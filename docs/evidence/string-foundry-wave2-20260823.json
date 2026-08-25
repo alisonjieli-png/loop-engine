@@ -1,0 +1,79 @@
+{
+ "record_type": "string_foundry_wave2_receipt/v1",
+ "date": "2026-08-23",
+ "run_id": "string-foundry-wave2-20260823",
+ "model": "deepseek-v4-flash:0731",
+ "loop": {
+  "steps_run": 18,
+  "semantic_calls": 8,
+  "wall_seconds": 68.4
+ },
+ "usage_log": [
+  {
+   "model": "deepseek-v4-flash:0731",
+   "ok": true,
+   "prompt_tokens": 154,
+   "eval_tokens": 1404
+  },
+  {
+   "model": "deepseek-v4-flash:0731",
+   "ok": true,
+   "prompt_tokens": 135,
+   "eval_tokens": 284
+  },
+  {
+   "model": "deepseek-v4-flash:0731",
+   "ok": true,
+   "prompt_tokens": 137,
+   "eval_tokens": 701
+  },
+  {
+   "model": "deepseek-v4-flash:0731",
+   "ok": true,
+   "prompt_tokens": 141,
+   "eval_tokens": 277
+  },
+  {
+   "model": "deepseek-v4-flash:0731",
+   "ok": true,
+   "prompt_tokens": 131,
+   "eval_tokens": 1542
+  },
+  {
+   "model": "deepseek-v4-flash:0731",
+   "ok": true,
+   "prompt_tokens": 126,
+   "eval_tokens": 2369
+  },
+  {
+   "model": "deepseek-v4-flash:0731",
+   "ok": true,
+   "prompt_tokens": 124,
+   "eval_tokens": 1326
+  },
+  {
+   "model": "deepseek-v4-flash:0731",
+   "ok": true,
+   "prompt_tokens": 135,
+   "eval_tokens": 375
+  }
+ ],
+ "tokens_total": {
+  "prompt": 1083,
+  "eval": 8278
+ },
+ "generated": {
+  "candidates": 64,
+  "undigested": 0,
+  "repairs_used": [],
+  "by_category": {
+   "first_principles": 8,
+   "job_position": 24,
+   "failure_recovery": 8,
+   "evaluation": 8,
+   "uncertainty": 8,
+   "cost_compression": 8
+  }
+ },
+ "honesty": "candidates only, provenance-stamped; repair = ONE stricter re-ask in its own iteration, never hand-fixing model output"
+}

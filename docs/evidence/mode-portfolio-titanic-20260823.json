@@ -1,0 +1,111 @@
+{
+ "record_type": "mode_portfolio_receipt/v1",
+ "date": "2026-08-23",
+ "task": "titanic (same data, same oracle: 5-fold CV accuracy via execute_tabular)",
+ "model": "deepseek-v4-flash:0731",
+ "provider": "ollama_cloud",
+ "arms": {
+  "deterministic_only": {
+   "steps_run": 6,
+   "stopped": "done",
+   "mode_counts": {
+    "deterministic": 6
+   },
+   "model_calls": 0,
+   "provider_tokens": [],
+   "cv_accuracy": 0.8294051627384961,
+   "estimator": "hgb",
+   "engineered": [],
+   "solution_spec": {
+    "valid": true,
+    "record_id": "solution.tabular_hgb",
+    "ensemble": "single",
+    "shipping_modes": [
+     "deterministic"
+    ]
+   },
+   "verify": {
+    "shape_ok": true,
+    "majority": 0.61616,
+    "beats_majority": true
+   },
+   "wall_seconds": 1.6,
+   "semantic_calls_per_iteration_max": 0
+  },
+  "hybrid": {
+   "steps_run": 6,
+   "stopped": "done",
+   "mode_counts": {
+    "deterministic": 5,
+    "hybrid": 1
+   },
+   "model_calls": 1,
+   "provider_tokens": [
+    {
+     "model": "deepseek-v4-flash:0731",
+     "ok": true,
+     "prompt_tokens": 55,
+     "eval_tokens": 512,
+     "attempts": 8
+    }
+   ],
+   "cv_accuracy": 0.8294051627384961,
+   "estimator": "hgb",
+   "engineered": [],
+   "solution_spec": {
+    "valid": true,
+    "record_id": "solution.tabular_hgb",
+    "ensemble": "single",
+    "shipping_modes": [
+     "deterministic"
+    ]
+   },
+   "verify": {
+    "shape_ok": true,
+    "majority": 0.61616,
+    "beats_majority": true
+   },
+   "wall_seconds": 6.1,
+   "semantic_calls_per_iteration_max": 1
+  },
+  "model_led": {
+   "steps_run": 6,
+   "stopped": "done",
+   "mode_counts": {
+    "deterministic": 5,
+    "non_deterministic": 1
+   },
+   "model_calls": 1,
+   "provider_tokens": [
+    {
+     "model": "deepseek-v4-flash:0731",
+     "ok": true,
+     "prompt_tokens": 55,
+     "eval_tokens": 424,
+     "attempts": 8
+    }
+   ],
+   "cv_accuracy": 0.8338945005611672,
+   "estimator": "hgb",
+   "engineered": [
+    "title__Name"
+   ],
+   "solution_spec": {
+    "valid": true,
+    "record_id": "solution.tabular_hgb",
+    "ensemble": "single",
+    "shipping_modes": [
+     "deterministic"
+    ]
+   },
+   "verify": {
+    "shape_ok": true,
+    "majority": 0.61616,
+    "beats_majority": true
+   },
+   "wall_seconds": 9.7,
+   "semantic_calls_per_iteration_max": 1
+  }
+ },
+ "honesty": "SMOKE: one task, one run per arm \u2014 a plumbing portfolio, not a statistical comparison; no arm claim generalizes"
+}

@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.tox/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Secrets — never commit a credential
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local run artifacts
+src/loop_engine/evidence/runs/
+src/loop_engine/evidence/studio/
+*.log
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.solver_runs.jsonl
+predictions.csv
+*.csv.out

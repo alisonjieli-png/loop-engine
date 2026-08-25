@@ -1,0 +1,195 @@
+{
+ "record_type": "live_mode_canary/v1",
+ "generated_by": "scratchpad/live_mode_canary.py",
+ "provider": "ollama_cloud",
+ "model": "deepseek-v4-flash:0731",
+ "date": "2026-08-23",
+ "arms": {
+  "hybrid": {
+   "shape": "deterministic primary -> typed insufficiency -> model-backed CHILD loop -> deterministic verification",
+   "deterministic_resolved": {
+    "2024-03-01": "2024-03-01",
+    "15/04/2024": "2024-04-15"
+   },
+   "insufficient_for_deterministic": [
+    "the second Tuesday of March 2024"
+   ],
+   "model_answers": {
+    "the second Tuesday of March 2024": "2024-03-12"
+   },
+   "accepted_by_deterministic_verifier": {
+    "the second Tuesday of March 2024": "2024-03-12"
+   },
+   "rejected_by_deterministic_verifier": {},
+   "root_loop_id": "loop1",
+   "root_stopped": "done",
+   "mode_counts": {
+    "deterministic": 2,
+    "hybrid": 1
+   },
+   "provider_reported_usage": [
+    {
+     "model": "deepseek-v4-flash:0731",
+     "prompt_tokens": 40,
+     "eval_tokens": 142
+    }
+   ],
+   "semantic_calls_made": 1,
+   "canonical_families_observed": [
+    "loop.child.returned",
+    "loop.child.started",
+    "loop.completed",
+    "loop.initialized",
+    "loop.iteration.completed",
+    "model.invocation.completed",
+    "model.invocation.requested"
+   ],
+   "model_invocation_events": 1,
+   "chronicle_head": "6061edb840e848d32b71d667c89264e3024ae32e2bbeae2c779cde45b0c8d970",
+   "chronicle_chain_intact": true,
+   "projection_lossless": true,
+   "untyped_passthrough": 0
+  },
+  "model_backed": {
+   "shape": "three iterations, each with exactly ONE semantic call, the model guiding the reasoning while the runtime owns state, budget, ordering and evidence",
+   "custom_steps_declared": [
+    "propose",
+    "critique",
+    "decide"
+   ],
+   "custom_steps_actually_run": [
+    "propose",
+    "critique",
+    "decide"
+   ],
+   "steps_not_normalized_to_nine": true,
+   "transcript": {
+    "propose": "For a 1000-row tabular classification task, use stratified 5-fold or 10-fold cross-validation to ensure each fold maintains the original class distribution, providing a robust performance estimate without wasting too much training data.",
+    "critique": "The single biggest weakness of this strategy is that it assumes the data are independent and identically distributed, so if there are any hidden groupings, repeated subjects, or temporal dependencies among the 1000 rows, the stratified folds will leak information and produce an overly optimistic performance estimate.",
+    "decide": "KEEP"
+   },
+   "provider_reported_usage": [
+    {
+     "model": "deepseek-v4-flash:0731",
+     "prompt_tokens": 23,
+     "eval_tokens": 159
+    },
+    {
+     "model": "deepseek-v4-flash:0731",
+     "prompt_tokens": 62,
+     "eval_tokens": 1002
+    },
+    {
+     "model": "deepseek-v4-flash:0731",
+     "prompt_tokens": 127,
+     "eval_tokens": 46
+    }
+   ],
+   "semantic_calls_per_iteration": [
+    1,
+    1,
+    1
+   ],
+   "one_semantic_call_per_iteration": true,
+   "total_prompt_tokens": 212,
+   "total_eval_tokens": 1207,
+   "root_loop_id": "loop1",
+   "root_stopped": "done",
+   "mode_counts": {
+    "non_deterministic": 3
+   },
+   "canonical_families_observed": [
+    "loop.completed",
+    "loop.initialized",
+    "loop.iteration.completed",
+    "model.invocation.completed"
+   ],
+   "model_invocation_events": 3,
+   "chronicle_head": "3e36193f3560273135048cf3a9ff11172f0f254a085ac7f59e4317f059da14be",
+   "chronicle_chain_intact": true
+  }
+ },
+ "coverage_after_this_run": {
+  "record_type": "canonical_event_coverage/v1",
+  "declared": 59,
+  "emitted_by_some_runtime_kind": [
+   "capability.rejected",
+   "capability.search.completed",
+   "intelligence.code.retrieved",
+   "intelligence.history.retrieved",
+   "intelligence.string.retrieved",
+   "intelligence.user.retrieved",
+   "loop.child.returned",
+   "loop.child.started",
+   "loop.completed",
+   "loop.failed",
+   "loop.initialized",
+   "loop.iteration.completed",
+   "loop.paused",
+   "loop.resumed",
+   "model.invocation.completed",
+   "model.invocation.requested",
+   "run.status_changed",
+   "runtime_memory.message_read",
+   "runtime_memory.message_written",
+   "solution.canvas.updated",
+   "solution.loop.completed",
+   "solution.loop.started",
+   "state.committed",
+   "tool.invocation.completed",
+   "user_intelligence.accepted",
+   "user_intelligence.attached",
+   "user_intelligence.deferred",
+   "user_intelligence.read",
+   "user_intelligence.rejected",
+   "user_intelligence.submitted",
+   "work_item.created"
+  ],
+  "declared_without_an_emitter": [
+   "capability.search.started",
+   "capability.selected",
+   "capability.snapshot.created",
+   "change.proposed",
+   "evaluation.completed",
+   "evaluation.started",
+   "failure.detected",
+   "learning.candidate.staged",
+   "learning.candidate.validated",
+   "loop.child.requested",
+   "loop.iteration.started",
+   "loop.started",
+   "loop.waiting",
+   "model.invocation.failed",
+   "model.invocation.started",
+   "recovery.completed",
+   "recovery.started",
+   "run.completed",
+   "run.failed",
+   "run.started",
+   "solution.candidate.created",
+   "solution.finalized",
+   "tool.invocation.failed",
+   "tool.invocation.started",
+   "user_intelligence.generalized",
+   "work_item.completed",
+   "work_item.deferred",
+   "work_item.selected"
+  ],
+  "observed_in_this_run": [
+   "loop.child.returned",
+   "loop.child.started",
+   "loop.completed",
+   "loop.initialized",
+   "loop.iteration.completed",
+   "model.invocation.completed",
+   "model.invocation.requested"
+  ],
+  "raw_kinds_mapped": 30
+ },
+ "totals": {
+  "semantic_calls": 4,
+  "prompt_tokens": 252,
+  "eval_tokens": 1349,
+  "note": "provider-reported counts only; nothing estimated"
+ }
+}

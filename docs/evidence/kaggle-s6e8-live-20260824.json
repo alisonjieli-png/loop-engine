@@ -1,0 +1,27 @@
+{
+ "record_type": "kaggle_live_submission/v1",
+ "competition": "playground-series-s6e8",
+ "competition_status": "LIVE (deadline 2026-08-31, 2799 teams)",
+ "date": "2026-08-24",
+ "arm": "deterministic, all four intelligence pillars consulted",
+ "public_score": 0.95486,
+ "submission_id": 55750803,
+ "model_calls": 0,
+ "wall_seconds": 19.6,
+ "ledger_events": 159,
+ "canonical_families": 9,
+ "chain_intact": true,
+ "pillars_retrieved": [
+  "intelligence.string.retrieved",
+  "intelligence.code.retrieved",
+  "intelligence.history.retrieved",
+  "intelligence.user.retrieved"
+ ],
+ "prior_submissions": {
+  "0.96337": "probe-guided bigger_capacity (2026-08-23) \u2014 CURRENT BEST",
+  "0.95663": "loop-of-loops smoke, probability resubmission",
+  "0.95486": "THIS RUN"
+ },
+ "honest_reading": "The pillar-consulting run scored 0.95486, BELOW the prior best of 0.96337. Wiring the intelligence plane into the solve did not improve the score on this task. That is a real negative signal and is recorded as one. Two things it does NOT establish: (a) that consulting intelligence is useless \u2014 this run used a plain baseline configuration while 0.96337 came from a probe-guided larger-capacity arm, so the arms differ in more than the pillars; (b) anything general about whether reuse pays, which stays unmeasured until the corpus is large. What it DOES establish is that the full loop architecture runs end to end on live competition data, produces a valid submission, and scores in a sane range.",
+ "what_this_proves": "live path: download -> loop-of-loops solve -> 4 pillars consulted -> valid submission -> accepted by Kaggle -> public score returned"
+}

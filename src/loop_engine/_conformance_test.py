@@ -1,0 +1,248 @@
+"""Architecture conformance + adversarial suite (§22–§23 of the reset).
+
+These tests FAIL when the repository drifts from the loop-of-loops
+architecture: the asset binary (String | Code Node), one canonical runtime
+path, recursive-loop invariants, mode/permission gates, the model boundary,
+and the no-self-promotion rule.  Adversarial cases actively try to break the
+rails — recursion explosion, budget evasion, permission elevation, hidden
+semantic fallbacks, orphan templates, self-promotion — and must produce an
+inspectable refusal, never a silent hang.
+"""
+from __future__ import annotations
+
+import importlib
+import json
+
+
+def self_test() -> dict:
+    results = []
+
+    def check(name, ok, note=""):
+        results.append({"name": name, "passed": bool(ok), "note": note})
+
+    from .loop.recursive_loop import (Loop, LoopConfig, LoopError,
+                                      PractitionerLoop, StepOutcome,
+                                      default_handler)
+
+    # ------------------------------------------------------------------ §22
+    # Asset binary: every classified asset is String or Code Node.
+    from .static_architecture.asset_class import KIND_CLASS, classify
+    other = {k: v for k, v in KIND_CLASS.items() if v not in ("string", "code")}
+    check("conformance_every_asset_kind_is_string_or_code",
+          not other and classify("loop") == "code"
+          and classify("context") == "string",
+          f"non-binary kinds: {other}")
+
+    # One canonical runtime: no parallel loop class; the alias IS the class.
+    check("conformance_one_canonical_runtime",
+          PractitionerLoop is Loop
+          and Loop.run_to_completion is Loop.run,
+          "PractitionerLoop/run_to_completion are the same object, not forks")
+
+    # The legacy flat module paths are DEAD (no parallel legacy structure).
+    from .architecture_map import PACKAGE
+    legacy_reachable = []
+    for legacy in ("kernel", "recursive_loop", "capability_directory",
+                   "intelligence_strings", "measurement"):
+        try:
+            importlib.import_module(f"{PACKAGE}.{legacy}")
+            legacy_reachable.append(legacy)
+        except ModuleNotFoundError:
+            pass
+    check("conformance_legacy_flat_paths_are_dead", not legacy_reachable,
+          f"still importable at the old root: {legacy_reachable}")
+
+    # Recursive loops: parent → child → grandchild return and integrate.
+    def spawning(loop, step, context):
+        if step == "research" and loop.depth < 2 and f"{step}:child" not in context:
+            return StepOutcome(output="needs child", mode="deterministic",
+                               spawn_goal=f"sub-research d{loop.depth + 1}")
+        return default_handler(loop, step, context)
+    root = Loop("root", LoopConfig(framework="custom",
+                                   custom_steps=("orient", "research", "act"),
+                                   max_depth=2))
+    r = root.run(handler=spawning)
+    tree = root.ledger.tree()
+    depths = {e.get("depth") for e in root.ledger.events
+              if e.get("event") == "spawn"}
+    check("conformance_parent_child_grandchild_integrate",
+          r.spawned >= 2 and depths >= {1, 2}
+          and root.loop_id in tree and r.stopped == "done",
+          f"{r.spawned} descendants across depths {sorted(depths)}; "
+          "answers flowed back up")
+
+    # ------------------------------------------------------------------ §23
+    # Adversarial: recursion explosion is bounded, not a hang.
+    def bomber(loop, step, context):
+        return StepOutcome(output="spawn more", mode="deterministic",
+                           spawn_goal="child forever")
+    b = Loop("bomb", LoopConfig(framework="five_step", max_depth=2,
+                                power="light"))
+    rb = b.run(handler=bomber)
+    check("adversarial_recursion_explosion_is_bounded",
+          rb.steps_run <= 3 and all(e.get("depth", 0) <= 2
+                                    for e in b.ledger.events),
+          f"depth capped at 2; {rb.spawned} spawns total, no hang")
+
+    # Adversarial: a child cannot elevate permissions (modes clamped/refused).
+    det_parent = Loop("det only", LoopConfig(allowable_modes=("deterministic",),
+                                             preferred_modes=("deterministic",)))
+    clamped = det_parent.spawn("child", LoopConfig(
+        allowable_modes=("deterministic", "non_deterministic")))
+    refused = False
+    try:
+        det_parent.spawn("evil", LoopConfig(
+            allowable_modes=("non_deterministic",),
+            preferred_modes=("non_deterministic",)))
+    except LoopError:
+        refused = True
+    clamp_events = [e for e in det_parent.ledger.events
+                    if e.get("modes_clamped_from")]
+    check("adversarial_child_cannot_elevate_permissions",
+          clamped.config.allowable_modes == ("deterministic",)
+          and refused and clamp_events,
+          "widening clamped + recorded; disjoint modes refused outright")
+
+    # Adversarial: MAX power does not expand permissions — a deterministic-only
+    # loop at max power still makes ZERO semantic calls.
+    maxed = Loop("max det", LoopConfig(allowable_modes=("deterministic",),
+                                       preferred_modes=("deterministic",),
+                                       power="max", framework="five_step"))
+    rm = maxed.run()
+    check("adversarial_max_power_grants_no_permissions",
+          rm.model_calls == 0 and rm.steps_run == 5
+          and "non_deterministic" not in rm.mode_counts
+          and "hybrid" not in rm.mode_counts,
+          "max raises budgets, never modes: zero semantic calls")
+
+    # Adversarial: budget evasion — a model-led loop cannot exceed its
+    # model-call budget by one extra call, and the stop is recorded.
+    greedy = Loop("greedy", LoopConfig(
+        allowable_modes=("non_deterministic",),
+        preferred_modes=("non_deterministic",), power="light"))
+    rg = greedy.run()
+    stops = [e for e in greedy.ledger.events if e.get("event") == "budget_stop"]
+    check("adversarial_model_budget_cannot_be_evaded",
+          rg.stopped == "budget" and stops
+          and rg.model_calls == greedy.config.settings["max_model_calls"] + 1,
+          "the call that crossed the budget stopped the loop, on the ledger")
+
+    # Adversarial: hidden semantic fallback — a failed semantic step may NOT
+    # retry semantically inside the same iteration (§12).
+    def semantic_flaky(loop, step, context):
+        if step == "act" and "act" not in context:
+            return StepOutcome(output="err", mode="hybrid", failed=True)
+        return default_handler(loop, step, context)
+    h = Loop("hidden", LoopConfig(framework="custom",
+                                  custom_steps=("orient", "act"), power="deep"))
+    recs = []
+    while not h.is_terminal:
+        recs.append(h.run_next_iteration(handler=semantic_flaky))
+    check("adversarial_no_hidden_semantic_fallback_in_iteration",
+          all(r.get("semantic_calls", 0) <= 1 for r in recs)
+          and any(e.get("event") == "model_boundary_deferred"
+                  for e in h.ledger.events),
+          "the semantic retry became a NEW visible iteration")
+
+    # Adversarial: an orphan/unbounded generated template cannot run.
+    from .loop.loop_templates import config_from_template, validate_template
+    orphan = {"template_id": "evil", "framework": "custom", "steps": ()}
+    unbounded = {"template_id": "evil2", "framework": "custom",
+                 "steps": tuple(f"s{i}" for i in range(9999))}
+    candidate = {"template_id": "evil3", "framework": "custom",
+                 "steps": ("a", "b"), "maturity": "candidate"}
+    refusals = 0
+    for tmpl in (orphan, unbounded, candidate):
+        try:
+            config_from_template(tmpl)
+        except ValueError:
+            refusals += 1
+    check("adversarial_bad_templates_refused_inspectably",
+          refusals == 3 and not validate_template(orphan)["valid"],
+          "orphan, unbounded, and unadmitted templates all refused with reasons")
+
+    # Adversarial: self-promotion — the improvement lane's own guard refuses
+    # promote/overwrite/delete-evidence actions.
+    from .code_nodes.housekeeping import SafeguardError, guard_improvement_action
+    blocked = 0
+    for a in ("promote", "overwrite_accepted", "delete_evidence"):
+        try:
+            guard_improvement_action(a)
+        except SafeguardError:
+            blocked += 1
+    try:
+        guard_improvement_action("stage_candidate")
+        allowed = True
+    except SafeguardError:
+        allowed = False
+    check("adversarial_improvement_cannot_self_promote",
+          blocked == 3 and allowed,
+          "stage yes; promote/overwrite/delete-evidence raise SafeguardError")
+
+    # Adversarial: lifecycle promotion without evidence is refused.
+    from .static_architecture.asset_lifecycle import (PromotionRefused, advance)
+    lifecycle_refused = False
+    try:
+        advance("validated", "registered", evidence={})
+    except PromotionRefused:
+        lifecycle_refused = True
+    check("adversarial_promotion_without_evidence_refused", lifecycle_refused)
+
+    # Adversarial: the cloud-only model gate — local counted generation refused
+    # by policy; kimi-k3 refused at construction, any route, any purpose.
+    from .static_architecture.model_routes import (ModelRoute, RoutePolicy,
+                                                   RouteViolation, screen_route)
+    local_refused = kimi_refused = False
+    try:
+        local = ModelRoute("local gen", "ollama_local", "llama3:8b",
+                           locality="local",
+                           purposes=("counted_generation",))
+        screen_route(local, purpose="counted_generation", policy=RoutePolicy())
+    except (RouteViolation, ValueError):
+        local_refused = True
+    try:
+        ModelRoute("k", "ollama_cloud", "kimi-k3:cloud")
+    except (RouteViolation, ValueError):
+        kimi_refused = True
+    check("adversarial_cloud_only_and_forbidden_family_hold",
+          local_refused and kimi_refused,
+          "local counted generation refused by the policy switch; kimi-k3 never")
+
+    # Adversarial: a pause token round-trips through JSON and resumes to the
+    # SAME final result — no corrupted-state resume.
+    a1 = Loop("resume int", LoopConfig(framework="five_step", power="deep"))
+    a1.run_next_iteration(); a1.run_next_iteration()
+    tok = json.loads(json.dumps(a1.pause()))
+    a2 = Loop.resume(tok)
+    ra = a2.run()
+    b1 = Loop("resume int", LoopConfig(framework="five_step", power="deep")).run()
+    check("adversarial_resume_reproduces_the_uninterrupted_run",
+          ra.steps_run == b1.steps_run == 5 and ra.output == b1.output,
+          "paused+resumed run ends exactly like the uninterrupted one")
+
+    # Adversarial: closure audit — a spawned-but-never-run child is an ORPHAN
+    # that fails closure; running it closes the tree.
+    pc = Loop("closure", LoopConfig(framework="five_step", power="deep"))
+    ghost = pc.spawn("never run")
+    pc.run()
+    audit1 = pc.audit_closure()
+    ghost.run()
+    audit2 = pc.audit_closure()
+    check("adversarial_orphaned_child_fails_closure_audit",
+          ghost.loop_id in audit1["orphaned_children"] and not audit1["closed"]
+          and audit2["closed"] and not audit2["orphaned_children"],
+          "orphan flagged inspectably; closure holds once every child is "
+          "terminal (terminal events are on the ledger)")
+
+    # Conformance: secrets never enter template/String records (spot scan of
+    # the shipped library for credential-shaped content).
+    from .loop.loop_templates import template_records
+    leaky = [r.record_id for r in template_records()
+             if any(tok in json.dumps(r.body).lower()
+                    for tok in ("api_key", "secret", "password", "token="))]
+    check("conformance_no_secret_shaped_content_in_shipped_strings",
+          not leaky, f"credential-shaped content in: {leaky}")
+
+    passed = sum(1 for r in results if r["passed"])
+    return {"tests": results, "passed": passed, "total": len(results),
+            "all_passed": passed == len(results)}

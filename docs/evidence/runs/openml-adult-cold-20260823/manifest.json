@@ -1,0 +1,8 @@
+{
+ "record_type": "chronicle_manifest/v1",
+ "run_id": "openml-adult-cold-20260823",
+ "parent_run_id": "",
+ "events": 10,
+ "head_digest": "648386842067e36b4fdf0038feed2d2e1bcc92450993fdfd215159c7b5e5bc3e",
+ "committed": true
+}

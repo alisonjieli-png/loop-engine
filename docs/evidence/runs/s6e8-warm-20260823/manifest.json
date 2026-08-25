@@ -1,0 +1,8 @@
+{
+ "record_type": "chronicle_manifest/v1",
+ "run_id": "s6e8-warm-20260823",
+ "parent_run_id": "",
+ "events": 9,
+ "head_digest": "c49efd6eef3748827b68679c56c00acfa1d7b8e01f3e7793315be64a80f75596",
+ "committed": true
+}

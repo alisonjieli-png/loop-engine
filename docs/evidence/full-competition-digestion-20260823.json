@@ -1,0 +1,113 @@
+{
+ "record_type": "full_competition_digestion_receipt/v1",
+ "date": "2026-08-23",
+ "model": "deepseek-v4-flash:0731",
+ "seed_manifest": [
+  {
+   "kernel": "alexisbcook/titanic-tutorial",
+   "votes": 60573
+  },
+  {
+   "kernel": "arthurtok/introduction-to-ensembling-stacking-in-python",
+   "votes": 15482
+  },
+  {
+   "kernel": "ldfreeman3/a-data-science-framework-to-achieve-99-accuracy",
+   "votes": 13986
+  },
+  {
+   "kernel": "mrisdal/exploring-survival-on-the-titanic",
+   "votes": 11028
+  }
+ ],
+ "curation_rule": "top-voted public methodology kernels; vote count is the documented stand-in for the owner's quality judgment on this first full run",
+ "digested": [
+  {
+   "kernel": "alexisbcook/titanic-tutorial",
+   "fetched": true,
+   "source_file": "titanic-tutorial.ipynb",
+   "candidates": 10,
+   "undigested": 0,
+   "staged": 10,
+   "deduped": 0
+  },
+  {
+   "kernel": "arthurtok/introduction-to-ensembling-stacking-in-python",
+   "fetched": true,
+   "source_file": "introduction-to-ensembling-stacking-in-python.ipynb",
+   "candidates": 10,
+   "undigested": 0,
+   "staged": 10,
+   "deduped": 0
+  },
+  {
+   "kernel": "ldfreeman3/a-data-science-framework-to-achieve-99-accuracy",
+   "fetched": true,
+   "source_file": "a-data-science-framework-to-achieve-99-accuracy.ipynb",
+   "candidates": 10,
+   "undigested": 0,
+   "staged": 10,
+   "deduped": 0
+  },
+  {
+   "kernel": "mrisdal/exploring-survival-on-the-titanic",
+   "fetched": true,
+   "source_file": "exploring-survival-on-the-titanic.Rmd",
+   "candidates": 10,
+   "undigested": 0,
+   "staged": 10,
+   "deduped": 0
+  }
+ ],
+ "usage": [
+  {
+   "kernel": "alexisbcook/titanic-tutorial",
+   "prompt_tokens": 2249,
+   "eval_tokens": 1045,
+   "ok": true
+  },
+  {
+   "kernel": "arthurtok/introduction-to-ensembling-stacking-in-python",
+   "prompt_tokens": 2447,
+   "eval_tokens": 353,
+   "ok": true
+  },
+  {
+   "kernel": "ldfreeman3/a-data-science-framework-to-achieve-99-accuracy",
+   "prompt_tokens": 2155,
+   "eval_tokens": 352,
+   "ok": true
+  },
+  {
+   "kernel": "mrisdal/exploring-survival-on-the-titanic",
+   "prompt_tokens": 2506,
+   "eval_tokens": 340,
+   "ok": true
+  }
+ ],
+ "bank_after": {
+  "total": 170,
+  "from_writeups": 50
+ },
+ "transfer_run": {
+  "competition": "spaceship-titanic (RELATED task, entered, open)",
+  "model_calls": 0,
+  "research_served_from": "genstr.c980fa034ef75275",
+  "served_provenance": "string-foundry-wave2-20260823 (deepseek-v4-flash:0731, improvement lane, wave 2)",
+  "local": {
+   "metric": "accuracy",
+   "score": 0.7950074772805705
+  },
+  "estimator": "hgb",
+  "wall_seconds": 5.7,
+  "submission": {
+   "returncode": 0,
+   "stdout": "Successfully submitted to Spaceship Titanic",
+   "stderr": "0%|          | 0.00/56.2k [00:00<?, ?B/s]\n 28%|\u2588\u2588\u258a       | 16.0k/56.2k [00:00<00:00, 99.9kB/s]\n100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 56.2k/56.2k [00:00<00:00, 112kB/s]"
+  },
+  "public_score": 0.79354,
+  "submission_ref": 55726305
+ },
+ "honesty": "the \u00a77 required test: write-ups -> digest -> stage -> a LATER practitioner run on a RELATED competition retrieves the digested intelligence and really submits. If the research step fell to the code rail instead of a bank hit, that is recorded above, not hidden. SMOKE evidence; no quality verdicts before tens of thousands of solutions (the owner's no-premature-judgment rule).",
+ "correction": "HONESTY CORRECTION: the record served at research (genstr.c980fa034ef75275) carries wave-2 FOUNDRY provenance, not write-up provenance \u2014 the search ranked a generated candidate above the kernel-digested ones. PROVEN: zero-call bank retrieval on a related competition + real submission (public 0.79354 ~= CV 0.795). PARTIAL: write-up-specific retrieval in a solving run (the earlier slice proved it under a targeted query; ranking write-up records competitively in open queries is the retrieval-quality work the new standardized RAG layer exists to do). The submission description overstated the served record's source; this field is the correction."
+}

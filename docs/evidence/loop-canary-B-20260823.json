@@ -1,0 +1,26 @@
+{
+ "record_type": "loop_canary_B/v1",
+ "recorded_at": "2026-08-23T15:13:38-04:00",
+ "what": "improvement run THROUGH the practitioner loop over the REAL ledgers of two live loop runs (the escalation events are real runtime behavior)",
+ "n_runs_mined": 2,
+ "through_loop": true,
+ "classification": {
+  "n_string": 0,
+  "n_code": 2
+ },
+ "top_opportunities": [
+  {
+   "kind": "code_node",
+   "score": 1.92,
+   "proposal": "build a code node for 'no code node served the 'orient' step' \u2014 it repeatedly fell back to the LLM (tokens spent on a solved problem)",
+   "asset_class": "code"
+  },
+  {
+   "kind": "code_node",
+   "score": 1.92,
+   "proposal": "build a code node for 'no code node served the 'research' step' \u2014 it repeatedly fell back to the LLM (tokens spent on a solved problem)",
+   "asset_class": "code"
+  }
+ ],
+ "honesty": "candidates only \u2014 promotion stays evidence-gated"
+}

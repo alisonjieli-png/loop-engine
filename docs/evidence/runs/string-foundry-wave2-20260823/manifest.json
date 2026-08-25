@@ -1,0 +1,8 @@
+{
+ "record_type": "chronicle_manifest/v1",
+ "run_id": "string-foundry-wave2-20260823",
+ "parent_run_id": "",
+ "events": 29,
+ "head_digest": "60aad20ae5f317ce8bbc5c782ba80f1afe071dd6a3e3fec4f8695e5a19537b58",
+ "committed": true
+}

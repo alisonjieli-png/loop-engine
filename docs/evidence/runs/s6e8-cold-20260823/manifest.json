@@ -1,0 +1,8 @@
+{
+ "record_type": "chronicle_manifest/v1",
+ "run_id": "s6e8-cold-20260823",
+ "parent_run_id": "",
+ "events": 10,
+ "head_digest": "4542c7c0da98636633c3a5021c5600eec32eb0eff58d4c47aa6f975e254da108",
+ "committed": true
+}

@@ -1,0 +1,68 @@
+{
+ "record_type": "flywheel_promotion_receipt/v1",
+ "date": "2026-08-23",
+ "steps": [
+  {
+   "step": "mine",
+   "sources": [
+    "loop-canary-A-20260823.json",
+    "smoke-titanic-loop-20260823.json (cold+warm)"
+   ],
+   "candidates_found": 2,
+   "deduplicated_ranked": [
+    {
+     "kind": "code_node",
+     "proposal": "build a code node for 'no code node served step 'research'' \u2014 it repeatedly fell back to the LLM (tokens spent on a solved problem)",
+     "frequency": 2,
+     "confidence": 0.64,
+     "score": 1.92
+    },
+    {
+     "kind": "logic_rule",
+     "proposal": "distill the recurring decision 'model resolved step 'research'' into a deterministic rule (zero-token)",
+     "frequency": 2,
+     "confidence": 0.64,
+     "score": 1.792
+    }
+   ],
+   "top_code_node_proposal": "build a code node for 'no code node served step 'research'' \u2014 it repeatedly fell back to the LLM (tokens spent on a solved problem)",
+   "provenance": "each ledger names its originating run receipt above"
+  },
+  {
+   "step": "stage_candidate",
+   "record_id": "node.advice_server.tabular",
+   "self_promotion_refused": "the improvement practitioner may not 'promote' \u2014 it stages candidates; a separate promotion authority decides (evidence-gated)"
+  },
+  {
+   "step": "promote_through_gate",
+   "refused_without_evidence": true,
+   "advanced": "validated -> registered",
+   "evidence": [
+    "warm run loop1: 0 model calls, advice served from the store (evidence/smoke-titanic-loop-20260823.json)",
+    "independent oracle execute_tabular 5-fold CV accuracy 0.83165 == cold 0.83165 (not worse)",
+    "verify step: shape_ok=True, beats_majority=True"
+   ],
+   "promoted_by": "separate promotion-authority path (asset_lifecycle.advance), never the improvement lane"
+  },
+  {
+   "step": "later_run_retrieves_promoted_resource",
+   "wall_seconds": 1.2,
+   "retrieved": "node.advice_server.tabular",
+   "retrieved_lifecycle": "registered",
+   "model_calls": 0,
+   "cv_score": 0.8316498316498316,
+   "steps_run": 6,
+   "stopped": "done"
+  }
+ ],
+ "gates": {
+  "candidates_mined_scored_deduplicated_ranked": true,
+  "provenance_points_to_exact_originating_runs": true,
+  "recurring_llm_decision_became_code_node_proposal": true,
+  "proposal_implemented_and_independently_evidenced": true,
+  "promotion_only_through_evidence_gate": true,
+  "later_related_run_retrieved_promoted_resource": true,
+  "measurable_improvement": "model-call substitution (1 -> 0) at equal local CV; quality unchanged (reported honestly)"
+ },
+ "honesty": "the 'implementation' is the store-served advice path exercised by the smoke handler \u2014 a deterministic code-only route replacing the model call; quality did not improve, cost did"
+}

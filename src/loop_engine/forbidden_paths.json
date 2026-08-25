@@ -1,0 +1,134 @@
+{
+ "record_type": "forbidden_paths/v1",
+ "scope": "src/loop_engine (self-contained package)",
+ "network_allowed_modules": [
+  "static_architecture/ollama_client.py",
+  "static_architecture/mistral_client.py",
+  "static_architecture/openrouter_client.py",
+  "static_architecture/custom_endpoint.py",
+  "static_architecture/studio_server.py",
+  "code_nodes/live_run_demo.py"
+ ],
+ "subprocess_allowed_modules": [
+  "static_architecture/opencode_client.py",
+  "code_nodes/smoke_ladder.py",
+  "_conformance_scan.py"
+ ],
+ "eval_exec_allowed_modules": [],
+ "dynamic_import_allowed_modules": [
+  "_self_test.py",
+  "_conformance_test.py",
+  "_conformance_scan.py",
+  "conformance_report.py",
+  "loop/step_registry.py",
+  "loop/steps/_facade_test.py",
+  "__init__.py"
+ ],
+ "kimi_mention_allowed_modules": [
+  "static_architecture/model_routes.py",
+  "static_architecture/ollama_resolvers.py",
+  "static_architecture/ollama_client.py",
+  "static_architecture/opencode_client.py",
+  "static_architecture/config.py",
+  "_conformance_test.py",
+  "_conformance_scan.py",
+  "conformance_report.py"
+ ],
+ "secret_patterns": [
+  "sk-[A-Za-z0-9]{20,}",
+  "AKIA[0-9A-Z]{16}",
+  "ghp_[A-Za-z0-9]{20,}",
+  "xox[bap]-[A-Za-z0-9-]{10,}",
+  "api_key\\s*=\\s*[\"'][A-Za-z0-9_\\-]{16,}[\"']",
+  "password\\s*=\\s*[\"'][^\"']{8,}[\"']",
+  "Bearer [A-Za-z0-9_\\-\\.]{20,}"
+ ],
+ "notes": [
+  "network_allowed: HTTP happens ONLY in a declared provider adapter (ollama_client, mistral_client, openrouter_client, and custom_endpoint, which is the ONE parameterised adapter for user-supplied OpenAI-compatible servers rather than a per-server module) or a declared server/demo module; everything else asks the directory. Amended 2026-08-24: the rule was written when one provider existed and said 'the ONE place'. Provider plurality is now a requirement, not a convenience \u2014 a single provider's 429 stopped a whole campaign \u2014 so the invariant is 'only in a declared adapter', and each adapter is listed above. Adding a provider means adding its adapter here with its reason, never relaxing the rule.",
+  "subprocess_allowed: opencode_client (declared tool adapter), smoke_ladder.submit_to_kaggle (declared external effect, explicit call sites only), and _conformance_scan.scan_min_python_syntax, which must invoke an OLDER interpreter to check syntax the current one accepts \u2014 a 3.14 workstation cannot detect PEP 701 usage that breaks the declared 3.10 floor, and that shipped once.",
+  "eval/exec: never \u2014 logic_ast interprets a closed operator set instead.",
+  "dynamic imports: registry/self-test plumbing only; a dynamic import elsewhere is a registration bypass.",
+  "secret patterns scan code AND receipts \u2014 evidence files must be secret-free too."
+ ],
+ "module_size_hard_cap": 800,
+ "module_size_exceptions": {
+  "loop/kernel.py": "the nine-step executor's default implementations; split plan: move per-step defaults into loop/steps/ facades one step at a time",
+  "loop/recursive_loop.py": "the canonical Loop runtime; split plan: extract LoopSpec/pause-resume into loop/spec.py once the kernel routes through run_next_iteration"
+ },
+ "docstring_min_lines": 3,
+ "docstring_exception_modules": [],
+ "suite_collection_exceptions": {
+  "static_architecture/ollama_client.py": "its self_test makes LIVE provider calls; folding it would make the suite non-deterministic and bill a provider on every run. Exercised by the dated live-mode canary receipt instead.",
+  "static_architecture/event_vocabulary.py": "no self_test of its own: it was split out of chronicle.py at the size cap and every one of its behaviours is exercised by chronicle.self_test (closed vocabulary, total projection, coverage honesty, adversarial undeclared-family refusal). A duplicate suite would test the same code twice and drift."
+ },
+ "resource_surfaces": {
+  "store_serve": {
+   "methods": [
+    "search",
+    "serve",
+    "records"
+   ],
+   "receivers": [
+    "store",
+    "_store",
+    "self._store",
+    "SolverStore",
+    "bank",
+    "catalog"
+   ]
+  },
+  "user_intelligence": {
+   "methods": [
+    "advice_for",
+    "consult",
+    "leave_advice"
+   ],
+   "receivers": [
+    "store",
+    "advice",
+    "advice_store",
+    "AdviceStore",
+    "s6",
+    "s7"
+   ]
+  },
+  "chronicle": {
+   "methods": [
+    "load",
+    "from_ledger"
+   ],
+   "receivers": [
+    "Chronicle",
+    "ch",
+    "chronicle"
+   ]
+  },
+  "retrieval": {
+   "methods": [
+    "search"
+   ],
+   "receivers": [
+    "Retriever",
+    "retriever",
+    "r"
+   ]
+  }
+ },
+ "resource_envelope_modules": {
+  "loop/intelligence_loops.py": "IS the loop envelope for the four intelligence pillars \u2014 wrapping a store record into a loop requires reaching the store. The envelope's own body is the base case for that boundary, not a crossing of it.",
+  "loop/recursive_loop.py": "the runtime kernel: committing a run's own Chronicle is the machinery that executes the loop abstraction, not a product-level caller reaching past it.",
+  "static_architecture/retrieval.py": "the search substrate itself \u2014 the Retriever reading the store it ranks is surface-internal, the same class as a surface calling itself.",
+  "loop/loop_capsule.py": "IS the ref/capsule layer: turning a store row into a LoopRef requires reading the row. The layer that creates the boundary is the base case for it, not a crossing of it."
+ },
+ "direct_resource_access_baseline": 0,
+ "direct_resource_access_note": "ZERO-TOLERANCE as of 2026-08-24. The rule graduated from a ratchet: every product-level direct resource access was routed through its loop envelope, so the baseline is 0 and any new one fails the build. Do not raise this to make a build pass \u2014 route the call through a loop.",
+ "boundary_register_exempt_modules": {
+  "static_architecture/reasoning_call.py": "the CALLER that crosses the model-invocation boundary, which is already a register row (envelope: as_model_loop). It owns no separate boundary of its own.",
+  "code_nodes/guided_setup.py": "the first-run WALKTHROUGH: it orchestrates existing boundaries (the practitioner envelope, provider discovery, the knowledge loader) and owns none of them. Every envelope it calls is already a register row; adding a second row for the caller would claim ownership it does not have.",
+  "code_nodes/universal_solve.py": "the ROUTING front door: it orients on a task and dispatches to an executor that owns the boundary, using the practitioner envelope only as a caller when no executor fits the modality. Every envelope it touches is already a register row; a second row would claim ownership it does not have."
+ },
+ "dynamic_import_allowed_modules_reasons": {
+  "__init__.py": "the package's documented public surface (from loop_engine import PractitionerLoop) resolved LAZILY, so importing the package stays cheap and no import cycle is created. This is a re-export of the canonical runtime, NOT the registration bypass the gate exists to catch: it registers nothing, and every name resolves to an already-mapped module."
+ },
+ "min_python": "3.10"
+}

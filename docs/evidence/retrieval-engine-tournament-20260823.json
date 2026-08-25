@@ -1,0 +1,149 @@
+{
+ "receipt": "retrieval-engine-tournament",
+ "date": "2026-08-23",
+ "classification": "PILOT",
+ "question": "which open-source engine should rank paraphrase queries over the real string bank?",
+ "population": "strings/generated_candidates.jsonl \u2014 170 records (the full bank, no sampling)",
+ "frozen_queries": 10,
+ "query_construction": "hand-written paraphrases with minimal shared vocabulary; accept-sets resolved by substring audit of the bank BEFORE any engine ran",
+ "engines": {
+  "fts5_stdlib_bm25": {
+   "hit_at_1": "2/10",
+   "hit_at_3": "4/10",
+   "mrr": 0.308
+  },
+  "hash_crc32_3gram": {
+   "hit_at_1": "2/10",
+   "hit_at_3": "3/10",
+   "mrr": 0.266
+  },
+  "potion-base-8M": {
+   "hit_at_1": "5/10",
+   "hit_at_3": "6/10",
+   "mrr": 0.55
+  },
+  "potion-retrieval-32M": {
+   "hit_at_1": "5/10",
+   "hit_at_3": "5/10",
+   "mrr": 0.511
+  },
+  "nomic-embed-text_local_ollama": {
+   "hit_at_1": "5/10",
+   "hit_at_3": "6/10",
+   "mrr": 0.564,
+   "index_build_seconds": 21.4
+  },
+  "hybrid_rrf_fts5_plus_retrieval32M": {
+   "hit_at_1": "2/10",
+   "hit_at_3": "4/10",
+   "mrr": 0.325
+  }
+ },
+ "findings": [
+  "learned LOCAL embeddings roughly double lexical/hash on paraphrase queries (MRR 0.55 vs 0.27-0.31) \u2014 three independent learned models converge, so the effect is real",
+  "AMONG learned models nothing separates at n=10: the 30MB static model ties the retrieval-tuned 32M and a full transformer on THIS bank \u2014 the smallest stays default per least-cost; NOT a verdict that bigger models never pay (no-premature-judgment rule: re-run at 10x bank size)",
+  "naive RRF fusion with a WEAK lexical leg degrades the strong vector leg (0.325 < 0.511) \u2014 hybrid is not automatically better than its best member (same lesson as the stacking-zoo ensemble receipt)",
+  "hash_vector used the salted builtin hash() and silently violated the identical-ranking invariant across processes \u2014 caught by the semantic canary flapping between runs; fixed with crc32 bucketing"
+ ],
+ "adopted": {
+  "default_lexical": "SQLite FTS5 (stdlib, zero deps)",
+  "opt_in_vector": "model2vec potion-base-8M via the 'rag' extra; model configurable (vector_model=)",
+  "verified_available_lanes": {
+   "sqlite-vec v0.1.9": "loads locally \u2014 the persistent single-file FTS5+vector store lane (wiring pending)",
+   "nomic-embed-text via local ollama daemon": "embeddings-are-LOCAL lawful; one backend flag away",
+   "CodeRankEmbed 137M": "code-specialized candidate for Code Node retrieval; needs sentence-transformers atop the present cpu torch (unmeasured here)"
+  }
+ },
+ "limits": "n=10 queries over 170 records is a PILOT \u2014 engine ordering among learned models is NOT established; the frozen-query harness is the durable artifact and re-runs as the bank grows",
+ "recompute": "the tournament script in this receipt's session scratchpad; rebuild via strings/generated_candidates.jsonl + the probes list herein",
+ "round_2_20260824": {
+  "question": "is there an easy good ready-made implementation of the intelligence search? (owner question)",
+  "engines_added": {
+   "lancedb_fts_tantivy_bm25": {
+    "hit_at_1": "4/10",
+    "hit_at_3": "5/10",
+    "mrr": 0.467
+   },
+   "lancedb_vector_model2vec": {
+    "hit_at_1": "5/10",
+    "hit_at_3": "6/10",
+    "mrr": 0.55,
+    "note": "identical to our vector leg \u2014 same embeddings, sanity check passes"
+   },
+   "lancedb_native_hybrid_rrf": {
+    "hit_at_1": "5/10",
+    "hit_at_3": "6/10",
+    "mrr": 0.533
+   },
+   "bm25s_pure_python": {
+    "hit_at_1": "2/10",
+    "hit_at_3": "3/10",
+    "mrr": 0.268
+   }
+  },
+  "findings": [
+   "LanceDB IS the easy good implementation of the multi-channel core: one embedded library, no server, ~10 lines for FTS+vector+hybrid, sub-second indexing at this scale",
+   "its tantivy BM25 BEAT our FTS5 OR-match lexical (0.467 vs 0.308) \u2014 adopted as lexical_backend='lancedb' (the 'search' extra)",
+   "its native score-aware hybrid held at 0.533 where our naive RRF degraded to 0.325 \u2014 proper fusion resists a weak leg; adopting its hybrid as a Retriever mode is the queued follow-up",
+   "bm25s matched our FTS5 (0.268 vs 0.308) \u2014 no gain, not adopted",
+   "the full portfolio (typed contracts, structural code search, compiler/test gates) remains OURS \u2014 no library ships it, and the research itself warns frameworks would duplicate our ontology"
+  ],
+  "limits": "same 10-query/170-record pilot as round 1 \u2014 ordering among close engines is directional"
+ },
+ "round_3_20260824_scale_poc": {
+  "question": "swappable plug + scale to billions (owner directive)",
+  "corpus": "250,000 records composed from the real seed grammar + bank (12 domain modifiers)",
+  "machine": "this workstation, CPU only",
+  "lancedb_250k": {
+   "embed_seconds": 6.1,
+   "embed_rate_per_s": 41189,
+   "ingest_seconds": 4.8,
+   "fts_index_seconds": 1.8,
+   "ivfpq_index_seconds": 15.2,
+   "disk": "296MB",
+   "query_p50_ms": {
+    "fts": 5,
+    "vector": 5,
+    "hybrid": 7,
+    "vector_plus_blocking_key_filter": 13
+   },
+   "extrapolation": "~1.2GB per million records at 256d; 10M ~= 12GB \u2014 the embedded rung honestly carries tens of millions"
+  },
+  "qdrant_embedded": {
+   "mode": ":memory:, no server",
+   "ingest_20k_seconds": 1.3,
+   "filtered_query_ms": 263,
+   "finding": "the rung-2 scale-up API runs fully in-process \u2014 dev/prod continuity verified; the python local mode is a functional mirror, not the Rust engine, so latency there is not representative"
+  },
+  "landed": [
+   "backend_handshakes() \u2014 the swappable-plug registry (5 backends, scale tiers, bodies_never_in_index on all)",
+   "EmbeddingSpace identity + require_same_space fail-closed guard (new model = new space = explicit reindex)",
+   "INTELLIGENCE-RETRIEVAL-PLAN.md \u2014 the 4-rung scale ladder with measured rung-1 numbers and named triggers"
+  ],
+  "limits": "250K is rung-1 proof, not billions; rung 2-3 engines (Vespa/Milvus/turbopuffer/OpenSearch) are researched and seamed, not integrated \u2014 integrating them now would be speculative infrastructure"
+ },
+ "round_4_20260824_research_backend": {
+  "question": "should RESEARCH_BACKEND flip from 'store' (idf) to 'fts5'? (queued since the probe rewire)",
+  "instrument": "tournament_as_loop \u2014 the tournament itself ran AS a hypothesis_experiment PractitionerLoop (loop-standardization item 4's first real use)",
+  "corpus": "the real 170-record bank; the 10 round-1 frozen queries",
+  "scores": {
+   "store": {
+    "hit_at_1": 2,
+    "mrr": 0.308
+   },
+   "fts5": {
+    "hit_at_1": 2,
+    "mrr": 0.3
+   }
+  },
+  "ranking": [
+   "store",
+   "fts5"
+  ],
+  "decision": "KEEP store \u2014 no clear win (flip requires a clear margin, not a coin toss)",
+  "loop_evidence": {
+   "loop_id": "loop1",
+   "model_calls": 0
+  }
+ }
+}

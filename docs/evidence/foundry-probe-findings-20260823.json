@@ -1,0 +1,83 @@
+{
+ "record_type": "foundry_probe_findings/v1",
+ "date": "2026-08-23",
+ "honesty": "probe findings are OBSERVATIONS for the loop, never accepted claims; large sets probed on seeded subsamples (recorded); multiclass residual probing is an honest gap",
+ "findings": {
+  "s6e8": {
+   "rows_probed": 120000,
+   "family": "lightgbm",
+   "note": "probed on a seeded 120000-row subsample",
+   "engineered": [],
+   "residual_probe": {
+    "record_type": "residual_predictability/v1",
+    "probe_auc": 0.826,
+    "error_rate": 0.1143,
+    "threshold": 0.62,
+    "verdict": "errors_have_learnable_structure",
+    "recommendation": "the primary model is missing signal \u2014 add features/subgroup handling where the probe scores high",
+    "seeded": 0,
+    "attribution": "observation, not accepted claim"
+   },
+   "train_test_probe": {
+    "record_type": "train_test_distinguishability/v1",
+    "domain_auc": 0.5574,
+    "threshold": 0.6,
+    "verdict": "no_material_shift_detected",
+    "drifting_columns": [],
+    "recommendation": "train and test look exchangeable at this probe's capacity",
+    "seeded": 0,
+    "attribution": "observation, not accepted claim"
+   },
+   "wall_seconds": 17.5
+  },
+  "openml-adult": {
+   "rows_probed": 39073,
+   "family": "lightgbm",
+   "note": "",
+   "engineered": [],
+   "residual_probe": {
+    "record_type": "residual_predictability/v1",
+    "probe_auc": 0.8459,
+    "error_rate": 0.1262,
+    "threshold": 0.62,
+    "verdict": "errors_have_learnable_structure",
+    "recommendation": "the primary model is missing signal \u2014 add features/subgroup handling where the probe scores high",
+    "seeded": 0,
+    "attribution": "observation, not accepted claim"
+   },
+   "train_test_probe": {
+    "record_type": "train_test_distinguishability/v1",
+    "domain_auc": 0.5021,
+    "threshold": 0.6,
+    "verdict": "no_material_shift_detected",
+    "drifting_columns": [],
+    "recommendation": "train and test look exchangeable at this probe's capacity",
+    "seeded": 0,
+    "attribution": "observation, not accepted claim"
+   },
+   "wall_seconds": 6.8
+  },
+  "openml-covertype": {
+   "rows_probed": 120000,
+   "family": "hgb",
+   "note": "probed on a seeded 120000-row subsample",
+   "engineered": [],
+   "residual_probe": {
+    "record_type": "residual_predictability/v1",
+    "verdict": "abstain",
+    "reason": "binary-only probe; multiclass residual probe not built"
+   },
+   "train_test_probe": {
+    "record_type": "train_test_distinguishability/v1",
+    "domain_auc": 0.5039,
+    "threshold": 0.6,
+    "verdict": "no_material_shift_detected",
+    "drifting_columns": [],
+    "recommendation": "train and test look exchangeable at this probe's capacity",
+    "seeded": 0,
+    "attribution": "observation, not accepted claim"
+   },
+   "wall_seconds": 17.4
+  }
+ }
+}

@@ -1,0 +1,374 @@
+<!-- Loop Engine Studio shell — a passive String served by studio_server.py.
+     Every number on every page is fetched from /api/* at request time
+     (Chronicle + live stores) — never a generated snapshot. -->
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Loop Engine Studio</title>
+<style>
+:root { --bg:#f4f6f5; --panel:#fdfffe; --ink:#1d2422; --mut:#5f6c68;
+  --line:#d7dedb; --acc:#1a6e63; --warn:#8a5a13; --hot:#c2571c;
+  --chip:#e7edeb; --code:#eef2f0; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg:#131816; --panel:#1a201e;
+    --ink:#e2e9e6; --mut:#8fa09a; --line:#2b332f; --acc:#4ec0ae;
+    --warn:#d9a94a; --hot:#e07b3c; --chip:#242b28; --code:#202623; } }
+:root[data-theme="dark"] { --bg:#131816; --panel:#1a201e; --ink:#e2e9e6;
+  --mut:#8fa09a; --line:#2b332f; --acc:#4ec0ae; --warn:#d9a94a;
+  --hot:#e07b3c; --chip:#242b28; --code:#202623; }
+.lnode { padding:.35rem .5rem; border:1px solid var(--line); border-radius:6px;
+  margin:.2rem 0; cursor:pointer; background:var(--panel); }
+.lnode:hover, .lnode:focus { border-color:var(--acc); outline:none; }
+.lnode b { font-family:"IBM Plex Mono",monospace; }
+.mchip { font:600 .62rem/1 "IBM Plex Mono",monospace; padding:.25em .5em;
+  border-radius:5px; margin-left:.35rem; border:1px solid var(--line);
+  text-transform:uppercase; letter-spacing:.06em; }
+.mchip.deterministic { color:var(--acc); border-color:var(--acc); }
+.mchip.hybrid { color:#2e6f8e; border-color:#2e6f8e; }
+.mchip.non_deterministic { color:var(--warn); border-color:var(--warn); }
+.canvas { display:flex; flex-wrap:wrap; gap:.5rem; }
+.cnode { border:1px solid var(--line); border-radius:6px; padding:.5rem .7rem;
+  background:var(--panel); min-width:9rem; }
+.cnode b { display:block; font-family:"IBM Plex Mono",monospace; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.5
+  "IBM Plex Sans",system-ui,sans-serif; height:100vh; display:flex;
+  flex-direction:column; }
+header { display:flex; gap:1rem; align-items:center; padding:.5rem 1rem;
+  border-bottom:1px solid var(--line); background:var(--panel); }
+header b { letter-spacing:-.01em; }
+header input { flex:1; max-width:28rem; padding:.35rem .6rem; border:1px
+  solid var(--line); border-radius:.4rem; background:var(--bg);
+  color:var(--ink); font:inherit; }
+#status { font-size:.75rem; color:var(--mut); margin-left:auto; }
+#layout { flex:1; display:flex; min-height:0; }
+nav { width:11rem; border-right:1px solid var(--line); background:var(--panel);
+  padding:.6rem 0; overflow:auto; }
+nav a { display:block; padding:.4rem 1rem; color:var(--ink);
+  text-decoration:none; font-size:.86rem; }
+nav a.on { color:var(--acc); font-weight:600; border-left:3px solid
+  var(--acc); padding-left:calc(1rem - 3px); }
+main { flex:1; overflow:auto; padding:1rem 1.2rem; min-width:0; }
+aside { width:22rem; border-left:1px solid var(--line);
+  background:var(--panel); overflow:auto; padding:.8rem 1rem;
+  display:none; font-size:.83rem; }
+aside.open { display:block; }
+aside h3 { margin:.2rem 0 .5rem; font-size:.95rem; }
+h1 { font-size:1.25rem; margin:.2rem 0 .8rem; }
+table { border-collapse:collapse; width:100%; font-size:.84rem;
+  background:var(--panel); }
+th,td { border-bottom:1px solid var(--line); padding:.35rem .55rem;
+  text-align:left; white-space:nowrap; }
+th { cursor:pointer; color:var(--mut); font-size:.72rem;
+  text-transform:uppercase; letter-spacing:.05em; position:sticky; top:0;
+  background:var(--panel); }
+td.num,th.num { text-align:right; font-variant-numeric:tabular-nums; }
+tr.row { cursor:pointer; } tr.row:hover td { background:var(--code); }
+.cards { display:grid; grid-template-columns:repeat(auto-fill,
+  minmax(9.5rem,1fr)); gap:.6rem; margin:.6rem 0 1.2rem; }
+.card { background:var(--panel); border:1px solid var(--line);
+  border-radius:.5rem; padding:.6rem .8rem; cursor:pointer; }
+.card b { display:block; font-size:1.3rem;
+  font-variant-numeric:tabular-nums; }
+.card span { font-size:.7rem; color:var(--mut); text-transform:uppercase;
+  letter-spacing:.05em; }
+.chip { background:var(--chip); border-radius:.3rem; padding:.05rem .45rem;
+  font-size:.72rem; font-family:"IBM Plex Mono",monospace; margin:0 .15rem;
+  display:inline-block; cursor:pointer; }
+.chip.on { background:var(--acc); color:#fff; }
+.chip.reg { background:var(--acc); color:#fff; }
+.chip.cand { background:var(--warn); color:#fff; }
+.tabs { display:flex; gap:.2rem; border-bottom:1px solid var(--line);
+  margin:.6rem 0; }
+.tabs a { padding:.35rem .8rem; color:var(--mut); text-decoration:none;
+  font-size:.84rem; border-bottom:2px solid transparent; }
+.tabs a.on { color:var(--acc); border-bottom-color:var(--acc); }
+pre { background:var(--code); border-radius:.4rem; padding:.6rem;
+  font:12px/1.5 "IBM Plex Mono",monospace; overflow:auto; }
+.tree { font:12.5px/1.7 "IBM Plex Mono",monospace; }
+.tl { display:flex; align-items:center; gap:.7rem; margin:.6rem 0; }
+.tl input[type=range] { flex:1; }
+.ev { border-left:3px solid var(--line); padding:.3rem .7rem;
+  margin:.25rem 0; font-size:.82rem; }
+.ev.model { border-color:var(--hot); }
+.ev.cur { background:var(--code); border-color:var(--acc); }
+.k { color:var(--mut); font-size:.8rem; }
+.warnbox { border-left:3px solid var(--warn); background:var(--panel);
+  padding:.4rem .8rem; color:var(--mut); font-size:.82rem; margin:.6rem 0; }
+button { background:var(--acc); color:#fff; border:0; border-radius:.35rem;
+  padding:.3rem .7rem; font:inherit; cursor:pointer; }
+</style></head><body>
+<header><b>Loop Engine Studio</b>
+<input id="q" placeholder="Filter the current page — or facet:value (class:string maturity:candidate role:question)">
+<span id="status">…</span></header>
+<div id="layout"><nav id="nav"></nav><main id="main">Loading…</main>
+<aside id="insp"></aside></div>
+<script>
+const NAV = [["home","Home"],["runs","Runs"],["intelligence","Strings"],
+  ["nodes","Code Intelligence"],["solutions","Solutions"],
+  ["improvements","Improvements"]];
+const $ = s => document.querySelector(s);
+const esc = t => String(t ?? "").replace(/[&<>"]/g,
+  c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+async function api(p) { const r = await fetch("/api/" + p);
+  if (!r.ok) throw new Error(p + " -> " + r.status); return r.json(); }
+function nav(page) { $("#nav").innerHTML = NAV.map(([k, l]) =>
+  `<a href="#/${k}" class="${page === k ? "on" : ""}">${l}</a>`).join(""); }
+function inspect(html) { const a = $("#insp");
+  a.className = html ? "open" : ""; a.innerHTML = html || ""; }
+function filterRows() { const v = $("#q").value.toLowerCase();
+  document.querySelectorAll("[data-s]").forEach(r =>
+    r.style.display = !v || r.dataset.s.includes(v) ? "" : "none"); }
+$("#q").addEventListener("input", filterRows);
+function sortable(tbl) { tbl.querySelectorAll("th").forEach((th, i) =>
+  th.onclick = () => { const rows = [...tbl.querySelectorAll("tr.row")];
+    const num = th.classList.contains("num");
+    const dir = th.dataset.d = -(th.dataset.d || -1);
+    rows.sort((a, b) => { const x = a.children[i].textContent,
+      y = b.children[i].textContent;
+      return dir * (num ? (parseFloat(x) || 0) - (parseFloat(y) || 0)
+                        : x.localeCompare(y)); });
+    rows.forEach(r => tbl.appendChild(r)); }); }
+
+const pages = {
+  async home() { const s = await api("summary");
+    $("#main").innerHTML = `<h1>Operations</h1><div class="cards">` +
+      s.cards.map(c => `<div class="card" onclick="location.hash='#/${c.link}'">
+        <b>${esc(c.value)}</b><span>${esc(c.label)}</span></div>`).join("") +
+      `</div><div class="warnbox">${esc(s.honesty)}</div>
+      <h1 style="font-size:1.05rem">Recent runs</h1>` + runsTable(s.recent);
+    sortable($("#main table")); },
+
+  async runs() { const d = await api("runs");
+    $("#main").innerHTML = `<h1>Runs</h1>` + runsTable(d.runs);
+    sortable($("#main table")); },
+
+  async run(id, tab) { tab = tab || "overview";
+    const d = await api("run/" + encodeURIComponent(id));
+    const T = ["overview","tree","canvas","playback","calls"];
+    let body = "";
+    if (tab === "overview") body = `<div class="cards">` + [
+      ["events", d.totals.events], ["iterations", d.totals.iterations],
+      ["semantic calls", d.totals.calls],
+      ["tokens", d.totals.prompt_tokens + "+" + d.totals.eval_tokens],
+      ["chain", d.chain_intact ? "intact" : "BROKEN"],
+      ["stuckness", d.stuckness.stuckness_score]]
+      .map(([l, v]) => `<div class="card"><b>${esc(v)}</b><span>${l}</span>
+      </div>`).join("") + `</div><p class="k">${esc(d.goal)}</p>` +
+      (d.stuckness.dominant_indicators.length ?
+        `<div class="warnbox">stuck: ${esc(d.stuckness.dominant_indicators
+          .map(i => i.indicator).join(", "))} → try ${esc(d.stuckness
+          .suggested_interventions.join(", "))}</div>` : "");
+    if (tab === "tree") {
+      window.__loops = {};
+      (d.loops || []).forEach(l => { window.__loops[l.loop_id] = l; });
+      const chip = (m, n) => `<span class="mchip ${m}">${m.replace(
+        "non_deterministic", "model-backed")} ${n}</span>`;
+      const draw = (n, depth) => {
+        const modes = Object.entries(n.modes || {})
+          .map(([m, c]) => chip(m, c)).join("");
+        return `<div class="lnode" style="margin-left:${depth * 1.1}rem"
+          tabindex="0" role="button"
+          onclick="pickLoop('${esc(n.loop_id)}')"
+          onkeydown="if(event.key==='Enter'||event.key===' ')
+            {event.preventDefault();pickLoop('${esc(n.loop_id)}')}">
+          <b>${esc(n.loop_id)}</b> <span class="k">${esc(
+            (n.goal || "").slice(0, 64))}</span>
+          <span class="k">iter ${n.iterations || 0} · calls ${
+            n.calls || 0} · ${esc(n.terminal || "running")}</span>
+          ${modes}</div>` +
+          (n.children || []).map(c => draw(c, depth + 1)).join("");
+      };
+      body = `<div class="looptree">` +
+        (d.tree_json || []).map(r => draw(r, 0)).join("") +
+        `</div><p class="k">Select a loop to inspect what it was given, what
+         it produced, and how it resolved each step.</p>`;
+    }
+    if (tab === "canvas") {
+      // The SOLUTION CANVAS: what the run SHIPPED, as loops.  Distinct from
+      // the Loop Tree, which is how it was built.
+      const sol = (d.events || []).filter(e =>
+        (e.type || "").startsWith("solution"));
+      body = sol.length
+        ? `<div class="canvas">` + sol.map(e =>
+            `<div class="cnode"><b>${esc(e.loop || "component")}</b>
+             <span class="k">${esc(e.type)}</span>
+             <span class="k">${esc(e.detail || "")}</span></div>`).join("") +
+          `</div>`
+        : `<div class="warnbox">This run recorded no Solution components.
+           The canvas shows what a run SHIPPED; a run that only explored has
+           nothing to show here, which is honest rather than empty.</div>`;
+    }
+    if (tab === "playback") body = `<div class="tl">
+      <button onclick="play('${esc(id)}')">▶</button>
+      <input type="range" id="scrub" min="0" max="${d.events.length - 1}"
+        value="0" oninput="showEv()"><span class="k" id="pos"></span></div>
+      <div id="evs">` + d.events.map((e, i) =>
+        `<div class="ev ${e.type === "model_invocation" ? "model" : ""}"
+          id="ev${i}">[${i}] <b>${esc(e.type)}</b> ${esc(e.loop)}
+          ${esc(e.step)} ${e.mode ? "(" + esc(e.mode) + ")" : ""}
+          ${e.tokens ? "· " + e.tokens + " tok" : ""}
+          <div class="k">${esc(e.detail)}</div></div>`).join("") + "</div>";
+    if (tab === "calls") body = d.calls.length ? `<table><tr>
+      <th class="num">#</th><th>loop</th><th>step</th><th>model</th>
+      <th class="num">in</th><th class="num">out</th></tr>` +
+      d.calls.map(c => `<tr class="row"><td class="num">${c.seq}</td>
+        <td>${esc(c.loop)}</td><td>${esc(c.step)}</td><td>${esc(c.model)}
+        </td><td class="num">${c.prompt_tokens}</td>
+        <td class="num">${c.eval_tokens}</td></tr>`).join("") + "</table>"
+      : `<p class="k">zero semantic calls — fully code-served</p>`;
+    $("#main").innerHTML = `<h1>${esc(id)}</h1><div class="tabs">` +
+      T.map(t => `<a href="#/runs/${encodeURIComponent(id)}/${t}"
+        class="${t === tab ? "on" : ""}">${t}</a>`).join("") +
+      `</div>` + body;
+    window.showEv = () => { const i = +$("#scrub").value;
+      document.querySelectorAll(".ev").forEach(e =>
+        e.classList.remove("cur"));
+      const el = $("#ev" + i); if (el) { el.classList.add("cur");
+        el.scrollIntoView({block: "center"}); }
+      $("#pos").textContent = i + " / " + d.events.length; };
+    window.play = () => { let i = +$("#scrub").value;
+      const t = setInterval(() => { if (i >= d.events.length - 1)
+        return clearInterval(t);
+        $("#scrub").value = ++i; showEv(); }, 450); }; },
+
+  async intelligence(id) { const d = await api("strings");
+    if (id) { const s = d.strings.find(x => x.id === id);
+      inspect(s ? `<h3>${esc(s.id)}</h3><p>${esc(s.text)}</p>
+        <p><span class="chip">${esc(s.kind)}</span>
+        <span class="chip ${s.maturity === "registered" ? "reg" : "cand"}">
+        ${esc(s.maturity)}</span></p>
+        <p class="k">category ${esc(s.category)} / ${esc(s.subcategory)}
+        ${s.job_position ? "· " + esc(s.job_position) : ""}</p>
+        <p class="k">${esc(s.provenance || s.source)}</p>` : "");
+      }
+    $("#main").innerHTML = `<h1>String intelligence
+      <span class="k">(${d.strings.length})</span></h1><p>` +
+      d.facets.map(f => `<span class="chip" onclick="$('#q').value=
+        'category:${f}';filterRows()">${esc(f)}</span>`).join("") +
+      `</p><table><tr><th>kind</th><th>text</th><th>category</th>
+      <th>maturity</th><th>source</th></tr>` +
+      d.strings.map(s => `<tr class="row" data-s="${esc((s.kind + " " +
+        s.text + " " + s.category + " category:" + s.category +
+        " maturity:" + s.maturity + " class:string").toLowerCase())}"
+        onclick="location.hash='#/intelligence/${encodeURIComponent(s.id)}'">
+        <td><span class="chip">${esc(s.kind)}</span></td>
+        <td style="white-space:normal">${esc(s.text.slice(0, 110))}</td>
+        <td>${esc(s.category)}</td><td><span class="chip ${
+          s.maturity === "registered" ? "reg" : "cand"}">${esc(s.maturity)}
+        </span></td><td class="k">${esc(s.source)}</td></tr>`).join("") +
+      `</table>`; sortable($("#main table")); filterRows(); },
+
+  async nodes(id) { const d = await api("nodes");
+    if (id) { const n = d.nodes.find(x => x.module === id);
+      inspect(n ? `<h3>${esc(n.module)}</h3><p class="k">${esc(n.group)} ·
+        ${n.loc} lines</p><p>${esc(n.purpose)}</p>` : ""); }
+    $("#main").innerHTML = `<h1>Code Intelligence
+      <span class="k">(${d.nodes.length})</span></h1>
+      <table><tr><th>module</th><th>group</th><th class="num">lines</th>
+      <th>purpose</th></tr>` +
+      d.nodes.map(n => `<tr class="row" data-s="${esc((n.module + " " +
+        n.group + " " + n.purpose + " class:code").toLowerCase())}"
+        onclick="location.hash='#/nodes/${encodeURIComponent(n.module)}'">
+        <td><b>${esc(n.module)}</b></td><td>${esc(n.group)}</td>
+        <td class="num">${n.loc}</td>
+        <td style="white-space:normal" class="k">${esc(n.purpose)}</td>
+        </tr>`).join("") + `</table>`;
+    sortable($("#main table")); filterRows(); },
+
+  async solutions() { const d = await api("solutions");
+    $("#main").innerHTML = `<h1>Solution library
+      <span class="k">(${d.solutions.length})</span></h1>
+      <div class="warnbox">A prior Solution is a starting point, never proof
+      it transfers.</div><table><tr><th>asset</th><th>fingerprint</th>
+      <th>evidence</th><th>maturity</th></tr>` +
+      d.solutions.map(s => `<tr class="row" data-s="${esc((s.id + " " +
+        s.fingerprint).toLowerCase())}"><td><b>${esc(s.id)}</b></td>
+        <td class="k">${esc(s.fingerprint)}</td>
+        <td style="white-space:normal" class="k">${esc(s.evidence)}</td>
+        <td><span class="chip cand">${esc(s.maturity)}</span></td>
+        </tr>`).join("") + `</table>`; sortable($("#main table")); },
+
+  async improvements() { const d = await api("improvements");
+    $("#main").innerHTML = `<h1>Improvements</h1>
+      <div class="cards">` + d.cards.map(c => `<div class="card">
+        <b>${esc(c.value)}</b><span>${esc(c.label)}</span></div>`)
+        .join("") + `</div>
+      <h1 style="font-size:1rem">Per-run stuckness</h1><table><tr>
+      <th>run</th><th class="num">score</th><th>indicators</th>
+      <th>interventions</th></tr>` +
+      d.stuckness.map(s => `<tr class="row" data-s="${esc(s.run
+        .toLowerCase())}" onclick="location.hash=
+        '#/runs/${encodeURIComponent(s.run)}/overview'">
+        <td>${esc(s.run)}</td><td class="num">${s.score}</td>
+        <td class="k">${esc(s.indicators)}</td>
+        <td class="k">${esc(s.interventions)}</td></tr>`).join("") +
+      `</table><div class="warnbox">${esc(d.honesty)}</div>`;
+    sortable($("#main table")); },
+};
+
+function runsTable(rows) { return `<table><tr><th>run</th><th>goal</th>
+  <th class="num">events</th><th class="num">calls</th>
+  <th class="num">tokens</th><th>chain</th></tr>` +
+  rows.map(r => `<tr class="row" data-s="${esc((r.run_id + " " + r.goal)
+    .toLowerCase())}" onclick="location.hash=
+    '#/runs/${encodeURIComponent(r.run_id)}/overview'">
+    <td><b>${esc(r.run_id)}</b></td>
+    <td style="white-space:normal" class="k">${esc(r.goal.slice(0, 70))}</td>
+    <td class="num">${r.events}</td><td class="num">${r.calls}</td>
+    <td class="num">${r.tokens}</td>
+    <td>${r.intact ? "intact" : "<b>BROKEN</b>"}</td></tr>`).join("") +
+  `</table>`; }
+
+// PATH routing with a hash fallback. The server serves the declared paths
+// (GET /routes enumerates them), so a Studio URL is shareable and
+// bookmarkable — a hash-only shell cannot be deep-linked into by anything
+// that does not already run the page.
+function currentParts() {
+  if (location.hash.length > 2)
+    return location.hash.replace(/^#\//, "").split("/").map(decodeURIComponent);
+  const p = location.pathname.replace(/^\/(app\/?)?/, "").replace(/\/$/, "");
+  return p ? p.split("/").map(decodeURIComponent) : [];
+}
+
+async function route() { inspect("");
+  const parts = currentParts();
+  const page = parts[0] || "home"; nav(page);
+  $("#status").textContent = "loading…";
+  try {
+    if (page === "runs" && parts[1]) await pages.run(parts[1], parts[2]);
+    else if (pages[page]) await pages[page](parts[1]);
+    else $("#main").innerHTML = "<h1>Not found</h1>";
+    $("#status").textContent = "live · computed at request time";
+  } catch (e) { $("#main").innerHTML = `<h1>Error</h1><pre>${esc(e)}</pre>`;
+    $("#status").textContent = "error"; } }
+// intercept in-app links so path navigation does not reload the shell
+document.addEventListener("click", (e) => {
+  const a = e.target.closest && e.target.closest("a[href^='/app']");
+  if (!a) return;
+  e.preventDefault();
+  history.pushState({}, "", a.getAttribute("href"));
+  route();
+});
+function pickLoop(id) {
+  const l = (window.__loops || {})[id];
+  if (!l) return;
+  const steps = (l.steps || []).map(s =>
+    `<tr><td>${esc(s.step)}</td><td><span class="mchip ${esc(s.mode)}">${
+      esc((s.mode || "").replace("non_deterministic", "model-backed"))
+    }</span></td><td class="k">${esc(s.out)}</td></tr>`).join("");
+  inspect(`<h2>${esc(l.loop_id)}</h2>
+    <p class="k">${esc(l.goal || "(no goal recorded)")}</p>
+    <table><tr><th>parent</th><td>${esc(l.parent || "root")}</td></tr>
+    <tr><th>iterations</th><td>${l.iterations || 0}</td></tr>
+    <tr><th>semantic calls</th><td>${l.calls || 0}</td></tr>
+    <tr><th>tokens</th><td>${l.tokens || 0}</td></tr>
+    <tr><th>terminal</th><td>${esc(l.terminal || "running")}</td></tr></table>
+    <h3>steps</h3><table><tr><th>step</th><th>mode</th><th>output</th></tr>
+    ${steps || "<tr><td colspan=3 class=k>no iterations recorded</td></tr>"}
+    </table>`);
+}
+
+window.addEventListener("hashchange", route);
+window.addEventListener("popstate", route);
+route();
+</script></body></html>

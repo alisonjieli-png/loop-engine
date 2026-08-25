@@ -1,0 +1,35 @@
+{
+ "record_type": "chronicle_bootstrap_receipt/v1",
+ "date": "2026-08-23",
+ "runs": [
+  {
+   "run_id": "s6e8-cold-20260823",
+   "events": 10,
+   "intact": true,
+   "genai_spans": 1
+  },
+  {
+   "run_id": "s6e8-warm-20260823",
+   "events": 9,
+   "intact": true,
+   "genai_spans": 0
+  },
+  {
+   "run_id": "titanic-cold-20260823",
+   "events": 9,
+   "intact": true,
+   "genai_spans": 1
+  },
+  {
+   "run_id": "titanic-warm-20260823",
+   "events": 8,
+   "intact": true,
+   "genai_spans": 0
+  }
+ ],
+ "solution_assets": [
+  "solasset.s6e8_lightgbm_20260823",
+  "solasset.titanic_lightgbm_20260823"
+ ],
+ "honesty": "chronicles projected from the live smoke receipts; timestamps are absent on pre-timestamp ledgers and recorded as 0.0 (unknown), never fabricated"
+}

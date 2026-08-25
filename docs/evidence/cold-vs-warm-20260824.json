@@ -1,0 +1,29 @@
+{
+ "record_type": "cold_vs_warm/v1",
+ "cold": {
+  "label": "cold",
+  "wall_s": 0.998,
+  "events": 39,
+  "families": 5,
+  "pillars_retrieved": [
+   "intelligence.string.retrieved"
+  ],
+  "capability_refs": 0,
+  "model_calls": 0
+ },
+ "warm": {
+  "label": "warm",
+  "wall_s": 0.312,
+  "events": 129,
+  "families": 8,
+  "pillars_retrieved": [
+   "intelligence.code.retrieved",
+   "intelligence.history.retrieved",
+   "intelligence.string.retrieved",
+   "intelligence.user.retrieved"
+  ],
+  "capability_refs": 4,
+  "model_calls": 0
+ },
+ "honesty": "one synthetic fixture, one run each \u2014 a mechanism demonstration, NOT a performance claim. Both arms made zero model calls; nothing here says reuse pays."
+}

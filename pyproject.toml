@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "loop-engine"
+version = "0.1.0"
+description = "A Python engine for deterministic, hybrid, and non-deterministic task loops."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "Alie Jie Li", email = "alisonjieli@gmail.com" }]
+keywords = ["agent", "loop", "llm", "orchestration", "automl", "provider-failover"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+# One install includes the runtime and every supported adapter. The public
+# package does not expose task-specific installation variants.
+dependencies = [
+    "numpy",
+    "pandas",
+    "scikit-learn",
+    "lightgbm",
+    "xgboost",
+    "kaggle",
+    "duckdb",
+    "model2vec",
+    "lancedb",
+    "PyYAML",
+]
+
+[project.urls]
+Homepage = "https://github.com/alisonjieli-png/loop-engine"
+Documentation = "https://github.com/alisonjieli-png/loop-engine/tree/main/docs"
+Issues = "https://github.com/alisonjieli-png/loop-engine/issues"
+
+[project.scripts]
+loop-engine = "loop_engine.__main__:main"
+
+[tool.setuptools]
+# `loop_engine` is the import name for the `loop-engine` distribution.
+# One package directory, one public surface.
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["loop_engine*"]
+
+[tool.setuptools.package-data]
+# Every non-.py file the package READS AT RUNTIME. A missing entry here is
+# invisible in the source tree and fails only after installation — which is
+# why the clean-virtualenv acceptance run is part of CI rather than optional.
+loop_engine = [
+    "forbidden_paths.json",
+    "architecture_conformance.json",
+    "ARCHITECTURE-MAP.md",
+    "strings/*.md",       # SEED-DIMENSIONS.md, read by string_foundry
+    "strings/*.html",     # studio_shell.html, served by the studio
+    "strings/*.json",
+    "strings/*.jsonl",    # the seed intelligence corpus
+]
