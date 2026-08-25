@@ -21,6 +21,8 @@ add another runtime or replace the intelligence layers.
 
 ```text
 One universal Loop runtime
+├── LoopDefinition: versioned, digest-bound execution contract
+├── LoopRuntimeContext: restricted services, permissions, and executors
 ├── Relationship
 │   ├── Starting
 │   ├── Spawned by
@@ -31,6 +33,12 @@ One universal Loop runtime
     ├── Practitioner
     ├── Intelligence
     └── Solution
+
+One authoritative static DAG
+└── LoopGraphDefinition
+    ├── exact LoopDefinitionRef per executable vertex
+    ├── typed edges and explicit Adapter Loops
+    └── graph version and content digest
 ```
 
 A Starting Practitioner may spawn a Practitioner subproblem Loop and query an

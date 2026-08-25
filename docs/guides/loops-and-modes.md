@@ -9,14 +9,16 @@ verify work. Solution loops run a finished Solution Canvas.
 Each Loop has:
 
 - a goal;
-- an input and output contract;
-- allowed and preferred run modes;
+- a versioned and digest-bound `LoopDefinition`;
+- a typed input and output contract;
+- supported modes and installed executors;
 - delegated modes for loops it starts;
 - a step profile;
 - an effort setting and budget;
 - model thinking power when the loop permits a model;
 - a loop condition and an exit condition;
 - a depth limit; and
+- a least-authority `LoopRuntimeContext`; and
 - an event log.
 
 Read [The Loop object and step profiles](../components/loop-object/) for the
@@ -45,7 +47,8 @@ config = LoopConfig(
 )
 ```
 
-Allowed modes control the current loop. Preferred modes set its order. A
+Supported modes control the current Loop definition. Preferred modes set its
+selection order. A
 deterministic loop stays deterministic even when a model provider is
 configured.
 
@@ -101,6 +104,11 @@ assumption = numbers.spawn("check one assumption")
 
 The Loops share the event log. Reports use the recorded relationships to show
 the Practitioner graph. `max_depth` limits dynamic spawning.
+
+This short example uses the observable compatibility constructor. That path
+composes a complete `LoopDefinition`, `LoopStartRequest`, and restricted
+runtime context before execution. New low-level integrations should construct
+those typed objects directly.
 
 ## Practitioner and Solution loops
 

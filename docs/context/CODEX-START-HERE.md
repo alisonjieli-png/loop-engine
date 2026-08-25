@@ -25,17 +25,22 @@ and extend one branch at a time:
 
 Operational runtime type
 └── Loop
+    ├── LoopDefinition: ID, version, digest, profile, contract, modes, conditions, authority
+    ├── LoopRuntimeContext: three public capability ports plus internal mechanics
     ├── Relationship: Starting, Spawned by, Queried by, Retrieved by, or Connected from
     ├── Role: Practitioner, Intelligence, or Solution
-    ├── Versioned role profile
     ├── Purpose and domain categories
-    ├── Mode: deterministic, hybrid, or non-deterministic
-    ├── Step profile
-    ├── Typed input and output contract
+    ├── Selected mode: deterministic, hybrid, or non-deterministic
     ├── Budget, permissions, and effects
     ├── Model settings when model use is allowed
-    ├── Loop condition and exit condition
     └── Run History events
+
+Authoritative static graph
+└── LoopGraphDefinition
+    ├── exact LoopDefinitionRef per executable vertex
+    ├── typed edges
+    ├── graph inputs and outputs
+    └── graph version and content digest
 
 Never use runtime type, role, profile, category, mode, or settings as
 interchangeable terms.

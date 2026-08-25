@@ -1,383 +1,306 @@
 # Taxonomy, ontology, and class map
 
-This page classifies Loop Engine without creating another specification. It
-maps public concepts to current code and marks the consolidation gaps. The
-[contract index](../contracts/) points to detailed contract objects. The
-[drift audit](LOOP-ENGINE-ARCHITECTURE-DRIFT-AUDIT-2026-08-25.md) contains the
-supporting findings.
+This page maps the public architecture to the current code. The linked Python
+objects are the implementation authority.
 
 ## One operational runtime
 
 ```text
 Operational runtime
 └── Loop
-    ├── role: Practitioner, Intelligence, or Solution
-    ├── exact versioned role profile
-    ├── selected mode for this Loop instance
-    ├── step profile
-    ├── typed input and output contract
-    ├── settings, budget, permissions, and effects
+    ├── immutable versioned definition
+    ├── selected role profile
+    ├── selected mode
+    ├── typed input and output roles
     ├── loop condition and exit condition
+    ├── least-authority runtime context
     ├── relationship to other Loops
-    └── Run History events
+    └── ordered Run History events
 ```
 
-Every executable graph vertex must resolve to a Loop. A service, record, file,
-port, edge, slot, prompt, package, or report is not a second runtime type.
+Every executable graph vertex is a `Loop`. A service, file, record, port,
+edge, slot, candidate, prompt, package, or report is not an executable graph
+vertex.
 
-## Definition and run instance
-
-Definition and execution state belong in separate objects.
+## Definition, start request, and run instance
 
 ```text
-Loop definition, immutable and reusable
-├── definition identity, semantic version, and content digest
-├── role and exact role profile
-├── supported modes and installed executors
-├── typed input and output PortSpecs
-├── step profile and settings schema
-├── loop condition and exit condition
-├── budgets, permissions, and effects
-├── required Static Architecture capabilities
-└── required internal runtime mechanics
+LoopDefinition
+├── definition_id
+├── version
+├── content_digest
+├── role_profile_id and role_profile_version
+├── LoopContract
+├── ConfigurationFacts
+├── supported_modes
+├── installed_executor_modes
+├── step_profile
+├── loop_condition and exit_condition
+├── effects and permissions
+└── required_capabilities
 
-Loop instance, one run of one definition
-├── instance identity
-├── exact definition reference
-├── selected mode
-├── validated input values
-├── run-scoped settings and counters
-├── relationships to other Loop instances
-├── output values
-└── Run History event references
+LoopStartRequest
+├── goal
+├── LoopDefinition
+├── LoopRelationship
+├── LoopRuntimeContext
+└── event_log
+
+Loop instance
+├── LoopDefinitionRef
+├── one selected mode
+├── mutable execution state
+├── input and output values
+└── events bound to the definition identity
 ```
 
-| State | Current implementation | Gap |
-|---|---|---|
-| Current | `LoopRoleIdentity`, `LoopRelationship`, `LoopProfileSpec`, `LoopConfig`, `LoopContract`, and `EffectiveLoopSpec` split these concerns into typed objects. | No single immutable `LoopDefinition` binds every field, semantic version, and digest. |
-| Current | `Loop` stores identity, relationship, configuration, contract, state, counters, and an event ledger. | The constructor does not yet require one registered, digest-bound definition reference. |
-| Target | Every runnable Loop comes from one validated definition. | Unknown profiles, abstract profiles, unavailable executors, incompatible settings, and unresolved service requirements must fail before execution. |
+[`LoopDefinition`](../../src/loop_engine/loop/loop_definition.py) is immutable.
+Its canonical JSON determines its SHA-256 content digest. Deserialization
+recomputes that digest and refuses changed content. The definition also checks
+that the role profile is registered, the contract role matches the profile,
+the supported modes stay within the profile, the selected contract mode is
+supported, and required capabilities are present.
+
+[`LoopStartRequest`](../../src/loop_engine/loop/loop_definition.py) carries all
+public start inputs in one object. [`Loop`](../../src/loop_engine/loop/recursive_loop.py)
+registers the definition with the event log and records the exact definition
+ID, version, and digest in its lifecycle events.
+
+Some established constructor calls still use an observable compatibility
+path. That path composes a complete `LoopDefinition` and `LoopRuntimeContext`
+before the Loop starts. It does not create a weaker runtime type.
 
 ## Role profile ontology
 
-Abstract branches organize registered profiles. They do not create runtime
-classes.
+Profiles classify purpose. They do not describe graph position or selected
+mode.
 
 ```text
-Loop profile
+Loop profile ontology
 ├── Practitioner
-│   ├── reference nine-step
-│   ├── compact five-step
-│   ├── research
-│   ├── solver
-│   ├── verifier
-│   ├── self-improvement task
-│   └── code execution
+│   ├── practitioner.reference_nine_step
+│   ├── practitioner.compact_five_step
+│   ├── practitioner.research
+│   ├── practitioner.solver
+│   ├── practitioner.verifier
+│   ├── practitioner.self_improvement
+│   └── practitioner.code_execution
 ├── Intelligence
-│   ├── cross-layer search
-│   ├── cross-layer materialize
-│   ├── Context Intelligence
-│   │   ├── serve
-│   │   ├── search
-│   │   └── frame
-│   ├── Code Intelligence
-│   │   ├── resolve
-│   │   ├── invoke
-│   │   └── load package or repository
-│   ├── Runtime History and Solution Intelligence
-│   │   ├── search
-│   │   ├── replay
-│   │   └── compare
-│   └── User Feedback Intelligence
-│       ├── serve
-│       ├── scope
-│       └── interpret
+│   ├── intelligence.search
+│   ├── intelligence.materialize
+│   ├── intelligence.context
+│   │   ├── intelligence.context.serve
+│   │   ├── intelligence.context.search
+│   │   └── intelligence.context.frame
+│   ├── intelligence.code
+│   │   ├── intelligence.code.resolve
+│   │   ├── intelligence.code.invoke
+│   │   └── intelligence.code.package
+│   ├── intelligence.runtime_history_solution
+│   │   ├── intelligence.runtime_history_solution.search
+│   │   ├── intelligence.runtime_history_solution.replay
+│   │   └── intelligence.runtime_history_solution.compare
+│   └── intelligence.user_feedback
+│       ├── intelligence.user_feedback.serve
+│       ├── intelligence.user_feedback.scope
+│       └── intelligence.user_feedback.interpret
 └── Solution
-    ├── atomic component
-    ├── pipeline
-    ├── router and fallback
-    ├── ensemble
-    └── validator
+    ├── solution.atomic_component
+    ├── solution.pipeline
+    ├── solution.router_fallback
+    ├── solution.ensemble
+    └── solution.validator
 ```
 
-### Practitioner profiles
+`loop`, `practitioner`, `intelligence`, `solution`, and the four Intelligence
+branch entries are abstract. All leaf entries above are registered profiles.
+The catalog does not register separate experimenter, builder, reviewer,
+repairer, output-formatter, or ensemble-member profiles.
 
-| Registered profile ID | Supported modes | Step template |
-|---|---|---|
-| `practitioner.reference_nine_step` | deterministic, hybrid, non-deterministic | `reference_nine_step` |
-| `practitioner.compact_five_step` | deterministic, hybrid, non-deterministic | `compact_five_beat` |
-| `practitioner.research` | deterministic, hybrid, non-deterministic | `research_intensive` |
-| `practitioner.solver` | deterministic, hybrid, non-deterministic | `build_test_repair` |
-| `practitioner.verifier` | deterministic, hybrid, non-deterministic | `adversarial_review` |
-| `practitioner.self_improvement` | deterministic, hybrid, non-deterministic | `continuous_improvement` |
-| `practitioner.code_execution` | deterministic | `atomic_code_only` |
+[`LoopProfileSpec`](../../src/loop_engine/loop/loop_profile_catalog.py) stores
+the profile version, parent, state, step template, allowed modes, required
+fields, required capabilities, and thinking-power policy.
+[`resolve_profile()`](../../src/loop_engine/loop/loop_profile_ontology.py)
+resolves inherited requirements. [`bind_profile()`](../../src/loop_engine/loop/loop_profile_ontology.py)
+checks the requested contract and mode policy before creating runtime
+configuration.
 
-### Intelligence profiles
+Self-improvement is `practitioner.self_improvement`. It is a Practitioner task,
+not a fourth Loop role.
 
-| Registered profile ID | Supported modes | Step template |
-|---|---|---|
-| `intelligence.search` | deterministic | `compact_five_beat` |
-| `intelligence.materialize` | deterministic | `atomic_code_only` |
-| `intelligence.context.serve` | deterministic | `atomic_code_only` |
-| `intelligence.context.search` | deterministic | `compact_five_beat` |
-| `intelligence.context.frame` | deterministic, hybrid, non-deterministic | `compact_five_beat` |
-| `intelligence.code.resolve` | deterministic | `compact_five_beat` |
-| `intelligence.code.invoke` | deterministic | `atomic_code_only` |
-| `intelligence.code.package` | deterministic | `compact_five_beat` |
-| `intelligence.runtime_history_solution.search` | deterministic | `compact_five_beat` |
-| `intelligence.runtime_history_solution.replay` | deterministic | `compact_five_beat` |
-| `intelligence.runtime_history_solution.compare` | deterministic, hybrid, non-deterministic | `adversarial_review` |
-| `intelligence.user_feedback.serve` | deterministic | `atomic_code_only` |
-| `intelligence.user_feedback.scope` | deterministic | `compact_five_beat` |
-| `intelligence.user_feedback.interpret` | deterministic, hybrid, non-deterministic | `compact_five_beat` |
+## Modes and executors
 
-The four abstract Intelligence branch IDs are `intelligence.context`,
-`intelligence.code`, `intelligence.runtime_history_solution`, and
-`intelligence.user_feedback`. Abstract profiles cannot run directly.
+The runtime defines three modes:
 
-### Solution profiles
+| Mode | Work leader |
+|---|---|
+| `deterministic` | Code, rules, retrieval, or an executable capability. |
+| `hybrid` | Code, with a bounded language-model step when permitted. |
+| `non_deterministic` | A language model leads semantic work under Loop controls. |
 
-| Registered profile ID | Supported modes | Step template |
-|---|---|---|
-| `solution.atomic_component` | deterministic | `atomic_code_only` |
-| `solution.pipeline` | deterministic | `compact_five_beat` |
-| `solution.router_fallback` | deterministic | `compact_five_beat` |
-| `solution.ensemble` | deterministic | `compact_five_beat` |
-| `solution.validator` | deterministic | `adversarial_review` |
-
-Loop Engine defines three modes, but a registered profile may support a safe
-subset. The current in-process Solution runner supports deterministic Solution
-Loops only. It must refuse unsupported Solution modes until real adapters pass
-their tests.
-
-## Selected mode and step profile
-
-Mode and step profile are independent.
-
-| Mode | What leads the work | Model use |
-|---|---|---|
-| deterministic | Code, rules, calculations, retrieval, or another repeatable operation. | No model call. |
-| hybrid | Code leads. A model may resolve a bounded semantic step. | Optional and recorded. |
-| non-deterministic | A model leads semantic work. Loop Engine controls tools, permissions, budgets, logging, and verification. | Required for the model-led step. |
-
-One Loop instance selects one mode. A Canvas, pipeline, graph, or spawning Loop
-does not assign one inherited mode to connected or spawned Loops.
-
-| Step profile | Shape | Use |
-|---|---|---|
-| `atomic_code_only` | One bounded action. | Small deterministic work. |
-| `compact_five_beat` | Load, choose, act, check, commit. | Short bounded work. |
-| `reference_nine_step` | Orient, reconcile, assess, decide, determine how, act, verify, integrate, route. | General Practitioner work. |
-| Task-specific registered templates | Research, build-test-repair, adversarial review, improvement, and other bounded sequences. | A registered role profile selects the template. |
-| Validated custom profile | From 1 to 200 ordered steps. | Caller-defined work that passes template validation. |
-
-## Loop and exit conditions
+These fields remain separate:
 
 ```text
-Loop condition
-├── steps_remain
-└── chooser_selects_work
-
-Exit condition
-├── steps_complete
-└── accepted_success
+Role profile       -> what the Loop is for
+Supported modes    -> what the definition may select
+Installed executors -> what this runtime can physically execute
+Selected mode      -> how this Loop instance runs
+Thinking power     -> a model-routing setting for an authorized model mode
+Permissions        -> effects and resources the Loop may use
 ```
 
-The loop condition answers whether another iteration may run. The exit
-condition defines successful completion. A deadline, depth limit, call limit,
-or resource budget is a safety limit, not a successful exit.
-
-## Contracts, settings, and authority
-
-```text
-Loop boundary
-├── LoopContract
-│   ├── input roles
-│   ├── output roles
-│   └── declared effects
-├── LoopConfig
-│   ├── selected framework
-│   ├── allowed and preferred modes
-│   ├── delegated modes
-│   ├── loop condition and exit condition
-│   └── effort and depth limits
-├── RuntimeSettings
-│   ├── Loop defaults
-│   ├── retrieval choices
-│   ├── provider and model routes
-│   ├── thinking-power tiers
-│   └── operating policy
-├── typed port values and connection checks
-├── effect approval
-└── workspace and network policy
-```
-
-These fields do not grant one another. A mode does not grant network access. A
-larger model tier does not grant a larger effect policy. A successful retrieval
-does not approve execution. Read the [contract index](../contracts/) for exact
-objects and current gaps.
+A semantic mode without an installed executor fails before work. Mode does
+not grant authority.
 
 ## Loop relationships
 
-| Relationship | Required identity | Meaning |
-|---|---|---|
-| Starting | No incoming Loop relationship. | Begins one independent Practitioner, Intelligence, or Solution graph. |
-| Spawned by | One spawning Loop ID. | Dynamic work created with its own goal, contract, budget, and exit. |
-| Queried by | One querying Loop ID. | An Intelligence Query Loop receives a need. |
-| Retrieved by | One retrieving Loop ID. | A selected Intelligence Item Loop verifies and serves one item. |
-| Connected from | One or more upstream Loop IDs. | Typed values enter a Solution Loop through declared edges. |
+[`LoopRelationship`](../../src/loop_engine/loop/loop_role.py) records one of
+five relationship kinds:
 
-Relationship is not role. A Retrieved Loop is still an Intelligence Loop. A
-Connected Loop is still a Solution Loop. A Spawned Loop may use any role whose
-profile and contract permit that work.
+| Kind | Meaning |
+|---|---|
+| `STARTING` | This Loop has no incoming Loop relationship. |
+| `SPAWNED_BY` | A Loop created dynamic bounded work. |
+| `QUERIED_BY` | A Loop sent an Intelligence query. |
+| `RETRIEVED_BY` | An Intelligence query selected this Intelligence item. |
+| `CONNECTED_FROM` | One or more typed DAG edges supplied input values. |
 
-## Static Solution DAG and dynamic Practitioner graph
+Relationship does not imply role or mode. A deterministic Practitioner may
+spawn a non-deterministic research Practitioner. A non-deterministic
+Practitioner may spawn a deterministic verifier. A Solution pipeline normally
+uses `CONNECTED_FROM`; it uses `SPAWNED_BY` only for a real dynamic branch,
+fallback, repair, or ensemble action.
+
+## Runtime context and Static Architecture
+
+[`LoopRuntimeContext`](../../src/loop_engine/loop/runtime_context.py) gives one
+Loop an explicit least-authority service context.
 
 ```text
-Dynamic Practitioner run graph
-Task
-└── Starting Practitioner
-    ├── Spawned by: research Practitioner
-    ├── Queried by: Intelligence search
-    │   └── Retrieved by: selected Intelligence item
-    ├── Spawned by: candidate Practitioner
-    └── Spawned by: verifier Practitioner
-
-Static Solution DAG
-Input
-└── Starting Solution
-    └── Connected from: validation Solution
-        └── Connected from: transformation Solution
-            └── Connected from: execution Solution
-                └── Connected from: output validation Solution
+LoopRuntimeContext
+├── IntelligenceSearchRetrievalPort
+├── WebResearchPort
+├── CustomPluginsPort
+└── InternalRuntimeMechanics
+    ├── internal service bindings
+    ├── permissions
+    └── installed mode executors
 ```
 
-The Practitioner graph records how Loop Engine built and tested work. The
-Solution DAG defines what runs for a new input. Dynamic fallback, repair, and
-ensemble selection may add Spawned Solution Loops. A straight deterministic
-pipeline uses Connected from relationships.
+The first three ports are the only public Static Architecture groups.
+`LoopRuntimeContext.require()` refuses missing capabilities, permissions, or
+executors. `derive()` can remove authority but cannot add it.
 
-The current package has `Canvas`, `SolutionSpec`, and `LoopGraphSpec`. These
-are overlapping graph records. The target is one versioned
-`LoopGraphDefinition`; the other views become projections or builders.
+Provider routing, settings, workspaces, approvals, stores, Runtime Memory,
+event persistence, reports, playback, MCP, skills, and trace export remain
+inside `InternalRuntimeMechanics`. The work that calls one of these mechanisms
+still runs in a classified Loop.
 
-## Intelligence branches and operations
+## Authoritative graph
 
-| Public branch | Persistent key | Stored material | Loop operations |
-|---|---|---|---|
-| Context Intelligence | `context_intelligence` | Questions, methods, checklists, examples, formats, source notes, and evaluation criteria. | search, serve, frame |
-| Code Intelligence | `code_intelligence` | Functions, packages, repositories, tools, services, workflows, datasets, and large systems. | search, resolve, invoke, load |
-| Runtime History and Solution Intelligence | `runtime_history_solution_intelligence` | Saved runs, decisions, failures, repairs, measurements, comparisons, and Solutions. | search, replay, compare |
-| User Feedback Intelligence | `user_feedback_intelligence` | Advice, corrections, sources, constraints, priorities, approvals, and vetoes. | serve, scope, interpret |
+[`LoopGraphDefinition`](../../src/loop_engine/code_nodes/solution_graph.py) is
+the authoritative static DAG definition.
 
-A stored record is passive. Searching, selecting, materializing, framing,
-invoking, replaying, comparing, and interpreting are work, so those operations
-run through Intelligence Loops. Runtime Memory is temporary and is not a fifth
-persistent branch.
+```text
+LoopGraphDefinition
+├── graph_id, version, and content_digest
+├── LoopDefinitionRegistry
+├── LoopGraphVertex records
+├── LoopGraphEdge records
+├── graph input and output ports
+├── stage and composition groups
+├── starting vertex and starting group
+└── permitted_vertex_modes policy
+```
 
-## Static Architecture capability classes
+Each `LoopGraphVertex` contains an exact `LoopDefinitionRef`, selected mode,
+operation reference, relationship, and immutable parameters. Each edge names
+source and target ports. An incompatible connection must name an explicit
+Adapter Loop vertex. An edge never transforms data by itself.
 
-Static Architecture has three public groups. The work that uses a capability
-remains owned by a classified Loop.
+Graph validation checks:
 
-| Capability group | Current classes | Source |
+- definition identity and digest;
+- selected mode and installed executor coverage;
+- role-compatible relationships;
+- typed input and output roles;
+- acyclic execution order;
+- declared graph inputs and outputs;
+- stage, route, fallback, and group membership;
+- exact graph digest after serialization.
+
+`SolutionSpec` projects one graph or graph group into the Solution API.
+`Canvas` organizes passive Solution candidates before selection. Neither is a
+second execution authority.
+
+Practitioner execution creates a dynamic graph recorded through Loop
+relationships and ordered events. The reusable Solution DAG is a static
+`LoopGraphDefinition` validated before execution. These views serve different
+purposes, but both use `Loop` as the only executable vertex type.
+
+## Intelligence branches
+
+```text
+Persistent intelligence
+├── Context Intelligence
+│   └── serve, search, frame
+├── Code Intelligence
+│   └── resolve, invoke, load package or repository
+├── Runtime History and Solution Intelligence
+│   └── search, replay, compare
+└── User Feedback Intelligence
+    └── serve, scope, interpret
+```
+
+Cross-layer search uses `intelligence.search`. Loading a selected reference
+uses `intelligence.materialize`. Search results are small `LoopRef` objects.
+The selected body is loaded after reference, digest, contract, and permission
+checks.
+
+Runtime Memory is temporary. It is not a fifth persistent layer.
+
+## Class map
+
+| Concept | Current class or function | Authority |
 |---|---|---|
-| Intelligence Search and Retrieval | `Retriever` | [`static_architecture/retrieval.py`](../../src/loop_engine/static_architecture/retrieval.py) |
-| Web Research | `BraveWebSearchRequest`, `BraveSearchConfig`, `BraveSearchPlugin` | [`static_architecture/brave_search.py`](../../src/loop_engine/static_architecture/brave_search.py) |
-| Custom Plugins | `CapabilityDirectory`, `CapabilityHandshake`, `McpRegistry`, `SkillRegistry` | [`capability_directory.py`](../../src/loop_engine/static_architecture/capability_directory.py), [`mcp_adapter.py`](../../src/loop_engine/static_architecture/mcp_adapter.py), [`skill_registry.py`](../../src/loop_engine/static_architecture/skill_registry.py) |
+| Immutable Loop definition | `LoopDefinition`, `LoopDefinitionRef`, `ConfigurationFacts` | [`loop_definition.py`](../../src/loop_engine/loop/loop_definition.py) |
+| Start boundary | `LoopStartRequest` | [`loop_definition.py`](../../src/loop_engine/loop/loop_definition.py) |
+| Operational runtime | `Loop`, `LoopConfig`, `LoopResult` | [`recursive_loop.py`](../../src/loop_engine/loop/recursive_loop.py) |
+| Role and relationship | `LoopRoleIdentity`, `LoopRelationship` | [`loop_role.py`](../../src/loop_engine/loop/loop_role.py) |
+| Typed Loop contract | `LoopContract`, `LoopConnectionSpec`, `validate_loop_connection()` | [`loop_contract.py`](../../src/loop_engine/loop/loop_contract.py) |
+| Role profile | `LoopProfileRef`, `LoopProfileSpec`, `bind_profile()` | [`loop_profile_catalog.py`](../../src/loop_engine/loop/loop_profile_catalog.py) and [`loop_profile_ontology.py`](../../src/loop_engine/loop/loop_profile_ontology.py) |
+| Least-authority services | `LoopRuntimeContext`, three public port classes, `InternalRuntimeMechanics` | [`runtime_context.py`](../../src/loop_engine/loop/runtime_context.py) |
+| Static DAG | `LoopGraphDefinition`, `LoopGraphVertex`, `LoopGraphEdge`, `LoopDefinitionRegistry` | [`solution_graph.py`](../../src/loop_engine/code_nodes/solution_graph.py) |
+| Solution definition builder | `SolutionSpec`, `SolutionLoopSpec` | [`solution_canvas.py`](../../src/loop_engine/code_nodes/solution_canvas.py) |
+| Solution candidate matrix | `Canvas`, `SolutionSlot`, `SolutionLoopCandidate` | [`canvas.py`](../../src/loop_engine/loop/canvas.py) |
+| Intelligence reference | `LoopRef`, `LoopCapsule` | [`loop_capsule.py`](../../src/loop_engine/loop/loop_capsule.py) |
+| Spawned work | `SpawnedTaskManager`, `DelegationSpec`, `SpawnedLoopRuntimePort` | [`delegation_runtime.py`](../../src/loop_engine/loop/delegation_runtime.py) |
+| Ordered event log | `LoopLedger` | [`recursive_loop.py`](../../src/loop_engine/loop/recursive_loop.py) |
+| Saved run | `RunHistory`, `RunHistoryEvent` | [`run_history.py`](../../src/loop_engine/static_architecture/run_history.py) |
 
-## Internal runtime mechanics classes
+## Separation rules
 
-These classes support execution. They are not peer Static Architecture
-capability groups.
+1. Runtime type is always `Loop`.
+2. Role does not determine relationship, mode, or step profile.
+3. A graph policy may restrict member modes but does not own one mode.
+4. A passive candidate becomes executable only through a complete
+   `LoopDefinition` and graph vertex.
+5. A service call is not a graph vertex. The classified Loop that owns the
+   call is the vertex.
+6. A graph edge carries a typed value. A conversion requires an Adapter Loop.
+7. Runtime Memory is not persistent intelligence.
+8. Self-improvement can stage candidates but cannot approve them.
+9. Saved legacy records may use explicit compatibility readers. New records
+   use current relationship and definition fields.
 
-| Mechanic | Current classes | Source |
-|---|---|---|
-| Model access and routing | `ModelGateway`, `ModelGatewayConfig`, `ModelGatewayRequest`, `ModelGatewayResult` | [`model_gateway.py`](../../src/loop_engine/static_architecture/model_gateway.py) |
-| Typed settings | `RuntimeSettings`, `LoopDefaults`, `ModelSettings` | [`runtime_settings.py`](../../src/loop_engine/static_architecture/runtime_settings.py) |
-| Workspace | `WorkspaceBackend`, `WorkspaceSpec`, `RestrictedLocalWorkspace`, `DockerWorkspace` | [`workspace_contracts.py`](../../src/loop_engine/static_architecture/workspace_contracts.py), [`workspace_local.py`](../../src/loop_engine/static_architecture/workspace_local.py), [`workspace_optional.py`](../../src/loop_engine/static_architecture/workspace_optional.py) |
-| Effect approval | `EffectApprovalService`, `EffectSpec`, `ApprovalRequest` | [`loop/effect_approval.py`](../../src/loop_engine/loop/effect_approval.py) |
-| Large context | `ContextArtifactManager`, `ContextArtifactRef`, `ContextArtifactStoreSpec` | [`context_artifacts.py`](../../src/loop_engine/static_architecture/context_artifacts.py) |
-| Runtime Memory | `RunNoteBoard`, `RuntimeMemoryService` | [`runtime_memory.py`](../../src/loop_engine/static_architecture/runtime_memory.py), [`spawned_runtime_port.py`](../../src/loop_engine/loop/spawned_runtime_port.py) |
-| Run History | `RunHistory`, `RunHistoryEvent` | [`run_history.py`](../../src/loop_engine/static_architecture/run_history.py) |
-| Stores | `SolverStore`, `StoreRecord`, `SolutionLibrary`, `AdviceStore` | [`store_serve.py`](../../src/loop_engine/static_architecture/store_serve.py), [`solution_library.py`](../../src/loop_engine/static_architecture/solution_library.py), [`user_feedback_intelligence.py`](../../src/loop_engine/static_architecture/user_feedback_intelligence.py) |
-| Runtime views | `RuntimeObservationServices`, `StudioReadSources` | [`runtime_observer.py`](../../src/loop_engine/static_architecture/runtime_observer.py), [`studio_operational_views.py`](../../src/loop_engine/static_architecture/studio_operational_views.py) |
+## Current limits
 
-The target `LoopRuntimeContext` does not exist yet. Every Loop does not yet
-receive one common permission-limited set of capability and internal mechanic
-ports.
-
-## Public code class map
-
-| Boundary | Current public classes | Source |
-|---|---|---|
-| Runtime | `Loop`, `LoopConfig`, `LoopLedger`, `LoopResult` | [`loop/recursive_loop.py`](../../src/loop_engine/loop/recursive_loop.py) |
-| Role and relationship | `LoopRole`, `LoopRoleIdentity`, `LoopRelationshipKind`, `LoopRelationship` | [`loop/loop_role.py`](../../src/loop_engine/loop/loop_role.py) |
-| Profile catalog | `LoopProfileRef`, `LoopProfileSpec` | [`loop/loop_profile_catalog.py`](../../src/loop_engine/loop/loop_profile_catalog.py) |
-| Profile binding | `LoopProfileBindingRequest`, `BoundLoopProfile`, `LoopProfileRequirement`, `LoopProfileHandshakeResult` | [`loop/loop_profile_ontology.py`](../../src/loop_engine/loop/loop_profile_ontology.py) |
-| Contract and connection | `LoopContract`, `LoopPortBinding`, `LoopConnectionSpec`, `LoopConnectionResult` | [`loop/loop_contract.py`](../../src/loop_engine/loop/loop_contract.py) |
-| Discovery reference | `LoopHandshake`, `LoopRef`, `LoopCapsule` | [`loop/loop_capsule.py`](../../src/loop_engine/loop/loop_capsule.py) |
-| Spawned lifecycle | `DelegationSpec`, `LoopPortValue`, `SpawnedTaskManager`, `SpawnedExecutionRequest`, `SpawnedLoopResult`, `SpawnedTaskCheckpoint` | [`loop/delegation_runtime.py`](../../src/loop_engine/loop/delegation_runtime.py), [`loop/spawned_task_checkpoint.py`](../../src/loop_engine/loop/spawned_task_checkpoint.py) |
-| Restricted spawned runtime | `SpawnedLoopRuntimePort`, `SpawnedLoopRuntimeMemoryPort`, `SpawnedStepRequest` | [`loop/spawned_runtime_port.py`](../../src/loop_engine/loop/spawned_runtime_port.py) |
-| Solution declaration | `SolutionLoopSpec`, `SolutionSpec` | [`code_nodes/solution_canvas.py`](../../src/loop_engine/code_nodes/solution_canvas.py) |
-| Typed graph | `LoopVertexSpec`, `LoopPortRef`, `LoopEdgeSpec`, `LoopGraphSpec` | [`code_nodes/solution_graph.py`](../../src/loop_engine/code_nodes/solution_graph.py) |
-| Candidate matrix | `SolutionLoopCandidate`, `Canvas` | [`loop/canvas.py`](../../src/loop_engine/loop/canvas.py) |
-
-The last three rows are current transitional graph surfaces. They are not
-three independent architecture authorities.
-
-## Versioning and handshakes
-
-| Boundary | Current check | Target |
-|---|---|---|
-| Role profile | `LoopProfileRef` carries a semantic version. `profile_handshake()` checks branch and compatible major version. | Bind every runnable Loop to one exact profile and definition digest. |
-| Loop role | `LoopRoleIdentity` binds role, profile ID, and profile version. | Resolve the profile through the catalog during construction. |
-| Typed connection | `LoopConnectionSpec` checks declared input and output roles. | Add versioned `PortSpec` schemas and validate values, shapes, units, optionality, and encoding. |
-| Capability | `CapabilityHandshake` and `LoopHandshake` describe operations and contracts before invocation. | Add one shared adapter handshake version policy across every service class. |
-| Saved run | `RunHistory` stores ordered hash-linked events. | Bind every event to the exact Loop definition and graph definition used for the run. |
-| Graph | `LoopGraphSpec` validates current references and edges. | Resolve every vertex through a versioned, digest-bound Loop definition registry. |
-
-## Extension rules
-
-1. Add work by registering a Loop profile or extending an existing profile.
-2. Add a public capability under Intelligence Search and Retrieval, Web
-   Research, or Custom Plugins. Use a typed handshake and request contract.
-3. Add a graph vertex only through an exact Loop definition reference.
-4. Add a new intelligence category inside one of the four persistent branches.
-   A source format does not create a fifth branch.
-5. Keep discovery free of effects. Materialization and execution require
-   separate selection, permission, and validation.
-6. Version serialized contracts and fail closed on unknown fields or
-   incompatible major versions.
-7. Keep candidate creation separate from independent review and activation.
-8. Add current behavior to the registry and conformance checks before adding
-   it to diagrams.
-
-## Anti-conflation rules
-
-| Do not combine | Reason |
-|---|---|
-| Role and relationship | Practitioner describes purpose. Spawned by describes how one Loop entered the graph. |
-| Mode and model tier | Mode describes how work is led. Model tier chooses a configured route for model-using work. |
-| Step profile and role profile | Step profile defines sequence. Role profile defines purpose, required fields, capabilities, and supported modes. |
-| Loop condition and exit condition | One permits another iteration. The other defines successful completion. |
-| Budget and exit | Exhausting a safety limit is not successful completion. |
-| Retrieval and execution | A search result grants no authority to run code, call a model, access a network, or change state. |
-| Runtime Memory and persistent Intelligence | Runtime Memory lasts for one run. Persistent Intelligence requires classification and independent review. |
-| Static Architecture capability and Loop | A capability is reusable. A Loop owns the work that calls it. |
-| Static Architecture and internal runtime mechanics | Static Architecture has three public capability groups. Providers, settings, workspaces, stores, history, and viewing remain internal mechanics. |
-| Practitioner graph and Solution DAG | One explains how work was built. The other defines what runs for a new input. |
-| Candidate staging and activation | A self-improvement Practitioner task cannot approve its own candidates. |
-
-## Current status summary
-
-| Area | Current | Target gap |
-|---|---|---|
-| Runtime ontology | One public `Loop` class with typed roles and relationships. | Require one complete versioned Loop definition at construction. |
-| Modes | Node-level mode policy exists. Physical provider events are available. | Provide standard real hybrid and non-deterministic executors across supported profiles. |
-| Intelligence | Four branches and Loop-wrapped search, materialization, invocation, replay, and interpretation paths exist. | Build every path from the same bound Loop definition and avoid mixed relationship events. |
-| Solution execution | Deterministic Solution execution fails closed for unsupported modes. | Consolidate graph schemas and add tested model-using Solution adapters only when real. |
-| Static Architecture | Three public capability groups use typed objects and extension seams. | Keep the groups closed while improving their handshakes and plugin registration. |
-| Internal runtime mechanics | Providers, settings, workspaces, approvals, stores, memory, history, and viewing use typed objects. | Inject one standard permission-limited runtime context into every Loop. |
-| Run History | Ordered hash-linked events support reports and playback. | Project the complete semantic relationship DAG and bind it to exact definitions. |
-| Documentation | Current public trees use one Loop ontology and exact branch names. | Generate profile and class tables from runtime registries so future drift fails CI. |
+- Typed role names are checked at connections. Full value-schema enforcement
+  for units, shapes, encodings, and field constraints is not available at
+  every port.
+- The built-in Solution runner executes deterministic leaves only. Hybrid and
+  non-deterministic Solution executors are not installed.
+- Some established constructor calls still use observable compatibility
+  composition for a definition and runtime context.
+- `LoopLedger` remains the internal event-log class name until a versioned
+  public migration can preserve saved-run compatibility.

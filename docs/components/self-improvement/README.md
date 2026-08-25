@@ -75,8 +75,9 @@ accepts the result.
 
 ## Seed a new domain
 
-Domain Context seeding is one self-improvement task. The registered
-`context_intelligence_seed` profile uses these steps:
+Domain Context seeding is one self-improvement task. The
+`context_intelligence_seed` step template uses these steps under the
+`practitioner.self_improvement` role profile:
 
 ```text
 scope domain

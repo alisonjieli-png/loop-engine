@@ -12,8 +12,8 @@ slide deck, browser player, and exported video.
 | Order | Page | What it explains |
 |---:|---|---|
 | 1 | [Repository organization](REPOSITORY-ORGANIZATION.md) | Which directory owns runtime code, contracts, guides, examples, benchmarks, case studies, and presentation assets. |
-| 2 | [Contract index](contracts/) | Current typed contract objects, implementation status, and consolidation gaps. |
-| 3 | [Taxonomy, ontology, and class map](architecture/TAXONOMY-ONTOLOGY-AND-CLASS-MAP.md) | One complete classification tree, exact registered profiles, public classes, and current gaps. |
+| 2 | [Contract index](contracts/) | Current definition, start, runtime-context, graph, intelligence, Solution, and event contracts. |
+| 3 | [Taxonomy, ontology, and class map](architecture/TAXONOMY-ONTOLOGY-AND-CLASS-MAP.md) | One complete classification tree, exact registered profiles, public classes, and current limits. |
 | 4 | [Component guide](components/) | The complete map and the recommended reading order. |
 | 5 | [The Loop object and step profiles](components/loop-object/) | Modes, steps, limits, loop conditions, exit conditions, and spawning. |
 | 6 | [Loop profile ontology](components/loop-object/LOOP-PROFILE-ONTOLOGY.md) | Versioned Practitioner, Intelligence, and Solution profiles with inheritance and handshakes. |

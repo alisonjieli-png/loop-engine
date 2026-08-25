@@ -6,9 +6,9 @@ from a metrics loop before either loop runs.
 
 ## Why use a loop
 
-A direct threshold function can make the final decision. The loop is useful
-here because it gives the verification role, step profile, contract, mode,
-decision path, and exit condition one inspectable identity.
+A direct threshold function can make the final decision. The Loop binds the
+verification role, profile version, typed contract, mode, step profile,
+conditions, and capability requirements into one definition identity.
 
 ## Run settings
 
@@ -56,8 +56,9 @@ when saved playback is required.
 ## What this example does not prove
 
 One fixed threshold check does not prove that the thresholds are correct for a
-production system. It shows profile binding, typed port compatibility, and
-deterministic execution.
+production system. It shows profile binding, typed port-role compatibility,
+and deterministic execution. It does not prove full value-schema checks at
+every graph edge.
 
 Read [Loop profile ontology](../../docs/components/loop-object/LOOP-PROFILE-ONTOLOGY.md)
 and [Typed loop connections](../../docs/guides/typed-loop-connections.md).

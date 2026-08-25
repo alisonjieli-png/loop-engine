@@ -18,5 +18,6 @@ python3 examples/09_search_the_intelligence_layers/run.py
 - Network or model: none
 - External effects: creates and removes a temporary local example directory
 - Shows: layer, category group, category, scope, lifecycle, source metadata,
-  search loop identity, selected `LoopRef`, and access loop identity
+  `intelligence.search` identity, selected `LoopRef`, and
+  `intelligence.materialize` identity
 - Does not treat Runtime Memory as a fifth layer; it remains run-scoped notes

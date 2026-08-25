@@ -17,19 +17,28 @@ Task
                 └── Spawned Solution Loops for dynamic branches only
 ```
 
-Each Loop has an exact role profile, selected mode, typed input and
-output ports, settings, loop condition, exit condition, budget, permissions,
-and Run History events. A graph, pipeline, or Canvas does not inherit one mode.
+Each Loop has an immutable `LoopDefinition` with an exact role profile,
+semantic version, content digest, supported modes, installed executors, typed
+input and output roles, step profile, configuration facts, loop condition,
+exit condition, permissions, effects, and required capabilities.
+
+`LoopStartRequest` adds the goal, graph relationship,
+`LoopRuntimeContext`, and event log. A graph, pipeline, or Canvas does not
+inherit one mode.
 
 The four persistent intelligence layers are Context Intelligence, Code
 Intelligence, Runtime History and Solution Intelligence, and User Feedback
 Intelligence. Runtime Memory is temporary and remains outside those layers.
 
 Static Architecture provides Intelligence Search and Retrieval, Web Research,
-and Custom Plugins. These capabilities are not fake graph vertices. Work that
-uses a capability must still belong to a classified Loop. Providers, settings,
-workspaces, approvals, stores, memory, history, and viewing are internal
-runtime mechanics.
+and Custom Plugins. These capabilities are not graph vertices. Work that uses
+a capability belongs to a classified Loop. Providers, settings, workspaces,
+approvals, stores, memory, history, and viewing are internal runtime mechanics.
+
+`LoopGraphDefinition` is the authoritative static DAG. Every graph vertex
+contains an exact `LoopDefinitionRef`. Every edge names typed source and target
+roles. `SolutionSpec` and `Canvas` build or project this graph. They are not
+parallel graph authorities.
 
 ## Read the current architecture
 

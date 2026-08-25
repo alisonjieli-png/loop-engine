@@ -35,9 +35,9 @@ them would break compatibility.
 | Loop Engine Studio | The local interface for live runs, playback, intelligence, and solutions. |
 
 Use Loop Practitioner for the public role. The package API does not expose a
-bare `Practitioner` class. `PractitionerLoop` is an exact alias for `Loop`.
-Internal decision algorithms use service and algorithm names because they are
-Code Intelligence, not runtime types.
+bare `Practitioner` class or another role-specific runtime alias. Internal
+decision algorithms use service and algorithm names because they are Code
+Intelligence, not runtime types.
 
 ## Three run modes
 
@@ -56,6 +56,7 @@ for its run. A spawning Loop cannot grant permissions that it does not have.
 
 | Public term | Current code | Meaning |
 |---|---|---|
+| Role profile | `LoopProfileSpec` | Versioned purpose, required fields, capabilities, and mode support. |
 | Step profile | `framework`, `custom_steps`, Loop Template | Number, order, and repetition of steps. |
 | Effort setting | `power` | Bounded work limits. Public values are light, standard, deep, and max. |
 | Operating settings | `OperatingProfile` | Permissions, access, providers, and optimization preferences. |
@@ -126,6 +127,7 @@ installation, or a plugin marketplace today.
 | admission | tested and approved for execution |
 | candidate maturity | under review and not yet available to run |
 | node as a second runtime type | Loop or Solution Loop |
+| internal class name `LoopLedger` | event log or Run History, unless documenting the Python API |
 
 Choose report, log, contract, event history, or run record according to the
 actual object. Do not use a generic proof-sounding label when one of these

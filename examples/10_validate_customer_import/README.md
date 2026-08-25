@@ -28,5 +28,6 @@ The output includes:
 - the operation trace, including the validation fallback; and
 - a short event-log summary for each Solution Canvas loop.
 
-This example uses four deterministic `SolutionLoopSpec` operations. It uses no
-model, network, external service, or file write.
+This example projects four deterministic Solution Loop definitions into one
+typed `LoopGraphDefinition`. Each selected operation runs through a Solution
+Loop. It uses no model, network, external service, or file write.

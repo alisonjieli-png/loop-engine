@@ -14,18 +14,22 @@ Starting Practitioner
     ├── role profile: intelligence.search
     └── retrieves Intelligence Item Loops
         ├── intelligence.materialize
-        ├── intelligence.invoke
-        ├── intelligence.replay
-        └── intelligence.interpret
+        ├── intelligence.code.invoke
+        ├── intelligence.runtime_history_solution.replay
+        └── intelligence.user_feedback.interpret
 ```
 
 The public operation selectors resolve to registered profiles:
 
 - `intelligence.search` searches selected layers and returns references.
 - `intelligence.materialize` verifies and loads one selected reference.
-- `intelligence.invoke` invokes selected Code Intelligence.
-- `intelligence.replay` replays selected Runtime History.
-- `intelligence.interpret` interprets selected User Feedback.
+- `intelligence.code.invoke` invokes selected Code Intelligence.
+- `intelligence.runtime_history_solution.replay` replays selected Runtime History.
+- `intelligence.user_feedback.interpret` interprets selected User Feedback.
+
+Short selectors such as `intelligence.invoke` resolve to these exact registered
+profiles. Saved definitions record the exact profile ID and version, not the
+short selector.
 
 An independent intelligence task may use a Starting Intelligence Loop. In the
 ordinary Practitioner flow, the Practitioner queries an Intelligence Query
@@ -108,7 +112,8 @@ loop-engine --example intelligence-layers
 
 ## One search across all four layers
 
-`query_intelligence()` sends one need through a search loop. Results include
+`query_intelligence()` sends one need through an `intelligence.search` Loop.
+Results include
 the source layer, common classification, search score, and a body-free
 `LoopRef`.
 Filters can narrow the query by fields such as category group, domain, scope,
@@ -127,7 +132,7 @@ for a runnable example.
 The normal flow is:
 
 ```text
-search loop
+Intelligence search Loop
   -> Practitioner queries an Intelligence Query Loop
   -> Query Loop returns ranked LoopRefs without item bodies
   -> Query Loop retrieves the selected Intelligence Item Loop

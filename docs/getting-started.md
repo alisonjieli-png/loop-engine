@@ -1,6 +1,6 @@
 # Getting started
 
-Fifteen minutes, no API key required.
+The first examples run without an API key.
 
 ## 1. Install
 
@@ -45,6 +45,11 @@ print(len(ledger.events))          # 13: the run recorded itself
 You got an answer and an event log from the same run. The answer is the task
 result. The event log supports reports, inspection, and debugging.
 
+`as_practitioner_loop()` is a compatibility entry point. It composes a
+complete `LoopDefinition` and restricted `LoopRuntimeContext` before the Loop
+starts. Use the [Loop object guide](components/loop-object/) for the low-level
+typed start contract.
+
 Runnable version:
 [support queue example](../examples/01_prioritize_support_queue/)
 
@@ -79,8 +84,8 @@ Runnable version, which generates its own dataset:
 python3 examples/04_read_run_reports/run.py
 ```
 
-The example prints the spawning and Spawned Loop graph and keeps Markdown, HTML, and
-JSON reports under `example-output/incident-report/`.
+The example prints the Loop graph and keeps Markdown, HTML, and JSON reports
+under `example-output/incident-report/`.
 
 Or in code, for a run you have in hand:
 
@@ -122,5 +127,5 @@ More: [providers and keys](guides/providers-and-keys.md) ·
 | [Reports](guides/reports.md) | reading and exporting a run |
 | [Component guide](components/) | the Loop object, roles, Static Architecture, and intelligence layers |
 | [Architecture](architecture/) | deeper implementation and visual guidance |
-| [`examples/`](../examples/) | fifteen categorized example folders |
+| [`examples/`](../examples/) | categorized example folders |
 | [Customer import Canvas](../examples/10_validate_customer_import/) | a realistic compiled Solution Canvas with fallback |

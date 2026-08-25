@@ -15,8 +15,8 @@ python3 examples/13_brave_search_plugin/run.py
 - Shows: manual plugin registration, effect-free discovery, handshake digest
   verification, one capability loop, rate-limit metadata, and ephemeral
   untrusted source candidates
-- The fake transport records calls so the example proves that discovery made
-  zero network attempts
+- The injected recording transport checks the local discovery contract. It
+  does not establish live Brave integration or search quality.
 
 An explicit live run makes one metered external request:
 

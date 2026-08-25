@@ -9,14 +9,14 @@ The selected item is then loaded through its own intelligence loop.
 
 ```mermaid
 flowchart LR
-    N[Need] --> S[Search loop]
+    N[Need] --> S[Intelligence search Loop]
     S --> R[Ranked LoopRefs<br/>no item bodies]
     R --> C[Choose one reference]
-    C --> M[Materialization loop<br/>verify locator and digest]
+    C --> M[Intelligence materialization Loop<br/>verify locator and digest]
     M --> U[Use the selected value]
     U --> X{Needs execution or reframing?}
-    X -->|Code| E[Component loop executes entry point]
-    X -->|Task-specific wording| F[Explicit model loop reframes a copy]
+    X -->|Code| E[Code Intelligence invocation Loop]
+    X -->|Task-specific wording| F[Context or User Feedback interpretation Loop]
     X -->|No| D[Return typed material to querying Loop]
 ```
 
@@ -25,7 +25,7 @@ This applies to all four persistent intelligence layers.
 | Layer | Search returns | Selected access |
 |---|---|---|
 | Context Intelligence | A reference to a question, method, warning, template, or source note. | A Context loop returns the stored value. |
-| Code Intelligence | A reference to a function, package, repository, service, workflow, or subsystem. | A Code Intelligence loop loads the selected body. A component loop executes the chosen entry point. |
+| Code Intelligence | A reference to a function, package, repository, service, workflow, or subsystem. | `intelligence.code.resolve` checks the reference. `intelligence.code.invoke` executes the chosen entry point. |
 | Runtime History and Solution Intelligence | A reference to a saved run, decision, failure, measurement, or solution. | A History loop returns the verified selected record. |
 | User Feedback Intelligence | A reference to scoped user guidance. | A User Feedback Intelligence loop returns the guidance. An optional model loop may reframe a copy for the current task. |
 
@@ -63,7 +63,8 @@ print(loaded["loop_id"])
 print(loaded["value"])
 ```
 
-The search loop and access loop have different identities. Searching does not
+The `intelligence.search` Loop and `intelligence.materialize` Loop have
+different definition identities. Searching does not
 load all candidates. Only `selected` is materialized.
 
 ## Optional user-guidance reframing
@@ -135,9 +136,9 @@ missing, changed, or swapped digest fails before execution.
 This sequence keeps the universal rule practical:
 
 ```text
-search loop
+Intelligence search Loop
 select one LoopRef
-materialization loop
-optional execution or reframe loop
+Intelligence materialization Loop
+optional Code invocation or interpretation Loop
 return typed material to the querying Loop
 ```

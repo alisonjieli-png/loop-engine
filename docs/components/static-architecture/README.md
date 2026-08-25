@@ -15,6 +15,12 @@ These groups describe reusable capabilities. They are not executable graph
 vertices. The work that searches, researches, or invokes a plugin must still
 belong to a classified Loop.
 
+`LoopRuntimeContext` carries these groups as three typed ports. It also groups
+internal runtime mechanics in a separate object. A Loop fails before work when
+its definition requires a capability, permission, or mode executor that its
+runtime context does not provide. A derived context may remove authority but
+cannot add it.
+
 ## Intelligence Search and Retrieval
 
 The Retrieval Engine searches the four persistent intelligence layers. It
@@ -59,8 +65,8 @@ inputs used by Loops, not new runtime types. Read
 
 ## Internal runtime mechanics
 
-The following mechanisms support Loop execution but are not peer Static
-Architecture capability groups:
+The following mechanisms live under `InternalRuntimeMechanics`. They support
+Loop execution but are not peer Static Architecture capability groups:
 
 - model gateway and provider adapters;
 - typed settings and model tiers;

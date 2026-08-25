@@ -9,6 +9,11 @@ allowed logical kinds, required fields, and required capabilities. A
 specialized profile may add requirements or narrow permissions. It cannot
 expand the permissions of its base profile.
 
+`LoopDefinition` binds the exact profile ID and version to one contract,
+configuration, mode policy, executor set, conditions, permissions, effects,
+and capability set. A profile is reusable classification data. The definition
+is the complete immutable contract for one runnable Loop.
+
 The code keeps data and behavior separate. `loop_profile_catalog.py` contains
 the immutable built-in definitions. `loop_profile_ontology.py` resolves
 parents, validates the tree, binds profiles, and checks version compatibility.
@@ -111,7 +116,7 @@ Self-improvement belongs under Practitioner. It is a task given to the Loop
 Practitioner. It is not a fourth runtime role and it cannot approve its own
 candidates.
 
-The current Solution Canvas runner executes deterministic component loops.
+The current Solution Canvas runner executes deterministic Solution Loops.
 For that reason, the registered atomic component, pipeline, router and
 fallback, ensemble, and validator profiles are deterministic-only. A future
 profile version may allow hybrid or non-deterministic execution after those
@@ -152,7 +157,8 @@ profile adds a query and the Context search capability. A code package profile
 adds an artifact manifest, an entry point, and an artifact loader. A Solution
 ensemble adds member loops, a combination rule, and the ensemble capability.
 
-The ontology checks requirements before a loop starts. It does not treat a
+The ontology and `LoopDefinition` check requirements before a Loop starts.
+They do not treat a
 field name as proof that a provider, store, package, or operation works. The
 runtime still verifies the selected capability and records the run.
 

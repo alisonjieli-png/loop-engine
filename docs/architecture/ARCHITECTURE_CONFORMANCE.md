@@ -19,6 +19,7 @@ The current checks cover:
 |---|---|
 | Package layout | Each module belongs to one declared architecture area. |
 | Runtime identity | The package API exposes only the canonical recursive `Loop` runtime. |
+| Retired planning surface | Obsolete decision-spine names and modules remain absent. |
 | Flat legacy paths | Retired package-level module paths stay unreachable and unused. |
 | Network and models | Calls stay behind declared provider and endpoint adapters. |
 | Processes | Subprocess use stays inside declared adapters. |
@@ -34,7 +35,11 @@ The current checks cover:
 | Events | Runtime events stay inside the canonical vocabulary. |
 | Self-tests | Every module self-test remains connected to the full suite. |
 | Envelopes | Modules that own execution envelopes remain registered. |
+| Loop ontology | Every operational boundary resolves to `Loop` and an exact registered profile or validated profile source. |
+| Relationships | Boundary relationship kinds remain compatible with their role families. |
+| Graph vertices | Every executable graph vertex uses the canonical `Loop` runtime type. |
 | Resource access | Product code does not add undeclared direct store access. |
+| Architecture map | The generated module map matches the current package. |
 
 The machine-readable configuration is
 [`architecture_conformance.json`](../../src/loop_engine/architecture_conformance.json).

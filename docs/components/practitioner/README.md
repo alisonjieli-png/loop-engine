@@ -1,24 +1,24 @@
 # Loop Practitioner
 
-The Loop Practitioner is the role that builds a solution. Practitioner loops
+The Loop Practitioner is the role that builds a solution. Practitioner Loops
 understand the task, search for useful intelligence, choose a method, perform
 the work, test the result, and decide what happens next.
 
-It is a role of the shared `Loop` runtime, not a second runtime. The public
-`PractitionerLoop` name is an exact alias of `Loop`. The package API does not
-export a separate `Practitioner` class. Internal planning algorithms use service
-names and run inside a `Loop` envelope.
+It is a role of the shared `Loop` runtime, not a second runtime. The package
+root exports no alternate Practitioner runtime class. Internal planning
+algorithms use service names and run inside a classified `Loop` envelope.
 
 ## Starting and Spawned Practitioner identities
 
 ```text
-Practitioner role profile
-├── Starting Practitioner
-│   └── Begins a run without a spawning Loop
-└── Spawned Practitioner
-    ├── researcher  -> practitioner.research
-    ├── solver      -> practitioner.solver
-    └── verifier    -> practitioner.verifier
+Registered Practitioner profiles
+├── practitioner.reference_nine_step
+├── practitioner.compact_five_step
+├── practitioner.research
+├── practitioner.solver
+├── practitioner.verifier
+├── practitioner.self_improvement
+└── practitioner.code_execution
 ```
 
 Starting and Spawned by are relationship kinds, not Practitioner subclasses. The
@@ -44,13 +44,14 @@ the Intelligence role and a query relationship.
 1. Reconstruct the current task and accepted state.
 2. Search the four intelligence layers for relevant context, code, prior work,
    and user guidance.
-3. Choose an allowed run mode and a suitable step profile.
-4. Perform bounded work or start another loop for a smaller question.
+3. Select a mode supported by the definition and an installed executor.
+4. Perform bounded work or spawn another Loop for a smaller question.
 5. Verify the output against the task contract.
-6. Integrate accepted work and decide whether to continue or stop.
+6. Integrate accepted work and evaluate the loop and exit conditions.
 
-A Practitioner can use the reference nine-step profile, a compact profile, an
-atomic profile, or a custom profile. The role does not require nine steps.
+A Practitioner can use a registered reference, compact, research, solver,
+verifier, self-improvement, or code-execution profile. A validated extension
+may add another versioned profile. The role does not require nine steps.
 
 ## The Practitioner Loop graph
 
@@ -74,9 +75,10 @@ A Practitioner run may return a direct result. It may also produce a
 [Solution Canvas](../solution-canvas/) that can be compiled, inspected, and
 run again without repeating the build process.
 
-The deterministic callable wrapper `as_practitioner_loop()` is useful for a
-bounded five-step task. It is one convenient entry point, not the complete
-definition of the Loop Practitioner role.
+The deterministic callable wrapper `as_practitioner_loop()` remains a
+compatibility entry point for bounded work. It composes a complete definition
+and restricted runtime context before execution. New low-level integrations
+should use `LoopDefinition` and `LoopStartRequest` directly.
 
 For nested Practitioner loops with a custom step profile, see
 [reconcile invoices](../../../examples/06_reconcile_invoices/).
@@ -85,7 +87,7 @@ For nested Practitioner loops with a custom step profile, see
 
 Use `SpawnedTaskManager` with a Practitioner `LoopProfileRef`, or use the
 synchronous `spawn_practitioner_loop()` helper. Both paths create the Spawned
-Loop through `Loop.spawn()`.
+Loop through `Loop.spawn()` and bind the exact definition identity.
 
 Injected executors receive a `SpawnedLoopRuntimePort`, not the internal `Loop`
 or shared ledger. See

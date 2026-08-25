@@ -15,29 +15,32 @@ Show this main path from left to right:
 Task -> Loop Practitioner -> Solution Canvas -> Result
 ```
 
-The same figure must also show:
+The same figure must show only the architecture needed to orient a new reader:
 
-- the shared Loop object used by Practitioner, Intelligence, and Solution Loops;
-- the three run modes: deterministic, hybrid, and non-deterministic;
-- step profiles with one step, five steps, nine steps, or a custom sequence;
-- Practitioner loops that may start more Practitioner loops;
-- Solution Canvas nodes that are Solution loops;
-- self-improvement shown as a task entering the Loop Practitioner, not as a
-  separate runtime role;
-- Static Architecture supporting every loop;
-- a separate Retrieval Engine service with lexical, vector, and hybrid modes;
-- built-in adapters, manual plugin registration, and future plugin packaging;
+- the shared Loop runtime used by Practitioner, Intelligence, and Solution;
 - all four intelligence layers;
-- Runtime Memory as current-run state; and
-- Run History, reports, and playback as saved run history.
+- the three Static Architecture groups;
+- the Practitioner building a Solution Canvas;
+- Solution Loops producing the result; and
+- self-improvement labeled as a later Practitioner task, not a separate
+  architecture system.
+
+Do not place providers, models, settings, workspaces, approvals, stores,
+Runtime Memory, event history, reports, playback, MCP, skills, or trace export
+in this first figure. Those are internal runtime mechanics. Explain them on a
+later detail figure.
+
+Do not place the three modes or detailed step profiles in this first figure.
+The next figures explain one Loop object and its controls.
 
 Do not use the nine-step sequence as the first figure. It is detail about one
 step profile, not the full product map.
 
 ## V2: one Loop object
 
-Show one Loop with its goal, typed contract, selected mode, step profile,
-budget, loop condition, exit condition, relationships, and event log.
+Show one Loop with its `LoopDefinition` identity and digest, goal, typed
+contract, selected mode, installed executor, step profile, runtime context,
+budget, loop condition, exit condition, relationship, and event log.
 
 If the figure includes a mode, use the public order:
 
@@ -68,8 +71,8 @@ are internal runtime mechanics.
 
 The Retrieval Engine searches classified records across the four layers. Its
 current backends are a fixed selectable set, not an external plugin registry.
-The Capability Directory is a separate search for something executable under
-the loop's contract and permissions. Do not merge these two searches.
+Custom Plugin discovery is a separate search for something executable under
+the Loop's contract and permissions. Do not merge these two searches.
 
 Both searches return body-free `LoopRef` objects. Show selection before
 materialization or execution. Capability discovery must be visibly local and
@@ -88,8 +91,8 @@ and belongs to the current run.
 
 ## V5: Solution Canvas
 
-Show what will run for a new input. Use a left-to-right graph whose operational
-nodes are Solution loops. Show typed connections, declared modes, and named
+Show what will run for a new input. Use a left-to-right graph whose executable
+vertices are Solution Loops. Show typed connections, declared modes, and named
 fallbacks when they matter.
 
 Use this caption when the distinction needs to be explicit:
@@ -98,8 +101,8 @@ Use this caption when the distinction needs to be explicit:
 > Canvas shows what runs now.
 
 Do not imply that declared hybrid or non-deterministic Canvas modes have a
-separate execution adapter today. The current in-process runner uses a
-deterministic component loop for each operation.
+built-in execution adapter today. The current in-process runner executes
+deterministic Solution leaves only and fails preflight for other leaf modes.
 
 ## V6: run history
 

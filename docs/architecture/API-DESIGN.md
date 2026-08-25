@@ -17,6 +17,9 @@ Examples in the current runtime include:
 
 | Boundary | Typed objects |
 |---|---|
+| Loop definition and start | `LoopDefinition`, `LoopDefinitionRef`, `LoopStartRequest` |
+| Loop services | `LoopRuntimeContext`, `InternalRuntimeMechanics` |
+| Static DAG | `LoopGraphDefinition`, `LoopGraphVertex`, `LoopGraphEdge` |
 | Runtime defaults | `RuntimeSettings`, `LoopConfigOverride` |
 | Model work | `ModelTask`, `ModelPolicyRequest`, `ModelGatewayRequest` |
 | Provider-pinned work | `ProviderPinnedRequest` |

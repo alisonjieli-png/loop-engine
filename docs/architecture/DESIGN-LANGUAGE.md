@@ -19,6 +19,8 @@ Task -> Loop Practitioner -> Solution Canvas -> Result
 Then explain the shared runtime and support system:
 
 - One Loop object runs each executable graph vertex.
+- Every Loop carries a versioned and digest-bound `LoopDefinition`.
+- `LoopGraphDefinition` is the one authoritative static DAG.
 - Each Loop has a selected mode and a step profile.
 - Practitioner Loops build and test solutions.
 - Intelligence Loops search, retrieve, frame, invoke, replay, and interpret.
@@ -28,8 +30,8 @@ Then explain the shared runtime and support system:
 - Static Architecture gives all three roles access to Intelligence Search and
   Retrieval, Web Research, and Custom Plugins when permitted.
 - The Retrieval Engine searches classified records across all four layers.
-- The Capability Directory lets loops search Static Architecture for something
-  executable under the current contract and permissions.
+- Custom Plugin discovery returns typed capability references without making
+  the capability service a graph vertex.
 - Four intelligence layers organize reusable knowledge.
 - Runtime Memory carries temporary notes during one run.
 - Run History, reports, and playback explain saved run history.
@@ -59,9 +61,9 @@ Loop relationships. Use the exact relationship instead of a generic topology
 term.
 
 Do not use the bare word `Practitioner` as a public class name. Use Loop
-Practitioner for the role and `PractitionerLoop` only for the exact public alias
-of `Loop`. Internal planning code is a decision service or planning algorithm,
-not another runtime.
+Practitioner for the role. The package root does not expose a separate
+role-specific runtime alias. Internal planning code is a service or algorithm
+that runs inside a classified Loop, not another runtime.
 
 ## 3. Keep the three loop controls separate
 

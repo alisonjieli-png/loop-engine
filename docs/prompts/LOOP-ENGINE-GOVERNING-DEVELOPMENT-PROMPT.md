@@ -65,10 +65,20 @@ There is one operational runtime type: `Loop`.
 ```text
 Operational runtime type
 └── Loop
-    ├── Identity
-    │   ├── Loop ID
-    │   ├── profile version
-    │   └── spawning Loop ID for a real Spawned by relationship
+    ├── LoopDefinition
+    │   ├── definition ID, semantic version, and content digest
+    │   ├── registered role profile and version
+    │   ├── typed input and output roles
+    │   ├── supported modes and installed executors
+    │   ├── step profile
+    │   ├── loop condition and exit condition
+    │   ├── configuration facts
+    │   └── permissions, effects, and required capabilities
+    ├── LoopRuntimeContext
+    │   ├── Intelligence Search and Retrieval
+    │   ├── Web Research
+    │   ├── Custom Plugins
+    │   └── internal runtime mechanics
     ├── Operational relationship
     │   ├── Starting
     │   ├── Spawned by
@@ -79,35 +89,18 @@ Operational runtime type
     │   ├── Practitioner
     │   ├── Intelligence
     │   └── Solution
-    ├── Versioned role profile
     ├── Purpose and domain categories
-    ├── Run mode
+    ├── Selected run mode
     │   ├── deterministic
     │   ├── hybrid
     │   └── non-deterministic, with model-led semantic work
-    ├── Step profile
-    │   ├── atomic
-    │   ├── compact
-    │   ├── reference nine-step
-    │   └── custom
-    ├── Typed contract
-    │   ├── named input ports
-    │   ├── named output ports
-    │   ├── compatibility checks
-    │   ├── loop condition
-    │   ├── exit condition
-    │   └── outgoing relationship
-    ├── Operating settings
-    │   ├── work and call budgets
-    │   ├── permissions and allowed effects
-    │   ├── workspace and network policy
-    │   └── exit condition
+    ├── Work and call budgets
     ├── Model settings when model use is allowed
     │   ├── thinking power
     │   ├── provider and model route
     │   ├── exact maximum output capability
     │   └── retry and failover policy
-    └── Evidence
+    └── Run record
         ├── Run History events
         ├── returned result
         ├── validation outcome
@@ -129,6 +122,11 @@ Do not use these terms interchangeably:
 - Settings carry contracts, budgets, permissions, effects, model routes,
   thinking power, loop conditions, and exit conditions.
 
+`LoopGraphDefinition` is the one static DAG authority. Every graph vertex
+contains an exact `LoopDefinitionRef`. Every edge names typed source and target
+roles. `SolutionSpec` and `Canvas` build or project this graph. They do not
+create another graph authority.
+
 Every known operational boundary must be classified in the existing
 `static_architecture.boundary_registry`. Its ontology entry must say
 `runtime_type: Loop` and bind either an exact registered versioned role profile
@@ -144,9 +142,9 @@ Query Loop retrieves Intelligence Item Loops. A Starting Solution connects to
 deterministic Solution pipeline Loops and spawns Solution Loops only for real
 dynamic branch, fallback, repair, or ensemble work.
 
-Every Loop node has its own mode when its contract, adapter coverage, and
+Every Loop graph vertex has its own mode when its contract, executor coverage, and
 permissions allow it. A Canvas or pipeline has no single execution mode. It
-may only restrict the modes permitted on member Loop nodes. Thinking power is
+may only restrict the modes permitted on member Loops. Thinking power is
 a model setting for authorized hybrid and non-deterministic Loops. It is not a
 fourth mode.
 
@@ -160,35 +158,30 @@ runtime.
 ```text
 Loop role profiles
 ├── Practitioner
-│   ├── researcher
-│   ├── solver
-│   ├── experimenter
-│   ├── builder
-│   ├── reviewer
-│   ├── verifier
-│   ├── repairer
-│   ├── code executor
-│   └── self-improvement task
+│   ├── practitioner.reference_nine_step
+│   ├── practitioner.compact_five_step
+│   ├── practitioner.research
+│   ├── practitioner.solver
+│   ├── practitioner.verifier
+│   ├── practitioner.self_improvement
+│   └── practitioner.code_execution
 ├── Intelligence
-│   ├── search and rank
-│   ├── select
-│   ├── materialize
-│   ├── frame for the current task
-│   ├── invoke Code Intelligence
-│   ├── replay or compare prior work
-│   └── interpret User Feedback Intelligence
+│   ├── intelligence.search
+│   ├── intelligence.materialize
+│   ├── intelligence.context.serve, search, frame
+│   ├── intelligence.code.resolve, invoke, package
+│   ├── intelligence.runtime_history_solution.search, replay, compare
+│   └── intelligence.user_feedback.serve, scope, interpret
 └── Solution
-    ├── component
-    ├── pipeline
-    ├── validator
-    ├── router
-    ├── fallback
-    ├── ensemble member
-    └── output formatter
+    ├── solution.atomic_component
+    ├── solution.pipeline
+    ├── solution.router_fallback
+    ├── solution.ensemble
+    └── solution.validator
 ```
 
 Profiles inherit only reusable definitions. Each running Loop still receives
-its own topology, role binding, mode, contract, step profile, budget,
+its own relationship, role binding, mode, contract, step profile, budget,
 permissions, exit condition, and event identity.
 
 ## Required separation of concerns

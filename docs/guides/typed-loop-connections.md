@@ -1,26 +1,28 @@
-# Typed loop connections
+# Typed Loop connections
 
-A graph can check whether one loop's output fits another loop's input before
-either loop runs. The check uses the existing `LoopContract` on each loop.
+Loop Engine checks a connection before either Loop runs. The authoritative
+graph stores exact Loop definitions and named input and output roles.
 
-## Two checks have different jobs
+## Two levels of checking
 
-`LoopContract` describes the roles at a loop boundary. For example, a feature
-loop can produce `feature_matrix/v1`, and a scoring loop can require
-`feature_matrix/v1`.
+`LoopContract` checks whether a producer role can feed a consumer role.
+`LoopGraphDefinition` checks that every graph vertex resolves to a complete
+definition, every edge names real ports, and the complete graph is acyclic.
 
-`ContractDefinition` checks a concrete Python value. It can check field types,
-required fields, allowed values, ranges, and row counts.
+```text
+LoopDefinition
+└── LoopContract
+    ├── input_roles
+    └── output_roles
 
-Use both checks:
+LoopGraphDefinition
+├── LoopGraphVertex with exact LoopDefinitionRef
+├── LoopGraphEdge with source and target endpoints
+├── graph input and output ports
+└── graph validation
+```
 
-1. Check the connection before execution.
-2. Validate the concrete value when the producer returns it.
-
-The first check prevents invalid wiring. The second check prevents invalid data
-from crossing a valid wire.
-
-## Check one connection
+## Check two contracts
 
 ```python
 from loop_engine.loop.loop_contract import (
@@ -34,101 +36,92 @@ prepare = LoopContract(
     execution_mode="code_only",
     input_roles=("raw_rows/v1",),
     output_roles=("feature_matrix/v1",),
+    role="solution",
 )
 
 score = LoopContract(
     name="score-model",
-    execution_mode="hybrid",
+    execution_mode="code_only",
     input_roles=("feature_matrix/v1",),
     output_roles=("scores/v1",),
+    role="solution",
 )
 
-connection = LoopConnectionSpec(producer=prepare, consumer=score)
-result = validate_loop_connection(connection)
+result = validate_loop_connection(
+    LoopConnectionSpec(producer=prepare, consumer=score)
+)
 
 assert result.compatible
 ```
 
-An empty `bindings` tuple asks Loop Engine to match inputs and outputs with the
-same role name. Use an explicit binding when you want to check one port.
+An empty binding list matches consumer inputs to producer outputs with the
+same role name.
 
-## Require an Adapter Loop for a conversion
+## Use an Adapter Loop for conversion
 
-Different role names do not connect by accident. Name the Adapter Loop that
-performs the conversion.
+An edge carries a value. It cannot transform the value. Different role names
+require a named Adapter Loop with its own definition, operation, tests, and
+event history.
 
 ```python
 from loop_engine.loop.loop_contract import LoopPortBinding
-
-score_v2 = LoopContract(
-    name="score-model-v2",
-    execution_mode="hybrid",
-    input_roles=("feature_matrix/v2",),
-    output_roles=("scores/v1",),
-)
 
 binding = LoopPortBinding(
     source_output="feature_matrix/v1",
     target_input="feature_matrix/v2",
     adapter_loop_ref="loop://adapters/features-v1-to-v2",
 )
-
-connection = LoopConnectionSpec(
-    producer=prepare,
-    consumer=score_v2,
-    bindings=(binding,),
-)
 ```
 
-The adapter reference does not prove that the conversion is correct. The
-Adapter Loop still needs its own contract, tests, and value validation.
+At the graph level, the Adapter is an explicit `LoopGraphVertex` with purpose
+`adapter`. Two ordinary edges connect the producer to the Adapter and the
+Adapter to the consumer. `LoopGraphEdge.metadata` rejects hidden callable,
+script, command, operation, tool, and adapter fields.
 
-## Validate a graph against its loops
+## Build the authoritative graph
 
-A typed graph uses `LoopVertexSpec` to attach each `LoopContract` to its loop
-reference. `LoopGraphSpec.validate()` then checks every edge against both loop
-contracts.
+The graph API uses these immutable objects:
 
-```python
-from loop_engine.code_nodes.solution_graph import (
-    LoopEdgeSpec,
-    LoopGraphSpec,
-    LoopPortRef,
-    LoopVertexSpec,
-)
+| Object | Purpose |
+|---|---|
+| `LoopDefinitionRegistry` | Resolves exact definition ID, version, and digest references. |
+| `LoopGraphVertex` | Binds one executable vertex to a `LoopDefinitionRef`, selected mode, purpose, and operation reference. |
+| `LoopGraphEndpoint` | Names one role on one vertex. |
+| `LoopGraphEdge` | Connects source and target endpoints without executing hidden work. |
+| `LoopGraphInputPort` | Maps an external typed input to one or more vertices. |
+| `LoopGraphOutputPort` | Maps one vertex output to an external typed output. |
+| `LoopGraphStage` | Groups a primary attempt and typed fallbacks. |
+| `LoopGraphGroup` | Defines one pipeline, route, or ensemble under an explicit controller Loop. |
+| `LoopGraphDefinition` | Binds the complete DAG to a semantic version and content digest. |
 
-graph = LoopGraphSpec(
-    "customer-risk",
-    edges=(
-        LoopEdgeSpec(
-            LoopPortRef("prepare", "features", "feature_matrix/v1"),
-            LoopPortRef("score", "features", "feature_matrix/v1"),
-        ),
-    ),
-    vertices=(
-        LoopVertexSpec("prepare", prepare),
-        LoopVertexSpec("score", score),
-    ),
-)
+Each vertex either embeds its exact `LoopDefinition` or resolves it through a
+`LoopDefinitionRegistry`. `validate()` refuses an unresolved reference or a
+digest mismatch.
 
-report = graph.validate()
-assert report["valid"]
-```
+## What graph validation checks
 
-Validation refuses an edge when:
+Validation rejects:
 
-- the producer does not declare the edge's output role;
-- the consumer does not declare the edge's input role;
-- the roles differ and no Adapter Loop is named;
-- an edge names a loop outside the graph;
-- the graph contains a cycle.
+- duplicate or unresolved vertices;
+- changed definition content;
+- a mode outside the definition, graph policy, or installed executors;
+- a relationship that conflicts with the role or edge;
+- a missing or incompatible input or output role;
+- hidden conversion work on an edge;
+- a fallback stage without an explicit Router Loop;
+- a cycle;
+- a graph input, output, stage, group, route, or evaluator that points to
+  missing work;
+- a graph whose serialized content does not match its digest.
 
-String-only `loop_refs` remain supported for existing callers. Add typed
-vertices when the graph must verify actual loop contracts.
+## Current value-schema limit
 
-## Current limit
+Port roles are versioned names such as `feature_matrix/v1`. The graph checks
+that those names match. It does not yet enforce every value property such as
+array shape, unit, encoding, optional field, numeric range, or table column at
+every connection.
 
-The graph check validates declared compatibility. It does not run a loop,
-inspect a value, or establish that two equal role names have the same meaning.
-Use versioned role names, register concrete `ContractDefinition` objects, and
-test each producer and adapter against those definitions.
+Use a deterministic Validator Loop at important boundaries until the graph has
+a shared versioned value-schema contract. See
+[validate a customer import](../../examples/10_validate_customer_import/) for
+a runnable Solution example.

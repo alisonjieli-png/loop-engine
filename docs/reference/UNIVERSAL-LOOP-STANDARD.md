@@ -22,11 +22,12 @@ A runnable loop declares:
 | Field | Requirement |
 |---|---|
 | Goal | Name the bounded work. |
-| Identity and version | Name the Loop definition, semantic version, and exact content. |
+| Definition identity | Name the Loop definition, semantic version, and SHA-256 content digest. |
 | Role profile | Select a registered Practitioner, Intelligence, or Solution profile. |
 | Contract | Define accepted inputs, outputs, and effects. |
-| Logical kind | State whether the loop executes, represents task repetition, or searches for improvement. |
-| Allowed modes | Limit the modes the loop may use. |
+| Configuration facts | Store immutable JSON facts that affect execution. |
+| Supported modes | Limit the modes the Loop may use. |
+| Installed executors | Name the modes that the current runtime can physically execute. |
 | Preferred modes | Order the permitted modes. |
 | Step profile | Define the steps, order, and repetition. |
 | Loop condition | Define when another iteration may run. |
@@ -34,6 +35,7 @@ A runnable loop declares:
 | Exit condition | Define success or another terminal state. |
 | Replay guarantee | State what a later replay can reproduce. |
 | Depth limit | Bound loops started by loops. |
+| Capabilities and permissions | Name required services, permitted effects, and resource authority. |
 
 A missing or invalid required field fails before execution.
 
@@ -50,6 +52,8 @@ operating policy. A spawning Loop may grant fewer permissions, but it cannot
 grant more than it has.
 
 Effort does not grant permissions.
+
+A semantic mode without an installed executor fails before work.
 
 ## 4. Step profiles
 
@@ -88,7 +92,19 @@ Run History records and the current Intelligence Library. It can audit, mine,
 compare, generate, and stage candidates. Its `logical_kind` is
 `search_improvement`, so it cannot approve or promote its own output.
 
-## 7. Intelligence and memory
+## 7. One graph authority
+
+`LoopGraphDefinition` is the authoritative static DAG. Every vertex contains
+an exact `LoopDefinitionRef`. Every edge names a source port, target port, and
+relationship. An Adapter must be an explicit Loop vertex. An edge cannot
+contain hidden execution.
+
+Graph validation checks definition digests, selected modes, executor coverage,
+typed roles, relationships, graph inputs and outputs, groups, and cycles.
+`SolutionSpec` and `Canvas` build or project that graph. They are not parallel
+graph authorities.
+
+## 8. Intelligence and memory
 
 Loops may search four persistent intelligence layers:
 
@@ -103,7 +119,17 @@ persistent layer. Temporary notes do not promote themselves.
 Candidate Context uses the experimental tier and remains outside normal
 retrieval. A review path must request candidates explicitly.
 
-## 8. History and replay
+## 9. Runtime context
+
+Every Loop receives a `LoopRuntimeContext`. Its public Static Architecture
+ports are Intelligence Search and Retrieval, Web Research, and Custom Plugins.
+Internal mechanics contain providers, settings, workspaces, approvals, stores,
+Runtime Memory, events, reports, playback, MCP, skills, and trace export.
+
+A derived context may remove capabilities, permissions, or executors. It may
+not add them.
+
+## 10. History and replay
 
 Every material action writes a typed event. The Run History stores the saved
 event history and verifies its chain. Reports, live views, and playback are
@@ -115,7 +141,7 @@ A loop states one replay guarantee: exact, event-equivalent,
 evidence-equivalent, or non-replayable. A seed or a zero temperature does not
 prove exact replay.
 
-## 9. Authority boundaries
+## 11. Authority boundaries
 
 - A loop cannot widen its own permissions.
 - A loop that searches for improvements cannot approve its own candidate.
@@ -125,7 +151,7 @@ prove exact replay.
   contract.
 - Missing evidence remains missing. It does not become zero or success.
 
-## 10. Verification
+## 12. Verification
 
 Run the complete behavior suite and architecture checks:
 

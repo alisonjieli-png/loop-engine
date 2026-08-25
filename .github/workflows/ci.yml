@@ -40,7 +40,10 @@ jobs:
 
       - name: Refuse retired public language
         run: |
-          if rg --hidden -n -i '\bchronicles?\b|\breceipts?\b' \
+          if rg --hidden -n -i \
+            --glob '!src/loop_engine/forbidden_paths.json' \
+            --glob '!showcase/node_modules/**' --glob '!**/.cache/**' \
+            '\bchronicles?\b|\breceipts?\b' \
             README.md CHANGELOG.md humanizer-context.md docs examples \
             case-studies benchmarks showcase src; then
             echo "Retired public language found. Use Run History, event log, record, report, or evidence."

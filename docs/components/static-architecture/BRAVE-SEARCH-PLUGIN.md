@@ -115,8 +115,10 @@ quietly become a browser or scraper.
 ## Runnable example
 
 [`examples/13_brave_search_plugin/`](../../../examples/13_brave_search_plugin/)
-runs with a fake transport by default. It can make one live request only when
-the caller supplies both `--live` and a working environment key.
+uses an injected recording transport by default to check local discovery,
+selection, and invocation contracts. That offline path does not establish
+live Brave integration or search quality. A live request runs only when the
+caller supplies both `--live` and a working environment key.
 
 Official Brave documentation:
 
