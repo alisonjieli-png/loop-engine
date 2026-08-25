@@ -1,8 +1,12 @@
 # Loop Engine constitution and autonomous campaign charter
 
+> Historical design record from before the current Loop Engine documentation
+> hierarchy. Use the root README, component guides, Product Nomenclature, and
+> Universal Loop standard for current behavior and names.
+
 ## Everything is a loop · the baseline every loop inherits · and the standing order to run for days
 
-Status: reference guidance for this repository.
+Status: historical design input.
 Paste this whole file into OpenCode, Codex, Claude Code, or any terminal-capable
 harness. It is self-orienting: it tells you what the architecture IS, what you
 must never break, and what to do for the next several days without being asked

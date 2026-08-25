@@ -18,7 +18,7 @@ What you pass into a Loop at initialization:
     loop MAY use; ``preferred_modes`` — the WATERFALL order (e.g. deterministic
     first, then hybrid, then non-deterministic), with fallback when a mode fails.
   * ``power`` — small / medium / large / max: a simple front lever that sets how
-    much string intelligence it pulls, how often it iterates, and how many model
+    much Context Intelligence it pulls, how often it iterates, and how many model
     calls it may make (advanced settings can override on the back end).
 
 The three modes map to the per-node resolution paths (see [[decision_engine.py]]):
@@ -298,6 +298,8 @@ class Loop:
                     getattr(contract, "execution_mode", ""))
         self.ledger.record(loop_id=self.loop_id, depth=depth, event="init",
                             goal=goal, framework=self.config.framework,
+                            logical_kind=self.config.logical_kind,
+                            replay_guarantee=self.config.replay_guarantee,
                             power=self.config.power,
                             stop_condition=self.config.stop_condition,
                             baseline_goal=getattr(contract, "goal", goal),
@@ -376,12 +378,16 @@ class Loop:
                 clamped_from = tuple(config.allowable_modes)
                 config = LoopConfig(
                     framework=config.framework,
+                    logical_kind=config.logical_kind,
+                    replay_guarantee=config.replay_guarantee,
                     allowable_modes=allowed,
                     preferred_modes=tuple(m for m in config.preferred_modes
                                           if m in allowed) or allowed,
                     power=config.power,
                     custom_steps=config.custom_steps,
-                    max_depth=config.max_depth)
+                    max_depth=config.max_depth,
+                    stop_condition=config.stop_condition,
+                    success_confidence_min=config.success_confidence_min)
         # the REQUEST is recorded before the child exists: a spawn that is
         # refused by the permission clamp still leaves a trace of having been
         # asked for, which a spawn-only event cannot show.
@@ -455,13 +461,20 @@ class Loop:
         limits = spec.get("limits") or {}
         cfg = LoopConfig(
             framework=template.get("framework", "nine_step"),
+            logical_kind=template.get("logical_kind", "execution"),
+            replay_guarantee=template.get("replay_guarantee",
+                                          "event_equivalent"),
             allowable_modes=_modes(resolution.get("allowed_modes"), MODES),
             preferred_modes=_modes(resolution.get("preferred_waterfall"),
                                    ("deterministic", "hybrid",
                                     "non_deterministic")),
             power=(spec.get("power") or {}).get("profile", "standard"),
             custom_steps=tuple(template.get("steps", ())),
-            max_depth=int(children.get("maximum_depth", 3)))
+            max_depth=int(children.get("maximum_depth", 3)),
+            stop_condition=(spec.get("stopping") or {}).get(
+                "condition", "run_to_completion"),
+            success_confidence_min=float((spec.get("stopping") or {}).get(
+                "success_confidence_min", 0.5)))
         digest = hashlib.sha256(
             json.dumps(spec, sort_keys=True, default=str).encode()).hexdigest()
         if parent is not None:
@@ -588,11 +601,16 @@ class Loop:
         return {"record_type": "loop_pause/v1", "loop_id": self.loop_id,
                 "goal": self.goal, "depth": self.depth, "reason": reason,
                 "config": {"framework": self.config.framework,
+                           "logical_kind": self.config.logical_kind,
+                           "replay_guarantee": self.config.replay_guarantee,
                            "allowable_modes": list(self.config.allowable_modes),
                            "preferred_modes": list(self.config.preferred_modes),
                            "power": self.config.power,
                            "custom_steps": list(self.config.custom_steps),
-                           "max_depth": self.config.max_depth},
+                           "max_depth": self.config.max_depth,
+                           "stop_condition": self.config.stop_condition,
+                           "success_confidence_min":
+                               self.config.success_confidence_min},
                 "iteration_state": {k: (dict(v) if isinstance(v, dict)
                                         else list(v) if isinstance(v, list)
                                         else v)
@@ -609,11 +627,18 @@ class Loop:
         c = token["config"]
         loop = cls(token["goal"],
                    LoopConfig(framework=c["framework"],
+                              logical_kind=c.get("logical_kind", "execution"),
+                              replay_guarantee=c.get("replay_guarantee",
+                                                     "event_equivalent"),
                               allowable_modes=tuple(c["allowable_modes"]),
                               preferred_modes=tuple(c["preferred_modes"]),
                               power=c["power"],
                               custom_steps=tuple(c["custom_steps"]),
-                              max_depth=c["max_depth"]),
+                              max_depth=c["max_depth"],
+                              stop_condition=c.get("stop_condition",
+                                                   "run_to_completion"),
+                              success_confidence_min=float(c.get(
+                                  "success_confidence_min", 0.5))),
                    ledger=ledger)
         loop._it = {k: (dict(v) if isinstance(v, dict) else v)
                     for k, v in token["iteration_state"].items()}
@@ -879,13 +904,29 @@ def self_test() -> dict:
           and research.parent is root,
           "one loop spawns another whose answer helps it proceed; depth-limited")
 
+    improve_root = Loop("review history", LoopConfig(
+        allowable_modes=("deterministic",),
+        preferred_modes=("deterministic",), max_depth=2,
+        logical_kind="search_improvement",
+        replay_guarantee="evidence_equivalent"))
+    improve_child = improve_root.spawn("audit context", LoopConfig(
+        framework="custom", custom_steps=("audit",),
+        allowable_modes=("deterministic", "hybrid"),
+        preferred_modes=("deterministic", "hybrid"), max_depth=2,
+        logical_kind="search_improvement",
+        replay_guarantee="evidence_equivalent"))
+    check("spawn_clamp_preserves_improvement_identity_and_replay_policy",
+          improve_child.config.allowable_modes == ("deterministic",)
+          and improve_child.config.logical_kind == "search_improvement"
+          and improve_child.config.replay_guarantee == "evidence_equivalent")
+
     # 6. POWER is a simple lever with monotonic concrete settings.
     s = {p: POWER_SETTINGS[p]["max_model_calls"] for p in POWER_LEVELS}
     i = {p: POWER_SETTINGS[p]["min_intelligence_per_step"] for p in POWER_LEVELS}
     check("power_lever_sets_monotonic_settings",
           s["light"] < s["standard"] < s["deep"] < s["max"]
           and i["light"] < i["standard"] < i["deep"] < i["max"],
-          "light→max scales model calls and required string intelligence")
+          "light to max scales model calls and required Context Intelligence")
 
     # 6b. spec refinements: legacy power names alias; the three modes have
     # precise internal names; five core String roles + the rails are declared.
@@ -907,7 +948,7 @@ def self_test() -> dict:
           and research.loop_id in tree and len(root.ledger.loops()) == 3,
           "spawns + steps recorded on one shared ledger; loops-of-loops tree")
 
-    # 8. plan() attaches required string intelligence per step (mandatory pull).
+    # 8. plan() attaches required Context Intelligence per step.
     plan = Loop("g", LoopConfig(power="large")).plan()
     check("plan_requires_string_intelligence_per_step",
           plan["steps"]
@@ -1034,7 +1075,10 @@ def self_test() -> dict:
           "one iteration at a time; result() is honestly partial until terminal")
 
     # 17. pause → serializable token → resume continues exactly where it stopped.
-    lp17 = Loop("pausable", LoopConfig(framework="five_step", power="large"))
+    lp17 = Loop("pausable", LoopConfig(
+        framework="five_step", power="large",
+        logical_kind="search_improvement",
+        replay_guarantee="evidence_equivalent"))
     lp17.run_next_iteration()
     lp17.run_next_iteration()
     token = json.loads(json.dumps(lp17.pause("checkpoint")))   # survives JSON
@@ -1045,6 +1089,8 @@ def self_test() -> dict:
     check("pause_resume_continues_exactly",
           token["record_type"] == "loop_pause/v1"
           and r17.steps_run == 5 and r17.stopped == "done"
+          and lp17b.config.logical_kind == "search_improvement"
+          and lp17b.config.replay_guarantee == "evidence_equivalent"
           and any(e.get("event") == "resume" for e in lp17b.ledger.events),
           "2 steps before pause + 3 after resume = the same 5-step loop")
 

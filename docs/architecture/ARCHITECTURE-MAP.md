@@ -11,6 +11,6 @@ Regenerate rather than hand-edit:
 python -m loop_engine --map
 ```
 
-Freshness is enforced by the `architecture_map_freshness` conformance gate — a
-committed map whose module census disagrees with the live projection fails the
-build.
+The `architecture_map_freshness` conformance check enforces freshness. A
+committed map fails the build when its module list differs from the live
+projection.

@@ -1,105 +1,108 @@
 # Loops and modes
 
-## Everything is a loop
+## Each operational node is a loop
 
-Not a metaphor — a single runtime. A search, a stored string, a past run, a
-model call, an adapter, a validator, and an entire solution all execute inside
-the same envelope.
+Loop Engine uses one `Loop` runtime object. A Loop can perform bounded work or
+start another Loop for a smaller part of the task. Practitioner loops,
+Solution loops, and Self-Improvement loops are roles of this same runtime.
 
-The reason is practical rather than aesthetic: because they are the same kind
-of object, any of them can be nested, retried, budgeted, replaced, paused, or
-inspected without a special case for each. A system with six execution
-mechanisms needs six retry stories, six budget stories, and six ways to be
-observed.
+Each loop has:
 
-## A loop always has a stop condition
+- a goal;
+- an input and output contract;
+- allowed and preferred run modes;
+- a step profile;
+- an effort setting and budget;
+- a stop condition;
+- a depth limit; and
+- an event log.
 
-```python
-LoopConfig(stop_condition="run_to_completion")   # work until the goal is met
-LoopConfig(stop_condition="success_once")        # one successful iteration is enough
-```
+Read [The Loop object and step profiles](../components/loop-object/) for the
+complete definition.
 
-`success_once` matters more than it looks. A great deal of real work is "try
-until something works" — a retrieval, a parse, a provider call. That is a loop
-whose stopping rule is *one iteration succeeded*, and saying so explicitly
-means the runtime can account for it like any other loop.
+## Three run modes
 
-## Three modes, granted rather than chosen
-
-| Mode | Calls a model | Use |
-|---|---|---|
-| `deterministic` | never | the default rail |
-| `hybrid` | for steps needing judgement | escalation |
-| `non_deterministic` | leads with the model | exploration |
-
-```python
-LoopConfig(allowable_modes=("deterministic", "hybrid"),
-           preferred_modes=("deterministic", "hybrid"))
-```
-
-**Permission, not preference.** A loop cannot exceed the modes it was granted,
-and a child cannot exceed its parent — `spawn()` clamps a child's modes to the
-intersection with the parent's and refuses a disjoint request. So "can this
-call a model?" is answerable before you run it, by reading the config.
-
-A deterministic loop stays on the code rail *even when a live model is wired
-up*. Wiring a provider grants a capability; it does not spend it.
-
-## Nesting
-
-```python
-root = Loop("prepare a quarterly plan", config, ledger=ledger)
-child = root.spawn("gather last quarter's numbers")
-grandchild = child.spawn("check one assumption")
-```
-
-Depth is unbounded in principle and bounded by `max_depth` in practice. The
-parent records its children as they return, which is what lets a report
-reconstruct the tree.
-
-## The nine-step practitioner kernel
-
-The standard template. Steps are configurable — nine is a useful default, not a
-law:
-
-```
-orient → research → decide → act → verify → commit
-```
-
-```python
-LoopConfig(framework="custom",
-           custom_steps=("orient", "research", "decide", "act",
-                         "verify", "commit"))
-```
-
-`loop-engine --map` prints the full kernel with what each step owns.
-
-## The four intelligence pillars
-
-A loop can consult four kinds of intelligence, and each is itself a loop:
-
-| Pillar | What it serves |
+| Mode | How it runs |
 |---|---|
-| string | task framings, questions, strategies |
-| code | registered executable capabilities |
-| past runs | what happened before |
-| user | guidance you have left |
-
-Cheapest first. **A store hit outranks a model call by design** — which is
-worth knowing when you are testing whether a model helps: a warm store will
-serve the step and the model will never be reached. Vary what serves the step,
-not just whether a model is available.
-
-## What a loop returns
+| `deterministic` | Uses code, rules, calculation, and search. It does not call a language model. |
+| `hybrid` | Uses code first and may call a language model for a specific unresolved step. |
+| `non_deterministic` | A language model leads the step while the loop controls tools, limits, logging, and verification. |
 
 ```python
-result["value"]         # the answer
-result["mode"]          # which mode actually ran
-result["model_calls"]   # how many semantic calls it spent
+from loop_engine.loop.recursive_loop import LoopConfig
+
+config = LoopConfig(
+    allowable_modes=("deterministic", "hybrid"),
+    preferred_modes=("deterministic", "hybrid"),
+)
 ```
 
-And the ledger holds the rest: every step, every mode decision, every
-retrieval, every model call with provider-reported tokens — over a closed
-vocabulary of 59 event families, hash-chained so tampering is detectable.
+Allowed modes are permissions. Preferred modes set the order within those
+permissions. A deterministic loop stays deterministic even when a model
+provider is configured.
 
-See [reports](reports.md) for reading it back.
+A loop that starts another loop cannot grant a mode that it does not have.
+
+## Step profiles
+
+Step profile and run mode answer different questions.
+
+- The run mode says how a step may be performed.
+- The step profile says which steps run and in what order.
+
+| Profile | Shape |
+|---|---|
+| Atomic code | One bounded action. |
+| Compact | Load, choose, act, check, commit. |
+| Reference Practitioner | Orient, reconcile, assess, decide, determine how, act, verify, integrate, route. |
+| Custom | From 1 to 200 caller-defined steps. Steps may repeat. |
+
+The code stores this shape in `framework` and `custom_steps`. Reusable shapes
+are stored as Loop Templates. The nine-step profile is a reference, not a
+requirement.
+
+## Stop conditions
+
+```python
+LoopConfig(stop_condition="run_to_completion")
+LoopConfig(stop_condition="success_once")
+```
+
+`run_to_completion` follows the configured sequence and budget.
+`success_once` stops after one accepted iteration. A stop condition is part of
+the loop definition, not an error-handling shortcut.
+
+## Starting another loop
+
+```python
+from loop_engine.loop.recursive_loop import Loop, LoopConfig, LoopLedger
+
+ledger = LoopLedger()
+root = Loop("prepare a quarterly plan", LoopConfig(), ledger=ledger)
+numbers = root.spawn("gather current numbers")
+assumption = numbers.spawn("check one assumption")
+```
+
+The loops share the event log. Reports use the recorded relationships to show
+the loop tree. `max_depth` keeps the tree bounded.
+
+## Three Loop roles
+
+Practitioner loops explain how work was built. A Solution Canvas explains what
+runs for a new input.
+
+A Self-Improvement Loop reviews history and intelligence, then stages
+candidates for independent review.
+
+- Read [Loop Practitioner](../components/practitioner/).
+- Read [Solution Canvas](../components/solution-canvas/).
+- Read [Self-improvement and domain seeding](../components/self-improvement/).
+
+## Intelligence and run history
+
+Loops can search Context, Code, Previous Run & Solution, and User Intelligence.
+Runtime Memory is a separate temporary note board for the current run.
+
+The event log records step attempts, mode decisions, searches, model calls,
+outputs, and failures. See [Reports](reports.md) for text, Markdown, HTML, JSON,
+live viewing, and playback.

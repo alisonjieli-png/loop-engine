@@ -1,6 +1,6 @@
 # Custom endpoints
 
-Point the loop at any inference server you control or have access to — vLLM,
+Point the loop at any inference server you control or have access to: vLLM,
 LM Studio, llama.cpp's server, text-generation-webui, LiteLLM, an internal
 gateway, or a friend's GPU box.
 
@@ -43,9 +43,9 @@ export LOOP_ENGINE_ENDPOINTS="name=box_a,url=https://a.example/v1,model=m1|name=
 
 | Field | Required | Default | Meaning |
 |---|---|---|---|
-| `name` | yes | — | becomes the provider key; appears in receipts |
-| `url` | yes | — | base URL, `http(s)://` |
-| `model` | yes | — | the model to request |
+| `name` | yes | none | becomes the provider key; appears in logs |
+| `url` | yes | none | base URL, `http(s)://` |
+| `model` | yes | none | the model to request |
 | `key` | no | none | bearer token if the server wants one |
 | `wire` | no | `openai` | `openai` or `ollama` |
 | `locality` | no | `local` | `local` or `cloud` |
@@ -58,12 +58,12 @@ silently dropping your credential and leaving you to debug an auth failure.
 ## Two protections worth knowing about
 
 **A custom endpoint cannot shadow a built-in provider.** Registering one named
-`mistral` is refused. A receipt naming a provider has to mean that provider,
-or the receipt is worthless.
+`mistral` is refused. A log naming a provider has to mean that provider, or it
+cannot be trusted.
 
 **Your configuration decides who gets called.** `advice_function(access)`
 routes to the providers that access verified. Configuring only your own server
-means only your own server is contacted — this was a real defect once, where a
+means only your own server is contacted: this was a real defect once, where a
 self-hosted configuration silently billed a different provider entirely.
 
 ## Self-hosted servers and evidence
@@ -72,7 +72,7 @@ self-hosted configuration silently billed a different provider entirely.
 CustomEndpoint(..., counts_as_evidence=False)   # the default
 ```
 
-A local endpoint is **usable by anyone** — that is not restricted. But
+A local endpoint is **usable by anyone**: that is not restricted. But
 `counts_as_evidence` defaults to `False`, because a measurement campaign needs
 token counts another machine can reproduce, and a box only you can reach does
 not satisfy that.
@@ -83,7 +83,7 @@ own the box and know what the claim rests on.
 
 ## Credentials
 
-`describe()` is the receipt shape, and it records `has_key: true` — never the
+`describe()` is the report shape, and it records `has_key: true`, never the
 key itself. That is enforced by a test, and a conformance gate scans code and
 evidence files for secret-shaped literals.
 

@@ -146,6 +146,15 @@ from .strings.question_engine import (ANSWER_SHAPES, SEED_SALTS, QuestionForm,
 from .loop.kernel_model_impls import make_model_impls
 from .code_nodes.enrichment import (EnrichmentPolicy, CoverageReport, coverage_probe,
                         generate_enrichment, domain_terms)
+from .code_nodes.context_seed import (ContextSeedSpec, ContextSeedRun,
+                         CONTEXT_SEED_STEPS, CONTEXT_PATTERNS,
+                         domain_research_questions, build_context_candidates,
+                         run_context_seed)
+from .code_nodes.housekeeping import (HousekeepingReport, ImprovementCandidate,
+                         run_housekeeping, candidate_records)
+from .code_nodes.self_improvement_loop import (
+                         SelfImprovementReport, run_self_improvement,
+                         load_chronicle_history)
 from .static_architecture.model_call import PROMPT_ASSEMBLY_ORDER
 from .code_nodes.review_mode import (REVIEW_VERDICTS, INTERROGATORIES, ReviewFinding,
                          ReviewReport, review, detect_constant_output,
@@ -284,6 +293,12 @@ __all__ = [
     "question_forms_as_records", "make_model_impls",
     "EnrichmentPolicy", "CoverageReport", "coverage_probe",
     "generate_enrichment", "domain_terms", "PROMPT_ASSEMBLY_ORDER",
+    "ContextSeedSpec", "ContextSeedRun", "CONTEXT_SEED_STEPS",
+    "CONTEXT_PATTERNS", "domain_research_questions",
+    "build_context_candidates", "run_context_seed",
+    "HousekeepingReport", "SelfImprovementReport", "ImprovementCandidate",
+    "run_housekeeping", "run_self_improvement", "load_chronicle_history",
+    "candidate_records",
     "OPTIMIZE_FOR", "REUSE_SOURCES", "SolverConfig", "Budgets",
     "ConfigViolation", "TokenMeter", "screen_models", "permit_plan",
     "config_details", "BIAS_REGISTRY", "apply_biases", "TRIAL_ARMS",

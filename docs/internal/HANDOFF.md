@@ -23,10 +23,10 @@ The old package and repository names have no compatibility aliases.
 
 ## Install and verify
 
-From the repository root:
+From any directory:
 
 ```bash
-python -m pip install .
+python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
 python -m loop_engine --self-test
 python -m loop_engine --conformance
 python -m loop_engine --map

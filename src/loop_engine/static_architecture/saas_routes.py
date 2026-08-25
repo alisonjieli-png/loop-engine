@@ -59,7 +59,7 @@ from __future__ import annotations
 #: the design README tracks as NOT RUN.
 PUBLIC_ROUTES = (
     "/", "/product", "/how-it-works", "/practitioner-loops", "/intelligence",
-    "/intelligence/strings", "/intelligence/code",
+    "/intelligence/context", "/intelligence/strings", "/intelligence/code",
     "/intelligence/previous-runs-solutions", "/intelligence/user",
     "/solutions", "/solution-canvas", "/studio", "/marketplace", "/pricing",
     "/docs", "/blog", "/news", "/case-studies", "/about", "/contact",
@@ -68,24 +68,20 @@ PUBLIC_ROUTES = (
 
 #: The authenticated Studio's routes.
 STUDIO_ROUTES = (
-    "/app", "/app/runs", "/app/runs/:id", "/app/runs/:id/live",
-    "/app/runs/:id/playback", "/app/runs/:id/loops/:loopId",
-    "/app/runs/:id/model-calls", "/app/runtime-memory",
-    "/app/intelligence/strings", "/app/intelligence/code",
-    "/app/intelligence/history", "/app/intelligence/user",
-    "/app/solutions", "/app/solutions/:id", "/app/solutions/:id/canvas",
-    "/app/solutions/compare", "/app/loops/templates", "/app/foundry",
-    "/app/improvements", "/app/infrastructure/capabilities",
-    "/app/infrastructure/models", "/app/infrastructure/tools",
-    "/app/infrastructure/storage", "/app/settings",
+    "/app", "/app/runs", "/app/runs/:id", "/app/runs/:id/overview",
+    "/app/runs/:id/tree", "/app/runs/:id/canvas",
+    "/app/runs/:id/playback", "/app/runs/:id/calls",
+    "/app/intelligence", "/app/context", "/app/strings", "/app/nodes",
+    "/app/solutions", "/app/improvements",
 )
 
-#: The four persistent pillars as the read surface names the browser uses.
-#: "history" is the wire spelling of past_run_intelligence; "user" is the
-#: fourth pillar the older three-route spelling omitted.
-PILLAR_ROUTES = {"strings": "string_intelligence", "code": "code_intelligence",
-                 "history": "past_run_intelligence",
-                 "user": "user_intelligence"}
+#: Preferred public routes for the four persistent layers. Compatibility
+#: aliases stay separate so an "all" request still returns exactly four.
+LAYER_ROUTES = {"context": "string_intelligence", "code": "code_intelligence",
+                "history": "past_run_intelligence",
+                "user": "user_intelligence"}
+LAYER_ROUTE_ALIASES = {"strings": "context", "string": "context"}
+PILLAR_ROUTES = LAYER_ROUTES
 
 #: endpoint -> {projection, template, method}.  The template is REGISTERED:
 #: a read endpoint runs under atomic_code_only (one act, zero semantic calls),
@@ -98,7 +94,12 @@ API_ROUTES = {
     "run": {"projection": "run", "template": "atomic_code_only",
             "method": "GET", "about": "one run's detail + loop tree"},
     "strings": {"projection": "strings", "template": "atomic_code_only",
-                "method": "GET", "about": "String Intelligence catalog"},
+                "method": "GET", "about": "legacy Context catalog route"},
+    "context": {"projection": "context", "template": "atomic_code_only",
+                "method": "GET", "about": "Context Intelligence catalog"},
+    "intelligence": {"projection": "intelligence",
+                     "template": "atomic_code_only", "method": "GET",
+                     "about": "the four categorized intelligence layers"},
     "loops": {"projection": "loops", "template": "atomic_code_only",
               "method": "GET", "about": "Code Intelligence catalog"},
     "solutions": {"projection": "solutions", "template": "atomic_code_only",
@@ -171,27 +172,27 @@ def serve_api(name: str, arg: str = "", *, ledger=None,
 
 def intelligence_surface(pillar: str, need: str = "", *,
                          layer_records=None, ledger=None) -> dict:
-    """Read ONE of the four pillars, or all four when ``pillar`` is "all".
-
-    The older route spelling was strings|code|history — three of four. A
-    request for an undeclared pillar is refused rather than silently served
-    from the nearest one.
-    """
-    if pillar != "all" and pillar not in PILLAR_ROUTES:
-        raise RouteError(f"pillar {pillar!r} is not one of the four — "
-                         f"declared: {sorted(PILLAR_ROUTES)} (or 'all')")
-    wanted = (tuple(PILLAR_ROUTES) if pillar == "all" else (pillar,))
-    layers = {PILLAR_ROUTES[w] for w in wanted}
+    """Read one of four layers, or all four when ``pillar`` is ``all``."""
+    requested = str(pillar)
+    pillar = LAYER_ROUTE_ALIASES.get(requested, requested)
+    if pillar != "all" and pillar not in LAYER_ROUTES:
+        raise RouteError(f"layer {requested!r} is not one of the four; "
+                         f"declared: {sorted(LAYER_ROUTES)} (or 'all')")
+    wanted = (tuple(LAYER_ROUTES) if pillar == "all" else (pillar,))
+    layers = {LAYER_ROUTES[w] for w in wanted}
     if layer_records is None:
-        return {"pillars": sorted(wanted), "layers": sorted(layers),
+        return {"public_layers": sorted(wanted), "pillars": sorted(wanted),
+                "layers": sorted(layers),
                 "hits": [], "need": need,
                 "note": "no corpus supplied — the surface is declared, the "
                         "read is empty (an empty read is not a missing pillar)"}
-    from .intelligence_layers import query_intelligence
-    scoped = {k: v for k, v in layer_records.items() if k in layers}
+    from .intelligence_layers import query_intelligence, normalize_layer_records
+    normalized_records = normalize_layer_records(layer_records)
+    scoped = {k: v for k, v in normalized_records.items() if k in layers}
     out = query_intelligence(need, scoped) if need else {
         "need": "", "hits": [], "unqueried": sorted(layers - set(scoped))}
-    return {"pillars": sorted(wanted), "layers": sorted(layers), **out}
+    return {"public_layers": sorted(wanted), "pillars": sorted(wanted),
+            "layers": sorted(layers), **out}
 
 
 def live_events(run_id: str, ledger_events=None) -> dict:
@@ -231,7 +232,8 @@ def route_contract() -> dict:
             "public_routes": len(PUBLIC_ROUTES),
             "studio_routes": len(STUDIO_ROUTES),
             "api_endpoints": sorted(API_ROUTES),
-            "pillars": sorted(PILLAR_ROUTES),
+            "layers": sorted(LAYER_ROUTES),
+            "pillars": sorted(LAYER_ROUTES),
             "every_api_endpoint_runs_as_a_loop": True,
             "read_endpoints_make_zero_semantic_calls": True}
 
@@ -272,27 +274,33 @@ def self_test() -> dict:
           and len(API_ROUTES) >= 7,
           f"{len(API_ROUTES)} endpoints, all on registered templates")
 
-    # 3. FOUR pillars, and the fourth is reachable by route.  The older
-    # spelling exposed strings|code|history and dropped User Intelligence.
+    # 3. Four preferred layers, with the old strings route as an alias.
     allp = intelligence_surface("all")
     user = intelligence_surface("user")
-    check("the_read_surface_exposes_all_four_pillars",
-          len(allp["pillars"]) == 4 and "user" in allp["pillars"]
+    context = intelligence_surface("context")
+    legacy_context = intelligence_surface("strings")
+    check("the_read_surface_exposes_all_four_layers",
+          len(allp["public_layers"]) == 4
+          and "context" in allp["public_layers"]
+          and "user" in allp["public_layers"]
           and user["layers"] == ["user_intelligence"]
+          and context["layers"] == legacy_context["layers"]
           and set(PILLAR_ROUTES.values()) == {
               "string_intelligence", "code_intelligence",
               "past_run_intelligence", "user_intelligence"},
-          f"pillars: {allp['pillars']}")
+          f"layers: {allp['public_layers']}")
 
     # 4. the page contract resolves, including parameterised Studio routes.
     home = resolve_route("/")
-    live = resolve_route("/app/runs/run-7/live")
-    canvas = resolve_route("/app/solutions/sol-2/canvas")
+    playback_route = resolve_route("/app/runs/run-7/playback")
+    intelligence_route = resolve_route("/app/intelligence")
+    context_route = resolve_route("/intelligence/context")
     check("declared_routes_resolve_including_parameters",
           home and home["kind"] == "public"
-          and live and live["kind"] == "studio"
-          and live["params"]["id"] == "run-7"
-          and canvas and canvas["params"]["id"] == "sol-2"
+          and playback_route and playback_route["kind"] == "studio"
+          and playback_route["params"]["id"] == "run-7"
+          and intelligence_route and intelligence_route["kind"] == "studio"
+          and context_route and context_route["kind"] == "public"
           and len(PUBLIC_ROUTES) >= 26,
           f"{len(PUBLIC_ROUTES)} public + {len(STUDIO_ROUTES)} studio routes")
 

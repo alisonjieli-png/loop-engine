@@ -220,6 +220,7 @@ def recommend_form(*, is_code: bool = False, is_judgement: bool = False,
 def template_records() -> list:
     """Each output template as a searchable strategy record."""
     from ..static_architecture.store_serve import StoreRecord
+    from ..static_architecture.facets import context_facets
     recs = []
     for t in OUTPUT_TEMPLATE_REGISTRY.values():
         recs.append(StoreRecord(
@@ -227,7 +228,13 @@ def template_records() -> list:
             title=f"Output form: {t.purpose} (reusable as {t.reusable_as})",
             body={"form": t.form, "reusability_rank": t.reusability_rank,
                   "reusable_as": t.reusable_as,
-                  "instruction": t.as_instruction()},
+                  "instruction": t.as_instruction(),
+                  "maturity": "registered",
+                  "facets": context_facets(
+                      category="output_template", subcategory=t.form,
+                      context_type="template", response_shape=t.form,
+                      scope="package", lifecycle="registered",
+                      provenance="output_template_registry")},
             tags=("output_template", "reusability", t.form, "step:decide_next",
                   "step:how"), tier="core"))
     return recs

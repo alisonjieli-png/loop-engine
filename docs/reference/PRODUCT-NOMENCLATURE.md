@@ -1,100 +1,131 @@
-# Product Nomenclature — the public words
+# Product nomenclature
 
-Status: CURRENT (registered in `conformance_report.CURRENT_DOCS`).
-Source: the owner's SaaS/architecture correction directive (2026-08-24).
-Rule: internal tokens stay stable in code; every HUMAN surface uses the
-words on this page. Where this page and older design notes disagree,
-this page wins.
+Status: current public naming guidance.
 
-## Product-facing terms (use prominently)
+Use the terms on this page in the README, guides, examples, Studio, command
+output, and diagrams. Internal code tokens may remain stable when renaming
+them would break compatibility.
 
-PractitionerLoop · Reference Nine-Step Loop · Custom Loop · Child Loop ·
-Deterministic · Hybrid · Model-backed · String Intelligence · Code
-Intelligence · **Previous Run & Solution Intelligence** (short UI label:
-Run & Solution Intelligence) · Runtime Memory · Solution Canvas ·
-Candidate Solution · Final Solution · Improvement Flywheel ·
-Intelligence Library · Loop Engine Studio · **Code Intelligence Search** ·
-Solution Library.
+## Product and package names
 
-> **"Code loop", not "capability" (vocabulary rule).** The asset in Code
-> Intelligence is a **code loop** (a reusable, invokable loop); the former
-> public phrase "Code Intelligence Search" is superseded — the surface serves Code
-> Intelligence.  The **Capability Directory** is a separate, load-bearing
-> internal surface that answers a different question — "what can EXECUTE
-> this under these permissions?" (invocation governance) — and it is not a
-> headline noun for the intelligence content.  So: pillar = Code
-> Intelligence; a reusable unit = a **code loop**; the lookup/governance
-> surface = the Capability Directory (searched via Code Intelligence
-> Search).  These are deliberate, distinct nouns, not synonyms for the
-> same thing.
-
-## The nine steps (public labels)
-
-1 Orient · 2 Reconcile · 3 Assess · 4 Decide · **5 Determine How** ·
-6 Act · 7 Verify · 8 Integrate · 9 Route. Always marked with the
-custom-loop footnote: *the nine-step loop is Loop Engine's recommended
-default; teams can use custom Loop Templates with different steps,
-orders, repetitions, and stopping rules.*
-
-## The three modes (always in this order, loop-specific)
-
-- **Deterministic** — reusable code, rules, calculations, search, and
-  tested capabilities; fast, repeatable, no language model required.
-- **Hybrid** — code first; a model only where interpretation,
-  generation, or repair adds value.
-- **Model-backed** — a model guides the current loop's reasoning while
-  Loop Engine controls tools, permissions, validation, memory, execution.
-
-Mode is set per loop. A model-backed loop may start a deterministic
-child; never present mode as inherited.
-
-## Plain-English translations (technical term → public words)
-
-| Internal | Public |
+| Surface | Name |
 |---|---|
-| receipt | verified run record |
-| digest | exact version fingerprint |
-| evidence gate | independent review before promotion |
-| manifest | capability description |
+| Product and repository | Loop Engine |
+| README title | Building with Loops |
+| Python distribution | `loop-engine` |
+| Command-line program | `loop-engine` |
+| Python import | `loop_engine` |
+
+## Main architecture terms
+
+| Term | Meaning |
+|---|---|
+| Loop | The shared runtime object for one operational node. |
+| Loop Practitioner | The role that builds and verifies a solution. |
+| Practitioner loop | One Loop instance acting in the builder role. |
+| Practitioner loop tree | The history of loops used to build the work. |
+| Solution Canvas | The declarative finished solution. |
+| Solution loop | One Loop instance represented by a node in the Canvas. |
+| Self-Improvement Loop | One Loop instance that reviews history and intelligence, seeds domains, and stages candidates. |
+| Static Architecture | Shared services used by Practitioner, Solution, and Self-Improvement loops. |
+| Retrieval Engine | One search interface with lexical, vector, and hybrid modes. |
+| Intelligence Library | One searchable view across the four persistent layers. |
+| Runtime Memory | Temporary notes shared inside the current run. |
+| Chronicle | Saved event history for reports and playback. |
+| Loop Engine Studio | The local interface for live runs, playback, intelligence, and solutions. |
+
+Use Loop Practitioner for the public role. Avoid the bare class name
+`Practitioner` because that shorter name refers to a different internal class.
+`PractitionerLoop` remains the public compatibility alias for `Loop`.
+
+## Three run modes
+
+Always show the modes in this order.
+
+| Mode | Meaning |
+|---|---|
+| Deterministic | Uses code, rules, calculation, and search. It does not call a language model. |
+| Hybrid | Uses code first and may call a language model for one unresolved step. |
+| Non-deterministic | A language model leads the step while the loop controls tools, limits, logging, and verification. |
+
+A loop may allow more than one mode. A loop that starts another loop cannot
+grant permissions that it does not have.
+
+## Three settings that must not be confused
+
+| Public term | Current code | Meaning |
+|---|---|---|
+| Step profile | `framework`, `custom_steps`, Loop Template | Number, order, and repetition of steps. |
+| Effort setting | `power` | Bounded work limits. Public values are light, standard, deep, and max. |
+| Operating settings | `OperatingProfile` | Permissions, access, providers, and optimization preferences. |
+
+Use "step profile" only for the sequence a loop follows. Do not use "profile"
+alone when the meaning could be effort or operating settings.
+
+## Step profile labels
+
+| Public label | Current built-in template | Steps |
+|---|---|---:|
+| Atomic code | `atomic_code_only` | 1 |
+| Compact | `compact_five_beat` | 5 |
+| Reference Practitioner | `reference_nine_step` | 9 |
+| Custom | `custom_user_supplied` or a validated custom configuration | 1 to 200 |
+
+The nine-step labels are:
+
+1. Orient
+2. Reconcile
+3. Assess
+4. Decide
+5. Determine How
+6. Act
+7. Verify
+8. Integrate
+9. Route
+
+Always state that this is a reference profile. A team can use different steps,
+orders, repetitions, and stopping rules.
+
+## Four intelligence layers
+
+| Layer | Contents |
+|---|---|
+| Context Intelligence | Questions, methods, checklists, templates, personas, evaluations, context, instructions, and warnings. |
+| Code Intelligence | Software for transformation, analysis, decisions, retrieval, execution, validation, reporting, and integration. |
+| Previous Run & Solution Intelligence | Runs, solutions, decisions, failures, repairs, measurements, and comparisons. |
+| User Intelligence | Advice, corrections, context, sources, package suggestions, priorities, constraints, instructions, approvals, and vetoes. |
+
+Runtime Memory is not a fifth layer. It is temporary and belongs to the
+current run.
+
+The human-facing layer key is `context_intelligence`. The stable compatibility
+token is `string_intelligence`. Do not expose the compatibility token in a
+headline or diagram.
+
+Candidate Context is excluded from normal retrieval. Use
+`include_candidates=True` only on an explicit review path.
+
+## Extensions and plugins
+
+Use "built-in adapter" or "extension point" for current functionality.
+
+Use "potential external plugin" only for future packaging around those
+extension points. Do not say that Loop Engine ships plugin discovery, plugin
+installation, or a plugin marketplace today.
+
+## Plain-English replacements
+
+| Avoid in public prose | Use instead |
+|---|---|
+| internal mode token `non_deterministic` | Non-deterministic |
+| internal layer token `past_run_intelligence` | Previous Run & Solution Intelligence |
+| internal layer token `string_intelligence` | Context Intelligence |
+| digest | exact version fingerprint, unless the technical detail matters |
+| manifest | capability description, unless referring to the actual file format |
 | admission | tested and approved for execution |
-| candidate maturity | not yet promoted — under review |
-| `non_deterministic` (token) | Model-backed |
-| `past_run_intelligence` (token) | Previous Run & Solution Intelligence |
-| a reusable code asset (token) | code loop |
-| finding a code loop | Code Intelligence Search |
+| candidate maturity | under review and not yet available to run |
+| node as a second runtime type | loop node or Solution loop |
 
-Secondary technical terms (docs/inspectors/tooltips only, never
-headlines): manifest, digest, span, trace, content-addressing,
-admission, runtime contract, evidence gate, semantic invocation,
-fallback route.
-
-## Template intelligence
-
-Template STRING intelligence (Loop Templates, prompt/context/blueprint/
-evaluation/output templates) lives in String Intelligence. Template
-CODE intelligence (node starters, solution-component/graph/test/adapter
-templates) lives in Code Intelligence; candidate source stays a String
-until tested and admitted. A cross-cutting "Templates" view may present
-both.
-
-## User Intelligence (the fourth layer)
-
-Advice humans leave on loops, tasks, runs, and solution components —
-written like a Slack message to a coworker. Loops may check for
-guidance before deciding, and every check is recorded. Guidance, never
-truth: it bypasses no gates. Public label: **User Intelligence**.
-
-## Every Solution component is a loop
-
-There are no "nodes": each component of a Solution Canvas is itself a
-PractitionerLoop — usually deterministic and one-pass, always with the
-loop envelope's fallback capability. "Node" may appear as drawing
-shorthand; the runtime object is a loop.
-
-## Runtime Memory (distinct from the pillars)
-
-The shared working notebook for loops active in the CURRENT run —
-notes, findings, questions, warnings, references, temporary summaries.
-Useful notes may later be curated into a pillar; nothing auto-promotes.
-State today: BUILT run-scoped (RunNoteBoard; every write and read is a
-ledger event); ambient writes without a run's board still refuse.
+Choose report, log, contract, event history, or run record according to the
+actual object. Do not use a generic proof-sounding label when one of these
+specific words is clearer.

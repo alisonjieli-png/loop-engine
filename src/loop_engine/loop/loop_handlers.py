@@ -5,7 +5,7 @@ This closes the last gap in "everything is a loop": ``recursive_loop.Loop.run``
 takes a pluggable handler, and these are the real ones —
 
   * ``directory_handler`` resolves every step through the live machinery:
-      1. pulls the MANDATORY string intelligence for the step (the power lever's
+      1. pulls the required Context Intelligence for the step (the effort setting's
          ``min_intelligence_per_step`` — the required calls to the string
          database), recorded;
       2. probes the CODE rail with one real search through the capability
@@ -24,7 +24,7 @@ takes a pluggable handler, and these are the real ones —
     kernel's passes land on the loop's ledger.
 
 The wedge, live: the Loop is universal; what a step actually resolves to is
-whatever CODE NODES and STRING INTELLIGENCE this install has accumulated.
+whatever Code Intelligence and Context Intelligence this install has accumulated.
 """
 
 from __future__ import annotations

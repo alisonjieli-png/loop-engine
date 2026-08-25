@@ -1,7 +1,7 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 159,
+ "files_scanned": 164,
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "reachable_legacy_runtimes": 0,

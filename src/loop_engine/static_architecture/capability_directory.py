@@ -639,7 +639,7 @@ def self_test() -> dict:
           and code_hits[0].resource_id == "n.vif_api",
           "both nodes present; preferred one ranked first")
 
-    # 10e. job-position lens on string intelligence.
+    # 10e. job-position lens on Context Intelligence.
     q_job = CapabilityQuery(
         obligation="warn about leakage",
         desired_capability="temporal leakage warning",

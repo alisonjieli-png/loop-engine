@@ -126,7 +126,8 @@ def self_test() -> dict:
         results.append({
             "test": "duckdb_dependency_installed", "passed": False,
             "missing_dependency": "duckdb",
-            "detail": "FAILED: missing duckdb. Reinstall Loop Engine."})
+            "detail": "FAILED: missing duckdb. Reinstall with: "
+                      "python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git"})
         return {"tests": results, "passed": 0, "total": 1,
                 "all_passed": False}
 

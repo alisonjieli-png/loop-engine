@@ -14,8 +14,8 @@ Owns:
       silently dropped or repaired by guesswork);
     - normalize + dedupe (within batch and against the existing bank, by
       normalized-text digest);
-    - stage_candidates: append-only JSONL bank at
-      ``strings/generated_candidates.jsonl`` — every row a full envelope
+    - stage_candidates: append-only user-data JSONL bank under
+      ``~/.loop-engine/intelligence/candidates/`` by default; every row a full envelope
       (kind, category/subcategory, job_position facet, maturity=candidate,
       provenance naming the exact run + model + seed);
     - load_candidate_bank: the bank as StoreRecords for search/browsing.
@@ -213,7 +213,11 @@ def improvement_seed_records() -> list:
             body={"kind": kind, "text": text, "maturity": "registered",
                   "facets": string_facets(category="improvement_meta",
                                           subcategory=sub,
-                                          lifecycle="registered")},
+                                          context_type=kind,
+                                          thinking_style="improvement",
+                                          scope="package",
+                                          lifecycle="registered",
+                                          provenance="improvement_seed_pack")},
             tags=(kind, "improvement_meta", sub, "registered")))
     return out
 
@@ -358,6 +362,14 @@ def parse_generated(text: str, seed: "dict | None" = None) -> dict:
 
 
 def default_bank_path() -> str:
+    return os.environ.get(
+        "LOOP_ENGINE_CONTEXT_CANDIDATES",
+        os.path.join(os.path.expanduser("~"), ".loop-engine", "intelligence",
+                     "candidates", "context.jsonl"))
+
+
+def packaged_bank_path() -> str:
+    """The shipped candidate snapshot, read-only at runtime."""
     return os.path.join(os.path.dirname(os.path.dirname(__file__)),
                         "strings", "generated_candidates.jsonl")
 
@@ -380,6 +392,7 @@ def stage_candidates(cands, provenance: str, ledger=None,
             except (json.JSONDecodeError, KeyError):
                 continue
     staged, deduped = 0, 0
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     with open(path, "a") as f:
         for c in cands:
             if c["digest"] in seen:
@@ -394,30 +407,41 @@ def stage_candidates(cands, provenance: str, ledger=None,
 
 
 def load_candidate_bank(path: "str | None" = None) -> list:
-    """The bank as searchable StoreRecords (facets ride the card)."""
+    """Candidate snapshots as experimental StoreRecords.
+
+    With no explicit path, load the packaged read-only snapshot plus the
+    user-data candidate bank. An explicit path loads only that path.
+    """
     from ..static_architecture.store_serve import StoreRecord
     from ..static_architecture.facets import string_facets
-    path = path or default_bank_path()
-    out = []
-    if not os.path.exists(path):
-        return out
-    for line in open(path):
-        try:
-            row = json.loads(line)
-        except json.JSONDecodeError:
+    paths = [path] if path else [packaged_bank_path(), default_bank_path()]
+    out, seen = [], set()
+    for candidate_path in paths:
+        if not os.path.exists(candidate_path):
             continue
-        out.append(StoreRecord(
-            f"genstr.{row['digest']}", "context", row["text"][:150],
-            body={"kind": row["kind"], "text": row["text"],
-                  "maturity": row.get("maturity", "candidate"),
-                  "provenance": row.get("provenance", ""),
-                  "facets": string_facets(
-                      category=row.get("category", ""),
-                      subcategory=row.get("subcategory", ""),
-                      job_position=row.get("job_position", ""),
-                      lifecycle=row.get("maturity", "candidate"))},
-            tags=(row["kind"], row.get("category", ""),
-                  row.get("maturity", "candidate"))))
+        for line in open(candidate_path):
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if row.get("digest") in seen:
+                continue
+            seen.add(row.get("digest"))
+            out.append(StoreRecord(
+                f"genstr.{row['digest']}", "context", row["text"][:150],
+                body={"kind": row["kind"], "text": row["text"],
+                      "maturity": row.get("maturity", "candidate"),
+                      "provenance": row.get("provenance", ""),
+                      "facets": string_facets(
+                          category=row.get("category", ""),
+                          subcategory=row.get("subcategory", ""),
+                          job_position=row.get("job_position", ""),
+                          scope="candidate_store",
+                          lifecycle=row.get("maturity", "candidate"),
+                          provenance=row.get("provenance", ""))},
+                tags=(row["kind"], row.get("category", ""),
+                      row.get("maturity", "candidate")),
+                tier="experimental", source="generated_candidate_bank"))
     return out
 
 
@@ -510,11 +534,26 @@ def load_seed_pack(verify: bool = True) -> dict:
 def seed_pack_store_records(records: list) -> list:
     """Seed records as searchable StoreRecords for the ONE Retriever."""
     from ..static_architecture.store_serve import StoreRecord
+    from ..static_architecture.facets import string_facets
     return [StoreRecord(r["string_id"], "context", r["text"],
                         body={"category": r["category"],
                               "subcategory": r["subcategory"],
-                              "role": r["role"], "maturity": r["maturity"]},
-                        tags=tuple(r["tags"][:6]))
+                              "role": r["role"],
+                              "stage": list(r.get("stage", ())),
+                              "possible_code_target":
+                                  r.get("possible_code_target", ""),
+                              "scope": r.get("scope", ""),
+                              "maturity": r["maturity"],
+                              "provenance": r.get("provenance", ""),
+                              "digest": r.get("digest", ""),
+                              "facets": string_facets(
+                                  category=r["category"],
+                                  subcategory=r["subcategory"],
+                                  scope=r.get("scope", ""),
+                                  lifecycle=r["maturity"],
+                                  provenance=r.get("provenance", ""))},
+                        tags=tuple(r.get("tags", ())), tier="experimental",
+                        source="core_seed_candidate_pack")
             for r in records]
 
 
@@ -563,9 +602,13 @@ def self_test() -> dict:
     # 4. the bank flows through the one search DAG.
     from ..static_architecture.store_serve import SolverStore
     store = SolverStore(core_records=recs)
+    hidden = store.search("join keys merge explosion")
+    store.enable_tier("experimental")
     hit = store.search("join keys merge explosion")
     check("generated_strings_are_searchable",
-          hit["hits"] and "join keys" in hit["hits"][0]["title"].lower())
+          not hidden["hits"] and hit["hits"]
+          and "join keys" in hit["hits"][0]["title"].lower(),
+          "candidate Context is searchable only after explicit tier enablement")
 
     # 5. the seed campaign covers the owner's requested fronts, and wave 2
     # extends coverage (more jobs, recovery, evaluation, uncertainty, cost)
@@ -678,7 +721,8 @@ def self_test() -> dict:
           wave["model_calls"] == 0 and wave["stopped"] == "done"
           and wave["candidates"] >= 1 and wave["undigested"] >= 1
           and wave["staged"].get("staged", 0) >= 1
-          and steps_seen[:2] == ["mine", "rank"]
+          and steps_seen[:4] == ["load_history", "audit_intelligence",
+                                 "mine", "rank"]
           and "stage" in steps_seen and "compare" in steps_seen,
           f"wave loop {wave['loop_id']}: {wave['candidates']} candidates "
           f"staged through the template beats")

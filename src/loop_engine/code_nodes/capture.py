@@ -51,7 +51,7 @@ GATE_ACTIONS = ("advance_to_compose", "capture_then_advance",
 
 
 # ---------------------------------------------------------------------------
-# Opening scaffolding — required first steps, as string intelligence.
+# Opening scaffolding: required first steps as Context Intelligence.
 # ---------------------------------------------------------------------------
 
 
@@ -384,7 +384,7 @@ def self_test() -> dict:
           raised and ok_advance,
           "advancing past a diffuse result raises; a captured result advances")
 
-    # 7. captured units materialize as searchable string intelligence.
+    # 7. captured units materialize as searchable Context Intelligence.
     strings = to_intelligence_strings(rep)
     check("captured_units_enter_the_string_library",
           strings and all(isinstance(s, IntelligenceString) for s in strings)

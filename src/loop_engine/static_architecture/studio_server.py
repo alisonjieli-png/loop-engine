@@ -44,7 +44,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote
 
 _PKG = os.path.dirname(os.path.dirname(__file__))
-_RUNS = os.path.join(_PKG, "evidence", "runs")
+from .chronicle import default_runs_dir
+
+_RUNS = default_runs_dir()
 
 
 def _load_run_as_historical_loop(run_id: str, *, ledger=None):
@@ -209,7 +211,8 @@ def _strings_inventory() -> dict:
             f.get("category", ""), f.get("subcategory", ""),
             r.body.get("maturity", "candidate"), "string_foundry",
             f.get("job_position", ""), r.body.get("provenance", ""))
-    return {"strings": rows,
+    return {"items": rows, "strings": rows,
+            "public_label": "Context Intelligence",
             "facets": sorted({r["category"] for r in rows if r["category"]})}
 
 
@@ -217,7 +220,7 @@ def _loops_inventory() -> dict:
     import ast
     from ..architecture_map import MODULE_MAP
     rows = []
-    for group in ("code_nodes", "static_architecture", "loop"):
+    for group in ("code_nodes",):
         for m in MODULE_MAP[group]:
             p = os.path.join(_PKG, group, m + ".py")
             if not os.path.exists(p):
@@ -230,6 +233,26 @@ def _loops_inventory() -> dict:
             rows.append({"module": m, "group": group, "loc":
                          sum(1 for _ in open(p)), "purpose": doc})
     return {"loops": rows}
+
+
+def _intelligence_inventory() -> dict:
+    """The four categorized layer populations from the canonical builder."""
+    from .intelligence_layers import (build_intelligence_catalog,
+                                      catalog_summary, classify_record,
+                                      LAYER_PUBLIC_LABEL)
+    advice_path = ADVICE_STORE_PATH or os.path.join(
+        os.path.dirname(_RUNS), "studio", "user-advice.jsonl")
+    catalog = build_intelligence_catalog(runs_dir=_RUNS,
+                                         advice_path=advice_path)
+    items = []
+    for layer, records in catalog.items():
+        for record in records:
+            classification = classify_record(layer, record)
+            items.append({"id": record.record_id, "title": record.title,
+                          "layer": layer,
+                          "public_layer": LAYER_PUBLIC_LABEL[layer],
+                          "classification": classification})
+    return {"summary": catalog_summary(catalog), "items": items}
 
 
 def _solutions_inventory() -> dict:
@@ -281,7 +304,7 @@ def _improvements() -> dict:
 
 def _summary() -> dict:
     rows = [_run_row(ch) for ch in _chronicles()]
-    from ..code_nodes.string_foundry import load_candidate_bank
+    intelligence = _intelligence_inventory()["summary"]
     return {"cards": [
         {"label": "runs chronicled", "value": len(rows), "link": "runs"},
         {"label": "semantic calls", "value": sum(r["calls"] for r in rows),
@@ -290,7 +313,8 @@ def _summary() -> dict:
          "link": "runs"},
         {"label": "zero-call runs", "value":
             sum(1 for r in rows if r["calls"] == 0), "link": "runs"},
-        {"label": "candidate strings", "value": len(load_candidate_bank()),
+        {"label": "categorized intelligence",
+         "value": intelligence["total_items"],
          "link": "intelligence"},
         {"label": "chains intact", "value":
             f"{sum(1 for r in rows if r['intact'])}/{len(rows)}",
@@ -308,8 +332,10 @@ def build_projection(name: str, arg: str = "") -> dict:
         return {"runs": [_run_row(ch) for ch in _chronicles()]}
     if name == "run":
         return _run_detail(arg)
-    if name == "strings":
+    if name in ("context", "strings"):
         return _strings_inventory()
+    if name == "intelligence":
+        return _intelligence_inventory()
     if name == "loops":
         return _loops_inventory()
     if name == "solutions":
@@ -366,7 +392,7 @@ def _leave_advice(data: dict) -> dict:
 
 
 def _data_dir() -> str:
-    d = os.path.join(_PKG, "evidence", "studio")
+    d = os.path.join(os.path.dirname(_RUNS), "studio")
     os.makedirs(d, exist_ok=True)
     return d
 
@@ -464,18 +490,29 @@ class _Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
 
-def serve(port: int = 8765, *, ready=None) -> None:
+def serve(port: int = 8765, *, ready=None, runs_dir: str = "") -> None:
     """Blocking local server (127.0.0.1 only — a workbench, not a deploy)."""
+    global _RUNS
+    if runs_dir:
+        _RUNS = default_runs_dir(runs_dir)
     httpd = ThreadingHTTPServer(("127.0.0.1", port), _Handler)
     if ready is not None:
         ready(httpd)                      # test mode: no banner
     else:
         print(f"Loop Engine Studio: http://127.0.0.1:{port}  (Ctrl-C to stop)")
-    httpd.serve_forever()
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        httpd.server_close()
 
 
 def self_test() -> dict:
     import tempfile
+    import shutil
+    global _RUNS
+    previous_runs, _RUNS = _RUNS, tempfile.mkdtemp(prefix="studio_runs_")
     results = []
 
     def check(name, ok, note=""):
@@ -502,11 +539,14 @@ def self_test() -> dict:
     s = build_projection("summary")
     runs = build_projection("runs")["runs"]
     strings = build_projection("strings")
+    intelligence = build_projection("intelligence")
     loops = build_projection("loops")["loops"]
     imp = build_projection("improvements")
     check("projections_compute_from_live_chronicles_and_stores",
           s["cards"] and runs and len(strings["strings"]) > 100
-          and len(loops) > 50 and "honesty" in imp,
+          and len(intelligence["summary"]["layers"]) == 4
+          and intelligence["summary"]["total_items"] >= 100
+          and len(loops) >= 30 and "honesty" in imp,
           f"{len(runs)} runs, {len(strings['strings'])} strings, "
           f"{len(loops)} loops — at request time")
 
@@ -639,6 +679,12 @@ def self_test() -> dict:
           f"{len(detail['loops'])} loops with per-loop rollups; tree is "
           "clickable and keyboard-reachable")
 
+    check("studio_api_and_shell_agree_on_code_and_four_layer_routes",
+          'api("loops")' in shell_src and 'api("nodes")' not in shell_src
+          and 'api("intelligence")' in shell_src
+          and "intelligence" in contract["api_endpoints"],
+          "Code Intelligence uses /api/loops; four layers use /api/intelligence")
+
     check("the_shell_supports_path_routing_not_only_hash_fragments",
           "currentParts" in shell_src and "popstate" in shell_src
           and "pushState" in shell_src,
@@ -648,12 +694,16 @@ def self_test() -> dict:
     check("the_routed_surface_serves_declared_paths_and_404s_the_rest",
           declared_ok and undeclared_404
           and contract["public_routes"] >= 26
-          and contract["studio_routes"] >= 24
+          and contract["studio_routes"] >= 13
           and contract["every_api_endpoint_runs_as_a_loop"] is True
-          and "/app/runs/:id/live" in contract["studio"],
+          and "/app/runs/:id/playback" in contract["studio"]
+          and "/app/intelligence" in contract["studio"],
           f"{contract['public_routes']} public + {contract['studio_routes']} "
           "studio routes served; unknown paths 404")
 
     passed = sum(1 for r in results if r["passed"])
-    return {"tests": results, "passed": passed, "total": len(results),
-            "all_passed": passed == len(results)}
+    report = {"tests": results, "passed": passed, "total": len(results),
+              "all_passed": passed == len(results)}
+    shutil.rmtree(_RUNS, ignore_errors=True)
+    _RUNS = previous_runs
+    return report

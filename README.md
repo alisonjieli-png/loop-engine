@@ -1,148 +1,291 @@
 # Building with Loops
 
-Loop Engine is a Python toolkit for building work as loops.
+Loop Engine turns a task into an inspectable finished solution built and run by
+loops. Everything that runs is a loop. Each loop is a node with three run
+modes: deterministic, hybrid, and non-deterministic.
 
-**Everything is a loop.**
+The `Loop` runtime object has three main roles:
 
-Each loop is a node with three run modes: deterministic, hybrid, and
-non-deterministic.
+- **Practitioner loops** understand a task, decide what to do, build, and verify.
+- **Solution loops** run the finished solution represented by a Solution Canvas.
+- **Self-Improvement loops** review run history and intelligence, find useful
+  changes, seed new domains, and stage candidates for independent review.
 
-A loop receives a task, runs its steps, and then stops or runs again. It can
-also start child loops. Each child returns its result to the loop that started
-it.
+Static Architecture supports all three roles. It provides the four intelligence
+layers, extension points, built-in adapters, Runtime Memory, provider access,
+stores, reporting, and the Chronicle.
+
+## Bird's-eye view
 
 ```mermaid
-flowchart LR
-    T([Task]) --> P((Loop))
-    P --> R([Result])
-    P -->|can start| A((Loop))
-    P -->|can start| B((Loop))
-    B -->|can start| C((Loop))
+flowchart TB
+    subgraph FLOW[From task to result]
+        direction LR
+        T([Task]) --> P[Loop Practitioner<br/>builds and tests<br/>may start more loops]
+        P --> C[Solution Canvas<br/>the finished solution<br/>contains Solution loops]
+        C --> R([Result])
+    end
+
+    subgraph RUNTIME[Every operational node uses one Loop object]
+        direction LR
+        L[Loop object<br/>goal, contract, budget,<br/>stop condition]
+        L --> M[Three run modes<br/>deterministic, hybrid, non-deterministic]
+        L --> SP[Step profiles<br/>1 step, 5 steps, 9 steps, or custom]
+        L --> IMP[Self-Improvement Loop<br/>reviews history and intelligence<br/>seeds domains and stages candidates only]
+    end
+
+    subgraph STATIC[Static Architecture supports every loop]
+        direction TB
+        A[Shared services]
+        A --> PL[Built-in adapters and extension points<br/>potential external plugins]
+        A --> CD[Capability Directory<br/>loops search what can execute<br/>under contract and permissions]
+        A --> RE[Retrieval Engine<br/>one interface: lexical, vector, hybrid]
+        A --> PS[Providers, validation, stores]
+        RE -->|searches classified records| I[Four intelligence layers]
+        I --> CX[Context Intelligence]
+        I --> CI[Code Intelligence]
+        I --> HI[Previous Run &amp;<br/>Solution Intelligence]
+        I --> UI[User Intelligence]
+        A --> RM[Runtime Memory<br/>current run only]
+        A --> CH[Chronicle, reports, playback<br/>saved run history]
+    end
+
+    FLOW -->|runs on| RUNTIME
+    RUNTIME -->|uses| STATIC
 ```
 
-Every circle is a loop node. A child can start more loops, so the same simple
-structure works for a small task or a large solution.
+The diagram separates how a solution is built from what eventually runs. The
+Loop Practitioner is the builder. The Solution Canvas is the finished
+arrangement. Self-improvement is a separate task role. All three use the same
+Loop object and the same mode language.
 
-## What each loop has
-
-Each loop has:
-
-- a task
-- allowed run modes
-- a set of steps
-- a budget
-- a stop condition
-- a log of what happened
-
-The same controls apply to a parent loop and its children. A child can use a
-different run mode when its parent allows it.
-
-## Each loop has three modes
-
-| Mode | How it works |
+| Part | Responsibility |
 |---|---|
-| **Deterministic** | Uses regular code, rules, calculation, and search. It does not call a language model. |
-| **Hybrid** | Uses code for most work. It can call a language model for a specific step. |
-| **Non-deterministic** | A language model leads the work. The loop still controls tools, limits, child loops, and logging. |
+| Loop object | Runs one bounded node with a mode, step profile, budget, and stop condition. |
+| Loop Practitioner | Starts loops that understand, build, and verify the work. |
+| Solution Canvas | Describes the Solution loops that run the finished solution. |
+| Self-Improvement Loop | Reviews history and intelligence, then stages candidates without promoting them. |
+| Static Architecture | Provides shared search, adapters, stores, providers, validation, history, and viewing tools. |
+| Four intelligence layers | Organize reusable context, code, run history, solutions, and user guidance. |
 
-The loop configuration says which modes are allowed. Each step records the
-mode it used. The steps answer a different question: what process will this
-loop follow?
+## How one task moves through the system
 
-A practitioner step plan with nine steps is available. It is one process, not
-the definition of a loop. You can also use a shorter plan or define your own
-steps.
+1. A task enters the Loop Practitioner.
+2. The Practitioner starts loops with explicit modes, step profiles, budgets,
+   contracts, and stop conditions.
+3. Those loops search intelligence through the Retrieval Engine. They search
+   Static Architecture through the Capability Directory for something that can
+   execute under the contract and permissions.
+4. The Practitioner tests the work and may produce a Solution Canvas.
+5. The Solution Canvas runs its Solution loops to produce the result.
+6. Runtime Memory carries temporary notes during the run. The Chronicle keeps
+   the saved history used by reports and playback.
 
-## Start here
+Self-improvement follows a separate task path:
 
-From the repository root, install the complete package once:
+1. A Self-Improvement Loop selects an exact population of saved runs.
+2. It verifies the Chronicle chain for each included run.
+3. It searches the current Intelligence Library through the Retrieval Engine.
+4. It finds repeated failures, repeated model work, missing categories, weak
+   classification, or a domain that needs more context.
+5. It stages Context or Code candidates. A separate review process decides
+   whether any candidate should become active intelligence.
+
+## The fundamental Loop object
+
+Each loop is a node. There is no second operational node type.
+
+| Part | Meaning |
+|---|---|
+| Goal | The work this loop must complete. |
+| Contract | Expected inputs, outputs, and allowed effects. |
+| Run modes | Which execution modes this loop may use. |
+| Step profile | The ordered steps this loop follows. |
+| Budget | Limits for iterations, model calls, depth, and work. |
+| Stop condition | When the loop is complete or must stop. |
+| Loop relationships | Which loop started this one and which loops it started. |
+| Event log | What the loop attempted, used, returned, or refused. |
+
+Read [The Loop object and step profiles](docs/components/loop-object/).
+
+### Three run modes
+
+| Mode | How it runs |
+|---|---|
+| **Deterministic** | Uses code, rules, calculation, and search. It does not call a language model. |
+| **Hybrid** | Uses code first and may call a language model for a specific step. |
+| **Non-deterministic** | A language model leads the step while the loop keeps control of tools, limits, logging, and verification. |
+
+A loop can permit several modes. Each completed step records the mode it used.
+A loop it starts may use a different mode only when the starting loop permits
+it.
+
+### Step profiles
+
+A step profile answers a separate question: how many steps does this loop run,
+and in what order? The code calls the low-level shape a `framework` and stores
+reusable profiles as Loop Templates.
+
+| Profile | Steps | Use |
+|---|---:|---|
+| Atomic code | 1 | One bounded deterministic action. |
+| Compact | 5 | Load, choose, act, check, commit. |
+| Reference Practitioner | 9 | Orient, reconcile, assess, decide, determine how, act, verify, integrate, route. |
+| Custom | 1 to 200 | A caller-defined bounded sequence, including repeated steps. |
+
+The reference nine-step profile is a useful default, not a universal law.
+
+## Loop Practitioner
+
+The Loop Practitioner builds solutions. It uses loops to understand the task,
+retrieve what already exists, choose a method, perform the work, test the
+result, and decide what happens next. It may start research, review, tool, or
+specialist loops.
+
+The Practitioner run produces a loop tree that explains how the work was
+built. It may also produce a Solution Canvas that can run later without
+repeating the build process.
+
+Read [Loop Practitioner](docs/components/practitioner/).
+
+## Solution Canvas
+
+The Solution Canvas is the finished solution, not the history of how it was
+built. Each Canvas node is a `SolutionLoopSpec` with its own operation, mode,
+parameters, and fallback chain. A Canvas may also combine several child
+solutions by voting, averaging, routing, selecting, or ordered fallback.
+
+The current in-process runner executes each operation through a deterministic
+component loop. Hybrid and non-deterministic Canvas modes are declared and
+validated, but they do not yet have separate execution adapters.
+
+The Practitioner tree answers, "How did we build this?" The Solution Canvas
+answers, "What will run now?"
+
+Read [Solution Canvas and Solution loops](docs/components/solution-canvas/).
+
+## Self-Improvement Loop
+
+The Self-Improvement Loop is a third role of the same `Loop` object. It is not
+a separate engine and it cannot approve its own work.
+
+`run_self_improvement()` loads a bounded population of saved Chronicles,
+excludes broken run histories, audits the current intelligence categories,
+mines repeated failures and repeated model work, ranks opportunities, and
+stages candidates in memory for independent review.
+
+Domain Context seeding is one Self-Improvement task. The
+`context_intelligence_seed` step profile maps roles, projects, tasks, research
+questions, and thinking styles into candidate Context records. Built-in domain
+seeding is deterministic. A separate source-aware research loop must answer
+questions about important people, organizations, standards, and primary
+sources. The seed loop does not invent those facts or promote candidates.
+
+Candidate Context is excluded from normal retrieval unless a caller explicitly
+requests candidates for review.
+
+Read [Self-improvement and domain seeding](docs/components/self-improvement/).
+
+## Static Architecture and extensions
+
+Static Architecture contains the reusable infrastructure that loops call
+instead of rebuilding it for every task.
+
+| Area | Current mechanism |
+|---|---|
+| Model providers | Built-in providers and parameterized custom endpoints. |
+| Decision methods | Resolver and regime registration. |
+| Capabilities | Typed handshakes and registered endpoints. |
+| Retrieval | Selectable built-in lexical and vector backends behind one interface. |
+| Step profiles | Built-in validated Loop Templates; candidate templates fail closed. |
+| Storage and history | Store adapters, Chronicle persistence, and Studio projections. |
+
+Providers, decision methods, and capabilities have explicit adapter or
+registration points. Retrieval selects from a fixed built-in backend set.
+Potential external plugins are planned. The package does not yet auto-discover
+Python entry-point plugins or provide a plugin marketplace.
+
+Read [Static Architecture and extensions](docs/components/static-architecture/).
+
+## Four intelligence layers
+
+| Layer | Examples of useful categories |
+|---|---|
+| **Context Intelligence** | questions, methods, checklists, templates, personas, evaluations, context, instructions, warnings, constraints, considerations |
+| **Code Intelligence** | transformations, analysis, decisions, retrieval, execution, validation, reports, integration |
+| **Previous Run & Solution Intelligence** | runs, solutions, decisions, failures, repairs, measurements, comparisons |
+| **User Intelligence** | advice, corrections, context, sources, packages, priorities, constraints, instructions, approvals, vetoes |
+
+Every catalog item can carry its layer, item type, category group, category,
+subcategory, domain, scope, lifecycle, source, and tags. Missing classification
+stays visible. Runtime Memory remains separate because it is temporary and
+run-scoped.
+
+Read [The four intelligence layers](docs/components/intelligence-layers/).
+
+## Install directly from GitHub
 
 ```bash
-python -m pip install .
+python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
 ```
 
-This one command installs the loop runtime and support for tables, Kaggle,
-SQL, and learned search. There are no separate task-specific install commands
-in this README.
+Python 3.10 or newer is required. One install includes the runtime and every
+supported adapter.
 
-Run the smallest example:
+## Run useful installed examples
+
+These commands work without a repository checkout:
 
 ```bash
-python examples/01_hello_loop.py
+loop-engine --example support-queue
+loop-engine --example intelligence-layers
+loop-engine --example context-seed
 ```
 
-Python 3.10 or newer is required.
+The first prioritizes a real-shaped support queue with zero model calls. The
+second prints the inventory and category state for all four intelligence
+layers. Previous Run and User Intelligence are empty until those stores have
+records. The third runs a deterministic space Context seed and keeps every
+output at candidate status.
 
-## Run a loop in Python
+## Watch and play back runs
 
-```python
-from loop_engine import LoopLedger
-from loop_engine.loop.encapsulate import as_practitioner_loop
-
-ledger = LoopLedger()
-result = as_practitioner_loop(
-    "estimate delivery time",
-    lambda: "4 days",
-    ledger=ledger,
-)
-
-result["value"]        # "4 days"
-result["model_calls"]  # 0 for this deterministic run
-ledger.events          # the event log
-```
-
-The Python import name is `loop_engine`. The command-line program and Python
-distribution are both named `loop-engine`.
-
-## Configuration, contracts, logs, and reports
-
-These words describe different parts of a run:
-
-| Record | What it contains |
-|---|---|
-| **Configuration** | The task, allowed modes, steps, budget, and stop condition. |
-| **Contract** | The expected input, output, and allowed effects. |
-| **Log** | The steps, child loops, model calls, errors, and other events that occurred. |
-| **Report** | A readable view of the completed run. Reports can be text, Markdown, HTML, or JSON. |
-
-Run the report example:
+Watch a real local run and save its Chronicle:
 
 ```bash
-python examples/04_reports.py
+loop-engine --live-demo --port 8770 --runs-dir "$HOME/.loop-engine/runs"
 ```
 
-## Intelligence is one part
+Open `http://127.0.0.1:8770` while it runs. Then start Studio on the same run
+directory:
 
-Intelligence helps a loop decide what to do. It is not the whole system.
+```bash
+loop-engine --studio --port 8765 --runs-dir "$HOME/.loop-engine/runs"
+```
 
-Before a model call, a loop can search four sources:
-
-| Source | What it can provide |
-|---|---|
-| Saved text | Questions, notes, methods, and instructions. |
-| Reusable code | A tested function or other executable tool. |
-| Previous runs | Earlier solutions, results, and failures. |
-| User guidance | Advice saved for a task, project, or organization. |
-
-A deterministic loop can work without a model. Hybrid and non-deterministic
-loops need a working model provider for the steps that use one. Provider setup
-and checks are described in [Providers and keys](docs/guides/providers-and-keys.md).
+Studio provides the loop tree, playback controls, model-call view,
+categorized intelligence inventory, solutions, and improvement candidates at
+`http://127.0.0.1:8765/app`.
 
 ## Examples
 
-| Example | What it shows |
-|---|---|
-| [01 hello loop](examples/01_hello_loop.py) | Run a small loop without a model. |
-| [02 solve a problem](examples/02_solve_a_problem.py) | Give the engine a table and a goal. |
-| [03 bring your own model](examples/03_bring_your_own_model.py) | Connect a provider and report its use. |
-| [04 reports](examples/04_reports.py) | Create text, Markdown, HTML, and structured report data. |
-| [05 Kaggle competition](examples/05_kaggle_competition.py) | Download and solve a competition task. Submission is optional. Kaggle credentials and competition access are required. |
-| [06 your own loop](examples/06_your_own_loop.py) | Use your own steps for invoice reconciliation. |
+The repository contains eleven numbered example folders. Each has a `README.md`
+and runnable `run.py`.
 
-## Clear failure states
+- [Useful work](examples/README.md#useful-work)
+- [Models and intelligence](examples/README.md#models-and-intelligence)
+- [Reports, live runs, and playback](examples/README.md#understand-a-run)
 
-The engine keeps failure states visible. A failed model provider is reported
-as unavailable. An empty run stays empty.
+## Documentation by depth
+
+Start here for the system map, then follow the component that matters:
+
+1. [Component guide](docs/components/)
+2. [Getting started](docs/getting-started.md)
+3. [Loops and modes](docs/guides/loops-and-modes.md)
+4. [Reports and playback](docs/guides/reports.md)
+5. [Architecture](docs/architecture/)
+6. [Reference](docs/reference/)
 
 ## Verify the installation
 
@@ -152,31 +295,12 @@ python -m loop_engine --conformance
 python -m loop_engine --map
 ```
 
-The self-test runs the built-in test suite. It does not need a provider key,
-but it may read a public provider catalog when network access is available.
-The conformance command checks the architecture rules. The map command shows
-the package map and the nine-step kernel.
+The self-test runs the built-in suite. The conformance command checks the
+architecture rules. The map command prints the package map and reference
+nine-step profile.
 
-## Documentation
+## Status and license
 
-- [Getting started](docs/getting-started.md)
-- [Loops and modes](docs/guides/loops-and-modes.md)
-- [Providers and keys](docs/guides/providers-and-keys.md)
-- [Custom endpoints](docs/guides/custom-endpoints.md)
-- [Reports](docs/guides/reports.md)
-- [Architecture](docs/architecture/)
-- [Reference](docs/reference/)
-
-## Status
-
-This project is alpha software. The loop runtime, provider checks, knowledge
-loading, reports, and architecture checks have automated tests. Results are
-recorded per task. One successful task is not reported as a general success
-rate.
-
-Run records and test results, including failures, are in
-[`docs/evidence/`](docs/evidence/).
-
-## License
-
-MIT. See [LICENSE](LICENSE).
+Loop Engine is alpha software. Results are recorded per task, and one
+successful task is not reported as a general success rate. MIT license. See
+[LICENSE](LICENSE).

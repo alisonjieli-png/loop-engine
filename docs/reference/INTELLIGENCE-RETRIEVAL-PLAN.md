@@ -1,6 +1,10 @@
 # Intelligence Retrieval Plan — the swappable plug and the scale ladder
 
-Status: CURRENT (registered in `conformance_report.CURRENT_DOCS`).
+> Historical retrieval design record. The current release provides one
+> Retrieval Engine with a fixed selectable set of built-in backends. It does
+> not provide external retrieval plugin registration.
+
+Status: historical design input.
 Date: 2026-08-24. Owner question answered here: "is there truly an
 off-the-shelf search/RAG/hybrid system we can encapsulate into a plug
 and swap later — and how does this scale to billions?"

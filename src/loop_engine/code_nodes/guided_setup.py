@@ -185,7 +185,7 @@ def run_setup(*, interactive: bool = True, knowledge_path: str = "",
     except ImportError as e:                                # pragma: no cover
         step.ran, step.ok = True, False
         step.detail = str(e)[:120]
-        step.fix = "pip install loop-engine"
+        step.fix = "python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git"
         _say(f"      FAIL {e}")
         return report
     dependencies = {
@@ -199,8 +199,9 @@ def run_setup(*, interactive: bool = True, knowledge_path: str = "",
     if missing:
         step.ok = False
         step.detail = "missing dependencies: " + ", ".join(missing)
-        step.fix = "reinstall Loop Engine"
-        _say(f"      MISSING: {', '.join(missing)}. Reinstall Loop Engine.")
+        step.fix = "python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git"
+        _say(f"      MISSING: {', '.join(missing)}. Reinstall with:")
+        _say("      python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git")
         return report
     _say("      The complete installation is ready.")
 
@@ -346,8 +347,8 @@ def run_setup(*, interactive: bool = True, knowledge_path: str = "",
     _say("  Next:")
     _say("    loop-engine --report            what a run did")
     _say("    loop-engine --self-test         verify the installation")
-    _say("    python examples/01_hello_loop.py")
-    _say("    python examples/06_your_own_loop.py     your own domain")
+    _say("    python3 examples/01_prioritize_support_queue/run.py")
+    _say("    python3 examples/06_reconcile_invoices/run.py")
     _say(f"  {_rule()}")
     _say()
     return report

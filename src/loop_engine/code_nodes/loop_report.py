@@ -1,11 +1,11 @@
-"""Loop reports — turn a run's ledger into something a person can read.
+"""Loop reports: turn a run's ledger into something a person can read.
 
 Architectural role: Code Node system (the reporting projection over a run).
 
 A run emits a chain of events. That chain is complete and checkable, and it is
 also unreadable: a few hundred JSON records with nesting expressed only through
 parent ids. This module answers the question a person actually has after a run
-— *what did the loop do, what did it cost, and where did it spend its time?* —
+: *what did the loop do, what did it cost, and where did it spend its time?* :
 in three renderings over the SAME projection:
 
     text      an indented tree for a terminal
@@ -40,7 +40,7 @@ Key invariants:
     - model cost is attributed per provider, or reported as unknown;
     - the rendered HTML is self-contained (no external assets).
 
-Verification: self_test() — tree shape from real nesting, cost attribution,
+Verification: self_test(): tree shape from real nesting, cost attribution,
 the empty-run path, unknown-vs-zero honesty, and HTML self-containment.
 """
 
@@ -82,7 +82,7 @@ class LoopNode:
 
     @property
     def seconds(self) -> "float | None":
-        """None — not 0.0 — when the ledger carries no timestamps. A zero here
+        """None: not 0.0: when the ledger carries no timestamps. A zero here
         would read as an instantaneous loop, which is a different claim."""
         if self.started is None or self.ended is None:
             return None
@@ -149,6 +149,8 @@ class LoopReport:
 def report_from_ledger(events, *, run_id: str = "",
                        chain_intact: "bool | None" = None) -> LoopReport:
     """Project a ledger into a report. Nothing is recomputed from elsewhere."""
+    from ..static_architecture.chronicle import as_ledger_events
+    events = as_ledger_events(events)
     rep = LoopReport(run_id=run_id, chain_intact=chain_intact)
     rep.total_events = len(events)
 
@@ -176,7 +178,7 @@ def report_from_ledger(events, *, run_id: str = "",
         # THE REAL PARENT EDGE. A spawned child does not announce its parent on
         # its own `init`; the PARENT records `child_return` under its own
         # loop_id naming the child. Reading only `init` produced a flat list of
-        # loops for a run that was genuinely nested — which hid the one
+        # loops for a run that was genuinely nested: which hid the one
         # structure the report exists to show.
         if kind == "child_return":
             kid = str(e.get("child", "") or "")
@@ -186,6 +188,12 @@ def report_from_ledger(events, *, run_id: str = "",
                     child = LoopNode(loop_id=kid)
                     rep.by_id[kid] = child
                 child.parent = lid
+        if kind == "spawn":
+            parent = str(e.get("parent", "") or "")
+            if parent:
+                node.parent = parent
+            if e.get("goal") and not node.goal:
+                node.goal = str(e.get("goal"))
         if kind in _TERMINAL_EVENTS:
             node.outcome = str(e.get("reason", "") or e.get("code", "")
                                or kind)
@@ -240,7 +248,7 @@ def report_from_ledger(events, *, run_id: str = "",
 
 
 def report_from_run(root: str, run_id: str, *, ledger=None) -> LoopReport:
-    """Project a SAVED run — the ``runs/<run_id>/`` layout on disk.
+    """Project a SAVED run: the ``runs/<run_id>/`` layout on disk.
 
     The stored run is reached through the historical-intelligence loop rather
     than by opening the Chronicle directly: past runs are one of the four
@@ -251,8 +259,7 @@ def report_from_run(root: str, run_id: str, *, ledger=None) -> LoopReport:
     ch = serve_historical_intelligence(
         f"report:{run_id}", lambda: Chronicle.load(root, run_id),
         ledger=ledger)["value"]
-    events = [dict(e.body()) for e in ch.events]
-    return report_from_ledger(events, run_id=run_id,
+    return report_from_ledger(ch.events, run_id=run_id,
                               chain_intact=ch.verify_chain()["intact"])
 
 
@@ -265,7 +272,7 @@ def _cost_line(n: LoopNode) -> str:
 
 def render_text(rep: LoopReport, *, show_steps: bool = True) -> str:
     """An indented tree for a terminal."""
-    out = [f"LOOP REPORT — {rep.run_id or 'unsaved run'}",
+    out = [f"LOOP REPORT: {rep.run_id or 'unsaved run'}",
            f"  {rep.loops} loops, {rep.total_events} events, "
            f"max depth {rep.deepest()}",
            f"  {rep.model_calls} model calls, {rep.total_tokens} tokens"]
@@ -285,7 +292,7 @@ def render_text(rep: LoopReport, *, show_steps: bool = True) -> str:
         timing = f" {secs}s" if secs is not None else ""
         head = f"{prefix}{n.loop_id}"
         if n.goal:
-            head += f" — {n.goal[:70]}"
+            head += f": {n.goal[:70]}"
         out.append(head)
         detail = f"{prefix}    [{n.mode or 'mode unrecorded'}]{timing}, " \
                  f"{n.events} events, {_cost_line(n)}"
@@ -302,7 +309,7 @@ def render_text(rep: LoopReport, *, show_steps: bool = True) -> str:
 
 def render_markdown(rep: LoopReport) -> str:
     """A report to paste into an issue or a pull request."""
-    out = [f"# Loop report — {rep.run_id or 'unsaved run'}", "",
+    out = [f"# Loop report: {rep.run_id or 'unsaved run'}", "",
            "| | |", "|---|---|",
            f"| Loops | {rep.loops} |",
            f"| Events | {rep.total_events} |",
@@ -329,7 +336,7 @@ def render_markdown(rep: LoopReport) -> str:
 
 
 def render_html(rep: LoopReport) -> str:
-    """A self-contained page — no external assets, no network."""
+    """A self-contained page: no external assets, no network."""
     def esc(s):
         return _html.escape(str(s))
 
@@ -366,7 +373,7 @@ def render_html(rep: LoopReport) -> str:
              f"<div class='stat'><b>{'yes' if rep.chain_intact else 'NO'}</b>"
              "<span>chain verified</span></div>")
     return f"""<!doctype html><meta charset="utf-8">
-<title>Loop report — {esc(rep.run_id or 'run')}</title>
+<title>Loop report: {esc(rep.run_id or 'run')}</title>
 <style>
 :root{{--bg:#fbfaf8;--fg:#1c1a17;--dim:#6b6660;--line:#e3ded6;--acc:#9a5b34}}
 @media(prefers-color-scheme:dark){{:root{{--bg:#16151a;--fg:#ece9e4;
@@ -467,7 +474,7 @@ def self_test() -> dict:
           and rep.deepest() == 1 and rep.loops == 3,
           "one root, two children, depth 1")
 
-    # 1b. A SPAWNED child announces no parent on its own `init` — the PARENT
+    # 1b. A SPAWNED child announces no parent on its own `init`: the PARENT
     # records `child_return` naming it. Reading only `init` rendered a genuinely
     # nested run as a flat list, hiding the one structure this report exists to
     # show, so the real runtime edge is exercised here against live spawn().
@@ -506,8 +513,8 @@ def self_test() -> dict:
           "root 4.0s spanning its children")
 
     # 4. UNKNOWN IS NOT ZERO. The live LoopLedger always stamps `ts`, so this
-    # path is about a ledger from somewhere else — a replay, an import, an
-    # older receipt — where the field is genuinely absent. Reporting 0.0 there
+    # path is about a ledger from somewhere else: a replay, an import, an
+    # older receipt: where the field is genuinely absent. Reporting 0.0 there
     # would read as an instantaneous loop, which is a different claim from
     # "this run did not record time".
     r2 = report_from_ledger([{"loop_id": "a", "event": "init",
@@ -532,7 +539,7 @@ def self_test() -> dict:
           and empty.deepest() == 0,
           "no invented structure")
 
-    # 6. every renderer works and the HTML is SELF-CONTAINED — a report that
+    # 6. every renderer works and the HTML is SELF-CONTAINED: a report that
     # needs the network is not a report you can send someone.
     t, m, h = render_text(rep), render_markdown(rep), render_html(rep)
     check("all_three_renderings_carry_the_same_facts",
@@ -559,6 +566,32 @@ def self_test() -> dict:
           r3.loops == 2 and len(r3.roots) == 2
           and {n.loop_id for n in r3.roots} == {"orphan", "selfref"},
           "every loop appears exactly once")
+
+    # 8. A persisted Chronicle uses event_type/detail fields. The canonical
+    # adapter must preserve the goal, model-call count, and tokens.
+    import shutil
+    import tempfile
+    from ..static_architecture.chronicle import Chronicle
+    saved_ledger = LoopLedger()
+    saved_ledger.record(loop_id="saved", event="init", goal="saved work")
+    saved_ledger.record(loop_id="saved", event="run_step", step="decide",
+                        mode="hybrid", output="selected")
+    saved_ledger.record(loop_id="saved", event="terminal", reason="done")
+    saved_chronicle = Chronicle.from_ledger(
+        saved_ledger.events, run_id="saved-report",
+        usage_log=[{"model": "test-model", "prompt_tokens": 10,
+                    "eval_tokens": 20}])
+    saved_chronicle.commit()
+    saved_root = tempfile.mkdtemp(prefix="loop_report_saved_")
+    saved_chronicle.save(saved_root)
+    saved_report = report_from_run(saved_root, "saved-report")
+    check("saved_chronicle_report_preserves_usage_and_goal",
+          saved_report.model_calls == 1
+          and saved_report.total_tokens == 30
+          and saved_report.by_id["saved"].goal == "saved work"
+          and saved_report.chain_intact is True,
+          "1 call, 30 tokens, goal and chain preserved")
+    shutil.rmtree(saved_root, ignore_errors=True)
 
     passed = sum(1 for t in results if t["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

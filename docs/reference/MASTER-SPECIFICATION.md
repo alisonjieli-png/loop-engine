@@ -1,7 +1,11 @@
 # Loop Engine master specification
+
+> Historical consolidated specification from 2026-08-23. It contains useful
+> design lineage and open ideas, but it is not the current product contract.
+> Use the root README and focused component pages for current behavior.
 ## Master Architecture, Telemetry, Build Directive, Solution Model, Observability Standard, and Product Roadmap
 
-**Status:** Canonical consolidated specification
+**Status:** Historical consolidated specification
 **Date:** 2026-08-23
 **Scope:** Local MVP, open-source Python package, recursive Practitioner runtime, String and Code Node intelligence, finished Solutions, continuous improvement, playback/telemetry, packaging, and future SaaS distribution
 **Evidence posture:** Current Kaggle-style results are smoke evidence for plumbing, reuse, and self-improvement mechanics. They are not broad benchmark evidence.
@@ -3589,9 +3593,9 @@ receipt); the design system of record exists (`DESIGN-LANGUAGE.md`,
 mode-first tokens, the fractal-ring doctrine) with the self-contained
 Claude Design prompt (`CLAUDE-DESIGN-PROMPT.md`).
 
-## C.3 Amendment — the three intelligence layers (owner, 2026-08-24)
+## C.3 The four intelligence layers
 
-The knowledge plane is formalized as exactly THREE intelligence layers,
+The knowledge plane has exactly four persistent intelligence layers,
 each queryable by any loop through one interface
 (`static_architecture/intelligence_layers.py`):
 
@@ -3603,20 +3607,21 @@ each queryable by any loop through one interface
    template executors. Deterministic nodes are the cost story.
 3. **Past-run intelligence** — previous Loop Engine solutions and runs,
    searchable as starting points; a prior, never proof.
+4. **User Intelligence** — scoped human advice, corrections, preferences,
+   sources, packages, constraints, instructions, approvals, and vetoes.
 
-Runtime memory — the loop-to-loop note board where any loop writes a
-note and any loop reads — is DECLARED architecture: the handshake
-reports `declared_not_built` and writes are refused until it exists.
+Runtime Memory is separate. It is a run-scoped note board where loops in the
+current run can write and read temporary working notes.
 This does not add a primitive: the layers are views over Strings, Code
 Nodes, and Solution composites. Public copy may later rename layer 1
 "context intelligence"; the rename is an owner decision, not taken.
 Same-day deltas: suite 745 → **752/752** (seed pack + layers);
 the 1,000-seed candidate pack ships at
-`strings/core_seed_intelligence_v1.jsonl` (charter §24 satisfied).
+`strings/core_seed_intelligence_v2.jsonl` (charter §24 satisfied).
 
 ## C.4 Amendment — User Intelligence and the loop-node rule (owner, 2026-08-24)
 
-**The fourth intelligence layer: User Intelligence.** A person watching
+**User Intelligence.** A person watching
 a run may click any loop — stuck, erroring, lagging, or improvable —
 see what it was given and what it is trying to produce, and type advice
 as they would to a coworker ("check out this website", "try this

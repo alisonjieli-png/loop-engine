@@ -2,19 +2,19 @@
 
 > Generated 2026-08-25 by `PYTHONPATH=src python3 -m loop_engine --map`. Regenerate rather than hand-edit; freshness is gated (`architecture_map_freshness`).
 
-ARCHITECTURE MAP — four top-level abstractions
+ARCHITECTURE MAP: four top-level abstractions
   loop/  (48 modules)
     acceptance, arbiter, builtin_resolvers, canvas, context_shuffle, decision_engine, decision_slates, escalation_governor, hybrid_dimension_lattice, research_to_capability, list_intelligence, decision_envelope, decision_episode, decision_need, delegation, deliberation, kernel, kernel_model_impls, lens, loop, loop_handlers, loop_templates, methodical, moves, intelligence_loops, practitioner_campaign, practitioner_loop, practitioner_methods, receipts, effective_spec, encapsulate, loop_capsule, loop_contract, loop_doctrine, recursive_loop, regimes, registry, resolvers, route_bridge, runner, solve, solver, step_registry, steps, studio, sub_practitioner, tuning, wiring
   strings/  (19 modules)
     ask_strategies, bias_checklist, biases, context, decision_schemas, domain_pack, frame, intelligence_strings, interrogation, knowledge, knowledge_state, notes, output_templates, packs, prompt_fragments, question_bank, question_engine, solution_shaping, task_blueprint
-  code_nodes/  (34 modules)
-    blueprint, capture, closure, competition_solver, enrichment, failure_response, follow_up, housekeeping, kaggle_executor, live_run_demo, learning_bundle, guided_setup, logic_ast, universal_solve, loop_report, measurement, pack_curation, planning, review_mode, change_proposals, foundry_probes, guidance_ledger, rl_vocabulary, run_analytics, run_playback, run_quality, runtime_contracts, self_improve, smoke_ladder, solution_canvas, solution_compiler, solution_graph, solution_records, string_foundry
-  static_architecture/  (33 modules)
-    asset_class, asset_lifecycle, capability_directory, chronicle, config, event_vocabulary, duckdb_catalog, facets, intelligence_layers, runtime_memory, user_intelligence, intelligence_registry, model_call, model_routes, ollama_client, ollama_resolvers, mistral_client, openrouter_client, provider_failover, model_discovery, autoconfigure, custom_endpoint, knowledge_loader, opencode_client, operating_profile, persistence, reasoning_call, retrieval, solution_library, store_serve, boundary_registry, saas_routes, studio_server
+  code_nodes/  (37 modules)
+    blueprint, capture, closure, context_seed, competition_solver, enrichment, failure_response, follow_up, housekeeping, kaggle_executor, live_run_demo, learning_bundle, guided_setup, logic_ast, universal_solve, loop_report, measurement, pack_curation, planning, public_examples, review_mode, change_proposals, foundry_probes, guidance_ledger, rl_vocabulary, run_analytics, run_playback, run_quality, runtime_contracts, self_improve, self_improvement_loop, smoke_ladder, solution_canvas, solution_compiler, solution_graph, solution_records, string_foundry
+  static_architecture/  (35 modules)
+    asset_class, asset_lifecycle, capability_directory, chronicle, config, context_catalog, context_classification, event_vocabulary, duckdb_catalog, facets, intelligence_layers, runtime_memory, user_intelligence, intelligence_registry, model_call, model_routes, ollama_client, ollama_resolvers, mistral_client, openrouter_client, provider_failover, model_discovery, autoconfigure, custom_endpoint, knowledge_loader, opencode_client, operating_profile, persistence, reasoning_call, retrieval, solution_library, store_serve, boundary_registry, saas_routes, studio_server
 
-THE NINE-STEP PRACTITIONER KERNEL — where every capability lives
+THE REFERENCE NINE-STEP PROFILE: detailed step map
 
-STEP 1 — orient  [REQUIRED]
+STEP 1: orient  [REQUIRED]
   Reconstruct the latest accepted problem state and assemble the verified context already available
   Q: What problem are we solving, and what verified context do we already have?
   PractitionerState  ->  Situation
@@ -27,7 +27,7 @@ STEP 1 — orient  [REQUIRED]
   default: kernel.default_orient
   extend: provide an `orient` impl returning a Situation; register context sources as searchable resources
 
-STEP 2 — reconcile_horizon  [OPTIONAL]
+STEP 2: reconcile_horizon  [OPTIONAL]
   Reconcile the ultimate goal, active checkpoint, and working blueprint with the latest accepted state
   Q: Where does this stand against the ultimate goal, the active checkpoint, and the working blueprint?
   PractitionerState + Situation  ->  LongHorizonAnchorPacket
@@ -40,7 +40,7 @@ STEP 2 — reconcile_horizon  [OPTIONAL]
   default: kernel.default_reconcile_horizon
   extend: provide a `reconcile_horizon` impl returning a LongHorizonAnchorPacket; add plan schemas in planning.py
 
-STEP 3 — assess_prepare  [OPTIONAL]
+STEP 3: assess_prepare  [OPTIONAL]
   Assess whether the current decision is sufficiently supported and prepare any additional evidence, questions, perspectives, or research
   Q: Is the current decision sufficiently supported, and if not, what evidence / questions / perspectives / research should we prepare?
   PractitionerState + Situation  ->  DecisionSupportPortfolio
@@ -54,7 +54,7 @@ STEP 3 — assess_prepare  [OPTIONAL]
   default: kernel.default_assess_prepare
   extend: provide an `assess_prepare` impl; register question/persona generators and research recipes
 
-STEP 4 — decide_next  [REQUIRED]
+STEP 4: decide_next  [REQUIRED]
   Generate, challenge, and select the most valuable next action that advances the active checkpoint without violating the broader blueprint
   Q: What is the most valuable next action that advances the checkpoint without violating the blueprint?
   PractitionerState + Situation  ->  CandidateAction[]
@@ -64,7 +64,7 @@ STEP 4 — decide_next  [REQUIRED]
     - bias_checklist: semi-persistent preferred-steps checklist carried in every prompt (research-first; before AND after; skips tracked with why/when/where/how; freedom to choose once all steps resolved)
     - task_blueprint: bias_next_from_blueprint (opening moves)
     - solution_shaping: should_decompose (decompose / monolithic / escalate) + shaping strings (outside-the-box, stacking/bagging/ensemble)
-    - decision_schemas: prompt-side reasoning shapes that bias what the model CONSIDERS (INTELLIGENCE; check_engagement is a soft signal — admission is runtime_contracts, bridged via to_contract)
+    - decision_schemas: prompt-side reasoning shapes that bias what the model CONSIDERS (INTELLIGENCE; check_engagement is a soft signal: admission is runtime_contracts, bridged via to_contract)
     - output_templates: the response-form ladder (string->list->if/then->measurement->evaluation->code) biasing reusable forms
     - follow_up: reactive scheduler obligations (justify/review/structure/reframe) that lead the candidate list
     - failure_response: on an error, bias toward diagnose_and_repair / research / try_other_method (don't hit the same wall; escalate/abstain when exhausted)
@@ -75,7 +75,7 @@ STEP 4 — decide_next  [REQUIRED]
   default: kernel.default_decide_next
   extend: register a bias in biases.py or a question form/strategy; provide a `decide_next` impl to change candidate generation
 
-STEP 5 — how  [REQUIRED]
+STEP 5: how  [REQUIRED]
   Find, adapt, compose, or design the most appropriate method for carrying out the selected action
   Q: What is the best available method to carry out that action?
   PractitionerState + Situation + CandidateAction  ->  ExecutionPlan
@@ -90,7 +90,7 @@ STEP 5 — how  [REQUIRED]
   default: kernel.default_how
   extend: register a node/executor as a searchable resource; provide a `how` impl to change method selection
 
-STEP 6 — act  [REQUIRED]
+STEP 6: act  [REQUIRED]
   Execute the method, build or run the required task graph, or delegate bounded subproblems to child practitioners
   Q: How do we execute it, build the task graph, or delegate to a child practitioner?
   PractitionerState + ExecutionPlan  ->  ResultPacket[]
@@ -106,7 +106,7 @@ STEP 6 — act  [REQUIRED]
   default: kernel.default_act
   extend: register an executor node behind execute(spec)->outcome and add it to the resource store; add a policy kind in rl_vocabulary
 
-STEP 7 — verify  [REQUIRED]
+STEP 7: verify  [REQUIRED]
   Independently interrogate the inputs, outputs, and process; test the results, compare alternatives, and identify remaining gaps or failures
   Q: Did it work, is it better than the alternatives, and what gaps remain?
   PractitionerState + ExecutionPlan + ResultPacket[]  ->  EvaluationPacket
@@ -119,7 +119,7 @@ STEP 7 — verify  [REQUIRED]
   default: kernel.default_verify
   extend: add a detector or interrogatory in review_mode.py; provide a `verify` impl for domain evaluators
 
-STEP 8 — integrate_commit  [OPTIONAL]
+STEP 8: integrate_commit  [OPTIONAL]
   Integrate accepted results, update the blueprint and checkpoint state, and commit validated evidence, artifacts, and reusable learning
   Q: What accepted results and reusable learning do we commit to memory?
   PractitionerState + PassRecord  ->  committed PractitionerState
@@ -134,7 +134,7 @@ STEP 8 — integrate_commit  [OPTIONAL]
   default: kernel.default_integrate_commit
   extend: provide an `integrate_commit` impl to commit domain artifacts; add a distillation trigger in self_improve.py
 
-STEP 9 — route  [REQUIRED]
+STEP 9: route  [REQUIRED]
   Choose whether to continue the checkpoint, revise the blueprint, branch, retry, reset, distill, escalate, close a checkpoint, or finish
   Q: Should we continue, branch, retry, reset, distill, escalate, or finish?
   PractitionerState + PassRecord  ->  RouteDecision + new PractitionerState
@@ -155,19 +155,19 @@ CROSS-CUTTING SERVICES (used by many steps, never step-specific):
   - logic (safe AST)  [logic_ast]
       the Logic category: a closed-operator expression AST (never eval) that COMPUTES/DECIDES deterministically; the executor for a captured logic_candidate; emits findings/actions, abstains outside scope, never mutates state
   - capability directory (handshakes + endpoints)  [capability_directory]
-      how the practitioner KNOWS what strings / code nodes / static components are available and HOW to call them: a CapabilityHandshake per surface (kind, operations, query fields, ranking, health — read before use, never assumed), and a standardized directory (discover / negotiate / call / serve) with declared fallbacks. serve() is the two-rail bias: use a code node if one serves the op, else fall back to the LLM-call pipeline
+      how the practitioner KNOWS what strings / code nodes / static components are available and HOW to call them: a CapabilityHandshake per surface (kind, operations, query fields, ranking, health: read before use, never assumed), and a standardized directory (discover / negotiate / call / serve) with declared fallbacks. serve() is the two-rail bias: use a code node if one serves the op, else fall back to the LLM-call pipeline
   - real loop handlers  [loop_handlers]
       the Loop on the REAL infrastructure: directory_handler pulls the mandatory string intelligence per step (the power lever), probes the code rail with a real search through the capability directory, resolves deterministic steps to real code nodes, escalates an empty code rail to the LLM surface (hybrid), and records every infra call on the ledger; run_loop_via_kernel delegates a nine_step loop to the wired kernel
   - the Loop (everything is a loop)  [recursive_loop]
-      the fundamental object: a Loop is an initializable, parameterized CLASS — pass in framework (nine_step | five_step | custom | open), allowable + preferred MODES (deterministic | hybrid | non_deterministic, a waterfall with fallback), and a POWER lever (small..max sets string-intelligence pull + model-call budget). One loop can SPAWN another (recursive initialization; loops of loops), all tracked on one shared ledger. nine_step is the default; the kernel is its executor. The wedge is reusable code nodes + string intelligence flowing through it
+      the fundamental object: a Loop is an initializable, parameterized CLASS: pass in framework (nine_step | five_step | custom | open), allowable + preferred MODES (deterministic | hybrid | non_deterministic, a waterfall with fallback), and a POWER lever (small..max sets string-intelligence pull + model-call budget). One loop can SPAWN another (recursive initialization; loops of loops), all tracked on one shared ledger. nine_step is the default; the kernel is its executor. The wedge is reusable code nodes + string intelligence flowing through it
   - decision engine (per-node sub-layer)  [decision_engine]
-      the immediate sub-node under EVERY one of the nine kernel nodes: resolve_path asks 'deterministic, deterministic + LLM repair, or non-deterministic?' and branches into three, deciding from heuristics / memory / policy (settings like model + internet access gate the paths) — the two-rail choice refined into three, one engine per node
+      the immediate sub-node under EVERY one of the nine kernel nodes: resolve_path asks 'deterministic, deterministic + LLM repair, or non-deterministic?' and branches into three, deciding from heuristics / memory / policy (settings like model + internet access gate the paths): the two-rail choice refined into three, one engine per node
   - continuous improvement (housekeeping)  [housekeeping]
-      a SEPARATE-PURPOSE run of the SAME practitioner loop (self-improvement objective + instructions): on a trigger/cron it mines our runtimes/logs and customer legacy code (GitHub URLs) and proposes new code nodes, strings, logic, and biases — classified string vs code, all runtime CANDIDATES (promotion is the evidence-gated boundary, never done here)
+      a SEPARATE-PURPOSE run of the SAME practitioner loop (self-improvement objective + instructions): on a trigger/cron it mines our runtimes/logs and customer legacy code (GitHub URLs) and proposes new code nodes, strings, logic, and biases: classified string vs code, all runtime CANDIDATES (promotion is the evidence-gated boundary, never done here)
   - live wiring  [wiring]
       the composed entry point run_wired: enriches the deterministic kernel defaults so the LIVE loop exercises guidance, shaping, measurement, contracts, capture, and learning end-to-end
   - runtime contracts  [runtime_contracts]
-      executable TRUTH at every boundary: ContractDefinition (immutable, versioned) + deterministic validator + explicit adapter. Distinct authority from intelligence — a contract ADMITS/REJECTS a result; intelligence only PROPOSES a contract (to_contract / ContractCandidate)
+      executable TRUTH at every boundary: ContractDefinition (immutable, versioned) + deterministic validator + explicit adapter. Distinct authority from intelligence: a contract ADMITS/REJECTS a result; intelligence only PROPOSES a contract (to_contract / ContractCandidate)
   - search / serve DAG  [store_serve]
       one strict search over ALL resources (nodes, packs, rules, prior runs); tier gates; capability requests
   - resources  [question_engine + question_bank + domain_pack + intelligence_strings + intelligence_registry + packs]

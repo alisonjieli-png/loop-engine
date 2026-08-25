@@ -31,7 +31,12 @@ def main(argv=None) -> int:
     parser.add_argument("--studio", action="store_true",
                         help="serve Loop Engine Studio (local, read-only, "
                         "Chronicle-backed) on --port")
-    parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument("--port", type=int,
+                        help="local port (Studio defaults to 8765; live demo "
+                             "defaults to 8770)")
+    parser.add_argument("--runs-dir",
+                        help="shared Chronicle directory; defaults to "
+                             "$LOOP_ENGINE_RUNS_DIR or ~/.loop-engine/runs")
     parser.add_argument("--conformance", action="store_true",
                         help="run the machine-enforced conformance scan + "
                         "zero-tolerance gates; writes "
@@ -52,6 +57,10 @@ def main(argv=None) -> int:
                         help="guided walkthrough: checks the installation, "
                              "providers, your own server and knowledge, then "
                              "runs a real loop")
+    parser.add_argument("--example",
+                        choices=("support-queue", "intelligence-layers",
+                                 "context-seed"),
+                        help="run a useful example included with the package")
     # `loop-engine setup` reads better than a flag, so accept the bare word too
     if argv is None and len(sys.argv) > 1 and sys.argv[1] == "setup":
         sys.argv[1] = "--setup"
@@ -59,11 +68,16 @@ def main(argv=None) -> int:
     if args.setup:
         from .code_nodes.guided_setup import run_setup
         return 0 if run_setup().ready else 1
+    if args.example:
+        from .code_nodes.public_examples import run_example
+        print(run_example(args.example))
+        return 0
     if args.runs or args.report:
         import os
+        from .static_architecture.chronicle import default_runs_dir
         from .code_nodes.loop_report import (report_from_run, render_text,
                                              render_markdown, render_html)
-        runs_dir = os.path.join(os.path.dirname(__file__), "evidence", "runs")
+        runs_dir = default_runs_dir(args.runs_dir or "")
         saved = sorted(os.listdir(runs_dir)) if os.path.isdir(runs_dir) else []
         if args.runs:
             if not saved:
@@ -96,11 +110,12 @@ def main(argv=None) -> int:
         return 0
     if args.live_demo:
         from .code_nodes.live_run_demo import run_live_demo
-        run_live_demo(port=8770, pace_seconds=0.6, serve_forever=True)
+        run_live_demo(port=args.port or 8770, pace_seconds=0.6,
+                      serve_forever=True, runs_dir=args.runs_dir or "")
         return 0
     if args.studio:
         from .static_architecture.studio_server import serve
-        serve(args.port)
+        serve(args.port or 8765, runs_dir=args.runs_dir or "")
         return 0
     if args.conformance:
         from .conformance_report import run_conformance

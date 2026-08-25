@@ -1,10 +1,10 @@
-"""Architecture map — the four top-level abstractions as the one projection authority.
+"""Architecture map: the four top-level abstractions as one projection authority.
 
 Every module in this package belongs to exactly one of the four frozen
 abstractions (loop | strings | code_nodes | static_architecture) or is package
 plumbing at the root.  This map IS the folder shape: the mover consulted it,
 `--map` prints it, `step_registry` resolves module paths through it, and the
-self-test refuses any module on disk that is not classified here — so the
+self-test refuses any module on disk that is not classified here, so the
 projection can never silently drift from the code.
 """
 from __future__ import annotations
@@ -49,20 +49,22 @@ MODULE_MAP = {
         "task_blueprint",
     ),
     "code_nodes": (
-        "blueprint", "capture", "closure",
+        "blueprint", "capture", "closure", "context_seed",
         "competition_solver", "enrichment", "failure_response",
         "follow_up", "housekeeping", "kaggle_executor", "live_run_demo",
         "learning_bundle", "guided_setup", "logic_ast", "universal_solve", "loop_report", "measurement",
-        "pack_curation", "planning", "review_mode",
+        "pack_curation", "planning", "public_examples", "review_mode",
         "change_proposals", "foundry_probes", "guidance_ledger",
         "rl_vocabulary", "run_analytics",
         "run_playback", "run_quality",
-        "runtime_contracts", "self_improve", "smoke_ladder",
+        "runtime_contracts", "self_improve", "self_improvement_loop",
+        "smoke_ladder",
         "solution_canvas", "solution_compiler", "solution_graph", "solution_records", "string_foundry",
     ),
     "static_architecture": (
         "asset_class", "asset_lifecycle", "capability_directory",
-        "chronicle", "config", "event_vocabulary", "duckdb_catalog", "facets", "intelligence_layers",
+        "chronicle", "config", "context_catalog", "context_classification",
+        "event_vocabulary", "duckdb_catalog", "facets", "intelligence_layers",
         "runtime_memory", "user_intelligence",
         "intelligence_registry",
         "model_call",
@@ -94,7 +96,7 @@ def module_path(module: str) -> str:
 
 
 def render_map() -> str:
-    out = ["ARCHITECTURE MAP — four top-level abstractions"]
+    out = ["ARCHITECTURE MAP: four top-level abstractions"]
     for s in SUBPACKAGES:
         mods = MODULE_MAP[s]
         out.append(f"  {s}/  ({len(mods)} modules)")
@@ -109,7 +111,7 @@ def self_test() -> dict:
         results.append({"name": name, "passed": bool(ok), "note": note})
 
     here = os.path.dirname(__file__)
-    # 1. every .py on disk is classified (root or one abstraction) — anti-drift.
+    # 1. every .py on disk is classified (root or one abstraction): anti-drift.
     on_disk = sorted(f[:-3] for f in os.listdir(here) if f.endswith(".py"))
     stray = [m for m in on_disk if m not in ROOT_MODULES]
     check("no_unclassified_module_at_package_root", not stray,

@@ -124,7 +124,7 @@ class TaskReading:
         if self.missing_dependency:
             lines.append(
                 f"  MISSING DEPENDENCY: {self.missing_dependency}. "
-                "Reinstall Loop Engine.")
+                "Reinstall with: python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git.")
         for n in self.notes:
             lines.append(f"  note: {n}")
         return "\n".join(lines)
@@ -479,7 +479,7 @@ def solve(goal: str, data: str = "", *, out: str = "", modality: str = "",
         out_dict["blocked"] = (
             f"this looks like a {reading.modality} task, but the declared "
             f"dependency {reading.missing_dependency!r} is missing. "
-            "Reinstall Loop Engine.")
+            "Reinstall with: python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git.")
         return out_dict
 
     if reading.modality in ("tabular", "mixed") and reading.train_file:

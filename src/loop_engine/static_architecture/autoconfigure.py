@@ -105,13 +105,14 @@ class ModelAccess:
         for name, err in self.providers_failed.items():
             hint = ""
             low = str(err).lower()
-            if "429" in low or "usage limit" in low:
+            if (("no " in low and "key" in low)
+                    or ("key" in low and "not found" in low)):
+                hint = f"  -> set {KEY_ENV.get(name, 'the provider key')}"
+            elif "429" in low or "usage limit" in low:
                 hint = "  -> rate or usage limit; this key works but is " \
                        "currently capped"
             elif "401" in low or "not found" in low or "unauthor" in low:
                 hint = "  -> the key was rejected; check it is current"
-            elif "no " in low and "key" in low:
-                hint = f"  -> set {KEY_ENV.get(name, 'the provider key')}"
             lines.append(f"  {name}: {str(err)[:120]}{hint}")
         lines.append(f"Modes available: {', '.join(self.modes_available())}")
         if not self.has_model:

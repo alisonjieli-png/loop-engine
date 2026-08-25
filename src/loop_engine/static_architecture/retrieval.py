@@ -182,8 +182,8 @@ class LanceDbBackend:
             import lancedb
         except ImportError as e:
             raise RuntimeError(
-                "lancedb is missing. Reinstall Loop Engine; the backend will "
-                "not silently downgrade.") from e
+                "lancedb is missing. Reinstall with: python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git. "
+                "The backend will not silently downgrade.") from e
         import tempfile
         self._dir = tempfile.mkdtemp(prefix="loop_engine-lancedb-")
         db = lancedb.connect(self._dir)
@@ -216,8 +216,8 @@ class Model2VecBackend:
             from model2vec import StaticModel
         except ImportError as e:
             raise RuntimeError(
-                "model2vec is missing. Reinstall Loop Engine; the backend "
-                "will not silently downgrade.") from e
+                "model2vec is missing. Reinstall with: python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git. "
+                "The backend will not silently downgrade.") from e
         # Default defended by the 2026-08-23 frozen-query tournament
         # (evidence/retrieval-engine-tournament-20260823.json): on the real
         # 170-record bank, potion-retrieval-32M and a full transformer did
@@ -495,7 +495,8 @@ def self_test() -> dict:
         results.append({
             "test": "model2vec_semantic_canary", "passed": False,
             "missing_dependency": "model2vec",
-            "detail": "FAILED: missing model2vec. Reinstall Loop Engine."})
+            "detail": "FAILED: missing model2vec. Reinstall with: "
+                      "python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git"})
     else:
         # ZERO token overlap between query and target record text — the
         # hash leg cannot win on morphology, so only learned semantics can

@@ -1,4 +1,4 @@
-"""Live run demo — watch a real PractitionerLoop execute in real time.
+"""Live run demo: watch a real PractitionerLoop execute in real time.
 
 Architectural role: code_nodes (an observation surface over the canonical
 runtime; owner ask 2026-08-24: "see it start the first practitioner loop,
@@ -8,17 +8,17 @@ what it is doing as well as logs out to a console").
 Owns:
     - TappedLedger: the shared LoopLedger with a per-event callback, so
       every step, mode choice, spawn, and terminal transition is observed
-      the moment it is recorded — the SAME event stream the Chronicle is
+      the moment it is recorded: the SAME event stream the Chronicle is
       built from, not a parallel telemetry path;
     - run_live_demo(): runs the stage-0 deterministic fixture through the
       REAL Loop in a background thread while a localhost page shows the
       current step on the loop rail, the intelligence pulled, and a live
-      console — and mirrors every event to stdout;
+      console: and mirrors every event to stdout;
     - the /events.json polling endpoint (since=N incremental slices).
 
 Does not own:
-    - the runtime (recursive_loop), the smoke lane (smoke_ladder — the
-      demo runs ITS fixture), or Studio (studio_server) — this is the
+    - the runtime (recursive_loop), the smoke lane (smoke_ladder: the
+      demo runs ITS fixture), or Studio (studio_server): this is the
       one-command "see it run" surface; Studio's Runs tab is the routed
       product version of the same stream.
 
@@ -28,12 +28,12 @@ Public entry points:
 
 Key invariants:
     - events reach the tap in recorded order, exactly once;
-    - demo pacing is DECLARED on the page ("demo pacing"), never hidden —
+    - demo pacing is DECLARED on the page ("demo pacing"), never hidden :
       pace 0 runs at true speed;
     - localhost only; the surface is declared in forbidden_paths
       network_allowed like studio_server.
 
-Verification: self_test() — ordered tap relay, incremental event serving
+Verification: self_test(): ordered tap relay, incremental event serving
 over a real socket, terminal event visibility, page carries the rail.
 """
 from __future__ import annotations
@@ -68,7 +68,7 @@ def _console_line(e: dict) -> str:
     mode = e.get("mode", "")
     out = str(e.get("output") or e.get("goal") or e.get("note") or "")[:110]
     return f"[{e.get('loop_id','?')}] {step}" + (f" ({mode})" if mode else "") \
-           + (f" — {out}" if out else "")
+           + (f": {out}" if out else "")
 
 
 _PAGE = """<!doctype html><meta charset="utf-8"><title>Loop Engine live run</title>
@@ -82,7 +82,7 @@ h1{font-size:1.2rem}.pace{color:#93a0ac;font-size:.8rem}
 pre{background:#0c0f13;border:1px solid #2a323b;border-radius:10px;padding:12px;
 font:12px/1.6 ui-monospace,monospace;height:320px;overflow:auto;white-space:pre-wrap}
 .done{color:#66bb6a;font-weight:600}</style>
-<div class="wrap"><h1>Loop Engine — a real PractitionerLoop, live</h1>
+<div class="wrap"><h1>Loop Engine: a real PractitionerLoop, live</h1>
 <div class="pace">Deterministic stage-0 fixture · zero model calls · demo
 pacing PACE_S s/step (pace 0 = true speed) · every line below is the same
 event stream the run record is built from</div>
@@ -90,7 +90,7 @@ event stream the run record is built from</div>
 <div class="pull" id="pull"></div><pre id="log"></pre>
 <div id="st" class="pace">running…</div>
 <div style="margin-top:14px;display:flex;gap:8px">
-<input id="adv" placeholder="Advise this loop, like a coworker on Slack — 'try the rapidfuzz package'"
+<input id="adv" placeholder="Advise this loop, like a coworker on Slack: 'try the rapidfuzz package'"
  style="flex:1;background:#0c0f13;border:1px solid #2a323b;border-radius:8px;color:#e8edf2;padding:.6em .8em;font:13px system-ui">
 <button onclick="sendAdvice()" style="background:#4ec0ae;color:#0c0f13;border:0;border-radius:8px;padding:.6em 1em;font-weight:600;cursor:pointer">Advise</button>
 <button onclick="fetch('/restart').then(()=>{since=0;log.textContent='';tick()})"
@@ -110,20 +110,20 @@ function tick(){fetch('/events.json?since='+since).then(r=>r.json()).then(d=>{
     p.textContent='intelligence pulled: '+e.pull;}
  });
  if(d.done){document.getElementById('st').innerHTML=
-   '<span class="done">run complete</span> — '+since+' events recorded';}
+   '<span class="done">run complete</span>: '+since+' events recorded';}
  else setTimeout(tick, 400);
 });}
 tick();
 function sendAdvice(){var v=document.getElementById('adv').value;
  fetch('/advice',{method:'POST',body:JSON.stringify({text:v})}).then(r=>r.json())
  .then(d=>{document.getElementById('advst').textContent = d.ok ?
-  'Advice on file: '+d.on_file+' — consulted at the start of each run (press Run again to see it).' :
+  'Advice on file: '+d.on_file+': consulted at the start of each run (press Run again to see it).' :
   'Refused: '+d.error; if(d.ok) document.getElementById('adv').value='';});}
 </script>"""
 
 
 def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
-                  serve_forever: bool = False) -> dict:
+                  serve_forever: bool = False, runs_dir: str = "") -> dict:
     """Serve the live view on 127.0.0.1:``port`` and run the stage-0
     deterministic fixture through the real Loop in a background thread.
     Returns {"port", "events", "done"} handles; with serve_forever=True
@@ -133,7 +133,10 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
     from .smoke_ladder import run_smoke_loop, _fixture
     from ..static_architecture.user_intelligence import AdviceStore
 
-    state = {"events": [], "raw": [], "done": False, "runs": 0}
+    from ..static_architecture.chronicle import default_runs_dir
+    shared_runs_dir = default_runs_dir(runs_dir)
+    state = {"events": [], "raw": [], "done": False, "runs": 0,
+             "run_id": "", "runs_dir": shared_runs_dir, "saved_path": ""}
     advice = AdviceStore(os.path.join(
         tempfile.mkdtemp(prefix="live_demo_advice_"), "user_advice.jsonl"))
 
@@ -153,15 +156,20 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
     def runner():
         state["done"] = False
         state["runs"] += 1
+        state["events"].clear()
+        state["raw"].clear()
+        state["run_id"] = (
+            time.strftime("live-%Y%m%d-%H%M%S-")
+            + f"{time.time_ns() % 1_000_000_000:09d}")
         workdir = tempfile.mkdtemp(prefix="live_demo_")
         train, test, sample, out = _fixture(workdir)
         ledger = TappedLedger(on_event=on_event)
         from ..static_architecture.runtime_memory import RunNoteBoard
         board = RunNoteBoard(f"live-demo-{state['runs']}", ledger=ledger)
-        board.write(f"run {state['runs']} starting — fixture ready",
+        board.write(f"run {state['runs']} starting: fixture ready",
                     loop_id="live", topic="status")
         # the loop's guidance check: consult USER INTELLIGENCE before the
-        # run decides anything — recorded on the ledger, visible live.
+        # run decides anything: recorded on the ledger, visible live.
         from ..loop.intelligence_loops import consult_guidance_as_loop
         hits = consult_guidance_as_loop(advice, "task", "live-demo",
                                         loop_id="live", ledger=ledger)["value"]
@@ -169,9 +177,12 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
             print(f"[demo] your advice on file: {h['text'][:80]}", flush=True)
         run_smoke_loop("live demo: solve the deterministic fixture",
                        train_csv=train, test_csv=test, sample_csv=sample,
-                       out_csv=out, ledger=ledger)
+                       out_csv=out, ledger=ledger,
+                       chronicle_run_id=state["run_id"],
+                       runs_dir=shared_runs_dir)
+        state["saved_path"] = os.path.join(shared_runs_dir, state["run_id"])
         state["done"] = True
-        print("[demo] run complete —", len(state["events"]),
+        print("[demo] run complete :", len(state["events"]),
               "events recorded", flush=True)
 
     page = _PAGE.replace("PACE_S", str(pace_seconds)).replace(
@@ -219,10 +230,12 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
                 self.wfile.write(body)
                 return
             if self.path == "/api/runs":
-                body = json.dumps([{"run_id": "live",
+                body = json.dumps([{"run_id": state["run_id"],
                                     "runs_completed": state["runs"],
                                     "done": state["done"],
-                                    "events": len(state["raw"])}]).encode()
+                                    "events": len(state["raw"]),
+                                    "runs_dir": shared_runs_dir,
+                                    "saved_path": state["saved_path"]}]).encode()
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
                 self.send_header("Content-Length", str(len(body)))
@@ -298,7 +311,7 @@ def self_test() -> dict:
 
     # The demo drives a TABULAR run and then reads its output over a socket.
     # Without the declared dependencies the run cannot start, and the socket read
-    # BLOCKS until it times out — a missing dependency surfacing as a
+    # BLOCKS until it times out: a missing dependency surfacing as a
     # network hang, which is the least diagnosable failure shape there is.
     # Declare the dependency up front and fail fast with the remedy instead.
     try:
@@ -308,7 +321,8 @@ def self_test() -> dict:
         return {"tests": [{
             "test": "live_run_demo_self_test", "passed": False,
             "missing_dependency": exc.name,
-            "detail": f"FAILED: missing {exc.name}. Reinstall Loop Engine."}],
+            "detail": f"FAILED: missing {exc.name}. Reinstall with: "
+                      "python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git"}],
             "passed": 0, "total": 1, "all_passed": False}
 
     # 1. the tap relays events in recorded order, exactly once.
@@ -325,8 +339,10 @@ def self_test() -> dict:
 
     # 2. a REAL live demo at pace 0: the server serves incremental slices
     # over a real socket and reports done with a terminal event visible.
+    import tempfile
     import urllib.request
-    d = run_live_demo(port=0, pace_seconds=0)
+    test_runs_dir = tempfile.mkdtemp(prefix="live_demo_runs_")
+    d = run_live_demo(port=0, pace_seconds=0, runs_dir=test_runs_dir)
     for _ in range(100):
         if d["state"]["done"]:
             break
@@ -351,6 +367,8 @@ def self_test() -> dict:
     conn.close()
     check("api_and_sse_serve_the_one_event_stream",
           runs[0]["done"] and runs[0]["events"] == len(canon)
+          and os.path.exists(os.path.join(runs[0]["saved_path"],
+                                          "manifest.json"))
           and any(c["type"] == "loop.completed" for c in canon)
           and sse_done and sse_data >= len(d["state"]["events"]),
           f"/api/runs ok; {len(canon)} canonical events (lossless parity); "
@@ -370,7 +388,7 @@ def self_test() -> dict:
     # 2b. USER INTELLIGENCE through the live surface: POST advice, restart,
     # and the next run's event stream shows the guidance consultation.
     import urllib.request as _u
-    d2 = run_live_demo(port=0, pace_seconds=0)
+    d2 = run_live_demo(port=0, pace_seconds=0, runs_dir=test_runs_dir)
     for _ in range(100):
         if d2["state"]["done"]:
             break
@@ -396,6 +414,9 @@ def self_test() -> dict:
           all(s in page for s in STEP_LABELS) and "demo\npacing" in page
           or all(s in page for s in STEP_LABELS) and "demo" in page,
           "rail + pacing declaration present")
+
+    import shutil
+    shutil.rmtree(test_runs_dir, ignore_errors=True)
 
     passed = sum(1 for t in results if t["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

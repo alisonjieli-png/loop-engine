@@ -32,3 +32,4 @@ Thumbs.db
 .solver_runs.jsonl
 predictions.csv
 *.csv.out
+example-output/

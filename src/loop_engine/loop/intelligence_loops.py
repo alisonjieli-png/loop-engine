@@ -194,7 +194,7 @@ def search_as_loop(store, query: str, *, pillar: str = "string_intelligence",
 def search_as_loop_refs(store, query: str, *,
                         pillar: str = "string_intelligence",
                         kind: "str | None" = None, top_n: int = 5,
-                        ledger=None) -> list:
+                        ledger=None, parent=None) -> list:
     """SEARCH RETURNS LOOPS (charter §20).
 
     ``search_as_loop`` returns hits through an envelope — correct, but the
@@ -203,7 +203,8 @@ def search_as_loop_refs(store, query: str, *,
     and only then invokes, so selection costs nothing to materialise."""
     from .loop_capsule import refs_for_records
     hits = search_as_loop(store, query, pillar=pillar, kind=kind,
-                          top_n=top_n, ledger=ledger)["value"]["hits"]
+                          top_n=top_n, ledger=ledger,
+                          parent=parent)["value"]["hits"]
     scores = {h["record_id"]: h.get("score", 0.0) for h in hits}
     records = [store.serve(h["record_id"]) for h in hits]
     return refs_for_records([r for r in records if r is not None],

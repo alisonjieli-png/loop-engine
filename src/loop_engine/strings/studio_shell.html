@@ -103,7 +103,8 @@ button { background:var(--acc); color:#fff; border:0; border-radius:.35rem;
 <div id="layout"><nav id="nav"></nav><main id="main">Loading…</main>
 <aside id="insp"></aside></div>
 <script>
-const NAV = [["home","Home"],["runs","Runs"],["intelligence","Strings"],
+const NAV = [["home","Home"],["runs","Runs"],
+  ["intelligence","Intelligence Layers"],["context","Context Intelligence"],
   ["nodes","Code Intelligence"],["solutions","Solutions"],
   ["improvements","Improvements"]];
 const $ = s => document.querySelector(s);
@@ -199,7 +200,13 @@ const pages = {
            nothing to show here, which is honest rather than empty.</div>`;
     }
     if (tab === "playback") body = `<div class="tl">
-      <button onclick="play('${esc(id)}')">▶</button>
+      <button onclick="stepEv(-1)" aria-label="previous event">◀</button>
+      <button id="playbtn" onclick="togglePlay()">Play</button>
+      <button onclick="stepEv(1)" aria-label="next event">▶</button>
+      <label class="k">speed <select id="speed">
+        <option value="1000">0.5x</option><option value="500" selected>1x</option>
+        <option value="250">2x</option><option value="100">5x</option>
+      </select></label>
       <input type="range" id="scrub" min="0" max="${d.events.length - 1}"
         value="0" oninput="showEv()"><span class="k" id="pos"></span></div>
       <div id="evs">` + d.events.map((e, i) =>
@@ -226,13 +233,48 @@ const pages = {
       const el = $("#ev" + i); if (el) { el.classList.add("cur");
         el.scrollIntoView({block: "center"}); }
       $("#pos").textContent = i + " / " + d.events.length; };
-    window.play = () => { let i = +$("#scrub").value;
-      const t = setInterval(() => { if (i >= d.events.length - 1)
-        return clearInterval(t);
-        $("#scrub").value = ++i; showEv(); }, 450); }; },
+    window.__playTimer = null;
+    window.stepEv = delta => { const scrub = $("#scrub");
+      scrub.value = Math.max(0, Math.min(d.events.length - 1,
+        +scrub.value + delta)); showEv(); };
+    window.togglePlay = () => { const button = $("#playbtn");
+      if (window.__playTimer) { clearTimeout(window.__playTimer);
+        window.__playTimer = null; button.textContent = "Play"; return; }
+      button.textContent = "Pause";
+      const advance = () => { const scrub = $("#scrub");
+        if (+scrub.value >= d.events.length - 1) { window.__playTimer = null;
+          button.textContent = "Play"; return; }
+        scrub.value = +scrub.value + 1; showEv();
+        window.__playTimer = setTimeout(advance, +$("#speed").value); };
+      window.__playTimer = setTimeout(advance, +$("#speed").value); };
+    if (tab === "playback" && d.events.length) showEv(); },
 
-  async intelligence(id) { const d = await api("strings");
-    if (id) { const s = d.strings.find(x => x.id === id);
+  async intelligence() { const d = await api("intelligence");
+    const cards = d.summary.layers.map(l => `<div class="card"
+      onclick="$('#q').value='layer:${esc(l.layer)}';filterRows()">
+      <b>${l.items}</b><span>${esc(l.public_label)}</span>
+      <span class="k">${esc(Object.entries(l.category_groups)
+        .map(([k,v]) => k + ' ' + v).join(' · ') || 'no items')}</span></div>`
+    ).join("");
+    const rows = d.items.map(item => { const c = item.classification;
+      return `<tr class="row" data-s="${esc((item.title + ' ' + item.layer +
+        ' layer:' + item.layer + ' category:' + c.category_group +
+        ' scope:' + c.scope + ' lifecycle:' + c.lifecycle).toLowerCase())}">
+        <td>${esc(item.public_layer)}</td><td>${esc(item.title.slice(0,90))}</td>
+        <td>${esc(c.category_group)}</td><td>${esc(c.category)}</td>
+        <td>${esc(c.scope || 'unclassified')}</td>
+        <td>${esc(c.lifecycle || 'unclassified')}</td></tr>`; }).join("");
+    $("#main").innerHTML = `<h1>Four intelligence layers
+      <span class="k">(${d.summary.total_items} items)</span></h1>
+      <div class="cards">${cards}</div>
+      <div class="warnbox">Runtime Memory is separate. It holds temporary
+      notes for the current run and is not a fifth persistent layer.</div>
+      <table><tr><th>layer</th><th>item</th><th>group</th><th>category</th>
+      <th>scope</th><th>lifecycle</th></tr>${rows}</table>`;
+    sortable($("#main table")); filterRows(); },
+
+  async context(id) { const d = await api("context");
+    if (id) { const s = d.items.find(x => x.id === id);
       inspect(s ? `<h3>${esc(s.id)}</h3><p>${esc(s.text)}</p>
         <p><span class="chip">${esc(s.kind)}</span>
         <span class="chip ${s.maturity === "registered" ? "reg" : "cand"}">
@@ -241,16 +283,18 @@ const pages = {
         ${s.job_position ? "· " + esc(s.job_position) : ""}</p>
         <p class="k">${esc(s.provenance || s.source)}</p>` : "");
       }
-    $("#main").innerHTML = `<h1>String intelligence
-      <span class="k">(${d.strings.length})</span></h1><p>` +
+    $("#main").innerHTML = `<h1>Context Intelligence
+      <span class="k">(${d.items.length})</span></h1>
+      <div class="warnbox">This review catalog can show candidates. Normal
+      retrieval excludes candidate and experimental items.</div><p>` +
       d.facets.map(f => `<span class="chip" onclick="$('#q').value=
         'category:${f}';filterRows()">${esc(f)}</span>`).join("") +
       `</p><table><tr><th>kind</th><th>text</th><th>category</th>
       <th>maturity</th><th>source</th></tr>` +
-      d.strings.map(s => `<tr class="row" data-s="${esc((s.kind + " " +
+      d.items.map(s => `<tr class="row" data-s="${esc((s.kind + " " +
         s.text + " " + s.category + " category:" + s.category +
         " maturity:" + s.maturity + " class:string").toLowerCase())}"
-        onclick="location.hash='#/intelligence/${encodeURIComponent(s.id)}'">
+        onclick="location.hash='#/context/${encodeURIComponent(s.id)}'">
         <td><span class="chip">${esc(s.kind)}</span></td>
         <td style="white-space:normal">${esc(s.text.slice(0, 110))}</td>
         <td>${esc(s.category)}</td><td><span class="chip ${
@@ -258,15 +302,15 @@ const pages = {
         </span></td><td class="k">${esc(s.source)}</td></tr>`).join("") +
       `</table>`; sortable($("#main table")); filterRows(); },
 
-  async nodes(id) { const d = await api("nodes");
-    if (id) { const n = d.nodes.find(x => x.module === id);
+  async nodes(id) { const d = await api("loops");
+    if (id) { const n = d.loops.find(x => x.module === id);
       inspect(n ? `<h3>${esc(n.module)}</h3><p class="k">${esc(n.group)} ·
         ${n.loc} lines</p><p>${esc(n.purpose)}</p>` : ""); }
     $("#main").innerHTML = `<h1>Code Intelligence
-      <span class="k">(${d.nodes.length})</span></h1>
+      <span class="k">(${d.loops.length})</span></h1>
       <table><tr><th>module</th><th>group</th><th class="num">lines</th>
       <th>purpose</th></tr>` +
-      d.nodes.map(n => `<tr class="row" data-s="${esc((n.module + " " +
+      d.loops.map(n => `<tr class="row" data-s="${esc((n.module + " " +
         n.group + " " + n.purpose + " class:code").toLowerCase())}"
         onclick="location.hash='#/nodes/${encodeURIComponent(n.module)}'">
         <td><b>${esc(n.module)}</b></td><td>${esc(n.group)}</td>
@@ -305,6 +349,7 @@ const pages = {
       `</table><div class="warnbox">${esc(d.honesty)}</div>`;
     sortable($("#main table")); },
 };
+pages.strings = pages.context;
 
 function runsTable(rows) { return `<table><tr><th>run</th><th>goal</th>
   <th class="num">events</th><th class="num">calls</th>
@@ -331,6 +376,8 @@ function currentParts() {
 }
 
 async function route() { inspect("");
+  if (window.__playTimer) { clearTimeout(window.__playTimer);
+    window.__playTimer = null; }
   const parts = currentParts();
   const page = parts[0] || "home"; nav(page);
   $("#status").textContent = "loading…";

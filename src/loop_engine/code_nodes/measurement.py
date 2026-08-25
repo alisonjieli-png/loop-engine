@@ -1,12 +1,12 @@
 """Measurement — how to judge models, task success, and the train-CV gap, as
-string intelligence PLUS a deterministic reuse-node.
+Context Intelligence plus a deterministic reuse node.
 
-Owner ask (2026-08-23): we need string intelligence for measuring models, task
+Owner ask (2026-08-23): we need Context Intelligence for measuring models, task
 success, the train-CV gap, etc. — every industry has its own ways of measuring,
 and that belongs in strings.  This module serves the two moat asset classes at
 once (see [[harness-commodity-intelligence-is-the-moat]]):
 
-  * STRING INTELLIGENCE (data): ``measurement_pack`` — the conventions as
+  * CONTEXT INTELLIGENCE (data): ``measurement_pack`` contains the conventions as
     IntelligenceStrings, step-tagged (mostly ``step:verify``): metric definitions
     and when-to-use, industry conventions (clinical, finance, search/ranking,
     NLP/generation, forecasting, fraud, manufacturing, experiment), the
@@ -210,7 +210,7 @@ def select_measures(signals: MeasurementSignals) -> MeasurementPlan:
 
 
 # ---------------------------------------------------------------------------
-# The string intelligence — DATA, step-tagged, swappable/distillable.
+# Context Intelligence data, step-tagged and reusable.
 # ---------------------------------------------------------------------------
 
 _ANY = "any"
@@ -222,7 +222,7 @@ def _s(kind, text, tags, appl=_ANY):
 
 
 def measurement_pack() -> StringBank:
-    """The measurement conventions as string intelligence.  Step-tagged
+    """The measurement conventions as Context Intelligence. Step-tagged
     (``step:verify`` mostly; success-framing also ``step:decide_next``).  A seed
     starter — grow or distil it per user/industry."""
     bank = StringBank()
@@ -461,7 +461,7 @@ def self_test() -> dict:
           and "pr_auc" in plan.recommended_metrics,
           f"recommended={plan.recommended_metrics}")
 
-    # 9. the string intelligence carries the industry + gap language the owner
+    # 9. Context Intelligence carries the industry and gap language the owner
     # asked for.
     bank = measurement_pack()
     txt = " ".join(s.text.lower() for s in bank.all())

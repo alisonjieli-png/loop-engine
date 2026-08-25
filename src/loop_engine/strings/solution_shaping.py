@@ -1,12 +1,12 @@
 """Solution shaping — decide whether to decompose into sub-models / sub-processes,
 and carry the reasoning that pushes the model past a monolithic answer.
 
-Owner ask (2026-08-23): we need DAGs and string intelligence on whether to build
+Owner ask (2026-08-23): we need DAGs and Context Intelligence on whether to build
 out sub-models, sub-prediction models, sub-processes, etc., and prompts/string
 intelligence that push the model to think outside the box, break the solution
 into individual components, and consider stacking, bagging, and other ensembling.
 The ultimate goal is an open-source practitioner harness where ALL the
-intelligence lives as string intelligence.
+intelligence lives as Context Intelligence.
 
 So this module is split along exactly that line:
 
@@ -202,7 +202,7 @@ def should_decompose(signals: DecompositionSignals) -> ShapingDecision:
 
 
 # ---------------------------------------------------------------------------
-# The string intelligence — DATA, a swappable/distillable seed pack.
+# Context Intelligence data in a reusable seed pack.
 # ---------------------------------------------------------------------------
 
 _ANY = "any"
@@ -299,7 +299,7 @@ def shape_solution_ask(signals: DecompositionSignals, *,
                        bank: "StringBank | None" = None,
                        decision: "ShapingDecision | None" = None) -> dict:
     """Compose the shaping prompt fragment for the decide/how node: the relevant
-    string intelligence (chosen by the task's signals) plus the DAG's verdict and
+    Context Intelligence (chosen by the task's signals) plus the DAG's verdict and
     proposed moves.  Works with an empty/None bank (harness still returns the
     decision) — the strings enrich, they are not required."""
     b = bank if bank is not None else solution_shaping_pack()

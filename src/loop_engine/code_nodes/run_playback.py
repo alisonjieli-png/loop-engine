@@ -1,11 +1,11 @@
-"""Run playback — replay a practitioner run and render it for humans.
+"""Run playback: replay a practitioner run and render it for humans.
 
 Architectural role: Code Node system (reporting over ledgers + analyses).
 
 Owns:
     - playback: a loop ledger -> an ordered, human-readable transcript
       (what happened, step by step, with modes, spawns, fallbacks, and
-      terminal reasons — the "play back what the practitioner did" surface);
+      terminal reasons: the "play back what the practitioner did" surface);
     - render_run_report: ONE canonical dict (ledger + run_analytics rollup +
       optional Solution Canvas) -> Mermaid loop-tree flowchart + HTML report
       with the du-style hotspot bars and token quantization.
@@ -13,7 +13,7 @@ Owns:
 Does not own:
     - the numbers (run_analytics.py computes them; this module renders);
     - the Solution Canvas graph (solution_compiler.render_canvas owns it;
-      the run report EMBEDS it — the loop tree explains the build, the
+      the run report EMBEDS it: the loop tree explains the build, the
       canvas explains the product).
 
 Public entry points:
@@ -38,20 +38,22 @@ from .run_analytics import analyze_run, propose_edits
 
 
 def playback(events) -> list:
-    """The ordered transcript of a run — one line per meaningful event."""
+    """The ordered transcript of a run: one line per meaningful event."""
+    from ..static_architecture.chronicle import as_ledger_events
+    events = as_ledger_events(events)
     lines = []
     for e in events:
         ev, lid = e.get("event"), e.get("loop_id", "?")
         if ev == "init":
             lines.append(f"[{lid}] INIT depth={e.get('depth', 0)} "
-                         f"{e.get('framework', '?')}/{e.get('power', '?')} — "
+                         f"{e.get('framework', '?')}/{e.get('power', '?')}: "
                          f"goal: {e.get('goal', '')[:80]}")
         elif ev == "spawn":
-            lines.append(f"[{e.get('parent', '?')}] SPAWN -> {lid} — "
+            lines.append(f"[{e.get('parent', '?')}] SPAWN -> {lid}: "
                          f"{e.get('goal', '')[:60]}")
         elif ev == "run_step":
             lines.append(f"[{lid}] {e.get('step', '?')} ({e.get('mode')}) "
-                         f"conf={e.get('confidence')} — "
+                         f"conf={e.get('confidence')}: "
                          f"{str(e.get('output', ''))[:70]}")
         elif ev == "fallback":
             lines.append(f"[{lid}] FALLBACK {e.get('step')}: "
@@ -90,6 +92,8 @@ def _mermaid_tree(events, analysis) -> str:
 def render_run_report(events, usage_log=(), trace=None, *, canvas=None,
                       title: str = "Practitioner run") -> dict:
     """ONE canonical dict -> Mermaid + a self-contained HTML report."""
+    from ..static_architecture.chronicle import as_ledger_events
+    events = as_ledger_events(events)
     analysis = analyze_run(events, usage_log, trace=trace)
     proposals = propose_edits(analysis)
     transcript = playback(events)
@@ -110,7 +114,7 @@ def render_run_report(events, usage_log=(), trace=None, *, canvas=None,
     stuck_rows = "".join(f"<li>{_html.escape(json.dumps(s))}</li>"
                          for s in analysis["stuck"]) or "<li>none</li>"
     prop_rows = "".join(
-        f'<li><b>{_html.escape(p["kind"])}</b> — '
+        f'<li><b>{_html.escape(p["kind"])}</b>: '
         f'{_html.escape(p["proposal"])} <i>({_html.escape(p["evidence"])})'
         f'</i></li>' for p in proposals) or "<li>none</li>"
     lines = "\n".join(_html.escape(l) for l in transcript)
@@ -123,7 +127,7 @@ steps · {analysis['totals']['semantic_calls']} semantic calls ·
 <h2>Loop tree</h2><pre class="mermaid">{_html.escape(mermaid)}</pre>
 {'<h2>Solution canvas</h2><pre class="mermaid">' + _html.escape(canonical["canvas_mermaid"]) + '</pre>' if canonical["canvas_mermaid"] else ''}
 <h2>Stuck signals</h2><ul>{stuck_rows}</ul>
-<h2>Proposed edits (candidates — never self-applied)</h2><ul>{prop_rows}</ul>
+<h2>Proposed edits (candidates: never self-applied)</h2><ul>{prop_rows}</ul>
 <h2>Transcript</h2><pre class="tx">{lines}</pre>"""
     canonical["html"] = body
     return canonical
@@ -186,6 +190,21 @@ def self_test() -> dict:
     check("solution_canvas_embeds_beside_the_loop_tree",
           "Solution canvas" in rep2["html"]
           and "flowchart TD" in rep2["canvas_mermaid"])
+
+    # 4. Loaded Chronicle events use a different storage envelope. Playback
+    # and analytics must use the shared adapter rather than render an empty run.
+    from ..static_architecture.chronicle import Chronicle
+    ch = Chronicle.from_ledger(lp.ledger.events, run_id="playback-saved",
+                               usage_log=usage)
+    ch.commit()
+    saved_tx = playback(ch.events)
+    saved_report = render_run_report(ch.events, title="saved playback")
+    check("persisted_chronicle_plays_without_reexecution",
+          saved_tx and any("INIT" in line for line in saved_tx)
+          and any("TERMINAL" in line for line in saved_tx)
+          and saved_report["analysis"]["totals"]["loops"] >= 2
+          and saved_report["analysis"]["tokens"]["prompt"] == 50,
+          "stored events produced transcript, tree, and provider usage")
 
     passed = sum(1 for r in results if r["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

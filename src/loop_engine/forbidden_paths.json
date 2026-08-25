@@ -125,7 +125,8 @@
  "boundary_register_exempt_modules": {
   "static_architecture/reasoning_call.py": "the CALLER that crosses the model-invocation boundary, which is already a register row (envelope: as_model_loop). It owns no separate boundary of its own.",
   "code_nodes/guided_setup.py": "the first-run WALKTHROUGH: it orchestrates existing boundaries (the practitioner envelope, provider discovery, the knowledge loader) and owns none of them. Every envelope it calls is already a register row; adding a second row for the caller would claim ownership it does not have.",
-  "code_nodes/universal_solve.py": "the ROUTING front door: it orients on a task and dispatches to an executor that owns the boundary, using the practitioner envelope only as a caller when no executor fits the modality. Every envelope it touches is already a register row; a second row would claim ownership it does not have."
+  "code_nodes/universal_solve.py": "the ROUTING front door: it orients on a task and dispatches to an executor that owns the boundary, using the practitioner envelope only as a caller when no executor fits the modality. Every envelope it touches is already a register row; a second row would claim ownership it does not have.",
+  "code_nodes/public_examples.py": "installed examples orchestrate existing practitioner, report, and intelligence boundaries for teaching. They own no new boundary; registering them would duplicate the envelopes they demonstrate."
  },
  "dynamic_import_allowed_modules_reasons": {
   "__init__.py": "the package's documented public surface (from loop_engine import PractitionerLoop) resolved LAZILY, so importing the package stays cheap and no import cycle is created. This is a re-export of the canonical runtime, NOT the registration bypass the gate exists to catch: it registers nothing, and every name resolves to an already-mapped module."

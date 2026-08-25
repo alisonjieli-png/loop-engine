@@ -1,66 +1,126 @@
-# Architecture Visual Guidance — the canonical figures
+# Architecture visual guidance
 
-Status: CURRENT (registered in `conformance_report.CURRENT_DOCS`).
-Source: the correction directive (2026-08-24 §6-§13). These are the
-ONLY approved topologies; freehand variants fail review.
+Status: current guidance.
 
-## V1 — the two-row loop rail (default loop figure)
+Diagrams must explain Loop Engine from the outside in. Start with the task and
+result. Add runtime detail only after the reader knows what the system builds.
 
-Top row left→right: 1 Orient · 2 Reconcile · 3 Assess · 4 Decide ·
-5 Determine How; bottom row right→left: 6 Act · 7 Verify · 8 Integrate ·
-9 Route; a connector drops 5→6 and rises 9→1. Identical card widths,
-aligned labels, centered connectors, tooltips + keyboard focus on every
-step. Marked "Reference Nine-Step Loop*" with the custom-loop footnote
-and a Reference/Custom toggle whose custom example is a genuinely
-different sequence (Research → Research → Compare → Prototype → Test →
-Diagnose → Repair → Verify) — never silently re-rendered as nine-step.
-A polygon is acceptable ONLY with mathematically aligned nodes,
-horizontal labels, no crossing connectors, and clean mobile collapse.
+## V1: bird's-eye system map
 
-## V2 — the spawn tree (loop-by-loop)
+This is the required first figure in the README and other introductions.
 
-Root PractitionerLoop → Research child (→ Source Review grandchild) +
-Validation child. Every card: goal, mode, status, iterations, calls,
-cost, confidence. Mode colors per DESIGN-GUIDANCE (det deep teal, hyb
-blue-teal, mod amber). The copy states mode is loop-specific — a
-model-backed loop may start deterministic, hybrid, and model-backed
-children. Spawn/return animation must explain behavior (subproblem →
-child appears → works → result returns), respect reduced motion.
+Show this main path from left to right:
 
-## V3 — the intelligence pillars + capability search
+```text
+Task -> Loop Practitioner -> Solution Canvas -> Result
+```
 
-Current PractitionerLoop → Code Intelligence Search → the pillar cards
-(String Intelligence · Code Intelligence · Previous Run & Solution
-Intelligence · **User Intelligence** — the fourth layer, owner
-2026-08-24: advice humans leave on loops/tasks/runs/components,
-consulted before decisions) → selected context/capability/prior
-solution/guidance. Search visibly spans ALL the pillars. In Studio,
-clicking any loop opens its input/expected-output and an advice box.
+The same figure must also show:
 
-## V4 — the Runtime Memory rail
+- the shared Loop object used by Practitioner, Solution, and Self-Improvement loops;
+- the three run modes: deterministic, hybrid, and non-deterministic;
+- step profiles with one step, five steps, nine steps, or a custom sequence;
+- Practitioner loops that may start more Practitioner loops;
+- Solution Canvas nodes that are Solution loops;
+- a Self-Improvement Loop that reviews history and intelligence, seeds domains,
+  and stages candidates only;
+- Static Architecture supporting all three roles;
+- a separate Retrieval Engine node with lexical, vector, and hybrid modes;
+- built-in adapters and extension points, with external plugins labeled as
+  potential rather than shipped;
+- all four intelligence layers;
+- Runtime Memory as current-run state; and
+- Chronicle, reports, and playback as saved run history.
 
-All active loops connect down to one shared rail: "Shared Runtime
-Memory — Notes · Findings · Questions · References". The capability is
-BUILT run-scoped in the runtime (`static_architecture/runtime_memory`,
-2026-08-24: writes and reads are ledger events); the Studio rail
-RENDERING is the queued piece — label it accordingly. Promotion note
-unchanged: useful notes may be curated into a pillar; nothing
-auto-promotes.
+Do not use the nine-step sequence as the first figure. It is detail about one
+step profile, not the full product map.
 
-## V5 — practitioner authors Solutions
+## V2: one Loop object
 
-PractitionerLoop Tree → writes and revises → Candidate Solution Canvas
-A/B/C (stacked cards; different topology/mode mix/cost) → compares,
-selects, or combines (select-best / ordered fallback / average /
-weighted blend / vote / bagging / boosting / stacking / gating /
-mixture of experts) → Final Solution Canvas. Every component carries a
-mode chip — and every component IS a loop (the loop-node rule): drawn as
-a card for legibility, executed as a PractitionerLoop with fallbacks. Caption: **"The PractitionerLoop shows how Loop Engine builds.
-The Solution Canvas shows what Loop Engine ships."**
+Show one loop with its goal, contract, mode, step profile, budget, stop
+condition, parent relationship, started loops, and event log.
 
-## V6 — the Improvement Flywheel
+If the figure includes a mode, use the public order:
 
-RUN → REVIEW (what worked, failed, cost time, needed a model) → CURATE
-(reusable questions, capabilities, prior-solution lessons) → IMPROVE
-THE THREE INTELLIGENCE PILLARS (named explicitly) → NEXT RUN STARTS
-STRONGER.
+1. Deterministic
+2. Hybrid
+3. Non-deterministic
+
+If the figure includes step profiles, show atomic, compact, reference
+nine-step, and custom. State that the nine-step profile is a reference, not a
+universal rule.
+
+## V3: Practitioner loop tree
+
+Show how the solution was built. A root Practitioner loop may start research,
+review, tool, or verification loops. Each loop card should show its own mode,
+status, and bounded goal.
+
+Use "starts" in public labels. The diagram may use parent and child in a
+technical note when it explains the permission clamp.
+
+## V4: Static Architecture and intelligence
+
+Show Static Architecture as shared services, not as a sequence of work. It can
+contain the Capability Directory, Retrieval Engine, providers, validation,
+stores, Chronicle, Studio, and Runtime Memory.
+
+The Retrieval Engine searches classified records across the four layers. Its
+current backends are a fixed selectable set, not an external plugin registry.
+The Capability Directory is a separate search for something executable under
+the loop's contract and permissions. Do not merge these two searches.
+
+Show all four persistent intelligence layers:
+
+1. Context Intelligence
+2. Code Intelligence
+3. Previous Run & Solution Intelligence
+4. User Intelligence
+
+Runtime Memory must remain outside those four layers because it is temporary
+and belongs to the current run.
+
+## V5: Solution Canvas
+
+Show what will run for a new input. Use a left-to-right graph whose operational
+nodes are Solution loops. Show typed connections, declared modes, and named
+fallbacks when they matter.
+
+Use this caption when the distinction needs to be explicit:
+
+> The Practitioner tree shows how Loop Engine built the work. The Solution
+> Canvas shows what runs now.
+
+Do not imply that declared hybrid or non-deterministic Canvas modes have a
+separate execution adapter today. The current in-process runner uses a
+deterministic component loop for each operation.
+
+## V6: run history
+
+Use a horizontal timeline for Chronicle events. Show the newest event on the
+right. Live views may reveal events as they arrive. Playback must use saved
+events and must not rerun the original work.
+
+## V7: Self-Improvement Loop
+
+Use a simple cycle:
+
+```text
+Run -> Review history and intelligence -> Stage candidates -> Independent review -> Improve the four layers -> Next run
+```
+
+Domain Context seeding is one Self-Improvement task. Nothing should appear to
+promote itself. Candidate work must remain visibly separate from reviewed and
+accepted work.
+
+## Review checklist
+
+- The first figure starts with a task and ends with a result.
+- Practitioner, Solution, and Self-Improvement loops are distinct roles of one
+  runtime.
+- Each visible loop has a mode when mode detail matters.
+- The four intelligence layers are all present in system maps.
+- Runtime Memory is separate from persistent intelligence.
+- External plugins are described as potential until plugin loading exists.
+- Labels use plain English and can be read without the rest of the document.
+- Lines do not cross labels, and text remains readable on a narrow screen.

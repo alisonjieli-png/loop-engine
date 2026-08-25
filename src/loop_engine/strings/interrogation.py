@@ -1,5 +1,5 @@
 """Interrogation — the clever, novel, adversarial questions an expert asks, as
-string intelligence, plus the continuous-improvement presets that run them.
+Context Intelligence, plus the continuous-improvement presets that run them.
 
 Owner insight (2026-08-23): the gap between a naive AI-generated solution and a
 human-expert-supervised one is not magic — it is the QUESTIONS the expert asks to
@@ -153,7 +153,7 @@ def interrogation_bank() -> list:
            "deterministic code node instead of an LLM call?", "check if the answer "
            "is a computed measure; if so, author a node", "either"),
         _q("integration", "weight_and_bias",
-           "How do we integrate this finding into string intelligence — which "
+           "How do we integrate this finding into Context Intelligence? Which "
            "category, weight, bias, and preference?", "classify the finding; "
            "propose the string kind + tags + a demotable bias", "llm"),
     ]
@@ -195,11 +195,11 @@ def question_records() -> list:
 
 IMPROVEMENT_PRESETS = {
     "improve_string_category":
-        "Analyze the string intelligence in category '{category}' and, from "
+        "Analyze the Context Intelligence in category '{category}' and, from "
         "runtime history, propose what could be improved, added, reweighted, or "
         "retired.",
     "string_to_node":
-        "Review the string intelligence in category '{category}' and identify "
+        "Review the Context Intelligence in category '{category}' and identify "
         "what could become a deterministic or semi-deterministic CODE NODE, so a "
         "future run answers it with zero or low LLM tokens.",
     "adversarial_solution_review":
@@ -231,11 +231,18 @@ def preset_goal(preset: str, **params) -> str:
 def preset_records() -> list:
     """The presets as searchable strategy records (role=improvement_preset)."""
     from ..static_architecture.store_serve import StoreRecord
+    from ..static_architecture.facets import context_facets
     return [StoreRecord(
         record_id=f"preset.{name}", kind="strategy",
         title=preset_goal(name),
         body={"preset": name, "goal_template": tmpl,
-              "role": "improvement_preset"},
+              "role": "improvement_preset", "maturity": "registered",
+              "facets": context_facets(
+                  category="improvement_preset", subcategory=name,
+                  context_type="instruction", thinking_style="improvement",
+                  workflow_stage="improve", scope="package",
+                  lifecycle="registered",
+                  provenance="improvement_preset_registry")},
         tags=("improvement_preset", "continuous_improvement", name),
         tier="core") for name, tmpl in IMPROVEMENT_PRESETS.items()]
 
@@ -324,7 +331,7 @@ def self_test() -> dict:
     store = SolverStore(core_records=question_records() + preset_records())
     hit = store.search("are there patterns in the residuals of the model",
                        kind="question")
-    hitp = store.search("turn string intelligence into a deterministic code node",
+    hitp = store.search("turn Context Intelligence into a deterministic code node",
                         kind="strategy")
     check("interrogations_and_presets_are_searchable",
           hit["hits"] and any("interro." in h["record_id"] for h in hit["hits"])

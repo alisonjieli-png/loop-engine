@@ -12,7 +12,7 @@ cannot run until validation passes and an explicit admission marks it
 from __future__ import annotations
 
 from ..loop.recursive_loop import (FRAMEWORKS, MODES, INTERNAL_MODE_NAMES,
-                                   LoopConfig)
+                                   LOGICAL_KINDS, LoopConfig)
 
 _FROM_INTERNAL = {v: k for k, v in INTERNAL_MODE_NAMES.items()}
 
@@ -65,10 +65,22 @@ TEMPLATE_LIBRARY = (
      "maturity": "registered",
      "description": "Try to refute before accepting; for verification passes."},
     {"template_id": "continuous_improvement", "framework": "custom",
-     "steps": ("mine", "rank", "engineer_candidate", "stage", "compare"),
+     "logical_kind": "search_improvement",
+     "steps": ("load_history", "audit_intelligence", "mine", "rank",
+               "engineer_candidate", "stage", "compare"),
      "maturity": "registered",
-     "description": "The improvement lane: mine runtimes, rank opportunities, "
-                    "stage candidates — never self-promote."},
+     "description": "The Self-Improvement Loop: review run history and "
+                    "intelligence, rank opportunities, and stage candidates "
+                    "without promoting them."},
+    {"template_id": "context_intelligence_seed", "framework": "custom",
+     "logical_kind": "search_improvement",
+     "steps": ("scope_domain", "audit_coverage", "map_roles_and_work",
+               "define_research_questions", "generate_context",
+               "classify", "deduplicate", "verify", "stage", "report"),
+     "maturity": "registered",
+     "description": "Seed one domain with categorized Context Intelligence "
+                    "candidates. Research remains source-bound and every "
+                    "output stays a candidate."},
     {"template_id": "legacy_assimilation", "framework": "custom",
      "steps": ("snapshot", "inventory", "map_capabilities", "search_existing",
                "choose_disposition", "generate_candidates", "quarantine_test"),
@@ -128,7 +140,10 @@ def validate_template(body: dict) -> dict:
         v.append("every step must be a non-empty string")
     if fw == "open" and not body.get("stop_condition"):
         v.append("an open template must declare its stop_condition "
-                 "(at least one terminal/abstention path)")
+            "(at least one terminal/abstention path)")
+    logical_kind = body.get("logical_kind", "execution")
+    if logical_kind not in LOGICAL_KINDS:
+        v.append(f"logical_kind {logical_kind!r} not in {LOGICAL_KINDS}")
     for m in body.get("allowed_modes", ()):
         if _FROM_INTERNAL.get(m, m) not in MODES:
             v.append(f"mode {m!r} unknown")
@@ -151,6 +166,9 @@ def config_from_template(body: dict, *, power: str = "standard",
     modes = tuple(_FROM_INTERNAL.get(m, m)
                   for m in body.get("allowed_modes", MODES)) or MODES
     return LoopConfig(framework=body["framework"],
+                      logical_kind=body.get("logical_kind", "execution"),
+                      replay_guarantee=body.get("replay_guarantee",
+                                                "event_equivalent"),
                       allowable_modes=modes,
                       preferred_modes=tuple(m for m in
                                             ("deterministic", "hybrid",
@@ -158,7 +176,9 @@ def config_from_template(body: dict, *, power: str = "standard",
                                             if m in modes),
                       power=power,
                       custom_steps=tuple(body.get("steps") or ()),
-                      max_depth=max_depth)
+                      max_depth=max_depth,
+                      stop_condition=body.get("stop_condition",
+                                              "run_to_completion"))
 
 
 def template_records() -> list:
@@ -167,15 +187,19 @@ def template_records() -> list:
     from ..static_architecture.facets import string_facets
     return [StoreRecord(
         record_id=f"looptmpl.{t['template_id']}", kind="strategy",
-        title=f"Loop template: {t['template_id']} — {t['description'][:60]}",
+        title=f"Loop template: {t['template_id']}: {t['description'][:60]}",
         body={**{k: (list(v) if isinstance(v, tuple) else v)
                  for k, v in t.items()},
               "role": "loop_template",
               "facets": string_facets(category="loop_template",
                                       subcategory=t["framework"],
-                                      lifecycle=t["maturity"])},
+                                      context_type="template",
+                                      scope="package",
+                                      lifecycle=t["maturity"],
+                                      provenance="loop_template_library")},
         tags=("loop_template", t["framework"], t["maturity"]),
-        tier="core") for t in TEMPLATE_LIBRARY]
+        tier="core" if t["maturity"] == "registered" else "experimental")
+            for t in TEMPLATE_LIBRARY]
 
 
 def self_test() -> dict:
@@ -190,12 +214,13 @@ def self_test() -> dict:
     required = {"reference_nine_step", "compact_five_beat", "research_intensive",
                 "build_test_repair", "hypothesis_experiment",
                 "adversarial_review", "continuous_improvement",
+                "context_intelligence_seed",
                 "legacy_assimilation", "minimal_code_only",
                 "custom_user_supplied", "generated_candidate",
                 "mutated_experimental"}
     invalid = [t["template_id"] for t in TEMPLATE_LIBRARY
                if not validate_template(t)["valid"]]
-    check("twelve_template_library_all_valid",
+    check("registered_and_candidate_template_library_all_valid",
           required <= set(lib) and not invalid,
           f"{len(lib)} templates; invalid: {invalid}")
 
@@ -242,7 +267,14 @@ def self_test() -> dict:
           cfg6.allowable_modes == ("deterministic",)
           and cfg6.preferred_modes == ("deterministic",))
 
-    # 7. THE EXTERNAL-HARNESS ENVELOPE (harness-integration strategy): handing
+    # 7. improvement templates bind the no-self-promotion logical kind.
+    improve_cfg = config_from_template(lib["continuous_improvement"])
+    seed_cfg = config_from_template(lib["context_intelligence_seed"])
+    check("improvement_templates_bind_search_improvement_identity",
+          improve_cfg.logical_kind == "search_improvement"
+          and seed_cfg.logical_kind == "search_improvement")
+
+    # 8. THE EXTERNAL-HARNESS ENVELOPE (harness-integration strategy): handing
     # a bounded assignment to OpenCode / Codex / an ACP agent is delegation to
     # a loop whose interior we cannot see.  Three laws must hold at the
     # envelope, and all three are properties of the registered template plus

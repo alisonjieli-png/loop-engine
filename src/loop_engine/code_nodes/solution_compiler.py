@@ -142,16 +142,23 @@ def render_canvas(plan: dict) -> dict:
                 f"{'/'.join(s['allowed_modes'])}"
         lines.append(f'  {me}["{label}"]')
         edges.append(f"  {parent} --> {me}")
+        tail = me
         for n in s.get("loops", ()):
             k = nid()
             fb = ("|fb: " + ",".join(n["fallback_operations"]) + "|"
                   if n.get("fallback_operations") else "")
             lines.append(f'  {k}("{n["loop_id"]}: {n["operation"]} '
                          f'[{n.get("mode", "deterministic")}]{fb}")')
-            edges.append(f"  {me} --> {k}")
-        for m in s.get("members", ()):
-            walk(m, me)
-        return me
+            edges.append(f"  {tail} --> {k}")
+            tail = k
+        member_tails = [walk(m, me) for m in s.get("members", ())]
+        if member_tails:
+            join = nid()
+            lines.append(f'  {join}{{"{s["solution_id"]} result"}}')
+            edges.extend(f"  {member_tail} --> {join}"
+                         for member_tail in member_tails)
+            tail = join
+        return tail
 
     root = walk(spec, "IN")
     out = nid()
@@ -235,7 +242,21 @@ def self_test() -> dict:
           and "select_best" in canvas["mermaid"]
           and json.loads(canvas["json"])["digest"] == d1)
 
-    # 6. round trip: plan -> spec -> identical re-compiled digest.
+    # 6. a loop graph is drawn in the same order in which it executes.
+    seq = SolutionSpec("sequence", loops=(
+        SolutionLoopSpec("clean", "clean"),
+        SolutionLoopSpec("summarize", "mean"),
+    ))
+    seq_plan = compile_solution(seq, reg)["plan"]
+    seq_mermaid = render_canvas(seq_plan)["mermaid"]
+    seq_edges = [line.strip() for line in seq_mermaid.splitlines()
+                 if " --> " in line]
+    check("canvas_draws_solution_loops_in_execution_order",
+          seq_edges == ["IN --> N1", "N1 --> N2", "N2 --> N3",
+                        "N3 --> N4"],
+          str(seq_edges))
+
+    # 7. round trip: plan -> spec -> identical re-compiled digest.
     spec_rt = _spec_from_dict(ok_rep["plan"]["spec"])
     check("plan_spec_round_trip_is_stable",
           compile_solution(spec_rt, reg)["digest"] == d1)

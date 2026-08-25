@@ -1,7 +1,7 @@
-"""The step registry — the live, tested map of the nine-step kernel.
+"""The step registry: the live, tested map of the nine-step kernel.
 
 Owner directive (2026-08-23): make the whole architecture maximally flexible,
-understandable, separated, and well organized — for humans AND for LLMs.
+understandable, separated, and well organized: for humans AND for LLMs.
 
 This module is that organization made FIRST-CLASS.  For each of the nine kernel
 steps it records, in one place:
@@ -11,14 +11,14 @@ steps it records, in one place:
   * its typed input -> output contract;
   * the ways it may be answered (deterministic / retrieved / model / hybrid …);
   * the MODULES and functions that provide its logic (its "shelf");
-  * the extension point — where to add a new way to answer it.
+  * the extension point: where to add a new way to answer it.
 
 It is both **human-readable** (``render_map`` / ``render_step`` print a clean
 outline) and **machine-readable** (an LLM or tool queries ``step`` /
 ``steps_for_module`` to know exactly where a capability belongs).  Crucially it is
 **tested against reality**: the self-test verifies every referenced default
 exists, every referenced module imports, and the step keys / required-optional
-split match the kernel exactly — so the map can never silently drift from the code.
+split match the kernel exactly: so the map can never silently drift from the code.
 
 Cross-cutting SERVICES (not steps) are listed separately: the strict model-call
 DAG, the search/serve DAG, memory/commit, and the operating profile.
@@ -118,7 +118,7 @@ KERNEL_STEP_REGISTRY: tuple = (
          "solution_shaping: should_decompose (decompose / monolithic / escalate) "
          "+ shaping strings (outside-the-box, stacking/bagging/ensemble)",
          "decision_schemas: prompt-side reasoning shapes that bias what the model "
-         "CONSIDERS (INTELLIGENCE; check_engagement is a soft signal — admission "
+         "CONSIDERS (INTELLIGENCE; check_engagement is a soft signal: admission "
          "is runtime_contracts, bridged via to_contract)",
          "output_templates: the response-form ladder (string->list->if/then->"
          "measurement->evaluation->code) biasing reusable forms",
@@ -209,7 +209,7 @@ KERNEL_STEP_REGISTRY: tuple = (
         "call closure.audit_run before finishing"),
 )
 
-# Cross-cutting services — hand-owned, used by many steps, never step-specific.
+# Cross-cutting services: hand-owned, used by many steps, never step-specific.
 SERVICE_MAP: tuple = (
     ("model-call DAG", "model_call + reasoning_call + model_routes",
      "every model call: ReasoningRequest -> PromptAssemblySpec (13 blocks) -> "
@@ -230,19 +230,19 @@ SERVICE_MAP: tuple = (
     ("capability directory (handshakes + endpoints)", "capability_directory",
      "how the practitioner KNOWS what strings / code nodes / static components are "
      "available and HOW to call them: a CapabilityHandshake per surface (kind, "
-     "operations, query fields, ranking, health — read before use, never "
+     "operations, query fields, ranking, health: read before use, never "
      "assumed), and a standardized directory (discover / negotiate / call / serve) "
      "with declared fallbacks. serve() is the two-rail bias: use a code node if "
      "one serves the op, else fall back to the LLM-call pipeline"),
         ("real loop handlers", "loop_handlers",
      "the Loop on the REAL infrastructure: directory_handler pulls the mandatory "
-     "string intelligence per step (the power lever), probes the code rail with a "
+     "Context Intelligence per step (the effort setting), probes the code rail with a "
      "real search through the capability directory, resolves deterministic steps "
      "to real code nodes, escalates an empty code rail to the LLM surface "
      "(hybrid), and records every infra call on the ledger; run_loop_via_kernel "
      "delegates a nine_step loop to the wired kernel"),
     ("the Loop (everything is a loop)", "recursive_loop",
-     "the fundamental object: a Loop is an initializable, parameterized CLASS — "
+     "the fundamental object: a Loop is an initializable, parameterized CLASS: "
      "pass in framework (nine_step | five_step | custom | open), allowable + "
      "preferred MODES (deterministic | hybrid | non_deterministic, a waterfall "
      "with fallback), and a POWER lever (small..max sets string-intelligence pull "
@@ -254,13 +254,13 @@ SERVICE_MAP: tuple = (
      "the immediate sub-node under EVERY one of the nine kernel nodes: resolve_path "
      "asks 'deterministic, deterministic + LLM repair, or non-deterministic?' and "
      "branches into three, deciding from heuristics / memory / policy (settings "
-     "like model + internet access gate the paths) — the two-rail choice refined "
+     "like model + internet access gate the paths): the two-rail choice refined "
      "into three, one engine per node"),
     ("continuous improvement (housekeeping)", "housekeeping",
      "a SEPARATE-PURPOSE run of the SAME practitioner loop (self-improvement "
      "objective + instructions): on a trigger/cron it mines our runtimes/logs and "
      "customer legacy code (GitHub URLs) and proposes new code nodes, strings, "
-     "logic, and biases — classified string vs code, all runtime CANDIDATES "
+     "logic, and biases: classified string vs code, all runtime CANDIDATES "
      "(promotion is the evidence-gated boundary, never done here)"),
     ("live wiring", "wiring",
      "the composed entry point run_wired: enriches the deterministic kernel "
@@ -269,7 +269,7 @@ SERVICE_MAP: tuple = (
     ("runtime contracts", "runtime_contracts",
      "executable TRUTH at every boundary: ContractDefinition (immutable, "
      "versioned) + deterministic validator + explicit adapter. Distinct "
-     "authority from intelligence — a contract ADMITS/REJECTS a result; "
+     "authority from intelligence: a contract ADMITS/REJECTS a result; "
      "intelligence only PROPOSES a contract (to_contract / ContractCandidate)"),
     ("search / serve DAG", "store_serve",
      "one strict search over ALL resources (nodes, packs, rules, prior runs); "
@@ -294,7 +294,7 @@ def step(key_or_number) -> KernelStep:
 
 
 def steps_for_module(module_basename: str) -> list:
-    """Which kernel steps a module serves — 'where does this file belong?'."""
+    """Which kernel steps a module serves: 'where does this file belong?'."""
     hits = []
     for s in KERNEL_STEP_REGISTRY:
         if any(m.split(":")[0].strip() == module_basename
@@ -306,7 +306,7 @@ def steps_for_module(module_basename: str) -> list:
 
 def render_step(s: KernelStep) -> str:
     tag = "REQUIRED" if s.required else "OPTIONAL"
-    lines = [f"STEP {s.number} — {s.key}  [{tag}]",
+    lines = [f"STEP {s.number}: {s.key}  [{tag}]",
              f"  {s.name}",
              f"  Q: {s.question}",
              f"  {s.input_contract}  ->  {s.output_contract}",
@@ -320,8 +320,8 @@ def render_step(s: KernelStep) -> str:
 
 
 def render_map() -> str:
-    """The whole architecture as one clean outline — for a human or an LLM."""
-    out = ["THE NINE-STEP PRACTITIONER KERNEL — where every capability lives", ""]
+    """The whole architecture as one clean outline: for a human or an LLM."""
+    out = ["THE REFERENCE NINE-STEP PROFILE: detailed step map", ""]
     for s in KERNEL_STEP_REGISTRY:
         out.append(render_step(s))
         out.append("")
@@ -333,7 +333,7 @@ def render_map() -> str:
 
 
 # ---------------------------------------------------------------------------
-# Self-test — the map is verified AGAINST the code so it cannot silently drift.
+# Self-test: the map is verified AGAINST the code so it cannot silently drift.
 # ---------------------------------------------------------------------------
 
 

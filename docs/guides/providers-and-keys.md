@@ -13,7 +13,7 @@ access = configure(openrouter_key="...")     # or ollama_key= / mistral_key=
 print(access.explain())
 ```
 
-```
+```text
 Working providers: mistral
 Models reachable: 56
   ollama_cloud: HTTP 429 ...  -> rate or usage limit; this key works but is currently capped
@@ -28,7 +28,7 @@ your time.
 ## Verified by use
 
 A provider appears as working only because it answered a real call. A key in an
-environment variable is not a working provider — it might be expired, capped,
+environment variable is not a working provider: it might be expired, capped,
 or scoped wrong, and every one of those looks identical until something tries
 to use it.
 
@@ -71,7 +71,7 @@ That is the whole design: a setup problem should surface at setup.
 
 ## Discovery costs zero model calls
 
-Models are sorted into three roles from each vendor's **published catalog** —
+Models are sorted into three roles from each vendor's **published catalog** :
 price per output token, context length, declared reasoning and tool support:
 
 | Role | Meaning |
@@ -92,7 +92,7 @@ something costs, not how well it will do your job. Treat a role as a routing
 hint. If you want a quality ranking, measure one.
 
 An unpriced model is *not* tiered by its name. Name heuristics are not
-evidence, so it lands in the general role — the assumption that fails most
+evidence, so it lands in the general role: the assumption that fails most
 safely.
 
 ## Failover
@@ -109,7 +109,7 @@ r.usage_record()
 
 Providers are tried in order; the first success wins and the rest are never
 contacted. Every attempt is recorded, because *"the third provider answered"*
-is a materially different receipt from *"a model answered"* — and six months
+is a materially different run log from *"a model answered"*, and six months
 later that difference is the thing you need.
 
 **If every provider refuses, that is a failure and stays one.** The library
@@ -119,7 +119,7 @@ model produces numbers that look like evidence and are not.
 
 ## Cost attribution
 
-Token counts are provider-reported — never estimated — and always travel with
+Token counts are provider-reported: never estimated: and always travel with
 the provider that produced them:
 
 ```python
@@ -139,8 +139,8 @@ makes it decoration rather than accounting.
 to a global default order.
 
 This was a real defect, found by testing against a live stand-in server:
-configuring only a self-hosted box produced a callable that contacted — and
-billed — a completely different provider, while the configured server was never
+configuring only a self-hosted box produced a callable that contacted: and
+billed: a completely different provider, while the configured server was never
 reached. If you configure a provider, that is who gets called.
 
 ## Forbidden models

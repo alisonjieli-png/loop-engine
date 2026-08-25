@@ -94,7 +94,7 @@ def core_forms() -> dict:
         F("rank_options", "Rank these options for {task} from best to worst: "
           "{options}. One line of justification each.", "ranking"),
         F("rank_by_analogy", "Given these items in the context of {task}: "
-          "{options} — which one is best, argued BY ANALOGY to a solved "
+          "{options}. Which one is best by analogy to a solved "
           "problem in another field?", "comparison"),
         F("eliminate", "Candidate solutions for {task}: {options}. ELIMINATE "
           "every one that cannot work, with the disqualifying reason. Keep "
@@ -103,7 +103,7 @@ def core_forms() -> dict:
           "it: is it correct, complete, and safe? Verdict then defects.",
           "verdict"),
         F("generate_novel", "Context: {task}. Existing candidates: {options}. "
-          "Propose approaches that are COMPLETELY NEW — derivative of none of "
+          "Propose approaches that are completely new and derived from none of "
           "the above.", "proposals"),
         F("pairwise", "For {task}: A = {a}; B = {b}. Which is better and why? "
           "Answer 'A' or 'B' first.", "comparison"),
@@ -123,6 +123,22 @@ def core_forms() -> dict:
         F("check_then_extend", "Solutions proposed for {task}: {options}. "
           "First CHECK each briefly, then EXTEND the strongest with one "
           "improvement.", "verdict"),
+        F("first_principles", "For {task}, identify the invariants, remove "
+          "assumptions, and derive the smallest approach that could work.",
+          "decomposition"),
+        F("outline_to_detail", "For {task}, give a short outline. Expand each "
+          "part into detailed steps, then name the first executable action.",
+          "decomposition"),
+        F("top_improvements", "For {task}, list the ten changes most likely "
+          "to improve the result. Rank them by expected value and effort.",
+          "ranking"),
+        F("top_avoid", "For {task}, list the ten mistakes most likely to waste "
+          "time, increase risk, or produce a false result.", "list"),
+        F("best_practices", "For {task}, list the practices an experienced "
+          "team would check before, during, and after the work.", "list"),
+        F("invert_assumptions", "For {task}, reverse the main assumptions one "
+          "at a time. Which reversed assumption changes the plan most?",
+          "comparison"),
     ]
     return {f.name: f for f in forms}
 
@@ -208,10 +224,19 @@ def register_generated_form(forms: dict, *, name: str, template: str,
 
 def as_store_records(forms: dict) -> list:
     """Forms as store records so the strict search/serve DAG finds them."""
+    from ..static_architecture.facets import context_facets
     return [StoreRecord(
         record_id=f"qform.{f.name}", kind="question", title=f.template[:80],
         body={"template": f.template, "answer_shape": f.answer_shape,
-              "slots": list(f.slots), "provenance": f.provenance},
+              "slots": list(f.slots), "provenance": f.provenance,
+              "maturity": "registered" if f.tier == "core" else "candidate",
+              "facets": context_facets(
+                  category="question_form", subcategory=f.name,
+                  context_type="question", thinking_style=f.name
+                  if f.name in ("first_principles", "outline_to_detail") else "",
+                  response_shape=f.answer_shape, scope="package",
+                  lifecycle="registered" if f.tier == "core" else "candidate",
+                  provenance=f.provenance)},
         tags=("question_form", f.answer_shape, f.name), tier=f.tier)
         for f in forms.values()]
 

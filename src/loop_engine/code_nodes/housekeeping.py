@@ -2,7 +2,7 @@
 
 Owner concept (2026-08-23): a housekeeping / continuous-improvement layer that is
 SEPARATE from direct solutioning.  It runs on a trigger or a cron, reviews all our
-runtimes, logs, and evidence, organizes and classifies them (string intelligence
+runtimes, logs, and evidence, organizes and classifies them (Context Intelligence
 vs code intelligence), mines them, and determines new code nodes, new text
 intelligence, new logic, and new biases worth including.  It can also review a
 customer's LEGACY codebases (e.g. a list of GitHub URLs) and either propose how

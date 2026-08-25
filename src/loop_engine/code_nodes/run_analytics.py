@@ -46,11 +46,14 @@ SEMANTIC_MODES = ("hybrid", "non_deterministic")
 
 def analyze_run(events, usage_log=(), trace: "dict | None" = None) -> dict:
     """One canonical rollup of a loop ledger (the shared-tree history)."""
+    from ..static_architecture.chronicle import as_ledger_events
+    events = as_ledger_events(events)
     per_loop: dict = defaultdict(lambda: {
         "steps": 0, "semantic_calls": 0, "fallbacks": 0, "deferrals": 0,
         "budget_stops": 0, "spawned": 0, "empty_outputs": 0,
         "wall_seconds": None, "first_ts": None, "last_ts": None,
         "step_counts": Counter(), "goal": "", "depth": 0})
+    stored_usage = []
     for e in events:
         lid = e.get("loop_id")
         if lid is None:
@@ -81,13 +84,16 @@ def analyze_run(events, usage_log=(), trace: "dict | None" = None) -> dict:
             row["budget_stops"] += 1
         elif ev == "spawn":
             per_loop[e.get("parent", "?")]["spawned"] += 1
+        elif ev == "model_invocation":
+            stored_usage.append({"prompt_tokens": e.get("prompt_tokens", 0),
+                                 "eval_tokens": e.get("eval_tokens", 0)})
     for row in per_loop.values():
         if row["first_ts"] is not None and row["last_ts"] is not None:
             row["wall_seconds"] = round(row["last_ts"] - row["first_ts"], 3)
         row["step_counts"] = dict(row["step_counts"])
 
     tokens = {"prompt": 0, "eval": 0, "calls_with_usage": 0}
-    for u in usage_log or ():
+    for u in (usage_log or stored_usage):
         tokens["prompt"] += int(u.get("prompt_tokens", 0) or 0)
         tokens["eval"] += int(u.get("eval_tokens", 0) or 0)
         tokens["calls_with_usage"] += 1

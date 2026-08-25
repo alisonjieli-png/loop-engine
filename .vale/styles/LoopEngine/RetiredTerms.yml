@@ -1,0 +1,10 @@
+extends: existence
+message: "Replace the retired public term '%s' with the current specific name."
+level: error
+scope: text
+ignorecase: true
+tokens:
+  - '\breceipts?\b'
+  - '\bloop[ _-]intelligence\b'
+  - '\bintelligence pillars?\b'
+  - '\bString Intelligence\b'

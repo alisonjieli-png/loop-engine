@@ -1,0 +1,7 @@
+extends: existence
+message: "Use a period, comma, colon, or parentheses instead of '%s'."
+level: error
+scope: text
+nonword: true
+tokens:
+  - '[—–]'

@@ -21,7 +21,7 @@ Owns:
     - retire_advice(): advice retires by tombstone, never by deletion.
 
 Does not own:
-    - the three persistent pillars (intelligence_layers composes all
+    - the other three persistent layers (intelligence_layers composes all
       four), Runtime Memory (loop-to-loop notes — a different thing:
       this layer is HUMAN-to-loop), or any promotion authority — advice
       is guidance, not truth: it never bypasses gates, and acting on it
@@ -320,11 +320,30 @@ def advice_records_for_search(store: "AdviceStore") -> list:
     """Advice as StoreRecords, so the fourth layer rides the one
     Retriever exactly like the other three."""
     from .store_serve import StoreRecord
-    return [StoreRecord(r["advice_id"], "context", r["text"],
-                        body={"scope": r["scope"], "target": r["target"],
-                              "author": r["author"]},
-                        tags=("user_advice", r["scope"]))
-            for r in store._rows() if r.get("kind") == "user_advice"]
+    from .facets import string_facets
+    rows = store._rows()
+    retired = {r.get("advice_id") for r in rows
+               if r.get("kind") == "advice_retired"}
+    return [StoreRecord(
+                r["advice_id"], "context", r["text"],
+                body={"scope": r["scope"], "target": r["target"],
+                      "author": r["author"],
+                      "guidance_type": r.get("guidance_type", "advice"),
+                      "strength": r.get("strength", "suggestion"),
+                      "timing": r.get("timing", "next_safe_boundary"),
+                      "status": r.get("status", "submitted"),
+                      "ts": r.get("ts"),
+                      "facets": string_facets(
+                          category="user_guidance",
+                          subcategory=r.get("guidance_type", "advice"),
+                          scope=r["scope"],
+                          lifecycle=r.get("status", "submitted"),
+                          provenance="human")},
+                tags=("user_guidance", r.get("guidance_type", "advice"),
+                      r.get("strength", "suggestion"), r["scope"]))
+            for r in rows
+            if r.get("kind") == "user_advice"
+            and r.get("advice_id") not in retired]
 
 
 def self_test() -> dict:
@@ -383,7 +402,13 @@ def self_test() -> dict:
     r = Retriever(recs)
     h = r.search("winning write-up", mode="lexical")
     check("advice_searchable_through_one_retriever",
-          h["hits"] and h["hits"][0]["record_id"].startswith("adv-"))
+          h["hits"] and h["hits"][0]["record_id"].startswith("adv-")
+          and recs[0].body["guidance_type"] == "advice"
+          and recs[0].body["strength"] == "suggestion"
+          and recs[0].body["facets"]["category"] == "user_guidance")
+    check("retired_advice_is_not_searchable",
+          advice_records_for_search(store) == [],
+          "retirement tombstone removes advice from the active search view")
 
     # 4. closed scope vocabulary + empty advice refused.
     refused = 0

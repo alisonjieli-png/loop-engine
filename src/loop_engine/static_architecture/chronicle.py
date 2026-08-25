@@ -49,6 +49,73 @@ EVENT_TYPES = ("run_started", "loop_init", "loop_spawn", "iteration",
                "budget_stop", "evaluation", "terminal", "cancel",
                "solution_built", "solution_run", "learning", "custom")
 
+RUNS_DIR_ENV = "LOOP_ENGINE_RUNS_DIR"
+
+
+def default_runs_dir(path: str = "") -> str:
+    """One shared run directory for live runs, reports, playback, and Studio."""
+    selected = path or os.environ.get(RUNS_DIR_ENV, "")
+    if selected:
+        return os.path.abspath(os.path.expanduser(selected))
+    return os.path.join(os.path.expanduser("~"), ".loop-engine", "runs")
+
+
+_CHRONICLE_TO_LEDGER = {
+    "run_started": "run_started",
+    "loop_init": "init",
+    "loop_spawn": "spawn",
+    "iteration": "run_step",
+    "capability_search": "infra_call",
+    "string_retrieval": "intelligence_pull",
+    "code_execution": "code_execution",
+    "model_invocation": "model_invocation",
+    "fallback": "fallback",
+    "model_boundary_deferred": "model_boundary_deferred",
+    "budget_stop": "budget_stop",
+    "evaluation": "evaluation",
+    "terminal": "terminal",
+    "cancel": "cancel",
+    "solution_built": "solution.canvas.updated",
+    "solution_run": "solution_run",
+    "learning": "learning",
+    "custom": "custom",
+}
+
+
+def as_ledger_event(event) -> dict:
+    """Project a Chronicle event into the runtime event shape consumers use.
+
+    Raw ledger dictionaries pass through unchanged. ChronicleEvent objects and
+    persisted event dictionaries use one explicit adapter, so reporting,
+    analytics, and playback cannot disagree about field names.
+    """
+    if isinstance(event, dict) and "event" in event:
+        return dict(event)
+    row = event.body() if hasattr(event, "body") else dict(event)
+    detail = dict(row.get("detail") or {})
+    event_type = str(row.get("event_type", "custom"))
+    kind = str(detail.pop("_ledger_event", "")
+               or _CHRONICLE_TO_LEDGER.get(event_type, "custom"))
+    out = {**detail,
+           "event": kind,
+           "loop_id": str(row.get("loop_id", "") or ""),
+           "ts": row.get("ts"),
+           "step": str(row.get("step", "") or ""),
+           "mode": str(row.get("mode", "") or "")}
+    parent = str(row.get("parent_loop_id", "") or "")
+    if parent:
+        out["parent"] = parent
+    for key in ("model", "prompt_tokens", "eval_tokens", "status"):
+        value = row.get(key)
+        if value not in (None, "", 0):
+            out[key] = value
+    return out
+
+
+def as_ledger_events(events) -> list:
+    """Normalize raw or persisted events for report and playback consumers."""
+    return [as_ledger_event(event) for event in events]
+
 
 def _digest(obj) -> str:
     return hashlib.sha256(
@@ -175,9 +242,10 @@ class Chronicle:
                   "step": str(e.get("step", "")),
                   "mode": str(e.get("mode", "")),
                   "ts": e.get("ts", 0.0) or 0.0,
-                  "detail": {k: v for k, v in e.items()
-                             if k not in ("event", "loop_id", "parent",
-                                          "step", "mode", "ts")}}
+                  "detail": {"_ledger_event": str(e.get("event", "")),
+                             **{k: v for k, v in e.items()
+                                if k not in ("event", "loop_id", "parent",
+                                             "step", "mode", "ts")}}}
             if et == "iteration" and e.get("mode") in ("hybrid",
                                                        "non_deterministic"):
                 if ui < len(usage):
@@ -185,7 +253,10 @@ class Chronicle:
                     kw["model"] = str(u.get("model", ""))
                     kw["prompt_tokens"] = int(u.get("prompt_tokens", 0) or 0)
                     kw["eval_tokens"] = int(u.get("eval_tokens", 0) or 0)
-                ch.append("model_invocation", **dict(kw))
+                invocation = dict(kw)
+                invocation["detail"] = {
+                    **dict(kw["detail"]), "_ledger_event": "model_invocation"}
+                ch.append("model_invocation", **invocation)
             ch.append(et, **kw)
         return ch
 
@@ -193,7 +264,11 @@ class Chronicle:
 
     def save(self, root: str) -> str:
         d = os.path.join(root, self.run_id)
-        os.makedirs(d, exist_ok=True)
+        if os.path.exists(d):
+            raise FileExistsError(
+                f"run {self.run_id!r} already exists at {d}; "
+                "Chronicle history is immutable")
+        os.makedirs(d, exist_ok=False)
         with open(os.path.join(d, "events.jsonl"), "w") as f:
             for e in self.events:
                 f.write(json.dumps({**e.body(),
@@ -355,6 +430,24 @@ def self_test() -> dict:
               and back.events[-1].event_digest
               == ch2.events[-1].event_digest,
               "manifest.json + events.jsonl; chain verifies after reload")
+        collision_refused = False
+        try:
+            ch2.save(tmp)
+        except FileExistsError:
+            collision_refused = True
+        check("saved_run_identity_is_immutable",
+              collision_refused,
+              "a second save with the same run id is refused")
+
+        projected = as_ledger_events(back.events)
+        check("persisted_events_project_to_runtime_shape",
+              any(e.get("event") == "init" and e.get("goal")
+                  for e in projected)
+              and any(e.get("event") == "model_invocation"
+                      and e.get("prompt_tokens") == 10
+                      and e.get("eval_tokens") == 40
+                      for e in projected),
+              "goal, event kinds, and provider usage survive persistence")
         # 3b. DuckDB can query the projection directly (files stay the truth).
         try:
             import duckdb
@@ -367,7 +460,7 @@ def self_test() -> dict:
             results.append({
                 "test": "duckdb_queries_the_chronicle_files_directly",
                 "passed": False, "missing_dependency": "duckdb",
-                "detail": "FAILED: missing duckdb. Reinstall Loop Engine."})
+                "detail": "FAILED: missing duckdb. Reinstall with: python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git"})
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

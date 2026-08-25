@@ -198,6 +198,7 @@ def bias_schema(name: str) -> DecisionSchema:
 def schema_records() -> list:
     """Each decision schema as a searchable store record — a swappable resource."""
     from ..static_architecture.store_serve import StoreRecord
+    from ..static_architecture.facets import context_facets
     recs = []
     for s in SCHEMA_REGISTRY.values():
         recs.append(StoreRecord(
@@ -205,7 +206,14 @@ def schema_records() -> list:
             title=f"Decision schema: {s.purpose}",
             body={"required_fields": list(s.required_fields()),
                   "placement": s.placement,
-                  "instruction": s.as_instruction()},
+                  "instruction": s.as_instruction(),
+                  "maturity": "registered",
+                  "facets": context_facets(
+                      category="decision_schema", subcategory=s.name,
+                      context_type="template", response_shape="json",
+                      workflow_stage="decide", scope="package",
+                      lifecycle="registered",
+                      provenance="decision_schema_registry")},
             tags=("decision_schema", "schema_as_bias", s.name,
                   "step:decide_next"), tier="core"))
     return recs

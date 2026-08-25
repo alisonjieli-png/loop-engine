@@ -1,33 +1,57 @@
 # Examples
 
-Install Loop Engine once, then run any example. Most examples need no API key.
-
-| | Needs | What it shows |
-|---|---|---|
-| [01_hello_loop.py](01_hello_loop.py) | nothing else | the smallest real loop: an answer and a log, produced together |
-| [02_solve_a_problem.py](02_solve_a_problem.py) | nothing else | hand the loop a dataset and a goal; it generates its own data so it runs anywhere |
-| [03_bring_your_own_model.py](03_bring_your_own_model.py) | a provider key (optional) | discovery, failover, cost attribution — and what it says when nothing is reachable |
-| [04_reports.py](04_reports.py) | nothing else | text, Markdown, HTML and structured report data |
-| [05_kaggle_competition.py](05_kaggle_competition.py) | Kaggle credentials and competition access | a real competition end to end, with optional submission |
-| [06_your_own_loop.py](06_your_own_loop.py) | nothing else | your steps, your stop condition, your domain: invoice reconciliation |
+Install the complete package directly from GitHub:
 
 ```bash
-python -m pip install .
-python examples/01_hello_loop.py
-python examples/02_solve_a_problem.py
-python examples/06_your_own_loop.py
-python examples/05_kaggle_competition.py --competition titanic
+python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
 ```
 
-## Two things these examples are careful about
+Each numbered folder has a runnable `run.py` and its own `README.md` with
+network, model, file, cost, and external-effect notes.
 
-**A store hit outranks a model call by design.** Pass both a warm advice store
-and a model and the store answers — the model is never reached. That is the
-cheapest-first waterfall working correctly, and a trap if you are trying to
-measure whether the model helps. Vary *what serves the step*, not just whether
-a provider exists.
+## Useful work
 
-**The stop condition is a real choice.** `run_to_completion` runs the steps;
-`success_once` stops at the first accepted success and keeps retrying until it
-gets one, bounded by the budget. Example 06 shows both, and says plainly what
-happened when the wrong one was chosen.
+| Example | What it does |
+|---|---|
+| [01 prioritize a support queue](01_prioritize_support_queue/) | Ranks support tickets by operational impact. |
+| [02 predict customer renewal](02_predict_customer_renewal/) | Builds and grades a prediction artifact. |
+| [05 Kaggle competition](05_kaggle_competition/) | Runs a narrow external competition workflow. |
+| [06 reconcile invoices](06_reconcile_invoices/) | Reconciles invoices with nested loops and visible retries. |
+| [10 validate a customer import](10_validate_customer_import/) | Compiles and runs a deterministic Solution Canvas with validation and fallback. |
+| [11 seed space Context Intelligence](11_seed_space_context/) | Runs a Self-Improvement Loop that prepares categorized domain candidates. |
+
+## Models and intelligence
+
+| Example | What it does |
+|---|---|
+| [03 connect a model](03_connect_a_model/) | Checks providers and makes one loop-governed model call. |
+| [09 search the intelligence layers](09_search_the_intelligence_layers/) | Categorizes and searches Context, Code, Previous Run & Solution, and User Intelligence together. |
+
+## Understand a run
+
+| Example | What it does |
+|---|---|
+| [04 read run reports](04_read_run_reports/) | Writes text, Markdown, HTML, and JSON reports. |
+| [07 watch a run live](07_watch_a_run_live/) | Shows console, polling, and server-sent events in real time. |
+| [08 play back a saved run](08_play_back_a_saved_run/) | Loads the same saved Chronicle without rerunning the work. |
+
+Run a local example from the repository checkout:
+
+```bash
+python3 examples/01_prioritize_support_queue/run.py
+```
+
+Installed examples do not assume a checkout location:
+
+```bash
+loop-engine --example support-queue
+loop-engine --example intelligence-layers
+loop-engine --example context-seed
+loop-engine --live-demo --port 8770
+loop-engine --studio --runs-dir "$HOME/.loop-engine/runs" --port 8765
+```
+
+New examples should follow the
+[example README template](../docs/templates/example-readme.md). Keep the
+problem realistic, name every external effect, and add each safe offline run
+to CI.

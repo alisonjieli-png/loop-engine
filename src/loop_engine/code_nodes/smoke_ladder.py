@@ -102,7 +102,7 @@ def _consult_pillars(loop, step: str, advice_store=None,
     try:
         serve_pillar("string_intelligence", f"step:{step}",
                      lambda: f"considerations for {step}",
-                     ledger=loop.ledger)
+                     ledger=loop.ledger, parent=loop)
         got["string"] = 1
     except Exception:                                       # noqa: BLE001
         pass
@@ -112,7 +112,7 @@ def _consult_pillars(loop, step: str, advice_store=None,
         try:
             refs = search_as_loop_refs(code_store, step,
                                        pillar="code_intelligence",
-                                       ledger=loop.ledger)
+                                       ledger=loop.ledger, parent=loop)
             got["code"], got["refs"] = 1, len(refs)
         except Exception:                                   # noqa: BLE001
             pass
@@ -121,14 +121,14 @@ def _consult_pillars(loop, step: str, advice_store=None,
         try:
             serve_pillar("past_run_intelligence", f"prior:{step}",
                          lambda: f"prior runs touching {step}",
-                         ledger=loop.ledger)
+                         ledger=loop.ledger, parent=loop)
             got["history"] = 1
         except Exception:                                   # noqa: BLE001
             pass
     if advice_store is not None:
         try:
             guidance_for_as_loop(advice_store, "task", "smoke",
-                                 ledger=loop.ledger)
+                                 ledger=loop.ledger, parent=loop)
             got["guidance"] = 1
         except Exception:                                   # noqa: BLE001
             pass
@@ -292,7 +292,9 @@ def make_smoke_handler(*, train_csv: str, test_csv: str, sample_csv: str,
 def run_smoke_loop(goal: str, *, train_csv: str, test_csv: str,
                    sample_csv: str, out_csv: str, advice_fn=None,
                    advice_store=None, output_probabilities: "bool | None" = None,
-                   config: "LoopConfig | None" = None, ledger=None) -> dict:
+                   config: "LoopConfig | None" = None, ledger=None,
+                   chronicle_run_id: str = "", runs_dir: str = "",
+                   usage_log: "list | None" = None) -> dict:
     """One end-to-end smoke run through the canonical Loop; returns the
     receipt (ledger, modes, trace, §12 accounting).  ``config`` sets the
     loop's mode discipline — a deterministic-only config keeps research on
@@ -309,6 +311,11 @@ def run_smoke_loop(goal: str, *, train_csv: str, test_csv: str,
                     if b["template_id"] == "smoke_solve_six_beat")
         config = config_from_template(tmpl, power="deep")
     loop = Loop(goal, config, ledger=ledger)
+    if chronicle_run_id:
+        from ..static_architecture.chronicle import default_runs_dir
+        loop.enable_chronicle(chronicle_run_id,
+                              root_dir=default_runs_dir(runs_dir),
+                              usage_log=usage_log)
     recs = []
     while not loop.is_terminal:
         recs.append(loop.run_next_iteration(handler=handler))

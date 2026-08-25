@@ -179,6 +179,7 @@ def as_model_loop(objective: str, fn, *, inputs=None,
     # checked against the canonical families).
     _usage = {"model": str(getattr(value, "model_used", "")
                            or getattr(value, "model", ""))[:60],
+              "provider": str(getattr(value, "provider", ""))[:60],
               "prompt_tokens": int(getattr(value, "prompt_tokens", 0) or 0),
               "eval_tokens": int(getattr(value, "eval_tokens", 0) or 0)}
     if ok:

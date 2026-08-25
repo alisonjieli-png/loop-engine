@@ -7,6 +7,67 @@ on:
   workflow_dispatch:
 
 jobs:
+  docs:
+    name: public documentation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check Markdown structure
+        run: >-
+          npx --yes markdownlint-cli2@0.23.2
+          README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md humanizer-context.md
+          docs/README.md docs/getting-started.md
+          'docs/components/**/*.md' 'docs/guides/*.md' 'docs/templates/*.md'
+          docs/STYLE.md
+          docs/architecture/ARCHITECTURE_CONFORMANCE.md
+          docs/architecture/DESIGN-GUIDANCE.md
+          docs/architecture/DESIGN-LANGUAGE.md
+          docs/architecture/ARCHITECTURE-VISUAL-GUIDANCE.md
+          docs/reference/PRODUCT-NOMENCLATURE.md
+          docs/reference/UNIVERSAL-LOOP-STANDARD.md
+          'examples/**/*.md'
+
+      - name: Check public language
+        uses: vale-cli/vale-action@v3
+        with:
+          version: 3.18.0
+          sync: false
+          files: '["README.md","CHANGELOG.md","CONTRIBUTING.md","SECURITY.md","humanizer-context.md","docs/README.md","docs/getting-started.md","docs/components","docs/guides","docs/templates","docs/STYLE.md","docs/architecture/ARCHITECTURE_CONFORMANCE.md","docs/architecture/DESIGN-GUIDANCE.md","docs/architecture/DESIGN-LANGUAGE.md","docs/architecture/ARCHITECTURE-VISUAL-GUIDANCE.md","docs/reference/PRODUCT-NOMENCLATURE.md","docs/reference/UNIVERSAL-LOOP-STANDARD.md","examples"]'
+
+      - name: Check local links and section anchors
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --offline --include-fragments --root-dir "$GITHUB_WORKSPACE"
+            README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md humanizer-context.md
+            docs/README.md docs/getting-started.md
+            'docs/components/**/*.md' 'docs/guides/*.md' 'docs/templates/*.md'
+            docs/STYLE.md
+            docs/architecture/ARCHITECTURE_CONFORMANCE.md
+            docs/architecture/DESIGN-GUIDANCE.md
+            docs/architecture/DESIGN-LANGUAGE.md
+            docs/architecture/ARCHITECTURE-VISUAL-GUIDANCE.md
+            docs/reference/PRODUCT-NOMENCLATURE.md
+            docs/reference/UNIVERSAL-LOOP-STANDARD.md
+            'examples/**/*.md'
+          fail: true
+          failIfEmpty: true
+
+      - name: Render current architecture diagrams
+        run: |
+          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' README.md > "$RUNNER_TEMP/readme-overview.mmd"
+          npx --yes @mermaid-js/mermaid-cli@11.16.0 -i "$RUNNER_TEMP/readme-overview.mmd" -o "$RUNNER_TEMP/readme-overview.png" --quiet
+          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/self-improvement/README.md > "$RUNNER_TEMP/self-improvement.mmd"
+          npx --yes @mermaid-js/mermaid-cli@11.16.0 -i "$RUNNER_TEMP/self-improvement.mmd" -o "$RUNNER_TEMP/self-improvement.png" --quiet
+
   test:
     name: suite + conformance gates
     runs-on: ubuntu-latest
@@ -36,9 +97,14 @@ jobs:
 
       - name: Examples run
         run: |
-          python examples/01_hello_loop.py
-          python examples/02_solve_a_problem.py
-          python examples/04_reports.py
+          python examples/01_prioritize_support_queue/run.py
+          python examples/02_predict_customer_renewal/run.py
+          python examples/04_read_run_reports/run.py
+          python examples/06_reconcile_invoices/run.py
+          python examples/08_play_back_a_saved_run/run.py
+          python examples/09_search_the_intelligence_layers/run.py
+          python examples/10_validate_customer_import/run.py
+          python examples/11_seed_space_context/run.py
 
   build:
     name: build the distribution

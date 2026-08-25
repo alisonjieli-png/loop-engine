@@ -40,7 +40,7 @@ CODE_FACET_FIELDS = ("execution_mode", "determinism", "locality", "effects",
                      "cost_class", "role", "lifecycle")
 
 # ---------------------------------------------------------------------------
-# String facet vocabularies (category drill-down is open; positions are a
+# Context facet vocabularies (category drill-down is open; positions are a
 # known list PLUS any explicit custom position — a lens, not a gate).
 # ---------------------------------------------------------------------------
 
@@ -50,8 +50,22 @@ KNOWN_JOB_POSITIONS = (
     "site_reliability_engineer", "security_engineer", "research_scientist",
 )
 
-STRING_FACET_FIELDS = ("category", "subcategory", "job_position",
-                       "scope", "lifecycle", "provenance")
+ROLE_FAMILIES = (
+    "leadership_product", "software_systems", "data_ai_statistics",
+    "science_engineering", "health_safety", "operations_reliability",
+    "risk_compliance", "research_review", "customer_domain", "other")
+
+CONTEXT_FACET_FIELDS = (
+    "category", "subcategory", "context_type", "role_family",
+    "job_position", "seniority", "industry", "domain", "subdomain",
+    "topic", "project_type", "task_type", "deliverable", "workflow_stage",
+    "thinking_style", "response_shape", "geography", "jurisdiction",
+    "time_horizon", "source_policy", "claim_status",
+    "possible_code_target", "scope", "lifecycle", "provenance", "digest")
+
+# Compatibility name for callers that still use the internal String asset
+# vocabulary. The public layer name is Context Intelligence.
+STRING_FACET_FIELDS = CONTEXT_FACET_FIELDS
 
 _CLOSED = {"execution_mode": EXECUTION_MODES, "determinism": DETERMINISM,
            "locality": LOCALITY, "cost_class": COST_CLASSES}
@@ -78,14 +92,49 @@ def code_facets(*, execution_mode: str, determinism: str, locality: str,
 
 def string_facets(*, category: str, subcategory: str = "",
                   job_position: str = "", scope: str = "",
-                  lifecycle: str = "", provenance: str = "") -> dict:
-    """Facet dict for a String record.  Category drill-down is open text;
-    a job position outside the known list is allowed but flagged custom."""
+                  lifecycle: str = "", provenance: str = "",
+                  context_type: str = "", role_family: str = "",
+                  seniority: str = "", industry: str = "", domain: str = "",
+                  subdomain: str = "", topic: str = "",
+                  project_type: str = "", task_type: str = "",
+                  deliverable: str = "", workflow_stage: str = "",
+                  thinking_style: str = "", response_shape: str = "",
+                  geography: str = "", jurisdiction: str = "",
+                  time_horizon: str = "", source_policy: str = "",
+                  claim_status: str = "", possible_code_target: str = "",
+                  digest: str = "") -> dict:
+    """Facet dict for a Context record.
+
+    The function keeps its compatibility name because existing persisted
+    records use the String asset vocabulary. Public interfaces call the layer
+    Context Intelligence. Open fields remain explicit instead of forcing every
+    industry and job into a closed list.
+    """
     return {"category": category, "subcategory": subcategory,
+            "context_type": context_type,
+            "role_family": role_family,
+            "role_family_known": (role_family in ROLE_FAMILIES
+                                  if role_family else True),
             "job_position": job_position,
             "job_position_known": (job_position in KNOWN_JOB_POSITIONS
                                    if job_position else True),
-            "scope": scope, "lifecycle": lifecycle, "provenance": provenance}
+            "seniority": seniority, "industry": industry,
+            "domain": domain, "subdomain": subdomain, "topic": topic,
+            "project_type": project_type, "task_type": task_type,
+            "deliverable": deliverable, "workflow_stage": workflow_stage,
+            "thinking_style": thinking_style,
+            "response_shape": response_shape,
+            "geography": geography, "jurisdiction": jurisdiction,
+            "time_horizon": time_horizon, "source_policy": source_policy,
+            "claim_status": claim_status,
+            "possible_code_target": possible_code_target,
+            "scope": scope, "lifecycle": lifecycle,
+            "provenance": provenance, "digest": digest}
+
+
+def context_facets(**kwargs) -> dict:
+    """Public-language alias for ``string_facets``."""
+    return string_facets(**kwargs)
 
 
 # ---------------------------------------------------------------------------
@@ -218,6 +267,20 @@ def self_test() -> dict:
     s3 = string_facets(category="ops", job_position="chief_vibes_officer")
     check("custom_job_position_allowed_but_flagged",
           s3["job_position_known"] is False)
+
+    # 10. the Context hierarchy is searchable through the same filter grammar.
+    cx = context_facets(
+        category="domain_seed", context_type="question",
+        role_family="science_engineering", job_position="mission_planner",
+        domain="space", project_type="earth_observation",
+        task_type="risk_review", workflow_stage="planning",
+        thinking_style="first_principles", response_shape="decomposition",
+        scope="domain", lifecycle="candidate", provenance="seed/v1")
+    cflt = FacetFilter(require={"domain": "space",
+                               "thinking_style": "first_principles"})
+    check("context_hierarchy_fields_use_the_shared_filter_grammar",
+          facet_match(cx, cflt)[0]
+          and all(field in cx for field in CONTEXT_FACET_FIELDS))
 
     passed = sum(1 for r in results if r["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

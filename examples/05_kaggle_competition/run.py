@@ -1,11 +1,11 @@
-"""5 — A real Kaggle competition, end to end.
+"""5: A real Kaggle competition, end to end.
 
-    python -m pip install .
+    python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
     # put your kaggle.json at ~/.kaggle/kaggle.json  (Account -> Create New Token)
-    python examples/05_kaggle_competition.py --competition titanic
+    python3 examples/05_kaggle_competition/run.py --competition titanic
 
 Download, solve, score locally, and optionally submit. The loop runs on the
-deterministic rail by default — this whole example spends zero tokens unless
+deterministic rail by default: this whole example spends zero tokens unless
 you pass --model.
 
 The honest part, which matters more than the score: the local cross-validation
@@ -72,7 +72,7 @@ def main():
     ap.add_argument("--competition", default="titanic")
     ap.add_argument("--model", action="store_true",
                     help="permit ONE model call for the research step "
-                         "(needs a provider — see example 03)")
+                         "(needs a provider: see example 03)")
     ap.add_argument("--submit", action="store_true",
                     help="actually submit to the leaderboard")
     ap.add_argument("--report", metavar="PATH",
@@ -96,14 +96,14 @@ def main():
         out_csv = os.path.join(d, "submission.csv")
         ledger = LoopLedger()
 
-        receipt = run_smoke_loop(
+        run_result = run_smoke_loop(
             f"solve the {args.competition} competition",
             train_csv=train, test_csv=test, sample_csv=sample,
             out_csv=out_csv, ledger=ledger,
             advice_store=None if advise else _warm_store(),
             advice_fn=advise)
 
-        trace = receipt.get("trace", {})
+        trace = run_result.get("trace", {})
         calls = trace.get("model_calls", [])
         tokens = sum(c.get("prompt_tokens", 0) + c.get("eval_tokens", 0)
                      for c in calls)
@@ -141,7 +141,7 @@ def main():
             print(f"  kaggle competitions submissions -c {args.competition}")
             print()
             print("When it differs from the local cv score above, the "
-                  "leaderboard is the honest number — your split was "
+                  "leaderboard is the honest number: your split was "
                   "optimistic, and that gap is the thing worth studying.")
         else:
             print()
@@ -155,7 +155,7 @@ def _warm_store():
 
     Worth knowing: a store hit OUTRANKS a model call by design (cheapest
     first). Passing both a warm store and a model means the store answers and
-    the model is never reached — which is correct behaviour, and a trap if you
+    the model is never reached: which is correct behaviour, and a trap if you
     are trying to measure whether the model helps."""
     from loop_engine.static_architecture.store_serve import (SolverStore,
                                                              StoreRecord)

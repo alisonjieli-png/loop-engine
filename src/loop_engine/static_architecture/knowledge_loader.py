@@ -325,8 +325,8 @@ def _load_yaml(path: str, text: str, kind: str) -> tuple:
     try:
         import yaml                                       # noqa: F401
     except ImportError:
-        return [], ["needs PyYAML for .yaml/.yml — pip install pyyaml "
-                    "(reported rather than skipped, so the gap is visible)"]
+        return [], ["needs PyYAML for .yaml/.yml. Reinstall with: "
+                    "python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git"]
     import yaml
     try:
         data = list(yaml.safe_load_all(text))
@@ -424,7 +424,7 @@ def load_knowledge(target: str, *, kind: str = DEFAULT_KIND,
             result.errors.append((path, err))
 
     if ledger is not None:
-        # a canonical kind: loading knowledge IS string intelligence being
+        # a canonical kind: loading knowledge is Context Intelligence being
         # retrieved, and a computed or invented kind cannot have its family
         # checked, so the gate refuses one
         ledger.record(loop_id="knowledge.load",

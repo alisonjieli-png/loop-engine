@@ -5,7 +5,7 @@ Fifteen minutes, no API key required.
 ## 1. Install
 
 ```bash
-python -m pip install .
+python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
 ```
 
 Python 3.10 or newer.
@@ -27,27 +27,30 @@ from loop_engine.loop.encapsulate import as_practitioner_loop
 ledger = LoopLedger()
 
 result = as_practitioner_loop(
-    "estimate delivery time",
-    lambda: 4,                     # any callable — ordinary Python
+    "choose the next support ticket",
+    lambda: max([
+        {"id": "SUP-1042", "severity": 2},
+        {"id": "SUP-1044", "severity": 3},
+    ], key=lambda ticket: ticket["severity"]),
     ledger=ledger)
 
-print(result["value"])             # 4
+print(result["value"]["id"])       # SUP-1044
 print(result["model_calls"])       # 0
-print(len(ledger.events))          # 13 — the run recorded itself
+print(len(ledger.events))          # 13: the run recorded itself
 ```
 
-Two things happened. You got an answer, and you got a record of how it was
-produced. That pairing is the point: work and evidence are the same act, not
-two.
+You got an answer and an event log from the same run. The answer is the task
+result. The event log supports reports, inspection, and debugging.
 
-Runnable version: [`examples/01_hello_loop.py`](../examples/01_hello_loop.py)
+Runnable version:
+[support queue example](../examples/01_prioritize_support_queue/)
 
 ## 3. Send it a real problem
 
 ```python
 from loop_engine.code_nodes.smoke_ladder import run_smoke_loop
 
-receipt = run_smoke_loop(
+run_result = run_smoke_loop(
     "predict which customers renew",
     train_csv="train.csv",
     test_csv="test.csv",
@@ -55,36 +58,26 @@ receipt = run_smoke_loop(
     out_csv="predictions.csv",
     ledger=ledger)
 
-trace = receipt["trace"]
+trace = run_result["trace"]
 trace["estimator"]      # what it chose
 trace["cv_score"]       # its honest local score
-trace["model_calls"]    # [] — nothing was sent to a model
+trace["model_calls"]    # []: nothing was sent to a model
 ```
 
-The loop runs the nine-step practitioner cycle: orient on the data, research an
-approach, decide, act, verify, commit. On the deterministic rail this costs
-nothing but CPU.
+The deterministic data workflow inspects the files, chooses an approach,
+builds predictions, and validates the output. It makes no model call.
 
 Runnable version, which generates its own dataset:
-[`examples/02_solve_a_problem.py`](../examples/02_solve_a_problem.py)
+[`examples/02_predict_customer_renewal/`](../examples/02_predict_customer_renewal/)
 
 ## 4. See what it did
 
 ```bash
-loop-engine --report
+python3 examples/04_read_run_reports/run.py
 ```
 
-```
-LOOP REPORT — quarterly-plan
-  5 loops, 34 events, max depth 2
-  0 model calls, 0 tokens
-
-loop1 — prepare a quarterly plan
-    loop2 — gather last quarter's numbers
-    loop3 — draft the objectives
-    loop4 — review the draft
-        loop5 — check one assumption
-```
+The example prints the parent and child loop tree and keeps Markdown, HTML, and
+JSON reports under `example-output/incident-report/`.
 
 Or in code, for a run you have in hand:
 
@@ -108,10 +101,9 @@ print(access.explain())
 advise = advice_function(access)     # None if nothing is reachable
 ```
 
-`configure()` probes every provider with a real call and tells you which loop
-modes this installation can actually run — *before* you start a job, so a
-capped or rejected key is a setup message rather than a failure twenty minutes
-in.
+`configure()` probes each configured provider with a real call. It reports the
+available loop modes before a job starts. A capped or rejected key becomes a
+setup error instead of a failure during the job.
 
 More: [providers and keys](guides/providers-and-keys.md) ·
 [custom endpoints](guides/custom-endpoints.md)
@@ -124,5 +116,7 @@ More: [providers and keys](guides/providers-and-keys.md) ·
 | [Providers and keys](guides/providers-and-keys.md) | discovery, failover, cost attribution |
 | [Custom endpoints](guides/custom-endpoints.md) | your own server or a third party's |
 | [Reports](guides/reports.md) | reading and exporting a run |
-| [Architecture](architecture/) | the four abstractions |
-| [`examples/`](../examples/) | four runnable programs |
+| [Component guide](components/) | the Loop object, roles, Static Architecture, and intelligence layers |
+| [Architecture](architecture/) | deeper implementation and visual guidance |
+| [`examples/`](../examples/) | eleven categorized example folders |
+| [Customer import Canvas](../examples/10_validate_customer_import/) | a realistic compiled Solution Canvas with fallback |
