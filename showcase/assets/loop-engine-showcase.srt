@@ -1,0 +1,130 @@
+1
+00:00:00,000 --> 00:00:03,000
+Loop Engine
+Loop Engine uses one operational runtime object for every executable graph vertex.
+
+2
+00:00:03,000 --> 00:00:08,000
+One system, four clear parts
+Self-improvement is a Practitioner task profile. It is not a fifth system part.
+
+3
+00:00:08,000 --> 00:00:11,500
+A Loop is one typed operational node
+Ports, records, files, edges, and services are not additional operational node types.
+
+4
+00:00:11,500 --> 00:00:15,000
+Input, work, validated output
+Schema version, shape, optionality, units, and encoding belong in the port contract.
+
+5
+00:00:15,000 --> 00:00:18,800
+Definition first, instance second
+A graph vertex should resolve to an exact definition ID, version, and content digest.
+
+6
+00:00:18,800 --> 00:00:22,000
+Deterministic
+A deterministic Loop records zero physical model calls.
+
+7
+00:00:22,000 --> 00:00:25,400
+Hybrid
+The model path is optional. If used, its physical call and usage must be recorded.
+
+8
+00:00:25,400 --> 00:00:28,800
+Non-deterministic or LLM-driven
+A mode label without a physical model attempt is not model-led execution.
+
+9
+00:00:28,800 --> 00:00:33,300
+Each Loop instance selects one mode
+A deterministic Loop can spawn a non-deterministic Loop, and the reverse is also valid when permissions allow it.
+
+10
+00:00:33,300 --> 00:00:37,500
+One Loop runtime, three role branches
+A spawned Loop is still the same runtime type. Its role profile states why it exists.
+
+11
+00:00:37,500 --> 00:00:41,500
+A Practitioner Loop decides what work is useful next
+The Loop repeats only while its loop condition is true and its budget allows more work.
+
+12
+00:00:41,500 --> 00:00:45,700
+A Practitioner can spawn focused Loops
+Private context stays isolated. Typed results return to the Loop that requested the work.
+
+13
+00:00:45,700 --> 00:00:49,700
+Every Loop should access the same three shared groups
+Permissions decide which service operations are available. A run mode never expands authority.
+
+14
+00:00:49,700 --> 00:00:53,700
+Intelligence is organized by what it contributes
+Runtime Memory is separate. It is temporary and lasts only for the current run.
+
+15
+00:00:53,700 --> 00:00:57,200
+Context Intelligence
+Search returns a small typed reference. A Retrieved Context Intelligence Loop materializes the selected content.
+
+16
+00:00:57,200 --> 00:01:00,700
+Code Intelligence
+Discovery is effect-free. Invocation begins after selection, compatibility checks, and permission checks.
+
+17
+00:01:00,700 --> 00:01:04,300
+Runtime History and Solution Intelligence
+Intelligence Loops search, replay, or compare exact saved records. Missing evidence remains visible.
+
+18
+00:01:04,300 --> 00:01:07,800
+User Feedback Intelligence
+A deterministic Loop can return exact guidance. An authorized model-led Loop can frame it for the current task.
+
+19
+00:01:07,800 --> 00:01:12,300
+The Solution Canvas keeps several working routes
+Selection, fallback, routing, and ensembles must be explicit Solution Loops, not hidden edge behavior.
+
+20
+00:01:12,300 --> 00:01:16,800
+Loops connect into one typed directed acyclic graph
+Starting, Spawned by, Queried by, Retrieved by, and Connected from describe different relationships.
+
+21
+00:01:16,800 --> 00:01:21,000
+Static Architecture has three public groups
+The groups provide reusable access. They are not additional operational nodes.
+
+22
+00:01:21,000 --> 00:01:25,200
+From public websites to a tested model
+Every executable step is a Loop with its own typed ports, selected mode, conditions, and history.
+
+23
+00:01:25,200 --> 00:01:29,400
+Find reliable sources and inspect every PDF
+Discovery remains effect-free. Network and file operations start only after exact permission checks.
+
+24
+00:01:29,400 --> 00:01:33,600
+Build trusted data before building models
+Competing model candidates remain separate until an independent verifier compares them.
+
+25
+00:01:33,600 --> 00:01:38,100
+Verify, repair, compile, and record
+The selected Solution graph enters the Canvas. The same ordered events power live view and playback.
+
+26
+00:01:38,100 --> 00:01:43,100
+Self-improvement uses the same Practitioner Loop
+The architecture is clear. The remaining work is to consolidate the runtime and prove one real end-to-end task.
+

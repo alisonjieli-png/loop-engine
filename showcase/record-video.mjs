@@ -280,6 +280,14 @@ async function main() {
   try {
     const baseUrl = argument("--base-url", "http://127.0.0.1:8082").replace(/\/$/, "");
     const assetsDirectory = resolve(argument("--output-dir", defaultAssetsDirectory));
+    const expectedSourceSha256 = argument("--expected-source-sha256", "").trim().toLowerCase();
+    const sourcePath = join(scriptDirectory, "showcase-data.js");
+    const sourceSha256AtStart = await sha256(sourcePath);
+    if (expectedSourceSha256 && sourceSha256AtStart !== expectedSourceSha256) {
+      throw new Error(
+        `Showcase source SHA-256 is ${sourceSha256AtStart}; expected ${expectedSourceSha256}.`
+      );
+    }
     const ffmpeg = findFfmpeg();
     const ffprobe = findFfprobe();
     const browserExecutable = await findBrowser();
@@ -369,9 +377,22 @@ async function main() {
       throw new Error(`The real browser recording is only ${rawInformation.size} bytes.`);
     }
     const rawSummary = summarizeMedia(probeMedia(ffprobe, rawWebm));
+    if (!rawSummary.videoCodec || rawSummary.width !== VIDEO_WIDTH || rawSummary.height !== VIDEO_HEIGHT) {
+      throw new Error(
+        `Raw browser recording is not a ${VIDEO_WIDTH}x${VIDEO_HEIGHT} video stream: ` +
+        JSON.stringify(rawSummary)
+      );
+    }
+    // Chrome's MediaRecorder sometimes leaves the WebM segment duration unset.
+    // A missing raw-container duration is not accepted as proof. The published
+    // encodes below must still match the declared timeline within 0.2 seconds,
+    // include the required streams, and pass strict full decoding.
     if (
-      rawSummary.durationSeconds < MIN_DURATION_SECONDS - 1 ||
-      rawSummary.durationSeconds > MAX_DURATION_SECONDS + 3
+      rawSummary.durationSeconds > 0 &&
+      (
+        rawSummary.durationSeconds < MIN_DURATION_SECONDS - 1 ||
+        rawSummary.durationSeconds > MAX_DURATION_SECONDS + 3
+      )
     ) {
       throw new Error(`Raw browser recording duration is ${rawSummary.durationSeconds} seconds.`);
     }
@@ -411,12 +432,28 @@ async function main() {
         `Contact sheet is unexpectedly small at ${contactSummary.width}x${contactSummary.height}.`
       );
     }
+    const sourceSha256AtPublish = await sha256(sourcePath);
+    if (sourceSha256AtPublish !== sourceSha256AtStart) {
+      throw new Error(
+        `Showcase source changed during export: ${sourceSha256AtStart} -> ${sourceSha256AtPublish}.`
+      );
+    }
 
     const evidence = {
       recordType: "loop_engine_showcase_media_evidence/v2",
       generatedAt: new Date().toISOString(),
       recordingMode: "?record=1",
       exclusiveWriter: true,
+      frozenSource: {
+        file: "showcase-data.js",
+        sha256: sourceSha256AtPublish,
+        expectedSha256: expectedSourceSha256 || null,
+        unchangedDuringExport: true
+      },
+      rawCapture: {
+        ...rawSummary,
+        containerDurationDeclared: rawSummary.durationSeconds > 0
+      },
       sourceSha256: await sourceHashes(),
       browser: {
         executable: basename(browserExecutable),

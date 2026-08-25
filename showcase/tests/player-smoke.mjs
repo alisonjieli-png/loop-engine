@@ -106,6 +106,12 @@ async function verifyMediaWhenPresent() {
   });
   assert.equal(await sha256(paths.mp4), evidence.outputs.mp4.sha256);
   assert.equal(await sha256(paths.webm), evidence.outputs.webm.sha256);
+  assert.equal(
+    evidence.sourceSha256["showcase-data.js"],
+    await sha256(join(showcaseDirectory, "showcase-data.js")),
+    "Saved media was generated from a different showcase-data.js source"
+  );
+  assert.equal(evidence.frozenSource?.unchangedDuringExport, true);
   assert.equal(evidence.outputs.mp4.fullDecodePassed, true);
   assert.equal(evidence.outputs.webm.fullDecodePassed, true);
   return { state: "verified", checked: true, mp4, webm };

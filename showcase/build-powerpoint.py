@@ -28,7 +28,6 @@ SLIDE_W = 33867
 SLIDE_H = 19050
 INCH = 2540
 FONT = "Liberation Sans"
-TITLE_FONT = "Liberation Sans Narrow"
 
 
 def ins(value: float) -> int:
@@ -380,31 +379,42 @@ class DeckBuilder:
         )
 
     def base(self, slide: Any, scene: dict[str, Any], index: int, total: int) -> None:
-        self.rect(slide, 0, 0, 13.334, 7.5, fill="background", line="none", radius=0)
-        self.rect(slide, 0, 0, 13.334, 0.08, fill="practitioner", line="none", radius=0)
+        self.rect(slide, 0, 0, 13.333333, 7.5, fill="background", line="none", radius=0)
+        self.rect(slide, 0, 0, 13.333333, 0.08, fill="practitioner", line="none", radius=0)
         self.text(slide, scene.get("kicker", "LOOP ENGINE").upper(), 0.68, 0.23, 8.8, 0.25, font_size=11, font_color="practitioner", bold=True)
         self.text(slide, f"{index + 1:02d} / {total:02d}", 11.70, 0.22, 0.95, 0.25, font_size=11, font_color="muted", bold=True, align="RIGHT")
+        title_is_long = len(scene["title"]) >= 50
         self.text(
             slide,
             scene["title"],
             0.68,
-            0.50,
+            0.48,
             11.20,
-            0.52,
-            font_size=36,
+            0.58,
+            font_size=28 if title_is_long else 32,
             bold=True,
-            font_name=TITLE_FONT,
-            scale_width=82,
+            valign="TOP",
+            font_name=FONT,
+            scale_width=100,
             wrap=False,
         )
-        self.text(slide, scene.get("subtitle", ""), 0.68, 1.03, 12.0, 0.55, font_size=18, font_color="muted")
-        self.rect(slide, 0.68, 6.66, 11.97, 0.43, fill="staticSoft", line="none")
-        self.text(slide, scene.get("annotation", ""), 0.80, 6.70, 11.72, 0.34, font_size=13, font_color="muted")
-        self.text(slide, scene.get("caption", ""), 0.68, 7.14, 10.85, 0.22, font_size=10.5, font_color="muted")
-        self.text(slide, "LOOP ENGINE", 11.55, 7.14, 1.10, 0.22, font_size=10.5, font_color="static", bold=True, align="RIGHT")
+        self.text(
+            slide,
+            scene.get("subtitle", ""),
+            0.68,
+            1.06,
+            12.0,
+            0.48,
+            font_size=17,
+            font_color="muted",
+        )
+        self.rect(slide, 0.68, 6.39, 11.97, 0.43, fill="staticSoft", line="none")
+        self.text(slide, scene.get("annotation", ""), 0.80, 6.43, 11.72, 0.34, font_size=13, font_color="muted")
+        self.text(slide, scene.get("caption", ""), 0.68, 6.88, 10.85, 0.22, font_size=10.5, font_color="muted")
+        self.text(slide, "LOOP ENGINE", 11.55, 6.88, 1.10, 0.22, font_size=10.5, font_color="static", bold=True, align="RIGHT")
 
     def title_slide(self, slide: Any, scene: dict[str, Any]) -> None:
-        self.rect(slide, 0, 0, 13.334, 7.5, fill="background", line="none", radius=0)
+        self.rect(slide, 0, 0, 13.333333, 7.5, fill="background", line="none", radius=0)
         self.rect(slide, 0, 0, 0.16, 7.5, fill="practitioner", line="none", radius=0)
         self.text(slide, scene.get("kicker", "").upper(), 0.88, 0.72, 7.0, 0.32, font_size=14, font_color="practitioner", bold=True)
         self.text(slide, scene["title"], 0.88, 1.30, 9.2, 0.90, font_size=64, bold=True)
@@ -417,8 +427,8 @@ class DeckBuilder:
             self.loop_node(slide, label, x, 4.42, 1.72, 1.18, role=roles[index], font_size=16)
             if index < len(marks) - 1:
                 self.line(slide, x + 1.72, 5.01, x + 2.55, 5.01, line="line")
-        self.text(slide, scene.get("annotation", ""), 0.92, 6.45, 10.9, 0.36, font_size=14, font_color="muted")
-        self.text(slide, scene.get("caption", ""), 0.92, 7.06, 11.45, 0.24, font_size=11, font_color="muted")
+        self.text(slide, scene.get("annotation", ""), 0.92, 6.18, 10.9, 0.36, font_size=14, font_color="muted")
+        self.text(slide, scene.get("caption", ""), 0.92, 6.80, 11.45, 0.24, font_size=11, font_color="muted")
 
     def overview(self, slide: Any, scene: dict[str, Any]) -> None:
         v = scene["visual"]

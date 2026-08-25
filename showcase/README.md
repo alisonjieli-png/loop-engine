@@ -1,8 +1,8 @@
 # Loop Engine showcase
 
 This folder contains the editable source for the 26-slide Loop Engine
-architecture presentation. The browser player, video, PowerPoint, and PDF read
-from the same slide data in `showcase-data.js`.
+architecture presentation. The browser player, video, captions, PowerPoint,
+and PDF read from the same slide data in `showcase-data.js`.
 
 The slides separate the architecture contract from current implementation
 status. The public Static Architecture view contains exactly three groups:
@@ -55,8 +55,15 @@ Create the PDF:
 npm run export:pdf
 ```
 
-`npm run package` creates a ZIP only after `artifact-manifest.json` lists the
-files that exist and their current SHA-256 digests.
+Create the timed SRT captions:
+
+```bash
+npm run export:captions
+```
+
+`npm run package` creates the fixed-allowlist manifest, verifies every listed
+size and SHA-256 digest, and creates the ZIP. The package excludes installed
+dependencies, temporary files, and the raw browser recording.
 
 ## Generated artifact names
 
@@ -66,9 +73,12 @@ Exports write these files under `assets/`:
 - `loop-engine-architecture.webm`
 - `loop-engine-showcase.pptx`
 - `loop-engine-showcase.pdf`
+- `loop-engine-showcase.srt`
 - `poster.png`
 - `contact-sheet.png`
+- `powerpoint-montage.png`
 - `media-evidence.json`
+- `powerpoint-verification.json`
 - `loop-engine-showcase-complete.zip`, after manifest-based packaging
 
 These files are not complete until the matching export command succeeds. The
@@ -85,9 +95,12 @@ python3 -m py_compile build-powerpoint.py
 node --check showcase-data.js
 node --check render.js
 node --check player.js
+node --check verify-powerpoint.mjs
 ```
 
 The browser tests check all 26 slides, the controls, 1920 by 1080 and 1280 by
 720 layouts, text clipping, console errors, and any media files that are
 present. The video exporter also performs a complete decode check before it
-publishes an MP4 or WebM file.
+publishes an MP4 or WebM file. PowerPoint verification checks 26 slides, 26
+notes pages, native editable shapes, slide bounds, a 26-page render, and a
+26-frame montage.

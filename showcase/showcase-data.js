@@ -105,7 +105,7 @@ export const showcaseData = {
       title: "One system, four clear parts",
       subtitle: "The Practitioner builds. The Canvas describes what runs. Intelligence and Static Architecture support the work.",
       caption: "Self-improvement is a Practitioner task profile. It is not a fifth system part.",
-      annotation: "Architecture contract. One standard runtime context for every Loop is not implemented yet.",
+      annotation: "Implemented. Established constructor calls remain visible as compatibility composition.",
       visual: {
         flow: [
           { label: "Loop Practitioner", role: "practitioner", detail: "understand, build, verify" },
@@ -131,7 +131,7 @@ export const showcaseData = {
       title: "A Loop is one typed operational node",
       subtitle: "It has a stable definition, a run instance, and explicit graph relationships.",
       caption: "Ports, records, files, edges, and services are not additional operational node types.",
-      annotation: "Target contract. The current runtime has several partial wrappers that still need consolidation.",
+      annotation: "Implemented. One immutable definition binds profile, contract, modes, conditions, capabilities, version, and digest.",
       visual: {
         loopLabel: "Loop",
         profileLabel: "versioned definition",
@@ -173,7 +173,7 @@ export const showcaseData = {
       title: "Definition first, instance second",
       subtitle: "The definition states what may run. The instance records one actual run.",
       caption: "A graph vertex should resolve to an exact definition ID, version, and content digest.",
-      annotation: "A single complete LoopDefinition object does not exist in the current runtime yet.",
+      annotation: "Implemented. Every current Loop event includes its exact definition ID, version, and content digest.",
       visual: {
         columns: [
           {
@@ -268,9 +268,9 @@ export const showcaseData = {
       visual: {
         trunk: "Loop",
         branches: [
-          { label: "Practitioner", role: "practitioner", items: ["researcher", "solver", "builder", "verifier", "repairer"] },
-          { label: "Intelligence", role: "intelligence", items: ["Context", "Code", "Run and Solution", "User Feedback"] },
-          { label: "Solution", role: "solution", items: ["component", "validator", "router", "fallback", "formatter"] }
+          { label: "Practitioner", role: "practitioner", items: ["reference and compact", "research", "solver", "verifier", "self-improvement and code execution"] },
+          { label: "Intelligence", role: "intelligence", items: ["Context", "Code", "Runtime History and Solution", "User Feedback"] },
+          { label: "Solution", role: "solution", items: ["atomic component", "pipeline", "router and fallback", "ensemble", "validator"] }
         ]
       }
     },
@@ -317,7 +317,7 @@ export const showcaseData = {
       title: "Every Loop should access the same three shared groups",
       subtitle: "Typed service ports provide Intelligence Search and Retrieval, Web Research, and Custom Plugins.",
       caption: "Permissions decide which service operations are available. A run mode never expands authority.",
-      annotation: "Target architecture. The current runtime passes services through selected handlers instead of one standard context.",
+      annotation: "Implemented. Each Loop carries a permission-limited LoopRuntimeContext with exactly these three public groups.",
       visual: {
         loops: [
           { label: "Practitioner", role: "practitioner" },
@@ -420,7 +420,7 @@ export const showcaseData = {
       title: "The Solution Canvas keeps several working routes",
       subtitle: "Each cell refers to a versioned Solution Loop. Typed edges connect the selected graph.",
       caption: "Selection, fallback, routing, and ensembles must be explicit Solution Loops, not hidden edge behavior.",
-      annotation: "Current code has overlapping Canvas and graph models. One authoritative Loop graph remains a required correction.",
+      annotation: "Implemented. SolutionSpec and Canvas now build or project one authoritative LoopGraphDefinition.",
       visual: {
         columns: ["Capture", "Extract", "Normalize", "Model", "Verify"],
         rows: [
@@ -439,7 +439,7 @@ export const showcaseData = {
       title: "Loops connect into one typed directed acyclic graph",
       subtitle: "Repetition stays inside a Loop. Edges carry values and relationships, not hidden work.",
       caption: "Starting, Spawned by, Queried by, Retrieved by, and Connected from describe different relationships.",
-      annotation: "Target architecture. Current graph vertices can still contain unresolved string references.",
+      annotation: "Implemented. Every vertex resolves an exact versioned and digest-bound LoopDefinition.",
       visual: {
         vertices: [
           { id: "task", label: "Starting Practitioner", role: "practitioner", x: 220, y: 360 },
@@ -567,7 +567,7 @@ export const showcaseData = {
       title: "Self-improvement uses the same Practitioner Loop",
       subtitle: "A Practitioner can review a bounded run population and stage candidates. Independent review remains separate.",
       caption: "The architecture is clear. The remaining work is to consolidate the runtime and prove one real end-to-end task.",
-      annotation: "Current gap: one LoopDefinition, one LoopRuntimeContext, one authoritative DAG, and all three real executors are not complete yet.",
+      annotation: "Remaining gaps: full value schemas and built-in hybrid or non-deterministic Solution executors.",
       visual: {
         practitionerTasks: ["research", "build and test", "verify and repair", "self-improvement"],
         reviewLabel: "Independent review decides promotion",

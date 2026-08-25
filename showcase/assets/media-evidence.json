@@ -1,0 +1,314 @@
+{
+  "recordType": "loop_engine_showcase_media_evidence/v2",
+  "generatedAt": "2026-08-25T19:44:21.659Z",
+  "recordingMode": "?record=1",
+  "exclusiveWriter": true,
+  "frozenSource": {
+    "file": "showcase-data.js",
+    "sha256": "cf178bfa9cebcb836d3156d7979c426d33a576be2db8e44ad594409a9dbb072b",
+    "expectedSha256": "cf178bfa9cebcb836d3156d7979c426d33a576be2db8e44ad594409a9dbb072b",
+    "unchangedDuringExport": true
+  },
+  "rawCapture": {
+    "container": "matroska,webm",
+    "videoCodec": "vp9",
+    "audioCodec": "",
+    "width": 1920,
+    "height": 1080,
+    "frameRate": 30,
+    "durationSeconds": 0,
+    "sizeBytes": 13035871,
+    "pixelFormat": "yuv420p",
+    "audioSampleRate": 0,
+    "audioChannels": 0,
+    "streamCount": 1,
+    "containerDurationDeclared": false
+  },
+  "sourceSha256": {
+    "index.html": "aec2b6ab80b531464f7fac94ce97a58d328a3e0835d2ef680bfbedac10399449",
+    "styles.css": "58e904b4575d20b535bf7b150f4e6bcfd424d2afd42bbfe521e74de71b1bf1e6",
+    "showcase-data.js": "cf178bfa9cebcb836d3156d7979c426d33a576be2db8e44ad594409a9dbb072b",
+    "render.js": "c07861c0ab81a1d50c23fc388adcb4ce01c74eb9a06b406ea9bd526d0e7bc32b",
+    "player.js": "55f127fc6a0922352ca9859777cdeb4d24f4cd78322b9487463a97258e348398",
+    "record-video.mjs": "75929bf1f40a200a5f60de43ceb6d41bb07e59460c82146359ad908b76147417"
+  },
+  "browser": {
+    "executable": "google-chrome",
+    "errors": []
+  },
+  "tools": {
+    "playwrightCore": "1.62.1",
+    "ffmpegStatic": "5.3.0",
+    "ffprobeStatic": "3.1.0"
+  },
+  "timeline": {
+    "scenes": 26,
+    "durationSeconds": 103.1,
+    "framesPerSecond": 30,
+    "expectedFrames": 3093,
+    "audio": "silent",
+    "sceneSamples": [
+      {
+        "index": 0,
+        "id": "title",
+        "title": "Loop Engine",
+        "startSeconds": 0,
+        "durationSeconds": 3,
+        "sampleSeconds": 1.6500000000000001
+      },
+      {
+        "index": 1,
+        "id": "architecture-overview",
+        "title": "One system, four clear parts",
+        "startSeconds": 3,
+        "durationSeconds": 5,
+        "sampleSeconds": 5.75
+      },
+      {
+        "index": 2,
+        "id": "loop-object",
+        "title": "A Loop is one typed operational node",
+        "startSeconds": 8,
+        "durationSeconds": 3.5,
+        "sampleSeconds": 9.925
+      },
+      {
+        "index": 3,
+        "id": "typed-flow",
+        "title": "Input, work, validated output",
+        "startSeconds": 11.5,
+        "durationSeconds": 3.5,
+        "sampleSeconds": 13.425
+      },
+      {
+        "index": 4,
+        "id": "definition-and-instance",
+        "title": "Definition first, instance second",
+        "startSeconds": 15,
+        "durationSeconds": 3.8,
+        "sampleSeconds": 17.09
+      },
+      {
+        "index": 5,
+        "id": "deterministic-mode",
+        "title": "Deterministic",
+        "startSeconds": 18.8,
+        "durationSeconds": 3.2,
+        "sampleSeconds": 20.56
+      },
+      {
+        "index": 6,
+        "id": "hybrid-mode",
+        "title": "Hybrid",
+        "startSeconds": 22,
+        "durationSeconds": 3.4,
+        "sampleSeconds": 23.87
+      },
+      {
+        "index": 7,
+        "id": "non-deterministic-mode",
+        "title": "Non-deterministic or LLM-driven",
+        "startSeconds": 25.4,
+        "durationSeconds": 3.4,
+        "sampleSeconds": 27.27
+      },
+      {
+        "index": 8,
+        "id": "mode-comparison",
+        "title": "Each Loop instance selects one mode",
+        "startSeconds": 28.8,
+        "durationSeconds": 4.5,
+        "sampleSeconds": 31.275
+      },
+      {
+        "index": 9,
+        "id": "loop-role-hierarchy",
+        "title": "One Loop runtime, three role branches",
+        "startSeconds": 33.3,
+        "durationSeconds": 4.2,
+        "sampleSeconds": 35.61
+      },
+      {
+        "index": 10,
+        "id": "practitioner-profile",
+        "title": "A Practitioner Loop decides what work is useful next",
+        "startSeconds": 37.5,
+        "durationSeconds": 4,
+        "sampleSeconds": 39.7
+      },
+      {
+        "index": 11,
+        "id": "spawned-loops",
+        "title": "A Practitioner can spawn focused Loops",
+        "startSeconds": 41.5,
+        "durationSeconds": 4.2,
+        "sampleSeconds": 43.81
+      },
+      {
+        "index": 12,
+        "id": "shared-access",
+        "title": "Every Loop should access the same three shared groups",
+        "startSeconds": 45.7,
+        "durationSeconds": 4,
+        "sampleSeconds": 47.9
+      },
+      {
+        "index": 13,
+        "id": "intelligence-overview",
+        "title": "Intelligence is organized by what it contributes",
+        "startSeconds": 49.7,
+        "durationSeconds": 4,
+        "sampleSeconds": 51.9
+      },
+      {
+        "index": 14,
+        "id": "context-intelligence",
+        "title": "Context Intelligence",
+        "startSeconds": 53.7,
+        "durationSeconds": 3.5,
+        "sampleSeconds": 55.625
+      },
+      {
+        "index": 15,
+        "id": "code-intelligence",
+        "title": "Code Intelligence",
+        "startSeconds": 57.2,
+        "durationSeconds": 3.5,
+        "sampleSeconds": 59.125
+      },
+      {
+        "index": 16,
+        "id": "run-solution-intelligence",
+        "title": "Runtime History and Solution Intelligence",
+        "startSeconds": 60.7,
+        "durationSeconds": 3.6,
+        "sampleSeconds": 62.68
+      },
+      {
+        "index": 17,
+        "id": "user-feedback-intelligence",
+        "title": "User Feedback Intelligence",
+        "startSeconds": 64.3,
+        "durationSeconds": 3.5,
+        "sampleSeconds": 66.225
+      },
+      {
+        "index": 18,
+        "id": "solution-canvas",
+        "title": "The Solution Canvas keeps several working routes",
+        "startSeconds": 67.8,
+        "durationSeconds": 4.5,
+        "sampleSeconds": 70.275
+      },
+      {
+        "index": 19,
+        "id": "canonical-dag",
+        "title": "Loops connect into one typed directed acyclic graph",
+        "startSeconds": 72.3,
+        "durationSeconds": 4.5,
+        "sampleSeconds": 74.775
+      },
+      {
+        "index": 20,
+        "id": "static-architecture",
+        "title": "Static Architecture has three public groups",
+        "startSeconds": 76.8,
+        "durationSeconds": 4.2,
+        "sampleSeconds": 79.11
+      },
+      {
+        "index": 21,
+        "id": "worked-task-overview",
+        "title": "From public websites to a tested model",
+        "startSeconds": 81,
+        "durationSeconds": 4.2,
+        "sampleSeconds": 83.31
+      },
+      {
+        "index": 22,
+        "id": "worked-sources-pdfs",
+        "title": "Find reliable sources and inspect every PDF",
+        "startSeconds": 85.2,
+        "durationSeconds": 4.2,
+        "sampleSeconds": 87.51
+      },
+      {
+        "index": 23,
+        "id": "worked-data-models",
+        "title": "Build trusted data before building models",
+        "startSeconds": 89.4,
+        "durationSeconds": 4.2,
+        "sampleSeconds": 91.71
+      },
+      {
+        "index": 24,
+        "id": "worked-verify-record",
+        "title": "Verify, repair, compile, and record",
+        "startSeconds": 93.6,
+        "durationSeconds": 4.5,
+        "sampleSeconds": 96.075
+      },
+      {
+        "index": 25,
+        "id": "practitioner-improvement-profile",
+        "title": "Self-improvement uses the same Practitioner Loop",
+        "startSeconds": 98.1,
+        "durationSeconds": 5,
+        "sampleSeconds": 100.85
+      }
+    ]
+  },
+  "outputs": {
+    "webm": {
+      "file": "loop-engine-architecture.webm",
+      "container": "matroska,webm",
+      "videoCodec": "vp8",
+      "audioCodec": "opus",
+      "width": 1920,
+      "height": 1080,
+      "frameRate": 30,
+      "durationSeconds": 103.108,
+      "sizeBytes": 18769406,
+      "pixelFormat": "yuv420p",
+      "audioSampleRate": 48000,
+      "audioChannels": 2,
+      "streamCount": 2,
+      "sha256": "0d3f099d7aae9a30ebcf13c7068f8932a8b809cd4d7048acffe5884b3f26e43a",
+      "fullDecodePassed": true
+    },
+    "mp4": {
+      "file": "loop-engine-architecture.mp4",
+      "container": "mov,mp4,m4a,3gp,3g2,mj2",
+      "videoCodec": "h264",
+      "audioCodec": "aac",
+      "width": 1920,
+      "height": 1080,
+      "frameRate": 30,
+      "durationSeconds": 103.1,
+      "sizeBytes": 4618315,
+      "pixelFormat": "yuv420p",
+      "audioSampleRate": 48000,
+      "audioChannels": 2,
+      "streamCount": 2,
+      "sha256": "199d122c0cd7233f95a2f2010024570543482ea70d8db9afe5787c6caf97033c",
+      "fullDecodePassed": true
+    },
+    "poster": {
+      "file": "poster.png",
+      "width": 1920,
+      "height": 1080,
+      "sizeBytes": 156542,
+      "sha256": "f37c4d9cbe825d56a86a348afe9328d0746ebefe035455ed3c2b29aba43e1f7f",
+      "sourceScene": 1
+    },
+    "contactSheet": {
+      "file": "contact-sheet.png",
+      "width": 2304,
+      "height": 760,
+      "sizeBytes": 393306,
+      "sha256": "b72b8842a310329b6e566b8ed4da1a5b7a972852d5587728745b1531f19abeb4",
+      "frames": 26,
+      "sampleRule": "one midpoint frame extracted from the encoded MP4 for every timed slide"
+    }
+  }
+}

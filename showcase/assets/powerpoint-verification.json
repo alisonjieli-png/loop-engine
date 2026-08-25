@@ -1,0 +1,195 @@
+{
+  "recordType": "loop_engine_showcase_powerpoint_verification/v1",
+  "generatedAt": "2026-08-25T19:43:20.900Z",
+  "frozenSource": {
+    "file": "showcase-data.js",
+    "sha256": "cf178bfa9cebcb836d3156d7979c426d33a576be2db8e44ad594409a9dbb072b",
+    "expectedSha256": "cf178bfa9cebcb836d3156d7979c426d33a576be2db8e44ad594409a9dbb072b"
+  },
+  "deck": {
+    "file": "loop-engine-showcase.pptx",
+    "sizeBytes": 113970,
+    "sha256": "dd515b50a344410645904f2a1fafd8fd078141505197e183bb4d891d99096a7b",
+    "slides": 26,
+    "notesPages": 26,
+    "slideWidth": 12192000,
+    "slideHeight": 6858000,
+    "nativeShapeCount": 809,
+    "pictureShapeCount": 0,
+    "graphicFrameCount": 0,
+    "placementCount": 809,
+    "shapeBoundsToleranceEmu": 1000,
+    "shapeBoundsViolations": 0,
+    "imageOnlyDeck": false,
+    "perSlide": [
+      {
+        "path": "ppt/slides/slide1.xml",
+        "nativeShapes": 18,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide2.xml",
+        "nativeShapes": 25,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide3.xml",
+        "nativeShapes": 36,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide4.xml",
+        "nativeShapes": 27,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide5.xml",
+        "nativeShapes": 32,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide6.xml",
+        "nativeShapes": 27,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide7.xml",
+        "nativeShapes": 28,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide8.xml",
+        "nativeShapes": 27,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide9.xml",
+        "nativeShapes": 52,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide10.xml",
+        "nativeShapes": 26,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide11.xml",
+        "nativeShapes": 30,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide12.xml",
+        "nativeShapes": 29,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide13.xml",
+        "nativeShapes": 29,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide14.xml",
+        "nativeShapes": 32,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide15.xml",
+        "nativeShapes": 26,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide16.xml",
+        "nativeShapes": 29,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide17.xml",
+        "nativeShapes": 26,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide18.xml",
+        "nativeShapes": 23,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide19.xml",
+        "nativeShapes": 59,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide20.xml",
+        "nativeShapes": 39,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide21.xml",
+        "nativeShapes": 23,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide22.xml",
+        "nativeShapes": 43,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide23.xml",
+        "nativeShapes": 32,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide24.xml",
+        "nativeShapes": 31,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide25.xml",
+        "nativeShapes": 31,
+        "pictures": 0,
+        "graphicFrames": 0
+      },
+      {
+        "path": "ppt/slides/slide26.xml",
+        "nativeShapes": 29,
+        "pictures": 0,
+        "graphicFrames": 0
+      }
+    ]
+  },
+  "renderedDeck": {
+    "pages": 26,
+    "aspectRatio": "16:9",
+    "montage": {
+      "file": "powerpoint-montage.png",
+      "width": 2304,
+      "height": 760,
+      "sizeBytes": 589099,
+      "sha256": "2d65106d2d2015e29efacad62ad8cd30fe83e8cd5d2c8f0047d90edddba081f0",
+      "frames": 26
+    }
+  }
+}

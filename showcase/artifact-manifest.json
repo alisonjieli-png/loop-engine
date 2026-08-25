@@ -1,0 +1,160 @@
+{
+  "recordType": "loop_engine_showcase_manifest/v2",
+  "generatedAt": "2026-08-25T19:45:23.739Z",
+  "sourceOfLabels": "showcase-data.js",
+  "packagePolicy": {
+    "fixedAllowlist": true,
+    "excludes": [
+      "node_modules",
+      "temporary files",
+      "raw recordings"
+    ]
+  },
+  "files": [
+    {
+      "path": "README.md",
+      "sizeBytes": 2950,
+      "sha256": "f26aa810c3507d233a06eef4a173be10cfca0c769be8fbd8eb84280158baf368"
+    },
+    {
+      "path": "index.html",
+      "sizeBytes": 1922,
+      "sha256": "aec2b6ab80b531464f7fac94ce97a58d328a3e0835d2ef680bfbedac10399449"
+    },
+    {
+      "path": "styles.css",
+      "sizeBytes": 5181,
+      "sha256": "58e904b4575d20b535bf7b150f4e6bcfd424d2afd42bbfe521e74de71b1bf1e6"
+    },
+    {
+      "path": "showcase-data.js",
+      "sizeBytes": 27485,
+      "sha256": "cf178bfa9cebcb836d3156d7979c426d33a576be2db8e44ad594409a9dbb072b"
+    },
+    {
+      "path": "render.js",
+      "sizeBytes": 25008,
+      "sha256": "c07861c0ab81a1d50c23fc388adcb4ce01c74eb9a06b406ea9bd526d0e7bc32b"
+    },
+    {
+      "path": "player.js",
+      "sizeBytes": 14164,
+      "sha256": "55f127fc6a0922352ca9859777cdeb4d24f4cd78322b9487463a97258e348398"
+    },
+    {
+      "path": "record-video.mjs",
+      "sizeBytes": 18606,
+      "sha256": "75929bf1f40a200a5f60de43ceb6d41bb07e59460c82146359ad908b76147417"
+    },
+    {
+      "path": "export-pdf.mjs",
+      "sizeBytes": 6373,
+      "sha256": "7f1ce9f61874215c792b3cecbcd9bab81431059eb4544e52a3f641473ecc580a"
+    },
+    {
+      "path": "export-captions.mjs",
+      "sizeBytes": 2639,
+      "sha256": "7c4a289a7b60b5c50d30c20917c1476c612e0bef58229351772589a846fa1d4c"
+    },
+    {
+      "path": "build-powerpoint.py",
+      "sizeBytes": 38965,
+      "sha256": "71e396938bd01252acddba5f23e2e6290f8adcc19ad10b824e74da875ec299cb"
+    },
+    {
+      "path": "verify-powerpoint.mjs",
+      "sizeBytes": 7501,
+      "sha256": "5306039a6f9eded7cabe5812699cd51f2f98bf976873600ab1984ead7b69d2a9"
+    },
+    {
+      "path": "create-artifact-manifest.mjs",
+      "sizeBytes": 2782,
+      "sha256": "13495314d23f8a8759a72b8e96933c538b21513165739d90292676178bd0923e"
+    },
+    {
+      "path": "package-showcase.mjs",
+      "sizeBytes": 5642,
+      "sha256": "4a1a59f35e833d2fd4d43fe18fef5a93a5aca0f1762d940488a5fa6d8061cb8e"
+    },
+    {
+      "path": "package.json",
+      "sizeBytes": 999,
+      "sha256": "35132dddf182b380ca9dcba3001d6dd6685ea2d1ed882b702a6d625b3cf367af"
+    },
+    {
+      "path": "package-lock.json",
+      "sizeBytes": 8380,
+      "sha256": "2a2b9c81bb038e755003b562aeb5f6137bced6c5dde6aaadb35d6cd94ac6cbe8"
+    },
+    {
+      "path": "tools/export-slide-data.mjs",
+      "sizeBytes": 1841,
+      "sha256": "3b482b8597cea1ec525fd20fdbf9f6554808ed7b310a74d50b49ca8d90147dcb"
+    },
+    {
+      "path": "tools/media-common.mjs",
+      "sizeBytes": 9090,
+      "sha256": "a1b19d2981ec8dd59868f80440f483dc1b20659ce3820b95a3e3994066e48578"
+    },
+    {
+      "path": "tests/player-smoke.mjs",
+      "sizeBytes": 10636,
+      "sha256": "db134c33bdefa29ba3a4d85e68885483994ac03e1c660cf0fab604c02adcc14c"
+    },
+    {
+      "path": "tests/visual-audit.mjs",
+      "sizeBytes": 9704,
+      "sha256": "df24732a640013449d73d15b9edb28d466843dbd5acaea371fca9d2776d2de17"
+    },
+    {
+      "path": "assets/loop-engine-architecture.mp4",
+      "sizeBytes": 4618315,
+      "sha256": "199d122c0cd7233f95a2f2010024570543482ea70d8db9afe5787c6caf97033c"
+    },
+    {
+      "path": "assets/loop-engine-architecture.webm",
+      "sizeBytes": 18769406,
+      "sha256": "0d3f099d7aae9a30ebcf13c7068f8932a8b809cd4d7048acffe5884b3f26e43a"
+    },
+    {
+      "path": "assets/loop-engine-showcase.pptx",
+      "sizeBytes": 113970,
+      "sha256": "dd515b50a344410645904f2a1fafd8fd078141505197e183bb4d891d99096a7b"
+    },
+    {
+      "path": "assets/loop-engine-showcase.pdf",
+      "sizeBytes": 2293138,
+      "sha256": "2ffdc5770cb151b6d99f174f023b43af0a7d5f5bcca12350b1b68616b4c1a18c"
+    },
+    {
+      "path": "assets/loop-engine-showcase.srt",
+      "sizeBytes": 4203,
+      "sha256": "8f5d77d9ada2377b1f7cba3e56f99a29bd658c2383ae868f0bfe9850f884df2a"
+    },
+    {
+      "path": "assets/poster.png",
+      "sizeBytes": 156542,
+      "sha256": "f37c4d9cbe825d56a86a348afe9328d0746ebefe035455ed3c2b29aba43e1f7f"
+    },
+    {
+      "path": "assets/contact-sheet.png",
+      "sizeBytes": 393306,
+      "sha256": "b72b8842a310329b6e566b8ed4da1a5b7a972852d5587728745b1531f19abeb4"
+    },
+    {
+      "path": "assets/powerpoint-montage.png",
+      "sizeBytes": 589099,
+      "sha256": "2d65106d2d2015e29efacad62ad8cd30fe83e8cd5d2c8f0047d90edddba081f0"
+    },
+    {
+      "path": "assets/media-evidence.json",
+      "sizeBytes": 9075,
+      "sha256": "a6693694dc506fc20babd8b9edbb5ddbb3b30c9c224e20a4bb2fa6c126e5dae5"
+    },
+    {
+      "path": "assets/powerpoint-verification.json",
+      "sizeBytes": 4693,
+      "sha256": "508520222c6053c32214e7f75351f08425eb4b0cdbf710ca78219895f32d6519"
+    }
+  ]
+}
