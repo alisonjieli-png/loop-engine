@@ -64,15 +64,15 @@ jobs:
       - name: Render current architecture diagrams
         run: |
           awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' README.md > "$RUNNER_TEMP/readme-overview.mmd"
-          npx --yes @mermaid-js/mermaid-cli@11.16.0 -i "$RUNNER_TEMP/readme-overview.mmd" -o "$RUNNER_TEMP/readme-overview.png" --quiet
+          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/readme-overview.mmd" -o "$RUNNER_TEMP/readme-overview.png" --quiet
           awk 'BEGIN{inside=0; block=0} /^```mermaid$/{block++; if(block==2){inside=1; next}} inside && /^```$/{exit} inside{print}' README.md > "$RUNNER_TEMP/readme-looprefs.mmd"
-          npx --yes @mermaid-js/mermaid-cli@11.16.0 -i "$RUNNER_TEMP/readme-looprefs.mmd" -o "$RUNNER_TEMP/readme-looprefs.png" --quiet
+          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/readme-looprefs.mmd" -o "$RUNNER_TEMP/readme-looprefs.png" --quiet
           awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/self-improvement/README.md > "$RUNNER_TEMP/self-improvement.mmd"
-          npx --yes @mermaid-js/mermaid-cli@11.16.0 -i "$RUNNER_TEMP/self-improvement.mmd" -o "$RUNNER_TEMP/self-improvement.png" --quiet
+          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/self-improvement.mmd" -o "$RUNNER_TEMP/self-improvement.png" --quiet
           awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/intelligence-layers/INTELLIGENCE-AS-LOOPS.md > "$RUNNER_TEMP/intelligence-loops.mmd"
-          npx --yes @mermaid-js/mermaid-cli@11.16.0 -i "$RUNNER_TEMP/intelligence-loops.mmd" -o "$RUNNER_TEMP/intelligence-loops.png" --quiet
+          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/intelligence-loops.mmd" -o "$RUNNER_TEMP/intelligence-loops.png" --quiet
           awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/static-architecture/BRAVE-SEARCH-PLUGIN.md > "$RUNNER_TEMP/brave-plugin.mmd"
-          npx --yes @mermaid-js/mermaid-cli@11.16.0 -i "$RUNNER_TEMP/brave-plugin.mmd" -o "$RUNNER_TEMP/brave-plugin.png" --quiet
+          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/brave-plugin.mmd" -o "$RUNNER_TEMP/brave-plugin.png" --quiet
 
   test:
     name: suite + conformance gates
