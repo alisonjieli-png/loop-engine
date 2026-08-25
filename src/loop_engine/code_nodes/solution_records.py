@@ -1,4 +1,4 @@
-"""The Solution record vocabulary — candidate, portfolio, evaluation, package, receipt.
+"""The Solution record vocabulary — candidate, portfolio, evaluation, package, record.
 
 Architectural role: Code Node system (the Solution lifecycle's record types).
 
@@ -13,7 +13,7 @@ objection demanded, each with a **live reader** rather than a name:
 | `SolutionPortfolio` | selection, and the `solution.candidate.created` lifecycle |
 | `SolutionEvaluationSpec` | `evaluate_candidate`, which refuses to score without one |
 | `SolutionPackageManifest` | `package_solution`, which digests what ships |
-| `SolutionRunReceipt` | `record_run`, the evidence a run actually happened |
+| `SolutionRunRecord` | `record_run`, the evidence a run actually happened |
 
 The rule that gives them teeth: **a candidate cannot select itself.**
 `SolutionPortfolio.select` requires an evaluation whose evaluator is not the
@@ -35,7 +35,7 @@ Key invariants:
     - a package manifest digests its contents, so "what shipped" is checkable.
 
 Verification: self_test() — selection on evidence, the self-evaluation
-refusal, empty-portfolio abstention, and manifest/receipt integrity.
+refusal, empty-portfolio abstention, and manifest/record integrity.
 """
 from __future__ import annotations
 
@@ -161,7 +161,7 @@ class SolutionPackageManifest:
 
 
 @dataclass
-class SolutionRunReceipt:
+class SolutionRunRecord:
     """Evidence that one Solution actually ran, and what it cost."""
     run_id: str
     solution_ref: str
@@ -172,7 +172,7 @@ class SolutionRunReceipt:
     package_digest: str = ""
 
     def to_record(self) -> dict:
-        return {"record_type": "solution_run_receipt/v1", "run_id": self.run_id,
+        return {"record_type": "solution_run_record/v1", "run_id": self.run_id,
                 "solution_ref": self.solution_ref, "accepted": self.accepted,
                 "loops_run": self.loops_run, "model_calls": self.model_calls,
                 "wall_seconds": round(self.wall_seconds, 3),
@@ -207,8 +207,8 @@ def package_solution(solution_ref: str, loops, *, package_id: str = "",
 
 def record_run(run_id: str, manifest: SolutionPackageManifest, *,
                accepted: bool, loops_run: int = 0, model_calls: int = 0,
-               wall_seconds: float = 0.0) -> SolutionRunReceipt:
-    return SolutionRunReceipt(
+               wall_seconds: float = 0.0) -> SolutionRunRecord:
+    return SolutionRunRecord(
         run_id=run_id, solution_ref=manifest.solution_ref, accepted=accepted,
         loops_run=loops_run, model_calls=model_calls,
         wall_seconds=wall_seconds, package_digest=manifest.digest)
@@ -273,16 +273,16 @@ def self_test() -> dict:
           empty is None and unscored is None and no_spec,
           "abstention beats an invented winner")
 
-    # package + receipt: what shipped is digested and what ran is evidenced
+    # package + record: what shipped is digested and what ran is evidenced
     man = package_solution("solution://b", ["prep", "score"])
     rec = record_run("run.1", man, accepted=True, loops_run=2, model_calls=0)
-    check("package_manifest_and_run_receipt_are_checkable",
+    check("package_manifest_and_run_record_are_checkable",
           len(man.digest) == 64
           and rec.to_record()["package_digest"] == man.digest
           and rec.to_record()["accepted"] is True
           and package_solution("solution://b", ["prep", "score"]).digest
           == man.digest,
-          "same contents give the same digest; the receipt names it")
+          "same contents give the same digest; the record names it")
 
     passed = sum(1 for t in results if t["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

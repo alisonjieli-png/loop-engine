@@ -1,6 +1,6 @@
 """DuckDB catalog backend — a QUERY LAYER over files, never a second truth.
 
-Architectural role: Static Architecture service (storage).
+Architectural role: internal storage query service.
 
 Owns:
     - the DuckDB-indexed catalog view over a JSONL record file

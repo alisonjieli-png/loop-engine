@@ -4,7 +4,7 @@ Architectural role: Code Node system (the reporting projection over a run).
 
 A run emits a chain of events. That chain is complete and checkable, and it is
 also unreadable: a few hundred JSON records with nesting expressed only through
-parent ids. This module answers the question a person actually has after a run
+spawning Loop IDs. This module answers the question a person has after a run
 : *what did the loop do, what did it cost, and where did it spend its time?* :
 in three renderings over the SAME projection:
 
@@ -31,7 +31,7 @@ Owns:
     - report_from_ledger() / report_from_run(): the two entry points.
 
 Does not own:
-    - the ledger or its vocabulary (chronicle, event_vocabulary), the runtime
+    - the ledger or its vocabulary (run_history, event_vocabulary), the runtime
       (recursive_loop), or the Studio server's live projections.
 
 Key invariants:
@@ -50,7 +50,7 @@ import html as _html
 import json
 from dataclasses import dataclass, field
 
-from ..static_architecture.chronicle import to_canonical_events
+from ..static_architecture.run_history import to_canonical_events
 
 #: Events that open and close a loop, used to build the tree and the timings.
 _OPEN = "init"
@@ -62,7 +62,7 @@ class LoopNode:
     """One loop in the tree, with what it did and what it cost."""
     loop_id: str
     goal: str = ""
-    parent: str = ""
+    spawning_loop_id: str = ""
     depth: int = 0
     mode: str = ""
     steps: list = field(default_factory=list)
@@ -74,7 +74,7 @@ class LoopNode:
     started: "float | None" = None
     ended: "float | None" = None
     outcome: str = ""
-    children: list = field(default_factory=list)
+    spawned_loops: list = field(default_factory=list)
 
     @property
     def total_tokens(self) -> int:
@@ -90,7 +90,8 @@ class LoopNode:
 
     def as_dict(self) -> dict:
         return {"loop_id": self.loop_id, "goal": self.goal,
-                "parent": self.parent, "depth": self.depth, "mode": self.mode,
+                "spawning_loop_id": self.spawning_loop_id,
+                "depth": self.depth, "mode": self.mode,
                 "steps": list(self.steps), "events": self.events,
                 "model_calls": self.model_calls,
                 "prompt_tokens": self.prompt_tokens,
@@ -98,14 +99,14 @@ class LoopNode:
                 "total_tokens": self.total_tokens,
                 "providers": list(self.providers), "seconds": self.seconds,
                 "outcome": self.outcome,
-                "children": [c.as_dict() for c in self.children]}
+                "spawned_loops": [c.as_dict() for c in self.spawned_loops]}
 
 
 @dataclass
 class LoopReport:
     """The whole run, projected."""
     run_id: str = ""
-    roots: list = field(default_factory=list)
+    starting_loops: list = field(default_factory=list)
     by_id: dict = field(default_factory=dict)
     total_events: int = 0
     families: dict = field(default_factory=dict)
@@ -143,13 +144,14 @@ class LoopReport:
                 "chain_intact": self.chain_intact}
 
     def as_dict(self) -> dict:
-        return {**self.summary(), "tree": [r.as_dict() for r in self.roots]}
+        return {**self.summary(),
+                "tree": [loop.as_dict() for loop in self.starting_loops]}
 
 
 def report_from_ledger(events, *, run_id: str = "",
                        chain_intact: "bool | None" = None) -> LoopReport:
     """Project a ledger into a report. Nothing is recomputed from elsewhere."""
-    from ..static_architecture.chronicle import as_ledger_events
+    from ..static_architecture.run_history import as_ledger_events
     events = as_ledger_events(events)
     rep = LoopReport(run_id=run_id, chain_intact=chain_intact)
     rep.total_events = len(events)
@@ -168,30 +170,26 @@ def report_from_ledger(events, *, run_id: str = "",
 
         if kind == _OPEN:
             node.goal = str(e.get("goal", "") or e.get("label", "") or "")
-            parent = str(e.get("parent", "") or e.get("parent_loop_id", "")
-                         or "")
-            if parent:
-                node.parent = parent
+            spawning = str(e.get("spawning_loop_id", "") or "")
+            if spawning:
+                node.spawning_loop_id = spawning
             if isinstance(ts, (int, float)):
                 node.started = float(ts)
 
-        # THE REAL PARENT EDGE. A spawned child does not announce its parent on
-        # its own `init`; the PARENT records `child_return` under its own
-        # loop_id naming the child. Reading only `init` produced a flat list of
-        # loops for a run that was genuinely nested: which hid the one
-        # structure the report exists to show.
-        if kind == "child_return":
-            kid = str(e.get("child", "") or "")
-            if kid:
-                child = rep.by_id.get(kid)
-                if child is None:
-                    child = LoopNode(loop_id=kid)
-                    rep.by_id[kid] = child
-                child.parent = lid
+        # THE RUNTIME OWNERSHIP EDGE. A returned Loop names the Loop that
+        # spawned it independently of its semantic relationship kind.
+        if kind == "spawned_return":
+            spawned_id = str(e.get("spawned_loop_id", "") or "")
+            if spawned_id:
+                spawned = rep.by_id.get(spawned_id)
+                if spawned is None:
+                    spawned = LoopNode(loop_id=spawned_id)
+                    rep.by_id[spawned_id] = spawned
+                spawned.spawning_loop_id = lid
         if kind == "spawn":
-            parent = str(e.get("parent", "") or "")
-            if parent:
-                node.parent = parent
+            spawning = str(e.get("spawning_loop_id", "") or "")
+            if spawning:
+                node.spawning_loop_id = spawning
             if e.get("goal") and not node.goal:
                 node.goal = str(e.get("goal"))
         if kind in _TERMINAL_EVENTS:
@@ -225,23 +223,24 @@ def report_from_ledger(events, *, run_id: str = "",
         fam = c["type"]
         rep.families[fam] = rep.families.get(fam, 0) + 1
 
-    # assemble the tree; a parent that never appears is treated as a root so
-    # no loop is silently dropped from the report
+    # Assemble runtime ownership. A missing spawning Loop makes the item a
+    # starting display node so no Loop is silently dropped.
     for node in rep.by_id.values():
-        parent = rep.by_id.get(node.parent) if node.parent else None
-        if parent is not None and parent is not node:
-            parent.children.append(node)
+        spawning = (rep.by_id.get(node.spawning_loop_id)
+                    if node.spawning_loop_id else None)
+        if spawning is not None and spawning is not node:
+            spawning.spawned_loops.append(node)
         else:
-            rep.roots.append(node)
+            rep.starting_loops.append(node)
 
     def _depth(n, d=0, seen=()):
         if n.loop_id in seen:                    # cycle guard: never recurse
             return
         n.depth = d
-        for c in n.children:
+        for c in n.spawned_loops:
             _depth(c, d + 1, seen + (n.loop_id,))
 
-    for r in rep.roots:
+    for r in rep.starting_loops:
         _depth(r)
     return rep
 
@@ -250,15 +249,15 @@ def report_from_run(root: str, run_id: str, *, ledger=None) -> LoopReport:
     """Project a SAVED run: the ``runs/<run_id>/`` layout on disk.
 
     The stored run is reached through the historical-intelligence loop rather
-    than by opening the Chronicle directly: past runs are one of the four
+    than by opening saved run history directly: past runs are one of the four
     intelligence pillars, and a reader that bypasses the envelope is exactly
     the direct-resource-access the conformance gate refuses."""
-    from ..static_architecture.chronicle import Chronicle
+    from ..static_architecture.run_history import RunHistory
     from ..loop.intelligence_loops import serve_historical_intelligence
     ch = serve_historical_intelligence(
-        f"report:{run_id}", lambda: Chronicle.load(root, run_id),
+        f"report:{run_id}", lambda: RunHistory.load(root, run_id),
         ledger=ledger)["value"]
-    return report_from_ledger(ch.events, run_id=run_id,
+    return report_from_ledger(ch.event_log, run_id=run_id,
                               chain_intact=ch.verify_chain()["intact"])
 
 
@@ -298,10 +297,10 @@ def render_text(rep: LoopReport, *, show_steps: bool = True) -> str:
         out.append(detail)
         if show_steps and n.steps:
             out.append(f"{prefix}    steps: {' -> '.join(n.steps)}")
-        for c in n.children:
+        for c in n.spawned_loops:
             walk(c, prefix + "    ")
 
-    for r in rep.roots:
+    for r in rep.starting_loops:
         walk(r)
     return "\n".join(out)
 
@@ -353,14 +352,14 @@ def render_html(rep: LoopReport) -> str:
             + (f' · {n.model_calls} calls, {n.total_tokens} tok'
                if n.model_calls else ' · no model')
             + '</span></div>')
-        if n.children:
+        if n.spawned_loops:
             rows.append("<ul>")
-            for c in n.children:
+            for c in n.spawned_loops:
                 walk(c, depth + 1)
             rows.append("</ul>")
         rows.append("</li>")
 
-    for r in rep.roots:
+    for r in rep.starting_loops:
         walk(r)
     tree = "<ul class='tree'>" + "".join(rows) + "</ul>" if rows else \
         "<p class='empty'>This run recorded no loops.</p>"
@@ -448,53 +447,63 @@ def self_test() -> dict:
 
     from ..loop.recursive_loop import LoopLedger
 
-    # A real nested run: a parent that spawns two children, one of which makes
+    # A real nested run: a starting Loop spawns two Loops, one of which makes
     # a model call. Built from the ledger's own vocabulary, not a mock.
     lg = LoopLedger()
-    lg.record(loop_id="root", event="init", goal="solve the task", ts=100.0)
-    lg.record(loop_id="root", event="iteration_started", step="orient",
+    lg.record(loop_id="starting", event="init", goal="solve the task",
+              relationship_kind="starting", ts=100.0)
+    lg.record(loop_id="starting", event="iteration_started", step="orient",
               mode="deterministic", ts=100.5)
     lg.record(loop_id="kid1", event="init", goal="retrieve context",
-              parent="root", ts=101.0)
+              relationship_kind="spawned_by",
+              spawned_by_loop_id="starting", ts=101.0)
+    lg.record(loop_id="kid1", event="spawn",
+              spawning_loop_id="starting", ts=101.0)
     lg.record(loop_id="kid1", event="terminal", reason="done", ts=101.5)
     lg.record(loop_id="kid2", event="init", goal="ask the model",
-              parent="root", ts=102.0)
+              relationship_kind="spawned_by",
+              spawned_by_loop_id="starting", ts=102.0)
+    lg.record(loop_id="kid2", event="spawn",
+              spawning_loop_id="starting", ts=102.0)
     lg.record(loop_id="kid2", event="model_led", model="m", provider="mistral",
               prompt_tokens=60, eval_tokens=140, ts=102.5)
     lg.record(loop_id="kid2", event="terminal", reason="done", ts=103.0)
-    lg.record(loop_id="root", event="terminal", reason="done", ts=104.0)
+    lg.record(loop_id="starting", event="terminal", reason="done", ts=104.0)
 
     rep = report_from_ledger(lg.events, run_id="demo-run", chain_intact=True)
 
     # 1. THE TREE COMES FROM REAL NESTING, not from event order.
-    check("the_tree_is_built_from_recorded_parentage",
-          len(rep.roots) == 1 and rep.roots[0].loop_id == "root"
-          and [c.loop_id for c in rep.roots[0].children] == ["kid1", "kid2"]
+    check("the_tree_is_built_from_recorded_spawning",
+          len(rep.starting_loops) == 1
+          and rep.starting_loops[0].loop_id == "starting"
+          and [item.loop_id
+               for item in rep.starting_loops[0].spawned_loops]
+              == ["kid1", "kid2"]
           and rep.deepest() == 1 and rep.loops == 3,
-          "one root, two children, depth 1")
+          "one starting Loop, two spawned Loops, depth 1")
 
-    # 1b. A SPAWNED child announces no parent on its own `init`: the PARENT
-    # records `child_return` naming it. Reading only `init` rendered a genuinely
-    # nested run as a flat list, hiding the one structure this report exists to
-    # show, so the real runtime edge is exercised here against live spawn().
+    # 1b. Runtime ownership comes from spawn and return events independently
+    # of the spawned Loop's semantic relationship.
     from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome
     slg = LoopLedger()
-    parent_loop = Loop("parent that spawns",
+    spawning_loop = Loop("spawning Loop",
                        LoopConfig(framework="custom", custom_steps=("act",),
                                   power="light"), ledger=slg)
-    kid = parent_loop.spawn("a real spawned child")
-    while not kid.is_terminal:
-        kid.run_next_iteration(
+    spawned_loop = spawning_loop.spawn("a real spawned Loop")
+    while not spawned_loop.is_terminal:
+        spawned_loop.run_next_iteration(
             handler=lambda loop, step, ctx: StepOutcome(
                 output="done", mode="deterministic", confidence=0.9))
     spawned = report_from_ledger(slg.events)
-    parent_node = spawned.by_id.get(parent_loop.loop_id)
-    check("a_spawned_child_nests_under_the_parent_that_recorded_it",
-          parent_node is not None
-          and kid.loop_id in [c.loop_id for c in parent_node.children]
-          and spawned.by_id[kid.loop_id].parent == parent_loop.loop_id
+    spawning_node = spawned.by_id.get(spawning_loop.loop_id)
+    check("a_spawned_loop_nests_under_its_spawning_loop",
+          spawning_node is not None
+          and spawned_loop.loop_id in [
+              item.loop_id for item in spawning_node.spawned_loops]
+          and spawned.by_id[spawned_loop.loop_id].spawning_loop_id
+              == spawning_loop.loop_id
           and spawned.deepest() >= 1,
-          f"{kid.loop_id} nests under {parent_loop.loop_id} via child_return")
+          f"{spawned_loop.loop_id} nests under {spawning_loop.loop_id}")
 
     # 2. COST IS ATTRIBUTED TO WHOEVER ANSWERED. A token count with no provider
     # cannot be checked later, so the provider travels with the number.
@@ -508,12 +517,12 @@ def self_test() -> dict:
 
     # 3. TIMINGS come from recorded timestamps.
     check("timings_are_read_from_recorded_timestamps",
-          rep.roots[0].seconds == 4.0 and kid2.seconds == 1.0,
-          "root 4.0s spanning its children")
+          rep.starting_loops[0].seconds == 4.0 and kid2.seconds == 1.0,
+          "starting Loop spans its spawned Loops for 4.0s")
 
     # 4. UNKNOWN IS NOT ZERO. The live LoopLedger always stamps `ts`, so this
     # path is about a ledger from somewhere else: a replay, an import, an
-    # older receipt: where the field is genuinely absent. Reporting 0.0 there
+    # older record: where the field is genuinely absent. Reporting 0.0 there
     # would read as an instantaneous loop, which is a different claim from
     # "this run did not record time".
     r2 = report_from_ledger([{"loop_id": "a", "event": "init",
@@ -542,7 +551,7 @@ def self_test() -> dict:
     # needs the network is not a report you can send someone.
     t, m, h = render_text(rep), render_markdown(rep), render_html(rep)
     check("all_three_renderings_carry_the_same_facts",
-          "root" in t and "mistral" in t
+          "starting" in t and "mistral" in t
           and "| Model calls | 1 |" in m and "mistral" in m
           and "Loop report" in h and "mistral" in h
           and "200" in h,
@@ -553,38 +562,45 @@ def self_test() -> dict:
           and "prefers-color-scheme" in h,
           "no external assets, no network, both themes")
 
-    # 7. ADVERSARIAL: an event naming a parent that never opened must not drop
-    # the loop from the report, and a self-parented loop must not hang it.
+    # 7. ADVERSARIAL: a missing spawning Loop must not drop a Loop, and a
+    # self-spawning reference must not hang the report.
     lg3 = LoopLedger()
-    lg3.record(loop_id="orphan", event="init", goal="lost parent",
-               parent="never_existed")
-    lg3.record(loop_id="selfref", event="init", goal="self parent",
-               parent="selfref")
+    lg3.record(loop_id="orphan", event="init", goal="lost spawning Loop",
+               relationship_kind="spawned_by",
+               spawned_by_loop_id="never_existed")
+    lg3.record(loop_id="orphan", event="spawn",
+               spawning_loop_id="never_existed")
+    lg3.record(loop_id="selfref", event="init", goal="self spawning Loop",
+               relationship_kind="spawned_by",
+               spawned_by_loop_id="selfref")
+    lg3.record(loop_id="selfref", event="spawn",
+               spawning_loop_id="selfref")
     r3 = report_from_ledger(lg3.events)
     check("orphans_and_self_parents_are_reported_not_dropped_or_hung",
-          r3.loops == 2 and len(r3.roots) == 2
-          and {n.loop_id for n in r3.roots} == {"orphan", "selfref"},
+          r3.loops == 2 and len(r3.starting_loops) == 2
+          and {n.loop_id for n in r3.starting_loops}
+              == {"orphan", "selfref"},
           "every loop appears exactly once")
 
-    # 8. A persisted Chronicle uses event_type/detail fields. The canonical
+    # 8. Persisted run history uses event_type/detail fields. The canonical
     # adapter must preserve the goal, model-call count, and tokens.
     import shutil
     import tempfile
-    from ..static_architecture.chronicle import Chronicle
+    from ..static_architecture.run_history import RunHistory
     saved_ledger = LoopLedger()
     saved_ledger.record(loop_id="saved", event="init", goal="saved work")
     saved_ledger.record(loop_id="saved", event="run_step", step="decide",
                         mode="hybrid", output="selected")
     saved_ledger.record(loop_id="saved", event="terminal", reason="done")
-    saved_chronicle = Chronicle.from_ledger(
+    saved_run_history = RunHistory.from_ledger(
         saved_ledger.events, run_id="saved-report",
         usage_log=[{"model": "test-model", "prompt_tokens": 10,
                     "eval_tokens": 20}])
-    saved_chronicle.commit()
+    saved_run_history.commit()
     saved_root = tempfile.mkdtemp(prefix="loop_report_saved_")
-    saved_chronicle.save(saved_root)
+    saved_run_history.save(saved_root)
     saved_report = report_from_run(saved_root, "saved-report")
-    check("saved_chronicle_report_preserves_usage_and_goal",
+    check("saved_run_history_report_preserves_usage_and_goal",
           saved_report.model_calls == 1
           and saved_report.total_tokens == 30
           and saved_report.by_id["saved"].goal == "saved work"

@@ -17,7 +17,7 @@ flowchart LR
     U --> X{Needs execution or reframing?}
     X -->|Code| E[Component loop executes entry point]
     X -->|Task-specific wording| F[Explicit model loop reframes a copy]
-    X -->|No| D[Return to parent loop]
+    X -->|No| D[Return typed material to querying Loop]
 ```
 
 This applies to all four persistent intelligence layers.
@@ -26,8 +26,8 @@ This applies to all four persistent intelligence layers.
 |---|---|---|
 | Context Intelligence | A reference to a question, method, warning, template, or source note. | A Context loop returns the stored value. |
 | Code Intelligence | A reference to a function, package, repository, service, workflow, or subsystem. | A Code Intelligence loop loads the selected body. A component loop executes the chosen entry point. |
-| Previous Run & Solution Intelligence | A reference to a saved run, decision, failure, measurement, or solution. | A History loop returns the verified selected record. |
-| User Intelligence | A reference to scoped user guidance. | A User Intelligence loop returns the guidance. An optional model loop may reframe a copy for the current task. |
+| Runtime History and Solution Intelligence | A reference to a saved run, decision, failure, measurement, or solution. | A History loop returns the verified selected record. |
+| User Feedback Intelligence | A reference to scoped user guidance. | A User Feedback Intelligence loop returns the guidance. An optional model loop may reframe a copy for the current task. |
 
 Runtime Memory uses the same loop boundary for reads and writes, but it remains
 temporary and run-scoped. It is not a fifth persistent layer.
@@ -68,7 +68,7 @@ load all candidates. Only `selected` is materialized.
 
 ## Optional user-guidance reframing
 
-A normal User Intelligence access is deterministic. Some applications may
+A normal User Feedback Intelligence access is deterministic. Some applications may
 want an authorized language model to restate the guidance for a specific task.
 That is a second loop, not hidden behavior inside retrieval.
 
@@ -90,11 +90,11 @@ assert result["access_loop_id"] != result["reframe_loop_id"]
 The source guidance remains unchanged. The model output is a task-specific
 result with its own loop identity.
 
-## Static Architecture uses the same selection rule
+## Custom Plugins use the same selection rule
 
-The Capability Directory searches local handshake cards. This is effect-free.
-It returns Code Intelligence `LoopRef` objects for registered Static
-Architecture capabilities.
+The Capability Directory searches local Custom Plugin handshake cards. This is
+effect-free. It returns Code Intelligence `LoopRef` objects for registered
+capabilities.
 
 ```python
 from loop_engine.loop.capability_loops import run_capability_ref_as_loop
@@ -139,5 +139,5 @@ search loop
 select one LoopRef
 materialization loop
 optional execution or reframe loop
-return to the parent loop
+return typed material to the querying Loop
 ```

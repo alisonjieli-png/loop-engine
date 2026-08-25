@@ -33,22 +33,25 @@ runtime class name.
 
 - Loop object
 - Loop Practitioner
-- Practitioner loop tree
+- Practitioner Loop graph
 - Solution Canvas
-- Solution loop
-- Self-Improvement Loop
+- Solution Loop
+- self-improvement Practitioner task
 - Static Architecture
+- Intelligence Search and Retrieval
+- Web Research
+- Custom Plugins
 - Retrieval Engine
 - built-in adapter
 - extension point
 - potential external plugin
 - Context Intelligence
 - Code Intelligence
-- Previous Run & Solution Intelligence
-- User Intelligence
+- Runtime History and Solution Intelligence
+- User Feedback Intelligence
 - Runtime Memory
-- Chronicle
-- report, log, contract, event history, or run record according to meaning
+- Run History
+- report, event log, contract, evidence, or run record according to meaning
 
 ## Terms that need a qualifier
 
@@ -72,13 +75,38 @@ runtime class name.
 
 Good:
 
-> Each loop is a node. It has a goal, a run mode, a step profile, a budget,
-> and a stop condition.
+> Every executable graph vertex is a Loop. Each Loop has a role, run mode,
+> typed ports, loop condition, exit condition, budget, and permissions.
 
 Good:
 
-> The Practitioner tree shows how the work was built. The Solution Canvas
+> The Practitioner graph shows how the work was built. The Solution Canvas
 > shows what runs for a new input.
 
 Avoid language that sounds impressive but does not name a behavior, input,
 output, limit, or current implementation state.
+
+## Tree diagram style
+
+Use a text tree or Mermaid tree when a page explains a hierarchy with three or
+more branches. Start at the shared trunk and label each classification axis.
+Do not place unrelated dimensions under one branch.
+
+Good:
+
+```text
+Loop
+├── Relationship: Starting, Spawned by, Queried by, Retrieved by, Connected from
+├── Role: Practitioner, Intelligence, or Solution
+├── Mode: deterministic, hybrid, or non-deterministic
+└── Settings: contract, loop condition, exit condition, budget, and permissions
+```
+
+Avoid a diagram that treats every non-starting Loop as Spawned. Practitioner
+subproblems may be Spawned. Intelligence Query Loops are Queried, selected
+Intelligence Item Loops are Retrieved, and deterministic Solution pipeline
+steps are Connected. Role profiles describe purpose. Modes describe execution.
+Categories support organization and search. Settings constrain the run.
+
+Passive records, services, ports, slots, and edges are not graph vertices.
+Do not call them nodes. Use `Loop` for every executable graph vertex.

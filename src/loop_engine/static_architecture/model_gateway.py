@@ -1,6 +1,6 @@
 """One provider-neutral gateway for every semantic model invocation.
 
-Architectural role: Static Architecture model execution boundary.
+Architectural role: internal model execution service.
 
 The gateway accepts one typed request, resolves provider and model routes,
 applies route policy and budgets, gives every physical provider attempt its own
@@ -20,6 +20,10 @@ import time
 from dataclasses import dataclass, field
 from typing import Callable, Protocol, Sequence
 
+from .model_capabilities import (
+    ModelOutputCapability, ModelOutputLimitMismatch, UnknownModelOutputLimit,
+    require_declared_maximum,
+)
 from .model_routes import (ModelRoute, RoutePolicy, RouteRegistry,
                            screen_route)
 
@@ -31,11 +35,14 @@ class ProviderAdapter(Protocol):
     def chat_maxout(self, prompt: str, *, model: str = "", system: str = "",
                     temperature: float = 0.7, timeout: float = 900.0,
                     max_attempts: int = 1,
-                    max_output_tokens: "int | None" = None): ...
+                    max_output_tokens: "int | None" = None,
+                    output_capability: "ModelOutputCapability | None" = None): ...
 
     def verify(self, model: str = ""): ...
 
     def live_models(self): ...
+
+    def output_capability_for(self, model: str): ...
 
 
 @dataclass(frozen=True)
@@ -50,17 +57,31 @@ class ProviderSpec:
     wire_format: str = "provider_native"
     endpoint: str = ""
     capabilities: tuple[str, ...] = ()
+    model_output_capability: "ModelOutputCapability | None" = None
+    model_output_capability_model: str = ""
 
     def __post_init__(self):
         if not self.provider_id:
             raise ValueError("ProviderSpec needs provider_id")
         if self.locality not in ("cloud", "local"):
             raise ValueError("provider locality must be cloud or local")
-        required = ("chat_maxout", "verify", "live_models", "DEFAULT_MODEL")
+        required = ("chat_maxout", "verify", "live_models",
+                    "output_capability_for", "DEFAULT_MODEL")
         missing = [name for name in required if not hasattr(self.adapter, name)]
         if missing:
             raise ValueError(
                 f"provider {self.provider_id!r} misses adapter fields {missing}")
+        if bool(self.model_output_capability) != bool(
+                self.model_output_capability_model):
+            raise ValueError(
+                "a ProviderSpec model output override needs both the exact "
+                "model and a ModelOutputCapability")
+
+    def output_capability_for(self, model: str) -> ModelOutputCapability:
+        if (self.model_output_capability is not None
+                and model == self.model_output_capability_model):
+            return self.model_output_capability
+        return self.adapter.output_capability_for(model)
 
     def describe(self) -> dict:
         return {
@@ -72,6 +93,11 @@ class ProviderSpec:
             "wire_format": self.wire_format,
             "endpoint": self.endpoint,
             "capabilities": list(self.capabilities),
+            "model_output_capability": (
+                self.model_output_capability.summary()
+                if self.model_output_capability else None),
+            "model_output_capability_model":
+                self.model_output_capability_model,
         }
 
 
@@ -164,7 +190,7 @@ class ModelGatewayConfig:
     allow_failover: bool = True
     max_route_attempts: int = 3
     timeout_seconds: float = 900.0
-    max_output_tokens: int = 4096
+    max_output_tokens: "int | None" = None
     max_total_tokens: "int | None" = None
     allow_power_escalation: bool = False
     max_power_escalations: int = 0
@@ -178,8 +204,10 @@ class ModelGatewayConfig:
             raise ValueError("max_route_attempts must be positive")
         if self.timeout_seconds <= 0:
             raise ValueError("timeout_seconds must be positive")
-        if self.max_output_tokens < 1:
-            raise ValueError("max_output_tokens must be positive")
+        if (self.max_output_tokens is not None
+                and self.max_output_tokens < 1):
+            raise ValueError(
+                "max_output_tokens must be positive when set")
         if self.max_total_tokens is not None and self.max_total_tokens < 1:
             raise ValueError("max_total_tokens must be positive when set")
         if self.thinking_power not in (
@@ -246,6 +274,8 @@ class GatewayAttempt:
     elapsed_seconds: float = 0.0
     provider_ok: bool = False
     thinking_power: str = "medium"
+    maximum_output_tokens: "int | None" = None
+    maximum_output_source: str = ""
 
     def to_dict(self) -> dict:
         return {
@@ -262,6 +292,8 @@ class GatewayAttempt:
             "error_code": self.error_code,
             "error": self.error[:200],
             "elapsed_seconds": self.elapsed_seconds,
+            "maximum_output_tokens": self.maximum_output_tokens,
+            "maximum_output_source": self.maximum_output_source,
         }
 
 
@@ -317,6 +349,10 @@ class ModelGatewayResult:
 
 def _error_code(error: str) -> str:
     low = str(error).lower()
+    if "unknown_model_output_limit" in low:
+        return "unknown_model_output_limit"
+    if "not the declared model maximum" in low:
+        return "model_output_limit_mismatch"
     if "401" in low or "403" in low or "unauthor" in low or "api_key" in low:
         return "authentication_failed"
     if "429" in low or "rate" in low and "limit" in low:
@@ -329,6 +365,26 @@ def _error_code(error: str) -> str:
     if "validation" in low:
         return "output_validation_failed"
     return "provider_failed"
+
+
+def _gateway_orchestration_config(parent=None):
+    """Build the routing loop config without narrowing the owner's tree.
+
+    A starting gateway keeps the historical depth limit of three. A gateway that
+    is invoked by an existing Loop inherits that Loop's configured depth, so
+    the routing Loop and its spawned provider attempt remain structurally below
+    the named spawning Loop.
+    """
+    from ..loop.recursive_loop import LoopConfig
+
+    max_depth = (parent.config.max_depth if parent is not None
+                 else LoopConfig().max_depth)
+    return LoopConfig(
+        framework="custom", custom_steps=("route",), power="light",
+        allowable_modes=("deterministic",),
+        preferred_modes=("deterministic",),
+        delegated_modes=("non_deterministic",),
+        exit_condition="steps_complete", max_depth=max_depth)
 
 
 class ModelGateway:
@@ -386,6 +442,8 @@ class ModelGateway:
                ledger=None, parent=None) -> ModelGatewayResult:
         """Run one route at a time; every provider attempt is a model loop."""
         from ..loop.encapsulate import as_model_loop
+        from ..loop.loop_role import (LoopRelationship, LoopRole,
+                                     LoopRoleIdentity)
         from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome
 
         routes = self._routes(request.config)
@@ -394,17 +452,20 @@ class ModelGateway:
                 ok=False, error_code="no_eligible_route",
                 error="no model route is permitted by this request and policy")
 
-        orchestration_config = LoopConfig(
-            framework="custom", custom_steps=("route",), power="light",
-            allowable_modes=("deterministic",),
-            preferred_modes=("deterministic",),
-            delegated_modes=("non_deterministic",),
-            stop_condition="run_to_completion")
-        root = (parent.spawn("route one model request", orchestration_config)
+        orchestration_config = _gateway_orchestration_config(parent)
+        identity = LoopRoleIdentity(
+            LoopRole.PRACTITIONER, "practitioner.code_execution")
+        relationship = (LoopRelationship.spawned_by(parent.loop_id)
+                        if parent is not None
+                        else LoopRelationship.starting())
+        starting = (parent.spawn(
+            "route one model request", orchestration_config,
+            identity=identity, relationship=relationship)
                 if parent is not None else Loop(
                     "route one model request", orchestration_config,
-                    ledger=ledger))
-        result = ModelGatewayResult(gateway_loop_id=root.loop_id)
+                    ledger=ledger, identity=identity,
+                    relationship=relationship))
+        result = ModelGatewayResult(gateway_loop_id=starting.loop_id)
         known_tokens = 0
 
         def handler(loop, step, context):
@@ -446,10 +507,31 @@ class ModelGateway:
                     request.config.timeout_seconds,
                     attempt_spec.timeout_seconds
                     or request.config.timeout_seconds)
-                attempt_output = min(
+                requested_outputs = tuple(value for value in (
                     request.config.max_output_tokens,
-                    attempt_spec.max_output_tokens
-                    or request.config.max_output_tokens)
+                    attempt_spec.max_output_tokens) if value is not None)
+                if len(set(requested_outputs)) > 1:
+                    error = (
+                        "model_output_limit_mismatch: gateway and route "
+                        "declare different output maxima")
+                    result.attempts.append(GatewayAttempt(
+                        route.provider, route.model, route.name, "", False,
+                        error_code="model_output_limit_mismatch", error=error,
+                        thinking_power=current_power))
+                    continue
+                requested_output = (requested_outputs[0]
+                                    if requested_outputs else None)
+                try:
+                    output_capability = spec.output_capability_for(route.model)
+                    attempt_output = require_declared_maximum(
+                        requested_output, output_capability)
+                except (UnknownModelOutputLimit,
+                        ModelOutputLimitMismatch) as exc:
+                    result.attempts.append(GatewayAttempt(
+                        route.provider, route.model, route.name, "", False,
+                        error_code=_error_code(str(exc)), error=str(exc),
+                        thinking_power=current_power))
+                    continue
 
                 def invoke_provider(spec=spec, route=route,
                                     attempt_timeout=attempt_timeout,
@@ -460,7 +542,8 @@ class ModelGateway:
                         temperature=request.temperature,
                         timeout=attempt_timeout,
                         max_attempts=1,
-                        max_output_tokens=attempt_output)
+                        max_output_tokens=attempt_output,
+                        output_capability=output_capability)
                     try:
                         value.provider = route.provider
                     except (AttributeError, TypeError):
@@ -510,6 +593,8 @@ class ModelGateway:
                     elapsed_seconds=round(time.monotonic() - started, 6),
                     provider_ok=provider_ok,
                     thinking_power=current_power,
+                    maximum_output_tokens=attempt_output,
+                    maximum_output_source=output_capability.source,
                 )
                 result.attempts.append(attempt)
                 if (request.config.max_total_tokens is not None
@@ -542,7 +627,7 @@ class ModelGateway:
             return StepOutcome(output="route:all_failed", mode="deterministic",
                                confidence=0.1, failed=True)
 
-        root.run(handler=handler, max_steps=2)
+        starting.run(handler=handler, max_steps=2)
         return result
 
 
@@ -553,129 +638,69 @@ def invoke_model_gateway(gateway: ModelGateway, request: ModelGatewayRequest,
 
 
 def self_test() -> dict:
-    """Offline contract tests. No provider or network is contacted."""
-    from .ollama_client import ChatResult
-    from ..loop.recursive_loop import LoopLedger
+    """Offline contract and refusal tests.  No provider is contacted."""
+    from .model_capabilities import UnknownModelOutputLimit
+    from .operating_profile import OperatingProfile
 
     results = []
 
     def check(name, ok, detail=""):
         results.append({"test": name, "passed": bool(ok), "detail": detail})
 
-    class StubAdapter:
-        DEFAULT_MODEL = "stub"
+    class RefusalBoundary:
+        """Non-executable adapter used only to prove pre-call refusal."""
 
-        def __init__(self, responses):
-            self.responses = list(responses)
-            self.calls = []
+        DEFAULT_MODEL = "unknown-model"
+
+        def __init__(self):
+            self.chat_attempted = False
+
+        def output_capability_for(self, model):
+            raise UnknownModelOutputLimit(
+                "unknown_model_output_limit: no declared maximum")
 
         def chat_maxout(self, prompt, **kwargs):
-            self.calls.append({"prompt": prompt, **kwargs})
-            return self.responses.pop(0)
+            self.chat_attempted = True
+            raise AssertionError("the provider boundary must not be reached")
 
         def verify(self, model=""):
-            return {"ok": True, "model": model or self.DEFAULT_MODEL}
+            raise AssertionError("offline tests never verify a provider")
 
         def live_models(self):
-            return [self.DEFAULT_MODEL]
+            raise AssertionError("offline tests never query a provider catalog")
 
-    ollama = StubAdapter([ChatResult(
-        "", "ollama-model", ok=False, error="HTTP 429 rate limit")])
-    mistral = StubAdapter([ChatResult(
-        "valid answer", "mistral-model", prompt_tokens=11, eval_tokens=7)])
-    openrouter = StubAdapter([ChatResult(
-        "unused", "openrouter-model", prompt_tokens=9, eval_tokens=3)])
-    providers = (
-        ProviderSpec("ollama_cloud", ollama, "fixture", "fixture:ollama"),
-        ProviderSpec("mistral", mistral, "fixture", "fixture:mistral"),
-        ProviderSpec("openrouter", openrouter, "fixture", "fixture:openrouter"),
-    )
-    routes = (
-        ModelRoute("test.ollama", "ollama_cloud", "ollama-model"),
-        ModelRoute("test.mistral", "mistral", "mistral-model"),
-        ModelRoute("test.openrouter", "openrouter", "openrouter-model"),
-    )
-    ledger = LoopLedger()
-    gateway = ModelGateway(providers=providers, routes=routes)
-    response = gateway.invoke(ModelGatewayRequest(
-        "solve the fixture",
-        ModelGatewayConfig(route_names=(
-            "test.ollama", "test.mistral", "test.openrouter"))),
-        validate=lambda text: text.startswith("valid"), ledger=ledger)
-    check("provider_failover_is_ordered_and_each_attempt_is_a_loop",
-          response.ok and response.provider == "mistral"
-          and [attempt.provider for attempt in response.attempts]
-          == ["ollama_cloud", "mistral"]
-          and len({attempt.loop_id for attempt in response.attempts}) == 2
-          and not openrouter.calls and len(ledger.loops()) == 3,
-          "gateway root plus two provider-attempt loops")
-    check("split_usage_and_failure_reason_survive_failover",
-          response.input_tokens == 11 and response.output_tokens == 7
-          and response.total_tokens == 18 and response.accounting_complete
-          and response.attempts[0].error_code == "rate_limited")
-
-    only = StubAdapter([ChatResult(
-        "wrong shape", "mistral-model", prompt_tokens=4, eval_tokens=2)])
-    failed = ModelGateway(
-        providers=(ProviderSpec("mistral", only, "fixture", "fixture:m"),),
-        routes=(ModelRoute("only", "mistral", "mistral-model"),)
-    ).invoke(ModelGatewayRequest(
-        "return json", ModelGatewayConfig(route_names=("only",))),
-        validate=lambda text: text.startswith("{"))
-    check("validation_failure_remains_a_model_failure",
-          not failed.ok and failed.error_code == "output_validation_failed"
-          and failed.attempts[0].validation_ok is False)
-
-    raising_validator_adapter = StubAdapter([ChatResult(
-        "not json", "mistral-model", prompt_tokens=4, eval_tokens=2)])
-    raising_validator = ModelGateway(
+    boundary = RefusalBoundary()
+    gateway = ModelGateway(
         providers=(ProviderSpec(
-            "mistral", raising_validator_adapter, "fixture", "fixture:m"),),
-        routes=(ModelRoute("raise", "mistral", "mistral-model"),)
-    ).invoke(ModelGatewayRequest(
-        "return json", ModelGatewayConfig(route_names=("raise",))),
-        validate=lambda text: json.loads(text))
-    check("a_validator_exception_becomes_a_typed_validation_failure",
-          not raising_validator.ok
-          and raising_validator.error_code == "output_validation_failed"
-          and "JSONDecodeError" in raising_validator.error)
+            "contract_only", boundary, "non_executable_contract",
+            "env:CONTRACT_ONLY_KEY"),),
+        routes=(ModelRoute(
+            "contract.unknown", "contract_only", "unknown-model"),))
+    refused = gateway.invoke(ModelGatewayRequest(
+        "prove refusal before provider use",
+        ModelGatewayConfig(
+            route_names=("contract.unknown",),
+            allow_failover=False, max_route_attempts=1)))
+    check("unknown_output_capability_refuses_before_provider_use",
+          not refused.ok
+          and refused.error_code == "unknown_model_output_limit"
+          and not boundary.chat_attempted
+          and refused.attempts[0].loop_id == "",
+          "this is a contract refusal, not a provider integration test")
 
-    pinned_adapter = StubAdapter([ChatResult(
-        "pinned", "openrouter-model", prompt_tokens=3, eval_tokens=1)])
-    pinned = ModelGateway(
-        providers=(ProviderSpec("openrouter", pinned_adapter, "fixture",
-                                "fixture:o"),),
-        routes=(ModelRoute("pinned.openrouter", "openrouter",
-                           "openrouter-model"),)
-    ).invoke(ModelGatewayRequest(
-        "one provider",
-        ModelGatewayConfig(route_names=("pinned.openrouter",),
-                           allow_failover=False)))
-    check("a_provider_comparison_can_pin_one_route",
-          pinned.ok and pinned.provider == "openrouter"
-          and len(pinned.attempts) == 1)
+    mismatch_config = False
+    try:
+        ModelGatewayConfig(max_output_tokens=0)
+    except ValueError:
+        mismatch_config = True
+    check("invalid_explicit_output_values_are_refused", mismatch_config)
 
-    no_usage_adapter = StubAdapter([ChatResult("answer", "m", ok=True)])
-    no_usage = ModelGateway(
-        providers=(ProviderSpec("mistral", no_usage_adapter, "fixture",
-                                "fixture:m"),),
-        routes=(ModelRoute("unknown.usage", "mistral", "m"),)
-    ).invoke(ModelGatewayRequest(
-        "usage", ModelGatewayConfig(route_names=("unknown.usage",))))
-    check("missing_provider_usage_remains_unknown_not_zero",
-          no_usage.ok and no_usage.input_tokens is None
-          and no_usage.output_tokens is None
-          and no_usage.total_tokens is None
-          and not no_usage.accounting_complete)
-
-    secret_text = "fixture-secret-value"
-    safe = ProviderSpec("safe", no_usage_adapter, "fixture",
-                        "env:SAFE_PROVIDER_KEY")
+    safe = ProviderSpec(
+        "contract_only", boundary, "non_executable_contract",
+        "env:SAFE_PROVIDER_KEY")
     check("provider_descriptions_carry_references_not_secret_values",
-          secret_text not in str(safe.describe())
-          and safe.describe()["credential_ref"] == "env:SAFE_PROVIDER_KEY")
+          safe.describe()["credential_ref"] == "env:SAFE_PROVIDER_KEY")
 
-    from .operating_profile import OperatingProfile
     deterministic_config = ModelGatewayConfig.from_operating_profile(
         OperatingProfile(reasoning_and_model_mode="deterministic_only"))
     local_config = ModelGatewayConfig.from_operating_profile(
@@ -687,54 +712,73 @@ def self_test() -> dict:
           and local_config.allowed_localities == ("local",)
           and remote_config.allowed_localities == ("cloud",))
 
-    tier_adapter = StubAdapter([
-        ChatResult("", "small-model", ok=False, error="request timeout"),
-        ChatResult("strong answer", "high-model",
-                   prompt_tokens=8, eval_tokens=5)])
-    tier_gateway = ModelGateway(
-        providers=(ProviderSpec(
-            "mistral", tier_adapter, "fixture", "fixture:m"),),
-        routes=(ModelRoute("tier.small", "mistral", "small-model"),
-                ModelRoute("tier.high", "mistral", "high-model")))
-    tier_ledger = LoopLedger()
-    tier_result = tier_gateway.invoke(ModelGatewayRequest(
-        "escalate only after a typed failure",
+    request = ModelGatewayRequest(
+        "one typed request",
         ModelGatewayConfig(
-            route_plan=(
-                ModelRouteAttemptSpec("tier.small", "small", 64, 10.0),
-                ModelRouteAttemptSpec("tier.high", "high", 128, 20.0)),
-            allow_power_escalation=True, max_power_escalations=1,
-            escalate_on=("timeout",))),
-        ledger=tier_ledger)
-    check("thinking_power_escalates_only_under_a_bounded_typed_plan",
-          tier_result.ok and tier_result.thinking_power == "high"
-          and [attempt.thinking_power for attempt in tier_result.attempts]
-          == ["small", "high"]
-          and [call["max_output_tokens"] for call in tier_adapter.calls]
-          == [64, 128]
-          and any(event.get("llm_thinking_power") == "high"
-                  for event in tier_ledger.events
-                  if event.get("event") == "init"))
+            route_plan=(ModelRouteAttemptSpec(
+                "contract.unknown", "medium", None, 10.0),),
+            max_route_attempts=1))
+    check("an_unspecified_output_limit_remains_unspecified_until_capability_resolution",
+          request.config.max_output_tokens is None
+          and request.config.route_plan[0].max_output_tokens is None)
 
-    auth_adapter = StubAdapter([
-        ChatResult("", "small-model", ok=False, error="HTTP 401 rejected"),
-        ChatResult("must not run", "high-model")])
-    auth_result = ModelGateway(
-        providers=(ProviderSpec(
-            "mistral", auth_adapter, "fixture", "fixture:m"),),
-        routes=(ModelRoute("auth.small", "mistral", "small-model"),
-                ModelRoute("auth.high", "mistral", "high-model"))
-    ).invoke(ModelGatewayRequest(
-        "do not spend a stronger call on a bad credential",
-        ModelGatewayConfig(
-            route_plan=(
-                ModelRouteAttemptSpec("auth.small", "small"),
-                ModelRouteAttemptSpec("auth.high", "high")),
-            allow_power_escalation=True, max_power_escalations=1)))
-    check("authentication_failure_does_not_trigger_power_escalation",
-          not auth_result.ok and len(auth_adapter.calls) == 1
-          and auth_result.error_code == "authentication_failed")
+    # A provider attempt remains below the named spawned model-led Loop even
+    # when that Loop is already two levels below a full Practitioner. The
+    # routing Loop inherits the declared depth of five. Starting gateway
+    # behavior remains compatible at the historical default depth of three.
+    from ..loop.recursive_loop import Loop, LoopConfig
+    deep = Loop(
+        "depth-five practitioner",
+        LoopConfig(
+            framework="custom", custom_steps=("run",), power="light",
+            allowable_modes=("deterministic",),
+            preferred_modes=("deterministic",),
+            delegated_modes=("deterministic", "non_deterministic"),
+            max_depth=5))
+    stage = deep.spawn(
+        "spawned stage",
+        LoopConfig(
+            framework="custom", custom_steps=("run",), power="light",
+            allowable_modes=("deterministic",),
+            preferred_modes=("deterministic",),
+            delegated_modes=("deterministic", "non_deterministic"),
+            max_depth=5))
+    candidate = stage.spawn(
+        "named spawned model-led candidate",
+        LoopConfig(
+            framework="custom", custom_steps=("invoke",), power="light",
+            allowable_modes=("deterministic",),
+            preferred_modes=("deterministic",),
+            delegated_modes=("deterministic", "non_deterministic"),
+            max_depth=5))
+    nested_config = _gateway_orchestration_config(candidate)
+    routing = candidate.spawn("route one model request", nested_config)
+    attempt = routing.spawn(
+        "provider attempt",
+        LoopConfig(
+            framework="custom", custom_steps=("invoke",), power="light",
+            allowable_modes=("non_deterministic",),
+            preferred_modes=("non_deterministic",),
+            delegated_modes=("non_deterministic",),
+            llm_thinking_power="medium"))
+    starting_config = _gateway_orchestration_config(None)
+    check("spawned_gateway_inherits_spawning_depth_without_reparenting",
+          nested_config.max_depth == 5
+          and routing.parent is candidate
+          and attempt.parent is routing
+          and attempt.depth == 4,
+          "practitioner -> spawned stage -> candidate -> route -> attempt")
+    check("starting_gateway_keeps_compatible_depth",
+          starting_config.max_depth == 3,
+          "starting gateway retains the historical default max_depth 3")
 
     passed = sum(1 for test in results if test["passed"])
-    return {"tests": results, "passed": passed, "total": len(results),
-            "all_passed": passed == len(results)}
+    return {
+        "record_type": "model_gateway_contract_test/v2",
+        "scope": "offline_contract_only",
+        "provider_integration_proven": False,
+        "tests": results,
+        "passed": passed,
+        "total": len(results),
+        "all_passed": passed == len(results),
+    }

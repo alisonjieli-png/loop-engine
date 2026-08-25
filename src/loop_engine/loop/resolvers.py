@@ -35,7 +35,7 @@ DEFAULT_CATEGORY_LEVEL = {
     "blind": 1, "embedding_similarity": 2, "small_model": 3, "hybrid": 3,
     "test_driven": 3, "persona_salted": 4, "llm_single": 4, "custom_special": 4,
     "llm_council": 6, "research": 7}
-# Which categories actually spend model tokens (for the calls-avoided receipt).
+# Which categories actually spend model tokens (for the calls-avoided record).
 MODEL_CATEGORIES = frozenset({"small_model", "hybrid", "persona_salted",
                               "llm_single", "llm_council", "research"})
 

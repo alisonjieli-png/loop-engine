@@ -1,0 +1,395 @@
+[loop1] INIT depth=0 nine_step/deep: goal: Select, compile, execute, and independently evaluate OpenML task 3560 on all ten
+[loop2] INIT depth=1 custom/light: goal: orient spawned Loop for Select, compile, execute, and independently evaluate OpenML tas
+[loop1] SPAWN -> loop2: orient spawned Loop for Select, compile, execute, and independently
+[loop2] act (deterministic) conf=1.0: orient:completed
+[loop2] TERMINAL: done
+[loop1] orient (deterministic) conf=1.0: orient:spawned Loop:loop2:ok
+[loop3] INIT depth=1 custom/light: goal: reconcile_horizon spawned Loop for Select, compile, execute, and independently evaluate
+[loop1] SPAWN -> loop3: reconcile_horizon spawned Loop for Select, compile, execute, and in
+[loop4] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for first principles decompositi
+[loop3] SPAWN -> loop4: serve callable: search four intelligence layers for first pr
+[loop4] serve (deterministic) conf=0.95: serve:done
+[loop4] TERMINAL: success_once
+[loop5] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for analogy novel alternatives c
+[loop3] SPAWN -> loop5: serve callable: search four intelligence layers for analogy 
+[loop5] serve (deterministic) conf=0.95: serve:done
+[loop5] TERMINAL: success_once
+[loop6] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for missing items evidence neede
+[loop3] SPAWN -> loop6: serve callable: search four intelligence layers for missing 
+[loop6] serve (deterministic) conf=0.95: serve:done
+[loop6] TERMINAL: success_once
+[loop7] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for failure adversarial review p
+[loop3] SPAWN -> loop7: serve callable: search four intelligence layers for failure 
+[loop7] serve (deterministic) conf=0.95: serve:done
+[loop7] TERMINAL: success_once
+[loop8] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for cost compression cost value 
+[loop3] SPAWN -> loop8: serve callable: search four intelligence layers for cost com
+[loop8] serve (deterministic) conf=0.95: serve:done
+[loop8] TERMINAL: success_once
+[loop9] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for verification evaluation rubr
+[loop3] SPAWN -> loop9: serve callable: search four intelligence layers for verifica
+[loop9] serve (deterministic) conf=0.95: serve:done
+[loop9] TERMINAL: success_once
+[loop10] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for output contract output templ
+[loop3] SPAWN -> loop10: serve callable: search four intelligence layers for output c
+[loop10] serve (deterministic) conf=0.95: serve:done
+[loop10] TERMINAL: success_once
+[loop11] INIT depth=2 custom/light: goal: serve callable: context_loop:context.openml.first_principles
+[loop3] SPAWN -> loop11: serve callable: context_loop:context.openml.first_principles
+[loop11] serve (deterministic) conf=0.95: serve:done
+[loop11] TERMINAL: success_once
+[loop12] INIT depth=2 custom/light: goal: serve callable: code_loop:code.openml.logistic_pipeline
+[loop3] SPAWN -> loop12: serve callable: code_loop:code.openml.logistic_pipeline
+[loop12] serve (deterministic) conf=0.95: serve:done
+[loop12] TERMINAL: success_once
+[loop13] INIT depth=2 custom/light: goal: serve callable: context_loop:context.openml.missing_information
+[loop3] SPAWN -> loop13: serve callable: context_loop:context.openml.missing_informat
+[loop13] serve (deterministic) conf=0.95: serve:done
+[loop13] TERMINAL: success_once
+[loop14] INIT depth=2 custom/light: goal: serve callable: context_loop:context.openml.failure_modes
+[loop3] SPAWN -> loop14: serve callable: context_loop:context.openml.failure_modes
+[loop14] serve (deterministic) conf=0.95: serve:done
+[loop14] TERMINAL: success_once
+[loop15] INIT depth=2 custom/light: goal: serve callable: guidance_loop:user.openml.active_owner_rules
+[loop3] SPAWN -> loop15: serve callable: guidance_loop:user.openml.active_owner_rules
+[loop15] serve (deterministic) conf=0.95: serve:done
+[loop15] TERMINAL: success_once
+[loop16] INIT depth=2 custom/light: goal: serve callable: context_loop:context.openml.verification
+[loop3] SPAWN -> loop16: serve callable: context_loop:context.openml.verification
+[loop16] serve (deterministic) conf=0.95: serve:done
+[loop16] TERMINAL: success_once
+[loop17] INIT depth=2 custom/light: goal: serve callable: context_loop:context.openml.output_contract
+[loop3] SPAWN -> loop17: serve callable: context_loop:context.openml.output_contract
+[loop17] serve (deterministic) conf=0.95: serve:done
+[loop17] TERMINAL: success_once
+[loop3] act (deterministic) conf=1.0: reconcile_horizon:completed
+[loop3] TERMINAL: done
+[loop1] reconcile_horizon (deterministic) conf=1.0: reconcile_horizon:spawned Loop:loop3:ok
+[loop18] INIT depth=1 custom/light: goal: assess_prepare spawned Loop for Select, compile, execute, and independently evaluate Op
+[loop1] SPAWN -> loop18: assess_prepare spawned Loop for Select, compile, execute, and indep
+[loop19] INIT depth=2 custom/light: goal: model-led logistic_candidate for OpenML task 3560
+[loop18] SPAWN -> loop19: model-led logistic_candidate for OpenML task 3560
+[loop20] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for first principles decompositi
+[loop19] SPAWN -> loop20: serve callable: search four intelligence layers for first pr
+[loop20] serve (deterministic) conf=0.95: serve:done
+[loop20] TERMINAL: success_once
+[loop21] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for analogy novel alternatives c
+[loop19] SPAWN -> loop21: serve callable: search four intelligence layers for analogy 
+[loop21] serve (deterministic) conf=0.95: serve:done
+[loop21] TERMINAL: success_once
+[loop22] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for missing items evidence neede
+[loop19] SPAWN -> loop22: serve callable: search four intelligence layers for missing 
+[loop22] serve (deterministic) conf=0.95: serve:done
+[loop22] TERMINAL: success_once
+[loop23] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for failure adversarial review p
+[loop19] SPAWN -> loop23: serve callable: search four intelligence layers for failure 
+[loop23] serve (deterministic) conf=0.95: serve:done
+[loop23] TERMINAL: success_once
+[loop24] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for cost compression cost value 
+[loop19] SPAWN -> loop24: serve callable: search four intelligence layers for cost com
+[loop24] serve (deterministic) conf=0.95: serve:done
+[loop24] TERMINAL: success_once
+[loop25] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for verification evaluation rubr
+[loop19] SPAWN -> loop25: serve callable: search four intelligence layers for verifica
+[loop25] serve (deterministic) conf=0.95: serve:done
+[loop25] TERMINAL: success_once
+[loop26] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for output contract output templ
+[loop19] SPAWN -> loop26: serve callable: search four intelligence layers for output c
+[loop26] serve (deterministic) conf=0.95: serve:done
+[loop26] TERMINAL: success_once
+[loop27] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.first_principles
+[loop19] SPAWN -> loop27: serve callable: context_loop:context.openml.first_principles
+[loop27] serve (deterministic) conf=0.95: serve:done
+[loop27] TERMINAL: success_once
+[loop28] INIT depth=3 custom/light: goal: serve callable: code_loop:code.openml.logistic_pipeline
+[loop19] SPAWN -> loop28: serve callable: code_loop:code.openml.logistic_pipeline
+[loop28] serve (deterministic) conf=0.95: serve:done
+[loop28] TERMINAL: success_once
+[loop29] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.missing_information
+[loop19] SPAWN -> loop29: serve callable: context_loop:context.openml.missing_informat
+[loop29] serve (deterministic) conf=0.95: serve:done
+[loop29] TERMINAL: success_once
+[loop30] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.failure_modes
+[loop19] SPAWN -> loop30: serve callable: context_loop:context.openml.failure_modes
+[loop30] serve (deterministic) conf=0.95: serve:done
+[loop30] TERMINAL: success_once
+[loop31] INIT depth=3 custom/light: goal: serve callable: guidance_loop:user.openml.active_owner_rules
+[loop19] SPAWN -> loop31: serve callable: guidance_loop:user.openml.active_owner_rules
+[loop31] serve (deterministic) conf=0.95: serve:done
+[loop31] TERMINAL: success_once
+[loop32] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.verification
+[loop19] SPAWN -> loop32: serve callable: context_loop:context.openml.verification
+[loop32] serve (deterministic) conf=0.95: serve:done
+[loop32] TERMINAL: success_once
+[loop33] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.output_contract
+[loop19] SPAWN -> loop33: serve callable: context_loop:context.openml.output_contract
+[loop33] serve (deterministic) conf=0.95: serve:done
+[loop33] TERMINAL: success_once
+[loop34] INIT depth=3 custom/light: goal: route one model request
+[loop19] SPAWN -> loop34: route one model request
+[loop35] INIT depth=4 custom/light: goal: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop34] SPAWN -> loop35: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop35] MODEL BOUNDARY deferred at : retry next iteration
+[loop35] invoke (non_deterministic) conf=0.6: invoke:answered
+[loop35] TERMINAL: success_once
+[loop34] route (deterministic) conf=1.0: route:answered:ollama_cloud
+[loop34] TERMINAL: done
+[loop19] invoke (non_deterministic) conf=0.9: logistic_candidate:accepted
+[loop19] TERMINAL: done
+[loop18] act (deterministic) conf=1.0: assess_prepare:completed
+[loop18] TERMINAL: done
+[loop1] assess_prepare (deterministic) conf=1.0: assess_prepare:spawned Loop:loop18:ok
+[loop36] INIT depth=1 custom/light: goal: decide_next spawned Loop for Select, compile, execute, and independently evaluate OpenM
+[loop1] SPAWN -> loop36: decide_next spawned Loop for Select, compile, execute, and independ
+[loop37] INIT depth=2 custom/light: goal: model-led random_forest_candidate for OpenML task 3560
+[loop36] SPAWN -> loop37: model-led random_forest_candidate for OpenML task 3560
+[loop38] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for first principles decompositi
+[loop37] SPAWN -> loop38: serve callable: search four intelligence layers for first pr
+[loop38] serve (deterministic) conf=0.95: serve:done
+[loop38] TERMINAL: success_once
+[loop39] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for analogy novel alternatives c
+[loop37] SPAWN -> loop39: serve callable: search four intelligence layers for analogy 
+[loop39] serve (deterministic) conf=0.95: serve:done
+[loop39] TERMINAL: success_once
+[loop40] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for missing items evidence neede
+[loop37] SPAWN -> loop40: serve callable: search four intelligence layers for missing 
+[loop40] serve (deterministic) conf=0.95: serve:done
+[loop40] TERMINAL: success_once
+[loop41] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for failure adversarial review p
+[loop37] SPAWN -> loop41: serve callable: search four intelligence layers for failure 
+[loop41] serve (deterministic) conf=0.95: serve:done
+[loop41] TERMINAL: success_once
+[loop42] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for cost compression cost value 
+[loop37] SPAWN -> loop42: serve callable: search four intelligence layers for cost com
+[loop42] serve (deterministic) conf=0.95: serve:done
+[loop42] TERMINAL: success_once
+[loop43] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for verification evaluation rubr
+[loop37] SPAWN -> loop43: serve callable: search four intelligence layers for verifica
+[loop43] serve (deterministic) conf=0.95: serve:done
+[loop43] TERMINAL: success_once
+[loop44] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for output contract output templ
+[loop37] SPAWN -> loop44: serve callable: search four intelligence layers for output c
+[loop44] serve (deterministic) conf=0.95: serve:done
+[loop44] TERMINAL: success_once
+[loop45] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.first_principles
+[loop37] SPAWN -> loop45: serve callable: context_loop:context.openml.first_principles
+[loop45] serve (deterministic) conf=0.95: serve:done
+[loop45] TERMINAL: success_once
+[loop46] INIT depth=3 custom/light: goal: serve callable: code_loop:code.openml.seeded_random_forest
+[loop37] SPAWN -> loop46: serve callable: code_loop:code.openml.seeded_random_forest
+[loop46] serve (deterministic) conf=0.95: serve:done
+[loop46] TERMINAL: success_once
+[loop47] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.missing_information
+[loop37] SPAWN -> loop47: serve callable: context_loop:context.openml.missing_informat
+[loop47] serve (deterministic) conf=0.95: serve:done
+[loop47] TERMINAL: success_once
+[loop48] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.failure_modes
+[loop37] SPAWN -> loop48: serve callable: context_loop:context.openml.failure_modes
+[loop48] serve (deterministic) conf=0.95: serve:done
+[loop48] TERMINAL: success_once
+[loop49] INIT depth=3 custom/light: goal: serve callable: guidance_loop:user.openml.active_owner_rules
+[loop37] SPAWN -> loop49: serve callable: guidance_loop:user.openml.active_owner_rules
+[loop49] serve (deterministic) conf=0.95: serve:done
+[loop49] TERMINAL: success_once
+[loop50] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.verification
+[loop37] SPAWN -> loop50: serve callable: context_loop:context.openml.verification
+[loop50] serve (deterministic) conf=0.95: serve:done
+[loop50] TERMINAL: success_once
+[loop51] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.output_contract
+[loop37] SPAWN -> loop51: serve callable: context_loop:context.openml.output_contract
+[loop51] serve (deterministic) conf=0.95: serve:done
+[loop51] TERMINAL: success_once
+[loop52] INIT depth=3 custom/light: goal: route one model request
+[loop37] SPAWN -> loop52: route one model request
+[loop53] INIT depth=4 custom/light: goal: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop52] SPAWN -> loop53: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop53] MODEL BOUNDARY deferred at : retry next iteration
+[loop53] invoke (non_deterministic) conf=0.6: invoke:answered
+[loop53] TERMINAL: success_once
+[loop52] route (deterministic) conf=1.0: route:answered:ollama_cloud
+[loop52] TERMINAL: done
+[loop37] invoke (non_deterministic) conf=0.9: random_forest_candidate:accepted
+[loop37] TERMINAL: done
+[loop54] INIT depth=2 custom/light: goal: model-led synthesis_selection for OpenML task 3560
+[loop36] SPAWN -> loop54: model-led synthesis_selection for OpenML task 3560
+[loop55] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for first principles decompositi
+[loop54] SPAWN -> loop55: serve callable: search four intelligence layers for first pr
+[loop55] serve (deterministic) conf=0.95: serve:done
+[loop55] TERMINAL: success_once
+[loop56] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for analogy novel alternatives c
+[loop54] SPAWN -> loop56: serve callable: search four intelligence layers for analogy 
+[loop56] serve (deterministic) conf=0.95: serve:done
+[loop56] TERMINAL: success_once
+[loop57] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for missing items evidence neede
+[loop54] SPAWN -> loop57: serve callable: search four intelligence layers for missing 
+[loop57] serve (deterministic) conf=0.95: serve:done
+[loop57] TERMINAL: success_once
+[loop58] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for failure adversarial review p
+[loop54] SPAWN -> loop58: serve callable: search four intelligence layers for failure 
+[loop58] serve (deterministic) conf=0.95: serve:done
+[loop58] TERMINAL: success_once
+[loop59] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for cost compression cost value 
+[loop54] SPAWN -> loop59: serve callable: search four intelligence layers for cost com
+[loop59] serve (deterministic) conf=0.95: serve:done
+[loop59] TERMINAL: success_once
+[loop60] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for verification evaluation rubr
+[loop54] SPAWN -> loop60: serve callable: search four intelligence layers for verifica
+[loop60] serve (deterministic) conf=0.95: serve:done
+[loop60] TERMINAL: success_once
+[loop61] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for output contract output templ
+[loop54] SPAWN -> loop61: serve callable: search four intelligence layers for output c
+[loop61] serve (deterministic) conf=0.95: serve:done
+[loop61] TERMINAL: success_once
+[loop62] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.first_principles
+[loop54] SPAWN -> loop62: serve callable: context_loop:context.openml.first_principles
+[loop62] serve (deterministic) conf=0.95: serve:done
+[loop62] TERMINAL: success_once
+[loop63] INIT depth=3 custom/light: goal: serve callable: code_loop:code.openml.logistic_pipeline
+[loop54] SPAWN -> loop63: serve callable: code_loop:code.openml.logistic_pipeline
+[loop63] serve (deterministic) conf=0.95: serve:done
+[loop63] TERMINAL: success_once
+[loop64] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.missing_information
+[loop54] SPAWN -> loop64: serve callable: context_loop:context.openml.missing_informat
+[loop64] serve (deterministic) conf=0.95: serve:done
+[loop64] TERMINAL: success_once
+[loop65] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.failure_modes
+[loop54] SPAWN -> loop65: serve callable: context_loop:context.openml.failure_modes
+[loop65] serve (deterministic) conf=0.95: serve:done
+[loop65] TERMINAL: success_once
+[loop66] INIT depth=3 custom/light: goal: serve callable: guidance_loop:user.openml.active_owner_rules
+[loop54] SPAWN -> loop66: serve callable: guidance_loop:user.openml.active_owner_rules
+[loop66] serve (deterministic) conf=0.95: serve:done
+[loop66] TERMINAL: success_once
+[loop67] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.verification
+[loop54] SPAWN -> loop67: serve callable: context_loop:context.openml.verification
+[loop67] serve (deterministic) conf=0.95: serve:done
+[loop67] TERMINAL: success_once
+[loop68] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.output_contract
+[loop54] SPAWN -> loop68: serve callable: context_loop:context.openml.output_contract
+[loop68] serve (deterministic) conf=0.95: serve:done
+[loop68] TERMINAL: success_once
+[loop69] INIT depth=3 custom/light: goal: route one model request
+[loop54] SPAWN -> loop69: route one model request
+[loop70] INIT depth=4 custom/light: goal: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop69] SPAWN -> loop70: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop70] MODEL BOUNDARY deferred at : retry next iteration
+[loop70] invoke (non_deterministic) conf=0.6: invoke:answered
+[loop70] TERMINAL: success_once
+[loop69] route (deterministic) conf=0.1: route:all_failed
+[loop69] TERMINAL: done
+[loop54] invoke (non_deterministic) conf=0.5: synthesis_selection:failed
+[loop54] TERMINAL: done
+[loop36] act (deterministic) conf=1.0: decide_next:completed
+[loop36] TERMINAL: done
+[loop1] decide_next (deterministic) conf=1.0: decide_next:spawned Loop:loop36:ok
+[loop71] INIT depth=1 custom/light: goal: how spawned Loop for Select, compile, execute, and independently evaluate OpenML task 3
+[loop1] SPAWN -> loop71: how spawned Loop for Select, compile, execute, and independently ev
+[loop71] act (deterministic) conf=0.5: how:failed:ValueError
+[loop71] TERMINAL: done
+[loop1] how (deterministic) conf=0.5: how:spawned Loop:loop71:failed
+[loop72] INIT depth=1 custom/light: goal: act spawned Loop for Select, compile, execute, and independently evaluate OpenML task 3
+[loop1] SPAWN -> loop72: act spawned Loop for Select, compile, execute, and independently ev
+[loop72] act (deterministic) conf=0.5: act:failed:KeyError
+[loop72] TERMINAL: done
+[loop1] act (deterministic) conf=0.5: act:spawned Loop:loop72:failed
+[loop73] INIT depth=1 custom/light: goal: verify spawned Loop for Select, compile, execute, and independently evaluate OpenML tas
+[loop1] SPAWN -> loop73: verify spawned Loop for Select, compile, execute, and independently
+[loop74] INIT depth=2 custom/light: goal: independent accuracy evaluator for OpenML task 3560
+[loop73] SPAWN -> loop74: independent accuracy evaluator for OpenML task 3560
+[loop75] INIT depth=2 custom/light: goal: model-led evaluator_repair for OpenML task 3560
+[loop73] SPAWN -> loop75: model-led evaluator_repair for OpenML task 3560
+[loop76] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for first principles decompositi
+[loop75] SPAWN -> loop76: serve callable: search four intelligence layers for first pr
+[loop76] serve (deterministic) conf=0.95: serve:done
+[loop76] TERMINAL: success_once
+[loop77] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for analogy novel alternatives c
+[loop75] SPAWN -> loop77: serve callable: search four intelligence layers for analogy 
+[loop77] serve (deterministic) conf=0.95: serve:done
+[loop77] TERMINAL: success_once
+[loop78] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for missing items evidence neede
+[loop75] SPAWN -> loop78: serve callable: search four intelligence layers for missing 
+[loop78] serve (deterministic) conf=0.95: serve:done
+[loop78] TERMINAL: success_once
+[loop79] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for failure adversarial review p
+[loop75] SPAWN -> loop79: serve callable: search four intelligence layers for failure 
+[loop79] serve (deterministic) conf=0.95: serve:done
+[loop79] TERMINAL: success_once
+[loop80] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for cost compression cost value 
+[loop75] SPAWN -> loop80: serve callable: search four intelligence layers for cost com
+[loop80] serve (deterministic) conf=0.95: serve:done
+[loop80] TERMINAL: success_once
+[loop81] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for verification evaluation rubr
+[loop75] SPAWN -> loop81: serve callable: search four intelligence layers for verifica
+[loop81] serve (deterministic) conf=0.95: serve:done
+[loop81] TERMINAL: success_once
+[loop82] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for output contract output templ
+[loop75] SPAWN -> loop82: serve callable: search four intelligence layers for output c
+[loop82] serve (deterministic) conf=0.95: serve:done
+[loop82] TERMINAL: success_once
+[loop83] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.first_principles
+[loop75] SPAWN -> loop83: serve callable: context_loop:context.openml.first_principles
+[loop83] serve (deterministic) conf=0.95: serve:done
+[loop83] TERMINAL: success_once
+[loop84] INIT depth=3 custom/light: goal: serve callable: code_loop:code.openml.seeded_random_forest
+[loop75] SPAWN -> loop84: serve callable: code_loop:code.openml.seeded_random_forest
+[loop84] serve (deterministic) conf=0.95: serve:done
+[loop84] TERMINAL: success_once
+[loop85] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.missing_information
+[loop75] SPAWN -> loop85: serve callable: context_loop:context.openml.missing_informat
+[loop85] serve (deterministic) conf=0.95: serve:done
+[loop85] TERMINAL: success_once
+[loop86] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.failure_modes
+[loop75] SPAWN -> loop86: serve callable: context_loop:context.openml.failure_modes
+[loop86] serve (deterministic) conf=0.95: serve:done
+[loop86] TERMINAL: success_once
+[loop87] INIT depth=3 custom/light: goal: serve callable: guidance_loop:user.openml.active_owner_rules
+[loop75] SPAWN -> loop87: serve callable: guidance_loop:user.openml.active_owner_rules
+[loop87] serve (deterministic) conf=0.95: serve:done
+[loop87] TERMINAL: success_once
+[loop88] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.verification
+[loop75] SPAWN -> loop88: serve callable: context_loop:context.openml.verification
+[loop88] serve (deterministic) conf=0.95: serve:done
+[loop88] TERMINAL: success_once
+[loop89] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.output_contract
+[loop75] SPAWN -> loop89: serve callable: context_loop:context.openml.output_contract
+[loop89] serve (deterministic) conf=0.95: serve:done
+[loop89] TERMINAL: success_once
+[loop90] INIT depth=3 custom/light: goal: route one model request
+[loop75] SPAWN -> loop90: route one model request
+[loop91] INIT depth=4 custom/light: goal: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop90] SPAWN -> loop91: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop91] MODEL BOUNDARY deferred at : retry next iteration
+[loop91] invoke (non_deterministic) conf=0.6: invoke:answered
+[loop91] TERMINAL: success_once
+[loop90] route (deterministic) conf=1.0: route:answered:ollama_cloud
+[loop90] TERMINAL: done
+[loop75] invoke (non_deterministic) conf=0.9: evaluator_repair:accepted
+[loop75] TERMINAL: done
+[loop92] INIT depth=2 five_step/light: goal: deterministic check: solution loop task-3560-official-fold-execution (code.openm
+[loop73] SPAWN -> loop92: deterministic check: solution loop task-3560-official-fold-e
+[loop92] load (deterministic) conf=0.95: load:done
+[loop92] choose (deterministic) conf=0.95: choose:done
+[loop92] act (deterministic) conf=0.95: act:done:FoldPredictionArtifact
+[loop92] check (deterministic) conf=0.95: check:ok
+[loop92] commit (deterministic) conf=0.95: commit:done
+[loop92] TERMINAL: done
+[loop93] INIT depth=2 custom/light: goal: independent accuracy evaluator for OpenML task 3560
+[loop73] SPAWN -> loop93: independent accuracy evaluator for OpenML task 3560
+[loop93] validate_contract (deterministic) conf=1.0: prediction_contract:present
+[loop93] score (deterministic) conf=1.0: accuracy:computed
+[loop93] accept (deterministic) conf=1.0: evaluation:accepted
+[loop93] TERMINAL: done
+[loop73] act (deterministic) conf=1.0: verify:completed
+[loop73] TERMINAL: done
+[loop1] verify (deterministic) conf=1.0: verify:spawned Loop:loop73:ok
+[loop94] INIT depth=1 custom/light: goal: integrate_commit spawned Loop for Select, compile, execute, and independently evaluate 
+[loop1] SPAWN -> loop94: integrate_commit spawned Loop for Select, compile, execute, and ind
+[loop94] act (deterministic) conf=1.0: integrate_commit:completed
+[loop94] TERMINAL: done
+[loop1] integrate_commit (deterministic) conf=1.0: integrate_commit:spawned Loop:loop94:ok
+[loop95] INIT depth=1 custom/light: goal: route spawned Loop for Select, compile, execute, and independently evaluate OpenML task
+[loop1] SPAWN -> loop95: route spawned Loop for Select, compile, execute, and independently 
+[loop95] act (deterministic) conf=1.0: route:completed
+[loop95] TERMINAL: done
+[loop1] route (deterministic) conf=1.0: route:spawned Loop:loop95:ok
+[loop1] TERMINAL: done

@@ -1,0 +1,87 @@
+{
+  "record_type": "ds1000_population/v1",
+  "population_id": "ds1000-pandas-sklearn-4-v1",
+  "frozen_before_outcomes": true,
+  "source": {
+    "repository": "https://github.com/xlang-ai/DS-1000.git",
+    "commit": "b39aab71da6d23ef8d3cac59a7c5f834516ab334",
+    "artifacts": [
+      {
+        "path": "data/ds1000.jsonl.gz",
+        "bytes": 418089,
+        "sha256": "e8c6daa9d7223976bce0296644f3933f78d7f47830669ff05cd61da62c6ba9b3"
+      },
+      {
+        "path": "test_ds1000.py",
+        "bytes": 3051,
+        "sha256": "32ebe279eefa2d3cb1d633a82b43954ea813567e2fca28a9f6d777ce7f04d50c"
+      },
+      {
+        "path": "execution.py",
+        "bytes": 5791,
+        "sha256": "fab0beb2a5c3300f4540c2225ffc013881e5770fed388ad20d4620ae040cd311"
+      },
+      {
+        "path": "environment.yml",
+        "bytes": 386,
+        "sha256": "61575788abe7cd77d26921ba2043efb652d2e1a9fe569378e9405a8469bb76aa"
+      },
+      {
+        "path": "LICENSE",
+        "bytes": 20139,
+        "sha256": "2003829cf643d61b00a76088dd31bb11b8029546f24c56b39fd492adb9281483"
+      }
+    ]
+  },
+  "selection_rule": "Owner-frozen two midpoint tasks per library, verified against the pinned data without reading outcomes.",
+  "tasks": [
+    {
+      "problem_id": 72,
+      "library": "Pandas",
+      "public_library": "pandas"
+    },
+    {
+      "problem_id": 218,
+      "library": "Pandas",
+      "public_library": "pandas"
+    },
+    {
+      "problem_id": 838,
+      "library": "Sklearn",
+      "public_library": "scikit-learn"
+    },
+    {
+      "problem_id": 896,
+      "library": "Sklearn",
+      "public_library": "scikit-learn"
+    }
+  ],
+  "selected_arm": {
+    "mode": "non_deterministic",
+    "provider": "ollama_cloud",
+    "model": "deepseek-v4-flash:0731",
+    "maximum_output_tokens": 65536,
+    "failover": false,
+    "calls_per_task": {
+      "candidate_spawned_loops": 2,
+      "synthesis_spawned_loops": 1,
+      "maximum_evaluator_triggered_repairs": 1,
+      "maximum_physical_calls": 4
+    },
+    "maximum_physical_calls_population": 16
+  },
+  "required_engine_path": [
+    "reference_nine_step root Practitioner",
+    "Context Intelligence retrieval",
+    "Code Intelligence retrieval",
+    "Runtime History and Solution Intelligence retrieval",
+    "User Feedback Intelligence retrieval",
+    "bounded deterministic and model-led spawned Loop loops",
+    "two distinct candidate context portfolios",
+    "one model-led synthesis comparison",
+    "typed compiled code Solution Canvas",
+    "isolated upstream DS-1000 evaluation",
+    "at most one failure-specific model repair",
+    "Run History save, chain verification, playback, and report"
+  ]
+}

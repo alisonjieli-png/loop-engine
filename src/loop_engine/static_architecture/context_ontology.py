@@ -1,6 +1,6 @@
 """Composable ontology for Context Intelligence.
 
-Architectural role: Static Architecture ontology and labeling service.
+Architectural role: internal ontology service for Intelligence Search and Retrieval.
 
 Owns: stable vocabularies for context kinds, question families, thinking
 methods, list structures, serialization formats, evidence states,

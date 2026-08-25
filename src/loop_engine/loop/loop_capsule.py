@@ -224,7 +224,7 @@ class LoopCapsule:
                               "version": self.handshake.version}}
 
 
-def capsule_from_record(rec, *, role: str = "string_intelligence"
+def capsule_from_record(rec, *, role: str = "context_intelligence"
                         ) -> LoopCapsule:
     """One store row as a lazy capsule."""
     def read(name, default=None):
@@ -264,7 +264,7 @@ def capsule_from_record(rec, *, role: str = "string_intelligence"
         facets=facets)
 
 
-def refs_for_records(records, *, role: str = "string_intelligence",
+def refs_for_records(records, *, role: str = "context_intelligence",
                      scores=None) -> list:
     """A store's rows as ranked LoopRefs — the shape a search returns."""
     scores = scores or {}
@@ -273,7 +273,7 @@ def refs_for_records(records, *, role: str = "string_intelligence",
             for c in caps]
 
 
-def refs_for_hits(hits, *, role: str = "string_intelligence") -> list:
+def refs_for_hits(hits, *, role: str = "context_intelligence") -> list:
     """Build refs from body-free search cards without serving any record."""
     refs = []
     for hit in hits:
@@ -384,7 +384,7 @@ def self_test() -> dict:
 
     from ..static_architecture.store_serve import StoreRecord
     from .recursive_loop import LoopLedger
-    from ..static_architecture.chronicle import to_canonical_events
+    from ..static_architecture.run_history import to_canonical_events
 
     recs = [StoreRecord("q.leak", "question",
                         "has leakage been checked before scoring?",
@@ -400,8 +400,8 @@ def self_test() -> dict:
     check("search_returns_refs_that_carry_no_content",
           len(refs) == 2 and all(isinstance(r, LoopRef) for r in refs)
           and "leakage" not in ref_json and "duplicate" not in ref_json
-          and refs[0].loop_ref.startswith("loop://string_intelligence/")
-          and refs[0].handshake.role == "string_intelligence",
+          and refs[0].loop_ref.startswith("loop://context_intelligence/")
+          and refs[0].handshake.role == "context_intelligence",
           "two refs, addresses + handshakes, zero payload text")
 
     # 2. LAZY: a capsule holds a REFERENCE until something invokes it.
@@ -410,7 +410,7 @@ def self_test() -> dict:
     cap.materialise(lambda ref: "resolved payload")
     check("capsules_are_lazy_until_invoked",
           lazy_before and cap.materialised
-          and cap.payload_ref == "content://string_intelligence/q.leak",
+          and cap.payload_ref == "content://context_intelligence/q.leak",
           "payload is a reference until materialise() is called")
 
     # 3. INVOCATION IS THE ONLY PATH TO CONTENT, and it goes through the loop
@@ -422,7 +422,7 @@ def self_test() -> dict:
     check("invoking_a_ref_runs_the_loop_and_returns_content",
           out["value"] == "has leakage been checked?"
           and out["loop_ref"] == refs[0].loop_ref
-          and "intelligence.string.retrieved" in fams
+          and "intelligence.context.retrieved" in fams
           and out["model_calls"] == 0,
           f"content only via invocation; families {sorted(fams)[:2]}…")
 

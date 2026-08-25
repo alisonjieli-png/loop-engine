@@ -24,7 +24,7 @@ from typing import Sequence
 
 OBLIGATION_KINDS = ("justify_action", "review_result", "structure_learning",
                     "reframe_after_barren", "assess_context_coverage",
-                    "validate_candidate", "join_child")
+                    "validate_candidate", "join_spawned")
 
 # Declarative condition ops — a tiny, safe evaluator (no eval).
 _OPS = {

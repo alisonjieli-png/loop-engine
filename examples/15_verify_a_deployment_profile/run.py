@@ -41,7 +41,7 @@ def main():
         available_fields=("claim_set", "acceptance_rule"),
         capabilities=(
             "loop_spawn",
-            "chronicle_write",
+            "run_history_write",
             "independent_verification",
         ),
         modes=("deterministic",),

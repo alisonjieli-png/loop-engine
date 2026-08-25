@@ -25,14 +25,16 @@ class ProviderPinnedRequest:
     system: str = ""
     temperature: float = 0.7
     timeout_seconds: float = 900.0
-    max_output_tokens: int = 4096
+    max_output_tokens: "int | None" = None
     thinking_power: str = "medium"
 
     def __post_init__(self):
         if not self.prompt.strip() or not self.provider or not self.model:
             raise ValueError(
                 "ProviderPinnedRequest needs prompt, provider, and model")
-        if self.timeout_seconds <= 0 or self.max_output_tokens < 1:
+        if (self.timeout_seconds <= 0
+                or (self.max_output_tokens is not None
+                    and self.max_output_tokens < 1)):
             raise ValueError("provider-pinned limits must be positive")
         if self.thinking_power not in (
                 "small", "medium", "high", "max", "specialized"):

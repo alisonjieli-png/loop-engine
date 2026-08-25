@@ -3,13 +3,13 @@
 CONTRACT   PractitionerState + ExecutionPlan  ->  ResultPacket[]
 REQUIRED   yes
 WAYS       run a deterministic node · run a task graph · one model call ·
-           author via an OpenCode worker · spawn child practitioners ·
+           author via an OpenCode worker · spawn Practitioner Loops ·
            matrix-of-solutions waterfall
 EXTEND     register an executor behind execute(spec)->outcome and add it to the
            store; add a policy kind in rl_vocabulary.
 
 A WorkPacket runs many deterministic ops per pass to a decision boundary — a
-10,000-op task is not 10,000 passes.  Children run the SAME kernel with a
+10,000-op task is not 10,000 passes.  Spawned Loops run the SAME kernel with a
 narrower goal.
 """
 from ...loop.kernel import ResultPacket, default_act

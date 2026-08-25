@@ -1,0 +1,44 @@
+{
+  "campaign_id": "openml-cc18-full-20260825T1505Z",
+  "fold_training_made_by_verification": false,
+  "known_packet_tokens_subtotal": 16418,
+  "legacy_state_note": "The saved campaign field tasks_accepted meant score-valid only; no quality acceptance threshold was declared.",
+  "model_calls_made_by_verification": 0,
+  "packet_calls_with_unknown_token_usage": 2,
+  "packet_physical_call_ceiling": 14,
+  "packet_physical_calls": 12,
+  "provider_cost_state": "unknown",
+  "quality_acceptance_rule": "not_defined",
+  "record_type": "openml_cc18_saved_campaign_verification/v2",
+  "selected_physical_calls": 10,
+  "tasks": [
+    {
+      "algorithm": "random_forest",
+      "mean_accuracy": 0.8239631336405528,
+      "physical_calls": 3,
+      "run_history_chain_intact": true,
+      "run_history_events": 697,
+      "task_id": 11
+    },
+    {
+      "algorithm": "random_forest",
+      "mean_accuracy": 0.7540360360360361,
+      "physical_calls": 3,
+      "run_history_chain_intact": true,
+      "run_history_events": 697,
+      "task_id": 10101
+    },
+    {
+      "algorithm": "random_forest",
+      "mean_accuracy": 0.2196360759493671,
+      "physical_calls": 4,
+      "run_history_chain_intact": true,
+      "run_history_events": 851,
+      "task_id": 3560
+    }
+  ],
+  "tasks_artifact_valid": 3,
+  "tasks_quality_accepted": null,
+  "tasks_score_valid": 3,
+  "verified": true
+}

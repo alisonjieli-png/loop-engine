@@ -1,0 +1,89 @@
+{
+  "canonical": {
+    "digest": "789f2ba4e85742561d5b72a1f7a24b33f81569d46e860389b0f67464a3b2dc3f",
+    "record_type": "solution_plan/v1",
+    "solution_id": "ds1000.896.synthesis.adf69186a2e3",
+    "spec": {
+      "allowed_modes": [
+        "deterministic"
+      ],
+      "ensemble": "single",
+      "loops": [
+        {
+          "fallback_operations": [],
+          "loop_id": "execute_candidate_in_isolated_upstream_evaluator",
+          "mode": "deterministic",
+          "operation": "ds1000_isolated_evaluator",
+          "params": {
+            "input_contract": "ds1000_code_candidate/v1",
+            "output_contract": "ds1000_isolated_evaluation/v1",
+            "runtime_image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d"
+          }
+        }
+      ],
+      "members": [],
+      "resolved_operations": [
+        "ds1000_isolated_evaluator"
+      ],
+      "solution_id": "ds1000.896.synthesis.adf69186a2e3",
+      "weights": []
+    }
+  },
+  "evaluation": {
+    "candidate_sha256": "adf69186a2e3b0f9aff2baa11892bb1f6c3090a04969563095c545811bfa0a3f",
+    "container_returncode": 0,
+    "container_stderr": "",
+    "container_stdout": "{\"candidate_sha256\": \"adf69186a2e3b0f9aff2baa11892bb1f6c3090a04969563095c545811bfa0a3f\", \"library\": \"Sklearn\", \"passed\": false, \"problem_id\": 896, \"record_type\": \"ds1000_upstream_evaluation/v1\", \"result\": \"failed: expected an indented block after function definition on line 5 (<string>, line 6)\", \"test_execution\": true, \"test_string\": false, \"upstream_timeout_seconds\": 120}\n",
+    "image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d",
+    "library": "Sklearn",
+    "passed": false,
+    "problem_id": 896,
+    "record_type": "ds1000_isolated_evaluation/v1",
+    "status": "completed",
+    "upstream_result": "failed: expected an indented block after function definition on line 5 (<string>, line 6)"
+  },
+  "json": "{\n \"record_type\": \"solution_plan/v1\",\n \"solution_id\": \"ds1000.896.synthesis.adf69186a2e3\",\n \"spec\": {\n  \"solution_id\": \"ds1000.896.synthesis.adf69186a2e3\",\n  \"allowed_modes\": [\n   \"deterministic\"\n  ],\n  \"ensemble\": \"single\",\n  \"weights\": [],\n  \"loops\": [\n   {\n    \"loop_id\": \"execute_candidate_in_isolated_upstream_evaluator\",\n    \"operation\": \"ds1000_isolated_evaluator\",\n    \"mode\": \"deterministic\",\n    \"fallback_operations\": [],\n    \"params\": {\n     \"input_contract\": \"ds1000_code_candidate/v1\",\n     \"output_contract\": \"ds1000_isolated_evaluation/v1\",\n     \"runtime_image_id\": \"sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d\"\n    }\n   }\n  ],\n  \"members\": [],\n  \"resolved_operations\": [\n   \"ds1000_isolated_evaluator\"\n  ]\n },\n \"digest\": \"789f2ba4e85742561d5b72a1f7a24b33f81569d46e860389b0f67464a3b2dc3f\"\n}",
+  "mermaid": "flowchart TD\n  IN([inputs])\n  N1[\"ds1000.896.synthesis.adf69186a2e3<br/>single | deterministic\"]\n  N2(\"execute_candidate_in_isolated_upstream_evaluator: ds1000_isolated_evaluator [deterministic]\")\n  N3([output])\n  IN --> N1\n  N1 --> N2\n  N2 --> N3",
+  "plan": {
+    "digest": "789f2ba4e85742561d5b72a1f7a24b33f81569d46e860389b0f67464a3b2dc3f",
+    "record_type": "solution_plan/v1",
+    "solution_id": "ds1000.896.synthesis.adf69186a2e3",
+    "spec": {
+      "allowed_modes": [
+        "deterministic"
+      ],
+      "ensemble": "single",
+      "loops": [
+        {
+          "fallback_operations": [],
+          "loop_id": "execute_candidate_in_isolated_upstream_evaluator",
+          "mode": "deterministic",
+          "operation": "ds1000_isolated_evaluator",
+          "params": {
+            "input_contract": "ds1000_code_candidate/v1",
+            "output_contract": "ds1000_isolated_evaluation/v1",
+            "runtime_image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d"
+          }
+        }
+      ],
+      "members": [],
+      "resolved_operations": [
+        "ds1000_isolated_evaluator"
+      ],
+      "solution_id": "ds1000.896.synthesis.adf69186a2e3",
+      "weights": []
+    }
+  },
+  "plan_digest": "789f2ba4e85742561d5b72a1f7a24b33f81569d46e860389b0f67464a3b2dc3f",
+  "record_type": "ds1000_canvas_evidence/v1",
+  "role": "synthesis",
+  "trace": [
+    {
+      "component_loop_id": "loop85",
+      "mode": "deterministic",
+      "operation": "ds1000_isolated_evaluator",
+      "solution_loop": "execute_candidate_in_isolated_upstream_evaluator",
+      "used_fallback": false
+    }
+  ]
+}

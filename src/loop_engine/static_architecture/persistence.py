@@ -1,6 +1,6 @@
 """Persistence — durable, append-only stores for every knowledge plane.
 
-The intelligence the loop accumulates — notes, decision episodes, receipts,
+The intelligence the loop accumulates — notes, decision episodes, records,
 curated pack items — must survive across runs, or the system relearns everything
 each time.  This module persists each plane to an append-only JSONL store and
 reloads it, keeping the same discipline the in-memory stores enforce: records are
@@ -20,7 +20,7 @@ from typing import Any, Iterable, Mapping
 
 from ..strings.notes import Note, NoteStore
 from ..loop.decision_episode import ProposalRecord, DecisionEpisode, EpisodeStore
-from ..loop.receipts import SolverIterationReceipt, verify_chain
+from ..loop.iteration_records import SolverIterationRecord, verify_chain
 
 
 def append_record_as_loop(path, kind: str, record, *, ledger=None):
@@ -132,13 +132,13 @@ def load_episodes(path: str | Path) -> EpisodeStore:
     return store
 
 
-# --- receipts ------------------------------------------------------------
-def persist_receipt(path: str | Path, receipt: SolverIterationReceipt) -> None:
-    append_record(path, "receipt", receipt.to_dict())
+# --- iteration records --------------------------------------------------
+def persist_iteration_record(path: str | Path, record: SolverIterationRecord) -> None:
+    append_record(path, "iteration_record", record.to_dict())
 
 
-def _receipt_from_dict(d: Mapping[str, Any]) -> SolverIterationReceipt:
-    return SolverIterationReceipt(
+def _iteration_record_from_dict(d: Mapping[str, Any]) -> SolverIterationRecord:
+    return SolverIterationRecord(
         cell_id=d["cell_id"], iteration=int(d["iteration"]),
         parent_digest=d["parent_digest"],
         knowledge_before_digest=d["knowledge_before_digest"],
@@ -151,11 +151,12 @@ def _receipt_from_dict(d: Mapping[str, Any]) -> SolverIterationReceipt:
         knowledge_after_digest=d["knowledge_after_digest"],
         resources=dict(d.get("resources", {})),
         terminal_state=d.get("terminal_state", ""),
-        receipt_digest=d["receipt_digest"])
+        record_digest=d["record_digest"])
 
 
-def load_receipts(path: str | Path) -> list[SolverIterationReceipt]:
-    return [_receipt_from_dict(rec) for rec in read_records(path, "receipt")]
+def load_iteration_records(path: str | Path) -> list[SolverIterationRecord]:
+    return [_iteration_record_from_dict(rec)
+            for rec in read_records(path, "iteration_record")]
 
 
 # ---------------------------------------------------------------------------
@@ -166,7 +167,7 @@ def load_receipts(path: str | Path) -> list[SolverIterationReceipt]:
 def self_test() -> dict:
     import tempfile
     from ..strings.notes import NoteTemplate, fill_note
-    from ..loop.receipts import build_iteration_receipt
+    from ..loop.iteration_records import build_iteration_record
 
     results: list[dict] = []
 
@@ -210,9 +211,9 @@ def self_test() -> dict:
           "a decision episode with a linked outcome reloads and its resolver "
           "calibration recomputes identically from disk")
 
-    # Receipts round-trip and the reloaded chain still verifies.
-    rpath = tmp / "receipts.jsonl"
-    r0 = build_iteration_receipt("cell.x", 0, parent=None,
+    # Iteration records round-trip and the reloaded chain still verifies.
+    rpath = tmp / "iteration-records.jsonl"
+    r0 = build_iteration_record("cell.x", 0, parent=None,
                                  knowledge_before_digest="k0",
                                  decision_need={"mode": "investigate"},
                                  proposals=["run_tests:a"],
@@ -220,7 +221,7 @@ def self_test() -> dict:
                                  model_calls_made=0, model_calls_avoided=2,
                                  observations=["obs.0"],
                                  knowledge_after_digest="k1")
-    r1 = build_iteration_receipt("cell.x", 1, parent=r0,
+    r1 = build_iteration_record("cell.x", 1, parent=r0,
                                  knowledge_before_digest="k1",
                                  decision_need={"mode": "route"},
                                  proposals=["add_node:hgb"],
@@ -228,19 +229,19 @@ def self_test() -> dict:
                                  model_calls_made=1, model_calls_avoided=1,
                                  observations=["obs.1"],
                                  knowledge_after_digest="k2")
-    persist_receipt(rpath, r0)
-    persist_receipt(rpath, r1)
-    loaded = load_receipts(rpath)
-    check("receipts_round_trip_and_the_reloaded_chain_verifies",
+    persist_iteration_record(rpath, r0)
+    persist_iteration_record(rpath, r1)
+    loaded = load_iteration_records(rpath)
+    check("iteration_records_round_trip_and_the_chain_verifies",
           len(loaded) == 2 and verify_chain(loaded)["valid"]
-          and loaded[0].receipt_digest == r0.receipt_digest,
-          "the two-receipt chain persists, reloads with identical digests, and "
+          and loaded[0].record_digest == r0.record_digest,
+          "the two-record chain persists, reloads with identical digests, and "
           "still verifies — a durable, tamper-evident run history")
 
     # Append-only: a second write adds a record, never replaces.
-    persist_receipt(rpath, r1)
+    persist_iteration_record(rpath, r1)
     check("stores_are_append_only",
-          len(read_records(rpath, "receipt")) == 3,
+          len(read_records(rpath, "iteration_record")) == 3,
           "writing a record again appends a third line rather than replacing — "
           "the store is append-only on disk")
 

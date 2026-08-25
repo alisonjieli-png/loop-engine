@@ -1,0 +1,121 @@
+{
+  "record_type": "beir_scifact_engineering_diagnostic_summary/v1",
+  "run_date": "2026-08-25",
+  "status": "engineering_diagnostic_excluded",
+  "engineering_checks_passed": true,
+  "selected_benchmark_evidence": false,
+  "exclusion_reason": "Selected benchmarks require non-deterministic runs. This deterministic zero-model-call diagnostic does not answer that question.",
+  "source": {
+    "url": "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/scifact.zip",
+    "archive_md5": "5f7d1de60b170fc8027bb7898e2efca1",
+    "archive_sha256": "536e14446a0ba56ed1398ab1055f39fe852686ecad24a6306c80c490fa8e0165"
+  },
+  "population": {
+    "corpus_documents": 5183,
+    "query_file_rows": 1109,
+    "test_queries": 300,
+    "qrel_rows": 339,
+    "population_sha256": "f4d696e834e31e39ca4f1c63894be39932185cd1a5d6f562c233f8420ba90bd7"
+  },
+  "root_practitioner": {
+    "run_id": "scifact-engineering-diagnostic-final",
+    "loop_id": "loop1",
+    "profile": "reference_nine_step",
+    "mode": "deterministic",
+    "model_calls": 0,
+    "loop_objects": 1211,
+    "steps": [
+      "orient",
+      "reconcile_horizon",
+      "assess_prepare",
+      "decide_next",
+      "how",
+      "act",
+      "verify",
+      "integrate_commit",
+      "route"
+    ]
+  },
+  "solution_canvas": {
+    "solution_id": "beir_scifact_retrieval",
+    "selected_candidate": "fts5_title_and_abstract",
+    "plan_digest": "f9ebf43da2204456687b31d0e4ca96e286e7b5bec34ce55f0c9baf678e56dfaf",
+    "final_query_loops": 300,
+    "model_calls": 0
+  },
+  "diagnostic_metrics": {
+    "ndcg_at_10": 0.6384475973112258,
+    "recall_at_10": 0.7469444444444445,
+    "mrr_at_10": 0.6114695767195767
+  },
+  "component_diagnostics": [
+    {
+      "candidate_id": "fts5_title_and_abstract",
+      "queries": 300,
+      "query_loops": 300,
+      "model_calls": 0,
+      "reference_verified": true,
+      "metrics": {
+        "ndcg_at_10": 0.6384475973112258,
+        "recall_at_10": 0.7469444444444445,
+        "mrr_at_10": 0.6114695767195767
+      }
+    },
+    {
+      "candidate_id": "fts5_title_only",
+      "queries": 300,
+      "query_loops": 300,
+      "model_calls": 0,
+      "reference_verified": true,
+      "metrics": {
+        "ndcg_at_10": 0.38482158103735586,
+        "recall_at_10": 0.4901111111111111,
+        "mrr_at_10": 0.358478835978836
+      }
+    },
+    {
+      "candidate_id": "fts5_abstract_only",
+      "queries": 300,
+      "query_loops": 300,
+      "model_calls": 0,
+      "reference_verified": true,
+      "metrics": {
+        "ndcg_at_10": 0.6214482346832594,
+        "recall_at_10": 0.7296111111111111,
+        "mrr_at_10": 0.5936335978835978
+      }
+    }
+  ],
+  "external_reference": {
+    "implementation": "ir_measures 0.4.3",
+    "ndcg_at_10": 0.6384475973112254,
+    "recall_at_10": 0.7469444444444444,
+    "rr_at_10": 0.6114695767195767,
+    "matches_within_floating_point_precision": true
+  },
+  "run_shape_assertions": {
+    "passed": 21,
+    "total": 21,
+    "every_retrieval_query_crossed_a_loop": true,
+    "final_solution_loop_executed": true,
+    "final_solution_loop_owned_by_practitioner": true,
+    "final_full_population_evaluated": true,
+    "final_metrics_independently_verified": true,
+    "run_history_saved_and_chain_verified": true,
+    "zero_model_calls": true
+  },
+  "run_history": {
+    "events": 9770,
+    "head_digest": "e19b23b25bec9650d8205d41d979b5ca5422dca7b46a0a829f930cffba07458b",
+    "chain_intact": true,
+    "playback_lines": 4883,
+    "full_history_checked_in": false
+  },
+  "limitations": [
+    "This deterministic run is excluded from selected benchmark evidence and does not test a non-deterministic model-driven Practitioner.",
+    "This is one retrieval dataset and does not establish general task quality.",
+    "The three candidate methods share one lexical engine and are not an exhaustive search.",
+    "The run measures retrieval quality, not downstream claim verification quality.",
+    "The complete generated Run History is not checked into Git because it is 6.5 MB; rerun the documented command to regenerate it."
+  ]
+}

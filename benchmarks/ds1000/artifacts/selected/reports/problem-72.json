@@ -1,0 +1,39 @@
+{
+  "record_type": "ds1000_compact_loop_report/v1",
+  "report": {
+    "chain_intact": true,
+    "event_families": {
+      "intelligence.code.retrieved": 10,
+      "intelligence.history.retrieved": 6,
+      "intelligence.string.retrieved": 22,
+      "intelligence.user.retrieved": 5,
+      "loop.completed": 104,
+      "loop.initialized": 104,
+      "loop.iteration.completed": 120,
+      "loop.iteration.started": 120,
+      "loop.spawn.requested": 103,
+      "loop.spawned.returned": 103,
+      "loop.spawned.started": 103,
+      "loop.started": 104,
+      "model.invocation.completed": 4,
+      "model.invocation.requested": 4,
+      "run.started": 1,
+      "solution.finalized": 2,
+      "solution.loop.completed": 2,
+      "solution.loop.started": 2,
+      "state.committed": 15
+    },
+    "events": 934,
+    "loops": 107,
+    "max_depth": 3,
+    "model_calls": 4,
+    "record_type": "loop_report/v1",
+    "run_id": "ds1000-full-v1-20260825T150857Z.problem-72",
+    "tokens_by_provider": {
+      "ollama_cloud": 10102
+    },
+    "total_tokens": 10102
+  },
+  "source_report_bytes": 68157,
+  "source_report_sha256": "8805f75aed1a665742e1c90ed1873beba3896c5762083d48db0cec9ad540661e"
+}

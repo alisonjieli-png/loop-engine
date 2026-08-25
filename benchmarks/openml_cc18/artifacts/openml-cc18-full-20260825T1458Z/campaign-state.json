@@ -1,0 +1,16 @@
+{
+  "campaign_id": "openml-cc18-full-20260825T1458Z",
+  "physical_call_ceiling": 12,
+  "record_type": "openml_cc18_campaign_state/v1",
+  "selected_mode": "non_deterministic",
+  "selected_tasks": [
+    11,
+    10101,
+    3560
+  ],
+  "started_at": "2026-08-25T14:55:33.151826+00:00",
+  "status": "failed_pre_provider",
+  "failed_at": "2026-08-25T14:56:27Z",
+  "physical_calls": 0,
+  "failure": "ModelGateway internal max_depth 3 refused a depth-4 provider attempt; no provider request was sent"
+}

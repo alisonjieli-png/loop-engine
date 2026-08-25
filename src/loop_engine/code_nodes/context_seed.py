@@ -3,7 +3,7 @@
 Architectural role: Code Node system for a Self-Improvement Loop task.
 
 Owns: a bounded seed specification, deterministic Context candidate generation,
-classification, role-specific child loops, research questions, and a candidate
+classification, role-specific spawned loops, research questions, and a candidate
 manifest.
 
 Does not own: web research, source approval, persistent installation, or
@@ -362,14 +362,14 @@ def run_context_seed(spec: ContextSeedSpec, *, existing_context_records=(),
         allowable_modes=("deterministic",),
         preferred_modes=("deterministic",), power=base.power,
         custom_steps=base.custom_steps, max_depth=base.max_depth,
-        stop_condition=base.stop_condition)
+        exit_condition=base.exit_condition)
     log = ledger or LoopLedger()
     root = Loop(f"seed Context Intelligence for {spec.domain}", config,
                 ledger=log)
     existing = list(existing_context_records or ())
     existing_in_domain = 0
     for record in existing:
-        classified = classified_record("string_intelligence", record)
+        classified = classified_record("context_intelligence", record)
         hierarchy = classified.body["classification"]["context_hierarchy"]
         if hierarchy.get("domain") == spec.domain:
             existing_in_domain += 1
@@ -397,7 +397,7 @@ def run_context_seed(spec: ContextSeedSpec, *, existing_context_records=(),
                 mode="deterministic", confidence=0.95)
         if step == "generate_context":
             # Plan once across every declared axis so the global bound does not
-            # make each role-specific child repeat the same pattern prefix.
+            # make each role-specific spawned repeat the same pattern prefix.
             planned = build_context_candidates(spec)
             records_by_role = {role: [] for role in spec.job_roles}
             for record in planned:
@@ -406,22 +406,22 @@ def run_context_seed(spec: ContextSeedSpec, *, existing_context_records=(),
                 role_records = records_by_role[role]
                 if not role_records:
                     continue
-                child_cfg = LoopConfig(
+                spawned_cfg = LoopConfig(
                     framework="custom", custom_steps=("generate_context",),
                     logical_kind="search_improvement",
                     allowable_modes=("deterministic",),
                     preferred_modes=("deterministic",), power="light",
                     max_depth=2)
-                child = loop.spawn(f"generate Context candidates for {role}",
-                                   child_cfg)
+                spawned = loop.spawn(f"generate Context candidates for {role}",
+                                   spawned_cfg)
 
-                def child_handler(_child, _step, _context, role=role,
+                def spawned_handler(_spawned, _step, _context, role=role,
                                   role_records=tuple(role_records)):
                     state["candidates"].extend(role_records)
                     return StepOutcome(output=f"generated={len(role_records)}",
                                        mode="deterministic", confidence=0.95)
 
-                child.run(handler=child_handler)
+                spawned.run(handler=spawned_handler)
             planned_order = {record.record_id: index
                              for index, record in enumerate(planned)}
             state["candidates"].sort(
@@ -431,7 +431,7 @@ def run_context_seed(spec: ContextSeedSpec, *, existing_context_records=(),
                 mode="deterministic", confidence=0.95)
         if step == "classify":
             state["candidates"] = [classified_record(
-                "string_intelligence", record) for record in state["candidates"]]
+                "context_intelligence", record) for record in state["candidates"]]
             return StepOutcome(output=f"classified={len(state['candidates'])}",
                                mode="deterministic", confidence=0.95)
         if step == "deduplicate":

@@ -545,7 +545,7 @@ def load_knowledge(target: str, *, kind: str = DEFAULT_KIND,
         # retrieved, and a computed or invented kind cannot have its family
         # checked, so the gate refuses one
         ledger.record(loop_id="knowledge.load",
-                      event="intelligence.string.retrieved",
+                      event="intelligence.context.retrieved",
                       kind="context", served=len(result.records))
     return result
 

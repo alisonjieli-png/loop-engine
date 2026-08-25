@@ -16,7 +16,7 @@ onto, so the practitioner reasons about trust ONCE.
     candidate→truth boundary — never crossed by assertion.
   * ONE ``Resource`` envelope (id · class · role · content · scope · lifecycle ·
     version · digest · provenance · relationships) so String ROLES
-    (question / receipt / work_item / evidence_window / improvement_finding /
+    (question / record / work_item / evidence_window / improvement_finding /
     capability_snapshot …) stop spawning near-identical dataclasses.
 
 Orthogonality note: the lifecycle is promotion maturity.  It is NOT the epistemic
@@ -136,7 +136,7 @@ class Resource:
     """The single envelope for every asset — String or Code node, any role."""
     asset_id: str
     asset_class: str                    # string | code
-    role: str                           # question / logic_rule / receipt / …
+    role: str                           # question / logic_rule / record / …
     content: str = ""
     scope: str = "run"
     lifecycle: str = "draft"
@@ -335,16 +335,16 @@ def self_test() -> dict:
           and tier_of(normalize("storage_stage", "raw_capture")) == "runtime",
           "promoted legacy states → database; provisional ones → runtime")
 
-    # 5. ONE Resource envelope carries every role (question / receipt / work_item
+    # 5. ONE Resource envelope carries every role (question / record / work_item
     # / logic_rule …) — the same object, a different role.
     r_q = Resource("q1", "string", "question", "Are the residuals patterned?")
-    r_rcpt = Resource("rc1", "string", "receipt", "pass 3 result", scope="run")
+    r_rcpt = Resource("rc1", "string", "record", "pass 3 result", scope="run")
     r_logic = Resource("lg1", "code", "logic_rule", "IF r>0.9 THEN flag",
                        lifecycle="validated")
     check("one_envelope_carries_every_role",
           r_q.asset_class == "string" and r_logic.asset_class == "code"
           and {r_q.role, r_rcpt.role, r_logic.role}
-          == {"question", "receipt", "logic_rule"}
+          == {"question", "record", "logic_rule"}
           and r_q.tier == "runtime" and r_q.digest,
           "String roles and Code nodes share one envelope — no per-role classes")
 
@@ -416,7 +416,7 @@ def self_test() -> dict:
     bad = promotion_review_as_loop("candidate", "registered",
                                    evidence=(), ledger=_lgP)
     good = promotion_review_as_loop("candidate", "registered",
-                                    evidence=("receipt:r1",))
+                                    evidence=("record:r1",))
     refusal_on_ledger = any("verify:REFUSED" in str(e.get("output", ""))
                             for e in _lgP.events)
     check("promotion_review_is_an_adversarial_loop_gate_intact",

@@ -292,7 +292,7 @@ def run_reasoning(request: ReasoningRequest, blocks: dict, *,
                   ask: "Callable | None" = None, gateway=None,
                   ledger=None, parent=None) -> dict:
     """The whole standardized pipeline in one call, returning every typed
-    object for the receipt."""
+    object for the record."""
     spec = PromptAssemblySpec(blocks=blocks, layout_policy=layout_policy,
                               seeds=seeds or Seeds())
     inv = to_invocation(request, spec, temperature=temperature)

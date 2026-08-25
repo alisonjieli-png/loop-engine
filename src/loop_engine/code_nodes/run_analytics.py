@@ -13,7 +13,7 @@ Owns:
       stops, empty model outputs;
     - digestibility: model outputs that produced NO distilled keys or staged
       candidates (spend that never became reusable memory);
-    - marginal-call analysis across paired receipts (cold vs warm, mode
+    - marginal-call analysis across paired records (cold vs warm, mode
       arms): did MORE calls actually buy quality?
     - propose_edits: per-hotspot improvement proposals in the housekeeping
       candidate vocabulary (staged only — never self-applied).
@@ -25,7 +25,7 @@ Does not own:
 
 Public entry points:
     - analyze_run(events, usage_log=(), trace=None) -> dict
-    - compare_receipts(pairs) -> dict     # marginal value of calls
+    - compare_run_records(pairs) -> dict     # marginal value of calls
     - propose_edits(analysis) -> list[dict]
 
 Side effects and authority: pure computation over dicts; no I/O.
@@ -46,7 +46,7 @@ SEMANTIC_MODES = ("hybrid", "non_deterministic")
 
 def analyze_run(events, usage_log=(), trace: "dict | None" = None) -> dict:
     """One canonical rollup of a loop ledger (the shared-tree history)."""
-    from ..static_architecture.chronicle import as_ledger_events
+    from ..static_architecture.run_history import as_ledger_events
     events = as_ledger_events(events)
     per_loop: dict = defaultdict(lambda: {
         "steps": 0, "semantic_calls": 0, "fallbacks": 0, "deferrals": 0,
@@ -83,7 +83,10 @@ def analyze_run(events, usage_log=(), trace: "dict | None" = None) -> dict:
         elif ev == "budget_stop":
             row["budget_stops"] += 1
         elif ev == "spawn":
-            per_loop[e.get("parent", "?")]["spawned"] += 1
+            spawning_loop_id = str(
+                e.get("spawning_loop_id", "")
+                or e.get("spawned_by_loop_id", "") or "?")
+            per_loop[spawning_loop_id]["spawned"] += 1
         elif ev == "model_invocation":
             stored_usage.append({"prompt_tokens": e.get("prompt_tokens", 0),
                                  "eval_tokens": e.get("eval_tokens", 0)})
@@ -150,7 +153,7 @@ def analyze_run(events, usage_log=(), trace: "dict | None" = None) -> dict:
                                         for r in per_loop.values())}}
 
 
-def compare_receipts(pairs) -> dict:
+def compare_run_records(pairs) -> dict:
     """Marginal value of calls across labeled arms of the SAME task:
     pairs = [(label, {"calls": n, "score": s, "wall": w}), ...].
     Answers 'did more calls buy quality?' — honestly, one comparison per
@@ -214,11 +217,11 @@ def self_test() -> dict:
     from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome, \
         default_handler
 
-    # a real run with a semantic step, a fallback, and a child spawn.
+    # A real run with a semantic step, a fallback, and a spawned Loop.
     def handler(loop, step, context):
         if step == "research" and loop.depth == 0:
-            if f"{step}:child" not in context:
-                return StepOutcome(output="need child", mode="deterministic",
+            if f"{step}:spawned" not in context:
+                return StepOutcome(output="need spawned", mode="deterministic",
                                    spawn_goal="sub-research")
             return StepOutcome(output="advice", mode="hybrid", confidence=0.7)
         if step == "act" and "act" not in context:
@@ -247,7 +250,7 @@ def self_test() -> dict:
           f"{root['wall_seconds']}s")
 
     # 2. hotspots rank by pain; the root (calls+fallbacks) outranks the
-    # clean child.
+    # clean spawned Loop.
     check("hotspots_rank_troublesome_loops_first",
           a["hotspots"][0]["loop"] == lp.loop_id
           and a["hotspots"][0]["pain"] > a["hotspots"][-1]["pain"])
@@ -267,7 +270,7 @@ def self_test() -> dict:
           and any(p["kind"] == "logic_rule" for p in props))
 
     # 5. marginal-call comparison answers 'did calls buy quality?' honestly.
-    cmp = compare_receipts([
+    cmp = compare_run_records([
         ("deterministic", {"calls": 0, "score": 0.8294}),
         ("hybrid", {"calls": 1, "score": 0.8294}),
         ("model_led", {"calls": 1, "score": 0.8339})])

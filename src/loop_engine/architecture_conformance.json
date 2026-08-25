@@ -1,11 +1,12 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 176,
+ "files_scanned": 217,
  "zero_tolerance_gates": {
-  "unclassified_files": 0,
-  "reachable_legacy_runtimes": 0,
-  "legacy_imports_on_live_paths": 0,
+  "unclassified_files": 3,
+  "reachable_legacy_flat_paths": 0,
+  "legacy_flat_imports_on_live_paths": 0,
+  "public_parallel_runtime_surfaces": 0,
   "direct_model_or_network_calls_outside_gateway": 0,
   "subprocess_outside_declared_adapters": 0,
   "eval_or_exec_anywhere": 0,
@@ -13,23 +14,132 @@
   "dynamic_import_registration_bypasses": 0,
   "forbidden_model_mentions_outside_guards": 0,
   "empty_placeholder_modules": 0,
-  "modules_over_size_cap_without_declared_exception": 0,
-  "public_interfaces_over_parameter_cap_without_declared_exception": 0,
+  "modules_over_size_cap_without_declared_exception": 2,
+  "public_interfaces_over_parameter_cap_without_declared_exception": 1,
   "syntax_newer_than_the_declared_minimum_python": 0,
-  "modules_missing_llm_context_docstring": 0,
+  "modules_missing_llm_context_docstring": 1,
   "stale_current_architecture_documents": 0,
   "conformance_test_skip_markers": 0,
   "runtime_event_kinds_outside_the_canonical_vocabulary": 0,
-  "modules_whose_self_test_the_suite_never_runs": 0,
+  "modules_whose_self_test_the_suite_never_runs": 1,
   "envelope_owning_modules_missing_from_the_register": 0,
+  "operational_boundaries_outside_loop_ontology": 0,
+  "operational_boundary_relationship_kind_violations": 0,
+  "operational_graph_vertex_types_outside_canonical_loop": 1,
   "direct_resource_access_above_baseline": 0,
   "architecture_map_freshness": 0
  },
  "gate_details": {
-  "unclassified_files": [],
-  "reachable_legacy_runtimes": [],
+  "unclassified_files": [
+   "loop/loop_definition_checks.py",
+   "loop/runtime_context.py",
+   "loop/loop_definition.py"
+  ],
+  "reachable_legacy_flat_paths": [],
   "stale_current_architecture_documents": [],
-  "scan_violations": []
+  "operational_boundary_ontology": {
+   "record_type": "operational_boundary_report/v2",
+   "total": 44,
+   "bound": 44,
+   "unbound": 0,
+   "ontology_conforming": 44,
+   "coverage": 1.0,
+   "by_binding_kind": {
+    "native_loop": 16,
+    "stage_loop_tree": 1,
+    "practitioner_loop": 18,
+    "api_dispatch": 1,
+    "template_governed": 5,
+    "component_loop": 3
+   },
+   "by_role": {
+    "practitioner": 25,
+    "intelligence": 10,
+    "solution": 6
+   },
+   "by_profile": {
+    "intelligence.code.invoke@1.0.0": 3,
+    "intelligence.context.frame@1.0.0": 1,
+    "intelligence.materialize@1.0.0": 3,
+    "intelligence.runtime_history_solution.replay@1.0.0": 1,
+    "intelligence.search@1.0.0": 1,
+    "intelligence.user_feedback.scope@1.0.0": 1,
+    "practitioner.code_execution@1.0.0": 11,
+    "practitioner.reference_nine_step@1.0.0": 1,
+    "practitioner.self_improvement@1.0.0": 2,
+    "practitioner.solver@1.0.0": 7,
+    "practitioner.verifier@1.0.0": 4,
+    "solution.atomic_component@1.0.0": 2,
+    "solution.ensemble@1.0.0": 1,
+    "solution.pipeline@1.0.0": 1,
+    "solution.router_fallback@1.0.0": 1,
+    "solution.validator@1.0.0": 1
+   },
+   "by_relationship_kind": {
+    "starting": 9,
+    "spawned_by": 29,
+    "queried_by": 5,
+    "retrieved_by": 7,
+    "connected_from": 5
+   },
+   "dynamic_profile_sources": {
+    "practitioner:static_architecture.external_harness.HarnessRunRequest.profile_id": 1,
+    "practitioner|intelligence|solution:loop.spawned_task_checkpoint.SpawnedTaskCheckpoint.spec": 1,
+    "practitioner|intelligence|solution:loop.delegation_runtime.DelegationSpec.profile": 1
+   },
+   "exact_profile_boundaries": 41,
+   "dynamic_profile_boundaries": 3,
+   "invalid_rows": [],
+   "invalid_relationship_rows": [],
+   "unclassified_rows": [],
+   "missing_ontology_keys": [],
+   "extra_ontology_keys": [],
+   "duplicate_boundary_names": [],
+   "outside_loop_ontology": 0,
+   "outside_loop_ontology_boundaries": [],
+   "unbound_boundaries": [],
+   "honesty": "coverage counts only rows joined one-to-one to a validated Loop role profile; invalid, unclassified, extra, duplicate, and unbound rows stay visible"
+  },
+  "operational_graph_vertex_types": [
+   {
+    "file": "code_nodes/solution_graph.py",
+    "line": 193,
+    "type": "LoopGraphVertex",
+    "reason": "graph vertex type does not inherit canonical Loop"
+   }
+  ],
+  "scan_violations": [
+   {
+    "rule": "module_over_size_cap",
+    "file": "code_nodes/solution_canvas.py",
+    "line": 925,
+    "detail": "925 lines > cap 800; declare an exception with a split plan or split it"
+   },
+   {
+    "rule": "module_over_size_cap",
+    "file": "code_nodes/solution_graph.py",
+    "line": 855,
+    "detail": "855 lines > cap 800; declare an exception with a split plan or split it"
+   },
+   {
+    "rule": "short_module_docstring",
+    "file": "code_nodes/solution_canvas.py",
+    "line": 1,
+    "detail": "docstring < 3 lines \u2014 an LLM landing on this file gets no context"
+   },
+   {
+    "rule": "uncollected_self_test",
+    "file": "loop/loop_definition_checks.py",
+    "line": 1,
+    "detail": "loop.loop_definition_checks defines self_test() but the suite does not collect it \u2014 add it to _FOLDED_SUBMODULE_TESTS or declare an exception with a reason"
+   },
+   {
+    "rule": "public_signature_over_parameter_cap",
+    "file": "code_nodes/solution_graph.py",
+    "line": 772,
+    "detail": "make_solution_loop_definition exposes 11 parameters, above the cap of 9. Use a typed request, config, or result object."
+   }
+  ]
  },
  "direct_resource_access": {
   "current": 0,
@@ -38,8 +148,8 @@
  },
  "guard_enforced_rails": [
   "hidden_semantic_calls: one semantic call per iteration; semantic fallbacks defer to the next iteration (model_boundary_deferred)",
-  "child_permission_escalation: spawn() clamps child modes to the parent's delegation authority and refuses disjoint requests",
-  "orphaned_loops: audit_closure() flags spawned-but-never-terminal children; every terminal transition is a recorded ledger event",
+  "spawned_permission_escalation: spawn() clamps spawned modes to the parent's delegation authority and refuses disjoint requests",
+  "orphaned_loops: audit_closure() flags spawned-but-never-terminal spawned_loops; every terminal transition is a recorded ledger event",
   "self_promotion: guard_improvement_action raises SafeguardError on promote/overwrite/delete-evidence",
   "evidence_gated_promotion: asset_lifecycle.advance refuses validated->registered without evidence (PromotionRefused)",
   "candidate_templates_cannot_run: config_from_template refuses maturity=candidate",
@@ -47,5 +157,5 @@
   "max_power_grants_no_permissions: power scales budgets only"
  ],
  "suite_note": "run --self-test separately; conformance is releasable only when BOTH exit 0",
- "all_gates_pass": true
+ "all_gates_pass": false
 }

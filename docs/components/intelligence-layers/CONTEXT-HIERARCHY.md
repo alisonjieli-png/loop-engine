@@ -5,9 +5,8 @@ executing the work itself. It includes questions, methods, role perspectives,
 warnings, checklists, examples, source notes, prompt parts, and output
 contracts.
 
-The internal compatibility token is `string_intelligence`. Saved run records
-and existing clients may still use that token. Public documentation uses
-Context Intelligence.
+The persistent key is `context_intelligence`. Public prose uses Context
+Intelligence.
 
 ## The main distinctions
 

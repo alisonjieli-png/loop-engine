@@ -1,6 +1,6 @@
 """The routed SaaS + Studio surface — and the rule that every API call is a loop.
 
-Architectural role: Static Architecture service (the front-end/back-end contract).
+Architectural role: internal front-end and back-end routing service.
 
 The design handoff (Claude Design project 265b684e, imported 2026-08-23) ships
 the public site and Studio as routed pages backed by named endpoints. This
@@ -27,13 +27,13 @@ Owns:
     - serve_api(): dispatch that runs the projection INSIDE a PractitionerLoop
       and returns the payload with its loop evidence attached;
     - intelligence_surface(): the FOUR-pillar read (the older three-route
-      spelling omitted User Intelligence);
-    - live_events(): canonical Chronicle families for the browser stream, so
+      spelling omitted User Feedback Intelligence);
+    - live_events(): canonical RunHistory families for the browser stream, so
       the console, the loop tree, and the inspector read one vocabulary.
 
 Does not own:
-    - the projections themselves (studio_server builds them), the Chronicle
-      (chronicle.py), advice storage (user_intelligence.py), or any HTML —
+    - the projections themselves (studio_server builds them), the RunHistory
+      (run_history.py), advice storage (user_feedback_intelligence.py), or any HTML —
       this module is the contract, not the renderer.
 
 Public entry points:
@@ -72,14 +72,14 @@ STUDIO_ROUTES = (
     "/app/runs/:id/tree", "/app/runs/:id/canvas",
     "/app/runs/:id/playback", "/app/runs/:id/calls",
     "/app/intelligence", "/app/context", "/app/strings", "/app/nodes",
-    "/app/solutions", "/app/improvements",
+    "/app/solutions", "/app/improvements", "/app/runtime",
 )
 
 #: Preferred public routes for the four persistent layers. Compatibility
 #: aliases stay separate so an "all" request still returns exactly four.
-LAYER_ROUTES = {"context": "string_intelligence", "code": "code_intelligence",
-                "history": "past_run_intelligence",
-                "user": "user_intelligence"}
+LAYER_ROUTES = {"context": "context_intelligence", "code": "code_intelligence",
+                "history": "runtime_history_solution_intelligence",
+                "user": "user_feedback_intelligence"}
 LAYER_ROUTE_ALIASES = {"strings": "context", "string": "context"}
 PILLAR_ROUTES = LAYER_ROUTES
 
@@ -107,6 +107,9 @@ API_ROUTES = {
     "improvements": {"projection": "improvements",
                      "template": "atomic_code_only", "method": "GET",
                      "about": "staged improvement candidates"},
+    "runtime": {"projection": "runtime", "template": "atomic_code_only",
+                "method": "GET",
+                "about": "safe runtime controls and adapter inventory"},
 }
 
 
@@ -200,17 +203,17 @@ def live_events(run_id: str, ledger_events=None) -> dict:
 
     The console, the loop tree, and the inspector are three projections of
     this list — never three counters maintained separately (the drift the
-    Chronicle doctrine exists to prevent).
+    RunHistory doctrine exists to prevent).
 
     Rows arrive in TWO forms and both are first-class: a live run hands over
-    raw ledger kinds, while a saved run hands over the Chronicle's stored
+    raw ledger kinds, while a saved run hands over the RunHistory's stored
     ``event_type`` buckets. Projecting the stored form through the raw map
     silently produced ``x.loop_init``-style passthrough — a live run and a
     replayed one describing the same history in different words, which is
     precisely the drift this seam exists to prevent. Each row is now
     projected by the vocabulary it actually belongs to.
     """
-    from .chronicle import (to_canonical_events, family_of, EVENT_FAMILIES,
+    from .run_history import (to_canonical_events, family_of, EVENT_FAMILIES,
                             _CANONICAL_EVENT_MAP, EVENT_TYPES)
     raw, out = list(ledger_events or ()), []
     for row in raw:
@@ -283,23 +286,25 @@ def self_test() -> dict:
           len(allp["public_layers"]) == 4
           and "context" in allp["public_layers"]
           and "user" in allp["public_layers"]
-          and user["layers"] == ["user_intelligence"]
+          and user["layers"] == ["user_feedback_intelligence"]
           and context["layers"] == legacy_context["layers"]
           and set(PILLAR_ROUTES.values()) == {
-              "string_intelligence", "code_intelligence",
-              "past_run_intelligence", "user_intelligence"},
+              "context_intelligence", "code_intelligence",
+              "runtime_history_solution_intelligence", "user_feedback_intelligence"},
           f"layers: {allp['public_layers']}")
 
     # 4. the page contract resolves, including parameterised Studio routes.
     home = resolve_route("/")
     playback_route = resolve_route("/app/runs/run-7/playback")
     intelligence_route = resolve_route("/app/intelligence")
+    runtime_route = resolve_route("/app/runtime")
     context_route = resolve_route("/intelligence/context")
     check("declared_routes_resolve_including_parameters",
           home and home["kind"] == "public"
           and playback_route and playback_route["kind"] == "studio"
           and playback_route["params"]["id"] == "run-7"
           and intelligence_route and intelligence_route["kind"] == "studio"
+          and runtime_route and runtime_route["kind"] == "studio"
           and context_route and context_route["kind"] == "public"
           and len(PUBLIC_ROUTES) >= 26,
           f"{len(PUBLIC_ROUTES)} public + {len(STUDIO_ROUTES)} studio routes")
@@ -318,12 +323,12 @@ def self_test() -> dict:
           and not [f for f in ev["families_present"] if f.startswith("x.")],
           f"{ev['count']} events -> {ev['families_present']}")
 
-    # 5b. REGRESSION: a SAVED run hands over the Chronicle's stored
+    # 5b. REGRESSION: a SAVED run hands over the RunHistory's stored
     # event_type buckets, not raw ledger kinds.  Projecting those through the
     # raw map produced x.loop_init-style passthrough — a replayed run
     # describing the same history in different words than the live one.  Both
     # forms must land on the same canonical families.
-    from .chronicle import EVENT_TYPES
+    from .run_history import EVENT_TYPES
     stored = [{"event": "run_started"}, {"event": "loop_init",
                                          "loop_id": "l1"},
               {"event": "iteration", "loop_id": "l1", "step": "act"},

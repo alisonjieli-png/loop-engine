@@ -239,14 +239,14 @@ class StrategyRegistry:
 def run_strategy(registry: StrategyRegistry, name: str, knowledge: Knowledge,
                  question: str = "", *, ask=execute_ask, **kw) -> dict:
     """Execute one strategy through the strict LLM-call DAG (injectable for
-    tests).  Single strategies return the AskResult receipt; compound ones
+    tests).  Single strategies return the AskResult record; compound ones
     return their own scripted transcript."""
     spec = registry.get(name)
     if spec.shape == "single":
         res: AskResult = ask(spec.build(knowledge, question))
         return {"strategy": name, "ok": res.ok, "text": res.text,
                 "tokens": res.total_tokens, "asks": 1,
-                "receipt": res.receipt()}
+                "record": res.record()}
     return spec.run(knowledge, question, ask, **kw)
 
 

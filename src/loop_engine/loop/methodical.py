@@ -27,7 +27,7 @@ harness cannot one-shot:
   * the **advance guard**: the cycle may not advance to the next what-is-next
     until verify_and_advance has run.
 
-Every rung avoided below an LLM is a model call saved, recorded on the receipt.
+Every rung avoided below an LLM is a model call saved, recorded on the record.
 """
 
 from __future__ import annotations
@@ -155,7 +155,7 @@ class CycleStep:
     verify: VerifyResult
     model_calls_avoided: int = 0
 
-    def receipt(self) -> dict:
+    def record(self) -> dict:
         return {"record_type": "whats_next_cycle/v1",
                 "goal": self.knowledge_goal,
                 "what_is_next": {"kind": self.answer.kind,
@@ -222,7 +222,7 @@ def run_cycle(knowledge: Knowledge, *, decide: DecideFn, resolve: ExecuteFn,
 
     decide -> what is next (a typed sub-task); resolve -> how to execute it,
     reuse-first (guarded); verify -> did we do it right and can we advance
-    (guarded).  Returns the CycleStep receipt; raises GuardViolation if either
+    (guarded).  Returns the CycleStep record; raises GuardViolation if either
     guard is broken."""
     ans = decide(knowledge)
     ex = resolve(knowledge, ans)
@@ -479,13 +479,13 @@ def self_test() -> dict:
     check("the_answer_kind_taxonomy_is_closed", bad,
           "an answer kind outside the taxonomy is refused, not silently coerced")
 
-    # 8. the receipt records all three stages + reuse accounting.
-    r = step.receipt()
-    check("the_receipt_records_all_three_stages_and_reuse_accounting",
+    # 8. The record includes all three stages and reuse accounting.
+    r = step.record()
+    check("the_record_records_all_three_stages_and_reuse_accounting",
           set(r) >= {"what_is_next", "how_to_execute", "verify_and_advance",
                      "model_calls_avoided"}
           and r["how_to_execute"]["chosen_rung"] == "exact_reuse",
-          "the cycle receipt shows the sub-task, the ladder rung, the verify "
+          "the cycle record shows the sub-task, the ladder rung, the verify "
           "outcome, and how many model calls were avoided")
 
     passed = sum(1 for r in results if r["passed"])

@@ -15,7 +15,7 @@ Every arm uses the same frozen input and evaluator for its problem.
 | Delivery estimate | Estimate delivery time and state a customer-safe promise. |
 
 These are local control-plane problems. They test loop construction, cross-mode
-spawning, provider routing, deterministic verification, Chronicle storage,
+spawning, provider routing, deterministic verification, Run History storage,
 reporting, and playback before a larger Kaggle run.
 
 ## Plan the matrix
@@ -41,7 +41,7 @@ loop-engine campaign run \
   --watch
 ```
 
-This stage makes no model calls. It saves one Chronicle per problem.
+This stage makes no model calls. It saves one Run History per problem.
 
 ## Run a provider-pinned pilot
 
@@ -82,7 +82,7 @@ loop-engine --studio --port 8765 \
   --runs-dir "$HOME/.loop-engine/pilot/runs"
 ```
 
-Open `http://127.0.0.1:8765/app` for the loop tree and saved-event playback.
+Open `http://127.0.0.1:8765/app` for the Loop graph and saved-event playback.
 `--watch` provides live console events while the campaign runs. Browser-based
 live campaign streaming is separate work; the current browser live view is the
 fixed local demonstration.
@@ -100,7 +100,7 @@ physical provider calls
 input and output tokens when reported
 whether token accounting is complete
 error state
-saved Chronicle run ID
+saved Run History ID
 ```
 
 Mode labels do not substitute for provider events. Physical model calls come

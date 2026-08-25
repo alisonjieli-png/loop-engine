@@ -18,7 +18,7 @@ The card and the body are separate. This is what makes large code practical.
 | `template_repository` | A parameterized repository template with variables, files, and validation. |
 | `service_adapter` | A local or remote service behind request, response, effect, and authorization contracts. |
 | `dataset_backed_system` | Code and datasets stored separately and joined by immutable references. |
-| `large_framework` | A root manifest plus independently searchable subsystem cards. |
+| `large_framework` | A top-level manifest plus independently searchable subsystem cards. |
 | `worker_system` | Preflight, execution, postflight, diagnostics, logging, and configuration loops. |
 | `llm_harness` | A model harness with tool contracts, model policy, effects, and verification. |
 | `command_line_tool` | A pinned command, arguments, environment, effects, and tests. |
@@ -111,13 +111,13 @@ approved environment. The component loop calls only the selected entry point.
 
 ## A GitHub or GitLab repository
 
-Use a commit-pinned repository locator. Add one root card and smaller subsystem
+Use a commit-pinned repository locator. Add one top-level card and smaller subsystem
 cards.
 
 ```text
 repository card
   commit and repository digest
-  root manifest
+  top-level manifest
   dependency lock
   license and provenance
   subsystem references
@@ -141,7 +141,7 @@ the model context or search result.
 Treat a large system as a referenced body plus a map, not one monolithic code
 record.
 
-1. Store a root locator, digest, manifest, dependency lock, and license.
+1. Store a top-level locator, digest, manifest, dependency lock, and license.
 2. Index body-free cards for packages, services, subsystems, public symbols,
    commands, schemas, tests, and operational roles.
 3. Search cards first.
@@ -203,7 +203,7 @@ through its own loop.
 Registration is not proof that code is safe or useful. A registered
 `CodeAssetSpec` requires an independent `admission_ref`. Loading must verify the
 selected payload digest. Execution must declare effects such as file reads,
-file writes, network access, secret reads, or child processes.
+file writes, network access, secret reads, or subprocesses.
 
 Untrusted repositories still need license review, dependency review,
 sandboxing, tests, and an independent result check. The Code Intelligence

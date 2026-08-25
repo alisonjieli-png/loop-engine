@@ -34,6 +34,11 @@ dependencies = [
     "model2vec",
     "lancedb",
     "PyYAML",
+    "jsonschema>=4.20",
+    "mcp>=1.29",
+    "opentelemetry-api>=1.41",
+    "opentelemetry-sdk>=1.41",
+    "tomli>=2; python_version < '3.11'",
 ]
 
 [project.urls]

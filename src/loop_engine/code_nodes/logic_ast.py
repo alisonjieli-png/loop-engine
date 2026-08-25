@@ -31,7 +31,7 @@ SET_OPS = ("in", "not_in")
 ARITH_OPS = ("add", "subtract", "multiply", "divide", "abs", "min", "max", "count")
 UNARY_PRESENCE = ("exists", "missing")
 LOGIC_KINDS = ("hard_constraint", "check", "finding", "recommendation",
-               "ranking_factor", "routing_rule", "stop_condition",
+               "ranking_factor", "routing_rule", "exit_condition",
                "retry_condition", "fallback_condition", "repair_proposal")
 PARAM_SOURCES = ("fixed", "default", "project_config", "tunable", "learned",
                  "retrieved", "contextual")

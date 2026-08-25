@@ -1,0 +1,1751 @@
+{
+  "consumption": {
+    "by_consuming_loop": {
+      "loop1": [
+        "loop://context_intelligence/context.openml.first_principles",
+        "loop://code_intelligence/code.openml.logistic_pipeline",
+        "loop://context_intelligence/context.openml.missing_information",
+        "loop://context_intelligence/context.openml.failure_modes",
+        "loop://user_feedback_intelligence/user.openml.active_owner_rules",
+        "loop://context_intelligence/context.openml.verification",
+        "loop://context_intelligence/context.openml.output_contract"
+      ],
+      "loop19": [
+        "loop://context_intelligence/context.openml.first_principles",
+        "loop://code_intelligence/code.openml.logistic_pipeline",
+        "loop://context_intelligence/context.openml.missing_information",
+        "loop://context_intelligence/context.openml.failure_modes",
+        "loop://user_feedback_intelligence/user.openml.active_owner_rules",
+        "loop://context_intelligence/context.openml.verification",
+        "loop://context_intelligence/context.openml.output_contract"
+      ],
+      "loop37": [
+        "loop://context_intelligence/context.openml.first_principles",
+        "loop://code_intelligence/code.openml.seeded_random_forest",
+        "loop://context_intelligence/context.openml.missing_information",
+        "loop://context_intelligence/context.openml.failure_modes",
+        "loop://user_feedback_intelligence/user.openml.active_owner_rules",
+        "loop://context_intelligence/context.openml.verification",
+        "loop://context_intelligence/context.openml.output_contract"
+      ],
+      "loop54": [
+        "loop://context_intelligence/context.openml.first_principles",
+        "loop://code_intelligence/code.openml.logistic_pipeline",
+        "loop://context_intelligence/context.openml.missing_information",
+        "loop://context_intelligence/context.openml.failure_modes",
+        "loop://user_feedback_intelligence/user.openml.active_owner_rules",
+        "loop://context_intelligence/context.openml.verification",
+        "loop://context_intelligence/context.openml.output_contract"
+      ]
+    },
+    "consuming_loop_count": 4,
+    "fold_digest": "02a17bf1aa4cf00227c128dd4bffc55fb0662a44e30ef0e89d18b268dd7fe0bc",
+    "lens_family_uses": {
+      "alternatives_analogy": 4,
+      "cost_resource": 4,
+      "failure_adversarial": 4,
+      "first_principles": 4,
+      "missing_information": 4,
+      "output_contract_format": 4,
+      "verification_evaluation": 4
+    },
+    "record_type": "intelligence_consumption_fold/v2",
+    "unique_ref_count": 8
+  },
+  "payload_bodies_exported": false,
+  "portfolios": [
+    {
+      "benchmark_id": "openml-cc18-task-11-both",
+      "bound": "one_unique_ref_per_required_lens_family",
+      "items": [
+        {
+          "affinity": 23,
+          "family": "first_principles",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "3f423fec60433c50526e583ee97746bcfb0af924fbccc16da6a3c90d86947803",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.first_principles",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.first_principles",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.first_principles",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:method",
+            "question_family:first_principles",
+            "thinking_style:first_principles",
+            "category_group:method"
+          ]
+        },
+        {
+          "affinity": 102,
+          "family": "alternatives_analogy",
+          "layer": "code_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "d33e12a95fe78c20d838179c4d1eefac6a1691decc9a3d14f7b2bfcd6dcc769a",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://code_intelligence/code.openml.logistic_pipeline",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "code_asset_ref",
+            "payload_digest": "552d7e5d022f36ad7bf650dbbc85ba0bac4ff695d87809408a9d7982cd7ae082",
+            "payload_ref": "python://benchmarks/openml_cc18/openml_runtime/build_logistic_pipeline",
+            "role": "code_intelligence",
+            "score": 0.09091,
+            "source": "code_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Code Intelligence",
+          "record_id": "code.openml.logistic_pipeline",
+          "retrieval_rank": 2,
+          "retrieval_score": 0.09091,
+          "selection_reasons": [
+            "materializable_action",
+            "registered_benchmark_code:openml-cc18-task-11-both"
+          ]
+        },
+        {
+          "affinity": 23,
+          "family": "missing_information",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "e88a1bdc03047d09b06400bfc01b70b9220a56857e20f5dd59c89674c748d78b",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.missing_information",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.missing_information",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.missing_information",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:checklist",
+            "question_family:missing_items",
+            "thinking_style:information_gain",
+            "category_group:checklist"
+          ]
+        },
+        {
+          "affinity": 23,
+          "family": "failure_adversarial",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "72fe1f7c3b9aab02cd0e0ba4f25841fcbb2b1df97f91c1cf6b874cfc46e64344",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.failure_modes",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.failure_modes",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.failure_modes",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:warning",
+            "question_family:adversarial_review",
+            "thinking_style:failure_analysis",
+            "category_group:warning"
+          ]
+        },
+        {
+          "affinity": 25,
+          "family": "cost_resource",
+          "layer": "user_feedback_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "487686f4ef315bac2a10ca45609959877737abc0a72e25a92859ba3fa0064f19",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://user_feedback_intelligence/user.openml.active_owner_rules",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://user_feedback_intelligence/user.openml.active_owner_rules",
+            "role": "user_feedback_intelligence",
+            "score": 0.07143,
+            "source": "user_feedback_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "User Feedback Intelligence",
+          "record_id": "user.openml.active_owner_rules",
+          "retrieval_rank": 5,
+          "retrieval_score": 0.07143,
+          "selection_reasons": [
+            "context_type:constraint",
+            "question_family:constraint_review",
+            "thinking_style:constraint_analysis",
+            "category_group:instruction",
+            "materializable_action"
+          ]
+        },
+        {
+          "affinity": 28,
+          "family": "verification_evaluation",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "0f36660ef4d8cae0bbbcaccc8a0c35110ad4e9fbda2cccfdaeb8581600e36b15",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.verification",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.verification",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.verification",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:evaluation",
+            "question_family:evidence_needed",
+            "thinking_style:verification",
+            "response_shape:evaluation",
+            "category_group:evaluation"
+          ]
+        },
+        {
+          "affinity": 10,
+          "family": "output_contract_format",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "ad5ca9cd51ed6a34db2c9ee9aeac61ba3bb65232b55261d82e88eb71f77a03ca",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.output_contract",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.output_contract",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.output_contract",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:output_contract",
+            "category:output_template"
+          ]
+        }
+      ],
+      "layer_coverage": [
+        {
+          "eligible_records": 7,
+          "excluded_candidate_records": 0,
+          "layer": "context_intelligence",
+          "public_key": "context_intelligence",
+          "public_label": "Context Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 5,
+          "state": "queried",
+          "supplied_records": 7,
+          "unique_hits": 7
+        },
+        {
+          "eligible_records": 2,
+          "excluded_candidate_records": 0,
+          "layer": "code_intelligence",
+          "public_key": "code_intelligence",
+          "public_label": "Code Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 1,
+          "state": "queried",
+          "supplied_records": 2,
+          "unique_hits": 2
+        },
+        {
+          "eligible_records": 12,
+          "excluded_candidate_records": 0,
+          "layer": "runtime_history_solution_intelligence",
+          "public_key": "runtime_history_solution_intelligence",
+          "public_label": "Runtime History and Solution Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 0,
+          "state": "queried",
+          "supplied_records": 12,
+          "unique_hits": 12
+        },
+        {
+          "eligible_records": 1,
+          "excluded_candidate_records": 0,
+          "layer": "user_feedback_intelligence",
+          "public_key": "user_feedback_intelligence",
+          "public_label": "User Feedback Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 1,
+          "state": "queried",
+          "supplied_records": 1,
+          "unique_hits": 1
+        }
+      ],
+      "mode": "non_deterministic",
+      "portfolio_id": "intelligence-portfolio:a1c4bfcdc9242ad5afa9d63a",
+      "query_traces": [
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 20,
+          "empty_layers": [],
+          "family": "first_principles",
+          "hits": 22,
+          "model_calls": 0,
+          "query_loop_id": "loop4",
+          "retrieval_labels": [
+            "first_principles",
+            "decomposition",
+            "assumptions",
+            "invariants"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.first_principles"
+        },
+        {
+          "best_affinity_cohort": 2,
+          "eligible_hits": 9,
+          "empty_layers": [],
+          "family": "alternatives_analogy",
+          "hits": 10,
+          "model_calls": 0,
+          "query_loop_id": "loop5",
+          "retrieval_labels": [
+            "analogy",
+            "novel_alternatives",
+            "counterfactual",
+            "maximum_diversity",
+            "comparison"
+          ],
+          "selected_rank": 2,
+          "selected_ref": "loop://code_intelligence/code.openml.logistic_pipeline"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 7,
+          "empty_layers": [],
+          "family": "missing_information",
+          "hits": 10,
+          "model_calls": 0,
+          "query_loop_id": "loop6",
+          "retrieval_labels": [
+            "missing_items",
+            "evidence_needed",
+            "prerequisites",
+            "uncertainty",
+            "information_gain",
+            "gap_analysis"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.missing_information"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 6,
+          "empty_layers": [],
+          "family": "failure_adversarial",
+          "hits": 10,
+          "model_calls": 0,
+          "query_loop_id": "loop7",
+          "retrieval_labels": [
+            "failure",
+            "adversarial_review",
+            "premortem",
+            "falsification",
+            "top_avoid",
+            "failure_recovery"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.failure_modes"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 5,
+          "empty_layers": [],
+          "family": "cost_resource",
+          "hits": 10,
+          "model_calls": 0,
+          "query_loop_id": "loop8",
+          "retrieval_labels": [
+            "cost_compression",
+            "cost_value_analysis",
+            "minimum_complexity",
+            "budget",
+            "resource",
+            "efficiency"
+          ],
+          "selected_rank": 5,
+          "selected_ref": "loop://user_feedback_intelligence/user.openml.active_owner_rules"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 4,
+          "empty_layers": [],
+          "family": "verification_evaluation",
+          "hits": 10,
+          "model_calls": 0,
+          "query_loop_id": "loop9",
+          "retrieval_labels": [
+            "verification",
+            "evaluation",
+            "rubric",
+            "metric",
+            "validate",
+            "evidence_needed"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.verification"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 3,
+          "empty_layers": [],
+          "family": "output_contract_format",
+          "hits": 10,
+          "model_calls": 0,
+          "query_loop_id": "loop10",
+          "retrieval_labels": [
+            "output_contract",
+            "output_template",
+            "response_shape",
+            "serialization_format",
+            "schema",
+            "format_example"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.output_contract"
+        }
+      ],
+      "record_type": "intelligence_portfolio/v2",
+      "selection_model_calls": 0,
+      "task": "Orient the full non-deterministic OpenML task 11 run with Context Code Previous Run and active User Feedback Intelligence",
+      "consuming_loop_id": "loop1"
+    },
+    {
+      "benchmark_id": "openml-cc18-task-11-logistic",
+      "bound": "one_unique_ref_per_required_lens_family",
+      "items": [
+        {
+          "affinity": 23,
+          "family": "first_principles",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "3f423fec60433c50526e583ee97746bcfb0af924fbccc16da6a3c90d86947803",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.first_principles",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.first_principles",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.first_principles",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:method",
+            "question_family:first_principles",
+            "thinking_style:first_principles",
+            "category_group:method"
+          ]
+        },
+        {
+          "affinity": 102,
+          "family": "alternatives_analogy",
+          "layer": "code_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "d33e12a95fe78c20d838179c4d1eefac6a1691decc9a3d14f7b2bfcd6dcc769a",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://code_intelligence/code.openml.logistic_pipeline",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "code_asset_ref",
+            "payload_digest": "552d7e5d022f36ad7bf650dbbc85ba0bac4ff695d87809408a9d7982cd7ae082",
+            "payload_ref": "python://benchmarks/openml_cc18/openml_runtime/build_logistic_pipeline",
+            "role": "code_intelligence",
+            "score": 0.09091,
+            "source": "code_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Code Intelligence",
+          "record_id": "code.openml.logistic_pipeline",
+          "retrieval_rank": 2,
+          "retrieval_score": 0.09091,
+          "selection_reasons": [
+            "materializable_action",
+            "registered_benchmark_code:openml-cc18-task-11-logistic"
+          ]
+        },
+        {
+          "affinity": 23,
+          "family": "missing_information",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "e88a1bdc03047d09b06400bfc01b70b9220a56857e20f5dd59c89674c748d78b",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.missing_information",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.missing_information",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.missing_information",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:checklist",
+            "question_family:missing_items",
+            "thinking_style:information_gain",
+            "category_group:checklist"
+          ]
+        },
+        {
+          "affinity": 23,
+          "family": "failure_adversarial",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "72fe1f7c3b9aab02cd0e0ba4f25841fcbb2b1df97f91c1cf6b874cfc46e64344",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.failure_modes",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.failure_modes",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.failure_modes",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:warning",
+            "question_family:adversarial_review",
+            "thinking_style:failure_analysis",
+            "category_group:warning"
+          ]
+        },
+        {
+          "affinity": 25,
+          "family": "cost_resource",
+          "layer": "user_feedback_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "487686f4ef315bac2a10ca45609959877737abc0a72e25a92859ba3fa0064f19",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://user_feedback_intelligence/user.openml.active_owner_rules",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://user_feedback_intelligence/user.openml.active_owner_rules",
+            "role": "user_feedback_intelligence",
+            "score": 0.07692,
+            "source": "user_feedback_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "User Feedback Intelligence",
+          "record_id": "user.openml.active_owner_rules",
+          "retrieval_rank": 4,
+          "retrieval_score": 0.07692,
+          "selection_reasons": [
+            "context_type:constraint",
+            "question_family:constraint_review",
+            "thinking_style:constraint_analysis",
+            "category_group:instruction",
+            "materializable_action"
+          ]
+        },
+        {
+          "affinity": 28,
+          "family": "verification_evaluation",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "0f36660ef4d8cae0bbbcaccc8a0c35110ad4e9fbda2cccfdaeb8581600e36b15",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.verification",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.verification",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.verification",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:evaluation",
+            "question_family:evidence_needed",
+            "thinking_style:verification",
+            "response_shape:evaluation",
+            "category_group:evaluation"
+          ]
+        },
+        {
+          "affinity": 10,
+          "family": "output_contract_format",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "ad5ca9cd51ed6a34db2c9ee9aeac61ba3bb65232b55261d82e88eb71f77a03ca",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.output_contract",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.output_contract",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.output_contract",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:output_contract",
+            "category:output_template"
+          ]
+        }
+      ],
+      "layer_coverage": [
+        {
+          "eligible_records": 7,
+          "excluded_candidate_records": 0,
+          "layer": "context_intelligence",
+          "public_key": "context_intelligence",
+          "public_label": "Context Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 5,
+          "state": "queried",
+          "supplied_records": 7,
+          "unique_hits": 7
+        },
+        {
+          "eligible_records": 1,
+          "excluded_candidate_records": 0,
+          "layer": "code_intelligence",
+          "public_key": "code_intelligence",
+          "public_label": "Code Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 1,
+          "state": "queried",
+          "supplied_records": 1,
+          "unique_hits": 1
+        },
+        {
+          "eligible_records": 12,
+          "excluded_candidate_records": 0,
+          "layer": "runtime_history_solution_intelligence",
+          "public_key": "runtime_history_solution_intelligence",
+          "public_label": "Runtime History and Solution Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 0,
+          "state": "queried",
+          "supplied_records": 12,
+          "unique_hits": 12
+        },
+        {
+          "eligible_records": 1,
+          "excluded_candidate_records": 0,
+          "layer": "user_feedback_intelligence",
+          "public_key": "user_feedback_intelligence",
+          "public_label": "User Feedback Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 1,
+          "state": "queried",
+          "supplied_records": 1,
+          "unique_hits": 1
+        }
+      ],
+      "mode": "non_deterministic",
+      "portfolio_id": "intelligence-portfolio:d2132606ec9ef883ecd42af7",
+      "query_traces": [
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 20,
+          "empty_layers": [],
+          "family": "first_principles",
+          "hits": 21,
+          "model_calls": 0,
+          "query_loop_id": "loop20",
+          "retrieval_labels": [
+            "first_principles",
+            "decomposition",
+            "assumptions",
+            "invariants"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.first_principles"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 8,
+          "empty_layers": [],
+          "family": "alternatives_analogy",
+          "hits": 9,
+          "model_calls": 0,
+          "query_loop_id": "loop21",
+          "retrieval_labels": [
+            "analogy",
+            "novel_alternatives",
+            "counterfactual",
+            "maximum_diversity",
+            "comparison"
+          ],
+          "selected_rank": 2,
+          "selected_ref": "loop://code_intelligence/code.openml.logistic_pipeline"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 7,
+          "empty_layers": [],
+          "family": "missing_information",
+          "hits": 9,
+          "model_calls": 0,
+          "query_loop_id": "loop22",
+          "retrieval_labels": [
+            "missing_items",
+            "evidence_needed",
+            "prerequisites",
+            "uncertainty",
+            "information_gain",
+            "gap_analysis"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.missing_information"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 6,
+          "empty_layers": [],
+          "family": "failure_adversarial",
+          "hits": 9,
+          "model_calls": 0,
+          "query_loop_id": "loop23",
+          "retrieval_labels": [
+            "failure",
+            "adversarial_review",
+            "premortem",
+            "falsification",
+            "top_avoid",
+            "failure_recovery"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.failure_modes"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 5,
+          "empty_layers": [],
+          "family": "cost_resource",
+          "hits": 9,
+          "model_calls": 0,
+          "query_loop_id": "loop24",
+          "retrieval_labels": [
+            "cost_compression",
+            "cost_value_analysis",
+            "minimum_complexity",
+            "budget",
+            "resource",
+            "efficiency"
+          ],
+          "selected_rank": 4,
+          "selected_ref": "loop://user_feedback_intelligence/user.openml.active_owner_rules"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 4,
+          "empty_layers": [],
+          "family": "verification_evaluation",
+          "hits": 9,
+          "model_calls": 0,
+          "query_loop_id": "loop25",
+          "retrieval_labels": [
+            "verification",
+            "evaluation",
+            "rubric",
+            "metric",
+            "validate",
+            "evidence_needed"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.verification"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 3,
+          "empty_layers": [],
+          "family": "output_contract_format",
+          "hits": 9,
+          "model_calls": 0,
+          "query_loop_id": "loop26",
+          "retrieval_labels": [
+            "output_contract",
+            "output_template",
+            "response_shape",
+            "serialization_format",
+            "schema",
+            "format_example"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.output_contract"
+        }
+      ],
+      "record_type": "intelligence_portfolio/v2",
+      "selection_model_calls": 0,
+      "task": "Evaluate the fixed logistic candidate for OpenML task 11 before any official fold outcome exists",
+      "consuming_loop_id": "loop19"
+    },
+    {
+      "benchmark_id": "openml-cc18-task-11-random_forest",
+      "bound": "one_unique_ref_per_required_lens_family",
+      "items": [
+        {
+          "affinity": 23,
+          "family": "first_principles",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "3f423fec60433c50526e583ee97746bcfb0af924fbccc16da6a3c90d86947803",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.first_principles",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.first_principles",
+            "role": "context_intelligence",
+            "score": 0.09091,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.first_principles",
+          "retrieval_rank": 2,
+          "retrieval_score": 0.09091,
+          "selection_reasons": [
+            "context_type:method",
+            "question_family:first_principles",
+            "thinking_style:first_principles",
+            "category_group:method"
+          ]
+        },
+        {
+          "affinity": 102,
+          "family": "alternatives_analogy",
+          "layer": "code_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "06bec71be0feeb880c08e7e630f4890c903d128cc56cd609e60570ee81c0063c",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://code_intelligence/code.openml.seeded_random_forest",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "code_asset_ref",
+            "payload_digest": "cf6303777d18e386b3637425f925e54954a0fc4e763486c160051c2bab86eb72",
+            "payload_ref": "python://benchmarks/openml_cc18/openml_runtime/build_random_forest_pipeline",
+            "role": "code_intelligence",
+            "score": 0.09091,
+            "source": "code_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Code Intelligence",
+          "record_id": "code.openml.seeded_random_forest",
+          "retrieval_rank": 2,
+          "retrieval_score": 0.09091,
+          "selection_reasons": [
+            "materializable_action",
+            "registered_benchmark_code:openml-cc18-task-11-random_forest"
+          ]
+        },
+        {
+          "affinity": 23,
+          "family": "missing_information",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "e88a1bdc03047d09b06400bfc01b70b9220a56857e20f5dd59c89674c748d78b",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.missing_information",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.missing_information",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.missing_information",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:checklist",
+            "question_family:missing_items",
+            "thinking_style:information_gain",
+            "category_group:checklist"
+          ]
+        },
+        {
+          "affinity": 23,
+          "family": "failure_adversarial",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "72fe1f7c3b9aab02cd0e0ba4f25841fcbb2b1df97f91c1cf6b874cfc46e64344",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.failure_modes",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.failure_modes",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.failure_modes",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:warning",
+            "question_family:adversarial_review",
+            "thinking_style:failure_analysis",
+            "category_group:warning"
+          ]
+        },
+        {
+          "affinity": 25,
+          "family": "cost_resource",
+          "layer": "user_feedback_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "487686f4ef315bac2a10ca45609959877737abc0a72e25a92859ba3fa0064f19",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://user_feedback_intelligence/user.openml.active_owner_rules",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://user_feedback_intelligence/user.openml.active_owner_rules",
+            "role": "user_feedback_intelligence",
+            "score": 0.07692,
+            "source": "user_feedback_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "User Feedback Intelligence",
+          "record_id": "user.openml.active_owner_rules",
+          "retrieval_rank": 4,
+          "retrieval_score": 0.07692,
+          "selection_reasons": [
+            "context_type:constraint",
+            "question_family:constraint_review",
+            "thinking_style:constraint_analysis",
+            "category_group:instruction",
+            "materializable_action"
+          ]
+        },
+        {
+          "affinity": 28,
+          "family": "verification_evaluation",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "0f36660ef4d8cae0bbbcaccc8a0c35110ad4e9fbda2cccfdaeb8581600e36b15",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.verification",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.verification",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.verification",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:evaluation",
+            "question_family:evidence_needed",
+            "thinking_style:verification",
+            "response_shape:evaluation",
+            "category_group:evaluation"
+          ]
+        },
+        {
+          "affinity": 10,
+          "family": "output_contract_format",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "ad5ca9cd51ed6a34db2c9ee9aeac61ba3bb65232b55261d82e88eb71f77a03ca",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.output_contract",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.output_contract",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.output_contract",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:output_contract",
+            "category:output_template"
+          ]
+        }
+      ],
+      "layer_coverage": [
+        {
+          "eligible_records": 7,
+          "excluded_candidate_records": 0,
+          "layer": "context_intelligence",
+          "public_key": "context_intelligence",
+          "public_label": "Context Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 5,
+          "state": "queried",
+          "supplied_records": 7,
+          "unique_hits": 7
+        },
+        {
+          "eligible_records": 1,
+          "excluded_candidate_records": 0,
+          "layer": "code_intelligence",
+          "public_key": "code_intelligence",
+          "public_label": "Code Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 1,
+          "state": "queried",
+          "supplied_records": 1,
+          "unique_hits": 1
+        },
+        {
+          "eligible_records": 12,
+          "excluded_candidate_records": 0,
+          "layer": "runtime_history_solution_intelligence",
+          "public_key": "runtime_history_solution_intelligence",
+          "public_label": "Runtime History and Solution Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 0,
+          "state": "queried",
+          "supplied_records": 12,
+          "unique_hits": 0
+        },
+        {
+          "eligible_records": 1,
+          "excluded_candidate_records": 0,
+          "layer": "user_feedback_intelligence",
+          "public_key": "user_feedback_intelligence",
+          "public_label": "User Feedback Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 1,
+          "state": "queried",
+          "supplied_records": 1,
+          "unique_hits": 1
+        }
+      ],
+      "mode": "non_deterministic",
+      "portfolio_id": "intelligence-portfolio:92a7024b7de06085c052b6e1",
+      "query_traces": [
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 8,
+          "empty_layers": [],
+          "family": "first_principles",
+          "hits": 9,
+          "model_calls": 0,
+          "query_loop_id": "loop38",
+          "retrieval_labels": [
+            "first_principles",
+            "decomposition",
+            "assumptions",
+            "invariants"
+          ],
+          "selected_rank": 2,
+          "selected_ref": "loop://context_intelligence/context.openml.first_principles"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 8,
+          "empty_layers": [],
+          "family": "alternatives_analogy",
+          "hits": 9,
+          "model_calls": 0,
+          "query_loop_id": "loop39",
+          "retrieval_labels": [
+            "analogy",
+            "novel_alternatives",
+            "counterfactual",
+            "maximum_diversity",
+            "comparison"
+          ],
+          "selected_rank": 2,
+          "selected_ref": "loop://code_intelligence/code.openml.seeded_random_forest"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 7,
+          "empty_layers": [],
+          "family": "missing_information",
+          "hits": 9,
+          "model_calls": 0,
+          "query_loop_id": "loop40",
+          "retrieval_labels": [
+            "missing_items",
+            "evidence_needed",
+            "prerequisites",
+            "uncertainty",
+            "information_gain",
+            "gap_analysis"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.missing_information"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 6,
+          "empty_layers": [],
+          "family": "failure_adversarial",
+          "hits": 9,
+          "model_calls": 0,
+          "query_loop_id": "loop41",
+          "retrieval_labels": [
+            "failure",
+            "adversarial_review",
+            "premortem",
+            "falsification",
+            "top_avoid",
+            "failure_recovery"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.failure_modes"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 5,
+          "empty_layers": [],
+          "family": "cost_resource",
+          "hits": 9,
+          "model_calls": 0,
+          "query_loop_id": "loop42",
+          "retrieval_labels": [
+            "cost_compression",
+            "cost_value_analysis",
+            "minimum_complexity",
+            "budget",
+            "resource",
+            "efficiency"
+          ],
+          "selected_rank": 4,
+          "selected_ref": "loop://user_feedback_intelligence/user.openml.active_owner_rules"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 4,
+          "empty_layers": [],
+          "family": "verification_evaluation",
+          "hits": 9,
+          "model_calls": 0,
+          "query_loop_id": "loop43",
+          "retrieval_labels": [
+            "verification",
+            "evaluation",
+            "rubric",
+            "metric",
+            "validate",
+            "evidence_needed"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.verification"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 3,
+          "empty_layers": [],
+          "family": "output_contract_format",
+          "hits": 9,
+          "model_calls": 0,
+          "query_loop_id": "loop44",
+          "retrieval_labels": [
+            "output_contract",
+            "output_template",
+            "response_shape",
+            "serialization_format",
+            "schema",
+            "format_example"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.output_contract"
+        }
+      ],
+      "record_type": "intelligence_portfolio/v2",
+      "selection_model_calls": 0,
+      "task": "Evaluate the fixed seeded random forest candidate for OpenML task 11 before any official fold outcome exists",
+      "consuming_loop_id": "loop37"
+    },
+    {
+      "benchmark_id": "openml-cc18-task-11-both",
+      "bound": "one_unique_ref_per_required_lens_family",
+      "items": [
+        {
+          "affinity": 23,
+          "family": "first_principles",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "3f423fec60433c50526e583ee97746bcfb0af924fbccc16da6a3c90d86947803",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.first_principles",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.first_principles",
+            "role": "context_intelligence",
+            "score": 0.09091,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.first_principles",
+          "retrieval_rank": 2,
+          "retrieval_score": 0.09091,
+          "selection_reasons": [
+            "context_type:method",
+            "question_family:first_principles",
+            "thinking_style:first_principles",
+            "category_group:method"
+          ]
+        },
+        {
+          "affinity": 102,
+          "family": "alternatives_analogy",
+          "layer": "code_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "d33e12a95fe78c20d838179c4d1eefac6a1691decc9a3d14f7b2bfcd6dcc769a",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://code_intelligence/code.openml.logistic_pipeline",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "code_asset_ref",
+            "payload_digest": "552d7e5d022f36ad7bf650dbbc85ba0bac4ff695d87809408a9d7982cd7ae082",
+            "payload_ref": "python://benchmarks/openml_cc18/openml_runtime/build_logistic_pipeline",
+            "role": "code_intelligence",
+            "score": 0.09091,
+            "source": "code_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Code Intelligence",
+          "record_id": "code.openml.logistic_pipeline",
+          "retrieval_rank": 2,
+          "retrieval_score": 0.09091,
+          "selection_reasons": [
+            "materializable_action",
+            "registered_benchmark_code:openml-cc18-task-11-both"
+          ]
+        },
+        {
+          "affinity": 23,
+          "family": "missing_information",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "e88a1bdc03047d09b06400bfc01b70b9220a56857e20f5dd59c89674c748d78b",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.missing_information",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.missing_information",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.missing_information",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:checklist",
+            "question_family:missing_items",
+            "thinking_style:information_gain",
+            "category_group:checklist"
+          ]
+        },
+        {
+          "affinity": 23,
+          "family": "failure_adversarial",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "72fe1f7c3b9aab02cd0e0ba4f25841fcbb2b1df97f91c1cf6b874cfc46e64344",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.failure_modes",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.failure_modes",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.failure_modes",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:warning",
+            "question_family:adversarial_review",
+            "thinking_style:failure_analysis",
+            "category_group:warning"
+          ]
+        },
+        {
+          "affinity": 25,
+          "family": "cost_resource",
+          "layer": "user_feedback_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "487686f4ef315bac2a10ca45609959877737abc0a72e25a92859ba3fa0064f19",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://user_feedback_intelligence/user.openml.active_owner_rules",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://user_feedback_intelligence/user.openml.active_owner_rules",
+            "role": "user_feedback_intelligence",
+            "score": 0.07143,
+            "source": "user_feedback_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "User Feedback Intelligence",
+          "record_id": "user.openml.active_owner_rules",
+          "retrieval_rank": 5,
+          "retrieval_score": 0.07143,
+          "selection_reasons": [
+            "context_type:constraint",
+            "question_family:constraint_review",
+            "thinking_style:constraint_analysis",
+            "category_group:instruction",
+            "materializable_action"
+          ]
+        },
+        {
+          "affinity": 28,
+          "family": "verification_evaluation",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "0f36660ef4d8cae0bbbcaccc8a0c35110ad4e9fbda2cccfdaeb8581600e36b15",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.verification",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.verification",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.verification",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:evaluation",
+            "question_family:evidence_needed",
+            "thinking_style:verification",
+            "response_shape:evaluation",
+            "category_group:evaluation"
+          ]
+        },
+        {
+          "affinity": 10,
+          "family": "output_contract_format",
+          "layer": "context_intelligence",
+          "loop_ref": {
+            "cost_class": "free",
+            "digest": "ad5ca9cd51ed6a34db2c9ee9aeac61ba3bb65232b55261d82e88eb71f77a03ca",
+            "effects": "pure",
+            "input_contract": "unit_request",
+            "loop_ref": "loop://context_intelligence/context.openml.output_contract",
+            "maturity": "registered",
+            "modes": [
+              "deterministic"
+            ],
+            "output_contract": "context_item",
+            "payload_digest": "",
+            "payload_ref": "content://context_intelligence/context.openml.output_contract",
+            "role": "context_intelligence",
+            "score": 0.1,
+            "source": "context_intelligence",
+            "version": "1.0.0"
+          },
+          "public_label": "Context Intelligence",
+          "record_id": "context.openml.output_contract",
+          "retrieval_rank": 1,
+          "retrieval_score": 0.1,
+          "selection_reasons": [
+            "context_type:output_contract",
+            "category:output_template"
+          ]
+        }
+      ],
+      "layer_coverage": [
+        {
+          "eligible_records": 7,
+          "excluded_candidate_records": 0,
+          "layer": "context_intelligence",
+          "public_key": "context_intelligence",
+          "public_label": "Context Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 5,
+          "state": "queried",
+          "supplied_records": 7,
+          "unique_hits": 7
+        },
+        {
+          "eligible_records": 2,
+          "excluded_candidate_records": 0,
+          "layer": "code_intelligence",
+          "public_key": "code_intelligence",
+          "public_label": "Code Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 1,
+          "state": "queried",
+          "supplied_records": 2,
+          "unique_hits": 2
+        },
+        {
+          "eligible_records": 12,
+          "excluded_candidate_records": 0,
+          "layer": "runtime_history_solution_intelligence",
+          "public_key": "runtime_history_solution_intelligence",
+          "public_label": "Runtime History and Solution Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 0,
+          "state": "queried",
+          "supplied_records": 12,
+          "unique_hits": 0
+        },
+        {
+          "eligible_records": 1,
+          "excluded_candidate_records": 0,
+          "layer": "user_feedback_intelligence",
+          "public_key": "user_feedback_intelligence",
+          "public_label": "User Feedback Intelligence",
+          "query_attempts": 7,
+          "selected_refs": 1,
+          "state": "queried",
+          "supplied_records": 1,
+          "unique_hits": 1
+        }
+      ],
+      "mode": "non_deterministic",
+      "portfolio_id": "intelligence-portfolio:ec2d486045d5d52436ea1aaf",
+      "query_traces": [
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 8,
+          "empty_layers": [],
+          "family": "first_principles",
+          "hits": 10,
+          "model_calls": 0,
+          "query_loop_id": "loop55",
+          "retrieval_labels": [
+            "first_principles",
+            "decomposition",
+            "assumptions",
+            "invariants"
+          ],
+          "selected_rank": 2,
+          "selected_ref": "loop://context_intelligence/context.openml.first_principles"
+        },
+        {
+          "best_affinity_cohort": 2,
+          "eligible_hits": 9,
+          "empty_layers": [],
+          "family": "alternatives_analogy",
+          "hits": 10,
+          "model_calls": 0,
+          "query_loop_id": "loop56",
+          "retrieval_labels": [
+            "analogy",
+            "novel_alternatives",
+            "counterfactual",
+            "maximum_diversity",
+            "comparison"
+          ],
+          "selected_rank": 2,
+          "selected_ref": "loop://code_intelligence/code.openml.logistic_pipeline"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 7,
+          "empty_layers": [],
+          "family": "missing_information",
+          "hits": 10,
+          "model_calls": 0,
+          "query_loop_id": "loop57",
+          "retrieval_labels": [
+            "missing_items",
+            "evidence_needed",
+            "prerequisites",
+            "uncertainty",
+            "information_gain",
+            "gap_analysis"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.missing_information"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 6,
+          "empty_layers": [],
+          "family": "failure_adversarial",
+          "hits": 10,
+          "model_calls": 0,
+          "query_loop_id": "loop58",
+          "retrieval_labels": [
+            "failure",
+            "adversarial_review",
+            "premortem",
+            "falsification",
+            "top_avoid",
+            "failure_recovery"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.failure_modes"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 5,
+          "empty_layers": [],
+          "family": "cost_resource",
+          "hits": 10,
+          "model_calls": 0,
+          "query_loop_id": "loop59",
+          "retrieval_labels": [
+            "cost_compression",
+            "cost_value_analysis",
+            "minimum_complexity",
+            "budget",
+            "resource",
+            "efficiency"
+          ],
+          "selected_rank": 5,
+          "selected_ref": "loop://user_feedback_intelligence/user.openml.active_owner_rules"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 4,
+          "empty_layers": [],
+          "family": "verification_evaluation",
+          "hits": 10,
+          "model_calls": 0,
+          "query_loop_id": "loop60",
+          "retrieval_labels": [
+            "verification",
+            "evaluation",
+            "rubric",
+            "metric",
+            "validate",
+            "evidence_needed"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.verification"
+        },
+        {
+          "best_affinity_cohort": 1,
+          "eligible_hits": 3,
+          "empty_layers": [],
+          "family": "output_contract_format",
+          "hits": 10,
+          "model_calls": 0,
+          "query_loop_id": "loop61",
+          "retrieval_labels": [
+            "output_contract",
+            "output_template",
+            "response_shape",
+            "serialization_format",
+            "schema",
+            "format_example"
+          ],
+          "selected_rank": 1,
+          "selected_ref": "loop://context_intelligence/context.openml.output_contract"
+        }
+      ],
+      "record_type": "intelligence_portfolio/v2",
+      "selection_model_calls": 0,
+      "task": "Compare logistic and seeded random forest candidate analyses and select one for OpenML task 11 before fold outcomes",
+      "consuming_loop_id": "loop54"
+    }
+  ],
+  "record_type": "intelligence_portfolio_export/v2"
+}

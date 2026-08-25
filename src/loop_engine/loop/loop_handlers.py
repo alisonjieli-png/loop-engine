@@ -37,8 +37,9 @@ def directory_handler(*, directory, bank=None, intelligence=None):
     + optional FOUR-PILLAR intelligence records).
 
     ``intelligence`` is a ``layer_records`` mapping for
-    ``intelligence_layers.query_intelligence`` — String / Code / Previous Run &
-    Solution / User.  When present, the loop CONSULTS all four pillars at the
+    ``intelligence_layers.query_intelligence``. Context, Code, Runtime History
+    and Solution, and User Feedback are the four layers. When present, the
+    loop consults all four layers at the
     orient step (one need, one Retriever), records the pull as a ledger event
     (``capability.search.started`` / ``capability.search.completed`` /
     ``capability.selected`` — the first real emitters for those declared
@@ -170,7 +171,7 @@ def self_test() -> dict:
     # 1. the MANDATORY intelligence pull happens for every step, per the power
     # lever, and is recorded.
     pulls = [e for e in ev if e.get("event") == "intelligence_pull"]
-    check("mandatory_string_intelligence_is_pulled_per_step",
+    check("mandatory_context_intelligence_is_pulled_per_step",
           len(pulls) == 3 and all(p["required"] == 3 for p in pulls)
           and all(p["pulled"] >= 3 for p in pulls),
           f"{len(pulls)} pulls, {pulls[0]['pulled']}/{pulls[0]['required']} each "

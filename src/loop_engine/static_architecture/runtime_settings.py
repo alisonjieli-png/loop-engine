@@ -16,7 +16,8 @@ import re
 from dataclasses import asdict, dataclass, field, replace
 from typing import Mapping
 
-from ..loop.recursive_loop import (FRAMEWORKS, MODES, POWER_LEVELS, LoopConfig,
+from ..loop.recursive_loop import (EXIT_CONDITIONS, FRAMEWORKS, MODES,
+                                   POWER_LEVELS, LoopConfig,
                                    MODEL_THINKING_POWER_LEVELS)
 from .model_routes import PURPOSES, ModelRoute, RoutePolicy, default_routes
 from .operating_profile import OperatingProfile
@@ -39,14 +40,14 @@ class SettingsError(ValueError):
 
 @dataclass(frozen=True)
 class LoopDefaults:
-    """Default shape, mode policy, and stop policy for new loops."""
+    """Default shape, mode policy, and exit policy for new loops."""
 
     framework: str = "nine_step"
     allowable_modes: tuple[str, ...] = MODES
     preferred_modes: tuple[str, ...] = MODES
     delegated_modes: tuple[str, ...] = MODES
     max_depth: int = 3
-    stop_condition: str = "run_to_completion"
+    exit_condition: str = "steps_complete"
     success_confidence_min: float = 0.5
 
     def __post_init__(self) -> None:
@@ -63,9 +64,9 @@ class LoopDefaults:
                 "loop.preferred_modes must be a subset of allowable_modes")
         if self.max_depth < 0:
             raise SettingsError("loop.max_depth cannot be negative")
-        if self.stop_condition not in ("run_to_completion", "success_once"):
+        if self.exit_condition not in EXIT_CONDITIONS:
             raise SettingsError(
-                "loop.stop_condition must be run_to_completion or success_once")
+                f"loop.exit_condition must be one of {EXIT_CONDITIONS}")
         if not 0.0 <= self.success_confidence_min <= 1.0:
             raise SettingsError(
                 "loop.success_confidence_min must be between 0 and 1")
@@ -83,7 +84,7 @@ class LoopConfigOverride:
     llm_thinking_power: str = ""
     custom_steps: tuple[str, ...] = ()
     max_depth: "int | None" = None
-    stop_condition: str = ""
+    exit_condition: str = ""
     success_confidence_min: "float | None" = None
 
     def __post_init__(self) -> None:
@@ -136,10 +137,10 @@ class SearchSettings:
 
 @dataclass(frozen=True)
 class HistorySettings:
-    """Where saved Chronicles and local viewing state live."""
+    """Where saved run histories and local viewing state live."""
 
     runs_dir: str = "~/.loop-engine/runs"
-    save_chronicle: bool = True
+    save_run_history: bool = True
 
     def resolved_runs_dir(self) -> str:
         return os.path.abspath(os.path.expandvars(os.path.expanduser(
@@ -159,6 +160,8 @@ class ProviderSettings:
     wire: str = "openai"
     locality: str = "cloud"
     counts_as_evidence: bool = False
+    maximum_output_tokens: "int | None" = None
+    maximum_output_source: str = ""
     purposes: tuple[str, ...] = ("counted_generation", "decide_label")
 
     def __post_init__(self) -> None:
@@ -180,6 +183,15 @@ class ProviderSettings:
         if self.kind == "custom" and not (self.endpoint and self.model):
             raise SettingsError(
                 "a custom provider needs endpoint and model")
+        if bool(self.maximum_output_tokens) != bool(
+                self.maximum_output_source.strip()):
+            raise SettingsError(
+                "provider.maximum_output_tokens and "
+                "provider.maximum_output_source must be declared together")
+        if (self.maximum_output_tokens is not None
+                and self.maximum_output_tokens < 1):
+            raise SettingsError(
+                "provider.maximum_output_tokens must be positive")
         if self.kind == "builtin" and self.provider_id not in (
                 "ollama_cloud", "mistral", "openrouter"):
             raise SettingsError(
@@ -204,6 +216,8 @@ class ProviderSettings:
             "wire": self.wire,
             "locality": self.locality,
             "counts_as_evidence": self.counts_as_evidence,
+            "maximum_output_tokens": self.maximum_output_tokens,
+            "maximum_output_source": self.maximum_output_source,
         }
 
 
@@ -213,7 +227,7 @@ class ModelTier:
 
     name: str
     routes: tuple[str, ...] = ()
-    max_output_tokens: int = 2048
+    max_output_tokens: "int | None" = None
     timeout_seconds: float = 300.0
     max_attempts: int = 2
 
@@ -221,7 +235,8 @@ class ModelTier:
         if self.name not in MODEL_THINKING_POWER_LEVELS:
             raise SettingsError(
                 f"model tier name must be one of {MODEL_THINKING_POWER_LEVELS}")
-        if self.max_output_tokens < 1 or self.max_attempts < 1:
+        if ((self.max_output_tokens is not None
+             and self.max_output_tokens < 1) or self.max_attempts < 1):
             raise SettingsError("model tier limits must be positive")
         if self.timeout_seconds <= 0:
             raise SettingsError("model tier timeout_seconds must be positive")
@@ -262,14 +277,15 @@ class EscalationSettings:
 def _default_tiers() -> tuple[ModelTier, ...]:
     """Conservative route hints. They are not a measured quality ranking."""
     return (
-        ModelTier("small", ("cloud.mistral", "cloud.default"), 512, 120.0, 2),
+        ModelTier("small", ("cloud.mistral", "cloud.default"),
+                  None, 120.0, 2),
         ModelTier("medium", ("cloud.default", "cloud.mistral.large",
-                             "cloud.openrouter"), 2048, 300.0, 3),
+                             "cloud.openrouter"), None, 300.0, 3),
         ModelTier("high", ("cloud.mistral.large", "cloud.hard",
-                           "cloud.openrouter.reasoning"), 4096, 600.0, 3),
+                           "cloud.openrouter.reasoning"), None, 600.0, 3),
         ModelTier("max", ("cloud.hard", "cloud.openrouter.reasoning",
-                          "cloud.mistral.large"), 8192, 900.0, 3),
-        ModelTier("specialized", (), 4096, 600.0, 2),
+                          "cloud.mistral.large"), None, 900.0, 3),
+        ModelTier("specialized", (), None, 600.0, 2),
     )
 
 
@@ -399,7 +415,11 @@ class ModelSettings:
             allow_failover=maximum_attempts > 1,
             max_route_attempts=maximum_attempts,
             timeout_seconds=max(item.timeout_seconds for item in route_plan),
-            max_output_tokens=max(item.max_output_tokens for item in route_plan),
+            max_output_tokens=(max(
+                item.max_output_tokens for item in route_plan
+                if item.max_output_tokens is not None)
+                if any(item.max_output_tokens is not None
+                       for item in route_plan) else None),
             max_total_tokens=req.max_total_tokens,
             allow_power_escalation=len(tiers) > 1,
             max_power_escalations=max(0, len(tiers) - 1),
@@ -482,8 +502,8 @@ class RuntimeSettings:
             custom_steps=change.custom_steps,
             max_depth=(self.loop.max_depth if change.max_depth is None
                        else change.max_depth),
-            stop_condition=(change.stop_condition
-                            or self.loop.stop_condition),
+            exit_condition=(change.exit_condition
+                            or self.loop.exit_condition),
             success_confidence_min=(
                 self.loop.success_confidence_min
                 if change.success_confidence_min is None
@@ -512,6 +532,7 @@ class RuntimeSettings:
     def build_gateway(self, environ: "Mapping[str, str] | None" = None):
         """Build a provider-neutral gateway without probing or calling it."""
         from .custom_endpoint import CustomEndpoint
+        from .model_capabilities import ModelOutputCapability
         from .model_gateway import (ModelGateway, builtin_provider_specs,
                                     provider_spec_from_endpoint)
         from .provider_failover import PROVIDERS
@@ -527,8 +548,19 @@ class RuntimeSettings:
                 if adapter is None:
                     raise SettingsError(
                         f"provider adapter {configured.provider_id!r} is missing")
-                providers.extend(builtin_provider_specs({
-                    configured.provider_id: adapter}))
+                built = builtin_provider_specs({
+                    configured.provider_id: adapter})
+                if configured.maximum_output_tokens is not None:
+                    built = tuple(replace(
+                        spec,
+                        model_output_capability=ModelOutputCapability(
+                            configured.maximum_output_tokens,
+                            configured.maximum_output_source,
+                            endpoint=spec.endpoint),
+                        model_output_capability_model=(
+                            configured.model or adapter.DEFAULT_MODEL))
+                        for spec in built)
+                providers.extend(built)
                 continue
             endpoint = CustomEndpoint(
                 name=configured.provider_id,
@@ -537,6 +569,11 @@ class RuntimeSettings:
                 api_key=env.get(configured.credential_env, ""),
                 wire=configured.wire,
                 locality=configured.locality,
+                output_capability=(ModelOutputCapability(
+                    configured.maximum_output_tokens,
+                    configured.maximum_output_source,
+                    endpoint=configured.endpoint)
+                    if configured.maximum_output_tokens is not None else None),
                 counts_as_evidence=configured.counts_as_evidence)
             spec = provider_spec_from_endpoint(endpoint)
             providers.append(replace(

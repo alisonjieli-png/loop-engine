@@ -258,7 +258,7 @@ def self_test() -> dict:
     # recovered, and the record did not.  The decision is unchanged; only its
     # visibility is, and the canonical projection proves it.
     from ..loop.recursive_loop import LoopLedger
-    from ..static_architecture.chronicle import to_canonical_events
+    from ..static_architecture.run_history import to_canonical_events
     _lg = LoopLedger()
     _sig = FailureSignal(kind="timeout", times_seen=1)
     _quiet = respond_to_failure(_sig)

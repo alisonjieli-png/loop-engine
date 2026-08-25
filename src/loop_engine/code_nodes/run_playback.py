@@ -39,7 +39,7 @@ from .run_analytics import analyze_run, propose_edits
 
 def playback(events) -> list:
     """The ordered transcript of a run: one line per meaningful event."""
-    from ..static_architecture.chronicle import as_ledger_events
+    from ..static_architecture.run_history import as_ledger_events
     events = as_ledger_events(events)
     lines = []
     for e in events:
@@ -49,7 +49,10 @@ def playback(events) -> list:
                          f"{e.get('framework', '?')}/{e.get('power', '?')}: "
                          f"goal: {e.get('goal', '')[:80]}")
         elif ev == "spawn":
-            lines.append(f"[{e.get('parent', '?')}] SPAWN -> {lid}: "
+            spawning_loop_id = str(
+                e.get("spawning_loop_id", "")
+                or e.get("spawned_by_loop_id", "") or "?")
+            lines.append(f"[{spawning_loop_id}] SPAWN -> {lid}: "
                          f"{e.get('goal', '')[:60]}")
         elif ev == "run_step":
             lines.append(f"[{lid}] {e.get('step', '?')} ({e.get('mode')}) "
@@ -85,14 +88,17 @@ def _mermaid_tree(events, analysis) -> str:
         lines.append(f'  {lid}["{label}"]')
     for e in events:
         if e.get("event") == "spawn":
-            lines.append(f"  {e.get('parent')} --> {e.get('loop_id')}")
+            spawning_loop_id = str(
+                e.get("spawning_loop_id", "")
+                or e.get("spawned_by_loop_id", "") or "?")
+            lines.append(f"  {spawning_loop_id} --> {e.get('loop_id')}")
     return "\n".join(lines)
 
 
 def render_run_report(events, usage_log=(), trace=None, *, canvas=None,
                       title: str = "Practitioner run") -> dict:
     """ONE canonical dict -> Mermaid + a self-contained HTML report."""
-    from ..static_architecture.chronicle import as_ledger_events
+    from ..static_architecture.run_history import as_ledger_events
     events = as_ledger_events(events)
     analysis = analyze_run(events, usage_log, trace=trace)
     proposals = propose_edits(analysis)
@@ -144,8 +150,8 @@ def self_test() -> dict:
 
     def handler(loop, step, context):
         if step == "research" and loop.depth == 0 \
-                and f"{step}:child" not in context:
-            return StepOutcome(output="need child", mode="deterministic",
+                and f"{step}:spawned" not in context:
+            return StepOutcome(output="need spawned", mode="deterministic",
                                spawn_goal="sub-research")
         if step == "decide":
             return StepOutcome(output="picked", mode="hybrid", confidence=0.7)
@@ -191,15 +197,15 @@ def self_test() -> dict:
           "Solution canvas" in rep2["html"]
           and "flowchart TD" in rep2["canvas_mermaid"])
 
-    # 4. Loaded Chronicle events use a different storage envelope. Playback
+    # 4. Loaded saved-run events use a different storage envelope. Playback
     # and analytics must use the shared adapter rather than render an empty run.
-    from ..static_architecture.chronicle import Chronicle
-    ch = Chronicle.from_ledger(lp.ledger.events, run_id="playback-saved",
+    from ..static_architecture.run_history import RunHistory
+    ch = RunHistory.from_ledger(lp.ledger.events, run_id="playback-saved",
                                usage_log=usage)
     ch.commit()
-    saved_tx = playback(ch.events)
-    saved_report = render_run_report(ch.events, title="saved playback")
-    check("persisted_chronicle_plays_without_reexecution",
+    saved_tx = playback(ch.event_log)
+    saved_report = render_run_report(ch.event_log, title="saved playback")
+    check("persisted_run_history_plays_without_reexecution",
           saved_tx and any("INIT" in line for line in saved_tx)
           and any("TERMINAL" in line for line in saved_tx)
           and saved_report["analysis"]["totals"]["loops"] >= 2

@@ -18,7 +18,7 @@ be enough, say so and use one.
 | Step profile | Atomic, compact, reference nine-step, or custom |
 | Intelligence layers | Name only the layers the example actually searches |
 | Runtime Memory | Used or not used |
-| Chronicle | Saved or not saved |
+| Run History | Saved or not saved |
 
 ## Install
 
@@ -47,7 +47,7 @@ URL when it does.
 
 ## Play it back
 
-State whether the example saves a Chronicle. Give the exact playback command
+State whether the example saves a Run History. Give the exact playback command
 when it does.
 
 ## What this example does not prove

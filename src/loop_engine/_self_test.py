@@ -12,7 +12,7 @@ from .strings.knowledge import Knowledge
 from .loop.moves import move, answer, WhatIsNextAnswer, MOVE_TYPES
 from .loop.resolvers import WhatIsNextResolver, RESOLVER_CATEGORIES
 from .loop.registry import ResolverRegistry
-from .loop.loop import SolverCell, Practitioner, ensemble_answers
+from .loop.loop import DecisionService, ensemble_answers
 from .strings.knowledge_state import (Claim, Unknown, Contradiction, EpistemicState,
                               KnowledgeDelta)
 from .loop.decision_need import detect_decision_need
@@ -57,7 +57,7 @@ def self_test() -> dict:
                            test_resolver, cost=2.0),
         WhatIsNextResolver("model_council", "llm_council", council_resolver,
                            cost=40.0)]
-    prac = Practitioner(confidence_bar=0.7, impact=5.0)
+    prac = DecisionService(confidence_bar=0.7, impact=5.0)
 
     # 1. deterministic rule answers cheaply, 0 model calls.
     k1 = Knowledge(goal="churn", open_obligations=("no_model",),
@@ -79,7 +79,7 @@ def self_test() -> dict:
           "one result, no rule -> 'run a cv probe first'")
 
     # 3. council is the last resort (needs a high-impact decision).
-    prac_hi = Practitioner(confidence_bar=0.7, impact=60.0)
+    prac_hi = DecisionService(confidence_bar=0.7, impact=60.0)
     k3 = Knowledge(goal="churn", open_obligations=("tie_break",),
                    results=(1, 2, 3, 4, 5))
     r3 = prac_hi.step(k3, resolvers=resolvers)
@@ -107,16 +107,16 @@ def self_test() -> dict:
             return answer("fan_out", "deterministic_rule",
                           [move("spawn_subloop", "start_A", confidence=0.9),
                            move("spawn_subloop", "start_B", confidence=0.9)], 0.9)
-        return answer("child", "deterministic_rule",
+        return answer("spawned", "deterministic_rule",
                       [move("add_node", f"node_for={k.goal}", confidence=0.9)],
                       0.9)
     sr = [WhatIsNextResolver("fan_out", "deterministic_rule", spawner)]
     r5 = prac.step(Knowledge(goal="explore"), resolvers=sr)
     check("a_resolver_can_spawn_sub_loops_that_run_and_attach",
-          len(r5.children) == 2
+          len(r5.spawned_loops) == 2
           and all(c.answer.moves.items[0].action_kind == "add_node"
-                  for c in r5.children),
-          "'spawn sub-loops A/B' runs each child question and attaches receipts")
+                  for c in r5.spawned_loops),
+          "'spawn sub-loops A/B' runs each spawned question and attaches records")
 
     # 6. ensemble sums support.
     a1 = answer("g1", "hybrid", [move("add_node", "estimator=hgb", support=0.6)],
@@ -139,7 +139,7 @@ def self_test() -> dict:
         bad = True
     check("loop_is_deterministic_and_move_kinds_validated",
           r1b.to_dict() == r1.to_dict() and bad,
-          "same inputs -> identical receipt; an unknown move kind is refused")
+          "same inputs -> identical record; an unknown move kind is refused")
 
     # 8. REGISTRY: register a new regime; the loop picks it up cheapest-first.
     reg = ResolverRegistry()
@@ -151,7 +151,7 @@ def self_test() -> dict:
                         lambda k: answer("dear_council", "llm_council",
                                          [move("add_node", "dear", confidence=0.8)],
                                          0.8), cost=40.0)
-    prac_reg = Practitioner(confidence_bar=0.7, impact=5.0, registry=reg)
+    prac_reg = DecisionService(confidence_bar=0.7, impact=5.0, registry=reg)
     r8 = prac_reg.step(Knowledge(goal="x"))
     check("a_newly_registered_regime_is_used_cheapest_first",
           r8.resolver == "cheap_rule" and r8.model_calls_made == 0
@@ -178,7 +178,7 @@ def self_test() -> dict:
                          [move("add_node", "open_choice", confidence=0.9)], 0.9),
         cost=1.0)
     reg2.register(open_regime)
-    prac2 = Practitioner(confidence_bar=0.7, impact=10.0, registry=reg2)
+    prac2 = DecisionService(confidence_bar=0.7, impact=10.0, registry=reg2)
     # has_model set so the blind-baseline lane (empty-graph only) does not
     # intercept; recipe of 2 steps; 1 done -> plan_recipe gives step 2 (no model).
     mid = prac2.step(Knowledge(goal="x", blueprints=("stepA", "stepB"),
@@ -226,7 +226,7 @@ def self_test() -> dict:
     #     no model call.
     lib = ResolverRegistry()
     register_library(lib)
-    prac_lib = Practitioner(confidence_bar=0.7, impact=10.0, registry=lib)
+    prac_lib = DecisionService(confidence_bar=0.7, impact=10.0, registry=lib)
     empty = prac_lib.step(Knowledge(goal="x", facts={"has_baseline": False}))
     check("register_library_populates_and_a_build_reflex_fires",
           lib.categories()["total_resolvers"] == len(LIBRARY_SPECS)
@@ -382,7 +382,7 @@ def self_test() -> dict:
         lambda k: answer("tester", "deterministic_rule",
                          [move("run_tests", "leakage_audit", confidence=0.9)],
                          0.9))]
-    cell = SolverCell(confidence_bar=0.7, impact=5.0)
+    cell = DecisionService(confidence_bar=0.7, impact=5.0)
     terminated = cell.step(Knowledge(goal="x"), resolvers=add_node_resolver,
                            need=n_goal)
     investigated = cell.step(Knowledge(goal="x"), resolvers=test_resolver,
@@ -391,36 +391,50 @@ def self_test() -> dict:
           not terminated.resolved            # add_node rejected by TERMINATE need
           and investigated.resolved
           and investigated.answer.moves.items[0].action_kind == "run_tests"
-          and SolverCell is Practitioner,
+          and isinstance(cell, DecisionService),
           "an 'add a node' answer does not satisfy a TERMINATE need (only "
           "terminal moves do), while a 'run tests' answer satisfies an "
-          "INVESTIGATE need — you cannot answer add-a-node to a stop decision; "
-          "SolverCell is the canonical name (Practitioner aliases it)")
+          "INVESTIGATE need; the decision service is not a second runtime")
 
     # Fold in the submodule self-tests so there is one test entrypoint:
     # deliberation strategies, lenses, context views, domain packs, the arbiter,
-    # delegation/join, and iteration receipts.
+    # delegation/join, and iteration records.
     _FOLDED_SUBMODULE_TESTS = [
         "architecture_map", "_conformance_test", "_conformance_scan",
         "conformance_report",
         "static_architecture.facets", "static_architecture.api_quality",
-        "loop.loop_templates", "loop.encapsulate", "loop.loop_contract",
+        "loop.loop_control", "loop.loop_templates", "loop.encapsulate",
+        "loop.loop_contract",
         "loop.loop_profile_ontology",
+        "loop.approval_state_store", "loop.delegation_runtime",
+        "loop.effect_approval",
         "loop.capability_loops",
         "loop.loop_doctrine", "loop.practitioner_campaign",
         "loop.intelligence_loops",
         "code_nodes.smoke_ladder", "code_nodes.campaign_runner",
+        "code_nodes.complex_task_benchmark",
         "code_nodes.context_seed", "code_nodes.self_improvement_loop",
         "code_nodes.solution_canvas", "code_nodes.solution_compiler",
         "code_nodes.run_analytics", "code_nodes.run_playback",
-        "static_architecture.chronicle", "code_nodes.run_quality",
+        "static_architecture.run_history", "code_nodes.run_quality",
         "static_architecture.intelligence_layers",
+        "static_architecture.intelligence_portfolio",
         "static_architecture.context_catalog",
+        "static_architecture.context_artifacts",
         "static_architecture.context_classification",
         "static_architecture.context_ontology",
         "static_architecture.code_intelligence_assets",
         "static_architecture.brave_search",
-        "static_architecture.user_intelligence",
+        "static_architecture.external_harness",
+        "static_architecture.external_harness_adapters",
+        "static_architecture.harness_intelligence_bridge",
+        "static_architecture.mcp_adapter",
+        "static_architecture.mcp_sdk_transport",
+        "static_architecture.otel_export",
+        "static_architecture.skill_registry",
+        "static_architecture.workspace_backends",
+        "static_architecture.workspace_operations",
+        "static_architecture.user_feedback_intelligence",
         "static_architecture.runtime_memory",
         "static_architecture.solution_library",
         "code_nodes.change_proposals",
@@ -434,7 +448,7 @@ def self_test() -> dict:
         "loop.hybrid_dimension_lattice", "loop.research_to_capability",
         "loop.list_intelligence",
         "loop.deliberation", "loop.lens", "strings.context", "strings.packs",
-        "loop.arbiter", "loop.delegation", "loop.receipts", "loop.runner",
+        "loop.arbiter", "loop.delegation", "loop.iteration_records", "loop.runner",
         "loop.practitioner_methods", "strings.notes", "loop.context_shuffle", "loop.decision_envelope",
         "strings.prompt_fragments", "loop.decision_episode", "code_nodes.pack_curation", "loop.studio",
         "static_architecture.persistence", "loop.acceptance", "loop.route_bridge", "static_architecture.ollama_resolvers",
@@ -442,6 +456,9 @@ def self_test() -> dict:
         "loop.canvas", "loop.sub_practitioner", "code_nodes.self_improve", "loop.tuning",
         "static_architecture.model_call", "static_architecture.store_serve", "strings.ask_strategies", "loop.kernel",
         "static_architecture.model_gateway",
+        "static_architecture.model_capabilities",
+        "static_architecture.live_model_verification",
+        "static_architecture.runtime_observer",
         "static_architecture.settings_loader",
         "strings.question_engine", "loop.kernel_model_impls", "code_nodes.enrichment", "static_architecture.config",
         "strings.biases", "code_nodes.review_mode", "code_nodes.rl_vocabulary", "code_nodes.competition_solver",
@@ -475,7 +492,7 @@ def self_test() -> dict:
         "sklearn": "scikit-learn", "lightgbm": "lightgbm",
         "xgboost": "xgboost", "duckdb": "duckdb",
         "model2vec": "model2vec", "lancedb": "lancedb",
-        "kaggle": "kaggle", "yaml": "PyYAML",
+        "kaggle": "kaggle", "yaml": "PyYAML", "mcp": "mcp",
     }
 
     def _fold(name, run):

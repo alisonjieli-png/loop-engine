@@ -1,6 +1,6 @@
 """Solution Library — first-class composite Solution Assets, searchable.
 
-Architectural role: Static Architecture service (the Solution Library).
+Architectural role: internal solution storage and search service.
 
 Owns:
     - SolutionAsset: the first-class COMPOSITE object — it reduces entirely
@@ -109,7 +109,7 @@ class SolutionLibrary:
         from ..loop.intelligence_loops import search_as_loop
         res = search_as_loop(
             self._store, f"solution_asset {modality} {problem} {out_role}",
-            pillar="past_run_intelligence")["value"]
+            pillar="runtime_history_solution_intelligence")["value"]
         hits = []
         for h in res.get("hits", ()):
             if (h.get("facets") or {}).get("category") != "solution_asset":
@@ -117,7 +117,7 @@ class SolutionLibrary:
             from ..loop.intelligence_loops import serve_record_as_loop
             rec = serve_record_as_loop(
                 self._store, h["record_id"],
-                pillar="past_run_intelligence")["value"]
+                pillar="runtime_history_solution_intelligence")["value"]
             if rec is None:
                 continue
             their = (rec.body.get("fingerprint") or "").split("|")

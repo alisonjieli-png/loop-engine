@@ -15,7 +15,7 @@ from loop_engine.code_nodes.loop_report import (
 
 def incident_run():
     ledger = LoopLedger()
-    root = Loop(
+    starting_loop = Loop(
         "restore checkout after a payment error spike",
         LoopConfig(framework="custom",
                    custom_steps=("inspect", "diagnose", "mitigate", "verify"),
@@ -25,25 +25,25 @@ def incident_run():
 
     def handle(loop, step, context):
         if loop.depth > 0:
-            child_output = {
+            spawned_output = {
                 "inspect": "gateway errors rose from 0.2% to 8.4%",
                 "diagnose": "failures start after credential rotation",
                 "mitigate": "validated the previous credential in staging",
                 "verify": "20 test charges passed",
             }[step]
-            return StepOutcome(child_output, mode="deterministic", confidence=0.95)
+            return StepOutcome(spawned_output, mode="deterministic", confidence=0.95)
         if step == "inspect":
             return StepOutcome("checkout failures exceed the alert threshold")
-        if step == "diagnose" and "diagnose:child" not in context:
+        if step == "diagnose" and "diagnose:spawned" not in context:
             return StepOutcome("inspect the payment gateway",
                                spawn_goal="check the payment gateway")
         if step == "diagnose":
-            return StepOutcome(f"gateway finding: {context['diagnose:child']}")
+            return StepOutcome(f"gateway finding: {context['diagnose:spawned']}")
         if step == "mitigate":
             return StepOutcome("restore the last verified credential")
         return StepOutcome("checkout error rate returned below 0.5%")
 
-    root.run(handler=handle, max_steps=20)
+    starting_loop.run(handler=handle, max_steps=20)
     return ledger
 
 

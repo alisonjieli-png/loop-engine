@@ -1,6 +1,6 @@
 # Reconcile invoices
 
-This example gives each invoice its own child loop and makes retry attempts in
+This example gives each invoice its own Spawned Loop and makes retry attempts in
 a vendor lookup visible.
 
 ```bash
@@ -15,5 +15,5 @@ python3 examples/06_reconcile_invoices/run.py
 
 - Network or model: none
 - External effects: none
-- Shows: custom steps, nested loops, stop conditions, and visible retries
+- Shows: custom steps, nested loops, exit conditions, and visible retries
 - Does not show: accounting-system integration or payment authorization

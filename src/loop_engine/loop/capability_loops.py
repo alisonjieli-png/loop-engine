@@ -1,4 +1,4 @@
-"""Invoke a selected Static Architecture capability as a loop.
+"""Invoke a selected registered plugin or retrieval capability as a Loop.
 
 Architectural role: loop envelope for manually registered capabilities.
 
@@ -46,7 +46,7 @@ class _LoopScopedLedger:
 
 
 def _new_loop(*, goal: str, config, contract, ledger=None, parent=None):
-    """Create a root or child loop while retaining the explicit contract."""
+    """Create a root or spawned loop while retaining the explicit contract."""
     from .recursive_loop import Loop, LoopError
 
     if parent is None:
@@ -56,13 +56,13 @@ def _new_loop(*, goal: str, config, contract, ledger=None, parent=None):
             f"max recursion depth {parent.config.max_depth} reached")
     if ledger is not None and ledger is not parent.ledger:
         raise CapabilityLoopError(
-            "a child capability loop must use its parent's shared ledger")
+            "a spawned capability Loop must use the spawning Loop's ledger")
 
     try:
-        child = parent.spawn(goal, config, contract=contract)
+        spawned = parent.spawn(goal, config, contract=contract)
     except LoopError as exc:
         raise CapabilityLoopError(str(exc)) from exc
-    return child
+    return spawned
 
 
 def run_capability_ref_as_loop(directory, ref, operation: str, *,
@@ -83,7 +83,8 @@ def run_capability_ref_as_loop(directory, ref, operation: str, *,
     surface = ref.handshake.loop_id
     if (ref.handshake.role != "code_intelligence"
             or ref.payload_ref != f"capability://{surface}"):
-        raise CapabilityLoopError("the selected ref is not a Static Architecture capability")
+        raise CapabilityLoopError(
+            "the selected ref is not a registered plugin or retrieval capability")
     handshake = directory.handshake(surface)
     current_digest = hashlib.sha256(json.dumps(
         handshake.describe(), sort_keys=True, default=str).encode()).hexdigest()
@@ -113,7 +114,7 @@ def run_capability_as_loop(directory, surface: str, operation: str, *,
     from .loop_contract import LoopContract
     from .recursive_loop import LoopConfig, StepOutcome
 
-    goal = (f"attempt Static Architecture capability {surface}.{operation} "
+    goal = (f"attempt registered capability {surface}.{operation} "
             "once and report its outcome")
     contract = LoopContract(
         name=f"{surface}.{operation}", execution_mode="code_only",
@@ -125,7 +126,7 @@ def run_capability_as_loop(directory, surface: str, operation: str, *,
         framework="custom", custom_steps=("invoke",), power="light",
         logical_kind="execution", replay_guarantee="event_equivalent",
         allowable_modes=("deterministic",),
-        preferred_modes=("deterministic",), stop_condition="success_once")
+        preferred_modes=("deterministic",), exit_condition="accepted_success")
     loop = _new_loop(goal=goal, config=config, contract=contract,
                      ledger=ledger, parent=parent)
     loop.ledger.record(

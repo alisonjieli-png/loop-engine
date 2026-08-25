@@ -1,6 +1,6 @@
-"""Manually registered Brave Web Search Static Architecture plugin.
+"""Manually registered Brave Web Search plugin.
 
-Architectural role: Static Architecture network adapter and plugin example.
+Public capability groups: Web Research and Custom Plugins.
 
 Owns: a narrow typed Brave Web Search request, fixed-host HTTPS transport,
 secret lookup, response normalization, rate-limit metadata, and explicit

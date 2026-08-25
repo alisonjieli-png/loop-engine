@@ -1,6 +1,6 @@
 """Build the active and candidate Context Intelligence populations.
 
-Architectural role: Static Architecture catalog projection.
+Architectural role: internal catalog for Intelligence Search and Retrieval.
 
 Owns: projecting the packaged question, method, lens, policy, template, and
 guidance registries into one Context catalog. Candidate packs are opt-in.
@@ -181,7 +181,7 @@ def self_test() -> dict:
     invalid = []
     for record in active:
         hierarchy = classify_record(
-            "string_intelligence", record).get("context_hierarchy", {})
+            "context_intelligence", record).get("context_hierarchy", {})
         controlled = {key: hierarchy.get(key) for key in CONTROLLED_AXES
             if hierarchy.get(key)}
         try:

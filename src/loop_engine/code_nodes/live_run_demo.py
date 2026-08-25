@@ -8,7 +8,7 @@ what it is doing as well as logs out to a console").
 Owns:
     - TappedLedger: the shared LoopLedger with a per-event callback, so
       every step, mode choice, spawn, and terminal transition is observed
-      the moment it is recorded: the SAME event stream the Chronicle is
+      the moment it is recorded: the same event stream the saved run history is
       built from, not a parallel telemetry path;
     - run_live_demo(): runs the stage-0 deterministic fixture through the
       REAL Loop in a background thread while a localhost page shows the
@@ -131,9 +131,9 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
     import tempfile
     from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
     from .smoke_ladder import run_smoke_loop, _fixture
-    from ..static_architecture.user_intelligence import AdviceStore
+    from ..static_architecture.user_feedback_intelligence import AdviceStore
 
-    from ..static_architecture.chronicle import default_runs_dir
+    from ..static_architecture.run_history import default_runs_dir
     shared_runs_dir = default_runs_dir(runs_dir)
     state = {"events": [], "raw": [], "done": False, "runs": 0,
              "run_id": "", "runs_dir": shared_runs_dir, "saved_path": ""}
@@ -178,7 +178,7 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
         run_smoke_loop("live demo: solve the deterministic fixture",
                        train_csv=train, test_csv=test, sample_csv=sample,
                        out_csv=out, ledger=ledger,
-                       chronicle_run_id=state["run_id"],
+                       run_history_run_id=state["run_id"],
                        runs_dir=shared_runs_dir)
         state["saved_path"] = os.path.join(shared_runs_dir, state["run_id"])
         state["done"] = True
@@ -243,9 +243,20 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
                 self.wfile.write(body)
                 return
             if self.path == "/api/runs/live/events":
-                from ..static_architecture.chronicle import to_canonical_events
+                from ..static_architecture.run_history import to_canonical_events
                 body = json.dumps(to_canonical_events(state["raw"]),
                                   default=str).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
+            if self.path == "/api/runs/live/runtime":
+                from ..static_architecture.studio_operational_views import (
+                    project_run_runtime)
+                body = json.dumps(
+                    project_run_runtime(state["raw"]), default=str).encode()
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
                 self.send_header("Content-Length", str(len(body)))
@@ -352,6 +363,8 @@ def self_test() -> dict:
                                              timeout=5).read())
     canon = json.loads(urllib.request.urlopen(
         base + "/api/runs/live/events", timeout=5).read())
+    runtime = json.loads(urllib.request.urlopen(
+        base + "/api/runs/live/runtime", timeout=5).read())
     import http.client
     conn = http.client.HTTPConnection("127.0.0.1", d["port"], timeout=5)
     conn.request("GET", "/events/sse")
@@ -370,6 +383,8 @@ def self_test() -> dict:
           and os.path.exists(os.path.join(runs[0]["saved_path"],
                                           "manifest.json"))
           and any(c["type"] == "loop.completed" for c in canon)
+          and runtime["record_type"] == "studio_run_runtime/v2"
+          and "history_gaps" in runtime
           and sse_done and sse_data >= len(d["state"]["events"]),
           f"/api/runs ok; {len(canon)} canonical events (lossless parity); "
           f"SSE streamed {sse_data} events to done")

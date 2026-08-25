@@ -5,9 +5,39 @@ understand the task, search for useful intelligence, choose a method, perform
 the work, test the result, and decide what happens next.
 
 It is a role of the shared `Loop` runtime, not a second runtime. The public
-`PractitionerLoop` name is an alias of `Loop`. Public documentation uses
-"Loop Practitioner" so it does not conflict with other internal classes that
-use the shorter word `Practitioner`.
+`PractitionerLoop` name is an exact alias of `Loop`. The package API does not
+export a separate `Practitioner` class. Internal planning algorithms use service
+names and run inside a `Loop` envelope.
+
+## Starting and Spawned Practitioner identities
+
+```text
+Practitioner role profile
+├── Starting Practitioner
+│   └── Begins a run without a spawning Loop
+└── Spawned Practitioner
+    ├── researcher  -> practitioner.research
+    ├── solver      -> practitioner.solver
+    └── verifier    -> practitioner.verifier
+```
+
+Starting and Spawned by are relationship kinds, not Practitioner subclasses. The
+same researcher, solver, or verifier profile can be Starting when that work is
+the entry task. A Starting Intelligence or Starting Solution can delegate one
+of these Spawned Practitioner profiles when its mode authority and contract
+permit it.
+
+Spawning and querying are different relationships:
+
+```text
+Task
+└── Starting Practitioner
+    ├── spawns a Practitioner subproblem Loop when work needs its own contract
+    └── queries an Intelligence Query Loop when work needs intelligence
+```
+
+The Intelligence Query Loop is not labeled as a Spawned Practitioner. It keeps
+the Intelligence role and a query relationship.
 
 ## What it does
 
@@ -22,10 +52,10 @@ use the shorter word `Practitioner`.
 A Practitioner can use the reference nine-step profile, a compact profile, an
 atomic profile, or a custom profile. The role does not require nine steps.
 
-## The Practitioner loop tree
+## The Practitioner Loop graph
 
-When one Practitioner loop starts another, the event log records the
-relationship. A report can then show a loop tree such as:
+When one Practitioner Loop spawns another, the event log records a typed
+relationship. A report can then show a graph such as:
 
 ```text
 prepare quarterly plan
@@ -35,7 +65,7 @@ prepare quarterly plan
   verify the final plan
 ```
 
-This tree explains how the work was built. It is not the finished solution
+This graph explains how the work was built. It is not the finished Solution
 graph.
 
 ## What it can produce
@@ -50,3 +80,13 @@ definition of the Loop Practitioner role.
 
 For nested Practitioner loops with a custom step profile, see
 [reconcile invoices](../../../examples/06_reconcile_invoices/).
+
+## Typed spawning
+
+Use `SpawnedTaskManager` with a Practitioner `LoopProfileRef`, or use the
+synchronous `spawn_practitioner_loop()` helper. Both paths create the Spawned
+Loop through `Loop.spawn()`.
+
+Injected executors receive a `SpawnedLoopRuntimePort`, not the internal `Loop`
+or shared ledger. See
+[Spawned Loop delegation](../../guides/spawned-loop-delegation.md).

@@ -7,7 +7,7 @@ existing Loop Template library. It does not define another runtime.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 
 from .loop_contract import LoopContract
 from .loop_profile_catalog import (
@@ -17,6 +17,7 @@ from .loop_profile_catalog import (
     PROFILE_FAMILIES,
     PROFILE_ONTOLOGY_VERSION,
     PROFILE_STATES,
+    ROLE_PROFILE_ALIASES,
     ROOT_PROFILE_ID,
     THINKING_POWER_POLICIES,
     TOP_BRANCH_IDS,
@@ -27,11 +28,14 @@ from .loop_profile_catalog import (
     _spec,
     _version_tuple,
     profile_catalog,
+    resolve_profile_alias,
 )
+from .loop_role import (LOOP_RELATIONSHIP_KINDS, LoopRelationship, LoopRole,
+                        LoopRoleIdentity)
 from .loop_templates import (TEMPLATE_LIBRARY, config_from_template,
                              validate_template)
 from .recursive_loop import (MODEL_THINKING_POWER_LEVELS, MODES, POWER_LEVELS,
-                             LoopConfig)
+                             LoopConfig, default_loop_condition)
 
 
 def _ordered_union(groups) -> tuple[str, ...]:
@@ -54,9 +58,9 @@ class ResolvedLoopProfile:
     allowed_logical_kinds: tuple[str, ...]
     allowed_modes: tuple[str, ...]
     step_template_id: str
-    stop_condition: str
+    loop_condition: str
+    exit_condition: str
     thinking_power_policy: str
-
 
 @dataclass(frozen=True)
 class OntologyValidationResult:
@@ -90,6 +94,8 @@ class LoopProfileBindingRequest:
     effort: str = "standard"
     llm_thinking_power: str = ""
     max_depth: int = 3
+    relationship: LoopRelationship = field(
+        default_factory=LoopRelationship.starting)
 
     def __post_init__(self) -> None:
         if not self.goal.strip():
@@ -108,6 +114,8 @@ class LoopProfileBindingRequest:
             raise LoopProfileError(f"effort must be one of {POWER_LEVELS}")
         if self.max_depth < 0:
             raise LoopProfileError("max_depth cannot be negative")
+        if not isinstance(self.relationship, LoopRelationship):
+            raise LoopProfileError("relationship must be a LoopRelationship")
 
 
 @dataclass(frozen=True)
@@ -117,6 +125,8 @@ class BoundLoopProfile:
     profile: ResolvedLoopProfile
     contract: LoopContract
     config: LoopConfig
+    identity: LoopRoleIdentity
+    relationship: LoopRelationship
 
 
 @dataclass(frozen=True)
@@ -189,6 +199,14 @@ def resolve_profile(ref: LoopProfileRef, *,
         current = spec.parent
     lineage.reverse()
     leaf = lineage[-1]
+    step_template_id = next(
+        (profile.step_template_id for profile in reversed(lineage)
+         if profile.step_template_id), "")
+    template_frameworks = {
+        body["template_id"]: body["framework"] for body in TEMPLATE_LIBRARY}
+    loop_condition = (
+        default_loop_condition(template_frameworks[step_template_id])
+        if step_template_id in template_frameworks else "")
     return ResolvedLoopProfile(
         spec=leaf, lineage=tuple(profile.ref for profile in lineage),
         required_fields=_ordered_union(
@@ -197,18 +215,29 @@ def resolve_profile(ref: LoopProfileRef, *,
             profile.required_capabilities for profile in lineage),
         allowed_logical_kinds=leaf.allowed_logical_kinds,
         allowed_modes=leaf.allowed_modes,
-        step_template_id=next(
-            (profile.step_template_id for profile in reversed(lineage)
-             if profile.step_template_id), ""),
-        stop_condition=next(
-            (profile.stop_condition for profile in reversed(lineage)
-             if profile.stop_condition), ""),
+        step_template_id=step_template_id,
+        loop_condition=loop_condition,
+        exit_condition=next(
+            (profile.exit_condition for profile in reversed(lineage)
+             if profile.exit_condition), ""),
         thinking_power_policy=leaf.thinking_power_policy)
+
+
+def identity_for_profile(
+        ref: LoopProfileRef, *, profiles=LOOP_PROFILE_ONTOLOGY
+        ) -> LoopRoleIdentity:
+    """Bind one exact role profile identity without inferring relationship."""
+    profile = resolve_profile(ref, profiles=profiles)
+    try:
+        role = LoopRole(profile.spec.family)
+        return LoopRoleIdentity(role, ref.profile_id, ref.version)
+    except ValueError as exc:
+        raise LoopProfileError(str(exc)) from exc
 
 
 def validate_profile_ontology(
         profiles=LOOP_PROFILE_ONTOLOGY) -> OntologyValidationResult:
-    """Validate topology, inheritance, templates, and mode rules."""
+    """Validate position, inheritance, templates, and mode rules."""
     violations: list[str] = []
     keys = [profile.ref.key for profile in profiles]
     if len(keys) != len(set(keys)):
@@ -226,13 +255,18 @@ def validate_profile_ontology(
             "and solution")
     intelligence_ref = LoopProfileRef("intelligence")
     pillars = {profile.profile_id for profile in profiles
-               if profile.parent == intelligence_ref}
+               if profile.parent == intelligence_ref
+               and profile.state == "abstract"}
     if pillars != set(INTELLIGENCE_BRANCH_IDS):
         violations.append(
-            "intelligence must branch into Context, Code, Previous Run and "
-            "Solution, and User profiles")
+            "intelligence must branch into Context, Code, Runtime History and "
+            "Solution, and User Feedback profiles")
 
     templates = {body["template_id"]: body for body in TEMPLATE_LIBRARY}
+    for alias, target in ROLE_PROFILE_ALIASES:
+        if LoopProfileRef(target).key not in registry:
+            violations.append(
+                f"profile alias {alias!r} targets missing profile {target!r}")
     for profile in profiles:
         if profile.parent is not None and profile.parent.key not in registry:
             violations.append(
@@ -296,6 +330,7 @@ def bind_profile(request: LoopProfileBindingRequest, *,
     if not ontology.valid:
         raise LoopProfileError("invalid profile ontology: " + ontology.explain())
     profile = resolve_profile(request.profile, profiles=profiles)
+    identity = identity_for_profile(request.profile, profiles=profiles)
     if profile.spec.state != "registered":
         raise LoopProfileError(
             f"profile {profile.spec.profile_id!r} has state "
@@ -314,8 +349,8 @@ def bind_profile(request: LoopProfileBindingRequest, *,
         raise LoopProfileError(
             f"logical_kind must be one of {profile.allowed_logical_kinds}")
 
-    automatic_fields = {"loop_contract", "stop_condition", "step_profile",
-                        "mode_policy"}
+    automatic_fields = {"loop_contract", "loop_condition", "exit_condition",
+                        "step_profile", "mode_policy"}
     available = automatic_fields | set(request.available_fields)
     missing_fields = [field for field in profile.required_fields
                       if field not in available]
@@ -361,7 +396,8 @@ def bind_profile(request: LoopProfileBindingRequest, *,
         if body["template_id"] == profile.step_template_id)
     template["allowed_modes"] = request.modes
     template["logical_kind"] = logical_kind
-    template["stop_condition"] = profile.stop_condition
+    template["loop_condition"] = profile.loop_condition
+    template["exit_condition"] = profile.exit_condition
     config = config_from_template(
         template, power=request.effort, max_depth=request.max_depth)
     config = replace(
@@ -369,8 +405,9 @@ def bind_profile(request: LoopProfileBindingRequest, *,
         preferred_modes=request.preferred_modes or request.modes,
         delegated_modes=request.delegated_modes,
         llm_thinking_power=request.llm_thinking_power)
-    return BoundLoopProfile(profile=profile, contract=request.contract,
-                            config=config)
+    return BoundLoopProfile(
+        profile=profile, contract=request.contract, config=config,
+        identity=identity, relationship=request.relationship)
 
 
 def profile_handshake(
@@ -422,6 +459,7 @@ def self_test() -> dict:
         "practitioner.verifier",
         "practitioner.self_improvement",
         "practitioner.code_execution",
+        "intelligence.search", "intelligence.materialize",
         *INTELLIGENCE_BRANCH_IDS,
         "solution.atomic_component", "solution.pipeline",
         "solution.router_fallback", "solution.ensemble",
@@ -438,13 +476,35 @@ def self_test() -> dict:
           f"{len(LOOP_PROFILE_ONTOLOGY)} profiles; current Solution profiles "
           "match the deterministic Canvas runner")
 
+    catalog = profile_catalog()
+    aliases = {
+        name: resolve_profile_alias(name).profile_id
+        for name, _target in ROLE_PROFILE_ALIASES
+    }
+    check("profiles_are_relationship_neutral_and_keep_role_aliases",
+          all(item["supported_relationship_kinds"]
+              == list(LOOP_RELATIONSHIP_KINDS)
+              for item in catalog if item["family"] != "universal")
+          and next(item for item in catalog
+                   if item["family"] == "universal")
+          ["supported_relationship_kinds"]
+          == []
+          and aliases["researcher"] == "practitioner.research"
+          and aliases["intelligence.materialize"]
+          == "intelligence.materialize"
+          and aliases["solution.fallback"] == "solution.router_fallback"
+          and all("exit_condition" in item for item in catalog),
+          "semantic relationships are independent of role profiles")
+
     code_profile = resolve_profile(
         LoopProfileRef("intelligence.code.invoke"))
-    check("child_profiles_inherit_required_fields_and_capabilities",
+    check("spawned_profiles_inherit_required_fields_and_capabilities",
           code_profile.required_fields == (
-              "loop_contract", "stop_condition", "step_profile",
-              "mode_policy", "code_asset_ref", "code_contract",
+              "loop_contract", "loop_condition", "exit_condition",
+              "step_profile", "mode_policy", "code_asset_ref", "code_contract",
               "operation_ref")
+          and code_profile.loop_condition == "steps_remain"
+          and code_profile.exit_condition == "accepted_success"
           and "intelligence_reference" in code_profile.required_capabilities
           and "code_execution" in code_profile.required_capabilities,
           "resolved through loop, intelligence, code, invoke")
@@ -474,7 +534,7 @@ def self_test() -> dict:
                 "repair", "hybrid", input_roles=("failure/v1",),
                 output_roles=("patch/v1",)),
             available_fields=("acceptance_test",),
-            capabilities=("loop_spawn", "chronicle_write",
+            capabilities=("loop_spawn", "run_history_write",
                           "solution_build", "independent_verification"),
             modes=("deterministic", "hybrid")))
     except LoopProfileError:
@@ -488,7 +548,7 @@ def self_test() -> dict:
             "repair", "hybrid", input_roles=("failure/v1",),
             output_roles=("patch/v1",)),
         available_fields=("acceptance_test",),
-        capabilities=("loop_spawn", "chronicle_write", "solution_build",
+        capabilities=("loop_spawn", "run_history_write", "solution_build",
                       "independent_verification"),
         modes=("deterministic", "hybrid"),
         preferred_modes=("deterministic", "hybrid"),
@@ -498,7 +558,25 @@ def self_test() -> dict:
           and bound.config.framework == "custom"
           and bound.config.custom_steps[0] == "understand_minimum"
           and bound.config.allowable_modes == ("deterministic", "hybrid")
-          and bound.config.llm_thinking_power == "high")
+          and bound.config.llm_thinking_power == "high"
+          and bound.config.loop_condition == "steps_remain"
+          and bound.config.exit_condition == "steps_complete"
+          and bound.relationship == LoopRelationship.starting()
+          and bound.identity.role == LoopRole.PRACTITIONER)
+
+    spawned_bound = bind_profile(LoopProfileBindingRequest(
+        profile=LoopProfileRef("intelligence.materialize"),
+        goal="load one selected context item",
+        contract=LoopContract(
+            "materialize", "code_only", output_roles=("item/v1",)),
+        available_fields=("intelligence_ref", "expected_digest"),
+        capabilities=(
+            "intelligence_reference", "intelligence_materialize",
+            "digest_verify"),
+        relationship=LoopRelationship.retrieved_by("loop17")))
+    check("profile_identity_is_separate_from_semantic_relationship",
+          spawned_bound.relationship == LoopRelationship.retrieved_by("loop17")
+          and spawned_bound.identity.role == LoopRole.INTELLIGENCE)
 
     improvement = resolve_profile(
         LoopProfileRef("practitioner.self_improvement"))
@@ -526,7 +604,8 @@ def self_test() -> dict:
     candidate = _spec(
         "solution.candidate_component", "Candidate component", "solution",
         "Used only to test candidate isolation.", parent="solution",
-        state="candidate", template="atomic_code_only", stop="success_once",
+        state="candidate", template="atomic_code_only",
+        exit_condition="accepted_success",
         kinds=("execution",), modes=("deterministic",),
         fields=("operation_ref",), capabilities=("component_execution",),
         thinking="forbidden")
@@ -544,14 +623,14 @@ def self_test() -> dict:
         candidate_refused = True
     check("candidate_profile_cannot_run", candidate_refused)
 
-    bad_child = _spec(
+    bad_spawned = _spec(
         "practitioner.invalid_expansion", "Invalid expansion", "practitioner",
         "Used only to test fail-closed validation.",
         parent="practitioner.code_execution", template="atomic_code_only",
-        stop="success_once", kinds=("execution",), modes=MODES)
+        exit_condition="accepted_success", kinds=("execution",), modes=MODES)
     adversarial = validate_profile_ontology(
-        LOOP_PROFILE_ONTOLOGY + (bad_child,))
-    check("child_profile_cannot_expand_parent_modes",
+        LOOP_PROFILE_ONTOLOGY + (bad_spawned,))
+    check("spawned_profile_cannot_expand_parent_modes",
           not adversarial.valid
           and any("expands its parent's run modes" in item
                   for item in adversarial.violations),

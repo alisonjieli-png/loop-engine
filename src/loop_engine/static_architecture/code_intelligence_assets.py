@@ -1,6 +1,6 @@
 """Flexible Code Intelligence cards, templates, and lazy loop capsules.
 
-Architectural role: Static Architecture schema and materialization service.
+Architectural role: internal Code Intelligence schema and materialization service.
 
 Owns: Code asset templates for functions, files, packages, repositories,
 services, dataset-backed systems, template repositories, large frameworks,

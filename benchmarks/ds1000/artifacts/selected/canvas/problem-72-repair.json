@@ -1,0 +1,89 @@
+{
+  "canonical": {
+    "digest": "b18ae2de965827ab28b09b1cb72417027e89b925e890bc7295d471fed0179a59",
+    "record_type": "solution_plan/v1",
+    "solution_id": "ds1000.72.repair.a6dfd1327c19",
+    "spec": {
+      "allowed_modes": [
+        "deterministic"
+      ],
+      "ensemble": "single",
+      "loops": [
+        {
+          "fallback_operations": [],
+          "loop_id": "execute_candidate_in_isolated_upstream_evaluator",
+          "mode": "deterministic",
+          "operation": "ds1000_isolated_evaluator",
+          "params": {
+            "input_contract": "ds1000_code_candidate/v1",
+            "output_contract": "ds1000_isolated_evaluation/v1",
+            "runtime_image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d"
+          }
+        }
+      ],
+      "members": [],
+      "resolved_operations": [
+        "ds1000_isolated_evaluator"
+      ],
+      "solution_id": "ds1000.72.repair.a6dfd1327c19",
+      "weights": []
+    }
+  },
+  "evaluation": {
+    "candidate_sha256": "a6dfd1327c19d2bee77b28153550d7756ac0e77fe24ec06d1a96b896f291b1a5",
+    "container_returncode": 0,
+    "container_stderr": "",
+    "container_stdout": "{\"candidate_sha256\": \"a6dfd1327c19d2bee77b28153550d7756ac0e77fe24ec06d1a96b896f291b1a5\", \"library\": \"Pandas\", \"passed\": false, \"problem_id\": 72, \"record_type\": \"ds1000_upstream_evaluation/v1\", \"result\": \"failed: expected an indented block after function definition on line 4 (<string>, line 5)\", \"test_execution\": true, \"test_string\": false, \"upstream_timeout_seconds\": 120}\n",
+    "image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d",
+    "library": "Pandas",
+    "passed": false,
+    "problem_id": 72,
+    "record_type": "ds1000_isolated_evaluation/v1",
+    "status": "completed",
+    "upstream_result": "failed: expected an indented block after function definition on line 4 (<string>, line 5)"
+  },
+  "json": "{\n \"record_type\": \"solution_plan/v1\",\n \"solution_id\": \"ds1000.72.repair.a6dfd1327c19\",\n \"spec\": {\n  \"solution_id\": \"ds1000.72.repair.a6dfd1327c19\",\n  \"allowed_modes\": [\n   \"deterministic\"\n  ],\n  \"ensemble\": \"single\",\n  \"weights\": [],\n  \"loops\": [\n   {\n    \"loop_id\": \"execute_candidate_in_isolated_upstream_evaluator\",\n    \"operation\": \"ds1000_isolated_evaluator\",\n    \"mode\": \"deterministic\",\n    \"fallback_operations\": [],\n    \"params\": {\n     \"input_contract\": \"ds1000_code_candidate/v1\",\n     \"output_contract\": \"ds1000_isolated_evaluation/v1\",\n     \"runtime_image_id\": \"sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d\"\n    }\n   }\n  ],\n  \"members\": [],\n  \"resolved_operations\": [\n   \"ds1000_isolated_evaluator\"\n  ]\n },\n \"digest\": \"b18ae2de965827ab28b09b1cb72417027e89b925e890bc7295d471fed0179a59\"\n}",
+  "mermaid": "flowchart TD\n  IN([inputs])\n  N1[\"ds1000.72.repair.a6dfd1327c19<br/>single | deterministic\"]\n  N2(\"execute_candidate_in_isolated_upstream_evaluator: ds1000_isolated_evaluator [deterministic]\")\n  N3([output])\n  IN --> N1\n  N1 --> N2\n  N2 --> N3",
+  "plan": {
+    "digest": "b18ae2de965827ab28b09b1cb72417027e89b925e890bc7295d471fed0179a59",
+    "record_type": "solution_plan/v1",
+    "solution_id": "ds1000.72.repair.a6dfd1327c19",
+    "spec": {
+      "allowed_modes": [
+        "deterministic"
+      ],
+      "ensemble": "single",
+      "loops": [
+        {
+          "fallback_operations": [],
+          "loop_id": "execute_candidate_in_isolated_upstream_evaluator",
+          "mode": "deterministic",
+          "operation": "ds1000_isolated_evaluator",
+          "params": {
+            "input_contract": "ds1000_code_candidate/v1",
+            "output_contract": "ds1000_isolated_evaluation/v1",
+            "runtime_image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d"
+          }
+        }
+      ],
+      "members": [],
+      "resolved_operations": [
+        "ds1000_isolated_evaluator"
+      ],
+      "solution_id": "ds1000.72.repair.a6dfd1327c19",
+      "weights": []
+    }
+  },
+  "plan_digest": "b18ae2de965827ab28b09b1cb72417027e89b925e890bc7295d471fed0179a59",
+  "record_type": "ds1000_canvas_evidence/v1",
+  "role": "repair",
+  "trace": [
+    {
+      "component_loop_id": "loop104",
+      "mode": "deterministic",
+      "operation": "ds1000_isolated_evaluator",
+      "solution_loop": "execute_candidate_in_isolated_upstream_evaluator",
+      "used_fallback": false
+    }
+  ]
+}

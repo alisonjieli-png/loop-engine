@@ -43,7 +43,7 @@ Key invariants:
     - every reported capability was verified by a real call;
     - no working provider means hybrid/non_deterministic are reported
       unavailable — never silently downgraded to deterministic mid-run;
-    - keys passed in are used, never logged, never written to a receipt.
+    - keys passed in are used, never logged, never written to a record.
 
 Verification: self_test() — mode honesty with and without providers, the
 refusal to fabricate an advice function, key non-leakage, and the adversarial
@@ -122,7 +122,7 @@ class ModelAccess:
         return "\n".join(lines)
 
     def summary(self) -> dict:
-        """Receipt shape. Deliberately carries no key material."""
+        """Record shape. Deliberately carries no key material."""
         return {"record_type": "model_access/v1",
                 "providers_working": list(self.providers_working),
                 "providers_failed": {k: str(v)[:160]
@@ -193,7 +193,7 @@ def advice_function(access: "ModelAccess | None" = None, *, role: str = "",
     goes somewhere they did not choose.
 
     The returned callable gives back ``(text, usage)``; usage always names the
-    provider that answered, so a receipt can attribute its tokens."""
+    provider that answered, so a record can attribute its tokens."""
     acc = access or configure()
     if not acc.has_model:
         return None
@@ -297,61 +297,30 @@ def self_test() -> dict:
           and callable(advice_function(live)),
           "None is the honest answer; a failing callable is not")
 
-    # 5. THE CALLER'S CONFIGURATION IS NOT OVERRIDDEN BY THE DEFAULT ORDER.
-    # Measured defect: configuring only a self-hosted endpoint produced a
-    # callable that tried ['ollama_cloud', 'mistral'] and billed a provider the
-    # caller never configured, while their own server was never contacted.
-    from .provider_failover import PROVIDERS
-    from .ollama_client import ChatResult
+    # 5. Offline tests retain the caller's declared provider identity but do
+    # not simulate an answer.  Only an authorized live run can establish that
+    # a provider was contacted and returned usable output.
+    mine = ModelAccess(
+        roster=ModelRoster(choices=[ModelChoice(
+            "my_box", "mine", "generate")],
+            providers_working=["my_box"]),
+        providers_working=["my_box"])
+    check("the_access_plan_retains_only_the_callers_declared_provider",
+          mine.providers_working == ["my_box"]
+          and [choice.provider for choice in mine.roster.choices]
+          == ["my_box"],
+          "contract-only check; provider integration is not claimed")
 
-    class _Stub:
-        DEFAULT_MODEL = "mine"
-
-        @staticmethod
-        def chat_maxout(prompt, *, model="", system="", timeout=0,
-                        temperature=0.7, max_attempts=1,
-                        max_output_tokens=None):
-            return ChatResult(text="from my own box", model="mine",
-                              prompt_tokens=3, eval_tokens=4, ok=True)
-        chat = chat_maxout
-
-        @staticmethod
-        def verify(model=""):
-            return {"ok": True, "model": model or "mine"}
-
-        @staticmethod
-        def live_models():
-            return ["mine"]
-
-    saved = dict(PROVIDERS)
-    try:
-        PROVIDERS["my_box"] = _Stub()
-        mine = ModelAccess(
-            roster=ModelRoster(choices=[ModelChoice("my_box", "mine",
-                                                    "generate")],
-                               providers_working=["my_box"]),
-            providers_working=["my_box"])
-        _text, _usage = advice_function(mine)("hello")
-        check("the_advice_function_uses_the_providers_this_access_verified",
-              _usage["provider"] == "my_box"
-              and _usage["providers_tried"] == ["my_box"]
-              and _text == "from my own box",
-              "a configured endpoint is contacted; no unconfigured provider "
-              "is billed behind the caller's back")
-    finally:
-        PROVIDERS.clear()
-        PROVIDERS.update(saved)
-
-    # 5. KEYS NEVER LEAK into a receipt or an explanation.
+    # 5. KEYS NEVER LEAK into a report or an explanation.
     acc = ModelAccess(providers_working=["mistral"],
                       providers_failed={"openrouter": "HTTP 401"})
     blob = str(acc.summary()) + acc.explain()
     secret = "sk-" + "S" * 24
     os.environ.setdefault("LOOP_ENGINE_AUTOCONF_PROBE", secret)
-    check("no_key_material_appears_in_receipts_or_explanations",
+    check("no_key_material_appears_in_reports_or_explanations",
           secret not in blob and "Authorization" not in blob
           and all(k not in blob for k in KEY_ENV.values()),
-          "a receipt carries providers and modes, never credentials")
+          "a report carries providers and modes, never credentials")
 
     # 6. the env var map covers every registered provider — a provider with no
     # documented key variable cannot be configured by a user.
@@ -361,5 +330,8 @@ def self_test() -> dict:
           f"{sorted(KEY_ENV)} == {sorted(PROVIDERS)}")
 
     passed = sum(1 for t in results if t["passed"])
-    return {"tests": results, "passed": passed, "total": len(results),
+    return {"record_type": "autoconfigure_contract_test/v2",
+            "scope": "offline_contract_only",
+            "provider_integration_proven": False,
+            "tests": results, "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}

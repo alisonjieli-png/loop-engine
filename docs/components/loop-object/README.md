@@ -1,21 +1,43 @@
 # The Loop object and step profiles
 
-The `Loop` is the shared runtime object in Loop Engine. Each operational node
-is a loop. A loop can perform work itself or start another loop for a bounded
-part of the task.
+`Loop` is the only executable graph vertex in Loop Engine. A Loop can perform
+work, spawn another Loop, query Intelligence, retrieve an Intelligence item,
+or pass a typed value to a connected Solution Loop.
+
+## Relationship and role are separate
+
+```text
+Loop
+├── relationship: Starting | Spawned by | Queried by | Retrieved by | Connected from
+├── role: Practitioner | Intelligence | Solution
+├── exact role profile
+├── selected run mode
+├── typed input and output ports
+├── loop condition and exit condition
+└── outgoing relationship
+```
+
+A Starting Solution is not a separate runtime profile. It is a Starting
+relationship paired with a Solution role profile. An explicit compatibility
+reader can load immutable records that use the retired topology shape. Current
+records write `LoopRoleIdentity` and `LoopRelationship` fields only.
 
 ## What defines one loop
 
 | Setting | Purpose |
 |---|---|
 | Goal | States the work to complete. |
+| Operational relationship | States whether this is Starting, Spawned by, Queried by, Retrieved by, or Connected from. |
+| Role profile | States whether this is Practitioner, Intelligence, or Solution work. |
 | Contract | Defines accepted inputs, outputs, and effects. |
-| Allowed modes | Limits how the loop may perform its work. |
-| Preferred modes | Sets the order in which allowed modes are tried. |
+| Allowed modes | Limits which mode this Loop may select. |
+| Preferred modes | Sets the order used to select one permitted mode. |
 | Delegated modes | Limits which modes this loop may grant loops it starts. |
 | Step profile | Defines the steps, their order, and any repetition. |
 | Effort setting | Limits iterations, intelligence retrieval, and model calls. |
-| Stop condition | Defines success or another terminal state. |
+| Exit condition | Defines the exact accepted or terminal state. |
+| Loop condition | Defines when this Loop node may continue. |
+| Outgoing relationship | Defines whether the next edge spawns, queries, retrieves, or connects. |
 | Depth limit | Limits how far the loop may start more loops. |
 | Event log | Records decisions, attempts, modes, outputs, and failures. |
 
@@ -72,13 +94,18 @@ Changing effort or model thinking power does not grant more permissions. Read
 the [Loop profile ontology](LOOP-PROFILE-ONTOLOGY.md) for the versioned
 Practitioner, Intelligence, and Solution hierarchy.
 
-## Starting another loop
+## Spawn a Practitioner Loop
 
 ```python
 from loop_engine.loop.recursive_loop import Loop, LoopConfig, LoopLedger
+from loop_engine.loop.loop_role import (
+    LoopRelationship,
+    LoopRole,
+    LoopRoleIdentity,
+)
 
 ledger = LoopLedger()
-root = Loop(
+starting_loop = Loop(
     "assemble the verified delivery plan",
     LoopConfig(
         allowable_modes=("deterministic",),
@@ -89,9 +116,14 @@ root = Loop(
         max_depth=2,
     ),
     ledger=ledger,
+    identity=LoopRoleIdentity(
+        LoopRole.PRACTITIONER,
+        "practitioner.reference_nine_step",
+    ),
+    relationship=LoopRelationship.starting(),
 )
 
-research = root.spawn(
+research = starting_loop.spawn(
     "interpret an ambiguous carrier policy",
     LoopConfig(
         framework="custom",
@@ -101,6 +133,11 @@ research = root.spawn(
         llm_thinking_power="high",
         max_depth=2,
     ),
+    identity=LoopRoleIdentity(
+        LoopRole.PRACTITIONER,
+        "practitioner.research",
+    ),
+    relationship=LoopRelationship.spawned_by(starting_loop.loop_id),
 )
 
 validation = research.spawn(
@@ -112,12 +149,18 @@ validation = research.spawn(
         preferred_modes=("deterministic",),
         max_depth=2,
     ),
+    identity=LoopRoleIdentity(
+        LoopRole.PRACTITIONER,
+        "practitioner.verifier",
+    ),
+    relationship=LoopRelationship.spawned_by(research.loop_id),
 )
 ```
 
-The root is deterministic. The research loop is non-deterministic. The
-validation loop is deterministic. All three share one event log, and the mode
-of each loop remains visible.
+The Starting Practitioner is deterministic. It starts a non-deterministic
+research Practitioner. The research Practitioner starts a deterministic
+verifier Practitioner. All three write to one event log. Their relationships,
+roles, profiles, and selected modes remain separate.
 
 For a complete practical example, see
 [reconcile invoices](../../../examples/06_reconcile_invoices/).

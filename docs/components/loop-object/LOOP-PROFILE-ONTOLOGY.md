@@ -4,20 +4,59 @@ Loop Engine has one runtime class: `Loop`. A loop profile is immutable data
 that configures that class for a specific kind of work. Profiles do not create
 new runtimes and do not use a deep Python class hierarchy.
 
-Each profile names its parent, version, step template, allowed modes, allowed
-logical kinds, required fields, and required capabilities. A child may add
-requirements or narrow permissions. It cannot expand the permissions of its
-parent.
+Each profile names its base profile, version, step template, allowed modes,
+allowed logical kinds, required fields, and required capabilities. A
+specialized profile may add requirements or narrow permissions. It cannot
+expand the permissions of its base profile.
 
 The code keeps data and behavior separate. `loop_profile_catalog.py` contains
 the immutable built-in definitions. `loop_profile_ontology.py` resolves
 parents, validates the tree, binds profiles, and checks version compatibility.
 
-## The profile tree
+## Operational relationship is not profile inheritance
+
+Run relationships and role profile inheritance are separate structures.
+
+```text
+Operational relationship
+├── Starting
+├── Spawned by
+├── Queried by
+├── Retrieved by
+└── Connected from
+```
+
+`LoopRoleIdentity` stores `role`, `profile_id`, and `profile_version`.
+`LoopRelationship` separately stores one relationship kind and only the IDs
+allowed for that kind. The five kinds are Starting, Spawned by, Queried by,
+Retrieved by, and Connected from.
+
+All three roles can use any relationship that is valid for the work. Query,
+retrieval, and connection relationships do not create more runtime roles or
+profile families.
+
+The ordinary relationship pattern is:
+
+```text
+Task
+└── Starting Practitioner
+    ├── may spawn a Practitioner subproblem Loop
+    ├── queries an Intelligence Query Loop
+    │   └── retrieves Intelligence Item Loops
+    └── builds a Solution Canvas
+        └── Starting Solution
+            ├── Connected Solution Loops
+            └── Spawned Solution only for dynamic branch work
+```
+
+## The profile inheritance tree
+
+The following diagram is catalog inheritance. Its top `Loop` box is the
+abstract profile base, not the Starting Loop in a run.
 
 ```mermaid
 flowchart TD
-    L["Loop\nshared typed contract, stop condition, step profile, mode policy"]
+    L["Loop\nshared typed contract, exit condition, step profile, mode policy"]
 
     L --> P["Practitioner"]
     L --> I["Intelligence"]
@@ -25,10 +64,11 @@ flowchart TD
 
     P --> PP["Profiles\nreference nine-step, compact five-step,\nresearch, solver, verifier,\nself-improvement task, code execution"]
 
+    I --> IO["Cross-layer operations\nsearch, materialize"]
     I --> IC["Context Intelligence"]
     I --> IX["Code Intelligence"]
-    I --> IH["Previous Run and Solution Intelligence"]
-    I --> IU["User Intelligence"]
+    I --> IH["Runtime History and Solution Intelligence"]
+    I --> IU["User Feedback Intelligence"]
 
     IC --> ICP["serve, search, frame for task"]
     IX --> IXP["resolve reference, invoke capability,\nload package or repository"]
@@ -45,6 +85,27 @@ The three top branches answer different questions:
 | Practitioner | What work is the system doing to understand, build, test, or improve something? |
 | Intelligence | What intelligence item is being searched, served, framed, loaded, replayed, or compared? |
 | Solution | What finished component or composition runs for a new input? |
+
+## Common role aliases
+
+Aliases are topology-neutral. A spawning Loop may use one for delegated work,
+while the same resolved profile can also be Starting.
+
+| Role | Public selector | Purpose |
+|---|---|---|
+| Practitioner | `researcher` | Research and source checking. |
+| Practitioner | `solver` | Build, test, diagnose, and repair. |
+| Practitioner | `verifier` | Independent verification. |
+| Intelligence | `intelligence.search` | Search selected layers. |
+| Intelligence | `intelligence.materialize` | Verify and load one selected item. |
+| Intelligence | `intelligence.invoke` | Invoke selected Code Intelligence. |
+| Intelligence | `intelligence.replay` | Replay selected Runtime History. |
+| Intelligence | `intelligence.interpret` | Interpret selected User Feedback. |
+| Solution | `solution.component` | Run one typed component. |
+| Solution | `solution.validator` | Check one result. |
+| Solution | `solution.router` | Choose a permitted route. |
+| Solution | `solution.fallback` | Try an ordered fallback. |
+| Solution | `solution.ensemble` | Combine compatible results. |
 
 Self-improvement belongs under Practitioner. It is a task given to the Loop
 Practitioner. It is not a fourth runtime role and it cannot approve its own
@@ -63,6 +124,8 @@ name makes configuration harder to check.
 
 | Setting | Meaning |
 |---|---|
+| Operational relationship | Starting, Spawned by, Queried by, Retrieved by, or Connected from. |
+| Role identity | Practitioner, Intelligence, or Solution plus an exact profile version. |
 | Loop profile | The loop's purpose and required interface. |
 | Step profile | The number, order, and repetition of steps. |
 | Run mode | Deterministic, hybrid, or non-deterministic execution. |
@@ -77,10 +140,10 @@ power value. The current levels are `small`, `medium`, `high`, `max`, and
 
 ## Profile requirements
 
-Every profile inherits these requirements from the root:
+Every profile inherits these requirements from the shared `Loop` profile:
 
 1. A `LoopContract` with typed input and output roles.
-2. A stop condition.
+2. An exit condition.
 3. A registered step profile.
 4. A mode policy.
 
@@ -118,7 +181,7 @@ request = LoopProfileBindingRequest(
     available_fields=("acceptance_test",),
     capabilities=(
         "loop_spawn",
-        "chronicle_write",
+        "run_history_write",
         "solution_build",
         "independent_verification",
     ),
@@ -139,7 +202,7 @@ binding does not copy that step sequence into another runtime.
 ## Version handshake
 
 Every profile reference includes an exact semantic version. A consumer can
-accept a profile branch and a compatible major version. A more specific child
+accept a profile branch and a compatible major version. A more specific
 profile satisfies the branch requirement when its ancestry and version match.
 
 ```python
@@ -174,13 +237,19 @@ input and output check.
 `validate_profile_ontology()` checks the full tree without running a loop. It
 fails when:
 
-- the root or any top branch is missing;
+- the shared `Loop` profile or any role branch is missing;
 - an intelligence layer branch is missing;
+- a role alias targets a missing profile;
 - a parent reference is missing or cyclic;
-- a child expands its parent's run modes or logical kinds;
+- a specialized profile expands the modes or logical kinds of its base;
 - a runnable profile points to a missing, invalid, or candidate Loop Template;
 - a deterministic-only profile accepts LLM thinking power;
-- a runnable profile has no stop condition or step template.
+- a runnable profile has no exit condition or step template.
+
+`LoopRoleIdentity` rejects a profile outside its declared role.
+`LoopRelationship` rejects a Starting relationship that names another Loop,
+a missing required relationship ID, or fields that belong to another
+relationship kind.
 
 Run the focused deterministic test with:
 

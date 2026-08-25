@@ -1,4 +1,8 @@
-"""The practitioner loop — the main intelligence execution path, as a node DAG.
+"""Internal practitioner planning algorithm.
+
+This module supplies Code Intelligence to the canonical ``recursive_loop.Loop``.
+Its state and steps are algorithm data, not another operational runtime. Public
+solve paths invoke this algorithm through a Loop envelope.
 
 The owner's model (2026-08-22): the single "what is next?" question is the spine,
 but the main path is a small DAG of nodes, each with MANY resolution paths, and
@@ -26,7 +30,7 @@ machine, not a straight line.  Two behaviours the owner called out are first-cla
   * any node that gets stuck loops back to the node(s) before it with a message,
     rather than failing the whole run.
 
-Swarm and tuning ride on top of one loop: ``swarm_practitioner`` runs N loops with
+Swarm and tuning ride on top of one loop: ``compare_practitioner_algorithms`` runs N loops with
 varied context/persona/seed and lets the fold oracle pick; tuning is either the
 ``optimize`` answer-kind inside node 1 or a per-candidate search around a finished
 graph (see ``TUNING_DESIGN``).  One loop stays simple; the scale lives outside it.
@@ -60,7 +64,7 @@ RESOLUTION_PATHS = ("cached", "muscle_memory", "deterministic", "reuse_drop_in",
                     "template_mutate", "embedding", "heuristic", "micro_model",
                     "small_model", "hybrid", "llm", "research", "custom")
 
-# Where tuning lives (design note, surfaced in the receipt / docs).
+# Where tuning lives (design note, surfaced in the record / docs).
 TUNING_DESIGN = (
     "Tuning is not a special place in the main loop.  It appears two ways: (a) as "
     "the 'optimize' answer-kind of what_is_next, which the loop implements like "
@@ -76,8 +80,8 @@ TUNING_DESIGN = (
 
 
 @dataclass
-class NodeResult:
-    node: str
+class PractitionerStepResult:
+    step: str
     output: Any = None
     control: str = "advance"
     loop_back_to: str = ""
@@ -86,21 +90,26 @@ class NodeResult:
     model_calls: int = 0
     detail: str = ""
 
+    @property
+    def node(self) -> str:
+        """Historical reader for callers that predate the step-result name."""
+        return self.step
+
     def __post_init__(self):
         if self.control not in CONTROL_SIGNALS:
             raise ValueError(f"unknown control signal {self.control!r}")
         if self.control == "loop_back" and self.loop_back_to not in NODE_SEQUENCE:
-            raise ValueError(f"loop_back_to must be a node; got "
+            raise ValueError(f"loop_back_to must be a step; got "
                              f"{self.loop_back_to!r}")
 
 
 @dataclass
-class LoopState:
-    """The shared state one practitioner loop carries across its nodes."""
+class PractitionerAlgorithmState:
+    """Mutable working state for the internal planning algorithm."""
     knowledge: Knowledge
     graph: list = field(default_factory=list)     # implemented nodes so far
     blackboard: dict = field(default_factory=dict)  # cross-node scratch + messages
-    history: list = field(default_factory=list)   # NodeResults, in run order
+    history: list = field(default_factory=list)   # step results, in run order
     model_calls: int = 0
     model_calls_avoided: int = 0
 
@@ -110,17 +119,17 @@ class LoopState:
 
 
 @dataclass
-class PractitionerNode:
+class PractitionerAlgorithmStep:
     name: str
-    resolve: Callable[[LoopState], NodeResult]
+    resolve: Callable[[PractitionerAlgorithmState], PractitionerStepResult]
 
 
 # ===========================================================================
-# The loop executor — a state machine with loop-backs and a step budget.
+# Internal algorithm executor with loop-backs and a step budget.
 # ===========================================================================
 
 
-def detect_logjam(state: LoopState, *, window: int = 8) -> str:
+def detect_logjam(state: PractitionerAlgorithmState, *, window: int = 8) -> str:
     """Is the loop stuck?  Two smells, both deterministic: the same node keeps
     being looped back to (>= 3 times in the window), or a full window of steps
     passed with the graph not growing.  Returns the reason, or '' if healthy."""
@@ -137,7 +146,7 @@ def detect_logjam(state: LoopState, *, window: int = 8) -> str:
     return ""
 
 
-def logjam_reset(state: LoopState, reason: str, reset_index: int) -> None:
+def logjam_reset(state: PractitionerAlgorithmState, reason: str, reset_index: int) -> None:
     """The documented reset — the organisational 'bring in a whole new person'.
 
     First DOCUMENT the failure (why we were stuck, at what step, with what
@@ -163,10 +172,10 @@ def logjam_reset(state: LoopState, reason: str, reset_index: int) -> None:
         context_level=state.knowledge.context_level, frame=frame)
 
 
-def run_practitioner_loop(state: LoopState, nodes: dict, *,
+def run_practitioner_algorithm(state: PractitionerAlgorithmState, nodes: dict, *,
                           max_steps: int = 60, max_resets: int = 2,
-                          logjam_window: int = 8) -> LoopState:
-    """Run the practitioner DAG as a state machine until done/abort/budget.
+                          logjam_window: int = 8) -> PractitionerAlgorithmState:
+    """Run the planning algorithm until done, abort, or budget exhaustion.
 
     Follows NODE_SEQUENCE forward on ``advance``; jumps to ``loop_back_to`` on
     ``loop_back`` (recording the message for that node to read); stops on ``done``
@@ -187,7 +196,7 @@ def run_practitioner_loop(state: LoopState, nodes: dict, *,
                     state.blackboard.setdefault("logjam_log", []).append(
                         {"reason": reason, "gave_up": True,
                          "at_step": len(state.history)})
-                    state.history.append(NodeResult(
+                    state.history.append(PractitionerStepResult(
                         NODE_SEQUENCE[idx], control="abort",
                         detail=f"logjam after {resets} resets: {reason}"))
                     break
@@ -231,7 +240,7 @@ def run_practitioner_loop(state: LoopState, nodes: dict, *,
 # ===========================================================================
 
 
-def node_what_is_next(state: LoopState) -> NodeResult:
+def node_what_is_next(state: PractitionerAlgorithmState) -> PractitionerStepResult:
     """Node 1: decide the next sub-task.  Terminate ends the loop."""
     # Absorb any research fed back from node 2 before deciding again.
     fed = state.messages_to("what_is_next")
@@ -245,15 +254,15 @@ def node_what_is_next(state: LoopState) -> NodeResult:
     ans = det_decide(state.knowledge)
     if ans.kind == "terminate":
         state.blackboard["graph_complete"] = True
-        return NodeResult("what_is_next", output=ans, control="done",
+        return PractitionerStepResult("what_is_next", output=ans, control="done",
                           paths_tried=["deterministic"],
                           detail="nothing left — deliver")
     state.blackboard["current_answer"] = ans
-    return NodeResult("what_is_next", output=ans, paths_tried=["deterministic"],
+    return PractitionerStepResult("what_is_next", output=ans, paths_tried=["deterministic"],
                       detail=f"[{ans.kind}] {ans.target}")
 
 
-def node_how_to_implement(state: LoopState) -> NodeResult:
+def node_how_to_implement(state: PractitionerAlgorithmState) -> PractitionerStepResult:
     """Node 2: reuse-first implementation route.  Research loops back to node 1."""
     ans: NextAnswer = state.blackboard["current_answer"]
     ex = det_resolve(state.knowledge, ans)
@@ -262,23 +271,23 @@ def node_how_to_implement(state: LoopState) -> NodeResult:
         state.model_calls_avoided += 1
     # If the best route is research, we don't build — feed back to what_is_next.
     if ans.kind == "research" or ex.chosen == "research":
-        return NodeResult("how_to_implement", output=ex, control="loop_back",
+        return PractitionerStepResult("how_to_implement", output=ex, control="loop_back",
                           loop_back_to="what_is_next",
                           message=f"research on {ans.target} done; re-decide",
                           paths_tried=[ex.chosen],
                           detail="research route — loop back, do not build")
     state.blackboard["current_execution"] = ex
-    return NodeResult("how_to_implement", output=ex, paths_tried=[ex.chosen],
+    return PractitionerStepResult("how_to_implement", output=ex, paths_tried=[ex.chosen],
                       model_calls=ex.model_calls,
                       detail=f"route={ex.chosen} handle={ex.handle}")
 
 
-def node_implement(state: LoopState) -> NodeResult:
+def node_implement(state: PractitionerAlgorithmState) -> PractitionerStepResult:
     """Node 3: wire the answer into the solution graph (deterministic here)."""
     ans: NextAnswer = state.blackboard["current_answer"]
     ex: ExecutionDecision = state.blackboard["current_execution"]
     if not ex.handle:                             # can't build -> loop back to 2
-        return NodeResult("implement", control="loop_back",
+        return PractitionerStepResult("implement", control="loop_back",
                           loop_back_to="how_to_implement",
                           message=f"no handle for {ans.target}; find another route",
                           detail="implementation blocked")
@@ -300,49 +309,49 @@ def node_implement(state: LoopState) -> NodeResult:
         results=state.knowledge.results, facts=new_facts,
         open_obligations=remaining, context_level=state.knowledge.context_level,
         frame=state.knowledge.frame)
-    return NodeResult("implement", output=built, paths_tried=[ex.chosen],
+    return PractitionerStepResult("implement", output=built, paths_tried=[ex.chosen],
                       detail=f"added node {ans.target} ({len(state.graph)} total)")
 
 
-def node_verify_compilable(state: LoopState) -> NodeResult:
+def node_verify_compilable(state: PractitionerAlgorithmState) -> PractitionerStepResult:
     """Node 4: did the graph stay compilable?  A broken edge loops back to node 3."""
     last = state.graph[-1] if state.graph else None
     if last is None:
-        return NodeResult("verify_compilable", control="loop_back",
+        return PractitionerStepResult("verify_compilable", control="loop_back",
                           loop_back_to="implement", message="nothing was built",
                           detail="empty graph")
     # Contract check: every built node needs a concrete handle and known kind.
     ok = bool(last.get("handle")) and last.get("kind") in ANSWER_KINDS
     if not ok:
-        return NodeResult("verify_compilable", control="loop_back",
+        return PractitionerStepResult("verify_compilable", control="loop_back",
                           loop_back_to="implement",
                           message=f"node {last.get('node')} fails its contract",
                           detail="contract violation")
-    return NodeResult("verify_compilable", output=VerifyResult(
+    return PractitionerStepResult("verify_compilable", output=VerifyResult(
         "correct_and_ready", "node satisfies its contract", True),
         paths_tried=["deterministic", "contract"],
         detail="graph is compilable")
 
 
-def node_save(state: LoopState) -> NodeResult:
+def node_save(state: PractitionerAlgorithmState) -> PractitionerStepResult:
     """Node 5: record the accepted step, then the loop continues to node 1."""
     state.blackboard.setdefault("saved", []).append(
         {"graph_size": len(state.graph)})
-    return NodeResult("save", detail=f"saved checkpoint ({len(state.graph)} nodes)")
+    return PractitionerStepResult("save", detail=f"saved checkpoint ({len(state.graph)} nodes)")
 
 
 def default_nodes() -> dict:
-    return {"what_is_next": PractitionerNode("what_is_next", node_what_is_next),
-            "how_to_implement": PractitionerNode("how_to_implement",
+    return {"what_is_next": PractitionerAlgorithmStep("what_is_next", node_what_is_next),
+            "how_to_implement": PractitionerAlgorithmStep("how_to_implement",
                                                 node_how_to_implement),
-            "implement": PractitionerNode("implement", node_implement),
-            "verify_compilable": PractitionerNode("verify_compilable",
+            "implement": PractitionerAlgorithmStep("implement", node_implement),
+            "verify_compilable": PractitionerAlgorithmStep("verify_compilable",
                                                  node_verify_compilable),
-            "save": PractitionerNode("save", node_save)}
+            "save": PractitionerAlgorithmStep("save", node_save)}
 
 
-def run_default(knowledge: Knowledge, *, max_steps: int = 60) -> LoopState:
-    return run_practitioner_loop(LoopState(knowledge=knowledge), default_nodes(),
+def run_default_algorithm(knowledge: Knowledge, *, max_steps: int = 60) -> PractitionerAlgorithmState:
+    return run_practitioner_algorithm(PractitionerAlgorithmState(knowledge=knowledge), default_nodes(),
                                  max_steps=max_steps)
 
 
@@ -351,20 +360,20 @@ def run_default(knowledge: Knowledge, *, max_steps: int = 60) -> LoopState:
 # ===========================================================================
 
 
-def swarm_practitioner(knowledge: Knowledge, *, n: int = 3,
+def compare_practitioner_algorithms(knowledge: Knowledge, *, n: int = 3,
                        nodes_factory: Callable[[], dict] | None = None,
                        vary: Callable[[Knowledge, int], Knowledge] | None = None,
                        max_steps: int = 60) -> dict:
-    """Run N practitioner loops that differ by context/persona/seed and collect
-    their graphs.  This is how swarm + non-determinism are handled: many loops,
-    each internally simple; selection among their outputs is a separate,
+    """Run N planning variants with different context, persona, or seed.
+
+    Selection among their outputs is a separate,
     oracle-driven step (never 'trust the loop that sounds best').  Returns the
     per-member graphs and the union of nodes discovered."""
     nf = nodes_factory or default_nodes
     vf = vary or (lambda k, i: k)
     members = []
     for i in range(n):
-        st = run_practitioner_loop(LoopState(knowledge=vf(knowledge, i)), nf(),
+        st = run_practitioner_algorithm(PractitionerAlgorithmState(knowledge=vf(knowledge, i)), nf(),
                                    max_steps=max_steps)
         members.append({"member": i, "graph": st.graph,
                         "steps": len(st.history),
@@ -385,14 +394,14 @@ def swarm_practitioner(knowledge: Knowledge, *, n: int = 3,
 # ===========================================================================
 
 
-def make_model_nodes(*, models: Sequence[str] | None = None,
+def make_model_algorithm_steps(*, models: Sequence[str] | None = None,
                      worker_model: str = "ollama-cloud/kimi-k2.7-code:cloud",
                      work_dir: str = ".", questions: Sequence[str] = (),
                      rounds: int = 2,
                      registry_probe: Callable[[str], str] | None = None,
                      author: Callable[[str, str], "AgentResult | None"] | None
                      = None) -> dict:
-    """Build the five practitioner nodes backed by real models + OpenCode.
+    """Build five internal planning steps backed by models and OpenCode.
 
     node 1 runs a debate to decide what is next; node 2 asks the registry_probe
     "do we already have this?" (reuse-first) and escalates only if not; node 3
@@ -419,34 +428,34 @@ def make_model_nodes(*, models: Sequence[str] | None = None,
 
     author_fn = author or _author
 
-    def n1(state: LoopState) -> NodeResult:
+    def n1(state: PractitionerAlgorithmState) -> PractitionerStepResult:
         ans = cycle["decide"](state.knowledge)
         if ans.kind == "terminate":
             state.blackboard["graph_complete"] = True
-            return NodeResult("what_is_next", output=ans, control="done",
+            return PractitionerStepResult("what_is_next", output=ans, control="done",
                               paths_tried=["llm_deliberation"])
         state.blackboard["current_answer"] = ans
-        return NodeResult("what_is_next", output=ans,
+        return PractitionerStepResult("what_is_next", output=ans,
                           paths_tried=["llm_deliberation"],
                           model_calls=len(list(models or [1, 2, 3])) * rounds,
                           detail=f"[{ans.kind}] {ans.target}")
 
-    def n2(state: LoopState) -> NodeResult:
+    def n2(state: PractitionerAlgorithmState) -> PractitionerStepResult:
         ans = state.blackboard["current_answer"]
         ex = cycle["resolve"](state.knowledge, ans)
         reuse_first_guard(ex)
         if ex.is_free():
             state.model_calls_avoided += 1
         if ans.kind == "research" or ex.chosen == "research":
-            return NodeResult("how_to_implement", output=ex, control="loop_back",
+            return PractitionerStepResult("how_to_implement", output=ex, control="loop_back",
                               loop_back_to="what_is_next",
                               message=f"research on {ans.target}; re-decide",
                               paths_tried=[ex.chosen])
         state.blackboard["current_execution"] = ex
-        return NodeResult("how_to_implement", output=ex, paths_tried=[ex.chosen],
+        return PractitionerStepResult("how_to_implement", output=ex, paths_tried=[ex.chosen],
                           model_calls=ex.model_calls)
 
-    def n3(state: LoopState) -> NodeResult:
+    def n3(state: PractitionerAlgorithmState) -> PractitionerStepResult:
         ans = state.blackboard["current_answer"]
         ex = state.blackboard["current_execution"]
         slug = "".join(c if c.isalnum() else "_" for c in ans.target)[:40]
@@ -454,12 +463,12 @@ def make_model_nodes(*, models: Sequence[str] | None = None,
             built = {"node": ans.target, "kind": ans.kind, "via": "exact_reuse",
                      "handle": ex.handle}
             state.graph.append(built)
-            return NodeResult("implement", output=built,
+            return PractitionerStepResult("implement", output=built,
                               paths_tried=["reuse_drop_in"],
                               detail=f"dropped in {ex.handle}")
         res = author_fn(slug, f"{ans.kind}: {ans.target} — {ans.rationale}")
         if res is None or not getattr(res, "ok", False):
-            return NodeResult("implement", control="loop_back",
+            return PractitionerStepResult("implement", control="loop_back",
                               loop_back_to="how_to_implement",
                               message=f"authoring failed for {ans.target}",
                               detail="worker could not author the node")
@@ -467,24 +476,24 @@ def make_model_nodes(*, models: Sequence[str] | None = None,
                  "handle": f"nodes/{slug}.py"}
         state.graph.append(built)
         state.blackboard["last_file"] = built["handle"]
-        return NodeResult("implement", output=built, paths_tried=["llm"],
+        return PractitionerStepResult("implement", output=built, paths_tried=["llm"],
                           model_calls=1, detail=f"authored {built['handle']}")
 
-    def n4(state: LoopState) -> NodeResult:
+    def n4(state: PractitionerAlgorithmState) -> PractitionerStepResult:
         import os as _os
         path = state.blackboard.get("last_file", "")
         last = state.graph[-1] if state.graph else None
         if last and last["via"] == "exact_reuse":
-            return NodeResult("verify_compilable", detail="reused node — compiled")
+            return PractitionerStepResult("verify_compilable", detail="reused node — compiled")
         full = _os.path.join(work_dir, path) if path else ""
         if not full or not _os.path.exists(full):
-            return NodeResult("verify_compilable", control="loop_back",
+            return PractitionerStepResult("verify_compilable", control="loop_back",
                               loop_back_to="implement",
                               message="no authored file to compile")
         try:
             py_compile.compile(full, doraise=True)
         except py_compile.PyCompileError as exc:
-            return NodeResult("verify_compilable", control="loop_back",
+            return PractitionerStepResult("verify_compilable", control="loop_back",
                               loop_back_to="implement",
                               message=f"does not compile: {str(exc)[:200]}",
                               detail="compile failed")
@@ -497,19 +506,30 @@ def make_model_nodes(*, models: Sequence[str] | None = None,
             open_obligations=tuple(o for o in state.knowledge.open_obligations
                                    if o not in last["node"]),
             context_level=state.knowledge.context_level, frame=state.knowledge.frame)
-        return NodeResult("verify_compilable", paths_tried=["deterministic",
+        return PractitionerStepResult("verify_compilable", paths_tried=["deterministic",
                           "py_compile"], detail=f"{path} compiles")
 
-    def n5(state: LoopState) -> NodeResult:
+    def n5(state: PractitionerAlgorithmState) -> PractitionerStepResult:
         state.blackboard.setdefault("saved", []).append(
             {"graph_size": len(state.graph)})
-        return NodeResult("save", detail=f"saved ({len(state.graph)} nodes)")
+        return PractitionerStepResult("save", detail=f"saved ({len(state.graph)} nodes)")
 
-    return {"what_is_next": PractitionerNode("what_is_next", n1),
-            "how_to_implement": PractitionerNode("how_to_implement", n2),
-            "implement": PractitionerNode("implement", n3),
-            "verify_compilable": PractitionerNode("verify_compilable", n4),
-            "save": PractitionerNode("save", n5)}
+    return {"what_is_next": PractitionerAlgorithmStep("what_is_next", n1),
+            "how_to_implement": PractitionerAlgorithmStep("how_to_implement", n2),
+            "implement": PractitionerAlgorithmStep("implement", n3),
+            "verify_compilable": PractitionerAlgorithmStep("verify_compilable", n4),
+            "save": PractitionerAlgorithmStep("save", n5)}
+
+
+# Module-local deprecated spellings for older imports. These objects are Code
+# Intelligence algorithms and are not public runtime types.
+NodeResult = PractitionerStepResult
+LoopState = PractitionerAlgorithmState
+PractitionerNode = PractitionerAlgorithmStep
+run_practitioner_loop = run_practitioner_algorithm
+run_default = run_default_algorithm
+swarm_practitioner = compare_practitioner_algorithms
+make_model_nodes = make_model_algorithm_steps
 
 
 # ===========================================================================
@@ -526,7 +546,7 @@ def self_test() -> dict:
     # 1. a full loop runs the nodes in forward order and terminates.
     k = Knowledge(goal="build a churn model",
                   open_obligations=("choose_model",), facts={})
-    st = run_default(k)
+    st = run_default_algorithm(k)
     order = [h.node for h in st.history]
     check("the_loop_runs_the_node_dag_and_terminates",
           "what_is_next" in order and "how_to_implement" in order
@@ -543,7 +563,7 @@ def self_test() -> dict:
     # 3. reuse-first: with a registry hit, node 2 resolves free (no model).
     k2 = Knowledge(goal="x", open_obligations=("choose_model",),
                    facts={"registry_has:address=choose_model": "hgb_v3"})
-    st2 = run_default(k2)
+    st2 = run_default_algorithm(k2)
     check("node_two_reuses_an_existing_node_with_no_model_call",
           st2.model_calls_avoided >= 1
           and any(n["via"] == "exact_reuse" for n in st2.graph),
@@ -556,7 +576,7 @@ def self_test() -> dict:
             "research", "best_practice_x", "need evidence")
         research_seen["n"] += 1
         if research_seen["n"] == 1:
-            return NodeResult("how_to_implement", control="loop_back",
+            return PractitionerStepResult("how_to_implement", control="loop_back",
                               loop_back_to="what_is_next",
                               message="researched; re-decide")
         # second time: pretend research produced a buildable answer
@@ -564,10 +584,10 @@ def self_test() -> dict:
         state.blackboard["current_execution"] = ExecutionDecision(
             "deterministic_wrapper", rungs_checked=["exact_reuse"],
             handle="wrapper::hgb")
-        return NodeResult("how_to_implement", detail="now buildable")
+        return PractitionerStepResult("how_to_implement", detail="now buildable")
     nodes = default_nodes()
-    nodes["how_to_implement"] = PractitionerNode("how_to_implement", research_node2)
-    st3 = run_practitioner_loop(LoopState(knowledge=Knowledge(
+    nodes["how_to_implement"] = PractitionerAlgorithmStep("how_to_implement", research_node2)
+    st3 = run_practitioner_algorithm(PractitionerAlgorithmState(knowledge=Knowledge(
         goal="y", open_obligations=("m",), facts={"has_baseline": True})),
         nodes, max_steps=30)
     msgs = st3.blackboard.get("messages", [])
@@ -580,11 +600,11 @@ def self_test() -> dict:
     def bad_implement(state):
         state.graph.append({"node": "x", "kind": "add_node", "via": "llm",
                             "handle": ""})     # empty handle -> contract fails
-        return NodeResult("implement", output={})
+        return PractitionerStepResult("implement", output={})
     nodes2 = default_nodes()
-    nodes2["implement"] = PractitionerNode("implement", bad_implement)
+    nodes2["implement"] = PractitionerAlgorithmStep("implement", bad_implement)
     # give node1 a single obligation then terminate; force one build attempt
-    st4 = run_practitioner_loop(LoopState(knowledge=Knowledge(
+    st4 = run_practitioner_algorithm(PractitionerAlgorithmState(knowledge=Knowledge(
         goal="z", open_obligations=("m",), facts={})), nodes2, max_steps=8)
     check("a_failed_verify_loops_back_to_implement",
           any(h.node == "verify_compilable" and h.control == "loop_back"
@@ -598,7 +618,7 @@ def self_test() -> dict:
           "loop-back messages are stored on the blackboard addressed to a node")
 
     # 7. swarm runs N loops and unions their graphs.
-    sw = swarm_practitioner(k, n=3)
+    sw = compare_practitioner_algorithms(k, n=3)
     check("swarm_runs_n_loops_and_unions_their_graphs",
           sw["n"] == 3 and len(sw["members"]) == 3 and sw["union_size"] >= 1,
           f"{sw['n']} members, union of {sw['union_size']} node(s)")
@@ -606,7 +626,7 @@ def self_test() -> dict:
     # 8. a loop-back to a non-node is rejected at construction.
     bad = False
     try:
-        NodeResult("implement", control="loop_back", loop_back_to="nowhere")
+        PractitionerStepResult("implement", control="loop_back", loop_back_to="nowhere")
     except ValueError:
         bad = True
     check("a_loop_back_to_an_unknown_node_is_rejected", bad,
@@ -624,8 +644,8 @@ def self_test() -> dict:
                 fh.write("def run(x):\n    \"\"\"stub\"\"\"\n    return x * 2\n")
             return AgentResult(ok=True, model="stub", output="", exit_code=0,
                                seconds=0.0)
-        mnodes = make_model_nodes(work_dir=d, author=stub_author)
-        stt = LoopState(knowledge=Knowledge(goal="t", facts={}))
+        mnodes = make_model_algorithm_steps(work_dir=d, author=stub_author)
+        stt = PractitionerAlgorithmState(knowledge=Knowledge(goal="t", facts={}))
         stt.blackboard["current_answer"] = NextAnswer("add_node", "double_it")
         stt.blackboard["current_execution"] = ExecutionDecision(
             "llm_single", rungs_checked=list(EXECUTION_LADDER[:7]),
@@ -646,8 +666,8 @@ def self_test() -> dict:
                 fh.write("def run(x)\n    return x\n")   # syntax error
             return AgentResult(ok=True, model="stub", output="", exit_code=0,
                                seconds=0.0)
-        mnodes2 = make_model_nodes(work_dir=d, author=bad_author)
-        stt2 = LoopState(knowledge=Knowledge(goal="t", facts={}))
+        mnodes2 = make_model_algorithm_steps(work_dir=d, author=bad_author)
+        stt2 = PractitionerAlgorithmState(knowledge=Knowledge(goal="t", facts={}))
         stt2.blackboard["current_answer"] = NextAnswer("add_node", "broken")
         stt2.blackboard["current_execution"] = ExecutionDecision(
             "llm_single", rungs_checked=list(EXECUTION_LADDER[:7]),

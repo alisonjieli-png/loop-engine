@@ -1,8 +1,8 @@
 {
- "record_type": "chronicle_manifest/v1",
- "run_id": "s6e8-warm-20260823",
- "parent_run_id": "",
- "events": 9,
- "head_digest": "c49efd6eef3748827b68679c56c00acfa1d7b8e01f3e7793315be64a80f75596",
- "committed": true
+  "record_type": "run_history_manifest/v1",
+  "run_id": "s6e8-warm-20260823",
+  "parent_run_id": "",
+  "events": 9,
+  "head_digest": "c5d75d6195ab68238c323d9276fdcb51f3de961f14888c1152010e21e248c80d",
+  "committed": true
 }

@@ -1,8 +1,8 @@
 {
- "record_type": "chronicle_manifest/v1",
- "run_id": "string-foundry-wave2-20260823",
- "parent_run_id": "",
- "events": 29,
- "head_digest": "60aad20ae5f317ce8bbc5c782ba80f1afe071dd6a3e3fec4f8695e5a19537b58",
- "committed": true
+  "record_type": "run_history_manifest/v1",
+  "run_id": "string-foundry-wave2-20260823",
+  "parent_run_id": "",
+  "events": 29,
+  "head_digest": "9cff4b31dff3cb2acd4de083ab86b5c26e9f0338348c8a94762cc84239ad77c2",
+  "committed": true
 }

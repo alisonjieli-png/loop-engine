@@ -16,18 +16,18 @@ the DIGEST of the resolved values rather than a pointer to mutable ones.
                         |
         EffectiveLoopSpec (immutable, digested)
                 +
-        PreferenceResolutionReceipt
+        PreferenceResolutionRecord
         (what was chosen, what was rejected, and WHY)
 
 Owns:
     - EffectiveLoopSpec: the frozen resolved configuration plus its digest;
     - resolve_effective_spec(): the deterministic resolution itself, run as a
       loop (the resolver is a boundary like any other);
-    - PreferenceResolutionReceipt: per-field selected value, source, rejected
+    - PreferenceResolutionRecord: per-field selected value, source, rejected
       alternatives, and the reason — so a resolution can be argued with.
 
 Does not own:
-    - the authority ladder (user_intelligence.rank_guidance owns precedence),
+    - the authority ladder (user_feedback_intelligence.rank_guidance owns precedence),
       the runtime (recursive_loop), or any preference storage.
 
 Key invariants:
@@ -39,13 +39,16 @@ Key invariants:
     - changing the store afterwards does NOT change a resolved spec.
 
 Verification: self_test() — determinism of the digest, floor precedence,
-receipt completeness, and the adversarial "mutate the store afterwards" path.
+record completeness, and the adversarial "mutate the store afterwards" path.
 """
 from __future__ import annotations
 
 import hashlib
 import json
 from dataclasses import dataclass, field
+
+from .recursive_loop import (default_loop_condition,
+                             normalize_exit_condition)
 
 #: Where a resolved value came from, highest authority first.  Mirrors the
 #: §13.2 ladder; the first three are the floor a preference cannot cross.
@@ -79,13 +82,13 @@ class EffectiveLoopSpec:
 
 
 @dataclass
-class PreferenceResolutionReceipt:
+class PreferenceResolutionRecord:
     """Why each field holds the value it holds."""
     decisions: list = field(default_factory=list)
     digest: str = ""
 
     def to_dict(self) -> dict:
-        return {"record_type": "preference_resolution_receipt/v1",
+        return {"record_type": "preference_resolution_record/v1",
                 "effective_digest": self.digest,
                 "decisions": self.decisions}
 
@@ -111,9 +114,28 @@ def resolve_effective_spec(requested: dict, *, preferences=(),
     optional ``strength``.  ``policy_floor`` entries use a floor source and
     win outright.  Resolution is a boundary, so it runs as a loop.
 
-    Returns ``(EffectiveLoopSpec, PreferenceResolutionReceipt)``.
+    Returns ``(EffectiveLoopSpec, PreferenceResolutionRecord)``.
     """
     from .encapsulate import as_practitioner_loop
+
+    def _mapping(value: dict) -> dict:
+        current = dict(value)
+        if "exit_condition" in current:
+            current["exit_condition"] = normalize_exit_condition(
+                current.get("exit_condition", ""))
+        return current
+
+    def _candidate(value: dict) -> dict:
+        current = dict(value)
+        if current.get("field") == "exit_condition":
+            current["value"] = normalize_exit_condition(
+                current.get("value"))
+        return current
+
+    requested = _mapping(requested)
+    template_defaults = _mapping(template_defaults or {})
+    preferences = tuple(_candidate(value) for value in preferences)
+    policy_floor = tuple(_candidate(value) for value in policy_floor)
 
     def _resolve():
         names = set(requested) | {p["field"] for p in preferences} \
@@ -139,7 +161,7 @@ def resolve_effective_spec(requested: dict, *, preferences=(),
             if name in requested:
                 candidates.append((VALUE_SOURCES.index("user_preference"),
                                    requested[name], "user_preference"))
-            for src, table in (("template_default", template_defaults or {}),):
+            for src, table in (("template_default", template_defaults),):
                 if name in table:
                     candidates.append((VALUE_SOURCES.index(src), table[name],
                                        src))
@@ -154,10 +176,43 @@ def resolve_effective_spec(requested: dict, *, preferences=(),
                              in candidates[1:]],
                 "rule": "highest authority wins; the floor cannot be crossed",
             })
-        fields = tuple(fields)
+        selected = {name: value for name, value, _source in fields}
+        framework = selected.get("framework", "nine_step")
+        expected_loop = default_loop_condition(framework)
+        loop_condition = selected.get("loop_condition", "")
+        if loop_condition and loop_condition != expected_loop:
+            raise ValueError(
+                f"framework {framework!r} requires loop_condition "
+                f"{expected_loop!r}")
+        if not loop_condition:
+            fields = [item for item in fields if item[0] != "loop_condition"]
+            decisions = [item for item in decisions
+                         if item["field"] != "loop_condition"]
+            fields.append(("loop_condition", expected_loop,
+                           "implementation_default"))
+            decisions.append({
+                "field": "loop_condition", "selected": expected_loop,
+                "source": "implementation_default", "rejected": [],
+                "rule": "derived from the effective framework",
+            })
+        exit_condition = normalize_exit_condition(
+            selected.get("exit_condition", ""))
+        if not selected.get("exit_condition"):
+            fields = [item for item in fields if item[0] != "exit_condition"]
+            decisions = [item for item in decisions
+                         if item["field"] != "exit_condition"]
+            fields.append(("exit_condition", exit_condition,
+                           "implementation_default"))
+            decisions.append({
+                "field": "exit_condition", "selected": exit_condition,
+                "source": "implementation_default", "rejected": [],
+                "rule": "every Loop has an explicit successful exit",
+            })
+        fields = tuple(sorted(fields, key=lambda item: item[0]))
+        decisions.sort(key=lambda item: item["field"])
         dig = _digest_fields(fields)
         return (EffectiveLoopSpec(fields=fields, digest=dig),
-                PreferenceResolutionReceipt(decisions=decisions, digest=dig))
+                PreferenceResolutionRecord(decisions=decisions, digest=dig))
 
     return as_practitioner_loop("resolve effective loop spec", _resolve,
                                 ledger=ledger)["value"]
@@ -176,7 +231,7 @@ def self_test() -> dict:
               "source": "organization_policy"}]
     defaults = {"power": "standard", "timeout": 30}
 
-    spec, receipt = resolve_effective_spec(
+    spec, record = resolve_effective_spec(
         {"goal": "win"}, preferences=prefs, policy_floor=floor,
         template_defaults=defaults)
 
@@ -196,7 +251,7 @@ def self_test() -> dict:
           spec.value("mode") == "deterministic"
           and spec.source("mode") == "organization_policy"
           and any(r["source"] == "user_preference"
-                  for r in receipt.rejected_for("mode")),
+                  for r in record.rejected_for("mode")),
           "user asked for non_deterministic; org policy won and the ask is "
           "preserved as a rejected alternative")
 
@@ -204,8 +259,10 @@ def self_test() -> dict:
     # rather than discarded — a resolution you cannot argue with is not one.
     check("every_field_names_its_source_and_keeps_the_rejects",
           all(s for _, _, s in spec.fields)
-          and all("rule" in d for d in receipt.decisions)
-          and spec.source("timeout") == "template_default",
+          and all("rule" in d for d in record.decisions)
+          and spec.source("timeout") == "template_default"
+          and spec.value("loop_condition") == "steps_remain"
+          and spec.value("exit_condition") == "steps_complete",
           f"{len(spec.fields)} fields, all sourced")
 
     # 4. ADVERSARIAL: a forged floor source is refused, and mutating the
@@ -228,6 +285,19 @@ def self_test() -> dict:
           forged and spec.value("power") == "deep"
           and spec.digest == spec2.digest,
           "later store mutation cannot rewrite a resolved spec")
+
+    current_spec, _ = resolve_effective_spec(
+        {"framework": "open", "exit_condition": "accepted_success"})
+    invalid = False
+    try:
+        resolve_effective_spec({"exit_condition": "whenever"})
+    except (LoopError, ValueError):
+        invalid = True
+    check("conditions_are_current_and_invalid_values_fail_closed",
+          current_spec.value("loop_condition") == "chooser_selects_work"
+          and current_spec.value("exit_condition") == "accepted_success"
+          and invalid,
+          "effective specs always expose current condition fields")
 
     passed = sum(1 for t in results if t["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

@@ -4,12 +4,12 @@ A human running the loop needs to see what it is thinking: what is presently
 known, what is still unknown or contradictory, why a decision is open, which
 resolvers were consulted and what each proposed, what was selected and why, what
 is running, and what changed.  This module assembles those panels from the state
-and receipts the loop already produces, and renders them two ways — a compact
+and iteration_records the loop already produces, and renders them two ways — a compact
 markdown view for a terminal, and a self-contained, theme-aware HTML dashboard.
 
-It is a projection only: it reads the normalized state and receipts and never
+It is a projection only: it reads the normalized state and iteration_records and never
 invents a second definition of anything.  Every number it shows traces back to a
-receipt.
+record.
 """
 
 from __future__ import annotations
@@ -35,7 +35,7 @@ def build_studio_view(*, title: str = "What-Is-Next", task: str = "",
                       decision_need: Mapping[str, Any] | None = None,
                       proposals: Sequence[Mapping[str, Any]] = (),
                       decision: Mapping[str, Any] | None = None,
-                      receipts: Sequence[Mapping[str, Any]] = (),
+                      iteration_records: Sequence[Mapping[str, Any]] = (),
                       calibration: Mapping[str, Any] | None = None,
                       pack_coverage: Mapping[str, Any] | None = None,
                       budget: Mapping[str, Any] | None = None) -> StudioView:
@@ -58,17 +58,17 @@ def build_studio_view(*, title: str = "What-Is-Next", task: str = "",
             "selected": (decision or {}).get("selected", []),
             "rejected": (decision or {}).get("rejected", []),
             "gate_excluded": (decision or {}).get("gate_excluded", [])},
-        "run": {"iterations": len(receipts),
+        "run": {"iterations": len(iteration_records),
                 "model_calls_made": sum(r.get("model_calls_made", 0)
-                                        for r in receipts),
+                                        for r in iteration_records),
                 "model_calls_avoided": sum(r.get("model_calls_avoided", 0)
-                                           for r in receipts),
-                "terminal_state": (receipts[-1].get("terminal_state")
-                                   if receipts else "")},
+                                           for r in iteration_records),
+                "terminal_state": (iteration_records[-1].get("terminal_state")
+                                   if iteration_records else "")},
         "changes": [{"iteration": r.get("iteration"),
                      "mode": (r.get("decision_need") or {}).get("mode"),
                      "observations": r.get("observations", [])}
-                    for r in receipts],
+                    for r in iteration_records],
         "resolver_calibration": (calibration or {}).get("resolvers", {}),
         "pack_coverage": (pack_coverage or {}).get("by_kind", {}),
         "budget": budget or {}}
@@ -213,7 +213,7 @@ def self_test() -> dict:
         proposals=[{"move": "run_tests"}],
         decision={"selected": [{"move": "run_tests"}], "rejected": [],
                   "gate_excluded": []},
-        receipts=[{"iteration": 0, "model_calls_made": 0,
+        iteration_records=[{"iteration": 0, "model_calls_made": 0,
                    "model_calls_avoided": 3, "observations": ["obs.0"],
                    "decision_need": {"mode": "investigate"},
                    "terminal_state": ""}],
@@ -242,7 +242,7 @@ def self_test() -> dict:
           and view.panels["knowledge"]["claims"] == 2
           and view.panels["knowledge"]["by_status"] == {"verified": 1,
                                                         "assumed": 1},
-          "the panels reflect exactly the input state and receipts — a "
+          "the panels reflect exactly the input state and iteration_records — a "
           "projection, not a second source of truth")
 
     # Determinism.

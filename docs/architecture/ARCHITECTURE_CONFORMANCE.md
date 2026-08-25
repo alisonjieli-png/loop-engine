@@ -18,8 +18,8 @@ The current checks cover:
 | Area | Required condition |
 |---|---|
 | Package layout | Each module belongs to one declared architecture area. |
-| Runtime identity | One canonical recursive Loop runtime remains reachable. |
-| Legacy paths | Retired runtime imports do not return to live paths. |
+| Runtime identity | The package API exposes only the canonical recursive `Loop` runtime. |
+| Flat legacy paths | Retired package-level module paths stay unreachable and unused. |
 | Network and models | Calls stay behind declared provider and endpoint adapters. |
 | Processes | Subprocess use stays inside declared adapters. |
 | Dynamic code | `eval` and `exec` remain absent. |
@@ -56,4 +56,6 @@ python -m loop_engine --self-test
 ```
 
 The self-test checks behavior. The conformance command checks architecture
-boundaries. Run both before a release.
+boundaries. The default self-test output is concise. Use
+`python -m loop_engine --self-test-verbose` for module demo output and the full
+JSON record. Run both gates before a release.

@@ -1,0 +1,36 @@
+{
+  "accepted": false,
+  "failures": [
+    {
+      "error": "LoopError: max recursion depth 3 reached",
+      "stage": "assess_prepare"
+    },
+    {
+      "error": "LoopError: max recursion depth 3 reached",
+      "stage": "decide_next"
+    },
+    {
+      "error": "ValueError: model synthesis did not produce a valid fixed candidate",
+      "stage": "how"
+    },
+    {
+      "error": "KeyError: 'compiled'",
+      "stage": "act"
+    },
+    {
+      "error": "TypeError: no typed prediction artifact reached the evaluator",
+      "stage": "independent_evaluator"
+    },
+    {
+      "error": "LoopError: max recursion depth 3 reached",
+      "stage": "verify"
+    }
+  ],
+  "mean_accuracy": null,
+  "physical_calls": 0,
+  "plan_digest": null,
+  "prediction_artifact_digest": null,
+  "repair_used": true,
+  "selected_algorithm": null,
+  "task_id": 11
+}

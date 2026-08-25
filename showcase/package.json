@@ -1,0 +1,24 @@
+{
+  "name": "loop-engine-showcase",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Presentation-first Loop Engine architecture showcase exporters and verification tools.",
+  "scripts": {
+    "serve": "python3 -m http.server 8082 --directory .",
+    "test": "node tests/player-smoke.mjs && node tests/visual-audit.mjs",
+    "test:player": "node tests/player-smoke.mjs",
+    "test:visual": "node tests/visual-audit.mjs",
+    "record": "node record-video.mjs --base-url http://127.0.0.1:8082",
+    "export:pdf": "node export-pdf.mjs --base-url http://127.0.0.1:8082",
+    "package": "node package-showcase.mjs"
+  },
+  "dependencies": {
+    "ffmpeg-static": "5.3.0",
+    "ffprobe-static": "3.1.0",
+    "playwright-core": "1.62.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

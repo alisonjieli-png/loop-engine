@@ -1,4 +1,4 @@
-"""Record a nested run, then play back the saved Chronicle without rerunning."""
+"""Record a nested run, then play back the saved Run History without rerunning."""
 
 import argparse
 import os
@@ -6,14 +6,14 @@ import time
 
 from loop_engine import LoopLedger
 from loop_engine.loop.recursive_loop import Loop, LoopConfig, StepOutcome
-from loop_engine.static_architecture.chronicle import Chronicle
+from loop_engine.static_architecture.run_history import RunHistory
 from loop_engine.code_nodes.run_playback import playback
 from loop_engine.code_nodes.loop_report import report_from_run, write_report
 
 
 def record_run(runs_dir):
     ledger = LoopLedger()
-    root = Loop(
+    starting_loop = Loop(
         "check inventory before the morning shipment",
         LoopConfig(framework="custom",
                    custom_steps=("load", "check", "route", "verify"),
@@ -24,19 +24,19 @@ def record_run(runs_dir):
     def handler(loop, step, context):
         if loop.depth > 0:
             return StepOutcome(f"{step}: warehouse count confirmed")
-        if step == "check" and "check:child" not in context:
+        if step == "check" and "check:spawned" not in context:
             return StepOutcome("confirm warehouse stock",
                                spawn_goal="confirm warehouse stock")
         if step == "route":
             return StepOutcome("hold SKU-442; release the other 18 orders")
         return StepOutcome(f"{step}: complete")
 
-    root.run(handler=handler, max_steps=20)
+    starting_loop.run(handler=handler, max_steps=20)
     run_id = (time.strftime("inventory-%Y%m%d-%H%M%S-")
               + f"{time.time_ns() % 1_000_000_000:09d}")
-    chronicle = Chronicle.from_ledger(ledger.events, run_id=run_id)
-    chronicle.commit()
-    chronicle.save(runs_dir)
+    run_history = RunHistory.from_ledger(ledger.events, run_id=run_id)
+    run_history.commit()
+    run_history.save(runs_dir)
     return run_id
 
 
@@ -48,13 +48,13 @@ def main():
     args = parser.parse_args()
     os.makedirs(args.runs_dir, exist_ok=True)
     run_id = args.run_id or record_run(args.runs_dir)
-    chronicle = Chronicle.load(args.runs_dir, run_id)
-    chain = chronicle.verify_chain()
+    run_history = RunHistory.load(args.runs_dir, run_id)
+    chain = run_history.verify_chain()
     if not chain["intact"]:
         raise SystemExit(f"saved chain is broken at {chain['broken_at']}")
 
     print(f"PLAYBACK: {run_id} ({chain['events']} events, chain intact)")
-    for line in playback(chronicle.events):
+    for line in playback(run_history.event_log):
         print(line)
 
     report = report_from_run(args.runs_dir, run_id)

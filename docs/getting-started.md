@@ -17,6 +17,9 @@ loop-engine --self-test
 ```
 
 If that exits 0, the installation passed its built-in test suite.
+The default output is a short summary plus any failures. Run
+`loop-engine --self-test-verbose` to inspect module demo output and the full
+test record.
 
 ## 2. Your first loop
 
@@ -76,7 +79,7 @@ Runnable version, which generates its own dataset:
 python3 examples/04_read_run_reports/run.py
 ```
 
-The example prints the parent and child loop tree and keeps Markdown, HTML, and
+The example prints the spawning and Spawned Loop graph and keeps Markdown, HTML, and
 JSON reports under `example-output/incident-report/`.
 
 Or in code, for a run you have in hand:
@@ -112,7 +115,7 @@ More: [providers and keys](guides/providers-and-keys.md) ·
 
 | | |
 |---|---|
-| [Loops and modes](guides/loops-and-modes.md) | how nesting, stop conditions, and permissions work |
+| [Loops and modes](guides/loops-and-modes.md) | how nesting, exit conditions, and permissions work |
 | [Providers and keys](guides/providers-and-keys.md) | discovery, failover, cost attribution |
 | [Runtime settings and model tiers](guides/settings.md) | YAML defaults, search choices, providers, and bounded model escalation |
 | [Custom endpoints](guides/custom-endpoints.md) | your own server or a third party's |

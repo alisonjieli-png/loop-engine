@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Loop Engine architecture showcase</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main id="showcase-app">
+      <div id="interactive-shell" class="presentation-layout">
+        <div class="presentation-main">
+          <section class="stage-shell">
+            <canvas id="showcase-stage" width="1920" height="1080"></canvas>
+          </section>
+
+          <section id="showcase-controls" class="control-bar">
+            <button id="previous-scene" type="button"></button>
+            <button id="play-pause" type="button"></button>
+            <button id="next-scene" type="button"></button>
+            <button id="restart" type="button"></button>
+            <label class="timeline-control" for="timeline-scrubber">
+              <span id="timeline-label"></span>
+              <input id="timeline-scrubber" type="range" min="0" value="0" step="1">
+            </label>
+            <label class="speed-control" for="speed-select">
+              <span id="speed-label"></span>
+              <select id="speed-select"></select>
+            </label>
+            <label class="motion-control" for="reduced-motion">
+              <input id="reduced-motion" type="checkbox">
+              <span id="motion-label"></span>
+            </label>
+            <output id="scene-counter"></output>
+          </section>
+
+          <p id="showcase-caption" class="caption" aria-live="polite"></p>
+        </div>
+
+        <nav id="scene-navigation" class="scene-navigation">
+          <h2 id="scene-navigation-title"></h2>
+          <ol id="scene-list"></ol>
+        </nav>
+      </div>
+
+      <section id="print-pages"></section>
+    </main>
+
+    <script type="module" src="player.js"></script>
+  </body>
+</html>

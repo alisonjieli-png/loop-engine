@@ -91,7 +91,7 @@ class TuningResult:
     evaluations: int = 0
     exhausted_budget: bool = False
 
-    def receipt(self) -> dict:
+    def record(self) -> dict:
         return {"record_type": "tuning_result/v1", "place": self.place,
                 "strategy": self.strategy, "evaluations": self.evaluations,
                 "baseline_score": self.baseline_score,
@@ -246,10 +246,10 @@ def self_test() -> dict:
           "with a flat objective the defaults stay — tuning cannot regress")
 
     # 7. every trial is retained — selection breadth is visible.
-    check("selection_breadth_is_visible_in_the_receipt",
-          r.receipt()["selection_breadth"] == r.evaluations
-          and "baseline_score" in r.receipt(),
-          "the receipt shows every configuration tried, not just the winner")
+    check("selection_breadth_is_visible_in_the_record",
+          r.record()["selection_breadth"] == r.evaluations
+          and "baseline_score" in r.record(),
+          "the record shows every configuration tried, not just the winner")
 
     # 8. unknown place / strategy are refused.
     bad_place = bad_strat = False

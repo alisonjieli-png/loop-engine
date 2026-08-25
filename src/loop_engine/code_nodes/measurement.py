@@ -465,7 +465,7 @@ def self_test() -> dict:
     # asked for.
     bank = measurement_pack()
     txt = " ".join(s.text.lower() for s in bank.all())
-    check("string_intelligence_carries_gap_and_industry_measures",
+    check("context_intelligence_carries_gap_and_industry_measures",
           "train-cv gap" in txt and "sensitivity and specificity" in txt
           and "sharpe" in txt and "mase" in txt and "calibration" in txt,
           f"{len(bank)} measurement strings across metrics + industries")

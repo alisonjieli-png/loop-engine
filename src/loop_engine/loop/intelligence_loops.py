@@ -13,10 +13,10 @@ is the Universal Loop Standard applied to the intelligence plane: nothing is
 consumed raw, everything crosses a loop.
 
 The four kinds (pillar → loop kind):
-    string_intelligence    -> CONTEXT loop     (a String served as a loop)
+    context_intelligence    -> CONTEXT loop     (a String served as a loop)
     code_intelligence      -> CODE loop        (a bound executable unit)
-    user_intelligence      -> GUIDANCE loop    (human advice, scoped + timed)
-    past_run_intelligence  -> HISTORICAL loop  (a prior run / solution)
+    user_feedback_intelligence      -> GUIDANCE loop    (human advice, scoped + timed)
+    runtime_history_solution_intelligence  -> HISTORICAL loop  (a prior run / solution)
 
 A loop kind is closed (`INTELLIGENCE_LOOP_KINDS`); an unknown kind is refused
 fail-closed.  Every serve is accepted-success-once, deterministic, zero
@@ -34,7 +34,7 @@ Does not own:
 
 Key invariants:
     - every serve returns through a loop, never raw;
-    - ``stop_condition`` is always a first accepted success;
+    - ``exit_condition`` is always an accepted success;
     - the layer is always recorded (the ledger never sees an unlabeled read);
     - unknown pillar -> fail-closed.
 
@@ -46,22 +46,37 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .encapsulate import as_loop
-from .recursive_loop import Loop, LoopLedger
+from .loop_contract import LoopContract
+from .loop_definition import LoopDefinition, LoopStartRequest
+from .loop_profile_catalog import LoopProfileRef
+from .loop_profile_ontology import resolve_profile
+from .loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
+from .recursive_loop import Loop, LoopConfig, LoopLedger
+from .runtime_context import (IntelligenceSearchRetrievalPort,
+                              InternalRuntimeMechanics,
+                              LoopRuntimeContext)
 
 #: the four pillars ride named loop kinds — never a raw serve.
 INTELLIGENCE_LOOP_KINDS = {
-    "string_intelligence": "context_loop",
+    "context_intelligence": "context_loop",
     "code_intelligence": "code_loop",
-    "user_intelligence": "guidance_loop",
-    "past_run_intelligence": "historical_run_loop",
+    "user_feedback_intelligence": "guidance_loop",
+    "runtime_history_solution_intelligence": "historical_run_loop",
 }
 
 #: the canonical ledger family for each pillar's retrieve event.
 _PILLAR_EVENT = {
-    "string_intelligence": "intelligence.string.retrieved",
+    "context_intelligence": "intelligence.context.retrieved",
     "code_intelligence": "intelligence.code.retrieved",
-    "user_intelligence": "intelligence.user.retrieved",
-    "past_run_intelligence": "intelligence.history.retrieved",
+    "user_feedback_intelligence": "intelligence.user_feedback.retrieved",
+    "runtime_history_solution_intelligence": "intelligence.runtime_history_solution.retrieved",
+}
+
+_PILLAR_PROFILE = {
+    "context_intelligence": "intelligence.context.serve",
+    "code_intelligence": "intelligence.materialize",
+    "user_feedback_intelligence": "intelligence.user_feedback.serve",
+    "runtime_history_solution_intelligence": "intelligence.materialize",
 }
 
 
@@ -81,6 +96,7 @@ class IntelligenceLoop:
     content: "object"         # the passive data (a String, a record, a callable)
     kind: str = ""            # one of INTELLIGENCE_LOOP_KINDS values
     query_hint: str = ""      # the "need" this loop serves against
+    profile_id: str = ""      # registered Intelligence role profile
 
     def __post_init__(self):
         if self.pillar not in INTELLIGENCE_LOOP_KINDS:
@@ -92,6 +108,22 @@ class IntelligenceLoop:
             raise IntelligenceLoopKindError(
                 f"pillar {self.pillar} must be kind "
                 f"{INTELLIGENCE_LOOP_KINDS[self.pillar]}, not {self.kind!r}")
+        if not self.profile_id:
+            self.profile_id = _PILLAR_PROFILE[self.pillar]
+        if not self.profile_id.startswith("intelligence"):
+            raise IntelligenceLoopKindError(
+                "an Intelligence Loop needs an Intelligence profile")
+        try:
+            profile = resolve_profile(LoopProfileRef(self.profile_id))
+        except Exception as exc:
+            raise IntelligenceLoopKindError(
+                f"profile {self.profile_id!r} is not registered") from exc
+        if profile.spec.family != "intelligence":
+            raise IntelligenceLoopKindError(
+                f"profile {self.profile_id!r} is not an Intelligence profile")
+        if profile.spec.state != "registered":
+            raise IntelligenceLoopKindError(
+                f"profile {self.profile_id!r} is abstract and cannot run")
 
     @property
     def loop_kind(self) -> str:
@@ -101,13 +133,57 @@ class IntelligenceLoop:
               parent: "Loop | None" = None) -> dict:
         """Serve this intelligence item AS a loop.  One accepted success; the
         retrieval is layer-labeled on the ledger; zero semantic calls."""
-        out = as_loop(f"{self.kind}:{self.name}", self.content if callable(self.content) else (self.content if not callable(self.content) else self.content),
-                      ledger=ledger, parent=parent)
-        lg = ledger or LoopLedger()
+        selected_ledger = ledger or (
+            parent.ledger if parent is not None else LoopLedger())
+        identity = LoopRoleIdentity(LoopRole.INTELLIGENCE, self.profile_id)
+        relationship = (LoopRelationship.retrieved_by(parent.loop_id)
+                        if parent is not None
+                        else LoopRelationship.starting())
+        cfg = LoopConfig(
+            framework="custom", custom_steps=("serve",),
+            exit_condition="accepted_success", power="light",
+            allowable_modes=("deterministic",),
+            preferred_modes=("deterministic",))
+        contract = LoopContract(
+            name=f"serve {self.pillar}: {self.name}",
+            execution_mode="code_only",
+            input_roles=("intelligence_reference",),
+            output_roles=(self.pillar,), role="intelligence")
+        definition = LoopDefinition.from_runtime(
+            identity=identity, contract=contract, config=cfg,
+            installed_executor_modes=("deterministic",))
+        local_context = LoopRuntimeContext(
+            intelligence_search_retrieval=IntelligenceSearchRetrievalPort(
+                "selected_intelligence_item", self,
+                definition.required_capabilities),
+            internal=InternalRuntimeMechanics(
+                executor_modes=("deterministic",)))
+        if parent is not None:
+            if parent.runtime_context.internal.compatibility_composition:
+                selected_context = local_context
+            else:
+                try:
+                    selected_context = parent.runtime_context.derive(
+                        capabilities=definition.required_capabilities,
+                        permissions=definition.permissions,
+                        executor_modes=definition.installed_executor_modes)
+                except ValueError as exc:
+                    raise IntelligenceLoopKindError(
+                        "the retrieving Loop has no authorized Intelligence "
+                        f"Search and Retrieval service: {exc}") from exc
+        else:
+            selected_context = local_context
+        content_kind = "callable" if callable(self.content) else "data"
+        start_request = LoopStartRequest(
+            f"serve {content_kind}: {self.kind}:{self.name}", definition,
+            relationship, selected_context, selected_ledger)
+        out = as_loop(
+            f"{self.kind}:{self.name}", self.content,
+            parent=parent, start_request=start_request)
         # the layer-labeled retrieval event rides the ledger
-        lg.record(loop_id=out["loop_id"],
-                  event=_PILLAR_EVENT[self.pillar], kind=self.kind,
-                  name=self.name, pulled=out["value"] is not None)
+        selected_ledger.record(
+            loop_id=out["loop_id"], event=_PILLAR_EVENT[self.pillar],
+            kind=self.kind, name=self.name, pulled=out["value"] is not None)
         out["pillar"] = self.pillar
         out["kind"] = self.kind
         return out
@@ -115,14 +191,16 @@ class IntelligenceLoop:
     def to_dict(self) -> dict:
         return {"record_type": "intelligence_loop/v1", "pillar": self.pillar,
                 "kind": self.kind, "name": self.name,
-                "query_hint": self.query_hint}
+                "query_hint": self.query_hint,
+                "profile_id": self.profile_id}
 
 
 def make_intelligence_loop(pillar: str, name: str, content, *,
-                           query_hint: str = "") -> IntelligenceLoop:
+                           query_hint: str = "", profile_id: str = ""
+                           ) -> IntelligenceLoop:
     """The single constructor — build the right loop kind for a pillar."""
     return IntelligenceLoop(pillar=pillar, name=name, content=content,
-                            query_hint=query_hint)
+                            query_hint=query_hint, profile_id=profile_id)
 
 
 # Convenience: one call per pillar.  All four are the same loop envelope.
@@ -132,7 +210,7 @@ def serve_context_intelligence(name: str, content, *, ledger=None, parent=None,
     rest configure the capsule — an earlier version forwarded everything to
     the constructor, so no caller could put the retrieval on a run's
     timeline."""
-    return IntelligenceLoop(pillar="string_intelligence", name=name,
+    return IntelligenceLoop(pillar="context_intelligence", name=name,
                             content=content, **kw).serve(ledger=ledger,
                                                          parent=parent)
 
@@ -150,7 +228,7 @@ def serve_guidance_intelligence(name: str, content, *, ledger=None, parent=None,
                                 **kw) -> dict:
     """Serve this pillar as a loop.  ``ledger``/``parent`` reach serve(); the
     rest configure the capsule."""
-    return IntelligenceLoop(pillar="user_intelligence", name=name,
+    return IntelligenceLoop(pillar="user_feedback_intelligence", name=name,
                             content=content, **kw).serve(ledger=ledger,
                                                          parent=parent)
 
@@ -159,7 +237,7 @@ def serve_historical_intelligence(name: str, content, *, ledger=None, parent=Non
                                   **kw) -> dict:
     """Serve this pillar as a loop.  ``ledger``/``parent`` reach serve(); the
     rest configure the capsule."""
-    return IntelligenceLoop(pillar="past_run_intelligence", name=name,
+    return IntelligenceLoop(pillar="runtime_history_solution_intelligence", name=name,
                             content=content, **kw).serve(ledger=ledger,
                                                          parent=parent)
 
@@ -174,7 +252,7 @@ def serve_pillar(pillar: str, name: str, content, *, ledger=None,
         ledger=ledger, parent=parent)
 
 
-def search_as_loop(store, query: str, *, pillar: str = "string_intelligence",
+def search_as_loop(store, query: str, *, pillar: str = "context_intelligence",
                    kind: "str | None" = None, top_n: int = 5, ledger=None,
                    parent=None) -> dict:
     """EVERY SEARCH IS A LOOP (owner, 2026-08-24).
@@ -188,11 +266,12 @@ def search_as_loop(store, query: str, *, pillar: str = "string_intelligence",
                         lambda: store.search(query, kind=kind, top_n=top_n)
                         if kind is not None
                         else store.search(query, top_n=top_n),
-                        ledger=ledger, parent=parent)
+                        ledger=ledger, parent=parent,
+                        profile_id="intelligence.search")
 
 
 def search_as_loop_refs(store, query: str, *,
-                        pillar: str = "string_intelligence",
+                        pillar: str = "context_intelligence",
                         kind: "str | None" = None, top_n: int = 5,
                         ledger=None, parent=None) -> list:
     """SEARCH RETURNS LOOPS (charter §20).
@@ -209,19 +288,21 @@ def search_as_loop_refs(store, query: str, *,
 
 
 def serve_record_as_loop(store, record_id: str, *,
-                         pillar: str = "string_intelligence", ledger=None,
+                         pillar: str = "context_intelligence", ledger=None,
                          parent=None) -> dict:
     """One stored record, fetched through its loop rather than read directly."""
     return serve_pillar(pillar, f"record:{record_id}",
                         lambda: store.serve(record_id),
-                        ledger=ledger, parent=parent)
+                        ledger=ledger, parent=parent,
+                        profile_id="intelligence.materialize")
 
 
-def records_as_loop(store, *, pillar: str = "string_intelligence",
+def records_as_loop(store, *, pillar: str = "context_intelligence",
                     ledger=None, parent=None) -> dict:
     """The store's whole record set, fetched through a loop."""
     return serve_pillar(pillar, "records:all", lambda: store.records(),
-                        ledger=ledger, parent=parent)
+                        ledger=ledger, parent=parent,
+                        profile_id="intelligence.search")
 
 
 def consult_guidance_as_loop(store, scope: str, target: str, *,
@@ -230,18 +311,20 @@ def consult_guidance_as_loop(store, scope: str, target: str, *,
     """EVERY GUIDANCE ACCESS IS A LOOP. Consulting human advice crosses a
     boundary, so it runs as a Guidance Loop; the consult still records its own
     audit row on the advice store."""
-    return serve_pillar("user_intelligence", f"consult:{scope}:{target}",
+    return serve_pillar("user_feedback_intelligence", f"consult:{scope}:{target}",
                         lambda: store.consult(scope, target, loop_id=loop_id,
                                               ledger=ledger),
-                        ledger=ledger, parent=parent)
+                        ledger=ledger, parent=parent,
+                        profile_id="intelligence.user_feedback.interpret")
 
 
 def guidance_for_as_loop(store, scope: str, target: str, *, ledger=None,
                          parent=None) -> dict:
     """Active advice for a target, read through a Guidance Loop."""
-    return serve_pillar("user_intelligence", f"advice_for:{scope}:{target}",
+    return serve_pillar("user_feedback_intelligence", f"advice_for:{scope}:{target}",
                         lambda: store.advice_for(scope, target),
-                        ledger=ledger, parent=parent)
+                        ledger=ledger, parent=parent,
+                        profile_id="intelligence.user_feedback.serve")
 
 
 def leave_guidance_as_loop(store, text: str, *, ledger=None, parent=None,
@@ -249,19 +332,20 @@ def leave_guidance_as_loop(store, text: str, *, ledger=None, parent=None,
     """A person leaving advice is a WRITE that crosses the boundary, so it
     crosses through a Guidance Loop too. The store's own append-only rules
     and refusals are unchanged — this adds the envelope, not new authority."""
-    return serve_pillar("user_intelligence", f"leave:{str(text)[:30]}",
+    return serve_pillar("user_feedback_intelligence", f"leave:{str(text)[:30]}",
                         lambda: store.leave_advice(text, **kw),
-                        ledger=ledger, parent=parent)
+                        ledger=ledger, parent=parent,
+                        profile_id="intelligence.user_feedback.serve")
 
 
 #: map a store record kind onto the pillar its loop belongs to (closed).
 #: "node" is the code-store's internal spelling of a code loop; both map to
 #: Code Intelligence.  Unknown kinds fail closed — never guessed.
 _STORE_KIND_TO_PILLAR = {
-    "context": "string_intelligence",
-    "question": "string_intelligence",
-    "persona": "string_intelligence",
-    "strategy": "past_run_intelligence",
+    "context": "context_intelligence",
+    "question": "context_intelligence",
+    "persona": "context_intelligence",
+    "strategy": "runtime_history_solution_intelligence",
     "loop": "code_intelligence",
     "node": "code_intelligence",     # the store's internal code spelling
 }
@@ -327,15 +411,15 @@ def self_test() -> dict:
 
     # 4. the layer-labeled retrieval event lands on the ledger.
     lg = LoopLedger()
-    IntelligenceLoop(pillar="user_intelligence", name="a",
+    IntelligenceLoop(pillar="user_feedback_intelligence", name="a",
                      content={"text": "hi"}).serve(ledger=lg)
     check("retrieval_is_layer_labeled_on_the_ledger",
-          any(e.get("event") == "intelligence.user.retrieved"
+          any(e.get("event") == "intelligence.user_feedback.retrieved"
               for e in lg.events),
           "guidance read recorded under its canonical family")
 
     # 5. one entry point serves any pillar to the right kind.
-    o = serve_pillar("past_run_intelligence", "prior", {"r": 1})
+    o = serve_pillar("runtime_history_solution_intelligence", "prior", {"r": 1})
     check("serve_pillar_resolves_to_the_right_kind",
           o["kind"] == "historical_run_loop" and o["value"] == {"r": 1},
           "one entry point, right kind")

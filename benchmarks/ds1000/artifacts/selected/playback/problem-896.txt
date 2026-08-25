@@ -1,0 +1,435 @@
+[loop1] INIT depth=0 nine_step/deep: goal: solve DS-1000 problem 896 with a model-led Practitioner
+[loop1] orient (non_deterministic) conf=0.9: orient:problem-896:source-frozen
+[loop1] reconcile_horizon (non_deterministic) conf=0.9: reconcile:full-path-only:four-call-ceiling
+[loop2] INIT depth=1 custom/light: goal: retrieve Context, Code, Previous Run, and User Feedback Intelligence
+[loop1] SPAWN -> loop2: retrieve Context, Code, Previous Run, and User Feedback Intelligence
+[loop3] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for DS-1000 first principles len
+[loop2] SPAWN -> loop3: serve callable: search four intelligence layers for DS-1000 
+[loop3] serve (deterministic) conf=0.95: serve:done
+[loop3] TERMINAL: success_once
+[loop4] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.first_principles
+[loop2] SPAWN -> loop4: serve callable: context_loop:ds1000.context.first_principles
+[loop4] serve (deterministic) conf=0.95: serve:done
+[loop4] TERMINAL: success_once
+[loop5] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for DS-1000 alternate methods le
+[loop2] SPAWN -> loop5: serve callable: search four intelligence layers for DS-1000 
+[loop5] serve (deterministic) conf=0.95: serve:done
+[loop5] TERMINAL: success_once
+[loop6] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.alternate_methods
+[loop2] SPAWN -> loop6: serve callable: context_loop:ds1000.context.alternate_method
+[loop6] serve (deterministic) conf=0.95: serve:done
+[loop6] TERMINAL: success_once
+[loop7] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for DS-1000 missing constraints 
+[loop2] SPAWN -> loop7: serve callable: search four intelligence layers for DS-1000 
+[loop7] serve (deterministic) conf=0.95: serve:done
+[loop7] TERMINAL: success_once
+[loop8] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.missing_constraints
+[loop2] SPAWN -> loop8: serve callable: context_loop:ds1000.context.missing_constrai
+[loop8] serve (deterministic) conf=0.95: serve:done
+[loop8] TERMINAL: success_once
+[loop9] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for DS-1000 common failures lens
+[loop2] SPAWN -> loop9: serve callable: search four intelligence layers for DS-1000 
+[loop9] serve (deterministic) conf=0.95: serve:done
+[loop9] TERMINAL: success_once
+[loop10] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.common_failures
+[loop2] SPAWN -> loop10: serve callable: context_loop:ds1000.context.common_failures
+[loop10] serve (deterministic) conf=0.95: serve:done
+[loop10] TERMINAL: success_once
+[loop11] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for DS-1000 verification lens
+[loop2] SPAWN -> loop11: serve callable: search four intelligence layers for DS-1000 
+[loop11] serve (deterministic) conf=0.95: serve:done
+[loop11] TERMINAL: success_once
+[loop12] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.verification
+[loop2] SPAWN -> loop12: serve callable: context_loop:ds1000.context.verification
+[loop12] serve (deterministic) conf=0.95: serve:done
+[loop12] TERMINAL: success_once
+[loop13] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for DS-1000 output shape lens
+[loop2] SPAWN -> loop13: serve callable: search four intelligence layers for DS-1000 
+[loop13] serve (deterministic) conf=0.95: serve:done
+[loop13] TERMINAL: success_once
+[loop14] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.output_shape
+[loop2] SPAWN -> loop14: serve callable: context_loop:ds1000.context.output_shape
+[loop14] serve (deterministic) conf=0.95: serve:done
+[loop14] TERMINAL: success_once
+[loop15] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for DS-1000 cost lens
+[loop2] SPAWN -> loop15: serve callable: search four intelligence layers for DS-1000 
+[loop15] serve (deterministic) conf=0.95: serve:done
+[loop15] TERMINAL: success_once
+[loop16] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.cost
+[loop2] SPAWN -> loop16: serve callable: context_loop:ds1000.context.cost
+[loop16] serve (deterministic) conf=0.95: serve:done
+[loop16] TERMINAL: success_once
+[loop17] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for Verify the pinned DS-1000 so
+[loop2] SPAWN -> loop17: serve callable: search four intelligence layers for Verify t
+[loop17] serve (deterministic) conf=0.95: serve:done
+[loop17] TERMINAL: success_once
+[loop18] INIT depth=2 custom/light: goal: serve callable: code_loop:ds1000.code.verify_pinned_source
+[loop2] SPAWN -> loop18: serve callable: code_loop:ds1000.code.verify_pinned_source
+[loop18] serve (deterministic) conf=0.95: serve:done
+[loop18] TERMINAL: success_once
+[loop19] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for Load a typed solver task wit
+[loop2] SPAWN -> loop19: serve callable: search four intelligence layers for Load a t
+[loop19] serve (deterministic) conf=0.95: serve:done
+[loop19] TERMINAL: success_once
+[loop20] INIT depth=2 custom/light: goal: serve callable: code_loop:ds1000.code.load_solver_task
+[loop2] SPAWN -> loop20: serve callable: code_loop:ds1000.code.load_solver_task
+[loop20] serve (deterministic) conf=0.95: serve:done
+[loop20] TERMINAL: success_once
+[loop21] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for Extract typed Python code fr
+[loop2] SPAWN -> loop21: serve callable: search four intelligence layers for Extract 
+[loop21] serve (deterministic) conf=0.95: serve:done
+[loop21] TERMINAL: success_once
+[loop22] INIT depth=2 custom/light: goal: serve callable: code_loop:ds1000.code.safe_extract_code
+[loop2] SPAWN -> loop22: serve callable: code_loop:ds1000.code.safe_extract_code
+[loop22] serve (deterministic) conf=0.95: serve:done
+[loop22] TERMINAL: success_once
+[loop23] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for Run one code candidate in th
+[loop2] SPAWN -> loop23: serve callable: search four intelligence layers for Run one 
+[loop23] serve (deterministic) conf=0.95: serve:done
+[loop23] TERMINAL: success_once
+[loop24] INIT depth=2 custom/light: goal: serve callable: code_loop:ds1000.code.run_isolated_evaluator
+[loop2] SPAWN -> loop24: serve callable: code_loop:ds1000.code.run_isolated_evaluator
+[loop24] serve (deterministic) conf=0.95: serve:done
+[loop24] TERMINAL: success_once
+[loop25] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for Apply the pinned upstream DS
+[loop2] SPAWN -> loop25: serve callable: search four intelligence layers for Apply th
+[loop25] serve (deterministic) conf=0.95: serve:done
+[loop25] TERMINAL: success_once
+[loop26] INIT depth=2 custom/light: goal: serve callable: code_loop:ds1000.code.upstream_passed
+[loop2] SPAWN -> loop26: serve callable: code_loop:ds1000.code.upstream_passed
+[loop26] serve (deterministic) conf=0.95: serve:done
+[loop26] TERMINAL: success_once
+[loop27] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for Compile and run the typed co
+[loop2] SPAWN -> loop27: serve callable: search four intelligence layers for Compile 
+[loop27] serve (deterministic) conf=0.95: serve:done
+[loop27] TERMINAL: success_once
+[loop28] INIT depth=2 custom/light: goal: serve callable: code_loop:ds1000.code.compile_and_run_canvas
+[loop2] SPAWN -> loop28: serve callable: code_loop:ds1000.code.compile_and_run_canvas
+[loop28] serve (deterministic) conf=0.95: serve:done
+[loop28] TERMINAL: success_once
+[loop29] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for Previous run: DS-1000 v1 sou
+[loop2] SPAWN -> loop29: serve callable: search four intelligence layers for Previous
+[loop29] serve (deterministic) conf=0.95: serve:done
+[loop29] TERMINAL: success_once
+[loop30] INIT depth=2 custom/light: goal: serve callable: historical_run_loop:ds1000.history.preflight
+[loop2] SPAWN -> loop30: serve callable: historical_run_loop:ds1000.history.preflight
+[loop30] serve (deterministic) conf=0.95: serve:done
+[loop30] TERMINAL: success_once
+[loop31] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for current owner rules full end
+[loop2] SPAWN -> loop31: serve callable: search four intelligence layers for current 
+[loop31] serve (deterministic) conf=0.95: serve:done
+[loop31] TERMINAL: success_once
+[loop32] INIT depth=2 custom/light: goal: serve callable: guidance_loop:ds1000.user.current_owner_rules
+[loop2] SPAWN -> loop32: serve callable: guidance_loop:ds1000.user.current_owner_rule
+[loop32] serve (deterministic) conf=0.95: serve:done
+[loop32] TERMINAL: success_once
+[loop2] retrieve (deterministic) conf=1.0: retrieved:15:all-four-layers
+[loop2] TERMINAL: done
+[loop1] assess_prepare (non_deterministic) conf=0.9: assess:all-four-intelligence-layers-materialized
+[loop1] decide_next (non_deterministic) conf=0.9: decide:canonical-portfolios-for-two-model-spawned-loopren
+[loop1] how (non_deterministic) conf=0.9: how:per-spawned-loopconsumption-then-candidates-and-synthesis
+[loop33] INIT depth=1 custom/light: goal: model-led candidate_a for DS-1000 problem 896
+[loop1] SPAWN -> loop33: model-led candidate_a for DS-1000 problem 896
+[loop34] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for first principles decompositi
+[loop33] SPAWN -> loop34: serve callable: search four intelligence layers for first pr
+[loop34] serve (deterministic) conf=0.95: serve:done
+[loop34] TERMINAL: success_once
+[loop35] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for analogy novel alternatives c
+[loop33] SPAWN -> loop35: serve callable: search four intelligence layers for analogy 
+[loop35] serve (deterministic) conf=0.95: serve:done
+[loop35] TERMINAL: success_once
+[loop36] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for missing items evidence neede
+[loop33] SPAWN -> loop36: serve callable: search four intelligence layers for missing 
+[loop36] serve (deterministic) conf=0.95: serve:done
+[loop36] TERMINAL: success_once
+[loop37] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for failure adversarial review p
+[loop33] SPAWN -> loop37: serve callable: search four intelligence layers for failure 
+[loop37] serve (deterministic) conf=0.95: serve:done
+[loop37] TERMINAL: success_once
+[loop38] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for cost compression cost value 
+[loop33] SPAWN -> loop38: serve callable: search four intelligence layers for cost com
+[loop38] serve (deterministic) conf=0.95: serve:done
+[loop38] TERMINAL: success_once
+[loop39] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for verification evaluation rubr
+[loop33] SPAWN -> loop39: serve callable: search four intelligence layers for verifica
+[loop39] serve (deterministic) conf=0.95: serve:done
+[loop39] TERMINAL: success_once
+[loop40] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for output contract output templ
+[loop33] SPAWN -> loop40: serve callable: search four intelligence layers for output c
+[loop40] serve (deterministic) conf=0.95: serve:done
+[loop40] TERMINAL: success_once
+[loop41] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.first_principles
+[loop33] SPAWN -> loop41: serve callable: context_loop:ds1000.context.first_principles
+[loop41] serve (deterministic) conf=0.95: serve:done
+[loop41] TERMINAL: success_once
+[loop42] INIT depth=2 custom/light: goal: serve callable: historical_run_loop:ds1000.history.preflight
+[loop33] SPAWN -> loop42: serve callable: historical_run_loop:ds1000.history.preflight
+[loop42] serve (deterministic) conf=0.95: serve:done
+[loop42] TERMINAL: success_once
+[loop43] INIT depth=2 custom/light: goal: serve callable: guidance_loop:ds1000.user.current_owner_rules
+[loop33] SPAWN -> loop43: serve callable: guidance_loop:ds1000.user.current_owner_rule
+[loop43] serve (deterministic) conf=0.95: serve:done
+[loop43] TERMINAL: success_once
+[loop44] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.common_failures
+[loop33] SPAWN -> loop44: serve callable: context_loop:ds1000.context.common_failures
+[loop44] serve (deterministic) conf=0.95: serve:done
+[loop44] TERMINAL: success_once
+[loop45] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.cost
+[loop33] SPAWN -> loop45: serve callable: context_loop:ds1000.context.cost
+[loop45] serve (deterministic) conf=0.95: serve:done
+[loop45] TERMINAL: success_once
+[loop46] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.verification
+[loop33] SPAWN -> loop46: serve callable: context_loop:ds1000.context.verification
+[loop46] serve (deterministic) conf=0.95: serve:done
+[loop46] TERMINAL: success_once
+[loop47] INIT depth=2 custom/light: goal: serve callable: code_loop:ds1000.code.safe_extract_code
+[loop33] SPAWN -> loop47: serve callable: code_loop:ds1000.code.safe_extract_code
+[loop47] serve (deterministic) conf=0.95: serve:done
+[loop47] TERMINAL: success_once
+[loop48] INIT depth=2 custom/light: goal: route one model request
+[loop33] SPAWN -> loop48: route one model request
+[loop49] INIT depth=3 custom/light: goal: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop48] SPAWN -> loop49: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop49] MODEL BOUNDARY deferred at : retry next iteration
+[loop49] invoke (non_deterministic) conf=0.6: invoke:answered
+[loop49] TERMINAL: success_once
+[loop48] route (deterministic) conf=1.0: route:answered:ollama_cloud
+[loop48] TERMINAL: done
+[loop33] generate (non_deterministic) conf=0.9: candidate_a:candidate:adf69186a2e3
+[loop33] TERMINAL: done
+[loop50] INIT depth=1 custom/light: goal: model-led candidate_b for DS-1000 problem 896
+[loop1] SPAWN -> loop50: model-led candidate_b for DS-1000 problem 896
+[loop51] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for first principles decompositi
+[loop50] SPAWN -> loop51: serve callable: search four intelligence layers for first pr
+[loop51] serve (deterministic) conf=0.95: serve:done
+[loop51] TERMINAL: success_once
+[loop52] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for analogy novel alternatives c
+[loop50] SPAWN -> loop52: serve callable: search four intelligence layers for analogy 
+[loop52] serve (deterministic) conf=0.95: serve:done
+[loop52] TERMINAL: success_once
+[loop53] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for missing items evidence neede
+[loop50] SPAWN -> loop53: serve callable: search four intelligence layers for missing 
+[loop53] serve (deterministic) conf=0.95: serve:done
+[loop53] TERMINAL: success_once
+[loop54] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for failure adversarial review p
+[loop50] SPAWN -> loop54: serve callable: search four intelligence layers for failure 
+[loop54] serve (deterministic) conf=0.95: serve:done
+[loop54] TERMINAL: success_once
+[loop55] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for cost compression cost value 
+[loop50] SPAWN -> loop55: serve callable: search four intelligence layers for cost com
+[loop55] serve (deterministic) conf=0.95: serve:done
+[loop55] TERMINAL: success_once
+[loop56] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for verification evaluation rubr
+[loop50] SPAWN -> loop56: serve callable: search four intelligence layers for verifica
+[loop56] serve (deterministic) conf=0.95: serve:done
+[loop56] TERMINAL: success_once
+[loop57] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for output contract output templ
+[loop50] SPAWN -> loop57: serve callable: search four intelligence layers for output c
+[loop57] serve (deterministic) conf=0.95: serve:done
+[loop57] TERMINAL: success_once
+[loop58] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.missing_constraints
+[loop50] SPAWN -> loop58: serve callable: context_loop:ds1000.context.missing_constrai
+[loop58] serve (deterministic) conf=0.95: serve:done
+[loop58] TERMINAL: success_once
+[loop59] INIT depth=2 custom/light: goal: serve callable: historical_run_loop:ds1000.history.preflight
+[loop50] SPAWN -> loop59: serve callable: historical_run_loop:ds1000.history.preflight
+[loop59] serve (deterministic) conf=0.95: serve:done
+[loop59] TERMINAL: success_once
+[loop60] INIT depth=2 custom/light: goal: serve callable: guidance_loop:ds1000.user.current_owner_rules
+[loop50] SPAWN -> loop60: serve callable: guidance_loop:ds1000.user.current_owner_rule
+[loop60] serve (deterministic) conf=0.95: serve:done
+[loop60] TERMINAL: success_once
+[loop61] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.common_failures
+[loop50] SPAWN -> loop61: serve callable: context_loop:ds1000.context.common_failures
+[loop61] serve (deterministic) conf=0.95: serve:done
+[loop61] TERMINAL: success_once
+[loop62] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.cost
+[loop50] SPAWN -> loop62: serve callable: context_loop:ds1000.context.cost
+[loop62] serve (deterministic) conf=0.95: serve:done
+[loop62] TERMINAL: success_once
+[loop63] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.verification
+[loop50] SPAWN -> loop63: serve callable: context_loop:ds1000.context.verification
+[loop63] serve (deterministic) conf=0.95: serve:done
+[loop63] TERMINAL: success_once
+[loop64] INIT depth=2 custom/light: goal: serve callable: code_loop:ds1000.code.load_solver_task
+[loop50] SPAWN -> loop64: serve callable: code_loop:ds1000.code.load_solver_task
+[loop64] serve (deterministic) conf=0.95: serve:done
+[loop64] TERMINAL: success_once
+[loop65] INIT depth=2 custom/light: goal: route one model request
+[loop50] SPAWN -> loop65: route one model request
+[loop66] INIT depth=3 custom/light: goal: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop65] SPAWN -> loop66: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop66] MODEL BOUNDARY deferred at : retry next iteration
+[loop66] invoke (non_deterministic) conf=0.6: invoke:answered
+[loop66] TERMINAL: success_once
+[loop65] route (deterministic) conf=1.0: route:answered:ollama_cloud
+[loop65] TERMINAL: done
+[loop50] generate (non_deterministic) conf=0.9: candidate_b:candidate:84642ac5c5e2
+[loop50] TERMINAL: done
+[loop67] INIT depth=1 custom/light: goal: model-led synthesis for DS-1000 problem 896
+[loop1] SPAWN -> loop67: model-led synthesis for DS-1000 problem 896
+[loop68] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for first principles decompositi
+[loop67] SPAWN -> loop68: serve callable: search four intelligence layers for first pr
+[loop68] serve (deterministic) conf=0.95: serve:done
+[loop68] TERMINAL: success_once
+[loop69] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for analogy novel alternatives c
+[loop67] SPAWN -> loop69: serve callable: search four intelligence layers for analogy 
+[loop69] serve (deterministic) conf=0.95: serve:done
+[loop69] TERMINAL: success_once
+[loop70] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for missing items evidence neede
+[loop67] SPAWN -> loop70: serve callable: search four intelligence layers for missing 
+[loop70] serve (deterministic) conf=0.95: serve:done
+[loop70] TERMINAL: success_once
+[loop71] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for failure adversarial review p
+[loop67] SPAWN -> loop71: serve callable: search four intelligence layers for failure 
+[loop71] serve (deterministic) conf=0.95: serve:done
+[loop71] TERMINAL: success_once
+[loop72] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for cost compression cost value 
+[loop67] SPAWN -> loop72: serve callable: search four intelligence layers for cost com
+[loop72] serve (deterministic) conf=0.95: serve:done
+[loop72] TERMINAL: success_once
+[loop73] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for verification evaluation rubr
+[loop67] SPAWN -> loop73: serve callable: search four intelligence layers for verifica
+[loop73] serve (deterministic) conf=0.95: serve:done
+[loop73] TERMINAL: success_once
+[loop74] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for output contract output templ
+[loop67] SPAWN -> loop74: serve callable: search four intelligence layers for output c
+[loop74] serve (deterministic) conf=0.95: serve:done
+[loop74] TERMINAL: success_once
+[loop75] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.first_principles
+[loop67] SPAWN -> loop75: serve callable: context_loop:ds1000.context.first_principles
+[loop75] serve (deterministic) conf=0.95: serve:done
+[loop75] TERMINAL: success_once
+[loop76] INIT depth=2 custom/light: goal: serve callable: historical_run_loop:ds1000.history.preflight
+[loop67] SPAWN -> loop76: serve callable: historical_run_loop:ds1000.history.preflight
+[loop76] serve (deterministic) conf=0.95: serve:done
+[loop76] TERMINAL: success_once
+[loop77] INIT depth=2 custom/light: goal: serve callable: guidance_loop:ds1000.user.current_owner_rules
+[loop67] SPAWN -> loop77: serve callable: guidance_loop:ds1000.user.current_owner_rule
+[loop77] serve (deterministic) conf=0.95: serve:done
+[loop77] TERMINAL: success_once
+[loop78] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.common_failures
+[loop67] SPAWN -> loop78: serve callable: context_loop:ds1000.context.common_failures
+[loop78] serve (deterministic) conf=0.95: serve:done
+[loop78] TERMINAL: success_once
+[loop79] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.cost
+[loop67] SPAWN -> loop79: serve callable: context_loop:ds1000.context.cost
+[loop79] serve (deterministic) conf=0.95: serve:done
+[loop79] TERMINAL: success_once
+[loop80] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.verification
+[loop67] SPAWN -> loop80: serve callable: context_loop:ds1000.context.verification
+[loop80] serve (deterministic) conf=0.95: serve:done
+[loop80] TERMINAL: success_once
+[loop81] INIT depth=2 custom/light: goal: serve callable: code_loop:ds1000.code.load_solver_task
+[loop67] SPAWN -> loop81: serve callable: code_loop:ds1000.code.load_solver_task
+[loop81] serve (deterministic) conf=0.95: serve:done
+[loop81] TERMINAL: success_once
+[loop82] INIT depth=2 custom/light: goal: route one model request
+[loop67] SPAWN -> loop82: route one model request
+[loop83] INIT depth=3 custom/light: goal: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop82] SPAWN -> loop83: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop83] MODEL BOUNDARY deferred at : retry next iteration
+[loop83] invoke (non_deterministic) conf=0.6: invoke:answered
+[loop83] TERMINAL: success_once
+[loop82] route (deterministic) conf=1.0: route:answered:ollama_cloud
+[loop82] TERMINAL: done
+[loop67] generate (non_deterministic) conf=0.9: synthesis:candidate:adf69186a2e3
+[loop67] TERMINAL: done
+[loop1] act (non_deterministic) conf=0.9: act:two-candidates-compared-and-synthesized
+[loop84] INIT depth=1 custom/light: goal: compile, execute, and grade synthesis for problem 896
+[loop1] SPAWN -> loop84: compile, execute, and grade synthesis for problem 896
+[loop85] INIT depth=2 five_step/light: goal: deterministic check: solution loop execute_candidate_in_isolated_upstream_evalua
+[loop84] SPAWN -> loop85: deterministic check: solution loop execute_candidate_in_isol
+[loop85] load (deterministic) conf=0.95: load:done
+[loop85] choose (deterministic) conf=0.95: choose:done
+[loop85] act (deterministic) conf=0.95: act:done:IsolatedEvaluation
+[loop85] check (deterministic) conf=0.95: check:ok
+[loop85] commit (deterministic) conf=0.95: commit:done
+[loop85] TERMINAL: done
+[loop84] compile_execute_grade (deterministic) conf=0.2: upstream-evaluation:failed
+[loop84] TERMINAL: done
+[loop86] INIT depth=1 custom/light: goal: model-led repair for DS-1000 problem 896
+[loop1] SPAWN -> loop86: model-led repair for DS-1000 problem 896
+[loop87] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for first principles decompositi
+[loop86] SPAWN -> loop87: serve callable: search four intelligence layers for first pr
+[loop87] serve (deterministic) conf=0.95: serve:done
+[loop87] TERMINAL: success_once
+[loop88] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for analogy novel alternatives c
+[loop86] SPAWN -> loop88: serve callable: search four intelligence layers for analogy 
+[loop88] serve (deterministic) conf=0.95: serve:done
+[loop88] TERMINAL: success_once
+[loop89] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for missing items evidence neede
+[loop86] SPAWN -> loop89: serve callable: search four intelligence layers for missing 
+[loop89] serve (deterministic) conf=0.95: serve:done
+[loop89] TERMINAL: success_once
+[loop90] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for failure adversarial review p
+[loop86] SPAWN -> loop90: serve callable: search four intelligence layers for failure 
+[loop90] serve (deterministic) conf=0.95: serve:done
+[loop90] TERMINAL: success_once
+[loop91] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for cost compression cost value 
+[loop86] SPAWN -> loop91: serve callable: search four intelligence layers for cost com
+[loop91] serve (deterministic) conf=0.95: serve:done
+[loop91] TERMINAL: success_once
+[loop92] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for verification evaluation rubr
+[loop86] SPAWN -> loop92: serve callable: search four intelligence layers for verifica
+[loop92] serve (deterministic) conf=0.95: serve:done
+[loop92] TERMINAL: success_once
+[loop93] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for output contract output templ
+[loop86] SPAWN -> loop93: serve callable: search four intelligence layers for output c
+[loop93] serve (deterministic) conf=0.95: serve:done
+[loop93] TERMINAL: success_once
+[loop94] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.first_principles
+[loop86] SPAWN -> loop94: serve callable: context_loop:ds1000.context.first_principles
+[loop94] serve (deterministic) conf=0.95: serve:done
+[loop94] TERMINAL: success_once
+[loop95] INIT depth=2 custom/light: goal: serve callable: historical_run_loop:ds1000.history.preflight
+[loop86] SPAWN -> loop95: serve callable: historical_run_loop:ds1000.history.preflight
+[loop95] serve (deterministic) conf=0.95: serve:done
+[loop95] TERMINAL: success_once
+[loop96] INIT depth=2 custom/light: goal: serve callable: guidance_loop:ds1000.user.current_owner_rules
+[loop86] SPAWN -> loop96: serve callable: guidance_loop:ds1000.user.current_owner_rule
+[loop96] serve (deterministic) conf=0.95: serve:done
+[loop96] TERMINAL: success_once
+[loop97] INIT depth=2 custom/light: goal: serve callable: historical_run_loop:ds1000.history.failure.896.adf69186a2e3
+[loop86] SPAWN -> loop97: serve callable: historical_run_loop:ds1000.history.failure.8
+[loop97] serve (deterministic) conf=0.95: serve:done
+[loop97] TERMINAL: success_once
+[loop98] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.cost
+[loop86] SPAWN -> loop98: serve callable: context_loop:ds1000.context.cost
+[loop98] serve (deterministic) conf=0.95: serve:done
+[loop98] TERMINAL: success_once
+[loop99] INIT depth=2 custom/light: goal: serve callable: context_loop:ds1000.context.verification
+[loop86] SPAWN -> loop99: serve callable: context_loop:ds1000.context.verification
+[loop99] serve (deterministic) conf=0.95: serve:done
+[loop99] TERMINAL: success_once
+[loop100] INIT depth=2 custom/light: goal: serve callable: code_loop:ds1000.code.load_solver_task
+[loop86] SPAWN -> loop100: serve callable: code_loop:ds1000.code.load_solver_task
+[loop100] serve (deterministic) conf=0.95: serve:done
+[loop100] TERMINAL: success_once
+[loop101] INIT depth=2 custom/light: goal: route one model request
+[loop86] SPAWN -> loop101: route one model request
+[loop102] INIT depth=3 custom/light: goal: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop101] SPAWN -> loop102: model invocation: ollama_cloud:deepseek-v4-flash:0731
+[loop102] MODEL BOUNDARY deferred at : retry next iteration
+[loop102] invoke (non_deterministic) conf=0.6: invoke:answered
+[loop102] TERMINAL: success_once
+[loop101] route (deterministic) conf=1.0: route:answered:ollama_cloud
+[loop101] TERMINAL: done
+[loop86] generate (non_deterministic) conf=0.9: repair:candidate:50efbbd3f8f0
+[loop86] TERMINAL: done
+[loop103] INIT depth=1 custom/light: goal: compile, execute, and grade repair for problem 896
+[loop1] SPAWN -> loop103: compile, execute, and grade repair for problem 896
+[loop104] INIT depth=2 five_step/light: goal: deterministic check: solution loop execute_candidate_in_isolated_upstream_evalua
+[loop103] SPAWN -> loop104: deterministic check: solution loop execute_candidate_in_isol
+[loop104] load (deterministic) conf=0.95: load:done
+[loop104] choose (deterministic) conf=0.95: choose:done
+[loop104] act (deterministic) conf=0.95: act:done:IsolatedEvaluation
+[loop104] check (deterministic) conf=0.95: check:ok
+[loop104] commit (deterministic) conf=0.95: commit:done
+[loop104] TERMINAL: done
+[loop103] compile_execute_grade (deterministic) conf=0.2: upstream-evaluation:failed
+[loop103] TERMINAL: done
+[loop1] verify (non_deterministic) conf=0.1: verify:repair-failed
+[loop1] integrate_commit (non_deterministic) conf=0.2: integrate:upstream-passed=False
+[loop1] route (non_deterministic) conf=1.0: route:finish:upstream-passed=False
+[loop1] TERMINAL: done

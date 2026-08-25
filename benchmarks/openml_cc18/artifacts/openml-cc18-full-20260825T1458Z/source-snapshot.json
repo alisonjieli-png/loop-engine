@@ -1,0 +1,222 @@
+{
+  "captured_at": "2026-08-25T14:55:32.566449+00:00",
+  "license_use_note": "The live metadata label is Public. This run is a user-directed local evaluation and does not convert that label into a legal conclusion.",
+  "portfolio_contract": "docs/benchmarks/first-loop-engine-portfolio.yaml",
+  "portfolio_contract_sha256": "d4c46ffdb64434d66d97a07e7136abd6457bdd2c39526a2434825cad35eb92ce",
+  "record_type": "openml_cc18_source_snapshot/v1",
+  "selection": [
+    11,
+    10101,
+    3560
+  ],
+  "suite": {
+    "alias": "OpenML-CC18",
+    "creation_date": "2019-02-21T18:47:13",
+    "id": 99,
+    "status": "active",
+    "task_count": 72
+  },
+  "suite_api": {
+    "bytes": 3334,
+    "fetched_at": "2026-08-25T14:55:27.690514+00:00",
+    "sha256": "4dabdc0e9e49c0b7eb39d6eac1a7e42811fb2f75d144c3701edf2b619fddc1c3",
+    "url": "https://www.openml.org/api/v1/json/study/OpenML-CC18"
+  },
+  "tasks": [
+    {
+      "data_api": {
+        "bytes": 2157,
+        "fetched_at": "2026-08-25T14:55:29.249615+00:00",
+        "sha256": "df55b657210fa615b5f1560eadc06c2263a3b32b42b0c87f263626de621746e5",
+        "url": "https://www.openml.org/api/v1/json/data/11"
+      },
+      "dataset": {
+        "bytes": 8724,
+        "md5": "76938608d472f620c170cef9c8c1fa65",
+        "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-11-dataset.arff",
+        "record_type": "openml_source_check/v1",
+        "sha256": "87d3943cea423bb376be52b5dfec17f79c63108dddcf40e0a46e5ba7196a5c24",
+        "verified": true
+      },
+      "mapping": {
+        "checks": {
+          "data_id": true,
+          "data_name": true,
+          "data_status": true,
+          "data_version": true,
+          "dataset_md5": true,
+          "default_target": true,
+          "license_label": true,
+          "split_folds": true,
+          "split_path": true,
+          "split_repeats": true,
+          "split_stratified": true,
+          "split_type": true,
+          "suite_alias": true,
+          "suite_id": true,
+          "suite_status": true,
+          "suite_task_count": true,
+          "target": true,
+          "task_id": true,
+          "task_in_suite": true,
+          "task_type": true
+        },
+        "data_id": 11,
+        "dataset_name": "balance-scale",
+        "license_label": "Public",
+        "license_precision": "OpenML literal label, not a precise SPDX license",
+        "record_type": "openml_live_mapping_check/v1",
+        "suite_id": 99,
+        "suite_task_count": 72,
+        "target": "class",
+        "task_id": 11,
+        "verified": true
+      },
+      "split": {
+        "bytes": 85917,
+        "md5": null,
+        "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-11-splits.arff",
+        "record_type": "openml_source_check/v1",
+        "sha256": "2761e26916111d33623c8145a78aeff7b8ac078449c13acc0f35b24a3d6e6627",
+        "verified": true
+      },
+      "task_api": {
+        "bytes": 1146,
+        "fetched_at": "2026-08-25T14:55:28.494517+00:00",
+        "sha256": "3dec9957a1ad2e7dbbd1ce8838f864708a01751a82340a82fe1c1a65bdfc7bb9",
+        "url": "https://www.openml.org/api/v1/json/task/11"
+      },
+      "task_id": 11
+    },
+    {
+      "data_api": {
+        "bytes": 2265,
+        "fetched_at": "2026-08-25T14:55:30.910022+00:00",
+        "sha256": "55bfb45d33ff652636d5ea705ccbc07fc3d5dfa377d119e0c78c81cd54531137",
+        "url": "https://www.openml.org/api/v1/json/data/1464"
+      },
+      "dataset": {
+        "bytes": 14143,
+        "md5": "c3242468edab8c2e7a907674122dc851",
+        "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-10101-dataset.arff",
+        "record_type": "openml_source_check/v1",
+        "sha256": "ee1304cac4a650ac31afe7395a100536a165f935bbe718a4643757c1a842316a",
+        "verified": true
+      },
+      "mapping": {
+        "checks": {
+          "data_id": true,
+          "data_name": true,
+          "data_status": true,
+          "data_version": true,
+          "dataset_md5": true,
+          "default_target": true,
+          "license_label": true,
+          "split_folds": true,
+          "split_path": true,
+          "split_repeats": true,
+          "split_stratified": true,
+          "split_type": true,
+          "suite_alias": true,
+          "suite_id": true,
+          "suite_status": true,
+          "suite_task_count": true,
+          "target": true,
+          "task_id": true,
+          "task_in_suite": true,
+          "task_type": true
+        },
+        "data_id": 1464,
+        "dataset_name": "blood-transfusion-service-center",
+        "license_label": "Public",
+        "license_precision": "OpenML literal label, not a precise SPDX license",
+        "record_type": "openml_live_mapping_check/v1",
+        "suite_id": 99,
+        "suite_task_count": 72,
+        "target": "Class",
+        "task_id": 10101,
+        "verified": true
+      },
+      "split": {
+        "bytes": 103033,
+        "md5": null,
+        "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-10101-splits.arff",
+        "record_type": "openml_source_check/v1",
+        "sha256": "965d72fa31f34cf0ca3c3345747bb68a8b78ad614c843ee7e6479c6d60503690",
+        "verified": true
+      },
+      "task_api": {
+        "bytes": 1112,
+        "fetched_at": "2026-08-25T14:55:30.105501+00:00",
+        "sha256": "a624d482c2ab588c90ef31e891fe1aa08645b974dcb8bc73028f16fd49ee58bd",
+        "url": "https://www.openml.org/api/v1/json/task/10101"
+      },
+      "task_id": 10101
+    },
+    {
+      "data_api": {
+        "bytes": 1636,
+        "fetched_at": "2026-08-25T14:55:32.566140+00:00",
+        "sha256": "43795c1973ab270b0be48e44115a360dc99f7aa7efe8693cb5422c03bf3f43a8",
+        "url": "https://www.openml.org/api/v1/json/data/469"
+      },
+      "dataset": {
+        "bytes": 23321,
+        "md5": "ad86226880052117a3e95479cf61faf6",
+        "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-3560-dataset.arff",
+        "record_type": "openml_source_check/v1",
+        "sha256": "d1fce1e52ef3e29c3cb8af6fc8215dd2982f829c0bfcd18a8be39269db4df501",
+        "verified": true
+      },
+      "mapping": {
+        "checks": {
+          "data_id": true,
+          "data_name": true,
+          "data_status": true,
+          "data_version": true,
+          "dataset_md5": true,
+          "default_target": true,
+          "license_label": true,
+          "split_folds": true,
+          "split_path": true,
+          "split_repeats": true,
+          "split_stratified": true,
+          "split_type": true,
+          "suite_alias": true,
+          "suite_id": true,
+          "suite_status": true,
+          "suite_task_count": true,
+          "target": true,
+          "task_id": true,
+          "task_in_suite": true,
+          "task_type": true
+        },
+        "data_id": 469,
+        "dataset_name": "analcatdata_dmft",
+        "license_label": "Public",
+        "license_precision": "OpenML literal label, not a precise SPDX license",
+        "record_type": "openml_live_mapping_check/v1",
+        "suite_id": 99,
+        "suite_task_count": 72,
+        "target": "Prevention",
+        "task_id": 3560,
+        "verified": true
+      },
+      "split": {
+        "bytes": 109828,
+        "md5": null,
+        "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-3560-splits.arff",
+        "record_type": "openml_source_check/v1",
+        "sha256": "72ad61a9a1e710faee86e7c88f258928f07692f575da2b4af9ae78a0d1e80755",
+        "verified": true
+      },
+      "task_api": {
+        "bytes": 1127,
+        "fetched_at": "2026-08-25T14:55:31.707122+00:00",
+        "sha256": "68e64acf02cb9df7417d90290eedc161877a069d4bc37666a7071ef9a05f4760",
+        "url": "https://www.openml.org/api/v1/json/task/3560"
+      },
+      "task_id": 3560
+    }
+  ]
+}

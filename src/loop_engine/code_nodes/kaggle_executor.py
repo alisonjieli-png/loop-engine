@@ -206,7 +206,7 @@ def _engineer_features(train: pd.DataFrame, test: pd.DataFrame, roles: TaskRoles
     object column carries a ``", Xxx."`` honorific; a deck from whatever object
     column carries a ``letter+digits`` cabin code; missingness indicators from
     whatever columns actually have missing values.  Returns the augmented frames
-    and the list of engineered columns (for the receipt)."""
+    and the list of engineered columns (for the record)."""
     kt = " ".join(proposed_keys).lower()
     tr, te = train.copy(), test.copy()
     added: list[str] = []

@@ -1,7 +1,6 @@
 """Standardized retrieval — ONE interface over Strings and Code Nodes.
 
-Architectural role: Static Architecture service (the retrieval layer the
-directory's search-by-need delegates to).
+Public capability group: Intelligence Search and Retrieval.
 
 Owns:
     - Retriever: one search() over ANY records (String cards and Code Node
@@ -10,14 +9,14 @@ Owns:
       backend_handshakes()): lexical = store idf | SQLite FTS5 BM25
       (default) | LanceDB tantivy; vector = crc32 hashed features
       (deterministic default) | learned LOCAL model2vec —
-      every adoption tournament-gated (evidence receipt), every space
+      every adoption tournament-gated (evidence record), every space
       identity-tracked (EmbeddingSpace);
     - facet filtering (require/prefer/exclude via facets.FacetFilter)
       applied identically in every mode;
     - honest capability labeling: hashed vectors buy MORPHOLOGY and
       typo/partial-overlap robustness, NOT semantic synonymy — the learned
       LOCAL upgrade is the model2vec backend below,
-      adopted 2026-08-23 via the frozen-query tournament receipt.
+      adopted 2026-08-23 via the frozen-query tournament record.
 
 Does not own:
     - the stores (store_serve/duckdb_catalog serve bodies), the directory
@@ -392,7 +391,7 @@ def tournament_as_loop(backend_names: list, records: list,
     observe (corpus), hypothesize (each backend is a hypothesis),
     experiment (frozen queries through each), analyze (hit@1 + MRR),
     revise (rank; losers eliminated). Deterministic, zero model calls;
-    adoption still requires the receipt + the evidence-gated flip."""
+    adoption still requires the record + the evidence-gated flip."""
     from ..loop.recursive_loop import Loop, StepOutcome
     from ..loop.loop_templates import TEMPLATE_LIBRARY, config_from_template
     tmpl = next(b for b in TEMPLATE_LIBRARY

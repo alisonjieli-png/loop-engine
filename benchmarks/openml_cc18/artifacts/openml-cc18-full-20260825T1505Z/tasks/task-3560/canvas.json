@@ -1,0 +1,33 @@
+{
+  "digest": "42ef50a36b5c0da0f8ee23081f4653f1575eb1663965b31574053765992f00ea",
+  "record_type": "solution_plan/v1",
+  "solution_id": "openml-task-3560-random_forest",
+  "spec": {
+    "allowed_modes": [
+      "deterministic"
+    ],
+    "ensemble": "single",
+    "loops": [
+      {
+        "fallback_operations": [],
+        "loop_id": "task-3560-official-fold-execution",
+        "mode": "deterministic",
+        "operation": "code.openml.execute_official_folds",
+        "params": {
+          "algorithm": "random_forest",
+          "input_type": "openml_task_bundle/v1",
+          "official_folds": 10,
+          "official_repeats": 1,
+          "one_cpu_thread": true,
+          "output_type": "openml_fold_predictions/v1"
+        }
+      }
+    ],
+    "members": [],
+    "resolved_operations": [
+      "code.openml.execute_official_folds"
+    ],
+    "solution_id": "openml-task-3560-random_forest",
+    "weights": []
+  }
+}

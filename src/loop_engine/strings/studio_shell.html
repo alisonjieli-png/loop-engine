@@ -1,6 +1,6 @@
 <!-- Loop Engine Studio shell — a passive String served by studio_server.py.
      Every number on every page is fetched from /api/* at request time
-     (Chronicle + live stores) — never a generated snapshot. -->
+     (saved run history + live stores) — never a generated snapshot. -->
 <!DOCTYPE html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Loop Engine Studio</title>
@@ -104,6 +104,7 @@ button { background:var(--acc); color:#fff; border:0; border-radius:.35rem;
 <aside id="insp"></aside></div>
 <script>
 const NAV = [["home","Home"],["runs","Runs"],
+  ["runtime","Runtime"],
   ["intelligence","Intelligence Layers"],["context","Context Intelligence"],
   ["nodes","Code Intelligence"],["solutions","Solutions"],
   ["improvements","Improvements"]];
@@ -145,7 +146,7 @@ const pages = {
 
   async run(id, tab) { tab = tab || "overview";
     const d = await api("run/" + encodeURIComponent(id));
-    const T = ["overview","tree","canvas","playback","calls"];
+    const T = ["overview","tree","runtime","canvas","playback","calls"];
     let body = "";
     if (tab === "overview") body = `<div class="cards">` + [
       ["events", d.totals.events], ["iterations", d.totals.iterations],
@@ -177,7 +178,7 @@ const pages = {
           <span class="k">iter ${n.iterations || 0} · calls ${
             n.calls || 0} · ${esc(n.terminal || "running")}</span>
           ${modes}</div>` +
-          (n.children || []).map(c => draw(c, depth + 1)).join("");
+          (n.spawned_loops || []).map(c => draw(c, depth + 1)).join("");
       };
       body = `<div class="looptree">` +
         (d.tree_json || []).map(r => draw(r, 0)).join("") +
@@ -198,6 +199,69 @@ const pages = {
         : `<div class="warnbox">This run recorded no Solution components.
            The canvas shows what a run SHIPPED; a run that only explored has
            nothing to show here, which is honest rather than empty.</div>`;
+    }
+    if (tab === "runtime") {
+      const r = d.runtime || {};
+      const spawned_loops = r.spawned_tasks || [], harnesses =
+        r.external_harness_runs || [], mcp = r.mcp_calls || [],
+        approvals = (r.effect_approvals || {}).items || [],
+        artifacts = (r.context_artifacts || {}).items || [],
+        compactions = (r.context_artifacts || {}).compactions || [],
+        skillLoads = r.skill_loads || [];
+      body = `<h2>Spawned tasks <span class="k">(${spawned_loops.length})</span></h2>` +
+        (spawned_loops.length ? `<table><tr><th>task</th><th>profile</th>
+          <th>mode</th><th>status</th><th class="num">updates</th>
+          <th class="num">steps</th><th class="num">calls</th></tr>` +
+          spawned_loops.map(c => `<tr><td>${esc(c.task_id)}</td>
+            <td>${esc(c.profile)}</td><td>${esc(c.mode)}</td>
+            <td>${esc(c.status)}</td><td class="num">${c.updates}</td>
+            <td class="num">${c.steps_run}</td>
+            <td class="num">${c.model_calls}</td></tr>`).join("") +
+          `</table>` : `<p class="k">No spawned task lifecycle was recorded.</p>`) +
+        `<h2>External harness runs <span class="k">(${harnesses.length})
+          </span></h2>` + (harnesses.length ? `<table><tr><th>harness</th>
+          <th>status</th><th>acceptance</th><th class="num">calls</th>
+          <th class="num">tokens</th><th>accounting</th></tr>` +
+          harnesses.map(h => `<tr><td>${esc(h.harness_id)}</td>
+            <td>${esc(h.status)}</td><td>${esc(h.acceptance)}</td>
+            <td class="num">${esc(h.physical_model_calls ?? "unknown")}</td>
+            <td class="num">${esc(h.total_tokens ?? "unknown")}</td>
+            <td>${h.accounting_complete ? "complete" : "incomplete"}</td>
+            </tr>`).join("") + `</table>` :
+          `<p class="k">No external harness summary was recorded.</p>`) +
+        `<h2>MCP calls <span class="k">(${mcp.length})</span></h2>` +
+        (mcp.length ? `<table><tr><th>server</th><th>tool</th><th>effect</th>
+          <th>status</th><th>stored output</th></tr>` + mcp.map(c =>
+          `<tr><td>${esc(c.server_id)}</td><td>${esc(c.tool_name)}</td>
+          <td>${esc(c.effect)}</td><td>${esc(c.status)}</td>
+          <td>${c.has_output_ref ? "yes" : "no"}</td></tr>`).join("") +
+          `</table>` : `<p class="k">No MCP terminal result was recorded.</p>`) +
+        `<h2>Effect approvals <span class="k">(${approvals.length})</span></h2>` +
+        (approvals.length ? `<table><tr><th>request</th><th>effect</th>
+          <th>operation</th><th>status</th><th>decision</th></tr>` +
+          approvals.map(a => `<tr><td>${esc(a.request_id)}</td>
+          <td>${esc(a.effect_class)}</td><td>${esc(a.operation)}</td>
+          <td>${esc(a.status)}</td><td>${esc(a.action || "pending")}</td>
+          </tr>`).join("") + `</table>` :
+          `<p class="k">No effect approval lifecycle was recorded.</p>`) +
+        `<h2>Context artifacts <span class="k">(${artifacts.length})</span></h2>` +
+        (artifacts.length ? `<table><tr><th>digest</th><th class="num">bytes</th>
+          <th>kind</th><th>offloaded</th></tr>` + artifacts.map(a =>
+          `<tr><td>${esc(a.digest_prefix)}</td><td class="num">${a.byte_count}</td>
+          <td>${esc(a.artifact_kind)}</td><td>${a.offloaded ? "yes" : "no"}</td>
+          </tr>`).join("") + `</table>` :
+          `<p class="k">No context artifact was recorded.</p>`) +
+        `<p class="k">${compactions.length} compaction operation(s) recorded.</p>` +
+        `<h2>Skill loads <span class="k">(${skillLoads.length})</span></h2>` +
+        (skillLoads.length ? `<table><tr><th>skill</th><th>version</th>
+          <th>lifecycle</th><th>status</th><th>manifest</th></tr>` +
+          skillLoads.map(s => `<tr><td>${esc(s.skill_id)}</td>
+          <td>${esc(s.version)}</td><td>${esc(s.lifecycle)}</td>
+          <td>${esc(s.status)}</td><td>${esc(s.manifest_digest_prefix)}</td>
+          </tr>`).join("") + `</table>` :
+          `<p class="k">No skill load was recorded.</p>`) +
+        (r.history_gaps || []).map(g =>
+          `<div class="warnbox">${esc(g)}</div>`).join("");
     }
     if (tab === "playback") body = `<div class="tl">
       <button onclick="stepEv(-1)" aria-label="previous event">◀</button>
@@ -348,6 +412,55 @@ const pages = {
         <td class="k">${esc(s.interventions)}</td></tr>`).join("") +
       `</table><div class="warnbox">${esc(d.honesty)}</div>`;
     sortable($("#main table")); },
+
+  async runtime() { const d = await api("runtime");
+    const hs = d.harnesses.items || [], ms = d.mcp.items || [],
+      ss = d.skills.items || [], aps = d.effect_approvals.items || [],
+      ctx = d.context_artifacts.items || [],
+      comps = d.context_artifacts.compactions || [];
+    $("#main").innerHTML = `<h1>Runtime inventory</h1><div class="cards">` + [
+      ["harness adapters", hs.length], ["MCP servers", ms.length],
+      ["skills", ss.length], ["live approvals", aps.length],
+      ["context artifacts", ctx.length], ["compactions", comps.length]]
+      .map(([l,v]) => `<div class="card"><b>${v}</b><span>${l}</span></div>`)
+      .join("") + `</div><div class="warnbox">${esc(d.privacy)}</div>
+      <h2>Harness adapters</h2><table><tr><th>harness</th><th>package</th>
+      <th>available</th><th>features</th></tr>` + hs.map(h =>
+        `<tr><td>${esc(h.harness_id)}</td><td>${esc(h.package_name)}
+        ${esc(h.package_version)}</td><td>${h.available ? "yes" : "no"}</td>
+        <td class="k" style="white-space:normal">${esc(h.features.join(", "))}
+        </td></tr>`).join("") + `</table><h2>MCP servers</h2>` +
+      (ms.length ? `<table><tr><th>server</th><th>transport</th>
+        <th>enabled</th><th>tools</th></tr>` + ms.map(s =>
+        `<tr><td>${esc(s.server_id)}</td><td>${esc(s.transport)}</td>
+        <td>${s.enabled ? "yes" : "no"}</td><td>${esc(s.tools.map(t =>
+          t.name + " (" + t.effect + ")").join(", "))}</td></tr>`).join("") +
+        `</table>` : `<p class="k">${esc(d.mcp.gap || "No MCP server configured.")}</p>`) +
+      `<h2>Skills</h2>` + (ss.length ? `<table><tr><th>skill</th>
+        <th>version</th><th>lifecycle</th><th>description</th></tr>` +
+        ss.map(s => `<tr><td>${esc(s.skill_id)}</td><td>${esc(s.version)}</td>
+        <td>${esc(s.lifecycle)}</td><td class="k" style="white-space:normal">
+        ${esc(s.description)}</td></tr>`).join("") + `</table>` :
+        `<p class="k">${esc(d.skills.gap || "No skill registry configured.")}</p>`) +
+      `<h2>Live approval states</h2>` + (aps.length ? `<table><tr>
+        <th>request</th><th>loop</th><th>effect</th><th>operation</th>
+        <th>status</th><th>decision</th></tr>` + aps.map(a =>
+        `<tr><td>${esc(a.request_id)}</td><td>${esc(a.loop_id)}</td>
+        <td>${esc(a.effect_class)}</td><td>${esc(a.operation)}</td>
+        <td>${esc(a.status)}</td><td>${esc(a.action || "pending")}</td></tr>`)
+        .join("") + `</table>` : `<p class="k">No live approval source supplied.</p>`) +
+      `<h2>Live context references</h2>` + (ctx.length ? `<table><tr>
+        <th>digest</th><th class="num">bytes</th><th class="num">estimated
+        tokens</th><th>offloaded</th></tr>` + ctx.map(c =>
+        `<tr><td>${esc(c.digest_prefix)}</td><td class="num">${c.byte_count}</td>
+        <td class="num">${c.estimated_tokens}</td>
+        <td>${c.offloaded ? "yes" : "no"}</td></tr>`).join("") + `</table>` :
+        `<p class="k">No live context artifact source supplied.</p>`) +
+      `<h2>Playback status</h2>` + ((d.history_gaps || []).length
+        ? d.history_gaps.map(g => `<div class="warnbox">${esc(g)}</div>`).join("")
+        : `<p class="k">The current safe runtime observations are available in
+          saved-run playback.</p>`);
+    document.querySelectorAll("#main table").forEach(sortable); },
 };
 pages.strings = pages.context;
 

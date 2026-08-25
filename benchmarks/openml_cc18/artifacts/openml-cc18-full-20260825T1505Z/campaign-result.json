@@ -1,0 +1,1438 @@
+{
+  "all_calls_consumed_intelligence_refs": true,
+  "campaign_id": "openml-cc18-full-20260825T1505Z",
+  "code_pack_admission": {
+    "admitted": true,
+    "admitted_at": "2026-08-25T15:06:55.336038+00:00",
+    "all_entrypoints_materialized": true,
+    "all_source_digests_matched": true,
+    "candidate_pipelines_constructed": 6,
+    "fold_training_or_scoring_during_admission": false,
+    "official_folds_per_task": [
+      10,
+      10,
+      10
+    ],
+    "real_task_bundles_loaded": 3,
+    "record_type": "openml_code_pack_admission/v1",
+    "registered_records": 11,
+    "typed_canvases_compiled": [
+      {
+        "algorithm": "logistic",
+        "canvas_rendered": true,
+        "plan_digest": "f50b192ed81b87b62c6f46703bfb38e0d4305e935c20155ac56143c956a11b9a",
+        "task_id": 11
+      },
+      {
+        "algorithm": "random_forest",
+        "canvas_rendered": true,
+        "plan_digest": "f12363e8f9cfb6a7aba9f96757d0084a6d0a409100107511a181adc23c73221b",
+        "task_id": 11
+      },
+      {
+        "algorithm": "logistic",
+        "canvas_rendered": true,
+        "plan_digest": "04bbcb45f383ca67d9355cc952c0518dbe9e340792eb106a6d24067c266e1249",
+        "task_id": 10101
+      },
+      {
+        "algorithm": "random_forest",
+        "canvas_rendered": true,
+        "plan_digest": "7205d2ff31b33d2ed05021cb87323f25915d50f4ce6094e2a88938c54a5d569f",
+        "task_id": 10101
+      },
+      {
+        "algorithm": "logistic",
+        "canvas_rendered": true,
+        "plan_digest": "da3edcbbb5d5458d90a010d4be734845465a42190e6466dd707117d9636f5596",
+        "task_id": 3560
+      },
+      {
+        "algorithm": "random_forest",
+        "canvas_rendered": true,
+        "plan_digest": "08dfe1a1de58ca7b7e67905197383d3a0c3c188f004f7fc7d99c1a4512e7ae2f",
+        "task_id": 3560
+      }
+    ]
+  },
+  "completed_at": "2026-08-25T15:11:03.176733+00:00",
+  "elapsed_seconds": 247.435065,
+  "environment_lock_digest": "ec1bc56efe25a81bcf661e5f38f8fad87fa9c936573729e5f86add3743202146",
+  "excluded_prior_campaign_attempts": [
+    {
+      "campaign_id": "openml-cc18-full-20260825T1457Z",
+      "excluded_from_selected_population": true,
+      "failure": "Gateway was temporarily reparented outside the named candidate spawned Loop; campaign stopped and excluded before continuation",
+      "physical_calls": 2,
+      "provider_usage": {
+        "calls": 2,
+        "physical_calls": 2,
+        "calls_with_complete_token_usage": 1,
+        "calls_with_unknown_token_usage": 1,
+        "known_input_tokens_subtotal": 1594,
+        "known_output_tokens_subtotal": 895,
+        "known_total_tokens_subtotal": 2489,
+        "token_accounting_complete": false,
+        "provider_cost": null,
+        "provider_cost_state": "unknown"
+      },
+      "status": "aborted_structural_correction"
+    },
+    {
+      "campaign_id": "openml-cc18-full-20260825T1458Z",
+      "excluded_from_selected_population": true,
+      "failure": "ModelGateway internal max_depth 3 refused a depth-4 provider attempt; no provider request was sent",
+      "physical_calls": 0,
+      "provider_usage": {
+        "calls": 0,
+        "physical_calls": 0,
+        "calls_with_complete_token_usage": 0,
+        "calls_with_unknown_token_usage": 0,
+        "known_input_tokens_subtotal": 0,
+        "known_output_tokens_subtotal": 0,
+        "known_total_tokens_subtotal": 0,
+        "token_accounting_complete": true,
+        "provider_cost": null,
+        "provider_cost_state": "unknown"
+      },
+      "status": "failed_pre_provider"
+    }
+  ],
+  "expected_calls_without_repair": 9,
+  "failures_stay_in_denominator": true,
+  "mean_accuracy_over_scored_tasks": 0.5992117485419853,
+  "missing_task_accuracy_treatment": "unknown, never converted to zero",
+  "physical_call_ceiling": 12,
+  "physical_call_ceiling_respected": true,
+  "physical_calls_including_excluded_attempts": 12,
+  "packet_physical_call_ceiling": 14,
+  "packet_physical_call_ceiling_respected": true,
+  "packet_provider_usage": {
+    "calls_with_unknown_token_usage": 2,
+    "known_input_tokens_subtotal": 10360,
+    "known_output_tokens_subtotal": 6058,
+    "known_total_tokens_subtotal": 16418,
+    "provider_cost": null,
+    "provider_cost_state": "unknown",
+    "token_accounting_complete": false
+  },
+  "population_denominator": 3,
+  "portfolio_contract": "docs/benchmarks/first-loop-engine-portfolio.yaml",
+  "provider_cost": null,
+  "provider_cost_state": "unknown",
+  "provider_preflight": {
+    "cross_provider_failover": false,
+    "discovered_models_count": 18,
+    "endpoint": "https://ollama.com/api/chat",
+    "exact_model_id": "deepseek-v4-flash:0731",
+    "exact_model_present": true,
+    "fake_or_synthetic_provider": false,
+    "maximum_output_observed_at": "2026-08-25",
+    "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+    "maximum_output_tokens": 65536,
+    "preflight_inference_calls": 0,
+    "provider": "ollama_cloud",
+    "record_type": "ollama_provider_preflight/v1"
+  },
+  "provider_usage": {
+    "calls": 10,
+    "calls_with_complete_token_usage": 9,
+    "calls_with_unknown_token_usage": 1,
+    "cross_provider_failover": false,
+    "input_tokens": null,
+    "known_input_tokens_subtotal": 8766,
+    "known_output_tokens_subtotal": 5163,
+    "known_total_tokens_subtotal": 13929,
+    "maximum_output_tokens_each_call": 65536,
+    "model": "deepseek-v4-flash:0731",
+    "output_tokens": null,
+    "physical_calls": 10,
+    "provider": "ollama_cloud",
+    "provider_cost": null,
+    "provider_cost_state": "unknown",
+    "token_accounting_complete": false,
+    "total_tokens": null,
+    "unknown_token_usage_calls": [
+      {
+        "call_role": "synthesis_selection",
+        "error_code": "provider_failed",
+        "task_id": 3560
+      }
+    ]
+  },
+  "record_type": "openml_cc18_full_practitioner_campaign/v1",
+  "scored_tasks": 3,
+  "selected_mode": "non_deterministic",
+  "selected_profile": "practitioner.reference_nine_step",
+  "source_snapshot_digest": "d49cc3d7165ef4863fd2c61472ac9a73e06362bc7e3e1fdb2b1d3db9e930280b",
+  "task_completion_rate": 1.0,
+  "task_population": [
+    11,
+    10101,
+    3560
+  ],
+  "task_results": [
+    {
+      "accepted": true,
+      "call_ceiling": 4,
+      "candidate_calls": [
+        {
+          "spawned_loop_id": "loop19",
+          "gateway": {
+            "accounting_complete": true,
+            "attempts": [
+              {
+                "elapsed_seconds": 19.427116,
+                "error": "",
+                "error_code": "",
+                "input_tokens": 928,
+                "loop_id": "loop35",
+                "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+                "maximum_output_tokens": 65536,
+                "model": "deepseek-v4-flash:0731",
+                "ok": true,
+                "output_tokens": 762,
+                "provider": "ollama_cloud",
+                "provider_ok": true,
+                "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+                "thinking_power": "medium",
+                "validation_ok": true
+              }
+            ],
+            "error": "",
+            "error_code": "",
+            "gateway_loop_id": "loop34",
+            "input_tokens": 928,
+            "model": "deepseek-v4-flash:0731",
+            "ok": true,
+            "output_tokens": 762,
+            "provider": "ollama_cloud",
+            "provider_responded": true,
+            "record_type": "model_gateway_result/v1",
+            "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+            "text": "{\n  \"candidate\": \"logistic\",\n  \"assessment\": \"Logistic regression is a linear model; balance-scale has non-linear decision boundaries and likely underfits, especially with 3 classes and only 4 numeric features.\",\n  \"advance\": false,\n  \"primary_risk\": \"Underfitting due to linear decision boundary, leading to poor generalization on unseen folds.\"\n}",
+            "thinking_power": "medium",
+            "total_tokens": 1690
+          },
+          "output_reference": "modelout.11.logistic_candidate.543b7264f58910bfa66b",
+          "parsed": {
+            "advance": false,
+            "assessment": "Logistic regression is a linear model; balance-scale has non-linear decision boundaries and likely underfits, especially with 3 classes and only 4 numeric features.",
+            "candidate": "logistic",
+            "primary_risk": "Underfitting due to linear decision boundary, leading to poor generalization on unseen folds."
+          },
+          "raw_text": "{\n  \"candidate\": \"logistic\",\n  \"assessment\": \"Logistic regression is a linear model; balance-scale has non-linear decision boundaries and likely underfits, especially with 3 classes and only 4 numeric features.\",\n  \"advance\": false,\n  \"primary_risk\": \"Underfitting due to linear decision boundary, leading to poor generalization on unseen folds.\"\n}",
+          "role": "logistic_candidate"
+        },
+        {
+          "spawned_loop_id": "loop37",
+          "gateway": {
+            "accounting_complete": true,
+            "attempts": [
+              {
+                "elapsed_seconds": 77.569894,
+                "error": "",
+                "error_code": "",
+                "input_tokens": 937,
+                "loop_id": "loop53",
+                "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+                "maximum_output_tokens": 65536,
+                "model": "deepseek-v4-flash:0731",
+                "ok": true,
+                "output_tokens": 676,
+                "provider": "ollama_cloud",
+                "provider_ok": true,
+                "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+                "thinking_power": "medium",
+                "validation_ok": true
+              }
+            ],
+            "error": "",
+            "error_code": "",
+            "gateway_loop_id": "loop52",
+            "input_tokens": 937,
+            "model": "deepseek-v4-flash:0731",
+            "ok": true,
+            "output_tokens": 676,
+            "provider": "ollama_cloud",
+            "provider_responded": true,
+            "record_type": "model_gateway_result/v1",
+            "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+            "text": "{\n  \"candidate\": \"random_forest\",\n  \"assessment\": \"Random forest is well-suited for this small numeric tabular dataset (625 rows, 4 features, 3 classes). With 200 trees and a fixed seed, it balances bias and variance, handles potential non-linear interactions, and is robust to noise. The fixed split geometry and deterministic evaluator ensure fair assessment.\",\n  \"advance\": true,\n  \"primary_risk\": \"Overfitting on the small sample size if trees are deep, though the ensemble and default settings mitigate this; class imbalance could also affect performance, but no evidence of severe imbalance is present.\"\n}",
+            "thinking_power": "medium",
+            "total_tokens": 1613
+          },
+          "output_reference": "modelout.11.random_forest_candidate.47039a885ea79dc7302a",
+          "parsed": {
+            "advance": true,
+            "assessment": "Random forest is well-suited for this small numeric tabular dataset (625 rows, 4 features, 3 classes). With 200 trees and a fixed seed, it balances bias and variance, handles potential non-linear interactions, and is robust to noise. The fixed split geometry and deterministic evaluator ensure fair assessment.",
+            "candidate": "random_forest",
+            "primary_risk": "Overfitting on the small sample size if trees are deep, though the ensemble and default settings mitigate this; class imbalance could also affect performance, but no evidence of severe imbalance is present."
+          },
+          "raw_text": "{\n  \"candidate\": \"random_forest\",\n  \"assessment\": \"Random forest is well-suited for this small numeric tabular dataset (625 rows, 4 features, 3 classes). With 200 trees and a fixed seed, it balances bias and variance, handles potential non-linear interactions, and is robust to noise. The fixed split geometry and deterministic evaluator ensure fair assessment.\",\n  \"advance\": true,\n  \"primary_risk\": \"Overfitting on the small sample size if trees are deep, though the ensemble and default settings mitigate this; class imbalance could also affect performance, but no evidence of severe imbalance is present.\"\n}",
+          "role": "random_forest_candidate"
+        },
+        {
+          "spawned_loop_id": "loop54",
+          "gateway": {
+            "accounting_complete": true,
+            "attempts": [
+              {
+                "elapsed_seconds": 39.479155,
+                "error": "",
+                "error_code": "",
+                "input_tokens": 1111,
+                "loop_id": "loop70",
+                "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+                "maximum_output_tokens": 65536,
+                "model": "deepseek-v4-flash:0731",
+                "ok": true,
+                "output_tokens": 183,
+                "provider": "ollama_cloud",
+                "provider_ok": true,
+                "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+                "thinking_power": "medium",
+                "validation_ok": true
+              }
+            ],
+            "error": "",
+            "error_code": "",
+            "gateway_loop_id": "loop69",
+            "input_tokens": 1111,
+            "model": "deepseek-v4-flash:0731",
+            "ok": true,
+            "output_tokens": 183,
+            "provider": "ollama_cloud",
+            "provider_responded": true,
+            "record_type": "model_gateway_result/v1",
+            "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+            "text": "{\n  \"choice\": \"random_forest\",\n  \"reason\": \"Random forest is better suited for non-linear decision boundaries and small numeric tabular data, while logistic regression likely underfits.\",\n  \"rejected_candidate\": \"logistic\"\n}",
+            "thinking_power": "medium",
+            "total_tokens": 1294
+          },
+          "output_reference": "modelout.11.synthesis_selection.227f5b786903fb57d187",
+          "parsed": {
+            "choice": "random_forest",
+            "reason": "Random forest is better suited for non-linear decision boundaries and small numeric tabular data, while logistic regression likely underfits.",
+            "rejected_candidate": "logistic"
+          },
+          "raw_text": "{\n  \"choice\": \"random_forest\",\n  \"reason\": \"Random forest is better suited for non-linear decision boundaries and small numeric tabular data, while logistic regression likely underfits.\",\n  \"rejected_candidate\": \"logistic\"\n}",
+          "role": "synthesis_selection"
+        }
+      ],
+      "canvas_compiled": true,
+      "canvas_executed": true,
+      "canvas_plan_digest": "70372c56f326aea95b5b22fb3a3194bec68c497cf5ceb3f3d5d3e3d73e77032c",
+      "run_history": {
+        "chain_intact": true,
+        "directory": "benchmarks/openml_cc18/artifacts/openml-cc18-full-20260825T1505Z/run-histories/openml-cc18-task-11-non-deterministic-openml-cc18-full-20260825T1505Z",
+        "events": 697,
+        "model_invocation_events": 3,
+        "run_id": "openml-cc18-task-11-non-deterministic-openml-cc18-full-20260825T1505Z",
+        "solution_event_kinds": [
+          "solution.canvas.updated",
+          "solution.loop.completed",
+          "solution.loop.started",
+          "solution.run.completed",
+          "solution_finalized"
+        ]
+      },
+      "data_id": 11,
+      "elapsed_seconds": 139.009484,
+      "errors": [],
+      "evaluation": {
+        "accepted": true,
+        "direction": "higher_is_better",
+        "evaluator": "sklearn.metrics.accuracy_score",
+        "fold_aggregation": "mean_of_10_official_fold_accuracies",
+        "folds": [
+          {
+            "accuracy": 0.8888888888888888,
+            "fold": 0,
+            "repeat": 0,
+            "test_rows": 63
+          },
+          {
+            "accuracy": 0.7619047619047619,
+            "fold": 1,
+            "repeat": 0,
+            "test_rows": 63
+          },
+          {
+            "accuracy": 0.8253968253968254,
+            "fold": 2,
+            "repeat": 0,
+            "test_rows": 63
+          },
+          {
+            "accuracy": 0.8253968253968254,
+            "fold": 3,
+            "repeat": 0,
+            "test_rows": 63
+          },
+          {
+            "accuracy": 0.8412698412698413,
+            "fold": 4,
+            "repeat": 0,
+            "test_rows": 63
+          },
+          {
+            "accuracy": 0.8709677419354839,
+            "fold": 5,
+            "repeat": 0,
+            "test_rows": 62
+          },
+          {
+            "accuracy": 0.8548387096774194,
+            "fold": 6,
+            "repeat": 0,
+            "test_rows": 62
+          },
+          {
+            "accuracy": 0.8064516129032258,
+            "fold": 7,
+            "repeat": 0,
+            "test_rows": 62
+          },
+          {
+            "accuracy": 0.7580645161290323,
+            "fold": 8,
+            "repeat": 0,
+            "test_rows": 62
+          },
+          {
+            "accuracy": 0.8064516129032258,
+            "fold": 9,
+            "repeat": 0,
+            "test_rows": 62
+          }
+        ],
+        "independent_from_model_selection": true,
+        "mean_accuracy": 0.8239631336405528,
+        "metric": "predictive_accuracy",
+        "record_type": "openml_accuracy_evaluation/v1",
+        "task_id": 11
+      },
+      "failure_reason": null,
+      "intelligence_portfolios": {
+        "consumption_count": 4,
+        "fold_digest": "02a17bf1aa4cf00227c128dd4bffc55fb0662a44e30ef0e89d18b268dd7fe0bc",
+        "payload_bodies_exported": false,
+        "portfolio_count": 4,
+        "selector": "static_architecture.intelligence_portfolio"
+      },
+      "live_mapping": {
+        "checks": {
+          "data_id": true,
+          "data_name": true,
+          "data_status": true,
+          "data_version": true,
+          "dataset_md5": true,
+          "default_target": true,
+          "license_label": true,
+          "split_folds": true,
+          "split_path": true,
+          "split_repeats": true,
+          "split_stratified": true,
+          "split_type": true,
+          "suite_alias": true,
+          "suite_id": true,
+          "suite_status": true,
+          "suite_task_count": true,
+          "target": true,
+          "task_id": true,
+          "task_in_suite": true,
+          "task_type": true
+        },
+        "data_id": 11,
+        "dataset_name": "balance-scale",
+        "license_label": "Public",
+        "license_precision": "OpenML literal label, not a precise SPDX license",
+        "record_type": "openml_live_mapping_check/v1",
+        "suite_id": 99,
+        "suite_task_count": 72,
+        "target": "class",
+        "task_id": 11,
+        "verified": true
+      },
+      "name": "balance-scale",
+      "official_folds_executed": 10,
+      "physical_calls": 3,
+      "playback_lines": 324,
+      "record_type": "openml_cc18_full_practitioner_task/v1",
+      "repair_used": false,
+      "report_rendered_from_saved_run_history": true,
+      "root_loop_id": "loop1",
+      "root_result": {
+        "stage_order": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ],
+        "steps_run": 9,
+        "stopped": "done",
+        "terminal_code": "ACCEPTED"
+      },
+      "schema": {
+        "arff_attributes_including_target": 5,
+        "categorical_features": [],
+        "classes": 3,
+        "data_id": 11,
+        "dataset_name": "balance-scale",
+        "folds": 10,
+        "input_features": 4,
+        "missing_feature_values": 0,
+        "numeric_features": [
+          "left-weight",
+          "left-distance",
+          "right-weight",
+          "right-distance"
+        ],
+        "record_type": "openml_schema/v1",
+        "rows": 625,
+        "target": "class",
+        "task_id": 11
+      },
+      "selected_algorithm": "random_forest",
+      "selected_mode": "non_deterministic",
+      "selected_population_denominator": 1,
+      "selected_profile": "practitioner.reference_nine_step",
+      "selected_profile_version": "1.0.0",
+      "source_checks": {
+        "dataset": {
+          "bytes": 8724,
+          "md5": "76938608d472f620c170cef9c8c1fa65",
+          "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-11-dataset.arff",
+          "record_type": "openml_source_check/v1",
+          "sha256": "87d3943cea423bb376be52b5dfec17f79c63108dddcf40e0a46e5ba7196a5c24",
+          "verified": true
+        },
+        "split": {
+          "bytes": 85917,
+          "md5": null,
+          "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-11-splits.arff",
+          "record_type": "openml_source_check/v1",
+          "sha256": "2761e26916111d33623c8145a78aeff7b8ac078449c13acc0f35b24a3d6e6627",
+          "verified": true
+        }
+      },
+      "stage_spawned_loops": [
+        {
+          "loop_id": "loop2",
+          "ok": true,
+          "stage": "orient"
+        },
+        {
+          "loop_id": "loop3",
+          "ok": true,
+          "stage": "reconcile_horizon"
+        },
+        {
+          "loop_id": "loop18",
+          "ok": true,
+          "stage": "assess_prepare"
+        },
+        {
+          "loop_id": "loop36",
+          "ok": true,
+          "stage": "decide_next"
+        },
+        {
+          "loop_id": "loop71",
+          "ok": true,
+          "stage": "how"
+        },
+        {
+          "loop_id": "loop72",
+          "ok": true,
+          "stage": "act"
+        },
+        {
+          "loop_id": "loop74",
+          "ok": true,
+          "stage": "verify"
+        },
+        {
+          "loop_id": "loop76",
+          "ok": true,
+          "stage": "integrate_commit"
+        },
+        {
+          "loop_id": "loop77",
+          "ok": true,
+          "stage": "route"
+        }
+      ],
+      "step_template": "reference_nine_step",
+      "task_id": 11
+    },
+    {
+      "accepted": true,
+      "call_ceiling": 4,
+      "candidate_calls": [
+        {
+          "spawned_loop_id": "loop19",
+          "gateway": {
+            "accounting_complete": true,
+            "attempts": [
+              {
+                "elapsed_seconds": 60.886132,
+                "error": "",
+                "error_code": "",
+                "input_tokens": 933,
+                "loop_id": "loop35",
+                "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+                "maximum_output_tokens": 65536,
+                "model": "deepseek-v4-flash:0731",
+                "ok": true,
+                "output_tokens": 768,
+                "provider": "ollama_cloud",
+                "provider_ok": true,
+                "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+                "thinking_power": "medium",
+                "validation_ok": true
+              }
+            ],
+            "error": "",
+            "error_code": "",
+            "gateway_loop_id": "loop34",
+            "input_tokens": 933,
+            "model": "deepseek-v4-flash:0731",
+            "ok": true,
+            "output_tokens": 768,
+            "provider": "ollama_cloud",
+            "provider_responded": true,
+            "record_type": "model_gateway_result/v1",
+            "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+            "text": "{\n  \"candidate\": \"logistic\",\n  \"assessment\": \"Reasonable baseline for 4 numeric features and 748 rows; logistic regression should converge and provide a solid benchmark.\",\n  \"advance\": true,\n  \"primary_risk\": \"Potential underfitting if the true decision boundary is nonlinear, but with only 4 features this risk is modest.\"\n}",
+            "thinking_power": "medium",
+            "total_tokens": 1701
+          },
+          "output_reference": "modelout.10101.logistic_candidate.f075ee11ff1167bfad13",
+          "parsed": {
+            "advance": true,
+            "assessment": "Reasonable baseline for 4 numeric features and 748 rows; logistic regression should converge and provide a solid benchmark.",
+            "candidate": "logistic",
+            "primary_risk": "Potential underfitting if the true decision boundary is nonlinear, but with only 4 features this risk is modest."
+          },
+          "raw_text": "{\n  \"candidate\": \"logistic\",\n  \"assessment\": \"Reasonable baseline for 4 numeric features and 748 rows; logistic regression should converge and provide a solid benchmark.\",\n  \"advance\": true,\n  \"primary_risk\": \"Potential underfitting if the true decision boundary is nonlinear, but with only 4 features this risk is modest.\"\n}",
+          "role": "logistic_candidate"
+        },
+        {
+          "spawned_loop_id": "loop37",
+          "gateway": {
+            "accounting_complete": true,
+            "attempts": [
+              {
+                "elapsed_seconds": 7.435879,
+                "error": "",
+                "error_code": "",
+                "input_tokens": 942,
+                "loop_id": "loop53",
+                "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+                "maximum_output_tokens": 65536,
+                "model": "deepseek-v4-flash:0731",
+                "ok": true,
+                "output_tokens": 703,
+                "provider": "ollama_cloud",
+                "provider_ok": true,
+                "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+                "thinking_power": "medium",
+                "validation_ok": true
+              }
+            ],
+            "error": "",
+            "error_code": "",
+            "gateway_loop_id": "loop52",
+            "input_tokens": 942,
+            "model": "deepseek-v4-flash:0731",
+            "ok": true,
+            "output_tokens": 703,
+            "provider": "ollama_cloud",
+            "provider_responded": true,
+            "record_type": "model_gateway_result/v1",
+            "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+            "text": "{\n  \"candidate\": \"random_forest\",\n  \"assessment\": \"RandomForest with 200 trees is a strong, low-variance ensemble for this small numeric dataset (748 rows, 4 features). No categorical features make one-hot preprocessing trivial. Fixed random_state ensures reproducibility. Class imbalance is a possible concern but random forest generally handles it adequately. The model is well-suited for the 10-fold official split.\",\n  \"advance\": true,\n  \"primary_risk\": \"Potential class imbalance or subtle interactions not captured by the forest, but with only 4 features and 748 samples, overfitting is unlikely and the model should generalize well.\"\n}",
+            "thinking_power": "medium",
+            "total_tokens": 1645
+          },
+          "output_reference": "modelout.10101.random_forest_candidate.fe7801df0057ae92b8b3",
+          "parsed": {
+            "advance": true,
+            "assessment": "RandomForest with 200 trees is a strong, low-variance ensemble for this small numeric dataset (748 rows, 4 features). No categorical features make one-hot preprocessing trivial. Fixed random_state ensures reproducibility. Class imbalance is a possible concern but random forest generally handles it adequately. The model is well-suited for the 10-fold official split.",
+            "candidate": "random_forest",
+            "primary_risk": "Potential class imbalance or subtle interactions not captured by the forest, but with only 4 features and 748 samples, overfitting is unlikely and the model should generalize well."
+          },
+          "raw_text": "{\n  \"candidate\": \"random_forest\",\n  \"assessment\": \"RandomForest with 200 trees is a strong, low-variance ensemble for this small numeric dataset (748 rows, 4 features). No categorical features make one-hot preprocessing trivial. Fixed random_state ensures reproducibility. Class imbalance is a possible concern but random forest generally handles it adequately. The model is well-suited for the 10-fold official split.\",\n  \"advance\": true,\n  \"primary_risk\": \"Potential class imbalance or subtle interactions not captured by the forest, but with only 4 features and 748 samples, overfitting is unlikely and the model should generalize well.\"\n}",
+          "role": "random_forest_candidate"
+        },
+        {
+          "spawned_loop_id": "loop54",
+          "gateway": {
+            "accounting_complete": true,
+            "attempts": [
+              {
+                "elapsed_seconds": 3.02747,
+                "error": "",
+                "error_code": "",
+                "input_tokens": 1115,
+                "loop_id": "loop70",
+                "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+                "maximum_output_tokens": 65536,
+                "model": "deepseek-v4-flash:0731",
+                "ok": true,
+                "output_tokens": 275,
+                "provider": "ollama_cloud",
+                "provider_ok": true,
+                "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+                "thinking_power": "medium",
+                "validation_ok": true
+              }
+            ],
+            "error": "",
+            "error_code": "",
+            "gateway_loop_id": "loop69",
+            "input_tokens": 1115,
+            "model": "deepseek-v4-flash:0731",
+            "ok": true,
+            "output_tokens": 275,
+            "provider": "ollama_cloud",
+            "provider_responded": true,
+            "record_type": "model_gateway_result/v1",
+            "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+            "text": "{\n  \"choice\": \"random_forest\",\n  \"reason\": \"Random forest is more robust to potential nonlinear decision boundaries and class imbalance, which are plausible with this small numeric dataset. With only 4 features and 748 rows, overfitting is unlikely, and the ensemble provides low variance and strong generalization for the 10-fold split.\",\n  \"rejected_candidate\": \"logistic\"\n}",
+            "thinking_power": "medium",
+            "total_tokens": 1390
+          },
+          "output_reference": "modelout.10101.synthesis_selection.deaf56e5ca3f09b1c826",
+          "parsed": {
+            "choice": "random_forest",
+            "reason": "Random forest is more robust to potential nonlinear decision boundaries and class imbalance, which are plausible with this small numeric dataset. With only 4 features and 748 rows, overfitting is unlikely, and the ensemble provides low variance and strong generalization for the 10-fold split.",
+            "rejected_candidate": "logistic"
+          },
+          "raw_text": "{\n  \"choice\": \"random_forest\",\n  \"reason\": \"Random forest is more robust to potential nonlinear decision boundaries and class imbalance, which are plausible with this small numeric dataset. With only 4 features and 748 rows, overfitting is unlikely, and the ensemble provides low variance and strong generalization for the 10-fold split.\",\n  \"rejected_candidate\": \"logistic\"\n}",
+          "role": "synthesis_selection"
+        }
+      ],
+      "canvas_compiled": true,
+      "canvas_executed": true,
+      "canvas_plan_digest": "14ae4d291c67a472d6d0539b720a704ecbbe6b0e41c1286564194bf7549aceb1",
+      "run_history": {
+        "chain_intact": true,
+        "directory": "benchmarks/openml_cc18/artifacts/openml-cc18-full-20260825T1505Z/run-histories/openml-cc18-task-10101-non-deterministic-openml-cc18-full-20260825T1505Z",
+        "events": 697,
+        "model_invocation_events": 3,
+        "run_id": "openml-cc18-task-10101-non-deterministic-openml-cc18-full-20260825T1505Z",
+        "solution_event_kinds": [
+          "solution.canvas.updated",
+          "solution.loop.completed",
+          "solution.loop.started",
+          "solution.run.completed",
+          "solution_finalized"
+        ]
+      },
+      "data_id": 1464,
+      "elapsed_seconds": 73.946577,
+      "errors": [],
+      "evaluation": {
+        "accepted": true,
+        "direction": "higher_is_better",
+        "evaluator": "sklearn.metrics.accuracy_score",
+        "fold_aggregation": "mean_of_10_official_fold_accuracies",
+        "folds": [
+          {
+            "accuracy": 0.7466666666666667,
+            "fold": 0,
+            "repeat": 0,
+            "test_rows": 75
+          },
+          {
+            "accuracy": 0.72,
+            "fold": 1,
+            "repeat": 0,
+            "test_rows": 75
+          },
+          {
+            "accuracy": 0.7466666666666667,
+            "fold": 2,
+            "repeat": 0,
+            "test_rows": 75
+          },
+          {
+            "accuracy": 0.7333333333333333,
+            "fold": 3,
+            "repeat": 0,
+            "test_rows": 75
+          },
+          {
+            "accuracy": 0.84,
+            "fold": 4,
+            "repeat": 0,
+            "test_rows": 75
+          },
+          {
+            "accuracy": 0.72,
+            "fold": 5,
+            "repeat": 0,
+            "test_rows": 75
+          },
+          {
+            "accuracy": 0.7466666666666667,
+            "fold": 6,
+            "repeat": 0,
+            "test_rows": 75
+          },
+          {
+            "accuracy": 0.76,
+            "fold": 7,
+            "repeat": 0,
+            "test_rows": 75
+          },
+          {
+            "accuracy": 0.8243243243243243,
+            "fold": 8,
+            "repeat": 0,
+            "test_rows": 74
+          },
+          {
+            "accuracy": 0.7027027027027027,
+            "fold": 9,
+            "repeat": 0,
+            "test_rows": 74
+          }
+        ],
+        "independent_from_model_selection": true,
+        "mean_accuracy": 0.7540360360360361,
+        "metric": "predictive_accuracy",
+        "record_type": "openml_accuracy_evaluation/v1",
+        "task_id": 10101
+      },
+      "failure_reason": null,
+      "intelligence_portfolios": {
+        "consumption_count": 4,
+        "fold_digest": "02a17bf1aa4cf00227c128dd4bffc55fb0662a44e30ef0e89d18b268dd7fe0bc",
+        "payload_bodies_exported": false,
+        "portfolio_count": 4,
+        "selector": "static_architecture.intelligence_portfolio"
+      },
+      "live_mapping": {
+        "checks": {
+          "data_id": true,
+          "data_name": true,
+          "data_status": true,
+          "data_version": true,
+          "dataset_md5": true,
+          "default_target": true,
+          "license_label": true,
+          "split_folds": true,
+          "split_path": true,
+          "split_repeats": true,
+          "split_stratified": true,
+          "split_type": true,
+          "suite_alias": true,
+          "suite_id": true,
+          "suite_status": true,
+          "suite_task_count": true,
+          "target": true,
+          "task_id": true,
+          "task_in_suite": true,
+          "task_type": true
+        },
+        "data_id": 1464,
+        "dataset_name": "blood-transfusion-service-center",
+        "license_label": "Public",
+        "license_precision": "OpenML literal label, not a precise SPDX license",
+        "record_type": "openml_live_mapping_check/v1",
+        "suite_id": 99,
+        "suite_task_count": 72,
+        "target": "Class",
+        "task_id": 10101,
+        "verified": true
+      },
+      "name": "blood-transfusion-service-center",
+      "official_folds_executed": 10,
+      "physical_calls": 3,
+      "playback_lines": 324,
+      "record_type": "openml_cc18_full_practitioner_task/v1",
+      "repair_used": false,
+      "report_rendered_from_saved_run_history": true,
+      "root_loop_id": "loop1",
+      "root_result": {
+        "stage_order": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ],
+        "steps_run": 9,
+        "stopped": "done",
+        "terminal_code": "ACCEPTED"
+      },
+      "schema": {
+        "arff_attributes_including_target": 5,
+        "categorical_features": [],
+        "classes": 2,
+        "data_id": 1464,
+        "dataset_name": "blood-transfusion-service-center",
+        "folds": 10,
+        "input_features": 4,
+        "missing_feature_values": 0,
+        "numeric_features": [
+          "V1",
+          "V2",
+          "V3",
+          "V4"
+        ],
+        "record_type": "openml_schema/v1",
+        "rows": 748,
+        "target": "Class",
+        "task_id": 10101
+      },
+      "selected_algorithm": "random_forest",
+      "selected_mode": "non_deterministic",
+      "selected_population_denominator": 1,
+      "selected_profile": "practitioner.reference_nine_step",
+      "selected_profile_version": "1.0.0",
+      "source_checks": {
+        "dataset": {
+          "bytes": 14143,
+          "md5": "c3242468edab8c2e7a907674122dc851",
+          "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-10101-dataset.arff",
+          "record_type": "openml_source_check/v1",
+          "sha256": "ee1304cac4a650ac31afe7395a100536a165f935bbe718a4643757c1a842316a",
+          "verified": true
+        },
+        "split": {
+          "bytes": 103033,
+          "md5": null,
+          "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-10101-splits.arff",
+          "record_type": "openml_source_check/v1",
+          "sha256": "965d72fa31f34cf0ca3c3345747bb68a8b78ad614c843ee7e6479c6d60503690",
+          "verified": true
+        }
+      },
+      "stage_spawned_loops": [
+        {
+          "loop_id": "loop2",
+          "ok": true,
+          "stage": "orient"
+        },
+        {
+          "loop_id": "loop3",
+          "ok": true,
+          "stage": "reconcile_horizon"
+        },
+        {
+          "loop_id": "loop18",
+          "ok": true,
+          "stage": "assess_prepare"
+        },
+        {
+          "loop_id": "loop36",
+          "ok": true,
+          "stage": "decide_next"
+        },
+        {
+          "loop_id": "loop71",
+          "ok": true,
+          "stage": "how"
+        },
+        {
+          "loop_id": "loop72",
+          "ok": true,
+          "stage": "act"
+        },
+        {
+          "loop_id": "loop74",
+          "ok": true,
+          "stage": "verify"
+        },
+        {
+          "loop_id": "loop76",
+          "ok": true,
+          "stage": "integrate_commit"
+        },
+        {
+          "loop_id": "loop77",
+          "ok": true,
+          "stage": "route"
+        }
+      ],
+      "step_template": "reference_nine_step",
+      "task_id": 10101
+    },
+    {
+      "accepted": true,
+      "call_ceiling": 4,
+      "candidate_calls": [
+        {
+          "spawned_loop_id": "loop19",
+          "gateway": {
+            "accounting_complete": true,
+            "attempts": [
+              {
+                "elapsed_seconds": 5.765516,
+                "error": "",
+                "error_code": "",
+                "input_tokens": 936,
+                "loop_id": "loop35",
+                "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+                "maximum_output_tokens": 65536,
+                "model": "deepseek-v4-flash:0731",
+                "ok": true,
+                "output_tokens": 682,
+                "provider": "ollama_cloud",
+                "provider_ok": true,
+                "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+                "thinking_power": "medium",
+                "validation_ok": true
+              }
+            ],
+            "error": "",
+            "error_code": "",
+            "gateway_loop_id": "loop34",
+            "input_tokens": 936,
+            "model": "deepseek-v4-flash:0731",
+            "ok": true,
+            "output_tokens": 682,
+            "provider": "ollama_cloud",
+            "provider_responded": true,
+            "record_type": "model_gateway_result/v1",
+            "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+            "text": "{\n  \"candidate\": \"logistic\",\n  \"assessment\": \"Reasonable baseline for 797 rows, 4 categorical features, 6 classes. One-hot encoding with C=1.0 and max_iter=1000 is standard. No numeric features, so no scaling needed. Potential issue: high cardinality in categorical features could inflate dimensionality, but with only 4 features it is likely manageable. The main concern is handling unseen categories in test folds, which the candidate ignores, potentially causing misalignment.\",\n  \"advance\": true,\n  \"primary_risk\": \"Unseen categories in test folds are ignored, leading to feature misalignment and potential accuracy degradation.\"\n}",
+            "thinking_power": "medium",
+            "total_tokens": 1618
+          },
+          "output_reference": "modelout.3560.logistic_candidate.e730c53e6580f4988c79",
+          "parsed": {
+            "advance": true,
+            "assessment": "Reasonable baseline for 797 rows, 4 categorical features, 6 classes. One-hot encoding with C=1.0 and max_iter=1000 is standard. No numeric features, so no scaling needed. Potential issue: high cardinality in categorical features could inflate dimensionality, but with only 4 features it is likely manageable. The main concern is handling unseen categories in test folds, which the candidate ignores, potentially causing misalignment.",
+            "candidate": "logistic",
+            "primary_risk": "Unseen categories in test folds are ignored, leading to feature misalignment and potential accuracy degradation."
+          },
+          "raw_text": "{\n  \"candidate\": \"logistic\",\n  \"assessment\": \"Reasonable baseline for 797 rows, 4 categorical features, 6 classes. One-hot encoding with C=1.0 and max_iter=1000 is standard. No numeric features, so no scaling needed. Potential issue: high cardinality in categorical features could inflate dimensionality, but with only 4 features it is likely manageable. The main concern is handling unseen categories in test folds, which the candidate ignores, potentially causing misalignment.\",\n  \"advance\": true,\n  \"primary_risk\": \"Unseen categories in test folds are ignored, leading to feature misalignment and potential accuracy degradation.\"\n}",
+          "role": "logistic_candidate"
+        },
+        {
+          "spawned_loop_id": "loop37",
+          "gateway": {
+            "accounting_complete": true,
+            "attempts": [
+              {
+                "elapsed_seconds": 8.388243,
+                "error": "",
+                "error_code": "",
+                "input_tokens": 945,
+                "loop_id": "loop53",
+                "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+                "maximum_output_tokens": 65536,
+                "model": "deepseek-v4-flash:0731",
+                "ok": true,
+                "output_tokens": 652,
+                "provider": "ollama_cloud",
+                "provider_ok": true,
+                "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+                "thinking_power": "medium",
+                "validation_ok": true
+              }
+            ],
+            "error": "",
+            "error_code": "",
+            "gateway_loop_id": "loop52",
+            "input_tokens": 945,
+            "model": "deepseek-v4-flash:0731",
+            "ok": true,
+            "output_tokens": 652,
+            "provider": "ollama_cloud",
+            "provider_responded": true,
+            "record_type": "model_gateway_result/v1",
+            "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+            "text": "{\n  \"candidate\": \"random_forest\",\n  \"assessment\": \"Random forest with 200 trees is a robust, variance-reducing ensemble suitable for small tabular data (797 rows, 4 categorical features). One-hot encoding is compatible with tree splits, and the fixed random_state ensures reproducibility. The 10-fold official split is respected. No missing values or obvious class coverage issues are indicated by schema metadata.\",\n  \"advance\": true,\n  \"primary_risk\": \"Overfitting on a small dataset, especially if one-hot encoding expands feature space with many categories, potentially reducing generalization on unseen folds.\"\n}",
+            "thinking_power": "medium",
+            "total_tokens": 1597
+          },
+          "output_reference": "modelout.3560.random_forest_candidate.2d3c19ba67374c48b61e",
+          "parsed": {
+            "advance": true,
+            "assessment": "Random forest with 200 trees is a robust, variance-reducing ensemble suitable for small tabular data (797 rows, 4 categorical features). One-hot encoding is compatible with tree splits, and the fixed random_state ensures reproducibility. The 10-fold official split is respected. No missing values or obvious class coverage issues are indicated by schema metadata.",
+            "candidate": "random_forest",
+            "primary_risk": "Overfitting on a small dataset, especially if one-hot encoding expands feature space with many categories, potentially reducing generalization on unseen folds."
+          },
+          "raw_text": "{\n  \"candidate\": \"random_forest\",\n  \"assessment\": \"Random forest with 200 trees is a robust, variance-reducing ensemble suitable for small tabular data (797 rows, 4 categorical features). One-hot encoding is compatible with tree splits, and the fixed random_state ensures reproducibility. The 10-fold official split is respected. No missing values or obvious class coverage issues are indicated by schema metadata.\",\n  \"advance\": true,\n  \"primary_risk\": \"Overfitting on a small dataset, especially if one-hot encoding expands feature space with many categories, potentially reducing generalization on unseen folds.\"\n}",
+          "role": "random_forest_candidate"
+        },
+        {
+          "spawned_loop_id": "loop54",
+          "gateway": {
+            "accounting_complete": false,
+            "attempts": [
+              {
+                "elapsed_seconds": 12.065965,
+                "error": "HTTP 500: {\"error\":\"Internal Server Error (ref: f13dee07-c9e8-4f2c-aade-d49251820a8f)\"}\n",
+                "error_code": "provider_failed",
+                "input_tokens": null,
+                "loop_id": "loop70",
+                "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+                "maximum_output_tokens": 65536,
+                "model": "deepseek-v4-flash:0731",
+                "ok": false,
+                "output_tokens": null,
+                "provider": "ollama_cloud",
+                "provider_ok": false,
+                "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+                "thinking_power": "medium",
+                "validation_ok": null
+              }
+            ],
+            "error": "HTTP 500: {\"error\":\"Internal Server Error (ref: f13dee07-c9e8-4f2c-aade-d49251820a8f)\"}\n",
+            "error_code": "provider_failed",
+            "gateway_loop_id": "loop69",
+            "input_tokens": null,
+            "model": "",
+            "ok": false,
+            "output_tokens": null,
+            "provider": "",
+            "provider_responded": false,
+            "record_type": "model_gateway_result/v1",
+            "route": "",
+            "text": "",
+            "thinking_power": "medium",
+            "total_tokens": null
+          },
+          "output_reference": "modelout.3560.synthesis_selection.d13bc21a49d044db493f",
+          "parsed": null,
+          "raw_text": "",
+          "role": "synthesis_selection"
+        },
+        {
+          "spawned_loop_id": "loop75",
+          "gateway": {
+            "accounting_complete": true,
+            "attempts": [
+              {
+                "elapsed_seconds": 4.323656,
+                "error": "",
+                "error_code": "",
+                "input_tokens": 919,
+                "loop_id": "loop91",
+                "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+                "maximum_output_tokens": 65536,
+                "model": "deepseek-v4-flash:0731",
+                "ok": true,
+                "output_tokens": 462,
+                "provider": "ollama_cloud",
+                "provider_ok": true,
+                "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+                "thinking_power": "medium",
+                "validation_ok": true
+              }
+            ],
+            "error": "",
+            "error_code": "",
+            "gateway_loop_id": "loop90",
+            "input_tokens": 919,
+            "model": "deepseek-v4-flash:0731",
+            "ok": true,
+            "output_tokens": 462,
+            "provider": "ollama_cloud",
+            "provider_responded": true,
+            "record_type": "model_gateway_result/v1",
+            "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+            "text": "{\n  \"choice\": \"random_forest\",\n  \"reason\": \"The failure indicates no prediction artifact was produced, likely due to encoding issues with categorical features. Random forest with a robust one-hot encoder (handle_unknown='ignore') is more resilient to unseen categories and sparse one-hot representations, and the portfolio explicitly suggests a seeded random forest pipeline.\",\n  \"repair_action\": \"Rebuild the pipeline using a seeded RandomForestClassifier with a OneHotEncoder(handle_unknown='ignore') inside a ColumnTransformer, ensure the pipeline is fitted and predicts on each official fold, and explicitly emit openml_fold_predictions/v1 for all folds before the evaluation object.\"\n}",
+            "thinking_power": "medium",
+            "total_tokens": 1381
+          },
+          "output_reference": "modelout.3560.evaluator_repair.bbbced39029d695b7150",
+          "parsed": {
+            "choice": "random_forest",
+            "reason": "The failure indicates no prediction artifact was produced, likely due to encoding issues with categorical features. Random forest with a robust one-hot encoder (handle_unknown='ignore') is more resilient to unseen categories and sparse one-hot representations, and the portfolio explicitly suggests a seeded random forest pipeline.",
+            "repair_action": "Rebuild the pipeline using a seeded RandomForestClassifier with a OneHotEncoder(handle_unknown='ignore') inside a ColumnTransformer, ensure the pipeline is fitted and predicts on each official fold, and explicitly emit openml_fold_predictions/v1 for all folds before the evaluation object."
+          },
+          "raw_text": "{\n  \"choice\": \"random_forest\",\n  \"reason\": \"The failure indicates no prediction artifact was produced, likely due to encoding issues with categorical features. Random forest with a robust one-hot encoder (handle_unknown='ignore') is more resilient to unseen categories and sparse one-hot representations, and the portfolio explicitly suggests a seeded random forest pipeline.\",\n  \"repair_action\": \"Rebuild the pipeline using a seeded RandomForestClassifier with a OneHotEncoder(handle_unknown='ignore') inside a ColumnTransformer, ensure the pipeline is fitted and predicts on each official fold, and explicitly emit openml_fold_predictions/v1 for all folds before the evaluation object.\"\n}",
+          "role": "evaluator_repair"
+        }
+      ],
+      "canvas_compiled": true,
+      "canvas_executed": true,
+      "canvas_plan_digest": "42ef50a36b5c0da0f8ee23081f4653f1575eb1663965b31574053765992f00ea",
+      "run_history": {
+        "chain_intact": true,
+        "directory": "benchmarks/openml_cc18/artifacts/openml-cc18-full-20260825T1505Z/run-histories/openml-cc18-task-3560-non-deterministic-openml-cc18-full-20260825T1505Z",
+        "events": 851,
+        "model_invocation_events": 4,
+        "run_id": "openml-cc18-task-3560-non-deterministic-openml-cc18-full-20260825T1505Z",
+        "solution_event_kinds": [
+          "solution.canvas.updated",
+          "solution.loop.completed",
+          "solution.loop.started",
+          "solution_finalized"
+        ]
+      },
+      "data_id": 469,
+      "elapsed_seconds": 34.381788,
+      "errors": [
+        {
+          "error": "HTTP 500: {\"error\":\"Internal Server Error (ref: f13dee07-c9e8-4f2c-aade-d49251820a8f)\"}\n",
+          "stage": "synthesis"
+        },
+        {
+          "error": "ValueError: model synthesis did not produce a valid fixed candidate",
+          "stage": "how"
+        },
+        {
+          "error": "KeyError: 'compiled'",
+          "stage": "act"
+        },
+        {
+          "error": "TypeError: no typed prediction artifact reached the evaluator",
+          "stage": "independent_evaluator"
+        }
+      ],
+      "evaluation": {
+        "accepted": true,
+        "direction": "higher_is_better",
+        "evaluator": "sklearn.metrics.accuracy_score",
+        "fold_aggregation": "mean_of_10_official_fold_accuracies",
+        "folds": [
+          {
+            "accuracy": 0.2625,
+            "fold": 0,
+            "repeat": 0,
+            "test_rows": 80
+          },
+          {
+            "accuracy": 0.1875,
+            "fold": 1,
+            "repeat": 0,
+            "test_rows": 80
+          },
+          {
+            "accuracy": 0.2125,
+            "fold": 2,
+            "repeat": 0,
+            "test_rows": 80
+          },
+          {
+            "accuracy": 0.1875,
+            "fold": 3,
+            "repeat": 0,
+            "test_rows": 80
+          },
+          {
+            "accuracy": 0.2,
+            "fold": 4,
+            "repeat": 0,
+            "test_rows": 80
+          },
+          {
+            "accuracy": 0.2125,
+            "fold": 5,
+            "repeat": 0,
+            "test_rows": 80
+          },
+          {
+            "accuracy": 0.225,
+            "fold": 6,
+            "repeat": 0,
+            "test_rows": 80
+          },
+          {
+            "accuracy": 0.1518987341772152,
+            "fold": 7,
+            "repeat": 0,
+            "test_rows": 79
+          },
+          {
+            "accuracy": 0.2911392405063291,
+            "fold": 8,
+            "repeat": 0,
+            "test_rows": 79
+          },
+          {
+            "accuracy": 0.26582278481012656,
+            "fold": 9,
+            "repeat": 0,
+            "test_rows": 79
+          }
+        ],
+        "independent_from_model_selection": true,
+        "mean_accuracy": 0.2196360759493671,
+        "metric": "predictive_accuracy",
+        "record_type": "openml_accuracy_evaluation/v1",
+        "task_id": 3560
+      },
+      "failure_reason": null,
+      "intelligence_portfolios": {
+        "consumption_count": 5,
+        "fold_digest": "ca6c8b6dc7cfa996072cfba9cb0ebd865fcf6264e5db64747edb734e4819bf7f",
+        "payload_bodies_exported": false,
+        "portfolio_count": 5,
+        "selector": "static_architecture.intelligence_portfolio"
+      },
+      "live_mapping": {
+        "checks": {
+          "data_id": true,
+          "data_name": true,
+          "data_status": true,
+          "data_version": true,
+          "dataset_md5": true,
+          "default_target": true,
+          "license_label": true,
+          "split_folds": true,
+          "split_path": true,
+          "split_repeats": true,
+          "split_stratified": true,
+          "split_type": true,
+          "suite_alias": true,
+          "suite_id": true,
+          "suite_status": true,
+          "suite_task_count": true,
+          "target": true,
+          "task_id": true,
+          "task_in_suite": true,
+          "task_type": true
+        },
+        "data_id": 469,
+        "dataset_name": "analcatdata_dmft",
+        "license_label": "Public",
+        "license_precision": "OpenML literal label, not a precise SPDX license",
+        "record_type": "openml_live_mapping_check/v1",
+        "suite_id": 99,
+        "suite_task_count": 72,
+        "target": "Prevention",
+        "task_id": 3560,
+        "verified": true
+      },
+      "name": "analcatdata_dmft",
+      "official_folds_executed": 10,
+      "physical_calls": 4,
+      "playback_lines": 395,
+      "record_type": "openml_cc18_full_practitioner_task/v1",
+      "repair_used": true,
+      "report_rendered_from_saved_run_history": true,
+      "root_loop_id": "loop1",
+      "root_result": {
+        "stage_order": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ],
+        "steps_run": 9,
+        "stopped": "done",
+        "terminal_code": "ACCEPTED"
+      },
+      "schema": {
+        "arff_attributes_including_target": 5,
+        "categorical_features": [
+          "DMFT.Begin",
+          "DMFT.End",
+          "Gender",
+          "Ethnic"
+        ],
+        "classes": 6,
+        "data_id": 469,
+        "dataset_name": "analcatdata_dmft",
+        "folds": 10,
+        "input_features": 4,
+        "missing_feature_values": 0,
+        "numeric_features": [],
+        "record_type": "openml_schema/v1",
+        "rows": 797,
+        "target": "Prevention",
+        "task_id": 3560
+      },
+      "selected_algorithm": "random_forest",
+      "selected_mode": "non_deterministic",
+      "selected_population_denominator": 1,
+      "selected_profile": "practitioner.reference_nine_step",
+      "selected_profile_version": "1.0.0",
+      "source_checks": {
+        "dataset": {
+          "bytes": 23321,
+          "md5": "ad86226880052117a3e95479cf61faf6",
+          "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-3560-dataset.arff",
+          "record_type": "openml_source_check/v1",
+          "sha256": "d1fce1e52ef3e29c3cb8af6fc8215dd2982f829c0bfcd18a8be39269db4df501",
+          "verified": true
+        },
+        "split": {
+          "bytes": 109828,
+          "md5": null,
+          "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-3560-splits.arff",
+          "record_type": "openml_source_check/v1",
+          "sha256": "72ad61a9a1e710faee86e7c88f258928f07692f575da2b4af9ae78a0d1e80755",
+          "verified": true
+        }
+      },
+      "stage_spawned_loops": [
+        {
+          "loop_id": "loop2",
+          "ok": true,
+          "stage": "orient"
+        },
+        {
+          "loop_id": "loop3",
+          "ok": true,
+          "stage": "reconcile_horizon"
+        },
+        {
+          "loop_id": "loop18",
+          "ok": true,
+          "stage": "assess_prepare"
+        },
+        {
+          "loop_id": "loop36",
+          "ok": true,
+          "stage": "decide_next"
+        },
+        {
+          "loop_id": "loop71",
+          "ok": false,
+          "stage": "how"
+        },
+        {
+          "loop_id": "loop72",
+          "ok": false,
+          "stage": "act"
+        },
+        {
+          "loop_id": "loop73",
+          "ok": true,
+          "stage": "verify"
+        },
+        {
+          "loop_id": "loop94",
+          "ok": true,
+          "stage": "integrate_commit"
+        },
+        {
+          "loop_id": "loop95",
+          "ok": true,
+          "stage": "route"
+        }
+      ],
+      "step_template": "reference_nine_step",
+      "task_id": 3560
+    }
+  ],
+  "tasks_accepted": 3,
+  "tasks_failed": 0,
+  "track_id": "openml_cc18_smallest_metadata_workload_slice"
+}

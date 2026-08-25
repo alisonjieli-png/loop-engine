@@ -1,90 +1,90 @@
-# Static Architecture and extensions
+# Static Architecture
 
-Static Architecture is the shared service layer used by Practitioner and
-Solution loops. A self-improvement task uses it through the same Loop
-Practitioner. A loop calls these services instead of rebuilding search,
-storage, provider access, validation, or reporting for each task.
+Static Architecture has three public capability groups. Practitioner,
+Intelligence, and Solution Loops may use these capabilities when their
+contracts and permissions allow the operation.
 
-## Main services
+```text
+Static Architecture
+├── Intelligence Search and Retrieval
+├── Web Research
+└── Custom Plugins
+```
 
-| Service | What it provides |
+These groups describe reusable capabilities. They are not executable graph
+vertices. The work that searches, researches, or invokes a plugin must still
+belong to a classified Loop.
+
+## Intelligence Search and Retrieval
+
+The Retrieval Engine searches the four persistent intelligence layers. It
+returns small typed references before it loads a selected body.
+
+| Current feature | Status |
 |---|---|
-| Capability Directory | Searches local capability cards and checks the selected handshake before execution. |
-| Retrieval Engine | Provides one search interface with lexical, vector, and hybrid modes. |
-| Provider adapters | Connects supported model providers and custom endpoints. |
-| Runtime settings | Loads typed loop defaults, search choices, provider references, model tiers, operating permissions, and history paths. |
-| Stores | Holds intelligence records and saved solution information. |
-| Chronicle | Saves run events and verifies their chain. |
-| Runtime Memory | Shares temporary notes inside the current run. |
-| Studio | Shows loop trees, playback, intelligence, and solution views. |
+| Lexical, vector, and hybrid search behind one interface | Implemented. |
+| Built-in selectable backends | Implemented for the documented backend set. |
+| Typed references, digest checks, and separate materialization | Implemented. |
+| Open external retrieval-backend registration | Not shipped. |
 
-## Two searches used by loops
+Read [Search and storage choices](SEARCH-AND-STORAGE.md) and
+[Intelligence is returned through Loops](../intelligence-layers/INTELLIGENCE-AS-LOOPS.md).
 
-| Search | Question | Result |
-|---|---|---|
-| Retrieval Engine | What relevant context, code reference, past work, solution, or user guidance already exists? | Ranked intelligence `LoopRef` objects. |
-| Capability Directory | What registered service or capability can execute this operation under the loop's contract and permissions? | Ranked Code Intelligence `LoopRef` objects for local handshake cards. |
+## Web Research
 
-A loop can use both searches. Search is a loop. Search results are loops. The
-caller selects one reference, verifies its digest and contract, and then runs
-the selected intelligence or capability loop.
+Web Research covers permitted source discovery, fetching, extraction, and
+source checking. Discovery remains separate from a network effect. The
+current Brave example registers one typed capability and can run against an
+offline fixture.
 
-Effectful capabilities are never executed during discovery. A network search
-plugin is found from its local handshake card. Its network call begins only
-after explicit selection and permission checks.
+The package does not claim that one search provider solves all Web Research.
+A research Loop may use a custom plugin, compare sources, download a selected
+document, or spawn another research Loop under its own contract.
 
-## What is swappable today
+Read [Brave Web Search plugin](BRAVE-SEARCH-PLUGIN.md).
 
-| Area | Status | Current way to change it |
-|---|---|---|
-| Model provider | Yes | Supply `ProviderSpec` objects to `ModelGateway`, or create one from `CustomEndpoint`. |
-| Model route and fallback | Yes | Replace `RouteRegistry`, `RoutePolicy`, or `ModelGatewayConfig` for one gateway instance. |
-| Decision method | Yes | Register a resolver or regime. |
-| Executable capability | Yes, manual | Register a typed endpoint in `CapabilityDirectory`. The Brave example uses this boundary. |
-| Retrieval backend | Partial | Select `store`, `fts5`, or `lancedb` for lexical search and `hash` or `model2vec` for vector search. External backend registration is not shipped. |
-| Intelligence store | Partial | Supply supported store and catalog adapters. There is no common external store plugin protocol yet. |
-| Chronicle storage | Partial | Choose the local run directory. Cloud and team storage adapters are not shipped. |
-| Report renderer | No plugin protocol | Use the built-in text, Markdown, HTML, and JSON renderers. |
-| Loop Template | Manual | Add and validate a template in the package library. |
+## Custom Plugins
 
-The table is intentionally mixed. Static Architecture is not uniformly
-pluggable yet. Model routing, decision methods, and capabilities have explicit
-interfaces. Retrieval, storage, Chronicle persistence, and report rendering
-still need stronger external plugin contracts.
+Custom Plugins add typed capabilities through `CapabilityHandshake` and
+`CapabilityDirectory`. Local discovery is effect-free. Invocation begins only
+after a Loop selects a capability and passes contract, permission, and effect
+checks.
 
-Loop Engine includes one manually registered plugin example for Brave Web
-Search. The package does not auto-discover it. Importing the module makes no
-request and changes no global registry.
+The current package supports manual registration. It does not auto-discover
+Python entry points, install plugins, or provide a plugin marketplace.
 
-- [Search and storage choices](SEARCH-AND-STORAGE.md)
-- [Model gateway and provider configuration](MODEL-GATEWAY.md)
-- [Runtime settings and model tiers](../../guides/settings.md)
-- [Brave Web Search plugin example](BRAVE-SEARCH-PLUGIN.md)
+MCP tools and skills can enter through typed adapters. They remain plugin
+inputs used by Loops, not new runtime types. Read
+[MCP and skills](MCP-AND-SKILLS.md).
 
-## Plugins and future packaging
+## Internal runtime mechanics
 
-Today, a plugin is a module with an explicit registration function. It can add
-a capability only after the caller gives it a `CapabilityDirectory`. The
-Brave example proves this manual path with an offline fake transport.
+The following mechanisms support Loop execution but are not peer Static
+Architecture capability groups:
 
-A future packaging layer could auto-discover approved modules that provide a
-model provider, retrieval backend, store adapter, report renderer, or tested
-capability set.
+- model gateway and provider adapters;
+- typed settings and model tiers;
+- workspaces and sandboxes;
+- effect approvals;
+- stores and large-context references;
+- Runtime Memory;
+- Run History and the event log;
+- reports, live viewing, playback, and trace export.
 
-That future work still needs a discovery contract, version checks, permission
-checks, install and removal behavior, and clear failure reporting. The current
-package does not auto-discover Python entry points and does not provide a
-plugin marketplace.
+These pages document the mechanics:
 
-## Settings stay separate
+- [Model gateway](MODEL-GATEWAY.md)
+- [Runtime settings](../../guides/settings.md)
+- [Custom model endpoints](../../guides/custom-endpoints.md)
+- [Effect approvals](EFFECT-APPROVALS.md)
+- [Workspace backends](WORKSPACE-BACKENDS.md)
+- [Context artifacts](CONTEXT-ARTIFACTS.md)
+- [OpenTelemetry export](OPENTELEMETRY.md)
+- [External harness adapters](EXTERNAL-HARNESS-ADAPTERS.md)
 
-Static Architecture keeps five controls separate:
+## Extension boundary
 
-- A Loop profile defines purpose and required capabilities.
-- A step profile changes the steps a loop follows.
-- An effort setting changes bounded work limits.
-- Model thinking power selects a configured model tier for a model-using loop.
-- Operating settings change permissions, access, and preferences.
-
-An effort or model-tier increase never grants a new tool, provider, permission,
-or external effect.
+Add a capability to one of the three groups. Do not create a fourth peer group
+for a provider, store, viewer, event system, or internal adapter. The
+[taxonomy and class map](../../architecture/TAXONOMY-ONTOLOGY-AND-CLASS-MAP.md)
+defines the extension rules.

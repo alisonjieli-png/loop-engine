@@ -16,7 +16,7 @@ describes, made executable for DEVELOPMENT work — not just problem-solving:
     wiring), works each, verifies it, and STOPS honestly at budget, review
     cadence, or exhaustion.  It stages a candidate change per worked gap
     (never self-promote, never merge unreviewed) and leaves the whole run on
-    the shared ledger for the Chronicle.
+    the shared ledger for the RunHistory.
 
   * ``anti_tunnel_vision_review`` — the five-step look-back checkpoint.  Every
     N closed work items the loop re-derives the goal and assumptions from the
@@ -34,8 +34,8 @@ Owns:
     - anti_tunnel_vision_review(run_history, config, ledger): the checkpoint.
 
 Does not own:
-    - the runtime (recursive_loop), doctrine (loop_doctrine), Chronicle
-      (chronicle), or the evidence gate.  Reviewing never merges.
+    - the runtime (recursive_loop), doctrine (loop_doctrine), RunHistory
+      (run_history), or the evidence gate.  Reviewing never merges.
 
 Key invariants:
     - the campaign is bounded (budget, max items, review cadence) and stops;
@@ -84,7 +84,7 @@ def development_practitioner_loop(
     cfg = LoopConfig(framework="custom",
                      custom_steps=("assess_gap", "close_gap", "verify_gap",
                                    "integrate_gap"),
-                     stop_condition="run_to_completion", power=power)
+                     exit_condition="steps_complete", power=power)
     loop = Loop("development-practitioner-campaign", cfg, ledger=it_ledger)
     closed, failed, reviews = [], [], []
 
@@ -125,15 +125,15 @@ def development_practitioner_loop(
         if i > 0 and i % review_cadence == 0:
             reviews.append(anti_tunnel_vision_review(
                 closed, failed, config=cfg, ledger=it_ledger, loop_id=loop.loop_id))
-        # each gap close runs as its OWN child loop, on the shared ledger:
-        # 4 beats, so the child needs 4 iterations — light (3) would stop at
+        # each gap close runs as its OWN spawned loop, on the shared ledger:
+        # 4 beats, so the spawned needs 4 iterations — light (3) would stop at
         # budget before integrate; standard (6) runs the full beat honestly.
-        child = loop.spawn(f"work {g.gap_id}",
+        spawned = loop.spawn(f"work {g.gap_id}",
                            LoopConfig(framework="custom",
                                       custom_steps=("assess_gap", "close_gap",
                                                     "verify_gap", "integrate_gap"),
                                       power="standard"))
-        child.run(handler=gap_handler(g))
+        spawned.run(handler=gap_handler(g))
     loop.run()
 
     return {"record_type": "dev_campaign/v1", "campaign_loop_id": loop.loop_id,

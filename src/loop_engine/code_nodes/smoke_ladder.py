@@ -1,7 +1,7 @@
 """The Kaggle smoke-test ladder (§24) — the Loop proving ground.
 
 Stage 0 runs a deterministic local fixture (synthetic tabular task) through a
-REAL ``Loop`` end to end: data loading, baseline, validation, receipts — zero
+REAL ``Loop`` end to end: data loading, baseline, validation, records — zero
 model calls.  The Titanic stage runs the same loop shape with ONE visible
 semantic model call (cloud-only, ``chat_maxout``, provider-reported tokens)
 and can really submit.  The warm run replays the task family with the mined
@@ -99,7 +99,7 @@ def _consult_pillars(loop, step: str, advice_store=None,
                                            search_as_loop_refs)
     got = {"string": 0, "code": 0, "history": 0, "guidance": 0, "refs": 0}
     try:
-        serve_pillar("string_intelligence", f"step:{step}",
+        serve_pillar("context_intelligence", f"step:{step}",
                      lambda: f"considerations for {step}",
                      ledger=loop.ledger, parent=loop)
         got["string"] = 1
@@ -118,7 +118,7 @@ def _consult_pillars(loop, step: str, advice_store=None,
     # HISTORY: has a prior run solved something like this step before?
     if history_store is not None:
         try:
-            serve_pillar("past_run_intelligence", f"prior:{step}",
+            serve_pillar("runtime_history_solution_intelligence", f"prior:{step}",
                          lambda: f"prior runs touching {step}",
                          ledger=loop.ledger, parent=loop)
             got["history"] = 1
@@ -143,7 +143,7 @@ def make_smoke_handler(*, train_csv: str, test_csv: str, sample_csv: str,
     ``advice_fn(prompt) -> (text, usage_dict)`` is the ONLY semantic surface —
     None means fully deterministic (stage 0).  ``advice_store`` is probed FIRST
     (a real store search): a hit serves the research step from code, so the
-    warm run makes zero model calls.  ``trace`` collects receipt facts.
+    warm run makes zero model calls.  ``trace`` collects record facts.
     """
     from .kaggle_executor import execute_tabular, resolve_roles
     import pandas as pd
@@ -244,7 +244,7 @@ def make_smoke_handler(*, train_csv: str, test_csv: str, sample_csv: str,
             from .solution_canvas import SolutionLoopSpec, SolutionSpec
             spec = SolutionSpec(
                 f"tabular_{res.family}",
-                allowed_modes=("deterministic",),
+                permitted_loop_modes=("deterministic",),
                 loops=(SolutionLoopSpec("load", "load_csv"),
                        SolutionLoopSpec("features", "engineer",
                                     params={"engineered":
@@ -260,7 +260,8 @@ def make_smoke_handler(*, train_csv: str, test_csv: str, sample_csv: str,
             tr["solution_spec"] = {"valid": spec.validate()["valid"],
                                    "record_id": spec.to_record().record_id,
                                    "ensemble": spec.ensemble,
-                                   "shipping_modes": list(spec.allowed_modes)}
+                                   "permitted_loop_modes": list(
+                                       spec.permitted_loop_modes)}
             return StepOutcome(output=f"cv_{res.local_metric}="
                                       f"{res.local_score:.5f} "
                                       f"est={res.family}",
@@ -293,10 +294,10 @@ def run_smoke_loop(goal: str, *, train_csv: str, test_csv: str,
                    sample_csv: str, out_csv: str, advice_fn=None,
                    advice_store=None, output_probabilities: "bool | None" = None,
                    config: "LoopConfig | None" = None, ledger=None,
-                   chronicle_run_id: str = "", runs_dir: str = "",
+                   run_history_run_id: str = "", runs_dir: str = "",
                    usage_log: "list | None" = None) -> dict:
     """One end-to-end smoke run through the canonical Loop; returns the
-    receipt (ledger, modes, trace, §12 accounting).  ``config`` sets the
+    record (ledger, modes, trace, §12 accounting).  ``config`` sets the
     loop's mode discipline — a deterministic-only config keeps research on
     the code rail even when a live advice surface is wired."""
     trace: dict = {}
@@ -311,16 +312,16 @@ def run_smoke_loop(goal: str, *, train_csv: str, test_csv: str,
                     if b["template_id"] == "smoke_solve_six_beat")
         config = config_from_template(tmpl, power="deep")
     loop = Loop(goal, config, ledger=ledger)
-    if chronicle_run_id:
-        from ..static_architecture.chronicle import default_runs_dir
-        loop.enable_chronicle(chronicle_run_id,
+    if run_history_run_id:
+        from ..static_architecture.run_history import default_runs_dir
+        loop.enable_run_history(run_history_run_id,
                               root_dir=default_runs_dir(runs_dir),
                               usage_log=usage_log)
     recs = []
     while not loop.is_terminal:
         recs.append(loop.run_next_iteration(handler=handler))
     res = loop.result()
-    return {"record_type": "smoke_loop_receipt/v1", "goal": goal,
+    return {"record_type": "smoke_loop_record/v1", "goal": goal,
             "loop_id": res.loop_id, "steps_run": res.steps_run,
             "stopped": res.stopped, "mode_counts": res.mode_counts,
             "model_calls_budgeted": res.model_calls,
@@ -333,17 +334,17 @@ def run_smoke_loop(goal: str, *, train_csv: str, test_csv: str,
 
 def stage0(workdir: "str | None" = None) -> dict:
     """Stage 0: the deterministic local fixture through the real Loop —
-    proves loop init, data loading, baseline, validation, receipts, with
+    proves loop init, data loading, baseline, validation, records, with
     ZERO model calls."""
     workdir = workdir or tempfile.mkdtemp(prefix="smoke0_")
     train, test, sample, out = _fixture(workdir)
-    receipt = run_smoke_loop("stage0: solve the deterministic fixture",
+    record = run_smoke_loop("stage0: solve the deterministic fixture",
                              train_csv=train, test_csv=test,
                              sample_csv=sample, out_csv=out)
-    receipt["stage"] = "stage0_deterministic_fixture"
-    receipt["honesty"] = ("synthetic seeded fixture; proves plumbing only — "
+    record["stage"] = "stage0_deterministic_fixture"
+    record["honesty"] = ("synthetic seeded fixture; proves plumbing only — "
                           "never benchmark evidence")
-    return receipt
+    return record
 
 
 def submission_as_loop(competition: str, csv_path: str, message: str, *,
@@ -424,7 +425,7 @@ def self_test() -> dict:
           f"cv={r0['trace'].get('cv_score')} vs majority "
           f"{r0['trace']['verify']['majority']}; zero model calls")
 
-    check("stage0_receipt_is_complete",
+    check("stage0_record_is_complete",
           r0["semantic_calls_per_iteration_max"] == 0
           and r0["ledger_events"] >= 7          # init + six recorded steps
           and len(r0["trace"]["code_served_steps"]) == 6,

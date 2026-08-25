@@ -1,0 +1,41 @@
+{
+  "record_type": "docker_workspace_live_verification/v1",
+  "observed_at_utc": "2026-08-25T15:33:12Z",
+  "repository_base_commit": "3491e2369639361893819ac6975a21bec47ea68c",
+  "working_tree_changes_present": true,
+  "implementation_path": "src/loop_engine/static_architecture/workspace_optional.py",
+  "implementation_sha256": "b61186c2a33e19c4e1e0ae7b2cea2c27cadd4bfc872b5e67c1969596046b6e33",
+  "python_version": "3.14.4",
+  "docker_client_version": "29.5.2",
+  "docker_server_version": "29.5.2",
+  "image": "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+  "network_access": false,
+  "image_pull_allowed": false,
+  "tests": [
+    {
+      "test": "typed_files_prepare_the_exact_mounted_workspace",
+      "passed": true
+    },
+    {
+      "test": "real_container_reads_the_prepared_file_without_network",
+      "passed": true
+    },
+    {
+      "test": "read_only_command_keeps_the_workspace_snapshot_stable",
+      "passed": true
+    },
+    {
+      "test": "runtime_used_an_immutable_image_and_no_pull",
+      "passed": true
+    }
+  ],
+  "passed": 4,
+  "total": 4,
+  "all_passed": true,
+  "limitations": [
+    "This proves one local Docker daemon, one immutable image, one read-only command, and one mounted workspace path.",
+    "It does not prove E2B or Modal execution.",
+    "It does not prove approval integration for workspace writes or commands.",
+    "The implementation file was uncommitted when this record was written; verify its digest before reuse."
+  ]
+}

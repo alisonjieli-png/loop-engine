@@ -17,7 +17,7 @@ Task -> Loop Practitioner -> Solution Canvas -> Result
 
 The same figure must also show:
 
-- the shared Loop object used by Practitioner and Solution loops;
+- the shared Loop object used by Practitioner, Intelligence, and Solution Loops;
 - the three run modes: deterministic, hybrid, and non-deterministic;
 - step profiles with one step, five steps, nine steps, or a custom sequence;
 - Practitioner loops that may start more Practitioner loops;
@@ -25,19 +25,19 @@ The same figure must also show:
 - self-improvement shown as a task entering the Loop Practitioner, not as a
   separate runtime role;
 - Static Architecture supporting every loop;
-- a separate Retrieval Engine node with lexical, vector, and hybrid modes;
+- a separate Retrieval Engine service with lexical, vector, and hybrid modes;
 - built-in adapters, manual plugin registration, and future plugin packaging;
 - all four intelligence layers;
 - Runtime Memory as current-run state; and
-- Chronicle, reports, and playback as saved run history.
+- Run History, reports, and playback as saved run history.
 
 Do not use the nine-step sequence as the first figure. It is detail about one
 step profile, not the full product map.
 
 ## V2: one Loop object
 
-Show one loop with its goal, contract, mode, step profile, budget, stop
-condition, parent relationship, started loops, and event log.
+Show one Loop with its goal, typed contract, selected mode, step profile,
+budget, loop condition, exit condition, relationships, and event log.
 
 If the figure includes a mode, use the public order:
 
@@ -49,20 +49,22 @@ If the figure includes step profiles, show atomic, compact, reference
 nine-step, and custom. State that the nine-step profile is a reference, not a
 universal rule.
 
-## V3: Practitioner loop tree
+## V3: Practitioner Loop graph
 
-Show how the solution was built. A root Practitioner loop may start research,
+Show how the solution was built. A Starting Practitioner loop may start research,
 review, tool, or verification loops. Each loop card should show its own mode,
 status, and bounded goal.
 
-Use "starts" in public labels. The diagram may use parent and child in a
-technical note when it explains the permission clamp.
+Use `Spawned by` in a relationship label. Do not imply that queried,
+retrieved, or connected Loops were spawned.
 
 ## V4: Static Architecture and intelligence
 
-Show Static Architecture as shared services, not as a sequence of work. It can
-contain the Capability Directory, Retrieval Engine, providers, validation,
-stores, Chronicle, Studio, and Runtime Memory.
+Show exactly three Static Architecture capability groups: Intelligence Search
+and Retrieval, Web Research, and Custom Plugins. Do not draw providers,
+settings, workspaces, approvals, stores, Runtime Memory, Run History, reports,
+playback, or provider adapters as peer Static Architecture components. Those
+are internal runtime mechanics.
 
 The Retrieval Engine searches classified records across the four layers. Its
 current backends are a fixed selectable set, not an external plugin registry.
@@ -78,8 +80,8 @@ Show all four persistent intelligence layers:
 
 1. Context Intelligence
 2. Code Intelligence
-3. Previous Run & Solution Intelligence
-4. User Intelligence
+3. Runtime History and Solution Intelligence
+4. User Feedback Intelligence
 
 Runtime Memory must remain outside those four layers because it is temporary
 and belongs to the current run.
@@ -92,7 +94,7 @@ fallbacks when they matter.
 
 Use this caption when the distinction needs to be explicit:
 
-> The Practitioner tree shows how Loop Engine built the work. The Solution
+> The Practitioner graph shows how Loop Engine built the work. The Solution
 > Canvas shows what runs now.
 
 Do not imply that declared hybrid or non-deterministic Canvas modes have a
@@ -101,7 +103,7 @@ deterministic component loop for each operation.
 
 ## V6: run history
 
-Use a horizontal timeline for Chronicle events. Show the newest event on the
+Use a horizontal timeline for Run History events. Show the newest event on the
 right. Live views may reveal events as they arrive. Playback must use saved
 events and must not rerun the original work.
 

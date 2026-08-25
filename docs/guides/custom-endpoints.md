@@ -13,32 +13,47 @@ server.
 ```python
 from loop_engine import configure
 from loop_engine.static_architecture.custom_endpoint import CustomEndpoint
+from loop_engine.static_architecture.model_capabilities import (
+    ModelOutputCapability,
+)
 
 access = configure(endpoints=[CustomEndpoint(
     name="friends_box",
     base_url="https://gpu.example.net/v1",
     model="qwen2.5-72b-instruct",
     api_key="...",          # omit if the server needs none
+    output_capability=ModelOutputCapability(
+        65536,
+        "provider documentation dated 2026-08-25",
+    ),
 )])
 ```
 
 Ollama's native shape works too:
 
 ```python
-CustomEndpoint(name="my_ollama", base_url="http://192.168.1.5:11434",
-               model="qwen2.5:7b", wire="ollama")
+CustomEndpoint(
+    name="my_ollama",
+    base_url="http://192.168.1.5:11434",
+    model="qwen2.5:7b",
+    wire="ollama",
+    output_capability=ModelOutputCapability(
+        32768,
+        "local server configuration checked 2026-08-25",
+    ),
+)
 ```
 
 ## Without touching code
 
 ```bash
-export LOOP_ENGINE_ENDPOINTS="name=friends_box,url=https://gpu.example.net/v1,model=qwen2.5-72b-instruct,key=..."
+export LOOP_ENGINE_ENDPOINTS="name=friends_box,url=https://gpu.example.net/v1,model=qwen2.5-72b-instruct,key=...,max_output=65536,max_output_source=provider documentation dated 2026-08-25"
 ```
 
 Multiple endpoints separated by `|`:
 
 ```bash
-export LOOP_ENGINE_ENDPOINTS="name=box_a,url=https://a.example/v1,model=m1|name=box_b,url=http://10.0.0.2:8000/v1,model=m2"
+export LOOP_ENGINE_ENDPOINTS="name=box_a,url=https://a.example/v1,model=m1,max_output=65536,max_output_source=box_a provider documentation|name=box_b,url=http://10.0.0.2:8000/v1,model=m2,max_output=32768,max_output_source=box_b server configuration"
 ```
 
 | Field | Required | Default | Meaning |
@@ -49,11 +64,18 @@ export LOOP_ENGINE_ENDPOINTS="name=box_a,url=https://a.example/v1,model=m1|name=
 | `key` | no | none | bearer token if the server wants one |
 | `wire` | no | `openai` | `openai` or `ollama` |
 | `locality` | no | `local` | `local` or `cloud` |
-| `max_output` | no | 4096 | output ceiling |
+| `max_output` | yes for generation | none | provider-declared maximum output tokens |
+| `max_output_source` | yes with `max_output` | none | one-line source for that exact maximum |
 | `evidence` | no | `false` | see below |
 
 **A misspelled field is refused, not ignored.** `keyy=...` raises rather than
 silently dropping your credential and leaving you to debug an auth failure.
+
+Loop Engine does not invent a smaller output limit. It requests the exact
+maximum declared for the selected model and endpoint, then lets the model stop
+naturally. If that maximum is unknown, generation is refused until you add a
+source-backed `ModelOutputCapability`. `max_output` and `max_output_source`
+must be set together.
 
 ## Two protections worth knowing about
 

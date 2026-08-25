@@ -12,13 +12,13 @@ pages, persist results, or retry silently.
 
 ```mermaid
 flowchart LR
-    L[Parent loop] --> D[Local Capability Directory search]
+    L[Spawning Loop] --> D[Local Capability Directory search]
     D --> R[Code Intelligence LoopRef]
     R --> G[Check access, effects, secret reference, and contract]
     G --> C[Capability loop]
     C --> B[One Brave Web Search request]
     B --> O[Ephemeral untrusted source candidates]
-    O --> V[Parent loop verifies and decides what happens next]
+    O --> V[Spawning Loop verifies and decides what happens next]
 ```
 
 Capability discovery is local and effect-free. The network request happens
@@ -95,7 +95,7 @@ HTTP 404, HTTP 422, and HTTP 429. A rate-limit result includes provider reset
 metadata when it can be parsed.
 
 The capability loop records one attempt. It does not retry or choose another
-provider inside the adapter. The parent loop can use the typed result to wait,
+provider inside the adapter. The spawning Loop can use the typed result to wait,
 stop, or select another capability.
 
 ## Result handling

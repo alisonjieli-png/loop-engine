@@ -1,8 +1,8 @@
 {
- "record_type": "chronicle_manifest/v1",
- "run_id": "openml-covertype-cold-20260823",
- "parent_run_id": "",
- "events": 10,
- "head_digest": "1e18df59db8e58d689e4668b6d67ec60f0a088e0be0747ed2e727c137fe9eafb",
- "committed": true
+  "record_type": "run_history_manifest/v1",
+  "run_id": "openml-covertype-cold-20260823",
+  "parent_run_id": "",
+  "events": 10,
+  "head_digest": "edac22c5fcad06c03eb2ba9af4ae3d7719c0a520f2f9c9a590506f08fdbe56b8",
+  "committed": true
 }

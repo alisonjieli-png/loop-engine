@@ -1,88 +1,88 @@
 {
- "record_type": "string_foundry_run_receipt/v1",
- "date": "2026-08-23",
- "run_id": "string-foundry-20260823",
- "model": "deepseek-v4-flash:0731",
- "provider": "ollama_cloud",
- "loop": {
-  "steps_run": 13,
-  "stopped": "done",
-  "semantic_calls": 9,
-  "wall_seconds": 76.0,
-  "max_semantic_calls_per_iteration": 1
- },
- "usage_log": [
-  {
-   "model": "deepseek-v4-flash:0731",
-   "ok": false,
-   "prompt_tokens": 142,
-   "eval_tokens": 124
+  "record_type": "string_foundry_run_evidence/v1",
+  "date": "2026-08-23",
+  "run_id": "string-foundry-20260823",
+  "model": "deepseek-v4-flash:0731",
+  "provider": "ollama_cloud",
+  "loop": {
+    "steps_run": 13,
+    "stopped": "done",
+    "semantic_calls": 9,
+    "wall_seconds": 76.0,
+    "max_semantic_calls_per_iteration": 1
   },
-  {
-   "model": "deepseek-v4-flash:0731",
-   "ok": true,
-   "prompt_tokens": 147,
-   "eval_tokens": 1067
+  "usage_log": [
+    {
+      "model": "deepseek-v4-flash:0731",
+      "ok": false,
+      "prompt_tokens": 142,
+      "eval_tokens": 124
+    },
+    {
+      "model": "deepseek-v4-flash:0731",
+      "ok": true,
+      "prompt_tokens": 147,
+      "eval_tokens": 1067
+    },
+    {
+      "model": "deepseek-v4-flash:0731",
+      "ok": true,
+      "prompt_tokens": 133,
+      "eval_tokens": 1039
+    },
+    {
+      "model": "deepseek-v4-flash:0731",
+      "ok": true,
+      "prompt_tokens": 132,
+      "eval_tokens": 1034
+    },
+    {
+      "model": "deepseek-v4-flash:0731",
+      "ok": true,
+      "prompt_tokens": 135,
+      "eval_tokens": 1101
+    },
+    {
+      "model": "deepseek-v4-flash:0731",
+      "ok": false,
+      "prompt_tokens": 138,
+      "eval_tokens": 460
+    },
+    {
+      "model": "deepseek-v4-flash:0731",
+      "ok": true,
+      "prompt_tokens": 129,
+      "eval_tokens": 1892
+    },
+    {
+      "model": "deepseek-v4-flash:0731",
+      "ok": true,
+      "prompt_tokens": 131,
+      "eval_tokens": 294
+    },
+    {
+      "model": "deepseek-v4-flash:0731",
+      "ok": true,
+      "prompt_tokens": 152,
+      "eval_tokens": 1085
+    }
+  ],
+  "tokens_total": {
+    "prompt": 1239,
+    "eval": 8096
   },
-  {
-   "model": "deepseek-v4-flash:0731",
-   "ok": true,
-   "prompt_tokens": 133,
-   "eval_tokens": 1039
+  "generated": {
+    "candidates": 56,
+    "undigested_lines": 0,
+    "by_category": {
+      "job_position": 32,
+      "research": 8,
+      "data_engineering": 8,
+      "llm_prompting": 8
+    },
+    "model_proposed_categories": []
   },
-  {
-   "model": "deepseek-v4-flash:0731",
-   "ok": true,
-   "prompt_tokens": 132,
-   "eval_tokens": 1034
-  },
-  {
-   "model": "deepseek-v4-flash:0731",
-   "ok": true,
-   "prompt_tokens": 135,
-   "eval_tokens": 1101
-  },
-  {
-   "model": "deepseek-v4-flash:0731",
-   "ok": false,
-   "prompt_tokens": 138,
-   "eval_tokens": 460
-  },
-  {
-   "model": "deepseek-v4-flash:0731",
-   "ok": true,
-   "prompt_tokens": 129,
-   "eval_tokens": 1892
-  },
-  {
-   "model": "deepseek-v4-flash:0731",
-   "ok": true,
-   "prompt_tokens": 131,
-   "eval_tokens": 294
-  },
-  {
-   "model": "deepseek-v4-flash:0731",
-   "ok": true,
-   "prompt_tokens": 152,
-   "eval_tokens": 1085
-  }
- ],
- "tokens_total": {
-  "prompt": 1239,
-  "eval": 8096
- },
- "generated": {
-  "candidates": 56,
-  "undigested_lines": 0,
-  "by_category": {
-   "job_position": 32,
-   "research": 8,
-   "data_engineering": 8,
-   "llm_prompting": 8
-  },
-  "model_proposed_categories": []
- },
- "staged": "staged 56, deduped 0",
- "undigested_samples": [],
- "honesty": "every staged string is a CANDIDATE with provenance; the improvement lane cannot promote \u2014 registration requires the evidence gate after these strings WIN on real tasks; undigested lines are counted, never repaired by guesswork"
+  "staged": "staged 56, deduped 0",
+  "undigested_samples": [],
+  "honesty": "every staged string is a CANDIDATE with provenance; the improvement lane cannot promote — registration requires the evidence gate after these strings WIN on real tasks; undigested lines are counted, never repaired by guesswork"
 }

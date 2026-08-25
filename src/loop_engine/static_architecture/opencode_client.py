@@ -102,7 +102,7 @@ def run_agent(task: str, *, model: str = DEFAULT_WORKER_MODEL,
     ``cwd`` is the directory the worker operates in (where it reads/writes code);
     ``timeout`` bounds the agent loop.  Never raises on worker failure — returns
     ``ok=False`` with the captured error, so a caller can fall back or retry.  The
-    Ollama Cloud key is injected into the child environment (cloud-only)."""
+    Ollama Cloud key is injected into the spawned environment (cloud-only)."""
     import time
     try:
         argv = build_command(task, model=model, pure=pure,

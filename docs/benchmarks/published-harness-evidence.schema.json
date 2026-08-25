@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/alisonjieli-png/loop-engine/docs/benchmarks/published-harness-evidence.schema.json",
+  "title": "Published harness benchmark evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "as_of", "records", "findings"],
+  "properties": {
+    "schema_version": {"const": "published_harness_evidence/v1"},
+    "as_of": {"type": "string", "format": "date"},
+    "records": {"type": "array", "items": {"$ref": "#/$defs/record"}},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}}
+  },
+  "$defs": {
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_id", "comparison_id", "configuration_label",
+        "harness_name", "harness_version", "benchmark_name",
+        "benchmark_version", "model_name", "model_version", "model_effort",
+        "population_name", "population_count", "population_selection",
+        "tools", "evaluation_protocol", "external_environment",
+        "score_value", "score_metric", "score_unit",
+        "metric_direction", "score_is_approximate", "evaluation_date",
+        "source_url", "source_title", "source_date", "source_state",
+        "evidence_qualifier", "evidence_strength", "limitations"
+      ],
+      "properties": {
+        "record_id": {"type": "string", "minLength": 1},
+        "comparison_id": {"type": "string", "minLength": 1},
+        "configuration_label": {"type": "string", "minLength": 1},
+        "harness_name": {"type": "string", "minLength": 1},
+        "harness_version": {"type": "string", "minLength": 1},
+        "benchmark_name": {"type": "string", "minLength": 1},
+        "benchmark_version": {"type": "string", "minLength": 1},
+        "model_name": {"type": "string", "minLength": 1},
+        "model_version": {"type": "string", "minLength": 1},
+        "model_effort": {"type": "string", "minLength": 1},
+        "population_name": {"type": "string", "minLength": 1},
+        "population_count": {"type": ["integer", "null"], "minimum": 1},
+        "population_selection": {"type": "string", "minLength": 1},
+        "tools": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "evaluation_protocol": {"type": "string", "minLength": 1},
+        "external_environment": {"type": "string", "minLength": 1},
+        "score_value": {"type": "number"},
+        "score_metric": {"type": "string", "minLength": 1},
+        "score_unit": {"type": "string", "minLength": 1},
+        "metric_direction": {"enum": ["maximize", "minimize"]},
+        "score_is_approximate": {"type": "boolean"},
+        "evaluation_date": {"type": "string", "format": "date"},
+        "source_url": {"type": "string", "format": "uri", "pattern": "^https://"},
+        "source_title": {"type": "string", "minLength": 1},
+        "source_date": {"type": "string", "format": "date"},
+        "source_state": {"enum": ["source_reviewed", "source_unverified"]},
+        "evidence_qualifier": {"enum": ["harness_measured", "model_only", "framework_measured_not_harness_bundle", "unclear"]},
+        "evidence_strength": {"const": "primary_numeric"},
+        "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "model_calls": {"type": ["integer", "null"], "minimum": 0},
+        "input_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "output_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "cost_usd": {"type": ["number", "null"], "minimum": 0}
+        ,"component_scores": {"type": "object", "additionalProperties": {"type": "number"}}
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id", "subject", "status", "statement", "benchmark_name",
+        "benchmark_version", "population_name", "population_count",
+        "compared_systems", "qualitative_ranking", "exact_values_available",
+        "source_url", "reviewed_sources", "source_title", "source_date", "source_state",
+        "evidence_strength", "search_scope", "search_date", "limitations"
+      ],
+      "properties": {
+        "finding_id": {"type": "string", "minLength": 1},
+        "subject": {"type": "string", "minLength": 1},
+        "status": {"enum": ["graphical_ranking_only", "no_qualifying_result_found", "dimension_not_measured"]},
+        "statement": {"type": "string", "minLength": 1},
+        "benchmark_name": {"type": "string"},
+        "benchmark_version": {"type": "string"},
+        "population_name": {"type": "string"},
+        "population_count": {"type": ["integer", "null"], "minimum": 1},
+        "compared_systems": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "qualitative_ranking": {"type": "array", "items": {"type": "string"}},
+        "exact_values_available": {"type": "boolean"},
+        "source_url": {"type": "string", "format": "uri", "pattern": "^https://"},
+        "reviewed_sources": {"type": "array", "minItems": 1, "items": {"type": "string", "format": "uri", "pattern": "^https://"}, "uniqueItems": true},
+        "source_title": {"type": "string", "minLength": 1},
+        "source_date": {"type": "string"},
+        "source_state": {"enum": ["source_reviewed", "source_unverified"]},
+        "evidence_strength": {"enum": ["primary_graphical", "official_search_no_score", "project_local_no_independent_score", "cross_source_gap"]},
+        "search_scope": {"type": "string", "minLength": 1},
+        "search_date": {"type": "string", "format": "date"},
+        "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+      }
+    }
+  }
+}

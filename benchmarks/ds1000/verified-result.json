@@ -1,0 +1,96 @@
+{
+  "record_type": "ds1000_full_practitioner_smoke_result/v1",
+  "population_id": "ds1000-pandas-sklearn-4-v1",
+  "source_commit": "b39aab71da6d23ef8d3cac59a7c5f834516ab334",
+  "selected_campaign_id": "ds1000-full-v1-20260825T150857Z",
+  "selected_mode": "non_deterministic",
+  "provider": "ollama_cloud",
+  "model": "deepseek-v4-flash:0731",
+  "maximum_output_tokens_each_call": 65536,
+  "failover": false,
+  "population": [
+    {
+      "problem_id": 72,
+      "library": "Pandas"
+    },
+    {
+      "problem_id": 218,
+      "library": "Pandas"
+    },
+    {
+      "problem_id": 838,
+      "library": "Sklearn"
+    },
+    {
+      "problem_id": 896,
+      "library": "Sklearn"
+    }
+  ],
+  "full_selected_run": {
+    "attempted": 4,
+    "full_path_eligible": 4,
+    "new_physical_model_calls": 14,
+    "excluded_diagnostic_physical_calls": 1,
+    "packet_total_physical_calls": 15,
+    "packet_physical_call_ceiling": 16,
+    "repairs_used": 2,
+    "input_tokens": 11577,
+    "output_tokens": 25301,
+    "total_tokens": 36878,
+    "money_cost_usd": null,
+    "money_cost_note": "No source-backed model price was configured.",
+    "runtime_image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d"
+  },
+  "original_evaluation": {
+    "reported_passed": 2,
+    "reported_execution_accuracy": 0.5,
+    "status": "invalidated",
+    "reason": "The first extractor version removed required leading completion whitespace before upstream evaluation."
+  },
+  "corrected_recorded_output_evaluation": {
+    "correction_id": "ds1000-full-v1-20260825T150857Z-extractor-whitespace-correction-v1",
+    "provider_outputs_reused": true,
+    "new_physical_model_calls": 0,
+    "full_regrade_path_eligible": 4,
+    "passed": 4,
+    "execution_accuracy": 1.0,
+    "tasks": [
+      {
+        "problem_id": 72,
+        "selected_role": "repair",
+        "passed": true
+      },
+      {
+        "problem_id": 218,
+        "selected_role": "synthesis",
+        "passed": true
+      },
+      {
+        "problem_id": 838,
+        "selected_role": "synthesis",
+        "passed": true
+      },
+      {
+        "problem_id": 896,
+        "selected_role": "repair",
+        "passed": true
+      }
+    ]
+  },
+  "evidence": {
+    "artifact_manifest": "artifacts/manifest.json",
+    "selected_summary": "artifacts/selected-summary.json",
+    "corrected_summary": "artifacts/correction-summary.json",
+    "task_evidence": "artifacts/task-evidence.json",
+    "run_history_chains": "artifacts/run-history-chains.json",
+    "population_manifest": "population-v1.json",
+    "offline_verifier": "verify.py"
+  },
+  "limitations": [
+    "This is a four-task public smoke population, not the full DS-1000 suite.",
+    "Public prompts create high contamination risk.",
+    "The corrected score is a deterministic regrade of exact recorded provider outputs, not a new model run.",
+    "This result does not represent broader AI, ML, experimentation, model tuning, or data engineering work.",
+    "Money cost is unknown because no source-backed price was configured for the route."
+  ]
+}

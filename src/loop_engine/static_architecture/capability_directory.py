@@ -2,9 +2,9 @@
 
 The directory stores machine-readable handshakes and registered endpoints.
 Loops can inspect operations, contracts, effects, locality, cost, access, and
-failure behavior before choosing a capability. Static Architecture search
-reads local handshake cards and returns Code Intelligence LoopRefs without
-executing an endpoint.
+failure behavior before choosing a capability. Custom Plugin discovery reads
+local handshake cards and returns Code Intelligence LoopRefs without executing
+an endpoint.
 
 Invocation is separate. A selected endpoint may use a declared fallback, but
 the result records which fallback layer changed. Effectful invocation belongs
@@ -489,7 +489,7 @@ def _get_endpoint(store):
     def _get(**kw):
         return serve_record_as_loop(
             store, kw.get("record_id", ""),
-            pillar=kw.get("pillar", "string_intelligence"))["value"]
+            pillar=kw.get("pillar", "context_intelligence"))["value"]
     return _get
 
 
@@ -736,7 +736,7 @@ def self_test() -> dict:
         tags=("leakage",), preferred_class="string",
         require_facets={"job_position": "risk_officer"})
     ms_job = d.search_by_need(q_job)
-    check("job_position_lens_focuses_string_intelligence",
+    check("job_position_lens_focuses_context_intelligence",
           ms_job and ms_job[0].resource_id == "s.warn"
           and ms_job[0].facets.get("job_position") == "risk_officer",
           "search focused one position's intelligence")
@@ -752,7 +752,7 @@ def self_test() -> dict:
     # so the snapshot belongs on the timeline.  Without a ledger the behaviour
     # is byte-identical — visibility is opt-in, never a behaviour change.
     from ..loop.recursive_loop import LoopLedger
-    from ..static_architecture.chronicle import to_canonical_events
+    from ..static_architecture.run_history import to_canonical_events
     _lg = LoopLedger()
     _quiet = d.snapshot()
     _loud = d.snapshot(ledger=_lg)

@@ -1,6 +1,6 @@
 # Reports
 
-A live run emits an event log. A saved Chronicle adds an immutable hash chain.
+A live run emits an event log. A saved Run History adds an immutable hash chain.
 Reports turn either form into something a person can act on.
 
 ## From the command line
@@ -51,13 +51,14 @@ loop1: prepare a quarterly plan
             [hybrid] 1.2s, 9 events, 1 model call, 294 tokens (mistral)
 ```
 
-The nesting is the point. A loop of loops rendered as a flat list hides the one
-structure worth seeing, so the tree is built from the parentage the runtime
-actually recorded.
+The relationships matter. A flat list hides which Loop spawned work, queried
+Intelligence, retrieved an item, or received a connected value. The current
+report renders the spawning structure. One complete relationship-DAG report
+is still a consolidation gap.
 
 ```python
 report.loops                  # how many
-report.deepest()              # nesting depth
+report.deepest()              # maximum spawning depth
 report.model_calls
 report.total_tokens
 report.cost_by_provider()     # {'mistral': 294}

@@ -5,15 +5,15 @@ runtime role, service layer, or architectural peer. The Practitioner uses
 ordinary loops to inspect past work and the current Intelligence Library, then
 propose useful changes.
 
-It is separate from Static Architecture. Static Architecture supplies the
-Retrieval Engine, Chronicle, stores, and validation services that the loop
-uses.
+It is not a separate Static Architecture group. It may use Intelligence Search
+and Retrieval like any other permitted Practitioner task. Run History, stores,
+and validation are internal runtime mechanics.
 
 ## Current flow
 
 ```mermaid
 flowchart LR
-    H[Verified Chronicle history] --> R[Retrieval Engine]
+    H[Verified Run History] --> R[Retrieval Engine]
     I[Four intelligence layers] --> R
     R --> L[Loop Practitioner<br/>task: improve the system]
     L --> C[Candidate staging]
@@ -30,7 +30,7 @@ candidate.
 `run_self_improvement()` performs a bounded review:
 
 1. Select an exact population from the saved-runs directory.
-2. Load each Chronicle and verify its event chain.
+2. Load each Run History record and verify its event chain.
 3. Exclude and report broken or unreadable runs.
 4. Search current intelligence through the Retrieval Engine.
 5. Audit missing classifications and broad `other` categories.

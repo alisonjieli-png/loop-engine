@@ -4,33 +4,41 @@ Start with the [main README](../README.md). Its first diagram shows how a task,
 Practitioner loops, a Solution Canvas, Static Architecture, and the four
 intelligence layers fit together.
 
+The [architecture showcase](../showcase/) explains the same system as a linear
+slide deck, browser player, and exported video.
+
 ## Learn the system in order
 
 | Order | Page | What it explains |
 |---:|---|---|
-| 1 | [Component guide](components/) | The complete map and the recommended reading order. |
-| 2 | [The Loop object and step profiles](components/loop-object/) | Modes, steps, limits, stopping, and loops that start loops. |
-| 2a | [Loop profile ontology](components/loop-object/LOOP-PROFILE-ONTOLOGY.md) | Versioned Practitioner, Intelligence, and Solution profiles with inheritance and handshakes. |
-| 3 | [Loop Practitioner](components/practitioner/) | How Practitioner loops build and test work. |
-| 4 | [Solution Canvas](components/solution-canvas/) | How Solution loops represent and run finished work. |
-| 5 | [Static Architecture and extensions](components/static-architecture/) | Shared services, search backends, adapters, and plugin boundaries. |
-| 6 | [The four intelligence layers](components/intelligence-layers/) | Ontology, Code templates, loop-bound retrieval, and Runtime Memory. |
+| 1 | [Repository organization](REPOSITORY-ORGANIZATION.md) | Which directory owns runtime code, contracts, guides, examples, benchmarks, case studies, and presentation assets. |
+| 2 | [Contract index](contracts/) | Current typed contract objects, implementation status, and consolidation gaps. |
+| 3 | [Taxonomy, ontology, and class map](architecture/TAXONOMY-ONTOLOGY-AND-CLASS-MAP.md) | One complete classification tree, exact registered profiles, public classes, and current gaps. |
+| 4 | [Component guide](components/) | The complete map and the recommended reading order. |
+| 5 | [The Loop object and step profiles](components/loop-object/) | Modes, steps, limits, loop conditions, exit conditions, and spawning. |
+| 6 | [Loop profile ontology](components/loop-object/LOOP-PROFILE-ONTOLOGY.md) | Versioned Practitioner, Intelligence, and Solution profiles with inheritance and handshakes. |
+| 7 | [Loop Practitioner](components/practitioner/) | How Practitioner Loops build and test work. |
+| 8 | [Solution Canvas](components/solution-canvas/) | How Solution Loops represent and run finished work. |
+| 9 | [Static Architecture](components/static-architecture/) | Intelligence Search and Retrieval, Web Research, and Custom Plugins. |
+| 10 | [The four intelligence layers](components/intelligence-layers/) | Ontology, Code templates, Loop-bound retrieval, and Runtime Memory. |
 
 ## Practitioner workflows
 
 | Page | What it explains |
 |---|---|
-| [Self-improvement as a Practitioner task](components/self-improvement/) | Chronicle review, intelligence audits, candidates, and domain seeds. |
+| [Self-improvement as a Practitioner task](components/self-improvement/) | Run History review, intelligence audits, candidates, and domain seeds. |
 | [Five-problem campaign](guides/campaigns.md) | Bounded provider and mode comparison with saved playback histories. |
-| [Benchmark candidate registry](benchmarks/) | 143 cataloged tracks with source, evaluator, access, cost, and eligibility fields. |
+| [Benchmark candidate registry](benchmarks/) | Cataloged tracks with source, evaluator, access, cost, and eligibility fields. |
 
 ## Start using Loop Engine
 
 | Page | Purpose |
 |---|---|
 | [Getting started](getting-started.md) | Install from GitHub and run useful examples. |
-| [Examples](../examples/) | Fourteen realistic example folders with their own instructions. |
+| [Examples](../examples/) | Seventeen realistic example folders with their own instructions. |
+| [Case studies](../case-studies/) | Completed full-system runs, failures, accounting, and limitations. |
 | [Loops and modes](guides/loops-and-modes.md) | A shorter runtime guide. |
+| [Spawned Loop delegation](guides/spawned-loop-delegation.md) | Typed spawned tasks, private request context, runtime ports, updates, and cancellation. |
 | [Providers and keys](guides/providers-and-keys.md) | Provider checks, failover, and cost attribution. |
 | [Runtime settings and model tiers](guides/settings.md) | Typed YAML settings, environment precedence, providers, model tiers, and escalation. |
 | [Custom endpoints](guides/custom-endpoints.md) | Connect a server you control. |
@@ -49,7 +57,7 @@ starting point.
 | [Typed API design](architecture/API-DESIGN.md) | Request objects, typed loop ports, compatibility wrappers, and the public parameter cap. |
 | [Design guidance](architecture/DESIGN-GUIDANCE.md) | Applying the design language. |
 | [Architecture visual guidance](architecture/ARCHITECTURE-VISUAL-GUIDANCE.md) | Required diagram order and content. |
-| [Historical architecture note](architecture/ARCHITECTURE.md) | Earlier architecture context. It is not the current onboarding map. |
+| [Architecture navigation](architecture/ARCHITECTURE.md) | Short current map and links to the authoritative contract and component pages. |
 
 ## Current research notes
 
@@ -71,9 +79,9 @@ not onboarding pages or a statement that every described feature is shipped.
 
 | Page | Purpose |
 |---|---|
-| [Master specification](reference/MASTER-SPECIFICATION.md) | Earlier full-system specification and open work. |
-| [Charter lineage](reference/TAEDRI-LOOP-CONSTITUTION-AND-AUTONOMOUS-CAMPAIGN-CHARTER.md) | Earlier governing principles retained for provenance. |
+| [Superseded master specification](reference/MASTER-SPECIFICATION.md) | Pointer to current sources and the earlier Git history. |
 | [Intelligence retrieval plan](reference/INTELLIGENCE-RETRIEVAL-PLAN.md) | Earlier retrieval plan and migration detail. |
+| [External reference sources](context/REFERENCE-SOURCES.md) | Paths to older Taedri material that may be inspected but never imported or copied in bulk. |
 
 ## Evidence and internal history
 
@@ -84,6 +92,13 @@ was measured and what the result does not establish.
 design history. These files preserve provenance, but they are not current user
 documentation.
 
+[`context/CODEX-START-HERE.md`](context/CODEX-START-HERE.md) is the compact
+entry point for a new Codex session. Repository-wide coding-agent rules are in
+[`AGENTS.md`](../AGENTS.md).
+[The older reference-source map](context/REFERENCE-SOURCES.md) explains how to
+consult Taedri and preserved design history without copying their structure
+into Loop Engine.
+
 If you are taking over development, read
 [HANDOFF.md](internal/HANDOFF.md) after the current component and architecture
 pages.
@@ -93,6 +108,11 @@ pages.
 - [Documentation style](STYLE.md)
 - [Example README template](templates/example-readme.md)
 - [Concept page template](templates/concept-page.md)
+
+## Coding-agent prompts
+
+- [Governing OpenCode and Codex development prompt](prompts/LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md)
+- [Architecture showcase and video prompt](prompts/LOOP-ENGINE-ARCHITECTURE-VIDEO-BUILD-PROMPT.md)
 
 Public prose also follows the repository's
 [`humanizer-context.md`](../humanizer-context.md) file. It defines the reader,

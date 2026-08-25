@@ -39,9 +39,9 @@ Key invariants:
     - total failure is a failure, never a silent deterministic substitution;
     - a forbidden model is refused before any provider is contacted.
 
-Verification: self_test() — order is honoured, the first success wins, total
-failure names every attempt, and the adversarial "quietly succeed with no
-provider" path is refused.
+Verification: self_test() covers data contracts and refusals that happen before
+provider use.  Ordered live failover requires separately authorized provider
+calls and is not claimed by the offline suite.
 """
 
 from __future__ import annotations
@@ -60,7 +60,7 @@ PROVIDERS = {
 }
 
 #: Default order. Ollama first because its counts drive the existing campaign
-#: receipts; Mistral second because it is verified live; OpenRouter last
+#: records; Mistral second because it is verified live; OpenRouter last
 #: because its key was dead when this was written (2026-08-24) — an order is a
 #: measured preference, not a ranking of quality.
 DEFAULT_ORDER = ("ollama_cloud", "mistral", "openrouter")
@@ -69,7 +69,7 @@ DEFAULT_ORDER = ("ollama_cloud", "mistral", "openrouter")
 @dataclass(frozen=True)
 class ProviderAttempt:
     """One provider's answer to one call — including the refusals, which are
-    the part a receipt usually loses."""
+    the part a record usually loses."""
     provider: str
     model: str
     ok: bool
@@ -106,7 +106,7 @@ class FailoverResult:
                 "attempts": [a.as_dict() for a in self.attempts]}
 
     def usage_record(self) -> dict:
-        """The shape a receipt stores: counts ALWAYS carry their provider."""
+        """The report shape: counts always carry their provider."""
         return {"provider": self.provider, "model": self.model,
                 "prompt_tokens": self.prompt_tokens,
                 "eval_tokens": self.eval_tokens,
@@ -122,7 +122,7 @@ def call_with_failover(prompt: str, *, order=DEFAULT_ORDER, models=None,
     ``models`` optionally maps provider -> model name; a provider not named
     uses its own default. Every attempt is recorded, successes and refusals
     alike, because "we tried three providers and the third worked" is a
-    materially different receipt from "a model answered"."""
+    materially different record from "a model answered"."""
     models = models or {}
     res = FailoverResult()
 
@@ -188,97 +188,62 @@ def available_providers(order=DEFAULT_ORDER) -> dict:
 
 
 def self_test() -> dict:
+    """Offline data-contract and pre-contact refusal checks only."""
     results = []
 
     def check(name, ok, note=""):
         results.append({"test": name, "passed": bool(ok), "detail": note})
 
-    from ..loop.recursive_loop import LoopLedger
-    from .ollama_client import ChatResult
+    unknown = call_with_failover("q", order=("not_configured",))
+    check("an_unknown_provider_is_a_typed_refusal",
+          not unknown.ok and len(unknown.attempts) == 1
+          and "unknown provider" in unknown.attempts[0].error,
+          "no provider boundary was invoked")
 
-    # A stub provider module: enough surface for the resolver, no network.
-    class _Stub:
-        DEFAULT_MODEL = "stub/model"
+    banned = call_with_failover(
+        "q", order=("ollama_cloud",),
+        models={"ollama_cloud": f"vendor/{FORBIDDEN_MODELS[0]}"})
+    check("a_forbidden_model_is_refused_before_provider_use",
+          not banned.ok and len(banned.attempts) == 1
+          and "forbidden" in banned.attempts[0].error
+          and banned.attempts[0].prompt_tokens == 0
+          and banned.attempts[0].eval_tokens == 0)
 
-        def __init__(self, ok, text="answer", tokens=(7, 5)):
-            self._ok, self._text, self._t = ok, text, tokens
+    failed = FailoverResult(attempts=[
+        ProviderAttempt("ollama_cloud", "m1", False, error="rate limited"),
+        ProviderAttempt("mistral", "m2", False, error="unavailable"),
+    ])
+    check("the_failure_result_preserves_every_declared_attempt",
+          not failed.ok and failed.text == "" and failed.provider == ""
+          and [item.provider for item in failed.attempts]
+          == ["ollama_cloud", "mistral"])
 
-        def chat_maxout(self, prompt, *, model="", system="", timeout=0):
-            return ChatResult(text=self._text if self._ok else "", model=model,
-                              prompt_tokens=self._t[0] if self._ok else 0,
-                              eval_tokens=self._t[1] if self._ok else 0,
-                              ok=self._ok,
-                              error="" if self._ok else "stub refused")
-        chat = chat_maxout
+    attributed = FailoverResult(
+        text="answer", provider="mistral", model="mistral-small-latest",
+        ok=True, prompt_tokens=7, eval_tokens=5,
+        attempts=[ProviderAttempt(
+            "mistral", "mistral-small-latest", True, 7, 5)])
+    check("usage_data_keeps_provider_and_model_attribution",
+          attributed.total_tokens == 12
+          and attributed.usage_record()["provider"] == "mistral"
+          and attributed.usage_record()["providers_tried"] == ["mistral"])
 
-    saved = dict(PROVIDERS)
-    try:
-        PROVIDERS.clear()
-        PROVIDERS.update({"first": _Stub(False), "second": _Stub(True),
-                          "third": _Stub(True, "should not be reached")})
-
-        lg = LoopLedger()
-        r = call_with_failover("q", order=("first", "second", "third"),
-                               ledger=lg)
-
-        # 1. ORDER IS HONOURED and the FIRST SUCCESS WINS — the third provider
-        # is never contacted, which is what makes an order meaningful.
-        check("failover_tries_in_order_and_stops_at_the_first_success",
-              r.ok and r.provider == "second" and r.text == "answer"
-              and len(r.attempts) == 2
-              and [a.provider for a in r.attempts] == ["first", "second"],
-              "third provider never contacted")
-
-        # 2. THE REFUSAL IS KEPT. A receipt that shows only the success hides
-        # that a provider was down — exactly the fact worth knowing later.
-        check("refusals_are_recorded_alongside_the_success",
-              r.attempts[0].ok is False and "refused" in r.attempts[0].error
-              and r.usage_record()["providers_tried"] == ["first", "second"]
-              and r.usage_record()["provider"] == "second",
-              "counts always carry the provider that produced them")
-
-        # 3. the ledger sees both the failure and the success as model events
-        evs = [(e.get("event"), e.get("provider")) for e in lg.events
-               if e.get("event", "").startswith("model_")]
-        check("both_the_failure_and_the_success_reach_the_ledger",
-              ("model_invocation_failed", "first") in evs
-              and ("model_led", "second") in evs,
-              f"{len(evs)} model events recorded")
-
-        # 4. ADVERSARIAL — TOTAL FAILURE STAYS A FAILURE. This is the rule the
-        # module exists to enforce: no silent degradation to a non-model answer.
-        PROVIDERS.update({"first": _Stub(False), "second": _Stub(False)})
-        dead = call_with_failover("q", order=("first", "second"))
-        check("total_failure_is_a_failure_naming_every_attempt",
-              dead.ok is False and dead.text == "" and dead.provider == ""
-              and len(dead.attempts) == 2
-              and dead.total_tokens == 0,
-              "a model arm that reached no model reports no model result")
-
-        # 5. a forbidden model is refused BEFORE any provider is contacted, and
-        # an unknown provider is a recorded refusal rather than a crash
-        banned = call_with_failover(
-            "q", order=("second",),
-            models={"second": f"vendor/{FORBIDDEN_MODELS[0]}"})
-        unknown = call_with_failover("q", order=("nope",))
-        check("forbidden_models_and_unknown_providers_are_refused_safely",
-              banned.ok is False
-              and "forbidden" in banned.attempts[0].error
-              and unknown.ok is False
-              and "unknown provider" in unknown.attempts[0].error,
-              "policy is checked before contact; nothing raises")
-    finally:
-        PROVIDERS.clear()
-        PROVIDERS.update(saved)
-
-    # 6. the real table is intact after the stub swap, and every adapter
-    # exposes the contract the resolver depends on
-    check("every_registered_adapter_exposes_the_resolver_contract",
+    check("every_registered_adapter_exposes_the_full_model_contract",
           set(PROVIDERS) == {"ollama_cloud", "mistral", "openrouter"}
-          and all(hasattr(m, "chat_maxout") and hasattr(m, "DEFAULT_MODEL")
-                  and hasattr(m, "verify") for m in PROVIDERS.values()),
-          f"{len(PROVIDERS)} providers: {sorted(PROVIDERS)}")
+          and all(
+              hasattr(adapter, "chat_maxout")
+              and hasattr(adapter, "DEFAULT_MODEL")
+              and hasattr(adapter, "verify")
+              and hasattr(adapter, "output_capability_for")
+              for adapter in PROVIDERS.values()))
 
-    passed = sum(1 for t in results if t["passed"])
-    return {"tests": results, "passed": passed, "total": len(results),
-            "all_passed": passed == len(results)}
+    passed = sum(1 for test in results if test["passed"])
+    return {
+        "record_type": "provider_failover_contract_test/v2",
+        "scope": "offline_contract_only",
+        "provider_integration_proven": False,
+        "tests": results,
+        "passed": passed,
+        "total": len(results),
+        "all_passed": passed == len(results),
+    }

@@ -8,7 +8,7 @@ Owns:
       fail-closed legal-transition machine;
     - the default bootstrap guidance for nontrivial work (§7.2) with its
       before/after pairings (§7.3);
-    - skip/defer RECEIPTS carrying the full record (reason, evidence, risk,
+    - skip/defer RECORDS carrying the full record (reason, evidence, risk,
       alternative, revisit condition, expiration) — a skip without a reason
       is refused;
     - Guidance Debt: deferred/skipped items stay visible until satisfied,
@@ -20,7 +20,7 @@ Does not own:
       the improvement lane own their pieces).
 
 Public entry points:
-    - GuidanceLedger(items=BOOTSTRAP_GUIDANCE).advance(key, to, **receipt)
+    - GuidanceLedger(items=BOOTSTRAP_GUIDANCE).advance(key, to, **record)
     - ledger.debt() / ledger.render_for_prompt()
 
 Key invariants:
@@ -93,7 +93,7 @@ _SKIP_REQUIRED = ("reason", "revisit_condition")
 
 
 class GuidanceError(ValueError):
-    """An illegal guidance transition or an incomplete skip receipt."""
+    """An illegal guidance transition or an incomplete skip record."""
 
 
 @dataclass
@@ -121,7 +121,7 @@ class GuidanceLedger:
                     a, f"AFTER obligation paired with '{i['key']}'.",
                     state="not_considered")
 
-    def advance(self, key: str, to: str, ledger=None, **receipt) -> GuidanceItem:
+    def advance(self, key: str, to: str, ledger=None, **record) -> GuidanceItem:
         item = self.items[key]
         if to not in GUIDANCE_STATES:
             raise GuidanceError(f"unknown guidance state {to!r}")
@@ -129,12 +129,12 @@ class GuidanceLedger:
             raise GuidanceError(f"illegal guidance transition "
                                 f"{item.state} -> {to} for {key!r}")
         if to in ("skipped_with_reason", "deferred"):
-            missing = [f for f in _SKIP_REQUIRED if not receipt.get(f)]
+            missing = [f for f in _SKIP_REQUIRED if not record.get(f)]
             if missing:
                 raise GuidanceError(
-                    f"a {to} needs {missing} — a skip without its receipt "
+                    f"a {to} needs {missing} — a skip without its record "
                     "is refused (why, when to revisit, at minimum)")
-        item.history.append({"from": item.state, "to": to, **receipt})
+        item.history.append({"from": item.state, "to": to, **record})
         item.state = to
         # satisfying a before-item makes its after-obligation DUE.
         if to in ("satisfied_provisional", "satisfied_validated") \
@@ -149,7 +149,7 @@ class GuidanceLedger:
     def debt(self) -> list:
         """Deferred/skipped/blocked items stay VISIBLE until resolved."""
         return [{"key": i.key, "state": i.state,
-                 "receipt": i.history[-1] if i.history else {}}
+                 "record": i.history[-1] if i.history else {}}
                 for i in self.items.values()
                 if i.state in ("deferred", "skipped_with_reason", "blocked")]
 
@@ -157,14 +157,14 @@ class GuidanceLedger:
         due = [i for i in self.items.values()
                if i.state in ("due", "in_progress", "reopened")]
         lines = ["GUIDANCE (due considerations — satisfy, defer with a "
-                 "receipt, or mark not applicable):"]
+                 "record, or mark not applicable):"]
         lines += [f"- [{i.state}] {i.text}" for i in due[:max_items]]
         d = self.debt()
         if d:
             lines.append(f"GUIDANCE DEBT ({len(d)} item(s) deferred/skipped "
                          "— still owed):")
             lines += [f"- [{x['state']}] {x['key']}: "
-                      f"{x['receipt'].get('reason', '?')}" for x in d[:4]]
+                      f"{x['record'].get('reason', '?')}" for x in d[:4]]
         return "\n".join(lines)
 
 
@@ -182,7 +182,7 @@ def self_test() -> dict:
           and g.items["evaluate_actual_result"].state == "not_considered"
           and len(g.items) >= 14)
 
-    # 2. a skip WITHOUT its receipt is refused; with it, recorded fully.
+    # 2. a skip WITHOUT its record is refused; with it, recorded fully.
     refused = False
     try:
         g.advance("create_blueprint", "skipped_with_reason")
@@ -194,7 +194,7 @@ def self_test() -> dict:
               risk="low — single-artifact output",
               alternative="direct execution",
               revisit_condition="if the task grows a second deliverable")
-    check("skip_needs_its_full_receipt",
+    check("skip_needs_its_full_record",
           refused and g.items["create_blueprint"].state
           == "skipped_with_reason"
           and g.items["create_blueprint"].history[-1]["revisit_condition"])

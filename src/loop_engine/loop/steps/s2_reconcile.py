@@ -15,7 +15,7 @@ from ...code_nodes.blueprint import (GoalStack, WorkingBlueprint, LongHorizonAnc
                          build_anchor, WorkPacket, ELABORATION_LEVELS,
                          DECISION_BOUNDARIES, grounding_summary,
                          seed_from_objective)
-from ...code_nodes.planning import (GoalGraph, GoalNode, BlueprintItem, CheckpointContract,
+from ...code_nodes.planning import (GoalGraph, GoalItem, BlueprintItem, CheckpointContract,
                         PlanFrontier, compute_frontier, validate_blueprint)
 from ...strings.task_blueprint import (TaskBlueprint, default_opening_sequence,
                              bias_next_from_blueprint, OpeningMove)
@@ -23,7 +23,7 @@ from ...strings.task_blueprint import (TaskBlueprint, default_opening_sequence,
 __all__ = ["default_reconcile_horizon", "GoalStack", "WorkingBlueprint",
            "LongHorizonAnchorPacket", "build_anchor", "WorkPacket",
            "ELABORATION_LEVELS", "DECISION_BOUNDARIES", "grounding_summary",
-           "seed_from_objective", "GoalGraph", "GoalNode", "BlueprintItem",
+           "seed_from_objective", "GoalGraph", "GoalItem", "BlueprintItem",
            "CheckpointContract", "PlanFrontier", "compute_frontier",
            "validate_blueprint", "TaskBlueprint", "default_opening_sequence",
            "bias_next_from_blueprint", "OpeningMove"]

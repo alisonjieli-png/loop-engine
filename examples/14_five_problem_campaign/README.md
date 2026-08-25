@@ -2,7 +2,7 @@
 
 This example runs five utility problems through deterministic Practitioner
 loops. Each problem uses a frozen input and evaluator. Every run is saved as a
-Chronicle in a temporary directory.
+Run History in a temporary directory.
 
 ```bash
 python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
@@ -12,7 +12,7 @@ python3 examples/14_five_problem_campaign/run.py
 - Network or model: none
 - External effects: creates and removes a temporary local run directory
 - Shows: campaign expansion, live console events, deterministic verification,
-  Chronicle creation, and result accounting
+  Run History creation, and result accounting
 - Problems: support priority, customer import, invoice reconciliation,
   deployment decision, and delivery estimate
 

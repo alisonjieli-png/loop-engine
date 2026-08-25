@@ -1,0 +1,39 @@
+[loop1] INIT depth=0 nine_step/deep: goal: regrade recorded DS-1000 problem 72 output
+[loop1] orient (deterministic) conf=1.0: orient:immutable-parent-output-loaded
+[loop1] reconcile_horizon (deterministic) conf=1.0: reconcile:evaluator-adapter-conformance-only
+[loop1] assess_prepare (deterministic) conf=1.0: assess:no-new-model-call-no-new-solver-information
+[loop1] decide_next (deterministic) conf=1.0: decide:regrade-original-selected-role-repair
+[loop1] how (deterministic) conf=1.0: how:upstream-compatible-whitespace-preserving-extraction
+[loop2] INIT depth=1 custom/light: goal: serve recorded candidate_a output without model execution
+[loop1] SPAWN -> loop2: serve recorded candidate_a output without model execution
+[loop2] serve_recorded_output (deterministic) conf=1.0: recorded-output:candidate_a
+[loop2] TERMINAL: done
+[loop3] INIT depth=1 custom/light: goal: serve recorded candidate_b output without model execution
+[loop1] SPAWN -> loop3: serve recorded candidate_b output without model execution
+[loop3] serve_recorded_output (deterministic) conf=1.0: recorded-output:candidate_b
+[loop3] TERMINAL: done
+[loop4] INIT depth=1 custom/light: goal: serve recorded repair output without model execution
+[loop1] SPAWN -> loop4: serve recorded repair output without model execution
+[loop4] serve_recorded_output (deterministic) conf=1.0: recorded-output:repair
+[loop4] TERMINAL: done
+[loop5] INIT depth=1 custom/light: goal: serve recorded synthesis output without model execution
+[loop1] SPAWN -> loop5: serve recorded synthesis output without model execution
+[loop5] serve_recorded_output (deterministic) conf=1.0: recorded-output:synthesis
+[loop5] TERMINAL: done
+[loop1] act (deterministic) conf=1.0: act:corrected-candidate:57db231e0c645bf95a3aa80867aca3dc3cfbf832a6cf19
+[loop6] INIT depth=1 custom/light: goal: compile and independently evaluate corrected problem 72
+[loop1] SPAWN -> loop6: compile and independently evaluate corrected problem 72
+[loop7] INIT depth=2 five_step/light: goal: deterministic check: solution loop execute_candidate_in_isolated_upstream_evalua
+[loop6] SPAWN -> loop7: deterministic check: solution loop execute_candidate_in_isol
+[loop7] load (deterministic) conf=0.95: load:done
+[loop7] choose (deterministic) conf=0.95: choose:done
+[loop7] act (deterministic) conf=0.95: act:done:IsolatedEvaluation
+[loop7] check (deterministic) conf=0.95: check:ok
+[loop7] commit (deterministic) conf=0.95: commit:done
+[loop7] TERMINAL: done
+[loop6] compile_execute_grade (deterministic) conf=1.0: upstream-evaluation:passed
+[loop6] TERMINAL: done
+[loop1] verify (deterministic) conf=1.0: verify:corrected-upstream-passed=True
+[loop1] integrate_commit (deterministic) conf=1.0: integrate:corrected-passed=True
+[loop1] route (deterministic) conf=1.0: route:finish-derived-correction
+[loop1] TERMINAL: done

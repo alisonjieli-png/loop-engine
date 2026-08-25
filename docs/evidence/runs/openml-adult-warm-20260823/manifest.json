@@ -1,8 +1,8 @@
 {
- "record_type": "chronicle_manifest/v1",
- "run_id": "openml-adult-warm-20260823",
- "parent_run_id": "",
- "events": 9,
- "head_digest": "15c5f7e6e376420aadf383748caef467173357e82b59eac8d5bc4c8855c1ac0a",
- "committed": true
+  "record_type": "run_history_manifest/v1",
+  "run_id": "openml-adult-warm-20260823",
+  "parent_run_id": "",
+  "events": 9,
+  "head_digest": "67447bc07b548e5b8f40a0afb896f1ae499164b7c7c02a0f793bb63bcbc6ada0",
+  "committed": true
 }

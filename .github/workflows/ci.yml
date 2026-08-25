@@ -27,18 +27,8 @@ jobs:
       - name: Check Markdown structure
         run: >-
           npx --yes markdownlint-cli2@0.23.2
-          README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md humanizer-context.md
-          docs/README.md docs/getting-started.md
-          'docs/components/**/*.md' 'docs/guides/*.md' 'docs/templates/*.md'
-          'docs/benchmarks/*.md' 'docs/research/*.md'
-          docs/STYLE.md
-          docs/architecture/API-DESIGN.md
-          docs/architecture/ARCHITECTURE_CONFORMANCE.md
-          docs/architecture/DESIGN-GUIDANCE.md
-          docs/architecture/DESIGN-LANGUAGE.md
-          docs/architecture/ARCHITECTURE-VISUAL-GUIDANCE.md
-          docs/reference/PRODUCT-NOMENCLATURE.md
-          docs/reference/UNIVERSAL-LOOP-STANDARD.md
+          AGENTS.md README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md humanizer-context.md
+          showcase/README.md 'docs/**/*.md' 'case-studies/*.md'
           'examples/**/*.md'
 
       - name: Check public language
@@ -46,25 +36,24 @@ jobs:
         with:
           version: 3.18.0
           sync: false
-          files: '["README.md","CHANGELOG.md","CONTRIBUTING.md","SECURITY.md","humanizer-context.md","docs/README.md","docs/getting-started.md","docs/components","docs/guides","docs/templates","docs/benchmarks","docs/research","docs/STYLE.md","docs/architecture/API-DESIGN.md","docs/architecture/ARCHITECTURE_CONFORMANCE.md","docs/architecture/DESIGN-GUIDANCE.md","docs/architecture/DESIGN-LANGUAGE.md","docs/architecture/ARCHITECTURE-VISUAL-GUIDANCE.md","docs/reference/PRODUCT-NOMENCLATURE.md","docs/reference/UNIVERSAL-LOOP-STANDARD.md","examples"]'
+          files: '["AGENTS.md","README.md","CHANGELOG.md","CONTRIBUTING.md","SECURITY.md","humanizer-context.md","showcase/README.md","docs","case-studies","examples"]'
+
+      - name: Refuse retired public language
+        run: |
+          if rg --hidden -n -i '\bchronicles?\b|\breceipts?\b' \
+            README.md CHANGELOG.md humanizer-context.md docs examples \
+            case-studies benchmarks showcase src; then
+            echo "Retired public language found. Use Run History, event log, record, report, or evidence."
+            exit 1
+          fi
 
       - name: Check local links and section anchors
         uses: lycheeverse/lychee-action@v2
         with:
           args: >-
             --offline --include-fragments --root-dir "$GITHUB_WORKSPACE"
-            README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md humanizer-context.md
-            docs/README.md docs/getting-started.md
-            'docs/components/**/*.md' 'docs/guides/*.md' 'docs/templates/*.md'
-            'docs/benchmarks/*.md' 'docs/research/*.md'
-            docs/STYLE.md
-            docs/architecture/API-DESIGN.md
-            docs/architecture/ARCHITECTURE_CONFORMANCE.md
-            docs/architecture/DESIGN-GUIDANCE.md
-            docs/architecture/DESIGN-LANGUAGE.md
-            docs/architecture/ARCHITECTURE-VISUAL-GUIDANCE.md
-            docs/reference/PRODUCT-NOMENCLATURE.md
-            docs/reference/UNIVERSAL-LOOP-STANDARD.md
+            AGENTS.md README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md humanizer-context.md
+            showcase/README.md 'docs/**/*.md' 'case-studies/*.md'
             'examples/**/*.md'
           fail: true
           failIfEmpty: true
@@ -104,6 +93,12 @@ jobs:
           npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/model-gateway.mmd" -o "$RUNNER_TEMP/model-gateway.png" --quiet
           awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/loop-object/LOOP-PROFILE-ONTOLOGY.md > "$RUNNER_TEMP/loop-profiles.mmd"
           npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/loop-profiles.mmd" -o "$RUNNER_TEMP/loop-profiles.png" --quiet
+
+      - name: Verify interactive architecture and video
+        run: |
+          npm ci --prefix showcase
+          npm test --prefix showcase
+          node showcase/tests/visual-audit.mjs
 
   test:
     name: suite + conformance gates

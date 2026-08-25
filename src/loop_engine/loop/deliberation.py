@@ -89,22 +89,22 @@ def blueprint_then_refine(
     # Recursively expand into a nested plan to `depth`.
     def expand(step: str, d: int) -> dict:
         if d <= 0:
-            return {"step": step, "children": []}
+            return {"step": step, "spawned_loops": []}
         kids = list(refine_step(step, d))
-        return {"step": step, "children": [expand(k, d - 1) for k in kids]}
+        return {"step": step, "spawned_loops": [expand(k, d - 1) for k in kids]}
     blueprint = [expand(s, depth) for s in top]
     rounds = depth + 1
 
     # The first step's refined alternatives become the moves to try.
-    first_children = blueprint[0]["children"] if blueprint else []
-    alternatives = [c["step"] for c in first_children][:first_step_alternatives]
+    first_spawned_loops = blueprint[0]["spawned_loops"] if blueprint else []
+    alternatives = [c["step"] for c in first_spawned_loops][:first_step_alternatives]
     if not alternatives and top:
         alternatives = [top[0]]
     moves = [move("move.constructive.instantiate", alt,
                   mechanism=f"refined alternative for first step {top[0]!r}"
                   if top else "", confidence=0.75)
              for alt in alternatives]
-    considered = tuple(c["step"] for node in blueprint for c in node["children"])
+    considered = tuple(c["step"] for node in blueprint for c in node["spawned_loops"])
     advanced = tuple(a for a in considered if _is_advanced(a))
     return DeliberationResult(
         strategy="blueprint_then_refine",

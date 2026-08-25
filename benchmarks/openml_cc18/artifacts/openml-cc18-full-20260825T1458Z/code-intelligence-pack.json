@@ -1,0 +1,238 @@
+{
+  "admission_reference": "benchmarks/openml_cc18/run.py:admit_code_intelligence_pack",
+  "record_type": "openml_code_intelligence_pack/v1",
+  "records": [
+    {
+      "admission_test": "benchmarks/openml_cc18/run.py:admit_code_intelligence_pack",
+      "callable_sha256": "7fed9affddb24ac2c8ab45dfb64bf835de37f2ae69d6be38787e9bd6e4e817d6",
+      "effects": [
+        "reads_fs"
+      ],
+      "entrypoint": "benchmarks.openml_cc18.openml_runtime:verify_source_artifact",
+      "maturity": "registered",
+      "record_id": "code.openml.verify_source_artifact",
+      "title": "Verify OpenML source bytes and hashes",
+      "typed_contract": {
+        "input_roles": [
+          "artifact_path",
+          "frozen_hash_contract"
+        ],
+        "output_roles": [
+          "verified_source_check"
+        ]
+      },
+      "version": "1.0.0"
+    },
+    {
+      "admission_test": "benchmarks/openml_cc18/run.py:admit_code_intelligence_pack",
+      "callable_sha256": "83ecd9974cc7594cbe134103514d2fbefe812a01b9b9125b3f44f707bcc6afd8",
+      "effects": [
+        "reads_fs"
+      ],
+      "entrypoint": "benchmarks.openml_cc18.openml_runtime:load_arff_frame",
+      "maturity": "registered",
+      "record_id": "code.openml.load_arff_frame",
+      "title": "Load an official OpenML ARFF without row reordering",
+      "typed_contract": {
+        "input_roles": [
+          "verified_arff_path"
+        ],
+        "output_roles": [
+          "ordered_tabular_frame"
+        ]
+      },
+      "version": "1.0.0"
+    },
+    {
+      "admission_test": "benchmarks/openml_cc18/run.py:admit_code_intelligence_pack",
+      "callable_sha256": "4a16d50a5814e3d56a7db2206154eb31c77f88123e4206d056329d9f344b07b7",
+      "effects": [
+        "reads_fs"
+      ],
+      "entrypoint": "benchmarks.openml_cc18.openml_runtime:load_official_splits",
+      "maturity": "registered",
+      "record_id": "code.openml.load_official_splits",
+      "title": "Load and validate every official OpenML fold",
+      "typed_contract": {
+        "input_roles": [
+          "verified_split_path",
+          "row_count",
+          "split_contract"
+        ],
+        "output_roles": [
+          "official_fold_sequence"
+        ]
+      },
+      "version": "1.0.0"
+    },
+    {
+      "admission_test": "benchmarks/openml_cc18/run.py:admit_code_intelligence_pack",
+      "callable_sha256": "d258be2217a2ff1288d9875433f7d1f03acf612d8a78fe9078122fc0b7c47b1f",
+      "effects": [
+        "reads_fs"
+      ],
+      "entrypoint": "benchmarks.openml_cc18.openml_runtime:load_task_bundle",
+      "maturity": "registered",
+      "record_id": "code.openml.load_task_bundle",
+      "title": "Build the typed OpenML task input bundle",
+      "typed_contract": {
+        "input_roles": [
+          "task_contract",
+          "verified_dataset",
+          "verified_splits"
+        ],
+        "output_roles": [
+          "openml_task_bundle"
+        ]
+      },
+      "version": "1.0.0"
+    },
+    {
+      "admission_test": "benchmarks/openml_cc18/run.py:admit_code_intelligence_pack",
+      "callable_sha256": "146438566cab6e037f908d202028f6464d4d95679cd5802b851d519fb83f0da4",
+      "effects": [
+        "pure"
+      ],
+      "entrypoint": "benchmarks.openml_cc18.openml_runtime:build_preprocessor",
+      "maturity": "registered",
+      "record_id": "code.openml.build_preprocessor",
+      "title": "Build fixed unknown-safe one-hot preprocessing",
+      "typed_contract": {
+        "input_roles": [
+          "tabular_feature_frame"
+        ],
+        "output_roles": [
+          "column_transformer"
+        ]
+      },
+      "version": "1.0.0"
+    },
+    {
+      "admission_test": "benchmarks/openml_cc18/run.py:admit_code_intelligence_pack",
+      "callable_sha256": "552d7e5d022f36ad7bf650dbbc85ba0bac4ff695d87809408a9d7982cd7ae082",
+      "effects": [
+        "pure"
+      ],
+      "entrypoint": "benchmarks.openml_cc18.openml_runtime:build_logistic_pipeline",
+      "maturity": "registered",
+      "record_id": "code.openml.logistic_pipeline",
+      "title": "Build C 1.0 logistic pipeline with max_iter 1000",
+      "typed_contract": {
+        "input_roles": [
+          "tabular_feature_frame"
+        ],
+        "output_roles": [
+          "fixed_logistic_pipeline"
+        ]
+      },
+      "version": "1.0.0"
+    },
+    {
+      "admission_test": "benchmarks/openml_cc18/run.py:admit_code_intelligence_pack",
+      "callable_sha256": "cf6303777d18e386b3637425f925e54954a0fc4e763486c160051c2bab86eb72",
+      "effects": [
+        "pure"
+      ],
+      "entrypoint": "benchmarks.openml_cc18.openml_runtime:build_random_forest_pipeline",
+      "maturity": "registered",
+      "record_id": "code.openml.seeded_random_forest",
+      "title": "Build 200-tree seeded random forest with one CPU thread",
+      "typed_contract": {
+        "input_roles": [
+          "tabular_feature_frame"
+        ],
+        "output_roles": [
+          "fixed_random_forest_pipeline"
+        ]
+      },
+      "version": "1.0.0"
+    },
+    {
+      "admission_test": "benchmarks/openml_cc18/run.py:admit_code_intelligence_pack",
+      "callable_sha256": "a3def7a01c557b6a28a1eb20950cc8c49289b5b230322acdc8f7af8e0d9f86bb",
+      "effects": [
+        "pure"
+      ],
+      "entrypoint": "benchmarks.openml_cc18.openml_runtime:execute_fold_solution",
+      "maturity": "registered",
+      "record_id": "code.openml.execute_official_folds",
+      "title": "Fit and predict every official fold without grading",
+      "typed_contract": {
+        "input_roles": [
+          "openml_task_bundle",
+          "fixed_candidate_configuration"
+        ],
+        "output_roles": [
+          "openml_fold_predictions"
+        ]
+      },
+      "version": "1.0.0"
+    },
+    {
+      "admission_test": "benchmarks/openml_cc18/run.py:admit_code_intelligence_pack",
+      "callable_sha256": "1ce0909ac00dfa4b85fe7a0df497177e5dd6c0d34631b3fa9fbf65980b95d1b6",
+      "effects": [
+        "pure"
+      ],
+      "entrypoint": "benchmarks.openml_cc18.openml_runtime:evaluate_accuracy",
+      "maturity": "registered",
+      "record_id": "code.openml.accuracy_evaluator",
+      "title": "Independently validate predictions and compute fold accuracy",
+      "typed_contract": {
+        "input_roles": [
+          "openml_fold_predictions",
+          "openml_task_bundle"
+        ],
+        "output_roles": [
+          "openml_accuracy_evaluation"
+        ]
+      },
+      "version": "1.0.0"
+    },
+    {
+      "admission_test": "benchmarks/openml_cc18/run.py:admit_code_intelligence_pack",
+      "callable_sha256": "ba74de21854ab408c8d887a6924068bab3326b630a7a230088a2ee82dc6348da",
+      "effects": [
+        "pure"
+      ],
+      "entrypoint": "benchmarks.openml_cc18.openml_runtime:compile_tabular_canvas",
+      "maturity": "registered",
+      "record_id": "code.openml.canvas_compiler",
+      "title": "Compile and render a typed Solution Canvas",
+      "typed_contract": {
+        "input_roles": [
+          "solution_spec",
+          "operation_registry"
+        ],
+        "output_roles": [
+          "compiled_solution_plan",
+          "solution_canvas"
+        ]
+      },
+      "version": "1.0.0"
+    },
+    {
+      "admission_test": "benchmarks/openml_cc18/run.py:admit_code_intelligence_pack",
+      "callable_sha256": "8dbcbd470c2a3f18eb14f6376261850a788b74135ad98528a6bf98267cd780da",
+      "effects": [
+        "pure"
+      ],
+      "entrypoint": "benchmarks.openml_cc18.openml_runtime:run_compiled_canvas",
+      "maturity": "registered",
+      "record_id": "code.openml.canvas_runner",
+      "title": "Execute the compiled Canvas through Solution component loops",
+      "typed_contract": {
+        "input_roles": [
+          "compiled_solution_plan",
+          "openml_task_bundle",
+          "loop_ledger"
+        ],
+        "output_roles": [
+          "openml_fold_predictions"
+        ]
+      },
+      "version": "1.0.0"
+    }
+  ],
+  "version": "1.0.0"
+}

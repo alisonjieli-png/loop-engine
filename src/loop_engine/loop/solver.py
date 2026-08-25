@@ -1,4 +1,8 @@
-"""The Universal Solver — the single core front door.  Not a side branch.
+"""Internal solution-planning service.
+
+The public front door is ``code_nodes.universal_solve.solve``. This module
+retains the planning, reuse, and matrix algorithms as Code Intelligence. Every
+public call executes them inside the canonical ``recursive_loop.Loop``.
 
 One call solves a task by composing every layer built here into one path:
 
@@ -18,9 +22,9 @@ One call solves a task by composing every layer built here into one path:
          2 fails at execution time, the matrix waterfalls to an alternative
          instead of collapsing.
 
-Deterministic mode spends zero model tokens end to end; models mode uses the
-council/debate at full output and OpenCode workers to author nodes — both run the
-SAME loop under the SAME guards (reuse-first, verify-before-advance).
+The public service currently permits deterministic mode only. Model-backed
+builders remain internal candidates until they route through ModelGateway with
+physical call, token, cost, and failure accounting.
 """
 
 from __future__ import annotations
@@ -31,19 +35,20 @@ from typing import Any, Callable, Sequence
 from ..strings.knowledge import Knowledge
 from ..loop.canvas import (Canvas, CanvasNode, SolutionSlot, TypeContract,
                      execute_matrix)
-from ..loop.practitioner_loop import (LoopState, PractitionerNode, NodeResult,
-                                run_practitioner_loop, default_nodes,
-                                make_model_nodes)
+from ..loop.practitioner_loop import (
+    PractitionerAlgorithmState, PractitionerAlgorithmStep, NodeResult,
+    run_practitioner_algorithm, default_nodes, make_model_algorithm_steps)
 from ..loop.methodical import ExecutionDecision, reuse_first_guard, EXECUTION_LADDER
 from ..code_nodes.self_improve import (ShortcutStore, Shortcut, problem_signature,
                            make_learning_probe)
 from ..loop.context_shuffle import shuffle_lanes
 
-SOLVER_MODES = ("deterministic", "models")
+SOLVER_MODES = ("deterministic",)
+UNAVAILABLE_SOLVER_MODES = ("models",)
 
 
 @dataclass
-class SolveResult:
+class PlanningResult:
     goal: str
     mode: str
     graph: list = field(default_factory=list)
@@ -55,8 +60,9 @@ class SolveResult:
     shortcuts_replayed: int = 0
     swarm_members: int = 0
     sub_practitioners: int = 0
+    loop_id: str = ""
 
-    def receipt(self) -> dict:
+    def record(self) -> dict:
         return {"record_type": "universal_solve/v1", "goal": self.goal,
                 "mode": self.mode, "graph_nodes": len(self.graph),
                 "steps": self.steps, "model_calls": self.model_calls,
@@ -65,11 +71,12 @@ class SolveResult:
                 "shortcuts_replayed": self.shortcuts_replayed,
                 "swarm_members": self.swarm_members,
                 "sub_practitioners": self.sub_practitioners,
+                "loop_id": self.loop_id,
                 "canvas": self.canvas.canvas_id if self.canvas else None,
                 "matrix_width": self.canvas.width() if self.canvas else 0}
 
 
-class UniversalSolver:
+class SolutionPlanningService:
     """The one solver.  Holds the learned-shortcut memory across solves so the
     system gets cheaper on problems it has seen the shape of before."""
 
@@ -107,11 +114,11 @@ class UniversalSolver:
                 kw["models"] = self.models
             if self.worker_model:
                 kw["worker_model"] = self.worker_model
-            return make_model_nodes(**kw)
+            return make_model_algorithm_steps(**kw)
         nodes = default_nodes()
         inner = nodes["how_to_implement"].resolve
 
-        def with_learning(state: LoopState) -> NodeResult:
+        def with_learning(state: PractitionerAlgorithmState) -> NodeResult:
             ans = state.blackboard.get("current_answer")
             if ans is not None:
                 handle = probe(ans.target)
@@ -129,13 +136,13 @@ class UniversalSolver:
                                       detail=f"shortcut replay -> {handle}")
             return inner(state)
 
-        nodes["how_to_implement"] = PractitionerNode("how_to_implement",
-                                                     with_learning)
+        nodes["how_to_implement"] = PractitionerAlgorithmStep(
+            "how_to_implement", with_learning)
         return nodes
 
     # -- learning ----------------------------------------------------------
 
-    def _learn(self, goal: str, state: LoopState) -> int:
+    def _learn(self, goal: str, state: PractitionerAlgorithmState) -> int:
         """Self-improvement pass: distill every verified model-built graph node
         into a shortcut.  Deterministic/free nodes teach nothing new; replayed
         shortcuts are not re-learned."""
@@ -188,19 +195,24 @@ class UniversalSolver:
 
     # -- the front door ----------------------------------------------------
 
-    def solve(self, goal: str, *, facts: dict | None = None,
-              obligations: Sequence[str] = (), swarm: int = 0,
-              max_steps: int = 60,
-              graph_evaluate=None, graph_params=None) -> SolveResult:
+    def _solve_algorithm(self, goal: str, *, facts: dict | None = None,
+                         obligations: Sequence[str] = (), swarm: int = 0,
+                         max_steps: int = 60,
+                         graph_evaluate=None,
+                         graph_params=None) -> PlanningResult:
         """Solve a task.  ``swarm`` > 1 runs that many varied practitioner loops
         and assembles their graphs into a matrix of solutions; otherwise one loop
         runs and the canvas is single-width."""
+        if self.mode != "deterministic":
+            raise RuntimeError(
+                "model-backed legacy planning is unavailable until every call "
+                "routes through ModelGateway with physical accounting")
         n = max(1, int(swarm))
         frames = shuffle_lanes(goal, n=n) if n > 1 else []
         member_graphs: list[list] = []
         total_steps = total_calls = total_avoided = total_subs = 0
         replayed = 0
-        last_state: "LoopState | None" = None
+        last_state: "PractitionerAlgorithmState | None" = None
         for i in range(n):
             k = Knowledge(goal=goal, facts=dict(facts or {}),
                           open_obligations=tuple(obligations))
@@ -208,9 +220,9 @@ class UniversalSolver:
                 k = Knowledge(goal=goal, facts=dict(facts or {}),
                               open_obligations=tuple(obligations),
                               frame=frames[i].to_ask_frame(goal, k.frame))
-            state = LoopState(knowledge=k)
-            state = run_practitioner_loop(state, self._nodes(goal),
-                                          max_steps=max_steps)
+            state = PractitionerAlgorithmState(knowledge=k)
+            state = run_practitioner_algorithm(
+                state, self._nodes(goal), max_steps=max_steps)
             member_graphs.append(state.graph)
             total_steps += len(state.history)
             total_calls += state.model_calls
@@ -220,7 +232,7 @@ class UniversalSolver:
             last_state = state
 
         # self-improvement: distill what this solve paid for.
-        learned = sum(self._learn(goal, LoopState(
+        learned = sum(self._learn(goal, PractitionerAlgorithmState(
             knowledge=Knowledge(goal=goal), graph=g,
             blackboard={"replayed": []}, model_calls=total_calls))
             for g in member_graphs) if self.mode == "models" else \
@@ -230,13 +242,13 @@ class UniversalSolver:
         primary = max(member_graphs, key=len) if member_graphs else []
         # TUNING (graph place, toggleable): with an evaluator + param space and
         # the switch on, tune around the finished graph; recorded, never silent.
-        tuning_receipt = None
+        tuning_record = None
         if graph_evaluate is not None and graph_params:
             from ..loop.tuning import tune
             tr = tune(graph_params, graph_evaluate, place="graph",
                       policy=self.tuning)
-            tuning_receipt = tr.receipt() if tr is not None else None
-        result = SolveResult(goal=goal, mode=self.mode, graph=primary,
+            tuning_record = tr.record() if tr is not None else None
+        result = PlanningResult(goal=goal, mode=self.mode, graph=primary,
                            canvas=canvas, steps=total_steps,
                            model_calls=total_calls,
                            model_calls_avoided=total_avoided,
@@ -246,23 +258,46 @@ class UniversalSolver:
         # document EVERY run (append-only JSONL) so runs are shareable/learnable
         if self.run_log_path:
             import json as _json, os as _os
-            rec = result.receipt()
-            if tuning_receipt:
-                rec["tuning"] = tuning_receipt
+            rec = result.record()
+            if tuning_record:
+                rec["tuning"] = tuning_record
             _os.makedirs(_os.path.dirname(self.run_log_path) or ".",
                          exist_ok=True)
             with open(self.run_log_path, "a") as fh:
                 fh.write(_json.dumps(rec) + "\n")
         return result
 
+    def solve(self, goal: str, *, facts: dict | None = None,
+              obligations: Sequence[str] = (), swarm: int = 0,
+              max_steps: int = 60,
+              graph_evaluate=None, graph_params=None) -> PlanningResult:
+        """Execute the planning algorithm inside one canonical Loop."""
+        from .encapsulate import as_practitioner_loop
 
-def solve(goal: str, **kw) -> SolveResult:
+        wrapped = as_practitioner_loop(
+            f"plan a solution for {goal}",
+            lambda: self._solve_algorithm(
+                goal, facts=facts, obligations=obligations, swarm=swarm,
+                max_steps=max_steps, graph_evaluate=graph_evaluate,
+                graph_params=graph_params))
+        result = wrapped["value"]
+        result.loop_id = wrapped["loop_id"]
+        return result
+
+
+def solve(goal: str, **kw) -> PlanningResult:
     """Module-level convenience: one call, one solver, one answer."""
     solver_kw = {k: kw.pop(k) for k in ("shortcut_path", "mode", "models",
                                         "worker_model", "work_dir",
                                         "run_log_path", "tuning")
                  if k in kw}
-    return UniversalSolver(**solver_kw).solve(goal, **kw)
+    return SolutionPlanningService(**solver_kw).solve(goal, **kw)
+
+
+# Module-local compatibility names. The package root exposes only `solve`,
+# which routes through the canonical Loop runtime.
+SolveResult = PlanningResult
+UniversalSolver = SolutionPlanningService
 
 
 # ---------------------------------------------------------------------------
@@ -277,16 +312,18 @@ def self_test() -> dict:
         results.append({"test": name, "passed": bool(ok), "detail": detail})
 
     # 1. one call solves end to end, zero model calls in deterministic mode.
-    res = solve("build a churn model", obligations=("choose_model",))
+    res = solve("build a churn model", obligations=("choose_model",),
+                run_log_path=None)
     check("one_call_solves_a_task_with_zero_model_calls",
           res.graph and res.model_calls == 0 and res.steps > 0
-          and res.canvas is not None and res.canvas.kind == "solution",
+          and res.canvas is not None and res.canvas.kind == "solution"
+          and res.loop_id.startswith("loop"),
           f"{len(res.graph)} nodes built in {res.steps} steps on a solution "
-          f"canvas, 0 model calls")
+          f"canvas inside {res.loop_id}, 0 model calls")
 
     # 2. SELF-IMPROVEMENT: a model-built solve teaches shortcuts; the SAME
     # solver solving a very similar problem replays them with fewer decisions.
-    sv = UniversalSolver(mode="deterministic")
+    sv = SolutionPlanningService(mode="deterministic", run_log_path=None)
     # simulate a prior model-built lesson landing in its memory:
     sv.shortcuts.record(Shortcut(
         signature=problem_signature("build a churn model", "add_node",
@@ -303,7 +340,8 @@ def self_test() -> dict:
 
     # 3. swarm assembles a MATRIX OF SOLUTIONS with per-step fallbacks.
     res3 = solve("classify medical images of knees",
-                 obligations=("choose_model",), swarm=3)
+                 obligations=("choose_model",), swarm=3,
+                 run_log_path=None)
     check("a_swarm_assembles_a_matrix_of_solutions",
           res3.swarm_members == 3 and res3.canvas is not None
           and len(res3.canvas.slots) >= 1,
@@ -312,7 +350,7 @@ def self_test() -> dict:
 
     # 4. the assembled matrix EXECUTES with waterfall (wire runnable impls in).
     from ..loop.canvas import Canvas as _C
-    m = UniversalSolver._assemble_matrix("g", [
+    m = SolutionPlanningService._assemble_matrix("g", [
         [{"node": "xgb", "kind": "add_node", "via": "reuse", "handle": "h1"}],
         [{"node": "lgbm", "kind": "add_node", "via": "reuse", "handle": "h2"}]])
     def crash(_x):
@@ -324,23 +362,30 @@ def self_test() -> dict:
           ex.ok and ex.waterfalls_used() == 1 and ex.output == "ok",
           "the second member's compatible node rescued the step")
 
-    # 5. the receipt carries the full accounting.
-    r = res.receipt()
-    check("the_receipt_accounts_for_calls_avoided_learned_and_matrix_width",
+    # 5. the record carries the full accounting.
+    r = res.record()
+    check("the_record_accounts_for_calls_avoided_learned_and_matrix_width",
           {"model_calls", "model_calls_avoided", "shortcuts_learned",
            "shortcuts_replayed", "matrix_width",
            "sub_practitioners"} <= set(r),
-          "one receipt answers what ran, what it cost, what was avoided, and "
+          "one record answers what ran, what it cost, what was avoided, and "
           "what was learned")
 
-    # 6. an unknown mode is refused.
-    bad = False
+    # 6. unknown and unaccounted model modes are refused before execution.
+    bad = unaccounted_model_mode = False
     try:
-        UniversalSolver(mode="vibes")
+        SolutionPlanningService(mode="vibes")
     except ValueError:
         bad = True
+    try:
+        SolutionPlanningService(mode="models")
+    except ValueError:
+        unaccounted_model_mode = True
     check("an_unknown_solver_mode_is_refused", bad,
-          "modes are the closed set (deterministic, models)")
+          "the public planning service has a closed mode set")
+    check("legacy_model_planning_is_unavailable_until_accounted",
+          unaccounted_model_mode,
+          "model work cannot hide inside a deterministic Loop envelope")
 
     passed = sum(1 for r_ in results if r_["passed"])
     return {"record_type": "universal_solver_self_test", "tests": results,

@@ -1,6 +1,6 @@
 # Read run reports
 
-This example runs a checkout incident investigation with a child loop, then
+This example runs a checkout incident investigation with a Spawned Loop, then
 writes text, Markdown, HTML, and JSON views of the same log.
 
 ```bash

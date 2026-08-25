@@ -16,7 +16,7 @@ from ..loop.decision_need import detect_decision_need
 from ..loop.moves import move, is_valid_move_kind, family_of
 from ..strings.context import build_view
 from ..loop.arbiter import Candidate, arbitrate, HARD_GATES
-from ..loop.receipts import build_iteration_receipt, verify_chain, SolverIterationReceipt
+from ..loop.iteration_records import build_iteration_record, verify_chain, SolverIterationRecord
 from ..strings.notes import NoteTemplate, fill_note, NoteStore
 from ..loop.context_shuffle import shuffle_lanes
 from .hybrid_dimension_lattice import pairwise_cover, DEFAULT_AXES
@@ -81,20 +81,20 @@ def self_test() -> dict:
 
     # I-6 / I-9: runtime cannot mutate a frozen record invisibly; decisions are
     # replayable.
-    r0 = build_iteration_receipt("c", 0, parent=None, knowledge_before_digest="k0",
+    r0 = build_iteration_record("c", 0, parent=None, knowledge_before_digest="k0",
                                  decision_need={"mode": "route"},
                                  proposals=["m"], decision={"selected": ["m"]},
                                  model_calls_made=0, model_calls_avoided=1,
                                  observations=[], knowledge_after_digest="k1")
-    tampered = SolverIterationReceipt(
+    tampered = SolverIterationRecord(
         **{**r0.causal_payload(), "decision": {"selected": ["evil"]},
-           "receipt_digest": r0.receipt_digest})
-    inv("I-6", "a_frozen_receipt_cannot_be_mutated_invisibly",
+           "record_digest": r0.record_digest})
+    inv("I-6", "a_frozen_record_cannot_be_mutated_invisibly",
         not verify_chain([tampered])["valid"],
-        "rewriting a receipt's decision breaks its content-addressed digest and "
+        "rewriting a record's decision breaks its content-addressed digest and "
         "chain verification catches it — history cannot be silently rewritten")
 
-    # I-7: every effect is authorized (and receipted).
+    # I-7: every effect is authorized (and recorded).
     tmpl = NoteTemplate("t", "observation", required_fields=("x",))
     note = fill_note(tmpl, "practitioner", {"x": "y"})
     store = NoteStore()
@@ -109,7 +109,7 @@ def self_test() -> dict:
 
     # I-8: an accepted claim carries lineage.
     claim = Claim("c1", "the split is leakage-free", "verified",
-                  source_refs=("receipt://diag-4",))
+                  source_refs=("record://diag-4",))
     inv("I-8", "an_accepted_claim_carries_evidence_lineage",
         claim.is_ground() and claim.source_refs,
         "a verified (ground) claim carries a source ref — accepted knowledge has "

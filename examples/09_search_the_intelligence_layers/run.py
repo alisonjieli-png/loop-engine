@@ -7,14 +7,14 @@ import time
 from loop_engine import LoopLedger
 from loop_engine.loop.encapsulate import as_practitioner_loop
 from loop_engine.loop.loop_capsule import LoopRef
-from loop_engine.static_architecture.chronicle import Chronicle
-from loop_engine.static_architecture.user_intelligence import AdviceStore
+from loop_engine.static_architecture.run_history import RunHistory
+from loop_engine.static_architecture.user_feedback_intelligence import AdviceStore
 from loop_engine.static_architecture.intelligence_layers import (
     build_intelligence_catalog, catalog_summary, materialize_intelligence_ref,
     query_intelligence)
 
 
-def add_previous_run(runs_dir):
+def add_runtime_history(runs_dir):
     ledger = LoopLedger()
     as_practitioner_loop(
         "validate customer records before import",
@@ -23,8 +23,8 @@ def add_previous_run(runs_dir):
     )
     run_id = (time.strftime("customer-import-%Y%m%d-%H%M%S-")
               + f"{time.time_ns() % 1_000_000_000:09d}")
-    chronicle = Chronicle.from_ledger(ledger.events, run_id=run_id)
-    chronicle.commit(); chronicle.save(runs_dir)
+    run_history = RunHistory.from_ledger(ledger.events, run_id=run_id)
+    run_history.commit(); run_history.save(runs_dir)
 
 
 def main():
@@ -33,7 +33,7 @@ def main():
         runs_dir = os.path.join(output_dir, "runs")
         advice_path = os.path.join(output_dir, "user-advice.jsonl")
         os.makedirs(runs_dir, exist_ok=True)
-        add_previous_run(runs_dir)
+        add_runtime_history(runs_dir)
         AdviceStore(advice_path).leave_advice(
             "Quarantine rows with an invalid country code instead of dropping them.",
             scope="task", target="customer-import", guidance_type="instruction",

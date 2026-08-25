@@ -1,6 +1,6 @@
 # Seed space Context Intelligence
 
-This example starts a Self-Improvement Loop that prepares candidate Context
+This example gives a self-improvement task to a Practitioner Loop. It prepares candidate Context
 Intelligence for space projects. It covers job roles, project types, task
 types, and multiple thinking styles.
 
@@ -18,12 +18,12 @@ research loop.
 
 | Setting | Value |
 |---|---|
-| Loop role | Self-Improvement Loop |
+| Loop role | Practitioner, with the self-improvement task profile |
 | Run mode | Deterministic |
 | Step profile | `context_intelligence_seed` |
 | Intelligence layer | Candidate Context Intelligence |
 | Runtime Memory | Not used |
-| Chronicle | Event log kept in memory for this example |
+| Run History | Event log kept in memory for this example |
 
 ## Install
 

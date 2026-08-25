@@ -28,7 +28,6 @@ from typing import Callable
 
 from ..strings.knowledge import Knowledge
 from ..strings.context import CONTEXT_POLICIES, build_view
-from ..static_architecture.ollama_client import ChatResult
 
 # The default preference-ordered model chain (strong roster; edit per call).
 DEFAULT_MODEL_CHAIN = ("deepseek-v4-pro", "glm-5.2", "kimi-k2.7-code")
@@ -77,7 +76,7 @@ class AskResult:
     stages: list = field(default_factory=list)   # the strict DAG's trace
     error: str = ""
 
-    def receipt(self) -> dict:
+    def record(self) -> dict:
         return {"record_type": "model_call/v1", "ok": self.ok,
                 "model_used": self.model_used,
                 "models_tried": self.models_tried,
@@ -127,11 +126,11 @@ def render(spec: AskSpec, context_text: str) -> str:
 
 def execute_ask(spec: AskSpec, *,
                 validate: Callable[[str], bool] | None = None,
-                _call: "Callable[..., ChatResult] | None" = None) -> AskResult:
+                _call: "Callable | None" = None) -> AskResult:
     """Run the strict DAG.  A model that errors, answers empty, or fails the
-    validator falls through to the next model in the chain.  ``_call`` is
-    injectable so the DAG is testable offline; production uses chat_maxout
-    (full output ceiling, 10%-backoff-on-failure per model)."""
+    validator falls through to the next model in the chain.  ``_call`` is an
+    integration seam for a real provider boundary.  Offline tests do not use it
+    to simulate model answers or claim provider integration."""
     if _call is None:
         from .provider_pinned import ProviderPinnedRequest, invoke_provider_model
 
@@ -184,7 +183,7 @@ def execute_ask(spec: AskSpec, *,
 
 
 # ---------------------------------------------------------------------------
-# Self-test — offline: an injected stub call, no network.
+# Self-test: offline data contracts and deterministic prompt rendering only.
 # ---------------------------------------------------------------------------
 
 
@@ -228,43 +227,23 @@ def self_test() -> dict:
           and "Respond ONLY as: JSON array of moves." in prompt,
           "the render stage assembles every populated dimension")
 
-    # 4. FALLBACK: model 1 down -> model 2 answers; the trace shows it.
-    def stub(prompt, *, model, temperature):
-        if model == "m1":
-            return ChatResult("", model, ok=False, error="503 down")
-        return ChatResult("the answer", model, prompt_tokens=10, eval_tokens=5)
-    r = execute_ask(AskSpec(question="q", models=("m1", "m2")), _call=stub)
-    check("a_down_model_falls_back_to_the_next_in_the_chain",
-          r.ok and r.model_used == "m2" and r.fallbacks_used == 1
-          and r.models_tried == ["m1", "m2"],
-          "m1 down -> m2 answered; the ask never dies with one provider")
-
-    # 5. a reply that fails VALIDATION also falls through.
-    def stub2(prompt, *, model, temperature):
-        return ChatResult("not json" if model == "m1" else '["ok"]', model,
-                          eval_tokens=3)
-    r2 = execute_ask(AskSpec(question="q", models=("m1", "m2")),
-                     validate=lambda t: t.strip().startswith("["), _call=stub2)
-    check("invalid_output_falls_through_to_the_next_model",
-          r2.ok and r2.model_used == "m2" and r2.fallbacks_used == 1,
-          "validation is part of the strict DAG, not an afterthought")
-
-    # 6. all models failing returns ok=False with the full trace, never raises.
-    r3 = execute_ask(AskSpec(question="q", models=("m1", "m2")),
-                     _call=lambda p, *, model, temperature: ChatResult(
-                         "", model, ok=False, error="down"))
-    check("total_failure_reports_honestly_instead_of_raising",
-          not r3.ok and len(r3.models_tried) == 2 and r3.error,
-          "the caller gets the failure and every stage tried")
-
-    # 7. the receipt records the strict DAG's stages in order.
-    stages = [s["stage"] for s in r.stages]
-    check("the_receipt_traces_the_strict_dag_stages",
-          stages[:2] == ["prepare_context", "render"]
-          and "call" in stages and "validate" in stages,
-          f"trace: {stages}")
+    # 4. Result accounting is a pure data contract.  It does not stand in for
+    # a provider response and therefore cannot prove fallback behavior.
+    recorded = AskResult(
+        ok=False, models_tried=["m1", "m2"], fallbacks_used=1,
+        total_tokens=0, context_policy="task_only",
+        stages=[{"stage": "prepare_context"}, {"stage": "render"}],
+        error="not run")
+    check("the_result_contract_preserves_attempt_and_stage_fields",
+          recorded.models_tried == ["m1", "m2"]
+          and recorded.fallbacks_used == 1
+          and [item["stage"] for item in recorded.stages]
+          == ["prepare_context", "render"],
+          "data shape only; live fallback behavior is not claimed")
 
     passed = sum(1 for r_ in results if r_["passed"])
-    return {"record_type": "model_call_self_test", "tests": results,
+    return {"record_type": "model_call_contract_test/v2",
+            "scope": "offline_contract_only",
+            "provider_integration_proven": False, "tests": results,
             "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}

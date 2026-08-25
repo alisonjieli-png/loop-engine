@@ -3,7 +3,7 @@
 The state may reference far more than any one resolver should receive (v3 §6): a
 ``ContextView`` is the scoped projection built for one resolver invocation, and
 it states what was shown, what was deliberately hidden, and under which policy.
-This is what makes blind and informed lanes a *deliberate, receipted choice*
+This is what makes blind and informed lanes a *deliberate, recorded choice*
 rather than an accident — the same decision can be asked blind (goal and graph
 interface only), memory-informed, research-informed, failure-only, anti-memory
 (suppress popular priors), or sealed-evaluator-safe, and the synthesis can then
@@ -90,7 +90,7 @@ class ContextView:
                 "note": self.note, "token_budget": self.token_budget,
                 "manifest_digest": self.manifest_digest,
                 "the_rule": ("a context view states what it showed AND what it "
-                             "deliberately hid — blindness is a receipted choice, "
+                             "deliberately hid — blindness is a recorded choice, "
                              "never an accident")}
 
 

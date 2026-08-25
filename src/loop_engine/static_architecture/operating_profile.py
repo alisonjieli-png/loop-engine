@@ -1,10 +1,10 @@
-"""Operating profile — five enum modes, resolved Platform -> ... -> child.
+"""Operating profile — five enum modes, resolved Platform -> ... -> spawned.
 
 Owner spec (2026-08-23): reduce the operating configuration to five clear,
 bucketed, high-level controls (not a wall of knobs), each an ENUM with an
 authority ordering, plus a small limits block.  Profiles resolve through a chain
-— Platform -> Organization -> Project -> Run -> Child practitioner — where a
-child may receive LESS authority than its parent but NEVER more.
+— Platform -> Organization -> Project -> Run -> Spawned practitioner — where a
+spawned may receive LESS authority than its parent but NEVER more.
 
 The five modes:
 
@@ -31,7 +31,7 @@ REASONING_MODES = ("deterministic_only", "local_only",
                    "best_available")
 CONSTRUCTION_MODES = ("inspect_only", "reuse_only", "compose_configure",
                       "sandbox_generate", "promotion_authorized")
-# Preferences (no authority ordering — a child may pick any).
+# Preferences have no authority ordering. A spawned Loop may pick any.
 EFFORT_MODES = ("minimal", "standard", "deep", "exhaustive")
 OPTIMIZATION_MODES = ("balanced", "quality_first", "reliability_first",
                       "cost_first", "latency_first", "exploration_first")
@@ -93,11 +93,11 @@ class OperatingProfile:
 
 
 def resolve_chain(*profiles: OperatingProfile) -> OperatingProfile:
-    """Resolve a precedence chain (Platform -> Org -> Project -> Run -> Child).
+    """Resolve a precedence chain (Platform -> Org -> Project -> Run -> Spawned).
 
     Each later profile may REQUEST settings, but is clamped to never exceed the
     authority granted so far: authority modes take the MINIMUM ordinal seen, and
-    limits take the MINIMUM value — a child can only ever narrow.  Preferences
+    limits take the minimum value. A spawned Loop can only narrow. Preferences
     (effort/optimization) take the LAST profile's choice (the most specific)."""
     if not profiles:
         return OperatingProfile()
@@ -188,23 +188,23 @@ def self_test() -> dict:
             bad += 1
     check("unknown_mode_values_are_refused", bad == 3, "closed vocabularies")
 
-    # 2. resolution CLAMPS a child to <= parent authority (never more).
+    # 2. Resolution clamps a spawned Loop to the spawning authority.
     platform = OperatingProfile(access_mode="broad_external_read",
                                 construction_and_execution_mode="sandbox_generate")
-    child_req = OperatingProfile(access_mode="approved_external_write",
+    spawned_req = OperatingProfile(access_mode="approved_external_write",
                                  construction_and_execution_mode="promotion_authorized")
-    resolved = resolve_chain(platform, child_req)
-    check("a_child_cannot_exceed_parent_authority",
+    resolved = resolve_chain(platform, spawned_req)
+    check("a_spawned_cannot_exceed_parent_authority",
           resolved.access_mode == "broad_external_read"
           and resolved.construction_and_execution_mode == "sandbox_generate"
           and resolved.authority_at_most(platform),
-          "the child asked for MORE access/construction and was clamped down")
+          "the spawned asked for MORE access/construction and was clamped down")
 
-    # 3. a child CAN narrow authority.
+    # 3. A spawned Loop can narrow authority.
     narrowing = OperatingProfile(access_mode="offline",
                                  reasoning_and_model_mode="deterministic_only")
     r2 = resolve_chain(platform, narrowing)
-    check("a_child_can_narrow_authority",
+    check("a_spawned_can_narrow_authority",
           r2.access_mode == "offline"
           and r2.reasoning_and_model_mode == "deterministic_only",
           "narrowing is always allowed; broadening never is")
@@ -223,7 +223,7 @@ def self_test() -> dict:
     r4 = resolve_chain(pa, pb)
     check("preferences_take_the_most_specific_profile",
           r4.optimization_mode == "cost_first" and r4.effort_mode == "deep",
-          "effort/optimization are preferences — the child's choice wins")
+          "effort/optimization are preferences — the spawned's choice wins")
 
     # 6. to_solver_config derives the ENFORCED config faithfully.
     off = to_solver_config(OperatingProfile(

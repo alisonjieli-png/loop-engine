@@ -29,7 +29,7 @@ This module is that doctrine executable.  It does NOT replace the runtime
 (``recursive_loop.Loop``), the templates (``loop_templates``), the typed
 contract (``loop_contract.LoopContract``), or the facet vocabulary
 (``static_architecture.facets``).  It is the DECLARATIVE BASELINE that names
-what every loop — practitioner, Static Architecture, code loop, or Solution
+what every loop — practitioner, internal-service, intelligence, or Solution
 DAG vertex — has in common, so each is an instance of the same shape rather
 than a bespoke object.  The thesis this makes concrete:
 
@@ -46,7 +46,7 @@ than a bespoke object.  The thesis this makes concrete:
         the waterfall is the governed route to a model — never a hidden call.
 
 Because practitioner loops and Solution loops share this one baseline, the
-SAME machinery (spawn, clamp, ledger, pause/resume, Chronicle, evidence
+SAME machinery (spawn, clamp, ledger, pause/resume, RunHistory, evidence
 gate, Studio) serves both — practitioner loops and Solution loops are not
 two runtimes, they are two instances of one baseline.  And because the
 waterfall is a property of every loop, ANY deterministic code loop that
@@ -69,18 +69,18 @@ Baseline templates shipped here (registered names, not inline literals):
 A baseline is a starting contract, NOT an authority: escalation past a
 loop's declared stop is itself bounded by the runtime's permission clamp
 and budget.  Deterministic is always tried first; a model is only ever
-reached through the declared waterfall, visible and receipt-every-time.
+reached through the declared waterfall, visible and record-every-time.
 
 Owns:
     - LoopBaseline (the declarative stop+waterfall+goal shape);
-    - STOP_CONDITIONS + ESCALATION_WATERFALLS (closed vocabularies);
+    - EXIT_CONDITIONS + ESCALATION_WATERFALLS (closed vocabularies);
     - baseline_for_code_loop / _solution_node / _practitioner / _validation;
     - loop_baseline_for(objective, ...) -> the composed LoopContract +
       baseline, ready to hand to the runtime.
 
 Does not own:
     - the runtime's iteration engine, templates, typed contract, facets,
-      Chronicle, or the evidence gate.
+      RunHistory, or the evidence gate.
 
 Key invariants:
     - every baseline has a stopping condition (fail-closed, closed vocab);
@@ -101,10 +101,9 @@ from dataclasses import dataclass, field
 from ..loop.loop_contract import (LoopContract, LoopContractError,
                                   contract_for_code_loop)
 
-#: WHEN a loop is done.  The degenerate legal stop is first_success: most
-#: Solution DAG nodes and checks run exactly one successful iteration.
-STOP_CONDITIONS = ("first_success", "success_condition", "budget",
-                   "no_progress", "max_iterations")
+#: Successful exits for a Loop baseline. Budgets and iteration limits are
+#: safety bounds, not successful outcomes.
+EXIT_CONDITIONS = ("steps_complete", "accepted_success")
 
 #: per-mode escalation path (cheapest-first).  A code_only loop never
 #: reaches a model; everything wider is the governed self-correcting seam.
@@ -120,20 +119,20 @@ class DoctrineError(ValueError):
 @dataclass(frozen=True)
 class LoopBaseline:
     """The ONE baseline every loop is an instance of: goal + typed I/O +
-    stopping condition + escalation waterfall.  Immutable — a baseline is a
+    exit condition + escalation waterfall.  Immutable — a baseline is a
     property of the loop's identity, declared before it runs."""
     goal: str
-    stop_condition: str = "first_success"
+    exit_condition: str = "accepted_success"
     escalate_to: tuple = ("code_only",)   # closed: subset of one waterfall
     input_roles: tuple = ()
     output_roles: tuple = ()
     notes: str = ""
 
     def __post_init__(self):
-        if self.stop_condition not in STOP_CONDITIONS:
+        if self.exit_condition not in EXIT_CONDITIONS:
             raise DoctrineError(
-                f"stop_condition {self.stop_condition!r} not in "
-                f"{STOP_CONDITIONS}")
+                f"exit_condition {self.exit_condition!r} not in "
+                f"{EXIT_CONDITIONS}")
         if not self.escalate_to:
             raise DoctrineError("a baseline must declare an escalation "
                                 "waterfall (even the terminal code_only)")
@@ -167,7 +166,7 @@ def baseline_for_code_loop(goal: str, *, input_roles=(), output_roles=(),
     This is a PURE code loop — a check or transform that either satisfies
     its goal deterministically or abstains.  It cannot reach a model.
     """
-    return LoopBaseline(goal=goal, stop_condition="first_success",
+    return LoopBaseline(goal=goal, exit_condition="accepted_success",
                         escalate_to=("code_only",),
                         input_roles=tuple(input_roles),
                         output_roles=tuple(output_roles), notes=notes)
@@ -179,7 +178,7 @@ def baseline_for_solution_loop(goal: str, *, input_roles=(), output_roles=(),
     its waterfall MAY escalate code_only → hybrid if the deterministic arm
     cannot honestly satisfy the goal.  The vertex is still a loop; escalation
     is governed, visible, and budgeted, not a hidden model call."""
-    return LoopBaseline(goal=goal, stop_condition="first_success",
+    return LoopBaseline(goal=goal, exit_condition="accepted_success",
                         escalate_to=("code_only", "hybrid"),
                         input_roles=tuple(input_roles),
                         output_roles=tuple(output_roles), notes=notes)
@@ -189,7 +188,7 @@ def baseline_for_practitioner(goal: str, *, input_roles=(), output_roles=(),
                               notes: str = "") -> LoopBaseline:
     """A general bounded problem loop: stop at its success condition, with
     the full deterministic → hybrid → model_led waterfall available."""
-    return LoopBaseline(goal=goal, stop_condition="success_condition",
+    return LoopBaseline(goal=goal, exit_condition="accepted_success",
                         escalate_to=("code_only", "hybrid", "model_led"),
                         input_roles=tuple(input_roles),
                         output_roles=tuple(output_roles), notes=notes)
@@ -199,7 +198,7 @@ def baseline_for_validation(goal: str, *, input_roles=(), output_roles=(),
                             notes: str = "") -> LoopBaseline:
     """A deterministic gate: stop at first success; abstains rather than
     escalating (a validator that guesses is not a validator)."""
-    return LoopBaseline(goal=goal, stop_condition="first_success",
+    return LoopBaseline(goal=goal, exit_condition="accepted_success",
                         escalate_to=("code_only",),
                         input_roles=tuple(input_roles),
                         output_roles=tuple(output_roles), notes=notes)
@@ -233,7 +232,7 @@ def self_test() -> dict:
     c = baseline_for_code_loop("map column to id",
                                input_roles=("raw_col",), output_roles=("id_col",))
     check("code_loop_baseline_is_one_success_and_code_only",
-          c.stop_condition == "first_success"
+          c.exit_condition == "accepted_success"
           and c.escalate_to == ("code_only",)
           and c.terminal_mode == "code_only",
           f"{c.goal}: stop after one success, never escalates")
@@ -244,20 +243,20 @@ def self_test() -> dict:
     pract = baseline_for_practitioner("build a model", output_roles=("model",))
     check("solution_node_and_practitioner_share_one_baseline",
           type(sol) is type(pract) is LoopBaseline
-          and sol.stop_condition in ("first_success", "success_condition")
-          and pract.stop_condition in ("first_success", "success_condition")
+          and sol.exit_condition == "accepted_success"
+          and pract.exit_condition == "accepted_success"
           and sol.terminal_mode == "hybrid"
           and pract.terminal_mode == "model_led",
           "same shape; solution loop escalates to hybrid, practitioner to model_led")
 
-    # 3. ADVERSARIAL — an unknown stopping condition is refused fail-closed.
+    # 3. ADVERSARIAL: an unknown exit condition is refused fail-closed.
     refused = False
     try:
-        LoopBaseline(goal="x", stop_condition="whenever",
+        LoopBaseline(goal="x", exit_condition="whenever",
                      output_roles=("y",))
     except DoctrineError:
         refused = True
-    check("unknown_stop_condition_refused", refused)
+    check("unknown_exit_condition_refused", refused)
 
     # 4. ADVERSARIAL — a waterfall that leapfrogs hybrid is refused, and the
     #    composed contract's runtime mode is ALWAYS derived, never double-

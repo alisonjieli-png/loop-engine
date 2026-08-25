@@ -60,7 +60,7 @@ def _loop(value: Mapping) -> LoopDefaults:
     body = _mapping(value, "loop")
     _known(body, ("framework", "allowable_modes", "preferred_modes",
                   "delegated_modes", "max_depth",
-                  "stop_condition", "success_confidence_min"), "loop")
+                  "exit_condition", "success_confidence_min"), "loop")
     base = LoopDefaults()
     return LoopDefaults(
         framework=str(body.get("framework", base.framework)),
@@ -71,8 +71,8 @@ def _loop(value: Mapping) -> LoopDefaults:
         delegated_modes=_tuple(body.get(
             "delegated_modes", base.delegated_modes), "loop.delegated_modes"),
         max_depth=int(body.get("max_depth", base.max_depth)),
-        stop_condition=str(body.get(
-            "stop_condition", base.stop_condition)),
+        exit_condition=str(body.get(
+            "exit_condition", base.exit_condition)),
         success_confidence_min=float(body.get(
             "success_confidence_min", base.success_confidence_min)))
 
@@ -98,6 +98,7 @@ def _provider(value: Mapping) -> ProviderSettings:
     body = _mapping(value, "models.providers item")
     _known(body, ("id", "kind", "enabled", "credential_env", "endpoint",
                   "model", "wire", "locality", "counts_as_evidence",
+                  "maximum_output_tokens", "maximum_output_source",
                   "purposes"), "provider")
     if not body.get("id"):
         raise SettingsError("each models.providers item needs id")
@@ -112,6 +113,10 @@ def _provider(value: Mapping) -> ProviderSettings:
         locality=str(body.get("locality", "cloud")),
         counts_as_evidence=_boolean(body.get(
             "counts_as_evidence", False), "provider.counts_as_evidence"),
+        maximum_output_tokens=(
+            int(body["maximum_output_tokens"])
+            if body.get("maximum_output_tokens") is not None else None),
+        maximum_output_source=str(body.get("maximum_output_source", "")),
         purposes=_tuple(body.get(
             "purposes", ("counted_generation", "decide_label")),
             "provider.purposes"))
@@ -128,12 +133,14 @@ def _tiers(value: Mapping, base: ModelSettings) -> tuple[ModelTier, ...]:
         _known(item, ("routes", "max_output_tokens", "timeout_seconds",
                       "max_attempts"), f"models.tiers.{name}")
         old = by_name[name]
+        output_value = item.get(
+            "max_output_tokens", old.max_output_tokens)
         by_name[name] = ModelTier(
             name=name,
             routes=_tuple(item.get("routes", old.routes),
                           f"models.tiers.{name}.routes"),
-            max_output_tokens=int(item.get(
-                "max_output_tokens", old.max_output_tokens)),
+            max_output_tokens=(None if output_value is None
+                               else int(output_value)),
             timeout_seconds=float(item.get(
                 "timeout_seconds", old.timeout_seconds)),
             max_attempts=int(item.get("max_attempts", old.max_attempts)))
@@ -206,13 +213,13 @@ def _operating(value: Mapping) -> OperatingProfile:
 
 def _history(value: Mapping) -> HistorySettings:
     body = _mapping(value, "history")
-    _known(body, ("runs_dir", "save_chronicle"), "history")
+    _known(body, ("runs_dir", "save_run_history"), "history")
     base = HistorySettings()
     return HistorySettings(
         runs_dir=str(body.get("runs_dir", base.runs_dir)),
-        save_chronicle=_boolean(body.get(
-            "save_chronicle", base.save_chronicle),
-            "history.save_chronicle"))
+        save_run_history=_boolean(body.get(
+            "save_run_history", base.save_run_history),
+            "history.save_run_history"))
 
 
 def runtime_settings_from_mapping(value: Mapping) -> RuntimeSettings:
@@ -354,7 +361,7 @@ loop:
   preferred_modes: [deterministic, hybrid, non_deterministic]
   delegated_modes: [deterministic, hybrid, non_deterministic]
   max_depth: 3
-  stop_condition: run_to_completion
+  exit_condition: steps_complete
   success_confidence_min: 0.5
 
 search:
@@ -375,27 +382,22 @@ models:
   tiers:
     small:
       routes: [cloud.mistral, cloud.default]
-      max_output_tokens: 512
       timeout_seconds: 120
       max_attempts: 2
     medium:
       routes: [cloud.default, cloud.mistral.large, cloud.openrouter]
-      max_output_tokens: 2048
       timeout_seconds: 300
       max_attempts: 3
     high:
       routes: [cloud.mistral.large, cloud.hard, cloud.openrouter.reasoning]
-      max_output_tokens: 4096
       timeout_seconds: 600
       max_attempts: 3
     max:
       routes: [cloud.hard, cloud.openrouter.reasoning, cloud.mistral.large]
-      max_output_tokens: 8192
       timeout_seconds: 900
       max_attempts: 3
     specialized:
       routes: []
-      max_output_tokens: 4096
       timeout_seconds: 600
       max_attempts: 2
   escalation:
@@ -414,7 +416,7 @@ operating:
 
 history:
   runs_dir: ~/.loop-engine/runs
-  save_chronicle: true
+  save_run_history: true
 """
 
 

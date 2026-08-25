@@ -459,7 +459,7 @@ def solve(goal: str, data: str = "", *, out: str = "", modality: str = "",
         solve("goal", data=...)     -> a shape with no executor yet: oriented,
                                        reported, and honestly not solved
 
-    Returns a dict carrying the reading, the route taken, the receipt and the
+    Returns a dict carrying the reading, the route taken, the record and the
     report."""
     from ..loop.recursive_loop import LoopLedger
     ledger = ledger if ledger is not None else LoopLedger()
@@ -468,7 +468,7 @@ def solve(goal: str, data: str = "", *, out: str = "", modality: str = "",
                         id_column=id_column, target_column=target_column,
                         exclude=(out,) if out else ())
     out_dict = {"record_type": "universal_solve/v1", "goal": goal,
-                "reading": reading.summary(), "ran": False, "receipt": None}
+                "reading": reading.summary(), "ran": False, "record": None}
 
     if dry_run:
         out_dict["explanation"] = reading.explain()
@@ -488,11 +488,11 @@ def solve(goal: str, data: str = "", *, out: str = "", modality: str = "",
         sample = reading.sample_file or ""
         if not sample:
             sample = _synth_sample(reading, out or "submission.csv")
-        receipt = run_smoke_loop(
+        record = run_smoke_loop(
             goal, train_csv=reading.train_file, test_csv=test,
             sample_csv=sample, out_csv=out or "predictions.csv",
             ledger=ledger, advice_fn=advice_fn)
-        out_dict.update(ran=True, receipt=receipt)
+        out_dict.update(ran=True, record=record)
     elif not data:
         # NO DATA is not a failure — it is a reasoning task. Hand it to the
         # knowledge solver rather than inventing a second front door: two
@@ -500,7 +500,10 @@ def solve(goal: str, data: str = "", *, out: str = "", modality: str = "",
         # module exists to remove.
         from ..loop.solver import solve as solve_from_knowledge
         res = solve_from_knowledge(goal, **(knowledge or {}))
-        out_dict.update(ran=True, receipt={"trace": {}, "value": res},
+        out_dict.update(ran=True, record={
+                            "trace": {"loop_id": res.loop_id,
+                                      "runtime_type": "Loop"},
+                            "value": res},
                         route="knowledge")
         out_dict["note"] = ("no data given, so this ran as a reasoning task "
                             "through the knowledge solver")
@@ -511,7 +514,7 @@ def solve(goal: str, data: str = "", *, out: str = "", modality: str = "",
         from ..loop.encapsulate import as_practitioner_loop
         res = as_practitioner_loop(
             goal, lambda: reading.summary(), ledger=ledger)
-        out_dict.update(ran=True, receipt={"trace": {}, "value": res["value"]},
+        out_dict.update(ran=True, record={"trace": {}, "value": res["value"]},
                         route="oriented_only")
         out_dict["note"] = (
             f"no executor is registered for modality {reading.modality!r} yet, "
@@ -653,7 +656,17 @@ def self_test() -> dict:
               and "Task:" in res["explanation"],
               "no file roles, no shapes, no modality asked of the caller")
 
-        # 8. a missing dependency is named rather than crashing
+        knowledge_run = solve(
+            "build a churn model", knowledge={
+                "obligations": ("choose_model",), "run_log_path": None})
+        check("knowledge_route_runs_inside_the_canonical_Loop_runtime",
+              knowledge_run["route"] == "knowledge"
+              and knowledge_run["record"]["trace"]["runtime_type"] == "Loop"
+              and knowledge_run["record"]["trace"]["loop_id"].startswith(
+                  "loop"),
+              "the planning algorithm is a Code Intelligence service inside Loop")
+
+        # 9. a missing dependency is named rather than crashing
         # somewhere deep in an executor
         try:
             import pandas                                   # noqa: F401
@@ -667,7 +680,7 @@ def self_test() -> dict:
                   and "pandas" in blocked.get("blocked", "")),
               "dependency name, not a stack trace" if not has_pandas
               else "dependency present; executed")
-        # --- 9. THE GOAL NAMES THE TARGET ------------------------------
+        # --- 10. THE GOAL NAMES THE TARGET -----------------------------
         # A name list answers "nothing found" for every column it was never
         # told about. A real corpus said `renewed` while the list said
         # `churn`, so the target was missed and the run worked by accident.
@@ -685,7 +698,7 @@ def self_test() -> dict:
               and rg.problem == "classification",
               "'will renew' reached the column 'renewed' with no word list")
 
-        # --- 10. ADVERSARIAL: never train on your own output --------------
+        # --- 11. ADVERSARIAL: never train on your own output -------------
         # Running solve() twice into the same folder made the second run read
         # the FIRST run's predictions as training data — leakage that produces
         # a great score and means nothing.

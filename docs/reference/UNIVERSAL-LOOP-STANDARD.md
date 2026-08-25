@@ -7,8 +7,8 @@ runtime and conformance tests remain the executable authority.
 
 ## 1. Runtime identity
 
-Each operational node is a `Loop`. Practitioner, Solution, and Self-Improvement
-loops are roles of this same runtime. A search, model call, validation, repair,
+Each executable graph vertex is a `Loop`. Practitioner, Intelligence, and
+Solution are roles of this same runtime. A search, model call, validation, repair,
 or bounded external worker must use a Loop envelope when it becomes active
 work.
 
@@ -22,13 +22,16 @@ A runnable loop declares:
 | Field | Requirement |
 |---|---|
 | Goal | Name the bounded work. |
+| Identity and version | Name the Loop definition, semantic version, and exact content. |
+| Role profile | Select a registered Practitioner, Intelligence, or Solution profile. |
 | Contract | Define accepted inputs, outputs, and effects. |
 | Logical kind | State whether the loop executes, represents task repetition, or searches for improvement. |
 | Allowed modes | Limit the modes the loop may use. |
 | Preferred modes | Order the permitted modes. |
 | Step profile | Define the steps, order, and repetition. |
+| Loop condition | Define when another iteration may run. |
 | Effort setting | Bound iterations, retrieval, model calls, and related work. |
-| Stop condition | Define success or another terminal state. |
+| Exit condition | Define success or another terminal state. |
 | Replay guarantee | State what a later replay can reproduce. |
 | Depth limit | Bound loops started by loops. |
 
@@ -42,9 +45,9 @@ The public mode order is:
 2. Hybrid
 3. Non-deterministic
 
-Mode is a permission. A loop may not exceed its allowed modes. A loop that
-starts another loop may grant fewer permissions, but it cannot grant more than
-it has.
+Mode is selected for one Loop instance. A Loop may not exceed its profile and
+operating policy. A spawning Loop may grant fewer permissions, but it cannot
+grant more than it has.
 
 Effort does not grant permissions.
 
@@ -60,29 +63,30 @@ Step profile and mode remain independent.
 The reference nine-step profile is not a universal execution law. Custom
 profiles may reorder or repeat steps.
 
-## 5. Attempts, accepted work, and stopping
+## 5. Attempts, loop conditions, and exit conditions
 
-An attempt does not automatically complete a loop. A failed deterministic
-attempt can move to an allowed fallback mode. The loop stops only when its
-declared condition is satisfied or another terminal state occurs.
+An attempt does not automatically complete a Loop. A failed deterministic
+attempt can move to an allowed fallback mode. The Loop continues only while
+its loop condition permits another iteration. It finishes successfully only
+when its exit condition is satisfied.
 
 The event history keeps attempts, accepted work, iterations, loops started,
 and terminal states separate.
 
 ## 6. Three Loop roles
 
-A Practitioner loop tree records how work was understood, built, and tested.
+A Practitioner Loop graph records how work was understood, built, and tested.
 A Solution Canvas describes what runs for a new input.
 
-Every operational Canvas node is a Solution loop. The current in-process
-Canvas runner uses a deterministic component loop for each operation. Hybrid
-and non-deterministic Canvas modes are validated and recorded, but separate
-execution adapters for those modes are not implemented yet.
+Every executable Canvas vertex is a Solution Loop. The current in-process
+Canvas runner uses a deterministic Solution Loop for each operation. It
+refuses hybrid and non-deterministic Solution execution because those adapters
+are not implemented.
 
-A Self-Improvement Loop reviews a bounded population of verified Chronicle
-history and the current Intelligence Library. It can audit, mine, compare,
-generate, and stage candidates. Its `logical_kind` is `search_improvement`, so
-it cannot approve or promote its own output.
+A self-improvement Practitioner task reviews a bounded population of verified
+Run History records and the current Intelligence Library. It can audit, mine,
+compare, generate, and stage candidates. Its `logical_kind` is
+`search_improvement`, so it cannot approve or promote its own output.
 
 ## 7. Intelligence and memory
 
@@ -90,8 +94,8 @@ Loops may search four persistent intelligence layers:
 
 1. Context Intelligence
 2. Code Intelligence
-3. Previous Run & Solution Intelligence
-4. User Intelligence
+3. Runtime History and Solution Intelligence
+4. User Feedback Intelligence
 
 Runtime Memory is temporary and belongs to the current run. It is not a fifth
 persistent layer. Temporary notes do not promote themselves.
@@ -101,7 +105,7 @@ retrieval. A review path must request candidates explicitly.
 
 ## 8. History and replay
 
-Every material action writes a typed event. The Chronicle stores the saved
+Every material action writes a typed event. The Run History stores the saved
 event history and verifies its chain. Reports, live views, and playback are
 projections of that history.
 

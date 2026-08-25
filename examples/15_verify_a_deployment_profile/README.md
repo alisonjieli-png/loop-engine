@@ -8,7 +8,7 @@ from a metrics loop before either loop runs.
 
 A direct threshold function can make the final decision. The loop is useful
 here because it gives the verification role, step profile, contract, mode,
-decision path, and stop condition one inspectable identity.
+decision path, and exit condition one inspectable identity.
 
 ## Run settings
 
@@ -19,7 +19,7 @@ decision path, and stop condition one inspectable identity.
 | Step profile | Adversarial review |
 | Intelligence layers | None |
 | Runtime Memory | Not used |
-| Chronicle | Not saved |
+| Run History | Not saved |
 
 ## Install
 
@@ -50,7 +50,7 @@ viewer.
 
 ## Play it back
 
-This example does not save a Chronicle. Use the campaign or playback examples
+This example does not save a Run History. Use the campaign or playback examples
 when saved playback is required.
 
 ## What this example does not prove

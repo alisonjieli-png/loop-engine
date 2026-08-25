@@ -3,14 +3,44 @@
 The Intelligence Library gives every loop one searchable view across four
 persistent layers. Every search result names the layer that served it.
 
+## Intelligence uses query and retrieval relationships
+
+The four layers classify stored intelligence. The Intelligence role classifies
+the work a Loop performs with that intelligence. These are different axes.
+
+```text
+Starting Practitioner
+└── queries an Intelligence Query Loop
+    ├── role profile: intelligence.search
+    └── retrieves Intelligence Item Loops
+        ├── intelligence.materialize
+        ├── intelligence.invoke
+        ├── intelligence.replay
+        └── intelligence.interpret
+```
+
+The public operation selectors resolve to registered profiles:
+
+- `intelligence.search` searches selected layers and returns references.
+- `intelligence.materialize` verifies and loads one selected reference.
+- `intelligence.invoke` invokes selected Code Intelligence.
+- `intelligence.replay` replays selected Runtime History.
+- `intelligence.interpret` interprets selected User Feedback.
+
+An independent intelligence task may use a Starting Intelligence Loop. In the
+ordinary Practitioner flow, the Practitioner queries an Intelligence Query
+Loop. That Query Loop retrieves Intelligence Item Loops and returns typed
+references or material. Query and retrieval do not change role, profile, or
+selected mode into a spawning relationship.
+
 ## Layer map
 
 | Layer | What belongs here | Category groups |
 |---|---|---|
 | Context Intelligence | Context that can guide work without executing it. | question, method, heuristic, checklist, warning, constraint, persona, example, prompt pattern, output contract, decision schema, evaluation, rubric, source note, failure pattern, other |
 | Code Intelligence | Software cards and executable capabilities. | function, file, module, package, repository, template repository, service, dataset-backed system, large framework, worker system, tool, plugin, workflow, notebook, other |
-| Previous Run & Solution Intelligence | Saved run history and reusable solution information. | run, solution, decision, failure, repair, measurement, comparison, other |
-| User Intelligence | Scoped guidance supplied by a person. | advice, correction, context, source suggestion, package suggestion, priority change, constraint, instruction, approval, veto, other |
+| Runtime History and Solution Intelligence | Saved run history and reusable solution information. | run, solution, decision, failure, repair, measurement, comparison, other |
+| User Feedback Intelligence | Scoped guidance supplied by a person. | advice, correction, context, source suggestion, package suggestion, priority change, constraint, instruction, approval, veto, other |
 
 The `other` category is deliberate. An item stays visible when its category is
 not yet known. The catalog does not invent a precise classification.
@@ -44,12 +74,12 @@ GitHub and GitLab repositories, repository templates, tools, skills, notebooks,
 workflows, and large systems. Read
 [Code Intelligence templates](CODE-INTELLIGENCE-TEMPLATES.md).
 
-Previous Run and Solution Intelligence has its own storage, retrieval,
+Runtime History and Solution Intelligence has its own storage, retrieval,
 applicability, and evidence boundaries. Read
-[Previous Run and Solution Intelligence](PREVIOUS-RUN-AND-SOLUTION-INTELLIGENCE.md).
+[Runtime History and Solution Intelligence](RUNTIME-HISTORY-AND-SOLUTION-INTELLIGENCE.md).
 
-User Intelligence has explicit scope, strength, timing, precedence, conflict,
-and response rules. Read [User Intelligence](USER-INTELLIGENCE.md).
+User Feedback Intelligence has explicit scope, strength, timing, precedence, conflict,
+and response rules. Read [User Feedback Intelligence](USER-FEEDBACK-INTELLIGENCE.md).
 
 ## Current built-in population
 
@@ -64,8 +94,8 @@ review. Staging a candidate does not make it active.
 The Code records are conservative module references. They are not a claim that
 every module is an independently registered executable capability.
 
-Previous Run & Solution Intelligence is populated from saved Chronicle runs.
-User Intelligence is populated from saved user guidance. Both can be empty on
+Runtime History and Solution Intelligence is populated from saved Run History records.
+User Feedback Intelligence is populated from saved user guidance. Both can be empty on
 a fresh installation. The current catalog does not yet load saved
 `SolutionLibrary` assets into the third layer.
 
@@ -89,10 +119,6 @@ modes. Current selectable built-in backends are `store`, `fts5`, and `lancedb`
 for lexical search, plus `hash` and `model2vec` for vector search. This is a
 fixed backend set today, not an external retrieval plugin registry.
 
-The human-facing layer key is `context_intelligence`, with the short alias
-`context`. The stable wire token remains `string_intelligence` so saved runs,
-seed IDs, and existing clients do not break.
-
 See [search the intelligence layers](../../../examples/09_search_the_intelligence_layers/)
 for a runnable example.
 
@@ -102,16 +128,18 @@ The normal flow is:
 
 ```text
 search loop
-  -> ranked LoopRefs without item bodies
-  -> select one reference
-  -> materialization loop verifies and loads that item
-  -> optional Code execution or explicit model reframe loop
-  -> return to the parent loop
+  -> Practitioner queries an Intelligence Query Loop
+  -> Query Loop returns ranked LoopRefs without item bodies
+  -> Query Loop retrieves the selected Intelligence Item Loop
+  -> materialization verifies and loads that item
+  -> optional Code invocation or explicit model reframe Loop
+  -> typed reference or material returns to the Practitioner
 ```
 
-Context, Code, Previous Run & Solution, and User Intelligence all use this
-flow. Read [Intelligence is returned through loops](INTELLIGENCE-AS-LOOPS.md)
-for the contracts and examples.
+Context Intelligence, Code Intelligence, Runtime History and Solution
+Intelligence, and User Feedback Intelligence all use this flow. Read
+[Intelligence is returned through loops](INTELLIGENCE-AS-LOOPS.md) for the
+contracts and examples.
 
 ## Runtime Memory is separate
 

@@ -1,12 +1,7 @@
-"""The machine-enforced conformance scanner (§15 of the maximal reset).
+"""The machine-enforced conformance scanner.
 
-Executable rules, not documentation: every detector reads its allowlists from
-``forbidden_paths.json``, scans the canonical package, and FAILS (nonzero
-counts) on bypasses — legacy flat imports, network outside the model gateway,
-subprocess outside declared adapters, eval/exec anywhere, secret-shaped
-literals in code OR receipts, dynamic-import registration bypasses, kimi-k3
-mentions outside the guards, empty placeholder modules, and skip/xfail
-markers in the conformance suites.
+Every detector reads its policy from ``forbidden_paths.json`` and scans the
+canonical package. Any detected bypass produces a nonzero violation count.
 
 Every detector is CANARY-PROVEN: the self-test plants a deliberately invalid
 fixture for each rule and asserts the detector fires, then asserts the live
@@ -53,11 +48,7 @@ def _legacy_prefixes() -> tuple:
     return tuple(f"{PACKAGE}.{m}" for mods in MODULE_MAP.values() for m in mods)
 
 
-# ---------------------------------------------------------------------------
-# Detectors.  Each returns a list of {"rule", "file", "line", "detail"}.
-# ---------------------------------------------------------------------------
-
-def scan_legacy_imports(root: str, rules: dict) -> list:
+def scan_legacy_flat_imports(root: str, rules: dict) -> list:
     v = []
     prefixes = _legacy_prefixes()
     from .architecture_map import PACKAGE, SUBPACKAGES
@@ -74,11 +65,25 @@ def scan_legacy_imports(root: str, rules: dict) -> list:
                     # is a legacy import UNLESS the next segment IS a subpackage.
                     seg = name[len(PACKAGE) + 1:].split(".")[0]
                     if seg not in SUBPACKAGES:
-                        v.append({"rule": "legacy_import", "file": rel,
+                        v.append({"rule": "legacy_flat_import", "file": rel,
                                   "line": text[:m.start()].count("\n") + 1,
                                   "detail": name})
                     break
     return v
+
+
+def scan_public_parallel_runtime_surfaces(root: str, rules: dict) -> list:
+    """Refuse competing runtime/state-machine names at the package root."""
+    from .public_runtime_conformance import (
+        public_parallel_runtime_violations)
+    return public_parallel_runtime_violations(
+        root, rules.get("public_parallel_runtime_names", ()))
+
+
+def scan_retired_source_nomenclature(root: str, rules: dict) -> list:
+    from .nomenclature_conformance import retired_nomenclature_violations
+    return retired_nomenclature_violations(
+        root, rules.get("retired_source_nomenclature", {}))
 
 
 def _module_imports(path: str) -> set:
@@ -164,14 +169,22 @@ def scan_secrets(root: str, rules: dict, *, include_json: bool = True) -> list:
 
 
 def scan_dynamic_imports(root: str, rules: dict) -> list:
-    allowed = set(rules["dynamic_import_allowed_modules"])
-    v = []
+    allowed = set(rules["dynamic_import_allowed_modules"]); v = []
     for rel in _py_files(root):
         if rel in allowed:
             continue
-        text = open(os.path.join(root, rel)).read()
-        if "importlib" in _module_imports(os.path.join(root, rel)) \
-                or "__import__" in text:
+        path = os.path.join(root, rel); text = open(path).read()
+        try: tree = ast.parse(text, path)
+        except SyntaxError: continue
+        risky = any((isinstance(n, ast.Import) and any(
+            a.name == "importlib" or a.name.startswith((
+                "importlib.util", "importlib.machinery")) for a in n.names))
+            or (isinstance(n, ast.ImportFrom) and n.module == "importlib"
+                and any(a.name in ("import_module", "reload")
+                        for a in n.names))
+            or (isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+                and n.func.id == "__import__") for n in ast.walk(tree))
+        if risky:
             v.append({"rule": "dynamic_import_bypass", "file": rel,
                       "line": 0, "detail": "importlib/__import__ outside "
                                             "registry plumbing"})
@@ -326,7 +339,7 @@ def scan_cross_component_imports(root: str, rules: dict) -> list:
         for m in pat.finditer(text):
             name = m.group(1)
             if name == PACKAGE or name.startswith(PACKAGE + "."):
-                continue        # own dev-tree path (covered by legacy_import)
+                continue  # own dev-tree path (covered by legacy_flat_import)
             v.append({"rule": "cross_component_import", "file": rel,
                       "line": text[:m.start()].count("\n") + 1,
                       "detail": name})
@@ -375,11 +388,11 @@ def scan_public_node_naming(root: str, rules: dict) -> list:
 def scan_unmapped_event_kinds(root: str, rules: dict) -> list:
     """ONE event vocabulary (§3.8): every raw runtime kind this package
     records must project into a declared canonical family.  An
-    ``event="..."`` literal with no entry in the Chronicle's canonical map
+    ``event="..."`` literal with no entry in the RunHistory's canonical map
     would reach the live console and the browser as an untyped ``x.<kind>``
     passthrough — a second semantic event model growing in the dark.  Fail
     the build instead: map the kind, or do not emit it."""
-    from .static_architecture.chronicle import _CANONICAL_EVENT_MAP
+    from .static_architecture.run_history import _CANONICAL_EVENT_MAP
     v = []
     for rel in _py_files(root):
         try:
@@ -423,7 +436,7 @@ def scan_unmapped_event_kinds(root: str, rules: dict) -> list:
                     # A COMPUTED event kind (f-string, variable, concat) cannot
                     # be checked against the vocabulary, so it silently bypassed
                     # this gate — which is exactly how an untyped
-                    # x.intelligence.string.retrieved reached the browser.
+                    # x.intelligence.context.retrieved reached the browser.
                     # Fail closed: the kind must be a literal a scanner reads.
                     v.append({"rule": "unmapped_ledger_event_kind",
                               "file": rel, "line": getattr(node, "lineno", 0),
@@ -437,7 +450,7 @@ def scan_unmapped_event_kinds(root: str, rules: dict) -> list:
                 v.append({"rule": "unmapped_ledger_event_kind", "file": rel,
                           "line": getattr(node, "lineno", 0),
                           "detail": f"{kind!r} has no canonical family — add "
-                                    "it to chronicle._CANONICAL_EVENT_MAP"})
+                                    "it to run_history._CANONICAL_EVENT_MAP"})
     return v
 
 
@@ -467,12 +480,12 @@ def _enclosing_functions(tree) -> dict:
     out: dict = {}
 
     def walk(node, fn):
-        for child in ast.iter_child_nodes(node):
-            name = (child.name
-                    if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef))
+        for spawned in ast.iter_child_nodes(node):
+            name = (spawned.name
+                    if isinstance(spawned, (ast.FunctionDef, ast.AsyncFunctionDef))
                     else fn)
-            out[id(child)] = name
-            walk(child, name)
+            out[id(spawned)] = name
+            walk(spawned, name)
     walk(tree, None)
     return out
 
@@ -555,7 +568,7 @@ def scan_direct_resource_access(root: str, rules: dict) -> list:
         enc = _enclosing_functions(tree)
         # A call inside a lambda/callable handed TO a loop envelope is already
         # inside that envelope — e.g. serve_historical(..., lambda:
-        # Chronicle.load(...)).  Collect those node ids so the envelope's own
+        # RunHistory.load(...)).  Collect those node ids so the envelope's own
         # body is not counted as a crossing of the boundary it creates.
         inside_envelope = set()
         for call in ast.walk(tree):
@@ -584,7 +597,7 @@ def scan_direct_resource_access(root: str, rules: dict) -> list:
                         and node.func.attr in methods):
                     continue
                 # the RECEIVER must be the surface, not merely a matching
-                # method name — json.load(f) is not chronicle.load.
+                # method name — json.load(f) is not run_history.load.
                 recv = node.func.value
                 name = (recv.id if isinstance(recv, ast.Name)
                         else recv.attr if isinstance(recv, ast.Attribute)
@@ -661,7 +674,10 @@ def scan_uncollected_self_tests(root: str, rules: dict) -> list:
 RATCHETED_RULES = ()
 
 
-DETECTORS = (scan_legacy_imports, scan_network, scan_subprocess,
+DETECTORS = (scan_legacy_flat_imports,
+             scan_public_parallel_runtime_surfaces,
+             scan_retired_source_nomenclature,
+             scan_network, scan_subprocess,
              scan_eval_exec, scan_secrets, scan_dynamic_imports, scan_kimi,
              scan_empty_modules, scan_skip_markers, scan_module_size,
              scan_min_python_syntax,
@@ -694,7 +710,7 @@ def run_scan(root: "str | None" = None) -> dict:
 # ---------------------------------------------------------------------------
 
 _FIXTURES = {
-    # legacy_import fixture is generated in self_test from the live PACKAGE
+    # legacy_flat_import fixture is generated from the live PACKAGE.
     # name so the canary fires under BOTH the dev path and the installed name.
     "network_outside_gateway": "import urllib.request\n",
     "subprocess_outside_declared": "import subprocess\nsubprocess.run(['ls'])\n",
@@ -727,7 +743,11 @@ def self_test() -> dict:
 
     from .architecture_map import PACKAGE
     fixtures = dict(_FIXTURES)
-    fixtures["legacy_import"] = f"from {PACKAGE}.kernel import x\n"
+    retired_term = _rules()["retired_source_nomenclature"]["terms"][0]
+    fixtures["retired_source_nomenclature"] = f'x = "{retired_term}"\n'
+    fixtures["legacy_flat_import"] = f"from {PACKAGE}.kernel import x\n"
+    fixtures["public_parallel_runtime_surface"] = (
+        '__all__ = ["SolverCell"]\n')
     tmp = tempfile.mkdtemp(prefix="conf_canary_")
     try:
         shutil.copy(os.path.join(_HERE, "forbidden_paths.json"),
@@ -736,6 +756,8 @@ def self_test() -> dict:
         for rule, src in fixtures.items():
             base = ("_conformance_fixture.py"
                     if rule == "conformance_test_skip_marker"
+                    else "__init__.py"
+                    if rule == "public_parallel_runtime_surface"
                     else f"fixture_{rule}.py")
             names[rule] = base
             with open(os.path.join(tmp, base), "w") as f:

@@ -1,8 +1,8 @@
 {
- "record_type": "chronicle_manifest/v1",
- "run_id": "titanic-warm-20260823",
- "parent_run_id": "",
- "events": 8,
- "head_digest": "0ebb96cb17c0329b0c0779a8fb8d5455e89ef94d3d49533d02a93969502c0511",
- "committed": true
+  "record_type": "run_history_manifest/v1",
+  "run_id": "titanic-warm-20260823",
+  "parent_run_id": "",
+  "events": 8,
+  "head_digest": "bca624adb023892b3800615d5baaaaddb583322f3f66cf4e91fc489f8a1dcd03",
+  "committed": true
 }

@@ -1,6 +1,6 @@
 """Run quality — did the calls help, is the loop stuck, does learning digest?
 
-Architectural role: Code Node system (quality analysis over Chronicles).
+Architectural role: Code Node system (quality analysis over run histories).
 
 Owns:
     - ModelCallContribution: before/after evaluation per semantic call with an
@@ -14,15 +14,15 @@ Owns:
       score + suggested interventions from the failure-response vocabulary;
     - LearningDigestibility: the checklist that answers "can this output
       become reusable memory?", with a low score recommending a structuring
-      child loop (a recommendation — the caller spawns it).
+      spawned loop (a recommendation — the caller spawns it).
 
 Does not own:
-    - the event store (chronicle.py), rollups (run_analytics.py), rendering
+    - the event store (run_history.py), rollups (run_analytics.py), rendering
       (run_playback.py), or applying any intervention.
 
 Public entry points:
-    - call_contributions(chronicle_events, evaluations) -> list[dict]
-    - stuckness_report(chronicle_events) -> dict
+    - call_contributions(run_history_events, evaluations) -> list[dict]
+    - stuckness_report(run_history_events) -> dict
     - digestibility(record) -> dict
 
 Key invariants:
@@ -154,7 +154,7 @@ DIGESTIBILITY_CHECKS = (
 def digestibility(record: dict) -> dict:
     """Score whether a raw output can become reusable memory.  ``record`` maps
     check names to booleans (absent = failed — fail-closed).  A low score
-    RECOMMENDS spawning a structuring child loop; it never spawns one."""
+    RECOMMENDS spawning a structuring spawned loop; it never spawns one."""
     checks = {c: bool(record.get(c)) for c in DIGESTIBILITY_CHECKS}
     score = round(sum(checks.values()) / len(checks), 3)
     failed = [c for c, ok in checks.items() if not ok]
@@ -163,7 +163,7 @@ def digestibility(record: dict) -> dict:
             "failed": failed,
             "recommendation": (
                 "digestible — stage as candidate" if score >= 0.7 else
-                "spawn a 'normalize and extract reusable learning' child "
+                "spawn a 'normalize and extract reusable learning' spawned "
                 "loop before this output touches shared memory")}
 
 
@@ -173,18 +173,18 @@ def self_test() -> dict:
     def check(name, ok, note=""):
         results.append({"name": name, "passed": bool(ok), "note": note})
 
-    from ..static_architecture.chronicle import Chronicle
+    from ..static_architecture.run_history import RunHistory
 
-    ch = Chronicle("q_run")
+    ch = RunHistory("q_run")
     ch.append("run_started")
     ch.append("loop_init", loop_id="loop1", detail={"depth": 0})
     ch.append("evaluation", loop_id="loop1", detail={"quality": 0.80})
-    e_eval1 = ch.events[-1].sequence_number
+    e_eval1 = ch.event_log[-1].sequence_number
     ch.append("model_invocation", loop_id="loop1", step="research",
               mode="hybrid", model="m", prompt_tokens=100, eval_tokens=400)
-    call_seq = ch.events[-1].sequence_number
+    call_seq = ch.event_log[-1].sequence_number
     ch.append("evaluation", loop_id="loop1", detail={"quality": 0.83})
-    e_eval2 = ch.events[-1].sequence_number
+    e_eval2 = ch.event_log[-1].sequence_number
     for _ in range(3):
         ch.append("iteration", loop_id="loop1", step="repair", mode="deterministic",
                   detail={"output": "same fix attempt"})
@@ -194,7 +194,7 @@ def self_test() -> dict:
     ch.append("budget_stop", loop_id="loop1")
 
     # 1. contribution: before/after quality, per-token gain, honest label.
-    contrib = call_contributions(ch.events,
+    contrib = call_contributions(ch.event_log,
                                  [(e_eval1, 0.80), (e_eval2, 0.83)])
     c = contrib[0]
     check("call_contribution_quantifies_with_honest_attribution",
@@ -207,12 +207,12 @@ def self_test() -> dict:
           "never causation")
 
     # 2. unknown quality stays unknown (never coerced to zero).
-    c2 = call_contributions(ch.events, [])[0]
+    c2 = call_contributions(ch.event_log, [])[0]
     check("unknown_quality_stays_unknown",
           c2["quality_delta"] is None and c2["gain_per_1k_tokens"] is None)
 
     # 3. stuckness: co-occurring indicators → score + interventions.
-    rep = stuckness_report(ch.events)
+    rep = stuckness_report(ch.event_log)
     inds = {i["indicator"] for i in rep["dominant_indicators"]}
     check("stuckness_report_finds_cooccurring_indicators",
           {"repeated_equivalent_work", "repeated_similar_responses",

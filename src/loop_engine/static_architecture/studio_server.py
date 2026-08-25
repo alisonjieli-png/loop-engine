@@ -1,25 +1,26 @@
-"""Loop Engine Studio server — the routed application over the Chronicle.
+"""Loop Engine Studio server over saved run history and live state.
 
-Architectural role: Static Architecture service (a serving adapter, like the
+Architectural role: internal local viewing service (a serving adapter, like the
 model gateway is for models).
 
 Owns:
     - the local HTTP surface (stdlib http.server — no new dependencies) that
       serves the Studio shell (a passive String at
       ``strings/studio_shell.html``) and the projection APIs;
-    - the Chronicle projections computed AT REQUEST TIME (never a generated
+    - saved-run projections computed at request time (never a generated
       snapshot): runs list, per-run overview/loop-tree/timeline/model-calls,
-      per-run stuckness; the intelligence inventory (live harvest of the
+      per-run stuckness and safe runtime controls; the intelligence inventory (live harvest of the
       banks + generated candidates + meta pack); the code-node inventory
-      (architecture map + docstrings); the solution library (receipts);
+      (architecture map + docstrings); the solution library (records);
       the improvements view (per-run stuckness + candidates awaiting
-      validation).
+      validation); and read-only harness, MCP, skill, approval, and context
+      artifact views when their authoritative live objects are supplied.
 
 Does not own:
     - any mutation: the Studio is READ-ONLY in this phase — edits become
       ChangeProposals through their own lane, never through HTTP;
     - analytics semantics (run_quality/run_analytics own them) or the
-      Chronicle itself (chronicle.py owns the store).
+      saved event log itself (run_history.py owns the store).
 
 Public entry points:
     - serve(port=8765) — blocking; ``--studio`` in __main__ wraps it
@@ -27,7 +28,7 @@ Public entry points:
       a socket)
 
 Key invariants:
-    - every payload derives from Chronicle files, live stores, or receipts
+    - every payload derives from saved-run files, live stores, or records
       read at request time;
     - the server binds 127.0.0.1 only (a local workbench, not a deployment);
     - unknown API routes 404 with a JSON error, never a traceback page.
@@ -44,29 +45,32 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote
 
 _PKG = os.path.dirname(os.path.dirname(__file__))
-from .chronicle import default_runs_dir
+from .run_history import default_runs_dir
+from .studio_operational_views import (
+    StudioReadSources, project_run_runtime, project_runtime_inventory)
 
 _RUNS = default_runs_dir()
+_READ_SOURCES = StudioReadSources()
 
 
 def _load_run_as_historical_loop(run_id: str, *, ledger=None):
     """Read ONE saved run through a Historical Run Loop.
 
-    The owner's ruling (2026-08-24) is that no caller queries Chronicle
+    No caller reads saved run history
     directly — it invokes the loop that owns the history.  The read is
     deterministic, stops after one accepted success, and records
-    ``intelligence.history.retrieved`` on the caller's ledger when one is
+    ``intelligence.runtime_history_solution.retrieved`` on the caller's ledger when one is
     given, so "the Studio read the history" is evidence rather than an
     assumption."""
-    from .chronicle import Chronicle
+    from .run_history import RunHistory
     from ..loop.intelligence_loops import serve_historical_intelligence
     return serve_historical_intelligence(
         f"run:{run_id}",
-                            lambda: Chronicle.load(_RUNS, run_id),
+                            lambda: RunHistory.load(_RUNS, run_id),
                             ledger=ledger)["value"]
 
 
-def _chronicles():
+def _run_histories():
     out = []
     if not os.path.isdir(_RUNS):
         return out
@@ -80,10 +84,10 @@ def _chronicles():
 
 
 def _run_row(ch) -> dict:
-    calls = [e for e in ch.events if e.event_type == "model_invocation"]
-    goal = next((e.detail.get("goal", "") for e in ch.events
+    calls = [e for e in ch.event_log if e.event_type == "model_invocation"]
+    goal = next((e.detail.get("goal", "") for e in ch.event_log
                  if e.event_type == "loop_init"), "")
-    return {"run_id": ch.run_id, "events": len(ch.events),
+    return {"run_id": ch.run_id, "events": len(ch.event_log),
             "calls": len(calls),
             "tokens": sum(e.prompt_tokens + e.eval_tokens for e in calls),
             "intact": ch.verify_chain()["intact"], "goal": goal}
@@ -93,13 +97,14 @@ def _run_detail(rid: str) -> dict:
     from ..code_nodes.run_quality import stuckness_report
     ch = _load_run_as_historical_loop(rid)
     calls, events, iters = [], [], 0
-    tree_kids: dict = {}
+    spawned_by_owner: dict = {}
     goals: dict = {}
-    for e in ch.events:
+    for e in ch.event_log:
         if e.event_type == "loop_init":
             goals[e.loop_id] = e.detail.get("goal", "")
         elif e.event_type == "loop_spawn":
-            tree_kids.setdefault(e.parent_loop_id, []).append(e.loop_id)
+            spawned_by_owner.setdefault(
+                e.spawning_loop_id, []).append(e.loop_id)
         elif e.event_type == "iteration":
             iters += 1
         elif e.event_type == "model_invocation":
@@ -115,25 +120,29 @@ def _run_detail(rid: str) -> dict:
 
     def tree(lid, prefix=""):
         lines = [f"{prefix}{lid}  {goals.get(lid, '')[:60]}"]
-        kids = tree_kids.get(lid, [])
-        for i, k in enumerate(kids):
-            last = i == len(kids) - 1
+        spawned = spawned_by_owner.get(lid, [])
+        for i, k in enumerate(spawned):
+            last = i == len(spawned) - 1
             lines += tree(k, prefix + ("└── " if last else "├── "))
         return lines
-    roots = [l for l in goals if not any(l in v for v in tree_kids.values())]
-    tree_txt = "\n".join(sum((tree(r) for r in roots), []))
+    starting_ids = [loop_id for loop_id in goals
+                    if not any(loop_id in values
+                               for values in spawned_by_owner.values())]
+    tree_txt = "\n".join(sum((tree(loop_id)
+                              for loop_id in starting_ids), []))
 
     # STRUCTURED tree + per-loop rollups, so the Studio can render a
     # clickable Loop Tree with an inspector instead of a text blob.  A text
     # tree shows shape; it cannot be selected, and a loop you cannot select
     # is a loop you cannot inspect or advise.
     per_loop: dict = {}
-    for e in ch.events:
+    for e in ch.event_log:
         if not e.loop_id:
             continue
         row = per_loop.setdefault(e.loop_id, {
             "loop_id": e.loop_id, "goal": goals.get(e.loop_id, ""),
-            "parent": "", "iterations": 0, "calls": 0, "tokens": 0,
+            "spawning_loop_id": "", "iterations": 0, "calls": 0,
+            "tokens": 0,
             "modes": {}, "steps": [], "terminal": ""})
         if e.event_type == "iteration":
             row["iterations"] += 1
@@ -147,28 +156,31 @@ def _run_detail(rid: str) -> dict:
             row["tokens"] += (e.prompt_tokens or 0) + (e.eval_tokens or 0)
         elif e.event_type == "terminal":
             row["terminal"] = str((e.detail or {}).get("reason", ""))
-    for parent, kids in tree_kids.items():
-        for k in kids:
-            if k in per_loop:
-                per_loop[k]["parent"] = parent
+    for spawning_loop_id, spawned_ids in spawned_by_owner.items():
+        for spawned_loop_id in spawned_ids:
+            if spawned_loop_id in per_loop:
+                per_loop[spawned_loop_id]["spawning_loop_id"] = (
+                    spawning_loop_id)
 
     def node(lid):
         return {"loop_id": lid, **per_loop.get(lid, {"goal": goals.get(lid, "")}),
-                "children": [node(k) for k in tree_kids.get(lid, [])]}
+                "spawned_loops": [node(k)
+                                  for k in spawned_by_owner.get(lid, [])]}
 
-    tree_json = [node(r) for r in roots]
+    tree_json = [node(loop_id) for loop_id in starting_ids]
     return {"run_id": rid,
             "goal": next(iter(goals.values()), ""),
-            "totals": {"events": len(ch.events), "iterations": iters,
+            "totals": {"events": len(ch.event_log), "iterations": iters,
                        "calls": len(calls),
                        "prompt_tokens": sum(c["prompt_tokens"]
                                             for c in calls),
                        "eval_tokens": sum(c["eval_tokens"] for c in calls)},
             "chain_intact": ch.verify_chain()["intact"],
-            "stuckness": stuckness_report(ch.events),
+            "stuckness": stuckness_report(ch.event_log),
             "tree": tree_txt, "tree_json": tree_json,
             "loops": list(per_loop.values()),
-            "events": events, "calls": calls}
+            "events": events, "calls": calls,
+            "runtime": project_run_runtime(ch.event_log)}
 
 
 def _strings_inventory() -> dict:
@@ -258,12 +270,12 @@ def _intelligence_inventory() -> dict:
 def _solutions_inventory() -> dict:
     out = []
     evid = os.path.join(_PKG, "evidence")
-    for f, key in (("chronicle-bootstrap-20260823.json", "solution_assets"),):
+    for f, key in (("run_history-bootstrap-20260823.json", "solution_assets"),):
         p = os.path.join(evid, f)
         if os.path.exists(p):
             for a in json.load(open(p)).get(key, []):
                 out.append({"id": a, "fingerprint": "see asset record",
-                            "evidence": "chronicle bootstrap",
+                            "evidence": "run_history bootstrap",
                             "maturity": "candidate"})
     p = os.path.join(evid, "openml-real-data-20260823.json")
     if os.path.exists(p):
@@ -283,8 +295,8 @@ def _improvements() -> dict:
     from ..code_nodes.run_quality import stuckness_report
     from ..code_nodes.string_foundry import load_candidate_bank
     stuck = []
-    for ch in _chronicles():
-        r = stuckness_report(ch.events)
+    for ch in _run_histories():
+        r = stuckness_report(ch.event_log)
         stuck.append({"run": ch.run_id, "score": r["stuckness_score"],
                       "indicators": ", ".join(i["indicator"] for i in
                                               r["dominant_indicators"])
@@ -294,7 +306,7 @@ def _improvements() -> dict:
     bank = load_candidate_bank()
     return {"cards": [
         {"label": "candidates awaiting validation", "value": len(bank)},
-        {"label": "runs chronicled", "value": len(stuck)},
+        {"label": "saved runs", "value": len(stuck)},
         {"label": "stuck runs", "value":
             sum(1 for s in stuck if s["score"] > 0.5)}],
         "stuckness": sorted(stuck, key=lambda s: -s["score"]),
@@ -303,10 +315,10 @@ def _improvements() -> dict:
 
 
 def _summary() -> dict:
-    rows = [_run_row(ch) for ch in _chronicles()]
+    rows = [_run_row(ch) for ch in _run_histories()]
     intelligence = _intelligence_inventory()["summary"]
     return {"cards": [
-        {"label": "runs chronicled", "value": len(rows), "link": "runs"},
+        {"label": "saved runs", "value": len(rows), "link": "runs"},
         {"label": "semantic calls", "value": sum(r["calls"] for r in rows),
          "link": "runs"},
         {"label": "provider tokens", "value": sum(r["tokens"] for r in rows),
@@ -321,7 +333,7 @@ def _summary() -> dict:
          "link": "runs"}],
         "recent": sorted(rows, key=lambda r: r["run_id"],
                          reverse=True)[:8],
-        "honesty": "every number is computed from the Chronicle at request "
+        "honesty": "every number is computed from saved run history at request "
                    "time; smoke evidence proves plumbing, never benchmarks"}
 
 
@@ -329,7 +341,7 @@ def build_projection(name: str, arg: str = "") -> dict:
     if name == "summary":
         return _summary()
     if name == "runs":
-        return {"runs": [_run_row(ch) for ch in _chronicles()]}
+        return {"runs": [_run_row(ch) for ch in _run_histories()]}
     if name == "run":
         return _run_detail(arg)
     if name in ("context", "strings"):
@@ -342,19 +354,20 @@ def build_projection(name: str, arg: str = "") -> dict:
         return _solutions_inventory()
     if name == "improvements":
         return _improvements()
+    if name == "runtime":
+        return project_runtime_inventory(_READ_SOURCES)
     raise KeyError(name)
 
 
 def _ledger_events_for(run_id: str) -> list:
     """The raw ledger rows behind one run, for the canonical projection.
-    A saved Chronicle stores canonical events already, so its bodies are
+    Saved run history stores canonical events already, so its bodies are
     replayed as their source rows; a run with no saved history streams
     empty rather than inventing activity."""
-    for ch in _chronicles():
+    for ch in _run_histories():
         if ch.run_id == run_id:
-            return [{"event": e.event_type, "loop_id": e.loop_id,
-                     "step": e.step, "mode": e.mode, "ts": e.ts,
-                     **(e.detail or {})} for e in ch.events]
+            from .run_history import as_ledger_event
+            return [as_ledger_event(event) for event in ch.event_log]
     return []
 
 
@@ -366,13 +379,13 @@ ADVICE_STORE_PATH: "str | None" = None
 
 
 def _leave_advice(data: dict) -> dict:
-    """Store one piece of User Intelligence from the Studio.
+    """Store one piece of User Feedback Intelligence from the Studio.
 
     Refuses an empty note, an undeclared scope, and an undeclared guidance
     type — the store's own closed vocabularies, enforced at the edge so a
     malformed request never becomes a malformed record.
     """
-    from .user_intelligence import AdviceStore
+    from .user_feedback_intelligence import AdviceStore
     text = str(data.get("text", "")).strip()
     if not text:
         raise ValueError("empty advice is refused")
@@ -490,11 +503,14 @@ class _Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
 
-def serve(port: int = 8765, *, ready=None, runs_dir: str = "") -> None:
+def serve(port: int = 8765, *, ready=None, runs_dir: str = "",
+          read_sources: "StudioReadSources | None" = None) -> None:
     """Blocking local server (127.0.0.1 only — a workbench, not a deploy)."""
-    global _RUNS
+    global _RUNS, _READ_SOURCES
     if runs_dir:
         _RUNS = default_runs_dir(runs_dir)
+    if read_sources is not None:
+        _READ_SOURCES = read_sources
     httpd = ThreadingHTTPServer(("127.0.0.1", port), _Handler)
     if ready is not None:
         ready(httpd)                      # test mode: no banner
@@ -511,8 +527,9 @@ def serve(port: int = 8765, *, ready=None, runs_dir: str = "") -> None:
 def self_test() -> dict:
     import tempfile
     import shutil
-    global _RUNS
+    global _RUNS, _READ_SOURCES
     previous_runs, _RUNS = _RUNS, tempfile.mkdtemp(prefix="studio_runs_")
+    previous_sources, _READ_SOURCES = _READ_SOURCES, StudioReadSources()
     results = []
 
     def check(name, ok, note=""):
@@ -526,11 +543,11 @@ def self_test() -> dict:
     if not build_projection("runs")["runs"]:
         from ..loop.encapsulate import as_practitioner_loop
         from ..loop.recursive_loop import LoopLedger
-        from .chronicle import Chronicle
+        from .run_history import RunHistory
         _lg = LoopLedger()
         as_practitioner_loop("studio projection fixture", lambda: "ok",
                              ledger=_lg)
-        _ch = Chronicle.from_ledger(_lg.events,
+        _ch = RunHistory.from_ledger(_lg.events,
                                     run_id="studio-self-test-fixture")
         _ch.commit()
         _ch.save(_RUNS)          # commit() only marks it; save() writes the run
@@ -542,11 +559,13 @@ def self_test() -> dict:
     intelligence = build_projection("intelligence")
     loops = build_projection("loops")["loops"]
     imp = build_projection("improvements")
-    check("projections_compute_from_live_chronicles_and_stores",
+    runtime = build_projection("runtime")
+    check("projections_compute_from_live_run_histories_and_stores",
           s["cards"] and runs and len(strings["strings"]) > 100
           and len(intelligence["summary"]["layers"]) == 4
           and intelligence["summary"]["total_items"] >= 100
-          and len(loops) >= 30 and "honesty" in imp,
+          and len(loops) >= 30 and "honesty" in imp
+          and len(runtime["harnesses"]["items"]) == 4,
           f"{len(runs)} runs, {len(strings['strings'])} strings, "
           f"{len(loops)} loops — at request time")
 
@@ -556,7 +575,13 @@ def self_test() -> dict:
     check("run_detail_projects_playback_tree_calls_stuckness",
           d["chain_intact"] and d["events"] and d["tree"]
           and "stuckness_score" in d["stuckness"]
-          and d["totals"]["events"] == len(d["events"]))
+          and d["totals"]["events"] == len(d["events"])
+          and d["runtime"]["record_type"] == "studio_run_runtime/v2")
+
+    # Safe operational views use allowlists and report missing saved-history
+    # emitters instead of starting a second history store.
+    from .studio_operational_views import _view_test_cases
+    results.extend(_view_test_cases())
 
     # 3. one LIVE request over HTTP: shell + an API route + a clean 404.
     import http.client
@@ -575,6 +600,8 @@ def self_test() -> dict:
     shell = conn.getresponse().read().decode()
     conn.request("GET", "/api/summary")
     api = json.loads(conn.getresponse().read())
+    conn.request("GET", "/api/runtime")
+    runtime_api = json.loads(conn.getresponse().read())
     conn.request("GET", "/api/nope")
     notfound = conn.getresponse()
     nf_body = json.loads(notfound.read())
@@ -643,6 +670,8 @@ def self_test() -> dict:
     holder["h"].shutdown()
     check("studio_serves_shell_api_and_clean_404s",
           "Loop Engine Studio" in shell and api["cards"]
+          and runtime_api["record_type"] == "studio_runtime_inventory/v1"
+          and len(runtime_api["harnesses"]["items"]) == 4
           and notfound.status == 404 and "error" in nf_body,
           f"live on an ephemeral port ({port})")
     check("reads_cross_into_a_loop_and_say_so_over_the_wire",
@@ -682,6 +711,7 @@ def self_test() -> dict:
     check("studio_api_and_shell_agree_on_code_and_four_layer_routes",
           'api("loops")' in shell_src and 'api("nodes")' not in shell_src
           and 'api("intelligence")' in shell_src
+          and 'api("runtime")' in shell_src
           and "intelligence" in contract["api_endpoints"],
           "Code Intelligence uses /api/loops; four layers use /api/intelligence")
 
@@ -697,7 +727,9 @@ def self_test() -> dict:
           and contract["studio_routes"] >= 13
           and contract["every_api_endpoint_runs_as_a_loop"] is True
           and "/app/runs/:id/playback" in contract["studio"]
-          and "/app/intelligence" in contract["studio"],
+          and "/app/intelligence" in contract["studio"]
+          and "/app/runtime" in contract["studio"]
+          and "runtime" in contract["api_endpoints"],
           f"{contract['public_routes']} public + {contract['studio_routes']} "
           "studio routes served; unknown paths 404")
 
@@ -706,4 +738,5 @@ def self_test() -> dict:
               "all_passed": passed == len(results)}
     shutil.rmtree(_RUNS, ignore_errors=True)
     _RUNS = previous_runs
+    _READ_SOURCES = previous_sources
     return report

@@ -1,0 +1,19 @@
+{
+  "campaign_id": "openml-cc18-full-20260825T1457Z",
+  "physical_call_ceiling": 12,
+  "record_type": "openml_cc18_campaign_state/v1",
+  "selected_mode": "non_deterministic",
+  "selected_tasks": [
+    11,
+    10101,
+    3560
+  ],
+  "started_at": "2026-08-25T14:56:42.686830+00:00",
+  "status": "aborted_structural_correction",
+  "aborted_at": "2026-08-25T14:58:01Z",
+  "physical_calls": 2,
+  "completed_provider_responses": 1,
+  "interrupted_in_flight_responses": 1,
+  "run_history_saved": false,
+  "failure": "Gateway was temporarily reparented outside the named candidate spawned Loop; campaign stopped and excluded before continuation"
+}

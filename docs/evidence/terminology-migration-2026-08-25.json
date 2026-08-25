@@ -1,0 +1,111 @@
+{
+  "record_type": "terminology_migration_evidence/v1",
+  "date": "2026-08-25",
+  "scope": [
+    "benchmarks",
+    "case-studies",
+    "docs/evidence",
+    "showcase"
+  ],
+  "current_public_terms": [
+    "Run History",
+    "event log",
+    "spawned Loop",
+    "Queried Intelligence Loop",
+    "Retrieved Intelligence Loop",
+    "Connected Solution Loop",
+    "report",
+    "record",
+    "evidence"
+  ],
+  "intelligence_layer_keys": [
+    "context_intelligence",
+    "code_intelligence",
+    "runtime_history_solution_intelligence",
+    "user_feedback_intelligence"
+  ],
+  "renamed_paths": [
+    "showcase",
+    "docs/evidence/run-history-bootstrap-20260823.json",
+    "benchmarks/ds1000/artifacts/run-history-chains.json",
+    "run-histories directories under saved benchmark campaigns"
+  ],
+  "saved_event_logs": {
+    "verified_logs": 27,
+    "verified_events": 7748,
+    "record_type": "run_history_manifest/v1",
+    "relationship_field": "spawning_loop_id",
+    "hashes_recomputed_after_metadata_rename": true,
+    "all_chains_intact": true
+  },
+  "ds1000_artifact_package": {
+    "manifest": "benchmarks/ds1000/artifacts/manifest.json",
+    "files_digest": "532888b8cae0472e6ab6d5dc9dfe3a4d1450169eae8404156db67a7d7e729325",
+    "offline_checks_passed": 288,
+    "offline_checks_total": 288,
+    "provider_calls_during_verification": 0,
+    "fit_or_train_calls_during_verification": 0
+  },
+  "openml_saved_campaign": {
+    "saved_verification": "benchmarks/openml_cc18/artifacts/openml-cc18-full-20260825T1505Z/saved-verification.json",
+    "saved_verification_sha256": "507a14f279260580d2cc6a14ef20ff4a8dece6498ba35e9a21d70528ee22715f",
+    "tasks_artifact_valid": 3,
+    "tasks_score_valid": 3,
+    "selected_physical_calls": 10,
+    "packet_physical_calls": 12,
+    "known_packet_tokens_subtotal": 16418,
+    "provider_calls_during_verification": 0,
+    "fit_or_train_calls_during_verification": false
+  },
+  "measured_results": {
+    "scores_changed": false,
+    "token_counts_changed": false,
+    "model_outputs_changed": false,
+    "population_counts_changed": false,
+    "provider_facts_changed": false,
+    "metadata_byte_sizes_changed": true,
+    "metadata_byte_size_reason": "Renamed fields and regenerated compact files have different byte lengths. These sizes are file metadata, not benchmark results."
+  },
+  "frozen_source_exception": {
+    "path": "benchmarks/openml_cc18/data/task-11-dataset.arff",
+    "reason": "The upstream ARFF comments contain an ordinary-language publication title. The file remains byte-identical because the benchmark contract pins the complete upstream artifact.",
+    "sha256": "87d3943cea423bb376be52b5dfec17f79c63108dddcf40e0a46e5ba7196a5c24",
+    "md5": "76938608d472f620c170cef9c8c1fa65",
+    "bytes": 8724,
+    "excluded_from_repository_language_scan": true,
+    "data_rows_or_values_changed": false
+  },
+  "scan_policy": {
+    "included": "Loop Engine filenames, schemas, metadata, reports, code, prose, and showcase source",
+    "excluded": [
+      "byte-pinned third-party datasets",
+      "embedded model output bodies",
+      "download caches",
+      "generated Python caches",
+      "installed JavaScript packages"
+    ],
+    "matching_embedded_model_outputs_observed": 0,
+    "included_scope_matches_after_migration": 0
+  },
+  "showcase": {
+    "source_directory": "showcase",
+    "static_architecture_groups": [
+      "Intelligence Search and Retrieval",
+      "Web Research",
+      "Custom Plugins"
+    ],
+    "slides": 26,
+    "timeline_seconds": 103.1,
+    "interactive_controls_verified": true,
+    "viewports_verified": [
+      "1920x1080",
+      "1280x720"
+    ],
+    "scene_views_inspected": 52,
+    "canvas_text_clipping": 0,
+    "console_errors": 0,
+    "stale_powerpoint_removed": true,
+    "media_regenerated": false,
+    "reason_media_not_regenerated": "Source migration and verification must finish before one exclusive export process creates media."
+  }
+}

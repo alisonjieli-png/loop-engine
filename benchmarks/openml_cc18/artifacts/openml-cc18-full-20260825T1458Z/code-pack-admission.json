@@ -1,0 +1,54 @@
+{
+  "admitted": true,
+  "admitted_at": "2026-08-25T14:55:32.690151+00:00",
+  "all_entrypoints_materialized": true,
+  "all_source_digests_matched": true,
+  "candidate_pipelines_constructed": 6,
+  "fold_training_or_scoring_during_admission": false,
+  "official_folds_per_task": [
+    10,
+    10,
+    10
+  ],
+  "real_task_bundles_loaded": 3,
+  "record_type": "openml_code_pack_admission/v1",
+  "registered_records": 11,
+  "typed_canvases_compiled": [
+    {
+      "algorithm": "logistic",
+      "canvas_rendered": true,
+      "plan_digest": "f50b192ed81b87b62c6f46703bfb38e0d4305e935c20155ac56143c956a11b9a",
+      "task_id": 11
+    },
+    {
+      "algorithm": "random_forest",
+      "canvas_rendered": true,
+      "plan_digest": "f12363e8f9cfb6a7aba9f96757d0084a6d0a409100107511a181adc23c73221b",
+      "task_id": 11
+    },
+    {
+      "algorithm": "logistic",
+      "canvas_rendered": true,
+      "plan_digest": "04bbcb45f383ca67d9355cc952c0518dbe9e340792eb106a6d24067c266e1249",
+      "task_id": 10101
+    },
+    {
+      "algorithm": "random_forest",
+      "canvas_rendered": true,
+      "plan_digest": "7205d2ff31b33d2ed05021cb87323f25915d50f4ce6094e2a88938c54a5d569f",
+      "task_id": 10101
+    },
+    {
+      "algorithm": "logistic",
+      "canvas_rendered": true,
+      "plan_digest": "da3edcbbb5d5458d90a010d4be734845465a42190e6466dd707117d9636f5596",
+      "task_id": 3560
+    },
+    {
+      "algorithm": "random_forest",
+      "canvas_rendered": true,
+      "plan_digest": "08dfe1a1de58ca7b7e67905197383d3a0c3c188f004f7fc7d99c1a4512e7ae2f",
+      "task_id": 3560
+    }
+  ]
+}

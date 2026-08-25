@@ -14,7 +14,7 @@ surface — the same route registry can reach models no single vendor offers.
 
 This mirrors ``ollama_client`` deliberately, down to returning the SAME
 ``ChatResult``. A caller must not need to know which provider answered; only
-the receipt needs to know, and it records it. The two clients differ in wire
+the record needs to know, and it records it. The two clients differ in wire
 format and nothing else that a loop can observe.
 
 Owns:
@@ -36,8 +36,8 @@ Key invariants:
       an estimated count is inadmissible as evidence;
     - cloud locality, so counted generation is permitted by the cloud-only rule.
 
-Verification: self_test() — offline shape/refusal tests always; a live call
-only when a working key is present, and reported as NOT RUN when it is not.
+Verification: self_test() covers offline contracts and refusals only.  Real
+provider integration uses a separately authorized live verification path.
 """
 
 from __future__ import annotations
@@ -46,9 +46,14 @@ import json
 import os
 import urllib.error
 import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
 
 from .ollama_client import ChatResult, FORBIDDEN_MODELS
+from .model_capabilities import (
+    ModelOutputCapability, ModelOutputLimitMismatch,
+    UnknownModelOutputLimit, require_declared_maximum,
+)
 
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODELS_URL = "https://openrouter.ai/api/v1/models"
@@ -56,21 +61,34 @@ MODELS_URL = "https://openrouter.ai/api/v1/models"
 #: A reasonable default. OpenRouter names models ``vendor/model``.
 DEFAULT_MODEL = "deepseek/deepseek-chat"
 
-#: Output ceilings per model. Absent -> DEFAULT_MAX_OUTPUT, because guessing a
-#: ceiling high is a failed call and guessing low silently truncates an answer.
-MODEL_MAX_OUTPUT = {
-    "deepseek/deepseek-chat": 8192,
-    "deepseek/deepseek-r1": 16384,
-    "qwen/qwen-2.5-72b-instruct": 8192,
-    "meta-llama/llama-3.3-70b-instruct": 8192,
-    "mistralai/mistral-large": 8192,
-    "google/gemini-2.0-flash-001": 8192,
-}
-DEFAULT_MAX_OUTPUT = 4096
+# OpenRouter publishes ``top_provider.max_completion_tokens`` in its live
+# Models API.  A static copy drifts as aliases and upstream routing change, so
+# generation resolves this field from the provider catalog at call time.
+MODEL_OUTPUT_CAPABILITIES = {}
+MODEL_MAX_OUTPUT = {}
+
+
+def output_capability_for(model: str) -> ModelOutputCapability:
+    for row in catalog():
+        if str(row.get("id", "")) != model:
+            continue
+        maximum = (row.get("top_provider") or {}).get(
+            "max_completion_tokens")
+        if isinstance(maximum, int) and maximum > 0:
+            return ModelOutputCapability(
+                maximum,
+                "OpenRouter Models API top_provider.max_completion_tokens",
+                endpoint=API_URL,
+                observed_at=datetime.now(timezone.utc).isoformat())
+        break
+    raise UnknownModelOutputLimit(
+        "unknown_model_output_limit: OpenRouter Models API did not declare "
+        f"top_provider.max_completion_tokens for {model!r}")
 
 
 def max_output_for(model: str) -> int:
-    return MODEL_MAX_OUTPUT.get(model, DEFAULT_MAX_OUTPUT)
+    """Compatibility accessor with no invented fallback."""
+    return output_capability_for(model).maximum_output_tokens
 
 
 def _forbidden(model: str) -> bool:
@@ -129,8 +147,9 @@ def live_models(api_key: "str | None" = None) -> list:
 
 
 def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
-         max_tokens: int = 512, temperature: float = 0.7,
-         timeout: float = 90.0, api_key: "str | None" = None) -> ChatResult:
+         max_tokens: "int | None" = None, temperature: float = 0.7,
+         timeout: float = 90.0, api_key: "str | None" = None,
+         output_capability: "ModelOutputCapability | None" = None) -> ChatResult:
     """One OpenRouter chat call. Never raises — a failure returns ok=False with
     the reason, so a resolver can fall back rather than crash the loop."""
     if _forbidden(model):
@@ -141,11 +160,15 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
     if not key:
         return ChatResult(text="", model=model, ok=False,
                           error="no OPENROUTER_API_KEY in environment or .env")
-
+    try:
+        capability = output_capability or output_capability_for(model)
+        maximum = require_declared_maximum(max_tokens, capability)
+    except (UnknownModelOutputLimit, ModelOutputLimitMismatch) as exc:
+        return ChatResult(text="", model=model, ok=False, error=str(exc))
     messages = ([{"role": "system", "content": system}] if system else []) \
         + [{"role": "user", "content": prompt}]
     payload = {"model": model, "messages": messages,
-               "max_tokens": int(max_tokens), "temperature": temperature,
+               "max_tokens": maximum, "temperature": temperature,
                # ask the gateway for native upstream usage rather than its
                # own estimate — an estimated count is not admissible evidence
                "usage": {"include": True}}
@@ -179,48 +202,39 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
         # provider-reported ONLY; a missing count stays 0 rather than estimated
         prompt_tokens=int(usage.get("prompt_tokens", 0)),
         eval_tokens=int(usage.get("completion_tokens", 0)),
-        ok=bool(text), num_predict_used=int(max_tokens),
+        ok=bool(text), num_predict_used=maximum,
         error="" if text else "provider returned no text")
 
 
 def chat_maxout(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
                 temperature: float = 0.7, timeout: float = 900.0,
                 api_key: "str | None" = None, backoff: float = 0.9,
-                floor_frac: float = 0.3, max_attempts: int = 8,
-                max_output_tokens: "int | None" = None) -> ChatResult:
-    """Ask for the model's full output ceiling, backing off ONLY on failure.
-
-    Identical policy to the Ollama surface — never cap output; on failure retry
-    at 90% of the previous request down to ``floor_frac``. Same semantics on
-    both providers means a failover does not silently change the call."""
-    ceiling = min(max_output_for(model), int(max_output_tokens)) \
-        if max_output_tokens is not None else max_output_for(model)
-    mt, last, attempt = ceiling, None, 1
-    for attempt in range(1, max_attempts + 1):
-        res = chat(prompt, model=model, system=system, max_tokens=int(mt),
-                   temperature=temperature, timeout=timeout, api_key=api_key)
-        res.num_predict_used, res.attempts = int(mt), attempt
-        if res.ok and res.text.strip():
-            return res
-        last = res
-        mt = int(mt * backoff)
-        if mt < ceiling * floor_frac:
-            break
-    if last is not None:
-        last.num_predict_used, last.attempts = int(mt), attempt
-    return last if last is not None else chat(prompt, model=model)
+                floor_frac: float = 0.3, max_attempts: int = 1,
+                max_output_tokens: "int | None" = None,
+                output_capability: "ModelOutputCapability | None" = None
+                ) -> ChatResult:
+    """Make one call at the source-backed model maximum."""
+    del backoff, floor_frac
+    if max_attempts != 1:
+        return ChatResult(
+            "", model, ok=False,
+            error="physical model retries require an explicit outer call budget")
+    return chat(
+        prompt, model=model, system=system, max_tokens=max_output_tokens,
+        temperature=temperature, timeout=timeout, api_key=api_key,
+        output_capability=output_capability)
 
 
 def verify(model: str = DEFAULT_MODEL) -> dict:
     """Verify the credential BY USE — a real call, never a status field."""
-    r = chat("Reply with one word: READY", model=model, max_tokens=20,
-             timeout=60)
+    r = chat("Reply with one word: READY", model=model, timeout=60)
     return {"provider": "openrouter", "model": r.model, "ok": r.ok,
             "prompt_tokens": r.prompt_tokens, "eval_tokens": r.eval_tokens,
             "error": r.error[:200], "text": r.text[:80]}
 
 
 def self_test() -> dict:
+    """Offline contract and refusal tests.  No provider is contacted."""
     results = []
 
     def check(name, ok, note=""):
@@ -251,37 +265,15 @@ def self_test() -> dict:
           and r.to_dict()["total_tokens"] == 0,
           "identical shape means failover is invisible to callers")
 
-    # 4. Output ceilings are declared per model, with an explicit default —
-    # guessing high fails a call, guessing low truncates an answer silently.
-    check("output_ceilings_are_declared_with_an_explicit_default",
-          max_output_for("deepseek/deepseek-chat") == 8192
-          and max_output_for("some/unknown-model") == DEFAULT_MAX_OUTPUT,
-          f"known ceilings {len(MODEL_MAX_OUTPUT)}, default "
-          f"{DEFAULT_MAX_OUTPUT}")
-
-    # 5. LIVE: only when a key is actually present AND works. A dead key is
-    # reported as NOT RUN — never as a pass, and never as a failure of this
-    # module, because "the owner's key is dead" is not a code defect.
-    key = load_api_key()
-    if key:
-        v = verify()
-        if v["ok"]:
-            check("live_call_returns_provider_reported_tokens",
-                  v["prompt_tokens"] > 0 and v["eval_tokens"] > 0,
-                  f"{v['model']}: {v['prompt_tokens']}+{v['eval_tokens']}")
-        else:
-            results.append({
-                "test": "live_call_returns_provider_reported_tokens",
-                "passed": True, "skipped": True,
-                "detail": f"NOT RUN — key present but provider refused: "
-                          f"{v['error'][:80]}. Offline contract tests above "
-                          f"still hold."})
-    else:
-        results.append({
-            "test": "live_call_returns_provider_reported_tokens",
-            "passed": True, "skipped": True,
-            "detail": "NOT RUN — no OPENROUTER_API_KEY present"})
+    # 4. Unknown stays unknown.  No fallback number can silently truncate or
+    # produce a provider rejection.
+    check("no_static_default_can_replace_live_catalog_capability_discovery",
+          not MODEL_OUTPUT_CAPABILITIES and not MODEL_MAX_OUTPUT,
+          "the provider catalog supplies max_completion_tokens at call time")
 
     passed = sum(1 for t in results if t["passed"])
-    return {"tests": results, "passed": passed, "total": len(results),
+    return {"record_type": "openrouter_client_contract_test/v2",
+            "scope": "offline_contract_only",
+            "provider_integration_proven": False,
+            "tests": results, "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}

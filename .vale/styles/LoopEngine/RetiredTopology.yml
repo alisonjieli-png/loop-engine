@@ -1,0 +1,15 @@
+extends: existence
+message: "Replace the retired topology phrase '%s' with the current Loop relationship."
+level: error
+scope: text
+ignorecase: true
+tokens:
+  - '\bchild(?:ren)?\b'
+  - '\bRoot Loop\b'
+  - '\bRoot Practitioner\b'
+  - '\bRoot Intelligence\b'
+  - '\bRoot Solution\b'
+  - '\bChild Loop\b'
+  - '\bChild Practitioner\b'
+  - '\bChild Intelligence\b'
+  - '\bChild Solution\b'

@@ -1,0 +1,559 @@
+schema_version: loop_engine_benchmark_portfolio/v1
+as_of: "2026-08-25"
+record_role: historical_pre_run_plan
+purpose: >-
+  Define the first small, reproducible Loop Engine benchmark portfolio before
+  any model output or task score is observed.
+state: partially_superseded_and_partially_run
+comparison_ready: false
+
+execution_status:
+  plan_executed_without_changes: false
+  explanation: >-
+    Later owner direction required non-deterministic selected runs, broader
+    Intelligence use, two candidate spawned Loops, synthesis, and bounded repair.
+    The DS-1000 population was also replaced before its selected run by the
+    separately frozen four-task population-v1.json. Preserve this file as the
+    pre-run source and selection record. Do not read it as the executed run
+    contract.
+  executed_tracks:
+    - track_id: openml_cc18_smallest_metadata_workload_slice
+      result: ../../benchmarks/openml_cc18/verified-result.json
+      case_study: ../../case-studies/openml-cc18-three-task-run.md
+    - track_id: ds1000_pandas_sklearn_first_slice
+      executed_population: ../../benchmarks/ds1000/population-v1.json
+      result: ../../benchmarks/ds1000/verified-result.json
+  not_run_tracks:
+    - spider_1_0_development_slice
+
+registry_alignment:
+  registry: benchmark-registry.yaml
+  schema: benchmark-registry.schema.json
+  registry_stages_changed: false
+  reason: >-
+    The DS-1000 runtime image is not frozen, the Spider database archives do
+    not have verified content hashes, and OpenML uses the literal license
+    label Public rather than a precise reusable license.
+
+selection_policy:
+  declared_before_outcomes: true
+  outcome_data_used: false
+  failures_stay_in_denominator: true
+  same_tasks_and_evaluator_for_every_arm: true
+  changes_after_first_run: >-
+    Create a new portfolio version. Do not replace tasks in this version.
+
+admission_contract:
+  selected_run_classification: practitioner_end_to_end
+  partial_paths_are_selected_runs: false
+  partial_path_policy: >-
+    A shorter subsystem or Solution Canvas-only probe may be saved as a
+    diagnostic. It is excluded from the selected population and comparison.
+  required_path_for_every_track:
+    - Start one Starting Loop with the Practitioner profile.
+    - Use the reference_nine_step step profile.
+    - Retrieve Context, Code, and Runtime History and Solution Intelligence before acting.
+    - Start bounded spawned Loops for research, construction, and verification.
+    - Build and compile a typed Solution Canvas for the selected task.
+    - Execute the Solution Canvas on the frozen task input.
+    - Run the pinned independent evaluator outside model judgment.
+    - Save and verify Practitioner and Solution Run History events.
+    - Render playback and a report from the saved Run History.
+    - Route every model call through ModelGateway with Ollama Cloud pinned.
+
+provider_policy:
+  provider: ollama_cloud
+  real_provider_required: true
+  fake_or_synthetic_provider_allowed: false
+  cross_provider_failover: false
+  exact_model_id: null
+  model_id_rule: >-
+    Discover the available Ollama Cloud model before execution, select one
+    exact model ID without looking at task outcomes, and freeze that ID for
+    every Ollama arm. Refuse to run while the ID is unknown.
+  output_rule:
+    requested_max_output_tokens: null
+    resolved_limit: provider_declared_maximum
+    on_unknown_maximum: no_go
+    on_lower_or_higher_caller_value: no_go
+    explanation: >-
+      Use the selected provider and model's declared maximum output. Do not
+      invent or reduce an output token ceiling.
+  accounting:
+    record_input_tokens: when_provider_reports
+    record_output_tokens: when_provider_reports
+    unknown_tokens: unknown
+    unknown_price: unknown
+  total_physical_call_ceiling: 47
+  call_ceiling_explanation: >-
+    Call count and wall time bound money and elapsed time. They do not reduce
+    the selected model's maximum output.
+
+tracks:
+  - id: ds1000_pandas_sklearn_first_slice
+    name: DS-1000 pandas and scikit-learn first slice
+    family: coding
+    parent_suite: DS-1000
+    registry_refs:
+      - ds1000_pandas
+      - ds1000_scikit_learn
+    task: Write executable pandas and scikit-learn code.
+    modality: [text, code, data_science]
+    source_url: https://github.com/xlang-ai/DS-1000
+    current_status: cataloged_not_run
+    staged_eligibility:
+      current_stage: catalog
+      next_stage: source_review
+      eligible_for_comparison: false
+      blockers:
+        - Freeze and verify an isolated runtime image.
+        - Freeze the exact Ollama Cloud model and its declared maximum output.
+        - Prove the full Loop Practitioner path in Run History.
+
+    source:
+      repository: https://github.com/xlang-ai/DS-1000
+      commit: b39aab71da6d23ef8d3cac59a7c5f834516ab334
+      commit_date_utc: "2024-10-30T17:43:41Z"
+      format: simplified_test_format
+      artifacts:
+        - path: data/ds1000.jsonl.gz
+          git_blob: 159dc40198442a964ea0ec5ac95700760757ffbf
+          sha256: e8c6daa9d7223976bce0296644f3933f78d7f47830669ff05cd61da62c6ba9b3
+          bytes: 418089
+        - path: test_ds1000.py
+          git_blob: c79eed28e3109001f623cb1a95d7574e854c8125
+          bytes: 3051
+        - path: environment.yml
+          git_blob: d366d515dc36ad0b711ead2f2b13dbf4008a8553
+          bytes: 386
+    license_access:
+      license: CC-BY-SA-4.0
+      access: Public repository and public benchmark data.
+
+    selection:
+      population_size: 16
+      rule: >-
+        Filter the pinned 1,000 problem file by metadata.library. Sort each
+        Pandas and Sklearn group by numeric problem_id. For k from 0 through
+        7, select index floor(((2*k)+1)*group_size/16). This takes eight
+        midpoint quantiles from each library without reading any score.
+      task_ids:
+        pandas: [18, 54, 90, 127, 163, 200, 236, 272]
+        scikit_learn: [824, 838, 852, 867, 881, 896, 910, 924]
+
+    engine_scope:
+      classification: practitioner_end_to_end
+      public_label: Full Loop Practitioner benchmark
+      required_path:
+        - A Starting Practitioner uses reference_nine_step.
+        - An Intelligence Loop retrieves Code, Context, and Runtime History data.
+        - A construction spawned produces a typed code candidate.
+        - A bounded repair spawned may run after a failed first attempt.
+        - The Practitioner compiles and executes a code Solution Canvas.
+        - A pinned DS-1000 evaluator spawned verifies output outside model judgment.
+        - Model calls use ModelGateway with Ollama Cloud pinned.
+        - Run History saves and verifies Practitioner and Solution events.
+        - Playback and a report are rendered from the saved Run History.
+      disqualifier: >-
+        If any required path item is absent, save it as a diagnostic and
+        exclude it from this benchmark population.
+
+    evaluator:
+      kind: isolated_code_execution
+      source_commit: b39aab71da6d23ef8d3cac59a7c5f834516ab334
+      source_path: test_ds1000.py
+      primary_metric: execution_accuracy
+      direction: higher_is_better
+      pass_rule: >-
+        A task passes only when upstream test_execution and test_string, when
+        present, both pass in an isolated process.
+      task_timeout_seconds: 120
+      oracle_owner: upstream_harness
+      independent_from_solver: true
+
+    arms:
+      deterministic_baseline:
+        mode: deterministic
+        model_calls: 0
+        method: >-
+          Run the full Practitioner path. Search frozen Loop Engine
+          intelligence for an exact typed component, compose only deterministic
+          compatible components into a Solution Canvas, and abstain when no
+          exact route exists. Do not read reference code or tests.
+      ollama_practitioner:
+        mode: hybrid
+        provider: ollama_cloud
+        failover: false
+        method: >-
+          Run the full Practitioner path. Use one Ollama call to produce code.
+          A repair spawned Loop may use one more call only after evaluator
+          failure. The evaluator remains outside the model loop.
+
+    limits:
+      max_physical_calls_per_task: 2
+      max_physical_calls_track: 32
+      provider_attempt_timeout_seconds: 180
+      evaluator_timeout_seconds_per_task: 120
+      track_wall_time_minutes: 90
+      max_output_tokens: provider_declared_maximum
+
+    contamination_risk:
+      level: high
+      basis: >-
+        Prompts, reference code, and tests are public. A strong result may
+        reflect prior exposure. Report this slice separately from unseen work.
+    expected_resources:
+      benchmark_download: 418089 bytes plus the pinned evaluator files
+      scratch_disk: 8 GB for the full upstream Python environment and outputs
+      compute: CPU only, 4 workers, 8 GB RAM; no GPU required
+      paid_service: Ollama Cloud account terms apply to the model arm
+
+    go_no_go:
+      current_decision: no_go
+      gates:
+        - Verify every pinned artifact hash after acquisition.
+        - Build and digest an isolated Python 3.10 runtime from environment.yml.
+        - Prove evaluator self-checks without exposing tests to the solver.
+        - Freeze one real Ollama Cloud model and its declared output maximum.
+        - Verify the 32 call and 90 minute ceilings before model authorization.
+        - Verify Run History, Canvas execution, playback, and report contain the
+          required end-to-end engine path.
+
+  - id: spider_1_dev_first_slice
+    name: Spider 1.0 development first slice
+    family: data_engineering
+    parent_suite: Spider 1.0
+    registry_refs: [spider_1]
+    task: Generate SQL for unseen database schemas.
+    modality: [text, table, database, code]
+    source_url: https://yale-lily.github.io/spider
+    current_status: cataloged_not_run
+    staged_eligibility:
+      current_stage: catalog
+      next_stage: source_review
+      eligible_for_comparison: false
+      blockers:
+        - Acquire the official database archives and freeze their SHA-256 hashes.
+        - Freeze the exact Ollama Cloud model and its declared maximum output.
+        - Compile and verify the finished Solution Canvas.
+
+    source:
+      task_page: https://yale-lily.github.io/spider
+      code_repository: https://github.com/taoyds/spider
+      code_commit: b7b5b8c890cd30e35427348bb9eb8c6d1350ca7c
+      code_commit_date_utc: "2024-05-29T03:16:42Z"
+      dev_artifact:
+        path: evaluation_examples/examples/dev.json
+        git_blob: 4e0338a32452185fa79fdf38a1f273d86d36fbdf
+        sha256: 30d64a3fccde493226df79687aed9e4a1c0129525baf44f29c0573d914d758a4
+        bytes: 3629512
+        records: 1034
+        databases: 20
+      table_artifact:
+        path: evaluation_examples/examples/tables.json
+        git_blob: c60d51f2b75e3c84572a164db969c71ad8a0fc8d
+        sha256: 61bb20aa401f03164e2d7f3b16509b7b5f79cc9c943ca7bd159046df1159e2ed
+        bytes: 810971
+      official_data_archive:
+        url: https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view
+        filename: spider_data.zip
+        compressed_bytes: 205800266
+        sha256: null
+      evaluator_repository: https://github.com/taoyds/test-suite-sql-eval
+      evaluator_commit: e97acc546ecbee8fa27fa8dbf025ef61493a876c
+      evaluator_commit_date_utc: "2022-08-03T02:46:54Z"
+      evaluator_artifact:
+        path: evaluation.py
+        git_blob: fae509c6c3afe60635e0ae9971c2204be7637005
+        sha256: 7401e4014a8955376a7919c06903a7f0ab403c99e89f94204cd8f4c8e32ae779
+        bytes: 33791
+      test_suite_archive:
+        url: https://drive.google.com/file/d/1mkCx2GOFIqNesD4y8TDAO1yX1QZORP5w/view
+        filename: testsuitedatabases.zip
+        compressed_bytes: 1269456098
+        sha256: null
+    license_access:
+      license: >-
+        CC-BY-SA-4.0 dataset; Apache-2.0 Spider and test-suite evaluator code
+      access: Public links. The official archives must be acquired separately.
+
+    selection:
+      population_size: 12
+      rule: >-
+        Decode the pinned dev JSON and retain each original zero-based index.
+        Sort records by db_id then index and group by db_id. For k from 0
+        through 11, select database group index
+        floor(((2*k)+1)*database_count/24). Within each selected group, take
+        source index floor(group_size/2). Do not use SQL hardness or scores.
+      task_ids:
+        - {source_index: 499, db_id: battle_death}
+        - {source_index: 22, db_id: concert_singer}
+        - {source_index: 339, db_id: cre_Doc_Template_Mgt}
+        - {source_index: 959, db_id: dog_kennels}
+        - {source_index: 219, db_id: flight_2}
+        - {source_index: 890, db_id: network_1}
+        - {source_index: 842, db_id: orchestra}
+        - {source_index: 667, db_id: poker_player}
+        - {source_index: 1015, db_id: singer}
+        - {source_index: 546, db_id: student_transcripts_tracking}
+        - {source_index: 694, db_id: voter_1}
+        - {source_index: 460, db_id: wta_1}
+
+    engine_scope:
+      classification: practitioner_end_to_end
+      public_label: Full Loop Practitioner benchmark
+      required_path:
+        - A Starting Practitioner uses reference_nine_step.
+        - A schema and intelligence spawned retrieves approved context.
+        - A construction spawned emits or composes one typed SQL candidate.
+        - The Practitioner compiles and executes a SQL Solution Canvas.
+        - A validation spawned rejects malformed or multi-statement SQL.
+        - The pinned test-suite evaluator verifies output outside model judgment.
+        - Model calls use ModelGateway with Ollama Cloud pinned.
+        - Run History saves and verifies Practitioner and Solution events.
+        - Playback and a report are rendered from the saved Run History.
+      disqualifier: >-
+        A Solution Canvas-only run is a diagnostic. Exclude it from this
+        benchmark population if the Starting Practitioner path is absent.
+
+    evaluator:
+      kind: test_suite_execution
+      source_commit: e97acc546ecbee8fa27fa8dbf025ef61493a876c
+      source_path: evaluation.py
+      primary_metric: test_suite_accuracy_without_values
+      direction: higher_is_better
+      arguments:
+        etype: exec
+        plug_value: true
+        keep_distinct: false
+      oracle_owner: upstream_harness
+      independent_from_solver: true
+      reporting_limit: >-
+        A 12-question slice is not comparable to the full Spider dev
+        leaderboard, even when it uses the official evaluator.
+
+    arms:
+      deterministic_baseline:
+        mode: deterministic
+        model_calls: 0
+        method: >-
+          Run the full Practitioner path. Use a frozen schema-aware template
+          set for count, min, max, average, simple filters, and joins, compile
+          the result into a Solution Canvas, and abstain when no template fits.
+      ollama_solution:
+        mode: hybrid
+        provider: ollama_cloud
+        failover: false
+        method: >-
+          Run the full Practitioner path. After spawned-loop retrieval, use one
+          Ollama call to emit one SQL statement, compile and execute the
+          Solution Canvas, and run deterministic checks with no model repair.
+
+    limits:
+      max_physical_calls_per_task: 1
+      max_physical_calls_track: 12
+      provider_attempt_timeout_seconds: 180
+      evaluator_timeout_seconds_per_task: 120
+      track_wall_time_minutes: 60
+      max_output_tokens: provider_declared_maximum
+
+    contamination_risk:
+      level: high
+      basis: >-
+        The development questions, schemas, gold SQL, and evaluator are public.
+        The slice measures reproducible integration, not unseen generalization.
+    expected_resources:
+      compressed_archives: 1475256364 bytes before repository files
+      scratch_disk: 5 GB planning allowance; verify expanded size after download
+      compute: CPU only, 4 workers, 8 GB RAM; no GPU required
+      paid_service: Ollama Cloud account terms apply to the model arm
+
+    go_no_go:
+      current_decision: no_go
+      gates:
+        - Acquire only from the two official links and record both SHA-256 hashes.
+        - Verify the pinned dev and evaluator artifact hashes.
+        - Confirm every selected database exists in both required archives.
+        - Prove a gold-file evaluator self-check before any model call.
+        - Freeze one real Ollama Cloud model and its declared output maximum.
+        - Verify the Starting Practitioner, spawned Loops, Canvas execution,
+          Run History, playback, and report.
+
+  - id: openml_cc18_smallest_metadata_workload_slice
+    name: OpenML-CC18 smallest metadata workload slice
+    family: ml_kaggle
+    subfamily: ml_tabular
+    parent_suite: OpenML-CC18
+    registry_refs: []
+    task: Train and evaluate small tabular classifiers on official task splits.
+    modality: [table, machine_learning]
+    source_url: https://www.openml.org/api/v1/json/study/OpenML-CC18
+    current_status: cataloged_not_run
+    staged_eligibility:
+      current_stage: catalog
+      next_stage: source_review
+      eligible_for_comparison: false
+      blockers:
+        - Resolve whether the OpenML license label Public is sufficient for use.
+        - Freeze the local evaluator environment.
+        - Freeze the exact Ollama Cloud model and its declared maximum output.
+
+    source:
+      suite_id: 99
+      suite_alias: OpenML-CC18
+      suite_status: active
+      suite_task_count: 72
+      suite_created: "2019-02-21T18:47:13"
+      api: https://www.openml.org/api/v1/
+    license_access:
+      license: >-
+        Public, exactly as recorded by OpenML for all three datasets. This is
+        not a precise SPDX license.
+      access: Public OpenML task, data, and split endpoints.
+
+    selection:
+      population_size: 3
+      rule: >-
+        Start with all 72 task IDs returned by active suite 99. For each task,
+        read official NumberOfInstances and NumberOfFeatures metadata. Rank by
+        their product, then numeric task ID, and select the first three. No run
+        or score is read during selection.
+      task_ids: [11, 10101, 3560]
+
+    tasks:
+      - task_id: 11
+        data_id: 11
+        name: balance-scale
+        dataset_version: 1
+        target: class
+        rows: 625
+        features: 5
+        classes: 3
+        dataset_url: https://www.openml.org/data/v1/download/11/balance-scale.arff
+        dataset_md5: 76938608d472f620c170cef9c8c1fa65
+        dataset_sha256: 87d3943cea423bb376be52b5dfec17f79c63108dddcf40e0a46e5ba7196a5c24
+        dataset_bytes: 8724
+        split_url: https://www.openml.org/api_splits/get/11/Task_11_splits.arff
+        split_sha256: 2761e26916111d33623c8145a78aeff7b8ac078449c13acc0f35b24a3d6e6627
+        split_bytes: 85917
+      - task_id: 3560
+        data_id: 469
+        name: analcatdata_dmft
+        dataset_version: 1
+        target: Prevention
+        rows: 797
+        features: 5
+        classes: 6
+        dataset_url: https://www.openml.org/data/v1/download/52581/analcatdata_dmft.arff
+        dataset_md5: ad86226880052117a3e95479cf61faf6
+        dataset_sha256: d1fce1e52ef3e29c3cb8af6fc8215dd2982f829c0bfcd18a8be39269db4df501
+        dataset_bytes: 23321
+        split_url: https://www.openml.org/api_splits/get/3560/Task_3560_splits.arff
+        split_sha256: 72ad61a9a1e710faee86e7c88f258928f07692f575da2b4af9ae78a0d1e80755
+        split_bytes: 109828
+      - task_id: 10101
+        data_id: 1464
+        name: blood-transfusion-service-center
+        dataset_version: 1
+        target: Class
+        rows: 748
+        features: 5
+        classes: 2
+        dataset_url: >-
+          https://www.openml.org/data/v1/download/1586225/blood-transfusion-service-center.arff
+        dataset_md5: c3242468edab8c2e7a907674122dc851
+        dataset_sha256: ee1304cac4a650ac31afe7395a100536a165f935bbe718a4643757c1a842316a
+        dataset_bytes: 14143
+        split_url: >-
+          https://www.openml.org/api_splits/get/10101/Task_10101_splits.arff
+        split_sha256: 965d72fa31f34cf0ca3c3345747bb68a8b78ad614c843ee7e6479c6d60503690
+        split_bytes: 103033
+
+    split_contract:
+      type: crossvalidation
+      repeats: 1
+      folds: 10
+      stratified: true
+      source: official_task_split_files
+
+    engine_scope:
+      classification: practitioner_end_to_end
+      public_label: Full Loop Practitioner benchmark
+      required_path:
+        - A Starting Practitioner uses reference_nine_step.
+        - Data and intelligence spawned Loops verify inputs and retrieve prior work.
+        - A construction spawned selects and builds one typed pipeline.
+        - The Practitioner compiles a tabular Solution Canvas.
+        - The Solution Canvas executes all ten official folds.
+        - A pinned accuracy evaluator spawned verifies predictions independently.
+        - Model calls use ModelGateway with Ollama Cloud pinned.
+        - Run History saves and verifies Practitioner and Solution events.
+        - Playback and a report are rendered from the saved Run History.
+      disqualifier: >-
+        A model selector or evaluator-only run is a diagnostic. Exclude it
+        from this benchmark population if the full path is absent.
+
+    evaluator:
+      kind: fixed_fold_classification
+      primary_metric: predictive_accuracy
+      direction: higher_is_better
+      fold_aggregation: mean_of_10_official_fold_accuracies
+      implementation: sklearn.metrics.accuracy_score
+      oracle_owner: OpenML task splits plus frozen local evaluator
+      independent_from_selector: true
+
+    arms:
+      deterministic_baseline:
+        mode: deterministic
+        model_calls: 0
+        method: >-
+          Run the full Practitioner path and compile a Solution Canvas with a
+          fixed one-hot encoder, unknown categories ignored, and
+          LogisticRegression with C 1.0, max_iter 1000, and one CPU thread.
+      ollama_advisor:
+        mode: hybrid
+        provider: ollama_cloud
+        failover: false
+        method: >-
+          Run the full Practitioner path. Before any fold result exists, a
+          planning spawned gives schema and non-outcome metadata to Ollama once.
+          It selects the fixed logistic pipeline or a 200-tree seeded random
+          forest. Compile the choice into a Canvas and run all ten folds.
+
+    limits:
+      max_physical_calls_per_task: 1
+      max_physical_calls_track: 3
+      provider_attempt_timeout_seconds: 120
+      track_wall_time_minutes: 15
+      max_output_tokens: provider_declared_maximum
+
+    contamination_risk:
+      level: high
+      basis: >-
+        Dataset names, data, labels, and prior results are public. The Ollama
+        advisor may have seen them. Keep cost and integration findings separate
+        from claims about general machine learning ability.
+    expected_resources:
+      data_and_splits: 344966 verified bytes
+      scratch_disk: 500 MB including environment cache and outputs
+      compute: CPU only, 1 worker, 2 GB RAM; no GPU required
+      paid_service: At most three Ollama Cloud calls under account terms
+
+    go_no_go:
+      current_decision: no_go
+      gates:
+        - Recheck suite 99 still maps the three task IDs to the named data IDs.
+        - Verify every dataset and split hash after acquisition.
+        - Record the exact Python and scikit-learn environment lock.
+        - Confirm local use is allowed under each Public metadata label.
+        - Freeze one real Ollama Cloud model and its declared output maximum.
+        - Verify the Starting Practitioner, spawned Loops, Canvas execution,
+          independent evaluator, Run History, playback, and report.
+
+portfolio_go_no_go:
+  current_decision: no_go
+  promotion_rule: >-
+    A track may enter local smoke only after every track gate is true. The
+    portfolio may enter paired comparison only after all arms use the same
+    frozen tasks and independent evaluator, and all calls, time, tokens, and
+    price state are recorded without converting unknown values to zero.

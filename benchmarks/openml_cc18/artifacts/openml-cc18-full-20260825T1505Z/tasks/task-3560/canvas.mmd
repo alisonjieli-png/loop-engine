@@ -1,0 +1,8 @@
+flowchart TD
+  IN([inputs])
+  N1["openml-task-3560-random_forest<br/>single | deterministic"]
+  N2("task-3560-official-fold-execution: code.openml.execute_official_folds [deterministic]")
+  N3([output])
+  IN --> N1
+  N1 --> N2
+  N2 --> N3

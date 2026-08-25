@@ -1,33 +1,24 @@
 """Asset class — the whole system has exactly TWO primitives.
 
 Owner classification (2026-08-23): this is not about "contracts" or six
-categories.  Literally every resource, asset, node, and text is one of two things:
+categories. Every passive intelligence or capability asset is one of two things:
 
   * STRING — for the LLM to READ.  Soft; interpreted; may be uncertain; costs
     tokens.  (intelligence, questions, personas, considerations, warnings, schema
     instructions, knowledge stated as text, blueprint fragments.)
-  * CODE NODE — for the machine to RUN.  Exact; deterministic; zero model tokens.
-    And a code node CAN READ STRINGS when it needs to (a string is a valid input
-    to a code node).  Everything runnable is a code node: a runtime contract is a
-    code node that VALIDATES, a logic rule is a code node that DECIDES, an adapter
-    is a code node that TRANSFORMS, a capability is a code node that EXECUTES, a
-    detector is a code node that DETECTS.  "Contract / logic / capability" are not
-    categories — they are ROLES a code node plays (see ``CODE_NODE_ROLES``).
+  * CODE CAPABILITY — passive metadata for exact code a Loop may invoke. It can
+    read Strings as inputs. Contract, logic, adapter, executor, and detector are
+    capability roles, not operational graph types.
 
 The insight that makes this the top classification: the SAME need can be met by
 EITHER primitive.  "Based on this data, are these variables collinear?" can be a
-STRING (ask an LLM) or a CODE NODE (a VIF node) — same question, two
+STRING (ask a model) or a CODE CAPABILITY (a VIF implementation) — same question,
 implementations.  So an asset's class is about HOW it is implemented, and the
 practitioner picks the primitive.
 
-The North Star is the arrow between them: STRING → CODE NODE.  A model's string
-reasoning, once it recurs and is verified, DISTILLS into a deterministic code node,
-so the next run answers the same question with zero tokens.  A code node never
-de-distills into a string.  This module owns the two primitives, the closed
-kind→primitive map, the code-node ROLES, the two-way implementation choice (prefer
-the exact zero-token code node when one exists), and the distillation direction.
-It is a LENS over what already exists (intelligence_strings, logic_ast,
-runtime_contracts, store nodes …), not a new store.
+Verified recurring String reasoning can distill into a deterministic code
+capability, so a later Loop can answer with zero model tokens. This module is a
+classification lens over existing intelligence and code, not a runtime or store.
 """
 
 from __future__ import annotations
@@ -35,19 +26,19 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Sequence
 
-# The two primitives.  The token "code" denotes a CODE NODE.
+# The two primitives.  The token "code" denotes a CODE CAPABILITY.
 ASSET_CLASSES = ("string", "code")
 ASSET_CLASS_MEANING = {
     "string": "a STRING — read by an LLM; soft, interpreted, costs tokens, "
               "may be uncertain",
-    "code": "a CODE NODE — run by the machine; exact, deterministic, zero model "
-            "tokens; may READ strings as input",
+    "code": "passive CODE CAPABILITY metadata for exact code invoked by a Loop; "
+            "may read Strings and use zero model tokens",
 }
 
-# The ROLES a code node can play.  These are what used to be miscalled
+# The roles a passive code capability can play. Invocation belongs to a Loop.
 # "categories" (contract / logic / capability) — they are roles, not primitives.
-CODE_NODE_ROLES = ("validate", "decide", "execute", "adapt", "transform",
-                   "detect", "route", "score", "search")
+CODE_CAPABILITY_ROLES = ("validate", "decide", "execute", "adapt", "transform",
+                         "detect", "route", "score", "search")
 
 # The CLOSED kind → class map covering every asset kind in the system.
 KIND_CLASS = {
@@ -62,7 +53,9 @@ KIND_CLASS = {
     "heuristic": "string", "knowledge_claim": "string",
     "failure_pattern": "string", "context": "string", "note": "string",
     "metric_definition": "string", "authority": "string",
-    # --- CODE (the machine runs it) ----------------------------------------
+    # --- CODE capability metadata ------------------------------------------
+    # ``node`` spellings below are immutable serialized kind values. They are
+    # read for compatibility and never emitted as an operational runtime type.
     "logic_rule": "code", "logic_candidate": "code", "contract": "code",
     "validator": "code", "adapter": "code", "node": "code",
     "deterministic_node": "code", "node_candidate": "code",
@@ -76,16 +69,16 @@ KIND_CLASS = {
 
 
 def classify(kind: str) -> str:
-    """Which primitive an asset kind is — 'string' or 'code' (a code node).  The
+    """Which primitive an asset kind is — 'string' or 'code' (a code capability).  The
     map is CLOSED: an unknown kind raises rather than being guessed."""
     if kind not in KIND_CLASS:
-        raise ValueError(f"unknown asset kind {kind!r}; the String/Code-node map "
+        raise ValueError(f"unknown asset kind {kind!r}; the String/Code map "
                          f"is closed — classify it explicitly in KIND_CLASS")
     return KIND_CLASS[kind]
 
 
-# The role each CODE-NODE kind plays (what used to be miscalled "categories").
-KIND_ROLE = {
+# The role each CODE-CAPABILITY kind plays (what used to be miscalled "categories").
+KIND_CAPABILITY_ROLE = {
     "contract": "validate", "validator": "validate",
     "logic_rule": "decide", "logic_candidate": "decide",
     "adapter": "adapt", "degeneracy_detector": "detect",
@@ -98,27 +91,25 @@ KIND_ROLE = {
 }
 
 
-def node_role(kind: str) -> str:
-    """The role a code-node kind plays.  Raises if the kind isn't a code node —
-    a string has no node role."""
+def code_capability_role(kind: str) -> str:
+    """The role of passive code metadata; a String has no code role."""
     if classify(kind) != "code":
-        raise ValueError(f"{kind!r} is a string, not a code node — it has no role")
-    return KIND_ROLE.get(kind, "execute")
+        raise ValueError(
+            f"{kind!r} is a string, not a code capability; it has no role")
+    return KIND_CAPABILITY_ROLE.get(kind, "execute")
 
 
 @dataclass(frozen=True)
-class CodeNode:
-    """A runnable code node.  It plays one ROLE and may READ strings as input —
-    the classification stays binary: the node is code, the strings it reads are
-    strings."""
-    node_id: str
+class CodeCapability:
+    """Passive code metadata. A canonical Loop owns every invocation."""
+    capability_id: str
     role: str = "execute"
     reads_strings: tuple = ()           # string inputs it consumes, if any
     exact: bool = True
 
     def __post_init__(self):
-        if self.role not in CODE_NODE_ROLES:
-            raise ValueError(f"role must be one of {CODE_NODE_ROLES}")
+        if self.role not in CODE_CAPABILITY_ROLES:
+            raise ValueError(f"role must be one of {CODE_CAPABILITY_ROLES}")
 
 
 # ---------------------------------------------------------------------------
@@ -131,7 +122,7 @@ class CapabilityImpl:
     """One way to satisfy a capability need — on the string rail or the code
     rail."""
     impl_class: str                     # "string" | "code"
-    handle: str                         # the prompt/string OR the code node id
+    handle: str                         # the prompt/string OR the code capability id
     exact: bool = False                 # code is exact; a string ask may be wrong
     token_cost: str = "tokens"          # "tokens" (string) | "zero_model" (code)
 
@@ -297,7 +288,7 @@ def self_test() -> dict:
     classes = {o.impl_class for o in opts}
     check("same_need_can_be_string_or_code",
           classes == {"string", "code"} and len(opts) == 2,
-          "the collinearity question has an LLM ask AND a VIF node")
+          "the collinearity question has a model ask and a VIF capability")
 
     # 4. the rail choice prefers exact zero-token CODE when it exists.
     chosen = choose_impl(opts, prefer="code")
@@ -359,24 +350,24 @@ def self_test() -> dict:
           "intelligence/schemas/templates -> string; contracts/logic/policies -> "
           "code; nothing unclassified")
 
-    # 9. code nodes have ROLES (contract=validate, logic=decide, capability=
+    # 9. code capabilitys have ROLES (contract=validate, logic=decide, capability=
     # execute) and CAN READ STRINGS — "contract / logic / capability" are roles,
     # not separate primitives; a string has no node role.
-    roles_ok = (node_role("contract") == "validate"
-                and node_role("logic_rule") == "decide"
-                and node_role("node") == "execute"
-                and node_role("adapter") == "adapt")
-    reads = CodeNode("n.collinear", role="decide",
-                     reads_strings=("the question phrasing",))
+    roles_ok = (code_capability_role("contract") == "validate"
+                and code_capability_role("logic_rule") == "decide"
+                and code_capability_role("node") == "execute"
+                and code_capability_role("adapter") == "adapt")
+    reads = CodeCapability("cap.collinear", role="decide",
+                           reads_strings=("the question phrasing",))
     string_has_no_role = False
     try:
-        node_role("consideration")
+        code_capability_role("consideration")
     except ValueError:
         string_has_no_role = True
-    check("code_nodes_have_roles_and_can_read_strings",
+    check("code_capabilities_have_roles_and_can_read_strings",
           roles_ok and reads.reads_strings and string_has_no_role,
-          "contract=validate, logic=decide, capability=execute; a code node may "
-          "read strings; a string has no node role")
+          "contract=validate, logic=decide, capability=execute; a code capability may "
+          "read strings; a string has no code-capability role")
 
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "asset_class_self_test", "tests": results,

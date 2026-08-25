@@ -381,7 +381,7 @@ def solve_competition(data_dir: str, *, slug: str = "", metric: str = "accuracy"
                            max_passes=max_passes)
     sub = out["artifacts"].get("submission", "")
     score = float(out["facts"].get("local_score", 0.0))
-    # one final review verdict for the receipt
+    # one final review verdict for the record
     verdict = "pass" if out["facts"].get("met:valid_submission") else "unmet"
     return CompetitionResult(slug=slug or comp.modality, submission_path=sub,
                              local_metric=comp.metric, local_score=score,

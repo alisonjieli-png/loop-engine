@@ -23,10 +23,10 @@ CURRENT_DOCS = ("ARCHITECTURE-MAP.md",)
 GUARD_ENFORCED = (
     "hidden_semantic_calls: one semantic call per iteration; semantic "
     "fallbacks defer to the next iteration (model_boundary_deferred)",
-    "child_permission_escalation: spawn() clamps child modes to the parent's "
+    "spawned_permission_escalation: spawn() clamps spawned modes to the parent's "
     "delegation authority and refuses disjoint requests",
     "orphaned_loops: audit_closure() flags spawned-but-never-terminal "
-    "children; every terminal transition is a recorded ledger event",
+    "spawned_loops; every terminal transition is a recorded ledger event",
     "self_promotion: guard_improvement_action raises SafeguardError on "
     "promote/overwrite/delete-evidence",
     "evidence_gated_promotion: asset_lifecycle.advance refuses "
@@ -70,8 +70,8 @@ def _unclassified() -> list:
     return bad
 
 
-def _legacy_runtime_reachable() -> list:
-    """Probe the dead flat import paths — they must stay dead."""
+def _legacy_flat_paths_reachable() -> list:
+    """Probe obsolete package-root module paths; they must stay dead."""
     import importlib
     from .architecture_map import PACKAGE
     reachable = []
@@ -108,19 +108,76 @@ def _stale_architecture_map() -> int:
     return 0 if counts(committed) != [] and counts(committed) == counts(live) else 1
 
 
+def operational_graph_vertex_violations(root: "str | None" = None) -> list:
+    """Find executable graph-vertex classes that compete with canonical Loop.
+
+    Passive projections are admitted only when their required Loop reference is
+    explicit. Historical aliases are assignments and remain readable without
+    being mistaken for current runtime types.
+    """
+    import ast
+    base = root or _HERE
+    retired = {"CanvasNode", "GoalNode", "CodeNode", "NodeResult"}
+    passive = {"LoopNode": {"loop_id"},
+               "LoopVertexSpec": {"loop_ref", "contract"}}
+    violations = []
+    for directory, _, files in os.walk(base):
+        for filename in files:
+            if not filename.endswith(".py"):
+                continue
+            path = os.path.join(directory, filename)
+            try:
+                tree = ast.parse(open(path, encoding="utf-8").read(), path)
+            except (OSError, SyntaxError):
+                continue
+            for item in (node for node in ast.walk(tree)
+                         if isinstance(node, ast.ClassDef)):
+                fields = {node.target.id for node in item.body
+                          if isinstance(node, ast.AnnAssign)
+                          and isinstance(node.target, ast.Name)}
+                methods = {node.name for node in item.body
+                           if isinstance(node, (ast.FunctionDef,
+                                                ast.AsyncFunctionDef))}
+                bases = {getattr(node, "id", getattr(node, "attr", ""))
+                         for node in item.bases}
+                reason = ""
+                if item.name in retired:
+                    reason = "retired non-Loop graph/runtime spelling"
+                elif item.name in passive and passive[item.name] <= fields:
+                    continue
+                elif (item.name.endswith(("Node", "Vertex"))
+                      and "Loop" not in bases):
+                    reason = "graph vertex type does not inherit canonical Loop"
+                elif ("node_id" in fields
+                      and methods & {"run", "execute", "invoke"}
+                      and "Loop" not in bases):
+                    reason = "executable node-shaped type bypasses canonical Loop"
+                if reason:
+                    violations.append({
+                        "file": os.path.relpath(path, base), "line": item.lineno,
+                        "type": item.name, "reason": reason})
+    return violations
+
+
 def run_conformance() -> dict:
     from ._conformance_scan import run_scan
     from .static_architecture.api_quality import scan_public_signatures
+    from .static_architecture.boundary_registry import boundary_report
     scan = run_scan()
     api_violations = scan_public_signatures()
+    boundaries = boundary_report()
+    graph_vertex_violations = operational_graph_vertex_violations()
     unclassified = _unclassified()
-    legacy = _legacy_runtime_reachable()
+    legacy_flat_paths = _legacy_flat_paths_reachable()
     stale = _stale_docs()
     c = scan["counts_by_rule"]
     gates = {
         "unclassified_files": len(unclassified),
-        "reachable_legacy_runtimes": len(legacy),
-        "legacy_imports_on_live_paths": c.get("legacy_import", 0),
+        "reachable_legacy_flat_paths": len(legacy_flat_paths),
+        "legacy_flat_imports_on_live_paths": c.get(
+            "legacy_flat_import", 0),
+        "public_parallel_runtime_surfaces": c.get(
+            "public_parallel_runtime_surface", 0),
         "direct_model_or_network_calls_outside_gateway":
             c.get("network_outside_gateway", 0),
         "subprocess_outside_declared_adapters":
@@ -153,6 +210,12 @@ def run_conformance() -> dict:
         # real (nonzero) count stays visible in the manifest below.
         "envelope_owning_modules_missing_from_the_register":
             c.get("unregistered_boundary", 0),
+        "operational_boundaries_outside_loop_ontology":
+            boundaries["outside_loop_ontology"],
+        "operational_boundary_relationship_kind_violations":
+            len(boundaries["invalid_relationship_rows"]),
+        "operational_graph_vertex_types_outside_canonical_loop":
+            len(graph_vertex_violations),
         "direct_resource_access_above_baseline": max(
             0, c.get("direct_resource_access", 0) - _access_baseline()),
         "architecture_map_freshness": _stale_architecture_map(),
@@ -165,8 +228,11 @@ def run_conformance() -> dict:
         "files_scanned": scan["files_scanned"],
         "zero_tolerance_gates": gates,
         "gate_details": {"unclassified_files": unclassified,
-                         "reachable_legacy_runtimes": legacy,
+                         "reachable_legacy_flat_paths": legacy_flat_paths,
                          "stale_current_architecture_documents": stale,
+                         "operational_boundary_ontology": boundaries,
+                         "operational_graph_vertex_types":
+                             graph_vertex_violations,
                          "scan_violations": (scan["violations"]
                                              + api_violations)},
         "direct_resource_access": {
@@ -195,6 +261,7 @@ def run_conformance() -> dict:
 
 
 def self_test() -> dict:
+    import tempfile
     results = []
 
     def check(name, ok, note=""):
@@ -211,6 +278,21 @@ def self_test() -> dict:
     check("stale_doc_gate_is_a_real_detector",
           _stale_docs() == [] and CURRENT_DOCS == ("ARCHITECTURE-MAP.md",),
           "every non-current root doc carries a SUPERSEDED/HISTORICAL header")
+    with tempfile.TemporaryDirectory() as directory:
+        fixture = os.path.join(directory, "vertex_canary.py")
+        with open(fixture, "w", encoding="utf-8") as stream:
+            stream.write(
+                "class TaskNode:\n    node_id: str\n"
+                "    def run(self): pass\n\n"
+                "class GoalItem:\n    goal_id: str\n\n"
+                "class SolutionSlot:\n    slot_id: str\n\n"
+                "class LoopVertexSpec:\n    loop_ref: str\n"
+                "    contract: object\n\n"
+                "GoalNode = GoalItem\n")
+        canary = operational_graph_vertex_violations(directory)
+    check("operational_vertex_canary_refuses_non_loop_and_ignores_passive_records",
+          [item["type"] for item in canary] == ["TaskNode"],
+          f"violations={canary}")
     passed = sum(1 for x in results if x["passed"])
     return {"tests": results, "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}

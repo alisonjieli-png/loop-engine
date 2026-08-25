@@ -1,0 +1,3308 @@
+{
+  "analysis": {
+    "digestibility": {
+      "notes": [],
+      "semantic_calls": 6,
+      "undigested": 0
+    },
+    "hotspots": [
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 0,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.7436855,
+        "goal": "Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670554.7479122,
+        "loop": "loop1",
+        "pain": 13.9,
+        "semantic_calls": 0,
+        "spawned": 9,
+        "step_counts": {
+          "act": 1,
+          "assess_prepare": 1,
+          "decide_next": 1,
+          "how": 1,
+          "integrate_commit": 1,
+          "orient": 1,
+          "reconcile_horizon": 1,
+          "route": 1,
+          "verify": 1
+        },
+        "steps": 9,
+        "wall_seconds": 139.004
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 1,
+        "depth": 4,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.476052,
+        "goal": "model invocation: ollama_cloud:deepseek-v4-flash:0731",
+        "last_ts": 1787670513.0459068,
+        "loop": "loop53",
+        "pain": 12.757,
+        "semantic_calls": 1,
+        "spawned": 0,
+        "step_counts": {
+          "invoke": 1
+        },
+        "steps": 1,
+        "wall_seconds": 77.57
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.3859441,
+        "goal": "decide_next spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670552.6687036,
+        "loop": "loop36",
+        "pain": 11.728,
+        "semantic_calls": 0,
+        "spawned": 2,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 117.283
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.3859751,
+        "goal": "model-led random_forest_candidate for OpenML task 11",
+        "last_ts": 1787670513.0471752,
+        "loop": "loop37",
+        "pain": 10.766,
+        "semantic_calls": 1,
+        "spawned": 15,
+        "step_counts": {
+          "invoke": 1
+        },
+        "steps": 1,
+        "wall_seconds": 77.661
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 1,
+        "depth": 4,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1833816,
+        "goal": "model invocation: ollama_cloud:deepseek-v4-flash:0731",
+        "last_ts": 1787670552.6624758,
+        "loop": "loop70",
+        "pain": 8.948,
+        "semantic_calls": 1,
+        "spawned": 0,
+        "step_counts": {
+          "invoke": 1
+        },
+        "steps": 1,
+        "wall_seconds": 39.479
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4760191,
+        "goal": "route one model request",
+        "last_ts": 1787670513.0459478,
+        "loop": "loop52",
+        "pain": 7.757,
+        "semantic_calls": 0,
+        "spawned": 1,
+        "step_counts": {
+          "route": 1
+        },
+        "steps": 1,
+        "wall_seconds": 77.57
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.0472462,
+        "goal": "model-led synthesis_selection for OpenML task 11",
+        "last_ts": 1787670552.6686602,
+        "loop": "loop54",
+        "pain": 6.962,
+        "semantic_calls": 1,
+        "spawned": 15,
+        "step_counts": {
+          "invoke": 1
+        },
+        "steps": 1,
+        "wall_seconds": 39.621
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 1,
+        "depth": 4,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9523916,
+        "goal": "model invocation: ollama_cloud:deepseek-v4-flash:0731",
+        "last_ts": 1787670435.379468,
+        "loop": "loop35",
+        "pain": 6.943,
+        "semantic_calls": 1,
+        "spawned": 0,
+        "step_counts": {
+          "invoke": 1
+        },
+        "steps": 1,
+        "wall_seconds": 19.427
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.858492,
+        "goal": "model-led logistic_candidate for OpenML task 11",
+        "last_ts": 1787670435.385842,
+        "loop": "loop19",
+        "pain": 4.953,
+        "semantic_calls": 1,
+        "spawned": 15,
+        "step_counts": {
+          "invoke": 1
+        },
+        "steps": 1,
+        "wall_seconds": 19.527
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.183315,
+        "goal": "route one model request",
+        "last_ts": 1787670552.6625097,
+        "loop": "loop69",
+        "pain": 3.948,
+        "semantic_calls": 0,
+        "spawned": 1,
+        "step_counts": {
+          "route": 1
+        },
+        "steps": 1,
+        "wall_seconds": 39.479
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8584616,
+        "goal": "assess_prepare spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670435.3858993,
+        "loop": "loop18",
+        "pain": 1.953,
+        "semantic_calls": 0,
+        "spawned": 1,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 19.527
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9523573,
+        "goal": "route one model request",
+        "last_ts": 1787670435.3795102,
+        "loop": "loop34",
+        "pain": 1.943,
+        "semantic_calls": 0,
+        "spawned": 1,
+        "step_counts": {
+          "route": 1
+        },
+        "steps": 1,
+        "wall_seconds": 19.427
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670552.6688924,
+        "goal": "act spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670554.7407727,
+        "loop": "loop72",
+        "pain": 0.207,
+        "semantic_calls": 0,
+        "spawned": 1,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 2.072
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 0,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670552.6689339,
+        "goal": "",
+        "last_ts": 1787670554.7404351,
+        "loop": "task-11-official-fold-execution",
+        "pain": 0.207,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {},
+        "steps": 0,
+        "wall_seconds": 2.072
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670552.6689515,
+        "goal": "deterministic check: solution loop task-11-official-fold-execution (code.openml.execute_official_folds)",
+        "last_ts": 1787670554.740416,
+        "loop": "loop73",
+        "pain": 0.207,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "act": 1,
+          "check": 1,
+          "choose": 1,
+          "commit": 1,
+          "load": 1
+        },
+        "steps": 5,
+        "wall_seconds": 2.071
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.7532585,
+        "goal": "reconcile_horizon spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670415.8584297,
+        "loop": "loop3",
+        "pain": 0.01,
+        "semantic_calls": 0,
+        "spawned": 14,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.105
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.7556584,
+        "goal": "serve callable: search four intelligence layers for first principles decomposition assumptions invariants openml-cc18-task-11-both O",
+        "last_ts": 1787670415.7728925,
+        "loop": "loop4",
+        "pain": 0.002,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.017
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8594062,
+        "goal": "serve callable: search four intelligence layers for first principles decomposition assumptions invariants openml-cc18-task-11-logist",
+        "last_ts": 1787670415.8740854,
+        "loop": "loop20",
+        "pain": 0.002,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.015
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.3995383,
+        "goal": "serve callable: search four intelligence layers for analogy novel alternatives counterfactual maximum diversity comparison openml-cc",
+        "last_ts": 1787670435.4140966,
+        "loop": "loop39",
+        "pain": 0.002,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.015
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.06329,
+        "goal": "serve callable: search four intelligence layers for analogy novel alternatives counterfactual maximum diversity comparison openml-cc",
+        "last_ts": 1787670513.0834649,
+        "loop": "loop56",
+        "pain": 0.002,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.02
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.0855072,
+        "goal": "serve callable: search four intelligence layers for missing items evidence needed prerequisites uncertainty information gain gap ana",
+        "last_ts": 1787670513.1080883,
+        "loop": "loop57",
+        "pain": 0.002,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.023
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1100814,
+        "goal": "serve callable: search four intelligence layers for failure adversarial review premortem falsification top avoid failure recovery op",
+        "last_ts": 1787670513.126424,
+        "loop": "loop58",
+        "pain": 0.002,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.016
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1282294,
+        "goal": "serve callable: search four intelligence layers for cost compression cost value analysis minimum complexity budget resource efficien",
+        "last_ts": 1787670513.1478195,
+        "loop": "loop59",
+        "pain": 0.002,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.02
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1489627,
+        "goal": "serve callable: search four intelligence layers for verification evaluation rubric metric validate evidence needed openml-cc18-task-",
+        "last_ts": 1787670513.1646633,
+        "loop": "loop60",
+        "pain": 0.002,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.016
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.165954,
+        "goal": "serve callable: search four intelligence layers for output contract output template response shape serialization format schema forma",
+        "last_ts": 1787670513.1812627,
+        "loop": "loop61",
+        "pain": 0.002,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.015
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.774384,
+        "goal": "serve callable: search four intelligence layers for analogy novel alternatives counterfactual maximum diversity comparison openml-cc",
+        "last_ts": 1787670415.787467,
+        "loop": "loop5",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.7886076,
+        "goal": "serve callable: search four intelligence layers for missing items evidence needed prerequisites uncertainty information gain gap ana",
+        "last_ts": 1787670415.80147,
+        "loop": "loop6",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8025515,
+        "goal": "serve callable: search four intelligence layers for failure adversarial review premortem falsification top avoid failure recovery op",
+        "last_ts": 1787670415.8159647,
+        "loop": "loop7",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.817031,
+        "goal": "serve callable: search four intelligence layers for cost compression cost value analysis minimum complexity budget resource efficien",
+        "last_ts": 1787670415.8295836,
+        "loop": "loop8",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8306708,
+        "goal": "serve callable: search four intelligence layers for verification evaluation rubric metric validate evidence needed openml-cc18-task-",
+        "last_ts": 1787670415.8440073,
+        "loop": "loop9",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8451588,
+        "goal": "serve callable: search four intelligence layers for output contract output template response shape serialization format schema forma",
+        "last_ts": 1787670415.8575132,
+        "loop": "loop10",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8751833,
+        "goal": "serve callable: search four intelligence layers for analogy novel alternatives counterfactual maximum diversity comparison openml-cc",
+        "last_ts": 1787670415.8866858,
+        "loop": "loop21",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8878922,
+        "goal": "serve callable: search four intelligence layers for missing items evidence needed prerequisites uncertainty information gain gap ana",
+        "last_ts": 1787670415.8996394,
+        "loop": "loop22",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9006631,
+        "goal": "serve callable: search four intelligence layers for failure adversarial review premortem falsification top avoid failure recovery op",
+        "last_ts": 1787670415.912053,
+        "loop": "loop23",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.011
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9131367,
+        "goal": "serve callable: search four intelligence layers for cost compression cost value analysis minimum complexity budget resource efficien",
+        "last_ts": 1787670415.9259584,
+        "loop": "loop24",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9270387,
+        "goal": "serve callable: search four intelligence layers for verification evaluation rubric metric validate evidence needed openml-cc18-task-",
+        "last_ts": 1787670415.9386497,
+        "loop": "loop25",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.939612,
+        "goal": "serve callable: search four intelligence layers for output contract output template response shape serialization format schema forma",
+        "last_ts": 1787670415.951364,
+        "loop": "loop26",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.3868868,
+        "goal": "serve callable: search four intelligence layers for first principles decomposition assumptions invariants openml-cc18-task-11-random",
+        "last_ts": 1787670435.3983874,
+        "loop": "loop38",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4150875,
+        "goal": "serve callable: search four intelligence layers for missing items evidence needed prerequisites uncertainty information gain gap ana",
+        "last_ts": 1787670435.426111,
+        "loop": "loop40",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.011
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4270172,
+        "goal": "serve callable: search four intelligence layers for failure adversarial review premortem falsification top avoid failure recovery op",
+        "last_ts": 1787670435.4381514,
+        "loop": "loop41",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.011
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.439168,
+        "goal": "serve callable: search four intelligence layers for cost compression cost value analysis minimum complexity budget resource efficien",
+        "last_ts": 1787670435.4511876,
+        "loop": "loop42",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4522076,
+        "goal": "serve callable: search four intelligence layers for verification evaluation rubric metric validate evidence needed openml-cc18-task-",
+        "last_ts": 1787670435.4633873,
+        "loop": "loop43",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.011
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4642687,
+        "goal": "serve callable: search four intelligence layers for output contract output template response shape serialization format schema forma",
+        "last_ts": 1787670435.4751298,
+        "loop": "loop44",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.011
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.0486372,
+        "goal": "serve callable: search four intelligence layers for first principles decomposition assumptions invariants openml-cc18-task-11-both C",
+        "last_ts": 1787670513.06198,
+        "loop": "loop55",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670554.7408252,
+        "goal": "verify spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670554.746928,
+        "loop": "loop74",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 1,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.006
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670554.7408493,
+        "goal": "independent accuracy evaluator for OpenML task 11",
+        "last_ts": 1787670554.7469187,
+        "loop": "loop75",
+        "pain": 0.001,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "accept": 1,
+          "score": 1,
+          "validate_contract": 1
+        },
+        "steps": 3,
+        "wall_seconds": 0.006
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 0,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670554.747922,
+        "goal": "",
+        "last_ts": 1787670554.747922,
+        "loop": "",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {},
+        "steps": 0,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.752998,
+        "goal": "orient spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670415.7532067,
+        "loop": "loop2",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8580217,
+        "goal": "serve callable: context_loop:context.openml.first_principles",
+        "last_ts": 1787670415.8580487,
+        "loop": "loop11",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.858095,
+        "goal": "serve callable: code_loop:code.openml.logistic_pipeline",
+        "last_ts": 1787670415.858121,
+        "loop": "loop12",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8581576,
+        "goal": "serve callable: context_loop:context.openml.missing_information",
+        "last_ts": 1787670415.8581748,
+        "loop": "loop13",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8582048,
+        "goal": "serve callable: context_loop:context.openml.failure_modes",
+        "last_ts": 1787670415.8582206,
+        "loop": "loop14",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8582485,
+        "goal": "serve callable: guidance_loop:user.openml.active_owner_rules",
+        "last_ts": 1787670415.858263,
+        "loop": "loop15",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8582902,
+        "goal": "serve callable: context_loop:context.openml.verification",
+        "last_ts": 1787670415.8583052,
+        "loop": "loop16",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8583329,
+        "goal": "serve callable: context_loop:context.openml.output_contract",
+        "last_ts": 1787670415.858347,
+        "loop": "loop17",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9518251,
+        "goal": "serve callable: context_loop:context.openml.first_principles",
+        "last_ts": 1787670415.9518504,
+        "loop": "loop27",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9518907,
+        "goal": "serve callable: code_loop:code.openml.logistic_pipeline",
+        "last_ts": 1787670415.9519165,
+        "loop": "loop28",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.951953,
+        "goal": "serve callable: context_loop:context.openml.missing_information",
+        "last_ts": 1787670415.9519706,
+        "loop": "loop29",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9520044,
+        "goal": "serve callable: context_loop:context.openml.failure_modes",
+        "last_ts": 1787670415.9520202,
+        "loop": "loop30",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9520528,
+        "goal": "serve callable: guidance_loop:user.openml.active_owner_rules",
+        "last_ts": 1787670415.952068,
+        "loop": "loop31",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9520993,
+        "goal": "serve callable: context_loop:context.openml.verification",
+        "last_ts": 1787670415.9521143,
+        "loop": "loop32",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9521444,
+        "goal": "serve callable: context_loop:context.openml.output_contract",
+        "last_ts": 1787670415.9521585,
+        "loop": "loop33",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4755118,
+        "goal": "serve callable: context_loop:context.openml.first_principles",
+        "last_ts": 1787670435.4755373,
+        "loop": "loop45",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4755778,
+        "goal": "serve callable: code_loop:code.openml.seeded_random_forest",
+        "last_ts": 1787670435.4755993,
+        "loop": "loop46",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4756343,
+        "goal": "serve callable: context_loop:context.openml.missing_information",
+        "last_ts": 1787670435.475651,
+        "loop": "loop47",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.475684,
+        "goal": "serve callable: context_loop:context.openml.failure_modes",
+        "last_ts": 1787670435.4757059,
+        "loop": "loop48",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4757385,
+        "goal": "serve callable: guidance_loop:user.openml.active_owner_rules",
+        "last_ts": 1787670435.475754,
+        "loop": "loop49",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4757855,
+        "goal": "serve callable: context_loop:context.openml.verification",
+        "last_ts": 1787670435.4758003,
+        "loop": "loop50",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.475832,
+        "goal": "serve callable: context_loop:context.openml.output_contract",
+        "last_ts": 1787670435.475847,
+        "loop": "loop51",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1824358,
+        "goal": "serve callable: context_loop:context.openml.first_principles",
+        "last_ts": 1787670513.182498,
+        "loop": "loop62",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1825702,
+        "goal": "serve callable: code_loop:code.openml.logistic_pipeline",
+        "last_ts": 1787670513.1826031,
+        "loop": "loop63",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1826587,
+        "goal": "serve callable: context_loop:context.openml.missing_information",
+        "last_ts": 1787670513.1826947,
+        "loop": "loop64",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1827462,
+        "goal": "serve callable: context_loop:context.openml.failure_modes",
+        "last_ts": 1787670513.1827707,
+        "loop": "loop65",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1828167,
+        "goal": "serve callable: guidance_loop:user.openml.active_owner_rules",
+        "last_ts": 1787670513.1828427,
+        "loop": "loop66",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1828978,
+        "goal": "serve callable: context_loop:context.openml.verification",
+        "last_ts": 1787670513.1829243,
+        "loop": "loop67",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1829855,
+        "goal": "serve callable: context_loop:context.openml.output_contract",
+        "last_ts": 1787670513.183007,
+        "loop": "loop68",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670552.6687639,
+        "goal": "how spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670552.6688585,
+        "loop": "loop71",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 0,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670554.740437,
+        "goal": "",
+        "last_ts": 1787670554.740437,
+        "loop": "openml-task-11-random_forest",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {},
+        "steps": 0,
+        "wall_seconds": 0.0
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670554.7469747,
+        "goal": "integrate_commit spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670554.7477484,
+        "loop": "loop76",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.001
+      },
+      {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670554.7477827,
+        "goal": "route spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670554.747902,
+        "loop": "loop77",
+        "pain": 0.0,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      }
+    ],
+    "loops": {
+      "": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 0,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670554.747922,
+        "goal": "",
+        "last_ts": 1787670554.747922,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {},
+        "steps": 0,
+        "wall_seconds": 0.0
+      },
+      "loop1": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 0,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.7436855,
+        "goal": "Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670554.7479122,
+        "semantic_calls": 0,
+        "spawned": 9,
+        "step_counts": {
+          "act": 1,
+          "assess_prepare": 1,
+          "decide_next": 1,
+          "how": 1,
+          "integrate_commit": 1,
+          "orient": 1,
+          "reconcile_horizon": 1,
+          "route": 1,
+          "verify": 1
+        },
+        "steps": 9,
+        "wall_seconds": 139.004
+      },
+      "loop10": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8451588,
+        "goal": "serve callable: search four intelligence layers for output contract output template response shape serialization format schema forma",
+        "last_ts": 1787670415.8575132,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      "loop11": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8580217,
+        "goal": "serve callable: context_loop:context.openml.first_principles",
+        "last_ts": 1787670415.8580487,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop12": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.858095,
+        "goal": "serve callable: code_loop:code.openml.logistic_pipeline",
+        "last_ts": 1787670415.858121,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop13": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8581576,
+        "goal": "serve callable: context_loop:context.openml.missing_information",
+        "last_ts": 1787670415.8581748,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop14": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8582048,
+        "goal": "serve callable: context_loop:context.openml.failure_modes",
+        "last_ts": 1787670415.8582206,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop15": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8582485,
+        "goal": "serve callable: guidance_loop:user.openml.active_owner_rules",
+        "last_ts": 1787670415.858263,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop16": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8582902,
+        "goal": "serve callable: context_loop:context.openml.verification",
+        "last_ts": 1787670415.8583052,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop17": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8583329,
+        "goal": "serve callable: context_loop:context.openml.output_contract",
+        "last_ts": 1787670415.858347,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop18": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8584616,
+        "goal": "assess_prepare spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670435.3858993,
+        "semantic_calls": 0,
+        "spawned": 1,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 19.527
+      },
+      "loop19": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.858492,
+        "goal": "model-led logistic_candidate for OpenML task 11",
+        "last_ts": 1787670435.385842,
+        "semantic_calls": 1,
+        "spawned": 15,
+        "step_counts": {
+          "invoke": 1
+        },
+        "steps": 1,
+        "wall_seconds": 19.527
+      },
+      "loop2": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.752998,
+        "goal": "orient spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670415.7532067,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop20": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8594062,
+        "goal": "serve callable: search four intelligence layers for first principles decomposition assumptions invariants openml-cc18-task-11-logist",
+        "last_ts": 1787670415.8740854,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.015
+      },
+      "loop21": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8751833,
+        "goal": "serve callable: search four intelligence layers for analogy novel alternatives counterfactual maximum diversity comparison openml-cc",
+        "last_ts": 1787670415.8866858,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      "loop22": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8878922,
+        "goal": "serve callable: search four intelligence layers for missing items evidence needed prerequisites uncertainty information gain gap ana",
+        "last_ts": 1787670415.8996394,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      "loop23": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9006631,
+        "goal": "serve callable: search four intelligence layers for failure adversarial review premortem falsification top avoid failure recovery op",
+        "last_ts": 1787670415.912053,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.011
+      },
+      "loop24": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9131367,
+        "goal": "serve callable: search four intelligence layers for cost compression cost value analysis minimum complexity budget resource efficien",
+        "last_ts": 1787670415.9259584,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      "loop25": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9270387,
+        "goal": "serve callable: search four intelligence layers for verification evaluation rubric metric validate evidence needed openml-cc18-task-",
+        "last_ts": 1787670415.9386497,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      "loop26": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.939612,
+        "goal": "serve callable: search four intelligence layers for output contract output template response shape serialization format schema forma",
+        "last_ts": 1787670415.951364,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      "loop27": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9518251,
+        "goal": "serve callable: context_loop:context.openml.first_principles",
+        "last_ts": 1787670415.9518504,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop28": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9518907,
+        "goal": "serve callable: code_loop:code.openml.logistic_pipeline",
+        "last_ts": 1787670415.9519165,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop29": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.951953,
+        "goal": "serve callable: context_loop:context.openml.missing_information",
+        "last_ts": 1787670415.9519706,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop3": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.7532585,
+        "goal": "reconcile_horizon spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670415.8584297,
+        "semantic_calls": 0,
+        "spawned": 14,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.105
+      },
+      "loop30": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9520044,
+        "goal": "serve callable: context_loop:context.openml.failure_modes",
+        "last_ts": 1787670415.9520202,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop31": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9520528,
+        "goal": "serve callable: guidance_loop:user.openml.active_owner_rules",
+        "last_ts": 1787670415.952068,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop32": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9520993,
+        "goal": "serve callable: context_loop:context.openml.verification",
+        "last_ts": 1787670415.9521143,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop33": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9521444,
+        "goal": "serve callable: context_loop:context.openml.output_contract",
+        "last_ts": 1787670415.9521585,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop34": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9523573,
+        "goal": "route one model request",
+        "last_ts": 1787670435.3795102,
+        "semantic_calls": 0,
+        "spawned": 1,
+        "step_counts": {
+          "route": 1
+        },
+        "steps": 1,
+        "wall_seconds": 19.427
+      },
+      "loop35": {
+        "budget_stops": 0,
+        "deferrals": 1,
+        "depth": 4,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.9523916,
+        "goal": "model invocation: ollama_cloud:deepseek-v4-flash:0731",
+        "last_ts": 1787670435.379468,
+        "semantic_calls": 1,
+        "spawned": 0,
+        "step_counts": {
+          "invoke": 1
+        },
+        "steps": 1,
+        "wall_seconds": 19.427
+      },
+      "loop36": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.3859441,
+        "goal": "decide_next spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670552.6687036,
+        "semantic_calls": 0,
+        "spawned": 2,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 117.283
+      },
+      "loop37": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.3859751,
+        "goal": "model-led random_forest_candidate for OpenML task 11",
+        "last_ts": 1787670513.0471752,
+        "semantic_calls": 1,
+        "spawned": 15,
+        "step_counts": {
+          "invoke": 1
+        },
+        "steps": 1,
+        "wall_seconds": 77.661
+      },
+      "loop38": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.3868868,
+        "goal": "serve callable: search four intelligence layers for first principles decomposition assumptions invariants openml-cc18-task-11-random",
+        "last_ts": 1787670435.3983874,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      "loop39": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.3995383,
+        "goal": "serve callable: search four intelligence layers for analogy novel alternatives counterfactual maximum diversity comparison openml-cc",
+        "last_ts": 1787670435.4140966,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.015
+      },
+      "loop4": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.7556584,
+        "goal": "serve callable: search four intelligence layers for first principles decomposition assumptions invariants openml-cc18-task-11-both O",
+        "last_ts": 1787670415.7728925,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.017
+      },
+      "loop40": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4150875,
+        "goal": "serve callable: search four intelligence layers for missing items evidence needed prerequisites uncertainty information gain gap ana",
+        "last_ts": 1787670435.426111,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.011
+      },
+      "loop41": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4270172,
+        "goal": "serve callable: search four intelligence layers for failure adversarial review premortem falsification top avoid failure recovery op",
+        "last_ts": 1787670435.4381514,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.011
+      },
+      "loop42": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.439168,
+        "goal": "serve callable: search four intelligence layers for cost compression cost value analysis minimum complexity budget resource efficien",
+        "last_ts": 1787670435.4511876,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.012
+      },
+      "loop43": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4522076,
+        "goal": "serve callable: search four intelligence layers for verification evaluation rubric metric validate evidence needed openml-cc18-task-",
+        "last_ts": 1787670435.4633873,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.011
+      },
+      "loop44": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4642687,
+        "goal": "serve callable: search four intelligence layers for output contract output template response shape serialization format schema forma",
+        "last_ts": 1787670435.4751298,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.011
+      },
+      "loop45": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4755118,
+        "goal": "serve callable: context_loop:context.openml.first_principles",
+        "last_ts": 1787670435.4755373,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop46": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4755778,
+        "goal": "serve callable: code_loop:code.openml.seeded_random_forest",
+        "last_ts": 1787670435.4755993,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop47": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4756343,
+        "goal": "serve callable: context_loop:context.openml.missing_information",
+        "last_ts": 1787670435.475651,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop48": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.475684,
+        "goal": "serve callable: context_loop:context.openml.failure_modes",
+        "last_ts": 1787670435.4757059,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop49": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4757385,
+        "goal": "serve callable: guidance_loop:user.openml.active_owner_rules",
+        "last_ts": 1787670435.475754,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop5": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.774384,
+        "goal": "serve callable: search four intelligence layers for analogy novel alternatives counterfactual maximum diversity comparison openml-cc",
+        "last_ts": 1787670415.787467,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      "loop50": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4757855,
+        "goal": "serve callable: context_loop:context.openml.verification",
+        "last_ts": 1787670435.4758003,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop51": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.475832,
+        "goal": "serve callable: context_loop:context.openml.output_contract",
+        "last_ts": 1787670435.475847,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop52": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.4760191,
+        "goal": "route one model request",
+        "last_ts": 1787670513.0459478,
+        "semantic_calls": 0,
+        "spawned": 1,
+        "step_counts": {
+          "route": 1
+        },
+        "steps": 1,
+        "wall_seconds": 77.57
+      },
+      "loop53": {
+        "budget_stops": 0,
+        "deferrals": 1,
+        "depth": 4,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670435.476052,
+        "goal": "model invocation: ollama_cloud:deepseek-v4-flash:0731",
+        "last_ts": 1787670513.0459068,
+        "semantic_calls": 1,
+        "spawned": 0,
+        "step_counts": {
+          "invoke": 1
+        },
+        "steps": 1,
+        "wall_seconds": 77.57
+      },
+      "loop54": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.0472462,
+        "goal": "model-led synthesis_selection for OpenML task 11",
+        "last_ts": 1787670552.6686602,
+        "semantic_calls": 1,
+        "spawned": 15,
+        "step_counts": {
+          "invoke": 1
+        },
+        "steps": 1,
+        "wall_seconds": 39.621
+      },
+      "loop55": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.0486372,
+        "goal": "serve callable: search four intelligence layers for first principles decomposition assumptions invariants openml-cc18-task-11-both C",
+        "last_ts": 1787670513.06198,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      "loop56": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.06329,
+        "goal": "serve callable: search four intelligence layers for analogy novel alternatives counterfactual maximum diversity comparison openml-cc",
+        "last_ts": 1787670513.0834649,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.02
+      },
+      "loop57": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.0855072,
+        "goal": "serve callable: search four intelligence layers for missing items evidence needed prerequisites uncertainty information gain gap ana",
+        "last_ts": 1787670513.1080883,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.023
+      },
+      "loop58": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1100814,
+        "goal": "serve callable: search four intelligence layers for failure adversarial review premortem falsification top avoid failure recovery op",
+        "last_ts": 1787670513.126424,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.016
+      },
+      "loop59": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1282294,
+        "goal": "serve callable: search four intelligence layers for cost compression cost value analysis minimum complexity budget resource efficien",
+        "last_ts": 1787670513.1478195,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.02
+      },
+      "loop6": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.7886076,
+        "goal": "serve callable: search four intelligence layers for missing items evidence needed prerequisites uncertainty information gain gap ana",
+        "last_ts": 1787670415.80147,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      "loop60": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1489627,
+        "goal": "serve callable: search four intelligence layers for verification evaluation rubric metric validate evidence needed openml-cc18-task-",
+        "last_ts": 1787670513.1646633,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.016
+      },
+      "loop61": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.165954,
+        "goal": "serve callable: search four intelligence layers for output contract output template response shape serialization format schema forma",
+        "last_ts": 1787670513.1812627,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.015
+      },
+      "loop62": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1824358,
+        "goal": "serve callable: context_loop:context.openml.first_principles",
+        "last_ts": 1787670513.182498,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop63": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1825702,
+        "goal": "serve callable: code_loop:code.openml.logistic_pipeline",
+        "last_ts": 1787670513.1826031,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop64": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1826587,
+        "goal": "serve callable: context_loop:context.openml.missing_information",
+        "last_ts": 1787670513.1826947,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop65": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1827462,
+        "goal": "serve callable: context_loop:context.openml.failure_modes",
+        "last_ts": 1787670513.1827707,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop66": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1828167,
+        "goal": "serve callable: guidance_loop:user.openml.active_owner_rules",
+        "last_ts": 1787670513.1828427,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop67": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1828978,
+        "goal": "serve callable: context_loop:context.openml.verification",
+        "last_ts": 1787670513.1829243,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop68": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1829855,
+        "goal": "serve callable: context_loop:context.openml.output_contract",
+        "last_ts": 1787670513.183007,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop69": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 3,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.183315,
+        "goal": "route one model request",
+        "last_ts": 1787670552.6625097,
+        "semantic_calls": 0,
+        "spawned": 1,
+        "step_counts": {
+          "route": 1
+        },
+        "steps": 1,
+        "wall_seconds": 39.479
+      },
+      "loop7": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8025515,
+        "goal": "serve callable: search four intelligence layers for failure adversarial review premortem falsification top avoid failure recovery op",
+        "last_ts": 1787670415.8159647,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      "loop70": {
+        "budget_stops": 0,
+        "deferrals": 1,
+        "depth": 4,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670513.1833816,
+        "goal": "model invocation: ollama_cloud:deepseek-v4-flash:0731",
+        "last_ts": 1787670552.6624758,
+        "semantic_calls": 1,
+        "spawned": 0,
+        "step_counts": {
+          "invoke": 1
+        },
+        "steps": 1,
+        "wall_seconds": 39.479
+      },
+      "loop71": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670552.6687639,
+        "goal": "how spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670552.6688585,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop72": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670552.6688924,
+        "goal": "act spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670554.7407727,
+        "semantic_calls": 0,
+        "spawned": 1,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 2.072
+      },
+      "loop73": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670552.6689515,
+        "goal": "deterministic check: solution loop task-11-official-fold-execution (code.openml.execute_official_folds)",
+        "last_ts": 1787670554.740416,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "act": 1,
+          "check": 1,
+          "choose": 1,
+          "commit": 1,
+          "load": 1
+        },
+        "steps": 5,
+        "wall_seconds": 2.071
+      },
+      "loop74": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670554.7408252,
+        "goal": "verify spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670554.746928,
+        "semantic_calls": 0,
+        "spawned": 1,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.006
+      },
+      "loop75": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670554.7408493,
+        "goal": "independent accuracy evaluator for OpenML task 11",
+        "last_ts": 1787670554.7469187,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "accept": 1,
+          "score": 1,
+          "validate_contract": 1
+        },
+        "steps": 3,
+        "wall_seconds": 0.006
+      },
+      "loop76": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670554.7469747,
+        "goal": "integrate_commit spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670554.7477484,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.001
+      },
+      "loop77": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 1,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670554.7477827,
+        "goal": "route spawned Loop for Select, compile, execute, and independently evaluate OpenML task 11 on all ten official folds",
+        "last_ts": 1787670554.747902,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "act": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.0
+      },
+      "loop8": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.817031,
+        "goal": "serve callable: search four intelligence layers for cost compression cost value analysis minimum complexity budget resource efficien",
+        "last_ts": 1787670415.8295836,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      "loop9": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 2,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670415.8306708,
+        "goal": "serve callable: search four intelligence layers for verification evaluation rubric metric validate evidence needed openml-cc18-task-",
+        "last_ts": 1787670415.8440073,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {
+          "serve": 1
+        },
+        "steps": 1,
+        "wall_seconds": 0.013
+      },
+      "openml-task-11-random_forest": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 0,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670554.740437,
+        "goal": "",
+        "last_ts": 1787670554.740437,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {},
+        "steps": 0,
+        "wall_seconds": 0.0
+      },
+      "task-11-official-fold-execution": {
+        "budget_stops": 0,
+        "deferrals": 0,
+        "depth": 0,
+        "empty_outputs": 0,
+        "fallbacks": 0,
+        "first_ts": 1787670552.6689339,
+        "goal": "",
+        "last_ts": 1787670554.7404351,
+        "semantic_calls": 0,
+        "spawned": 0,
+        "step_counts": {},
+        "steps": 0,
+        "wall_seconds": 2.072
+      }
+    },
+    "record_type": "run_analysis/v1",
+    "stuck": [],
+    "tokens": {
+      "calls_with_usage": 0,
+      "eval": 0,
+      "prompt": 0
+    },
+    "totals": {
+      "fallbacks": 0,
+      "loops": 80,
+      "semantic_calls": 6,
+      "steps": 91
+    }
+  },
+  "canvas_mermaid": "flowchart TD\n  IN([inputs])\n  N1[\"openml-task-11-random_forest<br/>single | deterministic\"]\n  N2(\"task-11-official-fold-execution: code.openml.execute_official_folds [deterministic]\")\n  N3([output])\n  IN --> N1\n  N1 --> N2\n  N2 --> N3",
+  "mermaid": "flowchart TD\n  [\"<br/>0 steps · 0 calls · pain 0.0\"]\n  loop1[\"loop1<br/>9 steps · 0 calls · pain 13.9\"]\n  loop2[\"loop2<br/>1 steps · 0 calls · pain 0.0\"]\n  loop3[\"loop3<br/>1 steps · 0 calls · pain 0.01\"]\n  loop4[\"loop4<br/>1 steps · 0 calls · pain 0.002\"]\n  loop5[\"loop5<br/>1 steps · 0 calls · pain 0.001\"]\n  loop6[\"loop6<br/>1 steps · 0 calls · pain 0.001\"]\n  loop7[\"loop7<br/>1 steps · 0 calls · pain 0.001\"]\n  loop8[\"loop8<br/>1 steps · 0 calls · pain 0.001\"]\n  loop9[\"loop9<br/>1 steps · 0 calls · pain 0.001\"]\n  loop10[\"loop10<br/>1 steps · 0 calls · pain 0.001\"]\n  loop11[\"loop11<br/>1 steps · 0 calls · pain 0.0\"]\n  loop12[\"loop12<br/>1 steps · 0 calls · pain 0.0\"]\n  loop13[\"loop13<br/>1 steps · 0 calls · pain 0.0\"]\n  loop14[\"loop14<br/>1 steps · 0 calls · pain 0.0\"]\n  loop15[\"loop15<br/>1 steps · 0 calls · pain 0.0\"]\n  loop16[\"loop16<br/>1 steps · 0 calls · pain 0.0\"]\n  loop17[\"loop17<br/>1 steps · 0 calls · pain 0.0\"]\n  loop18[\"loop18<br/>1 steps · 0 calls · pain 1.953\"]\n  loop19[\"loop19<br/>1 steps · 1 calls · pain 4.953\"]\n  loop20[\"loop20<br/>1 steps · 0 calls · pain 0.002\"]\n  loop21[\"loop21<br/>1 steps · 0 calls · pain 0.001\"]\n  loop22[\"loop22<br/>1 steps · 0 calls · pain 0.001\"]\n  loop23[\"loop23<br/>1 steps · 0 calls · pain 0.001\"]\n  loop24[\"loop24<br/>1 steps · 0 calls · pain 0.001\"]\n  loop25[\"loop25<br/>1 steps · 0 calls · pain 0.001\"]\n  loop26[\"loop26<br/>1 steps · 0 calls · pain 0.001\"]\n  loop27[\"loop27<br/>1 steps · 0 calls · pain 0.0\"]\n  loop28[\"loop28<br/>1 steps · 0 calls · pain 0.0\"]\n  loop29[\"loop29<br/>1 steps · 0 calls · pain 0.0\"]\n  loop30[\"loop30<br/>1 steps · 0 calls · pain 0.0\"]\n  loop31[\"loop31<br/>1 steps · 0 calls · pain 0.0\"]\n  loop32[\"loop32<br/>1 steps · 0 calls · pain 0.0\"]\n  loop33[\"loop33<br/>1 steps · 0 calls · pain 0.0\"]\n  loop34[\"loop34<br/>1 steps · 0 calls · pain 1.943\"]\n  loop35[\"loop35<br/>1 steps · 1 calls · pain 6.943\"]\n  loop36[\"loop36<br/>1 steps · 0 calls · pain 11.728\"]\n  loop37[\"loop37<br/>1 steps · 1 calls · pain 10.766\"]\n  loop38[\"loop38<br/>1 steps · 0 calls · pain 0.001\"]\n  loop39[\"loop39<br/>1 steps · 0 calls · pain 0.002\"]\n  loop40[\"loop40<br/>1 steps · 0 calls · pain 0.001\"]\n  loop41[\"loop41<br/>1 steps · 0 calls · pain 0.001\"]\n  loop42[\"loop42<br/>1 steps · 0 calls · pain 0.001\"]\n  loop43[\"loop43<br/>1 steps · 0 calls · pain 0.001\"]\n  loop44[\"loop44<br/>1 steps · 0 calls · pain 0.001\"]\n  loop45[\"loop45<br/>1 steps · 0 calls · pain 0.0\"]\n  loop46[\"loop46<br/>1 steps · 0 calls · pain 0.0\"]\n  loop47[\"loop47<br/>1 steps · 0 calls · pain 0.0\"]\n  loop48[\"loop48<br/>1 steps · 0 calls · pain 0.0\"]\n  loop49[\"loop49<br/>1 steps · 0 calls · pain 0.0\"]\n  loop50[\"loop50<br/>1 steps · 0 calls · pain 0.0\"]\n  loop51[\"loop51<br/>1 steps · 0 calls · pain 0.0\"]\n  loop52[\"loop52<br/>1 steps · 0 calls · pain 7.757\"]\n  loop53[\"loop53<br/>1 steps · 1 calls · pain 12.757\"]\n  loop54[\"loop54<br/>1 steps · 1 calls · pain 6.962\"]\n  loop55[\"loop55<br/>1 steps · 0 calls · pain 0.001\"]\n  loop56[\"loop56<br/>1 steps · 0 calls · pain 0.002\"]\n  loop57[\"loop57<br/>1 steps · 0 calls · pain 0.002\"]\n  loop58[\"loop58<br/>1 steps · 0 calls · pain 0.002\"]\n  loop59[\"loop59<br/>1 steps · 0 calls · pain 0.002\"]\n  loop60[\"loop60<br/>1 steps · 0 calls · pain 0.002\"]\n  loop61[\"loop61<br/>1 steps · 0 calls · pain 0.002\"]\n  loop62[\"loop62<br/>1 steps · 0 calls · pain 0.0\"]\n  loop63[\"loop63<br/>1 steps · 0 calls · pain 0.0\"]\n  loop64[\"loop64<br/>1 steps · 0 calls · pain 0.0\"]\n  loop65[\"loop65<br/>1 steps · 0 calls · pain 0.0\"]\n  loop66[\"loop66<br/>1 steps · 0 calls · pain 0.0\"]\n  loop67[\"loop67<br/>1 steps · 0 calls · pain 0.0\"]\n  loop68[\"loop68<br/>1 steps · 0 calls · pain 0.0\"]\n  loop69[\"loop69<br/>1 steps · 0 calls · pain 3.948\"]\n  loop70[\"loop70<br/>1 steps · 1 calls · pain 8.948\"]\n  loop71[\"loop71<br/>1 steps · 0 calls · pain 0.0\"]\n  loop72[\"loop72<br/>1 steps · 0 calls · pain 0.207\"]\n  task-11-official-fold-execution[\"task-11-official-fold-execution<br/>0 steps · 0 calls · pain 0.207\"]\n  loop73[\"loop73<br/>5 steps · 0 calls · pain 0.207\"]\n  openml-task-11-random_forest[\"openml-task-11-random_forest<br/>0 steps · 0 calls · pain 0.0\"]\n  loop74[\"loop74<br/>1 steps · 0 calls · pain 0.001\"]\n  loop75[\"loop75<br/>3 steps · 0 calls · pain 0.001\"]\n  loop76[\"loop76<br/>1 steps · 0 calls · pain 0.0\"]\n  loop77[\"loop77<br/>1 steps · 0 calls · pain 0.0\"]\n  loop1 --> loop2\n  loop1 --> loop3\n  loop3 --> loop4\n  loop3 --> loop5\n  loop3 --> loop6\n  loop3 --> loop7\n  loop3 --> loop8\n  loop3 --> loop9\n  loop3 --> loop10\n  loop3 --> loop11\n  loop3 --> loop12\n  loop3 --> loop13\n  loop3 --> loop14\n  loop3 --> loop15\n  loop3 --> loop16\n  loop3 --> loop17\n  loop1 --> loop18\n  loop18 --> loop19\n  loop19 --> loop20\n  loop19 --> loop21\n  loop19 --> loop22\n  loop19 --> loop23\n  loop19 --> loop24\n  loop19 --> loop25\n  loop19 --> loop26\n  loop19 --> loop27\n  loop19 --> loop28\n  loop19 --> loop29\n  loop19 --> loop30\n  loop19 --> loop31\n  loop19 --> loop32\n  loop19 --> loop33\n  loop19 --> loop34\n  loop34 --> loop35\n  loop1 --> loop36\n  loop36 --> loop37\n  loop37 --> loop38\n  loop37 --> loop39\n  loop37 --> loop40\n  loop37 --> loop41\n  loop37 --> loop42\n  loop37 --> loop43\n  loop37 --> loop44\n  loop37 --> loop45\n  loop37 --> loop46\n  loop37 --> loop47\n  loop37 --> loop48\n  loop37 --> loop49\n  loop37 --> loop50\n  loop37 --> loop51\n  loop37 --> loop52\n  loop52 --> loop53\n  loop36 --> loop54\n  loop54 --> loop55\n  loop54 --> loop56\n  loop54 --> loop57\n  loop54 --> loop58\n  loop54 --> loop59\n  loop54 --> loop60\n  loop54 --> loop61\n  loop54 --> loop62\n  loop54 --> loop63\n  loop54 --> loop64\n  loop54 --> loop65\n  loop54 --> loop66\n  loop54 --> loop67\n  loop54 --> loop68\n  loop54 --> loop69\n  loop69 --> loop70\n  loop1 --> loop71\n  loop1 --> loop72\n  loop72 --> loop73\n  loop1 --> loop74\n  loop74 --> loop75\n  loop1 --> loop76\n  loop1 --> loop77",
+  "proposals": [
+    {
+      "evidence": "loop loop53 pain 12.757",
+      "kind": "code_node",
+      "loop": "loop53",
+      "proposal": "serve this loop's semantic step from a code node or the advice store (1 calls here)"
+    },
+    {
+      "evidence": "loop loop53",
+      "kind": "bias",
+      "loop": "loop53",
+      "proposal": "reorder the mode waterfall or add a precondition - this loop fell back 0x, deferred 1x"
+    },
+    {
+      "evidence": "loop loop37 pain 10.766",
+      "kind": "code_node",
+      "loop": "loop37",
+      "proposal": "serve this loop's semantic step from a code node or the advice store (1 calls here)"
+    },
+    {
+      "evidence": "loop loop70 pain 8.948",
+      "kind": "code_node",
+      "loop": "loop70",
+      "proposal": "serve this loop's semantic step from a code node or the advice store (1 calls here)"
+    },
+    {
+      "evidence": "loop loop70",
+      "kind": "bias",
+      "loop": "loop70",
+      "proposal": "reorder the mode waterfall or add a precondition - this loop fell back 0x, deferred 1x"
+    },
+    {
+      "evidence": "loop loop54 pain 6.962",
+      "kind": "code_node",
+      "loop": "loop54",
+      "proposal": "serve this loop's semantic step from a code node or the advice store (1 calls here)"
+    },
+    {
+      "evidence": "loop loop35 pain 6.943",
+      "kind": "code_node",
+      "loop": "loop35",
+      "proposal": "serve this loop's semantic step from a code node or the advice store (1 calls here)"
+    },
+    {
+      "evidence": "loop loop35",
+      "kind": "bias",
+      "loop": "loop35",
+      "proposal": "reorder the mode waterfall or add a precondition - this loop fell back 0x, deferred 1x"
+    },
+    {
+      "evidence": "loop loop19 pain 4.953",
+      "kind": "code_node",
+      "loop": "loop19",
+      "proposal": "serve this loop's semantic step from a code node or the advice store (1 calls here)"
+    }
+  ],
+  "record_type": "run_report/v1",
+  "title": "OpenML task 11 full non-deterministic Practitioner run",
+  "transcript": [
+    "[loop1] INIT depth=0 nine_step/deep: goal: Select, compile, execute, and independently evaluate OpenML task 11 on all ten o",
+    "[loop2] INIT depth=1 custom/light: goal: orient spawned Loop for Select, compile, execute, and independently evaluate OpenML tas",
+    "[loop1] SPAWN -> loop2: orient spawned Loop for Select, compile, execute, and independently",
+    "[loop2] act (deterministic) conf=1.0: orient:completed",
+    "[loop2] TERMINAL: done",
+    "[loop1] orient (deterministic) conf=1.0: orient:spawned Loop:loop2:ok",
+    "[loop3] INIT depth=1 custom/light: goal: reconcile_horizon spawned Loop for Select, compile, execute, and independently evaluate",
+    "[loop1] SPAWN -> loop3: reconcile_horizon spawned Loop for Select, compile, execute, and in",
+    "[loop4] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for first principles decompositi",
+    "[loop3] SPAWN -> loop4: serve callable: search four intelligence layers for first pr",
+    "[loop4] serve (deterministic) conf=0.95: serve:done",
+    "[loop4] TERMINAL: success_once",
+    "[loop5] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for analogy novel alternatives c",
+    "[loop3] SPAWN -> loop5: serve callable: search four intelligence layers for analogy ",
+    "[loop5] serve (deterministic) conf=0.95: serve:done",
+    "[loop5] TERMINAL: success_once",
+    "[loop6] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for missing items evidence neede",
+    "[loop3] SPAWN -> loop6: serve callable: search four intelligence layers for missing ",
+    "[loop6] serve (deterministic) conf=0.95: serve:done",
+    "[loop6] TERMINAL: success_once",
+    "[loop7] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for failure adversarial review p",
+    "[loop3] SPAWN -> loop7: serve callable: search four intelligence layers for failure ",
+    "[loop7] serve (deterministic) conf=0.95: serve:done",
+    "[loop7] TERMINAL: success_once",
+    "[loop8] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for cost compression cost value ",
+    "[loop3] SPAWN -> loop8: serve callable: search four intelligence layers for cost com",
+    "[loop8] serve (deterministic) conf=0.95: serve:done",
+    "[loop8] TERMINAL: success_once",
+    "[loop9] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for verification evaluation rubr",
+    "[loop3] SPAWN -> loop9: serve callable: search four intelligence layers for verifica",
+    "[loop9] serve (deterministic) conf=0.95: serve:done",
+    "[loop9] TERMINAL: success_once",
+    "[loop10] INIT depth=2 custom/light: goal: serve callable: search four intelligence layers for output contract output templ",
+    "[loop3] SPAWN -> loop10: serve callable: search four intelligence layers for output c",
+    "[loop10] serve (deterministic) conf=0.95: serve:done",
+    "[loop10] TERMINAL: success_once",
+    "[loop11] INIT depth=2 custom/light: goal: serve callable: context_loop:context.openml.first_principles",
+    "[loop3] SPAWN -> loop11: serve callable: context_loop:context.openml.first_principles",
+    "[loop11] serve (deterministic) conf=0.95: serve:done",
+    "[loop11] TERMINAL: success_once",
+    "[loop12] INIT depth=2 custom/light: goal: serve callable: code_loop:code.openml.logistic_pipeline",
+    "[loop3] SPAWN -> loop12: serve callable: code_loop:code.openml.logistic_pipeline",
+    "[loop12] serve (deterministic) conf=0.95: serve:done",
+    "[loop12] TERMINAL: success_once",
+    "[loop13] INIT depth=2 custom/light: goal: serve callable: context_loop:context.openml.missing_information",
+    "[loop3] SPAWN -> loop13: serve callable: context_loop:context.openml.missing_informat",
+    "[loop13] serve (deterministic) conf=0.95: serve:done",
+    "[loop13] TERMINAL: success_once",
+    "[loop14] INIT depth=2 custom/light: goal: serve callable: context_loop:context.openml.failure_modes",
+    "[loop3] SPAWN -> loop14: serve callable: context_loop:context.openml.failure_modes",
+    "[loop14] serve (deterministic) conf=0.95: serve:done",
+    "[loop14] TERMINAL: success_once",
+    "[loop15] INIT depth=2 custom/light: goal: serve callable: guidance_loop:user.openml.active_owner_rules",
+    "[loop3] SPAWN -> loop15: serve callable: guidance_loop:user.openml.active_owner_rules",
+    "[loop15] serve (deterministic) conf=0.95: serve:done",
+    "[loop15] TERMINAL: success_once",
+    "[loop16] INIT depth=2 custom/light: goal: serve callable: context_loop:context.openml.verification",
+    "[loop3] SPAWN -> loop16: serve callable: context_loop:context.openml.verification",
+    "[loop16] serve (deterministic) conf=0.95: serve:done",
+    "[loop16] TERMINAL: success_once",
+    "[loop17] INIT depth=2 custom/light: goal: serve callable: context_loop:context.openml.output_contract",
+    "[loop3] SPAWN -> loop17: serve callable: context_loop:context.openml.output_contract",
+    "[loop17] serve (deterministic) conf=0.95: serve:done",
+    "[loop17] TERMINAL: success_once",
+    "[loop3] act (deterministic) conf=1.0: reconcile_horizon:completed",
+    "[loop3] TERMINAL: done",
+    "[loop1] reconcile_horizon (deterministic) conf=1.0: reconcile_horizon:spawned Loop:loop3:ok",
+    "[loop18] INIT depth=1 custom/light: goal: assess_prepare spawned Loop for Select, compile, execute, and independently evaluate Op",
+    "[loop1] SPAWN -> loop18: assess_prepare spawned Loop for Select, compile, execute, and indep",
+    "[loop19] INIT depth=2 custom/light: goal: model-led logistic_candidate for OpenML task 11",
+    "[loop18] SPAWN -> loop19: model-led logistic_candidate for OpenML task 11",
+    "[loop20] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for first principles decompositi",
+    "[loop19] SPAWN -> loop20: serve callable: search four intelligence layers for first pr",
+    "[loop20] serve (deterministic) conf=0.95: serve:done",
+    "[loop20] TERMINAL: success_once",
+    "[loop21] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for analogy novel alternatives c",
+    "[loop19] SPAWN -> loop21: serve callable: search four intelligence layers for analogy ",
+    "[loop21] serve (deterministic) conf=0.95: serve:done",
+    "[loop21] TERMINAL: success_once",
+    "[loop22] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for missing items evidence neede",
+    "[loop19] SPAWN -> loop22: serve callable: search four intelligence layers for missing ",
+    "[loop22] serve (deterministic) conf=0.95: serve:done",
+    "[loop22] TERMINAL: success_once",
+    "[loop23] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for failure adversarial review p",
+    "[loop19] SPAWN -> loop23: serve callable: search four intelligence layers for failure ",
+    "[loop23] serve (deterministic) conf=0.95: serve:done",
+    "[loop23] TERMINAL: success_once",
+    "[loop24] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for cost compression cost value ",
+    "[loop19] SPAWN -> loop24: serve callable: search four intelligence layers for cost com",
+    "[loop24] serve (deterministic) conf=0.95: serve:done",
+    "[loop24] TERMINAL: success_once",
+    "[loop25] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for verification evaluation rubr",
+    "[loop19] SPAWN -> loop25: serve callable: search four intelligence layers for verifica",
+    "[loop25] serve (deterministic) conf=0.95: serve:done",
+    "[loop25] TERMINAL: success_once",
+    "[loop26] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for output contract output templ",
+    "[loop19] SPAWN -> loop26: serve callable: search four intelligence layers for output c",
+    "[loop26] serve (deterministic) conf=0.95: serve:done",
+    "[loop26] TERMINAL: success_once",
+    "[loop27] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.first_principles",
+    "[loop19] SPAWN -> loop27: serve callable: context_loop:context.openml.first_principles",
+    "[loop27] serve (deterministic) conf=0.95: serve:done",
+    "[loop27] TERMINAL: success_once",
+    "[loop28] INIT depth=3 custom/light: goal: serve callable: code_loop:code.openml.logistic_pipeline",
+    "[loop19] SPAWN -> loop28: serve callable: code_loop:code.openml.logistic_pipeline",
+    "[loop28] serve (deterministic) conf=0.95: serve:done",
+    "[loop28] TERMINAL: success_once",
+    "[loop29] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.missing_information",
+    "[loop19] SPAWN -> loop29: serve callable: context_loop:context.openml.missing_informat",
+    "[loop29] serve (deterministic) conf=0.95: serve:done",
+    "[loop29] TERMINAL: success_once",
+    "[loop30] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.failure_modes",
+    "[loop19] SPAWN -> loop30: serve callable: context_loop:context.openml.failure_modes",
+    "[loop30] serve (deterministic) conf=0.95: serve:done",
+    "[loop30] TERMINAL: success_once",
+    "[loop31] INIT depth=3 custom/light: goal: serve callable: guidance_loop:user.openml.active_owner_rules",
+    "[loop19] SPAWN -> loop31: serve callable: guidance_loop:user.openml.active_owner_rules",
+    "[loop31] serve (deterministic) conf=0.95: serve:done",
+    "[loop31] TERMINAL: success_once",
+    "[loop32] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.verification",
+    "[loop19] SPAWN -> loop32: serve callable: context_loop:context.openml.verification",
+    "[loop32] serve (deterministic) conf=0.95: serve:done",
+    "[loop32] TERMINAL: success_once",
+    "[loop33] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.output_contract",
+    "[loop19] SPAWN -> loop33: serve callable: context_loop:context.openml.output_contract",
+    "[loop33] serve (deterministic) conf=0.95: serve:done",
+    "[loop33] TERMINAL: success_once",
+    "[loop34] INIT depth=3 custom/light: goal: route one model request",
+    "[loop19] SPAWN -> loop34: route one model request",
+    "[loop35] INIT depth=4 custom/light: goal: model invocation: ollama_cloud:deepseek-v4-flash:0731",
+    "[loop34] SPAWN -> loop35: model invocation: ollama_cloud:deepseek-v4-flash:0731",
+    "[loop35] MODEL BOUNDARY deferred at : retry next iteration",
+    "[loop35] invoke (non_deterministic) conf=0.6: invoke:answered",
+    "[loop35] TERMINAL: success_once",
+    "[loop34] route (deterministic) conf=1.0: route:answered:ollama_cloud",
+    "[loop34] TERMINAL: done",
+    "[loop19] invoke (non_deterministic) conf=0.9: logistic_candidate:accepted",
+    "[loop19] TERMINAL: done",
+    "[loop18] act (deterministic) conf=1.0: assess_prepare:completed",
+    "[loop18] TERMINAL: done",
+    "[loop1] assess_prepare (deterministic) conf=1.0: assess_prepare:spawned Loop:loop18:ok",
+    "[loop36] INIT depth=1 custom/light: goal: decide_next spawned Loop for Select, compile, execute, and independently evaluate OpenM",
+    "[loop1] SPAWN -> loop36: decide_next spawned Loop for Select, compile, execute, and independ",
+    "[loop37] INIT depth=2 custom/light: goal: model-led random_forest_candidate for OpenML task 11",
+    "[loop36] SPAWN -> loop37: model-led random_forest_candidate for OpenML task 11",
+    "[loop38] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for first principles decompositi",
+    "[loop37] SPAWN -> loop38: serve callable: search four intelligence layers for first pr",
+    "[loop38] serve (deterministic) conf=0.95: serve:done",
+    "[loop38] TERMINAL: success_once",
+    "[loop39] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for analogy novel alternatives c",
+    "[loop37] SPAWN -> loop39: serve callable: search four intelligence layers for analogy ",
+    "[loop39] serve (deterministic) conf=0.95: serve:done",
+    "[loop39] TERMINAL: success_once",
+    "[loop40] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for missing items evidence neede",
+    "[loop37] SPAWN -> loop40: serve callable: search four intelligence layers for missing ",
+    "[loop40] serve (deterministic) conf=0.95: serve:done",
+    "[loop40] TERMINAL: success_once",
+    "[loop41] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for failure adversarial review p",
+    "[loop37] SPAWN -> loop41: serve callable: search four intelligence layers for failure ",
+    "[loop41] serve (deterministic) conf=0.95: serve:done",
+    "[loop41] TERMINAL: success_once",
+    "[loop42] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for cost compression cost value ",
+    "[loop37] SPAWN -> loop42: serve callable: search four intelligence layers for cost com",
+    "[loop42] serve (deterministic) conf=0.95: serve:done",
+    "[loop42] TERMINAL: success_once",
+    "[loop43] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for verification evaluation rubr",
+    "[loop37] SPAWN -> loop43: serve callable: search four intelligence layers for verifica",
+    "[loop43] serve (deterministic) conf=0.95: serve:done",
+    "[loop43] TERMINAL: success_once",
+    "[loop44] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for output contract output templ",
+    "[loop37] SPAWN -> loop44: serve callable: search four intelligence layers for output c",
+    "[loop44] serve (deterministic) conf=0.95: serve:done",
+    "[loop44] TERMINAL: success_once",
+    "[loop45] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.first_principles",
+    "[loop37] SPAWN -> loop45: serve callable: context_loop:context.openml.first_principles",
+    "[loop45] serve (deterministic) conf=0.95: serve:done",
+    "[loop45] TERMINAL: success_once",
+    "[loop46] INIT depth=3 custom/light: goal: serve callable: code_loop:code.openml.seeded_random_forest",
+    "[loop37] SPAWN -> loop46: serve callable: code_loop:code.openml.seeded_random_forest",
+    "[loop46] serve (deterministic) conf=0.95: serve:done",
+    "[loop46] TERMINAL: success_once",
+    "[loop47] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.missing_information",
+    "[loop37] SPAWN -> loop47: serve callable: context_loop:context.openml.missing_informat",
+    "[loop47] serve (deterministic) conf=0.95: serve:done",
+    "[loop47] TERMINAL: success_once",
+    "[loop48] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.failure_modes",
+    "[loop37] SPAWN -> loop48: serve callable: context_loop:context.openml.failure_modes",
+    "[loop48] serve (deterministic) conf=0.95: serve:done",
+    "[loop48] TERMINAL: success_once",
+    "[loop49] INIT depth=3 custom/light: goal: serve callable: guidance_loop:user.openml.active_owner_rules",
+    "[loop37] SPAWN -> loop49: serve callable: guidance_loop:user.openml.active_owner_rules",
+    "[loop49] serve (deterministic) conf=0.95: serve:done",
+    "[loop49] TERMINAL: success_once",
+    "[loop50] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.verification",
+    "[loop37] SPAWN -> loop50: serve callable: context_loop:context.openml.verification",
+    "[loop50] serve (deterministic) conf=0.95: serve:done",
+    "[loop50] TERMINAL: success_once",
+    "[loop51] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.output_contract",
+    "[loop37] SPAWN -> loop51: serve callable: context_loop:context.openml.output_contract",
+    "[loop51] serve (deterministic) conf=0.95: serve:done",
+    "[loop51] TERMINAL: success_once",
+    "[loop52] INIT depth=3 custom/light: goal: route one model request",
+    "[loop37] SPAWN -> loop52: route one model request",
+    "[loop53] INIT depth=4 custom/light: goal: model invocation: ollama_cloud:deepseek-v4-flash:0731",
+    "[loop52] SPAWN -> loop53: model invocation: ollama_cloud:deepseek-v4-flash:0731",
+    "[loop53] MODEL BOUNDARY deferred at : retry next iteration",
+    "[loop53] invoke (non_deterministic) conf=0.6: invoke:answered",
+    "[loop53] TERMINAL: success_once",
+    "[loop52] route (deterministic) conf=1.0: route:answered:ollama_cloud",
+    "[loop52] TERMINAL: done",
+    "[loop37] invoke (non_deterministic) conf=0.9: random_forest_candidate:accepted",
+    "[loop37] TERMINAL: done",
+    "[loop54] INIT depth=2 custom/light: goal: model-led synthesis_selection for OpenML task 11",
+    "[loop36] SPAWN -> loop54: model-led synthesis_selection for OpenML task 11",
+    "[loop55] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for first principles decompositi",
+    "[loop54] SPAWN -> loop55: serve callable: search four intelligence layers for first pr",
+    "[loop55] serve (deterministic) conf=0.95: serve:done",
+    "[loop55] TERMINAL: success_once",
+    "[loop56] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for analogy novel alternatives c",
+    "[loop54] SPAWN -> loop56: serve callable: search four intelligence layers for analogy ",
+    "[loop56] serve (deterministic) conf=0.95: serve:done",
+    "[loop56] TERMINAL: success_once",
+    "[loop57] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for missing items evidence neede",
+    "[loop54] SPAWN -> loop57: serve callable: search four intelligence layers for missing ",
+    "[loop57] serve (deterministic) conf=0.95: serve:done",
+    "[loop57] TERMINAL: success_once",
+    "[loop58] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for failure adversarial review p",
+    "[loop54] SPAWN -> loop58: serve callable: search four intelligence layers for failure ",
+    "[loop58] serve (deterministic) conf=0.95: serve:done",
+    "[loop58] TERMINAL: success_once",
+    "[loop59] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for cost compression cost value ",
+    "[loop54] SPAWN -> loop59: serve callable: search four intelligence layers for cost com",
+    "[loop59] serve (deterministic) conf=0.95: serve:done",
+    "[loop59] TERMINAL: success_once",
+    "[loop60] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for verification evaluation rubr",
+    "[loop54] SPAWN -> loop60: serve callable: search four intelligence layers for verifica",
+    "[loop60] serve (deterministic) conf=0.95: serve:done",
+    "[loop60] TERMINAL: success_once",
+    "[loop61] INIT depth=3 custom/light: goal: serve callable: search four intelligence layers for output contract output templ",
+    "[loop54] SPAWN -> loop61: serve callable: search four intelligence layers for output c",
+    "[loop61] serve (deterministic) conf=0.95: serve:done",
+    "[loop61] TERMINAL: success_once",
+    "[loop62] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.first_principles",
+    "[loop54] SPAWN -> loop62: serve callable: context_loop:context.openml.first_principles",
+    "[loop62] serve (deterministic) conf=0.95: serve:done",
+    "[loop62] TERMINAL: success_once",
+    "[loop63] INIT depth=3 custom/light: goal: serve callable: code_loop:code.openml.logistic_pipeline",
+    "[loop54] SPAWN -> loop63: serve callable: code_loop:code.openml.logistic_pipeline",
+    "[loop63] serve (deterministic) conf=0.95: serve:done",
+    "[loop63] TERMINAL: success_once",
+    "[loop64] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.missing_information",
+    "[loop54] SPAWN -> loop64: serve callable: context_loop:context.openml.missing_informat",
+    "[loop64] serve (deterministic) conf=0.95: serve:done",
+    "[loop64] TERMINAL: success_once",
+    "[loop65] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.failure_modes",
+    "[loop54] SPAWN -> loop65: serve callable: context_loop:context.openml.failure_modes",
+    "[loop65] serve (deterministic) conf=0.95: serve:done",
+    "[loop65] TERMINAL: success_once",
+    "[loop66] INIT depth=3 custom/light: goal: serve callable: guidance_loop:user.openml.active_owner_rules",
+    "[loop54] SPAWN -> loop66: serve callable: guidance_loop:user.openml.active_owner_rules",
+    "[loop66] serve (deterministic) conf=0.95: serve:done",
+    "[loop66] TERMINAL: success_once",
+    "[loop67] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.verification",
+    "[loop54] SPAWN -> loop67: serve callable: context_loop:context.openml.verification",
+    "[loop67] serve (deterministic) conf=0.95: serve:done",
+    "[loop67] TERMINAL: success_once",
+    "[loop68] INIT depth=3 custom/light: goal: serve callable: context_loop:context.openml.output_contract",
+    "[loop54] SPAWN -> loop68: serve callable: context_loop:context.openml.output_contract",
+    "[loop68] serve (deterministic) conf=0.95: serve:done",
+    "[loop68] TERMINAL: success_once",
+    "[loop69] INIT depth=3 custom/light: goal: route one model request",
+    "[loop54] SPAWN -> loop69: route one model request",
+    "[loop70] INIT depth=4 custom/light: goal: model invocation: ollama_cloud:deepseek-v4-flash:0731",
+    "[loop69] SPAWN -> loop70: model invocation: ollama_cloud:deepseek-v4-flash:0731",
+    "[loop70] MODEL BOUNDARY deferred at : retry next iteration",
+    "[loop70] invoke (non_deterministic) conf=0.6: invoke:answered",
+    "[loop70] TERMINAL: success_once",
+    "[loop69] route (deterministic) conf=1.0: route:answered:ollama_cloud",
+    "[loop69] TERMINAL: done",
+    "[loop54] invoke (non_deterministic) conf=0.9: synthesis_selection:accepted",
+    "[loop54] TERMINAL: done",
+    "[loop36] act (deterministic) conf=1.0: decide_next:completed",
+    "[loop36] TERMINAL: done",
+    "[loop1] decide_next (deterministic) conf=1.0: decide_next:spawned Loop:loop36:ok",
+    "[loop71] INIT depth=1 custom/light: goal: how spawned Loop for Select, compile, execute, and independently evaluate OpenML task 1",
+    "[loop1] SPAWN -> loop71: how spawned Loop for Select, compile, execute, and independently ev",
+    "[loop71] act (deterministic) conf=1.0: how:completed",
+    "[loop71] TERMINAL: done",
+    "[loop1] how (deterministic) conf=1.0: how:spawned Loop:loop71:ok",
+    "[loop72] INIT depth=1 custom/light: goal: act spawned Loop for Select, compile, execute, and independently evaluate OpenML task 1",
+    "[loop1] SPAWN -> loop72: act spawned Loop for Select, compile, execute, and independently ev",
+    "[loop73] INIT depth=2 five_step/light: goal: deterministic check: solution loop task-11-official-fold-execution (code.openml.",
+    "[loop72] SPAWN -> loop73: deterministic check: solution loop task-11-official-fold-exe",
+    "[loop73] load (deterministic) conf=0.95: load:done",
+    "[loop73] choose (deterministic) conf=0.95: choose:done",
+    "[loop73] act (deterministic) conf=0.95: act:done:FoldPredictionArtifact",
+    "[loop73] check (deterministic) conf=0.95: check:ok",
+    "[loop73] commit (deterministic) conf=0.95: commit:done",
+    "[loop73] TERMINAL: done",
+    "[loop72] act (deterministic) conf=1.0: act:completed",
+    "[loop72] TERMINAL: done",
+    "[loop1] act (deterministic) conf=1.0: act:spawned Loop:loop72:ok",
+    "[loop74] INIT depth=1 custom/light: goal: verify spawned Loop for Select, compile, execute, and independently evaluate OpenML tas",
+    "[loop1] SPAWN -> loop74: verify spawned Loop for Select, compile, execute, and independently",
+    "[loop75] INIT depth=2 custom/light: goal: independent accuracy evaluator for OpenML task 11",
+    "[loop74] SPAWN -> loop75: independent accuracy evaluator for OpenML task 11",
+    "[loop75] validate_contract (deterministic) conf=1.0: prediction_contract:present",
+    "[loop75] score (deterministic) conf=1.0: accuracy:computed",
+    "[loop75] accept (deterministic) conf=1.0: evaluation:accepted",
+    "[loop75] TERMINAL: done",
+    "[loop74] act (deterministic) conf=1.0: verify:completed",
+    "[loop74] TERMINAL: done",
+    "[loop1] verify (deterministic) conf=1.0: verify:spawned Loop:loop74:ok",
+    "[loop76] INIT depth=1 custom/light: goal: integrate_commit spawned Loop for Select, compile, execute, and independently evaluate ",
+    "[loop1] SPAWN -> loop76: integrate_commit spawned Loop for Select, compile, execute, and ind",
+    "[loop76] act (deterministic) conf=1.0: integrate_commit:completed",
+    "[loop76] TERMINAL: done",
+    "[loop1] integrate_commit (deterministic) conf=1.0: integrate_commit:spawned Loop:loop76:ok",
+    "[loop77] INIT depth=1 custom/light: goal: route spawned Loop for Select, compile, execute, and independently evaluate OpenML task",
+    "[loop1] SPAWN -> loop77: route spawned Loop for Select, compile, execute, and independently ",
+    "[loop77] act (deterministic) conf=1.0: route:completed",
+    "[loop77] TERMINAL: done",
+    "[loop1] route (deterministic) conf=1.0: route:spawned Loop:loop77:ok",
+    "[loop1] TERMINAL: done"
+  ]
+}

@@ -1,12 +1,13 @@
-"""The loop — a Practitioner running "here is what I know; what is next?".
+"""Decision service used inside the canonical Loop runtime.
 
-The Practitioner is the atomic worker.  One ``step`` asks the question once:
+This module does not own an operational runtime. ``DecisionService.step`` asks
+one bounded what-is-next question:
 it turns the registered resolvers into escalation-governor arms, resolves at the
-cheapest category that answers confidently enough, and returns a receipt showing
+cheapest category that answers confidently enough, and returns a record showing
 which resolver won and how many model calls were made vs avoided.  If the winning
-answer proposes ``spawn_subloop`` moves, the Practitioner runs each as its own
-what-is-next question (bounded by a depth ceiling) and attaches the child
-receipts; ``ensemble_answers`` folds several answers into one, summing support
+answer proposes ``spawn_subloop`` moves, the service evaluates each as its own
+what-is-next question (bounded by a depth ceiling) and attaches the spawned
+records; ``ensemble_answers`` folds several answers into one, summing support
 for moves they agree on.  Nothing here decides truth — an answer orders what to
 try; the fold oracle decides what worked, and a blind/random resolver always
 rides along so muscle memory never becomes destiny.
@@ -31,7 +32,7 @@ _SPAWN_KINDS = frozenset({"spawn_subloop", "move.control.delegate"})
 
 
 @dataclass
-class StepReceipt:
+class StepRecord:
     resolved: bool
     resolver: str
     category: str
@@ -39,7 +40,7 @@ class StepReceipt:
     model_calls_made: int
     model_calls_avoided: int
     answer: WhatIsNextAnswer | None
-    children: list["StepReceipt"] = field(default_factory=list)
+    spawned_loops: list["StepRecord"] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return {"record_type": "whats_next_step/v1", "resolved": self.resolved,
@@ -48,16 +49,16 @@ class StepReceipt:
                 "model_calls_made": self.model_calls_made,
                 "model_calls_avoided": self.model_calls_avoided,
                 "answer": self.answer.to_dict() if self.answer else None,
-                "children": [c.to_dict() for c in self.children]}
+                "spawned_loops": [c.to_dict() for c in self.spawned_loops]}
 
 
 @dataclass
-class SolverCell:
-    """The smallest independently governed instance of the expert loop (v3 §2.1):
+class DecisionService:
+    """A bounded Code Intelligence service for one expert decision:
     given what is presently known, decide what is next.  It is implementation-
     independent — it may resolve with no model at all, or coordinate a council —
-    and recursively composable (a resolved ``spawn_subloop`` move runs a child
-    cell)."""
+    and recursively composable (a resolved ``spawn_subloop`` move runs a
+    spawned Loop)."""
     confidence_bar: float = 0.7
     budget: float | None = None
     impact: float = 1.0
@@ -68,7 +69,7 @@ class SolverCell:
     def step(self, knowledge: Knowledge, *,
              resolvers: Sequence[WhatIsNextResolver] | None = None,
              categories=None, need: DecisionNeed | None = None,
-             depth: int = 0) -> StepReceipt:
+             depth: int = 0) -> StepRecord:
         """Ask 'what is next' once.  If ``resolvers`` is given it is used
         verbatim; otherwise the cell's registry supplies them (optionally
         filtered to ``categories``).  If a ``DecisionNeed`` is given, the resolved
@@ -102,7 +103,7 @@ class SolverCell:
         resolved = ans is not None
         category = (by_name[gov.resolving_arm].category
                     if resolved and gov.resolving_arm in by_name else "")
-        receipt = StepReceipt(
+        record = StepRecord(
             resolved=resolved,
             resolver=gov.resolving_arm if resolved else "",
             category=category,
@@ -113,19 +114,21 @@ class SolverCell:
         if ans is not None and depth < self.max_depth:
             for m in ans.moves.items:
                 if m.action_kind in _SPAWN_KINDS:
-                    child = Knowledge(
+                    spawned = Knowledge(
                         goal=m.action_key, graph_summary=knowledge.graph_summary,
                         memory_refs=knowledge.memory_refs,
                         context_level=knowledge.context_level,
                         frame=knowledge.frame)
-                    receipt.children.append(
-                        self.step(child, resolvers=resolvers,
+                    record.spawned_loops.append(
+                        self.step(spawned, resolvers=resolvers,
                                   categories=categories, depth=depth + 1))
-        return receipt
+        return record
 
 
-# Transitional alias so any early caller of the working name keeps working.
-Practitioner = SolverCell
+# Module-local compatibility only. These historical names are not exported from
+# the package root because they describe a service, not a second Loop runtime.
+SolverCell = DecisionService
+Practitioner = DecisionService
 
 
 def ensemble_answers(answers: Sequence[WhatIsNextAnswer]) -> Slate:

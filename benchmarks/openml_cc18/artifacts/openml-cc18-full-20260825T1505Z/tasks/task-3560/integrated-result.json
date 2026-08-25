@@ -1,0 +1,28 @@
+{
+  "accepted": true,
+  "failures": [
+    {
+      "error": "HTTP 500: {\"error\":\"Internal Server Error (ref: f13dee07-c9e8-4f2c-aade-d49251820a8f)\"}\n",
+      "stage": "synthesis"
+    },
+    {
+      "error": "ValueError: model synthesis did not produce a valid fixed candidate",
+      "stage": "how"
+    },
+    {
+      "error": "KeyError: 'compiled'",
+      "stage": "act"
+    },
+    {
+      "error": "TypeError: no typed prediction artifact reached the evaluator",
+      "stage": "independent_evaluator"
+    }
+  ],
+  "mean_accuracy": 0.2196360759493671,
+  "physical_calls": 4,
+  "plan_digest": "42ef50a36b5c0da0f8ee23081f4653f1575eb1663965b31574053765992f00ea",
+  "prediction_artifact_digest": "8897df4c4dc8269e06ace22e8721a89be753b899966a0d6b2fb1d68137f72f88",
+  "repair_used": true,
+  "selected_algorithm": "random_forest",
+  "task_id": 3560
+}

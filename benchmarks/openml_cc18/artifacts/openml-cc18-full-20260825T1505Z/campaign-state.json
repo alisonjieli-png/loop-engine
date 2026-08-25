@@ -1,0 +1,14 @@
+{
+  "campaign_id": "openml-cc18-full-20260825T1505Z",
+  "completed_at": "2026-08-25T15:11:03.176733+00:00",
+  "physical_call_ceiling": 12,
+  "record_type": "openml_cc18_campaign_state/v1",
+  "selected_mode": "non_deterministic",
+  "selected_tasks": [
+    11,
+    10101,
+    3560
+  ],
+  "started_at": "2026-08-25T15:06:55.740958+00:00",
+  "status": "complete"
+}

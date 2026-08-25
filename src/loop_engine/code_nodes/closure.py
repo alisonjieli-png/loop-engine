@@ -6,7 +6,7 @@ with complete lineage before the run can close successfully:
 
   * an artifact -> consumed | stored | quarantined | rejected | superseded |
                    explicitly_discarded
-  * a child practitioner -> completed | failed | cancelled | paused_durably
+  * a spawned Practitioner Loop -> completed | failed | cancelled | paused_durably
   * a branch -> completed | abandoned_with_reason | retained_as_named_alternative
   * a checkpoint -> closed_with_exit_evidence | abandoned_with_reason
   * a goal / blueprint item / action / task-graph execution / evaluation /
@@ -29,7 +29,7 @@ TERMINAL_DISPOSITIONS = {
     "checkpoint": ("closed_with_exit_evidence", "abandoned_with_reason"),
     "action": ("completed", "failed", "superseded"),
     "task_graph": ("completed", "failed", "cancelled"),
-    "child_practitioner": ("completed", "failed", "cancelled",
+    "spawned_practitioner": ("completed", "failed", "cancelled",
                            "paused_durably"),
     "branch": ("completed", "abandoned_with_reason",
                "retained_as_named_alternative"),
@@ -94,7 +94,7 @@ class ClosureVerdict:
     n_items: int = 0
     n_disposed: int = 0
 
-    def receipt(self) -> dict:
+    def record(self) -> dict:
         return {"record_type": "run_closure_audit/v1",
                 "can_close_success": self.can_close_success,
                 "n_items": self.n_items, "n_disposed": self.n_disposed,
@@ -159,14 +159,14 @@ def self_test() -> dict:
 
     # 3. a disposition OUTSIDE the allowed set is rejected at dispose time.
     led3 = RunLedger()
-    led3.track("child_practitioner", "child1", lineage=LIN)
+    led3.track("spawned_practitioner", "spawned1", lineage=LIN)
     bad = False
     try:
-        led3.dispose("child_practitioner", "child1", "vanished")
+        led3.dispose("spawned_practitioner", "spawned1", "vanished")
     except ValueError:
         bad = True
     check("a_non_terminal_disposition_is_refused",
-          bad, "a child must be completed/failed/cancelled/paused_durably")
+          bad, "a spawned Loop must be completed/failed/cancelled/paused_durably")
 
     # 4. an item with a disposition but NO lineage is still an orphan.
     led4 = RunLedger()
@@ -189,9 +189,9 @@ def self_test() -> dict:
           and "explicitly_discarded" in TERMINAL_DISPOSITIONS["artifact"],
           "11 tracked kinds, each with a closed disposition set")
 
-    # 6. the verdict receipt names every orphan for repair.
-    r = v2.receipt()
-    check("the_verdict_receipt_names_every_orphan",
+    # 6. the verdict record names every orphan for repair.
+    r = v2.record()
+    check("the_verdict_record_names_every_orphan",
           r["record_type"] == "run_closure_audit/v1"
           and r["n_orphans"] == 1 and r["orphans"][0]["id"] == "scratch.tmp",
           "closure is proven, never a vibe — the orphan is named")

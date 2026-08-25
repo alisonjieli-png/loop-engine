@@ -1,0 +1,11 @@
+{
+  "accepted": true,
+  "failures": [],
+  "mean_accuracy": 0.7540360360360361,
+  "physical_calls": 3,
+  "plan_digest": "14ae4d291c67a472d6d0539b720a704ecbbe6b0e41c1286564194bf7549aceb1",
+  "prediction_artifact_digest": "3082df2bda2d3a73c56560f2975fe70d291e4137a07126f46ea979ff710a9c4c",
+  "repair_used": false,
+  "selected_algorithm": "random_forest",
+  "task_id": 10101
+}

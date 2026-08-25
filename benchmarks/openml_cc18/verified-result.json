@@ -1,0 +1,23 @@
+{
+  "campaign_id": "openml-cc18-full-20260825T1505Z",
+  "campaign_result": "benchmarks/openml_cc18/artifacts/openml-cc18-full-20260825T1505Z/campaign-result.json",
+  "saved_verification": "benchmarks/openml_cc18/artifacts/openml-cc18-full-20260825T1505Z/saved-verification.json",
+  "completed_at": "2026-08-25T15:11:03.176733+00:00",
+  "maximum_output_tokens_each_call": 65536,
+  "model": "deepseek-v4-flash:0731",
+  "physical_calls": 10,
+  "physical_calls_including_excluded_attempts": 12,
+  "packet_physical_call_ceiling": 14,
+  "packet_physical_call_ceiling_respected": true,
+  "packet_known_total_tokens_subtotal": 16418,
+  "packet_calls_with_unknown_token_usage": 2,
+  "population_denominator": 3,
+  "provider": "ollama_cloud",
+  "provider_cost_state": "unknown",
+  "record_type": "openml_cc18_verified_result_pointer/v2",
+  "tasks_artifact_valid": 3,
+  "tasks_score_valid": 3,
+  "quality_acceptance_rule": "not_defined",
+  "tasks_quality_accepted": null,
+  "legacy_campaign_state_note": "The immutable saved v1 campaign used accepted to mean score-valid. It did not define a quality threshold."
+}

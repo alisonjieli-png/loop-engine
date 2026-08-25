@@ -1,0 +1,13 @@
+{
+  "accepted": false,
+  "data_id": 469,
+  "evaluation": null,
+  "failure_preserved_in_denominator": true,
+  "failure_reason": "RuntimeError: task 3560 used 0 physical calls",
+  "name": "analcatdata_dmft",
+  "physical_calls": null,
+  "record_type": "openml_cc18_full_practitioner_task/v1",
+  "selected_mode": "non_deterministic",
+  "selected_population_denominator": 1,
+  "task_id": 3560
+}

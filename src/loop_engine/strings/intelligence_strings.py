@@ -141,7 +141,7 @@ def compose(bank: StringBank, tags: Sequence[str], *,
             max_strings: int = 20, budget_chars: int = 4000) -> dict:
     """Compose the relevant intelligence strings into a prompt fragment, in
     precedence order.  Returns the assembled text plus which strings were used
-    (for the receipt and for outcome attribution) — the loop reorders/biases by
+    (for the record and for outcome attribution) — the loop reorders/biases by
     reordering this list, never by editing code."""
     chosen = bank.relevant(tags)[:max_strings]
     parts, used, chars = [], [], 0

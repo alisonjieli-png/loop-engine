@@ -18,7 +18,7 @@ seventh kernel node.  It is:
      regenerated for the next similar problem.
 
 Deep needs (latest publications, real-time search) stay what they already are:
-research actions that spawn child practitioners.  Enrichment only grows the
+research actions that spawn Practitioner Loops. Enrichment only grows the
 banks of personas / questions / key phrases — the secret-sauce inventory.
 """
 
@@ -110,7 +110,7 @@ def generate_enrichment(problem: str, policy: EnrichmentPolicy, *,
                         models: Sequence[str] | None = None) -> dict:
     """ONE structured generation, parsed into standard records, stored forever.
 
-    Returns the receipt: what was generated, what was stored, and that nothing
+    Returns the record: what was generated, what was stored, and that nothing
     entered above the experimental tier.  A failed or unparseable generation
     stores NOTHING and says so — junk never enters the banks."""
     if not policy.enabled:

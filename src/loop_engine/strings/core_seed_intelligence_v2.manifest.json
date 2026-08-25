@@ -29,10 +29,10 @@
   "software_architecture_and_code_quality": 50,
   "timeframes_and_regimes": 50
  },
- "content_digest_sha256": "803aea5e6eeb5d9de9dc5438a038d16769379478a504888bc66b32fd7e416e5d",
+ "content_digest_sha256": "400229d47342e0593fb75d14e210ca04d47407411c8682e0f37c5acdc16e7b36",
  "authoritative_source": "owner-pasted master prompt appendix A (2026-08-24); reconstructed deterministically via its generation grammar (the appendix text is itself grammar-generated); structural fidelity machine-verified, byte fidelity to the paste not independently verifiable in-repo",
  "materialized_target": "strings/core_seed_intelligence_v2.jsonl",
- "migration": "Namespace-only identity change for the Loop Engine repository; content digest unchanged",
+ "migration": "Current Loop relationship and evidence terms replace retired wording; record and pack digests were recomputed",
  "promotion": "evidence_gate_only",
  "automatic_preference": "forbidden",
  "deduplication": {

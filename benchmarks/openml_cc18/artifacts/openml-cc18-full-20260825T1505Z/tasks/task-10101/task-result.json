@@ -1,0 +1,400 @@
+{
+  "accepted": true,
+  "call_ceiling": 4,
+  "candidate_calls": [
+    {
+      "spawned_loop_id": "loop19",
+      "gateway": {
+        "accounting_complete": true,
+        "attempts": [
+          {
+            "elapsed_seconds": 60.886132,
+            "error": "",
+            "error_code": "",
+            "input_tokens": 933,
+            "loop_id": "loop35",
+            "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+            "maximum_output_tokens": 65536,
+            "model": "deepseek-v4-flash:0731",
+            "ok": true,
+            "output_tokens": 768,
+            "provider": "ollama_cloud",
+            "provider_ok": true,
+            "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+            "thinking_power": "medium",
+            "validation_ok": true
+          }
+        ],
+        "error": "",
+        "error_code": "",
+        "gateway_loop_id": "loop34",
+        "input_tokens": 933,
+        "model": "deepseek-v4-flash:0731",
+        "ok": true,
+        "output_tokens": 768,
+        "provider": "ollama_cloud",
+        "provider_responded": true,
+        "record_type": "model_gateway_result/v1",
+        "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+        "text": "{\n  \"candidate\": \"logistic\",\n  \"assessment\": \"Reasonable baseline for 4 numeric features and 748 rows; logistic regression should converge and provide a solid benchmark.\",\n  \"advance\": true,\n  \"primary_risk\": \"Potential underfitting if the true decision boundary is nonlinear, but with only 4 features this risk is modest.\"\n}",
+        "thinking_power": "medium",
+        "total_tokens": 1701
+      },
+      "output_reference": "modelout.10101.logistic_candidate.f075ee11ff1167bfad13",
+      "parsed": {
+        "advance": true,
+        "assessment": "Reasonable baseline for 4 numeric features and 748 rows; logistic regression should converge and provide a solid benchmark.",
+        "candidate": "logistic",
+        "primary_risk": "Potential underfitting if the true decision boundary is nonlinear, but with only 4 features this risk is modest."
+      },
+      "raw_text": "{\n  \"candidate\": \"logistic\",\n  \"assessment\": \"Reasonable baseline for 4 numeric features and 748 rows; logistic regression should converge and provide a solid benchmark.\",\n  \"advance\": true,\n  \"primary_risk\": \"Potential underfitting if the true decision boundary is nonlinear, but with only 4 features this risk is modest.\"\n}",
+      "role": "logistic_candidate"
+    },
+    {
+      "spawned_loop_id": "loop37",
+      "gateway": {
+        "accounting_complete": true,
+        "attempts": [
+          {
+            "elapsed_seconds": 7.435879,
+            "error": "",
+            "error_code": "",
+            "input_tokens": 942,
+            "loop_id": "loop53",
+            "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+            "maximum_output_tokens": 65536,
+            "model": "deepseek-v4-flash:0731",
+            "ok": true,
+            "output_tokens": 703,
+            "provider": "ollama_cloud",
+            "provider_ok": true,
+            "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+            "thinking_power": "medium",
+            "validation_ok": true
+          }
+        ],
+        "error": "",
+        "error_code": "",
+        "gateway_loop_id": "loop52",
+        "input_tokens": 942,
+        "model": "deepseek-v4-flash:0731",
+        "ok": true,
+        "output_tokens": 703,
+        "provider": "ollama_cloud",
+        "provider_responded": true,
+        "record_type": "model_gateway_result/v1",
+        "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+        "text": "{\n  \"candidate\": \"random_forest\",\n  \"assessment\": \"RandomForest with 200 trees is a strong, low-variance ensemble for this small numeric dataset (748 rows, 4 features). No categorical features make one-hot preprocessing trivial. Fixed random_state ensures reproducibility. Class imbalance is a possible concern but random forest generally handles it adequately. The model is well-suited for the 10-fold official split.\",\n  \"advance\": true,\n  \"primary_risk\": \"Potential class imbalance or subtle interactions not captured by the forest, but with only 4 features and 748 samples, overfitting is unlikely and the model should generalize well.\"\n}",
+        "thinking_power": "medium",
+        "total_tokens": 1645
+      },
+      "output_reference": "modelout.10101.random_forest_candidate.fe7801df0057ae92b8b3",
+      "parsed": {
+        "advance": true,
+        "assessment": "RandomForest with 200 trees is a strong, low-variance ensemble for this small numeric dataset (748 rows, 4 features). No categorical features make one-hot preprocessing trivial. Fixed random_state ensures reproducibility. Class imbalance is a possible concern but random forest generally handles it adequately. The model is well-suited for the 10-fold official split.",
+        "candidate": "random_forest",
+        "primary_risk": "Potential class imbalance or subtle interactions not captured by the forest, but with only 4 features and 748 samples, overfitting is unlikely and the model should generalize well."
+      },
+      "raw_text": "{\n  \"candidate\": \"random_forest\",\n  \"assessment\": \"RandomForest with 200 trees is a strong, low-variance ensemble for this small numeric dataset (748 rows, 4 features). No categorical features make one-hot preprocessing trivial. Fixed random_state ensures reproducibility. Class imbalance is a possible concern but random forest generally handles it adequately. The model is well-suited for the 10-fold official split.\",\n  \"advance\": true,\n  \"primary_risk\": \"Potential class imbalance or subtle interactions not captured by the forest, but with only 4 features and 748 samples, overfitting is unlikely and the model should generalize well.\"\n}",
+      "role": "random_forest_candidate"
+    },
+    {
+      "spawned_loop_id": "loop54",
+      "gateway": {
+        "accounting_complete": true,
+        "attempts": [
+          {
+            "elapsed_seconds": 3.02747,
+            "error": "",
+            "error_code": "",
+            "input_tokens": 1115,
+            "loop_id": "loop70",
+            "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+            "maximum_output_tokens": 65536,
+            "model": "deepseek-v4-flash:0731",
+            "ok": true,
+            "output_tokens": 275,
+            "provider": "ollama_cloud",
+            "provider_ok": true,
+            "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+            "thinking_power": "medium",
+            "validation_ok": true
+          }
+        ],
+        "error": "",
+        "error_code": "",
+        "gateway_loop_id": "loop69",
+        "input_tokens": 1115,
+        "model": "deepseek-v4-flash:0731",
+        "ok": true,
+        "output_tokens": 275,
+        "provider": "ollama_cloud",
+        "provider_responded": true,
+        "record_type": "model_gateway_result/v1",
+        "route": "direct.ollama_cloud.deepseek-v4-flash.0731",
+        "text": "{\n  \"choice\": \"random_forest\",\n  \"reason\": \"Random forest is more robust to potential nonlinear decision boundaries and class imbalance, which are plausible with this small numeric dataset. With only 4 features and 748 rows, overfitting is unlikely, and the ensemble provides low variance and strong generalization for the 10-fold split.\",\n  \"rejected_candidate\": \"logistic\"\n}",
+        "thinking_power": "medium",
+        "total_tokens": 1390
+      },
+      "output_reference": "modelout.10101.synthesis_selection.deaf56e5ca3f09b1c826",
+      "parsed": {
+        "choice": "random_forest",
+        "reason": "Random forest is more robust to potential nonlinear decision boundaries and class imbalance, which are plausible with this small numeric dataset. With only 4 features and 748 rows, overfitting is unlikely, and the ensemble provides low variance and strong generalization for the 10-fold split.",
+        "rejected_candidate": "logistic"
+      },
+      "raw_text": "{\n  \"choice\": \"random_forest\",\n  \"reason\": \"Random forest is more robust to potential nonlinear decision boundaries and class imbalance, which are plausible with this small numeric dataset. With only 4 features and 748 rows, overfitting is unlikely, and the ensemble provides low variance and strong generalization for the 10-fold split.\",\n  \"rejected_candidate\": \"logistic\"\n}",
+      "role": "synthesis_selection"
+    }
+  ],
+  "canvas_compiled": true,
+  "canvas_executed": true,
+  "canvas_plan_digest": "14ae4d291c67a472d6d0539b720a704ecbbe6b0e41c1286564194bf7549aceb1",
+  "run_history": {
+    "chain_intact": true,
+    "directory": "benchmarks/openml_cc18/artifacts/openml-cc18-full-20260825T1505Z/run-histories/openml-cc18-task-10101-non-deterministic-openml-cc18-full-20260825T1505Z",
+    "events": 697,
+    "model_invocation_events": 3,
+    "run_id": "openml-cc18-task-10101-non-deterministic-openml-cc18-full-20260825T1505Z",
+    "solution_event_kinds": [
+      "solution.canvas.updated",
+      "solution.loop.completed",
+      "solution.loop.started",
+      "solution.run.completed",
+      "solution_finalized"
+    ]
+  },
+  "data_id": 1464,
+  "elapsed_seconds": 73.946577,
+  "errors": [],
+  "evaluation": {
+    "accepted": true,
+    "direction": "higher_is_better",
+    "evaluator": "sklearn.metrics.accuracy_score",
+    "fold_aggregation": "mean_of_10_official_fold_accuracies",
+    "folds": [
+      {
+        "accuracy": 0.7466666666666667,
+        "fold": 0,
+        "repeat": 0,
+        "test_rows": 75
+      },
+      {
+        "accuracy": 0.72,
+        "fold": 1,
+        "repeat": 0,
+        "test_rows": 75
+      },
+      {
+        "accuracy": 0.7466666666666667,
+        "fold": 2,
+        "repeat": 0,
+        "test_rows": 75
+      },
+      {
+        "accuracy": 0.7333333333333333,
+        "fold": 3,
+        "repeat": 0,
+        "test_rows": 75
+      },
+      {
+        "accuracy": 0.84,
+        "fold": 4,
+        "repeat": 0,
+        "test_rows": 75
+      },
+      {
+        "accuracy": 0.72,
+        "fold": 5,
+        "repeat": 0,
+        "test_rows": 75
+      },
+      {
+        "accuracy": 0.7466666666666667,
+        "fold": 6,
+        "repeat": 0,
+        "test_rows": 75
+      },
+      {
+        "accuracy": 0.76,
+        "fold": 7,
+        "repeat": 0,
+        "test_rows": 75
+      },
+      {
+        "accuracy": 0.8243243243243243,
+        "fold": 8,
+        "repeat": 0,
+        "test_rows": 74
+      },
+      {
+        "accuracy": 0.7027027027027027,
+        "fold": 9,
+        "repeat": 0,
+        "test_rows": 74
+      }
+    ],
+    "independent_from_model_selection": true,
+    "mean_accuracy": 0.7540360360360361,
+    "metric": "predictive_accuracy",
+    "record_type": "openml_accuracy_evaluation/v1",
+    "task_id": 10101
+  },
+  "failure_reason": null,
+  "intelligence_portfolios": {
+    "consumption_count": 4,
+    "fold_digest": "02a17bf1aa4cf00227c128dd4bffc55fb0662a44e30ef0e89d18b268dd7fe0bc",
+    "payload_bodies_exported": false,
+    "portfolio_count": 4,
+    "selector": "static_architecture.intelligence_portfolio"
+  },
+  "live_mapping": {
+    "checks": {
+      "data_id": true,
+      "data_name": true,
+      "data_status": true,
+      "data_version": true,
+      "dataset_md5": true,
+      "default_target": true,
+      "license_label": true,
+      "split_folds": true,
+      "split_path": true,
+      "split_repeats": true,
+      "split_stratified": true,
+      "split_type": true,
+      "suite_alias": true,
+      "suite_id": true,
+      "suite_status": true,
+      "suite_task_count": true,
+      "target": true,
+      "task_id": true,
+      "task_in_suite": true,
+      "task_type": true
+    },
+    "data_id": 1464,
+    "dataset_name": "blood-transfusion-service-center",
+    "license_label": "Public",
+    "license_precision": "OpenML literal label, not a precise SPDX license",
+    "record_type": "openml_live_mapping_check/v1",
+    "suite_id": 99,
+    "suite_task_count": 72,
+    "target": "Class",
+    "task_id": 10101,
+    "verified": true
+  },
+  "name": "blood-transfusion-service-center",
+  "official_folds_executed": 10,
+  "physical_calls": 3,
+  "playback_lines": 324,
+  "record_type": "openml_cc18_full_practitioner_task/v1",
+  "repair_used": false,
+  "report_rendered_from_saved_run_history": true,
+  "root_loop_id": "loop1",
+  "root_result": {
+    "stage_order": [
+      "orient",
+      "reconcile_horizon",
+      "assess_prepare",
+      "decide_next",
+      "how",
+      "act",
+      "verify",
+      "integrate_commit",
+      "route"
+    ],
+    "steps_run": 9,
+    "stopped": "done",
+    "terminal_code": "ACCEPTED"
+  },
+  "schema": {
+    "arff_attributes_including_target": 5,
+    "categorical_features": [],
+    "classes": 2,
+    "data_id": 1464,
+    "dataset_name": "blood-transfusion-service-center",
+    "folds": 10,
+    "input_features": 4,
+    "missing_feature_values": 0,
+    "numeric_features": [
+      "V1",
+      "V2",
+      "V3",
+      "V4"
+    ],
+    "record_type": "openml_schema/v1",
+    "rows": 748,
+    "target": "Class",
+    "task_id": 10101
+  },
+  "selected_algorithm": "random_forest",
+  "selected_mode": "non_deterministic",
+  "selected_population_denominator": 1,
+  "selected_profile": "practitioner.reference_nine_step",
+  "selected_profile_version": "1.0.0",
+  "source_checks": {
+    "dataset": {
+      "bytes": 14143,
+      "md5": "c3242468edab8c2e7a907674122dc851",
+      "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-10101-dataset.arff",
+      "record_type": "openml_source_check/v1",
+      "sha256": "ee1304cac4a650ac31afe7395a100536a165f935bbe718a4643757c1a842316a",
+      "verified": true
+    },
+    "split": {
+      "bytes": 103033,
+      "md5": null,
+      "path": "/home/username/loop-engine/benchmarks/openml_cc18/data/task-10101-splits.arff",
+      "record_type": "openml_source_check/v1",
+      "sha256": "965d72fa31f34cf0ca3c3345747bb68a8b78ad614c843ee7e6479c6d60503690",
+      "verified": true
+    }
+  },
+  "stage_spawned_loops": [
+    {
+      "loop_id": "loop2",
+      "ok": true,
+      "stage": "orient"
+    },
+    {
+      "loop_id": "loop3",
+      "ok": true,
+      "stage": "reconcile_horizon"
+    },
+    {
+      "loop_id": "loop18",
+      "ok": true,
+      "stage": "assess_prepare"
+    },
+    {
+      "loop_id": "loop36",
+      "ok": true,
+      "stage": "decide_next"
+    },
+    {
+      "loop_id": "loop71",
+      "ok": true,
+      "stage": "how"
+    },
+    {
+      "loop_id": "loop72",
+      "ok": true,
+      "stage": "act"
+    },
+    {
+      "loop_id": "loop74",
+      "ok": true,
+      "stage": "verify"
+    },
+    {
+      "loop_id": "loop76",
+      "ok": true,
+      "stage": "integrate_commit"
+    },
+    {
+      "loop_id": "loop77",
+      "ok": true,
+      "stage": "route"
+    }
+  ],
+  "step_template": "reference_nine_step",
+  "task_id": 10101
+}

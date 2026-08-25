@@ -1,18 +1,9 @@
-"""Universal encapsulation — EVERYTHING runs as a PractitionerLoop.
+"""Universal encapsulation through the one Loop runtime.
 
-Architectural role: loop (the runtime's universality affordance).
-
-Owner law (2026-08-24): "Everything is a loop, and not only that,
-everything is a PractitionerLoop — even a deterministic check is
-encapsulated as a PractitionerLoop, just with deterministic preferred
-settings."  This module makes that law one call instead of a discipline:
-a plain callable becomes a real Loop run — five-beat template, modes
-pinned to deterministic-only, zero semantic-call surface — so every
-check lands on the shared ledger with the same envelope (init, steps,
-terminal transition, closure) as any other loop.  The earlier "do not
-wrap trivial work in loops" guidance survives as what this WITHHOLDS:
-no children by default, no model budget, no autonomy — encapsulation is
-universal, autonomy stays earned (Master Spec Appendix C.2).
+Architectural role: Loop helpers for typed Practitioner work and generic
+role-bound work. A callable never becomes a second runtime. It executes inside
+one Loop with explicit relationship, role profile, mode, budget, stop condition,
+and RunHistory events.
 
 Owns:
     - as_practitioner_loop(objective, fn, ...): run one deterministic
@@ -33,13 +24,24 @@ Key invariants:
     - settings are pinned: callers cannot hand this helper a config
       that could think with a model.
 
-Verification: self_test() — positive wrap, parent-spawned child wrap,
+Verification: self_test() covers starting and spawned wrapping,
 raising-callable evidence, pinned-settings check.
 """
 from __future__ import annotations
 
+from .loop_definition import LoopStartRequest
+from .loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
 from .recursive_loop import (Loop, LoopConfig, LoopError, LoopLedger,
                              StepOutcome)
+
+
+def _identity(role: LoopRole, profile_id: str) -> LoopRoleIdentity:
+    return LoopRoleIdentity(role, profile_id)
+
+
+def _relationship(parent: "Loop | None") -> LoopRelationship:
+    return (LoopRelationship.spawned_by(parent.loop_id)
+            if parent is not None else LoopRelationship.starting())
 
 
 def as_practitioner_loop(objective: str, fn, *, inputs=None,
@@ -49,15 +51,23 @@ def as_practitioner_loop(objective: str, fn, *, inputs=None,
     settings.  Returns {"value", "loop_id", "steps_run", "model_calls",
     "mode_counts", "confidence", "stopped"}.  ``inputs`` (if given) is
     passed to ``fn`` as its single argument.  With ``parent`` the check
-    runs as a spawned CHILD (permission clamp applies)."""
+    runs as a spawned Loop (permission clamp applies)."""
     cfg = LoopConfig(framework="five_step", power="small",
                      allowable_modes=("deterministic",),
                      preferred_modes=("deterministic",))
     goal = f"deterministic check: {objective}"
     if parent is not None:
-        loop = parent.spawn(goal, cfg)
+        loop = parent.spawn(
+            goal, cfg,
+            identity=_identity(
+                LoopRole.PRACTITIONER, "practitioner.code_execution"),
+            relationship=_relationship(parent))
     else:
-        loop = Loop(goal, cfg, ledger=ledger)
+        loop = Loop(
+            goal, cfg, ledger=ledger,
+            identity=_identity(
+                LoopRole.PRACTITIONER, "practitioner.code_execution"),
+            relationship=_relationship(None))
     holder: dict = {}
 
     def handler(lp: Loop, step: str, context: dict) -> StepOutcome:
@@ -91,7 +101,10 @@ def as_practitioner_loop(objective: str, fn, *, inputs=None,
     return {"value": holder.get("value"), "loop_id": res.loop_id,
             "steps_run": res.steps_run, "model_calls": res.model_calls,
             "mode_counts": res.mode_counts, "confidence": res.confidence,
-            "stopped": res.stopped}
+            "stopped": res.stopped,
+            "loop_definition_id": res.loop_definition_id,
+            "loop_definition_version": res.loop_definition_version,
+            "loop_definition_digest": res.loop_definition_digest}
 
 
 def as_component_loop(objective: str, fn, *, fallbacks=(),
@@ -154,10 +167,16 @@ def as_model_loop(objective: str, fn, *, inputs=None,
                      allowable_modes=("non_deterministic",),
                      preferred_modes=("non_deterministic",),
                      llm_thinking_power=llm_thinking_power,
-                     stop_condition="success_once")
+                     exit_condition="accepted_success")
     goal = f"model invocation: {objective}"
-    loop = (parent.spawn(goal, cfg) if parent is not None
-            else Loop(goal, cfg, ledger=ledger))
+    identity = _identity(
+        LoopRole.PRACTITIONER, "practitioner.reference_nine_step")
+    relationship = _relationship(parent)
+    loop = (parent.spawn(goal, cfg, identity=identity,
+                         relationship=relationship)
+            if parent is not None else Loop(
+                goal, cfg, ledger=ledger, identity=identity,
+                relationship=relationship))
     lg = loop.ledger
     lg.record(loop_id=loop.loop_id, event="model_boundary_deferred",
               objective=objective[:120])
@@ -194,7 +213,10 @@ def as_model_loop(objective: str, fn, *, inputs=None,
             f"model invocation {objective!r} raised inside loop "
             f"{res.loop_id} (evidence on the ledger)") from holder["error"]
     return {"value": value, "loop_id": res.loop_id,
-            "steps_run": res.steps_run, "stopped": res.stopped, "ok": ok}
+            "steps_run": res.steps_run, "stopped": res.stopped, "ok": ok,
+            "loop_definition_id": res.loop_definition_id,
+            "loop_definition_version": res.loop_definition_version,
+            "loop_definition_digest": res.loop_definition_digest}
 
 
 def as_loop_of_stage_loops(goal: str, *, template: str = "reference_nine_step",
@@ -210,12 +232,12 @@ def as_loop_of_stage_loops(goal: str, *, template: str = "reference_nine_step",
     where there should be ten, so a stage cannot be inspected, retried,
     replaced, or advised on its own.
 
-    Here the root drives the template's ordering and every stage executes in
-    its OWN spawned child, on the shared ledger, under the parent's
+    Here the Starting Loop drives ordering and every stage executes in
+    its own Spawned Loop, on the shared ledger, under the spawning Loop's
     delegation clamp.  ``stage_work(stage, context)`` supplies the stage's
     actual work and returns its output; omit it for a structural run.
 
-    Returns the root result plus one receipt per stage, so the tree is
+    Returns the starting result plus one record per stage, so the tree is
     inspectable rather than asserted.
     """
     from .loop_templates import TEMPLATE_LIBRARY, config_from_template
@@ -224,14 +246,18 @@ def as_loop_of_stage_loops(goal: str, *, template: str = "reference_nine_step",
         raise LoopError(f"template {template!r} is not registered — a "
                         "variation must be a TEMPLATE, never an inline list")
     cfg = config_from_template(body, power=power)
-    root = Loop(goal, cfg, ledger=ledger)
-    receipts: list = []
+    starting = Loop(
+        goal, cfg, ledger=ledger,
+        identity=_identity(
+            LoopRole.PRACTITIONER, "practitioner.reference_nine_step"),
+        relationship=_relationship(None))
+    records: list = []
 
     def handler(loop: Loop, step: str, context: dict) -> StepOutcome:
-        # one stage = one child PractitionerLoop.  atomic_code_only shape:
-        # a single act beat, no grandchildren by default, and the spawn
+        # one stage = one Spawned Practitioner Loop. atomic_code_only shape:
+        # a single act beat, no nested_spawned_loops by default, and the spawn
         # clamps its modes to the parent's.
-        child = loop.spawn(f"stage {step}: {goal}",
+        spawned = loop.spawn(f"stage {step}: {goal}",
                            LoopConfig(framework="custom",
                                       custom_steps=("act",),
                                       allowable_modes=("deterministic",),
@@ -242,31 +268,36 @@ def as_loop_of_stage_loops(goal: str, *, template: str = "reference_nine_step",
                                       max_depth=loop.config.max_depth))
         holder: dict = {}
 
-        def child_handler(lp: Loop, s: str, ctx: dict) -> StepOutcome:
+        def spawned_handler(lp: Loop, s: str, ctx: dict) -> StepOutcome:
             holder["value"] = (stage_work(step, ctx) if stage_work is not None
                                else f"{step}:structural")
             return StepOutcome(output=f"{step}:{holder['value']}",
                                mode="deterministic", confidence=0.9)
 
-        res = child.run(handler=child_handler, max_steps=2)
-        receipts.append({"stage": step, "child_loop_id": res.loop_id,
-                         "parent_loop_id": loop.loop_id,
+        res = spawned.run(handler=spawned_handler, max_steps=2)
+        records.append({"stage": step, "spawned_loop_id": res.loop_id,
+                         "spawning_loop_id": loop.loop_id,
                          "output": holder.get("value"), "mode": "deterministic",
                          "steps_run": res.steps_run, "stopped": res.stopped,
                          "model_calls": res.model_calls})
         return StepOutcome(output=f"{step}:stage_loop:{res.loop_id}",
                            mode="deterministic", confidence=0.9)
 
-    result = root.run(handler=handler, max_steps=len(root.steps()) + 1)
-    return {"record_type": "loop_of_stage_loops/v1", "template": template,
-            "root_loop_id": root.loop_id, "stages": tuple(root.steps()),
-            "stage_receipts": receipts, "result": result,
-            "stage_loop_ids": [r["child_loop_id"] for r in receipts]}
+    result = starting.run(
+        handler=handler, max_steps=len(starting.steps()) + 1)
+    return {"record_type": "loop_of_stage_loops/v2", "template": template,
+            "starting_loop_id": starting.loop_id,
+            "stages": tuple(starting.steps()),
+            "stage_records": records, "result": result,
+            "spawned_loop_ids": [r["spawned_loop_id"] for r in records]}
 
 
 def as_loop(objective: str, thing, *, kind: str | None = None, inputs=None,
             parent: "Loop | None" = None,
-            ledger: "LoopLedger | None" = None) -> dict:
+            ledger: "LoopLedger | None" = None,
+            identity: "LoopRoleIdentity | None" = None,
+            relationship: "LoopRelationship | None" = None,
+            start_request: "LoopStartRequest | None" = None) -> dict:
     """The universal encapsulation entry point: ANYTHING runs as a loop.
 
     Owner law, made one call: "everything should be a loop, even if set up to
@@ -284,12 +315,32 @@ def as_loop(objective: str, thing, *, kind: str | None = None, inputs=None,
     if kind is None:
         kind = "callable" if callable(thing) else "data"
     cfg = LoopConfig(framework="custom", custom_steps=("serve",),
-                     stop_condition="success_once", power="light",
+                     exit_condition="accepted_success", power="light",
                      allowable_modes=("deterministic",),
                      preferred_modes=("deterministic",))
     goal = f"serve {kind}: {objective}"
-    loop = parent.spawn(goal, cfg) if parent is not None else Loop(
-        goal, cfg, ledger=ledger)
+    selected_relationship = relationship or _relationship(parent)
+    if start_request is not None:
+        if any(value is not None for value in (
+                identity, relationship, ledger)):
+            raise LoopError(
+                "LoopStartRequest already owns identity, relationship, and "
+                "event log")
+        if start_request.goal != goal:
+            raise LoopError(
+                "LoopStartRequest goal must match the encapsulated goal")
+        loop = Loop(
+            start_request, parent=parent,
+            depth=(parent.depth + 1 if parent is not None else 0))
+    else:
+        selected_identity = identity or _identity(
+            LoopRole.PRACTITIONER, "practitioner.code_execution")
+        loop = (parent.spawn(goal, cfg, identity=selected_identity,
+                             relationship=selected_relationship)
+                if parent is not None else Loop(
+                    goal, cfg, ledger=ledger,
+                    identity=selected_identity,
+                    relationship=selected_relationship))
     holder: dict = {}
 
     def handler(lp: Loop, step: str, context: dict) -> StepOutcome:
@@ -311,7 +362,10 @@ def as_loop(objective: str, thing, *, kind: str | None = None, inputs=None,
     out = {"record_type": "as_loop/v1", "kind": kind, "loop_id": res.loop_id,
            "value": holder.get("value"), "error": holder.get("error"),
            "stopped": res.stopped, "model_calls": res.model_calls,
-           "accepted": res.accepted_successes, "attempts": res.attempts}
+           "accepted": res.accepted_successes, "attempts": res.attempts,
+           "loop_definition_id": res.loop_definition_id,
+           "loop_definition_version": res.loop_definition_version,
+           "loop_definition_digest": res.loop_definition_digest}
     return out
 
 
@@ -347,7 +401,7 @@ def self_test() -> dict:
           and set(r["mode_counts"]) == {"deterministic"},
           f"loop {r['loop_id']}: 5 beats, 0 calls, value 42")
 
-    # 2. under a parent: the check is a spawned CHILD on the SHARED
+    # 2. under a spawning Loop: the check is spawned on the SHARED
     # ledger — the loop-of-loops tree shows it, the clamp applied.
     ledger = LoopLedger()
     parent = Loop("parent work", LoopConfig(framework="five_step",
@@ -355,9 +409,9 @@ def self_test() -> dict:
     r2 = as_practitioner_loop("row count", lambda xs: len(xs),
                               inputs=[1, 2, 3], parent=parent)
     kids = ledger.tree().get(parent.loop_id, [])
-    check("encapsulated_check_spawns_as_child_on_shared_ledger",
+    check("encapsulated_check_spawns_on_shared_ledger",
           r2["value"] == 3 and r2["loop_id"] in kids,
-          f"child {r2['loop_id']} under {parent.loop_id}")
+          f"spawned Loop {r2['loop_id']} from {parent.loop_id}")
 
     # 3. adversarial: a raising callable surfaces as LoopError AND the
     # failure is already ON the ledger (evidence first, then the error).
@@ -409,7 +463,7 @@ def self_test() -> dict:
     except LoopError:
         exhausted = True
     # 7. THE REFERENCE LOOP IS A LOOP OF NINE LOOPS — the doctrine's literal
-    # claim, proven as a receipt tree rather than asserted.  Before this,
+    # claim, proven as a record tree rather than asserted.  Before this,
     # framework="nine_step" produced ONE envelope running nine step-strings:
     # the sequence was right and the shape was wrong, so no stage could be
     # inspected, retried, replaced, or advised on its own.
@@ -418,20 +472,20 @@ def self_test() -> dict:
     tree = as_loop_of_stage_loops("prove the reference tree", ledger=lg7)
     envelopes = [e for e in lg7.events if e.get("event") == "init"]
     spawns = [e for e in lg7.events if e.get("event") == "spawn"]
-    returns = [e for e in lg7.events if e.get("event") == "child_return"]
-    parents = {r["parent_loop_id"] for r in tree["stage_receipts"]}
+    returns = [e for e in lg7.events if e.get("event") == "spawned_return"]
+    parents = {r["spawning_loop_id"] for r in tree["stage_records"]}
     check("reference_nine_step_runs_as_nine_stage_loops",
-          len(tree["stages"]) == 9 and len(tree["stage_loop_ids"]) == 9
-          and len(set(tree["stage_loop_ids"])) == 9        # nine DISTINCT ids
-          and len(envelopes) == 10                          # root + nine
+          len(tree["stages"]) == 9 and len(tree["spawned_loop_ids"]) == 9
+          and len(set(tree["spawned_loop_ids"])) == 9      # nine DISTINCT ids
+          and len(envelopes) == 10                          # starting + nine
           and len(spawns) == 9 and len(returns) == 9        # spawn AND return
-          and parents == {tree["root_loop_id"]}             # all under the root
+          and parents == {tree["starting_loop_id"]}
           and tree["result"].model_calls == 0
-          and all(r["stopped"] == "done" for r in tree["stage_receipts"]),
-          f"root {tree['root_loop_id']} + 9 stage loops, "
+          and all(r["stopped"] == "done" for r in tree["stage_records"]),
+          f"starting {tree['starting_loop_id']} + 9 stage loops, "
           f"{len(spawns)} spawns / {len(returns)} returns, 0 semantic calls")
 
-    # 8. ADVERSARIAL: a stage loop is a child, so the delegation clamp holds
+    # 8. ADVERSARIAL: a stage is a Spawned Loop, so the delegation clamp holds
     # on it too — the nine-step tree cannot become a way to widen authority
     # — and an unregistered template is refused rather than run as an inline
     # list of steps.
@@ -443,9 +497,9 @@ def self_test() -> dict:
     except LoopError:
         inline_refused = True
     check("stage_loops_stay_clamped_and_templates_stay_registered",
-          all(r["model_calls"] == 0 for r in clamped["stage_receipts"])
-          and len(clamped["stage_receipts"]) == 9 and inline_refused,
-          "stage children make no semantic calls; unregistered template raises")
+          all(r["model_calls"] == 0 for r in clamped["stage_records"])
+          and len(clamped["stage_records"]) == 9 and inline_refused,
+          "stage spawned_loops make no semantic calls; unregistered template raises")
 
     check("component_walks_its_whole_fallback_chain_then_fails_closed",
           r7["value"] == "prior-mean" and r7["served_by"] == 2
@@ -459,7 +513,7 @@ def self_test() -> dict:
     # on the timeline, so a provider call can never be a silent side effect
     # of a helper; a failing call still leaves evidence before it raises.
     from .recursive_loop import LoopLedger as _LL2
-    from ..static_architecture.chronicle import to_canonical_events as _tce
+    from ..static_architecture.run_history import to_canonical_events as _tce
 
     class _Res:
         ok, model_used, prompt_tokens, eval_tokens = True, "m", 11, 22

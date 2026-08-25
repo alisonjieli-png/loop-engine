@@ -1,37 +1,37 @@
 {
- "record_type": "kaggle_writeup_digestion_receipt/v1",
- "date": "2026-08-23",
- "seed": {
-  "kernel": "startupsci/titanic-data-science-solutions",
-  "why": "one of the most-read public Kaggle solution write-ups; a full worked methodology (EDA -> features -> models -> submission)",
-  "category": "kaggle_writeup",
-  "subcategory": "titanic_methodology",
-  "job_position": ""
- },
- "model": "deepseek-v4-flash:0731",
- "usage": {
+  "record_type": "kaggle_writeup_digestion_evidence/v1",
+  "date": "2026-08-23",
+  "seed": {
+    "kernel": "startupsci/titanic-data-science-solutions",
+    "why": "one of the most-read public Kaggle solution write-ups; a full worked methodology (EDA -> features -> models -> submission)",
+    "category": "kaggle_writeup",
+    "subcategory": "titanic_methodology",
+    "job_position": ""
+  },
   "model": "deepseek-v4-flash:0731",
-  "prompt_tokens": 1931,
-  "eval_tokens": 306,
-  "ok": true
- },
- "digested": {
-  "candidates": 10,
-  "undigested": 0,
-  "staged": 10,
-  "deduped": 0,
-  "samples": [
-   "Treat competition workflow as a sequence of stages that can be reordered, merged, repeated, or skipped based o",
-   "Before modeling, read the problem description for domain facts that hint at likely predictive features.",
-   "Enumerate features by type (categorical, numerical, mixed, missing, error-prone) to guide cleaning and feature",
-   "Combine train and test sets for operations like encoding categorical values to ensure consistent mappings acro"
-  ]
- },
- "retrieval_proof": {
-  "query": "feature engineering title extraction family size categorical",
-  "hits_total": 5,
-  "hits_from_writeup": 2,
-  "example": "Enumerate features by type (categorical, numerical, mixed, missing, error-prone) to guide cleaning and feature"
- },
- "honesty": "FIRST SLICE of the required test: one public kernel, one digest call, staged as candidates with exact source provenance, retrieval proven from the live bank. The full test \u2014 a whole competition's write-ups feeding a later solving run \u2014 remains open and is the next step. Public write-up, authenticated kaggle CLI, provenance preserved."
+  "usage": {
+    "model": "deepseek-v4-flash:0731",
+    "prompt_tokens": 1931,
+    "eval_tokens": 306,
+    "ok": true
+  },
+  "digested": {
+    "candidates": 10,
+    "undigested": 0,
+    "staged": 10,
+    "deduped": 0,
+    "samples": [
+      "Treat competition workflow as a sequence of stages that can be reordered, merged, repeated, or skipped based o",
+      "Before modeling, read the problem description for domain facts that hint at likely predictive features.",
+      "Enumerate features by type (categorical, numerical, mixed, missing, error-prone) to guide cleaning and feature",
+      "Combine train and test sets for operations like encoding categorical values to ensure consistent mappings acro"
+    ]
+  },
+  "retrieval_proof": {
+    "query": "feature engineering title extraction family size categorical",
+    "hits_total": 5,
+    "hits_from_writeup": 2,
+    "example": "Enumerate features by type (categorical, numerical, mixed, missing, error-prone) to guide cleaning and feature"
+  },
+  "honesty": "FIRST SLICE of the required test: one public kernel, one digest call, staged as candidates with exact source provenance, retrieval proven from the live bank. The full test — a whole competition's write-ups feeding a later solving run — remains open and is the next step. Public write-up, authenticated kaggle CLI, provenance preserved."
 }

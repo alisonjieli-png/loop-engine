@@ -1,12 +1,12 @@
 # Loops and modes
 
-## Each operational node is a loop
+## Every executable graph vertex is a Loop
 
 Loop Engine uses one `Loop` runtime object. A Loop can perform bounded work or
 start another Loop for a smaller part of the task. Practitioner loops build and
 verify work. Solution loops run a finished Solution Canvas.
 
-Each loop has:
+Each Loop has:
 
 - a goal;
 - an input and output contract;
@@ -15,7 +15,7 @@ Each loop has:
 - a step profile;
 - an effort setting and budget;
 - model thinking power when the loop permits a model;
-- a stop condition;
+- a loop condition and an exit condition;
 - a depth limit; and
 - an event log.
 
@@ -76,37 +76,38 @@ The code stores this shape in `framework` and `custom_steps`. Reusable shapes
 are stored as Loop Templates. The nine-step profile is a reference, not a
 requirement.
 
-## Stop conditions
+## Exit conditions
 
 ```python
-LoopConfig(stop_condition="run_to_completion")
-LoopConfig(stop_condition="success_once")
+LoopConfig(exit_condition="steps_complete")
+LoopConfig(exit_condition="accepted_success")
 ```
 
-`run_to_completion` follows the configured sequence and budget.
-`success_once` stops after one accepted iteration. A stop condition is part of
-the loop definition, not an error-handling shortcut.
+`steps_complete` requires the configured sequence to finish.
+`accepted_success` finishes after one accepted iteration. An exit condition is
+part of the Loop definition. A budget is a safety limit, not a successful
+exit.
 
-## Starting another loop
+## Spawn a Practitioner Loop
 
 ```python
 from loop_engine.loop.recursive_loop import Loop, LoopConfig, LoopLedger
 
 ledger = LoopLedger()
-root = Loop("prepare a quarterly plan", LoopConfig(), ledger=ledger)
-numbers = root.spawn("gather current numbers")
+starting_loop = Loop("prepare a quarterly plan", LoopConfig(), ledger=ledger)
+numbers = starting_loop.spawn("gather current numbers")
 assumption = numbers.spawn("check one assumption")
 ```
 
-The loops share the event log. Reports use the recorded relationships to show
-the loop tree. `max_depth` keeps the tree bounded.
+The Loops share the event log. Reports use the recorded relationships to show
+the Practitioner graph. `max_depth` limits dynamic spawning.
 
 ## Practitioner and Solution loops
 
 Practitioner loops explain how work was built. A Solution Canvas explains what
 runs for a new input.
 
-Self-improvement is a task given to the Loop Practitioner. It is not a third
+Self-improvement is a task given to the Loop Practitioner. It is not a fourth
 runtime role.
 
 - Read [Loop Practitioner](../components/practitioner/).
@@ -115,7 +116,8 @@ runtime role.
 
 ## Intelligence and run history
 
-Loops can search Context, Code, Previous Run & Solution, and User Intelligence.
+Loops can search Context Intelligence, Code Intelligence, Runtime History and
+Solution Intelligence, and User Feedback Intelligence.
 Runtime Memory is a separate temporary note board for the current run.
 
 The event log records step attempts, mode decisions, searches, model calls,

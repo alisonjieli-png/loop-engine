@@ -80,7 +80,7 @@ def build_spec():
 
 def main():
     spec = build_spec()
-    root_card = code_asset_record(spec)
+    top_level_card = code_asset_record(spec)
     subsystem_cards = subsystem_records(spec)
     reference = code_asset_capsule(spec).to_ref(source="code_intelligence")
 
@@ -123,11 +123,11 @@ def main():
         inputs=packet, ledger=ledger)
 
     print("LARGE CODEBASE CARD")
-    print(f"  serialized bytes: {len(json.dumps(root_card.to_dict()))}")
-    print(f"  declared files: {root_card.body['file_count']}")
-    print(f"  declared lines: {root_card.body['line_count']:,}")
-    print(f"  body inline: {root_card.body['body_inline']}")
-    print(f"  dataset inline: {'text' in root_card.body['data_refs'][0]}")
+    print(f"  serialized bytes: {len(json.dumps(top_level_card.to_dict()))}")
+    print(f"  declared files: {top_level_card.body['file_count']}")
+    print(f"  declared lines: {top_level_card.body['line_count']:,}")
+    print(f"  body inline: {top_level_card.body['body_inline']}")
+    print(f"  dataset inline: {'text' in top_level_card.body['data_refs'][0]}")
     print(f"  subsystem cards: {len(subsystem_cards)}")
     print(f"  materializations: {cache.calls}")
     print(f"  preflight: {preflight['value']}")

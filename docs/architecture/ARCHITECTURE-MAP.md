@@ -3,7 +3,9 @@
 This document is **generated from the code** and lives with it, so the
 projection can never drift from what is on disk:
 
-    src/loop_engine/ARCHITECTURE-MAP.md
+```text
+src/loop_engine/ARCHITECTURE-MAP.md
+```
 
 Regenerate rather than hand-edit:
 

@@ -1,8 +1,8 @@
 {
- "record_type": "chronicle_manifest/v1",
- "run_id": "spaceship-transfer-20260823",
- "parent_run_id": "",
- "events": 9,
- "head_digest": "4e9a5b73965c8e68f49387de20302fc762cba135254e2008858ef5ad73177094",
- "committed": true
+  "record_type": "run_history_manifest/v1",
+  "run_id": "spaceship-transfer-20260823",
+  "parent_run_id": "",
+  "events": 9,
+  "head_digest": "69a04b5e33907882d0024117aea0f8422bd6542dbe89e9b67b8762941f5e7264",
+  "committed": true
 }

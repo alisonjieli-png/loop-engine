@@ -1,6 +1,6 @@
 """Context Intelligence hierarchy and deterministic classification helpers.
 
-Architectural role: Static Architecture classification service.
+Architectural role: internal Context Intelligence classification service.
 
 Owns: the Context-specific hierarchy fields, thinking-style vocabulary, and
 conservative projection of one stored record. Empty values stay empty.

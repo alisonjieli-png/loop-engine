@@ -47,7 +47,8 @@ class PlanInvariantError(RuntimeError):
 
 
 @dataclass
-class GoalNode:
+class GoalItem:
+    """A passive desired-outcome record, never an operational graph vertex."""
     goal_id: str
     goal_kind: str
     statement: str
@@ -64,30 +65,41 @@ class GoalNode:
             raise ValueError(f"status must be one of {GOAL_STATUS}")
 
 
+# Compatibility for older module-level imports only. It is intentionally not
+# used by current records, tests, or emitted payloads.
+GoalNode = GoalItem
+
+
 @dataclass
 class GoalGraph:
-    nodes: dict = field(default_factory=dict)      # goal_id -> GoalNode
+    items: dict = field(default_factory=dict)      # goal_id -> GoalItem
 
-    def add(self, node: GoalNode) -> None:
-        self.nodes[node.goal_id] = node
+    @property
+    def nodes(self) -> dict:
+        """Historical reader for serialized callers; new code uses ``items``."""
+        return self.items
 
-    def ultimate(self) -> "GoalNode | None":
-        for n in self.nodes.values():
-            if n.goal_kind == "ultimate":
-                return n
+    def add(self, item: GoalItem) -> None:
+        self.items[item.goal_id] = item
+
+    def ultimate(self) -> "GoalItem | None":
+        for item in self.items.values():
+            if item.goal_kind == "ultimate":
+                return item
         return None
 
     def required_goals(self) -> list:
         """Hard goals that must have a plan path (non-goals/constraints excluded
         from the path requirement)."""
-        return [n for n in self.nodes.values()
-                if n.goal_kind in ("ultimate", "outcome", "subgoal") and n.hard]
+        return [item for item in self.items.values()
+                if item.goal_kind in ("ultimate", "outcome", "subgoal")
+                and item.hard]
 
     def satisfy(self, goal_id: str, *, evidence: tuple = (),
                 waiver: str = "") -> None:
         """A goal may become satisfied ONLY through accepted evidence or an
         explicit authorized waiver — never by assertion."""
-        n = self.nodes[goal_id]
+        n = self.items[goal_id]
         if not evidence and not waiver:
             raise PlanInvariantError(
                 f"goal {goal_id!r} cannot be satisfied without accepted "
@@ -260,10 +272,10 @@ def self_test() -> dict:
         results.append({"test": name, "passed": bool(ok), "detail": detail})
 
     goals = GoalGraph()
-    goals.add(GoalNode("g.win", "ultimate", "win the RSNA competition"))
-    goals.add(GoalNode("g.labels", "subgoal", "derive labels from reports",
+    goals.add(GoalItem("g.win", "ultimate", "win the RSNA competition"))
+    goals.add(GoalItem("g.labels", "subgoal", "derive labels from reports",
                        parent_goal_ids=("g.win",)))
-    goals.add(GoalNode("g.model", "subgoal", "train an accurate model",
+    goals.add(GoalItem("g.model", "subgoal", "train an accurate model",
                        parent_goal_ids=("g.win",)))
 
     bp = WorkingBlueprint("rev1")
@@ -292,7 +304,7 @@ def self_test() -> dict:
         bp.complete_item("i.extract", [])
     except PlanInvariantError:
         bad = True
-    bp.complete_item("i.extract", ["eval_receipt_7"])
+    bp.complete_item("i.extract", ["eval_record_7"])
     fr2 = compute_frontier(bp)
     check("completed_requires_evidence_and_unblocks_successors",
           bad and bp.items["i.extract"].status == "completed"
@@ -307,7 +319,7 @@ def self_test() -> dict:
         bad2 = True
     goals.satisfy("g.labels", evidence=("gold_validation",))
     check("a_goal_needs_evidence_or_a_waiver_to_be_satisfied",
-          bad2 and goals.nodes["g.labels"].status == "satisfied",
+          bad2 and goals.items["g.labels"].status == "satisfied",
           "satisfaction is earned by evidence, not asserted")
 
     # 5. validation catches a goal with no plan path and a dangling dependency.
@@ -349,14 +361,14 @@ def self_test() -> dict:
         cp.close([])
     except PlanInvariantError:
         bad4 = True
-    cp.close(["gold_eval_receipt"])
+    cp.close(["gold_eval_record"])
     check("a_checkpoint_needs_testable_exit_criteria_and_evidence",
           bad3 and bad4 and cp.status == "closed",
           "no exit criteria -> refused; closing without evidence -> refused")
 
     # 8. closed vocabularies.
     bad5 = 0
-    for fn in (lambda: GoalNode("x", "vibes", "s"),
+    for fn in (lambda: GoalItem("x", "vibes", "s"),
                lambda: BlueprintItem("x", "teleport", "s"),
                lambda: BlueprintItem("x", "phase", "s", status="magic")):
         try:

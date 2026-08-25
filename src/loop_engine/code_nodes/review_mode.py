@@ -68,7 +68,7 @@ class ReviewReport:
         if self.verdict not in REVIEW_VERDICTS:
             raise ValueError(f"verdict must be one of {REVIEW_VERDICTS}")
 
-    def receipt(self) -> dict:
+    def record(self) -> dict:
         return {"record_type": "practitioner_review/v1",
                 "verdict": self.verdict,
                 "findings": [{"check": f.check, "ok": f.ok,
@@ -318,8 +318,8 @@ def self_test() -> dict:
     # 8. every reviewed pair carries the full standing interrogation.
     check("every_review_asks_the_standing_interrogatories",
           len(r.interrogation) >= len(INTERROGATORIES) - 1
-          and r.receipt()["record_type"] == "practitioner_review/v1",
-          f"{len(r.interrogation)} interrogation rows in the receipt")
+          and r.record()["record_type"] == "practitioner_review/v1",
+          f"{len(r.interrogation)} interrogation rows in the record")
 
     passed = sum(1 for r_ in results if r_["passed"])
     return {"record_type": "review_mode_self_test", "tests": results,

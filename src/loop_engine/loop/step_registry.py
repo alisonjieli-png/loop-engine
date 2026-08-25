@@ -95,12 +95,12 @@ KERNEL_STEP_REGISTRY: tuple = (
         3, "assess_prepare", "PractitionerState + Situation",
         "DecisionSupportPortfolio",
         ("sufficient_no_expansion", "retrieve reusable resources",
-         "generate provisional resources", "spawn a research child"),
+         "generate provisional resources", "spawn a research Loop"),
         ("enrichment: coverage_probe, generate_enrichment (personas/questions)",
          "question_engine + question_bank: question forms and tiers",
          "capture: required opening scaffolding (research, outline, watch-outs, "
          "common/uncommon mistakes, best practices, success measures)",
-         "sub_practitioner: spawn a research child practitioner",
+         "sub_practitioner: spawn a Practitioner Loop for research",
          "kernel: default_assess_prepare"),
         "default_assess_prepare",
         "provide an `assess_prepare` impl; register question/persona generators "
@@ -150,12 +150,12 @@ KERNEL_STEP_REGISTRY: tuple = (
     KernelStep(
         6, "act", "PractitionerState + ExecutionPlan", "ResultPacket[]",
         ("run a deterministic node", "run a task graph", "one model call",
-         "author via OpenCode worker", "spawn child practitioners",
+         "author via OpenCode worker", "spawn Practitioner Loops",
          "matrix waterfall"),
         ("competition_solver: tabular/image executors (searchable nodes)",
          "rl_vocabulary: policies + novelty/action search",
          "opencode_client: headless coding workers",
-         "sub_practitioner + kernel.run_practitioner: child practitioners",
+         "sub_practitioner + kernel.run_practitioner: Practitioner Loops",
          "canvas: matrix-of-solutions execution",
          "kaggle_executor: real tabular submissions",
          "kernel: default_act"),
@@ -227,8 +227,8 @@ SERVICE_MAP: tuple = (
      "logic_candidate; emits findings/actions, abstains outside scope, never "
      "mutates state"),
     ("capability directory (handshakes + endpoints)", "capability_directory",
-     "how the practitioner knows what Context, Code, and Static Architecture "
-     "capabilities are "
+     "how the practitioner discovers Intelligence Search and Retrieval, Web "
+     "Research, and Custom Plugin capabilities that are "
      "available and HOW to call them: a CapabilityHandshake per surface (kind, "
      "operations, query fields, ranking, health: read before use, never "
      "assumed), and a standardized directory (discover / negotiate / call / serve) "
@@ -279,7 +279,7 @@ SERVICE_MAP: tuple = (
      "Packs, and Context Intelligence; intelligence_registry standardizes the "
      "Database and Runtime tiers (serve/version/track/promote)"),
     ("operating profile + config", "operating_profile + config",
-     "five enum modes resolved Platform->Org->Project->Run->Child; enforced at "
+     "five enum modes resolved Platform->Org->Project->Run->Spawned; enforced at "
      "the how/act/model boundaries"),
     ("model transport",
      "ollama_client + mistral_client + openrouter_client + custom_endpoint",
@@ -329,7 +329,7 @@ def render_map() -> str:
     for s in KERNEL_STEP_REGISTRY:
         out.append(render_step(s))
         out.append("")
-    out.append("CROSS-CUTTING SERVICES (used by many steps, never step-specific):")
+    out.append("INTERNAL RUNTIME SERVICES (not public capability groups):")
     for name, mods, desc in SERVICE_MAP:
         out.append(f"  - {name}  [{mods}]")
         out.append(f"      {desc}")
@@ -415,7 +415,7 @@ def self_test() -> dict:
     txt = render_map()
     check("the_rendered_map_lists_all_nine_steps_and_services",
           all(f"STEP {i}" in txt for i in range(1, 10))
-          and "CROSS-CUTTING SERVICES" in txt
+          and "INTERNAL RUNTIME SERVICES" in txt
           and "model-call DAG" in txt,
           "render_map prints all nine steps + the services outline")
 

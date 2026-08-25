@@ -24,7 +24,7 @@ resolves the decision with enough confidence — early exit is success, exactly 
 the information-first waterfall requires.  It escalates to a costlier arm ONLY
 when the cheaper arm abstained or was under-confident AND the expected value of
 the information the next arm would add exceeds that arm's cost.  It stops when
-the budget cannot afford the next arm.  Every resolution carries the receipt that
+the budget cannot afford the next arm.  Every resolution carries the record that
 makes the cost claim checkable: which arms ran, which one resolved, how many
 model calls were made, and — the number that beats a model-every-step loop — how
 many model calls were AVOIDED.
@@ -267,7 +267,7 @@ def self_test() -> dict:
         Arm("independent_panel", 5, 40.0, panel, model_calls=5)]
 
     # 1. A confident memory hit resolves at level 1 with ZERO model calls, and
-    #    the receipt shows the model calls it avoided.
+    #    the record shows the model calls it avoided.
     ctx_hit = {"memory": {"d1": {"answer": "cached", "confidence": 0.9}}}
     r1 = resolve_decision({"id": "d1", "key": "d1"}, ladder,
                           confidence_bar=0.75, context=ctx_hit)
@@ -276,7 +276,7 @@ def self_test() -> dict:
           and r1.model_calls_avoided == 7 and r1.answer == "cached"
           and r1.arms_run == ["deterministic_memory"],
           "a confident deterministic-memory hit resolves the decision at the "
-          "cheapest rung, makes no model call, and the receipt shows all 7 "
+          "cheapest rung, makes no model call, and the record shows all 7 "
           "would-be model calls avoided — the structural win over a "
           "model-every-step loop")
 

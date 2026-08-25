@@ -18,18 +18,21 @@ Task -> Loop Practitioner -> Solution Canvas -> Result
 
 Then explain the shared runtime and support system:
 
-- One Loop object runs each operational node.
-- Each loop has a mode and a step profile.
-- Practitioner loops build and test solutions.
-- Solution loops run the finished solution.
-- Self-Improvement loops review history and intelligence, then stage candidates.
-- Static Architecture supports all three roles.
+- One Loop object runs each executable graph vertex.
+- Each Loop has a selected mode and a step profile.
+- Practitioner Loops build and test solutions.
+- Intelligence Loops search, retrieve, frame, invoke, replay, and interpret.
+- Solution Loops run the finished solution.
+- A self-improvement Practitioner task reviews history and intelligence, then
+  stages candidates.
+- Static Architecture gives all three roles access to Intelligence Search and
+  Retrieval, Web Research, and Custom Plugins when permitted.
 - The Retrieval Engine searches classified records across all four layers.
 - The Capability Directory lets loops search Static Architecture for something
   executable under the current contract and permissions.
 - Four intelligence layers organize reusable knowledge.
 - Runtime Memory carries temporary notes during one run.
-- Chronicle, reports, and playback explain saved run history.
+- Run History, reports, and playback explain saved run history.
 
 Do not open with the reference nine-step sequence. That sequence is one step
 profile. It is not the product map.
@@ -38,26 +41,27 @@ profile. It is not the product map.
 
 | Name | Meaning |
 |---|---|
-| Loop | The shared runtime object for one operational node. |
+| Loop | The shared runtime object for one executable graph vertex. |
 | Loop Practitioner | The role that understands, builds, and verifies work. |
-| Practitioner loop tree | The history of loops used to build the work. |
+| Practitioner Loop graph | The Loops and relationships used to build the work. |
 | Solution Canvas | The declarative finished solution. |
-| Solution loop | One operational node in a Solution Canvas. |
-| Self-Improvement Loop | The role that reviews history and intelligence, seeds domains, and stages candidates. |
-| Static Architecture | Shared retrieval, providers, validation, stores, history, and viewing services. |
+| Solution Loop | One executable graph vertex in a Solution Canvas. |
+| Self-improvement Practitioner task | A bounded task that reviews history, audits intelligence, and stages candidates. |
+| Static Architecture | Intelligence Search and Retrieval, Web Research, and Custom Plugins. |
 | Retrieval Engine | One search interface with lexical, vector, and hybrid modes. |
 | Capability Directory | The search and handshake surface for executable services. |
 | Intelligence Library | One searchable view across the four persistent intelligence layers. |
 | Runtime Memory | The temporary note board for the current run. |
-| Chronicle | Saved event history used by reports and playback. |
+| Run History | Saved event history used by reports and playback. |
 
-Use "starts another loop" in introductory prose. Parent and child are valid
-technical terms when explaining depth or permission limits.
+Use Starting, Spawned by, Queried by, Retrieved by, and Connected from for
+Loop relationships. Use the exact relationship instead of a generic topology
+term.
 
-Do not use the bare word `Practitioner` as a public class name. The codebase
-contains another internal class with that shorter name. Use Loop Practitioner
-for the role and `PractitionerLoop` only when referring to the public alias of
-`Loop`.
+Do not use the bare word `Practitioner` as a public class name. Use Loop
+Practitioner for the role and `PractitionerLoop` only for the exact public alias
+of `Loop`. Internal planning code is a decision service or planning algorithm,
+not another runtime.
 
 ## 3. Keep the three loop controls separate
 
@@ -106,8 +110,8 @@ Every system-level intelligence diagram must include:
 
 1. Context Intelligence
 2. Code Intelligence
-3. Previous Run & Solution Intelligence
-4. User Intelligence
+3. Runtime History and Solution Intelligence
+4. User Feedback Intelligence
 
 Runtime Memory is separate because it is temporary and belongs to one run.
 
@@ -115,8 +119,8 @@ Code Intelligence currently includes conservative implemented-module
 references. Do not imply that every item is an independently registered and
 invokable capability.
 
-Previous Run & Solution Intelligence can be empty on a fresh installation. The
-current catalog loads saved Chronicle runs but does not yet load saved
+Runtime History and Solution Intelligence can be empty on a fresh installation. The
+current catalog loads saved Run History summaries but does not yet load saved
 `SolutionLibrary` assets into this layer.
 
 ## 6. Describe extensions honestly
@@ -157,13 +161,13 @@ Use the figure order in
 
 1. Bird's-eye system map
 2. One Loop object
-3. Practitioner loop tree
+3. Practitioner Loop graph
 4. Solution Canvas
-5. Self-Improvement Loop
+5. Self-improvement Practitioner task
 6. Static Architecture and intelligence layers
 7. Run history
 
-Canvases use left-to-right graphs. Chronicle timelines are horizontal with the
+Canvases use left-to-right graphs. Run History timelines are horizontal with the
 newest event on the right. A reference nine-step figure can use a two-row rail,
 but it appears only after the reader sees the full system.
 
@@ -184,10 +188,13 @@ but it appears only after the reader sees the full system.
 
 - The title describes what people can build.
 - The first diagram starts with a task and ends with a result.
-- Practitioner, Solution, and Self-Improvement loops are clearly different
-  roles.
+- Practitioner, Intelligence, and Solution are clearly shown as Loop roles.
+- Self-improvement is clearly shown as a Practitioner task.
 - The shared Loop object, modes, and step profiles are visible.
-- Static Architecture and all four intelligence layers appear early.
+- The three Static Architecture capability groups and all four intelligence
+  layers appear early.
+- Providers, settings, workspaces, stores, history, and viewing are shown as
+  internal runtime mechanics, not peer Static Architecture components.
 - Runtime Memory is not drawn as a fifth persistent layer.
 - Potential plugins are labeled as potential.
 - The nine-step profile is presented as one option.

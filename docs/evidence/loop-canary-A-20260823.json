@@ -1,160 +1,160 @@
 {
- "record_type": "loop_canary_A/v1",
- "recorded_at": "2026-08-23T15:12:50-04:00",
- "supersedes": "first attempt same file (empty answers: output-cap truncation; fix = chat_maxout per the session's F-catalog lesson)",
- "goal": "decide whether a churn model with train accuracy 0.99 and cross-validated 0.80 is overfitting, and choose the next step",
- "framework": "custom(orient,research,decide,verify)",
- "power": "medium",
- "result": {
-  "steps_run": 4,
-  "modes": {
-   "hybrid": 3,
-   "deterministic": 1
+  "record_type": "loop_canary_A/v1",
+  "recorded_at": "2026-08-23T15:12:50-04:00",
+  "supersedes": "first attempt same file (empty answers: output-cap truncation; fix = chat_maxout per the session's F-catalog lesson)",
+  "goal": "decide whether a churn model with train accuracy 0.99 and cross-validated 0.80 is overfitting, and choose the next step",
+  "framework": "custom(orient,research,decide,verify)",
+  "power": "medium",
+  "result": {
+    "steps_run": 4,
+    "modes": {
+      "hybrid": 3,
+      "deterministic": 1
+    },
+    "model_calls": 3,
+    "stopped": "done",
+    "confidence": 0.738
   },
-  "model_calls": 3,
-  "stopped": "done",
-  "confidence": 0.738
- },
- "real_model_calls": [
-  {
-   "step": "orient",
-   "model": "deepseek-v4-flash:0731",
-   "ok": true,
-   "prompt_tokens": 58,
-   "eval_tokens": 380,
-   "answer": "Yes, overfitting (gap 0.19). Next action: apply L1/L2 regularization or reduce feature set via selection, then re-evaluate with cross-validation to close the gap."
+  "real_model_calls": [
+    {
+      "step": "orient",
+      "model": "deepseek-v4-flash:0731",
+      "ok": true,
+      "prompt_tokens": 58,
+      "eval_tokens": 380,
+      "answer": "Yes, overfitting (gap 0.19). Next action: apply L1/L2 regularization or reduce feature set via selection, then re-evaluate with cross-validation to close the gap."
+    },
+    {
+      "step": "research",
+      "model": "deepseek-v4-flash:0731",
+      "ok": true,
+      "prompt_tokens": 58,
+      "eval_tokens": 568,
+      "answer": "Yes, it's overfitting (high variance). Next step: verify cross-validation uses time-based splits to rule out data leakage, then apply L1/L2 regularization or feature selection to reduce model complexity and close the 0.19 accuracy gap."
+    }
+  ],
+  "provider_reported_tokens": {
+    "prompt": 116,
+    "eval": 948
   },
-  {
-   "step": "research",
-   "model": "deepseek-v4-flash:0731",
-   "ok": true,
-   "prompt_tokens": 58,
-   "eval_tokens": 568,
-   "answer": "Yes, it's overfitting (high variance). Next step: verify cross-validation uses time-based splits to rule out data leakage, then apply L1/L2 regularization or feature selection to reduce model complexity and close the 0.19 accuracy gap."
-  }
- ],
- "provider_reported_tokens": {
-  "prompt": 116,
-  "eval": 948
- },
- "deterministic_computation": {
-  "node": "read_generalization_gap",
-  "train": 0.99,
-  "cv": 0.8,
-  "verdict": "overfitting",
-  "reason": "training score beats the cross-validated score by 23.7% (>10%): the model memorized rather than generalized \u2014 decide on the CV number"
- },
- "ledger_events": [
-  {
-   "loop_id": "loop1",
-   "depth": 0,
-   "event": "init",
-   "goal": "decide whether a churn model with train accuracy 0.99 and cross-validated 0.80 is overfitting, and choose the next step",
-   "framework": "custom",
-   "power": "medium"
+  "deterministic_computation": {
+    "node": "read_generalization_gap",
+    "train": 0.99,
+    "cv": 0.8,
+    "verdict": "overfitting",
+    "reason": "training score beats the cross-validated score by 23.7% (>10%): the model memorized rather than generalized — decide on the CV number"
   },
-  {
-   "loop_id": "loop1",
-   "event": "intelligence_pull",
-   "step": "orient",
-   "pulled": 3,
-   "required": 3
-  },
-  {
-   "loop_id": "loop1",
-   "event": "infra_call",
-   "step": "orient",
-   "surface": "resource_search",
-   "n_hits": 0
-  },
-  {
-   "loop_id": "loop1",
-   "event": "model_escalation",
-   "step": "orient"
-  },
-  {
-   "loop_id": "loop1",
-   "depth": 0,
-   "event": "run_step",
-   "step": "orient",
-   "mode": "hybrid",
-   "output": "orient:escalated_to_model",
-   "confidence": 0.65
-  },
-  {
-   "loop_id": "loop1",
-   "event": "intelligence_pull",
-   "step": "research",
-   "pulled": 3,
-   "required": 3
-  },
-  {
-   "loop_id": "loop1",
-   "event": "infra_call",
-   "step": "research",
-   "surface": "resource_search",
-   "n_hits": 0
-  },
-  {
-   "loop_id": "loop1",
-   "event": "model_escalation",
-   "step": "research"
-  },
-  {
-   "loop_id": "loop1",
-   "depth": 0,
-   "event": "run_step",
-   "step": "research",
-   "mode": "hybrid",
-   "output": "research:escalated_to_model",
-   "confidence": 0.65
-  },
-  {
-   "loop_id": "loop1",
-   "event": "intelligence_pull",
-   "step": "decide",
-   "pulled": 3,
-   "required": 3
-  },
-  {
-   "loop_id": "loop1",
-   "event": "infra_call",
-   "step": "decide",
-   "surface": "resource_search",
-   "n_hits": 1
-  },
-  {
-   "loop_id": "loop1",
-   "depth": 0,
-   "event": "run_step",
-   "step": "decide",
-   "mode": "hybrid",
-   "output": "decide:code+model_check[node.solution_shaping.should_decompose]",
-   "confidence": 0.8
-  },
-  {
-   "loop_id": "loop1",
-   "event": "intelligence_pull",
-   "step": "verify",
-   "pulled": 3,
-   "required": 3
-  },
-  {
-   "loop_id": "loop1",
-   "event": "infra_call",
-   "step": "verify",
-   "surface": "resource_search",
-   "n_hits": 2
-  },
-  {
-   "loop_id": "loop1",
-   "depth": 0,
-   "event": "run_step",
-   "step": "verify",
-   "mode": "deterministic",
-   "output": "verify:code[node.measurement.read_generalization_gap]",
-   "confidence": 0.85
-  }
- ],
- "honesty": "2 steps escalated to the real cloud model (no code node served them); decide/verify resolved on real code-node records; the overfitting verdict is the real deterministic gap reader, not the model's opinion"
+  "ledger_events": [
+    {
+      "loop_id": "loop1",
+      "depth": 0,
+      "event": "init",
+      "goal": "decide whether a churn model with train accuracy 0.99 and cross-validated 0.80 is overfitting, and choose the next step",
+      "framework": "custom",
+      "power": "medium"
+    },
+    {
+      "loop_id": "loop1",
+      "event": "intelligence_pull",
+      "step": "orient",
+      "pulled": 3,
+      "required": 3
+    },
+    {
+      "loop_id": "loop1",
+      "event": "infra_call",
+      "step": "orient",
+      "surface": "resource_search",
+      "n_hits": 0
+    },
+    {
+      "loop_id": "loop1",
+      "event": "model_escalation",
+      "step": "orient"
+    },
+    {
+      "loop_id": "loop1",
+      "depth": 0,
+      "event": "run_step",
+      "step": "orient",
+      "mode": "hybrid",
+      "output": "orient:escalated_to_model",
+      "confidence": 0.65
+    },
+    {
+      "loop_id": "loop1",
+      "event": "intelligence_pull",
+      "step": "research",
+      "pulled": 3,
+      "required": 3
+    },
+    {
+      "loop_id": "loop1",
+      "event": "infra_call",
+      "step": "research",
+      "surface": "resource_search",
+      "n_hits": 0
+    },
+    {
+      "loop_id": "loop1",
+      "event": "model_escalation",
+      "step": "research"
+    },
+    {
+      "loop_id": "loop1",
+      "depth": 0,
+      "event": "run_step",
+      "step": "research",
+      "mode": "hybrid",
+      "output": "research:escalated_to_model",
+      "confidence": 0.65
+    },
+    {
+      "loop_id": "loop1",
+      "event": "intelligence_pull",
+      "step": "decide",
+      "pulled": 3,
+      "required": 3
+    },
+    {
+      "loop_id": "loop1",
+      "event": "infra_call",
+      "step": "decide",
+      "surface": "resource_search",
+      "n_hits": 1
+    },
+    {
+      "loop_id": "loop1",
+      "depth": 0,
+      "event": "run_step",
+      "step": "decide",
+      "mode": "hybrid",
+      "output": "decide:code+model_check[node.solution_shaping.should_decompose]",
+      "confidence": 0.8
+    },
+    {
+      "loop_id": "loop1",
+      "event": "intelligence_pull",
+      "step": "verify",
+      "pulled": 3,
+      "required": 3
+    },
+    {
+      "loop_id": "loop1",
+      "event": "infra_call",
+      "step": "verify",
+      "surface": "resource_search",
+      "n_hits": 2
+    },
+    {
+      "loop_id": "loop1",
+      "depth": 0,
+      "event": "run_step",
+      "step": "verify",
+      "mode": "deterministic",
+      "output": "verify:code[node.measurement.read_generalization_gap]",
+      "confidence": 0.85
+    }
+  ],
+  "honesty": "2 steps escalated to the real cloud model (no code node served them); decide/verify resolved on real code-node records; the overfitting verdict is the real deterministic gap reader, not the model's opinion"
 }

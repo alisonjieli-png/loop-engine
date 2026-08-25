@@ -33,10 +33,10 @@ def _public_functions(tree: ast.Module):
             if not node.name.startswith("_"):
                 yield node, node.name
         elif isinstance(node, ast.ClassDef):
-            for child in node.body:
-                if (isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef))
-                        and not child.name.startswith("_")):
-                    yield child, f"{node.name}.{child.name}"
+            for spawned in node.body:
+                if (isinstance(spawned, (ast.FunctionDef, ast.AsyncFunctionDef))
+                        and not spawned.name.startswith("_")):
+                    yield spawned, f"{node.name}.{spawned.name}"
 
 
 def scan_public_signatures(root: "str | None" = None,

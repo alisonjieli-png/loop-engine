@@ -7,18 +7,59 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import sys
+import tempfile
 
 from .loop.resolvers import RESOLVER_CATEGORIES, DEFAULT_CATEGORY_LEVEL
 from .loop.moves import MOVE_TYPES
 from ._self_test import self_test
 
 
+def _run_self_test_captured(test_fn=self_test) -> tuple[dict, int]:
+    """Run noisy folded tests behind a real OS-backed text stream."""
+    with tempfile.TemporaryFile(mode="w+", encoding="utf-8") as stream:
+        with contextlib.redirect_stdout(stream), contextlib.redirect_stderr(stream):
+            report = test_fn()
+        stream.flush()
+        stream.seek(0)
+        captured_lines = sum(1 for _line in stream)
+    return report, captured_lines
+
+
+def _concise_self_test_summary(report: dict, captured_lines: int) -> dict:
+    failures = []
+    for item in report.get("tests", ()):
+        if item.get("passed"):
+            continue
+        failures.append({
+            "test": item.get("test") or item.get("name") or "unnamed test",
+            "detail": str(item.get("detail") or item.get("note") or "")[:300],
+            **({"missing_dependency": item["missing_dependency"]}
+               if item.get("missing_dependency") else {}),
+        })
+    return {
+        "record_type": "loop_engine_self_test_summary/v1",
+        "passed": report.get("passed", 0),
+        "total": report.get("total", 0),
+        "all_passed": bool(report.get("all_passed")),
+        "missing_dependencies": report.get("missing_dependencies", []),
+        "captured_output_lines": captured_lines,
+        "failures": failures,
+    }
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="loop-engine",
                                      description=__doc__.splitlines()[0])
-    parser.add_argument("--self-test", action="store_true")
+    test_output = parser.add_mutually_exclusive_group()
+    test_output.add_argument(
+        "--self-test", action="store_true",
+        help="run all tests and print one concise summary plus failures")
+    test_output.add_argument(
+        "--self-test-verbose", action="store_true",
+        help="run all tests with module demo output and the full JSON report")
     parser.add_argument("--categories", action="store_true",
                         help="print resolver categories, levels, and move types")
     parser.add_argument("--map", action="store_true",
@@ -27,17 +68,17 @@ def main(argv=None) -> int:
     parser.add_argument("--profiles", action="store_true",
                         help="print the versioned Loop profile catalog")
     parser.add_argument("--live-demo", action="store_true",
-                        help="watch a REAL PractitionerLoop run live: "
+                        help="watch a real canonical Loop run live: "
                         "localhost page with the step rail + console log "
                         "(deterministic stage-0 fixture, zero model calls)")
     parser.add_argument("--studio", action="store_true",
                         help="serve Loop Engine Studio (local, read-only, "
-                        "Chronicle-backed) on --port")
+                        "backed by saved run history) on --port")
     parser.add_argument("--port", type=int,
                         help="local port (Studio defaults to 8765; live demo "
                              "defaults to 8770)")
     parser.add_argument("--runs-dir",
-                        help="shared Chronicle directory; defaults to "
+                        help="shared saved-run directory; defaults to "
                              "$LOOP_ENGINE_RUNS_DIR or ~/.loop-engine/runs")
     parser.add_argument("--conformance", action="store_true",
                         help="run the machine-enforced conformance scan + "
@@ -65,6 +106,21 @@ def main(argv=None) -> int:
                         help="run a useful example included with the package")
     parser.add_argument("--campaign", choices=("plan", "run"),
                         help="plan or run the five-problem pilot campaign")
+    parser.add_argument("--verify-live-model", metavar="PROVIDER",
+                        help="verify one real Ollama Cloud, Mistral, or custom "
+                             "provider call against repository metadata")
+    parser.add_argument("--model-route", default="",
+                        help="exact route for --verify-live-model")
+    parser.add_argument("--model-id", default="",
+                        help="exact model for --verify-live-model")
+    parser.add_argument("--repository-root", default=".",
+                        help="repository whose pyproject.toml is used by the "
+                             "live verification")
+    parser.add_argument("--live-evidence-out", default="",
+                        help="new JSON evidence path; default is a protected "
+                             "file below ~/.loop-engine/evidence")
+    parser.add_argument("--live-timeout", type=float, default=300.0,
+                        help="wall-time limit for the one live provider call")
     parser.add_argument("--settings-action", choices=("init", "show", "check"),
                         help="create, show, or validate user settings")
     parser.add_argument("--settings-file",
@@ -102,6 +158,41 @@ def main(argv=None) -> int:
             parser.error("settings requires init, show, or check")
         raw_argv[:2] = ["--settings-action", raw_argv[1]]
     args = parser.parse_args(raw_argv)
+    if args.verify_live_model:
+        from .static_architecture.live_model_verification import (
+            LiveModelVerificationError, LiveModelVerificationRequest,
+            plan_live_model_verification, run_live_model_verification)
+        try:
+            request = LiveModelVerificationRequest(
+                provider=args.verify_live_model,
+                repository_root=args.repository_root,
+                settings_file=args.settings_file or "",
+                route_name=args.model_route,
+                model=args.model_id,
+                authorize_model_calls=args.authorize_model_calls,
+                max_physical_model_calls=args.max_model_calls,
+                max_total_tokens=args.max_total_tokens,
+                timeout_seconds=args.live_timeout,
+                evidence_path=args.live_evidence_out)
+            if not args.authorize_model_calls:
+                planned = plan_live_model_verification(request).safe_summary()
+                planned["status"] = "NOT_RUN"
+                planned["reason"] = (
+                    "add --authorize-model-calls, --max-model-calls 1, and "
+                    "an adequate --max-total-tokens value to make the call")
+                print(json.dumps(planned, indent=1))
+                return 2
+            result = run_live_model_verification(request)
+            print(json.dumps(result, indent=1))
+            return 0 if result["provider_integration_proven"] else 1
+        except (LiveModelVerificationError, KeyError, ValueError) as exc:
+            print(json.dumps({
+                "record_type": "live_model_verification_refusal/v1",
+                "status": "NOT_RUN",
+                "provider_integration_proven": False,
+                "reason": str(exc),
+            }, indent=1))
+            return 2
     if args.settings_action:
         from .static_architecture.settings_loader import (
             load_runtime_settings, write_default_settings)
@@ -193,7 +284,7 @@ def main(argv=None) -> int:
         except ValueError as exc:
             print(f"Campaign refused: {exc}")
             return 2
-        from .static_architecture.chronicle import default_runs_dir
+        from .static_architecture.run_history import default_runs_dir
         runs_dir = default_runs_dir(
             args.runs_dir or runtime_settings.history.resolved_runs_dir())
         result = CampaignRunner(spec, CampaignRunOptions(
@@ -210,15 +301,15 @@ def main(argv=None) -> int:
         return 0
     if args.runs or args.report:
         import os
-        from .static_architecture.chronicle import default_runs_dir
+        from .static_architecture.run_history import default_runs_dir
         from .code_nodes.loop_report import (report_from_run, render_text,
                                              render_markdown, render_html)
         runs_dir = default_runs_dir(args.runs_dir or "")
         saved = sorted(os.listdir(runs_dir)) if os.path.isdir(runs_dir) else []
         if args.runs:
             if not saved:
-                print("No saved runs yet. Run a loop first — every run that "
-                      "calls Chronicle.save() appears here.")
+                print("No saved runs yet. Run a Loop and save its run history "
+                      "to make it appear here.")
                 return 0
             print(f"{len(saved)} saved run(s):")
             for r in saved:
@@ -280,9 +371,14 @@ def main(argv=None) -> int:
                           "default_levels": DEFAULT_CATEGORY_LEVEL,
                           "move_types": list(MOVE_TYPES)}, indent=1))
         return 0
-    if args.self_test:
-        report = self_test()
-        print(json.dumps(report, indent=1))
+    if args.self_test or args.self_test_verbose:
+        if args.self_test_verbose:
+            report = self_test()
+            print(json.dumps(report, indent=1))
+        else:
+            report, captured_lines = _run_self_test_captured()
+            print(json.dumps(_concise_self_test_summary(
+                report, captured_lines), indent=1))
         return 0 if report["all_passed"] else 1
     parser.print_help()
     return 2

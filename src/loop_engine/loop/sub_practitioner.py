@@ -1,4 +1,8 @@
-"""Sub-practitioners and non-linear orchestration — spawnable, recursive loops.
+"""Legacy sub-practitioners plus non-linear ordering compatibility.
+
+New spawned work uses ``delegation_runtime.SpawnedTaskManager`` with a
+Practitioner profile. The historical ``LoopState`` functions remain callable
+for existing users and issue ``DeprecationWarning`` before using the old path.
 
 Two owner requirements (2026-08-22):
 
@@ -9,8 +13,8 @@ its own **exploration canvas** (never the parent's solution canvas), and what it
 learns feeds back into the parent's knowledge as facts.  Sub-practitioners can
 spawn sub-sub-practitioners, and so on, bounded by a depth guard so recursion
 cannot run away.  This is how the system "builds its own solution to research":
-the parent recognises it needs research, spawns a child whose goal IS the
-research, the child surveys the available nodes/tools (and may author new ones —
+the spawning Loop recognizes it needs research and spawns a Loop whose goal is the
+research, the spawned surveys the available nodes/tools (and may author new ones —
 custom web-search tools are just nodes), and its findings flow back up.
 
 **Non-linear ordering.**  The practitioner nodes do not have to run in a fixed
@@ -23,8 +27,14 @@ what-is-next, or interleave — the nodes are a vocabulary, not a script.
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
+
+if TYPE_CHECKING:
+    from .delegation_runtime import (
+        DelegationSpec, SpawnedExecutor, SpawnedTaskSnapshot)
+    from .recursive_loop import Loop
 
 from ..strings.knowledge import Knowledge
 from ..loop.canvas import Canvas
@@ -33,10 +43,32 @@ from ..loop.practitioner_loop import (LoopState, NODE_SEQUENCE,
 
 # Recursion bound: sub-sub-sub-practitioners are allowed, runaway spawning is not.
 MAX_PRACTITIONER_DEPTH = 5
+LEGACY_SUB_PRACTITIONER_DEPRECATION = (
+    "spawn_sub_practitioner(LoopState, ...) is a compatibility path; use "
+    "SpawnedTaskManager with a Practitioner Loop profile for new spawned work")
 
 
 class DepthExceeded(RuntimeError):
     """Raised when a spawn would exceed MAX_PRACTITIONER_DEPTH."""
+
+
+def spawn_practitioner_loop(
+        parent: "Loop", spec: "DelegationSpec", *,
+        executor: "SpawnedExecutor | None" = None) -> "SpawnedTaskSnapshot":
+    """Run one typed Spawned Practitioner Loop through delegation.
+
+    This small compatibility entry point returns a terminal task snapshot. Use
+    ``SpawnedTaskManager`` directly for status, update, cancellation, listing,
+    or asynchronous control is needed.
+    """
+    from .delegation_runtime import DelegationError, SpawnedTaskManager
+    from .loop_profile_ontology import resolve_profile
+
+    if resolve_profile(spec.profile).spec.family != "practitioner":
+        raise DelegationError(
+            "spawn_practitioner_loop requires a Practitioner profile")
+    manager = SpawnedTaskManager(parent, executor)
+    return manager.status(manager.start(spec))
 
 
 @dataclass
@@ -48,7 +80,7 @@ class SubPractitionerResult:
     graph: list = field(default_factory=list)
     steps: int = 0
     model_calls: int = 0
-    children: list = field(default_factory=list)   # SubPractitionerResults
+    spawned_loops: list = field(default_factory=list)   # SubPractitionerResults
 
 
 def spawn_sub_practitioner(parent: LoopState, goal: str, *,
@@ -57,11 +89,16 @@ def spawn_sub_practitioner(parent: LoopState, goal: str, *,
                            max_steps: int = 30) -> SubPractitionerResult:
     """Spawn one sub-practitioner for a side goal and feed its findings back.
 
-    The child gets its OWN exploration canvas and its own knowledge (seeded with
+    The spawned gets its OWN exploration canvas and its own knowledge (seeded with
     the side goal and any facts the parent passes down); it runs a full
     practitioner loop; and its findings are merged into the parent's knowledge as
     ``learned:<goal>`` facts — the feed-back-in the owner described.  Raises
     ``DepthExceeded`` past MAX_PRACTITIONER_DEPTH."""
+    warnings.warn(
+        LEGACY_SUB_PRACTITIONER_DEPRECATION,
+        DeprecationWarning,
+        stacklevel=2,
+    )
     depth = int(parent.blackboard.get("depth", 0)) + 1
     if depth > MAX_PRACTITIONER_DEPTH:
         raise DepthExceeded(f"practitioner depth {depth} exceeds "
@@ -69,16 +106,16 @@ def spawn_sub_practitioner(parent: LoopState, goal: str, *,
     canvas = Canvas(canvas_id=f"exploration-d{depth}-{abs(hash(goal)) % 99999}",
                     kind="exploration",
                     provenance=f"sub-practitioner of {parent.knowledge.goal!r}")
-    child_knowledge = Knowledge(goal=goal, facts=dict(seed_facts or {}))
-    child = LoopState(knowledge=child_knowledge)
-    child.blackboard["depth"] = depth
-    child.blackboard["canvas"] = canvas
-    child.blackboard["parent_goal"] = parent.knowledge.goal
+    spawned_knowledge = Knowledge(goal=goal, facts=dict(seed_facts or {}))
+    spawned = LoopState(knowledge=spawned_knowledge)
+    spawned.blackboard["depth"] = depth
+    spawned.blackboard["canvas"] = canvas
+    spawned.blackboard["parent_goal"] = parent.knowledge.goal
     nf = nodes_factory or default_nodes
-    child = run_practitioner_loop(child, nf(), max_steps=max_steps)
+    spawned = run_practitioner_loop(spawned, nf(), max_steps=max_steps)
 
     findings = {f"learned:{goal}": True,
-                f"learned:{goal}:nodes": len(child.graph)}
+                f"learned:{goal}:nodes": len(spawned.graph)}
     # feed back into the PARENT's knowledge — research flows up, never sideways.
     parent.knowledge = Knowledge(
         goal=parent.knowledge.goal, graph_summary=parent.knowledge.graph_summary,
@@ -88,9 +125,9 @@ def spawn_sub_practitioner(parent: LoopState, goal: str, *,
         context_level=parent.knowledge.context_level,
         frame=parent.knowledge.frame)
     result = SubPractitionerResult(goal=goal, depth=depth, canvas=canvas,
-                                   findings=findings, graph=child.graph,
-                                   steps=len(child.history),
-                                   model_calls=child.model_calls)
+                                   findings=findings, graph=spawned.graph,
+                                   steps=len(spawned.history),
+                                   model_calls=spawned.model_calls)
     parent.blackboard.setdefault("sub_practitioners", []).append(result)
     return result
 
@@ -219,7 +256,7 @@ def self_test() -> dict:
     check("a_sub_practitioner_runs_its_own_loop_on_an_exploration_canvas",
           res.canvas.kind == "exploration" and res.steps > 0
           and res.depth == 1,
-          f"child ran {res.steps} steps at depth 1 on canvas {res.canvas.canvas_id}")
+          f"spawned ran {res.steps} steps at depth 1 on canvas {res.canvas.canvas_id}")
 
     check("the_sub_practitioners_findings_feed_back_into_the_parent",
           parent.knowledge.fact("learned:research: best boosted-tree defaults")
@@ -227,12 +264,49 @@ def self_test() -> dict:
           "the parent's knowledge now carries learned:<goal> facts and the "
           "spawn is recorded on its blackboard")
 
+    # The new public path delegates through the universal Loop runtime.
+    from .delegation_runtime import (
+        DelegationConstraints, DelegationSpec, SpawnedTaskStatus)
+    from .loop_contract import LoopContract
+    from .loop_profile_catalog import resolve_profile_alias
+    from .loop_role import LoopRelationshipKind, LoopRole
+    from .recursive_loop import Loop, LoopConfig
+
+    universal_parent = Loop(
+        "run one bounded operation",
+        LoopConfig(
+            allowable_modes=("deterministic",),
+            preferred_modes=("deterministic",),
+            delegated_modes=("deterministic",),
+        ),
+    )
+    universal = spawn_practitioner_loop(
+        universal_parent,
+        DelegationSpec(
+            goal="run the selected operation",
+            profile=resolve_profile_alias("practitioner.code_execution"),
+            contract=LoopContract(
+                "run-operation", "code_only",
+                output_roles=("operation_result/v1",)),
+            constraints=DelegationConstraints(
+                available_fields=("operation_ref",),
+                capability_refs=(
+                    "loop_spawn", "run_history_write", "code_execution")),
+        ),
+    )
+    check("spawned_practitioner_path_uses_universal_delegation",
+          universal.status == SpawnedTaskStatus.SUCCEEDED
+          and universal.relationship.kind == LoopRelationshipKind.SPAWNED_BY
+          and universal.identity.role == LoopRole.PRACTITIONER,
+          "the recommended path returned a typed Spawned Practitioner snapshot")
+
     # 2. sub-sub spawning works, and the depth guard stops runaway recursion.
-    child_state = LoopState(knowledge=Knowledge(goal="child"))
-    child_state.blackboard["depth"] = 1
-    res2 = spawn_sub_practitioner(child_state, "sub-sub research")
+    spawned_state = LoopState(knowledge=Knowledge(goal="spawned"))
+    spawned_state.blackboard["depth"] = 1
+    res2 = spawn_sub_practitioner(spawned_state, "sub-sub research")
     check("sub_sub_practitioners_spawn_with_increasing_depth",
-          res2.depth == 2, "a child at depth 1 spawned a grandchild at depth 2")
+          res2.depth == 2,
+          "a Loop at depth 1 spawned another Loop at depth 2")
 
     deep = LoopState(knowledge=Knowledge(goal="deep"))
     deep.blackboard["depth"] = MAX_PRACTITIONER_DEPTH

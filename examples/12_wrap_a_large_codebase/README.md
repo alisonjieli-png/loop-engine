@@ -1,7 +1,7 @@
 # Wrap a large codebase
 
 This example represents a forty-file, one-million-line fulfillment worker as
-one small root card and six subsystem cards. The repository body and a 9 GB
+one small top-level card and six subsystem cards. The repository body and a 9 GB
 dataset remain behind separate digest-bound references.
 
 ```bash
@@ -11,7 +11,7 @@ python3 examples/12_wrap_a_large_codebase/run.py
 
 - Network or model: none
 - External effects: none
-- Shows: root card, subsystem cards, repository and dataset references,
+- Shows: top-level card, subsystem cards, repository and dataset references,
   digest-keyed materialization cache, and component-loop execution
 - Uses a fixture resolver, so it does not clone the example repository or load
   the example dataset

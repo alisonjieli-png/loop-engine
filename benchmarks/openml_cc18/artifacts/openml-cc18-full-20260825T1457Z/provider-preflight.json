@@ -1,0 +1,14 @@
+{
+  "cross_provider_failover": false,
+  "discovered_models_count": 18,
+  "endpoint": "https://ollama.com/api/chat",
+  "exact_model_id": "deepseek-v4-flash:0731",
+  "exact_model_present": true,
+  "fake_or_synthetic_provider": false,
+  "maximum_output_observed_at": "2026-08-25",
+  "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+  "maximum_output_tokens": 65536,
+  "preflight_inference_calls": 0,
+  "provider": "ollama_cloud",
+  "record_type": "ollama_provider_preflight/v1"
+}

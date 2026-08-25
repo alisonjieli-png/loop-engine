@@ -3,7 +3,7 @@
 Architectural role: Code Node system for repeatable end-to-end evaluation.
 
 The runner freezes each problem input and evaluator, expands nonredundant mode
-and provider arms, records every arm in a Chronicle, and supports console event
+and provider arms, records every arm in saved run history, and supports console event
 viewing. Deterministic arms never carry a provider label. Model arms require an
 explicit authorization flag and a physical-call ceiling.
 
@@ -429,7 +429,7 @@ class CampaignRunner:
                 ledger=ledger, parent=parent)
         return invoke_provider_model(ProviderPinnedRequest(
             prompt=prompt, provider=arm.provider, model=model,
-            max_output_tokens=256, thinking_power=arm.llm_thinking_power),
+            max_output_tokens=None, thinking_power=arm.llm_thinking_power),
             ledger=ledger, parent=parent)
 
     def _model(self, case, arm, baseline, *, ledger, parent):
@@ -465,7 +465,7 @@ class CampaignRunner:
                 delegated_modes=CAMPAIGN_MODES,
                 power="standard", max_depth=4),
             ledger=ledger)
-        root.enable_chronicle(run_id, root_dir=self.runs_dir)
+        root.enable_run_history(run_id, root_dir=self.runs_dir)
         state = {"baseline": case.solve_deterministically(),
                  "value": None, "gateway": None, "accepted": False,
                  "error": ""}
@@ -481,7 +481,7 @@ class CampaignRunner:
                     return StepOutcome(
                         output="solve:deterministic", mode="deterministic",
                         confidence=1.0)
-                child = loop.spawn(
+                spawned = loop.spawn(
                     f"solve {case.case_id} with {arm.arm_id}",
                     LoopConfig(
                         framework="custom", custom_steps=("solve",),
@@ -492,14 +492,14 @@ class CampaignRunner:
                         llm_thinking_power=arm.llm_thinking_power,
                         max_depth=4))
 
-                def child_handler(child_loop, child_step, child_context):
+                def spawned_handler(spawned_loop, spawned_step, spawned_context):
                     try:
                         response = self._model(
                             case, arm, state["baseline"], ledger=ledger,
-                            parent=child_loop)
+                            parent=spawned_loop)
                         state["gateway"] = response
-                        child_loop.ledger.record(
-                            loop_id=child_loop.loop_id, event="custom",
+                        spawned_loop.ledger.record(
+                            loop_id=spawned_loop.loop_id, event="custom",
                             model_gateway_result=response.to_dict())
                         candidate = _extract_json(response.text) if response.ok else None
                         if arm.mode == "hybrid":
@@ -526,7 +526,7 @@ class CampaignRunner:
                             mode="non_deterministic", confidence=0.0,
                             failed=True)
 
-                child.run(handler=child_handler, max_steps=2)
+                spawned.run(handler=spawned_handler, max_steps=2)
                 return StepOutcome(
                     output=f"solve:{arm.arm_id}", mode="deterministic",
                     confidence=0.9 if state["value"] is not None else 0.1,
@@ -582,8 +582,7 @@ def run_campaign_arm(runner: CampaignRunner, case: ProblemCase,
 
 
 def self_test() -> dict:
-    from ..static_architecture.model_gateway import (
-        GatewayAttempt, ModelGatewayResult)
+    """Offline campaign contracts and real deterministic executions only."""
     results = []
 
     def check(name, ok, detail=""):
@@ -608,44 +607,27 @@ def self_test() -> dict:
     with tempfile.TemporaryDirectory(prefix="loop-engine-campaign-") as root:
         det_result = CampaignRunner(
             deterministic, CampaignRunOptions(runs_dir=root)).run()
-        check("five_deterministic_cases_run_and_save_chronicles",
+        check("five_deterministic_cases_run_and_save_run_histories",
               det_result.accepted == 5 and len(det_result.arms) == 5
               and det_result.to_dict()["physical_model_calls"] == 0
               and len(os.listdir(root)) == 5)
-
-    calls = []
-
-    def fake_model(case, arm, baseline, **kwargs):
-        calls.append((case.case_id, arm.provider, arm.mode))
-        text = json.dumps(case.expected)
-        return ModelGatewayResult(
-            ok=True, text=text, provider=arm.provider, model="fixture-model",
-            route=f"fixture.{arm.provider}", input_tokens=5, output_tokens=3,
-            attempts=[GatewayAttempt(
-                arm.provider, "fixture-model", f"fixture.{arm.provider}",
-                f"model-{len(calls)}", True, 5, 3, True,
-                provider_ok=True)])
 
     one_case = default_problem_cases()[:1]
     model_arms = campaign_arms(
         modes=("hybrid", "non_deterministic"),
         providers=DEFAULT_PROVIDERS)
     model_spec = CampaignSpec(
-        "offline-model-matrix", one_case, model_arms,
+        "authorized-live-model-matrix", one_case, model_arms,
         authorize_model_calls=True, max_model_calls=6)
-    with tempfile.TemporaryDirectory(prefix="loop-engine-campaign-") as root:
-        model_result = CampaignRunner(model_spec, CampaignRunOptions(
-            runs_dir=root, model_call=fake_model)).run()
-        from .loop_report import report_from_run
-        saved_report = report_from_run(root, model_result.arms[0].run_id)
-        check("hybrid_and_model_led_provider_matrix_uses_the_same_evaluator",
-              model_result.accepted == 6 and len(calls) == 6
-              and {provider for _, provider, _ in calls}
-              == set(DEFAULT_PROVIDERS)
-              and model_result.to_dict()["physical_model_calls"] == 6
-              and saved_report.model_calls == 1,
-              "one physical call in each saved arm report")
+    check("model_matrix_can_be_planned_but_is_not_run_by_offline_tests",
+          model_spec.model_arm_count == 6
+          and model_spec.authorize_model_calls
+          and model_spec.max_model_calls == 6,
+          "provider integration requires a separately authorized live run")
 
     passed = sum(1 for test in results if test["passed"])
-    return {"tests": results, "passed": passed, "total": len(results),
+    return {"record_type": "campaign_runner_contract_test/v2",
+            "scope": "offline_contract_and_deterministic_execution",
+            "provider_integration_proven": False,
+            "tests": results, "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}

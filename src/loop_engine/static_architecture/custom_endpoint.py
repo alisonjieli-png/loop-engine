@@ -60,6 +60,10 @@ import urllib.request
 from dataclasses import dataclass
 
 from .ollama_client import ChatResult, FORBIDDEN_MODELS
+from .model_capabilities import (
+    ModelOutputCapability, ModelOutputLimitMismatch,
+    UnknownModelOutputLimit, require_declared_maximum,
+)
 from .provider_failover import PROVIDERS
 
 #: Wire formats understood. "openai" covers the overwhelming majority of
@@ -87,7 +91,7 @@ class CustomEndpoint:
     api_key: str = ""
     wire: str = "openai"
     locality: str = "local"
-    max_output: int = 4096
+    output_capability: "ModelOutputCapability | None" = None
     counts_as_evidence: bool = False
     timeout: float = 900.0
 
@@ -95,11 +99,16 @@ class CustomEndpoint:
         if not self.name or not self.name.replace("_", "").isalnum():
             raise EndpointError(
                 f"endpoint name {self.name!r} must be a simple identifier — it "
-                "becomes a provider key and appears in receipts")
+                "becomes a provider key and appears in records")
         if self.wire not in WIRE_FORMATS:
             raise EndpointError(f"wire {self.wire!r} not in {WIRE_FORMATS}")
         if self.locality not in LOCALITIES:
             raise EndpointError(f"locality must be one of {LOCALITIES}")
+        if (self.output_capability is not None
+                and not isinstance(self.output_capability,
+                                   ModelOutputCapability)):
+            raise EndpointError(
+                "output_capability must be a ModelOutputCapability")
         if not self.base_url.startswith(("http://", "https://")):
             raise EndpointError(
                 f"base_url {self.base_url!r} must be an http(s) URL")
@@ -110,7 +119,7 @@ class CustomEndpoint:
                 "endpoint is not a way around a model ban")
         if self.locality == "local" and self.counts_as_evidence:
             # Allowed, but it must be a DECLARED choice by someone who knows
-            # what it means, so it is stated in the receipt rather than assumed.
+            # what it means, so it is stated in the record rather than assumed.
             pass
 
     @property
@@ -122,10 +131,12 @@ class CustomEndpoint:
                        if not base.endswith("/chat/completions") else "")
 
     def describe(self) -> dict:
-        """Receipt shape — carries no credential."""
+        """Record shape — carries no credential."""
         return {"name": self.name, "base_url": self.base_url,
                 "model": self.model, "wire": self.wire,
                 "locality": self.locality,
+                "output_capability": (self.output_capability.summary()
+                                      if self.output_capability else None),
                 "counts_as_evidence": self.counts_as_evidence,
                 "has_key": bool(self.api_key)}
 
@@ -194,39 +205,48 @@ def make_adapter(ep: CustomEndpoint):
         endpoint = ep
 
         @staticmethod
+        def output_capability_for(model=""):
+            selected = model or ep.model
+            if selected != ep.model or ep.output_capability is None:
+                raise UnknownModelOutputLimit(
+                    "unknown_model_output_limit: custom endpoint needs an "
+                    "explicit ModelOutputCapability for its exact model")
+            return ep.output_capability
+
+        @staticmethod
         def chat(prompt, *, model="", system="", max_tokens=0,
-                 temperature=0.7, timeout=None, api_key=None):
-            return _chat_once(ep, prompt, system=system,
-                              max_tokens=max_tokens or ep.max_output,
-                              temperature=temperature,
-                              timeout=timeout or ep.timeout)
+                 temperature=0.7, timeout=None, api_key=None,
+                 output_capability=None):
+            try:
+                capability = (output_capability
+                              or _Adapter.output_capability_for(model))
+                maximum = require_declared_maximum(
+                    max_tokens or None, capability)
+            except (UnknownModelOutputLimit,
+                    ModelOutputLimitMismatch) as exc:
+                return ChatResult("", model or ep.model, ok=False,
+                                  error=str(exc))
+            return _chat_once(
+                ep, prompt, system=system, max_tokens=maximum,
+                temperature=temperature, timeout=timeout or ep.timeout)
 
         @staticmethod
         def chat_maxout(prompt, *, model="", system="", temperature=0.7,
                         timeout=None, api_key=None, backoff=0.9,
-                        floor_frac=0.3, max_attempts=8,
-                        max_output_tokens=None):
-            """Same back-off policy as every built-in adapter, so failing over
-            to a custom endpoint does not change the call's semantics."""
-            ceiling = min(ep.max_output, int(max_output_tokens)) \
-                if max_output_tokens is not None else ep.max_output
-            mt, last, attempt = ceiling, None, 1
-            for attempt in range(1, max_attempts + 1):
-                res = _chat_once(ep, prompt, system=system, max_tokens=int(mt),
-                                 temperature=temperature,
-                                 timeout=timeout or ep.timeout)
-                res.num_predict_used, res.attempts = int(mt), attempt
-                if res.ok and res.text.strip():
-                    return res
-                last = res
-                mt = int(mt * backoff)
-                if mt < ceiling * floor_frac:
-                    break
-            if last is not None:
-                last.num_predict_used, last.attempts = int(mt), attempt
-            return last if last is not None else _chat_once(
-                ep, prompt, system=system, max_tokens=ceiling,
-                temperature=temperature, timeout=ep.timeout)
+                        floor_frac=0.3, max_attempts=1,
+                        max_output_tokens=None, output_capability=None):
+            """Make one call at the explicitly declared model maximum."""
+            del backoff, floor_frac
+            if max_attempts != 1:
+                return ChatResult(
+                    "", model or ep.model, ok=False,
+                    error="physical model retries require an explicit outer "
+                          "call budget")
+            return _Adapter.chat(
+                prompt, model=model, system=system,
+                max_tokens=max_output_tokens or 0,
+                temperature=temperature, timeout=timeout, api_key=api_key,
+                output_capability=output_capability)
 
         @staticmethod
         def live_models():
@@ -248,8 +268,9 @@ def make_adapter(ep: CustomEndpoint):
 
         @staticmethod
         def verify(model=""):
-            r = _chat_once(ep, "Reply with one word: READY", system="",
-                           max_tokens=20, temperature=0.0, timeout=60)
+            r = _Adapter.chat(
+                "Reply with one word: READY", model=model, system="",
+                temperature=0.0, timeout=60)
             return {"provider": ep.name, "model": r.model, "ok": r.ok,
                     "prompt_tokens": r.prompt_tokens,
                     "eval_tokens": r.eval_tokens, "error": r.error[:200],
@@ -264,12 +285,12 @@ def register_endpoint(ep: CustomEndpoint, *, order_hint: str = "append"):
 
     A name that collides with a built-in provider is REFUSED rather than
     silently shadowing it — quietly replacing a sanctioned provider is exactly
-    the kind of substitution a receipt would then misattribute."""
+    the kind of substitution a record would then misattribute."""
     builtins = {"ollama_cloud", "mistral", "openrouter"}
     if ep.name in builtins:
         raise EndpointError(
             f"{ep.name!r} is a built-in provider; choose another name rather "
-            "than shadowing it — a receipt naming that provider must mean it")
+            "than shadowing it — a record naming that provider must mean it")
     adapter = make_adapter(ep)
     PROVIDERS[ep.name] = adapter
     return adapter
@@ -303,17 +324,25 @@ def endpoints_from_env(value: "str | None" = None) -> list:
             k, v = part.split("=", 1)
             fields[k.strip()] = v.strip()
         unknown = set(fields) - {"name", "url", "model", "key", "wire",
-                                 "locality", "max_output", "evidence"}
+                                 "locality", "max_output",
+                                 "max_output_source", "evidence"}
         if unknown:
             raise EndpointError(
                 f"unknown endpoint field(s) {sorted(unknown)} — refused rather "
                 "than ignored, so a typo cannot silently drop a setting")
+        maximum = fields.get("max_output", "").strip()
+        maximum_source = fields.get("max_output_source", "").strip()
+        if bool(maximum) != bool(maximum_source):
+            raise EndpointError(
+                "max_output and max_output_source must be declared together")
+        capability = (ModelOutputCapability(
+            int(maximum), maximum_source) if maximum else None)
         out.append(CustomEndpoint(
             name=fields.get("name", "custom"), base_url=fields.get("url", ""),
             model=fields.get("model", ""), api_key=fields.get("key", ""),
             wire=fields.get("wire", "openai"),
             locality=fields.get("locality", "local"),
-            max_output=int(fields.get("max_output", 4096)),
+            output_capability=capability,
             counts_as_evidence=fields.get("evidence", "").lower()
             in ("1", "true", "yes")))
     return out
@@ -328,7 +357,9 @@ def self_test() -> dict:
     ep = CustomEndpoint(name="friends_box",
                         base_url="https://gpu.example.net/v1",
                         model="qwen2.5-72b-instruct", api_key="secret-key-xyz",
-                        locality="local")
+                        locality="local",
+                        output_capability=ModelOutputCapability(
+                            32768, "endpoint owner declaration"))
 
     # 1. URL composition per wire format — the one thing that differs between
     # a self-hosted OpenAI-compatible server and Ollama's native shape.
@@ -356,7 +387,8 @@ def self_test() -> dict:
     # exposes what the resolver calls, not because of any special-casing.
     ad = make_adapter(ep)
     from . import ollama_client
-    needed = ("chat", "chat_maxout", "verify", "live_models", "DEFAULT_MODEL")
+    needed = ("chat", "chat_maxout", "verify", "live_models",
+              "output_capability_for", "DEFAULT_MODEL")
     check("a_custom_endpoint_exposes_the_same_contract_as_a_builtin",
           all(hasattr(ad, n) for n in needed)
           and all(hasattr(ollama_client, n) for n in needed)
@@ -364,7 +396,7 @@ def self_test() -> dict:
           "same surface the resolver already calls; no special-casing")
 
     # 4. REGISTRATION joins the provider table, and a built-in name is REFUSED
-    # rather than shadowed — a receipt naming 'mistral' must mean mistral.
+    # rather than shadowed — a record naming 'mistral' must mean mistral.
     saved = dict(PROVIDERS)
     try:
         register_endpoint(ep)
@@ -410,19 +442,21 @@ def self_test() -> dict:
           banned and bad_url and bad_name,
           "a custom endpoint is not a way around a model ban")
 
-    # 6. NO CREDENTIAL LEAK: describe() is the receipt shape and must not
+    # 6. NO CREDENTIAL LEAK: describe() is the record shape and must not
     # carry the key, only whether one is set.
     d = ep.describe()
-    check("the_receipt_shape_records_that_a_key_exists_never_the_key",
+    check("the_record_shape_records_that_a_key_exists_never_the_key",
           d["has_key"] is True and "secret-key-xyz" not in json.dumps(d)
           and d["counts_as_evidence"] is False,
-          "receipts carry posture, never credentials")
+          "records carry posture, never credentials")
 
     # 7. ENVIRONMENT CONFIG: deployment without code, and a typo'd field is
     # refused rather than silently dropped.
     parsed = endpoints_from_env(
-        "name=box_a,url=https://a.example/v1,model=m1|"
-        "name=box_b,url=http://10.0.0.2:8000/v1,model=m2,wire=openai")
+        "name=box_a,url=https://a.example/v1,model=m1,max_output=8192,"
+        "max_output_source=provider docs|"
+        "name=box_b,url=http://10.0.0.2:8000/v1,model=m2,wire=openai,"
+        "max_output=4096,max_output_source=server config")
     typo = False
     try:
         endpoints_from_env("name=x,url=https://a.com/v1,model=m,keyy=oops")
@@ -433,15 +467,16 @@ def self_test() -> dict:
           and parsed[1].base_url == "http://10.0.0.2:8000/v1" and typo,
           "a misspelled field cannot silently drop a setting")
 
-    # 8. a dead endpoint fails as a reason, never as an exception — the
-    # property that lets failover move past it.
-    dead = make_adapter(CustomEndpoint(
-        name="dead", base_url="http://127.0.0.1:9", model="m")).verify()
-    check("an_unreachable_endpoint_returns_a_reason_not_an_exception",
-          dead["ok"] is False and dead["error"]
-          and dead["prompt_tokens"] == 0,
-          f"reported: {dead['error'][:60]}")
+    unknown_capability = make_adapter(CustomEndpoint(
+        name="unknown_cap", base_url="http://127.0.0.1:9",
+        model="m")).verify()
+    check("an_unknown_custom_model_maximum_refuses_before_network_use",
+          not unknown_capability["ok"]
+          and "unknown_model_output_limit" in unknown_capability["error"])
 
     passed = sum(1 for t in results if t["passed"])
-    return {"tests": results, "passed": passed, "total": len(results),
+    return {"record_type": "custom_endpoint_contract_test/v2",
+            "scope": "offline_contract_only",
+            "provider_integration_proven": False,
+            "tests": results, "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}

@@ -394,7 +394,7 @@ def self_test() -> dict:
     # for — outside the box, decompose, stacking/bagging/boosting.
     bank = solution_shaping_pack()
     alltext = " ".join(s.text.lower() for s in bank.all())
-    check("string_intelligence_carries_decompose_and_ensemble_language",
+    check("context_intelligence_carries_decompose_and_ensemble_language",
           "outside the box" in alltext and "break the solution" in alltext
           and "bagging" in alltext and "boosting" in alltext
           and "stacking" in alltext and "sub-process" in alltext
@@ -426,7 +426,7 @@ def self_test() -> dict:
         "For imbalanced churn, a boosted tree on the minority residual beat "
         "the global model.", "consideration",
         tags=("shaping", "ensemble", "boosting"), applicability=_PRED))
-    check("distillation_grows_the_string_intelligence",
+    check("distillation_grows_the_context_intelligence",
           len(grown) == len(bank) + 1
           and any(s.provenance == "llm_distilled" for s in grown.all()),
           "accepted model reasoning becomes a new, retrievable shaping string")

@@ -4,7 +4,9 @@ level: error
 scope: text
 ignorecase: true
 tokens:
+  - '\bchronicles?\b'
   - '\breceipts?\b'
   - '\bloop[ _-]intelligence\b'
   - '\bintelligence pillars?\b'
   - '\bString Intelligence\b'
+  - '\bstop conditions?\b'

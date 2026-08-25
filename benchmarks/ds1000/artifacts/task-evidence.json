@@ -1,0 +1,2373 @@
+{
+  "correction": [
+    {
+      "canvas_path": "correction/canvas/problem-72.json",
+      "corrected_candidate_sha256": "57db231e0c645bf95a3aa80867aca3dc3cfbf832a6cf193ed2edd4dd63e986f0",
+      "corrected_passed": true,
+      "corrected_upstream_result": "passed",
+      "correction": "Preserve leading completion whitespace to match the pinned upstream postprocess behavior.",
+      "full_regrade_path": {
+        "checks": {
+          "leading_whitespace_preserved": true,
+          "physical_model_calls_zero": true,
+          "playback_rendered": true,
+          "recorded_model_spawned_loops_replayed": true,
+          "reference_nine_step": true,
+          "report_rendered": true,
+          "root_terminal": true,
+          "run_history_chain_intact": true,
+          "same_recorded_raw_response": true,
+          "starting_and_spawned_loops_closed": true,
+          "typed_canvas_executed": true,
+          "upstream_evaluator_completed": true
+        },
+        "eligible": true,
+        "root_steps": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ]
+      },
+      "html_report_sha256": "93c75a4126023f3dd69b25e90a4987f6e14452eaa8a8e228249f78d86d24a09c",
+      "library": "Pandas",
+      "original_candidate_sha256": "a6dfd1327c19d2bee77b28153550d7756ac0e77fe24ec06d1a96b896f291b1a5",
+      "original_reported_passed": false,
+      "parent_campaign_id": "ds1000-full-v1-20260825T150857Z",
+      "parent_run_id": "ds1000-full-v1-20260825T150857Z.problem-72",
+      "physical_model_calls": 0,
+      "playback_lines": 39,
+      "playback_path": "correction/playback/problem-72.txt",
+      "playback_sha256": "2d39cfae6959c89b3ab4a524d87621c768e0354bd79b63e0825f345f1f5a0e52",
+      "problem_id": 72,
+      "provider_outputs_reused": true,
+      "record_type": "ds1000_correction_task_evidence/v1",
+      "recorded_spawned_loops": [
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "9af56de3e185baae14b91a0fe6718ea7006553351f01eb1d1cec0db5062f0815",
+          "role": "candidate_a",
+          "spawned_loop_id": "loop2"
+        },
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "9af56de3e185baae14b91a0fe6718ea7006553351f01eb1d1cec0db5062f0815",
+          "role": "candidate_b",
+          "spawned_loop_id": "loop3"
+        },
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "57db231e0c645bf95a3aa80867aca3dc3cfbf832a6cf193ed2edd4dd63e986f0",
+          "role": "repair",
+          "spawned_loop_id": "loop4"
+        },
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "a6dfd1327c19d2bee77b28153550d7756ac0e77fe24ec06d1a96b896f291b1a5",
+          "role": "synthesis",
+          "spawned_loop_id": "loop5"
+        }
+      ],
+      "report_path": "correction/reports/problem-72.json",
+      "run_id": "ds1000-full-v1-20260825T150857Z-extractor-whitespace-correction-v1.problem-72",
+      "runtime": {
+        "base_image_digest": "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+        "image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d",
+        "platform": "linux/amd64",
+        "requirements_sha256": "329eaf4f9046b7eb281a79a8c3010ffde9b29229330f1eef1861223eb5d86b87",
+        "source_execution_sha256": "fab0beb2a5c3300f4540c2225ffc013881e5770fed388ad20d4620ae040cd311",
+        "tag": "loop-engine-ds1000-runtime:v1"
+      },
+      "selected_role": "repair"
+    },
+    {
+      "canvas_path": "correction/canvas/problem-218.json",
+      "corrected_candidate_sha256": "7cac9b6dbb24e1205651d7e784e16b1c627fedbfd6301bc79f910e7596e3e01d",
+      "corrected_passed": true,
+      "corrected_upstream_result": "passed",
+      "correction": "Preserve leading completion whitespace to match the pinned upstream postprocess behavior.",
+      "full_regrade_path": {
+        "checks": {
+          "leading_whitespace_preserved": true,
+          "physical_model_calls_zero": true,
+          "playback_rendered": true,
+          "recorded_model_spawned_loops_replayed": true,
+          "reference_nine_step": true,
+          "report_rendered": true,
+          "root_terminal": true,
+          "run_history_chain_intact": true,
+          "same_recorded_raw_response": true,
+          "starting_and_spawned_loops_closed": true,
+          "typed_canvas_executed": true,
+          "upstream_evaluator_completed": true
+        },
+        "eligible": true,
+        "root_steps": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ]
+      },
+      "html_report_sha256": "5137f1ebcfaed8c94cecbc0ac27507e202394bd4dc43c6f3e541a061d4c2739f",
+      "library": "Pandas",
+      "original_candidate_sha256": "7cac9b6dbb24e1205651d7e784e16b1c627fedbfd6301bc79f910e7596e3e01d",
+      "original_reported_passed": true,
+      "parent_campaign_id": "ds1000-full-v1-20260825T150857Z",
+      "parent_run_id": "ds1000-full-v1-20260825T150857Z.problem-218",
+      "physical_model_calls": 0,
+      "playback_lines": 35,
+      "playback_path": "correction/playback/problem-218.txt",
+      "playback_sha256": "b4f43fe5a210ea97f71f31baa7fa582c5a7e814dd9b3f6920f6d576d9c70c4ad",
+      "problem_id": 218,
+      "provider_outputs_reused": true,
+      "record_type": "ds1000_correction_task_evidence/v1",
+      "recorded_spawned_loops": [
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "7cac9b6dbb24e1205651d7e784e16b1c627fedbfd6301bc79f910e7596e3e01d",
+          "role": "candidate_a",
+          "spawned_loop_id": "loop2"
+        },
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "26f7e6a9cb7c427861016008636f9e39b042788245e6bcc54902d4af3401cdde",
+          "role": "candidate_b",
+          "spawned_loop_id": "loop3"
+        },
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "7cac9b6dbb24e1205651d7e784e16b1c627fedbfd6301bc79f910e7596e3e01d",
+          "role": "synthesis",
+          "spawned_loop_id": "loop4"
+        }
+      ],
+      "report_path": "correction/reports/problem-218.json",
+      "run_id": "ds1000-full-v1-20260825T150857Z-extractor-whitespace-correction-v1.problem-218",
+      "runtime": {
+        "base_image_digest": "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+        "image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d",
+        "platform": "linux/amd64",
+        "requirements_sha256": "329eaf4f9046b7eb281a79a8c3010ffde9b29229330f1eef1861223eb5d86b87",
+        "source_execution_sha256": "fab0beb2a5c3300f4540c2225ffc013881e5770fed388ad20d4620ae040cd311",
+        "tag": "loop-engine-ds1000-runtime:v1"
+      },
+      "selected_role": "synthesis"
+    },
+    {
+      "canvas_path": "correction/canvas/problem-838.json",
+      "corrected_candidate_sha256": "e285cf1e152039b34489e79186d4bbdecd82c1f4e4db5c99b09d0307e2a9f851",
+      "corrected_passed": true,
+      "corrected_upstream_result": "passed",
+      "correction": "Preserve leading completion whitespace to match the pinned upstream postprocess behavior.",
+      "full_regrade_path": {
+        "checks": {
+          "leading_whitespace_preserved": true,
+          "physical_model_calls_zero": true,
+          "playback_rendered": true,
+          "recorded_model_spawned_loops_replayed": true,
+          "reference_nine_step": true,
+          "report_rendered": true,
+          "root_terminal": true,
+          "run_history_chain_intact": true,
+          "same_recorded_raw_response": true,
+          "starting_and_spawned_loops_closed": true,
+          "typed_canvas_executed": true,
+          "upstream_evaluator_completed": true
+        },
+        "eligible": true,
+        "root_steps": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ]
+      },
+      "html_report_sha256": "71ac6af6b6800d68553e7eb31e58ecf4b29e762e6109084a56cb2cde95e4ee31",
+      "library": "Sklearn",
+      "original_candidate_sha256": "e285cf1e152039b34489e79186d4bbdecd82c1f4e4db5c99b09d0307e2a9f851",
+      "original_reported_passed": true,
+      "parent_campaign_id": "ds1000-full-v1-20260825T150857Z",
+      "parent_run_id": "ds1000-full-v1-20260825T150857Z.problem-838",
+      "physical_model_calls": 0,
+      "playback_lines": 35,
+      "playback_path": "correction/playback/problem-838.txt",
+      "playback_sha256": "d29c68b1ecdc2e6957776706c41f1c559b52327297e7907114a73eae57757933",
+      "problem_id": 838,
+      "provider_outputs_reused": true,
+      "record_type": "ds1000_correction_task_evidence/v1",
+      "recorded_spawned_loops": [
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "b52329f27394e178c4f1d80094c3c64ee973859081ca8094863784b5999c6575",
+          "role": "candidate_a",
+          "spawned_loop_id": "loop2"
+        },
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "26e601e0e66cacec9368b3e2159eb8faa104b7e867476363169f03d5ab8c9ed6",
+          "role": "candidate_b",
+          "spawned_loop_id": "loop3"
+        },
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "e285cf1e152039b34489e79186d4bbdecd82c1f4e4db5c99b09d0307e2a9f851",
+          "role": "synthesis",
+          "spawned_loop_id": "loop4"
+        }
+      ],
+      "report_path": "correction/reports/problem-838.json",
+      "run_id": "ds1000-full-v1-20260825T150857Z-extractor-whitespace-correction-v1.problem-838",
+      "runtime": {
+        "base_image_digest": "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+        "image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d",
+        "platform": "linux/amd64",
+        "requirements_sha256": "329eaf4f9046b7eb281a79a8c3010ffde9b29229330f1eef1861223eb5d86b87",
+        "source_execution_sha256": "fab0beb2a5c3300f4540c2225ffc013881e5770fed388ad20d4620ae040cd311",
+        "tag": "loop-engine-ds1000-runtime:v1"
+      },
+      "selected_role": "synthesis"
+    },
+    {
+      "canvas_path": "correction/canvas/problem-896.json",
+      "corrected_candidate_sha256": "27adb247228ca73b8ae96f90a4953330639ed40a542a314c82c7fd360e1acf6c",
+      "corrected_passed": true,
+      "corrected_upstream_result": "passed",
+      "correction": "Preserve leading completion whitespace to match the pinned upstream postprocess behavior.",
+      "full_regrade_path": {
+        "checks": {
+          "leading_whitespace_preserved": true,
+          "physical_model_calls_zero": true,
+          "playback_rendered": true,
+          "recorded_model_spawned_loops_replayed": true,
+          "reference_nine_step": true,
+          "report_rendered": true,
+          "root_terminal": true,
+          "run_history_chain_intact": true,
+          "same_recorded_raw_response": true,
+          "starting_and_spawned_loops_closed": true,
+          "typed_canvas_executed": true,
+          "upstream_evaluator_completed": true
+        },
+        "eligible": true,
+        "root_steps": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ]
+      },
+      "html_report_sha256": "806db7c5c1eb9798656f29d133a9bcecc54f3a3f9a20a22ca071c0cf644fab39",
+      "library": "Sklearn",
+      "original_candidate_sha256": "50efbbd3f8f0eb8494553fe5a724bd0a69a6d9542d4615684ae17965a27e4182",
+      "original_reported_passed": false,
+      "parent_campaign_id": "ds1000-full-v1-20260825T150857Z",
+      "parent_run_id": "ds1000-full-v1-20260825T150857Z.problem-896",
+      "physical_model_calls": 0,
+      "playback_lines": 39,
+      "playback_path": "correction/playback/problem-896.txt",
+      "playback_sha256": "839a7986b2b16b42facd39d655a94fac6133f5815a46b1d567d9594315140452",
+      "problem_id": 896,
+      "provider_outputs_reused": true,
+      "record_type": "ds1000_correction_task_evidence/v1",
+      "recorded_spawned_loops": [
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "adf69186a2e3b0f9aff2baa11892bb1f6c3090a04969563095c545811bfa0a3f",
+          "role": "candidate_a",
+          "spawned_loop_id": "loop2"
+        },
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "84642ac5c5e2c12983808724ee3022303fb53acda1796cbccf853d2db9ba7bfc",
+          "role": "candidate_b",
+          "spawned_loop_id": "loop3"
+        },
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "27adb247228ca73b8ae96f90a4953330639ed40a542a314c82c7fd360e1acf6c",
+          "role": "repair",
+          "spawned_loop_id": "loop4"
+        },
+        {
+          "physical_model_calls": 0,
+          "raw_response_sha256": "adf69186a2e3b0f9aff2baa11892bb1f6c3090a04969563095c545811bfa0a3f",
+          "role": "synthesis",
+          "spawned_loop_id": "loop5"
+        }
+      ],
+      "report_path": "correction/reports/problem-896.json",
+      "run_id": "ds1000-full-v1-20260825T150857Z-extractor-whitespace-correction-v1.problem-896",
+      "runtime": {
+        "base_image_digest": "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+        "image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d",
+        "platform": "linux/amd64",
+        "requirements_sha256": "329eaf4f9046b7eb281a79a8c3010ffde9b29229330f1eef1861223eb5d86b87",
+        "source_execution_sha256": "fab0beb2a5c3300f4540c2225ffc013881e5770fed388ad20d4620ae040cd311",
+        "tag": "loop-engine-ds1000-runtime:v1"
+      },
+      "selected_role": "repair"
+    }
+  ],
+  "record_type": "ds1000_task_evidence/v1",
+  "selected": [
+    {
+      "accounting_complete": true,
+      "canvas_paths": [
+        "selected/canvas/problem-72-synthesis.json",
+        "selected/canvas/problem-72-repair.json"
+      ],
+      "error": "",
+      "evaluations": [
+        {
+          "candidate_sha256": "a6dfd1327c19d2bee77b28153550d7756ac0e77fe24ec06d1a96b896f291b1a5",
+          "error": "",
+          "passed": false,
+          "result": "failed: expected an indented block after function definition on line 4 (<string>, line 5)",
+          "role": "synthesis",
+          "status": "completed",
+          "stopped": "done"
+        },
+        {
+          "candidate_sha256": "a6dfd1327c19d2bee77b28153550d7756ac0e77fe24ec06d1a96b896f291b1a5",
+          "error": "",
+          "passed": false,
+          "result": "failed: expected an indented block after function definition on line 4 (<string>, line 5)",
+          "role": "repair",
+          "status": "completed",
+          "stopped": "done"
+        }
+      ],
+      "failover": false,
+      "failures_preserved": true,
+      "full_path": {
+        "canvas_component_events": 2,
+        "checks": {
+          "active_user_feedback_intelligence_consumed_by_required_models": true,
+          "all_four_intelligence_layers_queried": true,
+          "candidate_portfolios_are_distinct": true,
+          "canonical_spawned_loop_consumption_bound": true,
+          "exact_model_no_reduced_maximum": true,
+          "model_context_bound_per_physical_call": true,
+          "physical_call_ceiling": true,
+          "registered_code_pack_materialized": true,
+          "repair_only_after_failed_upstream_evaluation": true,
+          "root_reference_nine_step": true,
+          "root_selected_mode_non_deterministic": true,
+          "root_terminal": true,
+          "run_history_chain_intact": true,
+          "run_history_playback_rendered": true,
+          "run_history_report_rendered": true,
+          "starting_and_spawned_loops_closed": true,
+          "synthesis_spawned_loop": true,
+          "two_candidate_spawned_loops": true,
+          "typed_canvas_compiled_and_executed": true,
+          "upstream_evaluator_outside_model_judgment": true
+        },
+        "closure": {
+          "closed": true,
+          "loop_id": "loop1",
+          "orphaned_spawned_loops": [],
+          "spawned_loops": [
+            "loop2",
+            "loop33",
+            "loop50",
+            "loop67",
+            "loop84",
+            "loop86",
+            "loop103"
+          ]
+        },
+        "context_bindings": 4,
+        "eligible": true,
+        "expected_root_steps": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ],
+        "model_events": 4,
+        "record_type": "ds1000_full_path_verification/v1",
+        "root_steps": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ]
+      },
+      "html_report_sha256": "f1be921382f239e88042e65d00f20d23602c27af1a5849bf2cc323211d2741b5",
+      "input_tokens": 3617,
+      "library": "Pandas",
+      "loop_tree_sha256": "6d36c1752dfa552afcc9ca556df45d74025274d62665e855dc513387b7bb8423",
+      "maximum_output_tokens": 65536,
+      "model": "deepseek-v4-flash:0731",
+      "model_spawned_loops": [
+        {
+          "candidate_code_sha256": "9af56de3e185baae14b91a0fe6718ea7006553351f01eb1d1cec0db5062f0815",
+          "consumed_candidate_refs": [],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "access_loop_id": "loop41",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.first_principles",
+                "observed_payload_digest": "",
+                "ref_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop42",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop43",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "access_loop_id": "loop44",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://context_intelligence/ds1000.context.common_failures",
+                "observed_payload_digest": "",
+                "ref_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop45",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop46",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "8b06997456d73f236759e2f2d887f56b846ea6d6fa8954200c0b1e07ff87692a",
+                "access_loop_id": "loop47",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.safe_extract_code",
+                "observed_payload_digest": "047ec1e47dbe897a93ae2f9ff560923131a563ba8d61b2f92ebd39a19a17c2b1",
+                "ref_digest": "8b06997456d73f236759e2f2d887f56b846ea6d6fa8954200c0b1e07ff87692a",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.first_principles",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://context_intelligence/ds1000.context.common_failures",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.safe_extract_code"
+            ],
+            "consuming_loop_id": "loop33",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:895952002446078bdf41a91a",
+            "record_digest": "67fc98225c9ff9806107c5c38bd829aacabd289e22aa82361a8625401e66abfe",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 77.338292,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 871,
+              "loop_id": "loop49",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 744,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "39cde2ab499d0288e633ce86858ebc8a9d9572e9cd6c20df39fdca8596ff38d9",
+          "raw_response_sha256": "9af56de3e185baae14b91a0fe6718ea7006553351f01eb1d1cec0db5062f0815",
+          "role": "candidate_a",
+          "spawned_loop_id": "loop33"
+        },
+        {
+          "candidate_code_sha256": "9af56de3e185baae14b91a0fe6718ea7006553351f01eb1d1cec0db5062f0815",
+          "consumed_candidate_refs": [],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "7e074b3e86cf43905ca401ff8f567e83011e3004ce851576104a0a59b04a7211",
+                "access_loop_id": "loop58",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.missing_constraints",
+                "observed_payload_digest": "",
+                "ref_digest": "7e074b3e86cf43905ca401ff8f567e83011e3004ce851576104a0a59b04a7211",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop59",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop60",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "access_loop_id": "loop61",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://context_intelligence/ds1000.context.common_failures",
+                "observed_payload_digest": "",
+                "ref_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop62",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop63",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "access_loop_id": "loop64",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.load_solver_task",
+                "observed_payload_digest": "0d866157e6972e2c9ee20a653e950b888ed0956e89b6bbd278d424ba648b9622",
+                "ref_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.missing_constraints",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://context_intelligence/ds1000.context.common_failures",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.load_solver_task"
+            ],
+            "consuming_loop_id": "loop50",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:80f4a2c3d5b6a90f5d4210af",
+            "record_digest": "11d0fe29a5040867edb12bf350f7504006b157ca05b9faf012bfebf1772159f4",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 7.261497,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 874,
+              "loop_id": "loop66",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 716,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "5d51540098445865c6c035cabf38c3bdfcab3a1f3d81873bb1e1e2177064dc16",
+          "raw_response_sha256": "9af56de3e185baae14b91a0fe6718ea7006553351f01eb1d1cec0db5062f0815",
+          "role": "candidate_b",
+          "spawned_loop_id": "loop50"
+        },
+        {
+          "candidate_code_sha256": "a6dfd1327c19d2bee77b28153550d7756ac0e77fe24ec06d1a96b896f291b1a5",
+          "consumed_candidate_refs": [
+            "candidate://72/synthesis/a6dfd1327c19d2bee77b28153550d7756ac0e77fe24ec06d1a96b896f291b1a5",
+            "evaluation://72/a6dfd1327c19d2bee77b28153550d7756ac0e77fe24ec06d1a96b896f291b1a5/failed"
+          ],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "access_loop_id": "loop94",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.first_principles",
+                "observed_payload_digest": "",
+                "ref_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop95",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop96",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "386e14ebd7339e092ecdb573f6356d25c93565d92991c9a03eab106964fefb4f",
+                "access_loop_id": "loop97",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.failure.72.a6dfd1327c19",
+                "observed_payload_digest": "",
+                "ref_digest": "386e14ebd7339e092ecdb573f6356d25c93565d92991c9a03eab106964fefb4f",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop98",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop99",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "access_loop_id": "loop100",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.load_solver_task",
+                "observed_payload_digest": "0d866157e6972e2c9ee20a653e950b888ed0956e89b6bbd278d424ba648b9622",
+                "ref_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.first_principles",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://runtime_history_solution_intelligence/ds1000.history.failure.72.a6dfd1327c19",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.load_solver_task"
+            ],
+            "consuming_loop_id": "loop86",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:085aa39ce5fa0f0e839beda0",
+            "record_digest": "a74e560dfa9f64592f6cf9588013f9db677e99c20e3ac28c16a7f65b92c60e94",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 25.772254,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 931,
+              "loop_id": "loop102",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 4729,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "e03097f4d1c84cfe40d51a34b48a97a5541b8282a98a493446dfd64a68fd3300",
+          "raw_response_sha256": "57db231e0c645bf95a3aa80867aca3dc3cfbf832a6cf193ed2edd4dd63e986f0",
+          "role": "repair",
+          "spawned_loop_id": "loop86"
+        },
+        {
+          "candidate_code_sha256": "a6dfd1327c19d2bee77b28153550d7756ac0e77fe24ec06d1a96b896f291b1a5",
+          "consumed_candidate_refs": [
+            "candidate://72/candidate_a/9af56de3e185baae14b91a0fe6718ea7006553351f01eb1d1cec0db5062f0815",
+            "candidate://72/candidate_b/9af56de3e185baae14b91a0fe6718ea7006553351f01eb1d1cec0db5062f0815"
+          ],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "access_loop_id": "loop75",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.first_principles",
+                "observed_payload_digest": "",
+                "ref_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop76",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop77",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "access_loop_id": "loop78",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://context_intelligence/ds1000.context.common_failures",
+                "observed_payload_digest": "",
+                "ref_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop79",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop80",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "access_loop_id": "loop81",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.load_solver_task",
+                "observed_payload_digest": "0d866157e6972e2c9ee20a653e950b888ed0956e89b6bbd278d424ba648b9622",
+                "ref_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.first_principles",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://context_intelligence/ds1000.context.common_failures",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.load_solver_task"
+            ],
+            "consuming_loop_id": "loop67",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:b4ba7059aee4d78cfddb54bd",
+            "record_digest": "382df59e3fc8da78cae27093b66a200426c4f9154867832c8c3274b5422a8431",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 2.669688,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 941,
+              "loop_id": "loop83",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 296,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "4ec3cacc4bb2b484009688aa2c177e175301303e334e58e4083e827e69e9a82a",
+          "raw_response_sha256": "a6dfd1327c19d2bee77b28153550d7756ac0e77fe24ec06d1a96b896f291b1a5",
+          "role": "synthesis",
+          "spawned_loop_id": "loop67"
+        }
+      ],
+      "output_tokens": 6485,
+      "passed": false,
+      "physical_model_calls": 4,
+      "playback_lines": 435,
+      "playback_path": "selected/playback/problem-72.txt",
+      "playback_sha256": "819703491d942e5fa49a7aaf79f240ad5ce5765b5828846473535457f1ba7da3",
+      "problem_id": 72,
+      "provider": "ollama_cloud",
+      "record_type": "ds1000_selected_task_evidence/v1",
+      "report_path": "selected/reports/problem-72.json",
+      "run_id": "ds1000-full-v1-20260825T150857Z.problem-72",
+      "runtime": {
+        "base_image_digest": "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+        "image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d",
+        "platform": "linux/amd64",
+        "requirements_sha256": "329eaf4f9046b7eb281a79a8c3010ffde9b29229330f1eef1861223eb5d86b87",
+        "source_execution_sha256": "fab0beb2a5c3300f4540c2225ffc013881e5770fed388ad20d4620ae040cd311",
+        "tag": "loop-engine-ds1000-runtime:v1"
+      },
+      "selected_candidate_sha256": "a6dfd1327c19d2bee77b28153550d7756ac0e77fe24ec06d1a96b896f291b1a5",
+      "selected_role": "repair",
+      "source_commit": "b39aab71da6d23ef8d3cac59a7c5f834516ab334",
+      "total_tokens": 10102
+    },
+    {
+      "accounting_complete": true,
+      "canvas_paths": [
+        "selected/canvas/problem-218-synthesis.json"
+      ],
+      "error": "",
+      "evaluations": [
+        {
+          "candidate_sha256": "7cac9b6dbb24e1205651d7e784e16b1c627fedbfd6301bc79f910e7596e3e01d",
+          "error": "",
+          "passed": true,
+          "result": "passed",
+          "role": "synthesis",
+          "status": "completed",
+          "stopped": "done"
+        }
+      ],
+      "failover": false,
+      "failures_preserved": true,
+      "full_path": {
+        "canvas_component_events": 1,
+        "checks": {
+          "active_user_feedback_intelligence_consumed_by_required_models": true,
+          "all_four_intelligence_layers_queried": true,
+          "candidate_portfolios_are_distinct": true,
+          "canonical_spawned_loop_consumption_bound": true,
+          "exact_model_no_reduced_maximum": true,
+          "model_context_bound_per_physical_call": true,
+          "physical_call_ceiling": true,
+          "registered_code_pack_materialized": true,
+          "repair_only_after_failed_upstream_evaluation": true,
+          "root_reference_nine_step": true,
+          "root_selected_mode_non_deterministic": true,
+          "root_terminal": true,
+          "run_history_chain_intact": true,
+          "run_history_playback_rendered": true,
+          "run_history_report_rendered": true,
+          "starting_and_spawned_loops_closed": true,
+          "synthesis_spawned_loop": true,
+          "two_candidate_spawned_loops": true,
+          "typed_canvas_compiled_and_executed": true,
+          "upstream_evaluator_outside_model_judgment": true
+        },
+        "closure": {
+          "closed": true,
+          "loop_id": "loop1",
+          "orphaned_spawned_loops": [],
+          "spawned_loops": [
+            "loop2",
+            "loop33",
+            "loop50",
+            "loop67",
+            "loop84"
+          ]
+        },
+        "context_bindings": 3,
+        "eligible": true,
+        "expected_root_steps": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ],
+        "model_events": 3,
+        "record_type": "ds1000_full_path_verification/v1",
+        "root_steps": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ]
+      },
+      "html_report_sha256": "460246bf91cd68ead508fa57c9d81e4630bc61da2082f1c98560baeb8ebd2933",
+      "input_tokens": 2054,
+      "library": "Pandas",
+      "loop_tree_sha256": "b0a75b1e85ac0309f2cad3dda0cfe4cfdd1e32fc9be4bd02fc1192887bbdd913",
+      "maximum_output_tokens": 65536,
+      "model": "deepseek-v4-flash:0731",
+      "model_spawned_loops": [
+        {
+          "candidate_code_sha256": "7cac9b6dbb24e1205651d7e784e16b1c627fedbfd6301bc79f910e7596e3e01d",
+          "consumed_candidate_refs": [],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "access_loop_id": "loop41",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.first_principles",
+                "observed_payload_digest": "",
+                "ref_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop42",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop43",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "access_loop_id": "loop44",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://context_intelligence/ds1000.context.common_failures",
+                "observed_payload_digest": "",
+                "ref_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop45",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop46",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "8b06997456d73f236759e2f2d887f56b846ea6d6fa8954200c0b1e07ff87692a",
+                "access_loop_id": "loop47",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.safe_extract_code",
+                "observed_payload_digest": "047ec1e47dbe897a93ae2f9ff560923131a563ba8d61b2f92ebd39a19a17c2b1",
+                "ref_digest": "8b06997456d73f236759e2f2d887f56b846ea6d6fa8954200c0b1e07ff87692a",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.first_principles",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://context_intelligence/ds1000.context.common_failures",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.safe_extract_code"
+            ],
+            "consuming_loop_id": "loop33",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:8d859870a3ed9271ed2c4014",
+            "record_digest": "a42d357e4620f0bcd494195b850d2db45ddfa32df8ae1c215e57ab9ed32a87fd",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 5.495506,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 664,
+              "loop_id": "loop49",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 690,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "afdfc541970304ab6a1c1caba03ece06b19537b3ebd87457723c599a1c004fe4",
+          "raw_response_sha256": "7cac9b6dbb24e1205651d7e784e16b1c627fedbfd6301bc79f910e7596e3e01d",
+          "role": "candidate_a",
+          "spawned_loop_id": "loop33"
+        },
+        {
+          "candidate_code_sha256": "26f7e6a9cb7c427861016008636f9e39b042788245e6bcc54902d4af3401cdde",
+          "consumed_candidate_refs": [],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "7e074b3e86cf43905ca401ff8f567e83011e3004ce851576104a0a59b04a7211",
+                "access_loop_id": "loop58",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.missing_constraints",
+                "observed_payload_digest": "",
+                "ref_digest": "7e074b3e86cf43905ca401ff8f567e83011e3004ce851576104a0a59b04a7211",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop59",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop60",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "access_loop_id": "loop61",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://context_intelligence/ds1000.context.common_failures",
+                "observed_payload_digest": "",
+                "ref_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop62",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop63",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "access_loop_id": "loop64",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.load_solver_task",
+                "observed_payload_digest": "0d866157e6972e2c9ee20a653e950b888ed0956e89b6bbd278d424ba648b9622",
+                "ref_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.missing_constraints",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://context_intelligence/ds1000.context.common_failures",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.load_solver_task"
+            ],
+            "consuming_loop_id": "loop50",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:d3d52fc7742e7d441c6be16a",
+            "record_digest": "6470d661dfe8bb56ad1230af7bece36ddfa8dd00c2d5c8465e4ec65693cebe71",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 15.746801,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 667,
+              "loop_id": "loop66",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 480,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "8a16344a7ee1eeb2bcf90d78e135747a119a89be5cf1394efb7da9cdcc041b2d",
+          "raw_response_sha256": "26f7e6a9cb7c427861016008636f9e39b042788245e6bcc54902d4af3401cdde",
+          "role": "candidate_b",
+          "spawned_loop_id": "loop50"
+        },
+        {
+          "candidate_code_sha256": "7cac9b6dbb24e1205651d7e784e16b1c627fedbfd6301bc79f910e7596e3e01d",
+          "consumed_candidate_refs": [
+            "candidate://218/candidate_a/7cac9b6dbb24e1205651d7e784e16b1c627fedbfd6301bc79f910e7596e3e01d",
+            "candidate://218/candidate_b/26f7e6a9cb7c427861016008636f9e39b042788245e6bcc54902d4af3401cdde"
+          ],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "access_loop_id": "loop75",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.first_principles",
+                "observed_payload_digest": "",
+                "ref_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop76",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop77",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "access_loop_id": "loop78",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://context_intelligence/ds1000.context.common_failures",
+                "observed_payload_digest": "",
+                "ref_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop79",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop80",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "access_loop_id": "loop81",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.load_solver_task",
+                "observed_payload_digest": "0d866157e6972e2c9ee20a653e950b888ed0956e89b6bbd278d424ba648b9622",
+                "ref_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.first_principles",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://context_intelligence/ds1000.context.common_failures",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.load_solver_task"
+            ],
+            "consuming_loop_id": "loop67",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:a0ce6532ce0d7326210a7e5a",
+            "record_digest": "94efb120a6b9fe74bac79520d7eafa8e284447aa70654d2c62b6bee16962471e",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 4.971253,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 723,
+              "loop_id": "loop83",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 623,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "d90748b7972e5fc46d87b46d6f21cebc7380b23a3e9e2b199271bf6eb4829f3a",
+          "raw_response_sha256": "7cac9b6dbb24e1205651d7e784e16b1c627fedbfd6301bc79f910e7596e3e01d",
+          "role": "synthesis",
+          "spawned_loop_id": "loop67"
+        }
+      ],
+      "output_tokens": 1793,
+      "passed": true,
+      "physical_model_calls": 3,
+      "playback_lines": 354,
+      "playback_path": "selected/playback/problem-218.txt",
+      "playback_sha256": "4352a755d702b9b6f0963906b88fd0ca57ab322b9bbb6e3e164fce1a09388d78",
+      "problem_id": 218,
+      "provider": "ollama_cloud",
+      "record_type": "ds1000_selected_task_evidence/v1",
+      "report_path": "selected/reports/problem-218.json",
+      "run_id": "ds1000-full-v1-20260825T150857Z.problem-218",
+      "runtime": {
+        "base_image_digest": "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+        "image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d",
+        "platform": "linux/amd64",
+        "requirements_sha256": "329eaf4f9046b7eb281a79a8c3010ffde9b29229330f1eef1861223eb5d86b87",
+        "source_execution_sha256": "fab0beb2a5c3300f4540c2225ffc013881e5770fed388ad20d4620ae040cd311",
+        "tag": "loop-engine-ds1000-runtime:v1"
+      },
+      "selected_candidate_sha256": "7cac9b6dbb24e1205651d7e784e16b1c627fedbfd6301bc79f910e7596e3e01d",
+      "selected_role": "synthesis",
+      "source_commit": "b39aab71da6d23ef8d3cac59a7c5f834516ab334",
+      "total_tokens": 3847
+    },
+    {
+      "accounting_complete": true,
+      "canvas_paths": [
+        "selected/canvas/problem-838-synthesis.json"
+      ],
+      "error": "",
+      "evaluations": [
+        {
+          "candidate_sha256": "e285cf1e152039b34489e79186d4bbdecd82c1f4e4db5c99b09d0307e2a9f851",
+          "error": "",
+          "passed": true,
+          "result": "passed",
+          "role": "synthesis",
+          "status": "completed",
+          "stopped": "done"
+        }
+      ],
+      "failover": false,
+      "failures_preserved": true,
+      "full_path": {
+        "canvas_component_events": 1,
+        "checks": {
+          "active_user_feedback_intelligence_consumed_by_required_models": true,
+          "all_four_intelligence_layers_queried": true,
+          "candidate_portfolios_are_distinct": true,
+          "canonical_spawned_loop_consumption_bound": true,
+          "exact_model_no_reduced_maximum": true,
+          "model_context_bound_per_physical_call": true,
+          "physical_call_ceiling": true,
+          "registered_code_pack_materialized": true,
+          "repair_only_after_failed_upstream_evaluation": true,
+          "root_reference_nine_step": true,
+          "root_selected_mode_non_deterministic": true,
+          "root_terminal": true,
+          "run_history_chain_intact": true,
+          "run_history_playback_rendered": true,
+          "run_history_report_rendered": true,
+          "starting_and_spawned_loops_closed": true,
+          "synthesis_spawned_loop": true,
+          "two_candidate_spawned_loops": true,
+          "typed_canvas_compiled_and_executed": true,
+          "upstream_evaluator_outside_model_judgment": true
+        },
+        "closure": {
+          "closed": true,
+          "loop_id": "loop1",
+          "orphaned_spawned_loops": [],
+          "spawned_loops": [
+            "loop2",
+            "loop33",
+            "loop50",
+            "loop67",
+            "loop84"
+          ]
+        },
+        "context_bindings": 3,
+        "eligible": true,
+        "expected_root_steps": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ],
+        "model_events": 3,
+        "record_type": "ds1000_full_path_verification/v1",
+        "root_steps": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ]
+      },
+      "html_report_sha256": "7444e8b4d7b81206b68551f5268a3103e317043f9bafd349ab27757953e9a162",
+      "input_tokens": 2936,
+      "library": "Sklearn",
+      "loop_tree_sha256": "6f7c5b6b616dedf0fc49f0aa3db43ba5197ff3b528f80afb5eedfe1f0eea6fdf",
+      "maximum_output_tokens": 65536,
+      "model": "deepseek-v4-flash:0731",
+      "model_spawned_loops": [
+        {
+          "candidate_code_sha256": "0684cadf18d361e2a3b6612cac1577cf62fdc11015e9ed0cb878122bc1e379b8",
+          "consumed_candidate_refs": [],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "access_loop_id": "loop41",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.first_principles",
+                "observed_payload_digest": "",
+                "ref_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop42",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop43",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "access_loop_id": "loop44",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://context_intelligence/ds1000.context.common_failures",
+                "observed_payload_digest": "",
+                "ref_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop45",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop46",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "8b06997456d73f236759e2f2d887f56b846ea6d6fa8954200c0b1e07ff87692a",
+                "access_loop_id": "loop47",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.safe_extract_code",
+                "observed_payload_digest": "047ec1e47dbe897a93ae2f9ff560923131a563ba8d61b2f92ebd39a19a17c2b1",
+                "ref_digest": "8b06997456d73f236759e2f2d887f56b846ea6d6fa8954200c0b1e07ff87692a",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.first_principles",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://context_intelligence/ds1000.context.common_failures",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.safe_extract_code"
+            ],
+            "consuming_loop_id": "loop33",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:c9aec84971665be9c722fa8a",
+            "record_digest": "c304ad7c04b341a48e84bb02c992321f9f555f25901e660a58f9cd523181fa38",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 63.017113,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 904,
+              "loop_id": "loop49",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 6148,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "26f618e1a60febc0124f8264ad1975a9911af84ef6974947554402126b3b3bfa",
+          "raw_response_sha256": "b52329f27394e178c4f1d80094c3c64ee973859081ca8094863784b5999c6575",
+          "role": "candidate_a",
+          "spawned_loop_id": "loop33"
+        },
+        {
+          "candidate_code_sha256": "e285cf1e152039b34489e79186d4bbdecd82c1f4e4db5c99b09d0307e2a9f851",
+          "consumed_candidate_refs": [],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "7e074b3e86cf43905ca401ff8f567e83011e3004ce851576104a0a59b04a7211",
+                "access_loop_id": "loop58",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.missing_constraints",
+                "observed_payload_digest": "",
+                "ref_digest": "7e074b3e86cf43905ca401ff8f567e83011e3004ce851576104a0a59b04a7211",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop59",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop60",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "access_loop_id": "loop61",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://context_intelligence/ds1000.context.common_failures",
+                "observed_payload_digest": "",
+                "ref_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop62",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop63",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "access_loop_id": "loop64",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.load_solver_task",
+                "observed_payload_digest": "0d866157e6972e2c9ee20a653e950b888ed0956e89b6bbd278d424ba648b9622",
+                "ref_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.missing_constraints",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://context_intelligence/ds1000.context.common_failures",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.load_solver_task"
+            ],
+            "consuming_loop_id": "loop50",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:bb1245d8e476cbcb0e2e2acf",
+            "record_digest": "37019b1fea40de5e22679aed29edd593a16408b1cad9094e1d73690a2c1bd8c9",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 40.206793,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 907,
+              "loop_id": "loop66",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 3547,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "672169b7f0babdda88d3ce1eaff5cbc1660dce1b4d7de50241f27164cfcba77f",
+          "raw_response_sha256": "26e601e0e66cacec9368b3e2159eb8faa104b7e867476363169f03d5ab8c9ed6",
+          "role": "candidate_b",
+          "spawned_loop_id": "loop50"
+        },
+        {
+          "candidate_code_sha256": "e285cf1e152039b34489e79186d4bbdecd82c1f4e4db5c99b09d0307e2a9f851",
+          "consumed_candidate_refs": [
+            "candidate://838/candidate_a/0684cadf18d361e2a3b6612cac1577cf62fdc11015e9ed0cb878122bc1e379b8",
+            "candidate://838/candidate_b/e285cf1e152039b34489e79186d4bbdecd82c1f4e4db5c99b09d0307e2a9f851"
+          ],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "access_loop_id": "loop75",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.first_principles",
+                "observed_payload_digest": "",
+                "ref_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop76",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop77",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "access_loop_id": "loop78",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://context_intelligence/ds1000.context.common_failures",
+                "observed_payload_digest": "",
+                "ref_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop79",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop80",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "access_loop_id": "loop81",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.load_solver_task",
+                "observed_payload_digest": "0d866157e6972e2c9ee20a653e950b888ed0956e89b6bbd278d424ba648b9622",
+                "ref_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.first_principles",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://context_intelligence/ds1000.context.common_failures",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.load_solver_task"
+            ],
+            "consuming_loop_id": "loop67",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:27ef5a1cc294e6f50327498b",
+            "record_digest": "88c01dada0d3319b6831d15e9a3249a442dabd71fb9074316ef6dafa1aaa81fe",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 16.965959,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 1125,
+              "loop_id": "loop83",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 2628,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "12faa66c000405a420cc31b1daf2bf14015002ea37e0565e1a58b582a736fb7c",
+          "raw_response_sha256": "e285cf1e152039b34489e79186d4bbdecd82c1f4e4db5c99b09d0307e2a9f851",
+          "role": "synthesis",
+          "spawned_loop_id": "loop67"
+        }
+      ],
+      "output_tokens": 12323,
+      "passed": true,
+      "physical_model_calls": 3,
+      "playback_lines": 354,
+      "playback_path": "selected/playback/problem-838.txt",
+      "playback_sha256": "e560b9a9922ab9138d973e8823d945372b00ac2963f43f295db46329e2773dbf",
+      "problem_id": 838,
+      "provider": "ollama_cloud",
+      "record_type": "ds1000_selected_task_evidence/v1",
+      "report_path": "selected/reports/problem-838.json",
+      "run_id": "ds1000-full-v1-20260825T150857Z.problem-838",
+      "runtime": {
+        "base_image_digest": "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+        "image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d",
+        "platform": "linux/amd64",
+        "requirements_sha256": "329eaf4f9046b7eb281a79a8c3010ffde9b29229330f1eef1861223eb5d86b87",
+        "source_execution_sha256": "fab0beb2a5c3300f4540c2225ffc013881e5770fed388ad20d4620ae040cd311",
+        "tag": "loop-engine-ds1000-runtime:v1"
+      },
+      "selected_candidate_sha256": "e285cf1e152039b34489e79186d4bbdecd82c1f4e4db5c99b09d0307e2a9f851",
+      "selected_role": "synthesis",
+      "source_commit": "b39aab71da6d23ef8d3cac59a7c5f834516ab334",
+      "total_tokens": 15259
+    },
+    {
+      "accounting_complete": true,
+      "canvas_paths": [
+        "selected/canvas/problem-896-synthesis.json",
+        "selected/canvas/problem-896-repair.json"
+      ],
+      "error": "",
+      "evaluations": [
+        {
+          "candidate_sha256": "adf69186a2e3b0f9aff2baa11892bb1f6c3090a04969563095c545811bfa0a3f",
+          "error": "",
+          "passed": false,
+          "result": "failed: expected an indented block after function definition on line 5 (<string>, line 6)",
+          "role": "synthesis",
+          "status": "completed",
+          "stopped": "done"
+        },
+        {
+          "candidate_sha256": "50efbbd3f8f0eb8494553fe5a724bd0a69a6d9542d4615684ae17965a27e4182",
+          "error": "",
+          "passed": false,
+          "result": "failed: expected an indented block after function definition on line 5 (<string>, line 6)",
+          "role": "repair",
+          "status": "completed",
+          "stopped": "done"
+        }
+      ],
+      "failover": false,
+      "failures_preserved": true,
+      "full_path": {
+        "canvas_component_events": 2,
+        "checks": {
+          "active_user_feedback_intelligence_consumed_by_required_models": true,
+          "all_four_intelligence_layers_queried": true,
+          "candidate_portfolios_are_distinct": true,
+          "canonical_spawned_loop_consumption_bound": true,
+          "exact_model_no_reduced_maximum": true,
+          "model_context_bound_per_physical_call": true,
+          "physical_call_ceiling": true,
+          "registered_code_pack_materialized": true,
+          "repair_only_after_failed_upstream_evaluation": true,
+          "root_reference_nine_step": true,
+          "root_selected_mode_non_deterministic": true,
+          "root_terminal": true,
+          "run_history_chain_intact": true,
+          "run_history_playback_rendered": true,
+          "run_history_report_rendered": true,
+          "starting_and_spawned_loops_closed": true,
+          "synthesis_spawned_loop": true,
+          "two_candidate_spawned_loops": true,
+          "typed_canvas_compiled_and_executed": true,
+          "upstream_evaluator_outside_model_judgment": true
+        },
+        "closure": {
+          "closed": true,
+          "loop_id": "loop1",
+          "orphaned_spawned_loops": [],
+          "spawned_loops": [
+            "loop2",
+            "loop33",
+            "loop50",
+            "loop67",
+            "loop84",
+            "loop86",
+            "loop103"
+          ]
+        },
+        "context_bindings": 4,
+        "eligible": true,
+        "expected_root_steps": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ],
+        "model_events": 4,
+        "record_type": "ds1000_full_path_verification/v1",
+        "root_steps": [
+          "orient",
+          "reconcile_horizon",
+          "assess_prepare",
+          "decide_next",
+          "how",
+          "act",
+          "verify",
+          "integrate_commit",
+          "route"
+        ]
+      },
+      "html_report_sha256": "67af9c4e15cb38d6703a25e158ae8d0f2a62184da0bb0a16defe44fcec3fbbc1",
+      "input_tokens": 2970,
+      "library": "Sklearn",
+      "loop_tree_sha256": "c4663766013f3b59a78ad57fadf9b21da52796ebe63d492e52dcfb3ace8d5941",
+      "maximum_output_tokens": 65536,
+      "model": "deepseek-v4-flash:0731",
+      "model_spawned_loops": [
+        {
+          "candidate_code_sha256": "adf69186a2e3b0f9aff2baa11892bb1f6c3090a04969563095c545811bfa0a3f",
+          "consumed_candidate_refs": [],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "access_loop_id": "loop41",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.first_principles",
+                "observed_payload_digest": "",
+                "ref_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop42",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop43",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "access_loop_id": "loop44",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://context_intelligence/ds1000.context.common_failures",
+                "observed_payload_digest": "",
+                "ref_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop45",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop46",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "8b06997456d73f236759e2f2d887f56b846ea6d6fa8954200c0b1e07ff87692a",
+                "access_loop_id": "loop47",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.safe_extract_code",
+                "observed_payload_digest": "047ec1e47dbe897a93ae2f9ff560923131a563ba8d61b2f92ebd39a19a17c2b1",
+                "ref_digest": "8b06997456d73f236759e2f2d887f56b846ea6d6fa8954200c0b1e07ff87692a",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.first_principles",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://context_intelligence/ds1000.context.common_failures",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.safe_extract_code"
+            ],
+            "consuming_loop_id": "loop33",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:1ce2eaf8f33ce4f3f856b24a",
+            "record_digest": "f91c654568ae2fec3c297becec805d9cc4e6d17b256f1a959c3106030a7b1239",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 18.613598,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 668,
+              "loop_id": "loop49",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 649,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "78d6ba20ca39bbe49cce2c27fdbe628abb1f8f4d13d5af9f787a5fbc2e0c0bff",
+          "raw_response_sha256": "adf69186a2e3b0f9aff2baa11892bb1f6c3090a04969563095c545811bfa0a3f",
+          "role": "candidate_a",
+          "spawned_loop_id": "loop33"
+        },
+        {
+          "candidate_code_sha256": "84642ac5c5e2c12983808724ee3022303fb53acda1796cbccf853d2db9ba7bfc",
+          "consumed_candidate_refs": [],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "7e074b3e86cf43905ca401ff8f567e83011e3004ce851576104a0a59b04a7211",
+                "access_loop_id": "loop58",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.missing_constraints",
+                "observed_payload_digest": "",
+                "ref_digest": "7e074b3e86cf43905ca401ff8f567e83011e3004ce851576104a0a59b04a7211",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop59",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop60",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "access_loop_id": "loop61",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://context_intelligence/ds1000.context.common_failures",
+                "observed_payload_digest": "",
+                "ref_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop62",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop63",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "access_loop_id": "loop64",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.load_solver_task",
+                "observed_payload_digest": "0d866157e6972e2c9ee20a653e950b888ed0956e89b6bbd278d424ba648b9622",
+                "ref_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.missing_constraints",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://context_intelligence/ds1000.context.common_failures",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.load_solver_task"
+            ],
+            "consuming_loop_id": "loop50",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:3b3660ae1deb17ac4e48e5dd",
+            "record_digest": "34d49f714856b7c44c1063d6f8cae45638a5d428884c0f3755d3da1000f3186a",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 10.861306,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 671,
+              "loop_id": "loop66",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 1330,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "e8c5e15c0f4bd96c7db4f7103cc8369aa5192105bf05d2958aaff782d8cf0370",
+          "raw_response_sha256": "84642ac5c5e2c12983808724ee3022303fb53acda1796cbccf853d2db9ba7bfc",
+          "role": "candidate_b",
+          "spawned_loop_id": "loop50"
+        },
+        {
+          "candidate_code_sha256": "50efbbd3f8f0eb8494553fe5a724bd0a69a6d9542d4615684ae17965a27e4182",
+          "consumed_candidate_refs": [
+            "candidate://896/synthesis/adf69186a2e3b0f9aff2baa11892bb1f6c3090a04969563095c545811bfa0a3f",
+            "evaluation://896/adf69186a2e3b0f9aff2baa11892bb1f6c3090a04969563095c545811bfa0a3f/failed"
+          ],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "access_loop_id": "loop94",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.first_principles",
+                "observed_payload_digest": "",
+                "ref_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop95",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop96",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "d7a51984ab08a0ea8f7b1199b9b2c7d4cc0691fb8181f3d8815980d74be004af",
+                "access_loop_id": "loop97",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.failure.896.adf69186a2e3",
+                "observed_payload_digest": "",
+                "ref_digest": "d7a51984ab08a0ea8f7b1199b9b2c7d4cc0691fb8181f3d8815980d74be004af",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop98",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop99",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "access_loop_id": "loop100",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.load_solver_task",
+                "observed_payload_digest": "0d866157e6972e2c9ee20a653e950b888ed0956e89b6bbd278d424ba648b9622",
+                "ref_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.first_principles",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://runtime_history_solution_intelligence/ds1000.history.failure.896.adf69186a2e3",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.load_solver_task"
+            ],
+            "consuming_loop_id": "loop86",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:384fbb9706043e88d9ec671c",
+            "record_digest": "ddf4d1b5d1c2c3e0e0e0e6c2861d46417048737783792500fc973480b5a86ade",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 21.94657,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 784,
+              "loop_id": "loop102",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 1046,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "c3fc337589dd55cc19542308bb33e625bb2edeb113bfc7016f0d0e4c9deeaaec",
+          "raw_response_sha256": "27adb247228ca73b8ae96f90a4953330639ed40a542a314c82c7fd360e1acf6c",
+          "role": "repair",
+          "spawned_loop_id": "loop86"
+        },
+        {
+          "candidate_code_sha256": "adf69186a2e3b0f9aff2baa11892bb1f6c3090a04969563095c545811bfa0a3f",
+          "consumed_candidate_refs": [
+            "candidate://896/candidate_a/adf69186a2e3b0f9aff2baa11892bb1f6c3090a04969563095c545811bfa0a3f",
+            "candidate://896/candidate_b/84642ac5c5e2c12983808724ee3022303fb53acda1796cbccf853d2db9ba7bfc"
+          ],
+          "consumption": {
+            "consumed": [
+              {
+                "access_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "access_loop_id": "loop75",
+                "family": "first_principles",
+                "loop_ref": "loop://context_intelligence/ds1000.context.first_principles",
+                "observed_payload_digest": "",
+                "ref_digest": "2b83ce035901b67b7501078c9aa7191e1ce38dc7d0b9e659b4124232944c964d",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "access_loop_id": "loop76",
+                "family": "alternatives_analogy",
+                "loop_ref": "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+                "observed_payload_digest": "",
+                "ref_digest": "93a2db483eca462de2c6e3dc2a746433a19ff215af6d878c212c633e97d391a3",
+                "value_type": "dict"
+              },
+              {
+                "access_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "access_loop_id": "loop77",
+                "family": "missing_information",
+                "loop_ref": "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+                "observed_payload_digest": "",
+                "ref_digest": "fd09b3d2332b2551a23ca3364936d48021f66272ea70be0e97916e1edca40482",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "access_loop_id": "loop78",
+                "family": "failure_adversarial",
+                "loop_ref": "loop://context_intelligence/ds1000.context.common_failures",
+                "observed_payload_digest": "",
+                "ref_digest": "1370b1886dce7857f5add21bdc81a0c0675ee5a43722c1118870b467c50441e4",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "access_loop_id": "loop79",
+                "family": "cost_resource",
+                "loop_ref": "loop://context_intelligence/ds1000.context.cost",
+                "observed_payload_digest": "",
+                "ref_digest": "f1c897f700b868d18e85be07cd8d6f216e27259c669fc28e9595bc9124a89021",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "access_loop_id": "loop80",
+                "family": "verification_evaluation",
+                "loop_ref": "loop://context_intelligence/ds1000.context.verification",
+                "observed_payload_digest": "",
+                "ref_digest": "7c46f3f7b1a27ebe2145ae121026e928fb7162dea3c21fbf96e28d69c03b2a7a",
+                "value_type": "str"
+              },
+              {
+                "access_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "access_loop_id": "loop81",
+                "family": "output_contract_format",
+                "loop_ref": "loop://code_intelligence/ds1000.code.load_solver_task",
+                "observed_payload_digest": "0d866157e6972e2c9ee20a653e950b888ed0956e89b6bbd278d424ba648b9622",
+                "ref_digest": "428373e7bc309260f775b025b503dfff2bf5da913d35a17aff395e10b19d304c",
+                "value_type": "dict"
+              }
+            ],
+            "consumed_refs": [
+              "loop://context_intelligence/ds1000.context.first_principles",
+              "loop://runtime_history_solution_intelligence/ds1000.history.preflight",
+              "loop://user_feedback_intelligence/ds1000.user.current_owner_rules",
+              "loop://context_intelligence/ds1000.context.common_failures",
+              "loop://context_intelligence/ds1000.context.cost",
+              "loop://context_intelligence/ds1000.context.verification",
+              "loop://code_intelligence/ds1000.code.load_solver_task"
+            ],
+            "consuming_loop_id": "loop67",
+            "materialization_model_calls": 0,
+            "mode": "non_deterministic",
+            "portfolio_id": "intelligence-portfolio:004ece6bccc5f3e44fd26708",
+            "record_digest": "bb5964e5a99af2f3a08e4e5f8ac88c36de77f0c83f41af50753d6bf45db03292",
+            "record_type": "intelligence_consumption_record/v2"
+          },
+          "gateway_attempts": [
+            {
+              "elapsed_seconds": 25.327471,
+              "error": "",
+              "error_code": "",
+              "input_tokens": 847,
+              "loop_id": "loop83",
+              "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+              "maximum_output_tokens": 65536,
+              "model": "deepseek-v4-flash:0731",
+              "ok": true,
+              "output_tokens": 1675,
+              "provider": "ollama_cloud",
+              "provider_ok": true,
+              "route": "benchmark.ds1000.deepseek-v4-flash-0731",
+              "thinking_power": "max",
+              "validation_ok": true
+            }
+          ],
+          "physical_calls": 1,
+          "prompt_sha256": "5a207380ffb7a1d1279898c534f4b4e82ef404433140d19b2db5e17f011703fc",
+          "raw_response_sha256": "adf69186a2e3b0f9aff2baa11892bb1f6c3090a04969563095c545811bfa0a3f",
+          "role": "synthesis",
+          "spawned_loop_id": "loop67"
+        }
+      ],
+      "output_tokens": 4700,
+      "passed": false,
+      "physical_model_calls": 4,
+      "playback_lines": 435,
+      "playback_path": "selected/playback/problem-896.txt",
+      "playback_sha256": "d1b149ce9c56df22d63a2286aa2630ffaf3cae0fca9129a4b8b90a4733be630a",
+      "problem_id": 896,
+      "provider": "ollama_cloud",
+      "record_type": "ds1000_selected_task_evidence/v1",
+      "report_path": "selected/reports/problem-896.json",
+      "run_id": "ds1000-full-v1-20260825T150857Z.problem-896",
+      "runtime": {
+        "base_image_digest": "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+        "image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d",
+        "platform": "linux/amd64",
+        "requirements_sha256": "329eaf4f9046b7eb281a79a8c3010ffde9b29229330f1eef1861223eb5d86b87",
+        "source_execution_sha256": "fab0beb2a5c3300f4540c2225ffc013881e5770fed388ad20d4620ae040cd311",
+        "tag": "loop-engine-ds1000-runtime:v1"
+      },
+      "selected_candidate_sha256": "50efbbd3f8f0eb8494553fe5a724bd0a69a6d9542d4615684ae17965a27e4182",
+      "selected_role": "repair",
+      "source_commit": "b39aab71da6d23ef8d3cac59a7c5f834516ab334",
+      "total_tokens": 7670
+    }
+  ]
+}

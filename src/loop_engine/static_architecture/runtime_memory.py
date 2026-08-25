@@ -1,6 +1,6 @@
 """Runtime Memory — the shared working notebook for loops in ONE run.
 
-Architectural role: Static Architecture service (the active-run
+Architectural role: internal runtime service (the active-run
 communication plane the superseding charter of 2026-08-24 requires live:
 "a shared working notebook for the loops active in the current run" —
 any loop writes a note, any loop reads notes; the real-time canary must
@@ -20,7 +20,7 @@ Does not own:
     - the four intelligence layers (persistent; this board is the run's
       scratch memory and dies with the run unless curated), User
       Intelligence (human-to-loop; this is loop-to-loop), or the
-      Chronicle (which receives these events like any others).
+      RunHistory (which receives these events like any others).
 
 Public entry points:
     - RunNoteBoard(run_id, ledger=None).write(note, loop_id=..., ...)

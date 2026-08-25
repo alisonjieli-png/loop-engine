@@ -2,14 +2,14 @@
 
 Architectural role: Code Node system for the third public Loop role.
 
-Owns: verified Chronicle intake, Retrieval Engine use, intelligence coverage
+Owns: verified saved-run intake, Intelligence Search and Retrieval, coverage
 audit, runtime mining, opportunity ranking, and in-memory candidate staging.
 
 Does not own: scheduling, persistent candidate writes, independent review, or
 promotion.
 
 Public entry points: ``run_self_improvement`` and
-``load_chronicle_history``.
+``load_run_history``.
 
 Verification: ``self_test()`` includes two valid runs and one broken run.
 """
@@ -61,10 +61,10 @@ def audit_intelligence_summary(summary: dict) -> list:
     return candidates
 
 
-def load_chronicle_history(runs_dir: str, *, limit: int = 100,
+def load_run_history(runs_dir: str, *, limit: int = 100,
                            ledger=None, parent=None) -> dict:
     """Load an exact verified run population for improvement review."""
-    from ..static_architecture.chronicle import (Chronicle, default_runs_dir,
+    from ..static_architecture.run_history import (RunHistory, default_runs_dir,
                                                   as_ledger_events)
     from ..loop.intelligence_loops import serve_historical_intelligence
     from .housekeeping import trace_from_loop_ledger
@@ -83,19 +83,19 @@ def load_chronicle_history(runs_dir: str, *, limit: int = 100,
         try:
             served = serve_historical_intelligence(
                 f"self-improvement-history:{run_id}",
-                lambda run_id=run_id: Chronicle.load(root, run_id),
+                lambda run_id=run_id: RunHistory.load(root, run_id),
                 ledger=ledger, parent=parent)
             if served.get("error") is not None or served.get("value") is None:
-                raise ValueError("Chronicle could not be loaded")
-            chronicle = served["value"]
-            chain = chronicle.verify_chain()
+                raise ValueError("saved run history could not be loaded")
+            run_history = served["value"]
+            chain = run_history.verify_chain()
             if not chain.get("intact"):
                 excluded.append({"run_id": run_id,
                                  "reason": "event chain is not intact"})
                 continue
-            trace = trace_from_loop_ledger(as_ledger_events(chronicle.events))
+            trace = trace_from_loop_ledger(as_ledger_events(run_history.event_log))
             trace["run_id"] = run_id
-            trace["events"] = len(chronicle.events)
+            trace["events"] = len(run_history.event_log)
             runs.append(trace)
         except (OSError, KeyError, TypeError, ValueError) as exc:
             excluded.append({"run_id": run_id,
@@ -142,7 +142,7 @@ def run_self_improvement(*, runs_dir: str = "", layer_records=None,
     log = ledger or LoopLedger()
     loop = Loop("review run history and intelligence for improvements",
                 config, ledger=log)
-    history = load_chronicle_history(runs_dir, limit=run_limit,
+    history = load_run_history(runs_dir, limit=run_limit,
                                      ledger=log, parent=loop)
     state = {"candidates": [], "retrieval_hits": []}
 
@@ -209,7 +209,7 @@ def self_test() -> dict:
     import json
     import tempfile
     from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome
-    from ..static_architecture.chronicle import Chronicle
+    from ..static_architecture.run_history import RunHistory
     from ..static_architecture.store_serve import StoreRecord
 
     with tempfile.TemporaryDirectory() as history_root:
@@ -220,20 +220,20 @@ def self_test() -> dict:
                 power="light"))
             lp.run(handler=lambda loop, step, context: StepOutcome(
                 output="research complete", mode="hybrid", confidence=0.9))
-            chronicle = Chronicle.from_ledger(
+            run_history = RunHistory.from_ledger(
                 lp.ledger.events, run_id=f"history-{index}")
-            chronicle.commit(); chronicle.save(history_root)
+            run_history.commit(); run_history.save(history_root)
         broken = os.path.join(history_root, "broken-run")
         os.makedirs(broken)
         with open(os.path.join(broken, "manifest.json"), "w") as handle:
-            json.dump({"not": "a chronicle"}, handle)
+            json.dump({"not": "a run_history"}, handle)
         catalog = {
             "context": [StoreRecord(
                 "ctx.incomplete", "context", "an uncategorized method",
                 body={"role": "method", "category": "method",
                       "maturity": "registered"})],
-            "code_intelligence": [], "past_run_intelligence": [],
-            "user_intelligence": []}
+            "code_intelligence": [], "runtime_history_solution_intelligence": [],
+            "user_feedback_intelligence": []}
         report = run_self_improvement(
             runs_dir=history_root, layer_records=catalog, min_frequency=2)
     tests = [{

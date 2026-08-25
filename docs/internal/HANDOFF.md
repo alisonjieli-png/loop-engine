@@ -39,7 +39,7 @@ add task-specific installation variants.
 
 - Keep one recursive loop runtime.
 - A loop can run deterministic, hybrid, or non-deterministic steps.
-- Child loops cannot exceed the permissions of their parent.
+- Spawned Loops cannot exceed the permissions of their parent.
 - Missing dependencies, providers, measurements, and saved runs remain visible.
 - Run the full test and conformance commands before release.
 - Keep package metadata, documentation, examples, and CI on the same names.

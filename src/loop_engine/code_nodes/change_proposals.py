@@ -103,7 +103,7 @@ class ChangeProposal:
 
 
 _MUTABLE_TEMPLATE_FIELDS = ("steps", "allowed_modes", "description",
-                            "stop_condition")
+                            "exit_condition")
 
 
 def apply_to_template(template_body: dict, proposal: ChangeProposal) -> dict:

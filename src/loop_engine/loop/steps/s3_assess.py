@@ -4,7 +4,7 @@ CONTRACT   PractitionerState + Situation  ->  DecisionSupportPortfolio
 REQUIRED   no (optional; kernel default = sufficient_no_expansion, never forces
            a model/research call)
 WAYS       sufficient_no_expansion · retrieve reusable resources ·
-           generate provisional resources · spawn a research child practitioner
+           generate provisional resources · spawn a Practitioner Loop for research
 EXTEND     provide an `assess_prepare` impl; register question/persona
            generators and research recipes.
 

@@ -14,7 +14,7 @@ Install Loop Engine directly from GitHub:
 python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
 ```
 
-Run the example from the repository root:
+Run the example from the repository directory:
 
 ```bash
 python examples/10_validate_customer_import/run.py

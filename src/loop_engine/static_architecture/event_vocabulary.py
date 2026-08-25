@@ -1,13 +1,13 @@
 """The canonical event vocabulary — one closed set of families, and the
 total projection from runtime kinds into it.
 
-Architectural role: Static Architecture service (the event vocabulary).
+Architectural role: internal event vocabulary service.
 
-Split out of `chronicle` on 2026-08-24 when that module crossed the 800-line
+Split out of `run_history` on 2026-08-24 when that module crossed the 800-line
 cap.  The split is not cosmetic: the VOCABULARY is referenced by the
 conformance scanner, the SaaS routes, and the Studio independently of the
 append-only history, so it was already a separate concern living in one file.
-`chronicle` re-exports every name, so no import site changed.
+`run_history` re-exports every name, so no import site changed.
 
 Owns:
     - EVENT_FAMILIES: the closed 59-family vocabulary (§20.2);
@@ -17,13 +17,13 @@ Owns:
     - canonical_event_coverage(): emitted vs declared-only, never conflated.
 
 Does not own:
-    - the Chronicle itself, persistence, or replay (chronicle.py).
+    - the RunHistory itself, persistence, or replay (run_history.py).
 
 Key invariants:
     - a projection may only produce a declared family; anything else raises;
     - declaring a family is not claiming it — coverage separates the two.
 
-Verification: exercised by chronicle.self_test() and the vocabulary gate.
+Verification: exercised by run_history.self_test() and the vocabulary gate.
 """
 from __future__ import annotations
 
@@ -37,15 +37,15 @@ EVENT_FAMILIES = (
     "run.started", "run.status_changed", "run.completed", "run.failed",
     "loop.initialized", "loop.started", "loop.iteration.started",
     "loop.iteration.completed", "loop.waiting", "loop.paused",
-    "loop.resumed", "loop.completed", "loop.failed", "loop.child.requested",
-    "loop.child.started", "loop.child.returned",
+    "loop.resumed", "loop.completed", "loop.failed", "loop.spawn.requested",
+    "loop.spawned.started", "loop.spawned.returned",
     "work_item.created", "work_item.selected", "work_item.completed",
     "work_item.deferred",
     "capability.snapshot.created", "capability.search.started",
     "capability.search.completed", "capability.selected",
     "capability.rejected",
-    "intelligence.string.retrieved", "intelligence.code.retrieved",
-    "intelligence.history.retrieved", "intelligence.user.retrieved",
+    "intelligence.context.retrieved", "intelligence.code.retrieved",
+    "intelligence.runtime_history_solution.retrieved", "intelligence.user_feedback.retrieved",
     "runtime_memory.message_written", "runtime_memory.message_read",
     "model.invocation.requested", "model.invocation.started",
     "model.invocation.completed", "model.invocation.failed",
@@ -55,10 +55,10 @@ EVENT_FAMILIES = (
     "solution.loop.started", "solution.loop.completed", "solution.finalized",
     "evaluation.started", "evaluation.completed",
     "failure.detected", "recovery.started", "recovery.completed",
-    "user_intelligence.submitted", "user_intelligence.attached",
-    "user_intelligence.read", "user_intelligence.accepted",
-    "user_intelligence.deferred", "user_intelligence.rejected",
-    "user_intelligence.generalized",
+    "user_feedback_intelligence.submitted", "user_feedback_intelligence.attached",
+    "user_feedback_intelligence.read", "user_feedback_intelligence.accepted",
+    "user_feedback_intelligence.deferred", "user_feedback_intelligence.rejected",
+    "user_feedback_intelligence.generalized",
     "learning.candidate.staged", "learning.candidate.validated",
     "state.committed", "change.proposed",
 )
@@ -67,15 +67,14 @@ EVENT_FAMILIES = (
 #: projects into.  An unknown layer raises — it never silently becomes
 #: "string".
 _INTELLIGENCE_LAYER_FAMILY = {
-    "string": "intelligence.string.retrieved",
-    "string_intelligence": "intelligence.string.retrieved",
+    "context": "intelligence.context.retrieved",
+    "context_intelligence": "intelligence.context.retrieved",
     "code": "intelligence.code.retrieved",
     "code_intelligence": "intelligence.code.retrieved",
-    "history": "intelligence.history.retrieved",
-    "past_run": "intelligence.history.retrieved",
-    "past_run_intelligence": "intelligence.history.retrieved",
-    "user": "intelligence.user.retrieved",
-    "user_intelligence": "intelligence.user.retrieved",
+    "history": "intelligence.runtime_history_solution.retrieved",
+    "runtime_history_solution_intelligence": "intelligence.runtime_history_solution.retrieved",
+    "user": "intelligence.user_feedback.retrieved",
+    "user_feedback_intelligence": "intelligence.user_feedback.retrieved",
 }
 
 
@@ -114,6 +113,31 @@ def _infra_family(e: dict) -> str:
             else "tool.invocation.completed")
 
 
+def _mcp_terminal_family(e: dict) -> str:
+    """Map every closed MCP result to an existing canonical family."""
+    status = str(e.get("status", ""))
+    families = {
+        "completed": "tool.invocation.completed",
+        "failed": "tool.invocation.failed",
+        "approval_required": "loop.paused",
+        "refused": "capability.rejected",
+        "unavailable": "capability.rejected",
+    }
+    family = families.get(status)
+    if family is None:
+        raise ValueError(f"unknown MCP terminal status {status!r}")
+    return family
+
+
+def _skill_terminal_family(e: dict) -> str:
+    status = str(e.get("status", ""))
+    if status == "completed":
+        return "intelligence.context.retrieved"
+    if status == "failed":
+        return "capability.rejected"
+    raise ValueError(f"unknown skill terminal status {status!r}")
+
+
 #: Raw runtime ledger kind -> canonical family.  A value may be a family name
 #: or a resolver that reads the event.  TOTAL over every kind this package
 #: emits: the ``unmapped_ledger_event_kind`` conformance detector fails the
@@ -132,8 +156,8 @@ _CANONICAL_EVENT_MAP = {
     "step": "work_item.created",
     "run_step": "loop.iteration.completed",
     "kernel_run": "loop.iteration.completed",
-    "spawn": "loop.child.started",
-    "child_return": "loop.child.returned",
+    "spawn": "loop.spawned.started",
+    "spawned_return": "loop.spawned.returned",
     "terminal": _terminal_family,
     "pause": "loop.paused",
     "resume": "loop.resumed",
@@ -159,18 +183,18 @@ _CANONICAL_EVENT_MAP = {
     "solution_finalized": "solution.finalized",
     "work_item_deferred": "work_item.deferred",
     "learning_candidate_validated": "learning.candidate.validated",
-    "user_intelligence_generalized": "user_intelligence.generalized",
+    "user_feedback_intelligence_generalized": "user_feedback_intelligence.generalized",
     "change.proposed": "change.proposed",
     "run_completed": "run.completed",
     "run_failed": "run.failed",
     "run_started": "run.started",
     "loop_waiting": "loop.waiting",
-    "child_requested": "loop.child.requested",
+    "spawned_requested": "loop.spawn.requested",
     "intelligence_pull": _intelligence_family,
-    "intelligence.string.retrieved": "intelligence.string.retrieved",
+    "intelligence.context.retrieved": "intelligence.context.retrieved",
     "intelligence.code.retrieved": "intelligence.code.retrieved",
-    "intelligence.history.retrieved": "intelligence.history.retrieved",
-    "intelligence.user.retrieved": "intelligence.user.retrieved",
+    "intelligence.runtime_history_solution.retrieved": "intelligence.runtime_history_solution.retrieved",
+    "intelligence.user_feedback.retrieved": "intelligence.user_feedback.retrieved",
     "infra_call": _infra_family,
     "runtime_memory.message_written": "runtime_memory.message_written",
     "runtime_memory.message_read": "runtime_memory.message_read",
@@ -184,15 +208,23 @@ _CANONICAL_EVENT_MAP = {
     "recovery.started": "recovery.started",
     "recovery.completed": "recovery.completed",
     "solution.loop.completed": "solution.loop.completed",
-    "user_guidance": "user_intelligence.read",
-    "user_intelligence.attached": "user_intelligence.attached",
-    "user_intelligence.submitted": "user_intelligence.submitted",
-    "user_intelligence.accepted": "user_intelligence.accepted",
-    "user_intelligence.deferred": "user_intelligence.deferred",
-    "user_intelligence.rejected": "user_intelligence.rejected",
+    "user_guidance": "user_feedback_intelligence.read",
+    "user_feedback_intelligence.attached": "user_feedback_intelligence.attached",
+    "user_feedback_intelligence.submitted": "user_feedback_intelligence.submitted",
+    "user_feedback_intelligence.accepted": "user_feedback_intelligence.accepted",
+    "user_feedback_intelligence.deferred": "user_feedback_intelligence.deferred",
+    "user_feedback_intelligence.rejected": "user_feedback_intelligence.rejected",
+    # Safe operational observers reuse existing families. These raw kinds
+    # preserve the exact lifecycle identity in RunHistory detail.
+    "effect_approval_requested": "loop.paused",
+    "effect_approval_decided": "loop.resumed",
+    "context_artifact_stored": "state.committed",
+    "context_compaction_completed": "state.committed",
+    "mcp_call_terminal": _mcp_terminal_family,
+    "skill_load_terminal": _skill_terminal_family,
 }
 
-#: The Chronicle's stored ``event_type`` is a COARSER storage bucket than the
+#: The RunHistory's stored ``event_type`` is a COARSER storage bucket than the
 #: canonical family (18 buckets over 59 families).  Binding every bucket to a
 #: family here is what keeps it a projection of the one vocabulary instead of
 #: a second semantic model: the suite asserts this table is total over
@@ -200,10 +232,10 @@ _CANONICAL_EVENT_MAP = {
 _EVENT_TYPE_FAMILY = {
     "run_started": "run.started",
     "loop_init": "loop.initialized",
-    "loop_spawn": "loop.child.started",
+    "loop_spawn": "loop.spawned.started",
     "iteration": "loop.iteration.completed",
     "capability_search": "capability.search.completed",
-    "string_retrieval": "intelligence.string.retrieved",
+    "context_retrieval": "intelligence.context.retrieved",
     "code_execution": "tool.invocation.completed",
     "model_invocation": "model.invocation.completed",
     "fallback": "capability.rejected",
@@ -220,7 +252,7 @@ _EVENT_TYPE_FAMILY = {
 
 
 def family_of(event_type: str) -> str:
-    """The canonical family a stored Chronicle event_type belongs to."""
+    """The canonical family a stored RunHistory event_type belongs to."""
     fam = _EVENT_TYPE_FAMILY.get(event_type)
     if fam is None:
         raise ValueError(f"event_type {event_type!r} has no canonical family")
@@ -265,7 +297,8 @@ def canonical_event_coverage(ledger_events: "list | None" = None) -> dict:
     reachable.update(_INTELLIGENCE_LAYER_FAMILY.values())
     reachable.update({"loop.completed", "loop.failed",
                       "capability.search.completed",
-                      "tool.invocation.completed"})
+                      "tool.invocation.completed", "tool.invocation.failed",
+                      "loop.paused", "capability.rejected"})
     reachable &= set(EVENT_FAMILIES)
     observed = set()
     if ledger_events is not None:
@@ -277,4 +310,3 @@ def canonical_event_coverage(ledger_events: "list | None" = None) -> dict:
                 sorted(set(EVENT_FAMILIES) - reachable),
             "observed_in_this_run": sorted(observed),
             "raw_kinds_mapped": len(_CANONICAL_EVENT_MAP)}
-

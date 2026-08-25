@@ -29,7 +29,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field, replace
 from typing import Sequence
 
-from ..static_architecture.ollama_client import FORBIDDEN_MODELS, DEFAULT_MODEL, MODEL_MAX_OUTPUT
+from ..static_architecture.ollama_client import FORBIDDEN_MODELS, DEFAULT_MODEL
 
 LOCALITIES = ("cloud", "local")
 # What a model call is FOR — the axis the cloud-only rule actually turns on.

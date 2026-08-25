@@ -1,73 +1,73 @@
 {
- "record_type": "openml_real_data_receipt/v1",
- "date": "2026-08-23",
- "model": "deepseek-v4-flash:0731",
- "provider": "ollama_cloud",
- "usage_log": [
-  {
-   "model": "deepseek-v4-flash:0731",
-   "ok": true,
-   "prompt_tokens": 53,
-   "eval_tokens": 722,
-   "attempts": 8
-  },
-  {
-   "model": "deepseek-v4-flash:0731",
-   "ok": true,
-   "prompt_tokens": 53,
-   "eval_tokens": 634,
-   "attempts": 8
+  "record_type": "openml_real_data_evidence/v1",
+  "date": "2026-08-23",
+  "model": "deepseek-v4-flash:0731",
+  "provider": "ollama_cloud",
+  "usage_log": [
+    {
+      "model": "deepseek-v4-flash:0731",
+      "ok": true,
+      "prompt_tokens": 53,
+      "eval_tokens": 722,
+      "attempts": 8
+    },
+    {
+      "model": "deepseek-v4-flash:0731",
+      "ok": true,
+      "prompt_tokens": 53,
+      "eval_tokens": 634,
+      "attempts": 8
+    }
+  ],
+  "honesty": "REAL public datasets (census income; cartographic forest cover), not synthetic playground data. No official leaderboard exists: every grade here is a LOCALLY GRADED REPLICA on a seeded sealed holdout, labeled as such per the constitution.",
+  "results": {
+    "openml-adult": {
+      "classes": 2,
+      "train_rows": 39073,
+      "sealed_rows": 9769,
+      "cold": {
+        "model_calls": 1,
+        "local_cv": 0.8738003224733192,
+        "metric": "accuracy",
+        "estimator": "lightgbm",
+        "sealed_holdout_accuracy_LOCAL_REPLICA": 0.8749104309550619,
+        "wall_seconds": 15.8
+      },
+      "warm": {
+        "model_calls": 0,
+        "local_cv": 0.8738003224733192,
+        "sealed_holdout_accuracy_LOCAL_REPLICA": 0.8749104309550619,
+        "served": "advice.openml-adult",
+        "wall_seconds": 4.9
+      },
+      "growth_gate": {
+        "fewer_calls": true,
+        "not_worse": true
+      }
+    },
+    "openml-covertype": {
+      "classes": 7,
+      "train_rows": 464809,
+      "sealed_rows": 116203,
+      "cold": {
+        "model_calls": 1,
+        "local_cv": 0.8134201360128569,
+        "metric": "accuracy",
+        "estimator": "hgb",
+        "sealed_holdout_accuracy_LOCAL_REPLICA": 0.7979053897059456,
+        "wall_seconds": 87.2
+      },
+      "warm": {
+        "model_calls": 0,
+        "local_cv": 0.8134201360128569,
+        "sealed_holdout_accuracy_LOCAL_REPLICA": 0.7979053897059456,
+        "served": "advice.openml-covertype",
+        "wall_seconds": 74.1
+      },
+      "growth_gate": {
+        "fewer_calls": true,
+        "not_worse": true
+      }
+    }
   }
- ],
- "honesty": "REAL public datasets (census income; cartographic forest cover), not synthetic playground data. No official leaderboard exists: every grade here is a LOCALLY GRADED REPLICA on a seeded sealed holdout, labeled as such per the constitution.",
- "results": {
-  "openml-adult": {
-   "classes": 2,
-   "train_rows": 39073,
-   "sealed_rows": 9769,
-   "cold": {
-    "model_calls": 1,
-    "local_cv": 0.8738003224733192,
-    "metric": "accuracy",
-    "estimator": "lightgbm",
-    "sealed_holdout_accuracy_LOCAL_REPLICA": 0.8749104309550619,
-    "wall_seconds": 15.8
-   },
-   "warm": {
-    "model_calls": 0,
-    "local_cv": 0.8738003224733192,
-    "sealed_holdout_accuracy_LOCAL_REPLICA": 0.8749104309550619,
-    "served": "advice.openml-adult",
-    "wall_seconds": 4.9
-   },
-   "growth_gate": {
-    "fewer_calls": true,
-    "not_worse": true
-   }
-  },
-  "openml-covertype": {
-   "classes": 7,
-   "train_rows": 464809,
-   "sealed_rows": 116203,
-   "cold": {
-    "model_calls": 1,
-    "local_cv": 0.8134201360128569,
-    "metric": "accuracy",
-    "estimator": "hgb",
-    "sealed_holdout_accuracy_LOCAL_REPLICA": 0.7979053897059456,
-    "wall_seconds": 87.2
-   },
-   "warm": {
-    "model_calls": 0,
-    "local_cv": 0.8134201360128569,
-    "sealed_holdout_accuracy_LOCAL_REPLICA": 0.7979053897059456,
-    "served": "advice.openml-covertype",
-    "wall_seconds": 74.1
-   },
-   "growth_gate": {
-    "fewer_calls": true,
-    "not_worse": true
-   }
-  }
- }
 }

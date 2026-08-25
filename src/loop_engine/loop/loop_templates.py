@@ -12,7 +12,10 @@ cannot run until validation passes and an explicit admission marks it
 from __future__ import annotations
 
 from ..loop.recursive_loop import (FRAMEWORKS, MODES, INTERNAL_MODE_NAMES,
-                                   LOGICAL_KINDS, LoopConfig)
+                                   LOGICAL_KINDS,
+                                   LOOP_CONDITIONS, LoopConfig,
+                                   default_loop_condition,
+                                   normalize_exit_condition)
 
 _FROM_INTERNAL = {v: k for k, v in INTERNAL_MODE_NAMES.items()}
 
@@ -138,9 +141,18 @@ def validate_template(body: dict) -> dict:
         v.append(f"{len(steps)} steps exceeds the bound {_MAX_STEPS}")
     if any(not isinstance(s, str) or not s for s in steps):
         v.append("every step must be a non-empty string")
-    if fw == "open" and not body.get("stop_condition"):
-        v.append("an open template must declare its stop_condition "
-            "(at least one terminal/abstention path)")
+    loop_condition = body.get("loop_condition", "")
+    if loop_condition and loop_condition not in LOOP_CONDITIONS:
+        v.append(f"loop_condition {loop_condition!r} not in {LOOP_CONDITIONS}")
+    if fw in FRAMEWORKS and loop_condition and loop_condition != \
+            default_loop_condition(fw):
+        v.append(
+            f"framework {fw!r} requires loop_condition "
+            f"{default_loop_condition(fw)!r}")
+    try:
+        normalize_exit_condition(body.get("exit_condition", ""))
+    except ValueError as exc:
+        v.append(str(exc))
     logical_kind = body.get("logical_kind", "execution")
     if logical_kind not in LOGICAL_KINDS:
         v.append(f"logical_kind {logical_kind!r} not in {LOGICAL_KINDS}")
@@ -177,8 +189,8 @@ def config_from_template(body: dict, *, power: str = "standard",
                       power=power,
                       custom_steps=tuple(body.get("steps") or ()),
                       max_depth=max_depth,
-                      stop_condition=body.get("stop_condition",
-                                              "run_to_completion"))
+                      loop_condition=body.get("loop_condition", ""),
+                      exit_condition=body.get("exit_condition", ""))
 
 
 def template_records() -> list:
@@ -190,6 +202,10 @@ def template_records() -> list:
         title=f"Loop template: {t['template_id']}: {t['description'][:60]}",
         body={**{k: (list(v) if isinstance(v, tuple) else v)
                  for k, v in t.items()},
+              "loop_condition": t.get("loop_condition")
+                  or default_loop_condition(t["framework"]),
+              "exit_condition": normalize_exit_condition(
+                  t.get("exit_condition", "")),
               "role": "loop_template",
               "facets": string_facets(category="loop_template",
                                       subcategory=t["framework"],
@@ -241,15 +257,26 @@ def self_test() -> dict:
         refused = True
     check("candidate_template_cannot_run_until_admitted", refused)
 
-    # 4. orphan/unbounded/undeclared-stop templates fail validation.
+    # 4. orphan, unbounded, and mismatched-condition templates fail validation.
     bad1 = validate_template({"template_id": "x", "framework": "custom",
                               "steps": ()})
-    bad2 = validate_template({"template_id": "x", "framework": "open"})
+    bad2 = validate_template({"template_id": "x", "framework": "open",
+                              "loop_condition": "steps_remain"})
     bad3 = validate_template({"template_id": "x", "framework": "custom",
                               "steps": tuple(f"s{i}" for i in range(500))})
-    check("orphan_unbounded_and_stopless_templates_refused",
+    check("orphan_unbounded_and_mismatched_conditions_refused",
           not bad1["valid"] and not bad2["valid"] and not bad3["valid"],
-          "no steps / no stop_condition / 500 steps all refused")
+          "no steps / wrong open condition / 500 steps all refused")
+
+    current = dict(lib["atomic_code_only"],
+                   exit_condition="accepted_success")
+    invalid = dict(current, exit_condition="whenever")
+    current_cfg = config_from_template(current)
+    check("current_exit_input_validates_and_unknowns_fail_closed",
+          current_cfg.exit_condition == "accepted_success"
+          and current_cfg.loop_condition == "steps_remain"
+          and not validate_template(invalid)["valid"],
+          "current conditions are stored; unknown values are refused")
 
     # 5. templates are searchable Strings through the one store, faceted.
     from ..static_architecture.store_serve import SolverStore
@@ -285,7 +312,7 @@ def self_test() -> dict:
     #   (b) it keeps its OWN five beats — the runtime must not quietly lower
     #       a custom ordering back into the nine-step sequence (§3.3);
     #   (c) the delegation clamp holds: a parent whose operating policy permits
-    #       only deterministic child modes cannot spawn it.
+    #       only deterministic spawned modes cannot spawn it.
     from .recursive_loop import Loop, LoopConfig, LoopError
     ext = lib["external_harness_worker"]
     cfg7 = config_from_template(ext)

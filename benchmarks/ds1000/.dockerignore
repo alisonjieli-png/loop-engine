@@ -1,0 +1,8 @@
+*
+!Dockerfile
+!requirements.lock
+!evaluator_one.py
+!.cache/
+!.cache/upstream/
+!.cache/upstream/execution.py
+

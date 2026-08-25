@@ -61,8 +61,8 @@ def intelligence_layers_example() -> str:
         groups = ", ".join(f"{name}={count}" for name, count
                            in layer["category_groups"].items()) or "none"
         lines.append(f"{layer['public_label']:<38} {layer['items']:>4}  {groups}")
-    candidate_context = (len(review_catalog["string_intelligence"])
-                         - len(active_catalog["string_intelligence"]))
+    candidate_context = (len(review_catalog["context_intelligence"])
+                         - len(active_catalog["context_intelligence"]))
     lines.extend(("", f"Context candidates available for review: "
                   f"{candidate_context}",
                   "Candidates are excluded from normal retrieval.",
@@ -125,7 +125,7 @@ def self_test() -> dict:
     check("installed_intelligence_example_shows_four_layers",
           all(label in layers for label in (
               "Context Intelligence", "Code Intelligence",
-              "Previous Run & Solution Intelligence", "User Intelligence")))
+              "Runtime History and Solution Intelligence", "User Feedback Intelligence")))
     seed = context_seed_example()
     check("installed_context_seed_uses_the_self_improvement_boundary",
           "candidate records: 24" in seed and "model calls: 0" in seed

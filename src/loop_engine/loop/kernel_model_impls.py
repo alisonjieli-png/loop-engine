@@ -12,7 +12,7 @@ This wires the six-node Practitioner Kernel to the real machinery:
                                    then the escalation modes
   4. Execute / build / delegate -> run a handle directly, have an OpenCode
                                    worker author + compile a node, or spawn
-                                   child practitioners
+                                   spawned Practitioner Loops
   5. Verify the result          -> deterministic checks first, then a
                                    verify_check form through the call DAG
   6. Save and route             -> commit facts/artifacts, distill shortcuts,
@@ -214,7 +214,7 @@ def make_model_impls(*, models: Sequence[str] | None = None,
         if chosen.kind == "research":
             return ExecutionPlan(
                 "research", "spawn_practitioners",
-                children=(ProblemSpec(objective=f"reduce gap: {chosen.action}",
+                spawned_loops=(ProblemSpec(objective=f"reduce gap: {chosen.action}",
                                       depth=state.spec.depth + 1,
                                       budget_passes=3),),
                 rationale="a narrower practitioner reduces the gap")
@@ -240,12 +240,12 @@ def make_model_impls(*, models: Sequence[str] | None = None,
                                      confidence=0.0)]
             from ..loop.kernel import run_practitioner, default_impls
             packets = []
-            for child in plan.children:
-                out = run_practitioner(child, default_impls())
+            for spawned in plan.spawned_loops:
+                out = run_practitioner(spawned, default_impls())
                 packets.append(ResultPacket(
-                    objective=child.objective,
+                    objective=spawned.objective,
                     result={"passes": out["passes"]},
-                    claims=(f"learned:{child.objective}",),
+                    claims=(f"learned:{spawned.objective}",),
                     confidence=0.7, cost=out["passes"]))
             return packets
         if plan.act_mode == "run_dag" and author is not None:

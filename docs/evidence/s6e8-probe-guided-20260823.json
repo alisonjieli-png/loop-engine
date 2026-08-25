@@ -1,39 +1,39 @@
 {
- "record_type": "probe_guided_improvement_receipt/v1",
- "date": "2026-08-23",
- "competition": "playground-series-s6e8",
- "trigger": "residual_predictability_probe fired at 0.826 (evidence/foundry-probe-findings-20260823.json)",
- "oracle": "seeded 80/20 stratified holdout ROC-AUC (clean; no OOF-stacking optimism on the comparison)",
- "arms": {
-  "incumbent": {
-   "holdout_auc": 0.9553333305145087,
-   "wall": 5.8
+  "record_type": "probe_guided_improvement_evidence/v1",
+  "date": "2026-08-23",
+  "competition": "playground-series-s6e8",
+  "trigger": "residual_predictability_probe fired at 0.826 (evidence/foundry-probe-findings-20260823.json)",
+  "oracle": "seeded 80/20 stratified holdout ROC-AUC (clean; no OOF-stacking optimism on the comparison)",
+  "arms": {
+    "incumbent": {
+      "holdout_auc": 0.9553333305145087,
+      "wall": 5.8
+    },
+    "residual_stack": {
+      "holdout_auc": 0.9588808511748348,
+      "wall": 27.8
+    },
+    "bigger_capacity": {
+      "holdout_auc": 0.9616653444133543,
+      "wall": 21.8
+    }
   },
-  "residual_stack": {
-   "holdout_auc": 0.9588808511748348,
-   "wall": 27.8
+  "winner": "bigger_capacity",
+  "delta_vs_incumbent": 0.006332013898845523,
+  "submitted": {
+    "returncode": 0,
+    "stdout": "Successfully submitted to Predicting Smartphone Addiction",
+    "stderr": "[00:01<00:02, 1.94MB/s]\n 44%|████▎     | 3.22M/7.39M [00:01<00:02, 2.18MB/s]\n 49%|████▉     | 3.66M/7.39M [00:01<00:01, 2.42MB/s]\n 56%|█████▌    | 4.14M/7.39M [00:02<00:01, 2.32MB/s]\n 64%|██████▎   | 4.70M/7.39M [00:02<00:01, 2.50MB/s]\n 71%|███████   | 5.25M/7.39M [00:02<00:00, 2.40MB/s]\n 80%|████████  | 5.92M/7.39M [00:02<00:00, 2.35MB/s]\n 89%|████████▉ | 6.59M/7.39M [00:03<00:00, 2.21MB/s]\n 99%|█████████▉| 7.33M/7.39M [00:03<00:00, 2.18MB/s]\n100%|██████████| 7.39M/7.39M [00:04<00:00, 1.71MB/s]",
+    "refit_wall": 41.0
   },
-  "bigger_capacity": {
-   "holdout_auc": 0.9616653444133543,
-   "wall": 21.8
-  }
- },
- "winner": "bigger_capacity",
- "delta_vs_incumbent": 0.006332013898845523,
- "submitted": {
-  "returncode": 0,
-  "stdout": "Successfully submitted to Predicting Smartphone Addiction",
-  "stderr": "[00:01<00:02, 1.94MB/s]\n 44%|\u2588\u2588\u2588\u2588\u258e     | 3.22M/7.39M [00:01<00:02, 2.18MB/s]\n 49%|\u2588\u2588\u2588\u2588\u2589     | 3.66M/7.39M [00:01<00:01, 2.42MB/s]\n 56%|\u2588\u2588\u2588\u2588\u2588\u258c    | 4.14M/7.39M [00:02<00:01, 2.32MB/s]\n 64%|\u2588\u2588\u2588\u2588\u2588\u2588\u258e   | 4.70M/7.39M [00:02<00:01, 2.50MB/s]\n 71%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588   | 5.25M/7.39M [00:02<00:00, 2.40MB/s]\n 80%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  | 5.92M/7.39M [00:02<00:00, 2.35MB/s]\n 89%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2589 | 6.59M/7.39M [00:03<00:00, 2.21MB/s]\n 99%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2589| 7.33M/7.39M [00:03<00:00, 2.18MB/s]\n100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 7.39M/7.39M [00:04<00:00, 1.71MB/s]",
-  "refit_wall": 41.0
- },
- "honesty": "one seeded split \u2014 directional; SMOKE competition",
- "public_score": 0.96337,
- "submission_ref": 55725706,
- "comparison": {
-  "this_probe_guided_run": 0.96337,
-  "prior_loop_lane_submission": 0.95663,
-  "prior_from_scratch_control_2026_08_01": 0.96094,
-  "note": "the probe-guided run beats BOTH the prior lane submission (+0.0067) and the historical from-scratch control (+0.0024) \u2014 one submission each, directional; SMOKE competition"
- },
- "what_this_proves": "a fired probe observation -> seeded three-arm holdout experiment -> winner refit -> real leaderboard gain, with ZERO model calls: code intelligence acting on code-generated findings"
+  "honesty": "one seeded split — directional; SMOKE competition",
+  "public_score": 0.96337,
+  "submission_ref": 55725706,
+  "comparison": {
+    "this_probe_guided_run": 0.96337,
+    "prior_loop_lane_submission": 0.95663,
+    "prior_from_scratch_control_2026_08_01": 0.96094,
+    "note": "the probe-guided run beats BOTH the prior lane submission (+0.0067) and the historical from-scratch control (+0.0024) — one submission each, directional; SMOKE competition"
+  },
+  "what_this_proves": "a fired probe observation -> seeded three-arm holdout experiment -> winner refit -> real leaderboard gain, with ZERO model calls: code intelligence acting on code-generated findings"
 }

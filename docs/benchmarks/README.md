@@ -1,13 +1,28 @@
 # Benchmark registry
 
+Published harness results use a separate evidence catalog:
+
+- [`published-harness-evidence.json`](published-harness-evidence.json) stores
+  only source-backed published results.
+- [`published-harness-evidence.schema.json`](published-harness-evidence.schema.json)
+  requires benchmark, model, population, tools, score, date, source, and evidence
+  qualifier fields.
+
+The published-evidence catalog does not run a harness. It keeps model-only
+results separate from harness measurements. Each admitted value links to the
+source that reported it.
+
 The registry contains 144 candidate tracks across ten families. A track may be
 one benchmark, one official subset, or one task inside a benchmark suite. This
 count is not 143 independent publications.
 
-No track in the registry has been run by Loop Engine. Every entry starts as
-`cataloged_not_run`, and every entry has
-`eligible_for_comparison: false`. The registry is a research queue, not a
-scoreboard.
+No registry entry has been promoted from `cataloged_not_run`, and every entry
+still has `eligible_for_comparison: false`. Two separately frozen full-system
+smoke populations have now run: three OpenML-CC18 tasks and four DS-1000
+tasks. Their status does not silently promote the broader registry entries.
+See the [case studies](../../case-studies/) and the
+[historical first-portfolio review](FIRST-LOOP-ENGINE-PORTFOLIO-SOURCE-REVIEW.md).
+The registry remains a research queue, not a scoreboard.
 
 Files:
 
@@ -98,9 +113,10 @@ but it does not remove training overlap in source data or task format.
 ## Suggested first campaign
 
 Start with a small, low-cost slice. Pick one locally executable track from each
-family whose terms and evaluator have passed source review. Run deterministic
-adapters first. Add bounded hybrid and non-deterministic arms only after the
-same task passes the local smoke gate.
+family whose terms and evaluator have passed source review. Freeze the selected
+run mode before outcomes. The current first campaign uses non-deterministic
+Practitioner work with deterministic retrieval, execution, validation, and
+grading spawned Loops. That is a campaign choice, not a universal benchmark rule.
 
 The first broad campaign should measure coverage and failure modes. It should
 not claim that Loop Engine is better than a specialized model or another

@@ -17,6 +17,6 @@ loop-engine --studio --runs-dir example-output/runs --port 8765
 Open the playback URL printed by `run.py`.
 
 - Network or model: localhost only; zero model calls
-- External effects: saves a Chronicle and static HTML report
+- External effects: saves a Run History and static HTML report
 - Shows: playback without re-execution, chain verification, and Studio scrubber
 - Does not show: semantic replay or a production event store

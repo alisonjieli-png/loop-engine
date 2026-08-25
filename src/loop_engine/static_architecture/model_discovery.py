@@ -22,7 +22,7 @@ Two rules make this honest rather than magic:
     declared reasoning and tool support. Those are DECLARED by the vendor, not
     measured by us, so a role is a candidate routing hint, never a measured
     quality ranking. `ModelChoice.basis` carries that distinction into every
-    receipt, and `measured` stays False until a real outcome says otherwise.
+    record, and `measured` stays False until a real outcome says otherwise.
 
 Zero model calls are spent classifying — the catalogs are data, and price is a
 better tier proxy than any name-matching heuristic. That is the information
@@ -310,7 +310,7 @@ def self_test() -> dict:
     check("every_choice_is_labelled_declared_and_not_measured",
           all(c.basis == "declared" and c.measured is False
               for c in (cheap, mid, exp, think)),
-          "no Loop Engine outcome has ranked these; the receipt will say so")
+          "no Loop Engine outcome has ranked these; the record will say so")
 
     # 3. an unpriced model does NOT get a tier guessed from its name — it lands
     # in the general role, the assumption that fails most safely.
@@ -326,7 +326,8 @@ def self_test() -> dict:
           "a catalog cannot introduce a banned model")
 
     # 5. ROSTER SEMANTICS: ordering, mode support, and empty honesty.
-    r = ModelRoster(choices=[cheap, mid, exp], providers_working=["stub"])
+    r = ModelRoster(
+        choices=[cheap, mid, exp], providers_working=["declared_provider"])
     empty = ModelRoster()
     check("a_roster_orders_by_cost_and_reports_the_modes_it_can_run",
           r.best("decide_label") is cheap and r.usable
@@ -354,24 +355,9 @@ def self_test() -> dict:
           and routes[0].name.startswith("discovered."),
           f"{len(routes)} routes, no parallel registry")
 
-    # 8. LIVE: the OpenRouter catalog needs no key, so real classification runs
-    # here. If the network is unavailable the catalog is empty and that is
-    # reported as NOT RUN rather than counted as a pass.
-    cat = _openrouter_catalog(40)
-    if cat:
-        roles = {c.role for c in cat}
-        check("live_catalog_classifies_real_models_with_zero_model_calls",
-              len(cat) > 5 and roles.issubset(set(ROLES))
-              and all(not _forbidden(c.model) for c in cat)
-              and all(c.basis == "declared" for c in cat),
-              f"{len(cat)} real models classified into {sorted(roles)}; "
-              "no model call spent")
-    else:
-        results.append({
-            "test": "live_catalog_classifies_real_models_with_zero_model_calls",
-            "passed": True, "skipped": True,
-            "detail": "NOT RUN — catalog unreachable (offline)"})
-
     passed = sum(1 for t in results if t["passed"])
-    return {"tests": results, "passed": passed, "total": len(results),
+    return {"record_type": "model_discovery_contract_test/v2",
+            "scope": "offline_contract_only",
+            "provider_integration_proven": False,
+            "tests": results, "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}

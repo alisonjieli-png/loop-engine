@@ -1,0 +1,57 @@
+{
+  "corrected_execution_accuracy": 1.0,
+  "corrected_passed": 4,
+  "correction_id": "ds1000-full-v1-20260825T150857Z-extractor-whitespace-correction-v1",
+  "full_regrade_path_eligible": 4,
+  "interpretation": "This correction reuses the exact recorded provider responses. It changes only deterministic extraction and upstream evaluation; it is not a new model run.",
+  "packet_total_physical_calls_unchanged": 15,
+  "parent_campaign_id": "ds1000-full-v1-20260825T150857Z",
+  "parent_reported_execution_accuracy": 0.5,
+  "parent_result_preserved": true,
+  "parent_score_status": "invalidated by nonconforming leading-whitespace extraction",
+  "physical_model_calls": 0,
+  "population_size": 4,
+  "record_type": "ds1000_recorded_output_regrade_campaign/v1",
+  "runtime": {
+    "base_image_digest": "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+    "image_id": "sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d",
+    "platform": "linux/amd64",
+    "requirements_sha256": "329eaf4f9046b7eb281a79a8c3010ffde9b29229330f1eef1861223eb5d86b87",
+    "source_execution_sha256": "fab0beb2a5c3300f4540c2225ffc013881e5770fed388ad20d4620ae040cd311",
+    "tag": "loop-engine-ds1000-runtime:v1"
+  },
+  "tasks": [
+    {
+      "corrected_passed": true,
+      "full_regrade_path_eligible": true,
+      "library": "Pandas",
+      "original_reported_passed": false,
+      "problem_id": 72,
+      "selected_role": "repair"
+    },
+    {
+      "corrected_passed": true,
+      "full_regrade_path_eligible": true,
+      "library": "Pandas",
+      "original_reported_passed": true,
+      "problem_id": 218,
+      "selected_role": "synthesis"
+    },
+    {
+      "corrected_passed": true,
+      "full_regrade_path_eligible": true,
+      "library": "Sklearn",
+      "original_reported_passed": true,
+      "problem_id": 838,
+      "selected_role": "synthesis"
+    },
+    {
+      "corrected_passed": true,
+      "full_regrade_path_eligible": true,
+      "library": "Sklearn",
+      "original_reported_passed": false,
+      "problem_id": 896,
+      "selected_role": "repair"
+    }
+  ]
+}

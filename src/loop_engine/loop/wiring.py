@@ -249,7 +249,7 @@ def self_test() -> dict:
     # 6. the four-pillar intelligence consult reaches the KERNEL executor: a
     # wired pack consults at orient and the landed fact names the pillar.
     from ..static_architecture.store_serve import StoreRecord
-    packs = {"string_intelligence": [StoreRecord(
+    packs = {"context_intelligence": [StoreRecord(
         "s.stat", "context", "use a statistician persona", body={},
         tags=("persona",))]}
     r_in = run_practitioner(
@@ -261,8 +261,8 @@ def self_test() -> dict:
         wired_impls(), max_passes=1)
     check("kernel_orient_consults_the_intelligence_when_wired",
           r_in["facts"].get("_intelligence", {}).get("pillar")
-          == "string_intelligence"
-          and "user_intelligence" in r_in["facts"]["_intelligence"]["unqueried"]
+          == "context_intelligence"
+          and "user_feedback_intelligence" in r_in["facts"]["_intelligence"]["unqueried"]
           and r_out["facts"].get("_intelligence") is None,
           "consult lands in run facts; the no-pack default is unchanged")
 

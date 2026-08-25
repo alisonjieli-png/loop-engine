@@ -12,7 +12,7 @@ First public release.
 - **One recursive `Loop` runtime.** Search, advice, model calls, adapters,
   validators and whole solutions all execute inside the same envelope, with
   `deterministic`, `hybrid`, and `non_deterministic` modes configured per loop.
-  A loop's own modes are separate from its child-delegation authority.
+  A loop's own modes are separate from its spawned-delegation authority.
 - **Provider gateway.** Ollama Cloud, Mistral, and OpenRouter adapters behind
   `ModelGateway`, plus `CustomEndpoint`, a parameterized adapter for any
   OpenAI-compatible or Ollama-native server (vLLM, LM Studio, llama.cpp,
@@ -22,12 +22,12 @@ First public release.
   output ceilings, and total token ceilings.
 - **Typed runtime settings** with YAML and environment precedence for loop
   defaults, search backends, provider references, model tiers, bounded
-  escalation, operating policy, and Chronicle paths.
+  escalation, operating policy, and Run History paths.
 - **Separate model thinking power** with `small`, `medium`, `high`, `max`, and
   `specialized` tiers. Provider failover and tier escalation remain separate
   recorded decisions.
-- **Versioned Loop profile ontology** with one Loop root, Practitioner,
-  Intelligence, and Solution branches, explicit parent relationships, typed
+- **Versioned Loop profile ontology** with one shared Loop profile, Practitioner,
+  Intelligence, and Solution branches, explicit semantic relationships, typed
   binding, required capabilities, and semantic-version handshakes.
 - **Typed loop connections** that validate producer output roles and consumer
   input roles before execution. Different roles require a named Adapter Loop.
@@ -42,15 +42,15 @@ First public release.
   modes this installation can run, verified by real calls.
 - **Loop reports** in text, Markdown, HTML, and JSON, projected from the run's
   own ledger, with a CLI: `--runs`, `--report`, `--format`, `--out`.
-- **Hash-chained Chronicle** over a closed vocabulary of canonical event
+- **Hash-chained Run History** over a closed vocabulary of canonical event
   families.
 - **Five-problem campaign CLI** with frozen inputs and evaluators, deterministic,
-  hybrid, and model-led arms, provider pinning, Chronicle storage, live console
+  hybrid, and model-led arms, provider pinning, Run History storage, live console
   events, and Studio playback.
-- **Four dedicated intelligence guides** for Context, Code, Previous Run and
-  Solution, and User Intelligence.
-- **Zero-tolerance conformance gates** and more than 1,000 built-in tests.
-- Fifteen documented example folders.
+- **Four dedicated intelligence guides** for Context, Code, Runtime History and
+  Solution, and User Feedback Intelligence.
+- **Zero-tolerance conformance gates** and a built-in behavior suite.
+- Seventeen documented example folders.
 
 ### Fixed
 
@@ -69,7 +69,7 @@ test:
 - `studio_server.self_test` indexed a saved run that does not exist on a fresh
   clone. It passed only because earlier runs were lying around on disk.
 - Semantic mode labels were counted as model calls even when no provider was
-  contacted. Chronicle and reports now use explicit provider events for
+  contacted. Run History and reports now use explicit provider events for
   physical model-call accounting.
 - A model-output validator exception escaped the gateway and stopped provider
   fallback. It now becomes a typed validation failure.

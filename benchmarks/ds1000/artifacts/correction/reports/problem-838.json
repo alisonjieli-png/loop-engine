@@ -1,0 +1,31 @@
+{
+  "record_type": "ds1000_compact_loop_report/v1",
+  "report": {
+    "chain_intact": true,
+    "event_families": {
+      "loop.completed": 6,
+      "loop.initialized": 6,
+      "loop.iteration.completed": 18,
+      "loop.iteration.started": 18,
+      "loop.spawn.requested": 5,
+      "loop.spawned.returned": 5,
+      "loop.spawned.started": 5,
+      "loop.started": 6,
+      "run.started": 1,
+      "solution.finalized": 1,
+      "solution.loop.completed": 1,
+      "solution.loop.started": 1,
+      "state.committed": 6
+    },
+    "events": 79,
+    "loops": 8,
+    "max_depth": 2,
+    "model_calls": 0,
+    "record_type": "loop_report/v1",
+    "run_id": "ds1000-full-v1-20260825T150857Z-extractor-whitespace-correction-v1.problem-838",
+    "tokens_by_provider": {},
+    "total_tokens": 0
+  },
+  "source_report_bytes": 5000,
+  "source_report_sha256": "f70dc8d3027d0c402692bd29fefdc041ed07fdfb02cafab0833464fe8211c127"
+}

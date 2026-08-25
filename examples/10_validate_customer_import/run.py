@@ -1,6 +1,6 @@
 """Validate and normalize customer rows with a deterministic Solution Canvas.
 
-Run from the repository root:
+Run from the repository directory:
     python examples/10_validate_customer_import/run.py
 
 This example uses no model, network, or external service.

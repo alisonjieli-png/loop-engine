@@ -36,7 +36,8 @@ classification. Total failure remains a model failure.
 | `ModelRoute` | One provider and model combination for a declared purpose. |
 | `RouteRegistry` | The routes available to a run. It can be replaced as a unit. |
 | `RoutePolicy` | Which local or cloud routes are permitted for each purpose. |
-| `ModelRouteAttemptSpec` | One route, model thinking power, output ceiling, and timeout. |
+| `ModelRouteAttemptSpec` | One route, model thinking power, and timeout. |
+| `ModelOutputCapability` | The provider-declared or endpoint-observed maximum output size and its source. |
 | `ProviderPinnedRequest` | One typed request for a comparison arm that must use one provider and model. |
 | `ModelGatewayConfig` | Ordered attempt plan, allowed models and localities, failover policy, tier escalation policy, and total token ceiling. |
 | `ModelGatewayRequest` | Prompt, system text, temperature, output contract, trace identity, and gateway configuration. |
@@ -81,6 +82,11 @@ least one provider answers.
 
 Provider checks make small live model calls. Run them only when those calls are
 authorized.
+
+Every generation asks for the selected route's source-backed maximum output.
+Loop Engine does not substitute a convenient lower limit. A route with an
+unknown maximum stays unavailable until provider discovery or explicit custom
+endpoint configuration supplies the exact value.
 
 ## Run an ordered failover request
 

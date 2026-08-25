@@ -12,7 +12,7 @@ second language.
 5. State the main limit.
 6. Link to deeper reference material.
 
-The root README starts with the complete bird's-eye diagram. A component page
+The main README starts with the complete bird's-eye diagram. A component page
 does not repeat that full map unless the relationship would otherwise be
 unclear.
 
@@ -38,18 +38,18 @@ The short list is:
 
 - Loop
 - Loop Practitioner
-- Practitioner loop tree
+- Practitioner Loop graph
 - Solution Canvas
-- Solution loop
-- Self-Improvement Loop
+- Solution Loop
+- self-improvement Practitioner task
 - Static Architecture
 - Retrieval Engine
 - Context Intelligence
 - Code Intelligence
-- Previous Run & Solution Intelligence
-- User Intelligence
+- Runtime History and Solution Intelligence
+- User Feedback Intelligence
 - Runtime Memory
-- Chronicle
+- Run History
 
 Use step profile, effort setting, and operating settings as three separate
 terms.

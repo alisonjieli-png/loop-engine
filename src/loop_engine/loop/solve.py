@@ -1,9 +1,9 @@
-"""solve — run the whole What-Is-Next loop end to end on a task, for real.
+"""Decision-workflow service executed inside the canonical Loop runtime.
 
-This assembles a SolverCell from the ACTUAL regime library (deterministic
+This assembles a DecisionService from the actual regime library (deterministic
 reflexes, the linear-regression checklist, weighted heuristics, plan/blind
 regimes, and any available memory), runs it to completion with an executor that
-applies each chosen move to the epistemic state, and emits receipts, a persisted
+applies each chosen move to the epistemic state, and emits iteration records, a persisted
 run, and a studio dashboard.  No stubs: the resolvers are the real library.
 
     PYTHONPATH=src python3 -m loop_engine.loop.solve --demo
@@ -20,15 +20,15 @@ from pathlib import Path
 from ..strings.knowledge import Knowledge
 from ..strings.knowledge_state import EpistemicState, Claim, Unknown, KnowledgeDelta
 from ..loop.moves import family_of
-from ..loop.loop import SolverCell
+from ..loop.loop import DecisionService
 from ..loop.registry import ResolverRegistry
 from ..loop.regimes import register_library
 from ..loop.builtin_resolvers import register_builtins
 from ..loop.practitioner_methods import checklist_resolver, linear_regression_checklist
-from ..loop.runner import SolverCellState, run
+from ..loop.runner import DecisionWorkflowState, run_decision_workflow
 from ..loop.studio import build_studio_view, render_markdown, render_html
-from ..loop.receipts import SolverIterationReceipt
-from ..static_architecture.persistence import persist_receipt, load_receipts
+from ..loop.iteration_records import SolverIterationRecord
+from ..static_architecture.persistence import persist_iteration_record, load_iteration_records
 
 
 def build_registry() -> ResolverRegistry:
@@ -94,28 +94,47 @@ def make_executor():
     return executor
 
 
-def solve(goal: str, facts: dict, *, unknowns: dict | None = None,
-          cell_id: str = "cell.solve", max_iterations: int = 20,
-          receipts_path: str | None = None) -> dict:
-    """Run the loop to completion and return the run plus a studio view."""
+def _execute_decision_workflow(
+        goal: str, facts: dict, *, unknowns: dict | None = None,
+        cell_id: str = "cell.solve", max_iterations: int = 20,
+        iteration_records_path: str | None = None) -> dict:
+    """Execute the internal service and return its run plus a studio view."""
     reg = build_registry()
-    cell = SolverCell(confidence_bar=0.7, impact=20.0, registry=reg)
+    service = DecisionService(confidence_bar=0.7, impact=20.0, registry=reg)
     est = _seed_facts(EpistemicState(), facts)
     for uid, u in (unknowns or {}).items():
         est.add_unknown(u)
-    start = SolverCellState(cell_id=cell_id, goal=goal, epistemic=est,
-                            flags={}, results=())
-    out = run(start, cell=cell, resolvers=None, executor=make_executor(),
-              max_iterations=max_iterations)
-    # Persist receipts if a path was given.
-    if receipts_path:
-        for rd in out["receipts"]:
-            persist_receipt(receipts_path, _receipt_obj(rd))
+    start = DecisionWorkflowState(
+        cell_id=cell_id, goal=goal, epistemic=est, flags={}, results=())
+    out = run_decision_workflow(
+        start, service=service, resolvers=None, executor=make_executor(),
+        max_iterations=max_iterations)
+    # Persist iteration records if a path was given.
+    if iteration_records_path:
+        for rd in out["iteration_records"]:
+            persist_iteration_record(iteration_records_path, _iteration_record_obj(rd))
     view = build_studio_view(
         title="What Is Next", task=goal, goal=goal,
-        epistemic=None, receipts=out["receipts"])
+        epistemic=None, iteration_records=out["iteration_records"])
     return {"run": out, "studio_markdown": render_markdown(view),
             "studio_html": render_html(view)}
+
+
+def solve(goal: str, facts: dict, *, unknowns: dict | None = None,
+          cell_id: str = "cell.solve", max_iterations: int = 20,
+          iteration_records_path: str | None = None) -> dict:
+    """Run the decision service inside one canonical deterministic Loop."""
+    from .encapsulate import as_practitioner_loop
+
+    wrapped = as_practitioner_loop(
+        f"run decision workflow for {goal}",
+        lambda: _execute_decision_workflow(
+            goal, facts, unknowns=unknowns, cell_id=cell_id,
+            max_iterations=max_iterations, iteration_records_path=iteration_records_path))
+    value = wrapped["value"]
+    value["loop_id"] = wrapped["loop_id"]
+    value["runtime_type"] = "Loop"
+    return value
 
 
 def _seed_facts(est: EpistemicState, facts: dict) -> EpistemicState:
@@ -127,8 +146,8 @@ def _seed_facts(est: EpistemicState, facts: dict) -> EpistemicState:
     return est
 
 
-def _receipt_obj(rd: dict) -> SolverIterationReceipt:
-    return SolverIterationReceipt(
+def _iteration_record_obj(rd: dict) -> SolverIterationRecord:
+    return SolverIterationRecord(
         cell_id=rd["cell_id"], iteration=rd["iteration"],
         parent_digest=rd["parent_digest"],
         knowledge_before_digest=rd["knowledge_before_digest"],
@@ -138,7 +157,7 @@ def _receipt_obj(rd: dict) -> SolverIterationReceipt:
         observations=tuple(rd["observations"]),
         knowledge_after_digest=rd["knowledge_after_digest"],
         resources=rd["resources"], terminal_state=rd["terminal_state"],
-        receipt_digest=rd["receipt_digest"])
+        record_digest=rd["record_digest"])
 
 
 def demo() -> dict:
@@ -170,12 +189,14 @@ def self_test() -> dict:
 
     out = demo()
     run_ = out["run"]
-    modes = [r["decision_need"]["mode"] for r in run_["receipts"]]
-    moves = [r["decision"].get("selected", []) for r in run_["receipts"]]
+    modes = [r["decision_need"]["mode"] for r in run_["iteration_records"]]
+    moves = [r["decision"].get("selected", []) for r in run_["iteration_records"]]
 
     check("the_loop_runs_the_real_library_to_a_semantic_stop",
           run_["terminal_state"] == "stop_continue"
-          and run_["hit_ceiling"] is False and run_["iterations"] >= 5,
+          and run_["hit_ceiling"] is False and run_["iterations"] >= 5
+          and out["runtime_type"] == "Loop"
+          and out["loop_id"].startswith("loop"),
           "the real regime library drives the checklist to completion and the "
           "loop stops because the goal is satisfied, not on a ceiling")
 
@@ -187,7 +208,7 @@ def self_test() -> dict:
           "leakage), not adding a model")
 
     check("the_run_makes_zero_model_calls",
-          sum(r["model_calls_made"] for r in run_["receipts"]) == 0,
+          sum(r["model_calls_made"] for r in run_["iteration_records"]) == 0,
           "the whole run resolves with deterministic reflexes and the checklist "
           "— zero model calls")
 
@@ -222,10 +243,10 @@ def main(argv=None) -> int:
                           "terminal_state": out["run"]["terminal_state"],
                           "model_calls_made": sum(
                               r["model_calls_made"]
-                              for r in out["run"]["receipts"]),
+                              for r in out["run"]["iteration_records"]),
                           "model_calls_avoided": sum(
                               r["model_calls_avoided"]
-                              for r in out["run"]["receipts"])}, indent=1))
+                              for r in out["run"]["iteration_records"])}, indent=1))
         if args.html_out:
             Path(args.html_out).write_text(out["studio_html"], encoding="utf-8")
             print(f"\nstudio HTML -> {args.html_out}")

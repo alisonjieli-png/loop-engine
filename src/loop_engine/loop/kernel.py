@@ -11,7 +11,8 @@ the practitioner is doing (see KERNEL_NODE_NAMES):
     3. Assess sufficiency + prepare evidence / questions / perspectives / research
     4. Generate, challenge, select the next action (advances the checkpoint)
     5. Find / adapt / compose / design the method
-    6. Execute the method, build/run the task graph, or delegate to a child
+    6. Execute the method, build or run the task graph, or delegate to a
+       spawned Practitioner Loop
     7. Independently interrogate inputs, outputs, and process; test the results
     8. Integrate accepted results, update the blueprint/checkpoint, commit
     9. Continue / revise blueprint / branch / retry / reset / distill / close / finish
@@ -22,7 +23,7 @@ defaults.  A pass may explicitly SKIP optional nodes (state.facts['_skip_nodes']
 set via plan_skip_next_pass) for a trivial or mid-WorkPacket pass — but a REQUIRED
 node can never be skipped: you always orient, decide, execute, verify, and route.
 Flexibility lives in the route vocabulary (continue/branch/retry/reset/distill/
-escalate/close/finish + 7 reset modes), in bounded recursion (child
+escalate/close/finish + 7 reset modes), in bounded recursion (spawned
 practitioners), and in WorkPackets that run many ops per pass to a decision
 boundary — never in weakening the required spine.
 
@@ -35,7 +36,7 @@ inspectable, and restartable — the run is a chain of passes, not a tangle:
 
 Standard typed outputs per node: Situation, CandidateAction[], ExecutionPlan,
 ResultPacket[], EvaluationPacket, RouteDecision (+ the new state).  A swarm is
-not a new architecture — it is a portfolio of parameterized child practitioner
+not a new architecture — it is a portfolio of parameterized Practitioner Loop
 specs, each running this same kernel.  An experiment is not a new node — it is a
 kind of ExecutionPlan.  Distillation is not a new node — it is a task Learn/Route
 spawns.  Resets live in Learn/Route, are standardized, and always DOCUMENT the
@@ -121,7 +122,7 @@ def validate_impls(impls: "dict") -> None:
             f"{KERNEL_REQUIRED_NODES}; optional: {KERNEL_OPTIONAL_NODES}")
 
 # The short keys above are CODE identifiers only.  Everywhere a human sees a
-# node — documentation, diagrams, receipts, the interface — it carries its full
+# node — documentation, diagrams, records, the interface — it carries its full
 # sentence name (owner rule: single verbs are too abstract).
 KERNEL_NODE_NAMES = {
     "orient": "Reconstruct the latest accepted problem state and assemble the "
@@ -137,7 +138,7 @@ KERNEL_NODE_NAMES = {
     "how": "Find, adapt, compose, or design the most appropriate method for "
            "carrying out the selected action",
     "act": "Execute the method, build or run the required task graph, or "
-           "delegate bounded subproblems to child practitioners",
+           "delegate bounded subproblems to spawned Practitioner Loops",
     "verify": "Independently interrogate the inputs, outputs, and process; test "
               "the results, compare alternatives, and identify remaining gaps "
               "or failures",
@@ -161,8 +162,8 @@ KERNEL_NODE_QUESTIONS = {
     "decide_next": "What is the most valuable next action that advances the "
                    "checkpoint without violating the blueprint?",
     "how": "What is the best available method to carry out that action?",
-    "act": "How do we execute it, build the task graph, or delegate to a child "
-           "practitioner?",
+    "act": "How do we execute it, build the task graph, or delegate to a "
+           "spawned Practitioner Loop?",
     "verify": "Did it work, is it better than the alternatives, and what gaps "
               "remain?",
     "integrate_commit": "What accepted results and reusable learning do we "
@@ -272,7 +273,7 @@ class ExecutionPlan:
     handle: str = ""
     steps: tuple = ()
     resources: tuple = ()
-    children: tuple = ()          # ProblemSpecs when act_mode == spawn
+    spawned_loops: tuple = ()          # ProblemSpecs when act_mode == spawn
     experiment: dict = field(default_factory=dict)  # candidates/strategy/budget
     rationale: str = ""
 
@@ -564,7 +565,7 @@ def default_how(state: PractitionerState, situation: Situation,
                              rationale="already built — drop it in")
     if chosen.kind == "research":
         return ExecutionPlan("research", "spawn_practitioners",
-                             children=(ProblemSpec(
+                             spawned_loops=(ProblemSpec(
                                  objective=f"reduce gap: {chosen.action}",
                                  depth=state.spec.depth + 1,
                                  budget_passes=3),),
@@ -582,14 +583,14 @@ def default_act(state: PractitionerState, plan: ExecutionPlan) -> list:
             return [ResultPacket(objective="spawn", errors=("depth exceeded",),
                                  confidence=0.0)]
         packets = []
-        for child_spec in plan.children:
-            child = run_practitioner(child_spec, default_impls())
+        for spawned_spec in plan.spawned_loops:
+            spawned = run_practitioner(spawned_spec, default_impls())
             packets.append(ResultPacket(
-                objective=child_spec.objective,
-                result={"passes": child["passes"]},
-                claims=(f"learned:{child_spec.objective}",),
-                confidence=0.7, cost=child["passes"],
-                lineage=(f"child@d{child_spec.depth}",)))
+                objective=spawned_spec.objective,
+                result={"passes": spawned["passes"]},
+                claims=(f"learned:{spawned_spec.objective}",),
+                confidence=0.7, cost=spawned["passes"],
+                lineage=(f"spawned@d{spawned_spec.depth}",)))
         return packets
     if plan.act_mode == "run_dag":
         return [ResultPacket(objective=plan.handle,
@@ -708,19 +709,19 @@ def default_impls() -> KernelImpls:
 
 
 @dataclass
-class SwarmChildSpec:
+class SwarmSpawnedSpec:
     label: str
     spec: ProblemSpec
     impls_factory: "Callable[[], KernelImpls] | None" = None
 
 
-def run_swarm(children: Sequence[SwarmChildSpec], *,
+def run_swarm(spawned_loops: Sequence[SwarmSpawnedSpec], *,
               event_dir: str | None = None) -> dict:
-    """A swarm is a list of child practitioner specs run through the SAME
+    """A swarm is a list of spawned Practitioner Loop specs run through the same
     kernel; the parent compares standardized run summaries.  Selection is the
     caller's oracle-driven step — the swarm only produces the portfolio."""
     members = []
-    for i, ch in enumerate(children):
+    for i, ch in enumerate(spawned_loops):
         impls = (ch.impls_factory or default_impls)()
         sub_dir = os.path.join(event_dir, ch.label) if event_dir else None
         out = run_practitioner(ch.spec, impls, event_dir=sub_dir)
@@ -808,14 +809,14 @@ def self_test() -> dict:
               and out["facts"].get("met:validated"),
               "the kernel only delivers when the spec's criteria are met")
 
-    # 4. research spawns a CHILD practitioner running the same kernel,
+    # 4. research spawns a SPAWNED practitioner running the same kernel,
     # and its findings land in the parent's facts.
     spec_r = ProblemSpec(objective="novel problem",
                          success_criteria=("understanding",))
     out_r = run_practitioner(spec_r, default_impls())
-    check("research_spawns_a_child_practitioner_and_feeds_findings_back",
+    check("research_spawns_a_spawned_practitioner_and_feeds_findings_back",
           any(k.startswith("learned:reduce gap") for k in out_r["facts"]),
-          "the gap-reduction child ran the same six-node kernel; "
+          "the gap-reduction spawned ran the same six-node kernel; "
           "'learned:' facts flowed up")
 
     # 5. reuse-first: a registry fact short-circuits HOW to 'use'.
@@ -844,15 +845,15 @@ def self_test() -> dict:
           f"routes: {routes}; failures documented: {len(out_b['failures'])}")
 
     # 7. the swarm is a portfolio of parameterized runs of the SAME kernel.
-    sw = run_swarm([SwarmChildSpec("full", ProblemSpec(
+    sw = run_swarm([SwarmSpawnedSpec("full", ProblemSpec(
         objective="p", success_criteria=("a",))),
-        SwarmChildSpec("minimal", ProblemSpec(
+        SwarmSpawnedSpec("minimal", ProblemSpec(
             objective="p", success_criteria=("a",), seed_facts={
                 "registry_has:meet:a": "cached"}))])
     check("a_swarm_is_a_portfolio_of_parameterized_kernel_runs",
           sw["n"] == 2 and all(m["final_route"] == "stop_success"
                                for m in sw["members"]),
-          "two children, different parameters, same kernel, standardized "
+          "two spawned_loops, different parameters, same kernel, standardized "
           "summaries")
 
     # 8. the taxonomies are closed.
@@ -873,7 +874,7 @@ def self_test() -> dict:
     deep_spec = ProblemSpec(objective="deep", depth=MAX_SPAWN_DEPTH)
     st_deep = PractitionerState(spec=deep_spec)
     plan = ExecutionPlan("research", "spawn_practitioners",
-                         children=(ProblemSpec(objective="child",
+                         spawned_loops=(ProblemSpec(objective="spawned",
                                                depth=MAX_SPAWN_DEPTH + 1),))
     packs = default_act(st_deep, plan)
     check("runaway_spawn_depth_degrades_honestly", packs
@@ -881,7 +882,7 @@ def self_test() -> dict:
           "silent recursion")
 
     # 10. every node carries a full-sentence name and its complete question —
-    # never a bare verb — and every run receipt self-describes with them.
+    # never a bare verb — and every run record self-describes with them.
     multiword = all(len(KERNEL_NODE_NAMES[k].split()) >= 5
                     and len(KERNEL_NODE_QUESTIONS[k].split()) >= 5
                     and KERNEL_NODE_QUESTIONS[k].endswith("?")
@@ -889,12 +890,12 @@ def self_test() -> dict:
     out_named = run_practitioner(ProblemSpec(objective="n",
                                              success_criteria=("a",)),
                                  default_impls())
-    check("nodes_have_full_sentence_names_and_questions_in_every_receipt",
+    check("nodes_have_full_sentence_names_and_questions_in_every_record",
           multiword and out_named.get("node_names") == KERNEL_NODE_NAMES,
           "short keys are code identifiers only; humans always see the full "
           "sentences")
 
-    # 12. per-pass SKIP: optional nodes can be skipped (receipted); a required
+    # 12. per-pass SKIP: optional nodes can be skipped (recorded); a required
     # node can never be skipped (fails loudly) — the flexibility + the guardrail.
     st_skip = PractitionerState(spec=spec,
                                 facts={"_skip_nodes": ("assess_prepare",
@@ -918,7 +919,7 @@ def self_test() -> dict:
           set(rec_s.skipped_nodes) == {"assess_prepare", "reconcile_horizon"}
           and rec_s.anchor is None and req_blocked and plan_bad
           and planned.facts["_skip_nodes"] == ("integrate_commit",),
-          "grounding+prepare skipped this pass and receipted; skipping verify "
+          "grounding+prepare skipped this pass and recorded; skipping verify "
           "(required) is refused; plan_skip_next_pass sets it for the route node")
 
     passed = sum(1 for r in results if r["passed"])

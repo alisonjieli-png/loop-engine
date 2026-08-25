@@ -53,13 +53,13 @@ unused setting.
 
 | Section | Responsibility |
 |---|---|
-| `loop` | Default step profile, run modes, delegation modes, depth, and stop condition. |
+| `loop` | Default step profile, run modes, delegation modes, depth, loop condition, and exit condition. |
 | `search` | Retrieval mode, lexical backend, vector backend, and result limit. |
 | `models.providers` | Built-in or custom provider declarations and credential environment variable names. |
 | `models.tiers` | Ordered model routes and resource limits for each thinking power. |
 | `models.escalation` | Typed failures that may move a request to a larger tier. |
 | `operating` | Network, model, construction, default effort, optimization, and resource policy. |
-| `history` | Chronicle directory and default save behavior. |
+| `history` | Run History directory and default save behavior. |
 
 The complete example is
 [`loop-engine.settings.example.yaml`](../../loop-engine.settings.example.yaml).
@@ -97,11 +97,13 @@ Each tier also declares:
 
 - ordered route names;
 - maximum provider attempts;
-- output token ceiling per attempt;
 - timeout per attempt.
 
-A request can add a total token ceiling. The gateway stops before another
-tier after that ceiling is exhausted.
+The provider or endpoint capability record supplies the exact maximum output
+size. The tier does not reduce it. A request can add a total usage ceiling for
+the complete run. The gateway stops before another tier after that ceiling is
+exhausted, but each physical generation still requests the model's declared
+maximum output and lets the model stop naturally.
 
 ## Use typed settings in Python
 

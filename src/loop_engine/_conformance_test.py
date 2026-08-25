@@ -39,7 +39,8 @@ def self_test() -> dict:
           and Loop.run_to_completion is Loop.run,
           "PractitionerLoop/run_to_completion are the same object, not forks")
 
-    # The legacy flat module paths are DEAD (no parallel legacy structure).
+    # Obsolete package-root module paths are dead. This checks path layout only;
+    # the scanner separately checks root exports for parallel runtime surfaces.
     from .architecture_map import PACKAGE
     legacy_reachable = []
     for legacy in ("kernel", "recursive_loop", "capability_directory",
@@ -49,13 +50,48 @@ def self_test() -> dict:
             legacy_reachable.append(legacy)
         except ModuleNotFoundError:
             pass
-    check("conformance_legacy_flat_paths_are_dead", not legacy_reachable,
+    check("conformance_obsolete_flat_module_paths_are_dead", not legacy_reachable,
           f"still importable at the old root: {legacy_reachable}")
 
-    # Recursive loops: parent → child → grandchild return and integrate.
+    import loop_engine as public_package
+    forbidden = set(public_package.__dict__.get("__all__", ())) & {
+        "SolverCell", "Practitioner", "SolverCellState", "LoopState",
+        "PractitionerNode", "run_practitioner_loop", "UniversalSolver",
+        "PractitionerState", "run_practitioner", "run_swarm",
+    }
+    check("conformance_root_exports_only_the_canonical_runtime",
+          not forbidden
+          and public_package.PractitionerLoop is public_package.Loop,
+          f"parallel root runtime names: {sorted(forbidden)}")
+
+    from .__main__ import (
+        _concise_self_test_summary, _run_self_test_captured)
+
+    def noisy_fixture():
+        import sys
+        descriptor = sys.stdout.fileno()
+        print("module demo noise")
+        return {
+            "tests": [{"test": "fixture failure", "passed": False,
+                       "detail": "bounded failure detail"}],
+            "passed": 0, "total": 1, "all_passed": False,
+            "missing_dependencies": [], "descriptor": descriptor,
+        }
+
+    captured_report, captured_lines = _run_self_test_captured(noisy_fixture)
+    concise = _concise_self_test_summary(captured_report, captured_lines)
+    check("concise_self_test_uses_an_OS_backed_stream_and_keeps_failures",
+          captured_report["descriptor"] >= 0
+          and captured_lines == 1
+          and concise["failures"] == [{
+              "test": "fixture failure", "detail": "bounded failure detail"}]
+          and concise["all_passed"] is False,
+          "folded demo output is captured; the failing test remains visible")
+
+    # Recursive loops: parent → spawned → nested_spawned_loop return and integrate.
     def spawning(loop, step, context):
-        if step == "research" and loop.depth < 2 and f"{step}:child" not in context:
-            return StepOutcome(output="needs child", mode="deterministic",
+        if step == "research" and loop.depth < 2 and f"{step}:spawned" not in context:
+            return StepOutcome(output="needs spawned", mode="deterministic",
                                spawn_goal=f"sub-research d{loop.depth + 1}")
         return default_handler(loop, step, context)
     root = Loop("root", LoopConfig(framework="custom",
@@ -65,7 +101,7 @@ def self_test() -> dict:
     tree = root.ledger.tree()
     depths = {e.get("depth") for e in root.ledger.events
               if e.get("event") == "spawn"}
-    check("conformance_parent_child_grandchild_integrate",
+    check("conformance_parent_spawned_nested_spawned_loop_integrate",
           r.spawned >= 2 and depths >= {1, 2}
           and root.loop_id in tree and r.stopped == "done",
           f"{r.spawned} descendants across depths {sorted(depths)}; "
@@ -75,7 +111,7 @@ def self_test() -> dict:
     # Adversarial: recursion explosion is bounded, not a hang.
     def bomber(loop, step, context):
         return StepOutcome(output="spawn more", mode="deterministic",
-                           spawn_goal="child forever")
+                           spawn_goal="spawned forever")
     b = Loop("bomb", LoopConfig(framework="five_step", max_depth=2,
                                 power="light"))
     rb = b.run(handler=bomber)
@@ -84,11 +120,11 @@ def self_test() -> dict:
                                     for e in b.ledger.events),
           f"depth capped at 2; {rb.spawned} spawns total, no hang")
 
-    # Adversarial: a child cannot exceed the parent's delegation authority.
+    # Adversarial: a spawned Loop cannot exceed the spawning Loop's authority.
     det_parent = Loop("det only", LoopConfig(allowable_modes=("deterministic",),
                                              preferred_modes=("deterministic",),
                                              delegated_modes=("deterministic",)))
-    clamped = det_parent.spawn("child", LoopConfig(
+    clamped = det_parent.spawn("spawned", LoopConfig(
         allowable_modes=("deterministic", "non_deterministic")))
     refused = False
     try:
@@ -99,7 +135,7 @@ def self_test() -> dict:
         refused = True
     clamp_events = [e for e in det_parent.ledger.events
                     if e.get("modes_clamped_from")]
-    check("adversarial_child_cannot_exceed_delegation_authority",
+    check("adversarial_spawned_cannot_exceed_delegation_authority",
           clamped.config.allowable_modes == ("deterministic",)
           and refused and clamp_events,
           "delegated widening is clamped and recorded; disjoint modes refuse")
@@ -223,7 +259,7 @@ def self_test() -> dict:
           ra.steps_run == b1.steps_run == 5 and ra.output == b1.output,
           "paused+resumed run ends exactly like the uninterrupted one")
 
-    # Adversarial: closure audit — a spawned-but-never-run child is an ORPHAN
+    # Adversarial: a spawned-but-never-run Loop is an orphan.
     # that fails closure; running it closes the tree.
     pc = Loop("closure", LoopConfig(framework="five_step", power="deep"))
     ghost = pc.spawn("never run")
@@ -231,10 +267,10 @@ def self_test() -> dict:
     audit1 = pc.audit_closure()
     ghost.run()
     audit2 = pc.audit_closure()
-    check("adversarial_orphaned_child_fails_closure_audit",
-          ghost.loop_id in audit1["orphaned_children"] and not audit1["closed"]
-          and audit2["closed"] and not audit2["orphaned_children"],
-          "orphan flagged inspectably; closure holds once every child is "
+    check("adversarial_orphaned_spawned_fails_closure_audit",
+          ghost.loop_id in audit1["orphaned_spawned_loops"] and not audit1["closed"]
+          and audit2["closed"] and not audit2["orphaned_spawned_loops"],
+          "orphan flagged inspectably; closure holds once every spawned is "
           "terminal (terminal events are on the ledger)")
 
     # Conformance: secrets never enter template/String records (spot scan of

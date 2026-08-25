@@ -17,6 +17,12 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
+from .model_capabilities import (
+    ModelOutputCapability, ModelOutputLimitMismatch,
+    UnknownModelOutputLimit, require_declared_maximum,
+    resolve_output_capability,
+)
+
 ENDPOINT = "https://ollama.com/api/chat"
 # Sanctioned, live default (kimi-k3 is forbidden per the model policy).
 # deepseek-v4-flash is fast/cheap for the loop; deepseek-v4-pro for hard calls.
@@ -29,29 +35,32 @@ FORBIDDEN_MODELS = ("kimi-k3",)
 # stops naturally when its answer is complete (num_predict is a max, not a
 # target, so this does NOT force giant replies — it only removes truncation).
 # Only if a max-output call fails do we back off (see chat_maxout).
-MODEL_MAX_OUTPUT = {
-    "deepseek-v4-pro": 128000, "deepseek-v4-flash": 128000,
-    "glm-5.2": 131072, "glm-5.1": 131072,
-    "kimi-k2.7-code": 256000, "kimi-k2.6": 262128, "kimi-k2.5": 262128,
-    "minimax-m3": 16384, "minimax-m2.7": 16384,
-    "mistral-large-3": 262144, "nemotron-3-ultra": 65536,
-    "qwen3.5": 262144, "x-preview-f": 131072, "ox-alpha": 131072,
-    "gpt-oss": 131072,
+# On 2026-08-25 Ollama's
+# OpenAI-compatible endpoint rejected 128000 for this exact identifier and
+# reported 65536 as the maximum.  Native acceptance of a larger number was not
+# treated as proof because a server may silently clamp it.
+MODEL_OUTPUT_CAPABILITIES = {
+    "deepseek-v4-flash:0731": ModelOutputCapability(
+        65536,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-08-25"),
 }
-# A conservative default ceiling for any model not in the table.
-DEFAULT_MAX_OUTPUT = 32768
+# Compatibility projection for read-only catalog consumers.  It has no default.
+MODEL_MAX_OUTPUT = {
+    name: capability.maximum_output_tokens
+    for name, capability in MODEL_OUTPUT_CAPABILITIES.items()
+}
+
+
+def output_capability_for(model: str) -> ModelOutputCapability:
+    """Return the source-backed output maximum or fail closed."""
+    return resolve_output_capability(
+        "ollama_cloud", model, ENDPOINT, MODEL_OUTPUT_CAPABILITIES)
 
 
 def max_output_for(model: str) -> int:
-    """The maximum output tokens a model supports, matching by name prefix so
-    version/':cloud' suffixes still resolve (e.g. 'kimi-k2.7-code:cloud')."""
-    base = model.split("/")[-1].split(":")[0]
-    if base in MODEL_MAX_OUTPUT:
-        return MODEL_MAX_OUTPUT[base]
-    for name, cap in MODEL_MAX_OUTPUT.items():
-        if base.startswith(name) or name in base:
-            return cap
-    return DEFAULT_MAX_OUTPUT
+    """Compatibility accessor with no invented fallback."""
+    return output_capability_for(model).maximum_output_tokens
 
 
 def live_models(api_key: str | None = None) -> list[str]:
@@ -101,7 +110,7 @@ class ChatResult:
     ok: bool = True
     error: str = ""
     num_predict_used: int = 0      # the output ceiling this call actually ran at
-    attempts: int = 1             # how many backoff attempts chat_maxout took
+    attempts: int = 1             # physical calls represented by this result
 
     @property
     def total_tokens(self) -> int:
@@ -118,45 +127,40 @@ class ChatResult:
 def chat_maxout(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
                 temperature: float = 0.7, timeout: float = 900.0,
                 api_key: str | None = None, backoff: float = 0.9,
-                floor_frac: float = 0.3, max_attempts: int = 8,
-                max_output_tokens: "int | None" = None) -> ChatResult:
-    """Call a model asking for its FULL output ceiling, backing off only on failure.
+                floor_frac: float = 0.3, max_attempts: int = 1,
+                max_output_tokens: "int | None" = None,
+                output_capability: "ModelOutputCapability | None" = None
+                ) -> ChatResult:
+    """Make one call at the source-backed model maximum.
 
-    The owner rule: never cap output — each call requests the model's maximum
-    output, and the model stops when its answer is done.  If (and only if) a call
-    fails — timeout, HTTP error, or an empty reply — retry at 90% of the previous
-    request, then 81%, and so on, down to ``floor_frac`` of the ceiling.  A large
-    generation is slow, so the default timeout is generous (15 minutes).  The
-    returned ChatResult carries ``num_predict_used`` and ``attempts`` so the
-    receipt shows the model ran at (or near) full capacity."""
-    ceiling = min(max_output_for(model), int(max_output_tokens)) \
-        if max_output_tokens is not None else max_output_for(model)
-    np = ceiling
-    last = None
-    for attempt in range(1, max_attempts + 1):
-        res = chat(prompt, model=model, system=system, num_predict=int(np),
-                   temperature=temperature, timeout=timeout, api_key=api_key)
-        res.num_predict_used = int(np)
-        res.attempts = attempt
-        if res.ok and res.text.strip():
-            return res
-        last = res
-        np = int(np * backoff)
-        if np < ceiling * floor_frac:
-            break
-    if last is not None:
-        last.num_predict_used = int(np)
-        last.attempts = attempt
-    return last if last is not None else chat(prompt, model=model,
-                                              num_predict=int(np))
+    ``backoff`` and ``floor_frac`` remain accepted for call compatibility but
+    never reduce the model ceiling.  Retry policy belongs above this physical
+    call boundary and must retain its own authorization and call budget.
+    """
+    del backoff, floor_frac
+    if max_attempts != 1:
+        return ChatResult(
+            "", model, ok=False,
+            error="physical model retries require an explicit outer call budget")
+    return chat(
+        prompt, model=model, system=system,
+        num_predict=max_output_tokens, temperature=temperature,
+        timeout=timeout, api_key=api_key,
+        output_capability=output_capability)
 
 
 def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
-         num_predict: int = 512, temperature: float = 0.7,
-         timeout: float = 90.0, api_key: str | None = None) -> ChatResult:
+         num_predict: "int | None" = None, temperature: float = 0.7,
+         timeout: float = 90.0, api_key: str | None = None,
+         output_capability: "ModelOutputCapability | None" = None) -> ChatResult:
     """Send one chat request to Ollama Cloud and return the text + provider token
     counts.  Never raises — a failure returns ``ok=False`` with the error, so a
     resolver can fall back rather than crash the loop."""
+    try:
+        capability = output_capability or output_capability_for(model)
+        maximum = require_declared_maximum(num_predict, capability)
+    except (UnknownModelOutputLimit, ModelOutputLimitMismatch) as exc:
+        return ChatResult("", model, ok=False, error=str(exc))
     # An explicit api_key="" means "no key" (used to test fallback); only None
     # falls back to the environment / .env.
     key = load_api_key() if api_key is None else api_key
@@ -169,7 +173,7 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
     messages.append({"role": "user", "content": prompt})
     body = json.dumps({
         "model": model, "messages": messages, "stream": False,
-        "options": {"num_predict": num_predict, "temperature": temperature}
+        "options": {"num_predict": maximum, "temperature": temperature}
     }).encode()
     req = urllib.request.Request(
         ENDPOINT, data=body, method="POST",
@@ -194,7 +198,7 @@ def verify(model: str = DEFAULT_MODEL) -> dict:
     """A harmless real call that verifies the credential by USING it.  A
     reasoning model needs headroom past its thinking, so ask for enough tokens."""
     res = chat("Reply with exactly the word: online", model=model,
-               num_predict=160, temperature=0.0)
+               temperature=0.0)
     return {"record_type": "ollama_verify/v1", "ok": res.ok,
             "model": res.model, "text": res.text.strip()[:60],
             "prompt_tokens": res.prompt_tokens, "eval_tokens": res.eval_tokens,
@@ -202,42 +206,42 @@ def verify(model: str = DEFAULT_MODEL) -> dict:
 
 
 def self_test() -> dict:
-    """Offline self-test — verifies the client's construction and error handling
-    without a network call (a live call is exercised by `verify`)."""
+    """Offline contract and refusal tests.  No provider is contacted."""
     results: list[dict] = []
 
     def check(name: str, ok: bool, detail: str = "") -> None:
         results.append({"test": name, "passed": bool(ok), "detail": detail})
 
     # No key -> ok=False, no crash.
-    res = chat("hi", api_key="", num_predict=1)
+    res = chat("hi", api_key="")
     check("a_missing_key_returns_ok_false_not_a_crash",
           not res.ok and "not found" in res.error.lower(),
           "with no api key the client returns ok=False with an error, never "
           "raising into the loop")
 
-    # A bad key hitting the endpoint returns ok=False without crashing (whether
-    # the endpoint answers with an HTTP error or an empty body).
-    res2 = chat("hi", api_key="definitely not a real key", num_predict=1,
-                timeout=15.0)
-    check("a_bad_key_or_network_error_is_handled_gracefully",
-          not res2.ok,
-          "a bad credential or unreachable endpoint returns ok=False rather "
-          "than raising into the loop — a resolver can fall back")
+    unknown = chat("hi", model="unlisted-model", api_key="unused")
+    check("an_unknown_model_maximum_refuses_before_network_use",
+          not unknown.ok and "unknown_model_output_limit" in unknown.error)
+
+    reduced = chat("hi", model=DEFAULT_MODEL, api_key="unused", num_predict=1)
+    check("a_caller_cannot_replace_the_declared_maximum_with_a_small_cap",
+          not reduced.ok and "not the declared model maximum" in reduced.error)
+
+    check("the_exact_live_observation_overrides_the_stale_family_value",
+          max_output_for(DEFAULT_MODEL) == 65536,
+          "exact deepseek-v4-flash:0731 maximum is 65536")
 
     check("chat_result_reports_total_tokens",
           ChatResult("x", "m", prompt_tokens=3, eval_tokens=5).total_tokens == 8,
           "the result exposes provider-reported prompt + eval token totals")
 
     passed = sum(1 for r in results if r["passed"])
-    return {"record_type": "ollama_client_self_test", "tests": results,
+    return {"record_type": "ollama_client_contract_test/v2",
+            "scope": "offline_contract_only",
+            "provider_integration_proven": False, "tests": results,
             "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}
 
 
 if __name__ == "__main__":
-    import sys
-    if "--verify" in sys.argv:
-        print(json.dumps(verify(), indent=1))
-    else:
-        print(json.dumps(self_test(), indent=1))
+    print(json.dumps(self_test(), indent=1))

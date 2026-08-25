@@ -80,7 +80,7 @@ class SolverConfig:
                                  f"cannot be allowed by configuration")
 
     def summary(self) -> dict:
-        """The plain-English receipt of what this run may and may not do."""
+        """The plain-English record of what this run may and may not do."""
         models = ("no model calls (pure deterministic)"
                   if self.allowed_models == ()
                   else "the sanctioned roster" if self.allowed_models is None
