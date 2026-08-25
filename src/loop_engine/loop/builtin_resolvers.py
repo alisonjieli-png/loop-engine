@@ -1,9 +1,9 @@
-"""Builtin resolvers — the session's modules wired in as what-is-next regimes.
+"""Builtin resolvers — the session's modules wired in as next-action decision regimes.
 
 The loop is only as good as its resolvers, and the point of this session's work
 is that the resolvers already exist.  This module wires the deterministic ones in
 as registered regimes so the loop uses them out of the box, and it is the worked
-example for adding a regime: each is a small ``(Knowledge) -> WhatIsNextAnswer``
+example for adding a regime: each is a small ``(Knowledge) -> NextActionProposal``
 function registered under a named category.
 
 Only deterministic backends are registered here (they run with no model and are
@@ -18,11 +18,11 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from ..strings.knowledge import Knowledge
-from ..loop.moves import WhatIsNextAnswer, answer, move
+from ..loop.moves import NextActionProposal, answer, move
 from ..loop.registry import ResolverRegistry, DEFAULT_REGISTRY
 
 
-def plan_recipe_resolver(knowledge: Knowledge) -> WhatIsNextAnswer | None:
+def plan_recipe_resolver(knowledge: Knowledge) -> NextActionProposal | None:
     """plan_recipe: if a recipe of predefined steps is supplied as blueprints,
     follow the next one.  When the recipe runs out, pass so an open-ended regime
     takes over — exactly the "first ten steps predefined, then open" behaviour."""
@@ -37,7 +37,7 @@ def plan_recipe_resolver(knowledge: Knowledge) -> WhatIsNextAnswer | None:
     return None
 
 
-def blind_baseline_resolver(knowledge: Knowledge) -> WhatIsNextAnswer | None:
+def blind_baseline_resolver(knowledge: Knowledge) -> NextActionProposal | None:
     """blind: with almost no context — just that the graph is empty and needs a
     start — propose a safe deterministic baseline.  A diversity lane that never
     reads memory, so it cannot inherit history's bias."""
@@ -53,12 +53,12 @@ def blind_baseline_resolver(knowledge: Knowledge) -> WhatIsNextAnswer | None:
 
 
 def make_fingerprint_resolver(store: Any) -> Callable[[Knowledge],
-                                                      "WhatIsNextAnswer | None"]:
+                                                      "NextActionProposal | None"]:
     """fingerprint_recall: muscle memory.  Given a ``list_intelligence`` store
     and the knowledge's situation (read from ``frame.extra['situation']``),
     recall the leading previously-accepted move for a matching situation.  This
     is the deterministic, no-model 'this looks like one we've solved' path."""
-    def resolve(knowledge: Knowledge) -> "WhatIsNextAnswer | None":
+    def resolve(knowledge: Knowledge) -> "NextActionProposal | None":
         situation = {}
         if isinstance(knowledge.frame.extra, dict):
             situation = knowledge.frame.extra.get("situation", {}) or {}

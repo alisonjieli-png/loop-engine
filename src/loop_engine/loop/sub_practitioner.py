@@ -1,13 +1,13 @@
 """Legacy sub-practitioners plus non-linear ordering compatibility.
 
 New spawned work uses ``delegation_runtime.SpawnedTaskManager`` with a
-Practitioner profile. The historical ``LoopState`` functions remain callable
+Practitioner profile. The historical ``PractitionerAlgorithmState`` functions remain callable
 for existing users and issue ``DeprecationWarning`` before using the old path.
 
 Two owner requirements (2026-08-22):
 
 **Sub-practitioners.**  A practitioner solving a problem can spawn a
-sub-practitioner — its own full what-is-next loop — for a side problem: do this
+sub-practitioner — its own full next-action decision loop — for a side problem: do this
 research, build this missing tool, test this idea.  The sub-practitioner works on
 its own **exploration canvas** (never the parent's solution canvas), and what it
 learns feeds back into the parent's knowledge as facts.  Sub-practitioners can
@@ -22,7 +22,7 @@ line.  ``run_orchestrated`` hands control to an ORDER-DECIDER — deterministic 
 default, an LLM when registered — that looks at the state each step and names the
 next node to run (or ``done``).  The standard sequence is just the default
 decider's behaviour; a smarter decider can jump straight to verify, re-run
-what-is-next, or interleave — the nodes are a vocabulary, not a script.
+next-action decision, or interleave — the nodes are a vocabulary, not a script.
 """
 
 from __future__ import annotations
@@ -38,13 +38,13 @@ if TYPE_CHECKING:
 
 from ..strings.knowledge import Knowledge
 from ..loop.canvas import Canvas
-from ..loop.practitioner_loop import (LoopState, NODE_SEQUENCE,
-                                run_practitioner_loop, default_nodes)
+from ..loop.practitioner_loop import (PractitionerAlgorithmState, NODE_SEQUENCE,
+                                run_practitioner_algorithm, default_nodes)
 
 # Recursion bound: sub-sub-sub-practitioners are allowed, runaway spawning is not.
 MAX_PRACTITIONER_DEPTH = 5
 LEGACY_SUB_PRACTITIONER_DEPRECATION = (
-    "spawn_sub_practitioner(LoopState, ...) is a compatibility path; use "
+    "spawn_sub_practitioner(PractitionerAlgorithmState, ...) is a compatibility path; use "
     "SpawnedTaskManager with a Practitioner Loop profile for new spawned work")
 
 
@@ -83,7 +83,7 @@ class SubPractitionerResult:
     spawned_loops: list = field(default_factory=list)   # SubPractitionerResults
 
 
-def spawn_sub_practitioner(parent: LoopState, goal: str, *,
+def spawn_sub_practitioner(parent: PractitionerAlgorithmState, goal: str, *,
                            nodes_factory: Callable[[], dict] | None = None,
                            seed_facts: dict | None = None,
                            max_steps: int = 30) -> SubPractitionerResult:
@@ -107,12 +107,12 @@ def spawn_sub_practitioner(parent: LoopState, goal: str, *,
                     kind="exploration",
                     provenance=f"sub-practitioner of {parent.knowledge.goal!r}")
     spawned_knowledge = Knowledge(goal=goal, facts=dict(seed_facts or {}))
-    spawned = LoopState(knowledge=spawned_knowledge)
+    spawned = PractitionerAlgorithmState(knowledge=spawned_knowledge)
     spawned.blackboard["depth"] = depth
     spawned.blackboard["canvas"] = canvas
     spawned.blackboard["parent_goal"] = parent.knowledge.goal
     nf = nodes_factory or default_nodes
-    spawned = run_practitioner_loop(spawned, nf(), max_steps=max_steps)
+    spawned = run_practitioner_algorithm(spawned, nf(), max_steps=max_steps)
 
     findings = {f"learned:{goal}": True,
                 f"learned:{goal}:nodes": len(spawned.graph)}
@@ -132,19 +132,19 @@ def spawn_sub_practitioner(parent: LoopState, goal: str, *,
     return result
 
 
-def make_spawning_node(side_goal_of: Callable[[LoopState], "str | None"], *,
+def make_spawning_node(side_goal_of: Callable[[PractitionerAlgorithmState], "str | None"], *,
                        nodes_factory: Callable[[], dict] | None = None):
     """A practitioner node that spawns a sub-practitioner when the state calls
     for one (``side_goal_of`` returns the side goal, or None to pass through).
     Drop it into any nodes dict to give that loop the power to delegate."""
-    from ..loop.practitioner_loop import NodeResult
+    from ..loop.practitioner_loop import PractitionerStepResult
 
-    def resolve(state: LoopState) -> NodeResult:
+    def resolve(state: PractitionerAlgorithmState) -> PractitionerStepResult:
         goal = side_goal_of(state)
         if not goal:
-            return NodeResult("what_is_next", detail="no side goal — pass")
+            return PractitionerStepResult("select_next_action", detail="no side goal — pass")
         res = spawn_sub_practitioner(state, goal, nodes_factory=nodes_factory)
-        return NodeResult("what_is_next", output=res,
+        return PractitionerStepResult("select_next_action", output=res,
                           detail=f"spawned sub-practitioner d{res.depth} for "
                           f"{goal!r}; {res.steps} steps, findings fed back")
     return resolve
@@ -155,12 +155,12 @@ def make_spawning_node(side_goal_of: Callable[[LoopState], "str | None"], *,
 # ===========================================================================
 
 # decider(state, last_node_name, last_result) -> next node name | "done"
-OrderDecider = Callable[[LoopState, str, "object | None"], str]
+OrderDecider = Callable[[PractitionerAlgorithmState, str, "object | None"], str]
 
 
-def standard_order_decider(state: LoopState, last: str, last_result) -> str:
+def standard_order_decider(state: PractitionerAlgorithmState, last: str, last_result) -> str:
     """The deterministic default: the standard forward flow with loop-backs —
-    exactly what run_practitioner_loop does, expressed as a decider so LLM/custom
+    exactly what run_practitioner_algorithm does, expressed as a decider so LLM/custom
     deciders are drop-in replacements."""
     if last_result is not None and getattr(last_result, "control", "") == "done":
         return "done"
@@ -176,9 +176,9 @@ def standard_order_decider(state: LoopState, last: str, last_result) -> str:
     return NODE_SEQUENCE[idx]
 
 
-def run_orchestrated(state: LoopState, nodes: dict, *,
+def run_orchestrated(state: PractitionerAlgorithmState, nodes: dict, *,
                      decider: OrderDecider = standard_order_decider,
-                     max_steps: int = 60) -> LoopState:
+                     max_steps: int = 60) -> PractitionerAlgorithmState:
     """Run the practitioner nodes in whatever order the decider chooses.
 
     The nodes are a VOCABULARY, not a script: each step the decider looks at the
@@ -213,7 +213,7 @@ def make_llm_order_decider(model: str | None = None) -> OrderDecider:
         ProviderPinnedRequest, invoke_provider_model)
     from ..static_architecture.ollama_client import DEFAULT_MODEL
 
-    def decide(state: LoopState, last: str, last_result) -> str:
+    def decide(state: PractitionerAlgorithmState, last: str, last_result) -> str:
         try:
             prompt = (
                 f"Task: {state.knowledge.goal}\n"
@@ -249,7 +249,7 @@ def self_test() -> dict:
 
     # 1. a sub-practitioner runs its own loop on an EXPLORATION canvas and
     # feeds findings back into the parent's knowledge.
-    parent = LoopState(knowledge=Knowledge(
+    parent = PractitionerAlgorithmState(knowledge=Knowledge(
         goal="win the competition", open_obligations=("choose_model",),
         facts={}))
     res = spawn_sub_practitioner(parent, "research: best boosted-tree defaults")
@@ -301,14 +301,14 @@ def self_test() -> dict:
           "the recommended path returned a typed Spawned Practitioner snapshot")
 
     # 2. sub-sub spawning works, and the depth guard stops runaway recursion.
-    spawned_state = LoopState(knowledge=Knowledge(goal="spawned"))
+    spawned_state = PractitionerAlgorithmState(knowledge=Knowledge(goal="spawned"))
     spawned_state.blackboard["depth"] = 1
     res2 = spawn_sub_practitioner(spawned_state, "sub-sub research")
     check("sub_sub_practitioners_spawn_with_increasing_depth",
           res2.depth == 2,
           "a Loop at depth 1 spawned another Loop at depth 2")
 
-    deep = LoopState(knowledge=Knowledge(goal="deep"))
+    deep = PractitionerAlgorithmState(knowledge=Knowledge(goal="deep"))
     deep.blackboard["depth"] = MAX_PRACTITIONER_DEPTH
     guarded = False
     try:
@@ -319,7 +319,7 @@ def self_test() -> dict:
           f"a spawn past depth {MAX_PRACTITIONER_DEPTH} raises DepthExceeded")
 
     # 3. orchestrated: the standard decider reproduces the standard flow.
-    st = run_orchestrated(LoopState(knowledge=Knowledge(
+    st = run_orchestrated(PractitionerAlgorithmState(knowledge=Knowledge(
         goal="build", open_obligations=("choose_model",), facts={})),
         default_nodes())
     seq = [h.node for h in st.history]
@@ -330,21 +330,21 @@ def self_test() -> dict:
     # 4. a CUSTOM decider reorders the nodes — they are a vocabulary, not a script.
     order_taken = []
     def custom(state, last, last_result):
-        plan = ["what_is_next", "what_is_next", "how_to_implement",
+        plan = ["select_next_action", "select_next_action", "how_to_implement",
                 "implement", "verify_compilable", "done"]
         nxt = plan[len(order_taken)] if len(order_taken) < len(plan) else "done"
         order_taken.append(nxt)
         return nxt
-    st2 = run_orchestrated(LoopState(knowledge=Knowledge(
+    st2 = run_orchestrated(PractitionerAlgorithmState(knowledge=Knowledge(
         goal="x", open_obligations=("m",), facts={})), default_nodes(),
         decider=custom, max_steps=10)
     ran = [h.node for h in st2.history]
     check("a_custom_decider_reorders_the_nodes_non_linearly",
-          ran[:2] == ["what_is_next", "what_is_next"],
-          f"the decider ran what_is_next twice in a row: {ran}")
+          ran[:2] == ["select_next_action", "select_next_action"],
+          f"the decider ran select_next_action twice in a row: {ran}")
 
     # 5. a decider naming an unknown node ends the run safely.
-    st3 = run_orchestrated(LoopState(knowledge=Knowledge(goal="y")),
+    st3 = run_orchestrated(PractitionerAlgorithmState(knowledge=Knowledge(goal="y")),
                            default_nodes(),
                            decider=lambda *_a: "not_a_node", max_steps=5)
     check("an_invented_node_name_ends_the_run_instead_of_crashing",

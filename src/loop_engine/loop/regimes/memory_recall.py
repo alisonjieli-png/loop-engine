@@ -1,6 +1,6 @@
 """Memory-recall regimes — muscle memory, generalized to any store.
 
-"This looks like one we've solved before" is a whole family of what-is-next
+"This looks like one we've solved before" is a whole family of next-action decision
 answers, and they all share one shape: consult a memory store keyed on the
 current situation/signature, and if it recalls something strong enough, propose
 it.  Rather than hard-wire one store, this module provides a **generic recall
@@ -9,7 +9,7 @@ muscle memory (``list_intelligence``), a solved-route index (replay the exact
 winning arrangement of a near-identical task), or an analogy store (transfer a
 mechanism from a structurally similar task).
 
-Each factory returns a ``(Knowledge) -> WhatIsNextAnswer | None`` resolver.  The
+Each factory returns a ``(Knowledge) -> NextActionProposal | None`` resolver.  The
 backend is injected, so these are testable with a stub and swappable for the real
 stores without touching the loop.  The honesty rule holds: memory recall ORDERS a
 move to try; the fold oracle still decides, and a blind lane always runs

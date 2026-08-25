@@ -1,6 +1,6 @@
-"""AskFrame — the dimensions always available to a what-is-next ask.
+"""AskFrame containing dimensions available to a next-action question.
 
-Every time the loop asks "what is next", a bundle of framing dimensions rides
+Every time a Loop selects its next action, a bundle of framing dimensions rides
 along: the system prompt, the original task, a simplified restatement, the
 salient features, a persona, a time period, a purpose, and any salts.  Two
 properties matter and are the reason this is its own small type:

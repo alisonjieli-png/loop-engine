@@ -1,4 +1,4 @@
-"""Route bridge — translate a What-Is-Next decision into engine route priors.
+"""Route bridge — translate a Next Action Decision decision into engine route priors.
 
 The expert loop decides what to try; the arrangement-search engine decides what
 wins.  This module is the adapter between them: it turns a decision's TRY and
@@ -83,7 +83,7 @@ def priors_from_slate(try_slate: Slate, *, avoid_slate: Slate | None = None,
 
 def merge_priors(*bundles: RoutePriors) -> RoutePriors:
     """Combine several prior bundles — summing filling weights, unioning avoids
-    and actions.  Used to fold whats_next priors with pheromone/analogy priors."""
+    and actions.  Used to fold next_action priors with pheromone/analogy priors."""
     out = RoutePriors()
     for b in bundles:
         for k, w in b.filling_priors.items():
@@ -168,7 +168,7 @@ def self_test() -> dict:
     check("priors_merge_by_summing_filling_weights",
           abs(merged.filling_priors["estimator=hgb"] - 1.0) < 1e-9
           and merged.filling_priors["scaler=standard"] == 0.4,
-          "merging the whats_next priors with a pheromone bundle sums the hgb "
+          "merging the next_action priors with a pheromone bundle sums the hgb "
           "weight (0.7+0.3) and keeps the scaler prior — one bundle for the "
           "engine")
 

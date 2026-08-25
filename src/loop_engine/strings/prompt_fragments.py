@@ -106,7 +106,7 @@ class FragmentRegistry:
 
 
 def seed_registry() -> FragmentRegistry:
-    """A few reusable fragments — the reusable pieces every what-is-next prompt
+    """A few reusable fragments used by each next-action prompt
     tends to share."""
     reg = FragmentRegistry()
     reg.register(PromptFragment(

@@ -25,9 +25,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
-from .loop_definition import LoopDefinition
+from .loop_definition import ConfigurationFacts, LoopDefinition
 from .recursive_loop import MODES, Loop, LoopLedger
-from ..code_nodes.solution_graph import make_solution_loop_definition
+from ..code_nodes.solution_graph import (SolutionLoopDefinitionRequest,
+                                          make_solution_loop_definition)
 
 # The two canvas kinds the owner named.
 CANVAS_KINDS = ("solution", "exploration")
@@ -102,29 +103,37 @@ class SolutionLoopCandidate:
                 "candidate operation_ref is not bound inside its definition")
 
     @classmethod
+    def declared(cls, name: str, contract: TypeContract, *,
+                 operation_ref: str = "", cost: float = 0.0,
+                 provenance: str = "", handle: str = "",
+                 mode: str = "deterministic",
+                 profile_id: str = "solution.atomic_component"
+                 ) -> "SolutionLoopCandidate":
+        """Create a passive candidate with a complete definition but no body."""
+        selected_ref = operation_ref or handle or name
+        definition = make_solution_loop_definition(
+            SolutionLoopDefinitionRequest(
+                graph_id="canvas_candidate", vertex_id=name,
+                profile_id=profile_id, input_roles=contract.inputs,
+                output_roles=contract.outputs, selected_mode=mode,
+                operation_ref=selected_ref,
+                parameters=ConfigurationFacts(), purpose="component"))
+        return cls(name, contract, selected_ref, definition, None,
+                   cost, provenance, handle, mode, profile_id)
+
+    @classmethod
     def from_callable(cls, name: str, contract: TypeContract,
-                      implementation: Callable[[Any], Any], *,
-                      operation_ref: str = "", cost: float = 0.0,
-                      provenance: str = "", handle: str = "",
-                      mode: str = "deterministic",
-                      profile_id: str = "solution.atomic_component"
+                      implementation: Callable[[Any], Any], **options
                       ) -> "SolutionLoopCandidate":
         """Make the callable selectable only after binding an exact Loop."""
         if not callable(implementation):
             raise ValueError("implementation must be callable")
-        selected_ref = operation_ref or handle or name
-        definition = make_solution_loop_definition(
-            graph_id="canvas_candidate", vertex_id=name,
-            profile_id=profile_id, input_roles=contract.inputs,
-            output_roles=contract.outputs, selected_mode=mode,
-            operation_ref=selected_ref, purpose="component")
-        return cls(name, contract, selected_ref, definition, implementation,
-                   cost, provenance, handle, mode, profile_id)
-
-
-# Compatibility for older module-level imports. It is a passive candidate
-# alias, never an operational graph type or a serialized runtime claim.
-CanvasNode = SolutionLoopCandidate
+        declared = cls.declared(name, contract, **options)
+        return cls(
+            declared.name, declared.contract, declared.operation_ref,
+            declared.definition, implementation, declared.cost,
+            declared.provenance, declared.handle, declared.mode,
+            declared.profile_id)
 
 
 @dataclass

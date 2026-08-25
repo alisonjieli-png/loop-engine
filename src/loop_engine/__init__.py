@@ -1,784 +1,281 @@
-"""What Is Next — the expert's loop as the organizing spine of the solver.
+"""Curated public API for Loop Engine.
 
-An expert runs one loop: *here is what I presently know; given that, what is
-next?*  This package makes that loop the centre of the system.  A **Practitioner**
-runs it; **Knowledge** is what it presently knows (as references, not full
-context); a **WhatIsNextResolver** is one named way to answer, and the resolver
-CATEGORIES are the clean paths — deterministic rule, plan/recipe, fingerprint
-recall (muscle memory), embedding similarity, small model, hybrid, test-driven,
-research, one model, a council, blind, persona-salted, or a custom special case;
-a **Move** is what an answer proposes to DO (not only "add a node" — also run
-tests, do research, gather context, spawn sub-loops, ensemble, …); and an
-**AskFrame** carries the persona/prompt dimensions.
-
-New "what is next?" regimes are added with one call —
-``register_regime(name, category, fn)`` — so the ontology stays open.  The loop
-resolves cheapest-category-first via the escalation governor, so most steps cost
-no model call; a council or research is the last resort.  Nothing here decides
-truth: an answer orders what to try; the fold oracle decides what worked, and a
-blind/random resolver always rides along so muscle memory never becomes destiny.
-
-Public entry points::
-
-    from ...benchmarks.whats_next import (Practitioner, Knowledge, AskFrame,
-        move, answer, register_regime, register_builtins)
-
-Self-test::
-
-    PYTHONPATH=. python3 -m loop_engine --self-test
+Every executable graph vertex uses the same ``Loop`` runtime. Public names in
+this module define Loop contracts, versioned profiles and definitions, typed
+Solution graphs, runtime access ports, and the services needed to run and
+inspect work. Internal decision strategies are intentionally absent.
 """
 
 from __future__ import annotations
 
-from .strings.frame import AskFrame
-from .strings.knowledge import Knowledge, CONTEXT_LEVELS
-from .strings.knowledge_state import (Claim, Unknown, Contradiction, EpistemicState,
-                              KnowledgeDelta, CLAIM_STATUSES, GROUND_STATUSES)
-from .loop.moves import (MOVE_TYPES, MOVE_FAMILIES, move, answer, WhatIsNextAnswer,
-                    family_of, is_valid_move_kind)
-from .loop.decision_need import (FrontierItem, DecisionNeed, detect_decision_need,
-                            frontier_from_state, DECISION_MODES,
-                            DECISION_NEED_KINDS, MODE_MOVE_FAMILIES)
-from .loop.resolvers import (RESOLVER_CATEGORIES, DEFAULT_CATEGORY_LEVEL,
-                        MODEL_CATEGORIES, WhatIsNextResolver, ResolveFn)
-from .loop.registry import (ResolverRegistry, DEFAULT_REGISTRY, register_regime,
-                       register, registered_resolvers)
-from .loop.builtin_resolvers import (register_builtins, plan_recipe_resolver,
-                                blind_baseline_resolver,
-                                make_fingerprint_resolver)
-from .loop.regimes import (register_library, catalog as regime_catalog,
-                      make_recall_resolver, make_solved_route_replay,
-                      make_analogy_transfer, make_single_model_regime,
-                      make_council_regime, make_research_regime)
-from .loop.deliberation import (DeliberationResult, blueprint_then_refine,
-                           fan_out_and_test, multi_context_probe,
-                           as_resolver as deliberation_as_resolver)
-from .loop.lens import (LensSpec, ROLE_LENSES, METHOD_LENSES, get_lens, apply_lens)
-from .strings.context import (ContextView, CONTEXT_POLICIES, build_view, build_lanes)
-from .strings.packs import (Pack, PackItem, PackRegistry, PACK_KINDS, pack_from_dict,
-                    seed_registry)
-from .loop.arbiter import (Candidate, NextMoveDecision, arbitrate, pareto_front,
-                      HARD_GATES, POLICY_WEIGHTS)
-from .loop.delegation import (SubproblemSpec, JOIN_POLICIES,
-                         request_fingerprint, ImpasseGuard, check_depth)
-from .loop.iteration_records import (SolverIterationRecord, build_iteration_record,
-                       verify_chain)
-from .loop.practitioner_methods import (Check, Checklist, WeightedRule,
-                                   checklist_resolver, checklist_status,
-                                   weighted_heuristic_resolver,
-                                   linear_regression_checklist)
-from .strings.notes import (NoteTemplate, Note, NoteStore, NOTE_KINDS, NOTE_STATUSES,
-                    fill_note, measure_note, council_review)
-from .loop.context_shuffle import (ShuffleFrame, DISTANT_DOMAINS, COGNITION_MODES,
-                              make_shuffle_frame, shuffle_lanes,
-                              cross_domain_bridge)
-from .loop.decision_envelope import DecisionEnvelope
-from .strings.prompt_fragments import (PromptFragment, PromptRecipe, FragmentRegistry,
-                               seed_registry as seed_fragment_registry)
-from .loop.decision_episode import (ProposalRecord, DecisionEpisode, EpisodeStore)
-from .code_nodes.pack_curation import (PackItemCandidate, curate_from_findings,
-                            review_candidate, promote_candidates)
-from .loop.studio import StudioView, build_studio_view, render_markdown, render_html
-from .static_architecture.persistence import (persist_note, load_notes, persist_episode,
-                          load_episodes, persist_iteration_record, load_iteration_records)
-from .loop.route_bridge import (RoutePriors, priors_from_slate, merge_priors,
-                           bridge_from_decision)
-from .loop.acceptance import self_test as acceptance_invariants
-from .static_architecture.ollama_client import chat as ollama_chat, verify as ollama_verify, live_models, ChatResult
-from .static_architecture.ollama_resolvers import (make_ollama_regime, make_ollama_proposer,
-                               render_next_move_prompt, parse_moves,
-                               deep_deliberate, make_ollama_council,
-                               COUNCIL_MODELS)
-# kaggle_executor: resolved LAZILY — see _PUBLIC below
-from .static_architecture.opencode_client import (AgentResult, run_agent, parallel_agents,
-                             build_command, DEFAULT_WORKER_MODEL)
-from .loop.methodical import (CYCLE_STAGES, WHATS_NEXT_ANSWER_KINDS, ANSWER_KINDS,
-                        EXECUTION_LADDER, VERIFY_OUTCOMES, GuardViolation,
-                        NextAnswer, ExecutionDecision, VerifyResult, CycleStep,
-                        run_cycle, run_cycle_deterministic, run_cycle_models,
-                        make_model_cycle, reuse_first_guard, advance_guard)
-from .loop.canvas import (CANVAS_KINDS, TypeContract, SolutionLoopCandidate, SolutionSlot,
-                    Canvas, SlotOutcome, MatrixExecution, execute_matrix)
-from .loop.sub_practitioner import spawn_practitioner_loop
-from .code_nodes.self_improve import (problem_signature, Shortcut, ShortcutStore,
-                          CheaperVerdict, could_this_be_cheaper,
-                          learn_from_cycle, make_learning_probe)
-from .loop.tuning import (TUNING_PLACES, TUNING_STRATEGIES, TuningPolicy, ParamSpec,
-                    TuningResult, tune, grid_search, heuristic_search)
-from .static_architecture.model_call import (DEFAULT_MODEL_CHAIN, CALL_STAGES, AskSpec, AskResult,
-                        execute_ask, prepare_context, render as render_ask)
-from .static_architecture.store_serve import (STORE_KINDS, TIERS, StoreRecord, SolverStore,
-                         core_seed)
-from .strings.ask_strategies import (STRATEGY_SHAPES, StrategySpec, StrategyRegistry,
-                            core_strategies, run_strategy)
-from .loop.kernel import (KERNEL_NODES, HOW_MODES, ACT_MODES, VERIFY_VERDICTS,
-                    ROUTES, RESET_MODES, ProblemSpec,
-                    Situation, CandidateAction, ExecutionPlan, ResultPacket,
-                    EvaluationPacket, RouteDecision, PassRecord, DecisionSupportPortfolio,
-                    SUFFICIENCY_OUTCOMES, KERNEL_NODES, KERNEL_NODE_NAMES,
-                    default_reconcile_horizon,
-                    KERNEL_NODE_QUESTIONS, KERNEL_REQUIRED_NODES,
-                    KERNEL_OPTIONAL_NODES, KernelHandshakeError, handshake,
-                    validate_impls, plan_skip_next_pass, run_pass,
-                    default_impls as default_kernel_impls)
-from .strings.question_engine import (ANSWER_SHAPES, SEED_SALTS, QuestionForm,
-                             AskVariant, core_forms, multiply,
-                             combination_space, register_generated_form,
-                             as_store_records as question_forms_as_records)
-from .loop.kernel_model_impls import make_model_impls
-from .code_nodes.enrichment import (EnrichmentPolicy, CoverageReport, coverage_probe,
-                        generate_enrichment, domain_terms)
-from .code_nodes.context_seed import (ContextSeedSpec, ContextSeedRun,
-                         CONTEXT_SEED_STEPS, CONTEXT_PATTERNS,
-                         domain_research_questions, build_context_candidates,
-                         run_context_seed)
-from .code_nodes.campaign_runner import (
-                         ProblemCase, ArmSpec, CampaignSpec, CampaignRunner,
-                         CampaignRunOptions, ArmResult, CampaignResult,
-                         default_problem_cases,
-                         campaign_arms, default_campaign_spec,
-                         run_campaign_arm)
-from .code_nodes.housekeeping import (HousekeepingReport, ImprovementCandidate,
-                         run_housekeeping, candidate_records)
-from .code_nodes.self_improvement_loop import (
-                         SelfImprovementReport, run_self_improvement,
-                         load_run_history)
-from .static_architecture.model_call import PROMPT_ASSEMBLY_ORDER
-from .code_nodes.review_mode import (REVIEW_VERDICTS, INTERROGATORIES, ReviewFinding,
-                         ReviewReport, review, detect_constant_output,
-                         detect_chance_level, detect_too_perfect)
-from .strings.biases import (BIAS_REGISTRY, TRIAL_ARMS, BIAS_VERDICTS, BiasTrial,
-                    BiasLedger, paired_trial, record_paired_outcome,
-                    apply_biases)
-from .static_architecture.config import (OPTIMIZE_FOR, REUSE_SOURCES, SolverConfig, Budgets,
-                    ConfigViolation, TokenMeter, screen_models, permit_plan,
-                    config_details)
-# rl_vocabulary: resolved LAZILY — see _PUBLIC below
-# competition_solver: resolved LAZILY — see _PUBLIC below
-from .static_architecture.operating_profile import (ACCESS_MODES, REASONING_MODES,
-                               CONSTRUCTION_MODES, EFFORT_MODES,
-                               OPTIMIZATION_MODES, Limits, OperatingProfile,
-                               resolve_chain, to_solver_config)
-from .static_architecture.reasoning_call import (PROMPT_BLOCKS, PROMPT_LAYOUT_POLICIES, Seeds,
-                             ReasoningRequest, PromptAssemblySpec,
-                             ModelInvocationRequest, ModelInvocationResult,
-                             layout_order, assemble_prompt, to_invocation,
-                             invoke, run_reasoning)
-from .static_architecture.model_routes import (
-                             ModelProviderCapabilities, ModelRoute,
-                             RoutePolicy, RouteRegistry, resolve_route)
-from .static_architecture.model_gateway import (
-                             ProviderAdapter, ProviderSpec,
-                             ModelRouteAttemptSpec, ModelGatewayConfig,
-                             ModelGatewayRequest,
-                             GatewayAttempt, ModelGatewayResult, ModelGateway,
-                             builtin_provider_specs,
-                             provider_spec_from_endpoint,
-                             invoke_model_gateway)
-from .static_architecture.provider_pinned import (
-                             ProviderPinnedRequest, invoke_provider_model)
-from .static_architecture.runtime_settings import (
-                             SETTINGS_VERSION, SEARCH_MODES,
-                             LEXICAL_BACKENDS, VECTOR_BACKENDS,
-                             ESCALATION_ERROR_CODES,
-                             SettingsError, LoopDefaults, LoopConfigOverride,
-                             SearchSettings, HistorySettings, ProviderSettings,
-                             ModelTier, EscalationSettings, ModelPolicyRequest,
-                             ModelTask, ModelSettings, SettingsLoadResult,
-                             SettingsWriteResult,
-                             RuntimeSettings)
-from .static_architecture.settings_loader import (
-                             runtime_settings_from_mapping,
-                             default_user_settings_path,
-                             load_runtime_settings, default_settings_yaml,
-                             write_default_settings)
-from .static_architecture.facets import (
-                             ContextFacetSpec, string_facets, context_facets)
-from .static_architecture.custom_endpoint import CustomEndpoint
-from .code_nodes.blueprint import (BLUEPRINT_LEVELS, ELABORATION_LEVELS, CHECKPOINT_STATES,
-                       DECISION_BOUNDARIES, Checkpoint, GoalStack,
-                       WorkingBlueprint, Progress, WorkPacket,
-                       LongHorizonAnchorPacket, grounding_summary, build_anchor,
-                       seed_from_objective)
-from .strings.question_bank import (MATURITY, QuestionDefinition, QuestionPattern,
-                            QuestionInstance, QuestionOutcomeRecord, QuestionBank)
-from .strings.domain_pack import (PACK_PARTS, DomainSupportPack, install_pack,
-                         cardiology_pack)
-from .code_nodes.closure import (TERMINAL_DISPOSITIONS, ITEM_KINDS, TrackedItem, RunLedger,
-                     ClosureVerdict, audit_run)
-from .code_nodes.planning import (GOAL_KINDS, GOAL_STATUS, BLUEPRINT_ITEM_KINDS,
-                      BLUEPRINT_ITEM_STATUS, BLUEPRINT_EDGE_TYPES,
-                      CHECKPOINT_STATUS, PlanInvariantError, GoalItem, GoalGraph,
-                      GoalBinding, BlueprintItem, CheckpointContract,
-                      WorkingBlueprint as TypedWorkingBlueprint, PlanFrontier,
-                      compute_frontier, validate_blueprint)
-from .strings.task_blueprint import (OPENING_MOVE_KINDS, OpeningMove, TaskBlueprint,
-                            default_opening_sequence, bias_next_from_blueprint)
-from .loop.step_registry import (KernelStep, KERNEL_STEP_REGISTRY, SERVICE_MAP, step,
-                            steps_for_module, render_step, render_map)
-from .loop.loop_contract import (
-                            LoopContract, LoopContractError, LoopPortBinding,
-                            LoopConnectionSpec, LoopConnectionResult,
-                            validate_loop_connection)
-from .loop.loop_profile_catalog import (
-                            PROFILE_ONTOLOGY_VERSION, PROFILE_FAMILIES,
-                            ROLE_PROFILE_ALIASES,
-                            LOOP_PROFILE_ONTOLOGY, LoopProfileError,
-                            LoopProfileRef, LoopProfileSpec, profile_catalog,
-                            resolve_profile_alias)
-from .loop.loop_profile_ontology import (
-                            ResolvedLoopProfile, OntologyValidationResult,
-                            LoopProfileBindingRequest, BoundLoopProfile,
-                            LoopProfileRequirement,
-                            LoopProfileHandshakeResult, get_profile,
-                            resolve_profile, validate_profile_ontology,
-                            bind_profile, profile_handshake, identity_for_profile)
-from .loop.loop_role import (
-                            LOOP_RELATIONSHIP_KINDS, LOOP_ROLES,
-                            LoopRelationshipKind, LoopRole, LoopRoleIdentity,
-                            LoopRelationship)
-from .code_nodes.solution_graph import (
-                            LoopVertexSpec, LoopPortRef, LoopEdgeSpec,
-                            LoopGraphSpec, insert_adapter)
-from ._self_test import self_test
-
-__all__ = [
-    "AskFrame", "Knowledge", "CONTEXT_LEVELS",
-    "Claim", "Unknown", "Contradiction", "EpistemicState", "KnowledgeDelta",
-    "CLAIM_STATUSES", "GROUND_STATUSES",
-    "MOVE_TYPES", "MOVE_FAMILIES", "move", "answer", "WhatIsNextAnswer",
-    "family_of", "is_valid_move_kind",
-    "FrontierItem", "DecisionNeed", "detect_decision_need",
-    "frontier_from_state", "DECISION_MODES", "DECISION_NEED_KINDS",
-    "MODE_MOVE_FAMILIES",
-    "RESOLVER_CATEGORIES", "DEFAULT_CATEGORY_LEVEL", "MODEL_CATEGORIES",
-    "WhatIsNextResolver", "ResolveFn",
-    "ResolverRegistry", "DEFAULT_REGISTRY", "register_regime", "register",
-    "registered_resolvers",
-    "register_builtins", "plan_recipe_resolver", "blind_baseline_resolver",
-    "make_fingerprint_resolver",
-    "register_library", "regime_catalog", "make_recall_resolver",
-    "make_solved_route_replay", "make_analogy_transfer",
-    "make_single_model_regime", "make_council_regime", "make_research_regime",
-    "DeliberationResult", "blueprint_then_refine", "fan_out_and_test",
-    "multi_context_probe", "deliberation_as_resolver",
-    "LensSpec", "ROLE_LENSES", "METHOD_LENSES", "get_lens", "apply_lens",
-    "ContextView", "CONTEXT_POLICIES", "build_view", "build_lanes",
-    "Pack", "PackItem", "PackRegistry", "PACK_KINDS", "pack_from_dict",
-    "seed_registry",
-    "Candidate", "NextMoveDecision", "arbitrate", "pareto_front", "HARD_GATES",
-    "POLICY_WEIGHTS",
-    "SubproblemSpec", "JOIN_POLICIES", "request_fingerprint",
-    "ImpasseGuard", "check_depth",
-    "SolverIterationRecord", "build_iteration_record", "verify_chain",
-    "Check", "Checklist", "WeightedRule", "checklist_resolver",
-    "checklist_status", "weighted_heuristic_resolver",
-    "linear_regression_checklist",
-    "NoteTemplate", "Note", "NoteStore", "NOTE_KINDS", "NOTE_STATUSES",
-    "fill_note", "measure_note", "council_review",
-    "ShuffleFrame", "DISTANT_DOMAINS", "COGNITION_MODES", "make_shuffle_frame",
-    "shuffle_lanes", "cross_domain_bridge",
-    "DecisionEnvelope",
-    "PromptFragment", "PromptRecipe", "FragmentRegistry",
-    "seed_fragment_registry",
-    "ProposalRecord", "DecisionEpisode", "EpisodeStore",
-    "PackItemCandidate", "curate_from_findings", "review_candidate",
-    "promote_candidates",
-    "StudioView", "build_studio_view", "render_markdown", "render_html",
-    "persist_note", "load_notes", "persist_episode", "load_episodes",
-    "persist_iteration_record", "load_iteration_records",
-    "RoutePriors", "priors_from_slate", "merge_priors", "bridge_from_decision",
-    "acceptance_invariants",
-    "make_ollama_regime", "make_ollama_proposer", "render_next_move_prompt",
-    "parse_moves", "deep_deliberate", "make_ollama_council", "COUNCIL_MODELS",
-    "TaskRoles", "ExecutionResult", "resolve_roles", "estimator_from_moves",
-    "execute_tabular",
-    "AgentResult", "run_agent", "parallel_agents", "build_command",
-    "DEFAULT_WORKER_MODEL",
-    "CYCLE_STAGES", "WHATS_NEXT_ANSWER_KINDS", "ANSWER_KINDS",
-    "EXECUTION_LADDER", "VERIFY_OUTCOMES", "GuardViolation", "NextAnswer",
-    "ExecutionDecision", "VerifyResult", "CycleStep", "run_cycle",
-    "run_cycle_deterministic", "run_cycle_models", "make_model_cycle",
-    "reuse_first_guard", "advance_guard",
-    "CANVAS_KINDS", "TypeContract", "SolutionLoopCandidate", "SolutionSlot", "Canvas",
-    "SlotOutcome", "MatrixExecution", "execute_matrix",
-    "spawn_practitioner_loop",
-    "problem_signature", "Shortcut", "ShortcutStore", "CheaperVerdict",
-    "could_this_be_cheaper", "learn_from_cycle", "make_learning_probe",
-    "solve",
-    "TUNING_PLACES", "TUNING_STRATEGIES", "TuningPolicy", "ParamSpec",
-    "TuningResult", "tune", "grid_search", "heuristic_search",
-    "DEFAULT_MODEL_CHAIN", "CALL_STAGES", "AskSpec", "AskResult",
-    "execute_ask", "prepare_context", "render_ask",
-    "STORE_KINDS", "TIERS", "StoreRecord", "SolverStore", "core_seed",
-    "STRATEGY_SHAPES", "StrategySpec", "StrategyRegistry", "core_strategies",
-    "run_strategy",
-    "KERNEL_NODES", "HOW_MODES", "ACT_MODES", "VERIFY_VERDICTS", "ROUTES",
-    "RESET_MODES", "ProblemSpec", "Situation",
-    "CandidateAction", "ExecutionPlan", "ResultPacket", "EvaluationPacket",
-    "RouteDecision", "PassRecord", "DecisionSupportPortfolio",
-    "SUFFICIENCY_OUTCOMES", "KERNEL_NODES", "KERNEL_NODE_NAMES",
-    "KERNEL_NODE_QUESTIONS", "KERNEL_REQUIRED_NODES",
-    "KERNEL_OPTIONAL_NODES", "KernelHandshakeError", "handshake",
-    "validate_impls", "plan_skip_next_pass", "run_pass",
-    "default_kernel_impls",
-    "ANSWER_SHAPES", "SEED_SALTS", "QuestionForm", "AskVariant", "core_forms",
-    "multiply", "combination_space", "register_generated_form",
-    "question_forms_as_records", "make_model_impls",
-    "EnrichmentPolicy", "CoverageReport", "coverage_probe",
-    "generate_enrichment", "domain_terms", "PROMPT_ASSEMBLY_ORDER",
-    "ContextSeedSpec", "ContextSeedRun", "CONTEXT_SEED_STEPS",
-    "CONTEXT_PATTERNS", "domain_research_questions",
-    "build_context_candidates", "run_context_seed",
-    "ProblemCase", "ArmSpec", "CampaignSpec", "CampaignRunner",
-    "CampaignRunOptions", "ArmResult", "CampaignResult",
-    "default_problem_cases",
-    "campaign_arms", "default_campaign_spec", "run_campaign_arm",
-    "HousekeepingReport", "SelfImprovementReport", "ImprovementCandidate",
-    "run_housekeeping", "run_self_improvement", "load_run_history",
-    "candidate_records",
-    "OPTIMIZE_FOR", "REUSE_SOURCES", "SolverConfig", "Budgets",
-    "ConfigViolation", "TokenMeter", "screen_models", "permit_plan",
-    "config_details", "BIAS_REGISTRY", "apply_biases", "TRIAL_ARMS",
-    "BIAS_VERDICTS", "BiasTrial", "BiasLedger", "paired_trial",
-    "record_paired_outcome",
-    "REVIEW_VERDICTS", "INTERROGATORIES", "ReviewFinding", "ReviewReport",
-    "review", "detect_constant_output", "detect_chance_level",
-    "detect_too_perfect",
-    "POLICY_KINDS", "Trajectory", "rollout", "RandomPolicy", "HeuristicPolicy",
-    "ScriptedPolicy", "EpsilonGreedyQPolicy", "UCBBandit", "NoveltyArchive",
-    "build_policy", "train_q", "cross_entropy_method",
-    "search_action_sequences",
-    "MODALITIES", "CompetitionSpec", "resolve_competition", "ExecOutcome",
-    "execute_image", "execute_tabular", "EXECUTORS", "executor_node_records",
-    "build_competition_store", "find_executor", "make_competition_impls",
-    "CompetitionResult", "solve_competition",
-    "ACCESS_MODES", "REASONING_MODES", "CONSTRUCTION_MODES", "EFFORT_MODES",
-    "OPTIMIZATION_MODES", "Limits", "OperatingProfile", "resolve_chain",
-    "to_solver_config",
-    "PROMPT_BLOCKS", "PROMPT_LAYOUT_POLICIES", "Seeds", "ReasoningRequest",
-    "PromptAssemblySpec", "ModelInvocationRequest", "ModelInvocationResult",
-    "layout_order", "assemble_prompt", "to_invocation", "invoke",
-    "run_reasoning",
-    "ModelProviderCapabilities", "ModelRoute", "RoutePolicy",
-    "RouteRegistry", "resolve_route", "ProviderAdapter", "ProviderSpec",
-    "ModelRouteAttemptSpec", "ProviderPinnedRequest", "ModelGatewayConfig",
-    "ModelGatewayRequest", "GatewayAttempt",
-    "ModelGatewayResult", "ModelGateway", "builtin_provider_specs",
-    "provider_spec_from_endpoint", "invoke_model_gateway",
-    "invoke_provider_model", "SETTINGS_VERSION", "SEARCH_MODES",
-    "LEXICAL_BACKENDS", "VECTOR_BACKENDS", "ESCALATION_ERROR_CODES",
-    "SettingsError",
-    "LoopDefaults", "LoopConfigOverride", "SearchSettings",
-    "HistorySettings", "ProviderSettings", "ModelTier",
-    "EscalationSettings", "ModelPolicyRequest", "ModelTask",
-    "ModelSettings", "SettingsLoadResult", "SettingsWriteResult",
-    "RuntimeSettings",
-    "runtime_settings_from_mapping", "default_user_settings_path",
-    "load_runtime_settings", "default_settings_yaml",
-    "write_default_settings", "CustomEndpoint",
-    "ContextFacetSpec", "string_facets", "context_facets",
-    "BLUEPRINT_LEVELS", "CHECKPOINT_STATES", "Checkpoint", "GoalStack",
-    "WorkingBlueprint", "Progress", "WorkPacket", "LongHorizonAnchorPacket",
-    "grounding_summary", "build_anchor", "seed_from_objective",
-    "ELABORATION_LEVELS", "DECISION_BOUNDARIES", "default_reconcile_horizon",
-    "TERMINAL_DISPOSITIONS", "ITEM_KINDS", "TrackedItem", "RunLedger",
-    "ClosureVerdict", "audit_run",
-    "GOAL_KINDS", "GOAL_STATUS", "BLUEPRINT_ITEM_KINDS", "BLUEPRINT_ITEM_STATUS",
-    "BLUEPRINT_EDGE_TYPES", "CHECKPOINT_STATUS", "PlanInvariantError",
-    "GoalItem", "GoalGraph", "GoalBinding", "BlueprintItem",
-    "CheckpointContract", "TypedWorkingBlueprint", "PlanFrontier",
-    "compute_frontier", "validate_blueprint",
-    "OPENING_MOVE_KINDS", "OpeningMove", "TaskBlueprint",
-    "default_opening_sequence", "bias_next_from_blueprint",
-    "KernelStep", "KERNEL_STEP_REGISTRY", "SERVICE_MAP", "step",
-    "steps_for_module", "render_step", "render_map",
-    "LoopContract", "LoopContractError", "LoopPortBinding",
-    "LoopConnectionSpec", "LoopConnectionResult",
-    "validate_loop_connection", "LoopVertexSpec", "LoopPortRef",
-    "LoopEdgeSpec", "LoopGraphSpec", "insert_adapter",
-    "PROFILE_ONTOLOGY_VERSION", "PROFILE_FAMILIES", "ROLE_PROFILE_ALIASES",
-    "LOOP_PROFILE_ONTOLOGY", "LoopProfileError", "LoopProfileRef",
-    "LoopProfileSpec", "profile_catalog", "resolve_profile_alias",
-    "LOOP_RELATIONSHIP_KINDS", "LOOP_ROLES", "LoopRelationshipKind",
-    "LoopRole", "LoopRoleIdentity", "LoopRelationship",
-    "ResolvedLoopProfile",
-    "OntologyValidationResult", "LoopProfileBindingRequest",
-    "BoundLoopProfile", "LoopProfileRequirement",
-    "LoopProfileHandshakeResult", "get_profile", "resolve_profile",
-    "validate_profile_ontology", "bind_profile", "profile_handshake",
-    "identity_for_profile",
-    "MATURITY", "QuestionDefinition", "QuestionPattern", "QuestionInstance",
-    "QuestionOutcomeRecord", "QuestionBank",
-    "PACK_PARTS", "DomainSupportPack", "install_pack", "cardiology_pack",
-    "SpawnedTaskManager", "DelegationSpec", "DelegationBudget",
-    "DelegationConstraints", "ContextVisibilityPolicy", "SpawnedTaskId",
-    "SpawnedTaskStatus", "SpawnedReturnDestination", "SpawnedTaskUpdate",
-    "SpawnedTaskSnapshot", "SpawnedTaskManagerLimits", "SpawnedExecutionRequest",
-    "SpawnedLoopResult", "LoopPortValue", "SpawnedExecutor",
-    "DeterministicSpawnedExecutor",
-    "SpawnedLoopRuntimePortError", "SpawnedLoopRuntimePort", "SpawnedLoopRuntimeConfigFacts",
-    "SpawnedLoopRuntimeCounters", "SpawnedLoopRuntimeOutcome", "SpawnedStepRequest",
-    "SpawnedStepHandler", "RuntimeMemoryService", "SpawnedLoopRuntimeMemoryPort",
-    "SPAWNED_TASK_CHECKPOINT_VERSION", "SpawnedTaskCheckpointError",
-    "SpawnedTaskCheckpoint", "SpawnedTaskLifecycleMixin",
-    "EffectClass", "ApprovalAction", "ApprovalStatus", "EffectSpec",
-    "ApprovalRequest", "ApprovalDecision", "PendingApprovalState",
-    "ApprovalCheckpoint", "EffectApprovalService",
-    "EFFECT_APPROVAL_SCHEMA_VERSION",
-    "APPROVAL_STATE_STORE_SCHEMA", "ApprovalStateStore",
-    "LocalJsonApprovalStateStore",
-    "ApprovalStateStoreError", "ApprovalStateNotFound",
-    "ApprovalStateConflict", "ApprovalStateIntegrityError",
-    "ContextArtifactRef", "ContextArtifactStoreSpec", "ContextArtifactStore",
-    "ContextOffloadPolicy", "ContextPayload", "ContextArtifactManager",
-    "Utf8ChunkTokenCounter", "CompactionRequest", "CompactionResult",
-    "HeadTailCompactor", "compact_context_as_loop",
-    "IntelligencePortfolioError", "PortfolioCoverageError", "LensFamily",
-    "REQUIRED_LENS_FAMILIES", "BenchmarkCodeRegistration",
-    "BenchmarkCodePack", "PortfolioRequest", "PortfolioSelectionServices",
-    "PortfolioMaterializationServices", "IntelligencePortfolio",
-    "LoopIntelligenceConsumption", "LoopIntelligenceMaterialization",
-    "select_intelligence_portfolio", "materialize_portfolio_for_loop",
-    "fold_loop_intelligence_consumption", "export_intelligence_portfolios",
-    "HarnessBudget", "HarnessRunRequest", "HarnessRunResult",
-    "HarnessRegistry", "HarnessServices", "run_external_harness",
-    "ConfiguredHarnessAdapter", "builtin_harness_adapters",
-    "WorkspaceSpec", "WorkspaceRef", "WorkspaceSnapshotRef",
-    "WorkspaceBackend", "BackendAvailability", "FileOperation",
-    "FileRequest", "FileResult", "CommandRequest", "CommandResult",
-    "SnapshotRequest", "RestrictedLocalWorkspace", "DockerWorkspace",
-    "DockerWorkspaceDeclaration", "DockerResourceLimits",
-    "DeclaredRemoteWorkspace", "E2BWorkspaceDeclaration",
-    "ModalWorkspaceDeclaration", "verify_live_docker_workspace",
-    "WorkspaceApprovalPlan", "WorkspaceOperationError",
-    "WorkspaceOperationService",
-    "McpServerSpec", "McpDiscoveryPolicy", "McpToolSpec", "McpCallRequest",
-    "McpCallResult", "McpApprovalBinding", "McpApprovalPlan",
-    "McpInvocationServices", "McpRegistry", "InjectedMcpTransport", "McpToolPolicy",
-    "McpSdkTransport", "SkillLoadPurpose", "SkillManifest", "LoadedSkill",
-    "SkillRegistry",
-    "OtelSpanRecord", "InMemorySpanExporter", "OpenTelemetrySpanExporter",
-    "run_history_to_spans", "export_run_history_as_loop",
-    "HarnessMemoryItem", "HarnessIntelligenceCandidate",
-    "classify_harness_memory", "import_harness_memory_as_loop",
-    "RuntimeObservation", "RuntimeObserver", "NullRuntimeObserver",
-    "LedgerRuntimeObserver", "RuntimeObservationServices",
-    "UnknownModelOutputLimit", "ModelOutputLimitMismatch",
-    "ModelOutputCapability", "resolve_output_capability",
-    "require_declared_maximum", "LiveModelVerificationError",
-    "RepositoryProbe", "LiveModelVerificationRequest",
-    "LiveModelVerificationPlan", "plan_live_model_verification",
-    "run_live_model_verification",
-    "PublishedBenchmarkEvidence", "PublishedComparisonGroup",
-    "PublishedEvidenceCatalog", "PublishedEvidenceError",
-    "PublishedEvidenceFinding", "default_published_catalog_path",
-    "load_published_evidence", "published_catalog_from_mapping",
-    "self_test",
-]
+from importlib import import_module as _import_module
 
 
-# ---------------------------------------------------------------------------
-# The public surface the charter documents: `from loop_engine import
-# PractitionerLoop, LoopSpec, SolutionSpec`.  Resolved lazily so importing the
-# package stays cheap and no import cycle is created — the names below are the
-# canonical runtime, not aliases onto a second one.
-# ---------------------------------------------------------------------------
+def _names(module: str, *names: str) -> dict[str, tuple[str, str]]:
+    """Map public names to one lazy source module."""
+    return {name: (module, name) for name in names}
 
-_PUBLIC = {
-    "PractitionerLoop": ("loop.recursive_loop", "Loop"),
-    "Loop": ("loop.recursive_loop", "Loop"),
-    "LoopSpec": ("loop.recursive_loop", "LoopConfig"),
-    "LoopConfig": ("loop.recursive_loop", "LoopConfig"),
-    "LoopLedger": ("loop.recursive_loop", "LoopLedger"),
-    "LoopResult": ("loop.recursive_loop", "LoopResult"),
-    "StepOutcome": ("loop.recursive_loop", "StepOutcome"),
-    "SolutionSpec": ("code_nodes.solution_canvas", "SolutionSpec"),
-    "SolutionLoopSpec": ("code_nodes.solution_canvas", "SolutionLoopSpec"),
-    "run_solution": ("code_nodes.solution_canvas", "run_solution"),
-    "EffectiveLoopSpec": ("loop.effective_spec", "EffectiveLoopSpec"),
-    "LoopRef": ("loop.loop_capsule", "LoopRef"),
-    "LoopCapsule": ("loop.loop_capsule", "LoopCapsule"),
-    "RunHistory": ("static_architecture.run_history", "RunHistory"),
-    "RunHistoryEvent": ("static_architecture.run_history", "RunHistoryEvent"),
-    "RunHistoryIntegrityError": (
-        "static_architecture.run_history", "RunHistoryIntegrityError"),
-    "EVENT_FAMILIES": ("static_architecture.event_vocabulary",
-                       "EVENT_FAMILIES"),
-    # Setup surface: bring a key, learn what this installation can run.
-    # `configure()` is the first call a new user makes, so it is public.
-    "configure": ("static_architecture.autoconfigure", "configure"),
-    "ModelAccess": ("static_architecture.autoconfigure", "ModelAccess"),
-    "advice_function": ("static_architecture.autoconfigure",
-                        "advice_function"),
-    "discover_roster": ("static_architecture.model_discovery",
-                        "discover_roster"),
-    "ModelRoster": ("static_architecture.model_discovery", "ModelRoster"),
-    "call_with_failover": ("static_architecture.provider_failover",
-                           "call_with_failover"),
 
-    # Typed spawned delegation and approval controls.
-    "SpawnedTaskManager": ("loop.delegation_runtime", "SpawnedTaskManager"),
-    "DelegationSpec": ("loop.delegation_runtime", "DelegationSpec"),
-    "DelegationBudget": ("loop.delegation_runtime", "DelegationBudget"),
-    "DelegationConstraints": ("loop.delegation_runtime", "DelegationConstraints"),
-    "ContextVisibilityPolicy": ("loop.delegation_runtime", "ContextVisibilityPolicy"),
-    "SpawnedTaskId": ("loop.delegation_runtime", "SpawnedTaskId"),
-    "SpawnedTaskStatus": ("loop.delegation_runtime", "SpawnedTaskStatus"),
-    "SpawnedReturnDestination": ("loop.delegation_runtime", "SpawnedReturnDestination"),
-    "SpawnedTaskUpdate": ("loop.delegation_runtime", "SpawnedTaskUpdate"),
-    "SpawnedTaskSnapshot": ("loop.delegation_runtime", "SpawnedTaskSnapshot"),
-    "SpawnedTaskManagerLimits": ("loop.delegation_runtime", "SpawnedTaskManagerLimits"),
-    "SpawnedExecutionRequest": ("loop.delegation_runtime", "SpawnedExecutionRequest"),
-    "SpawnedLoopResult": ("loop.delegation_runtime", "SpawnedLoopResult"),
-    "LoopPortValue": ("loop.delegation_runtime", "LoopPortValue"),
-    "SpawnedExecutor": ("loop.delegation_runtime", "SpawnedExecutor"),
-    "DeterministicSpawnedExecutor": ("loop.delegation_runtime", "DeterministicSpawnedExecutor"),
-    **{name: ("loop.spawned_runtime_port", name) for name in ("SpawnedLoopRuntimePortError", "SpawnedLoopRuntimePort", "SpawnedLoopRuntimeConfigFacts", "SpawnedLoopRuntimeCounters", "SpawnedLoopRuntimeOutcome", "SpawnedStepRequest", "SpawnedStepHandler", "RuntimeMemoryService", "SpawnedLoopRuntimeMemoryPort")},
-    **{name: ("loop.spawned_task_checkpoint", name) for name in ("SPAWNED_TASK_CHECKPOINT_VERSION", "SpawnedTaskCheckpointError", "SpawnedTaskCheckpoint", "SpawnedTaskLifecycleMixin")},
-    **{name: ("loop.effect_approval", name) for name in ("EffectClass", "ApprovalAction", "ApprovalStatus", "EffectSpec", "ApprovalRequest", "ApprovalDecision", "PendingApprovalState", "ApprovalCheckpoint", "EffectApprovalService", "EFFECT_APPROVAL_SCHEMA_VERSION")},
-    **{name: ("loop.approval_state_store", name) for name in ("APPROVAL_STATE_STORE_SCHEMA", "ApprovalStateStore", "LocalJsonApprovalStateStore", "ApprovalStateStoreError", "ApprovalStateNotFound", "ApprovalStateConflict", "ApprovalStateIntegrityError")},
+_PUBLIC: dict[str, tuple[str, str]] = {
+    # One operational runtime.
+    **_names(
+        "loop.recursive_loop",
+        "Loop", "LoopConfig", "LoopLedger", "LoopResult", "StepOutcome",
+    ),
 
-    # Context, harness, workspace, MCP, skills, and tracing adapters.
-    "ContextArtifactRef": ("static_architecture.context_artifacts",
-                           "ContextArtifactRef"),
-    "ContextArtifactStoreSpec": ("static_architecture.context_artifacts",
-                                 "ContextArtifactStoreSpec"),
-    "ContextArtifactStore": ("static_architecture.context_artifacts",
-                             "ContextArtifactStore"),
-    "ContextOffloadPolicy": ("static_architecture.context_artifacts",
-                             "ContextOffloadPolicy"),
-    "ContextPayload": ("static_architecture.context_artifacts",
-                       "ContextPayload"),
-    "ContextArtifactManager": ("static_architecture.context_artifacts",
-                               "ContextArtifactManager"),
-    "Utf8ChunkTokenCounter": ("static_architecture.context_artifacts",
-                              "Utf8ChunkTokenCounter"),
-    "CompactionRequest": ("static_architecture.context_artifacts",
-                          "CompactionRequest"),
-    "CompactionResult": ("static_architecture.context_artifacts",
-                         "CompactionResult"),
-    "HeadTailCompactor": ("static_architecture.context_artifacts",
-                           "HeadTailCompactor"),
-    "compact_context_as_loop": ("static_architecture.context_artifacts",
-                                 "compact_context_as_loop"),
-    "IntelligencePortfolioError": ("static_architecture.intelligence_portfolio", "IntelligencePortfolioError"),
-    "PortfolioCoverageError": ("static_architecture.intelligence_portfolio", "PortfolioCoverageError"),
-    "LensFamily": ("static_architecture.intelligence_portfolio", "LensFamily"),
-    "REQUIRED_LENS_FAMILIES": ("static_architecture.intelligence_portfolio", "REQUIRED_LENS_FAMILIES"),
-    "BenchmarkCodeRegistration": ("static_architecture.intelligence_portfolio", "BenchmarkCodeRegistration"),
-    "BenchmarkCodePack": ("static_architecture.intelligence_portfolio", "BenchmarkCodePack"),
-    "PortfolioRequest": ("static_architecture.intelligence_portfolio", "PortfolioRequest"),
-    "PortfolioSelectionServices": ("static_architecture.intelligence_portfolio", "PortfolioSelectionServices"),
-    "PortfolioMaterializationServices": ("static_architecture.intelligence_portfolio", "PortfolioMaterializationServices"),
-    "IntelligencePortfolio": ("static_architecture.intelligence_portfolio", "IntelligencePortfolio"),
-    "LoopIntelligenceConsumption": ("static_architecture.intelligence_portfolio", "LoopIntelligenceConsumption"),
-    "LoopIntelligenceMaterialization": ("static_architecture.intelligence_portfolio", "LoopIntelligenceMaterialization"),
-    "select_intelligence_portfolio": ("static_architecture.intelligence_portfolio", "select_intelligence_portfolio"),
-    "materialize_portfolio_for_loop": ("static_architecture.intelligence_portfolio", "materialize_portfolio_for_loop"),
-    "fold_loop_intelligence_consumption": ("static_architecture.intelligence_portfolio", "fold_loop_intelligence_consumption"),
-    "export_intelligence_portfolios": ("static_architecture.intelligence_portfolio", "export_intelligence_portfolios"),
-    "HarnessBudget": ("static_architecture.external_harness",
-                      "HarnessBudget"),
-    "HarnessRunRequest": ("static_architecture.external_harness",
-                          "HarnessRunRequest"),
-    "HarnessRunResult": ("static_architecture.external_harness",
-                         "HarnessRunResult"),
-    "HarnessRegistry": ("static_architecture.external_harness",
-                        "HarnessRegistry"),
-    "HarnessServices": ("static_architecture.external_harness",
-                        "HarnessServices"),
-    "run_external_harness": ("static_architecture.external_harness",
-                             "run_external_harness"),
-    "ConfiguredHarnessAdapter": (
-        "static_architecture.external_harness_adapters",
-        "ConfiguredHarnessAdapter"),
-    "builtin_harness_adapters": (
-        "static_architecture.external_harness_adapters",
-        "builtin_harness_adapters"),
-    "WorkspaceSpec": ("static_architecture.workspace_backends",
-                      "WorkspaceSpec"),
-    "WorkspaceRef": ("static_architecture.workspace_backends",
-                     "WorkspaceRef"),
-    "WorkspaceSnapshotRef": ("static_architecture.workspace_backends",
-                             "WorkspaceSnapshotRef"),
-    "WorkspaceBackend": ("static_architecture.workspace_backends",
-                         "WorkspaceBackend"),
-    "BackendAvailability": ("static_architecture.workspace_backends",
-                            "BackendAvailability"),
-    "FileOperation": ("static_architecture.workspace_backends",
-                      "FileOperation"),
-    "FileRequest": ("static_architecture.workspace_backends", "FileRequest"),
-    "FileResult": ("static_architecture.workspace_backends", "FileResult"),
-    "CommandRequest": ("static_architecture.workspace_backends",
-                       "CommandRequest"),
-    "CommandResult": ("static_architecture.workspace_backends",
-                      "CommandResult"),
-    "SnapshotRequest": ("static_architecture.workspace_backends",
-                        "SnapshotRequest"),
-    "RestrictedLocalWorkspace": ("static_architecture.workspace_backends",
-                                 "RestrictedLocalWorkspace"),
-    "DockerWorkspace": ("static_architecture.workspace_backends",
-                        "DockerWorkspace"),
-    "DockerWorkspaceDeclaration": (
+    # Versioned Loop definition, identity, relationship, and runtime context.
+    **_names(
+        "loop.loop_definition",
+        "ConfigurationFacts", "LoopDefinition", "LoopDefinitionError",
+        "LoopDefinitionRef", "LoopStartRequest",
+    ),
+    **_names(
+        "loop.loop_role",
+        "LOOP_RELATIONSHIP_KINDS", "LOOP_ROLES", "LoopRelationshipKind",
+        "LoopRole", "LoopRoleIdentity", "LoopRelationship",
+    ),
+    **_names(
+        "loop.runtime_context",
+        "CustomPluginsPort", "IntelligenceSearchRetrievalPort",
+        "InternalRuntimeBinding", "InternalRuntimeMechanics",
+        "LoopRuntimeContext", "LoopRuntimeContextError", "WebResearchPort",
+    ),
+
+    # Typed contracts, ports, and versioned profiles.
+    **_names(
+        "loop.loop_contract",
+        "LoopContract", "LoopContractError", "LoopPortBinding",
+        "LoopConnectionSpec", "LoopConnectionResult",
+        "validate_loop_connection",
+    ),
+    **_names(
+        "loop.loop_profile_catalog",
+        "PROFILE_ONTOLOGY_VERSION", "PROFILE_FAMILIES",
+        "ROLE_PROFILE_ALIASES", "LOOP_PROFILE_ONTOLOGY",
+        "LoopProfileError", "LoopProfileRef", "LoopProfileSpec",
+        "profile_catalog", "resolve_profile_alias",
+    ),
+    **_names(
+        "loop.loop_profile_ontology",
+        "ResolvedLoopProfile", "OntologyValidationResult",
+        "LoopProfileBindingRequest", "BoundLoopProfile",
+        "LoopProfileRequirement", "LoopProfileHandshakeResult",
+        "get_profile", "resolve_profile", "validate_profile_ontology",
+        "bind_profile", "profile_handshake", "identity_for_profile",
+    ),
+
+    # Canonical Solution graph and Canvas.
+    **_names(
+        "code_nodes.solution_graph",
+        "LoopDefinitionRegistry", "LoopGraphDefinition", "LoopGraphEdge",
+        "LoopGraphEndpoint", "LoopGraphError", "LoopGraphGroup",
+        "LoopGraphInputPort", "LoopGraphOutputPort", "LoopGraphStage",
+        "LoopGraphValidation", "LoopGraphVertex",
+    ),
+    **_names(
+        "code_nodes.solution_canvas",
+        "SolutionSpec", "SolutionLoopSpec", "run_solution",
+    ),
+    **_names(
+        "loop.canvas",
+        "CANVAS_KINDS", "TypeContract", "SolutionLoopCandidate",
+        "SolutionSlot", "Canvas", "SlotOutcome", "MatrixExecution",
+        "execute_matrix",
+    ),
+
+    # Intelligence references, portfolios, and useful workflows.
+    **_names("loop.loop_capsule", "LoopRef", "LoopCapsule"),
+    **_names(
+        "static_architecture.intelligence_portfolio",
+        "IntelligencePortfolioError", "PortfolioCoverageError", "LensFamily",
+        "REQUIRED_LENS_FAMILIES", "BenchmarkCodeRegistration",
+        "BenchmarkCodePack", "PortfolioRequest", "PortfolioSelectionServices",
+        "PortfolioMaterializationServices", "IntelligencePortfolio",
+        "LoopIntelligenceConsumption", "LoopIntelligenceMaterialization",
+        "select_intelligence_portfolio", "materialize_portfolio_for_loop",
+        "fold_loop_intelligence_consumption", "export_intelligence_portfolios",
+    ),
+    **_names("code_nodes.context_seed", "ContextSeedSpec", "run_context_seed"),
+    **_names(
+        "code_nodes.self_improvement_loop",
+        "SelfImprovementReport", "run_self_improvement", "load_run_history",
+    ),
+
+    # Saved Run History and event vocabulary.
+    **_names(
+        "static_architecture.run_history",
+        "RunHistory", "RunHistoryEvent", "RunHistoryIntegrityError",
+    ),
+    **_names("static_architecture.event_vocabulary", "EVENT_FAMILIES"),
+
+    # Typed settings and provider entry points.
+    **_names(
+        "static_architecture.runtime_settings",
+        "SETTINGS_VERSION", "SEARCH_MODES", "SettingsError", "LoopDefaults",
+        "LoopConfigOverride", "SearchSettings", "HistorySettings",
+        "ProviderSettings", "ModelTier", "EscalationSettings",
+        "ModelPolicyRequest", "ModelTask", "ModelSettings",
+        "SettingsLoadResult", "SettingsWriteResult", "RuntimeSettings",
+    ),
+    **_names(
+        "static_architecture.settings_loader",
+        "runtime_settings_from_mapping", "default_user_settings_path",
+        "load_runtime_settings", "default_settings_yaml",
+        "write_default_settings",
+    ),
+    **_names(
+        "static_architecture.model_gateway",
+        "ProviderAdapter", "ProviderSpec", "ModelRouteAttemptSpec",
+        "ModelGatewayConfig", "ModelGatewayRequest", "GatewayAttempt",
+        "ModelGatewayResult", "ModelGateway", "builtin_provider_specs",
+        "provider_spec_from_endpoint", "invoke_model_gateway",
+    ),
+    **_names(
+        "static_architecture.model_routes",
+        "ModelProviderCapabilities", "ModelRoute", "RoutePolicy",
+        "RouteRegistry", "resolve_route",
+    ),
+    **_names("static_architecture.custom_endpoint", "CustomEndpoint"),
+    **_names(
+        "static_architecture.autoconfigure",
+        "configure", "ModelAccess", "advice_function",
+    ),
+    **_names("static_architecture.provider_failover", "call_with_failover"),
+
+    # Typed spawned-Loop delegation and isolated context.
+    **_names(
+        "loop.delegation_runtime",
+        "SpawnedTaskManager", "DelegationSpec", "DelegationBudget",
+        "DelegationConstraints", "ContextVisibilityPolicy", "SpawnedTaskId",
+        "SpawnedTaskStatus", "SpawnedReturnDestination", "SpawnedTaskUpdate",
+        "SpawnedTaskSnapshot", "SpawnedTaskManagerLimits",
+        "SpawnedExecutionRequest", "SpawnedLoopResult", "LoopPortValue",
+        "SpawnedExecutor", "DeterministicSpawnedExecutor",
+    ),
+    **_names(
+        "loop.spawned_runtime_port",
+        "SpawnedLoopRuntimePortError", "SpawnedLoopRuntimePort",
+        "SpawnedLoopRuntimeConfigFacts", "SpawnedLoopRuntimeCounters",
+        "SpawnedLoopRuntimeOutcome", "SpawnedStepRequest",
+        "SpawnedStepHandler", "RuntimeMemoryService",
+        "SpawnedLoopRuntimeMemoryPort",
+    ),
+    **_names(
+        "loop.spawned_task_checkpoint",
+        "SPAWNED_TASK_CHECKPOINT_VERSION", "SpawnedTaskCheckpointError",
+        "SpawnedTaskCheckpoint", "SpawnedTaskLifecycleMixin",
+    ),
+
+    # Durable approvals and controlled workspaces.
+    **_names(
+        "loop.effect_approval",
+        "EffectClass", "ApprovalAction", "ApprovalStatus", "EffectSpec",
+        "ApprovalRequest", "ApprovalDecision", "PendingApprovalState",
+        "ApprovalCheckpoint", "EffectApprovalService",
+        "EFFECT_APPROVAL_SCHEMA_VERSION",
+    ),
+    **_names(
+        "loop.approval_state_store",
+        "APPROVAL_STATE_STORE_SCHEMA", "ApprovalStateStore",
+        "LocalJsonApprovalStateStore", "ApprovalStateStoreError",
+        "ApprovalStateNotFound", "ApprovalStateConflict",
+        "ApprovalStateIntegrityError",
+    ),
+    **_names(
         "static_architecture.workspace_backends",
-        "DockerWorkspaceDeclaration"),
-    "DockerResourceLimits": ("static_architecture.workspace_backends",
-                             "DockerResourceLimits"),
-    "DeclaredRemoteWorkspace": ("static_architecture.workspace_backends",
-                                "DeclaredRemoteWorkspace"),
-    "E2BWorkspaceDeclaration": ("static_architecture.workspace_backends",
-                                "E2BWorkspaceDeclaration"),
-    "ModalWorkspaceDeclaration": ("static_architecture.workspace_backends",
-                                   "ModalWorkspaceDeclaration"),
-    "verify_live_docker_workspace": (
-        "static_architecture.workspace_backends",
-        "verify_live_docker_workspace"),
-    **{name: ("static_architecture.workspace_operations", name) for name in ("WorkspaceApprovalPlan", "WorkspaceOperationError", "WorkspaceOperationService")},
-    **{name: ("static_architecture.mcp_adapter", name) for name in ("McpServerSpec", "McpDiscoveryPolicy", "McpToolSpec", "McpCallRequest", "McpCallResult", "McpApprovalBinding", "McpApprovalPlan", "McpInvocationServices", "McpRegistry", "InjectedMcpTransport")},
-    **{name: ("static_architecture.mcp_sdk_transport", name) for name in ("McpToolPolicy", "McpSdkTransport")},
-    "SkillLoadPurpose": ("static_architecture.skill_registry",
-                          "SkillLoadPurpose"),
-    "SkillManifest": ("static_architecture.skill_registry", "SkillManifest"),
-    "LoadedSkill": ("static_architecture.skill_registry", "LoadedSkill"),
-    "SkillRegistry": ("static_architecture.skill_registry", "SkillRegistry"),
-    "OtelSpanRecord": ("static_architecture.otel_export", "OtelSpanRecord"),
-    "InMemorySpanExporter": ("static_architecture.otel_export",
-                             "InMemorySpanExporter"),
-    "OpenTelemetrySpanExporter": ("static_architecture.otel_export",
-                                  "OpenTelemetrySpanExporter"),
-    "run_history_to_spans": ("static_architecture.otel_export",
-                           "run_history_to_spans"),
-    "export_run_history_as_loop": ("static_architecture.otel_export",
-                                 "export_run_history_as_loop"),
-    "HarnessMemoryItem": ("static_architecture.harness_intelligence_bridge",
-                          "HarnessMemoryItem"),
-    "HarnessIntelligenceCandidate": (
-        "static_architecture.harness_intelligence_bridge",
-        "HarnessIntelligenceCandidate"),
-    "classify_harness_memory": (
-        "static_architecture.harness_intelligence_bridge",
-        "classify_harness_memory"),
-    "import_harness_memory_as_loop": (
-        "static_architecture.harness_intelligence_bridge",
-        "import_harness_memory_as_loop"),
-    "RuntimeObservation": ("static_architecture.runtime_observer",
-                           "RuntimeObservation"),
-    "RuntimeObserver": ("static_architecture.runtime_observer",
-                        "RuntimeObserver"),
-    "NullRuntimeObserver": ("static_architecture.runtime_observer",
-                            "NullRuntimeObserver"),
-    "LedgerRuntimeObserver": ("static_architecture.runtime_observer",
-                              "LedgerRuntimeObserver"),
-    "RuntimeObservationServices": ("static_architecture.runtime_observer",
-                                   "RuntimeObservationServices"),
-    "UnknownModelOutputLimit": ("static_architecture.model_capabilities",
-                                "UnknownModelOutputLimit"),
-    "ModelOutputLimitMismatch": ("static_architecture.model_capabilities",
-                                 "ModelOutputLimitMismatch"),
-    "ModelOutputCapability": ("static_architecture.model_capabilities",
-                              "ModelOutputCapability"),
-    "resolve_output_capability": ("static_architecture.model_capabilities",
-                                  "resolve_output_capability"),
-    "require_declared_maximum": ("static_architecture.model_capabilities",
-                                 "require_declared_maximum"),
-    "LiveModelVerificationError": (
-        "static_architecture.live_model_verification",
-        "LiveModelVerificationError"),
-    "RepositoryProbe": ("static_architecture.live_model_verification",
-                        "RepositoryProbe"),
-    "LiveModelVerificationRequest": (
-        "static_architecture.live_model_verification",
-        "LiveModelVerificationRequest"),
-    "LiveModelVerificationPlan": (
-        "static_architecture.live_model_verification",
-        "LiveModelVerificationPlan"),
-    "plan_live_model_verification": (
-        "static_architecture.live_model_verification",
-        "plan_live_model_verification"),
-    "run_live_model_verification": (
-        "static_architecture.live_model_verification",
-        "run_live_model_verification"),
-    "PublishedBenchmarkEvidence": ("code_nodes.complex_task_benchmark",
-                                   "PublishedBenchmarkEvidence"),
-    "PublishedComparisonGroup": ("code_nodes.complex_task_benchmark",
-                                  "PublishedComparisonGroup"),
-    "PublishedEvidenceCatalog": ("code_nodes.complex_task_benchmark",
-                                 "PublishedEvidenceCatalog"),
-    "PublishedEvidenceError": ("code_nodes.complex_task_benchmark",
-                               "PublishedEvidenceError"),
-    "PublishedEvidenceFinding": ("code_nodes.complex_task_benchmark",
-                                 "PublishedEvidenceFinding"),
-    "default_published_catalog_path": ("code_nodes.complex_task_benchmark",
-                                       "default_published_catalog_path"),
-    "load_published_evidence": ("code_nodes.complex_task_benchmark",
-                                "load_published_evidence"),
-    "published_catalog_from_mapping": ("code_nodes.complex_task_benchmark",
-                                       "published_catalog_from_mapping"),
+        "WorkspaceSpec", "WorkspaceRef", "WorkspaceSnapshotRef",
+        "WorkspaceBackend", "BackendAvailability", "FileOperation",
+        "FileRequest", "FileResult", "CommandRequest", "CommandResult",
+        "SnapshotRequest", "RestrictedLocalWorkspace", "DockerWorkspace",
+        "DockerWorkspaceDeclaration", "DockerResourceLimits",
+        "DeclaredRemoteWorkspace", "E2BWorkspaceDeclaration",
+        "ModalWorkspaceDeclaration", "verify_live_docker_workspace",
+    ),
+    **_names(
+        "static_architecture.workspace_operations",
+        "WorkspaceApprovalPlan", "WorkspaceOperationError",
+        "WorkspaceOperationService",
+    ),
 
-    # THE FRONT DOOR: a goal and your data. It works out the shape itself.
-    "solve": ("code_nodes.universal_solve", "solve"),
-    "read_task": ("code_nodes.universal_solve", "read_task"),
-    "TaskReading": ("code_nodes.universal_solve", "TaskReading"),
-    "load_knowledge": ("static_architecture.knowledge_loader",
-                       "load_knowledge"),
-    "load_into_store": ("static_architecture.knowledge_loader",
-                        "load_into_store"),
-    "run_setup": ("code_nodes.guided_setup", "run_setup"),
+    # Context offloading and compaction.
+    **_names(
+        "static_architecture.context_artifacts",
+        "ContextArtifactRef", "ContextArtifactStoreSpec",
+        "ContextArtifactStore", "ContextOffloadPolicy", "ContextPayload",
+        "ContextArtifactManager", "Utf8ChunkTokenCounter",
+        "CompactionRequest", "CompactionResult", "HeadTailCompactor",
+        "compact_context_as_loop",
+    ),
 
-    # --- DOMAIN ADAPTERS: resolved lazily -------------------------------
-    # These are ONE domain (tables / competitions / reinforcement learning),
-    # not the core. Importing them eagerly made numpy a hard dependency of the
-    # whole package — a universal loop runtime that could not be installed
-    # without a scientific stack. They keep their names; they are simply not
-    # paid for until asked for.
-    "TaskRoles": ("code_nodes.kaggle_executor", "TaskRoles"),
-    "ExecutionResult": ("code_nodes.kaggle_executor", "ExecutionResult"),
-    "resolve_roles": ("code_nodes.kaggle_executor", "resolve_roles"),
-    "estimator_from_moves": ("code_nodes.kaggle_executor", "estimator_from_moves"),
-    "execute_tabular": ("code_nodes.kaggle_executor", "execute_tabular"),
-    "POLICY_KINDS": ("code_nodes.rl_vocabulary", "POLICY_KINDS"),
-    "Trajectory": ("code_nodes.rl_vocabulary", "Trajectory"),
-    "rollout": ("code_nodes.rl_vocabulary", "rollout"),
-    "RandomPolicy": ("code_nodes.rl_vocabulary", "RandomPolicy"),
-    "HeuristicPolicy": ("code_nodes.rl_vocabulary", "HeuristicPolicy"),
-    "ScriptedPolicy": ("code_nodes.rl_vocabulary", "ScriptedPolicy"),
-    "EpsilonGreedyQPolicy": ("code_nodes.rl_vocabulary", "EpsilonGreedyQPolicy"),
-    "UCBBandit": ("code_nodes.rl_vocabulary", "UCBBandit"),
-    "NoveltyArchive": ("code_nodes.rl_vocabulary", "NoveltyArchive"),
-    "build_policy": ("code_nodes.rl_vocabulary", "build_policy"),
-    "train_q": ("code_nodes.rl_vocabulary", "train_q"),
-    "cross_entropy_method": ("code_nodes.rl_vocabulary", "cross_entropy_method"),
-    "search_action_sequences": ("code_nodes.rl_vocabulary", "search_action_sequences"),
-    "MODALITIES": ("code_nodes.competition_solver", "MODALITIES"),
-    "CompetitionSpec": ("code_nodes.competition_solver", "CompetitionSpec"),
-    "resolve_competition": ("code_nodes.competition_solver", "resolve_competition"),
-    "ExecOutcome": ("code_nodes.competition_solver", "ExecOutcome"),
-    "execute_image": ("code_nodes.competition_solver", "execute_image"),
-    "EXECUTORS": ("code_nodes.competition_solver", "EXECUTORS"),
-    "executor_node_records": ("code_nodes.competition_solver", "executor_node_records"),
-    "build_competition_store": ("code_nodes.competition_solver", "build_competition_store"),
-    "find_executor": ("code_nodes.competition_solver", "find_executor"),
-    "make_competition_impls": ("code_nodes.competition_solver", "make_competition_impls"),
-    "CompetitionResult": ("code_nodes.competition_solver", "CompetitionResult"),
-    "solve_competition": ("code_nodes.competition_solver", "solve_competition"),
+    # MCP and skill adapters.
+    **_names(
+        "static_architecture.mcp_adapter",
+        "McpServerSpec", "McpDiscoveryPolicy", "McpToolSpec",
+        "McpCallRequest", "McpCallResult", "McpApprovalBinding",
+        "McpApprovalPlan", "McpInvocationServices", "McpRegistry",
+        "InjectedMcpTransport",
+    ),
+    **_names(
+        "static_architecture.mcp_sdk_transport",
+        "McpToolPolicy", "McpSdkTransport",
+    ),
+    **_names(
+        "static_architecture.skill_registry",
+        "SkillLoadPurpose", "SkillManifest", "LoadedSkill", "SkillRegistry",
+    ),
+
+    # Observability and OpenTelemetry export.
+    **_names(
+        "static_architecture.runtime_observer",
+        "RuntimeObservation", "RuntimeObserver", "NullRuntimeObserver",
+        "LedgerRuntimeObserver", "RuntimeObservationServices",
+    ),
+    **_names(
+        "static_architecture.otel_export",
+        "OtelSpanRecord", "InMemorySpanExporter",
+        "OpenTelemetrySpanExporter", "run_history_to_spans",
+        "export_run_history_as_loop",
+    ),
+
+    # External harness boundaries and published comparison evidence.
+    **_names(
+        "static_architecture.external_harness",
+        "HarnessBudget", "HarnessRunRequest", "HarnessRunResult",
+        "HarnessRegistry", "HarnessServices", "run_external_harness",
+    ),
+    **_names(
+        "static_architecture.external_harness_adapters",
+        "ConfiguredHarnessAdapter", "builtin_harness_adapters",
+    ),
+    **_names(
+        "code_nodes.complex_task_benchmark",
+        "PublishedBenchmarkEvidence", "PublishedComparisonGroup",
+        "PublishedEvidenceCatalog", "PublishedEvidenceError",
+        "PublishedEvidenceFinding", "default_published_catalog_path",
+        "load_published_evidence", "published_catalog_from_mapping",
+    ),
+
+    # Main user workflows and package verification.
+    **_names("code_nodes.universal_solve", "solve", "read_task", "TaskReading"),
+    **_names(
+        "static_architecture.knowledge_loader",
+        "load_knowledge", "load_into_store",
+    ),
+    **_names("_self_test", "self_test"),
 }
 
 
-# Include every lazy canonical surface in wildcard imports. Compatibility-only
-# decision algorithms stay module-local and are intentionally absent here.
-__all__ = list(dict.fromkeys((*__all__, *_PUBLIC)))
+__all__ = tuple(_PUBLIC)
 
 
-def __getattr__(name):
-    """Lazily expose the documented public names."""
+def __getattr__(name: str):
+    """Load a documented public name only when it is requested."""
     target = _PUBLIC.get(name)
     if target is None:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-    mod, attr = target
-    from importlib import import_module
-    return getattr(import_module(f"{__name__}.{mod}"), attr)
+    module, attribute = target
+    return getattr(_import_module(f"{__name__}.{module}"), attribute)
 
 
-def __dir__():
-    return sorted(set(list(globals()) + list(_PUBLIC)))
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | set(_PUBLIC))

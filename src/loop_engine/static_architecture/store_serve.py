@@ -172,7 +172,7 @@ class SolverStore:
 
         # Rarity-weighted scoring: a term that appears in few records carries
         # more signal than one that appears everywhere ("blueprint" must beat
-        # "what is next" for a blueprint query).  Deterministic idf over the
+        # "select next action" for a blueprint query). Deterministic idf over the
         # whole store, times a field weight (title > tags > body).
         import math
         n_all = max(1, len(self._records))
@@ -229,15 +229,15 @@ class SolverStore:
 def core_seed() -> list:
     return [
         StoreRecord("q.direct_next", "question", "What is the single best next "
-                    "move?", tags=("what_is_next", "direct")),
+                    "move?", tags=("next_action", "direct")),
         StoreRecord("q.blueprint_drilldown", "question",
                     "Develop a high-level blueprint of every step, then go into "
                     "more detail, then choose the most discrete next step",
-                    tags=("what_is_next", "blueprint", "drilldown")),
+                    tags=("next_action", "blueprint", "drilldown")),
         StoreRecord("q.are_you_sure", "question",
-                    "Are you sure this is what is next, or is there an "
+                    "Are you sure this action should run next, or is there an "
                     "intermediary step we are missing?",
-                    tags=("what_is_next", "verify", "intermediary")),
+                    tags=("next_action", "verify", "intermediary")),
         StoreRecord("p.careful_statistician", "persona",
                     "a careful statistician who distrusts leaderboards",
                     tags=("persona", "statistics")),
@@ -263,7 +263,7 @@ def self_test() -> dict:
     store = SolverStore(core_records=core_seed())
 
     # 1. search finds by kind with deterministic ranking.
-    out = store.search("what is next blueprint", kind="question")
+    out = store.search("select next action blueprint", kind="question")
     check("search_finds_and_ranks_questions_deterministically",
           out["hits"] and out["hits"][0]["record_id"] == "q.blueprint_drilldown",
           f"top hit {out['hits'][0]['record_id']} for a blueprint query")
@@ -276,11 +276,11 @@ def self_test() -> dict:
 
     # 3. experimental and gated tiers are OFF by default and visibly excluded.
     store.add(StoreRecord("q.exp1", "question", "experimental deep probe of "
-              "what is next", tags=("what_is_next",), tier="experimental"))
+              "select next action", tags=("next_action",), tier="experimental"))
     store.add(StoreRecord("q.secret_drilling", "question",
-              "trade-secret drilling question about what is next",
-              tags=("what_is_next", "oil_gas"), tier="gated"))
-    out2 = store.search("what is next", kind="question")
+              "trade-secret drilling question about selecting the next action",
+              tags=("next_action", "oil_gas"), tier="gated"))
+    out2 = store.search("select next action", kind="question")
     ids = {h["record_id"] for h in out2["hits"]}
     excluded = out2["stages"][1]["excluded_by_tier_gates"]
     check("experimental_and_gated_are_off_by_default_and_visibly_excluded",
@@ -296,7 +296,7 @@ def self_test() -> dict:
         denied = True
     store.enable_tier("experimental")
     store.enable_tier("gated", grant="org-license-123")
-    out3 = store.search("what is next", kind="question")
+    out3 = store.search("select next action", kind="question")
     ids3 = {h["record_id"] for h in out3["hits"]}
     check("tier_switches_admit_records_and_gated_requires_a_grant",
           denied and "q.exp1" in ids3 and "q.secret_drilling" in ids3,

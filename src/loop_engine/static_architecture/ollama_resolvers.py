@@ -1,7 +1,7 @@
-"""Ollama-backed resolvers — the model answers 'what is next' when nothing cheaper can.
+"""Ollama-backed resolvers for open next-action decisions.
 
-These wrap the Ollama Cloud client as ``llm_single`` / ``llm_council`` what-is-next
-resolvers.  They sit at the expensive end of the waterfall: the deterministic
+These wrap the Ollama Cloud client as ``llm_single`` or ``llm_council``
+next-action resolvers. They sit at the expensive end of the waterfall: deterministic
 reflexes, checklists, and memory answer first and for free; the model is reached
 only when a decision is genuinely open (DELIBERATE) and worth the tokens.  The
 resolver renders the decision into a prompt (task + known facts + the decision
@@ -17,7 +17,7 @@ from typing import Sequence
 
 from ..strings.knowledge import Knowledge
 from ..loop.moves import move, answer, is_valid_move_kind
-from ..loop.resolvers import WhatIsNextResolver
+from ..loop.resolvers import NextActionResolver
 from ..static_architecture.provider_pinned import (ProviderPinnedRequest,
                                                    invoke_provider_model)
 from ..static_architecture.ollama_client import DEFAULT_MODEL
@@ -105,8 +105,8 @@ def make_ollama_proposer(model: str = DEFAULT_MODEL, *, num_predict: int = 8000,
 def make_ollama_regime(name: str = "ollama_next_move",
                        model: str = DEFAULT_MODEL, *, category: str = "llm_single",
                        cost: float = 8.0, num_predict: int = 8000,
-                       questions: Sequence[str] = ()) -> WhatIsNextResolver:
-    """A live-model what-is-next resolver, registered at the expensive tier."""
+                       questions: Sequence[str] = ()) -> NextActionResolver:
+    """A live-model next-action resolver registered at the expensive tier."""
     proposer = make_ollama_proposer(model, num_predict=num_predict,
                                     questions=questions)
 
@@ -121,7 +121,7 @@ def make_ollama_regime(name: str = "ollama_next_move",
         return answer(name, category, moves, conf,
                       detail=f"{proposed[0].get('_model', model)} · "
                       f"{proposed[0].get('_tokens', 0)} tokens")
-    return WhatIsNextResolver(name=name, category=category, fn=resolve,
+    return NextActionResolver(name=name, category=category, fn=resolve,
                               cost=cost, model_calls=1)
 
 
@@ -262,14 +262,14 @@ def make_ollama_council(name: str = "ollama_council", *,
                         models: Sequence[str] = COUNCIL_MODELS,
                         category: str = "llm_council", cost: float = 40.0,
                         num_predict: int = 16000, questions: Sequence[str] = (),
-                        shuffle: bool = True) -> WhatIsNextResolver:
-    """A ≥3-model council as a what-is-next resolver (the expensive tier)."""
+                        shuffle: bool = True) -> NextActionResolver:
+    """A three-or-more-model council used as a next-action resolver."""
     def resolve(knowledge: Knowledge):
         out = deep_deliberate(knowledge, models=list(models),
                               num_predict=num_predict, questions=questions,
                               shuffle=shuffle)
         return out["answer"]
-    return WhatIsNextResolver(name=name, category=category, fn=resolve,
+    return NextActionResolver(name=name, category=category, fn=resolve,
                               cost=cost, model_calls=len(list(models)))
 
 

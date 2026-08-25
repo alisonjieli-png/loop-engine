@@ -1,17 +1,17 @@
 """Task Blueprint — a prioritized, digestible opening-move sequence, as a resource.
 
 Owner design question (2026-08-23): with ONE model call per loop, how do we stop
-the practitioner from jumping straight to "how to solve it" on pass 1?  A normal
-model asked "what is next?" just proposes a solution.  Our secret sauce is doing
-ATOMIC opening moves first — establish context, research, outline, detail — before
-building.
+the practitioner from jumping straight to "how to solve it" on pass 1? A normal
+model asked to select the next action may jump straight to a solution. This
+blueprint performs atomic opening moves first: establish context, research,
+outline, and add detail before building.
 
 The elegant resolution — and the answer to "separate nodes vs one node":
 
   * Keep ONE decision node (one call per pass — elegant, auditable).
   * Make the ORDER a **resource**, not hardcoded nodes.  A ``TaskBlueprint`` is a
     named, prioritized, digestible sequence of OPENING MOVES that BIASES the
-    single what-is-next node on early passes: pass 1 biases toward context, pass 2
+    single next-action Loop on early passes: pass 1 biases toward context, pass 2
     toward outline, and so on.  Same node, different bias per pass.
 
 Because the sequence is a resource (stored, searchable, swappable, versioned,
@@ -100,7 +100,7 @@ class TaskBlueprint:
 def default_opening_sequence() -> TaskBlueprint:
     """The secret-sauce default: groundwork BEFORE solving.  Context and research
     first, then progressively-detailed outlines, THEN build/tune/verify.  This is
-    what makes 'what is next?' do atomic opening moves instead of leaping to a
+    what makes next-action selection use atomic opening moves instead of leaping to a
     solution."""
     return TaskBlueprint(
         blueprint_id="default.groundwork_first", maturity="preferred",
@@ -132,7 +132,7 @@ def default_opening_sequence() -> TaskBlueprint:
 def bias_next_from_blueprint(candidates: list, blueprint: TaskBlueprint,
                              completed_kinds: Sequence[str], *,
                              boost: float = 0.25):
-    """Bias the what-is-next candidates toward the blueprint's current opening
+    """Bias next-action candidates toward the blueprint's current opening
     move — WITHOUT adding a node.  A candidate whose action matches the current
     move gets an expected-value boost; if none matches, the current move is
     INJECTED as a high-value candidate.  Returns the (possibly augmented) list,
@@ -193,7 +193,7 @@ def self_test() -> dict:
                 "verify"]
     check("the_opening_sequence_exhausts_then_frees_the_loop",
           bp.is_exhausted(all_done) and bp.next_move(all_done) is None,
-          "after the opening moves, what-is-next is unbiased (build/solve)")
+          "after the opening moves, next-action selection is unbiased (build/solve)")
 
     # 4. ONE node, biased: a matching candidate is boosted; else the move is
     # injected — no new node added.

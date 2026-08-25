@@ -9,10 +9,10 @@ from __future__ import annotations
 
 from .strings.frame import AskFrame
 from .strings.knowledge import Knowledge
-from .loop.moves import move, answer, WhatIsNextAnswer, MOVE_TYPES
-from .loop.resolvers import WhatIsNextResolver, RESOLVER_CATEGORIES
+from .loop.moves import move, answer, MOVE_TYPES
+from .loop.resolvers import NextActionResolver, RESOLVER_CATEGORIES
 from .loop.registry import ResolverRegistry
-from .loop.loop import DecisionService, ensemble_answers
+from .loop.decision_service import DecisionService, ensemble_answers
 from .strings.knowledge_state import (Claim, Unknown, Contradiction, EpistemicState,
                               KnowledgeDelta)
 from .loop.decision_need import detect_decision_need
@@ -51,11 +51,11 @@ def self_test() -> dict:
                       0.75)
 
     resolvers = [
-        WhatIsNextResolver("add_estimator_rule", "deterministic_rule",
+        NextActionResolver("add_estimator_rule", "deterministic_rule",
                            rule_resolver),
-        WhatIsNextResolver("probe_before_deciding", "test_driven",
+        NextActionResolver("probe_before_deciding", "test_driven",
                            test_resolver, cost=2.0),
-        WhatIsNextResolver("model_council", "llm_council", council_resolver,
+        NextActionResolver("model_council", "llm_council", council_resolver,
                            cost=40.0)]
     prac = DecisionService(confidence_bar=0.7, impact=5.0)
 
@@ -66,16 +66,16 @@ def self_test() -> dict:
     check("deterministic_rule_answers_with_zero_model_calls",
           r1.resolved and r1.category == "deterministic_rule"
           and r1.model_calls_made == 0
-          and r1.answer.moves.items[0].action_kind == "add_node",
+          and r1.proposal.moves.items[0].action_kind == "add_node",
           "a firing rule answers 'add estimator' with no model call")
 
     # 2. answer can be run_tests, not add-node.
     k2 = Knowledge(goal="churn", open_obligations=("choose_model",),
                    results=(1,))
     r2 = prac.step(k2, resolvers=resolvers)
-    check("what_is_next_can_answer_run_tests_not_only_add_node",
+    check("select_next_action_can_answer_run_tests_not_only_add_node",
           r2.category == "test_driven"
-          and r2.answer.moves.items[0].action_kind == "run_tests",
+          and r2.proposal.moves.items[0].action_kind == "run_tests",
           "one result, no rule -> 'run a cv probe first'")
 
     # 3. council is the last resort (needs a high-impact decision).
@@ -110,11 +110,11 @@ def self_test() -> dict:
         return answer("spawned", "deterministic_rule",
                       [move("add_node", f"node_for={k.goal}", confidence=0.9)],
                       0.9)
-    sr = [WhatIsNextResolver("fan_out", "deterministic_rule", spawner)]
+    sr = [NextActionResolver("fan_out", "deterministic_rule", spawner)]
     r5 = prac.step(Knowledge(goal="explore"), resolvers=sr)
     check("a_resolver_can_spawn_sub_loops_that_run_and_attach",
           len(r5.spawned_loops) == 2
-          and all(c.answer.moves.items[0].action_kind == "add_node"
+          and all(c.proposal.moves.items[0].action_kind == "add_node"
                   for c in r5.spawned_loops),
           "'spawn sub-loops A/B' runs each spawned question and attaches records")
 
@@ -172,7 +172,7 @@ def self_test() -> dict:
     # 9. register_builtins: plan_recipe follows steps then passes to open regime.
     reg2 = ResolverRegistry()
     register_builtins(reg2)
-    open_regime = WhatIsNextResolver(
+    open_regime = NextActionResolver(
         "open_fallback", "llm_single",
         lambda k: answer("open_fallback", "llm_single",
                          [move("add_node", "open_choice", confidence=0.9)], 0.9),
@@ -188,7 +188,7 @@ def self_test() -> dict:
                                 results=(1, 2), facts={"has_model": True}))
     check("plan_recipe_follows_predefined_steps_then_yields_to_open_regime",
           mid.category == "plan_recipe" and mid.model_calls_made == 0
-          and mid.answer.moves.items[0].action_key == "stepB"
+          and mid.proposal.moves.items[0].action_key == "stepB"
           and endk.category == "llm_single",
           "a recipe drives the first steps deterministically (no model); when it "
           "runs out the open regime takes over — 'first ten steps predefined, "
@@ -232,7 +232,7 @@ def self_test() -> dict:
           lib.categories()["total_resolvers"] == len(LIBRARY_SPECS)
           and empty.resolver == "establish_baseline"
           and empty.model_calls_made == 0
-          and empty.answer.moves.items[0].action_key.startswith("baseline"),
+          and empty.proposal.moves.items[0].action_key.startswith("baseline"),
           f"registering the library gives {len(LIBRARY_SPECS)} regimes; an empty "
           "graph fires 'establish a baseline' at zero model cost")
 
@@ -246,9 +246,9 @@ def self_test() -> dict:
         "high_cardinality_cols": ["city"], "split_verified": True}))
     check("the_leakage_guard_wins_before_target_encoding",
           unverified.resolver == "verify_split_first"
-          and unverified.answer.moves.items[0].action_kind == "run_tests"
+          and unverified.proposal.moves.items[0].action_kind == "run_tests"
           and verified.resolver == "encode_high_cardinality"
-          and verified.answer.moves.items[0].action_kind == "add_node",
+          and verified.proposal.moves.items[0].action_kind == "add_node",
           "with high-cardinality columns and an unverified split the loop "
           "answers 'verify the split first' (run_tests), never target-encode; "
           "once the split is verified the encoder reflex fires")
@@ -372,12 +372,12 @@ def self_test() -> dict:
     # 19. The decision need constrains the answer: a TERMINATE need admits only
     #     terminal moves, so an add-node answer does not satisfy it; an
     #     INVESTIGATE need admits an epistemic run_tests answer.
-    add_node_resolver = [WhatIsNextResolver(
+    add_node_resolver = [NextActionResolver(
         "adder", "deterministic_rule",
         lambda k: answer("adder", "deterministic_rule",
                          [move("add_node", "estimator=hgb", confidence=0.9)],
                          0.9))]
-    test_resolver = [WhatIsNextResolver(
+    test_resolver = [NextActionResolver(
         "tester", "deterministic_rule",
         lambda k: answer("tester", "deterministic_rule",
                          [move("run_tests", "leakage_audit", confidence=0.9)],
@@ -390,7 +390,7 @@ def self_test() -> dict:
     check("the_decision_need_constrains_the_admissible_answer",
           not terminated.resolved            # add_node rejected by TERMINATE need
           and investigated.resolved
-          and investigated.answer.moves.items[0].action_kind == "run_tests"
+          and investigated.proposal.moves.items[0].action_kind == "run_tests"
           and isinstance(cell, DecisionService),
           "an 'add a node' answer does not satisfy a TERMINATE need (only "
           "terminal moves do), while a 'run tests' answer satisfies an "
@@ -404,7 +404,7 @@ def self_test() -> dict:
         "conformance_report",
         "static_architecture.facets", "static_architecture.api_quality",
         "loop.loop_control", "loop.loop_templates", "loop.encapsulate",
-        "loop.loop_contract",
+        "loop.loop_contract", "loop.loop_definition_checks",
         "loop.loop_profile_ontology",
         "loop.approval_state_store", "loop.delegation_runtime",
         "loop.effect_approval",
@@ -415,6 +415,7 @@ def self_test() -> dict:
         "code_nodes.complex_task_benchmark",
         "code_nodes.context_seed", "code_nodes.self_improvement_loop",
         "code_nodes.solution_canvas", "code_nodes.solution_compiler",
+        "code_nodes.solution_graph_checks",
         "code_nodes.run_analytics", "code_nodes.run_playback",
         "static_architecture.run_history", "code_nodes.run_quality",
         "static_architecture.intelligence_layers",
@@ -551,7 +552,7 @@ def self_test() -> dict:
     passed = sum(1 for r in results if r["passed"])
     missing = [r for r in results if r.get("missing_dependency")]
     missing_packages = sorted({r["missing_dependency"] for r in missing})
-    return {"record_type": "whats_next_self_test", "tests": results,
+    return {"record_type": "loop_engine_self_test/v1", "tests": results,
             "passed": passed, "total": len(results),
             "missing_dependencies": missing_packages,
             "dependency_note": (

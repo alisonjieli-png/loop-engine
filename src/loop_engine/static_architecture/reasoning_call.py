@@ -383,7 +383,7 @@ def self_test() -> dict:
     class _A:
         ok = True; text = "the answer"; model_used = "stub"; total_tokens = 12
         error = ""
-    req = ReasoningRequest(question="what is next?",
+    req = ReasoningRequest(question="which action should run next?",
                            objective="win the task",
                            allowed_models=("glm-5.2",),
                            output_schema="JSON moves")

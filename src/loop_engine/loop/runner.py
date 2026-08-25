@@ -26,8 +26,8 @@ from ..strings.knowledge import Knowledge
 from ..strings.knowledge_state import EpistemicState, KnowledgeDelta
 from ..loop.decision_need import detect_decision_need
 from ..loop.moves import family_of
-from ..loop.resolvers import WhatIsNextResolver
-from ..loop.loop import DecisionService
+from ..loop.resolvers import NextActionResolver
+from ..loop.decision_service import DecisionService
 from ..loop.arbiter import Candidate, arbitrate
 from ..loop.iteration_records import (SolverIterationRecord, build_iteration_record)
 from .decision_slates import Proposal
@@ -79,7 +79,7 @@ class IterationResult:
 
 def iterate_decision_workflow(
         state: DecisionWorkflowState, *, service: DecisionService,
-        resolvers: Sequence[WhatIsNextResolver],
+        resolvers: Sequence[NextActionResolver],
         executor: Executor) -> IterationResult:
     """Run one observe→decide→act→update cycle and return the new state and
     record."""
@@ -106,7 +106,7 @@ def iterate_decision_workflow(
                                record)
 
     step = service.step(knowledge, resolvers=resolvers, need=need)
-    if not step.resolved or step.answer is None:
+    if not step.resolved or step.proposal is None:
         # No admissible answer for this need — block rather than force one.
         next_state = replace(state, iteration=state.iteration + 1,
                              terminal_state="blocked_information")
@@ -120,7 +120,7 @@ def iterate_decision_workflow(
         return IterationResult(replace(next_state, parent_record=record),
                                record)
 
-    moves = list(step.answer.moves.items)
+    moves = list(step.proposal.moves.items)
     candidates = [Candidate(move=m, estimates=_estimates_for(m)) for m in moves]
     decision = arbitrate(candidates, select=1)
 
@@ -145,7 +145,7 @@ def iterate_decision_workflow(
 
 def run_decision_workflow(
         state: DecisionWorkflowState, *, service: DecisionService,
-        resolvers: Sequence[WhatIsNextResolver], executor: Executor,
+        resolvers: Sequence[NextActionResolver], executor: Executor,
         max_iterations: int = 12) -> dict:
     """Run the loop until a terminal state or the safety ceiling.  The ceiling is
     a runaway backstop, NOT the reason the task is done — the terminal_state
@@ -165,13 +165,6 @@ def run_decision_workflow(
             "the_rule": ("the loop stops for a SEMANTIC reason recorded in "
                          "terminal_state; the iteration ceiling is only a "
                          "runaway backstop")}
-
-
-# Module-local compatibility aliases. They remain importable from this module,
-# but the package root exposes only the canonical Loop runtime.
-SolverCellState = DecisionWorkflowState
-iterate = iterate_decision_workflow
-run = run_decision_workflow
 
 
 # ---------------------------------------------------------------------------
@@ -195,7 +188,7 @@ def self_test() -> dict:
         return answer("dual", "deterministic_rule",
                       [move("run_tests", "leakage_audit", confidence=0.9),
                        move("add_node", "estimator=hgb", confidence=0.9)], 0.9)
-    resolvers = [WhatIsNextResolver("dual", "deterministic_rule", dual)]
+    resolvers = [NextActionResolver("dual", "deterministic_rule", dual)]
     service = DecisionService(confidence_bar=0.7, impact=5.0)
 
     # Executor: running the leakage audit resolves the unknown and unlocks

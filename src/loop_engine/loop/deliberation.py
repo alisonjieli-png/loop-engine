@@ -1,12 +1,12 @@
 """Deliberation strategies — pipelines that decide what is *really* next.
 
-A single "what is next?" call to a model tends to return the generic default —
+A single "select the next action?" call to a model tends to return the generic default —
 load, EDA, transform, preprocess, train a tree model, verify — because that is
 what dominates training data.  It will not, on its own, reach cell tracking,
 principled noise handling, or an advanced nearest-neighbour method.  To get the
 real answer you often run a *pipeline* of deliberation.  This module gives those
 pipelines a typed home, each as a composite strategy that produces a
-``WhatIsNextAnswer`` and can be registered as a resolver:
+``NextActionProposal`` and can be registered as a resolver:
 
 - **blueprint-then-refine** — first ask for a high-level blueprint, then
   recursively expand each step into sub-steps and alternatives to a chosen
@@ -38,7 +38,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Sequence
 
 from ..strings.knowledge import Knowledge
-from ..loop.moves import move, answer, WhatIsNextAnswer, family_of
+from ..loop.moves import move, answer, NextActionProposal, family_of
 
 # The generic-default vocabulary a shallow "what next?" tends to return.  Used
 # only to FLAG which probed answers are non-default (advanced) — never to filter
@@ -58,7 +58,7 @@ def _is_advanced(term: str) -> bool:
 @dataclass
 class DeliberationResult:
     strategy: str
-    answer: WhatIsNextAnswer
+    answer: NextActionProposal
     blueprint: tuple = ()
     considered: tuple[str, ...] = ()
     advanced_surfaced: tuple[str, ...] = ()
@@ -188,7 +188,7 @@ def multi_context_probe(
 
 def as_resolver(name: str, strategy_fn: Callable[[Knowledge], DeliberationResult],
                 *, category: str = "hybrid"):
-    """Wrap a bound deliberation strategy as a what-is-next resolver (returns the
+    """Wrap a bound deliberation strategy as a next-action decision resolver (returns the
     strategy's answer, or None if it produced no moves)."""
     def resolve(knowledge: Knowledge):
         result = strategy_fn(knowledge)
@@ -271,7 +271,7 @@ def self_test() -> dict:
           fo2.to_dict() == fo.to_dict() and r_ans is not None
           and r_ans.category == "test_driven",
           "the same inputs produce the identical deliberation result, and a "
-          "strategy wraps cleanly as a what-is-next resolver")
+          "strategy wraps cleanly as a next-action decision resolver")
 
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "deliberation_self_test", "tests": results,

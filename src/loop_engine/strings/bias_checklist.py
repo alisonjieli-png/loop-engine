@@ -7,7 +7,7 @@ mistakes, best practices, success measures, and finally create reusable assets a
 distill deterministic rules / reusable subgraphs.  Rather than hard-code that as a
 gate, carry a CHECKLIST into each LLM call so the model knows what we prefer and
 what has already been done.  Once every preferred step is completed, considered,
-or ruled out, the model earns more freedom to choose what is next — we are subtly
+or ruled out, the model earns more freedom to select the next action — we are subtly
 increasing bias through the prompt, not forcing a rigid order.
 
 Two more rules the owner set:
@@ -138,7 +138,7 @@ class BiasChecklist:
         self.skips.append(rec)
         return rec
 
-    # --- what's next / freedom ---------------------------------------------
+    # --- next-action freedom ------------------------------------------------
 
     def next_preferred(self) -> "str | None":
         """The next preferred step still demanding attention, or None when the

@@ -16,7 +16,7 @@ the split-verify reflex fills that gap — no external ordering needed.  When
 several genuinely apply, the loop takes the highest-priority one, applies it, and
 asks again; the rest fire on later turns.
 
-Every regime here is a ``(Knowledge) -> WhatIsNextAnswer | None`` function; a
+Every regime here is a ``(Knowledge) -> NextActionProposal | None`` function; a
 spec list at the bottom is what the registry consumes.
 """
 

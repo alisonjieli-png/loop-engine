@@ -1,7 +1,7 @@
 """Long-horizon grounding — a goal stack + working blueprint the agent never loses.
 
 Owner insight (2026-08-23): on 100-, 1,000-, 10,000-step tasks an agent asked
-only "what is next?" drifts — at step 40 of 100 it forgets the whole plan and
+only to select the next action drifts — at step 40 of 100 it forgets the whole plan and
 rushes to finish.  The fix is to ground EVERY decision in more than the next
 step: the ultimate goal, the current sub-goal / checkpoint, and a working
 blueprint of what the whole solution looks like.  That grounding is a memory item

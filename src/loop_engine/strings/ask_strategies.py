@@ -1,4 +1,4 @@
-"""Ask strategies — the secret sauce: the many rigorous ways to ask what-is-next.
+"""Ask strategies for rigorous next-action selection.
 
 Owner thesis (2026-08-22): once the solver DAG is universal, building pipelines
 stops being the competitive advantage.  The advantage is **asking the right
@@ -89,7 +89,7 @@ def _are_you_sure(k: Knowledge, question: str, ask=execute_ask, *,
     """Challenge a candidate: sure it is next, or is a step missing before it?"""
     spec = AskSpec(
         question=(f"The proposed next step is: {candidate or question}.\n"
-                  "Are you SURE this is what is next, or is there an "
+                  "Are you SURE this action should run next, or is there an "
                   "intermediary step we are missing? If a step is missing, name "
                   "it on a line starting 'INTERMEDIARY:'. If not, reply "
                   "'CONFIRMED'."),

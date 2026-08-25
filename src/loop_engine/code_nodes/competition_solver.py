@@ -11,7 +11,7 @@ non-degenerate submission".  The kernel then:
 
   1. Understand … -> resolve the competition (modality, id/target, metric) from
      its own sample_submission (the file-role contract, never a guessed name).
-  2. Decide what is next -> produce a submission (or, if the current one is
+  2. Select the next action -> produce a submission (or, if the current one is
      degenerate, improve it).
   3. Determine how -> reuse-first (a fitted-model artifact already?), else pick
      the executor node for the detected modality.
@@ -255,7 +255,8 @@ def make_competition_impls(comp: CompetitionSpec, store=None) -> dict:
             f"{'yes' if have_sub else 'no'} degenerate={degenerate}",
             knowns=dict(state.facts), unknowns=unmet, signals=tuple(signals))
 
-    def what_is_next(state: PractitionerState, situation: Situation) -> list:
+    def select_next_action(state: PractitionerState,
+                           situation: Situation) -> list:
         if not situation.unknowns:
             return [CandidateAction("deliver", kind="deliver",
                                     rationale="a valid, non-degenerate "
@@ -354,7 +355,7 @@ def make_competition_impls(comp: CompetitionSpec, store=None) -> dict:
         return (RouteDecision("stop_unprofitable", "no progress"),
                 state.derive(last_route="stop_unprofitable"))
 
-    return {"orient": orient, "decide_next": what_is_next, "how": how,
+    return {"orient": orient, "decide_next": select_next_action, "how": how,
             "act": act, "verify": verify, "route": learn_route}
 
 

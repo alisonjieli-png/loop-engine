@@ -19,7 +19,7 @@ duck-typed protocols so a competition's own SDK env (e.g. the agent-security
 Gym env) drops in behind an adapter.
 
 POLICY_KINDS is the registry the practitioner selects from; each maps to a
-constructor, so "what is next -> add a policy node -> which kind?" resolves like
+constructor, so "select next action -> add a policy Loop -> which kind?" resolves like
 any other typed choice.
 """
 

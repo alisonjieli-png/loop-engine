@@ -1,6 +1,6 @@
-"""Kaggle executor — turn the loop's proposed moves into a real, submittable file.
+"""Kaggle executor that turns proposed moves into a real submission file.
 
-The what-is-next loop *proposes* moves ("establish a baseline", "encode the
+The next-action Loop *proposes* moves ("establish a baseline", "encode the
 categoricals", "estimator=lightgbm").  Proposing is not solving: to learn how a
 proposal actually performs, something has to EXECUTE it on real data and produce
 a real prediction file.  This module is that bridge for the tabular-competition
@@ -12,7 +12,7 @@ column name).
 
 Flow::
 
-    resolve roles from sample_submission  ->  run the what-is-next loop to get a
+    resolve roles from sample_submission  ->  run the next-action Loop to get a
     PLAN (which estimator, whether to encode / impute)  ->  execute that plan with
     a real scikit-learn / LightGBM pipeline  ->  cross-validate for an honest local
     score  ->  write submission.csv in the template's exact shape.

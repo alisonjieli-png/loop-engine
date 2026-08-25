@@ -1,6 +1,6 @@
-"""Moves — what a what-is-next answer proposes to DO.
+"""Moves — what a next-action decision answer proposes to DO.
 
-The point the framing insists on: an answer to "what is next" is not only "add a
+The point the framing insists on: an answer to "select the next action" is not only "add a
 node."  It can be "run these tests first", "we don't know enough — gather more",
 "go understand the current subgraph", "start an optimization plan", "spawn
 sub-loops and ensemble them", or "stop".  A move is one such proposal; an answer
@@ -87,7 +87,7 @@ def move(kind: str, key: str, *, mechanism: str = "", support: float = 0.0,
 
 
 @dataclass
-class WhatIsNextAnswer:
+class NextActionProposal:
     """What a resolver proposes as next — a slate of moves, plus which resolver
     produced it and how confident it is."""
     resolver: str
@@ -97,7 +97,7 @@ class WhatIsNextAnswer:
     detail: str = ""
 
     def to_dict(self) -> dict:
-        return {"record_type": "whats_next_answer/v1",
+        return {"record_type": "next_action_proposal/v1",
                 "resolver": self.resolver, "category": self.category,
                 "confidence": round(self.confidence, 4),
                 "moves": self.moves.to_dict(), "detail": self.detail,
@@ -107,8 +107,8 @@ class WhatIsNextAnswer:
 
 
 def answer(resolver: str, category: str, moves, confidence: float,
-           detail: str = "") -> WhatIsNextAnswer:
-    """Build a what-is-next answer from a sequence of move proposals."""
-    return WhatIsNextAnswer(resolver=resolver, category=category,
+           detail: str = "") -> NextActionProposal:
+    """Build a next-action decision answer from a sequence of move proposals."""
+    return NextActionProposal(resolver=resolver, category=category,
                             moves=Slate("try", list(moves)),
                             confidence=confidence, detail=detail)

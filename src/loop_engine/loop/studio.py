@@ -29,7 +29,7 @@ class StudioView:
                 "panels": self.panels}
 
 
-def build_studio_view(*, title: str = "What-Is-Next", task: str = "",
+def build_studio_view(*, title: str = "Next Action Decision", task: str = "",
                       goal: str = "", epistemic: Mapping[str, Any] | None = None,
                       frontier: Sequence[Mapping[str, Any]] = (),
                       decision_need: Mapping[str, Any] | None = None,

@@ -1,10 +1,10 @@
-"""Regime library — the growing set of ways to answer "what is next".
+"""Regime library — the growing set of ways to answer "select the next action".
 
 This subpackage is where regimes accumulate.  The deterministic reflexes and the
 test/optimization regimes register with one call (`register_library`); the
 memory-recall and model-backed regimes are factories (they need a store or a
 model client), re-exported here so a caller wires them in.  Adding a new regime
-is: write a `(Knowledge) -> WhatIsNextAnswer | None` function, give it a category
+is: write a `(Knowledge) -> NextActionProposal | None` function, give it a category
 and a cost, and append it to a SPECS list (or register it directly).
 """
 

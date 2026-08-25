@@ -8,7 +8,7 @@ One call solves a task by composing every layer built here into one path:
 
     solve(goal)
       -> a SOLUTION CANVAS is opened (the place the graph is built)
-      -> the PRACTITIONER LOOP runs on it (what is next -> how to implement
+      -> the PRACTITIONER LOOP runs on it (select the next action -> how to implement
          [reuse-first: learned shortcuts + registry answer "do we already have
          this?"] -> implement -> verify compilable -> save, with loop-backs,
          optional non-linear ordering, and sub-practitioner spawning for side
@@ -33,10 +33,11 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Sequence
 
 from ..strings.knowledge import Knowledge
-from ..loop.canvas import (Canvas, CanvasNode, SolutionSlot, TypeContract,
+from ..loop.canvas import (Canvas, SolutionLoopCandidate, SolutionSlot, TypeContract,
                      execute_matrix)
 from ..loop.practitioner_loop import (
-    PractitionerAlgorithmState, PractitionerAlgorithmStep, NodeResult,
+    PractitionerAlgorithmState, PractitionerAlgorithmStep,
+    PractitionerStepResult,
     run_practitioner_algorithm, default_nodes, make_model_algorithm_steps)
 from ..loop.methodical import ExecutionDecision, reuse_first_guard, EXECUTION_LADDER
 from ..code_nodes.self_improve import (ShortcutStore, Shortcut, problem_signature,
@@ -118,7 +119,7 @@ class SolutionPlanningService:
         nodes = default_nodes()
         inner = nodes["how_to_implement"].resolve
 
-        def with_learning(state: PractitionerAlgorithmState) -> NodeResult:
+        def with_learning(state: PractitionerAlgorithmState) -> PractitionerStepResult:
             ans = state.blackboard.get("current_answer")
             if ans is not None:
                 handle = probe(ans.target)
@@ -131,7 +132,7 @@ class SolutionPlanningService:
                     state.blackboard["current_execution"] = ex
                     state.blackboard.setdefault("replayed", []).append(
                         ans.target)
-                    return NodeResult("how_to_implement", output=ex,
+                    return PractitionerStepResult("how_to_implement", output=ex,
                                       paths_tried=["muscle_memory"],
                                       detail=f"shortcut replay -> {handle}")
             return inner(state)
@@ -186,9 +187,8 @@ class SolutionPlanningService:
                     if name in seen:
                         continue
                     seen.add(name)
-                    slot.add_candidate(CanvasNode(
-                        name=name, contract=contract, run=None,
-                        provenance=g[i].get("via", ""),
+                    slot.add_candidate(SolutionLoopCandidate.declared(
+                        name, contract, provenance=g[i].get("via", ""),
                         handle=g[i].get("handle", "")))
             canvas.add_slot(slot)
         return canvas
@@ -355,8 +355,8 @@ def self_test() -> dict:
         [{"node": "lgbm", "kind": "add_node", "via": "reuse", "handle": "h2"}]])
     def crash(_x):
         raise RuntimeError("boom")
-    m.slots[0].candidates[0].run = crash
-    m.slots[0].candidates[1].run = lambda x: "ok"
+    m.slots[0].candidates[0].implementation = crash
+    m.slots[0].candidates[1].implementation = lambda x: "ok"
     ex = execute_matrix(m, initial_input="data")
     check("the_matrix_waterfalls_when_the_preferred_node_fails",
           ex.ok and ex.waterfalls_used() == 1 and ex.output == "ok",

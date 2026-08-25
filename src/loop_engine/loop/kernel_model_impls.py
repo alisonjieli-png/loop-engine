@@ -132,7 +132,7 @@ def make_model_impls(*, models: Sequence[str] | None = None,
             signals=tuple(signals),
             resources_hint=tuple(h["record_id"] for h in hits))
 
-    def what_is_next(state: PractitionerState,
+    def select_next_action(state: PractitionerState,
                      situation: Situation) -> list:
         if not situation.unknowns:
             return [CandidateAction(action="deliver", kind="deliver",
@@ -338,7 +338,7 @@ def make_model_impls(*, models: Sequence[str] | None = None,
                     learned_from_goal=state.spec.objective))
         return route, new_state
 
-    return {"orient": orient, "decide_next": what_is_next, "how": how,
+    return {"orient": orient, "decide_next": select_next_action, "how": how,
             "act": act, "verify": verify, "route": learn_route}
 
 

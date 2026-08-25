@@ -1,4 +1,4 @@
-"""Resolvers — the named ways to answer "what is next".
+"""Resolvers — the named ways to answer "select the next action".
 
 The value of centring on the question is that the *ways to answer it* become a
 clean, named taxonomy instead of ad-hoc code.  Each resolver is one path — a
@@ -19,7 +19,7 @@ from typing import Any, Callable, Mapping
 from .escalation_governor import Arm, Resolution
 from .decision_slates import Slate
 from ..strings.knowledge import Knowledge
-from ..loop.moves import WhatIsNextAnswer, family_of
+from ..loop.moves import NextActionProposal, family_of
 
 # The named categories of how to answer the question — the expert's paths.
 RESOLVER_CATEGORIES = ("deterministic_rule", "plan_recipe", "fingerprint_recall",
@@ -40,15 +40,15 @@ MODEL_CATEGORIES = frozenset({"small_model", "hybrid", "persona_salted",
                               "llm_single", "llm_council", "research"})
 
 # A resolver answers from Knowledge, or returns None to pass.
-ResolveFn = Callable[[Knowledge], "WhatIsNextAnswer | None"]
+NextActionResolveFn = Callable[[Knowledge], "NextActionProposal | None"]
 
 
 @dataclass(frozen=True)
-class WhatIsNextResolver:
-    """One named way to answer 'what is next'."""
+class NextActionResolver:
+    """One named way to answer 'select the next action'."""
     name: str
     category: str
-    fn: ResolveFn
+    fn: NextActionResolveFn
     level: int | None = None          # default from category
     cost: float = 0.0
     model_calls: int = 0
@@ -85,7 +85,7 @@ class WhatIsNextResolver:
                         detail=f"{self.name}: no move admitted by "
                         f"{getattr(need, 'mode', '?')} need")
                 if len(admitted) != len(ans.moves.items):
-                    ans = WhatIsNextAnswer(
+                    ans = NextActionProposal(
                         resolver=ans.resolver, category=ans.category,
                         moves=Slate("try", admitted),
                         confidence=ans.confidence, detail=ans.detail)

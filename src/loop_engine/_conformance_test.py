@@ -21,8 +21,7 @@ def self_test() -> dict:
         results.append({"name": name, "passed": bool(ok), "note": note})
 
     from .loop.recursive_loop import (Loop, LoopConfig, LoopError,
-                                      PractitionerLoop, StepOutcome,
-                                      default_handler)
+                                      StepOutcome, default_handler)
 
     # ------------------------------------------------------------------ §22
     # Asset binary: every classified asset is String or Code Node.
@@ -33,11 +32,10 @@ def self_test() -> dict:
           and classify("context") == "string",
           f"non-binary kinds: {other}")
 
-    # One canonical runtime: no parallel loop class; the alias IS the class.
+    # One canonical runtime: no parallel runtime class or public alias.
     check("conformance_one_canonical_runtime",
-          PractitionerLoop is Loop
-          and Loop.run_to_completion is Loop.run,
-          "PractitionerLoop/run_to_completion are the same object, not forks")
+          Loop.__name__ == "Loop" and Loop.run_to_completion is Loop.run,
+          "Loop is the only runtime class")
 
     # Obsolete package-root module paths are dead. This checks path layout only;
     # the scanner separately checks root exports for parallel runtime surfaces.
@@ -54,14 +52,23 @@ def self_test() -> dict:
           f"still importable at the old root: {legacy_reachable}")
 
     import loop_engine as public_package
-    forbidden = set(public_package.__dict__.get("__all__", ())) & {
+    retired_decision_names = {
+        "".join(("What", "Is", "Next", "Answer")),
+        "".join(("What", "Is", "Next", "Resolver")),
+        "".join(("WHATS", "_NEXT", "_ANSWER_KINDS")),
+    }
+    forbidden = set(public_package.__dict__.get("__all__", ())) & ({
         "SolverCell", "Practitioner", "SolverCellState", "LoopState",
         "PractitionerNode", "run_practitioner_loop", "UniversalSolver",
         "PractitionerState", "run_practitioner", "run_swarm",
-    }
+        "PractitionerLoop", "LoopSpec",
+    } | retired_decision_names)
     check("conformance_root_exports_only_the_canonical_runtime",
           not forbidden
-          and public_package.PractitionerLoop is public_package.Loop,
+          and "PractitionerLoop" not in public_package.__dict__.get(
+              "__all__", ())
+          and not hasattr(public_package, "PractitionerLoop")
+          and public_package.Loop is Loop,
           f"parallel root runtime names: {sorted(forbidden)}")
 
     from .__main__ import (

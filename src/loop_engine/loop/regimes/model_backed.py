@@ -9,7 +9,7 @@ when a caller has wired one in and the escalation governor decides it is worth
 the cost.
 
 Each factory renders the AskFrame preamble into the ask, so persona / system
-prompt / salts flow to the model, and returns a ``(Knowledge) -> WhatIsNextAnswer``
+prompt / salts flow to the model, and returns a ``(Knowledge) -> NextActionProposal``
 resolver.  The council factory digests independent members by summing confidence
 per distinct move across members (each member is one independent group), so a
 lone loud member cannot carry a move — the same dependence-aware discipline the

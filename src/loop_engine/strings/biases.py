@@ -47,7 +47,7 @@ BIAS_REGISTRY = {
         "trigger": "situation signals missing_info",
         "why": "with little known, reducing the gap outranks acting blind",
         "alternative": "attempt the task directly with what is known",
-        "wired_in": "kernel.default_what_is_next / model impls"},
+        "wired_in": "kernel.default_select_next_action / model impls"},
     "generate_context_first": {
         "trigger": "early in the run (no context generated yet) with work to do",
         "why": "generating domain personas/questions/key phrases as the FIRST "

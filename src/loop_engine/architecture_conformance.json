@@ -1,12 +1,13 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 217,
+ "files_scanned": 220,
  "zero_tolerance_gates": {
-  "unclassified_files": 3,
+  "unclassified_files": 0,
   "reachable_legacy_flat_paths": 0,
   "legacy_flat_imports_on_live_paths": 0,
   "public_parallel_runtime_surfaces": 0,
+  "retired_decision_spine_terms": 0,
   "direct_model_or_network_calls_outside_gateway": 0,
   "subprocess_outside_declared_adapters": 0,
   "eval_or_exec_anywhere": 0,
@@ -14,27 +15,23 @@
   "dynamic_import_registration_bypasses": 0,
   "forbidden_model_mentions_outside_guards": 0,
   "empty_placeholder_modules": 0,
-  "modules_over_size_cap_without_declared_exception": 2,
-  "public_interfaces_over_parameter_cap_without_declared_exception": 1,
+  "modules_over_size_cap_without_declared_exception": 0,
+  "public_interfaces_over_parameter_cap_without_declared_exception": 0,
   "syntax_newer_than_the_declared_minimum_python": 0,
-  "modules_missing_llm_context_docstring": 1,
+  "modules_missing_llm_context_docstring": 0,
   "stale_current_architecture_documents": 0,
   "conformance_test_skip_markers": 0,
   "runtime_event_kinds_outside_the_canonical_vocabulary": 0,
-  "modules_whose_self_test_the_suite_never_runs": 1,
+  "modules_whose_self_test_the_suite_never_runs": 0,
   "envelope_owning_modules_missing_from_the_register": 0,
   "operational_boundaries_outside_loop_ontology": 0,
   "operational_boundary_relationship_kind_violations": 0,
-  "operational_graph_vertex_types_outside_canonical_loop": 1,
+  "operational_graph_vertex_types_outside_canonical_loop": 0,
   "direct_resource_access_above_baseline": 0,
   "architecture_map_freshness": 0
  },
  "gate_details": {
-  "unclassified_files": [
-   "loop/loop_definition_checks.py",
-   "loop/runtime_context.py",
-   "loop/loop_definition.py"
-  ],
+  "unclassified_files": [],
   "reachable_legacy_flat_paths": [],
   "stale_current_architecture_documents": [],
   "operational_boundary_ontology": {
@@ -100,46 +97,9 @@
    "unbound_boundaries": [],
    "honesty": "coverage counts only rows joined one-to-one to a validated Loop role profile; invalid, unclassified, extra, duplicate, and unbound rows stay visible"
   },
-  "operational_graph_vertex_types": [
-   {
-    "file": "code_nodes/solution_graph.py",
-    "line": 193,
-    "type": "LoopGraphVertex",
-    "reason": "graph vertex type does not inherit canonical Loop"
-   }
-  ],
-  "scan_violations": [
-   {
-    "rule": "module_over_size_cap",
-    "file": "code_nodes/solution_canvas.py",
-    "line": 925,
-    "detail": "925 lines > cap 800; declare an exception with a split plan or split it"
-   },
-   {
-    "rule": "module_over_size_cap",
-    "file": "code_nodes/solution_graph.py",
-    "line": 855,
-    "detail": "855 lines > cap 800; declare an exception with a split plan or split it"
-   },
-   {
-    "rule": "short_module_docstring",
-    "file": "code_nodes/solution_canvas.py",
-    "line": 1,
-    "detail": "docstring < 3 lines \u2014 an LLM landing on this file gets no context"
-   },
-   {
-    "rule": "uncollected_self_test",
-    "file": "loop/loop_definition_checks.py",
-    "line": 1,
-    "detail": "loop.loop_definition_checks defines self_test() but the suite does not collect it \u2014 add it to _FOLDED_SUBMODULE_TESTS or declare an exception with a reason"
-   },
-   {
-    "rule": "public_signature_over_parameter_cap",
-    "file": "code_nodes/solution_graph.py",
-    "line": 772,
-    "detail": "make_solution_loop_definition exposes 11 parameters, above the cap of 9. Use a typed request, config, or result object."
-   }
-  ]
+  "operational_graph_vertex_types": [],
+  "retired_decision_spine_terms": [],
+  "scan_violations": []
  },
  "direct_resource_access": {
   "current": 0,
@@ -157,5 +117,5 @@
   "max_power_grants_no_permissions: power scales budgets only"
  ],
  "suite_note": "run --self-test separately; conformance is releasable only when BOTH exit 0",
- "all_gates_pass": false
+ "all_gates_pass": true
 }

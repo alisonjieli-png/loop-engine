@@ -1,14 +1,12 @@
-"""Internal practitioner planning algorithm.
+"""Internal planning algorithm for a Practitioner Loop profile.
 
 This module supplies Code Intelligence to the canonical ``recursive_loop.Loop``.
-Its state and steps are algorithm data, not another operational runtime. Public
-solve paths invoke this algorithm through a Loop envelope.
+Its state and steps are algorithm data, not executable graph vertices or another
+runtime. Public solve paths invoke the algorithm through a classified Loop.
 
-The owner's model (2026-08-22): the single "what is next?" question is the spine,
-but the main path is a small DAG of nodes, each with MANY resolution paths, and
-with loop-back edges so a later node can talk to an earlier one.
+The default algorithm uses a bounded step graph with loop-back transitions:
 
-    (1) what_is_next  ->  (2) how_to_implement  ->  (3) implement
+    (1) select_next_action  ->  (2) how_to_implement  ->  (3) implement
                                      |                      |
                                      | research            | can't build
                                      v                      v
@@ -19,11 +17,9 @@ with loop-back edges so a later node can talk to an earlier one.
        |                    v
        +--> back to (1)   back to (3)
 
-Each NODE has a set of resolution PATHS (deterministic / heuristic / embedding /
-micro-model / small-model / LLM / hybrid / reuse / research / custom), tried
-reuse-first.  A node returns a control signal — advance, loop_back (to a named
-earlier node, with a message), done, or abort — so the loop is a real state
-machine, not a straight line.  Two behaviours the owner called out are first-class:
+Each internal step has eligible resolution paths. A step returns ``advance``,
+``loop_back``, ``done``, or ``abort``. These transitions are implementation
+details within one Loop profile. They do not create non-Loop graph vertices.
 
   * node 2, when its answer is **research**, does NOT build — it loops straight
     back to node 1 and feeds the findings in (sometimes we only need to learn);
@@ -52,7 +48,7 @@ from ..loop.methodical import (NextAnswer, ExecutionDecision, VerifyResult,
 # ===========================================================================
 
 # The nodes of the main practitioner DAG, in forward order.
-NODE_SEQUENCE = ("what_is_next", "how_to_implement", "implement",
+NODE_SEQUENCE = ("select_next_action", "how_to_implement", "implement",
                  "verify_compilable", "save")
 
 # The control signal a node returns — this is what makes loop-backs possible.
@@ -67,7 +63,7 @@ RESOLUTION_PATHS = ("cached", "muscle_memory", "deterministic", "reuse_drop_in",
 # Where tuning lives (design note, surfaced in the record / docs).
 TUNING_DESIGN = (
     "Tuning is not a special place in the main loop.  It appears two ways: (a) as "
-    "the 'optimize' answer-kind of what_is_next, which the loop implements like "
+    "the 'optimize' answer-kind of select_next_action, which the loop implements like "
     "any other node; and (b) as a per-CANDIDATE search AROUND a finished "
     "compilable graph — each swarm member's graph is tuned independently and in "
     "parallel, so a 20-node x 5-param space is explored per candidate by grid or "
@@ -227,7 +223,7 @@ def run_practitioner_algorithm(state: PractitionerAlgorithmState, nodes: dict, *
         # advance
         idx += 1
         if idx >= len(NODE_SEQUENCE):
-            # completed a full pass (save) -> loop back to what_is_next for the
+            # completed a full pass (save) -> loop back to select_next_action for the
             # NEXT sub-task, unless the graph is marked complete.
             if state.blackboard.get("graph_complete"):
                 break
@@ -240,10 +236,10 @@ def run_practitioner_algorithm(state: PractitionerAlgorithmState, nodes: dict, *
 # ===========================================================================
 
 
-def node_what_is_next(state: PractitionerAlgorithmState) -> PractitionerStepResult:
+def node_select_next_action(state: PractitionerAlgorithmState) -> PractitionerStepResult:
     """Node 1: decide the next sub-task.  Terminate ends the loop."""
     # Absorb any research fed back from node 2 before deciding again.
-    fed = state.messages_to("what_is_next")
+    fed = state.messages_to("select_next_action")
     if fed:
         state.knowledge = Knowledge(
             goal=state.knowledge.goal, graph_summary=state.knowledge.graph_summary,
@@ -254,11 +250,11 @@ def node_what_is_next(state: PractitionerAlgorithmState) -> PractitionerStepResu
     ans = det_decide(state.knowledge)
     if ans.kind == "terminate":
         state.blackboard["graph_complete"] = True
-        return PractitionerStepResult("what_is_next", output=ans, control="done",
+        return PractitionerStepResult("select_next_action", output=ans, control="done",
                           paths_tried=["deterministic"],
                           detail="nothing left — deliver")
     state.blackboard["current_answer"] = ans
-    return PractitionerStepResult("what_is_next", output=ans, paths_tried=["deterministic"],
+    return PractitionerStepResult("select_next_action", output=ans, paths_tried=["deterministic"],
                       detail=f"[{ans.kind}] {ans.target}")
 
 
@@ -269,10 +265,10 @@ def node_how_to_implement(state: PractitionerAlgorithmState) -> PractitionerStep
     reuse_first_guard(ex)
     if ex.is_free():
         state.model_calls_avoided += 1
-    # If the best route is research, we don't build — feed back to what_is_next.
+    # If the best route is research, we don't build — feed back to select_next_action.
     if ans.kind == "research" or ex.chosen == "research":
         return PractitionerStepResult("how_to_implement", output=ex, control="loop_back",
-                          loop_back_to="what_is_next",
+                          loop_back_to="select_next_action",
                           message=f"research on {ans.target} done; re-decide",
                           paths_tried=[ex.chosen],
                           detail="research route — loop back, do not build")
@@ -294,7 +290,7 @@ def node_implement(state: PractitionerAlgorithmState) -> PractitionerStepResult:
     built = {"node": ans.target, "kind": ans.kind, "via": ex.chosen,
              "handle": ex.handle}
     state.graph.append(built)
-    # Record the EFFECT of implementing this node so the next what_is_next sees
+    # Record the EFFECT of implementing this node so the next select_next_action sees
     # progress and does not re-propose the same step (a node must record what it
     # accomplished, or the loop cannot advance).
     new_facts = {**state.knowledge.facts,
@@ -341,7 +337,7 @@ def node_save(state: PractitionerAlgorithmState) -> PractitionerStepResult:
 
 
 def default_nodes() -> dict:
-    return {"what_is_next": PractitionerAlgorithmStep("what_is_next", node_what_is_next),
+    return {"select_next_action": PractitionerAlgorithmStep("select_next_action", node_select_next_action),
             "how_to_implement": PractitionerAlgorithmStep("how_to_implement",
                                                 node_how_to_implement),
             "implement": PractitionerAlgorithmStep("implement", node_implement),
@@ -403,7 +399,7 @@ def make_model_algorithm_steps(*, models: Sequence[str] | None = None,
                      = None) -> dict:
     """Build five internal planning steps backed by models and OpenCode.
 
-    node 1 runs a debate to decide what is next; node 2 asks the registry_probe
+    node 1 runs a debate to decide select the next action; node 2 asks the registry_probe
     "do we already have this?" (reuse-first) and escalates only if not; node 3
     drops in a reused node OR has an OpenCode worker author ``nodes/<slug>.py``;
     node 4 actually ``py_compile``s the authored file and loops back to node 3
@@ -432,10 +428,10 @@ def make_model_algorithm_steps(*, models: Sequence[str] | None = None,
         ans = cycle["decide"](state.knowledge)
         if ans.kind == "terminate":
             state.blackboard["graph_complete"] = True
-            return PractitionerStepResult("what_is_next", output=ans, control="done",
+            return PractitionerStepResult("select_next_action", output=ans, control="done",
                               paths_tried=["llm_deliberation"])
         state.blackboard["current_answer"] = ans
-        return PractitionerStepResult("what_is_next", output=ans,
+        return PractitionerStepResult("select_next_action", output=ans,
                           paths_tried=["llm_deliberation"],
                           model_calls=len(list(models or [1, 2, 3])) * rounds,
                           detail=f"[{ans.kind}] {ans.target}")
@@ -448,7 +444,7 @@ def make_model_algorithm_steps(*, models: Sequence[str] | None = None,
             state.model_calls_avoided += 1
         if ans.kind == "research" or ex.chosen == "research":
             return PractitionerStepResult("how_to_implement", output=ex, control="loop_back",
-                              loop_back_to="what_is_next",
+                              loop_back_to="select_next_action",
                               message=f"research on {ans.target}; re-decide",
                               paths_tried=[ex.chosen])
         state.blackboard["current_execution"] = ex
@@ -497,7 +493,7 @@ def make_model_algorithm_steps(*, models: Sequence[str] | None = None,
                               loop_back_to="implement",
                               message=f"does not compile: {str(exc)[:200]}",
                               detail="compile failed")
-        # mark progress so the next what_is_next advances
+        # mark progress so the next select_next_action advances
         state.knowledge = Knowledge(
             goal=state.knowledge.goal, graph_summary=f"{len(state.graph)} nodes",
             results=state.knowledge.results,
@@ -514,22 +510,11 @@ def make_model_algorithm_steps(*, models: Sequence[str] | None = None,
             {"graph_size": len(state.graph)})
         return PractitionerStepResult("save", detail=f"saved ({len(state.graph)} nodes)")
 
-    return {"what_is_next": PractitionerAlgorithmStep("what_is_next", n1),
+    return {"select_next_action": PractitionerAlgorithmStep("select_next_action", n1),
             "how_to_implement": PractitionerAlgorithmStep("how_to_implement", n2),
             "implement": PractitionerAlgorithmStep("implement", n3),
             "verify_compilable": PractitionerAlgorithmStep("verify_compilable", n4),
             "save": PractitionerAlgorithmStep("save", n5)}
-
-
-# Module-local deprecated spellings for older imports. These objects are Code
-# Intelligence algorithms and are not public runtime types.
-NodeResult = PractitionerStepResult
-LoopState = PractitionerAlgorithmState
-PractitionerNode = PractitionerAlgorithmStep
-run_practitioner_loop = run_practitioner_algorithm
-run_default = run_default_algorithm
-swarm_practitioner = compare_practitioner_algorithms
-make_model_nodes = make_model_algorithm_steps
 
 
 # ===========================================================================
@@ -549,9 +534,9 @@ def self_test() -> dict:
     st = run_default_algorithm(k)
     order = [h.node for h in st.history]
     check("the_loop_runs_the_node_dag_and_terminates",
-          "what_is_next" in order and "how_to_implement" in order
+          "select_next_action" in order and "how_to_implement" in order
           and "implement" in order and "verify_compilable" in order
-          and order[-1] == "what_is_next"
+          and order[-1] == "select_next_action"
           and st.history[-1].control == "done",
           f"node order: {order}")
 
@@ -577,7 +562,7 @@ def self_test() -> dict:
         research_seen["n"] += 1
         if research_seen["n"] == 1:
             return PractitionerStepResult("how_to_implement", control="loop_back",
-                              loop_back_to="what_is_next",
+                              loop_back_to="select_next_action",
                               message="researched; re-decide")
         # second time: pretend research produced a buildable answer
         state.blackboard["current_answer"] = NextAnswer("add_node", "model=hgb")
@@ -591,8 +576,8 @@ def self_test() -> dict:
         goal="y", open_obligations=("m",), facts={"has_baseline": True})),
         nodes, max_steps=30)
     msgs = st3.blackboard.get("messages", [])
-    check("research_loops_back_to_what_is_next_without_building",
-          any(m["from"] == "how_to_implement" and m["to"] == "what_is_next"
+    check("research_loops_back_to_select_next_action_without_building",
+          any(m["from"] == "how_to_implement" and m["to"] == "select_next_action"
               for m in msgs),
           "node 2 with a research answer looped straight back to node 1")
 

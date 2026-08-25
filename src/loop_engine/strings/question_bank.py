@@ -199,7 +199,7 @@ def self_test() -> dict:
     bank = QuestionBank()
     d = QuestionDefinition("next_action",
                            "what is the single most valuable next action?",
-                           domain="general", keywords=("what_is_next",))
+                           domain="general", keywords=("next_action",))
     bank.add_definition(d)
     p = QuestionPattern("next_action.blueprint", "next_action",
                         "For {task}, outline every step, then name the most "

@@ -773,7 +773,7 @@ def self_test() -> dict:
                          "act": default_act, "verify": default_verify})
     aliased = False
     try:
-        validate_impls({"orient": default_orient, "what_is_next":
+        validate_impls({"orient": default_orient, "select_next_action":
                         default_decide_next, "how": default_how, "act":
                         default_act, "verify": default_verify, "learn_route":
                         default_route})   # old keys -> unknown -> must raise

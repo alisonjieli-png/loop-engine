@@ -517,188 +517,8 @@ class LoopGraphDefinition:
 
     def validate(self, registry: LoopDefinitionRegistry | None = None
                  ) -> LoopGraphValidation:
-        violations: list[str] = []
-        vertex_ids = [item.vertex_id for item in self.vertices]
-        edge_ids = [item.edge_id for item in self.edges]
-        group_ids = [item.group_id for item in self.groups]
-        for label, values in (("vertex", vertex_ids), ("edge", edge_ids),
-                              ("group", group_ids)):
-            if len(values) != len(set(values)):
-                violations.append(f"{label} IDs must be unique")
-        by_vertex = {item.vertex_id: item for item in self.vertices}
-        by_group = {item.group_id: item for item in self.groups}
-        if self.starting_group_id not in by_group:
-            violations.append("starting_group_id does not name one group")
-
-        definition_versions: dict[tuple[str, str], str] = {}
-        for vertex in self.vertices:
-            try:
-                definition = vertex.resolved_definition(registry)
-            except (LoopGraphError, LoopDefinitionError) as exc:
-                violations.append(str(exc))
-                continue
-            key = (definition.definition_id, definition.version)
-            prior = definition_versions.get(key)
-            if prior is not None and prior != definition.content_digest:
-                violations.append(
-                    f"definition {key} has different digests inside one graph")
-            definition_versions[key] = definition.content_digest
-            if definition.identity.role.value != "solution":
-                violations.append(
-                    f"vertex {vertex.vertex_id!r} is not a Solution Loop")
-            if vertex.selected_mode not in definition.supported_modes:
-                violations.append(
-                    f"vertex {vertex.vertex_id!r} selected mode "
-                    f"{vertex.selected_mode!r} is not supported by its exact "
-                    "Loop definition")
-            if vertex.selected_mode not in definition.installed_executor_modes:
-                violations.append(
-                    f"vertex {vertex.vertex_id!r} has no installed "
-                    f"{vertex.selected_mode!r} Solution executor")
-            if definition.contract.runtime_mode != vertex.selected_mode:
-                violations.append(
-                    f"vertex {vertex.vertex_id!r} selected mode conflicts with "
-                    "its Loop contract")
-            if vertex.selected_mode not in self.permitted_vertex_modes:
-                violations.append(
-                    f"vertex {vertex.vertex_id!r} selected mode is outside the "
-                    "graph policy")
-            facts = definition.configuration_facts.to_dict()
-            if vertex.operation_ref and facts.get(
-                    "operation_ref") != vertex.operation_ref:
-                violations.append(
-                    f"vertex {vertex.vertex_id!r} operation_ref is not bound "
-                    "inside its exact Loop definition")
-            if facts.get("parameters", {}) != vertex.parameters.to_dict():
-                violations.append(
-                    f"vertex {vertex.vertex_id!r} parameters are not bound "
-                    "inside its exact Loop definition")
-            if vertex.purpose == "adapter" and not vertex.operation_ref:
-                violations.append(
-                    f"Adapter Loop {vertex.vertex_id!r} has no operation")
-
-        bound_inputs: set[tuple[str, str]] = set()
-        for port in self.input_ports:
-            for target in port.targets:
-                vertex = by_vertex.get(target.vertex_id)
-                if vertex is None:
-                    violations.append(
-                        f"external input {port.name!r} targets a missing vertex")
-                    continue
-                try:
-                    definition = vertex.resolved_definition(registry)
-                except (LoopGraphError, LoopDefinitionError):
-                    continue
-                if port.role != target.port_role:
-                    violations.append(
-                        f"external input {port.name!r} role does not match its "
-                        "target endpoint")
-                if target.port_role not in definition.contract.input_roles:
-                    violations.append(
-                        f"external input {port.name!r} targets undeclared port "
-                        f"{target.port_role!r}")
-                bound_inputs.add((target.vertex_id, target.port_role))
-
-        adjacency = {item: set() for item in vertex_ids}
-        indegree = {item: 0 for item in vertex_ids}
-        for edge in self.edges:
-            source = by_vertex.get(edge.source.vertex_id)
-            target = by_vertex.get(edge.target.vertex_id)
-            if source is None or target is None:
-                violations.append(f"edge {edge.edge_id!r} names a missing vertex")
-                continue
-            try:
-                source_definition = source.resolved_definition(registry)
-                target_definition = target.resolved_definition(registry)
-            except (LoopGraphError, LoopDefinitionError):
-                continue
-            if edge.source.port_role not in source_definition.contract.output_roles:
-                violations.append(
-                    f"edge {edge.edge_id!r} names missing source port "
-                    f"{edge.source.port_role!r}")
-            if edge.target.port_role not in target_definition.contract.input_roles:
-                violations.append(
-                    f"edge {edge.edge_id!r} names missing target port "
-                    f"{edge.target.port_role!r}")
-            if edge.source.port_role != edge.target.port_role:
-                violations.append(
-                    f"edge {edge.edge_id!r} changes port roles; insert an "
-                    "explicit Adapter Loop vertex")
-            target_key = (edge.target.vertex_id, edge.target.port_role)
-            if target_key in bound_inputs:
-                violations.append(
-                    f"input {target_key} is bound more than once")
-            bound_inputs.add(target_key)
-            if edge.target.vertex_id not in adjacency[edge.source.vertex_id]:
-                adjacency[edge.source.vertex_id].add(edge.target.vertex_id)
-                indegree[edge.target.vertex_id] += 1
-
-        for vertex in self.vertices:
-            try:
-                definition = vertex.resolved_definition(registry)
-            except (LoopGraphError, LoopDefinitionError):
-                continue
-            for role in definition.contract.input_roles:
-                if (vertex.vertex_id, role) not in bound_inputs:
-                    violations.append(
-                        f"vertex {vertex.vertex_id!r} input port {role!r} is "
-                        "not bound")
-
-        queue = [item for item, degree in indegree.items() if degree == 0]
-        visited: list[str] = []
-        while queue:
-            current = queue.pop(0)
-            visited.append(current)
-            for target in sorted(adjacency[current]):
-                indegree[target] -= 1
-                if indegree[target] == 0:
-                    queue.append(target)
-        if len(visited) != len(vertex_ids):
-            violations.append("Loop graph contains a cycle")
-
-        for port in self.output_ports:
-            vertex = by_vertex.get(port.source.vertex_id)
-            if vertex is None:
-                violations.append(
-                    f"external output {port.name!r} names a missing vertex")
-                continue
-            try:
-                definition = vertex.resolved_definition(registry)
-            except (LoopGraphError, LoopDefinitionError):
-                continue
-            if port.role != port.source.port_role:
-                violations.append(
-                    f"external output {port.name!r} role does not match source")
-            if port.source.port_role not in definition.contract.output_roles:
-                violations.append(
-                    f"external output {port.name!r} names an undeclared port")
-
-        referenced_groups = {self.starting_group_id}
-        referenced_vertices: set[str] = set()
-        for group in self.groups:
-            referenced_vertices.add(group.controller_vertex_id)
-            referenced_groups.update(group.member_group_ids)
-            for stage in group.stages:
-                referenced_vertices.update(stage.attempt_vertex_ids)
-                if stage.router_vertex_id:
-                    referenced_vertices.add(stage.router_vertex_id)
-            if group.route_vertex_id:
-                referenced_vertices.add(group.route_vertex_id)
-            referenced_vertices.update(group.evaluator_vertex_ids)
-        missing_groups = sorted(referenced_groups - set(group_ids))
-        extra_vertices = sorted(set(vertex_ids) - referenced_vertices)
-        missing_vertices = sorted(referenced_vertices - set(vertex_ids))
-        if missing_groups:
-            violations.append(f"execution groups are unresolved {missing_groups}")
-        if extra_vertices:
-            violations.append(
-                f"vertices are outside the graph-owned execution plan "
-                f"{extra_vertices}")
-        if missing_vertices:
-            violations.append(
-                f"execution plan names missing vertices {missing_vertices}")
-        return LoopGraphValidation(not violations, tuple(violations))
-
+        from .solution_graph_validation import validate_loop_graph
+        return validate_loop_graph(self, registry)
     def assert_executable(self, registry: LoopDefinitionRegistry | None = None
                           ) -> None:
         report = self.validate(registry)
@@ -769,26 +589,53 @@ class LoopGraphDefinition:
                              if item.operation_ref}))
 
 
+@dataclass(frozen=True)
+class SolutionLoopDefinitionRequest:
+    """One typed request for generating one exact Solution Loop definition."""
+
+    graph_id: str
+    vertex_id: str
+    profile_id: str
+    input_roles: tuple[str, ...]
+    output_roles: tuple[str, ...]
+    selected_mode: str = "deterministic"
+    operation_ref: str = ""
+    parameters: ConfigurationFacts = field(default_factory=ConfigurationFacts)
+    purpose: str = "component"
+    delegated_modes: tuple[str, ...] = ("deterministic",)
+    version: str = "1.0.0"
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "input_roles", tuple(self.input_roles))
+        object.__setattr__(self, "output_roles", tuple(self.output_roles))
+        object.__setattr__(self, "delegated_modes", tuple(self.delegated_modes))
+        if not isinstance(self.parameters, ConfigurationFacts):
+            raise LoopGraphError("definition parameters need ConfigurationFacts")
+
+
 def make_solution_loop_definition(
-        *, graph_id: str, vertex_id: str, profile_id: str,
-        input_roles: Iterable[str], output_roles: Iterable[str],
-        selected_mode: str = "deterministic", operation_ref: str = "",
-        parameters: dict | None = None, purpose: str = "component",
-        delegated_modes: Iterable[str] = ("deterministic",),
-        version: str = "1.0.0") -> LoopDefinition:
+        request: SolutionLoopDefinitionRequest) -> LoopDefinition:
     """Build one exact definition for a generated Solution graph vertex.
 
     Unsupported semantic modes deliberately produce a deterministic definition
     paired with the requested selected mode.  Graph validation then reports the
     missing semantic executor before any operation can run.
     """
+    if not isinstance(request, SolutionLoopDefinitionRequest):
+        raise LoopGraphError(
+            "make_solution_loop_definition needs its typed request object")
+    graph_id, vertex_id = request.graph_id, request.vertex_id
+    profile_id, selected_mode = request.profile_id, request.selected_mode
+    operation_ref, purpose = request.operation_ref, request.purpose
+    parameters = request.parameters.to_dict()
+    delegated_modes, version = request.delegated_modes, request.version
     resolved = resolve_profile(LoopProfileRef(profile_id))
     profile_modes = tuple(resolved.allowed_modes)
     definition_mode = (selected_mode if selected_mode in profile_modes
                        else "deterministic")
     execution_mode = _MODE_TO_EXECUTION[definition_mode]
-    inputs = tuple(input_roles)
-    outputs = tuple(dict.fromkeys(output_roles))
+    inputs = tuple(request.input_roles)
+    outputs = tuple(dict.fromkeys(request.output_roles))
     custom_step = "verify_survivors" if purpose == "validator" else "act"
     facts = {
         "framework": "custom", "logical_kind": "execution",
@@ -835,21 +682,71 @@ def vertex_from_definition(
         operation_ref, ConfigurationFacts.from_mapping(parameters))
 
 
-# Narrow source-compatibility while the package root moves to the canonical
-# names. New serialized records always emit ``LoopGraphDefinition`` names.
-LoopVertexSpec = LoopGraphVertex
-LoopPortRef = LoopGraphEndpoint
-LoopEdgeSpec = LoopGraphEdge
-LoopGraphSpec = LoopGraphDefinition
+@dataclass(frozen=True)
+class AdapterLoopRunRequest:
+    """All inputs for executing one explicit Adapter Loop vertex."""
+
+    graph_id: str
+    adapter_vertex: LoopGraphVertex
+    value: Any
+    registry: dict = field(repr=False, compare=False)
+    parent: Any = field(default=None, repr=False, compare=False)
+    event_log: Any = field(default=None, repr=False, compare=False)
+    trace: list | None = field(default=None, repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        _identifier("graph_id", self.graph_id)
+        if (not isinstance(self.adapter_vertex, LoopGraphVertex)
+                or self.adapter_vertex.purpose != "adapter"):
+            raise LoopGraphError(
+                "adapter_vertex must be an explicit Adapter Loop vertex")
+        if not isinstance(self.registry, dict):
+            raise LoopGraphError("adapter registry must be a mapping")
 
 
-def insert_adapter(*args, **kwargs):
-    """Refuse the retired edge-attached adapter shortcut.
+def run_adapter_loop(request: AdapterLoopRunRequest):
+    """Execute a typed conversion through its exact Adapter Loop definition."""
+    if not isinstance(request, AdapterLoopRunRequest):
+        raise LoopGraphError("run_adapter_loop needs AdapterLoopRunRequest")
+    adapter = request.adapter_vertex
+    definition = adapter.resolved_definition(None)
+    if (len(definition.contract.input_roles) != 1
+            or len(definition.contract.output_roles) != 1):
+        raise LoopGraphError(
+            "the current Adapter runner needs one input and one output role")
+    input_role = definition.contract.input_roles[0]
+    output_role = definition.contract.output_roles[0]
+    controller_id = "adapter.controller"
+    controller_definition = make_solution_loop_definition(
+        SolutionLoopDefinitionRequest(
+            request.graph_id, controller_id, "solution.pipeline",
+            (input_role,), tuple(dict.fromkeys((input_role, output_role))),
+            delegated_modes=(adapter.selected_mode,)))
+    controller = vertex_from_definition(
+        controller_id, controller_definition, selected_mode="deterministic",
+        purpose="controller")
+    edge = LoopGraphEdge(
+        "adapter.connection", LoopGraphEndpoint(controller_id, input_role),
+        LoopGraphEndpoint(adapter.vertex_id, input_role))
+    group = LoopGraphGroup(
+        "adapter.group", controller_id,
+        (LoopGraphStage("adapter.stage", (adapter.vertex_id,)),))
+    graph = LoopGraphDefinition(
+        request.graph_id, "1.0.0", (adapter.selected_mode,),
+        (LoopGraphInputPort(
+            "input", input_role,
+            (LoopGraphEndpoint(controller_id, input_role),)),),
+        (LoopGraphOutputPort(
+            "output", output_role,
+            LoopGraphEndpoint(adapter.vertex_id, output_role)),),
+        (controller, adapter), (edge,), (group,), group.group_id)
+    graph.assert_executable()
+    from .solution_canvas import SolutionSpec, run_solution
+    return run_solution(
+        SolutionSpec.from_graph(graph), request.registry, request.value,
+        trace=request.trace, ledger=request.event_log, parent=request.parent)
 
-    Callers must add an explicit ``LoopGraphVertex(purpose="adapter")`` and
-    two typed edges. This name exists only so an older import fails clearly at
-    the operation boundary instead of making the whole package unimportable.
-    """
-    raise LoopGraphError(
-        "insert_adapter no longer edits an edge; add one explicit Adapter "
-        "Loop vertex and connect it with two typed edges")
+
+def self_test() -> dict:
+    from .solution_graph_checks import solution_graph_self_test_checks
+    return solution_graph_self_test_checks()

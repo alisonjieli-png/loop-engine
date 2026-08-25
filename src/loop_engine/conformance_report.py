@@ -108,18 +108,35 @@ def _stale_architecture_map() -> int:
     return 0 if counts(committed) != [] and counts(committed) == counts(live) else 1
 
 
+def _public_retired_nomenclature() -> list:
+    """Scan current repository text for the retired decision-spine terms."""
+    from ._conformance_scan import _rules
+    from .nomenclature_conformance import retired_nomenclature_violations
+
+    policy = dict(_rules().get("retired_source_nomenclature", {}))
+    policy["terms"] = tuple(
+        term for term in policy.get("terms", ())
+        if "what" in str(term).casefold())
+    policy["excluded_files"] = (
+        "src/loop_engine/forbidden_paths.json",
+    )
+    root = os.path.dirname(os.path.dirname(_HERE))
+    return retired_nomenclature_violations(root, policy)
+
+
 def operational_graph_vertex_violations(root: "str | None" = None) -> list:
     """Find executable graph-vertex classes that compete with canonical Loop.
 
-    Passive projections are admitted only when their required Loop reference is
-    explicit. Historical aliases are assignments and remain readable without
-    being mistaken for current runtime types.
+    Passive projections are admitted only when their exact Loop definition
+    reference is explicit. They never own execution.
     """
     import ast
     base = root or _HERE
     retired = {"CanvasNode", "GoalNode", "CodeNode", "NodeResult"}
-    passive = {"LoopNode": {"loop_id"},
-               "LoopVertexSpec": {"loop_ref", "contract"}}
+    passive = {
+        "LoopNode": {"loop_id"},
+        "LoopGraphVertex": {"definition_ref", "definition", "selected_mode"},
+    }
     violations = []
     for directory, _, files in os.walk(base):
         for filename in files:
@@ -167,6 +184,7 @@ def run_conformance() -> dict:
     api_violations = scan_public_signatures()
     boundaries = boundary_report()
     graph_vertex_violations = operational_graph_vertex_violations()
+    public_nomenclature = _public_retired_nomenclature()
     unclassified = _unclassified()
     legacy_flat_paths = _legacy_flat_paths_reachable()
     stale = _stale_docs()
@@ -178,6 +196,7 @@ def run_conformance() -> dict:
             "legacy_flat_import", 0),
         "public_parallel_runtime_surfaces": c.get(
             "public_parallel_runtime_surface", 0),
+        "retired_decision_spine_terms": len(public_nomenclature),
         "direct_model_or_network_calls_outside_gateway":
             c.get("network_outside_gateway", 0),
         "subprocess_outside_declared_adapters":
@@ -233,6 +252,8 @@ def run_conformance() -> dict:
                          "operational_boundary_ontology": boundaries,
                          "operational_graph_vertex_types":
                              graph_vertex_violations,
+                         "retired_decision_spine_terms":
+                             public_nomenclature,
                          "scan_violations": (scan["violations"]
                                              + api_violations)},
         "direct_resource_access": {
@@ -286,8 +307,8 @@ def self_test() -> dict:
                 "    def run(self): pass\n\n"
                 "class GoalItem:\n    goal_id: str\n\n"
                 "class SolutionSlot:\n    slot_id: str\n\n"
-                "class LoopVertexSpec:\n    loop_ref: str\n"
-                "    contract: object\n\n"
+                "class LoopGraphVertex:\n    definition_ref: object\n"
+                "    definition: object\n    selected_mode: str\n\n"
                 "GoalNode = GoalItem\n")
         canary = operational_graph_vertex_violations(directory)
     check("operational_vertex_canary_refuses_non_loop_and_ignores_passive_records",

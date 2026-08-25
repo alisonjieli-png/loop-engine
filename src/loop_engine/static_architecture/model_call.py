@@ -197,7 +197,7 @@ def self_test() -> dict:
                   facts={"modality": "tabular"})
 
     # 1. the ask spec carries every dimension; unknown policy refused.
-    spec = AskSpec(question="What is next?", knowledge=k,
+    spec = AskSpec(question="Which action should run next?", knowledge=k,
                    context_policy="task_only", persona="a careful statistician",
                    output_contract="JSON array of moves",
                    details={"budget": "2 model calls"})
@@ -213,11 +213,13 @@ def self_test() -> dict:
 
     # 2. the same question renders DIFFERENTLY under different context policies.
     p_full = render(spec, prepare_context(AskSpec(
-        question="What is next?", knowledge=k, context_policy="fully_informed")))
+        question="Which action should run next?", knowledge=k,
+        context_policy="fully_informed")))
     p_blind = render(spec, prepare_context(AskSpec(
-        question="What is next?", knowledge=k, context_policy="goal_only")))
+        question="Which action should run next?", knowledge=k,
+        context_policy="goal_only")))
     check("context_policies_change_what_the_model_sees",
-          len(p_full) > len(p_blind) and "What is next?" in p_blind,
+          len(p_full) > len(p_blind) and "Which action should run next?" in p_blind,
           "fully_informed vs goal_only: same question, different visible context")
 
     # 3. persona, details, and output contract land in the prompt.

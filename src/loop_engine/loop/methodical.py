@@ -1,33 +1,18 @@
-"""The what-is-next cycle — the one global question, and the guardrail around it.
+"""Optional next-action cycle used inside a Practitioner Loop profile.
 
-Owner ontology (2026-08-22): **everything goes through "what is next?"**  It is the
-single global question.  Its ANSWERS are sub-tasks — add a node, optimize, gather
-context, research, *research what we missed*, *find what alternatives exist*,
-*diagnose what we did wrong*, deliberate, test, or terminate.  "What did we miss"
-and "what alternatives exist" are therefore NOT sibling phases of some pipeline —
-they are answer kinds of what-is-next, chosen when the situation calls for them.
+This module is an internal decision strategy. It is not the Loop Engine
+architecture and it does not define another runtime. A Practitioner profile may
+use the three stages below when it needs to select, execute, and verify one
+bounded action. Other Loop profiles may use different step sequences.
 
-The atomic unit is a cycle of **three sibling stages**, repeated:
+The cycle has three stages:
 
-  1. what_is_next      — decide the single next sub-task (an answer kind below)
-  2. how_to_execute    — decide how best to carry it out, asking FIRST
-                         "do we already have this coded, retrievable, ready?"
-                         and escalating up a reuse-first ladder only as far as
-                         needed (deterministic wrapper -> tool/db/service ->
-                         micro/small model -> one LLM -> deliberation -> research)
-  3. verify_and_advance — did we execute it correctly, and are we ready for the
-                         next what-is-next?
+1. ``select_next_action`` selects one typed subtask.
+2. ``how_to_execute`` checks reusable capabilities before escalating.
+3. ``verify_and_advance`` checks the result before another action is selected.
 
-Two guardrails make this structural rather than aspirational — they are why the
-harness cannot one-shot:
-
-  * the **reuse-first guard**: how_to_execute may not select an expensive rung
-    (an LLM/deliberation/research) without recording that the cheaper rungs above
-    it — crucially "do we already have this?" — were checked and ruled out; and
-  * the **advance guard**: the cycle may not advance to the next what-is-next
-    until verify_and_advance has run.
-
-Every rung avoided below an LLM is a model call saved, recorded on the record.
+The reuse guard refuses model use until required cheaper routes were checked.
+The advance guard refuses progression until verification has run.
 """
 
 from __future__ import annotations
@@ -43,12 +28,10 @@ from ..strings.knowledge import Knowledge
 # ===========================================================================
 
 # The three sibling stages of one atomic cycle.  Fixed; the same every time.
-CYCLE_STAGES = ("what_is_next", "how_to_execute", "verify_and_advance")
+CYCLE_STAGES = ("select_next_action", "how_to_execute", "verify_and_advance")
 
-# Stage 1 hierarchy: the kinds of answer "what is next?" can return.  These are
-# sub-tasks of the one global question — not competitors to it.  Grouped for
-# legibility; the group is the parent, the kind is the leaf.
-WHATS_NEXT_ANSWER_KINDS = {
+# Stage 1 hierarchy: the kinds of action this decision strategy may select.
+NEXT_ACTION_KINDS = {
     "construct": ("add_node", "optimize", "compose", "ensemble"),
     "inform":    ("gather_context", "research", "review_missed",
                   "find_alternatives", "diagnose"),
@@ -57,7 +40,7 @@ WHATS_NEXT_ANSWER_KINDS = {
     "deliver":   ("terminate",),
 }
 # Flat set of every valid answer kind (leaves of the hierarchy above).
-ANSWER_KINDS = tuple(k for group in WHATS_NEXT_ANSWER_KINDS.values()
+ANSWER_KINDS = tuple(k for group in NEXT_ACTION_KINDS.values()
                      for k in group)
 
 # Stage 2 hierarchy: the reuse-first execution ladder, cheapest / most
@@ -83,9 +66,9 @@ FIRST_LLM_RUNG = EXECUTION_LADDER.index("llm_single")
 
 # Stage 3 hierarchy: the outcomes of verifying an execution.
 VERIFY_OUTCOMES = (
-    "correct_and_ready",     # executed well; advance to the next what-is-next
+    "correct_and_ready",     # executed well; advance to the next next-action decision
     "correct_more_needed",   # fine, but the graph is not complete; loop
-    "incorrect",             # wrong; the repair is itself the next what-is-next
+    "incorrect",             # wrong; the repair is itself the next next-action decision
     "inconclusive",          # cannot tell yet; more validation is the next step
 )
 
@@ -109,11 +92,11 @@ class NextAnswer:
 
     def __post_init__(self):
         if self.kind not in ANSWER_KINDS:
-            raise ValueError(f"unknown what-is-next answer kind {self.kind!r}; "
+            raise ValueError(f"unknown next-action decision answer kind {self.kind!r}; "
                              f"must be one of {ANSWER_KINDS}")
 
     def group(self) -> str:
-        for g, kinds in WHATS_NEXT_ANSWER_KINDS.items():
+        for g, kinds in NEXT_ACTION_KINDS.items():
             if self.kind in kinds:
                 return g
         return "unknown"
@@ -148,7 +131,7 @@ class VerifyResult:
 
 @dataclass
 class CycleStep:
-    """One full atomic cycle: what-is-next -> how-to-execute -> verify."""
+    """One full atomic cycle: next-action decision -> how-to-execute -> verify."""
     knowledge_goal: str
     answer: NextAnswer
     execution: ExecutionDecision
@@ -156,9 +139,9 @@ class CycleStep:
     model_calls_avoided: int = 0
 
     def record(self) -> dict:
-        return {"record_type": "whats_next_cycle/v1",
+        return {"record_type": "next_action_cycle/v1",
                 "goal": self.knowledge_goal,
-                "what_is_next": {"kind": self.answer.kind,
+                "select_next_action": {"kind": self.answer.kind,
                                  "group": self.answer.group(),
                                  "target": self.answer.target,
                                  "rationale": self.answer.rationale},
@@ -197,7 +180,7 @@ def reuse_first_guard(decision: ExecutionDecision) -> None:
 
 def advance_guard(step: CycleStep) -> None:
     """Refuse to treat a cycle as complete until verify_and_advance has run and
-    reported readiness — no advancing to the next what-is-next on faith."""
+    reported readiness — no advancing to the next next-action decision on faith."""
     if step.verify is None:
         raise GuardViolation("cannot advance: verify_and_advance did not run")
     if (step.verify.ready_to_advance
@@ -218,9 +201,9 @@ VerifyFn = Callable[[Knowledge, NextAnswer, ExecutionDecision], VerifyResult]
 
 def run_cycle(knowledge: Knowledge, *, decide: DecideFn, resolve: ExecuteFn,
               verify: VerifyFn) -> CycleStep:
-    """Run ONE atomic what-is-next cycle with both guards enforced.
+    """Run ONE atomic next-action decision cycle with both guards enforced.
 
-    decide -> what is next (a typed sub-task); resolve -> how to execute it,
+    decide -> select the next action (a typed sub-task); resolve -> how to execute it,
     reuse-first (guarded); verify -> did we do it right and can we advance
     (guarded).  Returns the CycleStep record; raises GuardViolation if either
     guard is broken."""
@@ -243,7 +226,7 @@ def run_cycle(knowledge: Knowledge, *, decide: DecideFn, resolve: ExecuteFn,
 
 
 def det_decide(knowledge: Knowledge) -> NextAnswer:
-    """A zero-model what-is-next: pick the next sub-task from obligations/facts."""
+    """A zero-model next-action decision: pick the next sub-task from obligations/facts."""
     if not knowledge.fact("has_baseline"):
         return NextAnswer("add_node", "baseline=deterministic_default",
                           "no baseline yet", 0.9)
@@ -317,7 +300,7 @@ def make_model_cycle(models: Sequence[str] | None = None, *,
     probe = registry_probe or (lambda _t: "")
 
     def decide(knowledge: Knowledge) -> NextAnswer:
-        # what-is-next itself is a deliberation when the decision is open.
+        # next-action decision itself is a deliberation when the decision is open.
         out = debate(knowledge, models=ms, rounds=rounds, questions=questions)
         cons = (out.get("consensus") or [])
         if not cons:
@@ -368,7 +351,7 @@ def make_model_cycle(models: Sequence[str] | None = None, *,
                   f"We chose next step: [{ans.kind}] {ans.target}\n"
                   f"Executed via: {ex.chosen} ({ex.handle})\n\n"
                   "Was this the right next step, executed correctly, and are we "
-                  "ready to move to the NEXT what-is-next? Answer ONLY as JSON "
+                  "ready to move to the NEXT next-action decision? Answer ONLY as JSON "
                   '{"outcome": one of ["correct_and_ready","correct_more_needed",'
                   '"incorrect","inconclusive"], "ready": true/false, '
                   '"evidence": "one sentence"}.')
@@ -416,13 +399,13 @@ def self_test() -> dict:
           all(k in ANSWER_KINDS for k in ("review_missed", "find_alternatives",
                                           "diagnose", "research")),
           "'what did we miss', 'what alternatives', 'what did we do wrong', and "
-          "research are answer KINDS of what-is-next, not sibling phases")
+          "research are answer KINDS of next-action decision, not sibling phases")
 
     # 2. the atomic cycle is exactly the three sibling stages.
     check("the_cycle_is_three_sibling_stages",
-          CYCLE_STAGES == ("what_is_next", "how_to_execute",
+          CYCLE_STAGES == ("select_next_action", "how_to_execute",
                            "verify_and_advance"),
-          "what is next -> how to execute -> verify and advance")
+          "select the next action -> how to execute -> verify and advance")
 
     # 3. a full deterministic cycle runs and reuses when the registry has it.
     k = Knowledge(goal="classify churn", facts={"has_baseline": True,
@@ -482,7 +465,7 @@ def self_test() -> dict:
     # 8. The record includes all three stages and reuse accounting.
     r = step.record()
     check("the_record_records_all_three_stages_and_reuse_accounting",
-          set(r) >= {"what_is_next", "how_to_execute", "verify_and_advance",
+          set(r) >= {"select_next_action", "how_to_execute", "verify_and_advance",
                      "model_calls_avoided"}
           and r["how_to_execute"]["chosen_rung"] == "exact_reuse",
           "the cycle record shows the sub-task, the ladder rung, the verify "

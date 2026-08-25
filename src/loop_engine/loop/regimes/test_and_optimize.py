@@ -1,6 +1,6 @@
 """Test-driven and optimization regimes.
 
-Two families of what-is-next answer that are not "add a node":
+Two families of next-action decision answer that are not "add a node":
 
 - **test_driven** — "we don't know enough to choose; run a test and ask again."
   The answer is a ``run_tests`` move; only its results let the loop decide.

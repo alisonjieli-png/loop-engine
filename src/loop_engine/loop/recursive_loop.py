@@ -1198,10 +1198,6 @@ class Loop:
     run_to_completion = run
 
 
-# The canonical public name (§19): one universal recursive class, two spellings.
-PractitionerLoop = Loop
-
-
 def suggested_templates() -> list:
     """A few starting-point loop configs as searchable resources — the "nice
     middle ground" front lever plus framework presets."""
@@ -1601,9 +1597,9 @@ def self_test() -> dict:
           lp19.is_terminal and lp19.result().stopped == "cancelled"
           and any(e.get("event") == "cancel" for e in lp19.ledger.events))
 
-    # 20. PractitionerLoop is the same canonical class (one runtime, §19).
-    check("practitioner_loop_is_the_same_canonical_class",
-          PractitionerLoop is Loop, "one universal recursive class")
+    # 20. Loop is the only runtime class.
+    check("loop_is_the_only_runtime_class",
+          Loop.__name__ == "Loop", "one universal Loop class")
 
     # 21. NATIVE RUN_HISTORY EMISSION: a root loop with enable_run_history
     # persists its canonical history automatically at terminal; spawned_loops

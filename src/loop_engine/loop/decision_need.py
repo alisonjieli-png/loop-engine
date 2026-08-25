@@ -1,4 +1,4 @@
-"""Decision need — detect WHY a decision is open, before asking what is next.
+"""Decision need — detect WHY a decision is open, before asking select the next action.
 
 A key v3 correction (§7): the system should not ask a broad resolver "what next?"
 without first identifying why a decision is due.  An expert first frames the open
@@ -190,5 +190,5 @@ def detect_decision_need(state: EpistemicState, *,
                     0.6, 0.5)
 
     return need("task_framing", "deliberate",
-                "No plan or clear route applies — deliberate on what is next.",
+                "No plan or clear route applies — deliberate on select the next action.",
                 0.5, 0.4, horizon="tactical")

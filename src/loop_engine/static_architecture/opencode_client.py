@@ -1,7 +1,7 @@
 """OpenCode-as-agent — delegate a multi-step coding task to a headless worker.
 
-The Ollama client in this package makes a SINGLE deliberation call: it asks a
-model "what is next" and parses typed moves back.  That is right for planning,
+The Ollama client in this package makes one deliberation call: it asks a model
+to select the next action and parses typed moves back. That is right for planning,
 but some moves are *do the work*: implement this DSL primitive, write and run its
 tests, fix it until it passes.  That is an agent loop, not one call — and OpenCode
 (``opencode``, installed here at 1.18.21) is exactly a headless agent loop that

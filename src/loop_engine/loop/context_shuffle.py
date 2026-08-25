@@ -3,7 +3,7 @@
 A human practitioner's best ideas often arrive off-task: on a walk, relaxed in
 the bath, or while immersed in something unrelated — ecology, music, geology —
 and a weird cross-domain connection surfaces that on-task focus would never
-reach.  An LLM, asked "what is next" cold, rarely bridges distant niches; it
+reach.  An LLM, asked "select the next action" cold, rarely bridges distant niches; it
 returns the near, conventional answer.  This module injects that shuffle
 deliberately: it produces deliberation frames that displace the reasoner into a
 distant domain, a different reasoning *mode*, or a different time, and asks the

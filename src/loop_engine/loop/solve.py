@@ -20,7 +20,7 @@ from pathlib import Path
 from ..strings.knowledge import Knowledge
 from ..strings.knowledge_state import EpistemicState, Claim, Unknown, KnowledgeDelta
 from ..loop.moves import family_of
-from ..loop.loop import DecisionService
+from ..loop.decision_service import DecisionService
 from ..loop.registry import ResolverRegistry
 from ..loop.regimes import register_library
 from ..loop.builtin_resolvers import register_builtins
@@ -114,7 +114,7 @@ def _execute_decision_workflow(
         for rd in out["iteration_records"]:
             persist_iteration_record(iteration_records_path, _iteration_record_obj(rd))
     view = build_studio_view(
-        title="What Is Next", task=goal, goal=goal,
+        title="Next action decision", task=goal, goal=goal,
         epistemic=None, iteration_records=out["iteration_records"])
     return {"run": out, "studio_markdown": render_markdown(view),
             "studio_html": render_html(view)}
@@ -213,7 +213,7 @@ def self_test() -> dict:
           "— zero model calls")
 
     check("the_run_emits_a_studio_dashboard",
-          "What Is Next" in out["studio_markdown"]
+          "Next action decision" in out["studio_markdown"]
           and out["studio_html"].startswith("<style>"),
           "the run emits a markdown summary and a self-contained HTML dashboard")
 

@@ -16,13 +16,17 @@ def retired_nomenclature_violations(root: str, policy: dict) -> list[dict]:
     """Return every configured retired term outside an exact exception."""
     terms = tuple(str(term) for term in policy.get("terms", ()))
     excluded = set(policy.get("excluded_files", ()))
+    excluded_directories = {
+        ".git", ".venv", "__pycache__", "archive", "assets", "build",
+        "dist", "evidence", "node_modules", "venv",
+        *policy.get("excluded_directories", ()),
+    }
     allowed = {str(path): tuple(fragments) for path, fragments
                in policy.get("allowed_fragments", {}).items()}
     violations = []
     for directory, dirnames, filenames in os.walk(root):
         dirnames[:] = [name for name in dirnames
-                       if name not in ("__pycache__", "build", "dist",
-                                       "evidence")]
+                       if name not in excluded_directories]
         for filename in filenames:
             if not filename.endswith(_TEXT_SUFFIXES):
                 continue

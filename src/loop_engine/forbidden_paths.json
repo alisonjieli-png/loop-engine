@@ -60,7 +60,14 @@
    "chronicle",
    "receipt",
    "stop_condition",
-   "child"
+   "child",
+   "what is next",
+   "what-is-next",
+   "what_is_next",
+   "whats_next",
+   "whatisnext",
+   "what's next",
+   "what’s next"
   ],
   "excluded_files": [
    "forbidden_paths.json"
