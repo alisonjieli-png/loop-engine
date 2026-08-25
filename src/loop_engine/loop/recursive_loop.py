@@ -32,7 +32,6 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
-from typing import Sequence
 
 from ..loop.kernel import KERNEL_NODES
 
@@ -90,6 +89,8 @@ def terminal_code(reason: str) -> str:
 SELF_PROMOTION_FORBIDDEN = ("search_improvement",)
 POWER_LEVELS = ("light", "standard", "deep", "max")
 _POWER_ALIASES = {"small": "light", "medium": "standard", "large": "deep"}
+MODEL_THINKING_POWER_LEVELS = ("small", "medium", "high", "max",
+                               "specialized")
 _FIVE = ("load", "choose", "act", "check", "commit")
 
 # The five core String roles EVERY loop must receive to stay grounded (coverage,
@@ -103,7 +104,7 @@ RAILS = (
     "every loop has a stop / abstention / budget-exhaustion condition",
     "every iteration is durably recorded",
     "every child has a parent and a declared return destination",
-    "child permissions never exceed the parent's",
+    "child modes never exceed the parent's delegation authority",
     "recursion depth and child count are bounded",
     "every capability search flows through the directory",
     "every semantic model call is visible and budgeted",
@@ -148,10 +149,13 @@ class LoopConfig:
     framework: str = "nine_step"
     logical_kind: str = "execution"
     replay_guarantee: str = "event_equivalent"
-    allowable_modes: tuple = MODES
-    preferred_modes: tuple = ("deterministic", "hybrid", "non_deterministic")
+    allowable_modes: tuple[str, ...] = MODES
+    preferred_modes: tuple[str, ...] = (
+        "deterministic", "hybrid", "non_deterministic")
+    delegated_modes: tuple[str, ...] = MODES
     power: str = "medium"
-    custom_steps: tuple = ()
+    llm_thinking_power: str = ""
+    custom_steps: tuple[str, ...] = ()
     max_depth: int = 3
     stop_condition: str = "run_to_completion"          # or "success_once"
     success_confidence_min: float = 0.5
@@ -163,9 +167,23 @@ class LoopConfig:
         if self.power not in POWER_LEVELS:
             raise ValueError(f"power must be one of {POWER_LEVELS} "
                              f"(aliases: {_POWER_ALIASES})")
-        for m in tuple(self.allowable_modes) + tuple(self.preferred_modes):
+        for m in (tuple(self.allowable_modes) + tuple(self.preferred_modes)
+                  + tuple(self.delegated_modes)):
             if m not in MODES:
                 raise ValueError(f"mode {m!r} must be one of {MODES}")
+        uses_model = any(mode in self.allowable_modes
+                         for mode in ("hybrid", "non_deterministic"))
+        if uses_model and not self.llm_thinking_power:
+            self.llm_thinking_power = "medium"
+        if (self.llm_thinking_power
+                and self.llm_thinking_power not in MODEL_THINKING_POWER_LEVELS):
+            raise ValueError(
+                "llm_thinking_power must be small, medium, high, max, or "
+                "specialized")
+        if not uses_model and self.llm_thinking_power:
+            raise ValueError(
+                "llm_thinking_power applies only to a loop that allows "
+                "hybrid or non_deterministic mode")
         if self.framework == "custom" and not self.custom_steps:
             raise ValueError("a custom framework needs custom_steps")
         if self.replay_guarantee not in REPLAY_GUARANTEES:
@@ -193,7 +211,7 @@ class LoopLedger:
     """The intelligent database of everything that happened — decisions, inputs,
     outputs, modes, spawns, infra calls.  Shared across a loop and its children so
     the whole recursive tree has one history."""
-    events: list = field(default_factory=list)
+    events: list[dict] = field(default_factory=list)
     _counter: int = 0
 
     def next_id(self) -> str:
@@ -219,12 +237,14 @@ class LoopLedger:
 @dataclass
 class StepOutcome:
     """What resolving one step produced.  ``spawn_goal`` triggers a child loop;
-    ``failed`` triggers a mode fallback (deterministic → hybrid → non_det)."""
+    ``failed`` triggers a mode fallback. ``model_calls`` counts physical
+    provider attempts, not semantic mode labels."""
     output: str
     mode: str = "deterministic"
     confidence: float = 0.8
     failed: bool = False
     spawn_goal: str = ""
+    model_calls: int = 0
 
 
 @dataclass
@@ -233,7 +253,7 @@ class LoopResult:
     output: str
     confidence: float
     steps_run: int
-    mode_counts: dict
+    mode_counts: dict[str, int]
     model_calls: int
     spawned: int
     stopped: str = ""                   # "" | budget | depth | done | success_once
@@ -301,6 +321,8 @@ class Loop:
                             logical_kind=self.config.logical_kind,
                             replay_guarantee=self.config.replay_guarantee,
                             power=self.config.power,
+                            llm_thinking_power=
+                                self.config.llm_thinking_power,
                             stop_condition=self.config.stop_condition,
                             baseline_goal=getattr(contract, "goal", goal),
                             baseline_terminal_mode=m,
@@ -350,32 +372,56 @@ class Loop:
             return seq[seq.index(current) + 1]
         return "abstain"
 
+    def _require_allowed_outcome_mode(self, outcome: StepOutcome,
+                                      step: str) -> None:
+        """Refuse a handler that reports a mode this loop cannot use."""
+        if outcome.mode not in self.config.allowable_modes:
+            self.ledger.record(
+                loop_id=self.loop_id, event="failure.detected",
+                failure_kind="disallowed_step_mode", step=step,
+                reported_mode=outcome.mode,
+                allowable_modes=tuple(self.config.allowable_modes))
+            raise LoopError(
+                f"step {step!r} reported mode {outcome.mode!r}, but loop "
+                f"{self.loop_id} allows only {tuple(self.config.allowable_modes)}")
+
     # --- recursion: one loop initializes another ---------------------------
 
-    def spawn(self, goal: str, config: "LoopConfig | None" = None) -> "Loop":
+    def spawn(self, goal: str, config: "LoopConfig | None" = None, *,
+              contract=None) -> "Loop":
         """Initialize a CHILD loop (e.g. a research loop) whose answer helps this
         loop proceed.  Depth-limited; recorded on the shared ledger.
 
-        The permission rail: a child NEVER has more mode permissions than its
-        parent.  A requested config is clamped to the intersection of its
-        allowable modes with the parent's (order preserved); an empty
-        intersection is refused.  Power may differ — power raises effort,
-        never permissions.
+        Mode is local to each loop. The parent's own ``allowable_modes`` do not
+        determine the child's mode. A deterministic loop may start a
+        non-deterministic loop, and the reverse is also valid.
+
+        ``delegated_modes`` is the separate authority rail. A requested child
+        config is clamped to the modes the parent may delegate. The child's own
+        delegation authority is also clamped, so it cannot pass on authority
+        that the parent did not grant. Power may differ; effort never grants
+        new authority.
         """
         if self.depth + 1 > self.config.max_depth:
             raise LoopError(f"max recursion depth {self.config.max_depth} reached")
         clamped_from = ()
+        delegated_clamped_from = ()
         if config is not None and config is not self.config:
             allowed = tuple(m for m in config.allowable_modes
-                            if m in self.config.allowable_modes)
+                            if m in self.config.delegated_modes)
             if not allowed:
                 raise LoopError(
                     "child modes "
                     f"{tuple(config.allowable_modes)} share nothing with the "
-                    f"parent's {tuple(self.config.allowable_modes)} — a child "
-                    "never has more permissions than its parent")
+                    "parent's delegation authority "
+                    f"{tuple(self.config.delegated_modes)}")
+            delegated = tuple(m for m in config.delegated_modes
+                              if m in self.config.delegated_modes)
             if set(allowed) != set(config.allowable_modes):
                 clamped_from = tuple(config.allowable_modes)
+            if set(delegated) != set(config.delegated_modes):
+                delegated_clamped_from = tuple(config.delegated_modes)
+            if clamped_from or delegated_clamped_from:
                 config = LoopConfig(
                     framework=config.framework,
                     logical_kind=config.logical_kind,
@@ -383,24 +429,35 @@ class Loop:
                     allowable_modes=allowed,
                     preferred_modes=tuple(m for m in config.preferred_modes
                                           if m in allowed) or allowed,
+                    delegated_modes=delegated,
                     power=config.power,
+                    llm_thinking_power=(
+                        config.llm_thinking_power if any(
+                            mode in allowed for mode in
+                            ("hybrid", "non_deterministic")) else ""),
                     custom_steps=config.custom_steps,
                     max_depth=config.max_depth,
                     stop_condition=config.stop_condition,
                     success_confidence_min=config.success_confidence_min)
         # the REQUEST is recorded before the child exists: a spawn that is
-        # refused by the permission clamp still leaves a trace of having been
+        # refused by the delegation clamp still leaves a trace of having been
         # asked for, which a spawn-only event cannot show.
         self.ledger.record(loop_id=self.loop_id, event="child_requested",
                            goal=str(goal)[:120], depth=self.depth + 1)
         child = Loop(goal, config or self.config, parent=self,
-                     depth=self.depth + 1, ledger=self.ledger)
+                     depth=self.depth + 1, ledger=self.ledger,
+                     contract=contract)
         self.ledger.record(loop_id=child.loop_id, parent=self.loop_id,
                            depth=child.depth, event="spawn", goal=goal,
                            **({"modes_clamped_from": clamped_from,
                                "modes_clamped_to":
                                    tuple(child.config.allowable_modes)}
-                              if clamped_from else {}))
+                              if clamped_from else {}),
+                           **({"delegated_modes_clamped_from":
+                                  delegated_clamped_from,
+                               "delegated_modes_clamped_to":
+                                  tuple(child.config.delegated_modes)}
+                              if delegated_clamped_from else {}))
         return child
 
     # --- the structural plan ----------------------------------------------
@@ -422,6 +479,7 @@ class Loop:
                                event="step", step=step, mode=mode)
         return {"loop_id": self.loop_id, "framework": self.config.framework,
                 "power": self.config.power, "open": self.config.framework == "open",
+                "llm_thinking_power": self.config.llm_thinking_power,
                 "max_model_calls": st["max_model_calls"], "steps": rows}
 
     # --- initialization from a serialized Loop Specification String ---------
@@ -468,7 +526,10 @@ class Loop:
             preferred_modes=_modes(resolution.get("preferred_waterfall"),
                                    ("deterministic", "hybrid",
                                     "non_deterministic")),
+            delegated_modes=_modes(children.get("allowed_modes"), MODES),
             power=(spec.get("power") or {}).get("profile", "standard"),
+            llm_thinking_power=(spec.get("models") or {}).get(
+                "thinking_power", ""),
             custom_steps=tuple(template.get("steps", ())),
             max_depth=int(children.get("maximum_depth", 3)),
             stop_condition=(spec.get("stopping") or {}).get(
@@ -605,7 +666,10 @@ class Loop:
                            "replay_guarantee": self.config.replay_guarantee,
                            "allowable_modes": list(self.config.allowable_modes),
                            "preferred_modes": list(self.config.preferred_modes),
+                           "delegated_modes": list(self.config.delegated_modes),
                            "power": self.config.power,
+                           "llm_thinking_power":
+                               self.config.llm_thinking_power,
                            "custom_steps": list(self.config.custom_steps),
                            "max_depth": self.config.max_depth,
                            "stop_condition": self.config.stop_condition,
@@ -632,7 +696,11 @@ class Loop:
                                                      "event_equivalent"),
                               allowable_modes=tuple(c["allowable_modes"]),
                               preferred_modes=tuple(c["preferred_modes"]),
+                              delegated_modes=tuple(
+                                  c.get("delegated_modes", MODES)),
                               power=c["power"],
+                              llm_thinking_power=c.get(
+                                  "llm_thinking_power", ""),
                               custom_steps=tuple(c["custom_steps"]),
                               max_depth=c["max_depth"],
                               stop_condition=c.get("stop_condition",
@@ -673,6 +741,7 @@ class Loop:
             it["pending"] = None
             outcome = StepOutcome(output=f"{step}:recovered:{forced_mode}",
                                   mode=forced_mode, confidence=0.6)
+            self._require_allowed_outcome_mode(outcome, step)
             self.ledger.record(loop_id=self.loop_id, event="fallback",
                               step=step, from_mode="deferred",
                               to_mode=forced_mode)
@@ -715,6 +784,7 @@ class Loop:
             self.ledger.record(loop_id=self.loop_id, event="iteration_started",
                                step=step, iteration=it["steps_run"] + 1)
             outcome = handler(self, step, it["context"])
+            self._require_allowed_outcome_mode(outcome, step)
             attempts = 0
             while outcome.failed and attempts < 3:  # the mode fallback, live
                 fb = self.fallback_mode(outcome.mode)
@@ -738,6 +808,7 @@ class Loop:
                                    to_mode=fb)
                 outcome = StepOutcome(output=f"{step}:recovered:{fb}", mode=fb,
                                       confidence=0.6)
+                self._require_allowed_outcome_mode(outcome, step)
                 attempts += 1
         if outcome.spawn_goal and self.depth + 1 <= self.config.max_depth:
             child = self.spawn(outcome.spawn_goal)   # loops initialize loops
@@ -748,9 +819,14 @@ class Loop:
                                   mode=outcome.mode,
                                   confidence=min(outcome.confidence,
                                                  cres.confidence))
-        if outcome.mode in ("hybrid", "non_deterministic"):
-            it["model_calls"] += 1
-            rec["semantic_calls"] = 1           # never more than one (§12)
+        physical_model_calls = max(0, int(outcome.model_calls))
+        if physical_model_calls:
+            if physical_model_calls > 1:
+                raise LoopError(
+                    "one loop iteration may report at most one physical "
+                    "model call")
+            it["model_calls"] += physical_model_calls
+            rec["semantic_calls"] = physical_model_calls
             if it["model_calls"] > st["max_model_calls"]:
                 self.ledger.record(loop_id=self.loop_id, event="budget_stop",
                                    model_calls=it["model_calls"])
@@ -882,6 +958,23 @@ def self_test() -> dict:
           and balanced.choose_mode(deterministic_available=False) == "hybrid",
           "deterministic first; det-only stays deterministic; no code → hybrid")
 
+    disallowed_mode = Loop(
+        "mode guard",
+        LoopConfig(framework="custom", custom_steps=("act",),
+                   allowable_modes=("deterministic",),
+                   preferred_modes=("deterministic",)))
+    disallowed_refused = False
+    try:
+        disallowed_mode.run(handler=lambda loop, step, context: StepOutcome(
+            output="mislabelled", mode="hybrid"))
+    except LoopError:
+        disallowed_refused = True
+    check("handler_cannot_report_a_mode_the_loop_does_not_allow",
+          disallowed_refused and any(
+              event.get("failure_kind") == "disallowed_step_mode"
+              for event in disallowed_mode.ledger.events),
+          "reported modes are enforced, not trusted as labels")
+
     # 4. FALLBACK moves along the waterfall: deterministic → hybrid → non_det.
     check("mode_fallback_walks_the_waterfall",
           balanced.fallback_mode("deterministic") == "hybrid"
@@ -907,6 +1000,7 @@ def self_test() -> dict:
     improve_root = Loop("review history", LoopConfig(
         allowable_modes=("deterministic",),
         preferred_modes=("deterministic",), max_depth=2,
+        delegated_modes=("deterministic",),
         logical_kind="search_improvement",
         replay_guarantee="evidence_equivalent"))
     improve_child = improve_root.spawn("audit context", LoopConfig(
@@ -920,6 +1014,26 @@ def self_test() -> dict:
           and improve_child.config.logical_kind == "search_improvement"
           and improve_child.config.replay_guarantee == "evidence_equivalent")
 
+    det_parent = Loop("deterministic orchestration", LoopConfig(
+        allowable_modes=("deterministic",),
+        preferred_modes=("deterministic",), max_depth=2))
+    model_child = det_parent.spawn("open-ended research", LoopConfig(
+        framework="custom", custom_steps=("research",),
+        allowable_modes=("non_deterministic",),
+        preferred_modes=("non_deterministic",), max_depth=2))
+    model_parent = Loop("model-led planning", LoopConfig(
+        allowable_modes=("non_deterministic",),
+        preferred_modes=("non_deterministic",), max_depth=2))
+    code_child = model_parent.spawn("validate the proposal", LoopConfig(
+        framework="custom", custom_steps=("validate",),
+        allowable_modes=("deterministic",),
+        preferred_modes=("deterministic",), max_depth=2))
+    check("parent_and_child_modes_are_independent_under_delegation_policy",
+          model_child.config.allowable_modes == ("non_deterministic",)
+          and code_child.config.allowable_modes == ("deterministic",)
+          and model_child.parent is det_parent and code_child.parent is model_parent,
+          "deterministic starts model-led; model-led starts deterministic")
+
     # 6. POWER is a simple lever with monotonic concrete settings.
     s = {p: POWER_SETTINGS[p]["max_model_calls"] for p in POWER_LEVELS}
     i = {p: POWER_SETTINGS[p]["min_intelligence_per_step"] for p in POWER_LEVELS}
@@ -927,6 +1041,22 @@ def self_test() -> dict:
           s["light"] < s["standard"] < s["deep"] < s["max"]
           and i["light"] < i["standard"] < i["deep"] < i["max"],
           "light to max scales model calls and required Context Intelligence")
+
+    invalid_thinking_power = False
+    try:
+        LoopConfig(
+            allowable_modes=("deterministic",),
+            llm_thinking_power="high")
+    except ValueError:
+        invalid_thinking_power = True
+    model_config = LoopConfig(
+        allowable_modes=("hybrid",), preferred_modes=("hybrid",),
+        llm_thinking_power="specialized")
+    check("model_thinking_power_applies_only_to_model_using_loops",
+          invalid_thinking_power
+          and LoopConfig().llm_thinking_power == "medium"
+          and model_config.llm_thinking_power == "specialized",
+          "deterministic-only refuses it; model-using loops default or declare it")
 
     # 6b. spec refinements: legacy power names alias; the three modes have
     # precise internal names; five core String roles + the rails are declared.
@@ -1001,7 +1131,7 @@ def self_test() -> dict:
         return default_handler(loop, step, context)
     lp3 = Loop("flaky", LoopConfig(framework="custom",
                                    custom_steps=("orient", "act", "verify")))
-    r3 = lp3.run(handler=flaky_handler)
+    lp3.run(handler=flaky_handler)
     fell = [e for e in lp3.ledger.events if e.get("event") == "fallback"]
     check("mode_fallback_runs_live",
           fell and fell[0]["from_mode"] == "deterministic"
@@ -1015,7 +1145,8 @@ def self_test() -> dict:
                  LoopConfig(allowable_modes=("non_deterministic",),
                             preferred_modes=("non_deterministic",),
                             power="small"))
-    r4 = heavy.run()
+    r4 = heavy.run(handler=lambda loop, step, context: StepOutcome(
+        output="model attempt", mode="non_deterministic", model_calls=1))
     check("power_budget_stops_a_model_heavy_loop",
           r4.stopped == "budget" and r4.model_calls == 3 and r4.steps_run <= 2,
           f"small power = 2 model calls; stopped at the 3rd ({r4.steps_run} steps)")
@@ -1077,6 +1208,7 @@ def self_test() -> dict:
     # 17. pause → serializable token → resume continues exactly where it stopped.
     lp17 = Loop("pausable", LoopConfig(
         framework="five_step", power="large",
+        delegated_modes=("deterministic", "hybrid"),
         logical_kind="search_improvement",
         replay_guarantee="evidence_equivalent"))
     lp17.run_next_iteration()
@@ -1091,6 +1223,7 @@ def self_test() -> dict:
           and r17.steps_run == 5 and r17.stopped == "done"
           and lp17b.config.logical_kind == "search_improvement"
           and lp17b.config.replay_guarantee == "evidence_equivalent"
+          and lp17b.config.delegated_modes == ("deterministic", "hybrid")
           and any(e.get("event") == "resume" for e in lp17b.ledger.events),
           "2 steps before pause + 3 after resume = the same 5-step loop")
 
@@ -1099,7 +1232,7 @@ def self_test() -> dict:
     def semantic_flaky(loop, step, context):
         if step == "act" and "act" not in context:
             return StepOutcome(output="act:model-error", mode="hybrid",
-                               failed=True)
+                               failed=True, model_calls=1)
         return default_handler(loop, step, context)
     lp18 = Loop("one call per iteration",
                 LoopConfig(framework="custom", custom_steps=("orient", "act"),

@@ -52,6 +52,19 @@
   "secret patterns scan code AND receipts \u2014 evidence files must be secret-free too."
  ],
  "module_size_hard_cap": 800,
+ "public_parameter_hard_cap": 9,
+ "long_signature_exceptions": {
+  "loop/receipts.py:build_iteration_receipt": "Legacy evidence builder. Replace the parameter list with one typed IterationRecordInput while preserving the stored format.",
+  "code_nodes/smoke_ladder.py:run_smoke_loop": "Legacy smoke runner. Move run controls into one SmokeRunSpec and keep the current function as a compatibility adapter.",
+  "loop/studio.py:build_studio_view": "Legacy projection builder. Add one StudioProjectionInput that groups run state, usage, and display options.",
+  "code_nodes/universal_solve.py:solve": "Legacy universal front door. Add one SolveRequest object and retain solve as a compatibility wrapper during alpha.",
+  "code_nodes/measurement.py:read_generalization_gap": "Legacy metric helper. Group train, validation, direction, and tolerance fields in one GeneralizationGapInput.",
+  "loop/decision_need.py:detect_decision_need": "Legacy decision classifier. Group state signals in one DecisionContext object.",
+  "static_architecture/ollama_client.py:chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead.",
+  "static_architecture/mistral_client.py:chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead.",
+  "static_architecture/openrouter_client.py:chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead.",
+  "static_architecture/custom_endpoint.py:_Adapter.chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead."
+ },
  "module_size_exceptions": {
   "loop/kernel.py": "the nine-step executor's default implementations; split plan: move per-step defaults into loop/steps/ facades one step at a time",
   "loop/recursive_loop.py": "the canonical Loop runtime; split plan: extract LoopSpec/pause-resume into loop/spec.py once the kernel routes through run_next_iteration"

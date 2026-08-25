@@ -56,7 +56,7 @@ import os
 from dataclasses import dataclass, field
 
 from .model_discovery import ModelRoster, discover_roster
-from .provider_failover import DEFAULT_ORDER, call_with_failover
+from .provider_failover import DEFAULT_ORDER
 
 #: Which loop modes need a semantic call. Deterministic never does — that is
 #: the whole point of the zero-model lane.
@@ -202,21 +202,49 @@ def advice_function(access: "ModelAccess | None" = None, *, role: str = "",
         # order is only a fallback for an access built without discovery
         order = tuple(acc.providers_working) or DEFAULT_ORDER
 
-    models = {}
-    if role and acc.roster is not None:
-        for provider in acc.providers_working:
-            best = next((c for c in acc.roster.for_role(role)
-                         if c.provider == provider), None)
-            if best is not None:
-                models[provider] = best.model
+    from .model_discovery import roster_to_routes
+    from .model_gateway import (ModelGateway, ModelGatewayConfig,
+                                ModelGatewayRequest, builtin_provider_specs)
+    from .model_routes import RoutePolicy
+    from .provider_failover import PROVIDERS
+
+    routes = roster_to_routes(acc.roster or ModelRoster())
+    ordered_routes = []
+    for provider in order:
+        candidates = [route for route in routes if route.provider == provider]
+        if role and acc.roster is not None:
+            role_models = {choice.model for choice in acc.roster.for_role(role)
+                           if choice.provider == provider}
+            candidates = [route for route in candidates
+                          if route.model in role_models] or candidates
+        if candidates:
+            ordered_routes.append(candidates[0])
+    specs = builtin_provider_specs({
+        provider: PROVIDERS[provider] for provider in order
+        if provider in PROVIDERS})
+    allow_local = any(spec.locality == "local" for spec in specs)
+    gateway = ModelGateway(
+        providers=specs, routes=tuple(ordered_routes),
+        policy=RoutePolicy(allow_local_counted_generation=allow_local))
+    route_names = tuple(route.name for route in ordered_routes)
 
     def _advise(prompt: str):
-        r = call_with_failover(prompt, order=tuple(order), models=models)
+        r = gateway.invoke(ModelGatewayRequest(
+            prompt,
+            ModelGatewayConfig(route_names=route_names,
+                               max_route_attempts=max(1, len(route_names)))))
         if not r.ok:
             tried = "; ".join(f"{a.provider}: {a.error[:60]}"
                               for a in r.attempts)
             raise RuntimeError(f"every provider refused -> {tried}")
-        return str(r.text), r.usage_record()
+        return str(r.text), {
+            "provider": r.provider, "model": r.model,
+            "prompt_tokens": r.input_tokens,
+            "eval_tokens": r.output_tokens,
+            "providers_tried": [attempt.provider for attempt in r.attempts],
+            "routes_tried": [attempt.route for attempt in r.attempts],
+            "accounting_complete": r.accounting_complete,
+        }
 
     return _advise
 
@@ -280,10 +308,20 @@ def self_test() -> dict:
         DEFAULT_MODEL = "mine"
 
         @staticmethod
-        def chat_maxout(prompt, *, model="", system="", timeout=0):
+        def chat_maxout(prompt, *, model="", system="", timeout=0,
+                        temperature=0.7, max_attempts=1,
+                        max_output_tokens=None):
             return ChatResult(text="from my own box", model="mine",
                               prompt_tokens=3, eval_tokens=4, ok=True)
         chat = chat_maxout
+
+        @staticmethod
+        def verify(model=""):
+            return {"ok": True, "model": model or "mine"}
+
+        @staticmethod
+        def live_models():
+            return ["mine"]
 
     saved = dict(PROVIDERS)
     try:

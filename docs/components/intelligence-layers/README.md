@@ -44,6 +44,13 @@ GitHub and GitLab repositories, repository templates, tools, skills, notebooks,
 workflows, and large systems. Read
 [Code Intelligence templates](CODE-INTELLIGENCE-TEMPLATES.md).
 
+Previous Run and Solution Intelligence has its own storage, retrieval,
+applicability, and evidence boundaries. Read
+[Previous Run and Solution Intelligence](PREVIOUS-RUN-AND-SOLUTION-INTELLIGENCE.md).
+
+User Intelligence has explicit scope, strength, timing, precedence, conflict,
+and response rules. Read [User Intelligence](USER-INTELLIGENCE.md).
+
 ## Current built-in population
 
 The active population is computed from the package registries. The review

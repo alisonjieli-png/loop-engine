@@ -151,10 +151,12 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
 def chat_maxout(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
                 temperature: float = 0.7, timeout: float = 900.0,
                 api_key: "str | None" = None, backoff: float = 0.9,
-                floor_frac: float = 0.3, max_attempts: int = 8) -> ChatResult:
+                floor_frac: float = 0.3, max_attempts: int = 8,
+                max_output_tokens: "int | None" = None) -> ChatResult:
     """Full output ceiling, backing off only on failure — same policy as the
     other providers, so a failover does not change the call's semantics."""
-    ceiling = max_output_for(model)
+    ceiling = min(max_output_for(model), int(max_output_tokens)) \
+        if max_output_tokens is not None else max_output_for(model)
     mt, last, attempt = ceiling, None, 1
     for attempt in range(1, max_attempts + 1):
         res = chat(prompt, model=model, system=system, max_tokens=int(mt),

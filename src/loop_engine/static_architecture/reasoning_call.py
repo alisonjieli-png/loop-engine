@@ -25,10 +25,9 @@ testable; production routes through the strict model-call DAG.
 from __future__ import annotations
 
 import hashlib
-import json
 import random
 from dataclasses import dataclass, field, asdict
-from typing import Any, Callable, Sequence
+from typing import Callable, Sequence
 
 # The 13 canonical prompt blocks, highest priority first.
 PROMPT_BLOCKS = (
@@ -89,6 +88,7 @@ class ReasoningRequest:
     output_schema: str = ""
     allowed_tools: tuple = ()
     allowed_models: tuple = ()
+    allowed_routes: tuple = ()
     cost_budget: "float | None" = None
 
 
@@ -110,6 +110,7 @@ class ModelInvocationRequest:
     prompt: str
     ordered_blocks: list
     model_chain: tuple
+    route_chain: tuple
     temperature: float
     seeds: Seeds
     prompt_digest: str
@@ -121,13 +122,18 @@ class ModelInvocationResult:
     ok: bool
     text: str = ""
     model_used: str = ""
-    prompt_tokens: int = 0
-    eval_tokens: int = 0
+    provider_used: str = ""
+    route_used: str = ""
+    prompt_tokens: "int | None" = 0
+    eval_tokens: "int | None" = 0
+    attempts: list = field(default_factory=list)
     result_digest: str = ""
     error: str = ""
 
     @property
-    def total_tokens(self) -> int:
+    def total_tokens(self) -> "int | None":
+        if self.prompt_tokens is None or self.eval_tokens is None:
+            return None
         return self.prompt_tokens + self.eval_tokens
 
 
@@ -225,6 +231,7 @@ def to_invocation(request: ReasoningRequest, spec: PromptAssemblySpec, *,
     return ModelInvocationRequest(
         prompt=prompt, ordered_blocks=order,
         model_chain=tuple(request.allowed_models),
+        route_chain=tuple(request.allowed_routes),
         temperature=temperature, seeds=spec.seeds,
         prompt_digest=_digest(prompt),
         cache_key=cache_key(spec, prompt))
@@ -232,7 +239,7 @@ def to_invocation(request: ReasoningRequest, spec: PromptAssemblySpec, *,
 
 def invoke(inv: ModelInvocationRequest, *,
            ask: "Callable | None" = None, ledger=None,
-           parent=None) -> ModelInvocationResult:
+           parent=None, gateway=None) -> ModelInvocationResult:
     """Run an invocation through the strict model-call DAG, AS A LOOP.
 
     Owner law (2026-08-24): every model call is a loop.  The four-stage DAG
@@ -240,33 +247,57 @@ def invoke(inv: ModelInvocationRequest, *,
     provider call is never a silent side effect of a helper.  Pass ``ledger``
     to put the request and its outcome on the run's own timeline.
     ``ask`` stays injectable so the DAG remains testable offline."""
-    from ..static_architecture.model_call import AskSpec, execute_ask
-    from ..loop.encapsulate import as_model_loop
-    ask = ask or execute_ask
-    spec = AskSpec(question=inv.prompt, temperature=inv.temperature)
-    if inv.model_chain:
-        spec.models = inv.model_chain
-    res = as_model_loop(inv.prompt[:60], lambda: ask(spec),
-                        ledger=ledger, parent=parent)["value"]
-    text = getattr(res, "text", "") or ""
+    if ask is not None:
+        from ..static_architecture.model_call import AskSpec
+        from ..loop.encapsulate import as_model_loop
+        spec = AskSpec(question=inv.prompt, temperature=inv.temperature)
+        if inv.model_chain:
+            spec.models = inv.model_chain
+        res = as_model_loop(inv.prompt[:60], lambda: ask(spec),
+                            ledger=ledger, parent=parent)["value"]
+        text = getattr(res, "text", "") or ""
+        return ModelInvocationResult(
+            ok=bool(getattr(res, "ok", False)), text=text,
+            model_used=getattr(res, "model_used", ""),
+            provider_used=getattr(res, "provider", ""),
+            prompt_tokens=getattr(res, "total_tokens", 0), eval_tokens=0,
+            result_digest=_digest(text),
+            error="" if getattr(res, "ok", False)
+            else getattr(res, "error", ""))
+
+    from .model_gateway import (ModelGateway, ModelGatewayConfig,
+                                ModelGatewayRequest)
+    gateway = gateway or ModelGateway()
+    response = gateway.invoke(
+        ModelGatewayRequest(
+            inv.prompt,
+            ModelGatewayConfig(
+                route_names=inv.route_chain,
+                allowed_models=inv.model_chain,
+                max_route_attempts=max(1, len(inv.route_chain) or 3)),
+            temperature=inv.temperature),
+        ledger=ledger, parent=parent)
     return ModelInvocationResult(
-        ok=bool(getattr(res, "ok", False)), text=text,
-        model_used=getattr(res, "model_used", ""),
-        prompt_tokens=getattr(res, "total_tokens", 0), eval_tokens=0,
-        result_digest=_digest(text),
-        error="" if getattr(res, "ok", False) else getattr(res, "error", ""))
+        ok=response.ok, text=response.text, model_used=response.model,
+        provider_used=response.provider, route_used=response.route,
+        prompt_tokens=response.input_tokens,
+        eval_tokens=response.output_tokens,
+        attempts=[attempt.to_dict() for attempt in response.attempts],
+        result_digest=_digest(response.text), error=response.error)
 
 
 def run_reasoning(request: ReasoningRequest, blocks: dict, *,
                   layout_policy: str = "canonical",
                   seeds: "Seeds | None" = None, temperature: float = 0.7,
-                  ask: "Callable | None" = None) -> dict:
+                  ask: "Callable | None" = None, gateway=None,
+                  ledger=None, parent=None) -> dict:
     """The whole standardized pipeline in one call, returning every typed
     object for the receipt."""
     spec = PromptAssemblySpec(blocks=blocks, layout_policy=layout_policy,
                               seeds=seeds or Seeds())
     inv = to_invocation(request, spec, temperature=temperature)
-    result = invoke(inv, ask=ask)
+    result = invoke(inv, ask=ask, gateway=gateway,
+                    ledger=ledger, parent=parent)
     return {"record_type": "reasoning_call/v1",
             "request": {"question": request.question,
                         "objective": request.objective},
@@ -366,6 +397,30 @@ def self_test() -> dict:
           and out["result"]["result_digest"],
           "ReasoningRequest -> PromptAssemblySpec -> ModelInvocationRequest -> "
           "ModelInvocationResult, all digested")
+
+    from .model_gateway import GatewayAttempt, ModelGatewayResult
+
+    class _Gateway:
+        def invoke(self, request, **kwargs):
+            return ModelGatewayResult(
+                ok=True, text="gateway answer", provider="mistral",
+                model="mistral-small", route="test.mistral",
+                input_tokens=8, output_tokens=5,
+                attempts=[GatewayAttempt(
+                    "mistral", "mistral-small", "test.mistral", "loop2",
+                    True, 8, 5, True, provider_ok=True)])
+
+    gateway_out = run_reasoning(
+        ReasoningRequest(question="use gateway", allowed_routes=(
+            "test.mistral",)),
+        all_blocks, gateway=_Gateway())
+    check("production_reasoning_uses_the_provider_neutral_gateway",
+          gateway_out["result"]["provider_used"] == "mistral"
+          and gateway_out["result"]["route_used"] == "test.mistral"
+          and gateway_out["result"]["prompt_tokens"] == 8
+          and gateway_out["result"]["eval_tokens"] == 5
+          and len(gateway_out["result"]["attempts"]) == 1,
+          "provider, route, split usage, and attempts survive the typed path")
 
     # 8. assembly is deterministic — same inputs, same digest.
     a = to_invocation(req, PromptAssemblySpec(blocks=all_blocks,

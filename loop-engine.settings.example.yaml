@@ -1,0 +1,76 @@
+# Loop Engine user settings
+version: 1
+
+loop:
+  framework: nine_step
+  allowable_modes: [deterministic, hybrid, non_deterministic]
+  preferred_modes: [deterministic, hybrid, non_deterministic]
+  delegated_modes: [deterministic, hybrid, non_deterministic]
+  max_depth: 3
+  stop_condition: run_to_completion
+  success_confidence_min: 0.5
+
+search:
+  mode: hybrid
+  lexical_backend: fts5
+  vector_backend: hash
+  vector_model: ""
+  top_k: 10
+  zero_model_first: true
+
+models:
+  default_thinking_power: medium
+  allow_local_counted_generation: false
+  providers:
+    - id: ollama_cloud
+      kind: builtin
+      credential_env: OLLAMA_API_KEY
+    - id: mistral
+      kind: builtin
+      credential_env: MISTRAL_API_KEY
+    - id: openrouter
+      kind: builtin
+      credential_env: OPENROUTER_API_KEY
+  tiers:
+    small:
+      routes: [cloud.mistral, cloud.default]
+      max_output_tokens: 512
+      timeout_seconds: 120
+      max_attempts: 2
+    medium:
+      routes: [cloud.default, cloud.mistral.large, cloud.openrouter]
+      max_output_tokens: 2048
+      timeout_seconds: 300
+      max_attempts: 3
+    high:
+      routes: [cloud.mistral.large, cloud.hard, cloud.openrouter.reasoning]
+      max_output_tokens: 4096
+      timeout_seconds: 600
+      max_attempts: 3
+    max:
+      routes: [cloud.hard, cloud.openrouter.reasoning, cloud.mistral.large]
+      max_output_tokens: 8192
+      timeout_seconds: 900
+      max_attempts: 3
+    specialized:
+      routes: []
+      max_output_tokens: 4096
+      timeout_seconds: 600
+      max_attempts: 2
+  escalation:
+    enabled: false
+    order: [small, medium, high, max]
+    on_errors: [output_validation_failed]
+    max_tier_changes: 1
+
+operating:
+  access_mode: approved_external_read
+  reasoning_and_model_mode: deterministic_first_local_first
+  construction_and_execution_mode: sandbox_generate
+  effort_mode: standard
+  optimization_mode: quality_first
+  limits: {}
+
+history:
+  runs_dir: ~/.loop-engine/runs
+  save_chronicle: true

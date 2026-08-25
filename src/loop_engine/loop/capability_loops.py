@@ -54,23 +54,14 @@ def _new_loop(*, goal: str, config, contract, ledger=None, parent=None):
     if parent.depth + 1 > parent.config.max_depth:
         raise CapabilityLoopError(
             f"max recursion depth {parent.config.max_depth} reached")
-    if "deterministic" not in parent.config.allowable_modes:
-        raise CapabilityLoopError(
-            "the parent does not allow the code-only mode required by this "
-            "Static Architecture capability")
     if ledger is not None and ledger is not parent.ledger:
         raise CapabilityLoopError(
             "a child capability loop must use its parent's shared ledger")
 
-    parent.ledger.record(loop_id=parent.loop_id, event="child_requested",
-                         goal=goal[:120], depth=parent.depth + 1)
     try:
-        child = Loop(goal, config, parent=parent, depth=parent.depth + 1,
-                     ledger=parent.ledger, contract=contract)
+        child = parent.spawn(goal, config, contract=contract)
     except LoopError as exc:
         raise CapabilityLoopError(str(exc)) from exc
-    parent.ledger.record(loop_id=child.loop_id, parent=parent.loop_id,
-                         depth=child.depth, event="spawn", goal=goal)
     return child
 
 

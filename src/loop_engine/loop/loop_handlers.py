@@ -199,10 +199,10 @@ def self_test() -> dict:
                                   for e in infra),
           "one real search per step, each with its hit count")
 
-    # 5. the run completes with mixed modes and model calls counted.
-    check("the_real_run_completes_with_mixed_modes",
+    # 5. the run completes with mixed modes without inventing provider calls.
+    check("the_real_run_completes_with_mixed_modes_without_fake_calls",
           res.steps_run == 3 and res.mode_counts.get("deterministic") == 2
-          and res.mode_counts.get("hybrid") == 1 and res.model_calls == 1,
+          and res.mode_counts.get("hybrid") == 1 and res.model_calls == 0,
           f"modes {res.mode_counts}, {res.model_calls} model call")
 
     # 6. nine_step delegates to the KERNEL (the wired run), recorded on the loop

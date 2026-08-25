@@ -36,7 +36,6 @@ from dataclasses import dataclass, field
 from typing import Callable, Sequence
 
 from ..strings.knowledge import Knowledge
-from ..loop.moves import move, answer, WhatIsNextAnswer
 
 
 # ===========================================================================
@@ -309,8 +308,9 @@ def make_model_cycle(models: Sequence[str] | None = None, *,
     handle, no model is called at all.  Only when it (and the deterministic rungs)
     come up empty does resolve escalate to an LLM/deliberation, and decide/verify
     use max-output calls.  The reuse-first guard still applies to every result."""
-    from ..static_architecture.ollama_client import chat_maxout
-    from ..static_architecture.ollama_resolvers import debate, parse_moves, render_next_move_prompt
+    from ..static_architecture.provider_pinned import (
+        ProviderPinnedRequest, invoke_provider_model)
+    from ..static_architecture.ollama_resolvers import debate
     from ..static_architecture.ollama_resolvers import COUNCIL_MODELS
     import json as _json
     ms = list(models) if models else list(COUNCIL_MODELS)
@@ -372,7 +372,9 @@ def make_model_cycle(models: Sequence[str] | None = None, *,
                   '{"outcome": one of ["correct_and_ready","correct_more_needed",'
                   '"incorrect","inconclusive"], "ready": true/false, '
                   '"evidence": "one sentence"}.')
-        res = chat_maxout(prompt, model=ms[0], temperature=0.3)
+        res = invoke_provider_model(ProviderPinnedRequest(
+            prompt=prompt, provider="ollama_cloud", model=ms[0],
+            temperature=0.3))
         try:
             s = res.text[res.text.find("{"):res.text.rfind("}") + 1]
             v = _json.loads(s)

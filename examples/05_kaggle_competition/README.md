@@ -13,6 +13,14 @@ Run from the repository checkout:
 python3 examples/05_kaggle_competition/run.py --competition titanic
 ```
 
+Keep the generated CSV for review:
+
+```bash
+python3 examples/05_kaggle_competition/run.py \
+  --competition titanic \
+  --out ./example-output/titanic-submission.csv
+```
+
 - Network: Kaggle download; optional model use with `--model`
 - External effects: download, local files, and optional submission
 - Requirements: Kaggle credentials and accepted competition rules

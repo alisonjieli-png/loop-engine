@@ -284,16 +284,16 @@ def self_test() -> dict:
     #       semantic call;
     #   (b) it keeps its OWN five beats — the runtime must not quietly lower
     #       a custom ordering back into the nine-step sequence (§3.3);
-    #   (c) the permission clamp holds: a deterministic-only parent cannot
-    #       spawn it, so an external harness can never be the route by which
-    #       a run acquires authority its parent did not hold.
+    #   (c) the delegation clamp holds: a parent whose operating policy permits
+    #       only deterministic child modes cannot spawn it.
     from .recursive_loop import Loop, LoopConfig, LoopError
     ext = lib["external_harness_worker"]
     cfg7 = config_from_template(ext)
     lp7 = Loop("delegate to an external harness", cfg7)
     parent_det = Loop("deterministic parent", LoopConfig(
         framework="five_step", allowable_modes=("deterministic",),
-        preferred_modes=("deterministic",)))
+        preferred_modes=("deterministic",),
+        delegated_modes=("deterministic",)))
     escalated = False
     try:
         parent_det.spawn("delegate to an external harness", cfg7)

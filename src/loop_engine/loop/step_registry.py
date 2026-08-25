@@ -210,10 +210,12 @@ KERNEL_STEP_REGISTRY: tuple = (
 
 # Cross-cutting services: hand-owned, used by many steps, never step-specific.
 SERVICE_MAP: tuple = (
-    ("model-call DAG", "model_call + reasoning_call + model_routes",
+    ("model-call DAG and gateway",
+     "model_call + reasoning_call + model_gateway + model_routes",
      "every model call: ReasoningRequest -> PromptAssemblySpec (13 blocks) -> "
-     "ModelInvocationRequest -> ModelInvocationResult; provider-neutral routes "
-     "(cloud-only policy, local wired-but-gated); fallbacks + seeds"),
+     "ModelInvocationRequest -> ModelGateway -> ModelInvocationResult; "
+     "provider-neutral routes, one model loop per physical attempt, policy, "
+     "failover, validation, budgets, and seeds"),
     ("two intelligence item forms (Context | Code)", "asset_class",
      "Context Intelligence guides work without executing it. Code Intelligence "
      "describes something the machine can run. Both are discovered as small "
@@ -279,8 +281,11 @@ SERVICE_MAP: tuple = (
     ("operating profile + config", "operating_profile + config",
      "five enum modes resolved Platform->Org->Project->Run->Child; enforced at "
      "the how/act/model boundaries"),
-    ("model transport", "ollama_client + opencode_client",
-     "Ollama Cloud (token-counted) + OpenCode headless workers (cloud-only)"),
+    ("model transport",
+     "ollama_client + mistral_client + openrouter_client + custom_endpoint",
+     "Ollama Cloud, Mistral, OpenRouter, and custom endpoints implement the "
+     "ProviderAdapter contract; OpenCode workers remain a separate external "
+     "agent boundary"),
 )
 
 

@@ -134,7 +134,8 @@ def as_component_loop(objective: str, fn, *, fallbacks=(),
 
 def as_model_loop(objective: str, fn, *, inputs=None,
                   parent: "Loop | None" = None,
-                  ledger: "LoopLedger | None" = None) -> dict:
+                  ledger: "LoopLedger | None" = None,
+                  llm_thinking_power: str = "medium") -> dict:
     """EVERY MODEL CALL IS A LOOP (owner, 2026-08-24).
 
     The other encapsulators pin deterministic-only and assert zero semantic
@@ -152,6 +153,7 @@ def as_model_loop(objective: str, fn, *, inputs=None,
                      power="light",
                      allowable_modes=("non_deterministic",),
                      preferred_modes=("non_deterministic",),
+                     llm_thinking_power=llm_thinking_power,
                      stop_condition="success_once")
     goal = f"model invocation: {objective}"
     loop = (parent.spawn(goal, cfg) if parent is not None
@@ -169,7 +171,7 @@ def as_model_loop(objective: str, fn, *, inputs=None,
             holder["error"] = e
             out = f"invoke:error:{type(e).__name__}"
         return StepOutcome(output=out, mode="non_deterministic",
-                           confidence=0.6)
+                           confidence=0.6, model_calls=1)
 
     res = loop.run(handler=handler, max_steps=2)
     value = holder.get("value")
@@ -210,7 +212,7 @@ def as_loop_of_stage_loops(goal: str, *, template: str = "reference_nine_step",
 
     Here the root drives the template's ordering and every stage executes in
     its OWN spawned child, on the shared ledger, under the parent's
-    permission clamp.  ``stage_work(stage, context)`` supplies the stage's
+    delegation clamp.  ``stage_work(stage, context)`` supplies the stage's
     actual work and returns its output; omit it for a structural run.
 
     Returns the root result plus one receipt per stage, so the tree is
@@ -232,8 +234,10 @@ def as_loop_of_stage_loops(goal: str, *, template: str = "reference_nine_step",
         child = loop.spawn(f"stage {step}: {goal}",
                            LoopConfig(framework="custom",
                                       custom_steps=("act",),
-                                      allowable_modes=loop.config.allowable_modes,
-                                      preferred_modes=loop.config.preferred_modes,
+                                      allowable_modes=("deterministic",),
+                                      preferred_modes=("deterministic",),
+                                      delegated_modes=
+                                          loop.config.delegated_modes,
                                       power="light",
                                       max_depth=loop.config.max_depth))
         holder: dict = {}
@@ -320,14 +324,11 @@ def serve_intelligence(pillar: str, records: list, *, query: str,
     inherits the loop envelope — the Universal Loop Standard made literal.
     Records the layer-labeled retrieval event on the ledger."""
     from ..static_architecture.retrieval import Retriever
-    from .recursive_loop import MODES
     out = as_loop(f"retrieve {pillar} intelligence for {query!r}",
                    lambda: Retriever(records).search(query, mode="hybrid",
                                                       top_n=5),
                    kind="callable", ledger=ledger)
     # mark the ledger with the layer the loop served
-    import json
-    _ = out
     return out
 
 
@@ -430,7 +431,7 @@ def self_test() -> dict:
           f"root {tree['root_loop_id']} + 9 stage loops, "
           f"{len(spawns)} spawns / {len(returns)} returns, 0 semantic calls")
 
-    # 8. ADVERSARIAL: a stage loop is a CHILD, so the permission clamp holds
+    # 8. ADVERSARIAL: a stage loop is a child, so the delegation clamp holds
     # on it too — the nine-step tree cannot become a way to widen authority
     # — and an unregistered template is refused rather than run as an inline
     # list of steps.

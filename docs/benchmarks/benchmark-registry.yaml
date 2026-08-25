@@ -1,0 +1,1074 @@
+schema_version: benchmark_registry/v1
+as_of: "2026-08-25"
+purpose: >-
+  Catalog external benchmark candidates before any task is downloaded, run,
+  scored, or used in a comparison claim.
+
+stage_definitions:
+  catalog:
+    meaning: The benchmark has an official source and has not been run.
+  source_review:
+    meaning: License, access, data handling, evaluator, and version are frozen.
+  local_smoke:
+    meaning: A small local subset proves the adapter and evaluator work.
+  frozen_evaluation:
+    meaning: The declared population runs with fixed inputs, settings, and oracle.
+  comparison_ready:
+    meaning: All comparison arms use the same frozen population and evaluator.
+
+templates:
+  common_catalog: &common_catalog
+    current_status: cataloged_not_run
+    staged_eligibility:
+      current_stage: catalog
+      next_stage: source_review
+      eligible_for_comparison: false
+      blockers:
+        - Freeze a version or dated snapshot.
+        - Confirm task-specific license and access terms.
+        - Reproduce the official evaluator on a known sample.
+
+  agentbench: &agentbench
+    <<: *common_catalog
+    family: agentic_task
+    parent_suite: AgentBench
+    modality: [text, tool, environment]
+    source_url: https://github.com/THUDM/AgentBench
+    evaluator:
+      kind: executable_environment
+      primary_metric: task_success_rate
+      oracle_owner: upstream_harness
+    license_access:
+      license: Apache-2.0 repository; upstream environment terms vary
+      access: Public code and data; Docker services and task assets are required
+    cost_network_needs:
+      network: required_for_setup
+      compute: medium_to_high
+      paid_service: optional_model_api
+    contamination_risk:
+      level: high
+      basis: The task definitions and development data are public.
+
+  gaia: &gaia
+    <<: *common_catalog
+    family: agentic_task
+    parent_suite: GAIA
+    modality: [text, file, tool, web]
+    source_url: https://huggingface.co/datasets/gaia-benchmark/GAIA
+    evaluator:
+      kind: answer_match_with_private_test
+      primary_metric: accuracy
+      oracle_owner: official_leaderboard
+    license_access:
+      license: Dataset card and gating terms apply
+      access: Gated download; test answers remain private
+    cost_network_needs:
+      network: required
+      compute: medium
+      paid_service: optional_model_and_search_apis
+    contamination_risk:
+      level: medium
+      basis: Development questions are public, while test answers are private.
+
+  bfcl: &bfcl
+    <<: *common_catalog
+    family: agentic_task
+    parent_suite: Berkeley Function Calling Leaderboard V4
+    modality: [text, tool]
+    source_url: https://gorilla.cs.berkeley.edu/leaderboard
+    evaluator:
+      kind: ast_execution_or_agentic_task
+      primary_metric: category_accuracy
+      oracle_owner: upstream_harness
+    license_access:
+      license: Apache-2.0 evaluation repository; contributed function terms vary
+      access: Public code and data; live tracks need network services
+    cost_network_needs:
+      network: track_dependent
+      compute: medium
+      paid_service: optional_model_api
+    contamination_risk:
+      level: medium
+      basis: Static categories are public; live and agentic tracks change over time.
+
+  tau_bench: &tau_bench
+    <<: *common_catalog
+    family: agentic_task
+    parent_suite: tau-bench
+    modality: [text, tool, database]
+    source_url: https://taubench.com/
+    evaluator:
+      kind: executable_policy_task
+      primary_metric: pass_1
+      oracle_owner: upstream_harness
+    license_access:
+      license: Review the source repository and domain data terms
+      access: Public benchmark materials; environment setup required
+    cost_network_needs:
+      network: required_for_setup_and_model_calls
+      compute: medium
+      paid_service: optional_model_api
+    contamination_risk:
+      level: medium
+      basis: Policies and examples are public, but executable state limits memorization.
+
+  beir: &beir
+    <<: *common_catalog
+    family: rag_retrieval
+    parent_suite: BEIR
+    modality: [text, retrieval]
+    source_url: https://github.com/beir-cellar/beir
+    evaluator:
+      kind: ranked_retrieval
+      primary_metric: ndcg_at_10
+      oracle_owner: upstream_qrels
+    license_access:
+      license: Apache-2.0 wrapper; each upstream dataset has separate terms
+      access: Most tracks are public downloads; some require reconstruction
+    cost_network_needs:
+      network: required_for_setup
+      compute: corpus_dependent
+      paid_service: no
+    contamination_risk:
+      level: high
+      basis: Corpora, queries, and relevance labels are widely available.
+
+  longbench: &longbench
+    <<: *common_catalog
+    family: long_context
+    parent_suite: LongBench
+    modality: [text, long_context]
+    source_url: https://github.com/THUDM/LongBench
+    evaluator:
+      kind: official_task_metric
+      primary_metric: task_specific_score
+      oracle_owner: upstream_harness
+    license_access:
+      license: Apache-2.0 repository; upstream dataset terms vary
+      access: Public benchmark data and evaluation code
+    cost_network_needs:
+      network: required_for_setup
+      compute: high_context_dependent
+      paid_service: optional_model_api
+    contamination_risk:
+      level: high
+      basis: Benchmark inputs and evaluation code are public.
+
+  legalbench: &legalbench
+    <<: *common_catalog
+    family: legal
+    parent_suite: LegalBench
+    modality: [text, legal]
+    source_url: https://github.com/HazyResearch/legalbench
+    evaluator:
+      kind: official_task_evaluator
+      primary_metric: task_specific_accuracy_or_score
+      oracle_owner: upstream_harness
+    license_access:
+      license: Mixed by task; the official task license must be checked
+      access: Public repository and data; some tasks have extra restrictions
+    cost_network_needs:
+      network: required_for_setup
+      compute: low_to_medium
+      paid_service: optional_model_api
+    contamination_risk:
+      level: high
+      basis: Task prompts and labels are public or widely mirrored.
+
+  harvey_lab: &harvey_lab
+    <<: *common_catalog
+    family: legal
+    parent_suite: Harvey Legal Agent Benchmark v1.0
+    modality: [text, document, file, tool]
+    source_url: https://github.com/harveyai/harvey-labs/tree/v1.0
+    evaluator:
+      kind: expert_rubric_all_pass
+      primary_metric: all_pass_rate
+      oracle_owner: upstream_harness
+    license_access:
+      license: MIT repository; task asset terms must still be reviewed
+      access: Public versioned repository with tasks, documents, rubrics, and harness
+    cost_network_needs:
+      network: required_for_setup
+      compute: high
+      paid_service: optional_model_api_and_llm_judge
+    contamination_risk:
+      level: high
+      basis: Public tasks and rubrics can appear in model training or development.
+
+  swebench: &swebench
+    <<: *common_catalog
+    family: coding
+    parent_suite: SWE-bench
+    modality: [text, code, repository]
+    source_url: https://github.com/princeton-nlp/SWE-bench
+    evaluator:
+      kind: repository_test_execution
+      primary_metric: resolved_rate
+      oracle_owner: upstream_harness
+    license_access:
+      license: MIT harness; each source repository keeps its own license
+      access: Public datasets; Docker images and source repositories are required
+    cost_network_needs:
+      network: required_for_setup
+      compute: high
+      paid_service: optional_model_api
+    contamination_risk:
+      level: high
+      basis: Issues, patches, and repositories are public.
+
+  livecodebench: &livecodebench
+    <<: *common_catalog
+    family: coding
+    parent_suite: LiveCodeBench
+    modality: [text, code]
+    source_url: https://github.com/LiveCodeBench/LiveCodeBench
+    evaluator:
+      kind: sandboxed_code_execution
+      primary_metric: pass_at_1
+      oracle_owner: upstream_harness
+    license_access:
+      license: MIT harness; contest platform problem terms also apply
+      access: Public versioned dataset and evaluator
+    cost_network_needs:
+      network: required_for_setup
+      compute: medium_to_high
+      paid_service: optional_model_api
+    contamination_risk:
+      level: medium
+      basis: Dated releases permit post-training windows, but older tasks are public.
+
+  ds1000: &ds1000
+    <<: *common_catalog
+    family: coding
+    parent_suite: DS-1000
+    modality: [text, code, data_science]
+    source_url: https://github.com/xlang-ai/DS-1000
+    evaluator:
+      kind: isolated_code_execution
+      primary_metric: execution_accuracy
+      oracle_owner: upstream_harness
+    license_access:
+      license: CC-BY-SA-4.0
+      access: Public dataset and evaluator
+    cost_network_needs:
+      network: required_for_setup
+      compute: medium
+      paid_service: optional_model_api
+    contamination_risk:
+      level: high
+      basis: All prompts, reference code, and tests are public.
+
+  sql_data: &sql_data
+    <<: *common_catalog
+    family: data_engineering
+    parent_suite: SQL and table benchmarks
+    modality: [text, table, database, code]
+    source_url: https://github.com/taoyds/spider
+    evaluator:
+      kind: query_execution_or_task_specific
+      primary_metric: execution_accuracy
+      oracle_owner: upstream_harness
+    license_access:
+      license: Review each benchmark source and database terms
+      access: Public or gated by benchmark; database setup is required
+    cost_network_needs:
+      network: required_for_setup
+      compute: medium_to_high
+      paid_service: benchmark_dependent
+    contamination_risk:
+      level: high
+      basis: Static questions, schemas, and development answers are public.
+
+  docvqa: &docvqa
+    <<: *common_catalog
+    family: document_understanding
+    parent_suite: DocVQA
+    modality: [text, image, document]
+    source_url: https://www.docvqa.org/datasets
+    evaluator:
+      kind: official_challenge_evaluator
+      primary_metric: anls_or_task_specific_score
+      oracle_owner: official_challenge
+    license_access:
+      license: Dataset and source document terms apply
+      access: RRC account or official download may be required
+    cost_network_needs:
+      network: required_for_setup
+      compute: medium_to_high
+      paid_service: optional_ocr_or_model_api
+    contamination_risk:
+      level: high
+      basis: Training and validation documents and questions are public.
+
+  document_other: &document_other
+    <<: *common_catalog
+    family: document_understanding
+    parent_suite: Independent document benchmarks
+    modality: [text, image, document]
+    source_url: https://github.com/crcresearch/FUNSD
+    evaluator:
+      kind: benchmark_specific
+      primary_metric: task_specific_score
+      oracle_owner: upstream_harness
+    license_access:
+      license: Review the named dataset terms before download or redistribution
+      access: Public or account-gated, depending on the dataset
+    cost_network_needs:
+      network: required_for_setup
+      compute: medium_to_high
+      paid_service: optional_ocr_or_model_api
+    contamination_risk:
+      level: high
+      basis: Static document images and labels are public or widely mirrored.
+
+  safety: &safety
+    <<: *common_catalog
+    family: safety
+    parent_suite: Safety evaluation
+    modality: [text, safety]
+    source_url: https://crfm.stanford.edu/2024/11/08/helm-safety.html
+    evaluator:
+      kind: benchmark_specific_safety_evaluator
+      primary_metric: harmfulness_or_refusal_score
+      oracle_owner: upstream_harness
+    license_access:
+      license: Review each source; harmful content handling rules apply
+      access: Public or gated benchmark data
+    cost_network_needs:
+      network: required_for_setup
+      compute: medium
+      paid_service: judge_model_may_be_required
+    contamination_risk:
+      level: high
+      basis: Most prompts and evaluation protocols are public.
+    staged_eligibility:
+      current_stage: catalog
+      next_stage: source_review
+      eligible_for_comparison: false
+      blockers:
+        - Approve a safety test plan and restricted-output handling.
+        - Freeze the benchmark version and evaluator.
+        - Confirm licenses and any model-judge dependency.
+
+  multimodal: &multimodal
+    <<: *common_catalog
+    family: multimodal
+    parent_suite: Multimodal evaluation
+    modality: [text, image, multimodal]
+    source_url: https://github.com/MMMU-Benchmark/MMMU
+    evaluator:
+      kind: benchmark_specific
+      primary_metric: accuracy_or_task_specific_score
+      oracle_owner: upstream_harness
+    license_access:
+      license: Review each dataset and source media license
+      access: Public or gated, depending on the benchmark
+    cost_network_needs:
+      network: required_for_setup
+      compute: high
+      paid_service: optional_multimodal_model_api
+    contamination_risk:
+      level: high
+      basis: Most static prompts, images, and answers are public.
+
+  kaggle: &kaggle
+    <<: *common_catalog
+    family: ml_kaggle
+    parent_suite: Kaggle competition
+    modality: [table, machine_learning]
+    source_url: https://www.kaggle.com/competitions
+    evaluator:
+      kind: private_test_leaderboard
+      primary_metric: competition_specific_metric
+      oracle_owner: Kaggle
+    license_access:
+      license: Competition rules and dataset license apply
+      access: Kaggle account and rule acceptance are required
+    cost_network_needs:
+      network: required
+      compute: competition_dependent
+      paid_service: no_for_local_baseline
+    contamination_risk:
+      level: medium
+      basis: Training data is public, while test labels remain private.
+
+benchmarks:
+  # Agentic tasks and tool use, 20 tracks.
+  - <<: *agentbench
+    id: agentbench_os
+    name: AgentBench Operating System
+    task: Complete bounded shell and operating system tasks.
+  - <<: *agentbench
+    id: agentbench_database
+    name: AgentBench Database
+    task: Answer database questions through SQL interaction.
+  - <<: *agentbench
+    id: agentbench_knowledge_graph
+    name: AgentBench Knowledge Graph
+    task: Query a knowledge graph through the benchmark service.
+  - <<: *agentbench
+    id: agentbench_digital_card_game
+    name: AgentBench Digital Card Game
+    task: Plan actions in the benchmark card game environment.
+  - <<: *agentbench
+    id: agentbench_lateral_thinking
+    name: AgentBench Lateral Thinking Puzzles
+    task: Resolve interactive lateral thinking questions.
+  - <<: *agentbench
+    id: agentbench_alfworld
+    name: AgentBench ALFWorld
+    task: Complete household tasks in a text environment.
+  - <<: *agentbench
+    id: agentbench_webshop
+    name: AgentBench WebShop
+    task: Find and purchase products under task constraints.
+  - <<: *agentbench
+    id: agentbench_mind2web
+    name: AgentBench Mind2Web
+    task: Complete web navigation tasks.
+  - <<: *gaia
+    id: gaia_level_1
+    name: GAIA Level 1
+    task: Solve general assistant questions with limited tool depth.
+  - <<: *gaia
+    id: gaia_level_2
+    name: GAIA Level 2
+    task: Solve general assistant questions with several reasoning and tool steps.
+  - <<: *gaia
+    id: gaia_level_3
+    name: GAIA Level 3
+    task: Solve the most complex GAIA questions with substantial autonomy.
+  - <<: *bfcl
+    id: bfcl_single_turn_non_live
+    name: BFCL Single Turn Non-Live
+    task: Select and format one or more function calls against static functions.
+  - <<: *bfcl
+    id: bfcl_single_turn_live
+    name: BFCL Single Turn Live
+    task: Call functions whose behavior depends on a live service.
+  - <<: *bfcl
+    id: bfcl_parallel_calls
+    name: BFCL Parallel Calls
+    task: Produce independent function calls in parallel.
+  - <<: *bfcl
+    id: bfcl_multi_turn
+    name: BFCL Multi Turn
+    task: Maintain function state and choose calls across turns.
+  - <<: *bfcl
+    id: bfcl_relevance_detection
+    name: BFCL Relevance Detection
+    task: Refuse function calls when no listed function applies.
+  - <<: *bfcl
+    id: bfcl_agentic_web_search
+    name: BFCL Agentic Web Search
+    task: Use search tools for multi-step questions and recovery.
+  - <<: *bfcl
+    id: bfcl_agentic_memory
+    name: BFCL Agentic Memory
+    task: Store and retrieve information through memory tools.
+  - <<: *tau_bench
+    id: tau_bench_retail
+    name: tau-bench Retail
+    task: Follow retail policy while changing simulated customer state.
+  - <<: *tau_bench
+    id: tau_bench_airline
+    name: tau-bench Airline
+    task: Follow airline policy while changing simulated booking state.
+
+  # Retrieval and RAG, 18 BEIR datasets.
+  - <<: *beir
+    id: beir_msmarco
+    name: BEIR MS MARCO
+    task: Retrieve passages for web search queries.
+  - <<: *beir
+    id: beir_trec_covid
+    name: BEIR TREC-COVID
+    task: Retrieve biomedical evidence for COVID-19 questions.
+  - <<: *beir
+    id: beir_nfcorpus
+    name: BEIR NFCorpus
+    task: Retrieve nutrition and health documents.
+  - <<: *beir
+    id: beir_bioasq
+    name: BEIR BioASQ
+    task: Retrieve biomedical articles for expert questions.
+  - <<: *beir
+    id: beir_natural_questions
+    name: BEIR Natural Questions
+    task: Retrieve passages that answer natural questions.
+  - <<: *beir
+    id: beir_hotpotqa
+    name: BEIR HotpotQA
+    task: Retrieve evidence for multi-hop questions.
+  - <<: *beir
+    id: beir_fiqa
+    name: BEIR FiQA-2018
+    task: Retrieve financial answers and opinions.
+  - <<: *beir
+    id: beir_signal1m
+    name: BEIR Signal-1M
+    task: Retrieve relevant news tweets.
+  - <<: *beir
+    id: beir_trec_news
+    name: BEIR TREC-NEWS
+    task: Retrieve news articles for information needs.
+  - <<: *beir
+    id: beir_robust04
+    name: BEIR Robust04
+    task: Retrieve news documents for TREC topics.
+  - <<: *beir
+    id: beir_arguana
+    name: BEIR ArguAna
+    task: Retrieve counterarguments.
+  - <<: *beir
+    id: beir_touche2020
+    name: BEIR Touché-2020
+    task: Retrieve arguments for controversial questions.
+  - <<: *beir
+    id: beir_cqadupstack
+    name: BEIR CQADupStack
+    task: Retrieve duplicate community questions.
+  - <<: *beir
+    id: beir_quora
+    name: BEIR Quora
+    task: Retrieve duplicate questions.
+  - <<: *beir
+    id: beir_dbpedia_entity
+    name: BEIR DBpedia Entity
+    task: Retrieve entities for natural language queries.
+  - <<: *beir
+    id: beir_scidocs
+    name: BEIR SCIDOCS
+    task: Retrieve related scientific papers.
+  - <<: *beir
+    id: beir_fever
+    name: BEIR FEVER
+    task: Retrieve evidence for fact verification.
+  - <<: *beir
+    id: beir_scifact
+    name: BEIR SciFact
+    task: Retrieve scientific evidence for claims.
+
+  # Long context, all 21 LongBench tasks.
+  - <<: *longbench
+    id: longbench_2wikimqa
+    name: LongBench 2WikiMultihopQA
+    task: Answer multi-document, multi-hop questions.
+  - <<: *longbench
+    id: longbench_dureader
+    name: LongBench DuReader
+    task: Answer Chinese questions over long documents.
+  - <<: *longbench
+    id: longbench_gov_report
+    name: LongBench GovReport
+    task: Summarize long government reports.
+  - <<: *longbench
+    id: longbench_hotpotqa
+    name: LongBench HotpotQA
+    task: Answer multi-hop questions from long context.
+  - <<: *longbench
+    id: longbench_lcc
+    name: LongBench LCC
+    task: Complete code from a long file context.
+  - <<: *longbench
+    id: longbench_lsht
+    name: LongBench LSHT
+    task: Classify long Chinese news text from examples.
+  - <<: *longbench
+    id: longbench_multi_news
+    name: LongBench Multi-News
+    task: Summarize several related news documents.
+  - <<: *longbench
+    id: longbench_multifieldqa_en
+    name: LongBench MultiFieldQA English
+    task: Answer questions across long English documents.
+  - <<: *longbench
+    id: longbench_multifieldqa_zh
+    name: LongBench MultiFieldQA Chinese
+    task: Answer questions across long Chinese documents.
+  - <<: *longbench
+    id: longbench_musique
+    name: LongBench MuSiQue
+    task: Answer compositional multi-hop questions.
+  - <<: *longbench
+    id: longbench_narrativeqa
+    name: LongBench NarrativeQA
+    task: Answer questions about long narratives.
+  - <<: *longbench
+    id: longbench_passage_count
+    name: LongBench Passage Count
+    task: Count matching passages in long synthetic context.
+  - <<: *longbench
+    id: longbench_passage_retrieval_en
+    name: LongBench Passage Retrieval English
+    task: Find an English passage in long synthetic context.
+  - <<: *longbench
+    id: longbench_passage_retrieval_zh
+    name: LongBench Passage Retrieval Chinese
+    task: Find a Chinese passage in long synthetic context.
+  - <<: *longbench
+    id: longbench_qasper
+    name: LongBench Qasper
+    task: Answer questions about scientific papers.
+  - <<: *longbench
+    id: longbench_qmsum
+    name: LongBench QMSum
+    task: Produce query-focused meeting summaries.
+  - <<: *longbench
+    id: longbench_repobench_p
+    name: LongBench RepoBench-P
+    task: Complete code with repository-level context.
+  - <<: *longbench
+    id: longbench_samsum
+    name: LongBench SAMSum
+    task: Learn dialogue summarization from long demonstrations.
+  - <<: *longbench
+    id: longbench_trec
+    name: LongBench TREC
+    task: Learn question classification from long demonstrations.
+  - <<: *longbench
+    id: longbench_triviaqa
+    name: LongBench TriviaQA
+    task: Answer trivia questions from long evidence.
+  - <<: *longbench
+    id: longbench_vcsum
+    name: LongBench VCSUM
+    task: Summarize long Chinese meeting transcripts.
+
+  # Long-horizon legal work, followed by 20 LegalBench tasks.
+  - <<: *harvey_lab
+    id: harvey_lab_v1_full
+    name: Harvey Legal Agent Benchmark v1.0
+    task: Complete long-horizon legal work products across the versioned public task set.
+  - <<: *legalbench
+    id: legalbench_abercrombie
+    name: LegalBench Abercrombie
+    task: Classify trademark distinctiveness.
+  - <<: *legalbench
+    id: legalbench_canada_tax_outcomes
+    name: LegalBench Canada Tax Court Outcomes
+    task: Predict the outcome of a tax court case.
+  - <<: *legalbench
+    id: legalbench_citation_prediction_classification
+    name: LegalBench Citation Prediction Classification
+    task: Select the cited legal authority.
+  - <<: *legalbench
+    id: legalbench_consumer_contracts_qa
+    name: LegalBench Consumer Contracts QA
+    task: Answer questions about consumer contracts.
+  - <<: *legalbench
+    id: legalbench_contract_nli_confidentiality
+    name: LegalBench Contract NLI Confidentiality
+    task: Classify whether an agreement is confidential.
+  - <<: *legalbench
+    id: legalbench_contract_qa
+    name: LegalBench Contract QA
+    task: Answer questions about contract language.
+  - <<: *legalbench
+    id: legalbench_corporate_lobbying
+    name: LegalBench Corporate Lobbying
+    task: Classify corporate lobbying disclosures.
+  - <<: *legalbench
+    id: legalbench_cuad_anti_assignment
+    name: LegalBench CUAD Anti-Assignment
+    task: Identify anti-assignment clauses.
+  - <<: *legalbench
+    id: legalbench_cuad_cap_on_liability
+    name: LegalBench CUAD Cap on Liability
+    task: Identify liability cap clauses.
+  - <<: *legalbench
+    id: legalbench_definition_classification
+    name: LegalBench Definition Classification
+    task: Classify whether a sentence defines a legal term.
+  - <<: *legalbench
+    id: legalbench_definition_extraction
+    name: LegalBench Definition Extraction
+    task: Extract the term defined by a court sentence.
+  - <<: *legalbench
+    id: legalbench_function_of_decision_section
+    name: LegalBench Function of Decision Section
+    task: Classify the role of a section in a judicial decision.
+  - <<: *legalbench
+    id: legalbench_hearsay
+    name: LegalBench Hearsay
+    task: Decide whether evidence is hearsay.
+  - <<: *legalbench
+    id: legalbench_insurance_policy_interpretation
+    name: LegalBench Insurance Policy Interpretation
+    task: Interpret coverage language.
+  - <<: *legalbench
+    id: legalbench_legal_reasoning_causality
+    name: LegalBench Legal Reasoning Causality
+    task: Apply legal causality rules.
+  - <<: *legalbench
+    id: legalbench_nys_judicial_ethics
+    name: LegalBench New York Judicial Ethics
+    task: Answer judicial ethics questions.
+  - <<: *legalbench
+    id: legalbench_personal_jurisdiction
+    name: LegalBench Personal Jurisdiction
+    task: Apply personal jurisdiction doctrine.
+  - <<: *legalbench
+    id: legalbench_privacy_policy_qa
+    name: LegalBench Privacy Policy QA
+    task: Answer questions about privacy policies.
+  - <<: *legalbench
+    id: legalbench_rule_qa
+    name: LegalBench Rule QA
+    task: Answer questions about the substance of law.
+  - <<: *legalbench
+    id: legalbench_unfair_tos
+    name: LegalBench Unfair Terms of Service
+    task: Identify potentially unfair contract terms.
+
+  # Coding and data science, 14 tracks.
+  - <<: *swebench
+    id: swebench_full
+    name: SWE-bench
+    task: Resolve real GitHub issues in their source repositories.
+  - <<: *swebench
+    id: swebench_lite
+    name: SWE-bench Lite
+    task: Resolve the smaller official issue subset.
+  - <<: *swebench
+    id: swebench_verified
+    name: SWE-bench Verified
+    task: Resolve the human-validated issue subset.
+  - <<: *swebench
+    id: swebench_multimodal
+    name: SWE-bench Multimodal
+    task: Resolve issues that include visual evidence.
+  - <<: *livecodebench
+    id: livecodebench_generation
+    name: LiveCodeBench Code Generation
+    task: Write accepted contest solutions.
+  - <<: *livecodebench
+    id: livecodebench_execution
+    name: LiveCodeBench Code Execution
+    task: Predict the result of executing code.
+  - <<: *livecodebench
+    id: livecodebench_test_output
+    name: LiveCodeBench Test Output Prediction
+    task: Predict outputs for tests and code snippets.
+  - <<: *ds1000
+    id: ds1000_matplotlib
+    name: DS-1000 Matplotlib
+    task: Write executable Matplotlib code.
+  - <<: *ds1000
+    id: ds1000_numpy
+    name: DS-1000 NumPy
+    task: Write executable NumPy code.
+  - <<: *ds1000
+    id: ds1000_pandas
+    name: DS-1000 pandas
+    task: Write executable pandas code.
+  - <<: *ds1000
+    id: ds1000_pytorch
+    name: DS-1000 PyTorch
+    task: Write executable PyTorch code.
+  - <<: *ds1000
+    id: ds1000_scipy
+    name: DS-1000 SciPy
+    task: Write executable SciPy code.
+  - <<: *ds1000
+    id: ds1000_scikit_learn
+    name: DS-1000 scikit-learn
+    task: Write executable scikit-learn code.
+  - <<: *ds1000
+    id: ds1000_tensorflow
+    name: DS-1000 TensorFlow
+    task: Write executable TensorFlow code.
+
+  # Data engineering and table work, 9 benchmarks.
+  - <<: *sql_data
+    id: spider_1
+    name: Spider 1.0
+    task: Generate SQL for unseen database schemas.
+  - <<: *sql_data
+    id: sparc
+    name: SParC
+    task: Generate context-dependent SQL across dialogue turns.
+  - <<: *sql_data
+    id: cosql
+    name: CoSQL
+    task: Complete conversational text-to-SQL interactions.
+  - <<: *sql_data
+    id: spider_2_lite
+    name: Spider 2.0 Lite
+    task: Complete enterprise text-to-SQL workflows.
+    source_url: https://spider2-sql.github.io/
+  - <<: *sql_data
+    id: spider_2_snow
+    name: Spider 2.0 Snow
+    task: Complete enterprise text-to-SQL tasks on Snowflake schemas.
+    source_url: https://spider2-sql.github.io/
+  - <<: *sql_data
+    id: bird_sql
+    name: BIRD-SQL
+    task: Generate efficient SQL over large, content-rich databases.
+    source_url: https://bird-bench.github.io/
+  - <<: *sql_data
+    id: live_sql_bench_base
+    name: LiveSQLBench Base
+    task: Solve versioned business intelligence and CRUD SQL tasks.
+    source_url: https://github.com/bird-bench/livesqlbench
+    contamination_risk:
+      level: medium
+      basis: The benchmark has dated releases, but past releases become public.
+  - <<: *sql_data
+    id: tablebench
+    name: TableBench
+    task: Answer complex table questions across four capability groups.
+    source_url: https://github.com/TableBench/TableBench
+  - <<: *sql_data
+    id: databench
+    name: DataBench
+    task: Answer questions over diverse CSV-style tables.
+    source_url: https://github.com/jorses/databench_eval
+
+  # Document extraction and understanding, 15 benchmarks.
+  - <<: *docvqa
+    id: docvqa_single_document
+    name: DocVQA Single Document
+    task: Answer extractive questions about one document image.
+  - <<: *docvqa
+    id: docvqa_document_collection
+    name: DocVQA Document Collection
+    task: Find evidence and answer across a document collection.
+  - <<: *docvqa
+    id: infographicvqa
+    name: InfographicVQA
+    task: Answer questions about infographic images.
+    source_url: https://www.docvqa.org/datasets/infographicvqa
+  - <<: *docvqa
+    id: mp_docvqa
+    name: MP-DocVQA
+    task: Answer questions across multi-page documents.
+  - <<: *docvqa
+    id: dude
+    name: DUDE
+    task: Answer questions about diverse multi-page documents.
+  - <<: *document_other
+    id: funsd
+    name: FUNSD
+    task: Extract and link semantic entities from noisy scanned forms.
+    license_access:
+      license: Non-commercial research and educational use per dataset source
+      access: Public download
+  - <<: *document_other
+    id: cord
+    name: CORD
+    task: Parse structured fields from document images.
+    source_url: https://github.com/clovaai/cord
+    license_access:
+      license: CC-BY-4.0
+      access: Public download
+  - <<: *document_other
+    id: sroie
+    name: SROIE
+    task: Detect text, recognize text, and extract key fields from scanned documents.
+    source_url: https://rrc.cvc.uab.es/?ch=13
+  - <<: *document_other
+    id: xfund
+    name: XFUND
+    task: Extract and link form fields across languages.
+    source_url: https://github.com/doc-analysis/XFUND
+  - <<: *document_other
+    id: rvl_cdip
+    name: RVL-CDIP
+    task: Classify document images by type.
+    source_url: https://adamharley.com/rvl-cdip/
+  - <<: *document_other
+    id: publaynet
+    name: PubLayNet
+    task: Detect document layout regions.
+    source_url: https://github.com/ibm-aur-nlp/PubLayNet
+  - <<: *document_other
+    id: fintabnet
+    name: FinTabNet
+    task: Recognize table structure in financial reports.
+    source_url: https://dax-cdn.cdn.appdomain.cloud/dax-fintabnet/1.0.0/data_preview/exploring_FinTabNet_dataset.html
+  - <<: *document_other
+    id: kleister_charity
+    name: Kleister Charity
+    task: Extract fields from charity reports.
+    source_url: https://github.com/applicaai/kleister-charity
+  - <<: *document_other
+    id: kleister_nda
+    name: Kleister NDA
+    task: Extract fields from non-disclosure agreements.
+    source_url: https://github.com/applicaai/kleister-nda
+  - <<: *document_other
+    id: ocrbench
+    name: OCRBench
+    task: Evaluate OCR-related abilities of multimodal models.
+    source_url: https://github.com/Yuliang-Liu/MultimodalOCR
+
+  # Safety, 7 benchmarks.
+  - <<: *safety
+    id: harmbench
+    name: HarmBench
+    task: Measure harmful compliance under automated red teaming.
+    source_url: https://github.com/centerforaisafety/HarmBench
+  - <<: *safety
+    id: simple_safety_tests
+    name: SimpleSafetyTests
+    task: Test responses to clearly unsafe requests.
+    source_url: https://huggingface.co/datasets/Bertievidgen/SimpleSafetyTests
+  - <<: *safety
+    id: xstest
+    name: XSTest
+    task: Measure exaggerated refusal and unsafe compliance edge cases.
+    source_url: https://github.com/paul-rottger/exaggerated-safety
+  - <<: *safety
+    id: bbq
+    name: Bias Benchmark for QA
+    task: Measure social bias in ambiguous and disambiguated questions.
+    source_url: https://github.com/nyu-mll/BBQ
+  - <<: *safety
+    id: anthropic_red_team
+    name: Anthropic Red Team
+    task: Measure harmful behavior elicited by red-team conversations.
+    source_url: https://github.com/anthropics/hh-rlhf
+  - <<: *safety
+    id: agentharm
+    name: AgentHarm
+    task: Measure harmful behavior by tool-using agents.
+    source_url: https://github.com/UKGovernmentBEIS/inspect_evals/tree/main/src/inspect_evals/agentharm
+  - <<: *safety
+    id: air_bench
+    name: AIR-Bench
+    task: Evaluate safety against policy and regulatory risk categories.
+    source_url: https://github.com/mlcommons/ailuminate
+
+  # Multimodal reasoning, 12 benchmarks.
+  - <<: *multimodal
+    id: mmmu
+    name: MMMU
+    task: Answer expert questions over varied image types.
+  - <<: *multimodal
+    id: mmmu_pro
+    name: MMMU-Pro
+    task: Answer more robust expert multimodal questions.
+  - <<: *multimodal
+    id: mm_vet
+    name: MM-Vet
+    task: Combine recognition, reasoning, OCR, and spatial understanding.
+    source_url: https://github.com/yuweihao/MM-Vet
+  - <<: *multimodal
+    id: mm_vet_v2
+    name: MM-Vet v2
+    task: Solve extended integrated multimodal tasks.
+    source_url: https://github.com/yuweihao/MM-Vet
+  - <<: *multimodal
+    id: mathvista
+    name: MathVista
+    task: Solve mathematical reasoning problems with visual context.
+    source_url: https://github.com/lupantech/MathVista
+  - <<: *multimodal
+    id: ai2d
+    name: AI2D
+    task: Answer questions about scientific diagrams.
+    source_url: https://allenai.org/data/diagrams
+  - <<: *multimodal
+    id: chartqa
+    name: ChartQA
+    task: Answer visual and numerical questions about charts.
+    source_url: https://github.com/vis-nlp/ChartQA
+  - <<: *multimodal
+    id: textvqa
+    name: TextVQA
+    task: Answer image questions that require reading text.
+    source_url: https://textvqa.org/
+  - <<: *multimodal
+    id: scienceqa_image
+    name: ScienceQA Image Subset
+    task: Answer science questions with image context.
+    source_url: https://github.com/lupantech/ScienceQA
+  - <<: *multimodal
+    id: mmbench
+    name: MMBench
+    task: Answer circular multiple-choice multimodal questions.
+    source_url: https://github.com/open-compass/MMBench
+  - <<: *multimodal
+    id: seed_bench
+    name: SEED-Bench
+    task: Evaluate image and video understanding through multiple choice.
+    source_url: https://github.com/AILab-CVC/SEED-Bench
+  - <<: *multimodal
+    id: realworldqa
+    name: RealWorldQA
+    task: Answer questions about spatial relations in real-world images.
+    source_url: https://huggingface.co/datasets/xai-org/RealworldQA
+
+  # Machine learning agents and Kaggle, 7 benchmarks.
+  - <<: *kaggle
+    id: mle_bench
+    name: MLE-bench
+    task: Build machine learning solutions for a frozen set of Kaggle competitions.
+    source_url: https://openai.com/index/mle-bench/
+    evaluator:
+      kind: competition_grader
+      primary_metric: medal_or_normalized_competition_score
+      oracle_owner: upstream_harness
+    cost_network_needs:
+      network: required
+      compute: high
+      paid_service: optional_model_api
+  - <<: *kaggle
+    id: kaggle_titanic
+    name: Kaggle Titanic
+    task: Predict passenger survival.
+    source_url: https://www.kaggle.com/competitions/titanic
+    evaluator:
+      kind: private_test_leaderboard
+      primary_metric: accuracy
+      oracle_owner: Kaggle
+  - <<: *kaggle
+    id: kaggle_spaceship_titanic
+    name: Kaggle Spaceship Titanic
+    task: Predict transported passengers.
+    source_url: https://www.kaggle.com/competitions/spaceship-titanic
+    evaluator:
+      kind: private_test_leaderboard
+      primary_metric: accuracy
+      oracle_owner: Kaggle
+  - <<: *kaggle
+    id: kaggle_house_prices
+    name: Kaggle House Prices
+    task: Predict residential sale prices.
+    source_url: https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques
+    evaluator:
+      kind: private_test_leaderboard
+      primary_metric: root_mean_squared_log_error
+      oracle_owner: Kaggle
+  - <<: *kaggle
+    id: kaggle_store_sales
+    name: Kaggle Store Sales
+    task: Forecast store sales over time.
+    source_url: https://www.kaggle.com/competitions/store-sales-time-series-forecasting
+    evaluator:
+      kind: private_test_leaderboard
+      primary_metric: root_mean_squared_log_error
+      oracle_owner: Kaggle
+  - <<: *kaggle
+    id: kaggle_digit_recognizer
+    name: Kaggle Digit Recognizer
+    task: Classify handwritten digit images.
+    modality: [image, machine_learning]
+    source_url: https://www.kaggle.com/competitions/digit-recognizer
+    evaluator:
+      kind: private_test_leaderboard
+      primary_metric: accuracy
+      oracle_owner: Kaggle
+  - <<: *kaggle
+    id: kaggle_nlp_disaster_tweets
+    name: Kaggle NLP with Disaster Tweets
+    task: Classify whether a tweet describes a real disaster.
+    modality: [text, machine_learning]
+    source_url: https://www.kaggle.com/competitions/nlp-getting-started
+    evaluator:
+      kind: private_test_leaderboard
+      primary_metric: f1
+      oracle_owner: Kaggle

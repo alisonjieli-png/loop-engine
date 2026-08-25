@@ -24,6 +24,8 @@ def main(argv=None) -> int:
     parser.add_argument("--map", action="store_true",
                         help="print the nine-step kernel map: where every "
                         "capability lives")
+    parser.add_argument("--profiles", action="store_true",
+                        help="print the versioned Loop profile catalog")
     parser.add_argument("--live-demo", action="store_true",
                         help="watch a REAL PractitionerLoop run live: "
                         "localhost page with the step rail + console log "
@@ -61,10 +63,144 @@ def main(argv=None) -> int:
                         choices=("support-queue", "intelligence-layers",
                                  "context-seed"),
                         help="run a useful example included with the package")
-    # `loop-engine setup` reads better than a flag, so accept the bare word too
-    if argv is None and len(sys.argv) > 1 and sys.argv[1] == "setup":
-        sys.argv[1] = "--setup"
-    args = parser.parse_args(argv)
+    parser.add_argument("--campaign", choices=("plan", "run"),
+                        help="plan or run the five-problem pilot campaign")
+    parser.add_argument("--settings-action", choices=("init", "show", "check"),
+                        help="create, show, or validate user settings")
+    parser.add_argument("--settings-file",
+                        help="explicit YAML settings path")
+    parser.add_argument("--modes", default="",
+                        help="comma-separated campaign modes; defaults to "
+                             "the user settings")
+    parser.add_argument("--providers", default="",
+                        help="comma-separated campaign providers; defaults "
+                             "to enabled providers in user settings")
+    parser.add_argument("--thinking-power", default="",
+                        choices=("", "small", "medium", "high", "max",
+                                 "specialized"),
+                        help="model capacity tier for model-using campaign "
+                             "arms")
+    parser.add_argument("--cases", default="",
+                        help="comma-separated campaign case IDs; default all")
+    parser.add_argument("--authorize-model-calls", action="store_true",
+                        help="explicitly allow campaign model calls")
+    parser.add_argument("--max-model-calls", type=int, default=0,
+                        help="hard physical model-call ceiling")
+    parser.add_argument("--max-total-tokens", type=int,
+                        help="hard provider-reported token ceiling")
+    parser.add_argument("--watch", action="store_true",
+                        help="print campaign events while arms run")
+    raw_argv = list(sys.argv[1:] if argv is None else argv)
+    if raw_argv[:1] == ["setup"]:
+        raw_argv[:1] = ["--setup"]
+    elif raw_argv[:1] == ["campaign"]:
+        if len(raw_argv) < 2 or raw_argv[1] not in ("plan", "run"):
+            parser.error("campaign requires plan or run")
+        raw_argv[:2] = ["--campaign", raw_argv[1]]
+    elif raw_argv[:1] == ["settings"]:
+        if len(raw_argv) < 2 or raw_argv[1] not in ("init", "show", "check"):
+            parser.error("settings requires init, show, or check")
+        raw_argv[:2] = ["--settings-action", raw_argv[1]]
+    args = parser.parse_args(raw_argv)
+    if args.settings_action:
+        from .static_architecture.settings_loader import (
+            load_runtime_settings, write_default_settings)
+        from .static_architecture.runtime_settings import SettingsError
+        try:
+            if args.settings_action == "init":
+                created = write_default_settings(args.settings_file)
+                print(f"Created Loop Engine settings at {created.path} "
+                      f"through {created.loop_id}")
+                return 0
+            loaded = load_runtime_settings(args.settings_file)
+            summary = loaded.safe_summary()
+            if args.settings_action == "check":
+                gateway = loaded.settings.build_gateway()
+                enabled = set(gateway.providers)
+                usable_by_tier = {}
+                for tier in loaded.settings.models.tiers:
+                    usable = []
+                    for route_name in tier.routes:
+                        route = gateway.registry.get(route_name)
+                        if route.provider in enabled:
+                            usable.append(route_name)
+                    usable_by_tier[tier.name] = usable
+                summary["validation"] = {
+                    "valid": True,
+                    "network_calls": 0,
+                    "usable_routes_by_tier": usable_by_tier,
+                }
+            print(json.dumps(summary, indent=1))
+            return 0
+        except (SettingsError, KeyError, ValueError, RuntimeError) as exc:
+            print(f"Settings refused: {exc}")
+            return 2
+    if args.campaign:
+        from .code_nodes.campaign_runner import (
+            CAMPAIGN_MODES, CampaignRunOptions, CampaignRunner, campaign_arms,
+            default_campaign_spec, default_problem_cases)
+        from .static_architecture.settings_loader import load_runtime_settings
+        try:
+            loaded = load_runtime_settings(args.settings_file)
+        except ValueError as exc:
+            parser.error(str(exc))
+        runtime_settings = loaded.settings
+        modes = (tuple(value.strip() for value in args.modes.split(",")
+                       if value.strip()) or runtime_settings.loop.preferred_modes)
+        providers = (tuple(value.strip()
+                           for value in args.providers.split(",")
+                           if value.strip())
+                     or runtime_settings.models.enabled_provider_ids())
+        thinking_power = (args.thinking_power
+                          or runtime_settings.models.default_thinking_power)
+        all_cases = default_problem_cases()
+        requested_cases = {value.strip() for value in args.cases.split(",")
+                           if value.strip()}
+        cases = tuple(case for case in all_cases
+                      if not requested_cases or case.case_id in requested_cases)
+        unknown_cases = requested_cases - {case.case_id for case in all_cases}
+        if unknown_cases:
+            parser.error(f"unknown campaign cases: {sorted(unknown_cases)}")
+        bad_modes = [mode for mode in modes if mode not in CAMPAIGN_MODES]
+        if bad_modes:
+            parser.error(f"unknown campaign modes: {bad_modes}")
+        arms = campaign_arms(
+            modes=modes, providers=providers,
+            llm_thinking_power=thinking_power)
+        if args.campaign == "plan":
+            model_arms = sum(1 for case in cases
+                             for arm in arms
+                             if arm.mode != "deterministic")
+            print(json.dumps({
+                "record_type": "campaign_plan/v1",
+                "cases": [case.summary() for case in cases],
+                "arms": [arm.arm_id for arm in arms],
+                "runs": len(cases) * len(arms),
+                "model_arms": model_arms,
+                "minimum_model_call_ceiling": model_arms,
+                "model_authorization_required": bool(model_arms),
+                "llm_thinking_power": thinking_power,
+            }, indent=1))
+            return 0
+        try:
+            spec = default_campaign_spec(
+                modes=modes, providers=providers,
+                llm_thinking_power=thinking_power,
+                cases=cases,
+                authorize_model_calls=args.authorize_model_calls,
+                max_model_calls=args.max_model_calls,
+                max_total_tokens=args.max_total_tokens)
+        except ValueError as exc:
+            print(f"Campaign refused: {exc}")
+            return 2
+        from .static_architecture.chronicle import default_runs_dir
+        runs_dir = default_runs_dir(
+            args.runs_dir or runtime_settings.history.resolved_runs_dir())
+        result = CampaignRunner(spec, CampaignRunOptions(
+            runs_dir=runs_dir, watch=args.watch,
+            runtime_settings=runtime_settings)).run()
+        print(json.dumps(result.to_dict(), indent=1))
+        return 0 if result.accepted == len(result.arms) else 1
     if args.setup:
         from .code_nodes.guided_setup import run_setup
         return 0 if run_setup().ready else 1
@@ -128,6 +264,16 @@ def main(argv=None) -> int:
         print(render_architecture())
         print()
         print(render_map())
+        return 0
+    if args.profiles:
+        from .loop.loop_profile_catalog import (
+            PROFILE_ONTOLOGY_VERSION, profile_catalog)
+        profiles = profile_catalog()
+        print(json.dumps({
+            "record_type": "loop_profile_catalog/v1",
+            "ontology_version": PROFILE_ONTOLOGY_VERSION,
+            "profiles": profiles,
+        }, indent=1))
         return 0
     if args.categories:
         print(json.dumps({"resolver_categories": list(RESOLVER_CATEGORIES),

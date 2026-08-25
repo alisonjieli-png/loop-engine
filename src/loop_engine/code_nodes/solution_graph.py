@@ -37,6 +37,22 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from ..loop.loop_contract import (LoopConnectionSpec, LoopContract,
+                                  LoopPortBinding, validate_loop_connection)
+
+
+@dataclass(frozen=True)
+class LoopVertexSpec:
+    """One graph vertex and the LoopContract it promises to follow."""
+    loop_ref: str
+    contract: LoopContract
+
+    def __post_init__(self):
+        if not isinstance(self.loop_ref, str) or not self.loop_ref.strip():
+            raise ValueError("a graph vertex needs a loop reference")
+        if not isinstance(self.contract, LoopContract):
+            raise TypeError("a graph vertex needs a LoopContract")
+
 
 @dataclass(frozen=True)
 class LoopPortRef:
@@ -44,6 +60,14 @@ class LoopPortRef:
     loop_id: str
     port_name: str
     contract: str = "any"
+
+    def __post_init__(self):
+        if (not isinstance(self.loop_id, str) or not self.loop_id.strip()
+                or not isinstance(self.port_name, str)
+                or not self.port_name.strip()):
+            raise ValueError("a loop port needs a loop id and port name")
+        if not isinstance(self.contract, str) or not self.contract.strip():
+            raise ValueError("a loop port contract cannot be empty")
 
     def label(self) -> str:
         return f"{self.loop_id}.{self.port_name}:{self.contract}"
@@ -72,11 +96,24 @@ class LoopGraphSpec:
     root_output_contract: str = "any"
     graph_version: str = "1.0.0"
     _adapters: dict = field(default_factory=dict)
+    vertices: tuple[LoopVertexSpec, ...] = field(default=(), kw_only=True)
 
     def validate(self) -> dict:
         """Fail-closed validation; the report IS the result."""
         v = []
         known = set(self.loop_refs)
+        contract_by_loop: dict[str, LoopContract] = {}
+        for vertex in self.vertices:
+            if vertex.loop_ref in contract_by_loop:
+                v.append(f"loop {vertex.loop_ref!r} has more than one contract")
+                continue
+            contract_by_loop[vertex.loop_ref] = vertex.contract
+            known.add(vertex.loop_ref)
+        if self.vertices:
+            for loop_ref in self.loop_refs:
+                if loop_ref not in contract_by_loop:
+                    v.append(
+                        f"loop {loop_ref!r} has no typed vertex contract")
         if not known:
             v.append("a graph with no loops ships nothing")
         for e in self.edges:
@@ -84,15 +121,27 @@ class LoopGraphSpec:
                 if port.loop_id not in known:
                     v.append(f"edge {side} {port.label()} names a loop that is "
                              "not a vertex of this graph")
-            if not e.compatible and not e.adapter_loop_ref:
+            producer = contract_by_loop.get(e.source.loop_id)
+            consumer = contract_by_loop.get(e.target.loop_id)
+            if producer is not None and consumer is not None:
+                checked = validate_loop_connection(LoopConnectionSpec(
+                    producer=producer, consumer=consumer,
+                    bindings=(LoopPortBinding(
+                        e.source.contract, e.target.contract,
+                        e.adapter_loop_ref),)))
+                for violation in checked.violations:
+                    v.append(
+                        f"edge {e.source.label()} -> {e.target.label()}: "
+                        f"{violation}")
+            elif not e.compatible and not e.adapter_loop_ref:
                 v.append(
                     f"edge {e.source.label()} -> {e.target.label()} connects "
-                    "incompatible contracts with no adapter loop — insert an "
+                    "incompatible contracts with no adapter loop. Insert an "
                     "Adapter Loop; an anonymous conversion on the edge has no "
                     "identity, test, or failure attribution")
         cyc = self._cycle()
         if cyc:
-            v.append(f"cycle detected: {' -> '.join(cyc)} — a Solution graph "
+            v.append(f"cycle detected: {' -> '.join(cyc)}. A Solution graph "
                      "is a DAG; repetition belongs inside a task-semantic loop")
         return {"valid": not v, "violations": v}
 
@@ -127,9 +176,18 @@ class LoopGraphSpec:
         return [e for e in self.edges if not e.compatible]
 
     def to_record(self) -> dict:
+        loop_refs = tuple(dict.fromkeys(
+            (*self.loop_refs, *(vertex.loop_ref for vertex in self.vertices))))
         return {"record_type": "loop_graph_spec/v1", "graph_id": self.graph_id,
                 "graph_version": self.graph_version,
-                "loops": list(self.loop_refs),
+                "loops": list(loop_refs),
+                "typed_vertices": [
+                    {"loop_ref": vertex.loop_ref,
+                     "contract_name": vertex.contract.name,
+                     "execution_mode": vertex.contract.execution_mode,
+                     "input_roles": list(vertex.contract.input_roles),
+                     "output_roles": list(vertex.contract.output_roles)}
+                    for vertex in self.vertices],
                 "edges": [{"source": e.source.label(),
                            "target": e.target.label(),
                            "adapter": e.adapter_loop_ref} for e in self.edges]}
@@ -151,7 +209,8 @@ def insert_adapter(graph: LoopGraphSpec, edge: LoopEdgeSpec, *,
     return LoopGraphSpec(graph_id=graph.graph_id, loop_refs=loops,
                          edges=edges,
                          root_output_contract=graph.root_output_contract,
-                         graph_version=graph.graph_version)
+                         graph_version=graph.graph_version,
+                         vertices=graph.vertices)
 
 
 def run_adapter_loop(edge: LoopEdgeSpec, value, *, convert=None, ledger=None):
@@ -199,6 +258,54 @@ def self_test() -> dict:
           and "feature_matrix.to.prediction_frame"
           in fixed.edges[0].adapter_loop_ref,
           f"adapter {fixed.edges[0].adapter_loop_ref}")
+
+    # Typed vertices prove that edge labels match the actual loop contracts.
+    prep_contract = LoopContract(
+        name="prepare", execution_mode="code_only",
+        input_roles=("raw_rows/v1",),
+        output_roles=("feature_matrix/v1",))
+    score_contract = LoopContract(
+        name="score", execution_mode="hybrid",
+        input_roles=("feature_matrix/v1",),
+        output_roles=("scores/v1",))
+    typed = LoopGraphSpec(
+        "g.typed",
+        edges=(LoopEdgeSpec(
+            LoopPortRef("prep", "features", "feature_matrix/v1"),
+            LoopPortRef("score", "features", "feature_matrix/v1")),),
+        vertices=(LoopVertexSpec("prep", prep_contract),
+                  LoopVertexSpec("score", score_contract)))
+    check("typed_vertex_contracts_validate_edge_ports_before_execution",
+          typed.validate()["valid"], str(typed.validate()["violations"]))
+
+    forged = LoopGraphSpec(
+        "g.forged",
+        edges=(LoopEdgeSpec(
+            LoopPortRef("prep", "features", "unknown_matrix/v1"),
+            LoopPortRef("score", "features", "feature_matrix/v1")),),
+        vertices=typed.vertices)
+    forged_report = forged.validate()
+    check("an_edge_cannot_claim_an_output_the_loop_does_not_declare",
+          not forged_report["valid"]
+          and any("does not declare output" in violation
+                  for violation in forged_report["violations"]),
+          str(forged_report["violations"]))
+
+    upgraded_contract = LoopContract(
+        name="score-v2", execution_mode="hybrid",
+        input_roles=("feature_matrix/v2",),
+        output_roles=("scores/v1",))
+    bridged = LoopGraphSpec(
+        "g.bridged",
+        edges=(LoopEdgeSpec(
+            LoopPortRef("prep", "features", "feature_matrix/v1"),
+            LoopPortRef("score", "features", "feature_matrix/v2"),
+            "loop://adapters/features-v1-to-v2"),),
+        vertices=(LoopVertexSpec("prep", prep_contract),
+                  LoopVertexSpec("score", upgraded_contract)))
+    check("a_named_adapter_bridges_declared_but_different_port_roles",
+          bridged.validate()["valid"],
+          str(bridged.validate()["violations"]))
 
     # the adapter RUNS as a loop, with the fallback seam every component has
     from ..loop.recursive_loop import LoopLedger

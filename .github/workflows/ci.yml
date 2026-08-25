@@ -20,13 +20,19 @@ jobs:
         with:
           node-version: "22"
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Check Markdown structure
         run: >-
           npx --yes markdownlint-cli2@0.23.2
           README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md humanizer-context.md
           docs/README.md docs/getting-started.md
           'docs/components/**/*.md' 'docs/guides/*.md' 'docs/templates/*.md'
+          'docs/benchmarks/*.md' 'docs/research/*.md'
           docs/STYLE.md
+          docs/architecture/API-DESIGN.md
           docs/architecture/ARCHITECTURE_CONFORMANCE.md
           docs/architecture/DESIGN-GUIDANCE.md
           docs/architecture/DESIGN-LANGUAGE.md
@@ -40,7 +46,7 @@ jobs:
         with:
           version: 3.18.0
           sync: false
-          files: '["README.md","CHANGELOG.md","CONTRIBUTING.md","SECURITY.md","humanizer-context.md","docs/README.md","docs/getting-started.md","docs/components","docs/guides","docs/templates","docs/STYLE.md","docs/architecture/ARCHITECTURE_CONFORMANCE.md","docs/architecture/DESIGN-GUIDANCE.md","docs/architecture/DESIGN-LANGUAGE.md","docs/architecture/ARCHITECTURE-VISUAL-GUIDANCE.md","docs/reference/PRODUCT-NOMENCLATURE.md","docs/reference/UNIVERSAL-LOOP-STANDARD.md","examples"]'
+          files: '["README.md","CHANGELOG.md","CONTRIBUTING.md","SECURITY.md","humanizer-context.md","docs/README.md","docs/getting-started.md","docs/components","docs/guides","docs/templates","docs/benchmarks","docs/research","docs/STYLE.md","docs/architecture/API-DESIGN.md","docs/architecture/ARCHITECTURE_CONFORMANCE.md","docs/architecture/DESIGN-GUIDANCE.md","docs/architecture/DESIGN-LANGUAGE.md","docs/architecture/ARCHITECTURE-VISUAL-GUIDANCE.md","docs/reference/PRODUCT-NOMENCLATURE.md","docs/reference/UNIVERSAL-LOOP-STANDARD.md","examples"]'
 
       - name: Check local links and section anchors
         uses: lycheeverse/lychee-action@v2
@@ -50,7 +56,9 @@ jobs:
             README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md humanizer-context.md
             docs/README.md docs/getting-started.md
             'docs/components/**/*.md' 'docs/guides/*.md' 'docs/templates/*.md'
+            'docs/benchmarks/*.md' 'docs/research/*.md'
             docs/STYLE.md
+            docs/architecture/API-DESIGN.md
             docs/architecture/ARCHITECTURE_CONFORMANCE.md
             docs/architecture/DESIGN-GUIDANCE.md
             docs/architecture/DESIGN-LANGUAGE.md
@@ -61,18 +69,41 @@ jobs:
           fail: true
           failIfEmpty: true
 
+      - name: Validate benchmark registry
+        run: |
+          python -m pip install PyYAML jsonschema
+          python - <<'PY'
+          import json
+          import yaml
+          from jsonschema import validate
+          with open("docs/benchmarks/benchmark-registry.yaml") as stream:
+              registry = yaml.safe_load(stream)
+          with open("docs/benchmarks/benchmark-registry.schema.json") as stream:
+              schema = json.load(stream)
+          validate(registry, schema)
+          tracks = registry["benchmarks"]
+          ids = [item["id"] for item in tracks]
+          assert len(tracks) >= 100
+          assert len(ids) == len(set(ids))
+          assert not any(item["staged_eligibility"]["eligible_for_comparison"]
+                         for item in tracks)
+          print(f"validated {len(tracks)} cataloged benchmark tracks")
+          PY
+
       - name: Render current architecture diagrams
         run: |
           awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' README.md > "$RUNNER_TEMP/readme-overview.mmd"
           npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/readme-overview.mmd" -o "$RUNNER_TEMP/readme-overview.png" --quiet
-          awk 'BEGIN{inside=0; block=0} /^```mermaid$/{block++; if(block==2){inside=1; next}} inside && /^```$/{exit} inside{print}' README.md > "$RUNNER_TEMP/readme-looprefs.mmd"
-          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/readme-looprefs.mmd" -o "$RUNNER_TEMP/readme-looprefs.png" --quiet
           awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/self-improvement/README.md > "$RUNNER_TEMP/self-improvement.mmd"
           npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/self-improvement.mmd" -o "$RUNNER_TEMP/self-improvement.png" --quiet
           awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/intelligence-layers/INTELLIGENCE-AS-LOOPS.md > "$RUNNER_TEMP/intelligence-loops.mmd"
           npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/intelligence-loops.mmd" -o "$RUNNER_TEMP/intelligence-loops.png" --quiet
           awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/static-architecture/BRAVE-SEARCH-PLUGIN.md > "$RUNNER_TEMP/brave-plugin.mmd"
           npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/brave-plugin.mmd" -o "$RUNNER_TEMP/brave-plugin.png" --quiet
+          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/static-architecture/MODEL-GATEWAY.md > "$RUNNER_TEMP/model-gateway.mmd"
+          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/model-gateway.mmd" -o "$RUNNER_TEMP/model-gateway.png" --quiet
+          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/loop-object/LOOP-PROFILE-ONTOLOGY.md > "$RUNNER_TEMP/loop-profiles.mmd"
+          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/loop-profiles.mmd" -o "$RUNNER_TEMP/loop-profiles.png" --quiet
 
   test:
     name: suite + conformance gates
@@ -113,6 +144,8 @@ jobs:
           python examples/11_seed_space_context/run.py
           python examples/12_wrap_a_large_codebase/run.py
           python examples/13_brave_search_plugin/run.py
+          python examples/14_five_problem_campaign/run.py
+          python examples/15_verify_a_deployment_profile/run.py
 
   build:
     name: build the distribution

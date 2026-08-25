@@ -17,14 +17,14 @@ Task -> Loop Practitioner -> Solution Canvas -> Result
 
 The same figure must also show:
 
-- the shared Loop object used by Practitioner, Solution, and Self-Improvement loops;
+- the shared Loop object used by Practitioner and Solution loops;
 - the three run modes: deterministic, hybrid, and non-deterministic;
 - step profiles with one step, five steps, nine steps, or a custom sequence;
 - Practitioner loops that may start more Practitioner loops;
 - Solution Canvas nodes that are Solution loops;
-- a Self-Improvement Loop that reviews history and intelligence, seeds domains,
-  and stages candidates only;
-- Static Architecture supporting all three roles;
+- self-improvement shown as a task entering the Loop Practitioner, not as a
+  separate runtime role;
+- Static Architecture supporting every loop;
 - a separate Retrieval Engine node with lexical, vector, and hybrid modes;
 - built-in adapters, manual plugin registration, and future plugin packaging;
 - all four intelligence layers;
@@ -105,23 +105,23 @@ Use a horizontal timeline for Chronicle events. Show the newest event on the
 right. Live views may reveal events as they arrive. Playback must use saved
 events and must not rerun the original work.
 
-## V7: Self-Improvement Loop
+## V7: self-improvement Practitioner workflow
 
 Use a simple cycle:
 
 ```text
-Run -> Review history and intelligence -> Stage candidates -> Independent review -> Improve the four layers -> Next run
+Self-improvement task -> Loop Practitioner -> Review history and intelligence -> Stage candidates -> Independent review
 ```
 
-Domain Context seeding is one Self-Improvement task. Nothing should appear to
+Domain Context seeding is one self-improvement task. Nothing should appear to
 promote itself. Candidate work must remain visibly separate from reviewed and
 accepted work.
 
 ## Review checklist
 
 - The first figure starts with a task and ends with a result.
-- Practitioner, Solution, and Self-Improvement loops are distinct roles of one
-  runtime.
+- Self-improvement enters the Loop Practitioner as a task and is not shown as a
+  third runtime role.
 - Each visible loop has a mode when mode detail matters.
 - The four intelligence layers are all present in system maps.
 - Runtime Memory is separate from persistent intelligence.

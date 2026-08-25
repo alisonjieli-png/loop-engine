@@ -13,12 +13,14 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Any, Sequence
+from typing import Sequence
 
 from ..strings.knowledge import Knowledge
-from ..loop.moves import move, answer, MOVE_TYPES, is_valid_move_kind
+from ..loop.moves import move, answer, is_valid_move_kind
 from ..loop.resolvers import WhatIsNextResolver
-from ..static_architecture.ollama_client import chat, chat_maxout, DEFAULT_MODEL
+from ..static_architecture.provider_pinned import (ProviderPinnedRequest,
+                                                   invoke_provider_model)
+from ..static_architecture.ollama_client import DEFAULT_MODEL
 
 _MOVE_SCHEMA_HINT = (
     'Respond ONLY with a JSON array of the 3 best next moves, each: '
@@ -87,12 +89,14 @@ def make_ollama_proposer(model: str = DEFAULT_MODEL, *, num_predict: int = 8000,
     """A proposer (knowledge, preamble) -> [move dicts] backed by a live model."""
     def proposer(knowledge: Knowledge, preamble: str) -> list[dict]:
         prompt = render_next_move_prompt(knowledge, questions=questions)
-        res = chat_maxout(prompt, model=model, temperature=0.6)
+        res = invoke_provider_model(ProviderPinnedRequest(
+            prompt=prompt, provider="ollama_cloud", model=model,
+            temperature=0.6))
         if not res.ok:
             return []
         moves = parse_moves(res.text)
         for mv in moves:
-            mv["_tokens"] = res.total_tokens
+            mv["_tokens"] = res.total_tokens or 0
             mv["_model"] = res.model
         return moves
     return proposer
@@ -207,14 +211,16 @@ def deep_deliberate(knowledge: Knowledge, *, models: Sequence[str] = COUNCIL_MOD
                 context_level=knowledge.context_level,
                 frame=frames[i].to_ask_frame(knowledge.goal, knowledge.frame))
         prompt = render_next_move_prompt(k, questions=questions)
-        res = chat_maxout(prompt, model=model, temperature=0.7)
-        total_tokens += res.total_tokens
+        res = invoke_provider_model(ProviderPinnedRequest(
+            prompt=prompt, provider="ollama_cloud", model=model,
+            temperature=0.7))
+        total_tokens += res.total_tokens or 0
         moves = parse_moves(res.text) if res.ok else []
         members.append({"model": model,
                         "archetype": (frames[i].distant_domain + "/"
                                       + frames[i].cognition_mode)
                         if shuffle and i < len(frames) else "",
-                        "ok": res.ok, "tokens": res.total_tokens,
+                        "ok": res.ok, "tokens": res.total_tokens or 0,
                         "moves": moves})
 
     # Dependence-aware aggregation: each MODEL endorses a move at most once.
@@ -338,8 +344,10 @@ def debate(knowledge: Knowledge, *, models: Sequence[str] = COUNCIL_MODELS,
                           for mv in mvs]
                 prompt = _render_critique_prompt(kviews[i], current[i], others,
                                                  questions=questions)
-            res = chat_maxout(prompt, model=model, temperature=0.7)
-            rt += res.total_tokens
+            res = invoke_provider_model(ProviderPinnedRequest(
+                prompt=prompt, provider="ollama_cloud", model=model,
+                temperature=0.7))
+            rt += res.total_tokens or 0
             new_current.append(parse_moves(res.text) if res.ok else current[i])
         current = new_current
         total_tokens += rt

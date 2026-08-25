@@ -1,0 +1,252 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/alisonjieli-png/loop-engine/docs/benchmarks/benchmark-registry.schema.json",
+  "title": "Loop Engine benchmark registry",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "as_of",
+    "stage_definitions",
+    "benchmarks"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "benchmark_registry/v1"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stage_definitions": {
+      "type": "object",
+      "required": [
+        "catalog",
+        "source_review",
+        "local_smoke",
+        "frozen_evaluation",
+        "comparison_ready"
+      ]
+    },
+    "templates": {
+      "type": "object"
+    },
+    "benchmarks": {
+      "type": "array",
+      "minItems": 100,
+      "items": {
+        "$ref": "#/$defs/benchmark"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "benchmark": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "family",
+        "parent_suite",
+        "task",
+        "modality",
+        "source_url",
+        "evaluator",
+        "license_access",
+        "cost_network_needs",
+        "contamination_risk",
+        "current_status",
+        "staged_eligibility"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 2
+        },
+        "family": {
+          "enum": [
+            "agentic_task",
+            "rag_retrieval",
+            "long_context",
+            "legal",
+            "coding",
+            "data_engineering",
+            "document_understanding",
+            "safety",
+            "multimodal",
+            "ml_kaggle"
+          ]
+        },
+        "parent_suite": {
+          "type": "string",
+          "minLength": 2
+        },
+        "task": {
+          "type": "string",
+          "minLength": 8
+        },
+        "modality": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          }
+        },
+        "source_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "evaluator": {
+          "type": "object",
+          "required": [
+            "kind",
+            "primary_metric",
+            "oracle_owner"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "minLength": 2
+            },
+            "primary_metric": {
+              "type": "string",
+              "minLength": 2
+            },
+            "oracle_owner": {
+              "type": "string",
+              "minLength": 2
+            }
+          },
+          "additionalProperties": false
+        },
+        "license_access": {
+          "type": "object",
+          "required": [
+            "license",
+            "access"
+          ],
+          "properties": {
+            "license": {
+              "type": "string",
+              "minLength": 2
+            },
+            "access": {
+              "type": "string",
+              "minLength": 2
+            }
+          },
+          "additionalProperties": false
+        },
+        "cost_network_needs": {
+          "type": "object",
+          "required": [
+            "network",
+            "compute",
+            "paid_service"
+          ],
+          "properties": {
+            "network": {
+              "type": "string",
+              "minLength": 2
+            },
+            "compute": {
+              "type": "string",
+              "minLength": 2
+            },
+            "paid_service": {
+              "type": [
+                "string",
+                "boolean"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "contamination_risk": {
+          "type": "object",
+          "required": [
+            "level",
+            "basis"
+          ],
+          "properties": {
+            "level": {
+              "enum": [
+                "low",
+                "medium",
+                "high",
+                "unknown"
+              ]
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 8
+            }
+          },
+          "additionalProperties": false
+        },
+        "current_status": {
+          "enum": [
+            "cataloged_not_run",
+            "source_reviewed",
+            "smoke_tested",
+            "evaluated",
+            "comparison_ready",
+            "blocked",
+            "retired"
+          ]
+        },
+        "staged_eligibility": {
+          "type": "object",
+          "required": [
+            "current_stage",
+            "next_stage",
+            "eligible_for_comparison",
+            "blockers"
+          ],
+          "properties": {
+            "current_stage": {
+              "enum": [
+                "catalog",
+                "source_review",
+                "local_smoke",
+                "frozen_evaluation",
+                "comparison_ready"
+              ]
+            },
+            "next_stage": {
+              "enum": [
+                "source_review",
+                "local_smoke",
+                "frozen_evaluation",
+                "comparison_ready",
+                "none"
+              ]
+            },
+            "eligible_for_comparison": {
+              "type": "boolean"
+            },
+            "blockers": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 4
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

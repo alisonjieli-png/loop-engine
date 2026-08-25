@@ -266,18 +266,23 @@ def roster_to_routes(roster: ModelRoster) -> list:
     """The roster as ModelRoute data the existing registry accepts — discovery
     feeds the route table rather than replacing it."""
     from .model_routes import ModelProviderCapabilities, ModelRoute
+    from .provider_failover import PROVIDERS
     routes = []
     for c in roster.choices:
+        adapter = PROVIDERS.get(c.provider)
+        endpoint = getattr(adapter, "endpoint", None)
+        locality = getattr(endpoint, "locality", "cloud")
+        tokens_reported = getattr(endpoint, "counts_as_evidence", True)
         caps = ModelProviderCapabilities(
-            provider=c.provider, locality="cloud",
-            tokens_provider_reported=True,
+            provider=c.provider, locality=locality,
+            tokens_provider_reported=tokens_reported,
             supports_tool_calls=c.supports_tools,
             max_context=c.context_length)
         purposes = (("counted_generation", "decide_label")
                     if c.role == "decide_label" else ("counted_generation",))
         routes.append(ModelRoute(
             name=f"discovered.{c.provider}.{c.model}".replace("/", "."),
-            provider=c.provider, model=c.model, locality="cloud",
+            provider=c.provider, model=c.model, locality=locality,
             purposes=purposes, capabilities=caps))
     return routes
 

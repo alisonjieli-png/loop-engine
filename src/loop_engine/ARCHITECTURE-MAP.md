@@ -3,14 +3,14 @@
 > Generated 2026-08-25 by `PYTHONPATH=src python3 -m loop_engine --map`. Regenerate rather than hand-edit; freshness is gated (`architecture_map_freshness`).
 
 ARCHITECTURE MAP: four top-level abstractions
-  loop/  (49 modules)
-    acceptance, arbiter, builtin_resolvers, capability_loops, canvas, context_shuffle, decision_engine, decision_slates, escalation_governor, hybrid_dimension_lattice, research_to_capability, list_intelligence, decision_envelope, decision_episode, decision_need, delegation, deliberation, kernel, kernel_model_impls, lens, loop, loop_handlers, loop_templates, methodical, moves, intelligence_loops, practitioner_campaign, practitioner_loop, practitioner_methods, receipts, effective_spec, encapsulate, loop_capsule, loop_contract, loop_doctrine, recursive_loop, regimes, registry, resolvers, route_bridge, runner, solve, solver, step_registry, steps, studio, sub_practitioner, tuning, wiring
+  loop/  (51 modules)
+    acceptance, arbiter, builtin_resolvers, capability_loops, canvas, context_shuffle, decision_engine, decision_slates, escalation_governor, hybrid_dimension_lattice, research_to_capability, list_intelligence, decision_envelope, decision_episode, decision_need, delegation, deliberation, kernel, kernel_model_impls, lens, loop, loop_handlers, loop_templates, methodical, moves, intelligence_loops, practitioner_campaign, practitioner_loop, practitioner_methods, receipts, effective_spec, encapsulate, loop_capsule, loop_contract, loop_doctrine, loop_profile_catalog, loop_profile_ontology, recursive_loop, regimes, registry, resolvers, route_bridge, runner, solve, solver, step_registry, steps, studio, sub_practitioner, tuning, wiring
   strings/  (19 modules)
     ask_strategies, bias_checklist, biases, context, decision_schemas, domain_pack, frame, intelligence_strings, interrogation, knowledge, knowledge_state, notes, output_templates, packs, prompt_fragments, question_bank, question_engine, solution_shaping, task_blueprint
-  code_nodes/  (37 modules)
-    blueprint, capture, closure, context_seed, competition_solver, enrichment, failure_response, follow_up, housekeeping, kaggle_executor, live_run_demo, learning_bundle, guided_setup, logic_ast, universal_solve, loop_report, measurement, pack_curation, planning, public_examples, review_mode, change_proposals, foundry_probes, guidance_ledger, rl_vocabulary, run_analytics, run_playback, run_quality, runtime_contracts, self_improve, self_improvement_loop, smoke_ladder, solution_canvas, solution_compiler, solution_graph, solution_records, string_foundry
-  static_architecture/  (38 modules)
-    asset_class, asset_lifecycle, brave_search, capability_directory, chronicle, config, context_catalog, context_classification, context_ontology, code_intelligence_assets, event_vocabulary, duckdb_catalog, facets, intelligence_layers, runtime_memory, user_intelligence, intelligence_registry, model_call, model_routes, ollama_client, ollama_resolvers, mistral_client, openrouter_client, provider_failover, model_discovery, autoconfigure, custom_endpoint, knowledge_loader, opencode_client, operating_profile, persistence, reasoning_call, retrieval, solution_library, store_serve, boundary_registry, saas_routes, studio_server
+  code_nodes/  (38 modules)
+    blueprint, campaign_runner, capture, closure, context_seed, competition_solver, enrichment, failure_response, follow_up, housekeeping, kaggle_executor, live_run_demo, learning_bundle, guided_setup, logic_ast, universal_solve, loop_report, measurement, pack_curation, planning, public_examples, review_mode, change_proposals, foundry_probes, guidance_ledger, rl_vocabulary, run_analytics, run_playback, run_quality, runtime_contracts, self_improve, self_improvement_loop, smoke_ladder, solution_canvas, solution_compiler, solution_graph, solution_records, string_foundry
+  static_architecture/  (43 modules)
+    api_quality, asset_class, asset_lifecycle, brave_search, capability_directory, chronicle, config, context_catalog, context_classification, context_ontology, code_intelligence_assets, event_vocabulary, duckdb_catalog, facets, intelligence_layers, runtime_memory, user_intelligence, intelligence_registry, model_call, model_gateway, runtime_settings, settings_loader, model_routes, ollama_client, ollama_resolvers, mistral_client, openrouter_client, provider_failover, provider_pinned, model_discovery, autoconfigure, custom_endpoint, knowledge_loader, opencode_client, operating_profile, persistence, reasoning_call, retrieval, solution_library, store_serve, boundary_registry, saas_routes, studio_server
 
 THE REFERENCE NINE-STEP PROFILE: detailed step map
 
@@ -148,8 +148,14 @@ STEP 9: route  [REQUIRED]
   extend: provide a `route` impl to emit richer routes (branch/distill/escalate); call closure.audit_run before finishing
 
 CROSS-CUTTING SERVICES (used by many steps, never step-specific):
-  - model-call DAG  [model_call + reasoning_call + model_routes]
-      every model call: ReasoningRequest -> PromptAssemblySpec (13 blocks) -> ModelInvocationRequest -> ModelInvocationResult; provider-neutral routes (cloud-only policy, local wired-but-gated); fallbacks + seeds
+  - versioned Loop profile ontology  [loop_profile_catalog + loop_profile_ontology]
+      one Loop root branches into Practitioner, Intelligence, and Solution profiles; profiles are immutable data with explicit parents, required fields, required capabilities, registered step templates, mode limits, semantic versions, and compatibility handshakes; profile binding returns the existing LoopConfig and never creates another runtime
+  - typed runtime settings  [runtime_settings + settings_loader]
+      one composed settings object covers loop defaults, retrieval backends, provider references, model thinking tiers, bounded escalation, operating policy, and Chronicle paths; YAML stores credential environment variable names, unknown keys fail closed, and environment overrides remain visible
+  - typed API quality  [api_quality + loop_contract + solution_graph]
+      loop ports use versioned input and output roles, different roles require a named Adapter Loop, and conformance rejects new public signatures above the parameter cap unless a typed boundary or declared compatibility plan exists
+  - model-call DAG and gateway  [model_call + reasoning_call + model_gateway + model_routes + provider_pinned]
+      every model call: ReasoningRequest -> PromptAssemblySpec (13 blocks) -> ModelInvocationRequest -> ModelGateway -> ModelInvocationResult; provider-neutral routes, one model loop per physical attempt, policy, failover, validation, budgets, and seeds
   - two intelligence item forms (Context | Code)  [asset_class]
       Context Intelligence guides work without executing it. Code Intelligence describes something the machine can run. Both are discovered as small LoopRefs and returned through loops. Contract, logic, and capability are roles a Code item can play, not new runtime node types
   - logic (safe AST)  [logic_ast]
@@ -174,5 +180,5 @@ CROSS-CUTTING SERVICES (used by many steps, never step-specific):
       question forms/tiers, personas, context/layout policies, Domain Support Packs, and Context Intelligence; intelligence_registry standardizes the Database and Runtime tiers (serve/version/track/promote)
   - operating profile + config  [operating_profile + config]
       five enum modes resolved Platform->Org->Project->Run->Child; enforced at the how/act/model boundaries
-  - model transport  [ollama_client + opencode_client]
-      Ollama Cloud (token-counted) + OpenCode headless workers (cloud-only)
+  - model transport  [ollama_client + mistral_client + openrouter_client + custom_endpoint]
+      Ollama Cloud, Mistral, OpenRouter, and custom endpoints implement the ProviderAdapter contract; OpenCode workers remain a separate external agent boundary

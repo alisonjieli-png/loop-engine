@@ -77,6 +77,8 @@ def main():
                     help="actually submit to the leaderboard")
     ap.add_argument("--report", metavar="PATH",
                     help="write an HTML loop report to PATH")
+    ap.add_argument("--out", metavar="PATH",
+                    help="keep the generated submission CSV at PATH")
     args = ap.parse_args()
 
     advise = None
@@ -93,7 +95,10 @@ def main():
     with tempfile.TemporaryDirectory() as d:
         files = download(args.competition, d)
         train, test, sample = pick_files(d, files)
-        out_csv = os.path.join(d, "submission.csv")
+        out_csv = args.out or os.path.join(d, "submission.csv")
+        if args.out:
+            os.makedirs(os.path.dirname(os.path.abspath(args.out)),
+                        exist_ok=True)
         ledger = LoopLedger()
 
         run_result = run_smoke_loop(
@@ -145,9 +150,15 @@ def main():
                   "optimistic, and that gap is the thing worth studying.")
         else:
             print()
-            print("Not submitted. Add --submit to send it, or submit by hand:")
-            print(f"  kaggle competitions submit -c {args.competition} "
-                  f"-f {out_csv} -m 'loop-engine'")
+            if args.out:
+                print("Not submitted. The generated CSV was kept at:")
+                print(f"  {out_csv}")
+                print("Submit only after reviewing it:")
+                print(f"  kaggle competitions submit -c {args.competition} "
+                      f"-f {out_csv} -m 'loop-engine'")
+            else:
+                print("Not submitted. The temporary CSV was not retained.")
+                print("Use --out PATH to keep it for review.")
 
 
 def _warm_store():

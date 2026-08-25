@@ -3,22 +3,28 @@
 ## Each operational node is a loop
 
 Loop Engine uses one `Loop` runtime object. A Loop can perform bounded work or
-start another Loop for a smaller part of the task. Practitioner loops,
-Solution loops, and Self-Improvement loops are roles of this same runtime.
+start another Loop for a smaller part of the task. Practitioner loops build and
+verify work. Solution loops run a finished Solution Canvas.
 
 Each loop has:
 
 - a goal;
 - an input and output contract;
 - allowed and preferred run modes;
+- delegated modes for loops it starts;
 - a step profile;
 - an effort setting and budget;
+- model thinking power when the loop permits a model;
 - a stop condition;
 - a depth limit; and
 - an event log.
 
 Read [The Loop object and step profiles](../components/loop-object/) for the
 complete definition.
+
+A Loop profile classifies the loop as Practitioner, Intelligence, or Solution
+work. It is separate from the step profile and run mode. Read the
+[Loop profile ontology](../components/loop-object/LOOP-PROFILE-ONTOLOGY.md).
 
 ## Three run modes
 
@@ -34,14 +40,23 @@ from loop_engine.loop.recursive_loop import LoopConfig
 config = LoopConfig(
     allowable_modes=("deterministic", "hybrid"),
     preferred_modes=("deterministic", "hybrid"),
+    delegated_modes=("deterministic", "hybrid", "non_deterministic"),
+    llm_thinking_power="medium",
 )
 ```
 
-Allowed modes are permissions. Preferred modes set the order within those
-permissions. A deterministic loop stays deterministic even when a model
-provider is configured.
+Allowed modes control the current loop. Preferred modes set its order. A
+deterministic loop stays deterministic even when a model provider is
+configured.
 
-A loop that starts another loop cannot grant a mode that it does not have.
+Delegated modes are separate. They control which modes the loop may grant a
+loop it starts. This allows deterministic to start non-deterministic,
+non-deterministic to start deterministic, and hybrid to start either. The
+operating policy may still restrict delegation.
+
+`llm_thinking_power` selects a configured model tier for hybrid or
+non-deterministic work. It is invalid on a deterministic-only loop. Read
+[Runtime settings and model tiers](settings.md).
 
 ## Step profiles
 
@@ -86,17 +101,17 @@ assumption = numbers.spawn("check one assumption")
 The loops share the event log. Reports use the recorded relationships to show
 the loop tree. `max_depth` keeps the tree bounded.
 
-## Three Loop roles
+## Practitioner and Solution loops
 
 Practitioner loops explain how work was built. A Solution Canvas explains what
 runs for a new input.
 
-A Self-Improvement Loop reviews history and intelligence, then stages
-candidates for independent review.
+Self-improvement is a task given to the Loop Practitioner. It is not a third
+runtime role.
 
 - Read [Loop Practitioner](../components/practitioner/).
 - Read [Solution Canvas](../components/solution-canvas/).
-- Read [Self-improvement and domain seeding](../components/self-improvement/).
+- Read [Self-improvement as a Practitioner task](../components/self-improvement/).
 
 ## Intelligence and run history
 

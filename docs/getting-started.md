@@ -114,9 +114,10 @@ More: [providers and keys](guides/providers-and-keys.md) ·
 |---|---|
 | [Loops and modes](guides/loops-and-modes.md) | how nesting, stop conditions, and permissions work |
 | [Providers and keys](guides/providers-and-keys.md) | discovery, failover, cost attribution |
+| [Runtime settings and model tiers](guides/settings.md) | YAML defaults, search choices, providers, and bounded model escalation |
 | [Custom endpoints](guides/custom-endpoints.md) | your own server or a third party's |
 | [Reports](guides/reports.md) | reading and exporting a run |
 | [Component guide](components/) | the Loop object, roles, Static Architecture, and intelligence layers |
 | [Architecture](architecture/) | deeper implementation and visual guidance |
-| [`examples/`](../examples/) | thirteen categorized example folders |
+| [`examples/`](../examples/) | fifteen categorized example folders |
 | [Customer import Canvas](../examples/10_validate_customer_import/) | a realistic compiled Solution Canvas with fallback |

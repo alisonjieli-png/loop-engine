@@ -13,7 +13,7 @@ record cannot satisfy a requirement by omission.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 
 # ---------------------------------------------------------------------------
 # Code Node facet vocabularies (closed — validated).
@@ -96,115 +96,110 @@ def code_facets(*, execution_mode: str, determinism: str, locality: str,
     return out
 
 
-def string_facets(*, category: str, subcategory: str = "",
-                  job_position: str = "", scope: str = "",
-                  lifecycle: str = "", provenance: str = "",
-                  context_type: str = "", role_family: str = "",
-                  seniority: str = "", industry: str = "", domain: str = "",
-                  subdomain: str = "", topic: str = "",
-                  project_type: str = "", task_type: str = "",
-                  deliverable: str = "", workflow_stage: str = "",
-                  thinking_style: str = "", question_family: str = "",
-                  speech_act: str = "", polarity: str = "",
-                  comparison_mode: str = "", detail_direction: str = "",
-                  list_structure: str = "", ordering_rule: str = "",
-                  response_shape: str = "", serialization_format: str = "",
-                  geography: str = "", jurisdiction: str = "",
-                  time_horizon: str = "", source_policy: str = "",
-                  claim_status: str = "", evidence_status: str = "",
-                  utility_status: str = "", access_level: str = "",
-                  source_type: str = "", freshness_status: str = "",
-                  risk_level: str = "", applicability_status: str = "",
-                  possible_code_target: str = "",
-                  digest: str = "") -> dict:
-    """Facet dict for a Context record.
+@dataclass(frozen=True)
+class ContextFacetSpec:
+    """Typed classification settings for one Context Intelligence item.
 
-    The function keeps its compatibility name because existing persisted
-    records use the String asset vocabulary. Public interfaces call the layer
-    Context Intelligence. Open fields remain explicit instead of forcing every
-    industry and job into a closed list.
+    The open dimensions accept explicit strings. Controlled dimensions are
+    normalized and validated by ``context_ontology`` when facets are built.
     """
-    from .context_ontology import normalize_ontology
-    normalized = normalize_ontology({key: value for key, value in {
-        "context_type": context_type,
-        "thinking_style": thinking_style,
-        "question_family": question_family,
-        "speech_act": speech_act,
-        "polarity": polarity,
-        "comparison_mode": comparison_mode,
-        "detail_direction": detail_direction,
-        "list_structure": list_structure,
-        "ordering_rule": ordering_rule,
-        "response_shape": response_shape,
-        "serialization_format": serialization_format,
-        "claim_status": claim_status,
-        "evidence_status": evidence_status,
-        "utility_status": utility_status,
-        "lifecycle": lifecycle,
-        "access_level": access_level,
-        "source_type": source_type,
-        "freshness_status": freshness_status,
-        "risk_level": risk_level,
-        "applicability_status": applicability_status,
-    }.items() if value})
-    context_type = normalized.get("context_type", context_type)
-    thinking_style = normalized.get("thinking_style", thinking_style)
-    question_family = normalized.get("question_family", question_family)
-    speech_act = normalized.get("speech_act", speech_act)
-    polarity = normalized.get("polarity", polarity)
-    comparison_mode = normalized.get("comparison_mode", comparison_mode)
-    detail_direction = normalized.get("detail_direction", detail_direction)
-    list_structure = normalized.get("list_structure", list_structure)
-    ordering_rule = normalized.get("ordering_rule", ordering_rule)
-    response_shape = normalized.get("response_shape", response_shape)
-    serialization_format = normalized.get(
-        "serialization_format", serialization_format)
-    evidence_status = normalized.get("evidence_status", evidence_status)
-    utility_status = normalized.get("utility_status", utility_status)
-    claim_status = normalized.get("claim_status", claim_status)
-    lifecycle = normalized.get("lifecycle", lifecycle)
-    access_level = normalized.get("access_level", access_level)
-    source_type = normalized.get("source_type", source_type)
-    freshness_status = normalized.get("freshness_status", freshness_status)
-    risk_level = normalized.get("risk_level", risk_level)
-    applicability_status = normalized.get(
-        "applicability_status", applicability_status)
-    return {"category": category, "subcategory": subcategory,
-            "context_type": context_type,
-            "role_family": role_family,
-            "role_family_known": (role_family in ROLE_FAMILIES
-                                  if role_family else True),
-            "job_position": job_position,
-            "job_position_known": (job_position in KNOWN_JOB_POSITIONS
-                                   if job_position else True),
-            "seniority": seniority, "industry": industry,
-            "domain": domain, "subdomain": subdomain, "topic": topic,
-            "project_type": project_type, "task_type": task_type,
-            "deliverable": deliverable, "workflow_stage": workflow_stage,
-            "thinking_style": thinking_style,
-            "question_family": question_family,
-            "speech_act": speech_act, "polarity": polarity,
-            "comparison_mode": comparison_mode,
-            "detail_direction": detail_direction,
-            "list_structure": list_structure,
-            "ordering_rule": ordering_rule,
-            "response_shape": response_shape,
-            "serialization_format": serialization_format,
-            "geography": geography, "jurisdiction": jurisdiction,
-            "time_horizon": time_horizon, "source_policy": source_policy,
-            "claim_status": claim_status, "evidence_status": evidence_status,
-            "utility_status": utility_status,
-            "access_level": access_level, "source_type": source_type,
-            "freshness_status": freshness_status, "risk_level": risk_level,
-            "applicability_status": applicability_status,
-            "possible_code_target": possible_code_target,
-            "scope": scope, "lifecycle": lifecycle,
-            "provenance": provenance, "digest": digest}
+    category: str
+    subcategory: str = ""
+    context_type: str = ""
+    role_family: str = ""
+    job_position: str = ""
+    seniority: str = ""
+    industry: str = ""
+    domain: str = ""
+    subdomain: str = ""
+    topic: str = ""
+    project_type: str = ""
+    task_type: str = ""
+    deliverable: str = ""
+    workflow_stage: str = ""
+    thinking_style: str = ""
+    question_family: str = ""
+    speech_act: str = ""
+    polarity: str = ""
+    comparison_mode: str = ""
+    detail_direction: str = ""
+    list_structure: str = ""
+    ordering_rule: str = ""
+    response_shape: str = ""
+    serialization_format: str = ""
+    geography: str = ""
+    jurisdiction: str = ""
+    time_horizon: str = ""
+    source_policy: str = ""
+    claim_status: str = ""
+    evidence_status: str = ""
+    utility_status: str = ""
+    access_level: str = ""
+    source_type: str = ""
+    freshness_status: str = ""
+    risk_level: str = ""
+    applicability_status: str = ""
+    possible_code_target: str = ""
+    scope: str = ""
+    lifecycle: str = ""
+    provenance: str = ""
+    digest: str = ""
+
+    def __post_init__(self):
+        for definition in fields(self):
+            value = getattr(self, definition.name)
+            if not isinstance(value, str):
+                raise TypeError(
+                    f"{definition.name} must be a string, got "
+                    f"{type(value).__name__}")
+        if not self.category.strip():
+            raise ValueError("category cannot be empty")
+
+    @classmethod
+    def from_mapping(cls, values: dict) -> "ContextFacetSpec":
+        """Build a spec from loaded YAML, JSON, or catalog metadata."""
+        return cls(**dict(values))
+
+    def to_facets(self) -> dict:
+        """Normalize controlled axes and return the stable facet mapping."""
+        from .context_ontology import CONTROLLED_AXES, normalize_ontology
+        values = asdict(self)
+        controlled = {key: value for key, value in values.items()
+                      if key in CONTROLLED_AXES and value}
+        normalized = normalize_ontology(controlled)
+        for key in values:
+            if key in normalized:
+                values[key] = normalized[key]
+        values["role_family_known"] = (
+            values["role_family"] in ROLE_FAMILIES
+            if values["role_family"] else True)
+        values["job_position_known"] = (
+            values["job_position"] in KNOWN_JOB_POSITIONS
+            if values["job_position"] else True)
+        return values
 
 
-def context_facets(**kwargs) -> dict:
-    """Public-language alias for ``string_facets``."""
-    return string_facets(**kwargs)
+def string_facets(spec: "ContextFacetSpec | None" = None,
+                  **legacy_fields) -> dict:
+    """Build facets from one typed spec.
+
+    Legacy keyword fields remain accepted for existing callers. New code
+    should construct ``ContextFacetSpec`` and pass it as ``spec``.
+    """
+    if spec is not None and legacy_fields:
+        raise TypeError(
+            "pass ContextFacetSpec or legacy keyword fields, not both")
+    if spec is None:
+        spec = ContextFacetSpec(**legacy_fields)
+    if not isinstance(spec, ContextFacetSpec):
+        raise TypeError("spec must be a ContextFacetSpec")
+    return spec.to_facets()
+
+
+def context_facets(spec: "ContextFacetSpec | None" = None,
+                   **legacy_fields) -> dict:
+    """Public-language entry point for Context Intelligence facets."""
+    return string_facets(spec, **legacy_fields)
 
 
 # ---------------------------------------------------------------------------
@@ -319,8 +314,9 @@ def self_test() -> dict:
 
     # 7. prefer is soft: mismatch never gates, match adds rank.
     pf = FacetFilter(prefer={"job_position": "senior_data_scientist"})
-    s1 = string_facets(category="measurement", subcategory="generalization",
-                       job_position="senior_data_scientist")
+    s1 = context_facets(ContextFacetSpec(
+        category="measurement", subcategory="generalization",
+        job_position="senior_data_scientist"))
     s2 = string_facets(category="measurement")
     ok1, sc1, _ = facet_match(s1, pf)
     ok2, sc2, _ = facet_match(s2, pf)
@@ -339,18 +335,47 @@ def self_test() -> dict:
           s3["job_position_known"] is False)
 
     # 10. the Context hierarchy is searchable through the same filter grammar.
-    cx = context_facets(
+    cx = context_facets(ContextFacetSpec(
         category="domain_seed", context_type="question",
         role_family="science_engineering", job_position="mission_planner",
         domain="space", project_type="earth_observation",
         task_type="risk_review", workflow_stage="planning",
         thinking_style="first_principles", response_shape="decomposition",
-        scope="domain", lifecycle="candidate", provenance="seed/v1")
+        scope="domain", lifecycle="candidate", provenance="seed/v1"))
     cflt = FacetFilter(require={"domain": "space",
                                "thinking_style": "first_principles"})
     check("context_hierarchy_fields_use_the_shared_filter_grammar",
           facet_match(cx, cflt)[0]
           and all(field in cx for field in CONTEXT_FACET_FIELDS))
+
+    # 11. The typed object and legacy keywords produce the same mapping.
+    typed = context_facets(ContextFacetSpec(
+        category="prompting", context_type="prompt",
+        serialization_format="md", lifecycle="core"))
+    legacy = context_facets(
+        category="prompting", context_type="prompt",
+        serialization_format="md", lifecycle="core")
+    check("typed_context_spec_preserves_legacy_output",
+          typed == legacy
+          and set(typed) == (set(CONTEXT_FACET_FIELDS)
+                             | {"role_family_known", "job_position_known"})
+          and typed["context_type"] == "prompt_fragment"
+          and typed["serialization_format"] == "markdown"
+          and typed["lifecycle"] == "registered")
+
+    # 12. Callers cannot combine the typed and legacy forms by accident.
+    mixed_refused = False
+    bad_type_refused = False
+    try:
+        context_facets(ContextFacetSpec(category="x"), domain="space")
+    except TypeError:
+        mixed_refused = True
+    try:
+        ContextFacetSpec(category="x", domain=7)
+    except TypeError:
+        bad_type_refused = True
+    check("context_spec_refuses_mixed_or_untyped_fields",
+          mixed_refused and bad_type_refused)
 
     passed = sum(1 for r in results if r["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

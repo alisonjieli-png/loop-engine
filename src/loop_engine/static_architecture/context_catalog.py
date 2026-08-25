@@ -15,7 +15,7 @@ from __future__ import annotations
 
 def build_context_records(*, include_candidates: bool = False) -> list:
     from .store_serve import StoreRecord
-    from .facets import string_facets
+    from .facets import ContextFacetSpec, context_facets
     from ..code_nodes.string_foundry import (load_seed_pack,
                                               seed_pack_store_records,
                                               load_candidate_bank)
@@ -41,10 +41,10 @@ def build_context_records(*, include_candidates: bool = False) -> list:
         for item in getattr(bank, "_by_id", {}).values():
             base = item.envelope()
             body = dict(base.body or {})
-            body["facets"] = string_facets(
+            body["facets"] = context_facets(ContextFacetSpec(
                 category=category, subcategory=item.kind,
                 scope="package", lifecycle=item.maturity,
-                provenance=item.provenance)
+                provenance=item.provenance))
             add(StoreRecord(base.record_id, base.kind, base.title,
                             body=body, tags=base.tags, tier=base.tier,
                             source=category))
@@ -56,11 +56,11 @@ def build_context_records(*, include_candidates: bool = False) -> list:
             body={"role": "question", "maturity": "registered",
                   "how_to_answer": item.how_to_answer,
                   "answerable_by": item.answerable_by,
-                  "facets": string_facets(
+                  "facets": context_facets(ContextFacetSpec(
                       category="interrogation",
                       subcategory=item.subcategory or item.category,
                       context_type="question", scope="package",
-                      lifecycle="registered", provenance="interrogation_bank")},
+                      lifecycle="registered", provenance="interrogation_bank"))},
             tags=("interrogation", item.category, item.subcategory),
             source="interrogation"))
 
@@ -69,10 +69,10 @@ def build_context_records(*, include_candidates: bool = False) -> list:
         add(StoreRecord(
             f"guidance.{item['key']}", "context", item["text"],
             body={"role": "instruction", "maturity": "registered",
-                  "facets": string_facets(
+                  "facets": context_facets(ContextFacetSpec(
                       category="guidance", subcategory=item.get("kind", ""),
                       context_type="instruction", scope="package",
-                      lifecycle="registered", provenance="guidance_ledger")},
+                      lifecycle="registered", provenance="guidance_ledger"))},
             tags=("guidance", item.get("kind", "instruction")),
             source="guidance_ledger"))
 
@@ -97,14 +97,14 @@ def build_context_records(*, include_candidates: bool = False) -> list:
             body={"role": f"{lens.kind}_lens", "maturity": "registered",
                   "focus": list(lens.focus),
                   "default_questions": list(lens.default_questions),
-                  "facets": string_facets(
+                  "facets": context_facets(ContextFacetSpec(
                       category="role_lens" if lens.kind == "role"
                       else "thinking_method",
                       subcategory=short_name, context_type="persona"
                       if lens.kind == "role" else "method",
                       job_position=short_name if lens.kind == "role" else "",
                       thinking_style=thinking, scope="package",
-                      lifecycle="registered", provenance="lens_registry")},
+                      lifecycle="registered", provenance="lens_registry"))},
             tags=("lens", lens.kind, short_name), source="lens_registry"))
 
     from ..strings.context import CONTEXT_POLICIES
@@ -114,11 +114,11 @@ def build_context_records(*, include_candidates: bool = False) -> list:
             f"Context policy: {name.replace('_', ' ')}",
             body={"role": "context_policy", "policy": dict(policy),
                   "maturity": "registered",
-                  "facets": string_facets(
+                  "facets": context_facets(ContextFacetSpec(
                       category="context_policy", subcategory=name,
                       context_type="instruction", scope="package",
                       lifecycle="registered",
-                      provenance="context_policy_registry")},
+                      provenance="context_policy_registry"))},
             tags=("context_policy", name), source="context_policy_registry"))
 
     from ..strings.ask_strategies import core_strategies
@@ -133,13 +133,13 @@ def build_context_records(*, include_candidates: bool = False) -> list:
                   "detail_direction": detail_direction,
                   "maturity": "registered" if strategy.tier == "core"
                   else "candidate",
-                  "facets": string_facets(
+                  "facets": context_facets(ContextFacetSpec(
                       category="asking_method", subcategory=name,
                       context_type="method", thinking_style="exploration",
                       detail_direction=detail_direction,
                       scope="package", lifecycle="registered"
                       if strategy.tier == "core" else "candidate",
-                      provenance="ask_strategy_registry")},
+                      provenance="ask_strategy_registry"))},
             tags=("ask_strategy", strategy.shape, name), tier=strategy.tier,
             source="ask_strategy_registry"))
 
@@ -151,13 +151,13 @@ def build_context_records(*, include_candidates: bool = False) -> list:
                   "serialization_format": "plain_text",
                   "format_example": fragment.template,
                   "maturity": "registered",
-                  "facets": string_facets(
+                  "facets": context_facets(ContextFacetSpec(
                       category="prompt_fragment",
                       subcategory=fragment.purpose,
                       context_type="template", scope="package",
                       serialization_format="plain_text",
                       lifecycle="registered",
-                      provenance="prompt_fragment_registry")},
+                      provenance="prompt_fragment_registry"))},
             tags=("prompt_fragment", fragment.purpose),
             source="prompt_fragment_registry"))
 

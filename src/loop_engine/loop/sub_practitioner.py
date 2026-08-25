@@ -24,11 +24,11 @@ what-is-next, or interleave — the nodes are a vocabulary, not a script.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Callable, Sequence
+from typing import Callable
 
 from ..strings.knowledge import Knowledge
 from ..loop.canvas import Canvas
-from ..loop.practitioner_loop import (LoopState, PractitionerNode, NODE_SEQUENCE,
+from ..loop.practitioner_loop import (LoopState, NODE_SEQUENCE,
                                 run_practitioner_loop, default_nodes)
 
 # Recursion bound: sub-sub-sub-practitioners are allowed, runaway spawning is not.
@@ -172,7 +172,9 @@ def make_llm_order_decider(model: str | None = None) -> OrderDecider:
     """An LLM order-decider: shown the state summary and the node vocabulary, it
     names the next node.  Falls back to the standard decider on any failure —
     orchestration must never crash the loop."""
-    from ..static_architecture.ollama_client import chat_maxout, DEFAULT_MODEL
+    from ..static_architecture.provider_pinned import (
+        ProviderPinnedRequest, invoke_provider_model)
+    from ..static_architecture.ollama_client import DEFAULT_MODEL
 
     def decide(state: LoopState, last: str, last_result) -> str:
         try:
@@ -184,8 +186,9 @@ def make_llm_order_decider(model: str | None = None) -> OrderDecider:
                 f"{list(state.knowledge.open_obligations)}\n"
                 "Which node should run NEXT? Reply with exactly one node name "
                 "from the list, or done.")
-            res = chat_maxout(prompt, model=model or DEFAULT_MODEL,
-                              temperature=0.2)
+            res = invoke_provider_model(ProviderPinnedRequest(
+                prompt=prompt, provider="ollama_cloud",
+                model=model or DEFAULT_MODEL, temperature=0.2))
             word = (res.text or "").strip().split()[0].strip(".,`'\"").lower() \
                 if res.ok and res.text.strip() else ""
             if word == "done" or word in NODE_SEQUENCE:

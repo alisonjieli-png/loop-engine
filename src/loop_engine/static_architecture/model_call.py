@@ -24,11 +24,11 @@ was shown, which models were tried, which answered, and what it cost.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Callable, Sequence
+from typing import Callable
 
 from ..strings.knowledge import Knowledge
 from ..strings.context import CONTEXT_POLICIES, build_view
-from ..static_architecture.ollama_client import chat_maxout, ChatResult
+from ..static_architecture.ollama_client import ChatResult
 
 # The default preference-ordered model chain (strong roster; edit per call).
 DEFAULT_MODEL_CHAIN = ("deepseek-v4-pro", "glm-5.2", "kimi-k2.7-code")
@@ -127,11 +127,19 @@ def render(spec: AskSpec, context_text: str) -> str:
 
 def execute_ask(spec: AskSpec, *,
                 validate: Callable[[str], bool] | None = None,
-                _call: Callable[..., ChatResult] = chat_maxout) -> AskResult:
+                _call: "Callable[..., ChatResult] | None" = None) -> AskResult:
     """Run the strict DAG.  A model that errors, answers empty, or fails the
     validator falls through to the next model in the chain.  ``_call`` is
     injectable so the DAG is testable offline; production uses chat_maxout
     (full output ceiling, 10%-backoff-on-failure per model)."""
+    if _call is None:
+        from .provider_pinned import ProviderPinnedRequest, invoke_provider_model
+
+        def _call(prompt, *, model, temperature):
+            return invoke_provider_model(ProviderPinnedRequest(
+                prompt=prompt, provider="ollama_cloud", model=model,
+                temperature=temperature))
+
     stages: list = []
     ctx = prepare_context(spec)
     stages.append({"stage": "prepare_context",
@@ -152,14 +160,14 @@ def execute_ask(spec: AskSpec, *,
             stages.append({"stage": "call", "model": model, "ok": False,
                            "error": last_err[:120]})
             continue
-        tokens += getattr(res, "total_tokens", 0)
+        tokens += getattr(res, "total_tokens", 0) or 0
         if not getattr(res, "ok", False) or not (res.text or "").strip():
             last_err = getattr(res, "error", "") or "empty reply"
             stages.append({"stage": "call", "model": model, "ok": False,
                            "error": last_err[:120]})
             continue
         stages.append({"stage": "call", "model": model, "ok": True,
-                       "tokens": getattr(res, "total_tokens", 0)})
+                       "tokens": getattr(res, "total_tokens", 0) or 0})
         if validate is not None and not validate(res.text):
             last_err = "output failed validation"
             stages.append({"stage": "validate", "model": model, "ok": False})

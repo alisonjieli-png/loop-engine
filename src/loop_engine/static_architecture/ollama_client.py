@@ -16,7 +16,6 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 ENDPOINT = "https://ollama.com/api/chat"
 # Sanctioned, live default (kimi-k3 is forbidden per the model policy).
@@ -119,7 +118,8 @@ class ChatResult:
 def chat_maxout(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
                 temperature: float = 0.7, timeout: float = 900.0,
                 api_key: str | None = None, backoff: float = 0.9,
-                floor_frac: float = 0.3, max_attempts: int = 8) -> ChatResult:
+                floor_frac: float = 0.3, max_attempts: int = 8,
+                max_output_tokens: "int | None" = None) -> ChatResult:
     """Call a model asking for its FULL output ceiling, backing off only on failure.
 
     The owner rule: never cap output — each call requests the model's maximum
@@ -129,7 +129,8 @@ def chat_maxout(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
     generation is slow, so the default timeout is generous (15 minutes).  The
     returned ChatResult carries ``num_predict_used`` and ``attempts`` so the
     receipt shows the model ran at (or near) full capacity."""
-    ceiling = max_output_for(model)
+    ceiling = min(max_output_for(model), int(max_output_tokens)) \
+        if max_output_tokens is not None else max_output_for(model)
     np = ceiling
     last = None
     for attempt in range(1, max_attempts + 1):

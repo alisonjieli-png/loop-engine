@@ -59,6 +59,49 @@ Closed fields use one validated vocabulary. Friendly or older spellings are
 normalized. For example, `md` becomes `markdown`, `adversarial` becomes
 `adversarial_review`, and `core` becomes `registered`.
 
+## Build facets with one typed object
+
+Pass one `ContextFacetSpec` to `context_facets()`. The spec is
+frozen and checks that every field is a string. The ontology then normalizes
+and validates controlled fields.
+
+```python
+from loop_engine.static_architecture.facets import (
+    ContextFacetSpec,
+    context_facets,
+)
+
+spec = ContextFacetSpec(
+    category="security_review",
+    context_type="question",
+    role_family="software_systems",
+    domain="identity_and_access_management",
+    thinking_style="adversarial_review",
+    response_shape="ranking",
+    serialization_format="json",
+    lifecycle="candidate",
+)
+
+facets = context_facets(spec)
+```
+
+Configuration loaded from YAML or JSON can use
+`ContextFacetSpec.from_mapping(values)`. Unknown field names fail at object
+creation. This catches configuration drift before the item enters a catalog.
+
+Existing callers can still pass keyword fields:
+
+```python
+facets = context_facets(
+    category="security_review",
+    context_type="question",
+)
+```
+
+Do not combine the object and keyword forms in one call. The built-in Context
+catalog uses the object form, so adding an optional facet does not change the
+`context_facets()` interface.
+
 ## One complete example
 
 This record asks a security architect to rank ten authentication approaches.
@@ -234,6 +277,8 @@ Research output stays at candidate status until a separate review accepts it.
 
 ## Code locations
 
+- Typed facet settings:
+  `loop_engine.static_architecture.facets.ContextFacetSpec`
 - Ontology and format contracts:
   `loop_engine.static_architecture.context_ontology`
 - Classification:

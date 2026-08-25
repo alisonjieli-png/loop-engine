@@ -23,8 +23,8 @@ CURRENT_DOCS = ("ARCHITECTURE-MAP.md",)
 GUARD_ENFORCED = (
     "hidden_semantic_calls: one semantic call per iteration; semantic "
     "fallbacks defer to the next iteration (model_boundary_deferred)",
-    "child_permission_escalation: spawn() clamps modes to the parent's "
-    "intersection and refuses disjoint requests",
+    "child_permission_escalation: spawn() clamps child modes to the parent's "
+    "delegation authority and refuses disjoint requests",
     "orphaned_loops: audit_closure() flags spawned-but-never-terminal "
     "children; every terminal transition is a recorded ledger event",
     "self_promotion: guard_improvement_action raises SafeguardError on "
@@ -110,7 +110,9 @@ def _stale_architecture_map() -> int:
 
 def run_conformance() -> dict:
     from ._conformance_scan import run_scan
+    from .static_architecture.api_quality import scan_public_signatures
     scan = run_scan()
+    api_violations = scan_public_signatures()
     unclassified = _unclassified()
     legacy = _legacy_runtime_reachable()
     stale = _stale_docs()
@@ -124,7 +126,7 @@ def run_conformance() -> dict:
         "subprocess_outside_declared_adapters":
             c.get("subprocess_outside_declared", 0),
         "eval_or_exec_anywhere": c.get("eval_or_exec", 0),
-        "secret_shaped_literals_in_code_or_receipts":
+        "secret_shaped_literals_in_code_or_run_records":
             c.get("secret_shaped_literal", 0),
         "dynamic_import_registration_bypasses":
             c.get("dynamic_import_bypass", 0),
@@ -133,6 +135,8 @@ def run_conformance() -> dict:
         "empty_placeholder_modules": c.get("empty_placeholder_module", 0),
         "modules_over_size_cap_without_declared_exception":
             c.get("module_over_size_cap", 0),
+        "public_interfaces_over_parameter_cap_without_declared_exception":
+            len(api_violations),
         "syntax_newer_than_the_declared_minimum_python":
             c.get("syntax_newer_than_min_python", 0),
         "modules_missing_llm_context_docstring":
@@ -163,7 +167,8 @@ def run_conformance() -> dict:
         "gate_details": {"unclassified_files": unclassified,
                          "reachable_legacy_runtimes": legacy,
                          "stale_current_architecture_documents": stale,
-                         "scan_violations": scan["violations"]},
+                         "scan_violations": (scan["violations"]
+                                             + api_violations)},
         "direct_resource_access": {
             "current": scan["counts_by_rule"].get("direct_resource_access", 0),
             "baseline": _access_baseline(),

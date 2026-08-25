@@ -10,20 +10,29 @@ intelligence layers fit together.
 |---:|---|---|
 | 1 | [Component guide](components/) | The complete map and the recommended reading order. |
 | 2 | [The Loop object and step profiles](components/loop-object/) | Modes, steps, limits, stopping, and loops that start loops. |
+| 2a | [Loop profile ontology](components/loop-object/LOOP-PROFILE-ONTOLOGY.md) | Versioned Practitioner, Intelligence, and Solution profiles with inheritance and handshakes. |
 | 3 | [Loop Practitioner](components/practitioner/) | How Practitioner loops build and test work. |
 | 4 | [Solution Canvas](components/solution-canvas/) | How Solution loops represent and run finished work. |
-| 5 | [Self-improvement and domain seeding](components/self-improvement/) | Chronicle review, intelligence audits, candidates, and domain seeds. |
-| 6 | [Static Architecture and extensions](components/static-architecture/) | Shared services, search backends, adapters, and plugin boundaries. |
-| 7 | [The four intelligence layers](components/intelligence-layers/) | Ontology, Code templates, loop-bound retrieval, and Runtime Memory. |
+| 5 | [Static Architecture and extensions](components/static-architecture/) | Shared services, search backends, adapters, and plugin boundaries. |
+| 6 | [The four intelligence layers](components/intelligence-layers/) | Ontology, Code templates, loop-bound retrieval, and Runtime Memory. |
+
+## Practitioner workflows
+
+| Page | What it explains |
+|---|---|
+| [Self-improvement as a Practitioner task](components/self-improvement/) | Chronicle review, intelligence audits, candidates, and domain seeds. |
+| [Five-problem campaign](guides/campaigns.md) | Bounded provider and mode comparison with saved playback histories. |
+| [Benchmark candidate registry](benchmarks/) | 143 cataloged tracks with source, evaluator, access, cost, and eligibility fields. |
 
 ## Start using Loop Engine
 
 | Page | Purpose |
 |---|---|
 | [Getting started](getting-started.md) | Install from GitHub and run useful examples. |
-| [Examples](../examples/) | Thirteen realistic example folders with their own instructions. |
+| [Examples](../examples/) | Fourteen realistic example folders with their own instructions. |
 | [Loops and modes](guides/loops-and-modes.md) | A shorter runtime guide. |
 | [Providers and keys](guides/providers-and-keys.md) | Provider checks, failover, and cost attribution. |
+| [Runtime settings and model tiers](guides/settings.md) | Typed YAML settings, environment precedence, providers, model tiers, and escalation. |
 | [Custom endpoints](guides/custom-endpoints.md) | Connect a server you control. |
 | [Reports](guides/reports.md) | Read, export, watch, and play back a run. |
 
@@ -37,9 +46,16 @@ starting point.
 | [Generated architecture map](../src/loop_engine/ARCHITECTURE-MAP.md) | Current module inventory generated from the package. |
 | [Architecture conformance](architecture/ARCHITECTURE_CONFORMANCE.md) | Automated architecture checks and their purpose. |
 | [Design language](architecture/DESIGN-LANGUAGE.md) | Naming and visual rules. |
+| [Typed API design](architecture/API-DESIGN.md) | Request objects, typed loop ports, compatibility wrappers, and the public parameter cap. |
 | [Design guidance](architecture/DESIGN-GUIDANCE.md) | Applying the design language. |
 | [Architecture visual guidance](architecture/ARCHITECTURE-VISUAL-GUIDANCE.md) | Required diagram order and content. |
 | [Historical architecture note](architecture/ARCHITECTURE.md) | Earlier architecture context. It is not the current onboarding map. |
+
+## Current research notes
+
+| Page | Purpose |
+|---|---|
+| [Model routing and gateway options](research/MODEL-ROUTING-AND-GATEWAY-OPTIONS.md) | Primary-source comparison of gateways, routers, overhead, and integration choices. |
 
 ## Reference
 

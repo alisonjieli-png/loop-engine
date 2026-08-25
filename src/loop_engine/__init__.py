@@ -150,6 +150,12 @@ from .code_nodes.context_seed import (ContextSeedSpec, ContextSeedRun,
                          CONTEXT_SEED_STEPS, CONTEXT_PATTERNS,
                          domain_research_questions, build_context_candidates,
                          run_context_seed)
+from .code_nodes.campaign_runner import (
+                         ProblemCase, ArmSpec, CampaignSpec, CampaignRunner,
+                         CampaignRunOptions, ArmResult, CampaignResult,
+                         default_problem_cases,
+                         campaign_arms, default_campaign_spec,
+                         run_campaign_arm)
 from .code_nodes.housekeeping import (HousekeepingReport, ImprovementCandidate,
                          run_housekeeping, candidate_records)
 from .code_nodes.self_improvement_loop import (
@@ -176,6 +182,37 @@ from .static_architecture.reasoning_call import (PROMPT_BLOCKS, PROMPT_LAYOUT_PO
                              ModelInvocationRequest, ModelInvocationResult,
                              layout_order, assemble_prompt, to_invocation,
                              invoke, run_reasoning)
+from .static_architecture.model_routes import (
+                             ModelProviderCapabilities, ModelRoute,
+                             RoutePolicy, RouteRegistry, resolve_route)
+from .static_architecture.model_gateway import (
+                             ProviderAdapter, ProviderSpec,
+                             ModelRouteAttemptSpec, ModelGatewayConfig,
+                             ModelGatewayRequest,
+                             GatewayAttempt, ModelGatewayResult, ModelGateway,
+                             builtin_provider_specs,
+                             provider_spec_from_endpoint,
+                             invoke_model_gateway)
+from .static_architecture.provider_pinned import (
+                             ProviderPinnedRequest, invoke_provider_model)
+from .static_architecture.runtime_settings import (
+                             SETTINGS_VERSION, SEARCH_MODES,
+                             LEXICAL_BACKENDS, VECTOR_BACKENDS,
+                             ESCALATION_ERROR_CODES,
+                             SettingsError, LoopDefaults, LoopConfigOverride,
+                             SearchSettings, HistorySettings, ProviderSettings,
+                             ModelTier, EscalationSettings, ModelPolicyRequest,
+                             ModelTask, ModelSettings, SettingsLoadResult,
+                             SettingsWriteResult,
+                             RuntimeSettings)
+from .static_architecture.settings_loader import (
+                             runtime_settings_from_mapping,
+                             default_user_settings_path,
+                             load_runtime_settings, default_settings_yaml,
+                             write_default_settings)
+from .static_architecture.facets import (
+                             ContextFacetSpec, string_facets, context_facets)
+from .static_architecture.custom_endpoint import CustomEndpoint
 from .code_nodes.blueprint import (BLUEPRINT_LEVELS, ELABORATION_LEVELS, CHECKPOINT_STATES,
                        DECISION_BOUNDARIES, Checkpoint, GoalStack,
                        WorkingBlueprint, Progress, WorkPacket,
@@ -197,6 +234,24 @@ from .strings.task_blueprint import (OPENING_MOVE_KINDS, OpeningMove, TaskBluepr
                             default_opening_sequence, bias_next_from_blueprint)
 from .loop.step_registry import (KernelStep, KERNEL_STEP_REGISTRY, SERVICE_MAP, step,
                             steps_for_module, render_step, render_map)
+from .loop.loop_contract import (
+                            LoopContract, LoopContractError, LoopPortBinding,
+                            LoopConnectionSpec, LoopConnectionResult,
+                            validate_loop_connection)
+from .loop.loop_profile_catalog import (
+                            PROFILE_ONTOLOGY_VERSION, PROFILE_FAMILIES,
+                            LOOP_PROFILE_ONTOLOGY, LoopProfileError,
+                            LoopProfileRef, LoopProfileSpec, profile_catalog)
+from .loop.loop_profile_ontology import (
+                            ResolvedLoopProfile, OntologyValidationResult,
+                            LoopProfileBindingRequest, BoundLoopProfile,
+                            LoopProfileRequirement,
+                            LoopProfileHandshakeResult, get_profile,
+                            resolve_profile, validate_profile_ontology,
+                            bind_profile, profile_handshake)
+from .code_nodes.solution_graph import (
+                            LoopVertexSpec, LoopPortRef, LoopEdgeSpec,
+                            LoopGraphSpec, insert_adapter)
 from ._self_test import self_test
 
 __all__ = [
@@ -296,6 +351,10 @@ __all__ = [
     "ContextSeedSpec", "ContextSeedRun", "CONTEXT_SEED_STEPS",
     "CONTEXT_PATTERNS", "domain_research_questions",
     "build_context_candidates", "run_context_seed",
+    "ProblemCase", "ArmSpec", "CampaignSpec", "CampaignRunner",
+    "CampaignRunOptions", "ArmResult", "CampaignResult",
+    "default_problem_cases",
+    "campaign_arms", "default_campaign_spec", "run_campaign_arm",
     "HousekeepingReport", "SelfImprovementReport", "ImprovementCandidate",
     "run_housekeeping", "run_self_improvement", "load_chronicle_history",
     "candidate_records",
@@ -322,6 +381,24 @@ __all__ = [
     "PromptAssemblySpec", "ModelInvocationRequest", "ModelInvocationResult",
     "layout_order", "assemble_prompt", "to_invocation", "invoke",
     "run_reasoning",
+    "ModelProviderCapabilities", "ModelRoute", "RoutePolicy",
+    "RouteRegistry", "resolve_route", "ProviderAdapter", "ProviderSpec",
+    "ModelRouteAttemptSpec", "ProviderPinnedRequest", "ModelGatewayConfig",
+    "ModelGatewayRequest", "GatewayAttempt",
+    "ModelGatewayResult", "ModelGateway", "builtin_provider_specs",
+    "provider_spec_from_endpoint", "invoke_model_gateway",
+    "invoke_provider_model", "SETTINGS_VERSION", "SEARCH_MODES",
+    "LEXICAL_BACKENDS", "VECTOR_BACKENDS", "ESCALATION_ERROR_CODES",
+    "SettingsError",
+    "LoopDefaults", "LoopConfigOverride", "SearchSettings",
+    "HistorySettings", "ProviderSettings", "ModelTier",
+    "EscalationSettings", "ModelPolicyRequest", "ModelTask",
+    "ModelSettings", "SettingsLoadResult", "SettingsWriteResult",
+    "RuntimeSettings",
+    "runtime_settings_from_mapping", "default_user_settings_path",
+    "load_runtime_settings", "default_settings_yaml",
+    "write_default_settings", "CustomEndpoint",
+    "ContextFacetSpec", "string_facets", "context_facets",
     "BLUEPRINT_LEVELS", "CHECKPOINT_STATES", "Checkpoint", "GoalStack",
     "WorkingBlueprint", "Progress", "WorkPacket", "LongHorizonAnchorPacket",
     "grounding_summary", "build_anchor", "seed_from_objective",
@@ -337,6 +414,17 @@ __all__ = [
     "default_opening_sequence", "bias_next_from_blueprint",
     "KernelStep", "KERNEL_STEP_REGISTRY", "SERVICE_MAP", "step",
     "steps_for_module", "render_step", "render_map",
+    "LoopContract", "LoopContractError", "LoopPortBinding",
+    "LoopConnectionSpec", "LoopConnectionResult",
+    "validate_loop_connection", "LoopVertexSpec", "LoopPortRef",
+    "LoopEdgeSpec", "LoopGraphSpec", "insert_adapter",
+    "PROFILE_ONTOLOGY_VERSION", "PROFILE_FAMILIES",
+    "LOOP_PROFILE_ONTOLOGY", "LoopProfileError", "LoopProfileRef",
+    "LoopProfileSpec", "profile_catalog", "ResolvedLoopProfile",
+    "OntologyValidationResult", "LoopProfileBindingRequest",
+    "BoundLoopProfile", "LoopProfileRequirement",
+    "LoopProfileHandshakeResult", "get_profile", "resolve_profile",
+    "validate_profile_ontology", "bind_profile", "profile_handshake",
     "MATURITY", "QuestionDefinition", "QuestionPattern", "QuestionInstance",
     "QuestionOutcomeRecord", "QuestionBank",
     "PACK_PARTS", "DomainSupportPack", "install_pack", "cardiology_pack",
@@ -358,6 +446,7 @@ _PUBLIC = {
     "LoopConfig": ("loop.recursive_loop", "LoopConfig"),
     "LoopLedger": ("loop.recursive_loop", "LoopLedger"),
     "LoopResult": ("loop.recursive_loop", "LoopResult"),
+    "StepOutcome": ("loop.recursive_loop", "StepOutcome"),
     "SolutionSpec": ("code_nodes.solution_canvas", "SolutionSpec"),
     "SolutionLoopSpec": ("code_nodes.solution_canvas", "SolutionLoopSpec"),
     "run_solution": ("code_nodes.solution_canvas", "run_solution"),

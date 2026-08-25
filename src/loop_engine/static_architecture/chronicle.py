@@ -202,12 +202,9 @@ class Chronicle:
     #:     capability_search, solution.canvas.updated -> solution_built.
     #:     Nothing in the tree counts those three buckets, so redistributing
     #:     into them moves no consumer's number.
-    #:   * model_led / model_escalation deliberately STAY custom.  Mapping
-    #:     them to model_invocation would double-count: from_ledger already
-    #:     synthesizes a model_invocation for each hybrid/non-deterministic
-    #:     iteration, and run_quality pairs quality observations off exactly
-    #:     that bucket.  Their canonical family is precise either way, so the
-    #:     coarse bucket costs nothing that the family does not already give.
+    #:   * explicit provider events map to model_invocation. Mode labels alone
+    #:     are not physical-call evidence. Legacy histories with no explicit
+    #:     provider events retain the older synthesis path for compatibility.
     #:   * kernel_run STAYS custom for the same reason: run_quality counts
     #:     `iteration` as per-loop steps, and a delegated kernel run is one
     #:     unit of work, not N steps of this loop.
@@ -221,6 +218,9 @@ class Chronicle:
                    "cancel": "cancel", "spec": "custom",
                    "pause": "custom", "resume": "custom",
                    "loop.started": "loop_init",
+                   "model_led": "model_invocation",
+                   "model_escalation": "model_invocation",
+                   "model_invocation_failed": "model_invocation",
                    "intelligence_pull": "string_retrieval",
                    "infra_call": "capability_search",
                    "solution.canvas.updated": "solution_built"}
@@ -229,12 +229,17 @@ class Chronicle:
     def from_ledger(cls, ledger_events, *, run_id: str,
                     usage_log=()) -> "Chronicle":
         """Project the runtime LoopLedger into canonical Chronicle events.
-        Semantic iterations absorb provider usage in order (the usage log is
-        positional: nth semantic step ↔ nth usage row)."""
+        Explicit provider events are authoritative. Legacy ledgers without
+        them may absorb the positional usage log for compatibility."""
+        ledger_events = list(ledger_events)
         ch = cls(run_id)
         ch.append("run_started", detail={"source": "loop_ledger"})
         usage = list(usage_log or ())
         ui = 0
+        explicit_model_events = any(
+            event.get("event") in (
+                "model_led", "model_escalation", "model_invocation_failed")
+            for event in ledger_events)
         for e in ledger_events:
             et = cls._LEDGER_MAP.get(e.get("event", ""), "custom")
             kw = {"loop_id": str(e.get("loop_id", "")),
@@ -246,8 +251,15 @@ class Chronicle:
                              **{k: v for k, v in e.items()
                                 if k not in ("event", "loop_id", "parent",
                                              "step", "mode", "ts")}}}
-            if et == "iteration" and e.get("mode") in ("hybrid",
-                                                       "non_deterministic"):
+            if et == "model_invocation":
+                kw["model"] = str(e.get("model", ""))
+                kw["prompt_tokens"] = int(e.get("prompt_tokens", 0) or 0)
+                kw["eval_tokens"] = int(e.get("eval_tokens", 0) or 0)
+                kw["status"] = ("failed" if e.get("event")
+                                == "model_invocation_failed" else "ok")
+            if (not explicit_model_events and et == "iteration"
+                    and e.get("mode") in (
+                        "hybrid", "non_deterministic")):
                 if ui < len(usage):
                     u = usage[ui]; ui += 1
                     kw["model"] = str(u.get("model", ""))
@@ -363,8 +375,7 @@ def recorded_output_handler(chronicle: Chronicle, base_handler,
 # site keeps working and the vocabulary keeps one home.
 from .event_vocabulary import (                                # noqa: E402
     EVENT_FAMILIES, _CANONICAL_EVENT_MAP, _EVENT_TYPE_FAMILY,
-    _INTELLIGENCE_LAYER_FAMILY, _ACCEPTED_TERMINAL_REASONS, family_of,
-    to_canonical_events, canonical_event_coverage)
+    family_of, to_canonical_events, canonical_event_coverage)
 
 
 def self_test() -> dict:
@@ -495,7 +506,7 @@ def self_test() -> dict:
     # runtime-memory note written AND read, a solution-canvas update, and
     # terminal closure — then the canonical projection is total, lossless,
     # and carries every required family.
-    from ..loop.recursive_loop import Loop, LoopConfig, LoopLedger, StepOutcome
+    from ..loop.recursive_loop import LoopLedger
     from .runtime_memory import RunNoteBoard
     _lg = LoopLedger()
     _board = RunNoteBoard("canary-run", ledger=_lg)

@@ -14,7 +14,6 @@ evidence bar.
 """
 from __future__ import annotations
 
-import json
 import os
 import re
 import subprocess
@@ -220,7 +219,8 @@ def make_smoke_handler(*, train_csv: str, test_csv: str, sample_csv: str,
             text, usage = advice_fn(prompt)
             tr["model_calls"].append(usage)
             return StepOutcome(output=text[:2000] or "(empty)", mode=mode,
-                               confidence=0.75, failed=not text)
+                               confidence=0.75, failed=not text,
+                               model_calls=1)
         if step == "decide":
             keys = _distill_keys(context.get("research", ""))
             tr["proposed_keys"] = list(keys)

@@ -67,7 +67,7 @@ ceiling ineligible, missing contract means not composable).
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from ..static_architecture.facets import (EXECUTION_MODES, LOCALITY,
                                           COST_CLASSES, EFFECTS)
@@ -98,14 +98,26 @@ class LoopContract:
     """
     name: str
     execution_mode: str                       # code_only | hybrid | model_led
-    input_roles: tuple = ()
-    output_roles: tuple = ()
-    effects: tuple = ("pure",)
+    input_roles: tuple[str, ...] = ()
+    output_roles: tuple[str, ...] = ()
+    effects: tuple[str, ...] = ("pure",)
     locality: str = "local_machine"
     cost_class: str = "free"
     role: str = ""
 
     def __post_init__(self):
+        if not isinstance(self.name, str) or not self.name.strip():
+            raise LoopContractError("a loop contract needs a non-empty name")
+        for field_name in ("input_roles", "output_roles", "effects"):
+            values = tuple(getattr(self, field_name))
+            if any(not isinstance(value, str) or not value.strip()
+                   for value in values):
+                raise LoopContractError(
+                    f"{field_name} must contain non-empty strings")
+            if len(values) != len(set(values)):
+                raise LoopContractError(
+                    f"{field_name} cannot contain duplicate values")
+            object.__setattr__(self, field_name, values)
         if self.execution_mode not in EXECUTION_MODES:
             raise LoopContractError(
                 f"execution_mode {self.execution_mode!r} not in "
@@ -135,6 +147,132 @@ class LoopContract:
     def mode_waterfall(self) -> tuple:
         """Cheapest-first execution path for this loop's mode."""
         return _MODE_WATERFALL[self.execution_mode]
+
+
+@dataclass(frozen=True)
+class LoopPortBinding:
+    """One declared output connected to one declared input.
+
+    Different role names require a named Adapter Loop. The adapter remains a
+    loop with its own contract, tests, and event history.
+    """
+    source_output: str
+    target_input: str
+    adapter_loop_ref: str = ""
+
+    def __post_init__(self):
+        if (not isinstance(self.source_output, str)
+                or not self.source_output.strip()
+                or not isinstance(self.target_input, str)
+                or not self.target_input.strip()):
+            raise LoopContractError(
+                "a port binding needs a source output and target input")
+        if (not isinstance(self.adapter_loop_ref, str)):
+            raise LoopContractError("adapter_loop_ref must be a string")
+
+
+@dataclass(frozen=True)
+class LoopConnectionSpec:
+    """The typed request for checking one loop-to-loop connection.
+
+    Pass this object instead of adding more positional compatibility arguments.
+    When ``bindings`` is empty, inputs with the same role name are connected.
+    """
+    producer: "LoopContract | None"
+    consumer: "LoopContract | None"
+    bindings: tuple[LoopPortBinding, ...] = ()
+    allowed_modes: tuple[str, ...] = EXECUTION_MODES
+    effect_ceiling: tuple[str, ...] = EFFECTS
+
+    def __post_init__(self):
+        bindings = tuple(self.bindings)
+        if any(not isinstance(binding, LoopPortBinding)
+               for binding in bindings):
+            raise LoopContractError(
+                "bindings must contain LoopPortBinding objects")
+        object.__setattr__(self, "bindings", bindings)
+        object.__setattr__(self, "allowed_modes", tuple(self.allowed_modes))
+        object.__setattr__(self, "effect_ceiling", tuple(self.effect_ceiling))
+        bad_modes = [mode for mode in self.allowed_modes
+                     if mode not in EXECUTION_MODES]
+        if bad_modes:
+            raise LoopContractError(
+                f"allowed_modes contains unknown values {bad_modes!r}")
+        bad_effects = [effect for effect in self.effect_ceiling
+                       if effect not in EFFECTS]
+        if bad_effects:
+            raise LoopContractError(
+                f"effect_ceiling contains unknown values {bad_effects!r}")
+
+
+@dataclass(frozen=True)
+class LoopConnectionResult:
+    """The machine-readable result of a loop connection check."""
+    compatible: bool
+    bindings: tuple[LoopPortBinding, ...] = ()
+    violations: tuple[str, ...] = ()
+
+    def explain(self) -> str:
+        if self.compatible:
+            return "compatible"
+        return "; ".join(self.violations)
+
+
+def validate_loop_connection(spec: LoopConnectionSpec) -> LoopConnectionResult:
+    """Check output-to-input compatibility without executing either loop.
+
+    The check is fail-closed. Both contracts must exist. Each binding must name
+    a real producer output and a real consumer input. A role conversion needs a
+    named Adapter Loop. Mode and effect limits apply to both loops.
+    """
+    violations: list[str] = []
+    if spec.producer is None:
+        violations.append("producer has no LoopContract")
+    if spec.consumer is None:
+        violations.append("consumer has no LoopContract")
+    if violations:
+        return LoopConnectionResult(False, violations=tuple(violations))
+
+    producer = spec.producer
+    consumer = spec.consumer
+    assert producer is not None and consumer is not None
+
+    bindings = spec.bindings or tuple(
+        LoopPortBinding(role, role) for role in consumer.input_roles)
+
+    seen_targets: set[str] = set()
+    for binding in bindings:
+        if binding.source_output not in producer.output_roles:
+            violations.append(
+                f"producer {producer.name!r} does not declare output "
+                f"{binding.source_output!r}")
+        if binding.target_input not in consumer.input_roles:
+            violations.append(
+                f"consumer {consumer.name!r} does not declare input "
+                f"{binding.target_input!r}")
+        if (binding.source_output != binding.target_input
+                and not binding.adapter_loop_ref):
+            violations.append(
+                f"{binding.source_output!r} cannot feed "
+                f"{binding.target_input!r} without an Adapter Loop")
+        if binding.target_input in seen_targets:
+            violations.append(
+                f"consumer input {binding.target_input!r} is bound more than once")
+        seen_targets.add(binding.target_input)
+
+    for contract, label in ((producer, "producer"), (consumer, "consumer")):
+        if contract.execution_mode not in spec.allowed_modes:
+            violations.append(
+                f"{label} mode {contract.execution_mode!r} is outside "
+                f"{spec.allowed_modes!r}")
+        over = [effect for effect in contract.effects
+                if effect not in spec.effect_ceiling]
+        if over:
+            violations.append(
+                f"{label} effects {over!r} exceed {spec.effect_ceiling!r}")
+
+    return LoopConnectionResult(not violations, tuple(bindings),
+                                tuple(violations))
 
 
 def contract_for_code_loop(name: str, *, input_roles=(), output_roles=(),
@@ -236,6 +374,47 @@ def self_test() -> dict:
     check("compatibility_fails_closed_on_missing_contract_slot_mode_effect",
           not no_contract and not wrong_slot and not wrong_mode and not over_fx,
           "no contract / missing role / wrong mode / over-ceiling effect")
+
+    # 6. A producer and consumer can be checked before either loop runs.
+    producer = LoopContract(
+        name="prepare-features", execution_mode="code_only",
+        input_roles=("raw_rows",), output_roles=("feature_matrix/v1",))
+    consumer = LoopContract(
+        name="score-model", execution_mode="hybrid",
+        input_roles=("feature_matrix/v1",), output_roles=("scores/v1",))
+    linked = validate_loop_connection(
+        LoopConnectionSpec(producer=producer, consumer=consumer))
+    check("typed_loop_connection_validates_before_execution",
+          linked.compatible
+          and linked.bindings == (LoopPortBinding(
+              "feature_matrix/v1", "feature_matrix/v1"),),
+          linked.explain())
+
+    # 7. A forged output role, missing adapter, or policy mismatch is refused.
+    changed_consumer = LoopContract(
+        name="legacy-score", execution_mode="model_led",
+        input_roles=("feature_matrix/v2",), output_roles=("scores/v1",),
+        effects=("network",))
+    incompatible = validate_loop_connection(LoopConnectionSpec(
+        producer=producer, consumer=changed_consumer,
+        bindings=(LoopPortBinding("feature_matrix/v1",
+                                  "feature_matrix/v2"),),
+        allowed_modes=("code_only",), effect_ceiling=("pure",)))
+    check("typed_loop_connection_fails_closed",
+          not incompatible.compatible
+          and any("Adapter Loop" in item for item in incompatible.violations)
+          and any("consumer mode" in item for item in incompatible.violations)
+          and any("consumer effects" in item for item in incompatible.violations),
+          incompatible.explain())
+
+    # 8. A named Adapter Loop makes a deliberate schema bridge checkable.
+    adapted = validate_loop_connection(LoopConnectionSpec(
+        producer=producer, consumer=changed_consumer,
+        bindings=(LoopPortBinding(
+            "feature_matrix/v1", "feature_matrix/v2",
+            "loop://adapters/features-v1-to-v2"),)))
+    check("named_adapter_loop_bridges_different_port_roles",
+          adapted.compatible, adapted.explain())
 
     passed = sum(1 for t in results if t["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

@@ -204,10 +204,13 @@ def make_adapter(ep: CustomEndpoint):
         @staticmethod
         def chat_maxout(prompt, *, model="", system="", temperature=0.7,
                         timeout=None, api_key=None, backoff=0.9,
-                        floor_frac=0.3, max_attempts=8):
+                        floor_frac=0.3, max_attempts=8,
+                        max_output_tokens=None):
             """Same back-off policy as every built-in adapter, so failing over
             to a custom endpoint does not change the call's semantics."""
-            mt, last, attempt = ep.max_output, None, 1
+            ceiling = min(ep.max_output, int(max_output_tokens)) \
+                if max_output_tokens is not None else ep.max_output
+            mt, last, attempt = ceiling, None, 1
             for attempt in range(1, max_attempts + 1):
                 res = _chat_once(ep, prompt, system=system, max_tokens=int(mt),
                                  temperature=temperature,
@@ -217,12 +220,12 @@ def make_adapter(ep: CustomEndpoint):
                     return res
                 last = res
                 mt = int(mt * backoff)
-                if mt < ep.max_output * floor_frac:
+                if mt < ceiling * floor_frac:
                     break
             if last is not None:
                 last.num_predict_used, last.attempts = int(mt), attempt
             return last if last is not None else _chat_once(
-                ep, prompt, system=system, max_tokens=ep.max_output,
+                ep, prompt, system=system, max_tokens=ceiling,
                 temperature=temperature, timeout=ep.timeout)
 
         @staticmethod

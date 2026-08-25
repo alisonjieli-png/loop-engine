@@ -84,9 +84,10 @@ def self_test() -> dict:
                                     for e in b.ledger.events),
           f"depth capped at 2; {rb.spawned} spawns total, no hang")
 
-    # Adversarial: a child cannot elevate permissions (modes clamped/refused).
+    # Adversarial: a child cannot exceed the parent's delegation authority.
     det_parent = Loop("det only", LoopConfig(allowable_modes=("deterministic",),
-                                             preferred_modes=("deterministic",)))
+                                             preferred_modes=("deterministic",),
+                                             delegated_modes=("deterministic",)))
     clamped = det_parent.spawn("child", LoopConfig(
         allowable_modes=("deterministic", "non_deterministic")))
     refused = False
@@ -98,10 +99,10 @@ def self_test() -> dict:
         refused = True
     clamp_events = [e for e in det_parent.ledger.events
                     if e.get("modes_clamped_from")]
-    check("adversarial_child_cannot_elevate_permissions",
+    check("adversarial_child_cannot_exceed_delegation_authority",
           clamped.config.allowable_modes == ("deterministic",)
           and refused and clamp_events,
-          "widening clamped + recorded; disjoint modes refused outright")
+          "delegated widening is clamped and recorded; disjoint modes refuse")
 
     # Adversarial: MAX power does not expand permissions — a deterministic-only
     # loop at max power still makes ZERO semantic calls.
@@ -120,7 +121,8 @@ def self_test() -> dict:
     greedy = Loop("greedy", LoopConfig(
         allowable_modes=("non_deterministic",),
         preferred_modes=("non_deterministic",), power="light"))
-    rg = greedy.run()
+    rg = greedy.run(handler=lambda loop, step, context: StepOutcome(
+        output="model attempt", mode="non_deterministic", model_calls=1))
     stops = [e for e in greedy.ledger.events if e.get("event") == "budget_stop"]
     check("adversarial_model_budget_cannot_be_evaded",
           rg.stopped == "budget" and stops
@@ -131,7 +133,8 @@ def self_test() -> dict:
     # retry semantically inside the same iteration (§12).
     def semantic_flaky(loop, step, context):
         if step == "act" and "act" not in context:
-            return StepOutcome(output="err", mode="hybrid", failed=True)
+            return StepOutcome(output="err", mode="hybrid", failed=True,
+                               model_calls=1)
         return default_handler(loop, step, context)
     h = Loop("hidden", LoopConfig(framework="custom",
                                   custom_steps=("orient", "act"), power="deep"))

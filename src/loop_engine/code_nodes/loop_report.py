@@ -213,8 +213,7 @@ def report_from_ledger(events, *, run_id: str = "",
 
         # model cost: provider-reported only, attributed to whoever answered
         if kind in ("model_led", "model_invocation", "model_invocation_failed"):
-            if kind != "model_invocation_failed":
-                node.model_calls += 1
+            node.model_calls += 1
             node.prompt_tokens += int(e.get("prompt_tokens", 0) or 0)
             node.eval_tokens += int(e.get("eval_tokens", 0) or 0)
             prov = str(e.get("provider", "") or "")

@@ -12,6 +12,7 @@ part of the task.
 | Contract | Defines accepted inputs, outputs, and effects. |
 | Allowed modes | Limits how the loop may perform its work. |
 | Preferred modes | Sets the order in which allowed modes are tried. |
+| Delegated modes | Limits which modes this loop may grant loops it starts. |
 | Step profile | Defines the steps, their order, and any repetition. |
 | Effort setting | Limits iterations, intelligence retrieval, and model calls. |
 | Stop condition | Defines success or another terminal state. |
@@ -26,8 +27,13 @@ part of the task.
 | `hybrid` | Uses code first and may call a language model for a specific unresolved step. |
 | `non_deterministic` | A language model leads the step while the loop controls tools, limits, logging, and verification. |
 
-Mode is a permission. A loop may permit one or more modes. A loop that starts
-another loop cannot give it permissions that the starting loop does not have.
+Mode is local to each loop. The mode a loop uses does not become the mode of a
+loop it starts.
+
+`allowable_modes` controls this loop. `delegated_modes` is a separate authority
+setting that controls the loops it may start. This separation permits a
+deterministic loop to start a non-deterministic research loop and permits that
+research loop to start a deterministic validator.
 
 ## Step profiles
 
@@ -49,18 +55,22 @@ experiments, review, improvement, and external workers.
 Two bundled templates are candidates. Candidate templates cannot configure a
 loop until they are reviewed and registered.
 
-## Three different settings
+## Five settings that stay separate
 
 The word profile can become unclear, so the public documentation separates
 three ideas.
 
 | Public term | Current code | What it changes |
 |---|---|---|
+| Loop profile | `LoopProfileSpec` | Purpose, required fields, capabilities, and compatibility. |
 | Step profile | `framework`, `custom_steps`, Loop Template | Steps, order, and repetition. |
 | Effort setting | `power` | Work limits such as iterations and model-call budget. |
-| Operating settings | `OperatingProfile` | Permissions, provider access, and optimization preferences. |
+| Model thinking power | `llm_thinking_power` | The configured model tier for a hybrid or non-deterministic loop. |
+| Operating settings | `OperatingProfile`, `delegated_modes` | Permissions, provider access, delegation authority, and optimization preferences. |
 
-Changing effort does not grant more permissions.
+Changing effort or model thinking power does not grant more permissions. Read
+the [Loop profile ontology](LOOP-PROFILE-ONTOLOGY.md) for the versioned
+Practitioner, Intelligence, and Solution hierarchy.
 
 ## Starting another loop
 
@@ -69,20 +79,45 @@ from loop_engine.loop.recursive_loop import Loop, LoopConfig, LoopLedger
 
 ledger = LoopLedger()
 root = Loop(
-    "prepare the delivery plan",
+    "assemble the verified delivery plan",
     LoopConfig(
-        allowable_modes=("deterministic", "hybrid"),
-        preferred_modes=("deterministic", "hybrid"),
+        allowable_modes=("deterministic",),
+        preferred_modes=("deterministic",),
+        delegated_modes=(
+            "deterministic", "hybrid", "non_deterministic"
+        ),
         max_depth=2,
     ),
     ledger=ledger,
 )
 
-child = root.spawn("check carrier cutoff times")
+research = root.spawn(
+    "interpret an ambiguous carrier policy",
+    LoopConfig(
+        framework="custom",
+        custom_steps=("research",),
+        allowable_modes=("non_deterministic",),
+        preferred_modes=("non_deterministic",),
+        llm_thinking_power="high",
+        max_depth=2,
+    ),
+)
+
+validation = research.spawn(
+    "verify the extracted cutoff time",
+    LoopConfig(
+        framework="custom",
+        custom_steps=("validate",),
+        allowable_modes=("deterministic",),
+        preferred_modes=("deterministic",),
+        max_depth=2,
+    ),
+)
 ```
 
-The root and the loop it starts share one event log. Reports can rebuild the
-relationship without treating the second loop as a different runtime type.
+The root is deterministic. The research loop is non-deterministic. The
+validation loop is deterministic. All three share one event log, and the mode
+of each loop remains visible.
 
 For a complete practical example, see
 [reconcile invoices](../../../examples/06_reconcile_invoices/).

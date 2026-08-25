@@ -1,8 +1,9 @@
-# Self-improvement and domain seeding
+# Self-improvement as a Practitioner task
 
-The Self-Improvement Loop is a role of the shared `Loop` runtime. Its task is
-to inspect past work and the current Intelligence Library, then propose useful
-changes.
+Self-improvement is a task given to the Loop Practitioner. It is not a separate
+runtime role, service layer, or architectural peer. The Practitioner uses
+ordinary loops to inspect past work and the current Intelligence Library, then
+propose useful changes.
 
 It is separate from Static Architecture. Static Architecture supplies the
 Retrieval Engine, Chronicle, stores, and validation services that the loop
@@ -14,13 +15,13 @@ uses.
 flowchart LR
     H[Verified Chronicle history] --> R[Retrieval Engine]
     I[Four intelligence layers] --> R
-    R --> L[Self-Improvement Loop]
+    R --> L[Loop Practitioner<br/>task: improve the system]
     L --> C[Candidate staging]
     C --> V[Independent review]
     V -->|accepted only| I
 ```
 
-The Self-Improvement Loop has no direct path to active intelligence. It can
+The Practitioner workflow has no direct path to active intelligence. It can
 observe, analyze, recommend, compare, and stage. It cannot promote its own
 candidate.
 
@@ -57,9 +58,9 @@ The current function does not schedule itself and does not write candidate
 files. Callers decide when to run it and where reviewed candidate records
 belong.
 
-## Other Self-Improvement tasks
+## Other self-improvement tasks
 
-The same Loop role can receive other bounded goals and step profiles:
+The same Loop Practitioner can receive other bounded goals and step profiles:
 
 - compare retrieval methods on a fixed query set;
 - improve category tags and hierarchy coverage;
@@ -69,12 +70,12 @@ The same Loop role can receive other bounded goals and step profiles:
 - run a hypothesis and experiment profile; and
 - review negative transfer when retrieved context made a result worse.
 
-Each task still ends at candidate staging unless a separate review authority
+Each self-improvement task still ends at candidate staging unless a separate review authority
 accepts the result.
 
 ## Seed a new domain
 
-Domain Context seeding is one Self-Improvement task. The registered
+Domain Context seeding is one self-improvement task. The registered
 `context_intelligence_seed` profile uses these steps:
 
 ```text
@@ -122,5 +123,5 @@ Foundry staging writes to
 candidate snapshot is read-only at runtime.
 
 Independent promotion still needs source support, an unchanged evaluator,
-useful outcomes, and the required authority. The Self-Improvement Loop does
+useful outcomes, and the required authority. The Practitioner workflow does
 not provide that authority.
