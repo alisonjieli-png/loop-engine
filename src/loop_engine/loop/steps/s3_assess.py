@@ -15,9 +15,9 @@ from ...loop.kernel import DecisionSupportPortfolio, default_assess_prepare
 from ...code_nodes.enrichment import (EnrichmentPolicy, coverage_probe, generate_enrichment)
 from ...strings.question_engine import core_forms, multiply, QuestionForm
 from ...strings.question_bank import QuestionBank, QuestionDefinition, QuestionPattern
-from ...loop.sub_practitioner import spawn_sub_practitioner
+from ...loop.spawned_practitioner import spawn_practitioner_loop
 
 __all__ = ["DecisionSupportPortfolio", "default_assess_prepare",
            "EnrichmentPolicy", "coverage_probe", "generate_enrichment",
            "core_forms", "multiply", "QuestionForm", "QuestionBank",
-           "QuestionDefinition", "QuestionPattern", "spawn_sub_practitioner"]
+           "QuestionDefinition", "QuestionPattern", "spawn_practitioner_loop"]

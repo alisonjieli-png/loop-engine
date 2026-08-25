@@ -31,7 +31,7 @@ Discipline (non-negotiable, from the doctrine):
   * A mined pattern is an OBSERVATION, not an accepted claim.  Recurrence and
     evidence are recorded; nothing is asserted as true.
   * It is a distinct PURPOSE, not a separate engine: it runs THROUGH the same
-    ``run_practitioner`` loop, given a self-improvement objective + instructions,
+    ``run_kernel_passes`` loop, given a self-improvement objective + instructions,
     with the mining as the code node its act node calls (``self_improve`` is the
     same idea per cycle).  It improves the library the solving practitioner draws
     on — more code nodes (zero-token), better strings, sharper biases — it does not
@@ -48,7 +48,8 @@ from dataclasses import dataclass, field
 from typing import Sequence
 
 from ..static_architecture.asset_class import classify
-from ..loop.kernel import run_practitioner, ProblemSpec, ResultPacket, default_impls
+from ..loop.kernel import (KernelRunRequest, ProblemSpec, ResultPacket,
+                           default_impls, run_kernel_passes)
 
 # What housekeeping can propose adding.
 IMPROVEMENT_KINDS = ("code_node", "logic_rule", "intelligence_string", "bias",
@@ -415,14 +416,15 @@ def run_housekeeping(*, runs: "Sequence[dict]" = (),
                      trigger_class: str = "scheduled",
                      min_frequency: int = 2) -> HousekeepingReport:
     """Run continuous improvement THROUGH the practitioner loop (not a separate
-    engine): the same run_practitioner, given a self-improvement objective +
+    engine): the same run_kernel_passes, given a self-improvement objective +
     instructions, with the mining as the code node its act node calls.  Ranks the
     opportunities and promotes nothing — every proposal is a runtime candidate."""
     if trigger_class not in TRIGGER_CLASSES:
         raise ValueError(f"trigger_class must be one of {TRIGGER_CLASSES}")
     spec = housekeeping_spec(runs, legacy, trigger_class=trigger_class,
                              min_frequency=min_frequency)
-    run = run_practitioner(spec, housekeeping_impls(), max_passes=6)
+    run = run_kernel_passes(KernelRunRequest(
+        spec, housekeeping_impls(), max_passes=6))
     seen, cands = set(), []
     for rec in run["records"]:
         for res in (rec.results or ()):
@@ -526,7 +528,7 @@ def self_test() -> dict:
           report.through_loop and report.run is not None
           and report.run["passes"] >= 1
           and report.run["facts"].get("_mode") == "self_improvement",
-          "same run_practitioner, self-improvement objective + instructions")
+          "same run_kernel_passes, self-improvement objective + instructions")
     check("housekeeping_promotes_nothing",
           report.candidates and "evidence-gated" in report.note
           and all(isinstance(c, ImprovementCandidate)

@@ -19,10 +19,10 @@ from ...code_nodes.rl_vocabulary import (build_policy, search_action_sequences, 
                             POLICY_KINDS, rollout)
 from ...static_architecture.opencode_client import run_agent, parallel_agents
 from ...loop.canvas import Canvas, SolutionSlot, execute_matrix
-from ...loop.sub_practitioner import spawn_sub_practitioner
+from ...loop.spawned_practitioner import spawn_practitioner_loop
 
 __all__ = ["ResultPacket", "default_act", "EXECUTORS", "execute_tabular",
            "execute_image", "ExecOutcome", "build_policy",
            "search_action_sequences", "train_q", "POLICY_KINDS", "rollout",
            "run_agent", "parallel_agents", "Canvas", "SolutionSlot",
-           "execute_matrix", "spawn_sub_practitioner"]
+           "execute_matrix", "spawn_practitioner_loop"]

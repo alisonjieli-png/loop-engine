@@ -70,4 +70,5 @@ loop_engine = [
     "strings/*.html",     # studio_shell.html, served by the studio
     "strings/*.json",
     "strings/*.jsonl",    # the seed intelligence corpus
+    "data/*.json",        # installed published benchmark evidence
 ]

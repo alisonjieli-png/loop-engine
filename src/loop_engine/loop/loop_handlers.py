@@ -118,17 +118,28 @@ def run_loop_via_kernel(loop: Loop, *, max_passes: "int | None" = None
     if loop.config.framework != "nine_step":
         raise LoopError("kernel delegation is for nine_step loops; custom/open "
                         "loops use Loop.run with a handler")
-    from ..loop.wiring import run_wired
+    from ..loop.wiring import WiredKernelRunRequest, run_wired
     from ..loop.kernel import ProblemSpec
-    run = run_wired(ProblemSpec(objective=loop.goal,
-                                success_criteria=("solved",)),
-                    max_passes=max_passes
-                    or loop.config.settings["max_iterations"])
+    run = run_wired(WiredKernelRunRequest(
+        spec=ProblemSpec(objective=loop.goal, success_criteria=("solved",)),
+        owner_loop=loop,
+        max_passes=(max_passes
+                    or loop.config.settings["max_iterations"])))
     loop.ledger.record(loop_id=loop.loop_id, event="kernel_run",
                        passes=run["passes"], final=run["final_route"],
                        exercised=run["wired_modules"])
-    return LoopResult(loop.loop_id, run["final_route"], 0.8, run["passes"],
-                      {"deterministic": run["passes"]}, 0, 0, "done")
+    runtime_result = loop.result()
+    return LoopResult(
+        loop.loop_id, run["final_route"], runtime_result.confidence,
+        runtime_result.steps_run, runtime_result.mode_counts,
+        runtime_result.model_calls, runtime_result.spawned,
+        runtime_result.stopped, attempts=runtime_result.attempts,
+        accepted_successes=runtime_result.accepted_successes,
+        loop_condition=runtime_result.loop_condition,
+        exit_condition=runtime_result.exit_condition,
+        loop_definition_id=runtime_result.loop_definition_id,
+        loop_definition_version=runtime_result.loop_definition_version,
+        loop_definition_digest=runtime_result.loop_definition_digest)
 
 
 # ---------------------------------------------------------------------------

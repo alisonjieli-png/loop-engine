@@ -347,7 +347,7 @@ def _manifest(spec: ContextSeedSpec, candidates: list) -> dict:
 
 def run_context_seed(spec: ContextSeedSpec, *, existing_context_records=(),
                      ledger=None) -> ContextSeedRun:
-    """Run domain seeding through one root loop and one loop per job role."""
+    """Run domain seeding through one Starting Loop and one Loop per job role."""
     from ..loop.recursive_loop import Loop, LoopConfig, LoopLedger, StepOutcome
     from ..loop.loop_templates import TEMPLATE_LIBRARY, config_from_template
     from ..static_architecture.intelligence_layers import classified_record

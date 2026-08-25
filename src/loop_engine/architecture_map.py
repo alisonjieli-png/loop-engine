@@ -41,7 +41,7 @@ MODULE_MAP = {
         "decision_envelope", "decision_episode", "decision_need",
         "delegation", "delegation_checkpoint_checks", "delegation_runtime",
         "delegation_runtime_checks",
-        "deliberation", "effect_approval", "kernel",
+        "deliberation", "effect_approval", "kernel", "kernel_runtime",
         "kernel_model_impls", "lens",
         "loop_handlers", "loop_templates", "methodical", "moves",
         "intelligence_loops", "practitioner_campaign", "practitioner_loop",
@@ -53,7 +53,7 @@ MODULE_MAP = {
         "recursive_loop", "regimes", "registry", "service_loop_envelope",
         "resolvers", "route_bridge", "runner",
         "solve", "solver", "step_registry",
-        "steps", "studio", "sub_practitioner",
+        "steps", "studio", "spawned_practitioner",
         "tuning", "wiring",
     ),
     "strings": (

@@ -44,7 +44,7 @@ class Knowledge:
         facts_key = tuple(sorted((k, repr(v)) for k, v in self.facts.items()))
         key = (self.goal, self.graph_summary, self.results,
                self.open_obligations, facts_key, self.context_level)
-        return {"id": f"whatsnext:{hash(key) & 0xFFFFFF}",
+        return {"id": f"decision-signals:{hash(key) & 0xFFFFFF}",
                 "goal": self.goal, "graph_summary": self.graph_summary,
                 "n_results": len(self.results),
                 "open_obligations": list(self.open_obligations),

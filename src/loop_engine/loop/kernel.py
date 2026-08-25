@@ -394,8 +394,25 @@ class PassRecord:
 KernelImpls = dict
 
 
-def run_pass(state: PractitionerState, impls: KernelImpls,
-             pass_number: int = 1) -> tuple:
+@dataclass(frozen=True)
+class KernelRunRequest:
+    """One typed request for an operational Practitioner-kernel run.
+
+    ``owner_loop`` is the exact canonical Loop that owns the work when a caller
+    is already inside one.  When it is absent, the operational boundary creates
+    a Starting Practitioner Loop before calculating any passes.
+    """
+
+    spec: ProblemSpec
+    impls: KernelImpls
+    owner_loop: Any = None
+    event_dir: str | None = None
+    max_passes: int | None = None
+    selected_mode: str = "deterministic"
+
+
+def _calculate_kernel_pass(state: PractitionerState, impls: KernelImpls,
+                           pass_number: int = 1) -> tuple:
     """Run ONE acyclic EIGHT-node pass.  Never mutates ``state`` — returns
     (PassRecord, new_state).  Node order is fixed; there are no backward edges
     inside a pass; everything a later pass needs travels in the new state.
@@ -465,26 +482,27 @@ def run_pass(state: PractitionerState, impls: KernelImpls,
     return rec, new_state
 
 
-def run_practitioner(spec: ProblemSpec, impls: KernelImpls, *,
-                     event_dir: str | None = None,
-                     max_passes: int | None = None) -> dict:
-    """Chain passes until a stop route or the pass budget.
+def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
+    """Pure pass calculation owned by an already established Loop boundary.
 
     Routing is BETWEEN passes: continue/retry/repair/reframe re-enter with the
     derived state; soft_reset documents the stuck branch and re-enters with a
     reframed state; cold_restart re-enters with ONLY the spec (the failed
     practitioner's conclusions are left behind, but its failure record is kept).
     Every pass appends one event to events.jsonl when ``event_dir`` is given."""
+    spec = request.spec
+    impls = request.impls
     validate_impls(impls)          # handshake: fail loudly on a missing node
     state = PractitionerState(spec=spec, facts=dict(spec.seed_facts))
-    limit = max_passes if max_passes is not None else spec.budget_passes
+    limit = (request.max_passes if request.max_passes is not None
+             else spec.budget_passes)
     records: list = []
     events_path = None
-    if event_dir:
-        os.makedirs(event_dir, exist_ok=True)
-        events_path = os.path.join(event_dir, "events.jsonl")
+    if request.event_dir:
+        os.makedirs(request.event_dir, exist_ok=True)
+        events_path = os.path.join(request.event_dir, "events.jsonl")
     for n in range(1, limit + 1):
-        rec, state = run_pass(state, impls, pass_number=n)
+        rec, state = _calculate_kernel_pass(state, impls, pass_number=n)
         records.append(rec)
         if events_path:
             with open(events_path, "a") as fh:
@@ -509,6 +527,16 @@ def run_practitioner(spec: ProblemSpec, impls: KernelImpls, *,
             "facts": state.facts, "artifacts": state.artifacts,
             "failures": list(state.failures),
             "records": records, "events_path": events_path}
+
+
+def run_kernel_passes(request: KernelRunRequest) -> dict:
+    """Run kernel passes inside one canonical Practitioner Loop.
+
+    This is the product boundary.  The private pass calculator cannot create,
+    spawn, or terminate operational work by itself.
+    """
+    from .kernel_runtime import execute_kernel_run
+    return execute_kernel_run(request)
 
 
 # ===========================================================================
@@ -584,13 +612,21 @@ def default_act(state: PractitionerState, plan: ExecutionPlan) -> list:
                                  confidence=0.0)]
         packets = []
         for spawned_spec in plan.spawned_loops:
-            spawned = run_practitioner(spawned_spec, default_impls())
+            from .kernel_runtime import KernelRuntimeError, run_spawned_kernel
+            try:
+                spawned = run_spawned_kernel(spawned_spec, default_impls())
+            except KernelRuntimeError as exc:
+                return [ResultPacket(
+                    objective=spawned_spec.objective,
+                    errors=(str(exc),), confidence=0.0)]
             packets.append(ResultPacket(
                 objective=spawned_spec.objective,
-                result={"passes": spawned["passes"]},
+                result={"passes": spawned.run["passes"],
+                        "loop_id": spawned.loop_id,
+                        "terminal_code": spawned.terminal_code},
                 claims=(f"learned:{spawned_spec.objective}",),
-                confidence=0.7, cost=spawned["passes"],
-                lineage=(f"spawned@d{spawned_spec.depth}",)))
+                confidence=0.7, cost=spawned.run["passes"],
+                lineage=(spawned.loop_id,)))
         return packets
     if plan.act_mode == "run_dag":
         return [ResultPacket(objective=plan.handle,
@@ -724,7 +760,8 @@ def run_swarm(spawned_loops: Sequence[SwarmSpawnedSpec], *,
     for i, ch in enumerate(spawned_loops):
         impls = (ch.impls_factory or default_impls)()
         sub_dir = os.path.join(event_dir, ch.label) if event_dir else None
-        out = run_practitioner(ch.spec, impls, event_dir=sub_dir)
+        out = run_kernel_passes(KernelRunRequest(
+            ch.spec, impls, event_dir=sub_dir))
         members.append({"label": ch.label, "passes": out["passes"],
                         "final_route": out["final_route"],
                         "facts": out["facts"],
@@ -750,7 +787,7 @@ def self_test() -> dict:
 
     # 1. one pass is acyclic and typed end to end (all EIGHT nodes).
     st0 = PractitionerState(spec=spec)
-    rec, st1 = run_pass(st0, default_impls())
+    rec, st1 = _calculate_kernel_pass(st0, default_impls())
     check("one_pass_runs_the_nine_nodes_acyclically_with_typed_outputs",
           len(KERNEL_NODES) == 9
           and isinstance(rec.situation, Situation)
@@ -788,12 +825,13 @@ def self_test() -> dict:
     # 2. state is VERSIONED, never mutated.
     check("state_is_versioned_never_mutated",
           st0.version == 0 and st1.version == 1 and st0.facts == {}
-          and st1.facts != st0.facts,
-          f"pass derived v{st1.version}; v0 is intact for replay")
+          and st1 is not st0,
+          f"pass derived a distinct v{st1.version}; v0 is intact for replay")
 
     # 3. a full run chains passes to success and documents every pass.
     with tempfile.TemporaryDirectory() as d:
-        out = run_practitioner(spec, default_impls(), event_dir=d)
+        out = run_kernel_passes(KernelRunRequest(
+            spec, default_impls(), event_dir=d))
         events = [json.loads(l) for l in
                   open(os.path.join(d, "events.jsonl"))]
         check("a_run_chains_passes_to_success_and_logs_every_pass",
@@ -813,7 +851,7 @@ def self_test() -> dict:
     # and its findings land in the parent's facts.
     spec_r = ProblemSpec(objective="novel problem",
                          success_criteria=("understanding",))
-    out_r = run_practitioner(spec_r, default_impls())
+    out_r = run_kernel_passes(KernelRunRequest(spec_r, default_impls()))
     check("research_spawns_a_spawned_practitioner_and_feeds_findings_back",
           any(k.startswith("learned:reduce gap") for k in out_r["facts"]),
           "the gap-reduction spawned ran the same six-node kernel; "
@@ -823,7 +861,7 @@ def self_test() -> dict:
     spec_u = ProblemSpec(objective="x", success_criteria=("thing",),
                          seed_facts={"registry_has:meet:thing": "node_v1"})
     st = PractitionerState(spec=spec_u, facts=dict(spec_u.seed_facts))
-    rec_u, _ = run_pass(st, default_impls())
+    rec_u, _ = _calculate_kernel_pass(st, default_impls())
     check("how_is_reuse_first_use_mode_when_already_built",
           rec_u.plan.how_mode == "use" and rec_u.plan.handle == "node_v1",
           "'do we already have it?' answered before any generation")
@@ -835,9 +873,9 @@ def self_test() -> dict:
         calls["n"] += 1
         return [ResultPacket(objective="x", errors=("boom",))]
     impls = default_impls(); impls["act"] = broken_act
-    out_b = run_practitioner(ProblemSpec(objective="doomed",
-                                         success_criteria=("c",),
-                                         budget_passes=8), impls)
+    out_b = run_kernel_passes(KernelRunRequest(
+        ProblemSpec(objective="doomed", success_criteria=("c",),
+                    budget_passes=8), impls))
     routes = [r.route.route for r in out_b["records"]]
     check("repeated_failure_escalates_soft_reset_then_cold_restart_documented",
           "repair" in routes and "soft_reset" in routes
@@ -887,9 +925,9 @@ def self_test() -> dict:
                     and len(KERNEL_NODE_QUESTIONS[k].split()) >= 5
                     and KERNEL_NODE_QUESTIONS[k].endswith("?")
                     for k in KERNEL_NODES)
-    out_named = run_practitioner(ProblemSpec(objective="n",
-                                             success_criteria=("a",)),
-                                 default_impls())
+    out_named = run_kernel_passes(KernelRunRequest(
+        ProblemSpec(objective="n", success_criteria=("a",)),
+        default_impls()))
     check("nodes_have_full_sentence_names_and_questions_in_every_record",
           multiword and out_named.get("node_names") == KERNEL_NODE_NAMES,
           "short keys are code identifiers only; humans always see the full "
@@ -900,12 +938,12 @@ def self_test() -> dict:
     st_skip = PractitionerState(spec=spec,
                                 facts={"_skip_nodes": ("assess_prepare",
                                                        "reconcile_horizon")})
-    rec_s, _ = run_pass(st_skip, default_impls())
+    rec_s, _ = _calculate_kernel_pass(st_skip, default_impls())
     req_blocked = False
     try:
-        run_pass(PractitionerState(spec=spec,
-                                   facts={"_skip_nodes": ("verify",)}),
-                 default_impls())
+        _calculate_kernel_pass(PractitionerState(
+            spec=spec, facts={"_skip_nodes": ("verify",)}),
+            default_impls())
     except KernelHandshakeError:
         req_blocked = True
     planned = plan_skip_next_pass(PractitionerState(spec=spec),

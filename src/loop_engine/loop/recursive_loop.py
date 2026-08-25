@@ -1601,11 +1601,11 @@ def self_test() -> dict:
     check("loop_is_the_only_runtime_class",
           Loop.__name__ == "Loop", "one universal Loop class")
 
-    # 21. NATIVE RUN_HISTORY EMISSION: a root loop with enable_run_history
+    # 21. NATIVE RUN_HISTORY EMISSION: a Starting Loop with enable_run_history
     # persists its canonical history automatically at terminal; spawned_loops
-    # refuse (they share the root's history).
+    # refuse (they share the Starting Loop's history).
     import tempfile as _tf
-    _croot = _tf.mkdtemp(prefix="chron_native_")
+    _croot = _tf.mkdtemp(prefix="run_history_native_")
     lp21 = Loop("native emit", LoopConfig(framework="five_step",
                                           power="deep"))
     lp21.enable_run_history("native-test-run", root_dir=_croot)
@@ -1617,7 +1617,7 @@ def self_test() -> dict:
     lp21.run()
     from ..static_architecture.run_history import RunHistory as _Ch
     back = _Ch.load(_croot, "native-test-run")
-    check("root_loop_emits_its_run_history_natively_at_terminal",
+    check("starting_loop_emits_its_run_history_natively_at_terminal",
           back.verify_chain()["intact"] and len(back.event_log) >= 6
           and spawned_refused
           and any(e.get("run_history_saved") == "native-test-run"

@@ -40,7 +40,7 @@ from typing import Any, Callable, Sequence
 from ..strings.knowledge import Knowledge
 from ..loop.moves import move, answer, NextActionProposal, family_of
 
-# The generic-default vocabulary a shallow "what next?" tends to return.  Used
+# Generic default vocabulary that a shallow next-action decision tends to return. Used
 # only to FLAG which probed answers are non-default (advanced) — never to filter
 # them out.
 GENERIC_DEFAULT_TERMS = frozenset({

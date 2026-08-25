@@ -238,15 +238,25 @@ def make_model_impls(*, models: Sequence[str] | None = None,
                 return [ResultPacket(objective="spawn",
                                      errors=("depth exceeded",),
                                      confidence=0.0)]
-            from ..loop.kernel import run_practitioner, default_impls
+            from ..loop.kernel import default_impls
+            from ..loop.kernel_runtime import (
+                KernelRuntimeError, run_spawned_kernel)
             packets = []
             for spawned in plan.spawned_loops:
-                out = run_practitioner(spawned, default_impls())
+                try:
+                    out = run_spawned_kernel(spawned, default_impls())
+                except KernelRuntimeError as exc:
+                    return [ResultPacket(
+                        objective=spawned.objective, errors=(str(exc),),
+                        confidence=0.0)]
                 packets.append(ResultPacket(
                     objective=spawned.objective,
-                    result={"passes": out["passes"]},
+                    result={"passes": out.run["passes"],
+                            "loop_id": out.loop_id,
+                            "terminal_code": out.terminal_code},
                     claims=(f"learned:{spawned.objective}",),
-                    confidence=0.7, cost=out["passes"]))
+                    confidence=0.7, cost=out.run["passes"],
+                    lineage=(out.loop_id,)))
             return packets
         if plan.act_mode == "run_dag" and author is not None:
             slug = "".join(c if c.isalnum() else "_"
@@ -348,7 +358,7 @@ def make_model_impls(*, models: Sequence[str] | None = None,
 
 
 def self_test() -> dict:
-    from ..loop.kernel import run_practitioner
+    from ..loop.kernel import KernelRunRequest, run_kernel_passes
     from ..static_architecture.model_call import AskResult
     results: list[dict] = []
 
@@ -368,7 +378,8 @@ def self_test() -> dict:
     impls = make_model_impls(ask=stub_ask, shortcuts=shortcuts)
     spec = ProblemSpec(objective="predict churn on tabular data",
                        success_criteria=("model",), budget_passes=6)
-    out = run_practitioner(spec, impls)
+    out = run_kernel_passes(KernelRunRequest(
+        spec, impls, selected_mode="non_deterministic"))
 
     # 1. the full architecture runs end to end through the model impls.
     check("the_model_backed_kernel_runs_end_to_end",
@@ -392,9 +403,10 @@ def self_test() -> dict:
         asked2.append(spec_)
         return stub_ask(spec_)
     impls2 = make_model_impls(ask=stub_ask2, shortcuts=shortcuts)
-    out2 = run_practitioner(ProblemSpec(
-        objective="predict churn on tabular data",
-        success_criteria=("model",), budget_passes=6), impls2)
+    out2 = run_kernel_passes(KernelRunRequest(
+        ProblemSpec(objective="predict churn on tabular data",
+                    success_criteria=("model",), budget_passes=6),
+        impls2, selected_mode="non_deterministic"))
     check("a_similar_problem_replays_the_learned_shortcut",
           out2["final_route"] == "stop_success",
           "the same objective resolved again with the shortcut store primed")
@@ -404,9 +416,10 @@ def self_test() -> dict:
         return None
     impls3 = make_model_impls(ask=stub_ask, author=bad_author,
                               shortcuts=ShortcutStore())
-    out3 = run_practitioner(ProblemSpec(objective="novel widget",
-                                        success_criteria=("built",),
-                                        budget_passes=4), impls3)
+    out3 = run_kernel_passes(KernelRunRequest(
+        ProblemSpec(objective="novel widget", success_criteria=("built",),
+                    budget_passes=4), impls3,
+        selected_mode="non_deterministic"))
     routes = [r.route.route for r in out3["records"]]
     check("authoring_failure_routes_to_repair_not_silent_success",
           "repair" in routes or out3["final_route"] != "stop_success",
@@ -448,9 +461,11 @@ def self_test() -> dict:
     impls_e = make_model_impls(ask=stub_ask3, store=st,
                                shortcuts=ShortcutStore(),
                                enrichment=EnrichmentPolicy(enabled=True))
-    out_e = run_practitioner(ProblemSpec(
-        objective="heart disease classification from echocardiogram data",
-        success_criteria=("model",), budget_passes=6), impls_e)
+    out_e = run_kernel_passes(KernelRunRequest(
+        ProblemSpec(
+            objective="heart disease classification from echocardiogram data",
+            success_criteria=("model",), budget_passes=6),
+        impls_e, selected_mode="non_deterministic"))
     enriched = any(k.startswith("enriched:") for k in out_e["facts"])
     persona_hit = st.search("cardiologist echo", kind="persona")["hits"]
     check("weak_coverage_triggers_one_enrichment_pass_then_the_task_proceeds",
@@ -468,9 +483,9 @@ def self_test() -> dict:
         return stub_ask(spec_)
     impls_nm = make_model_impls(ask=counting_ask, shortcuts=ShortcutStore(),
                                 config=SolverConfig(allowed_models=()))
-    out_nm = run_practitioner(ProblemSpec(objective="churn model",
-                                          success_criteria=("model",),
-                                          budget_passes=6), impls_nm)
+    out_nm = run_kernel_passes(KernelRunRequest(
+        ProblemSpec(objective="churn model", success_criteria=("model",),
+                    budget_passes=6), impls_nm))
     check("no_models_config_solves_deterministically_with_zero_asks",
           out_nm["final_route"] == "stop_success" and len(asked_none) == 0,
           f"stop_success with {len(asked_none)} model asks")
@@ -479,9 +494,10 @@ def self_test() -> dict:
     # configuration reason — never a silent success via authoring.
     impls_na = make_model_impls(ask=stub_ask, shortcuts=ShortcutStore(),
                                 config=SolverConfig(code_authoring=False))
-    out_na = run_practitioner(ProblemSpec(objective="novel widget nobody has",
-                                          success_criteria=("built",),
-                                          budget_passes=4), impls_na)
+    out_na = run_kernel_passes(KernelRunRequest(
+        ProblemSpec(objective="novel widget nobody has",
+                    success_criteria=("built",), budget_passes=4),
+        impls_na, selected_mode="non_deterministic"))
     refusals = [f for f in out_na["failures"]
                 if "configuration" in f or "refus" in f]
     check("code_authoring_off_refuses_generation_with_a_documented_reason",
@@ -499,9 +515,10 @@ def self_test() -> dict:
     impls_tb = make_model_impls(ask=counting_ask2, shortcuts=ShortcutStore(),
                                 config=SolverConfig(
                                     budgets=Budgets(max_tokens=9)))
-    out_tb = run_practitioner(ProblemSpec(objective="churn model",
-                                          success_criteria=("model",),
-                                          budget_passes=6), impls_tb)
+    out_tb = run_kernel_passes(KernelRunRequest(
+        ProblemSpec(objective="churn model", success_criteria=("model",),
+                    budget_passes=6), impls_tb,
+        selected_mode="non_deterministic"))
     check("a_token_ceiling_stops_asks_but_the_run_still_finishes",
           out_tb["final_route"] == "stop_success"
           and 1 <= len(asked_budget) < 8,

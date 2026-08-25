@@ -86,7 +86,7 @@ BINDING_KINDS = (
 #: The register. Each row: the boundary, what crosses it, how it is bound,
 #: the module that owns the envelope, and the test that proves it.
 BOUNDARIES = (
-    {"boundary": "root solve", "crosses": "a user task enters the runtime",
+    {"boundary": "task entry", "crosses": "a user task enters the runtime",
      "binding": "native_loop", "envelope": "loop.recursive_loop.Loop",
      "test": "recursive_loop.self_test"},
     {"boundary": "reference nine-step stages",
@@ -94,6 +94,11 @@ BOUNDARIES = (
      "binding": "stage_loop_tree",
      "envelope": "loop.encapsulate.as_loop_of_stage_loops",
      "test": "encapsulate:reference_nine_step_runs_as_nine_stage_loops"},
+    {"boundary": "Practitioner kernel execution",
+     "crosses": "typed kernel passes calculate an operational task result",
+     "binding": "native_loop",
+     "envelope": "loop.kernel_runtime.execute_kernel_run",
+     "test": "kernel_runtime.self_test"},
     {"boundary": "deterministic check",
      "crosses": "a plain callable runs as governed work",
      "binding": "practitioner_loop",
@@ -328,11 +333,14 @@ BOUNDARIES = (
 #: One immutable ontology join for the existing operational-boundary register.
 #: The key sets must match exactly; neither side may silently grow alone.
 BOUNDARY_ONTOLOGY = MappingProxyType({
-    "root solve": _exact(
+    "task entry": _exact(
         "practitioner", "practitioner.solver@1.0.0", "starting"),
     "reference nine-step stages": _exact(
         "practitioner", "practitioner.reference_nine_step@1.0.0",
         "spawned_by"),
+    "Practitioner kernel execution": _exact(
+        "practitioner", "practitioner.reference_nine_step@1.0.0",
+        "starting", "spawned_by"),
     "deterministic check": _exact(
         "practitioner", "practitioner.code_execution@1.0.0",
         "starting", "spawned_by"),

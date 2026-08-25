@@ -146,7 +146,7 @@ def self_test() -> dict:
         results.append({"test": name, "passed": bool(ok), "detail": detail})
 
     reg = seed_registry()
-    recipe = PromptRecipe("recipe.what_next.review",
+    recipe = PromptRecipe("recipe.next_action.review",
                           ("frag.system.authority", "frag.role.persona",
                            "frag.method.failure_first",
                            "frag.uncertainty.declare",

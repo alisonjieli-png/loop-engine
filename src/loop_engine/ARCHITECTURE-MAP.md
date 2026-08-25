@@ -3,8 +3,8 @@
 > Generated 2026-08-25 by `PYTHONPATH=src python3 -m loop_engine --map`. Regenerate rather than hand-edit; freshness is gated (`architecture_map_freshness`).
 
 ARCHITECTURE MAP: four top-level abstractions
-  loop/  (65 modules)
-    acceptance, approval_state_store, approval_state_store_checks, arbiter, builtin_resolvers, capability_loops, canvas, spawned_runtime_port, spawned_task_checkpoint, context_shuffle, decision_engine, decision_slates, escalation_governor, hybrid_dimension_lattice, research_to_capability, list_intelligence, decision_envelope, decision_episode, decision_need, delegation, delegation_checkpoint_checks, delegation_runtime, delegation_runtime_checks, deliberation, effect_approval, kernel, kernel_model_impls, lens, decision_service, loop_handlers, loop_templates, methodical, moves, intelligence_loops, practitioner_campaign, practitioner_loop, practitioner_methods, iteration_records, effective_spec, encapsulate, loop_capsule, loop_contract, loop_definition, loop_definition_checks, runtime_context, loop_doctrine, loop_profile_catalog, loop_profile_ontology, loop_role, loop_control, recursive_loop, regimes, registry, service_loop_envelope, resolvers, route_bridge, runner, solve, solver, step_registry, steps, studio, sub_practitioner, tuning, wiring
+  loop/  (66 modules)
+    acceptance, approval_state_store, approval_state_store_checks, arbiter, builtin_resolvers, capability_loops, canvas, spawned_runtime_port, spawned_task_checkpoint, context_shuffle, decision_engine, decision_service, decision_slates, escalation_governor, hybrid_dimension_lattice, research_to_capability, list_intelligence, decision_envelope, decision_episode, decision_need, delegation, delegation_checkpoint_checks, delegation_runtime, delegation_runtime_checks, deliberation, effect_approval, kernel, kernel_runtime, kernel_model_impls, lens, loop_handlers, loop_templates, methodical, moves, intelligence_loops, practitioner_campaign, practitioner_loop, practitioner_methods, iteration_records, effective_spec, encapsulate, loop_capsule, loop_contract, loop_definition, loop_definition_checks, runtime_context, loop_doctrine, loop_profile_catalog, loop_profile_ontology, loop_role, loop_control, recursive_loop, regimes, registry, service_loop_envelope, resolvers, route_bridge, runner, solve, solver, step_registry, steps, studio, spawned_practitioner, tuning, wiring
   strings/  (19 modules)
     ask_strategies, bias_checklist, biases, context, decision_schemas, domain_pack, frame, intelligence_strings, interrogation, knowledge, knowledge_state, notes, output_templates, packs, prompt_fragments, question_bank, question_engine, solution_shaping, task_blueprint
   code_nodes/  (44 modules)
@@ -54,7 +54,7 @@ STEP 3: assess_prepare  [OPTIONAL]
     - enrichment: coverage_probe, generate_enrichment (personas/questions)
     - question_engine + question_bank: question forms and tiers
     - capture: required opening scaffolding (research, outline, watch-outs, common/uncommon mistakes, best practices, success measures)
-    - sub_practitioner: spawn a Practitioner Loop for research
+    - spawned_practitioner: start a typed Practitioner Loop for research
     - kernel: default_assess_prepare
   default: kernel.default_assess_prepare
   extend: provide an `assess_prepare` impl; register question/persona generators and research recipes
@@ -104,7 +104,7 @@ STEP 6: act  [REQUIRED]
     - competition_solver: tabular/image executors (searchable nodes)
     - rl_vocabulary: policies + novelty/action search
     - opencode_client: headless coding workers
-    - sub_practitioner + kernel.run_practitioner: Practitioner Loops
+    - spawned_practitioner + kernel_runtime.execute_kernel_run: Practitioner Loops
     - canvas: matrix-of-solutions execution
     - kaggle_executor: real tabular submissions
     - kernel: default_act

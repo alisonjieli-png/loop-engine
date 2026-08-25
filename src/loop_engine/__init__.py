@@ -165,6 +165,7 @@ _PUBLIC: dict[str, tuple[str, str]] = {
         "SPAWNED_TASK_CHECKPOINT_VERSION", "SpawnedTaskCheckpointError",
         "SpawnedTaskCheckpoint", "SpawnedTaskLifecycleMixin",
     ),
+    **_names("loop.spawned_practitioner", "spawn_practitioner_loop"),
 
     # Durable approvals and controlled workspaces.
     **_names(

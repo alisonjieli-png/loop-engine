@@ -36,7 +36,8 @@ import pandas as pd
 
 from ..loop.kernel import (ProblemSpec, PractitionerState, Situation,
                      CandidateAction, ExecutionPlan, ResultPacket,
-                     EvaluationPacket, RouteDecision, PassRecord, run_practitioner)
+                     EvaluationPacket, KernelRunRequest, RouteDecision,
+                     PassRecord, run_kernel_passes)
 from ..code_nodes.review_mode import review
 
 MODALITIES = ("tabular", "image", "text")
@@ -378,8 +379,9 @@ def solve_competition(data_dir: str, *, slug: str = "", metric: str = "accuracy"
                        success_criteria=("valid_submission",),
                        budget_passes=max_passes)
     store = build_competition_store()
-    out = run_practitioner(spec, make_competition_impls(comp, store=store),
-                           max_passes=max_passes)
+    out = run_kernel_passes(KernelRunRequest(
+        spec, make_competition_impls(comp, store=store),
+        max_passes=max_passes))
     sub = out["artifacts"].get("submission", "")
     score = float(out["facts"].get("local_score", 0.0))
     # one final review verdict for the record

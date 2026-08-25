@@ -60,7 +60,7 @@ class PlanningResult:
     shortcuts_learned: int = 0
     shortcuts_replayed: int = 0
     swarm_members: int = 0
-    sub_practitioners: int = 0
+    spawned_practitioners: int = 0
     loop_id: str = ""
 
     def record(self) -> dict:
@@ -71,7 +71,7 @@ class PlanningResult:
                 "shortcuts_learned": self.shortcuts_learned,
                 "shortcuts_replayed": self.shortcuts_replayed,
                 "swarm_members": self.swarm_members,
-                "sub_practitioners": self.sub_practitioners,
+                "spawned_practitioners": self.spawned_practitioners,
                 "loop_id": self.loop_id,
                 "canvas": self.canvas.canvas_id if self.canvas else None,
                 "matrix_width": self.canvas.width() if self.canvas else 0}
@@ -227,7 +227,7 @@ class SolutionPlanningService:
             total_steps += len(state.history)
             total_calls += state.model_calls
             total_avoided += state.model_calls_avoided
-            total_subs += len(state.blackboard.get("sub_practitioners", []))
+            total_subs += len(state.blackboard.get("spawned_practitioners", []))
             replayed += len(state.blackboard.get("replayed", []))
             last_state = state
 
@@ -254,7 +254,7 @@ class SolutionPlanningService:
                            model_calls_avoided=total_avoided,
                            shortcuts_learned=learned,
                            shortcuts_replayed=replayed,
-                           swarm_members=n, sub_practitioners=total_subs)
+                           swarm_members=n, spawned_practitioners=total_subs)
         # document EVERY run (append-only JSONL) so runs are shareable/learnable
         if self.run_log_path:
             import json as _json, os as _os
@@ -367,7 +367,7 @@ def self_test() -> dict:
     check("the_record_accounts_for_calls_avoided_learned_and_matrix_width",
           {"model_calls", "model_calls_avoided", "shortcuts_learned",
            "shortcuts_replayed", "matrix_width",
-           "sub_practitioners"} <= set(r),
+           "spawned_practitioners"} <= set(r),
           "one record answers what ran, what it cost, what was avoided, and "
           "what was learned")
 

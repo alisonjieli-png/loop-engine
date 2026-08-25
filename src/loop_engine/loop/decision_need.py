@@ -1,7 +1,7 @@
 """Decision need — detect WHY a decision is open, before asking select the next action.
 
-A key v3 correction (§7): the system should not ask a broad resolver "what next?"
-without first identifying why a decision is due.  An expert first frames the open
+A decision should not be delegated to a broad resolver before the reason for
+the decision is clear. An expert first frames the open
 question — is this a knowledge gap, a contradiction to resolve, a plan checkpoint,
 a plateau, a routing choice among candidates, or a stop decision? — and that
 framing constrains which answers are even admissible and which mode of reasoning

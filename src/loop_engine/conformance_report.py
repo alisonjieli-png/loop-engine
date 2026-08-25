@@ -108,8 +108,23 @@ def _stale_architecture_map() -> int:
     return 0 if counts(committed) != [] and counts(committed) == counts(live) else 1
 
 
+def _nomenclature_scan_layout(
+        package_dir: "str | None" = None) -> tuple[str, tuple[str, ...]]:
+    """Resolve source-checkout or installed-package paths without guessing."""
+    here = package_dir or _HERE
+    repository = os.path.dirname(os.path.dirname(here))
+    source_policy = os.path.join(
+        repository, "src", "loop_engine", "forbidden_paths.json")
+    if os.path.isfile(source_policy):
+        return repository, (
+            "src/loop_engine/forbidden_paths.json",
+            "src/loop_engine/architecture_conformance.json",
+        )
+    return here, ("forbidden_paths.json", "architecture_conformance.json")
+
+
 def _public_retired_nomenclature() -> list:
-    """Scan current repository text for the retired decision-spine terms."""
+    """Scan current source or installed package without scanning policy data."""
     from ._conformance_scan import _rules
     from .nomenclature_conformance import retired_nomenclature_violations
 
@@ -117,10 +132,9 @@ def _public_retired_nomenclature() -> list:
     policy["terms"] = tuple(
         term for term in policy.get("terms", ())
         if "what" in str(term).casefold())
-    policy["excluded_files"] = (
-        "src/loop_engine/forbidden_paths.json",
-    )
-    root = os.path.dirname(os.path.dirname(_HERE))
+    root, layout_exclusions = _nomenclature_scan_layout()
+    policy["excluded_files"] = tuple(dict.fromkeys((
+        *policy.get("excluded_files", ()), *layout_exclusions)))
     return retired_nomenclature_violations(root, policy)
 
 
@@ -314,6 +328,18 @@ def self_test() -> dict:
     check("operational_vertex_canary_refuses_non_loop_and_ignores_passive_records",
           [item["type"] for item in canary] == ["TaskNode"],
           f"violations={canary}")
+    with tempfile.TemporaryDirectory() as directory:
+        installed_package = os.path.join(directory, "loop_engine")
+        os.makedirs(installed_package)
+        open(os.path.join(
+            installed_package, "forbidden_paths.json"), "w").write("{}")
+        installed_root, installed_exclusions = _nomenclature_scan_layout(
+            installed_package)
+    check("installed_package_nomenclature_scan_excludes_its_policy_and_manifest",
+          installed_root == installed_package
+          and installed_exclusions == (
+              "forbidden_paths.json", "architecture_conformance.json"),
+          f"root={installed_root}; exclusions={installed_exclusions}")
     passed = sum(1 for x in results if x["passed"])
     return {"tests": results, "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}

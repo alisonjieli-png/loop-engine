@@ -100,7 +100,7 @@ KERNEL_STEP_REGISTRY: tuple = (
          "question_engine + question_bank: question forms and tiers",
          "capture: required opening scaffolding (research, outline, watch-outs, "
          "common/uncommon mistakes, best practices, success measures)",
-         "sub_practitioner: spawn a Practitioner Loop for research",
+         "spawned_practitioner: start a typed Practitioner Loop for research",
          "kernel: default_assess_prepare"),
         "default_assess_prepare",
         "provide an `assess_prepare` impl; register question/persona generators "
@@ -155,7 +155,7 @@ KERNEL_STEP_REGISTRY: tuple = (
         ("competition_solver: tabular/image executors (searchable nodes)",
          "rl_vocabulary: policies + novelty/action search",
          "opencode_client: headless coding workers",
-         "sub_practitioner + kernel.run_practitioner: Practitioner Loops",
+         "spawned_practitioner + kernel.run_kernel_passes: Practitioner Loops",
          "canvas: matrix-of-solutions execution",
          "kaggle_executor: real tabular submissions",
          "kernel: default_act"),

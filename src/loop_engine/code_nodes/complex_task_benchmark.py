@@ -35,8 +35,8 @@ __all__ = (
 
 
 def default_published_catalog_path() -> Path:
-    """Return the repository's reviewed published-evidence catalog path."""
-    return (Path(__file__).resolve().parents[3] / "docs" / "benchmarks"
+    """Return the installed package's reviewed published-evidence catalog."""
+    return (Path(__file__).resolve().parents[1] / "data"
             / "published-harness-evidence.json")
 
 
@@ -46,6 +46,15 @@ def self_test() -> dict:
     tests = list(result["tests"])
     catalog = load_published_evidence(default_published_catalog_path())
     accounting = catalog.accounting()
+    repository_copy = (Path(__file__).resolve().parents[3] / "docs"
+                       / "benchmarks" / "published-harness-evidence.json")
+    tests.append({
+        "test": "installed_catalog_matches_the_repository_document_copy",
+        "passed": (not repository_copy.exists()
+                   or repository_copy.read_bytes()
+                   == default_published_catalog_path().read_bytes()),
+        "detail": str(default_published_catalog_path()),
+    })
     tests.append({
         "test": "current_published_catalog_is_valid_and_claims_only_eligible_groups",
         "passed": (

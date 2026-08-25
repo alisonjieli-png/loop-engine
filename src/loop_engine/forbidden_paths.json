@@ -62,12 +62,16 @@
    "stop_condition",
    "child",
    "what is next",
+   "what next",
    "what-is-next",
    "what_is_next",
    "whats_next",
+   "whatsnext",
+   "whatnext",
    "whatisnext",
    "what's next",
-   "what’s next"
+   "what’s next",
+   "root loop"
   ],
   "excluded_files": [
    "forbidden_paths.json"

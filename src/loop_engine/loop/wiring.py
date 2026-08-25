@@ -1,7 +1,7 @@
 """Wiring — make the LIVE loop actually call the library.
 
 This closes the honest gap the Atlas names: every module is tested in isolation,
-but ``run_practitioner`` had only the deterministic defaults, so the Guidance /
+but ``run_kernel_passes`` had only the deterministic defaults, so the Guidance /
 Intelligence / Evidence library was present but not EXERCISED end-to-end.
 
 ``wired_impls`` returns a ``KernelImpls`` that ENRICHES the deterministic defaults
@@ -25,8 +25,11 @@ kernel defaults (the 470 tests that depend on them stay green).
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+from typing import Any
+
 from ..loop.kernel import (default_impls, CandidateAction, EvaluationPacket,
-                     ProblemSpec, run_practitioner)
+                     KernelRunRequest, ProblemSpec, run_kernel_passes)
 from ..strings import solution_shaping
 from ..code_nodes import review_mode, measurement, capture, learning_bundle
 from ..static_architecture import asset_class
@@ -172,12 +175,30 @@ def wired_impls(*, checklist: "BiasChecklist | None" = None, contract=None,
             "integrate_commit": integrate}
 
 
-def run_wired(spec: ProblemSpec, *, contract=None, max_passes: int = 8) -> dict:
+@dataclass(frozen=True)
+class WiredKernelRunRequest:
+    """One typed request for a kernel run with the library connected."""
+
+    spec: ProblemSpec
+    owner_loop: Any = None
+    contract: Any = None
+    max_passes: int = 8
+    event_dir: str | None = None
+    selected_mode: str = "deterministic"
+
+
+def run_wired(request: WiredKernelRunRequest) -> dict:
     """Run the live loop with the library wired in, and report what it exercised."""
+    if not isinstance(request, WiredKernelRunRequest):
+        raise TypeError("run_wired needs a WiredKernelRunRequest")
     log: list = []
     checklist = BiasChecklist(run_ref="wired")
-    impls = wired_impls(checklist=checklist, contract=contract, log=log)
-    run = run_practitioner(spec, impls, max_passes=max_passes)
+    impls = wired_impls(
+        checklist=checklist, contract=request.contract, log=log)
+    run = run_kernel_passes(KernelRunRequest(
+        spec=request.spec, impls=impls, owner_loop=request.owner_loop,
+        event_dir=request.event_dir, max_passes=request.max_passes,
+        selected_mode=request.selected_mode))
     run["wired_modules"] = sorted(set(log))
     run["checklist"] = checklist.snapshot()
     run["asset_split"] = asset_class.asset_split(
@@ -198,7 +219,8 @@ def self_test() -> dict:
         results.append({"test": name, "passed": bool(ok), "detail": detail})
 
     # 1. a live wired run COMPLETES and exercises the library end-to-end.
-    run = run_wired(ProblemSpec(objective="win", success_criteria=("model",)))
+    run = run_wired(WiredKernelRunRequest(
+        ProblemSpec(objective="win", success_criteria=("model",))))
     mods = set(run["wired_modules"])
     check("live_loop_exercises_the_library",
           run["passes"] >= 1
@@ -252,13 +274,13 @@ def self_test() -> dict:
     packs = {"context_intelligence": [StoreRecord(
         "s.stat", "context", "use a statistician persona", body={},
         tags=("persona",))]}
-    r_in = run_practitioner(
+    r_in = run_kernel_passes(KernelRunRequest(
         ProblemSpec(objective="statistician review",
                     success_criteria=("ok",)),
-        wired_impls(intelligence=packs), max_passes=1)
-    r_out = run_practitioner(
+        wired_impls(intelligence=packs), max_passes=1))
+    r_out = run_kernel_passes(KernelRunRequest(
         ProblemSpec(objective="win", success_criteria=("model",)),
-        wired_impls(), max_passes=1)
+        wired_impls(), max_passes=1))
     check("kernel_orient_consults_the_intelligence_when_wired",
           r_in["facts"].get("_intelligence", {}).get("pillar")
           == "context_intelligence"
