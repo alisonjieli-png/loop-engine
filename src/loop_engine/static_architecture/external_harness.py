@@ -392,21 +392,77 @@ class HarnessAdapterInfo:
 
 
 @dataclass(frozen=True)
+class HarnessRuntimeBinding:
+    """Provider-bound runtime object supplied to one optional harness.
+
+    The binding prevents an adapter from treating a model name as sufficient
+    provider configuration.  ``runtime_object`` is an SDK model or client that
+    application code configured outside Loop Engine.  ``configuration_ref``
+    is a non-secret reference to that reviewed configuration.
+
+    Deep Agents cannot apply a per-run output maximum at its graph boundary,
+    so its model binding must carry the exact already-applied output limit.
+    Other adapters apply the resolved limit themselves and may leave
+    ``output_limit`` empty.
+    """
+
+    provider_id: str
+    model_id: str
+    runtime_kind: str
+    runtime_object: object
+    configuration_ref: str
+    output_limit: "ModelOutputLimit | None" = None
+
+    def __post_init__(self) -> None:
+        if not self.provider_id.strip() or not self.model_id.strip():
+            raise HarnessError(
+                "a harness runtime binding needs provider_id and model_id")
+        if self.runtime_kind not in ("model", "client"):
+            raise HarnessError("runtime_kind must be model or client")
+        if self.runtime_object is None:
+            raise HarnessError("a harness runtime binding needs an SDK object")
+        if not self.configuration_ref.strip():
+            raise HarnessError(
+                "a harness runtime binding needs a non-secret configuration reference")
+        if self.output_limit is not None:
+            _validate_output_limit_binding_fields(
+                self.provider_id, self.model_id, self.output_limit)
+
+    def validate_for(self, request: HarnessRunRequest, *,
+                     runtime_kind: str,
+                     preconfigured_output_limit: bool = False) -> None:
+        if self.provider_id != request.provider_id:
+            raise HarnessError(
+                "harness runtime binding provider does not match the request")
+        if self.model_id != request.model_id:
+            raise HarnessError(
+                "harness runtime binding model does not match the request")
+        if self.runtime_kind != runtime_kind:
+            raise HarnessError(
+                f"harness runtime binding must contain an SDK {runtime_kind}")
+        if self.output_limit is not None:
+            if self.output_limit != request.budget.output_limit:
+                raise HarnessError(
+                    "harness runtime binding output maximum does not match the request")
+        elif preconfigured_output_limit:
+            raise HarnessError(
+                "this harness needs a model binding with the exact output maximum already applied")
+
+
+@dataclass(frozen=True)
 class HarnessServices:
     """Run-scoped services passed as one object to every adapter."""
 
-    model_gateway: object = None
-    harness_model: object = None
-    harness_client: object = None
-    workspace: object = None
-    approval_store: object = None
+    runtime_binding: "HarnessRuntimeBinding | None" = None
     artifact_store: "ContextArtifactManager | None" = None
-    skill_registry: object = None
-    mcp_registry: object = None
-    trace_exporter: object = None
     model_output_resolver: object = None
 
     def __post_init__(self) -> None:
+        if (self.runtime_binding is not None
+                and not isinstance(self.runtime_binding,
+                                   HarnessRuntimeBinding)):
+            raise HarnessError(
+                "runtime_binding must be a HarnessRuntimeBinding")
         if self.artifact_store is not None:
             from .context_artifacts import ContextArtifactManager
             if not isinstance(self.artifact_store, ContextArtifactManager):
@@ -437,15 +493,21 @@ class StaticModelOutputResolver:
 
 def _validate_output_limit_binding(
         request: HarnessRunRequest, limit: ModelOutputLimit) -> None:
-    if limit.provider_id != request.provider_id:
-        raise HarnessError(
-            "model output maximum provider does not match the request")
-    if limit.model_id != request.model_id:
-        raise HarnessError(
-            "model output maximum model does not match the request")
+    _validate_output_limit_binding_fields(
+        request.provider_id, request.model_id, limit)
     if limit.route_id and limit.route_id not in request.model_routes:
         raise HarnessError(
             "model output maximum route does not match the request")
+
+
+def _validate_output_limit_binding_fields(
+        provider_id: str, model_id: str, limit: ModelOutputLimit) -> None:
+    if limit.provider_id != provider_id:
+        raise HarnessError(
+            "model output maximum provider does not match the request")
+    if limit.model_id != model_id:
+        raise HarnessError(
+            "model output maximum model does not match the request")
 
 
 def resolve_harness_output_limit(

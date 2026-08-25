@@ -13,6 +13,13 @@ The catalog contains reviewed numeric results, graphical findings, and searches
 that found no qualifying score. It currently has one exact cross-harness group
 from Artificial Analysis Coding Agent Index v1.4.
 
+Loop Engine results use a separate catalog:
+[`loop-engine-benchmark-evidence.json`](../benchmarks/loop-engine-benchmark-evidence.json).
+`match_loop_engine_to_published()` joins the two catalogs only when every
+comparison key matches. The current report finds zero fair Loop
+Engine-to-harness matches. It gives an exclusion reason for each saved Loop
+Engine result instead of comparing unlike scores.
+
 ## Required facts
 
 Every record must name these facts:
@@ -81,13 +88,20 @@ Load and audit the catalog in Python:
 
 ```python
 from loop_engine.code_nodes.complex_task_benchmark import (
+    default_loop_engine_catalog_path,
+    default_published_catalog_path,
+    load_native_evidence,
     load_published_evidence,
+    match_loop_engine_to_published,
 )
 
-catalog = load_published_evidence(
-    "docs/benchmarks/published-harness-evidence.json"
+published = load_published_evidence(default_published_catalog_path())
+native = load_native_evidence(default_loop_engine_catalog_path())
+report = match_loop_engine_to_published(
+    native,
+    published,
 )
-print(catalog.accounting())
+print(report.to_dict())
 ```
 
 The accounting output separates reviewed sources, harness measurements,

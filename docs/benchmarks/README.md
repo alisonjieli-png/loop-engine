@@ -8,6 +8,20 @@ Published harness results use a separate evidence catalog:
   requires benchmark, model, population, tools, score, date, source, and evidence
   qualifier fields.
 
+Saved Loop Engine results use
+[`loop-engine-benchmark-evidence.json`](loop-engine-benchmark-evidence.json).
+Its required fields are defined by
+[`loop-engine-benchmark-evidence.schema.json`](loop-engine-benchmark-evidence.schema.json).
+The matching code compares the two catalogs only when the benchmark,
+population, model, effort, metric, evaluator, and environment are identical.
+The current match count is zero. The OpenML and DS-1000 studies remain useful
+full-system smoke evidence, but neither has a fair published harness arm.
+
+Each Loop Engine record separates selected model calls from every call in its
+run packet, including excluded diagnostics. Known token subtotals remain
+visible when one or more attempts lack usage. Cost stays unknown unless a
+source-backed value exists.
+
 The published-evidence catalog does not run a harness. It keeps model-only
 results separate from harness measurements. Each admitted value links to the
 source that reported it.

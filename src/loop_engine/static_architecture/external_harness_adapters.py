@@ -5,10 +5,11 @@ framework only when selected. External packages are not core dependencies.
 Every adapter also accepts an injected runner for deterministic conformance
 tests and application-specific SDK configuration.
 
-The OpenAI and Microsoft paths expose explicit maximum-output arguments. The
-Pydantic and Deep Agents paths refuse before import until an exact binding is
-verified. No path installs packages, chooses credentials, approves effects, or
-claims task acceptance.
+Pydantic AI, OpenAI Agents, and Microsoft Agent Framework receive the exact
+resolved output maximum at their documented SDK boundaries. Deep Agents
+requires a provider-bound model whose typed binding records that the same
+maximum was applied before the graph was created. No path installs packages,
+chooses credentials, approves effects, or claims task acceptance.
 """
 from __future__ import annotations
 
@@ -22,7 +23,7 @@ from typing import Callable, Mapping
 
 from .external_harness import (
     HarnessAdapterInfo, HarnessError, HarnessModelCall, HarnessRunRequest,
-    HarnessRunResult, HarnessServices, ModelOutputLimit,
+    HarnessRunResult, HarnessRuntimeBinding, HarnessServices, ModelOutputLimit,
     resolve_harness_output_limit)
 
 
@@ -31,25 +32,26 @@ RunnerFn = Callable[[HarnessRunRequest, HarnessServices], object]
 
 _FRAMEWORKS = {
     "pydantic_ai": {
-        "module": "pydantic_ai_harness", "package": "pydantic-ai-harness",
-        "features": ("typed_request", "package_detection"),
-        "output_limit_binding": "",
+        "module": "pydantic_ai", "package": "pydantic-ai",
+        "features": ("typed_request", "exact_output_limit",
+                     "request_limit", "usage_reporting"),
+        "output_limit_binding": "ModelSettings.max_tokens",
         "limitations": (
-            "built-in execution is refused because an exact maximum-output "
-            "binding is not verified",
-            "subagents, compaction, memory, skills, MCP, sandbox, and approvals "
-            "are not wired by this adapter",
+            "a provider-bound SDK model is required through HarnessServices",
+            "tools, multi-agent delegation, memory, MCP, sandbox, and approvals "
+            "are intentionally not exposed by this bounded adapter",
         ),
     },
     "deep_agents": {
         "module": "deepagents", "package": "deepagents",
-        "features": ("typed_request", "package_detection"),
-        "output_limit_binding": "",
+        "features": ("typed_request", "provider_bound_model",
+                     "exact_output_limit", "bounded_graph_recursion",
+                     "usage_reporting"),
+        "output_limit_binding": "HarnessRuntimeBinding.output_limit",
         "limitations": (
-            "built-in execution is refused because an exact maximum-output "
-            "binding is not verified",
-            "filesystem, compaction, memory, skills, MCP, sandbox, and "
-            "approvals are not wired by this adapter",
+            "the supplied SDK model must already enforce the exact output maximum",
+            "host filesystem access, persistent memory, skills, MCP, subagents, "
+            "and approvals are intentionally not exposed by this bounded adapter",
         ),
     },
     "openai_agents": {
@@ -58,8 +60,9 @@ _FRAMEWORKS = {
                      "usage_reporting", "tracing_disabled"),
         "output_limit_binding": "ModelSettings.max_tokens",
         "limitations": (
-            "handoffs, agents-as-tools, MCP, guardrails, sandbox, and "
-            "approvals are not wired by this adapter",
+            "a provider-bound SDK model is required through HarnessServices",
+            "handoffs, agents-as-tools, MCP, sandbox, and approvals are not "
+            "exposed by this bounded adapter",
         ),
     },
     "microsoft_agent_framework": {
@@ -69,9 +72,9 @@ _FRAMEWORKS = {
                      "web_search_disabled", "file_memory_disabled"),
         "output_limit_binding": "create_harness_agent.max_output_tokens",
         "limitations": (
-            "a configured chat client is required through HarnessServices",
-            "workflows, checkpoints, compaction, skills, approvals, and "
-            "OpenTelemetry are not wired by this adapter",
+            "a provider-bound SDK client is required through HarnessServices",
+            "web search, file memory, compaction, todos, autonomous harness "
+            "looping, skills, and approvals are disabled at this boundary",
         ),
     },
 }
@@ -86,12 +89,17 @@ class _AdapterExecution:
 
 
 class PhysicalCallCountingClient:
-    """Count calls at an SDK chat client's provider request boundary."""
+    """Count and stop calls at an SDK client's provider request boundary."""
 
-    def __init__(self, client):
+    def __init__(self, client, *, max_calls: "int | None" = None):
         if not callable(getattr(client, "get_response", None)):
             raise TypeError("counted chat client needs get_response")
+        if (max_calls is not None
+                and (not isinstance(max_calls, int)
+                     or isinstance(max_calls, bool) or max_calls < 1)):
+            raise ValueError("max_calls must be a positive integer")
         self._client = client
+        self._max_calls = max_calls
         self.call_count = 0
 
     @property
@@ -99,6 +107,10 @@ class PhysicalCallCountingClient:
         return getattr(self._client, "additional_properties", {})
 
     def get_response(self, *args, **kwargs):
+        if (self._max_calls is not None
+                and self.call_count >= self._max_calls):
+            raise HarnessError(
+                "external harness model-call budget is exhausted")
         self.call_count += 1
         return self._client.get_response(*args, **kwargs)
 
@@ -151,6 +163,21 @@ def _required_output_limit(request: HarnessRunRequest) -> ModelOutputLimit:
     return limit
 
 
+def _required_runtime_binding(
+        request: HarnessRunRequest, services: HarnessServices, *,
+        runtime_kind: str,
+        preconfigured_output_limit: bool = False) -> HarnessRuntimeBinding:
+    binding = services.runtime_binding
+    if binding is None:
+        raise HarnessError(
+            "package-backed harness execution needs a typed, provider-bound "
+            "HarnessRuntimeBinding")
+    binding.validate_for(
+        request, runtime_kind=runtime_kind,
+        preconfigured_output_limit=preconfigured_output_limit)
+    return binding
+
+
 def _openai_model_settings_kwargs(request: HarnessRunRequest) -> dict:
     limit = _required_output_limit(request)
     return {
@@ -160,6 +187,29 @@ def _openai_model_settings_kwargs(request: HarnessRunRequest) -> dict:
     }
 
 
+def _pydantic_model_settings_kwargs(request: HarnessRunRequest) -> dict:
+    settings = {
+        "max_tokens": _required_output_limit(request).max_output_tokens,
+        "temperature": float(request.metadata.get("temperature", 0.2)),
+    }
+    if request.budget.max_seconds is not None:
+        settings["timeout"] = float(request.budget.max_seconds)
+    return settings
+
+
+def _pydantic_usage_limit_kwargs(request: HarnessRunRequest) -> dict:
+    values = {"request_limit": request.budget.max_model_calls}
+    if request.budget.max_total_tokens is not None:
+        values["total_tokens_limit"] = request.budget.max_total_tokens
+    return values
+
+
+def _deep_agents_graph_config(request: HarnessRunRequest) -> dict:
+    # LangGraph counts graph steps rather than physical model calls. The
+    # preconfigured model binding remains responsible for the physical limit.
+    return {"recursion_limit": max(4, request.budget.max_model_calls * 4 + 2)}
+
+
 def _microsoft_harness_kwargs(
         request: HarnessRunRequest, counted_client: object) -> dict:
     limit = _required_output_limit(request)
@@ -167,8 +217,10 @@ def _microsoft_harness_kwargs(
         "client": counted_client,
         "disable_web_search": True,
         "disable_file_memory": True,
+        "disable_compaction": True,
+        "disable_todo": True,
+        "disable_mode": True,
         "max_output_tokens": limit.max_output_tokens,
-        "loop_max_iterations": request.budget.max_model_calls,
     }
 
 
@@ -388,26 +440,51 @@ class ConfiguredHarnessAdapter:
     @staticmethod
     def _run_pydantic(request: HarnessRunRequest,
                       services: HarnessServices):
-        del request, services
-        raise HarnessError(
-            "pydantic_ai adapter unavailable: no verified exact "
-            "maximum-output binding is wired; no package or model was invoked")
+        limit = _required_output_limit(request)
+        binding = _required_runtime_binding(
+            request, services, runtime_kind="model")
+        from pydantic_ai import Agent, ModelSettings, UsageLimits
+
+        agent = Agent(
+            binding.runtime_object,
+            instructions=(
+                "Complete one bounded task and return the requested output. "
+                "Do not claim verification or acceptance."))
+        raw = agent.run_sync(
+            _prompt(request),
+            model_settings=ModelSettings(
+                **_pydantic_model_settings_kwargs(request)),
+            usage_limits=UsageLimits(
+                **_pydantic_usage_limit_kwargs(request)))
+        return _AdapterExecution(raw, limit)
 
     @staticmethod
     def _run_deep_agents(request: HarnessRunRequest,
                          services: HarnessServices):
-        del request, services
-        raise HarnessError(
-            "deep_agents adapter unavailable: no verified exact "
-            "maximum-output binding is wired; no package or model was invoked")
+        limit = _required_output_limit(request)
+        binding = _required_runtime_binding(
+            request, services, runtime_kind="model",
+            preconfigured_output_limit=True)
+        from deepagents import create_deep_agent
+
+        agent = create_deep_agent(
+            model=binding.runtime_object,
+            tools=[],
+            system_prompt=(
+                "Complete one bounded task. Do not access host files, spawn "
+                "other agents, or claim verification or acceptance."),
+            subagents=[], skills=[], memory=[])
+        raw = agent.invoke(
+            {"messages": [{"role": "user", "content": _prompt(request)}]},
+            config=_deep_agents_graph_config(request))
+        return _AdapterExecution(raw, limit)
 
     @staticmethod
     def _run_openai_agents(request: HarnessRunRequest,
                            services: HarnessServices):
         limit = _required_output_limit(request)
-        model = services.harness_model or request.model_id
-        if not model:
-            raise ValueError("OpenAI Agents adapter needs model_id")
+        binding = _required_runtime_binding(
+            request, services, runtime_kind="model")
         from agents import Agent, ModelSettings, RunConfig, Runner
 
         agent = Agent(
@@ -415,7 +492,7 @@ class ConfiguredHarnessAdapter:
             instructions=(
                 "Complete the bounded task. Return the requested output. "
                 "The spawning Loop verifies the result."),
-            model=model)
+            model=binding.runtime_object)
         raw = Runner.run_sync(
             agent, _prompt(request), max_turns=request.budget.max_model_calls,
             run_config=RunConfig(
@@ -428,15 +505,13 @@ class ConfiguredHarnessAdapter:
     def _run_microsoft(request: HarnessRunRequest,
                        services: HarnessServices):
         limit = _required_output_limit(request)
-        client = getattr(services, "harness_client", None)
-        if client is None:
-            raise ValueError(
-                "Microsoft adapter needs HarnessServices.harness_client")
+        binding = _required_runtime_binding(
+            request, services, runtime_kind="client")
         from agent_framework import create_harness_agent
 
-        counted_client = (client if isinstance(
-            client, PhysicalCallCountingClient)
-            else PhysicalCallCountingClient(client))
+        client = binding.runtime_object
+        counted_client = PhysicalCallCountingClient(
+            client, max_calls=request.budget.max_model_calls)
         agent = create_harness_agent(
             **_microsoft_harness_kwargs(request, counted_client))
         session = agent.create_session()
@@ -613,26 +688,51 @@ def self_test() -> dict:
           and injected_result.max_output_tokens_used is None
           and injected.info().features[-1] == "injected_runner")
 
-    pydantic_refused = deep_refused = False
+    model_binding = HarnessRuntimeBinding(
+        "ollama_cloud", "configured-model-ref", "model", object(),
+        "settings:ollama-cloud")
+    bound_services = HarnessServices(runtime_binding=model_binding)
+    binding_ok = _required_runtime_binding(
+        resolved, bound_services, runtime_kind="model")
+    check("provider_bound_model_is_required_before_package_import",
+          binding_ok is model_binding)
+
+    missing_binding_refused = deep_unbound_refused = False
     try:
-        ConfiguredHarnessAdapter._run_pydantic(
-            resolved, HarnessServices())
+        _required_runtime_binding(
+            resolved, HarnessServices(), runtime_kind="model")
     except HarnessError:
-        pydantic_refused = True
+        missing_binding_refused = True
     try:
-        ConfiguredHarnessAdapter._run_deep_agents(
-            resolved, HarnessServices())
+        _required_runtime_binding(
+            resolved, bound_services, runtime_kind="model",
+            preconfigured_output_limit=True)
     except HarnessError:
-        deep_refused = True
-    check("pydantic_adapter_refuses_before_unverified_package_execution",
-          pydantic_refused)
-    check("deep_agents_adapter_refuses_before_unverified_package_execution",
-          deep_refused)
+        deep_unbound_refused = True
+    check("missing_provider_binding_fails_before_package_import",
+          missing_binding_refused)
+    check("deep_agents_requires_a_preconfigured_exact_output_maximum",
+          deep_unbound_refused)
+    deep_binding = HarnessRuntimeBinding(
+        "ollama_cloud", "configured-model-ref", "model", object(),
+        "settings:ollama-cloud-max-output", output_limit=limit)
+    check("deep_agents_accepts_only_the_matching_preconfigured_limit",
+          _required_runtime_binding(
+              resolved, HarnessServices(runtime_binding=deep_binding),
+              runtime_kind="model", preconfigured_output_limit=True)
+          is deep_binding)
 
     openai_settings = _openai_model_settings_kwargs(resolved)
     check("openai_adapter_passes_exact_maximum_to_ModelSettings",
           openai_settings["max_tokens"] == 65536
           and openai_settings["include_usage"] is True)
+    check("pydantic_adapter_passes_exact_maximum_and_request_budget",
+          _pydantic_model_settings_kwargs(resolved)["max_tokens"] == 65536
+          and _pydantic_usage_limit_kwargs(resolved)["request_limit"] == 2
+          and _pydantic_usage_limit_kwargs(
+              resolved)["total_tokens_limit"] == 100)
+    check("deep_agents_graph_recursion_is_bounded",
+          _deep_agents_graph_config(resolved)["recursion_limit"] == 10)
 
     class ProviderBoundaryContract:
         additional_properties = {"contract": True}
@@ -640,18 +740,29 @@ def self_test() -> dict:
         def get_response(self, value, **kwargs):
             return value, kwargs
 
-    counted = PhysicalCallCountingClient(ProviderBoundaryContract())
+    counted = PhysicalCallCountingClient(
+        ProviderBoundaryContract(), max_calls=2)
     microsoft_settings = _microsoft_harness_kwargs(resolved, counted)
     check("microsoft_adapter_passes_exact_maximum_to_harness_boundary",
           microsoft_settings["max_output_tokens"] == 65536
           and microsoft_settings["client"] is counted
-          and microsoft_settings["loop_max_iterations"] == 2)
+          and microsoft_settings["disable_web_search"] is True
+          and microsoft_settings["disable_file_memory"] is True
+          and microsoft_settings["disable_compaction"] is True
+          and microsoft_settings["disable_todo"] is True
+          and microsoft_settings["disable_mode"] is True)
     first_value = counted.get_response("one", stream=False)
     second_value = counted.get_response("two", stream=False)
+    budget_refused = False
+    try:
+        counted.get_response("three", stream=False)
+    except HarnessError:
+        budget_refused = True
     check("physical_call_decorator_counts_the_sdk_request_boundary",
           counted.call_count == 2
           and first_value[0] == "one" and second_value[0] == "two"
-          and counted.additional_properties == {"contract": True})
+          and counted.additional_properties == {"contract": True}
+          and budget_refused)
 
     bad_cap_refused = False
     try:

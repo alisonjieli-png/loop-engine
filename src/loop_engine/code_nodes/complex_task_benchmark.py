@@ -22,14 +22,29 @@ from .complex_task_published_evidence import (
     published_catalog_from_mapping,
     self_test as _published_evidence_self_test,
 )
+from .complex_task_native_evidence import (
+    NATIVE_EVIDENCE_STATES,
+    LoopEngineBenchmarkEvidence,
+    LoopEngineEvidenceCatalog,
+    PublishedHarnessMatch,
+    PublishedHarnessMatchReport,
+    load_native_evidence,
+    match_loop_engine_to_published,
+    native_catalog_from_mapping,
+    self_test as _native_evidence_self_test,
+)
 
 __all__ = (
     "EVIDENCE_QUALIFIERS", "EVIDENCE_STRENGTHS", "FINDING_STATUSES",
     "METRIC_DIRECTIONS", "SOURCE_STATES",
     "PublishedBenchmarkEvidence", "PublishedComparisonGroup",
     "PublishedEvidenceCatalog", "PublishedEvidenceError",
-    "PublishedEvidenceFinding",
-    "default_published_catalog_path", "load_published_evidence",
+    "PublishedEvidenceFinding", "NATIVE_EVIDENCE_STATES",
+    "LoopEngineBenchmarkEvidence", "LoopEngineEvidenceCatalog",
+    "PublishedHarnessMatch", "PublishedHarnessMatchReport",
+    "default_loop_engine_catalog_path", "default_published_catalog_path",
+    "load_native_evidence", "load_published_evidence",
+    "match_loop_engine_to_published", "native_catalog_from_mapping",
     "published_catalog_from_mapping", "self_test",
 )
 
@@ -40,20 +55,38 @@ def default_published_catalog_path() -> Path:
             / "published-harness-evidence.json")
 
 
+def default_loop_engine_catalog_path() -> Path:
+    """Return the installed package's verified Loop Engine evidence catalog."""
+    return (Path(__file__).resolve().parents[1] / "data"
+            / "loop-engine-benchmark-evidence.json")
+
+
 def self_test() -> dict:
     """Validate schema behavior and the current catalog without running arms."""
     result = _published_evidence_self_test()
     tests = list(result["tests"])
+    native_result = _native_evidence_self_test()
+    tests.extend(native_result["tests"])
     catalog = load_published_evidence(default_published_catalog_path())
     accounting = catalog.accounting()
     repository_copy = (Path(__file__).resolve().parents[3] / "docs"
                        / "benchmarks" / "published-harness-evidence.json")
+    native_repository_copy = (Path(__file__).resolve().parents[3] / "docs"
+                              / "benchmarks"
+                              / "loop-engine-benchmark-evidence.json")
     tests.append({
         "test": "installed_catalog_matches_the_repository_document_copy",
         "passed": (not repository_copy.exists()
                    or repository_copy.read_bytes()
                    == default_published_catalog_path().read_bytes()),
         "detail": str(default_published_catalog_path()),
+    })
+    tests.append({
+        "test": "installed_native_catalog_matches_the_repository_document_copy",
+        "passed": (not native_repository_copy.exists()
+                   or native_repository_copy.read_bytes()
+                   == default_loop_engine_catalog_path().read_bytes()),
+        "detail": str(default_loop_engine_catalog_path()),
     })
     tests.append({
         "test": "current_published_catalog_is_valid_and_claims_only_eligible_groups",

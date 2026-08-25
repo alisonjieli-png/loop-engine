@@ -55,8 +55,8 @@ def analyze_run(events, usage_log=(), trace: "dict | None" = None) -> dict:
         "step_counts": Counter(), "goal": "", "depth": 0})
     stored_usage = []
     for e in events:
-        lid = e.get("loop_id")
-        if lid is None:
+        lid = str(e.get("loop_id", "") or "")
+        if not lid:
             continue
         row = per_loop[lid]
         ts = e.get("ts")
@@ -279,6 +279,16 @@ def self_test() -> dict:
           "calls bought nothing measurable" in verdicts[0]
           and len(cmp["findings"]) == 2,
           f"{verdicts}")
+
+    # Service metadata without a Loop identity must not create a blank graph
+    # vertex in reports or Mermaid output.
+    without_blank = analyze_run((
+        {"event": "custom", "loop_id": "", "ts": 1.0},
+        {"event": "init", "loop_id": "loop1", "ts": 2.0},
+    ))
+    check("empty_loop_identity_does_not_create_a_display_vertex",
+          tuple(without_blank["loops"]) == ("loop1",)
+          and without_blank["totals"]["loops"] == 1)
 
     passed = sum(1 for r in results if r["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

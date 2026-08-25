@@ -218,11 +218,12 @@ _PUBLIC: dict[str, tuple[str, str]] = {
     ),
     **_names(
         "static_architecture.mcp_sdk_transport",
-        "McpToolPolicy", "McpSdkTransport",
+        "McpToolPolicy", "McpSecretResolver", "McpSdkTransport",
     ),
     **_names(
         "static_architecture.skill_registry",
-        "SkillLoadPurpose", "SkillManifest", "LoadedSkill", "SkillRegistry",
+        "SkillLoadPurpose", "SkillAdmissionRecord", "SkillManifest",
+        "LoadedSkill", "SkillRegistry",
     ),
 
     # Observability and OpenTelemetry export.
@@ -233,7 +234,7 @@ _PUBLIC: dict[str, tuple[str, str]] = {
     ),
     **_names(
         "static_architecture.otel_export",
-        "OtelSpanRecord", "InMemorySpanExporter",
+        "RawLedgerEvents", "OtelSpanRecord", "InMemorySpanExporter",
         "OpenTelemetrySpanExporter", "run_history_to_spans",
         "export_run_history_as_loop",
     ),
@@ -241,7 +242,9 @@ _PUBLIC: dict[str, tuple[str, str]] = {
     # External harness boundaries and published comparison evidence.
     **_names(
         "static_architecture.external_harness",
-        "HarnessBudget", "HarnessRunRequest", "HarnessRunResult",
+        "ModelOutputLimit", "StaticModelOutputResolver",
+        "HarnessBudget", "HarnessRunRequest", "HarnessModelCall",
+        "HarnessRunResult", "HarnessAdapterInfo", "HarnessRuntimeBinding",
         "HarnessRegistry", "HarnessServices", "run_external_harness",
     ),
     **_names(
@@ -252,8 +255,12 @@ _PUBLIC: dict[str, tuple[str, str]] = {
         "code_nodes.complex_task_benchmark",
         "PublishedBenchmarkEvidence", "PublishedComparisonGroup",
         "PublishedEvidenceCatalog", "PublishedEvidenceError",
-        "PublishedEvidenceFinding", "default_published_catalog_path",
-        "load_published_evidence", "published_catalog_from_mapping",
+        "PublishedEvidenceFinding", "LoopEngineBenchmarkEvidence",
+        "LoopEngineEvidenceCatalog", "PublishedHarnessMatch",
+        "PublishedHarnessMatchReport", "default_loop_engine_catalog_path",
+        "default_published_catalog_path", "load_native_evidence",
+        "load_published_evidence", "match_loop_engine_to_published",
+        "native_catalog_from_mapping", "published_catalog_from_mapping",
     ),
 
     # Main user workflows and package verification.

@@ -2,6 +2,9 @@
 
 The reviewed sources do not support a claim that Loop Engine beats another
 harness. Loop Engine has no independent published benchmark result.
+The repository now matches its two saved full-system smoke results against
+this catalog by exact comparison key. It finds zero fair matches. This is a
+measured exclusion, not a claim that either system wins.
 
 Deep Agents has the clearest published same-harness configuration studies in
 this review.

@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/alisonjieli-png/loop-engine/blob/main/docs/benchmarks/loop-engine-benchmark-evidence.schema.json",
+  "title": "Loop Engine benchmark evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "as_of", "records"],
+  "properties": {
+    "schema_version": {
+      "const": "loop_engine_benchmark_evidence/v1"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    }
+  },
+  "$defs": {
+    "nullableNonNegativeInteger": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "nullableNonNegativeNumber": {
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_id",
+        "evidence_state",
+        "benchmark_name",
+        "benchmark_version",
+        "population_name",
+        "population_count",
+        "population_selection",
+        "model_name",
+        "model_version",
+        "model_effort",
+        "score_value",
+        "score_metric",
+        "score_unit",
+        "metric_direction",
+        "evaluation_protocol",
+        "external_environment",
+        "evaluation_date",
+        "provider_id",
+        "selected_mode",
+        "selected_model_calls",
+        "packet_model_calls",
+        "excluded_model_calls",
+        "known_input_tokens_subtotal",
+        "known_output_tokens_subtotal",
+        "token_accounting_complete",
+        "cost_usd",
+        "cost_state",
+        "artifact_refs",
+        "verification_ref",
+        "limitations",
+        "score_is_approximate"
+      ],
+      "properties": {
+        "record_id": {"type": "string", "minLength": 1},
+        "evidence_state": {
+          "enum": ["full_system_verified", "component_only", "invalidated"]
+        },
+        "benchmark_name": {"type": "string", "minLength": 1},
+        "benchmark_version": {"type": "string", "minLength": 1},
+        "population_name": {"type": "string", "minLength": 1},
+        "population_count": {"type": "integer", "minimum": 1},
+        "population_selection": {"type": "string", "minLength": 1},
+        "model_name": {"type": "string", "minLength": 1},
+        "model_version": {"type": "string", "minLength": 1},
+        "model_effort": {"type": "string", "minLength": 1},
+        "score_value": {"type": "number"},
+        "score_metric": {"type": "string", "minLength": 1},
+        "score_unit": {"type": "string", "minLength": 1},
+        "metric_direction": {"enum": ["maximize", "minimize"]},
+        "evaluation_protocol": {"type": "string", "minLength": 1},
+        "external_environment": {"type": "string", "minLength": 1},
+        "evaluation_date": {"type": "string", "format": "date"},
+        "provider_id": {"type": "string", "minLength": 1},
+        "selected_mode": {"type": "string", "minLength": 1},
+        "selected_model_calls": {"type": "integer", "minimum": 0},
+        "packet_model_calls": {"type": "integer", "minimum": 0},
+        "excluded_model_calls": {"type": "integer", "minimum": 0},
+        "known_input_tokens_subtotal": {"$ref": "#/$defs/nullableNonNegativeInteger"},
+        "known_output_tokens_subtotal": {"$ref": "#/$defs/nullableNonNegativeInteger"},
+        "token_accounting_complete": {"type": "boolean"},
+        "cost_usd": {"$ref": "#/$defs/nullableNonNegativeNumber"},
+        "cost_state": {"enum": ["known", "unknown"]},
+        "artifact_refs": {"$ref": "#/$defs/nonEmptyStrings"},
+        "verification_ref": {"type": "string", "minLength": 1},
+        "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "score_is_approximate": {"type": "boolean"}
+      }
+    }
+  }
+}

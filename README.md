@@ -241,9 +241,12 @@ intelligence use, Solution records, and staged improvement candidates.
 - [DS-1000 four-task recorded-output correction](case-studies/ds1000-four-task-recorded-output-correction.md)
 - [Benchmark registry](docs/benchmarks/)
 - [Published harness evidence](docs/research/PUBLISHED-HARNESS-BENCHMARKS.md)
+- [Exact Loop Engine and published-harness matching](examples/16_compare_complex_harnesses/)
 
 The saved benchmark populations are small. They do not establish a general
-success rate or a fair head-to-head result against another harness.
+success rate. The exact matcher currently finds zero fair Loop
+Engine-to-harness comparisons because no published result uses the same
+population, model, effort, evaluator, metric, and environment.
 
 ## Documentation
 

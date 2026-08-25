@@ -413,6 +413,7 @@ def self_test() -> dict:
         "loop.intelligence_loops",
         "code_nodes.smoke_ladder", "code_nodes.campaign_runner",
         "code_nodes.complex_task_benchmark",
+        "code_nodes.complex_task_native_evidence",
         "code_nodes.context_seed", "code_nodes.self_improvement_loop",
         "code_nodes.solution_canvas", "code_nodes.solution_compiler",
         "code_nodes.solution_graph_checks",

@@ -1,14 +1,14 @@
 # Audit published harness benchmark evidence
 
-This example validates the source-backed published-evidence catalog inside a
-deterministic Verifier Practitioner Loop. It prints population accounting. It
-does not run an external harness or call a model.
+This example validates the published harness catalog and the saved Loop Engine
+benchmark catalog inside a deterministic Verifier Practitioner Loop. It then
+looks for exact matches. It does not run an external harness or call a model.
 
 ## Why use this example
 
-Harness comparisons often mix benchmark versions, models, populations, tools,
-and metrics. The catalog refuses that conflation. It groups records only when
-the required comparison facts match.
+Harness comparisons often mix benchmark versions, models, populations, and
+evaluators. This audit requires an exact match before it calls a comparison
+fair.
 
 ## Run settings
 
@@ -40,16 +40,16 @@ python examples/16_compare_complex_harnesses/run.py
 
 The command starts from a complete `LoopDefinition`, `LoopStartRequest`,
 `LoopRuntimeContext`, typed contract, exact definition digest, and restricted
-capability bindings. It reads
-`docs/benchmarks/published-harness-evidence.json`. It reports record counts by
-evidence qualifier and the number of exact comparable groups.
+capability bindings. It reads the installed published-harness catalog and the
+installed Loop Engine evidence catalog. The report gives an exclusion reason
+for every Loop Engine result that lacks a matching published harness run.
 
 ## Expected result
 
-The Loop output reports numeric records, qualitative findings, same-harness
-configuration studies, and one exact cross-harness group from Artificial
-Analysis Coding Agent Index v1.4. The example validates those source records. It
-does not produce a new benchmark score.
+The Loop output reports the published records, two saved Loop Engine smoke
+populations, and zero fair Loop Engine-to-harness matches. The result is zero
+because no published harness record uses the same population, model, effort,
+metric, evaluator, and environment. It does not produce a new benchmark score.
 
 ## Watch it live
 
@@ -62,9 +62,9 @@ This example does not create a Run History.
 
 ## What this example does not prove
 
-A valid catalog schema does not prove harness performance. A comparison needs
-source-reviewed published records on the same benchmark version, population,
-tools, model, and metric.
+A valid catalog does not prove that Loop Engine is better. A comparison needs
+the same benchmark version, population, model, effort, metric, evaluator, and
+environment.
 
 Read [Published harness benchmark evidence](../../docs/guides/complex-task-comparisons.md)
 before adding a record.

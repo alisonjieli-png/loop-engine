@@ -1,0 +1,57 @@
+{
+  "record_type": "external_harness_abi_check/v1",
+  "checked_at": "2026-08-25",
+  "python_version": "3.14.4",
+  "model_calls": 0,
+  "network_model_calls": 0,
+  "package_index": {
+    "pydantic-ai": "2.34.0",
+    "deepagents": "0.7.8",
+    "openai-agents": "0.22.0",
+    "agent-framework-core": "1.15.0"
+  },
+  "combined_environment": {
+    "status": "dependency_resolution_failed",
+    "reason": "The current pydantic-ai and deepagents dependency sets could not be resolved together."
+  },
+  "separate_environments": {
+    "agent-framework-core": {
+      "status": "installed_and_signature_checked",
+      "version": "1.15.0",
+      "observed_create_harness_agent_parameters": [
+        "client",
+        "max_output_tokens",
+        "disable_compaction",
+        "disable_todo",
+        "disable_mode",
+        "disable_file_memory",
+        "disable_web_search",
+        "loop_max_iterations"
+      ]
+    },
+    "pydantic-ai": {
+      "status": "not_installed",
+      "reason": "The clean temporary environment hit the host disk quota."
+    },
+    "deepagents": {
+      "status": "not_installed",
+      "reason": "The clean temporary environment hit the host disk quota."
+    },
+    "openai-agents": {
+      "status": "not_installed",
+      "reason": "The clean temporary environment hit the host disk quota."
+    }
+  },
+  "source_documents": [
+    "https://ai.pydantic.dev/agent/#model-run-settings",
+    "https://docs.langchain.com/oss/python/deepagents/models",
+    "https://openai.github.io/openai-agents-python/ref/model_settings/",
+    "https://github.com/microsoft/agent-framework/tree/main/python/samples/02-agents/harness"
+  ],
+  "limitations": [
+    "This checks installability and one SDK signature only.",
+    "No optional harness executed a task.",
+    "No provider was called.",
+    "The Pydantic AI, Deep Agents, and OpenAI Agents package calls remain source-reviewed but locally ABI-unverified."
+  ]
+}

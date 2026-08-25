@@ -68,7 +68,7 @@ MODULE_MAP = {
     "code_nodes": (
         "blueprint", "campaign_runner", "capture", "closure", "context_seed",
         "competition_solver", "complex_task_benchmark",
-        "complex_task_published_evidence",
+        "complex_task_native_evidence", "complex_task_published_evidence",
         "enrichment", "failure_response",
         "follow_up", "housekeeping", "kaggle_executor", "live_run_demo",
         "learning_bundle", "guided_setup", "logic_ast", "universal_solve", "loop_report", "measurement",
@@ -106,7 +106,7 @@ MODULE_MAP = {
         "opencode_client", "operating_profile", "persistence",
         "reasoning_call", "retrieval", "skill_registry", "solution_library",
         "store_serve",
-        "boundary_registry", "saas_routes",
+        "boundary_registry", "boundary_runtime_checks", "saas_routes",
         "studio_operational_views", "studio_server", "workspace_backends",
         "workspace_contracts",
         "workspace_local", "workspace_operation_checks",

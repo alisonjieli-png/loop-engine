@@ -346,8 +346,7 @@ class RunHistory:
         from dataclasses import asdict
         from .otel_export import run_history_to_spans
 
-        records = run_history_to_spans(
-            as_ledger_events(self.event_log), run_id=self.run_id)
+        records = run_history_to_spans(self, run_id=self.run_id)
         return [asdict(record) for record in records]
 
 

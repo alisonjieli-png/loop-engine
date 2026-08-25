@@ -90,6 +90,15 @@ jobs:
           assert not any(item["staged_eligibility"]["eligible_for_comparison"]
                          for item in tracks)
           print(f"validated {len(tracks)} cataloged benchmark tracks")
+
+          with open("docs/benchmarks/loop-engine-benchmark-evidence.json") as stream:
+              native = json.load(stream)
+          with open("docs/benchmarks/loop-engine-benchmark-evidence.schema.json") as stream:
+              native_schema = json.load(stream)
+          validate(native, native_schema)
+          native_ids = [item["record_id"] for item in native["records"]]
+          assert len(native_ids) == len(set(native_ids))
+          print(f"validated {len(native_ids)} Loop Engine benchmark records")
           PY
 
       - name: Render current architecture diagrams

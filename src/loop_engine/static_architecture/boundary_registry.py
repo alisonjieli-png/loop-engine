@@ -1,13 +1,6 @@
-"""The canonical operational-boundary register and Loop ontology join.
+"""Canonical Loop operational-boundary register.
 
-``BOUNDARIES`` inventories independently invokable work. The immutable
-``BOUNDARY_ONTOLOGY`` classifies every row as the one ``Loop`` runtime plus an
-exact registered Practitioner, Intelligence, or Solution profile, or a typed
-runtime-validated dynamic source. The key sets must match exactly.
-
-``boundary_report`` exposes missing, extra, duplicate, invalid, unclassified,
-and unbound rows. ``self_test`` resolves envelopes through the architecture
-map and proves positive and adversarial ontology canaries.
+Every declared boundary is joined to a role profile and runtime evidence.
 """
 from __future__ import annotations
 
@@ -24,14 +17,12 @@ from ..loop.loop_role import LOOP_RELATIONSHIP_KINDS
 ROLE_FAMILIES = ("practitioner", "intelligence", "solution")
 ROLE_RELATIONSHIP_KINDS = MappingProxyType({
     "practitioner": frozenset(("starting", "spawned_by")),
-    "intelligence": frozenset(
-        ("starting", "queried_by", "retrieved_by")),
+    "intelligence": frozenset(("starting", "queried_by", "retrieved_by")),
     "solution": frozenset(("starting", "spawned_by", "connected_from")),
 })
 
 PUBLIC_CAPABILITY_GROUP_BOUNDARIES = MappingProxyType({
-    "Intelligence Search and Retrieval": (
-        "retrieval tournament", "intelligence serving"),
+    "Intelligence Search and Retrieval": ("retrieval tournament", "intelligence serving"),
     "Web Research": ("custom plugin invocation",),
     "Custom Plugins": ("custom plugin invocation",),
 })
@@ -57,8 +48,7 @@ class BoundaryOntologyBinding:
     dynamic_profile_source: "DynamicProfileSource | None" = None
 
 
-def _exact(role: str, profile_ref: str,
-           *relationships: str) -> BoundaryOntologyBinding:
+def _exact(role: str, profile_ref: str, *relationships: str) -> BoundaryOntologyBinding:
     return BoundaryOntologyBinding(
         "Loop", (role,), tuple(relationships), profile_ref=profile_ref)
 
@@ -72,7 +62,6 @@ def _dynamic(*roles: str, source: str,
         dynamic_profile_source=DynamicProfileSource(
             source, validator, families))
 
-#: How a boundary reaches its loop.
 BINDING_KINDS = (
     "practitioner_loop",     # wrapped by as_practitioner_loop
     "component_loop",        # wrapped by as_component_loop (fallback arms)
@@ -83,8 +72,6 @@ BINDING_KINDS = (
     "unbound",               # honestly not wrapped yet
 )
 
-#: The register. Each row: the boundary, what crosses it, how it is bound,
-#: the module that owns the envelope, and the test that proves it.
 BOUNDARIES = (
     {"boundary": "task entry", "crosses": "a user task enters the runtime",
      "binding": "native_loop", "envelope": "loop.recursive_loop.Loop",
@@ -247,8 +234,13 @@ BOUNDARIES = (
      "envelope": "static_architecture.harness_intelligence_bridge"
                  ".import_harness_memory_as_loop",
      "test": "harness_intelligence_bridge.self_test"},
+    {"boundary": "MCP tool discovery",
+     "crosses": "a registered MCP server returns an allowed tool catalog",
+     "binding": "practitioner_loop",
+     "envelope": "static_architecture.mcp_adapter.McpRegistry",
+     "test": "mcp_adapter.self_test"},
     {"boundary": "MCP tool operation",
-     "crosses": "a registered MCP server is searched or invoked",
+     "crosses": "a discovered MCP tool is invoked",
      "binding": "practitioner_loop",
      "envelope": "static_architecture.mcp_adapter.McpRegistry",
      "test": "mcp_adapter.self_test"},
@@ -256,6 +248,11 @@ BOUNDARIES = (
      "crosses": "a selected skill body enters active task context",
      "binding": "practitioner_loop",
      "envelope": "static_architecture.skill_registry.SkillRegistry",
+     "test": "skill_registry.self_test"},
+    {"boundary": "skill admission",
+     "crosses": "an independently reviewed skill becomes available to tasks",
+     "binding": "practitioner_loop",
+     "envelope": "static_architecture.skill_registry.SkillRegistry.admit",
      "test": "skill_registry.self_test"},
     {"boundary": "OpenTelemetry export",
      "crosses": "safe saved-run fields become external trace spans",
@@ -330,8 +327,7 @@ BOUNDARIES = (
 )
 
 
-#: One immutable ontology join for the existing operational-boundary register.
-#: The key sets must match exactly; neither side may silently grow alone.
+#: The boundary and ontology key sets must match exactly.
 BOUNDARY_ONTOLOGY = MappingProxyType({
     "task entry": _exact(
         "practitioner", "practitioner.solver@1.0.0", "starting"),
@@ -349,7 +345,8 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
     "api endpoint": _exact(
         "practitioner", "practitioner.code_execution@1.0.0", "starting"),
     "user intelligence resolution": _exact(
-        "intelligence", "intelligence.user_feedback.scope@1.0.0", "queried_by"),
+        "intelligence", "intelligence.user_feedback.scope@1.0.0",
+        "queried_by"),
     "external harness delegation": _exact(
         "practitioner", "practitioner.solver@1.0.0", "spawned_by"),
     "promotion review": _exact(
@@ -359,7 +356,8 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
     "retrieval tournament": _exact(
         "practitioner", "practitioner.verifier@1.0.0", "spawned_by"),
     "intelligence foundry wave": _exact(
-        "practitioner", "practitioner.self_improvement@1.0.0", "spawned_by"),
+        "practitioner", "practitioner.self_improvement@1.0.0",
+        "spawned_by"),
     "model invocation": _exact(
         "practitioner", "practitioner.solver@1.0.0",
         "starting", "spawned_by"),
@@ -411,31 +409,46 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
         relationships=("spawned_by",)),
     "external harness memory import": _exact(
         "intelligence", "intelligence.materialize@1.0.0", "retrieved_by"),
+    "MCP tool discovery": _exact(
+        "intelligence", "intelligence.code.resolve@1.0.0",
+        "starting", "queried_by"),
     "MCP tool operation": _exact(
         "intelligence", "intelligence.code.invoke@1.0.0",
-        "queried_by", "retrieved_by"),
+        "starting", "retrieved_by"),
     "skill instruction load": _exact(
-        "intelligence", "intelligence.materialize@1.0.0", "retrieved_by"),
+        "intelligence", "intelligence.context.serve@1.0.0",
+        "starting", "retrieved_by"),
+    "skill admission": _exact(
+        "practitioner", "practitioner.verifier@1.0.0",
+        "starting", "spawned_by"),
     "OpenTelemetry export": _exact(
-        "practitioner", "practitioner.code_execution@1.0.0", "spawned_by"),
+        "practitioner", "practitioner.code_execution@1.0.0", "starting"),
     "context compaction": _exact(
-        "intelligence", "intelligence.context.frame@1.0.0", "queried_by"),
+        "intelligence", "intelligence.context.frame@1.0.0",
+        "starting", "retrieved_by"),
     "durable approval decision": _exact(
-        "practitioner", "practitioner.verifier@1.0.0", "spawned_by"),
+        "practitioner", "practitioner.verifier@1.0.0",
+        "starting", "spawned_by"),
     "durable approval consumption": _exact(
-        "practitioner", "practitioner.verifier@1.0.0", "spawned_by"),
+        "practitioner", "practitioner.verifier@1.0.0",
+        "starting", "spawned_by"),
     "workspace file write": _exact(
-        "practitioner", "practitioner.code_execution@1.0.0", "spawned_by"),
+        "practitioner", "practitioner.code_execution@1.0.0",
+        "starting", "spawned_by"),
     "workspace command": _exact(
-        "practitioner", "practitioner.code_execution@1.0.0", "spawned_by"),
+        "practitioner", "practitioner.code_execution@1.0.0",
+        "starting", "spawned_by"),
     "spawned checkpoint restore": _dynamic(
         *ROLE_FAMILIES,
         source="loop.spawned_task_checkpoint.SpawnedTaskCheckpoint.spec",
         validator="loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin"
                   ".restore_checkpoint",
         relationships=("spawned_by",)),
-    "spawned task join": _exact(
-        "practitioner", "practitioner.solver@1.0.0", "spawned_by"),
+    "spawned task join": _dynamic(
+        *ROLE_FAMILIES,
+        source="loop.delegation_runtime.DelegationSpec.profile",
+        validator="loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin.join",
+        relationships=("spawned_by",)),
     "solution pipeline execution": _exact(
         "solution", "solution.pipeline@1.0.0",
         "starting", "spawned_by", "connected_from"),
@@ -674,6 +687,12 @@ def self_test() -> dict:
         results.append({"test": name, "passed": bool(ok), "detail": note})
 
     rep = boundary_report()
+
+    from .boundary_runtime_checks import run_runtime_ontology_proof
+    runtime_ok, runtime_detail = run_runtime_ontology_proof(
+        BOUNDARY_ONTOLOGY)
+    check("runtime_events_match_boundary_profiles_and_relationships",
+          runtime_ok, runtime_detail)
 
     from ..architecture_map import PUBLIC_STATIC_ARCHITECTURE_CAPABILITY_GROUPS
     public_group_names = tuple(

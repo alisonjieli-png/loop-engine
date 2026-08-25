@@ -1,7 +1,7 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 221,
+ "files_scanned": 223,
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "reachable_legacy_flat_paths": 0,
@@ -36,36 +36,38 @@
   "stale_current_architecture_documents": [],
   "operational_boundary_ontology": {
    "record_type": "operational_boundary_report/v2",
-   "total": 45,
-   "bound": 45,
+   "total": 47,
+   "bound": 47,
    "unbound": 0,
-   "ontology_conforming": 45,
+   "ontology_conforming": 47,
    "coverage": 1.0,
    "by_binding_kind": {
     "native_loop": 17,
     "stage_loop_tree": 1,
-    "practitioner_loop": 18,
+    "practitioner_loop": 20,
     "api_dispatch": 1,
     "template_governed": 5,
     "component_loop": 3
    },
    "by_role": {
     "practitioner": 26,
-    "intelligence": 10,
+    "intelligence": 11,
     "solution": 6
    },
    "by_profile": {
     "intelligence.code.invoke@1.0.0": 3,
+    "intelligence.code.resolve@1.0.0": 1,
     "intelligence.context.frame@1.0.0": 1,
-    "intelligence.materialize@1.0.0": 3,
+    "intelligence.context.serve@1.0.0": 1,
+    "intelligence.materialize@1.0.0": 2,
     "intelligence.runtime_history_solution.replay@1.0.0": 1,
     "intelligence.search@1.0.0": 1,
     "intelligence.user_feedback.scope@1.0.0": 1,
     "practitioner.code_execution@1.0.0": 11,
     "practitioner.reference_nine_step@1.0.0": 2,
     "practitioner.self_improvement@1.0.0": 2,
-    "practitioner.solver@1.0.0": 7,
-    "practitioner.verifier@1.0.0": 4,
+    "practitioner.solver@1.0.0": 6,
+    "practitioner.verifier@1.0.0": 5,
     "solution.atomic_component@1.0.0": 2,
     "solution.ensemble@1.0.0": 1,
     "solution.pipeline@1.0.0": 1,
@@ -73,19 +75,19 @@
     "solution.validator@1.0.0": 1
    },
    "by_relationship_kind": {
-    "starting": 10,
+    "starting": 20,
     "spawned_by": 30,
-    "queried_by": 5,
-    "retrieved_by": 7,
+    "queried_by": 4,
+    "retrieved_by": 8,
     "connected_from": 5
    },
    "dynamic_profile_sources": {
     "practitioner:static_architecture.external_harness.HarnessRunRequest.profile_id": 1,
     "practitioner|intelligence|solution:loop.spawned_task_checkpoint.SpawnedTaskCheckpoint.spec": 1,
-    "practitioner|intelligence|solution:loop.delegation_runtime.DelegationSpec.profile": 1
+    "practitioner|intelligence|solution:loop.delegation_runtime.DelegationSpec.profile": 2
    },
-   "exact_profile_boundaries": 42,
-   "dynamic_profile_boundaries": 3,
+   "exact_profile_boundaries": 43,
+   "dynamic_profile_boundaries": 4,
    "invalid_rows": [],
    "invalid_relationship_rows": [],
    "unclassified_rows": [],
