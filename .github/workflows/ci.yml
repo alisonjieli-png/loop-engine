@@ -50,6 +50,16 @@ jobs:
             exit 1
           fi
 
+          if rg --hidden -n -i \
+            --glob '!docs/evidence/**' --glob '!showcase/assets/**' \
+            --glob '!showcase/node_modules/**' --glob '!**/.cache/**' \
+            '\bchild(?:ren)?\b|\broot[[:space:]_-]+loop\b|what[[:space:]_-]*is[[:space:]_-]*next|what[[:space:]_-]+next|whats[[:space:]_-]*next|whatnext' \
+            README.md CHANGELOG.md humanizer-context.md docs examples \
+            case-studies showcase; then
+            echo "Retired topology or decision language found. Use Starting, Spawned by, Queried by, Retrieved by, Connected from, or select next action."
+            exit 1
+          fi
+
       - name: Check local links and section anchors
         uses: lycheeverse/lychee-action@v2
         with:
@@ -144,6 +154,8 @@ jobs:
           python examples/13_brave_search_plugin/run.py
           python examples/14_five_problem_campaign/run.py
           python examples/15_verify_a_deployment_profile/run.py
+          python examples/16_compare_complex_harnesses/run.py
+          python examples/17_classify_harness_files/run.py
 
   build:
     name: build the distribution
