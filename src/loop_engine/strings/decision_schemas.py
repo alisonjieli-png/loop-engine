@@ -28,8 +28,8 @@ are formalized in [[learning_bundle.py]]; admission lives in
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Sequence
+import json
+from dataclasses import dataclass
 
 # Where a schema's instruction sits in the 13-block prompt order.
 PLACEMENTS = ("output_contract", "reasoning_considerations", "final_directive")
@@ -109,7 +109,8 @@ class DecisionSchema:
         what must be CONSIDERED, not that nothing else may appear)."""
         from ..code_nodes.runtime_contracts import ContractDefinition, FieldSpec
         _dt = {"number": "float", "bool": "bool", "enum": "string",
-               "list": "any", "text": "string"}
+               "list": "array", "object": "object", "any": "any",
+               "text": "string"}
         specs = tuple(
             FieldSpec(f.name, _dt.get(f.kind, "string"),
                       nullable=not f.required, allowed_values=tuple(f.enum))
@@ -201,16 +202,29 @@ def schema_records() -> list:
     from ..static_architecture.facets import context_facets
     recs = []
     for s in SCHEMA_REGISTRY.values():
+        example = {}
+        for field in s.fields:
+            example[field.name] = (
+                [] if field.kind == "list"
+                else False if field.kind == "bool"
+                else 0 if field.kind == "number"
+                else field.enum[0] if field.kind == "enum" and field.enum
+                else "example")
+        format_example = json.dumps(example, separators=(",", ":"))
         recs.append(StoreRecord(
             record_id=f"schema.{s.name}", kind="strategy",
             title=f"Decision schema: {s.purpose}",
             body={"required_fields": list(s.required_fields()),
                   "placement": s.placement,
                   "instruction": s.as_instruction(),
+                  "serialization_format": "json",
+                  "response_shape": "key_value",
+                  "format_example": format_example,
                   "maturity": "registered",
                   "facets": context_facets(
                       category="decision_schema", subcategory=s.name,
-                      context_type="template", response_shape="json",
+                      context_type="template", response_shape="key_value",
+                      serialization_format="json",
                       workflow_stage="decide", scope="package",
                       lifecycle="registered",
                       provenance="decision_schema_registry")},
@@ -272,6 +286,17 @@ def self_test() -> dict:
           and any(v.kind == "invalid_enum_value" for v in adm.violations),
           "engagement passes the filled field; the runtime contract rejects the "
           "invalid enum — clean separation of bias vs admission")
+
+    valid_list = cc.to_contract().validate({
+        "coverage_verdict": "sufficient", "gaps": [],
+        "chosen_action": "proceed_with_existing", "justification": "complete"})
+    invalid_list = cc.to_contract().validate({
+        "coverage_verdict": "sufficient", "gaps": "none",
+        "chosen_action": "proceed_with_existing", "justification": "complete"})
+    check("decision_schema_list_fields_compile_to_array_contracts",
+          valid_list.valid and not invalid_list.valid
+          and any(v.kind == "type_mismatch"
+                  for v in invalid_list.violations))
 
     # 5. the reusable-learning appendix schema carries the full taxonomy.
     la = bias_schema("reusable_learning_appendix")

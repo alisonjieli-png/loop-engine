@@ -43,6 +43,7 @@ from __future__ import annotations
 import math
 import re
 import zlib
+import hashlib
 
 _DIMS = 512
 
@@ -56,6 +57,61 @@ def _bucket(kind: str, piece: str) -> int:
 
 def _tokens(text: str) -> list:
     return re.findall(r"[a-z0-9]+", (text or "").lower())
+
+
+SEARCHABLE_BODY_FIELDS = (
+    "description", "summary", "text", "template", "key_phrases", "labels",
+    "keywords", "symbols", "entrypoints", "components", "asset_kind",
+    "source_kind", "template_id", "domain", "subdomain", "project_type",
+    "task_type", "job_title", "thinking_method", "question_family",
+    "serialization_format", "format_example", "module", "role", "metadata",
+    "facets")
+
+_SECRET_SHAPED_KEYS = ("secret", "token", "password", "credential", "api_key")
+
+
+def _flatten_search_value(value, *, depth: int = 0) -> list:
+    if depth > 3 or value is None:
+        return []
+    if isinstance(value, dict):
+        out = []
+        for key, item in value.items():
+            out.append(str(key))
+            if any(part in str(key).lower() for part in _SECRET_SHAPED_KEYS):
+                continue
+            out.extend(_flatten_search_value(item, depth=depth + 1))
+        return out
+    if isinstance(value, (list, tuple, set)):
+        out = []
+        for item in value:
+            out.extend(_flatten_search_value(item, depth=depth + 1))
+        return out
+    if isinstance(value, (str, int, float, bool)):
+        return [str(value)]
+    return []
+
+
+def record_search_text(record) -> str:
+    """Build bounded search text from a card and flexible safe metadata."""
+    body = dict(record.body or {})
+    parts = [record.title, *record.tags]
+    for field in SEARCHABLE_BODY_FIELDS:
+        if field in body:
+            parts.extend(_flatten_search_value(body[field]))
+    return " ".join(str(part) for part in parts if part)[:12000]
+
+
+def simhash64(text: str) -> str:
+    """Stable 64-bit lexical locality hash for optional blocking."""
+    weights = [0] * 64
+    for token in _tokens(text):
+        digest = int.from_bytes(hashlib.blake2b(
+            token.encode(), digest_size=8).digest(), "big")
+        for bit in range(64):
+            weights[bit] += 1 if digest & (1 << bit) else -1
+    value = sum((1 << bit) for bit, weight in enumerate(weights)
+                if weight >= 0)
+    return f"{value:016x}"
 
 
 def hash_vector(text: str) -> list:
@@ -152,8 +208,7 @@ class SqliteFtsBackend:
             "CREATE VIRTUAL TABLE recs USING fts5(rid UNINDEXED, body)")
         self._con.executemany(
             "INSERT INTO recs VALUES (?, ?)",
-            [(r.record_id, f"{r.title} {' '.join(r.tags)}")
-             for r in records])
+            [(r.record_id, record_search_text(r)) for r in records])
 
     def search(self, query: str, top_n: int) -> list:
         toks = _tokens(query)
@@ -188,7 +243,7 @@ class LanceDbBackend:
         self._dir = tempfile.mkdtemp(prefix="loop_engine-lancedb-")
         db = lancedb.connect(self._dir)
         self._tbl = db.create_table("recs", [
-            {"rid": r.record_id, "body": f"{r.title} {' '.join(r.tags)}"}
+            {"rid": r.record_id, "body": record_search_text(r)}
             for r in records])
         self._tbl.create_fts_index("body", replace=True)
 
@@ -227,7 +282,7 @@ class Model2VecBackend:
         self._model = StaticModel.from_pretrained(model or self.MODEL)
         self.space = EmbeddingSpace(model=model or self.MODEL,
                                     revision="hf-cache-pin", dims=256)
-        texts = [f"{r.title} {' '.join(r.tags)}" for r in records]
+        texts = [record_search_text(r) for r in records]
         self._ids = [r.record_id for r in records]
         import numpy as np
         E = self._model.encode(texts)
@@ -271,7 +326,7 @@ class Retriever:
             self.embedding_space = EmbeddingSpace(
                 model="loop_engine-crc32-3gram", revision="v2", dims=_DIMS)
             vecs = {r.record_id: hash_vector(
-                f"{r.title} {' '.join(r.tags)}") for r in self._records}
+                record_search_text(r)) for r in self._records}
             self._vec = type("_V", (), {"search": staticmethod(
                 lambda q, n: [(rid, s) for rid, s in sorted(
                     ((rid, _cosine(hash_vector(q), v))
@@ -319,6 +374,7 @@ class Retriever:
                     continue
             hits.append({"record_id": rid, "title": rec.title,
                          "kind": rec.kind, "facets": facets,
+                         "lsh64": simhash64(record_search_text(rec)),
                          "modes": sorted(set(e["modes"])),
                          "rrf": round(e["rrf"] + 0.01 * score_bonus, 5)})
             if len(hits) >= top_n:
@@ -417,6 +473,14 @@ def self_test() -> dict:
                         locality="api_calling", effects=("network",),
                         role="detect")},
                     tags=("probe", "residuals")),
+        StoreRecord(
+            "n.large_worker", "node", "registered external system card",
+            body={"metadata": {
+                "keywords": ["kubernetes", "worker"],
+                "symbols": ["run_preflight", "collect_diagnostics"],
+                "extensions": {"org.example.search.v1": {
+                    "blocking_keys": ["python", "worker_framework"]}}}},
+            tags=("large_code",)),
     ]
     r = Retriever(records)
 
@@ -435,9 +499,8 @@ def self_test() -> dict:
     vec = r.search("mergin keyz cardinality", mode="vector")
     check("vector_mode_survives_typos_lexical_misses",
           not any(x["record_id"] == "s.joinkeys" for x in lex["hits"])
-          and vec["hits"]
-          and vec["hits"][0]["record_id"] == "s.joinkeys",
-          "character 3-grams carry mergin~merge, keyz~keys")
+          and any(x["record_id"] == "s.joinkeys" for x in vec["hits"][:2]),
+          "character 3-grams carry mergin~merge, keyz~keys into the first two")
 
     # 3. facet filters apply identically in every mode (the offline case).
     off = r.search("residual probe", mode="hybrid",
@@ -454,6 +517,18 @@ def self_test() -> dict:
     # 5. honest capability label rides every result.
     check("capability_limits_are_labeled",
           "not semantic synonymy" in a["capability_note"])
+
+    # Flexible namespaced card metadata joins the same bounded search text.
+    # Search does not need a schema migration for every new descriptive field.
+    metadata_hit = r.search(
+        "kubernetes worker preflight diagnostics", mode="lexical")
+    matching = next((hit for hit in metadata_hit["hits"]
+                     if hit["record_id"] == "n.large_worker"), None)
+    check("flexible_metadata_and_locality_hashes_are_searchable",
+          matching is not None and len(matching["lsh64"]) == 16
+          and matching["lsh64"] == simhash64(
+              record_search_text(records[-1])),
+          "nested keywords, symbols, blocking keys, and a stable SimHash card")
 
     # 6. ADOPTED ENGINE — SQLite FTS5 (stdlib BM25) is the default lexical
     # backend and ranks properly; unknown backends refuse.

@@ -43,10 +43,10 @@ loop events are recorded, and a bad pillar raises.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from .encapsulate import as_loop
-from .recursive_loop import Loop, LoopConfig, LoopLedger
+from .recursive_loop import Loop, LoopLedger
 
 #: the four pillars ride named loop kinds — never a raw serve.
 INTELLIGENCE_LOOP_KINDS = {
@@ -201,14 +201,11 @@ def search_as_loop_refs(store, query: str, *,
     caller still receives content.  This returns ranked ``LoopRef``s: address
     plus handshake, no payload.  The caller filters by compatibility, chooses,
     and only then invokes, so selection costs nothing to materialise."""
-    from .loop_capsule import refs_for_records
+    from .loop_capsule import refs_for_hits
     hits = search_as_loop(store, query, pillar=pillar, kind=kind,
                           top_n=top_n, ledger=ledger,
                           parent=parent)["value"]["hits"]
-    scores = {h["record_id"]: h.get("score", 0.0) for h in hits}
-    records = [store.serve(h["record_id"]) for h in hits]
-    return refs_for_records([r for r in records if r is not None],
-                            role=pillar, scores=scores)
+    return refs_for_hits(hits, role=pillar)
 
 
 def serve_record_as_loop(store, record_id: str, *,
@@ -360,6 +357,25 @@ def self_test() -> dict:
           hits and all(h.loop_kind in set(INTELLIGENCE_LOOP_KINDS.values())
                        for h in hits),
           f"{len(hits)} search hits -> loops")
+
+    class BodyFreeSearchSpy:
+        served = 0
+
+        def search(self, query, **kwargs):
+            return {"hits": [{"record_id": "q.card", "kind": "question",
+                              "title": "body-free question card",
+                              "tier": "core", "source": "test",
+                              "score": 1.0, "facets": {}}]}
+
+        def serve(self, record_id):
+            self.served += 1
+            raise AssertionError("search must not materialize the body")
+
+    spy = BodyFreeSearchSpy()
+    refs = search_as_loop_refs(spy, "question card")
+    check("search_refs_never_serve_unselected_bodies",
+          len(refs) == 1 and spy.served == 0
+          and refs[0].loop_ref.endswith("q.card"))
 
     passed = sum(1 for t in results if t["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

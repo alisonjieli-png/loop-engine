@@ -337,7 +337,7 @@ def advice_records_for_search(store: "AdviceStore") -> list:
                           category="user_guidance",
                           subcategory=r.get("guidance_type", "advice"),
                           scope=r["scope"],
-                          lifecycle=r.get("status", "submitted"),
+                          lifecycle="registered",
                           provenance="human")},
                 tags=("user_guidance", r.get("guidance_type", "advice"),
                       r.get("strength", "suggestion"), r["scope"]))

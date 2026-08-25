@@ -53,7 +53,7 @@ class OutputTemplate:
         if self.form not in OUTPUT_FORMS:
             raise ValueError(f"form must be one of {OUTPUT_FORMS}")
         if self.reusable_as not in CANDIDATE_TYPES:
-            raise ValueError(f"reusable_as must be a CANDIDATE_TYPE")
+            raise ValueError("reusable_as must be a CANDIDATE_TYPE")
 
     def as_instruction(self) -> str:
         return (f"Answer in the '{self.form}' form ({self.purpose}). "
@@ -116,23 +116,24 @@ def _p_if_then(t: str) -> dict:
 
 
 def _p_measurement(t: str) -> dict:
-    low = t.lower()
-    direction = ("minimize" if any(w in low for w in
-                 ("minimize", "lower is better", "lower the better", "less is"))
-                 else "maximize")
-    nums = _NUM.findall(t)
-    threshold = float(nums[0]) if nums else None
-    m = re.search(r"(?:metric|measure)\s*[:=]\s*([A-Za-z0-9_ \-]+)", t, re.I)
-    name = (m.group(1).strip() if m else
-            (t.split()[0].strip(":") if t.split() else ""))
-    return {"ok": bool(name), "name": name, "direction": direction,
+    metric = re.search(r"(?:metric|measure)\s*[:=]\s*([^,\n]+)", t, re.I)
+    direction_match = re.search(r"\b(maximize|minimize)\b", t, re.I)
+    threshold_match = re.search(
+        r"\bthreshold\s*[:=]?\s*(-?\d+(?:\.\d+)?)", t, re.I)
+    name = metric.group(1).strip() if metric else ""
+    direction = direction_match.group(1).lower() if direction_match else ""
+    threshold = (float(threshold_match.group(1))
+                 if threshold_match else None)
+    return {"ok": bool(name and direction and threshold is not None),
+            "name": name, "direction": direction,
             "threshold": threshold, "form": "measurement_spec"}
 
 
 def _p_evaluation(t: str) -> dict:
-    low = t.lower()
-    verdict = next((v for v in ("degenerate", "pass_with_notes", "fail", "pass")
-                    if v in low), "")
+    match = re.search(
+        r"^\s*verdict\s*[:=]\s*(pass_with_notes|degenerate|fail|pass)\s*$",
+        t, re.I | re.M)
+    verdict = match.group(1).lower() if match else ""
     ev = [m.group(1).strip() for m in
           (_BULLET.match(ln) for ln in t.splitlines()) if m]
     return {"ok": bool(verdict), "verdict": verdict, "evidence": ev,
@@ -221,6 +222,13 @@ def template_records() -> list:
     """Each output template as a searchable strategy record."""
     from ..static_architecture.store_serve import StoreRecord
     from ..static_architecture.facets import context_facets
+    format_by_form = {"json_list": "json", "code_or_test": "markdown"}
+    list_by_form = {"json_list": "flat_list", "evaluation": "checklist"}
+    response_by_form = {
+        "simple_value": "single_value", "string_statement": "free_text",
+        "json_list": "list", "if_then_rule": "key_value",
+        "measurement_spec": "measurement_spec", "evaluation": "evaluation",
+        "code_or_test": "code_or_test"}
     recs = []
     for t in OUTPUT_TEMPLATE_REGISTRY.values():
         recs.append(StoreRecord(
@@ -229,10 +237,18 @@ def template_records() -> list:
             body={"form": t.form, "reusability_rank": t.reusability_rank,
                   "reusable_as": t.reusable_as,
                   "instruction": t.as_instruction(),
+                  "serialization_format": format_by_form.get(
+                      t.form, "plain_text"),
+                  "response_shape": response_by_form[t.form],
+                  "format_example": t.example,
                   "maturity": "registered",
                   "facets": context_facets(
                       category="output_template", subcategory=t.form,
-                      context_type="template", response_shape=t.form,
+                      context_type="template",
+                      response_shape=response_by_form[t.form],
+                      list_structure=list_by_form.get(t.form, "none"),
+                      serialization_format=format_by_form.get(
+                          t.form, "plain_text"),
                       scope="package", lifecycle="registered",
                       provenance="output_template_registry")},
             tags=("output_template", "reusability", t.form, "step:decide_next",
@@ -282,6 +298,14 @@ def self_test() -> dict:
     check("measurement_form_extracts_name_direction_threshold",
           rm["ok"] and rm["direction"] == "maximize" and rm["threshold"] == 0.85,
           f"{rm['name']} / {rm['direction']} / {rm['threshold']}")
+    f1 = template("measurement_spec").parse(
+        "metric: F1, maximize, threshold 0.85")
+    missing_direction = template("measurement_spec").parse(
+        "metric: RMSE, threshold 0.2")
+    check("measurement_parser_uses_labeled_fields_and_requires_direction",
+          f1["ok"] and f1["name"] == "F1" and f1["threshold"] == 0.85
+          and not missing_direction["ok"]
+          and missing_direction["direction"] == "")
 
     # 5. an evaluation extracts a verdict + evidence.
     re_ = template("evaluation").parse(
@@ -290,6 +314,9 @@ def self_test() -> dict:
           re_["ok"] and re_["verdict"] == "pass_with_notes"
           and len(re_["evidence"]) == 2,
           f"verdict={re_['verdict']}")
+    negated = template("evaluation").parse("verdict: not a pass")
+    check("evaluation_parser_does_not_accept_negated_verdicts",
+          not negated["ok"] and negated["verdict"] == "")
 
     # 6. code form extracts the code, names the stat test, flags sandbox need.
     rc = template("code_or_test").parse(

@@ -24,7 +24,7 @@ ROOT_MODULES = ("__init__", "__main__", "_self_test", "_conformance_test",
 #: module -> subpackage.  "steps" and "regimes" are subpackages riding in loop/.
 MODULE_MAP = {
     "loop": (
-        "acceptance", "arbiter", "builtin_resolvers",
+        "acceptance", "arbiter", "builtin_resolvers", "capability_loops",
         "canvas", "context_shuffle", "decision_engine",
         "decision_slates", "escalation_governor", "hybrid_dimension_lattice",
         "research_to_capability", "list_intelligence",
@@ -62,8 +62,10 @@ MODULE_MAP = {
         "solution_canvas", "solution_compiler", "solution_graph", "solution_records", "string_foundry",
     ),
     "static_architecture": (
-        "asset_class", "asset_lifecycle", "capability_directory",
+        "asset_class", "asset_lifecycle", "brave_search",
+        "capability_directory",
         "chronicle", "config", "context_catalog", "context_classification",
+        "context_ontology", "code_intelligence_assets",
         "event_vocabulary", "duckdb_catalog", "facets", "intelligence_layers",
         "runtime_memory", "user_intelligence",
         "intelligence_registry",

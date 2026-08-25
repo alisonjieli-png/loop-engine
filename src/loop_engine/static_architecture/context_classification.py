@@ -14,20 +14,26 @@ from __future__ import annotations
 
 import re
 
+from .context_ontology import (QUESTION_FAMILIES, THINKING_METHODS,
+                               extract_key_phrases)
+
 
 CONTEXT_HIERARCHY_FIELDS = (
     "context_type", "industry", "domain", "subdomain", "topic",
     "role_family", "job_role", "seniority", "project_type", "task_type",
-    "deliverable", "workflow_stage", "thinking_style", "response_shape",
+    "deliverable", "workflow_stage", "thinking_style", "question_family",
+    "speech_act", "polarity", "comparison_mode", "detail_direction",
+    "list_structure", "ordering_rule", "response_shape",
+    "serialization_format", "format_example",
     "geography", "jurisdiction", "time_horizon", "source_policy",
-    "source_refs", "claim_status", "possible_code_target", "scope",
-    "lifecycle", "source", "digest", "tags")
+    "source_refs", "claim_status", "evidence_status", "access_level",
+    "source_type", "freshness_status", "risk_level",
+    "applicability_status",
+    "possible_code_target", "scope", "lifecycle", "source", "digest",
+    "key_phrases", "labels", "relationships", "utility_status",
+    "utility_history", "failure_history", "tags")
 
-CONTEXT_THINKING_STYLES = (
-    "first_principles", "analogy", "outline_to_detail", "gap_analysis",
-    "improvement", "avoidance", "best_practices", "failure_analysis",
-    "inversion", "adversarial_review", "comparison", "prioritization",
-    "verification", "exploration", "other")
+CONTEXT_THINKING_STYLES = THINKING_METHODS
 
 _THINKING_HINTS = (
     ("first_principles", ("first_principles", "invariant", "fundamental")),
@@ -48,8 +54,12 @@ _THINKING_HINTS = (
 
 
 def _words(*values) -> set:
-    return set(re.findall(r"[a-z0-9_]+", " ".join(
-        str(value or "").lower() for value in values)))
+    tokens = re.findall(r"[a-z0-9_]+", " ".join(
+        str(value or "").lower() for value in values))
+    phrases = {"_".join(tokens[index:index + size])
+               for size in (2, 3)
+               for index in range(max(0, len(tokens) - size + 1))}
+    return set(tokens) | phrases
 
 
 def context_hierarchy(record, classification: "dict | None" = None) -> dict:
@@ -73,11 +83,36 @@ def context_hierarchy(record, classification: "dict | None" = None) -> dict:
 
     def value(name: str, *aliases: str):
         for key in (name,) + aliases:
-            got = facets.get(key, body.get(key, ""))
-            if got not in (None, "", (), []):
-                return list(got) if isinstance(got, tuple) else got
+            facet_value = facets.get(key)
+            if facet_value not in (None, "", (), []):
+                return (list(facet_value) if isinstance(facet_value, tuple)
+                        else facet_value)
+            body_value = body.get(key)
+            if body_value not in (None, "", (), []):
+                return (list(body_value) if isinstance(body_value, tuple)
+                        else body_value)
         return ""
 
+    question_family = value("question_family")
+    if not question_family:
+        subcategory = str(body.get("subcategory")
+                          or facets.get("subcategory") or "")
+        question_family = subcategory if subcategory in QUESTION_FAMILIES else ""
+    key_phrases = value("key_phrases") or extract_key_phrases(
+        str(body.get("text") or body.get("template") or record.title))
+    if isinstance(key_phrases, str):
+        key_phrases = [key_phrases]
+    raw_labels = value("labels")
+    labels = (list(raw_labels) if isinstance(raw_labels, (list, tuple))
+              else [raw_labels] if raw_labels else [])
+    labels.extend(str(tag) for tag in tags if str(tag) not in labels)
+    for key, label_value in (
+            ("thinking", thinking), ("question", question_family),
+            ("format", value("serialization_format")),
+            ("shape", value("response_shape", "answer_shape"))):
+        label = f"{key}:{label_value}" if label_value else ""
+        if label and label not in labels:
+            labels.append(label)
     return {
         "schema": "context_hierarchy/v1",
         "context_type": value("context_type")
@@ -94,20 +129,41 @@ def context_hierarchy(record, classification: "dict | None" = None) -> dict:
         "deliverable": value("deliverable"),
         "workflow_stage": value("workflow_stage", "task_stage", "stage"),
         "thinking_style": thinking,
+        "question_family": question_family,
+        "speech_act": value("speech_act"),
+        "polarity": value("polarity"),
+        "comparison_mode": value("comparison_mode"),
+        "detail_direction": value("detail_direction"),
+        "list_structure": value("list_structure"),
+        "ordering_rule": value("ordering_rule"),
         "response_shape": value("response_shape", "answer_shape",
                                 "output_shape"),
+        "serialization_format": value("serialization_format", "format"),
+        "format_example": value("format_example"),
         "geography": value("geography"),
         "jurisdiction": value("jurisdiction"),
         "time_horizon": value("time_horizon", "timeframe"),
         "source_policy": value("source_policy"),
         "source_refs": value("source_refs"),
         "claim_status": value("claim_status"),
+        "evidence_status": value("evidence_status"),
+        "access_level": value("access_level"),
+        "source_type": value("source_type"),
+        "freshness_status": value("freshness_status"),
+        "risk_level": value("risk_level"),
+        "applicability_status": value("applicability_status"),
         "possible_code_target": value("possible_code_target"),
         "scope": value("scope") or base.get("scope", ""),
         "lifecycle": value("lifecycle", "maturity")
         or base.get("lifecycle", ""),
         "source": value("source", "provenance") or base.get("source", ""),
         "digest": value("digest"),
+        "key_phrases": list(key_phrases),
+        "labels": labels,
+        "relationships": value("relationships"),
+        "utility_status": value("utility_status"),
+        "utility_history": value("utility_history"),
+        "failure_history": value("failure_history"),
         "tags": list(tags),
     }
 
@@ -125,6 +181,14 @@ def self_test() -> dict:
     inferred = context_hierarchy(StoreRecord(
         "ctx.missing", "question", "What is missing from this plan?",
         tags=("coverage",)), {"category_group": "question"})
+    from .facets import context_facets
+    body_fallback = context_hierarchy(StoreRecord(
+        "ctx.body", "context", "source-backed method",
+        body={"digest": "abc123", "evidence_status": "source_backed",
+              "utility_status": "helpful",
+              "possible_code_target": "code.validator",
+              "facets": context_facets(category="method")}),
+        {"category_group": "method"})
     tests = [
         {"test": "explicit_context_axes_are_preserved",
          "passed": got["job_role"] == "mission operations lead"
@@ -133,6 +197,11 @@ def self_test() -> dict:
         {"test": "thinking_style_is_inferred_without_inventing_a_role",
          "passed": inferred["thinking_style"] == "gap_analysis"
          and inferred["job_role"] == ""},
+        {"test": "empty_facets_do_not_mask_populated_body_metadata",
+         "passed": body_fallback["digest"] == "abc123"
+         and body_fallback["evidence_status"] == "source_backed"
+         and body_fallback["utility_status"] == "helpful"
+         and body_fallback["possible_code_target"] == "code.validator"},
     ]
     passed = sum(1 for test in tests if test["passed"])
     return {"tests": tests, "passed": passed, "total": len(tests),

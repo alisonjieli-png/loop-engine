@@ -13,15 +13,15 @@ intelligence layers fit together.
 | 3 | [Loop Practitioner](components/practitioner/) | How Practitioner loops build and test work. |
 | 4 | [Solution Canvas](components/solution-canvas/) | How Solution loops represent and run finished work. |
 | 5 | [Self-improvement and domain seeding](components/self-improvement/) | Chronicle review, intelligence audits, candidates, and domain seeds. |
-| 6 | [Static Architecture and extensions](components/static-architecture/) | Shared services, adapters, and future plugin boundaries. |
-| 7 | [The four intelligence layers](components/intelligence-layers/) | Categories, classification, search, and Runtime Memory. |
+| 6 | [Static Architecture and extensions](components/static-architecture/) | Shared services, search backends, adapters, and plugin boundaries. |
+| 7 | [The four intelligence layers](components/intelligence-layers/) | Ontology, Code templates, loop-bound retrieval, and Runtime Memory. |
 
 ## Start using Loop Engine
 
 | Page | Purpose |
 |---|---|
 | [Getting started](getting-started.md) | Install from GitHub and run useful examples. |
-| [Examples](../examples/) | Eleven realistic example folders with their own instructions. |
+| [Examples](../examples/) | Thirteen realistic example folders with their own instructions. |
 | [Loops and modes](guides/loops-and-modes.md) | A shorter runtime guide. |
 | [Providers and keys](guides/providers-and-keys.md) | Provider checks, failover, and cost attribution. |
 | [Custom endpoints](guides/custom-endpoints.md) | Connect a server you control. |

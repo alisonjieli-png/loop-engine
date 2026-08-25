@@ -1,47 +1,27 @@
-"""Capability directory — how the practitioner KNOWS what is available and HOW to
-call it.
+"""Local capability discovery and standardized invocation.
 
-Owner requirement (2026-08-23): the practitioner must have knowledge of the
-strings database, the code nodes, and the static architecture components available
-to it, and there must be a STANDARDIZED search system + endpoints so it can call
-these as necessary — with biases and fallbacks, and HANDSHAKES that declare what
-search/functionality exists so the practitioner knows how to call each component
-and what it can do.
+The directory stores machine-readable handshakes and registered endpoints.
+Loops can inspect operations, contracts, effects, locality, cost, access, and
+failure behavior before choosing a capability. Static Architecture search
+reads local handshake cards and returns Code Intelligence LoopRefs without
+executing an endpoint.
 
-This is the CLAUDE.md capability-handshake doctrine made concrete:
-
-  * A ``CapabilityHandshake`` is what each surface DECLARES about itself — its kind
-    (string_store / code_node_registry / static_component), the operations it
-    supports, its searchable query fields and ranking (deterministic no-embedding
-    search always works; embeddings are an optional enhancement), what it accepts
-    and returns, and its health.  The practitioner READS the handshake before
-    calling — it never assumes a capability from a name.
-  * A ``CapabilityDirectory`` is the standardized surface: ``available`` /
-    ``for_kind`` / ``discover`` tell the practitioner what exists; ``negotiate``
-    checks a surface supports the operations a task needs and names the fallback
-    when it does not; ``call`` invokes an endpoint uniformly and, on a missing
-    operation or an error, follows the declared FALLBACK — a bias, not a crash.
-  * ``serve`` is the two-rail bias in one call: find a code-node/static surface for
-    the operation and call it; if none exists, fall back to the LLM-call pipeline
-    (the string rail) — "prefer the exact zero-token code node; ask the model only
-    when nothing serves it" (see [[asset_class.py]]).
+Invocation is separate. A selected endpoint may use a declared fallback, but
+the result records which fallback layer changed. Effectful invocation belongs
+inside ``loop.capability_loops``.
 """
 
 from __future__ import annotations
 
 import hashlib
+import json
 from dataclasses import dataclass, field, asdict
 from typing import Callable, Sequence
 
 SURFACE_KINDS = ("string_store", "code_node_registry", "static_component")
-OPERATIONS = ("search", "get", "list", "invoke", "validate", "compose", "run",
-              "resolve")
-# The three DISTINCT fallback layers — each records what actually changed.
+OPERATIONS = ("search", "get", "list", "invoke", "validate", "compose",
+              "run", "resolve", "materialize")
 FALLBACK_LAYERS = ("search_mode", "surface", "semantic")
-# search_mode: same surface, another search mechanism (exact → lexical → semantic)
-# surface:     same capability class, another backend (primary → cache → core)
-# semantic:    a materially different method (a code node → the LLM pipeline);
-#              a semantic fallback should normally be a new practitioner pass.
 
 
 class HandshakeError(RuntimeError):
@@ -62,6 +42,26 @@ class CapabilityHandshake:
     returns: tuple = ()
     protocol_version: str = "1.0.0"
     health: str = "ok"
+    input_schema: str = "any"
+    output_schema: str = "any"
+    locality: str = "local_machine"
+    effects: tuple = ("pure",)
+    cost_class: str = "free"
+    auth_method: str = "none"
+    secret_ref: str = ""
+    retention_default: str = "ephemeral"
+    idempotency: str = "read_only"
+    timeout_seconds: float = 0.0
+    max_response_bytes: int = 0
+    quota_policy: str = "unknown"
+    rate_limit_policy: str = "provider_reported"
+    retry_policy: str = "caller_controlled"
+    data_egress: tuple = ()
+    privacy_class: str = "unknown"
+    license_terms: str = "unknown"
+    pricing_snapshot_ref: str = ""
+    provider_version: str = ""
+    last_verified_at: str = ""
 
     def __post_init__(self):
         if self.surface_kind not in SURFACE_KINDS:
@@ -69,6 +69,15 @@ class CapabilityHandshake:
         bad = [o for o in self.operations if o not in OPERATIONS]
         if bad:
             raise ValueError(f"unknown operations {bad}; valid {OPERATIONS}")
+        from .facets import EFFECTS, LOCALITY, COST_CLASSES
+        if self.locality not in LOCALITY:
+            raise ValueError(f"locality must be one of {LOCALITY}")
+        if self.cost_class not in COST_CLASSES:
+            raise ValueError(f"cost_class must be one of {COST_CLASSES}")
+        if any(effect not in EFFECTS for effect in self.effects):
+            raise ValueError(f"effects must be drawn from {EFFECTS}")
+        if self.timeout_seconds < 0 or self.max_response_bytes < 0:
+            raise ValueError("timeout and response-size limits cannot be negative")
 
     def supports(self, operation: str) -> bool:
         return operation in self.operations and self.health == "ok"
@@ -136,6 +145,7 @@ class CapabilityMatch:
     fallbacks: tuple = ()
     facets: dict = field(default_factory=dict)
     facet_score: int = 0                # prefer-facet matches (rank only)
+    loop_ref: object = None
 
 
 @dataclass
@@ -180,18 +190,18 @@ class CapabilityDirectory:
         self._ep: dict = {}                         # (surface, op) -> Endpoint
         self._default_fallback: dict = {}           # surface -> (surface, op)
 
-    # --- registration -------------------------------------------------------
-
     def register(self, handshake: CapabilityHandshake,
                  endpoints: "Sequence[Endpoint]" = (), *,
-                 default_fallback: "tuple | None" = None) -> None:
+                 default_fallback: "tuple | None" = None,
+                 replace: bool = False) -> None:
+        if handshake.surface in self._hs and not replace:
+            raise HandshakeError(
+                f"surface {handshake.surface!r} is already registered")
         self._hs[handshake.surface] = handshake
         for ep in endpoints:
             self._ep[(handshake.surface, ep.operation)] = ep
         if default_fallback:
             self._default_fallback[handshake.surface] = default_fallback
-
-    # --- discovery: what is available (the practitioner's knowledge) --------
 
     def available(self) -> list:
         return list(self._hs.values())
@@ -211,6 +221,42 @@ class CapabilityDirectory:
         return [h.surface for h in self._hs.values()
                 if h.supports(operation)
                 and (surface_kind is None or h.surface_kind == surface_kind)]
+
+    def search_static_architecture(self, need: str, *, top_n: int = 8) -> list:
+        """Search local handshake cards without invoking any capability."""
+        from ..loop.loop_capsule import LoopCapsule, LoopHandshake
+        terms = set(str(need).lower().replace("_", " ").split())
+        ranked = []
+        for handshake in self._hs.values():
+            text = " ".join((handshake.surface, handshake.functionality,
+                             *handshake.operations, *handshake.query_fields,
+                             *handshake.returns)).lower().replace("_", " ")
+            tokens = set(text.split())
+            score = len(terms & tokens)
+            if score <= 0:
+                continue
+            digest = hashlib.sha256(json.dumps(
+                handshake.describe(), sort_keys=True, default=str).encode()
+                                    ).hexdigest()
+            loop_handshake = LoopHandshake(
+                loop_id=handshake.surface, role="code_intelligence",
+                modes=("deterministic",), input_contract="capability_request",
+                output_contract="capability_handshake", effects="pure",
+                cost_class="free", maturity="registered",
+                version=handshake.protocol_version)
+            capsule = LoopCapsule(
+                loop_id=handshake.surface, role="code_intelligence",
+                handshake=loop_handshake,
+                payload_ref=f"capability://{handshake.surface}",
+                payload_digest=digest,
+                provenance="static_architecture", lifecycle="registered",
+                facets={"surface_kind": handshake.surface_kind,
+                        "handshake_digest": digest})
+            ranked.append((score, handshake.surface,
+                           capsule.to_ref(score=float(score),
+                                          source="static_architecture")))
+        return [item[2] for item in sorted(
+            ranked, key=lambda item: (-item[0], item[1]))[:top_n]]
 
     # --- negotiation: does a surface support what a task needs? -------------
 
@@ -268,23 +314,47 @@ class CapabilityDirectory:
         if ep is None:
             fb = self._fallback_for(surface, operation)
             if fb:
-                r = self.call(fb[0], fb[1], **kwargs)
+                r = self.call(fb[0], fb[1], ledger=ledger, **kwargs)
                 return CallResult(surface, operation, r.ok, r.value, True,
                                   f"unsupported → fallback {fb[0]}.{fb[1]}",
                                   self._fallback_layer(surface, operation,
                                                        fb[0], fb[1]))
+            if ledger is not None:
+                ledger.record(loop_id="", event="tool_invocation_failed",
+                              surface=surface, operation=operation,
+                              reason="unsupported and no fallback")
             return CallResult(surface, operation, False, None, False,
                               "unsupported and no fallback declared")
         try:
-            return CallResult(surface, operation, True, ep.fn(**kwargs))
+            value = ep.fn(**kwargs)
+            value_ok = (value.get("ok", True) if isinstance(value, dict)
+                        else getattr(value, "ok", True))
+            if not value_ok:
+                note = (value.get("error_code") or value.get("error") or
+                        "capability returned a typed failure") \
+                    if isinstance(value, dict) else "capability returned failure"
+                if ledger is not None:
+                    ledger.record(loop_id="", event="tool_invocation_failed",
+                                  surface=surface, operation=operation,
+                                  reason=str(note)[:120])
+                return CallResult(surface, operation, False, value, False,
+                                  str(note))
+            if ledger is not None:
+                ledger.record(loop_id="", event="tool_invocation_completed",
+                              surface=surface, operation=operation)
+            return CallResult(surface, operation, True, value)
         except Exception as e:                                  # noqa: BLE001
             fb = ep.fallback or self._default_fallback.get(surface)
             if fb:
-                r = self.call(fb[0], fb[1], **kwargs)
+                r = self.call(fb[0], fb[1], ledger=ledger, **kwargs)
                 return CallResult(surface, operation, r.ok, r.value, True,
                                   f"error → fallback {fb[0]}.{fb[1]}: {e}",
                                   self._fallback_layer(surface, operation,
                                                        fb[0], fb[1]))
+            if ledger is not None:
+                ledger.record(loop_id="", event="tool_invocation_failed",
+                              surface=surface, operation=operation,
+                              reason=type(e).__name__)
             return CallResult(surface, operation, False, None, False,
                               f"error: {e}")
 
@@ -328,7 +398,13 @@ class CapabilityDirectory:
     def search_by_need(self, query: "CapabilityQuery") -> list:
         """Federate a need across every searchable surface; return matches that
         keep their source surface + exact identity, ranked with the two-rail bias
-        (prefer the exact zero-token code node unless a string was requested)."""
+        (prefer the exact zero-token code node unless a string was requested).
+
+        This discovery path may execute only local, pure search endpoints.
+        Network, secret-reading, metered, or externally hosted capabilities are
+        represented by their local handshake cards and invoked only after an
+        explicit selection through ``run_capability_as_loop``.
+        """
         from ..static_architecture.asset_class import classify_record
         from ..static_architecture.facets import FacetFilter, facet_match
         flt = FacetFilter(require=dict(query.require_facets),
@@ -338,6 +414,8 @@ class CapabilityDirectory:
         matches: list = []
         for h in self._hs.values():
             if "search" not in h.operations:
+                continue
+            if h.locality != "local_machine" or tuple(h.effects) != ("pure",):
                 continue
             ep = self._ep.get((h.surface, "search"))
             if ep is None:
@@ -404,6 +482,17 @@ def _search_endpoint(store):
     return _search
 
 
+def _get_endpoint(store):
+    """Fetch one selected resource through its intelligence access loop."""
+    from ..loop.intelligence_loops import serve_record_as_loop
+
+    def _get(**kw):
+        return serve_record_as_loop(
+            store, kw.get("record_id", ""),
+            pillar=kw.get("pillar", "string_intelligence"))["value"]
+    return _get
+
+
 def default_directory(*, store=None,
                       llm_invoke: "Callable | None" = None) -> CapabilityDirectory:
     """A directory of the standard surfaces the practitioner has: the search DAG,
@@ -433,7 +522,8 @@ def default_directory(*, store=None,
             operations=("search", "get"),
             query_fields=("title", "tags", "body"), ranking=("lexical",),
             embeddings=False, returns=("string", "code")),
-            [Endpoint("search", _search_endpoint(store))])
+            [Endpoint("search", _search_endpoint(store)),
+             Endpoint("get", _get_endpoint(store))])
 
     # the string bank — the strings database.
     d.register(CapabilityHandshake(
@@ -558,7 +648,7 @@ def self_test() -> dict:
     check("missing_operation_follows_the_declared_fallback",
           r2.ok and r2.used_fallback
           and "resource_search" in r2.note,
-          f"contract_registry has no search → fell back to resource_search")
+          "contract_registry has no search → fell back to resource_search")
 
     # 7. serve = the two-rail bias: no code node for a need → the LLM pipeline.
     served = d.serve("summarize")             # nothing supports 'summarize'... but
@@ -672,6 +762,36 @@ def self_test() -> dict:
           and _fams == ["capability.snapshot.created"]
           and _lg.events[0]["snapshot_id"] == _loud.snapshot_id,
           f"snapshot {_loud.snapshot_id} recorded; identical without a ledger")
+
+    static_refs = d.search_static_architecture(
+        "provider neutral model routes")
+    check("static_architecture_search_returns_local_loop_refs_without_calls",
+          static_refs and static_refs[0].loop_ref.endswith("model_gateway")
+          and static_refs[0].source == "static_architecture"
+          and static_refs[0].handshake.role == "code_intelligence")
+
+    unsafe_calls = []
+    d.register(CapabilityHandshake(
+        "remote_fixture_search", "static_component",
+        "search a remote fixture service", operations=("search",),
+        locality="api_calling", effects=("network",), cost_class="metered"),
+        [Endpoint("search", lambda query: unsafe_calls.append(query) or {
+            "hits": []})])
+    remote_refs = d.search_static_architecture("remote fixture search")
+    d.search_by_need(CapabilityQuery(
+        obligation="find fixture", desired_capability="remote fixture search"))
+    check("federated_discovery_never_executes_effectful_search_endpoints",
+          remote_refs and not unsafe_calls
+          and remote_refs[0].loop_ref.endswith("remote_fixture_search"),
+          "effectful capability is discoverable as a local ref, not called")
+
+    duplicate_refused = False
+    try:
+        d.register(d.handshake("model_gateway"))
+    except HandshakeError:
+        duplicate_refused = True
+    check("duplicate_static_surface_registration_is_refused",
+          duplicate_refused)
 
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "capability_directory_self_test", "tests": results,

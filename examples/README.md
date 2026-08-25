@@ -18,14 +18,16 @@ network, model, file, cost, and external-effect notes.
 | [05 Kaggle competition](05_kaggle_competition/) | Runs a narrow external competition workflow. |
 | [06 reconcile invoices](06_reconcile_invoices/) | Reconciles invoices with nested loops and visible retries. |
 | [10 validate a customer import](10_validate_customer_import/) | Compiles and runs a deterministic Solution Canvas with validation and fallback. |
-| [11 seed space Context Intelligence](11_seed_space_context/) | Runs a Self-Improvement Loop that prepares categorized domain candidates. |
 
 ## Models and intelligence
 
 | Example | What it does |
 |---|---|
 | [03 connect a model](03_connect_a_model/) | Checks providers and makes one loop-governed model call. |
-| [09 search the intelligence layers](09_search_the_intelligence_layers/) | Categorizes and searches Context, Code, Previous Run & Solution, and User Intelligence together. |
+| [09 search the intelligence layers](09_search_the_intelligence_layers/) | Searches all four layers as a loop, returns `LoopRef` objects, and materializes one selected item. |
+| [11 seed space Context Intelligence](11_seed_space_context/) | Runs a Self-Improvement Loop that prepares balanced categorized domain candidates. |
+| [12 wrap a large codebase](12_wrap_a_large_codebase/) | Represents a million-line worker and a 9 GB dataset with small cards and selected component loops. |
+| [13 Brave Search plugin](13_brave_search_plugin/) | Registers, discovers, and invokes a Static Architecture capability. The default run is offline. |
 
 ## Understand a run
 

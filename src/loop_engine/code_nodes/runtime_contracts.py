@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import hashlib
 import re
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, asdict
 from typing import Sequence
 
 # The four constraint classes — kept DISTINCT (the owner's rule).  Only
@@ -46,7 +46,7 @@ OUTPUT_TYPES = ("table", "object", "enum", "scalar")
 # "any" = presence/nullability/uniqueness are still checked, the value TYPE is not
 # (for a required-but-free-form field, e.g. a reasoning field bridged from an
 # intelligence decision schema).
-DATA_TYPES = ("string", "int", "float", "bool", "any")
+DATA_TYPES = ("string", "int", "float", "bool", "array", "object", "any")
 _SEMVER = re.compile(r"^\d+\.\d+\.\d+$")
 
 
@@ -82,6 +82,12 @@ def _type_ok(v, dt: str) -> bool:
         return isinstance(v, (int, float)) and not isinstance(v, bool)
     if dt == "bool":
         return isinstance(v, bool)
+    if dt == "array":
+        return isinstance(v, (list, tuple))
+    if dt == "object":
+        return isinstance(v, dict)
+    if dt == "any":
+        return True
     return False
 
 
@@ -483,6 +489,20 @@ def self_test() -> dict:
           hit["hits"] and any("contract." in h["record_id"]
                               for h in hit["hits"]),
           "the contract registry shares the one search surface")
+
+    flexible = ContractDefinition(
+        "flexible-fields", "object", fields=(
+            FieldSpec("items", "array", nullable=False),
+            FieldSpec("metadata", "object", nullable=False),
+            FieldSpec("value", "any", nullable=False)))
+    good_flexible = flexible.validate(
+        {"items": [], "metadata": {"source": "test"}, "value": 7})
+    bad_flexible = flexible.validate(
+        {"items": "none", "metadata": [], "value": 7})
+    check("array_object_and_any_field_types_validate_correctly",
+          good_flexible.valid and not bad_flexible.valid
+          and sum(v.kind == "type_mismatch"
+                  for v in bad_flexible.violations) == 2)
 
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "runtime_contracts_self_test", "tests": results,

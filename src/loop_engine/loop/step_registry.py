@@ -27,8 +27,7 @@ DAG, the search/serve DAG, memory/commit, and the operating profile.
 from __future__ import annotations
 
 import importlib
-from dataclasses import dataclass, field
-from typing import Sequence
+from dataclasses import dataclass
 
 from ..loop.kernel import (KERNEL_NODES, KERNEL_REQUIRED_NODES, KERNEL_OPTIONAL_NODES,
                      KERNEL_NODE_NAMES, KERNEL_NODE_QUESTIONS)
@@ -215,20 +214,19 @@ SERVICE_MAP: tuple = (
      "every model call: ReasoningRequest -> PromptAssemblySpec (13 blocks) -> "
      "ModelInvocationRequest -> ModelInvocationResult; provider-neutral routes "
      "(cloud-only policy, local wired-but-gated); fallbacks + seeds"),
-    ("two primitives (String | Code node)", "asset_class",
-     "THE classification of everything: literally every resource, asset, node, "
-     "and text is a STRING (an LLM reads it) or a CODE NODE (the machine runs "
-     "it; may READ strings). 'Contract / logic / capability' are ROLES a code "
-     "node plays (validate / decide / execute / adapt / detect), not separate "
-     "primitives. Same need, either primitive; the arrow STRING -> CODE NODE is "
-     "the distillation flywheel"),
+    ("two intelligence item forms (Context | Code)", "asset_class",
+     "Context Intelligence guides work without executing it. Code Intelligence "
+     "describes something the machine can run. Both are discovered as small "
+     "LoopRefs and returned through loops. Contract, logic, and capability are "
+     "roles a Code item can play, not new runtime node types"),
     ("logic (safe AST)", "logic_ast",
      "the Logic category: a closed-operator expression AST (never eval) that "
      "COMPUTES/DECIDES deterministically; the executor for a captured "
      "logic_candidate; emits findings/actions, abstains outside scope, never "
      "mutates state"),
     ("capability directory (handshakes + endpoints)", "capability_directory",
-     "how the practitioner KNOWS what strings / code nodes / static components are "
+     "how the practitioner knows what Context, Code, and Static Architecture "
+     "capabilities are "
      "available and HOW to call them: a CapabilityHandshake per surface (kind, "
      "operations, query fields, ranking, health: read before use, never "
      "assumed), and a standardized directory (discover / negotiate / call / serve) "
@@ -245,11 +243,11 @@ SERVICE_MAP: tuple = (
      "the fundamental object: a Loop is an initializable, parameterized CLASS: "
      "pass in framework (nine_step | five_step | custom | open), allowable + "
      "preferred MODES (deterministic | hybrid | non_deterministic, a waterfall "
-     "with fallback), and a POWER lever (small..max sets string-intelligence pull "
+     "with fallback), and an effort setting (small..max sets Context retrieval "
      "+ model-call budget). One loop can SPAWN another (recursive initialization; "
      "loops of loops), all tracked on one shared ledger. nine_step is the default; "
-     "the kernel is its executor. The wedge is reusable code nodes + string "
-     "intelligence flowing through it"),
+     "the kernel is its executor. Reusable Context and Code Intelligence flow "
+     "through the same loop boundary"),
     ("decision engine (per-node sub-layer)", "decision_engine",
      "the immediate sub-node under EVERY one of the nine kernel nodes: resolve_path "
      "asks 'deterministic, deterministic + LLM repair, or non-deterministic?' and "
@@ -259,8 +257,8 @@ SERVICE_MAP: tuple = (
     ("continuous improvement (housekeeping)", "housekeeping",
      "a SEPARATE-PURPOSE run of the SAME practitioner loop (self-improvement "
      "objective + instructions): on a trigger/cron it mines our runtimes/logs and "
-     "customer legacy code (GitHub URLs) and proposes new code nodes, strings, "
-     "logic, and biases: classified string vs code, all runtime CANDIDATES "
+     "customer legacy code (GitHub URLs) and proposes new Code items, Context "
+     "items, logic, and biases. All runtime output stays at candidate status "
      "(promotion is the evidence-gated boundary, never done here)"),
     ("live wiring", "wiring",
      "the composed entry point run_wired: enriches the deterministic kernel "
@@ -276,7 +274,8 @@ SERVICE_MAP: tuple = (
      "tier gates; capability requests"),
     ("resources", "question_engine + question_bank + domain_pack + intelligence_strings + intelligence_registry + packs",
      "question forms/tiers, personas, context/layout policies, Domain Support "
-     "Packs, and intelligence-as-strings; intelligence_registry standardizes the Database vs Runtime tiers (serve/version/track/promote)"),
+     "Packs, and Context Intelligence; intelligence_registry standardizes the "
+     "Database and Runtime tiers (serve/version/track/promote)"),
     ("operating profile + config", "operating_profile + config",
      "five enum modes resolved Platform->Org->Project->Run->Child; enforced at "
      "the how/act/model boundaries"),

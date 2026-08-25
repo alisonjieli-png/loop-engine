@@ -7,8 +7,8 @@ persistent layers. Every search result names the layer that served it.
 
 | Layer | What belongs here | Category groups |
 |---|---|---|
-| Context Intelligence | Context that can guide work without executing it. | question, method, checklist, template, persona, evaluation, context, instruction, warning, constraint, consideration, other |
-| Code Intelligence | Implemented software references and executable capabilities. | transform, analyze, decide, retrieve, execute, validate, report, integrate, other |
+| Context Intelligence | Context that can guide work without executing it. | question, method, heuristic, checklist, warning, constraint, persona, example, prompt pattern, output contract, decision schema, evaluation, rubric, source note, failure pattern, other |
+| Code Intelligence | Software cards and executable capabilities. | function, file, module, package, repository, template repository, service, dataset-backed system, large framework, worker system, tool, plugin, workflow, notebook, other |
 | Previous Run & Solution Intelligence | Saved run history and reusable solution information. | run, solution, decision, failure, repair, measurement, comparison, other |
 | User Intelligence | Scoped guidance supplied by a person. | advice, correction, context, source suggestion, package suggestion, priority change, constraint, instruction, approval, veto, other |
 
@@ -37,15 +37,18 @@ classification measurable instead of hiding it.
 
 Context Intelligence also has a composable hierarchy for roles, work, thinking
 styles, response shapes, operating conditions, and evidence. Read
-[Context Intelligence hierarchy](CONTEXT-HIERARCHY.md).
+[Context Intelligence ontology](CONTEXT-HIERARCHY.md).
+
+Code Intelligence has reusable templates for small functions, PyPI packages,
+GitHub and GitLab repositories, repository templates, tools, skills, notebooks,
+workflows, and large systems. Read
+[Code Intelligence templates](CODE-INTELLIGENCE-TEMPLATES.md).
 
 ## Current built-in population
 
-At this revision, a clean active catalog contains 134 Context Intelligence
-records and 37 Code Intelligence module references. The packaged review
-catalog contains 1,337 Context records because it also includes the 1,000-record seed pack,
-generated Foundry candidates, candidate Loop Templates, and experimental ask
-strategies.
+The active population is computed from the package registries. The review
+population adds the 1,000-record seed pack, generated candidates, candidate
+Loop Templates, and experimental ask strategies.
 
 Candidate records use the `experimental` tier. They are excluded from normal
 retrieval. A caller must set `include_candidates=True` to inspect them during
@@ -59,9 +62,7 @@ User Intelligence is populated from saved user guidance. Both can be empty on
 a fresh installation. The current catalog does not yet load saved
 `SolutionLibrary` assets into the third layer.
 
-The current packaged records contain all required common classification
-fields. Nine Context records and 29 Code module references still fall into the
-broad `other` group. Run the installed example to see the current counts
+Run the installed example to see the current counts and missing classifications
 instead of relying on a copied number:
 
 ```bash
@@ -70,8 +71,9 @@ loop-engine --example intelligence-layers
 
 ## One search across all four layers
 
-`query_intelligence()` sends one need through the Retrieval Engine. Results
-include the source layer, the common classification, and the search score.
+`query_intelligence()` sends one need through a search loop. Results include
+the source layer, common classification, search score, and a body-free
+`LoopRef`.
 Filters can narrow the query by fields such as category group, domain, scope,
 thinking style, project type, task type, or lifecycle.
 
@@ -86,6 +88,23 @@ seed IDs, and existing clients do not break.
 
 See [search the intelligence layers](../../../examples/09_search_the_intelligence_layers/)
 for a runnable example.
+
+## Search results are loops
+
+The normal flow is:
+
+```text
+search loop
+  -> ranked LoopRefs without item bodies
+  -> select one reference
+  -> materialization loop verifies and loads that item
+  -> optional Code execution or explicit model reframe loop
+  -> return to the parent loop
+```
+
+Context, Code, Previous Run & Solution, and User Intelligence all use this
+flow. Read [Intelligence is returned through loops](INTELLIGENCE-AS-LOOPS.md)
+for the contracts and examples.
 
 ## Runtime Memory is separate
 

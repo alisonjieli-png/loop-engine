@@ -152,6 +152,7 @@ _CANONICAL_EVENT_MAP = {
     "custom": "state.committed",
     "iteration_started": "loop.iteration.started",
     "tool_invocation_started": "tool.invocation.started",
+    "tool_invocation_completed": "tool.invocation.completed",
     "tool_invocation_failed": "tool.invocation.failed",
     "learning_candidate_staged": "learning.candidate.staged",
     "solution_candidate_created": "solution.candidate.created",
@@ -276,5 +277,4 @@ def canonical_event_coverage(ledger_events: "list | None" = None) -> dict:
                 sorted(set(EVENT_FAMILIES) - reachable),
             "observed_in_this_run": sorted(observed),
             "raw_kinds_mapped": len(_CANONICAL_EVENT_MAP)}
-
 

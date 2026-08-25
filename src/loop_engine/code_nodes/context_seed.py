@@ -101,6 +101,28 @@ _THINKING_STYLE = {
     "alternatives": "exploration",
 }
 
+_QUESTION_FAMILY = {
+    "first_principles": "first_principles",
+    "analogy": "analogy",
+    "outline_to_detail": "outline_to_detail",
+    "gap_analysis": "missing_items",
+    "top_improvements": "top_improvements",
+    "avoidance": "top_avoid",
+    "best_practices": "best_practices",
+    "failure_analysis": "failure_recovery",
+    "inversion": "inversion",
+    "adversarial_review": "adversarial_review",
+    "evidence_review": "evidence_needed",
+    "alternatives": "novel_alternatives",
+}
+
+_SPEECH_ACT = {
+    "top_improvements": "rank", "avoidance": "warn",
+    "best_practices": "instruct", "failure_analysis": "critique",
+    "adversarial_review": "critique", "evidence_review": "verify",
+    "alternatives": "generate",
+}
+
 
 @dataclass(frozen=True)
 class ContextSeedSpec:
@@ -125,6 +147,13 @@ class ContextSeedSpec:
             raise ValueError(f"source_policy must be one of {SOURCE_POLICIES}")
         if not self.project_types or not self.task_types or not self.job_roles:
             raise ValueError("projects, tasks, and job roles cannot be empty")
+        for name, values in (("project types", self.project_types),
+                             ("task types", self.task_types),
+                             ("job roles", self.job_roles)):
+            if any(not str(value).strip() for value in values):
+                raise ValueError(f"{name} cannot contain blank values")
+            if len(values) != len(set(values)):
+                raise ValueError(f"{name} must be unique")
         if not 1 <= self.max_candidates <= 500:
             raise ValueError("max_candidates must be between 1 and 500")
 
@@ -192,63 +221,115 @@ def domain_research_questions(spec: ContextSeedSpec) -> tuple:
     )
 
 
+def _coverage_balanced_coordinates(spec: ContextSeedSpec, roles: tuple):
+    """Yield every pattern/role/project/task coordinate exactly once.
+
+    The iterator is a lazy permutation of the mixed-radix Cartesian space; it
+    never constructs ``product(...)``.  Axes are ordered largest-first, then a
+    triangular digit transform rotates each smaller axis by the digits already
+    visited.  The transform is invertible, so coordinates cannot repeat.  It
+    also gives the useful prefix property: when the requested limit is at least
+    an axis's cardinality, every value on that axis appears before any value on
+    that axis repeats.
+    """
+    axes = (tuple(CONTEXT_PATTERNS), tuple(roles),
+            tuple(spec.project_types), tuple(spec.task_types))
+    # Stable tie-breaking by the declared semantic order keeps identical inputs
+    # byte-reproducible across Python versions.
+    order = tuple(sorted(range(len(axes)),
+                         key=lambda index: (-len(axes[index]), index)))
+    ordered = tuple(axes[index] for index in order)
+    sizes = tuple(len(axis) for axis in ordered)
+    total = 1
+    for size in sizes:
+        total *= size
+
+    for rank in range(total):
+        remainder = rank
+        digits = []
+        for size in sizes:
+            digits.append(remainder % size)
+            remainder //= size
+
+        selected = [None] * len(axes)
+        prior_digit_sum = 0
+        for position, original_index in enumerate(order):
+            size = sizes[position]
+            balanced_index = (digits[position] + prior_digit_sum) % size
+            selected[original_index] = ordered[position][balanced_index]
+            prior_digit_sum += digits[position]
+        yield tuple(selected)
+
+
 def build_context_candidates(spec: ContextSeedSpec, *,
                              roles: "tuple | None" = None,
                              limit: "int | None" = None) -> list:
-    """Build deterministic candidate Context records from the declared axes."""
+    """Build a bounded, coverage-balanced candidate population lazily."""
     from ..static_architecture.store_serve import StoreRecord
     from ..static_architecture.facets import context_facets
     roles = tuple(roles or spec.job_roles)
-    maximum = min(limit or spec.max_candidates, spec.max_candidates)
+    if (any(not str(role).strip() for role in roles)
+            or len(roles) != len(set(roles))):
+        raise ValueError("roles must be nonblank and unique")
+    requested = spec.max_candidates if limit is None else max(0, int(limit))
+    maximum = min(requested, spec.max_candidates)
     out = []
-    for pattern in CONTEXT_PATTERNS:
-        for role in roles:
-            for project in spec.project_types:
-                for task in spec.task_types:
-                    if len(out) >= maximum:
-                        return out
-                    text = pattern["text"].format(
-                        role=role, task=task, project=project,
-                        domain=spec.subdomain or spec.domain)
-                    identity = "|".join((spec.domain, role, project, task,
-                                         pattern["name"], text))
-                    digest = hashlib.sha256(identity.encode()).hexdigest()[:16]
-                    facets = context_facets(
-                        category="domain_seed",
-                        subcategory=pattern["name"],
-                        context_type=pattern["context_type"],
-                        role_family=_role_family(role),
-                        job_position=_slug(role), domain=spec.domain,
-                        project_type=_slug(project), task_type=_slug(task),
-                        workflow_stage="orientation",
-                        thinking_style=_THINKING_STYLE.get(
-                            pattern["name"], pattern["name"]),
-                        response_shape=pattern["response_shape"],
-                        scope="domain", lifecycle="candidate",
-                        provenance="context_seed/v1")
-                    out.append(StoreRecord(
-                        f"context.seed.{digest}", "question"
-                        if pattern["context_type"] == "question" else "context",
-                        text,
-                        body={"role": "context_seed_candidate", "text": text,
-                              "context_type": pattern["context_type"],
-                              "job_title": role, "industry": spec.industry,
-                              "domain": spec.domain,
-                              "subdomain": spec.subdomain,
-                              "project_type": project, "task_type": task,
-                              "thinking_method": pattern["name"],
-                              "answer_shape": pattern["response_shape"],
-                              "geography": spec.geography,
-                              "jurisdiction": spec.jurisdiction,
-                              "time_horizon": spec.time_horizon,
-                              "source_policy": spec.source_policy,
-                              "source_refs": list(spec.source_refs),
-                              "claim_status": "proposed",
-                              "maturity": "candidate", "digest": digest,
-                              "facets": facets},
-                        tags=("context_seed", _slug(spec.domain),
-                              _slug(role), pattern["name"], "candidate"),
-                        tier="experimental", source="context_seed/v1"))
+    for pattern, role, project, task in _coverage_balanced_coordinates(spec,
+                                                                       roles):
+        if len(out) >= maximum:
+            break
+        text = pattern["text"].format(
+            role=role, task=task, project=project,
+            domain=spec.subdomain or spec.domain)
+        identity = "|".join((spec.domain, role, project, task,
+                             pattern["name"], text))
+        digest = hashlib.sha256(identity.encode()).hexdigest()[:16]
+        facets = context_facets(
+            category="domain_seed",
+            subcategory=pattern["name"],
+            context_type=pattern["context_type"],
+            role_family=_role_family(role),
+            job_position=_slug(role), domain=spec.domain,
+            project_type=_slug(project), task_type=_slug(task),
+            workflow_stage="orientation",
+            thinking_style=_THINKING_STYLE.get(
+                pattern["name"], pattern["name"]),
+            question_family=_QUESTION_FAMILY[pattern["name"]],
+            speech_act=_SPEECH_ACT.get(pattern["name"], "ask"),
+            polarity="adversarial" if pattern["name"] in (
+                "avoidance", "failure_analysis", "adversarial_review")
+            else "neutral",
+            list_structure="ranked_list"
+            if pattern["response_shape"] == "ranking"
+            else "flat_list" if pattern["response_shape"] in (
+                "list", "proposals") else "none",
+            serialization_format="plain_text",
+            response_shape=pattern["response_shape"],
+            scope="domain", lifecycle="candidate",
+            provenance="context_seed/v1")
+        out.append(StoreRecord(
+            f"context.seed.{digest}", "question"
+            if pattern["context_type"] == "question" else "context",
+            text,
+            body={"role": "context_seed_candidate", "text": text,
+                  "context_type": pattern["context_type"],
+                  "job_title": role, "industry": spec.industry,
+                  "domain": spec.domain,
+                  "subdomain": spec.subdomain,
+                  "project_type": project, "task_type": task,
+                  "thinking_method": pattern["name"],
+                  "answer_shape": pattern["response_shape"],
+                  "geography": spec.geography,
+                  "jurisdiction": spec.jurisdiction,
+                  "time_horizon": spec.time_horizon,
+                  "source_policy": spec.source_policy,
+                  "source_refs": list(spec.source_refs),
+                  "claim_status": "proposal",
+                  "maturity": "candidate", "digest": digest,
+                  "facets": facets},
+            tags=("context_seed", _slug(spec.domain),
+                  _slug(role), pattern["name"], "candidate"),
+            tier="experimental", source="context_seed/v1"))
     return out
 
 
@@ -315,11 +396,15 @@ def run_context_seed(spec: ContextSeedSpec, *, existing_context_records=(),
                 output=f"research_questions={len(state['research_questions'])}",
                 mode="deterministic", confidence=0.95)
         if step == "generate_context":
-            base_count, remainder = divmod(spec.max_candidates,
-                                            len(spec.job_roles))
-            for index, role in enumerate(spec.job_roles):
-                role_limit = base_count + (1 if index < remainder else 0)
-                if role_limit <= 0:
+            # Plan once across every declared axis so the global bound does not
+            # make each role-specific child repeat the same pattern prefix.
+            planned = build_context_candidates(spec)
+            records_by_role = {role: [] for role in spec.job_roles}
+            for record in planned:
+                records_by_role[record.body["job_title"]].append(record)
+            for role in spec.job_roles:
+                role_records = records_by_role[role]
+                if not role_records:
                     continue
                 child_cfg = LoopConfig(
                     framework="custom", custom_steps=("generate_context",),
@@ -331,14 +416,16 @@ def run_context_seed(spec: ContextSeedSpec, *, existing_context_records=(),
                                    child_cfg)
 
                 def child_handler(_child, _step, _context, role=role,
-                                  role_limit=role_limit):
-                    records = build_context_candidates(
-                        spec, roles=(role,), limit=role_limit)
-                    state["candidates"].extend(records)
-                    return StepOutcome(output=f"generated={len(records)}",
+                                  role_records=tuple(role_records)):
+                    state["candidates"].extend(role_records)
+                    return StepOutcome(output=f"generated={len(role_records)}",
                                        mode="deterministic", confidence=0.95)
 
                 child.run(handler=child_handler)
+            planned_order = {record.record_id: index
+                             for index, record in enumerate(planned)}
+            state["candidates"].sort(
+                key=lambda record: planned_order[record.record_id])
             return StepOutcome(
                 output=f"generated={len(state['candidates'])}",
                 mode="deterministic", confidence=0.95)
@@ -407,6 +494,35 @@ def self_test() -> dict:
     second = run_context_seed(spec)
     first_ids = [record.record_id for record in first.candidates]
     second_ids = [record.record_id for record in second.candidates]
+    full_spec = ContextSeedSpec(
+        domain=spec.domain, industry=spec.industry,
+        project_types=spec.project_types, task_types=spec.task_types,
+        job_roles=spec.job_roles, source_policy=spec.source_policy,
+        max_candidates=(len(CONTEXT_PATTERNS) * len(spec.job_roles)
+                        * len(spec.project_types) * len(spec.task_types)))
+    balanced = build_context_candidates(full_spec, limit=30)
+    balanced_again = build_context_candidates(full_spec, limit=30)
+    complete = build_context_candidates(
+        full_spec, limit=full_spec.max_candidates)
+    limited = build_context_candidates(full_spec, limit=7)
+    empty = build_context_candidates(full_spec, limit=0)
+    capped = build_context_candidates(spec, limit=full_spec.max_candidates)
+    wide_spec = ContextSeedSpec(
+        domain="wide-axis-test",
+        job_roles=tuple(f"role {index}" for index in range(17)),
+        project_types=tuple(f"project {index}" for index in range(15)),
+        task_types=tuple(f"task {index}" for index in range(13)),
+        max_candidates=30)
+    wide = build_context_candidates(wide_spec)
+    duplicate_axes_refused = 0
+    for operation in (
+            lambda: ContextSeedSpec(domain="x", job_roles=("same", "same")),
+            lambda: build_context_candidates(full_spec,
+                                             roles=("same", "same"))):
+        try:
+            operation()
+        except ValueError:
+            duplicate_axes_refused += 1
     check("domain_seed_runs_through_search_improvement_loops",
           first.loop_result.stopped == "done"
           and first.loop_result.model_calls == 0
@@ -420,19 +536,59 @@ def self_test() -> dict:
           and first.manifest["content_digest_sha256"]
           == second.manifest["content_digest_sha256"]
           and len(first_ids) == len(set(first_ids)) == 30)
+    axes = (
+        ("thinking_method", tuple(item["name"] for item in CONTEXT_PATTERNS)),
+        ("job_title", spec.job_roles),
+        ("project_type", spec.project_types),
+        ("task_type", spec.task_types),
+    )
+    check("coverage_balanced_prefix_covers_each_feasible_axis_before_repeating",
+          all(
+              len({record.body[field]
+                   for record in balanced[:len(expected)]}) == len(expected)
+              and {record.body[field]
+                   for record in balanced[:len(expected)]} == set(expected)
+              for field, expected in axes),
+          "the first N records cover all N values of each feasible axis")
+    wide_axes = (
+        ("thinking_method", tuple(item["name"] for item in CONTEXT_PATTERNS)),
+        ("job_title", wide_spec.job_roles),
+        ("project_type", wide_spec.project_types),
+        ("task_type", wide_spec.task_types),
+    )
+    check("coverage_prefix_holds_when_a_non_pattern_axis_is_largest",
+          all({record.body[field] for record in wide[:len(expected)]}
+              == set(expected) for field, expected in wide_axes),
+          "17 roles, 15 projects, 13 tasks, and 12 patterns all cover first")
+    complete_coordinates = {
+        (record.body["thinking_method"], record.body["job_title"],
+         record.body["project_type"], record.body["task_type"])
+        for record in complete}
+    check("coverage_sampler_is_unique_deterministic_and_limit_bounded",
+          [record.record_id for record in balanced]
+          == [record.record_id for record in balanced_again]
+          and len(complete) == len(complete_coordinates)
+          == full_spec.max_candidates
+          and len(limited) == 7 and not empty
+          and len(capped) == spec.max_candidates
+          and duplicate_axes_refused == 2,
+          f"{len(complete)} unique full coordinates; limits 7 and "
+          f"{spec.max_candidates} honored")
     hierarchies = [record.body["classification"]["context_hierarchy"]
                    for record in first.candidates]
     check("candidate_context_has_role_work_and_thinking_axes",
           {item["job_role"] for item in hierarchies}
           == set(spec.job_roles)
           and all(item["domain"] == "space" for item in hierarchies)
-          and len({item["thinking_style"] for item in hierarchies}) >= 3)
+          and len({item["thinking_style"] for item in hierarchies}) >= 3
+          and {record.body["thinking_method"] for record in first.candidates}
+          == {item["name"] for item in CONTEXT_PATTERNS})
     check("research_questions_request_sources_without_inventing_people",
           any("people and organizations" in question
               for question in first.research_questions)
           and any("official standards" in question
                   for question in first.research_questions)
-          and all(record.body.get("claim_status") == "proposed"
+          and all(record.body.get("claim_status") == "proposal"
                   for record in first.candidates))
     from ..static_architecture.intelligence_layers import query_intelligence
     hidden = query_intelligence(

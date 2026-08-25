@@ -3,14 +3,14 @@
 > Generated 2026-08-25 by `PYTHONPATH=src python3 -m loop_engine --map`. Regenerate rather than hand-edit; freshness is gated (`architecture_map_freshness`).
 
 ARCHITECTURE MAP: four top-level abstractions
-  loop/  (48 modules)
-    acceptance, arbiter, builtin_resolvers, canvas, context_shuffle, decision_engine, decision_slates, escalation_governor, hybrid_dimension_lattice, research_to_capability, list_intelligence, decision_envelope, decision_episode, decision_need, delegation, deliberation, kernel, kernel_model_impls, lens, loop, loop_handlers, loop_templates, methodical, moves, intelligence_loops, practitioner_campaign, practitioner_loop, practitioner_methods, receipts, effective_spec, encapsulate, loop_capsule, loop_contract, loop_doctrine, recursive_loop, regimes, registry, resolvers, route_bridge, runner, solve, solver, step_registry, steps, studio, sub_practitioner, tuning, wiring
+  loop/  (49 modules)
+    acceptance, arbiter, builtin_resolvers, capability_loops, canvas, context_shuffle, decision_engine, decision_slates, escalation_governor, hybrid_dimension_lattice, research_to_capability, list_intelligence, decision_envelope, decision_episode, decision_need, delegation, deliberation, kernel, kernel_model_impls, lens, loop, loop_handlers, loop_templates, methodical, moves, intelligence_loops, practitioner_campaign, practitioner_loop, practitioner_methods, receipts, effective_spec, encapsulate, loop_capsule, loop_contract, loop_doctrine, recursive_loop, regimes, registry, resolvers, route_bridge, runner, solve, solver, step_registry, steps, studio, sub_practitioner, tuning, wiring
   strings/  (19 modules)
     ask_strategies, bias_checklist, biases, context, decision_schemas, domain_pack, frame, intelligence_strings, interrogation, knowledge, knowledge_state, notes, output_templates, packs, prompt_fragments, question_bank, question_engine, solution_shaping, task_blueprint
   code_nodes/  (37 modules)
     blueprint, capture, closure, context_seed, competition_solver, enrichment, failure_response, follow_up, housekeeping, kaggle_executor, live_run_demo, learning_bundle, guided_setup, logic_ast, universal_solve, loop_report, measurement, pack_curation, planning, public_examples, review_mode, change_proposals, foundry_probes, guidance_ledger, rl_vocabulary, run_analytics, run_playback, run_quality, runtime_contracts, self_improve, self_improvement_loop, smoke_ladder, solution_canvas, solution_compiler, solution_graph, solution_records, string_foundry
-  static_architecture/  (35 modules)
-    asset_class, asset_lifecycle, capability_directory, chronicle, config, context_catalog, context_classification, event_vocabulary, duckdb_catalog, facets, intelligence_layers, runtime_memory, user_intelligence, intelligence_registry, model_call, model_routes, ollama_client, ollama_resolvers, mistral_client, openrouter_client, provider_failover, model_discovery, autoconfigure, custom_endpoint, knowledge_loader, opencode_client, operating_profile, persistence, reasoning_call, retrieval, solution_library, store_serve, boundary_registry, saas_routes, studio_server
+  static_architecture/  (38 modules)
+    asset_class, asset_lifecycle, brave_search, capability_directory, chronicle, config, context_catalog, context_classification, context_ontology, code_intelligence_assets, event_vocabulary, duckdb_catalog, facets, intelligence_layers, runtime_memory, user_intelligence, intelligence_registry, model_call, model_routes, ollama_client, ollama_resolvers, mistral_client, openrouter_client, provider_failover, model_discovery, autoconfigure, custom_endpoint, knowledge_loader, opencode_client, operating_profile, persistence, reasoning_call, retrieval, solution_library, store_serve, boundary_registry, saas_routes, studio_server
 
 THE REFERENCE NINE-STEP PROFILE: detailed step map
 
@@ -150,20 +150,20 @@ STEP 9: route  [REQUIRED]
 CROSS-CUTTING SERVICES (used by many steps, never step-specific):
   - model-call DAG  [model_call + reasoning_call + model_routes]
       every model call: ReasoningRequest -> PromptAssemblySpec (13 blocks) -> ModelInvocationRequest -> ModelInvocationResult; provider-neutral routes (cloud-only policy, local wired-but-gated); fallbacks + seeds
-  - two primitives (String | Code node)  [asset_class]
-      THE classification of everything: literally every resource, asset, node, and text is a STRING (an LLM reads it) or a CODE NODE (the machine runs it; may READ strings). 'Contract / logic / capability' are ROLES a code node plays (validate / decide / execute / adapt / detect), not separate primitives. Same need, either primitive; the arrow STRING -> CODE NODE is the distillation flywheel
+  - two intelligence item forms (Context | Code)  [asset_class]
+      Context Intelligence guides work without executing it. Code Intelligence describes something the machine can run. Both are discovered as small LoopRefs and returned through loops. Contract, logic, and capability are roles a Code item can play, not new runtime node types
   - logic (safe AST)  [logic_ast]
       the Logic category: a closed-operator expression AST (never eval) that COMPUTES/DECIDES deterministically; the executor for a captured logic_candidate; emits findings/actions, abstains outside scope, never mutates state
   - capability directory (handshakes + endpoints)  [capability_directory]
-      how the practitioner KNOWS what strings / code nodes / static components are available and HOW to call them: a CapabilityHandshake per surface (kind, operations, query fields, ranking, health: read before use, never assumed), and a standardized directory (discover / negotiate / call / serve) with declared fallbacks. serve() is the two-rail bias: use a code node if one serves the op, else fall back to the LLM-call pipeline
+      how the practitioner knows what Context, Code, and Static Architecture capabilities are available and HOW to call them: a CapabilityHandshake per surface (kind, operations, query fields, ranking, health: read before use, never assumed), and a standardized directory (discover / negotiate / call / serve) with declared fallbacks. serve() is the two-rail bias: use a code node if one serves the op, else fall back to the LLM-call pipeline
   - real loop handlers  [loop_handlers]
       the Loop on the REAL infrastructure: directory_handler pulls the mandatory string intelligence per step (the power lever), probes the code rail with a real search through the capability directory, resolves deterministic steps to real code nodes, escalates an empty code rail to the LLM surface (hybrid), and records every infra call on the ledger; run_loop_via_kernel delegates a nine_step loop to the wired kernel
   - the Loop (everything is a loop)  [recursive_loop]
-      the fundamental object: a Loop is an initializable, parameterized CLASS: pass in framework (nine_step | five_step | custom | open), allowable + preferred MODES (deterministic | hybrid | non_deterministic, a waterfall with fallback), and a POWER lever (small..max sets string-intelligence pull + model-call budget). One loop can SPAWN another (recursive initialization; loops of loops), all tracked on one shared ledger. nine_step is the default; the kernel is its executor. The wedge is reusable code nodes + string intelligence flowing through it
+      the fundamental object: a Loop is an initializable, parameterized CLASS: pass in framework (nine_step | five_step | custom | open), allowable + preferred MODES (deterministic | hybrid | non_deterministic, a waterfall with fallback), and an effort setting (small..max sets Context retrieval + model-call budget). One loop can SPAWN another (recursive initialization; loops of loops), all tracked on one shared ledger. nine_step is the default; the kernel is its executor. Reusable Context and Code Intelligence flow through the same loop boundary
   - decision engine (per-node sub-layer)  [decision_engine]
       the immediate sub-node under EVERY one of the nine kernel nodes: resolve_path asks 'deterministic, deterministic + LLM repair, or non-deterministic?' and branches into three, deciding from heuristics / memory / policy (settings like model + internet access gate the paths): the two-rail choice refined into three, one engine per node
   - continuous improvement (housekeeping)  [housekeeping]
-      a SEPARATE-PURPOSE run of the SAME practitioner loop (self-improvement objective + instructions): on a trigger/cron it mines our runtimes/logs and customer legacy code (GitHub URLs) and proposes new code nodes, strings, logic, and biases: classified string vs code, all runtime CANDIDATES (promotion is the evidence-gated boundary, never done here)
+      a SEPARATE-PURPOSE run of the SAME practitioner loop (self-improvement objective + instructions): on a trigger/cron it mines our runtimes/logs and customer legacy code (GitHub URLs) and proposes new Code items, Context items, logic, and biases. All runtime output stays at candidate status (promotion is the evidence-gated boundary, never done here)
   - live wiring  [wiring]
       the composed entry point run_wired: enriches the deterministic kernel defaults so the LIVE loop exercises guidance, shaping, measurement, contracts, capture, and learning end-to-end
   - runtime contracts  [runtime_contracts]
@@ -171,7 +171,7 @@ CROSS-CUTTING SERVICES (used by many steps, never step-specific):
   - search / serve DAG  [store_serve]
       one strict search over ALL resources (nodes, packs, rules, prior runs); tier gates; capability requests
   - resources  [question_engine + question_bank + domain_pack + intelligence_strings + intelligence_registry + packs]
-      question forms/tiers, personas, context/layout policies, Domain Support Packs, and intelligence-as-strings; intelligence_registry standardizes the Database vs Runtime tiers (serve/version/track/promote)
+      question forms/tiers, personas, context/layout policies, Domain Support Packs, and Context Intelligence; intelligence_registry standardizes the Database and Runtime tiers (serve/version/track/promote)
   - operating profile + config  [operating_profile + config]
       five enum modes resolved Platform->Org->Project->Run->Child; enforced at the how/act/model boundaries
   - model transport  [ollama_client + opencode_client]

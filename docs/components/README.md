@@ -9,8 +9,8 @@ pages in this order if the system is new to you.
 | 2 | [Loop Practitioner](practitioner/) | How does Loop Engine build and test a solution? |
 | 3 | [Solution Canvas](solution-canvas/) | What does the finished solution contain and run? |
 | 4 | [Self-improvement and domain seeding](self-improvement/) | How does the system review history and stage improvements? |
-| 5 | [Static Architecture and extensions](static-architecture/) | Which shared services support every loop? |
-| 6 | [The four intelligence layers](intelligence-layers/) | What reusable knowledge can a loop search? |
+| 5 | [Static Architecture and extensions](static-architecture/) | Which shared services and registered plugins support every loop? |
+| 6 | [The four intelligence layers](intelligence-layers/) | What reusable context, code, history, solutions, and user guidance can a loop search? |
 
 The short version is:
 

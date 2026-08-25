@@ -31,7 +31,8 @@ DETERMINISM = ("deterministic", "seeded", "stochastic")
 LOCALITY = ("local_machine", "api_calling", "external_resources")
 
 #: side effects (multi-valued; "pure" excludes the others)
-EFFECTS = ("pure", "reads_fs", "writes_fs", "network", "spawns_process")
+EFFECTS = ("pure", "reads_fs", "writes_fs", "reads_secret", "network",
+           "spawns_process")
 
 #: coarse cost band
 COST_CLASSES = ("free", "cheap", "metered", "expensive")
@@ -59,8 +60,13 @@ CONTEXT_FACET_FIELDS = (
     "category", "subcategory", "context_type", "role_family",
     "job_position", "seniority", "industry", "domain", "subdomain",
     "topic", "project_type", "task_type", "deliverable", "workflow_stage",
-    "thinking_style", "response_shape", "geography", "jurisdiction",
-    "time_horizon", "source_policy", "claim_status",
+    "thinking_style", "question_family", "speech_act", "polarity",
+    "comparison_mode", "detail_direction", "list_structure",
+    "ordering_rule", "response_shape", "serialization_format",
+    "geography", "jurisdiction",
+    "time_horizon", "source_policy", "claim_status", "evidence_status",
+    "utility_status", "access_level", "source_type", "freshness_status",
+    "risk_level", "applicability_status",
     "possible_code_target", "scope", "lifecycle", "provenance", "digest")
 
 # Compatibility name for callers that still use the internal String asset
@@ -98,10 +104,18 @@ def string_facets(*, category: str, subcategory: str = "",
                   subdomain: str = "", topic: str = "",
                   project_type: str = "", task_type: str = "",
                   deliverable: str = "", workflow_stage: str = "",
-                  thinking_style: str = "", response_shape: str = "",
+                  thinking_style: str = "", question_family: str = "",
+                  speech_act: str = "", polarity: str = "",
+                  comparison_mode: str = "", detail_direction: str = "",
+                  list_structure: str = "", ordering_rule: str = "",
+                  response_shape: str = "", serialization_format: str = "",
                   geography: str = "", jurisdiction: str = "",
                   time_horizon: str = "", source_policy: str = "",
-                  claim_status: str = "", possible_code_target: str = "",
+                  claim_status: str = "", evidence_status: str = "",
+                  utility_status: str = "", access_level: str = "",
+                  source_type: str = "", freshness_status: str = "",
+                  risk_level: str = "", applicability_status: str = "",
+                  possible_code_target: str = "",
                   digest: str = "") -> dict:
     """Facet dict for a Context record.
 
@@ -110,6 +124,51 @@ def string_facets(*, category: str, subcategory: str = "",
     Context Intelligence. Open fields remain explicit instead of forcing every
     industry and job into a closed list.
     """
+    from .context_ontology import normalize_ontology
+    normalized = normalize_ontology({key: value for key, value in {
+        "context_type": context_type,
+        "thinking_style": thinking_style,
+        "question_family": question_family,
+        "speech_act": speech_act,
+        "polarity": polarity,
+        "comparison_mode": comparison_mode,
+        "detail_direction": detail_direction,
+        "list_structure": list_structure,
+        "ordering_rule": ordering_rule,
+        "response_shape": response_shape,
+        "serialization_format": serialization_format,
+        "claim_status": claim_status,
+        "evidence_status": evidence_status,
+        "utility_status": utility_status,
+        "lifecycle": lifecycle,
+        "access_level": access_level,
+        "source_type": source_type,
+        "freshness_status": freshness_status,
+        "risk_level": risk_level,
+        "applicability_status": applicability_status,
+    }.items() if value})
+    context_type = normalized.get("context_type", context_type)
+    thinking_style = normalized.get("thinking_style", thinking_style)
+    question_family = normalized.get("question_family", question_family)
+    speech_act = normalized.get("speech_act", speech_act)
+    polarity = normalized.get("polarity", polarity)
+    comparison_mode = normalized.get("comparison_mode", comparison_mode)
+    detail_direction = normalized.get("detail_direction", detail_direction)
+    list_structure = normalized.get("list_structure", list_structure)
+    ordering_rule = normalized.get("ordering_rule", ordering_rule)
+    response_shape = normalized.get("response_shape", response_shape)
+    serialization_format = normalized.get(
+        "serialization_format", serialization_format)
+    evidence_status = normalized.get("evidence_status", evidence_status)
+    utility_status = normalized.get("utility_status", utility_status)
+    claim_status = normalized.get("claim_status", claim_status)
+    lifecycle = normalized.get("lifecycle", lifecycle)
+    access_level = normalized.get("access_level", access_level)
+    source_type = normalized.get("source_type", source_type)
+    freshness_status = normalized.get("freshness_status", freshness_status)
+    risk_level = normalized.get("risk_level", risk_level)
+    applicability_status = normalized.get(
+        "applicability_status", applicability_status)
     return {"category": category, "subcategory": subcategory,
             "context_type": context_type,
             "role_family": role_family,
@@ -123,10 +182,21 @@ def string_facets(*, category: str, subcategory: str = "",
             "project_type": project_type, "task_type": task_type,
             "deliverable": deliverable, "workflow_stage": workflow_stage,
             "thinking_style": thinking_style,
+            "question_family": question_family,
+            "speech_act": speech_act, "polarity": polarity,
+            "comparison_mode": comparison_mode,
+            "detail_direction": detail_direction,
+            "list_structure": list_structure,
+            "ordering_rule": ordering_rule,
             "response_shape": response_shape,
+            "serialization_format": serialization_format,
             "geography": geography, "jurisdiction": jurisdiction,
             "time_horizon": time_horizon, "source_policy": source_policy,
-            "claim_status": claim_status,
+            "claim_status": claim_status, "evidence_status": evidence_status,
+            "utility_status": utility_status,
+            "access_level": access_level, "source_type": source_type,
+            "freshness_status": freshness_status, "risk_level": risk_level,
+            "applicability_status": applicability_status,
             "possible_code_target": possible_code_target,
             "scope": scope, "lifecycle": lifecycle,
             "provenance": provenance, "digest": digest}

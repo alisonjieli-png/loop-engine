@@ -33,7 +33,7 @@ Verification: self_test() (folded into the package suite).
 from __future__ import annotations
 
 import copy
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 PROPOSAL_STATUSES = ("draft", "under_review", "approved", "rejected",
                      "deferred")
@@ -83,6 +83,9 @@ class ChangeProposal:
     def to_record(self):
         from ..static_architecture.store_serve import StoreRecord
         from ..static_architecture.facets import string_facets
+        lifecycle = ("validated" if self.status == "approved"
+                     else "retired" if self.status == "rejected"
+                     else "candidate")
         return StoreRecord(
             f"proposal.{self.proposal_id}", "strategy",
             f"Change proposal: {self.proposal_id} on {self.target_kind} "
@@ -95,7 +98,7 @@ class ChangeProposal:
                   "test_plan": self.test_plan, "status": self.status,
                   "facets": string_facets(category="change_proposal",
                                           subcategory=self.target_kind,
-                                          lifecycle=self.status)},
+                                          lifecycle=lifecycle)},
             tags=("change_proposal", self.target_kind, self.status))
 
 
@@ -205,11 +208,12 @@ def self_test() -> dict:
           refused_field and refused_invalid,
           "maturity is gate-owned; an orphan template does not validate")
 
-    # 4. the proposal is a searchable String with its status on the card.
+    # 4. the proposal is searchable Context with status separate from lifecycle.
     rec = prop.to_record()
-    check("proposals_are_searchable_strings",
+    check("proposals_are_searchable_context_with_separate_status",
           rec.body["role"] == "change_proposal"
-          and rec.body["facets"]["lifecycle"] == "approved"
+          and rec.body["status"] == "approved"
+          and rec.body["facets"]["lifecycle"] == "validated"
           and "approved" in rec.tags)
 
     passed = sum(1 for r in results if r["passed"])

@@ -90,10 +90,17 @@ stage
 report
 ```
 
-`run_context_seed()` multiplies declared job roles, project types, task types,
-and thinking styles into deterministic candidate Context records. It starts one
-loop for each role, keeps candidate IDs stable, and creates a manifest over the
-exact candidate set.
+`run_context_seed()` samples declared job roles, project types, task types, and
+question patterns into deterministic candidate Context records. The sampler is
+balanced across every feasible axis before it repeats one. It plans the bounded
+set once, partitions work across role loops, restores the global order, keeps
+candidate IDs stable, and creates a manifest over the exact set.
+
+The Context ontology supplies controlled question families, thinking methods,
+speech acts, response shapes, list structures, serialization formats, evidence
+states, and typed relationships. Job title, industry, domain, and key phrases
+remain open fields. A seed can add a new role without changing a closed package
+enumeration.
 
 Built-in seeding does not browse the web. It creates explicit questions for a
 separate source-aware research loop, including questions about important

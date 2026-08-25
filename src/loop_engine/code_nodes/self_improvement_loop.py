@@ -155,7 +155,8 @@ def run_self_improvement(*, runs_dir: str = "", layer_records=None,
         if step == "audit_intelligence":
             retrieved = query_intelligence(
                 "review context method failure and repeated model work",
-                catalog, top_n=5, include_candidates=include_candidates)
+                catalog, top_n=5, include_candidates=include_candidates,
+                ledger=log, parent=active_loop)
             state["retrieval_hits"] = list(retrieved["hits"])
             found = audit_intelligence_summary(summary)
             state["candidates"].extend(found)

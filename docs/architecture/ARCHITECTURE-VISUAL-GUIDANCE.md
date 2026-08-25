@@ -26,8 +26,7 @@ The same figure must also show:
   and stages candidates only;
 - Static Architecture supporting all three roles;
 - a separate Retrieval Engine node with lexical, vector, and hybrid modes;
-- built-in adapters and extension points, with external plugins labeled as
-  potential rather than shipped;
+- built-in adapters, manual plugin registration, and future plugin packaging;
 - all four intelligence layers;
 - Runtime Memory as current-run state; and
 - Chronicle, reports, and playback as saved run history.
@@ -69,6 +68,11 @@ The Retrieval Engine searches classified records across the four layers. Its
 current backends are a fixed selectable set, not an external plugin registry.
 The Capability Directory is a separate search for something executable under
 the loop's contract and permissions. Do not merge these two searches.
+
+Both searches return body-free `LoopRef` objects. Show selection before
+materialization or execution. Capability discovery must be visibly local and
+effect-free. Network, secret, file-write, and process effects begin in the
+selected capability loop.
 
 Show all four persistent intelligence layers:
 
@@ -121,6 +125,7 @@ accepted work.
 - Each visible loop has a mode when mode detail matters.
 - The four intelligence layers are all present in system maps.
 - Runtime Memory is separate from persistent intelligence.
-- External plugins are described as potential until plugin loading exists.
+- Manual plugins are distinguished from future auto-discovery and marketplace
+  packaging.
 - Labels use plain English and can be read without the rest of the document.
 - Lines do not cross labels, and text remains readable on a narrow screen.

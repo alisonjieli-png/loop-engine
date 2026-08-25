@@ -118,5 +118,5 @@ More: [providers and keys](guides/providers-and-keys.md) ·
 | [Reports](guides/reports.md) | reading and exporting a run |
 | [Component guide](components/) | the Loop object, roles, Static Architecture, and intelligence layers |
 | [Architecture](architecture/) | deeper implementation and visual guidance |
-| [`examples/`](../examples/) | eleven categorized example folders |
+| [`examples/`](../examples/) | thirteen categorized example folders |
 | [Customer import Canvas](../examples/10_validate_customer_import/) | a realistic compiled Solution Canvas with fallback |

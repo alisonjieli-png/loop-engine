@@ -123,14 +123,20 @@ def build_context_records(*, include_candidates: bool = False) -> list:
 
     from ..strings.ask_strategies import core_strategies
     for name, strategy in core_strategies().items():
+        detail_direction = ("progressive_detail"
+                            if name == "blueprint_progressive_detail"
+                            else "summary_only" if name == "direct_next"
+                            else "")
         add(StoreRecord(
             f"ask_strategy.{name}", "strategy", strategy.description,
             body={"role": "ask_strategy", "shape": strategy.shape,
+                  "detail_direction": detail_direction,
                   "maturity": "registered" if strategy.tier == "core"
                   else "candidate",
                   "facets": string_facets(
                       category="asking_method", subcategory=name,
                       context_type="method", thinking_style="exploration",
+                      detail_direction=detail_direction,
                       scope="package", lifecycle="registered"
                       if strategy.tier == "core" else "candidate",
                       provenance="ask_strategy_registry")},
@@ -142,15 +148,22 @@ def build_context_records(*, include_candidates: bool = False) -> list:
         add(StoreRecord(
             fragment.id, "context", fragment.template,
             body={"role": "prompt_fragment", "version": fragment.version,
+                  "serialization_format": "plain_text",
+                  "format_example": fragment.template,
                   "maturity": "registered",
                   "facets": string_facets(
                       category="prompt_fragment",
                       subcategory=fragment.purpose,
                       context_type="template", scope="package",
+                      serialization_format="plain_text",
                       lifecycle="registered",
                       provenance="prompt_fragment_registry")},
             tags=("prompt_fragment", fragment.purpose),
             source="prompt_fragment_registry"))
+
+    from .context_ontology import ontology_records
+    for record in ontology_records():
+        add(record)
 
     if not include_candidates:
         records = [record for record in records
@@ -163,6 +176,18 @@ def build_context_records(*, include_candidates: bool = False) -> list:
 def self_test() -> dict:
     active = build_context_records()
     review = build_context_records(include_candidates=True)
+    from .intelligence_layers import classify_record
+    from .context_ontology import CONTROLLED_AXES, normalize_ontology
+    invalid = []
+    for record in active:
+        hierarchy = classify_record(
+            "string_intelligence", record).get("context_hierarchy", {})
+        controlled = {key: hierarchy.get(key) for key in CONTROLLED_AXES
+            if hierarchy.get(key)}
+        try:
+            normalize_ontology(controlled)
+        except ValueError as exc:
+            invalid.append((record.record_id, str(exc)))
     tests = [
         {"test": "active_context_excludes_candidate_tiers",
          "passed": active and all(record.tier == "core"
@@ -177,6 +202,8 @@ def self_test() -> dict:
          and any(record.record_id.startswith("lens.") for record in active)
          and any(record.record_id.startswith("context_policy.")
                  for record in active)},
+        {"test": "every_active_context_record_uses_valid_controlled_axes",
+         "passed": not invalid},
     ]
     passed = sum(1 for test in tests if test["passed"])
     return {"tests": tests, "passed": passed, "total": len(tests),

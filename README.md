@@ -37,7 +37,7 @@ flowchart TB
     subgraph STATIC[Static Architecture supports every loop]
         direction TB
         A[Shared services]
-        A --> PL[Built-in adapters and extension points<br/>potential external plugins]
+        A --> PL[Built-in adapters and manual plugins<br/>more plugin packaging can be added]
         A --> CD[Capability Directory<br/>loops search what can execute<br/>under contract and permissions]
         A --> RE[Retrieval Engine<br/>one interface: lexical, vector, hybrid]
         A --> PS[Providers, validation, stores]
@@ -46,6 +46,8 @@ flowchart TB
         I --> CI[Code Intelligence]
         I --> HI[Previous Run &amp;<br/>Solution Intelligence]
         I --> UI[User Intelligence]
+        I --> IR[Ranked intelligence LoopRefs<br/>small cards, no large bodies]
+        CD --> CR[Ranked capability LoopRefs<br/>local discovery, no effects]
         A --> RM[Runtime Memory<br/>current run only]
         A --> CH[Chronicle, reports, playback<br/>saved run history]
     end
@@ -68,14 +70,37 @@ Loop object and the same mode language.
 | Static Architecture | Provides shared search, adapters, stores, providers, validation, history, and viewing tools. |
 | Four intelligence layers | Organize reusable context, code, run history, solutions, and user guidance. |
 
+## Search and execution use loops
+
+Search is a loop. Its results are also loops.
+
+```mermaid
+flowchart LR
+    N[Need] --> S[Search loop]
+    S --> R[Ranked LoopRefs<br/>no large bodies]
+    R --> C[Select one]
+    C --> M[Materialization loop<br/>verify locator and digest]
+    M --> U{Selected item}
+    U -->|Context, history, or user guidance| P[Return value to parent loop]
+    U -->|Code| E[Component loop executes one entry point]
+    U -->|Static Architecture capability| A[Capability loop runs declared effects]
+```
+
+The Retrieval Engine searches the four intelligence layers. The Capability
+Directory searches local Static Architecture handshake cards. Neither search
+needs to load a repository, call a tool, read a secret, or make a network
+request. Effects begin only after the parent loop selects a reference and runs
+it.
+
 ## How one task moves through the system
 
 1. A task enters the Loop Practitioner.
 2. The Practitioner starts loops with explicit modes, step profiles, budgets,
    contracts, and stop conditions.
-3. Those loops search intelligence through the Retrieval Engine. They search
-   Static Architecture through the Capability Directory for something that can
-   execute under the contract and permissions.
+3. Those loops search intelligence through the Retrieval Engine. The search
+   returns ranked intelligence `LoopRef` objects. They also search Static
+   Architecture through the Capability Directory for capability `LoopRef`
+   objects that can execute under the contract and permissions.
 4. The Practitioner tests the work and may produce a Solution Canvas.
 5. The Solution Canvas runs its Solution loops to produce the result.
 6. Runtime Memory carries temporary notes during the run. The Chronicle keeps
@@ -202,8 +227,9 @@ instead of rebuilding it for every task.
 
 Providers, decision methods, and capabilities have explicit adapter or
 registration points. Retrieval selects from a fixed built-in backend set.
-Potential external plugins are planned. The package does not yet auto-discover
-Python entry-point plugins or provide a plugin marketplace.
+A manually registered Brave Web Search plugin example is included. The package
+does not auto-discover Python entry-point plugins or provide a plugin
+marketplace.
 
 Read [Static Architecture and extensions](docs/components/static-architecture/).
 
@@ -211,8 +237,8 @@ Read [Static Architecture and extensions](docs/components/static-architecture/).
 
 | Layer | Examples of useful categories |
 |---|---|
-| **Context Intelligence** | questions, methods, checklists, templates, personas, evaluations, context, instructions, warnings, constraints, considerations |
-| **Code Intelligence** | transformations, analysis, decisions, retrieval, execution, validation, reports, integration |
+| **Context Intelligence** | questions, methods, checklists, role perspectives, prompt patterns, output contracts, examples, warnings, source notes, evaluations |
+| **Code Intelligence** | functions, packages, repositories, repository templates, tools, services, workflows, notebooks, large systems, executable capabilities |
 | **Previous Run & Solution Intelligence** | runs, solutions, decisions, failures, repairs, measurements, comparisons |
 | **User Intelligence** | advice, corrections, context, sources, packages, priorities, constraints, instructions, approvals, vetoes |
 
@@ -222,6 +248,11 @@ stays visible. Runtime Memory remains separate because it is temporary and
 run-scoped.
 
 Read [The four intelligence layers](docs/components/intelligence-layers/).
+Read [Context Intelligence ontology](docs/components/intelligence-layers/CONTEXT-HIERARCHY.md)
+for question families, thinking methods, roles, formats, labels, phrases,
+relationships, and history. Read
+[Code Intelligence templates](docs/components/intelligence-layers/CODE-INTELLIGENCE-TEMPLATES.md)
+for packages, repositories, tools, skills, datasets, and large systems.
 
 ## Install directly from GitHub
 
@@ -269,7 +300,7 @@ categorized intelligence inventory, solutions, and improvement candidates at
 
 ## Examples
 
-The repository contains eleven numbered example folders. Each has a `README.md`
+The repository contains thirteen numbered example folders. Each has a `README.md`
 and runnable `run.py`.
 
 - [Useful work](examples/README.md#useful-work)

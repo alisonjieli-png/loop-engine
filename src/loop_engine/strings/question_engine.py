@@ -24,8 +24,8 @@ until they earn core tier by outcome history.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
-from typing import Any, Sequence
+from dataclasses import dataclass
+from typing import Sequence
 
 from ..strings.knowledge import Knowledge
 from ..static_architecture.model_call import AskSpec
@@ -46,6 +46,21 @@ SEED_SALTS = (
     "Optimize for the most reliable path.",
     "Answer first, then list what would change your mind.",
 )
+
+FORM_TO_QUESTION_FAMILY = {
+    "best_way": "best_way", "worst_way": "worst_way",
+    "rank_1_to_10": "ranking", "rank_options": "ranking",
+    "rank_by_analogy": "analogy", "eliminate": "elimination",
+    "verify_check": "evidence_needed", "generate_novel": "novel_alternatives",
+    "pairwise": "pairwise", "devils_advocate": "adversarial_review",
+    "premortem": "premortem", "decompose": "decomposition",
+    "prerequisites": "prerequisites", "whats_missing": "missing_items",
+    "calibrate": "calibration", "check_then_extend": "best_practices",
+    "first_principles": "first_principles",
+    "outline_to_detail": "outline_to_detail",
+    "top_improvements": "top_improvements", "top_avoid": "top_avoid",
+    "best_practices": "best_practices", "invert_assumptions": "inversion",
+}
 
 
 @dataclass
@@ -195,9 +210,13 @@ def multiply(forms: dict, *, personas: Sequence[str] = ("",),
     total = nf * np_ * npol * nsd
     for i in range(min(limit, total)):
         f = usable[i % nf]
-        p = personas[(i // nf) % np_]
-        pol = policies[(i * 3 + i // (nf * np_)) % npol]
-        sd = seeds[(i * 7 + i // nf) % nsd]
+        combo = i // nf
+        # Change the cheap framing salt first, then the persona, then the
+        # context policy. Every form still appears before the next coordinate,
+        # while a short bounded sample sees more than one framing early.
+        sd = seeds[combo % nsd]
+        p = personas[(combo // nsd) % np_]
+        pol = policies[(combo // (nsd * np_)) % npol]
         out.append(AskVariant(f.name, p, pol, sd,
                               f.render(**slot_values), f.answer_shape))
     return out
@@ -229,11 +248,19 @@ def as_store_records(forms: dict) -> list:
         record_id=f"qform.{f.name}", kind="question", title=f.template[:80],
         body={"template": f.template, "answer_shape": f.answer_shape,
               "slots": list(f.slots), "provenance": f.provenance,
+              "question_family": FORM_TO_QUESTION_FAMILY.get(f.name, ""),
+              "serialization_format": "plain_text",
+              "format_example": f.template,
               "maturity": "registered" if f.tier == "core" else "candidate",
               "facets": context_facets(
                   category="question_form", subcategory=f.name,
                   context_type="question", thinking_style=f.name
                   if f.name in ("first_principles", "outline_to_detail") else "",
+                  question_family=FORM_TO_QUESTION_FAMILY.get(f.name, ""),
+                  list_structure="ranked_list" if f.answer_shape == "ranking"
+                  else "flat_list" if f.answer_shape in ("list", "proposals")
+                  else "none",
+                  serialization_format="plain_text",
                   response_shape=f.answer_shape, scope="package",
                   lifecycle="registered" if f.tier == "core" else "candidate",
                   provenance=f.provenance)},
@@ -307,6 +334,22 @@ def self_test() -> dict:
           and spec.output_contract.startswith("answer shape:"),
           "the seed salt lands in the prompt; persona/policy/shape ride the "
           "AskSpec")
+
+    total = combination_space(forms, personas=2, policies=2, seeds=2)
+    stride_all = multiply(
+        forms, personas=("a skeptic", "an optimist"),
+        policies=("fully_informed", "goal_only"), seeds=(0, 3),
+        slot_values=slot_values, limit=total, mode="stride")
+    full_all = multiply(
+        forms, personas=("a skeptic", "an optimist"),
+        policies=("fully_informed", "goal_only"), seeds=(0, 3),
+        slot_values=slot_values, limit=total, mode="full")
+    key = lambda variant: (variant.form, variant.persona,
+                           variant.context_policy, variant.seed)
+    check("stride_visits_every_combination_once",
+          len(stride_all) == len({key(item) for item in stride_all}) == total
+          and {key(item) for item in stride_all}
+          == {key(item) for item in full_all})
 
     # 6. a model-authored form registers ONCE as experimental with provenance.
     f = register_generated_form(

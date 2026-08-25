@@ -15,11 +15,13 @@ consequences, and the second is the worse one:
     success is worse than a crash, because nothing tells you to look.
 
 So this module loads many formats, and it REPORTS what it could not read
-rather than swallowing it.
+rather than swallowing it. Large files can instead become compact locator and
+digest cards, selected by size before the body reaches the text loader.
 
     load_knowledge("docs/")            -> LoadResult(records, skipped, errors)
     load_knowledge("runbook.md")
     load_knowledge("decisions.csv", kind="context")
+    load_knowledge("large.parquet", content_mode="reference")
 
 Supported without any dependency:
 
@@ -36,7 +38,8 @@ when it is not — an honest refusal, never a silent skip.
 Owns:
     - FORMAT_LOADERS: extension -> parser, the one dispatch table;
     - load_knowledge(): files, directories, or globs -> records + a report;
-    - LoadResult: what loaded, what did not, and exactly why;
+    - ExternalPayloadRef: a content-addressed locator for an external body;
+    - LoadResult: what loaded, referenced, what did not, and exactly why;
     - records_to_store(): the records as a SolverStore.
 
 Does not own:
@@ -46,6 +49,7 @@ Key invariants:
     - a file that cannot be read is REPORTED, never silently skipped;
     - every record carries provenance back to its file and position;
     - record ids are stable across runs, so re-loading is idempotent;
+    - reference mode checks size before decoding and never inlines the body;
     - loading costs zero model calls and zero network.
 
 Verification: self_test() — every format round-trips, provenance survives,
@@ -59,10 +63,13 @@ import csv
 import hashlib
 import io
 import json
+import mimetypes
 import os
 import re
 from dataclasses import dataclass, field
+from pathlib import Path
 
+from ..loop.loop_capsule import ExternalPayloadRef
 from .store_serve import STORE_KINDS, StoreRecord
 
 #: Default kind for loaded knowledge. "context" is the honest choice: an
@@ -81,6 +88,11 @@ _SKIP_SUFFIXES = {".pyc", ".pyo", ".so", ".dylib", ".dll", ".zip", ".gz",
 #: one big file cannot dominate a search index.
 MAX_CHARS_PER_RECORD = 4000
 
+#: Inline remains default; reference modes never decode the external body.
+CONTENT_MODES = ("inline", "reference", "auto")
+DEFAULT_REFERENCE_THRESHOLD_BYTES = 8_000_000
+_DIGEST_CHUNK_BYTES = 1024 * 1024
+
 
 @dataclass
 class LoadResult:
@@ -89,6 +101,7 @@ class LoadResult:
     skipped: list = field(default_factory=list)      # (path, reason)
     errors: list = field(default_factory=list)       # (path, reason)
     files_read: int = 0
+    files_referenced: int = 0
 
     @property
     def ok(self) -> bool:
@@ -97,6 +110,7 @@ class LoadResult:
     def summary(self) -> dict:
         return {"record_type": "knowledge_load/v1",
                 "records": len(self.records), "files_read": self.files_read,
+                "files_referenced": self.files_referenced,
                 "skipped": len(self.skipped), "errors": len(self.errors),
                 "by_format": self._by_format(),
                 "skipped_detail": [{"path": p, "reason": r}
@@ -116,6 +130,9 @@ class LoadResult:
         than they expected."""
         lines = [f"Loaded {len(self.records)} records from "
                  f"{self.files_read} file(s)."]
+        if self.files_referenced:
+            lines.append(f"  referenced {self.files_referenced} file(s) without "
+                         "inlining their bodies.")
         if self._by_format():
             lines.append("  by format: " + ", ".join(
                 f"{k} {v}" for k, v in sorted(self._by_format().items())))
@@ -169,6 +186,62 @@ def _record(path: str, index: int, title: str, text: str, *, kind: str,
         body={"text": text, "source_path": path, "format": fmt,
               "position": index, **(extra or {})},
         tags=("knowledge", fmt.lstrip(".")),
+        source="org")
+
+
+def _read_text_file(path: str) -> str:
+    """The one inline text read; reference-mode tests spy on this seam."""
+    return open(path, encoding="utf-8", errors="replace").read()
+
+
+def _sha256_file(path: str) -> str:
+    """Hash exact bytes in bounded chunks without materializing the body."""
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        while True:
+            chunk = handle.read(_DIGEST_CHUNK_BYTES)
+            if not chunk:
+                break
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _reference_record(path: str, *, kind: str, size_bytes: int,
+                      reference_reason: str,
+                      threshold_bytes: "int | None" = None) -> StoreRecord:
+    """One compact search card for an external file; never reads text."""
+    absolute = str(Path(path).resolve())
+    ext = os.path.splitext(path)[1].lower()
+    payload = ExternalPayloadRef(
+        uri=Path(absolute).as_uri(), digest=_sha256_file(path),
+        size_bytes=size_bytes,
+        media_type=mimetypes.guess_type(path)[0] or "application/octet-stream",
+        storage="local_file")
+    external_payload = payload.to_dict()
+    external_payload.update({
+        "schema": "external_payload_ref/v1", "digest_algorithm": "sha256",
+        "source_path": path})
+    body = {
+        "role": "external_payload_ref",
+        "payload_ref": payload.uri,
+        "payload_digest": payload.digest,
+        "payload_size_bytes": payload.size_bytes,
+        "payload_media_type": payload.media_type,
+        "body_inline": False,
+        "source_path": path,
+        "format": ext or "<no_suffix>",
+        "position": 0,
+        "reference_reason": reference_reason,
+        "external_payload": external_payload,
+    }
+    if threshold_bytes is not None:
+        body["reference_threshold_bytes"] = int(threshold_bytes)
+    return StoreRecord(
+        record_id=_stable_id(path, 0, f"external:{payload.digest}"),
+        kind=kind,
+        title=f"External knowledge file: {os.path.basename(path)}",
+        body=body,
+        tags=("knowledge", "external_reference", ext.lstrip(".") or "file"),
         source="org")
 
 
@@ -323,11 +396,10 @@ def _load_python(path: str, text: str, kind: str) -> tuple:
 
 def _load_yaml(path: str, text: str, kind: str) -> tuple:
     try:
-        import yaml                                       # noqa: F401
+        import yaml
     except ImportError:
         return [], ["needs PyYAML for .yaml/.yml. Reinstall with: "
                     "python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git"]
-    import yaml
     try:
         data = list(yaml.safe_load_all(text))
     except yaml.YAMLError as e:
@@ -378,21 +450,66 @@ def _iter_files(target: str, recursive: bool = True):
 
 def load_knowledge(target: str, *, kind: str = DEFAULT_KIND,
                    recursive: bool = True, max_files: int = 5000,
+                   content_mode: str = "inline",
+                   reference_threshold_bytes: int =
+                       DEFAULT_REFERENCE_THRESHOLD_BYTES,
                    ledger=None) -> LoadResult:
     """Load knowledge from a file, a directory, or a glob.
 
     Every file is accounted for: loaded, skipped with a reason, or failed with
-    a reason. Nothing disappears quietly — that was the original defect."""
+    a reason. Nothing disappears quietly — that was the original defect.
+
+    ``inline`` preserves parsing; ``reference`` emits locator cards; ``auto``
+    does so only at the threshold, decided by ``stat`` before text decoding.
+    """
     if kind not in STORE_KINDS:
         raise ValueError(f"kind must be one of {STORE_KINDS}, got {kind!r}")
+    if content_mode not in CONTENT_MODES:
+        raise ValueError(f"content_mode must be one of {CONTENT_MODES}, got "
+                         f"{content_mode!r}")
+    if int(reference_threshold_bytes) <= 0:
+        raise ValueError("reference_threshold_bytes must be positive")
     result = LoadResult()
 
     for path in _iter_files(target, recursive):
-        if len(result.records) and result.files_read >= max_files:
+        if result.files_read >= max_files:
             result.skipped.append((path, f"file cap of {max_files} reached"))
             continue
+        try:
+            size_bytes = os.path.getsize(path)
+        except OSError as e:
+            result.errors.append((path, f"could not stat: {e}"))
+            continue
+        if size_bytes == 0:
+            result.skipped.append((path, "empty file"))
+            continue
+        if os.path.basename(path).startswith("."):
+            result.skipped.append((path, "hidden files are not loaded"))
+            continue
+
+        should_reference = (
+            content_mode == "reference"
+            or (content_mode == "auto"
+                and size_bytes >= int(reference_threshold_bytes)))
+        if should_reference:
+            reason = ("explicit_reference_mode" if content_mode == "reference"
+                      else "size_threshold")
+            try:
+                record = _reference_record(
+                    path, kind=kind, size_bytes=size_bytes,
+                    reference_reason=reason,
+                    threshold_bytes=(int(reference_threshold_bytes)
+                                     if content_mode == "auto" else None))
+            except OSError as e:
+                result.errors.append((path, f"could not hash: {e}"))
+                continue
+            result.files_read += 1
+            result.files_referenced += 1
+            result.records.append(record)
+            continue
+
         ext = os.path.splitext(path)[1].lower()
-        if ext in _SKIP_SUFFIXES or os.path.basename(path).startswith("."):
+        if ext in _SKIP_SUFFIXES:
             # NOTE: no multi-line expression inside an f-string here. That is
             # PEP 701 and only parses on Python 3.12+, while this package
             # supports 3.10 — CI caught it, a 3.14 workstation did not.
@@ -406,7 +523,7 @@ def load_knowledge(target: str, *, kind: str = DEFAULT_KIND,
                        f"supported: {', '.join(SUPPORTED_FORMATS)}"))
             continue
         try:
-            text = open(path, encoding="utf-8", errors="replace").read()
+            text = _read_text_file(path)
         except OSError as e:
             result.errors.append((path, f"could not read: {e}"))
             continue
@@ -443,9 +560,14 @@ def records_to_store(records, *, core_records=()):
 
 
 def load_into_store(target: str, *, kind: str = DEFAULT_KIND,
-                    core_records=(), ledger=None) -> tuple:
+                    core_records=(), content_mode: str = "inline",
+                    reference_threshold_bytes: int =
+                        DEFAULT_REFERENCE_THRESHOLD_BYTES,
+                    ledger=None) -> tuple:
     """One call: files in, a searchable store plus the load report out."""
-    result = load_knowledge(target, kind=kind, ledger=ledger)
+    result = load_knowledge(
+        target, kind=kind, content_mode=content_mode,
+        reference_threshold_bytes=reference_threshold_bytes, ledger=ledger)
     return records_to_store(result.records, core_records=core_records), result
 
 
@@ -575,6 +697,77 @@ def self_test() -> dict:
               and not nothing.records and nothing.skipped and nothing.ok
               and bad_kind,
               "an empty result is empty and honest, not an error")
+
+        # 10. Decide from stat before decoding; stream only for SHA-256.
+        large_path = os.path.join(d, "large_reference_payload.dat")
+        large_bytes = b"NEVER_INLINE_THIS_LARGE_BODY\n" * 4096
+        open(large_path, "wb").write(large_bytes)
+        inline_reads = []
+        original_reader = globals()["_read_text_file"]
+
+        def spy_reader(path):
+            inline_reads.append(path)
+            return original_reader(path)
+
+        globals()["_read_text_file"] = spy_reader
+        try:
+            large_ref = load_knowledge(large_path, content_mode="auto",
+                                       reference_threshold_bytes=1024)
+            explicit_ref = load_knowledge(os.path.join(d, "notes.md"),
+                                          content_mode="reference")
+        finally:
+            globals()["_read_text_file"] = original_reader
+        card = large_ref.records[0]
+        serialized_card = json.dumps(card.to_dict(), sort_keys=True)
+        expected_digest = hashlib.sha256(large_bytes).hexdigest()
+        ref_store = records_to_store(large_ref.records)
+        ref_hits = ref_store.search("large reference payload")["hits"]
+        check("large_files_become_compact_content_addressed_references",
+              large_ref.ok and large_ref.files_read == 1
+              and large_ref.files_referenced == 1
+              and card.body["body_inline"] is False
+              and card.body["payload_digest"] == expected_digest
+              and card.body["payload_size_bytes"] == len(large_bytes)
+              and card.body["payload_ref"].startswith("file://")
+              and "text" not in card.body
+              and "NEVER_INLINE_THIS_LARGE_BODY" not in serialized_card
+              and len(serialized_card) < 2500 and ref_hits,
+              "stat -> streamed digest -> one small locator card; no body")
+        check("reference_paths_never_reach_the_inline_text_reader",
+              not inline_reads and explicit_ref.files_referenced == 1
+              and len(explicit_ref.records) == 1
+              and explicit_ref.records[0].body["body_inline"] is False,
+              f"inline reader calls: {inline_reads}")
+
+        # 11. Default and below-threshold behavior remain inline.
+        small_auto = load_knowledge(os.path.join(d, "notes.md"),
+                                    content_mode="auto",
+                                    reference_threshold_bytes=10_000_000)
+        large_again = load_knowledge(large_path, content_mode="auto",
+                                     reference_threshold_bytes=1024)
+        check("inline_default_and_below_threshold_behavior_are_preserved",
+              single.files_referenced == 0
+              and any("text" in record.body for record in single.records)
+              and small_auto.files_referenced == 0
+              and any("text" in record.body for record in small_auto.records)
+              and large_again.records[0].record_id == card.record_id
+              and large_again.records[0].body["payload_digest"]
+              == expected_digest,
+              "existing callers still get parsed text; reference IDs are stable")
+
+        # 12. Unknown modes and nonsensical thresholds fail closed.
+        bad_mode = bad_threshold = False
+        try:
+            load_knowledge(large_path, content_mode="maybe")
+        except ValueError:
+            bad_mode = True
+        try:
+            load_knowledge(large_path, content_mode="auto", reference_threshold_bytes=0)
+        except ValueError:
+            bad_threshold = True
+        check("reference_configuration_is_validated_fail_closed",
+              bad_mode and bad_threshold,
+              f"modes={CONTENT_MODES}; threshold must be positive")
     finally:
         shutil.rmtree(d, ignore_errors=True)
 

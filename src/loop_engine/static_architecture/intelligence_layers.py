@@ -50,6 +50,7 @@ from collections import Counter
 from .context_classification import (CONTEXT_HIERARCHY_FIELDS,
                                      CONTEXT_THINKING_STYLES,
                                      context_hierarchy)
+from .context_ontology import CONTEXT_KINDS
 
 LAYERS = ("string_intelligence", "code_intelligence", "past_run_intelligence",
           "user_intelligence")
@@ -114,11 +115,13 @@ LAYER_MEANING = {
 # category and subcategory stay intact. Unknown items remain visible as
 # ``other`` with a missing-field report rather than receiving an invented type.
 LAYER_CATEGORY_GROUPS = {
-    "string_intelligence": (
-        "question", "method", "checklist", "template", "persona",
-        "evaluation", "context", "instruction", "warning", "constraint",
-        "consideration", "other"),
+    "string_intelligence": CONTEXT_KINDS,
     "code_intelligence": (
+        "function", "single_file", "module", "package", "repository",
+        "template_repository", "service", "dataset_backed_system",
+        "container", "large_framework", "worker_system", "llm_harness",
+        "command_line_tool", "static_architecture_plugin",
+        "agent_skill_bundle", "workflow", "notebook",
         "transform", "analyze", "decide", "retrieve", "execute",
         "validate", "report", "integrate", "other"),
     "past_run_intelligence": (
@@ -213,6 +216,19 @@ def classify_record(layer: str, record) -> dict:
     explicit_group = str(facets.get("category_group") or "")
     group = explicit_group if explicit_group in LAYER_CATEGORY_GROUPS[layer] \
         else ""
+    if not group and layer == "string_intelligence":
+        context_type = str(facets.get("context_type")
+                           or body.get("context_type") or "")
+        group = context_type if context_type in LAYER_CATEGORY_GROUPS[layer] \
+            else ""
+    if not group and layer == "code_intelligence":
+        asset_kind = str(body.get("asset_kind")
+                         or (body.get("metadata") or {}).get("asset_kind")
+                         or "")
+        if asset_kind in LAYER_CATEGORY_GROUPS[layer]:
+            group = asset_kind
+        elif item_type == "module_reference":
+            group = "module"
     if not group and layer == "user_intelligence":
         guidance_type = str(body.get("guidance_type") or subcategory)
         group = guidance_type if guidance_type in LAYER_CATEGORY_GROUPS[layer] \
@@ -302,6 +318,9 @@ def build_intelligence_catalog(*, runs_dir: str = "",
                              "subcategory": module, "scope": "package",
                              "lifecycle": "implemented"}},
             tags=("code_module", module), source="package"))
+
+    from .code_intelligence_assets import code_template_records
+    code.extend(code_template_records())
 
     from .chronicle import Chronicle, default_runs_dir, as_ledger_events
     from ..loop.intelligence_loops import serve_historical_intelligence
@@ -411,7 +430,8 @@ def runtime_memory_write(note: str, board=None, *, loop_id: str = "",
 
 def query_intelligence(need: str, layer_records: dict, *,
                        mode: str = "lexical", top_n: int = 3,
-                       flt=None, include_candidates: bool = False) -> dict:
+                       flt=None, include_candidates: bool = False,
+                       ledger=None, parent=None) -> dict:
     """Fan ONE semantic need across the four layers through the one
     Retriever. ``layer_records`` maps layer name -> list of StoreRecords
     (missing layers are reported as unqueried, never silently skipped).
@@ -432,25 +452,79 @@ def query_intelligence(need: str, layer_records: dict, *,
             wrapped_id = f"{layer}:{record.record_id}"
             wrapped = classified_record(layer, record, record_id=wrapped_id)
             combined.append(wrapped)
-            identities[wrapped_id] = (record.record_id,
-                                      wrapped.body["classification"])
+            identities[wrapped_id] = (record, wrapped.body["classification"])
     requested = max(top_n, top_n * max(1, len(LAYERS) - len(unqueried)))
-    res = Retriever(combined).search(need, mode=mode, flt=flt,
-                                     top_n=requested) if combined else {"hits": []}
-    hits = []
+    from ..loop.encapsulate import as_loop
+    search_run = as_loop(
+        f"search four intelligence layers for {need[:80]}",
+        lambda: Retriever(combined).search(
+            need, mode=mode, flt=flt, top_n=requested)
+        if combined else {"hits": []},
+        kind="callable", ledger=ledger, parent=parent)
+    res = search_run["value"]
+    hits, refs = [], []
+    from ..loop.loop_capsule import capsule_from_record
     for hit in res["hits"]:
-        original_id, classification = identities[hit["record_id"]]
-        hits.append({**hit, "record_id": original_id,
+        record, classification = identities[hit["record_id"]]
+        score = hit.get("rrf", 0.0)
+        ref = capsule_from_record(
+            record, role=classification["layer"]).to_ref(
+                score=score, source=classification["layer"])
+        refs.append(ref.as_dict())
+        hits.append({**hit, "record_id": record.record_id,
                      "layer": classification["layer"],
                      "public_key": classification["public_key"],
                      "public_slug": classification["public_slug"],
                      "public_label": classification["public_label"],
                      "classification": classification,
-                     "score": hit.get("rrf", 0.0)})
+                     "loop_ref": ref.as_dict(), "score": score})
     return {"need": need, "hits": hits, "unqueried": unqueried,
             "unqueried_public": [LAYER_PUBLIC_KEY[layer]
                                  for layer in unqueried],
-            "candidates_included": bool(include_candidates)}
+            "candidates_included": bool(include_candidates),
+            "loop_refs": refs,
+            "query_loop": {"loop_id": search_run["loop_id"],
+                           "model_calls": search_run["model_calls"],
+                           "stopped": search_run["stopped"]}}
+
+
+def query_intelligence_refs(*args, **kwargs) -> list:
+    """Typed LoopRefs in the exact order returned by unified ranking."""
+    from ..loop.loop_capsule import LoopRef
+    return [LoopRef.from_dict(body)
+            for body in query_intelligence(*args, **kwargs)["loop_refs"]]
+
+
+def materialize_intelligence_ref(ref, layer_records: dict, *,
+                                 external_resolver=None, ledger=None,
+                                 parent=None) -> dict:
+    """Materialize one selected intelligence ref through its access loop."""
+    from ..loop.loop_capsule import materialize_ref_as_loop
+    normalized = normalize_layer_records(layer_records)
+    record_id = ref.loop_ref.rsplit("/", 1)[-1]
+    records = normalized.get(ref.handshake.role) or ()
+    record = next((item for item in records
+                   if item.record_id == record_id), None)
+    if record is None:
+        raise KeyError(f"no intelligence record {record_id!r} in supplied layer")
+
+    def resolve(payload_ref):
+        if not payload_ref.startswith("content://"):
+            if external_resolver is None:
+                raise ValueError(
+                    f"external payload {payload_ref!r} needs a resolver")
+            return external_resolver(payload_ref)
+        body = dict(record.body or {})
+        if "text" in body:
+            return body["text"]
+        if ref.handshake.role == "past_run_intelligence":
+            return body
+        if ref.handshake.role == "code_intelligence":
+            return body.get("handle") or body
+        return body.get("value") or record.title
+
+    return materialize_ref_as_loop(
+        ref, resolve, ledger=ledger, parent=parent)
 
 
 def self_test() -> dict:
@@ -483,6 +557,18 @@ def self_test() -> dict:
           and out["hits"][0]["layer"] == "code_intelligence"
           and out["hits"][0]["record_id"] == "n.dedupe",
           f"top: {out['hits'][0]['record_id'] if out['hits'] else 'none'}")
+    typed_refs = query_intelligence_refs("statistician persona", packs)
+    from ..loop.recursive_loop import LoopLedger
+    ref_ledger = LoopLedger()
+    materialized = materialize_intelligence_ref(
+        typed_refs[0], packs, ledger=ref_ledger)
+    check("unified_search_returns_loop_refs_and_selected_item_materializes",
+          out["query_loop"]["model_calls"] == 0
+          and len(out["loop_refs"]) == len(out["hits"])
+          and typed_refs[0].loop_ref.endswith("s.persona")
+          and materialized["value"] == "adopt a statistician persona for review"
+          and materialized["model_calls"] == 0
+          and len(ref_ledger.loops()) == 1)
 
     # 2. a Context need routes to the stable internal string layer; a prior-solution
     # need routes to past runs — three DISTINCT buckets, not one soup.

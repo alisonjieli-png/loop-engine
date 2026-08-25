@@ -28,7 +28,7 @@ import json
 import os
 import re
 from dataclasses import dataclass, field, asdict
-from typing import Any, Sequence
+from typing import Sequence
 
 # What a stored record can be.
 STORE_KINDS = ("node", "question", "persona", "context", "strategy")
@@ -201,7 +201,12 @@ class SolverStore:
         # directory filters (require/prefer/exclude) without serving the body.
         hits = [{"record_id": r.record_id, "kind": r.kind, "title": r.title,
                  "tier": r.tier, "source": r.source, "score": s,
-                 "facets": dict((r.body or {}).get("facets") or {})}
+                 "facets": dict((r.body or {}).get("facets") or {}),
+                 "payload_ref": str((r.body or {}).get("payload_ref") or ""),
+                 "payload_digest": str((r.body or {}).get("payload_digest")
+                                       or (r.body or {}).get("body_digest") or ""),
+                 "maturity": str((r.body or {}).get("maturity") or r.tier),
+                 "version": str((r.body or {}).get("version") or "1.0.0")}
                 for s, r in scored[:top_n]]
         stages.append({"stage": "rank", "returned": len(hits)})
         return {"record_type": "store_search/v1", "query": query,
