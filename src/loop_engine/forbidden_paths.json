@@ -204,6 +204,11 @@
    ],
    "generation/model/campaign.py": [
     "stop_conditions"
+   ],
+   "parallel_runner.py": [
+    "child lifecycle",
+    "child LoopNode",
+    "async child"
    ]
   }
  },

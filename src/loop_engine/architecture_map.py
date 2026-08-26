@@ -33,7 +33,8 @@ ROOT_MODULES = ("__init__", "__main__", "_self_test", "_conformance_test",
                 "nomenclature_conformance", "public_runtime_conformance",
                 "repository_conformance", "repository_structure",
                 "backend_isolation", "structure_review",
-                "runtime_ontology_check", "scheduling", "campaign")
+                "runtime_ontology_check", "scheduling", "campaign",
+                "parallel_runner")
 
 #: module -> subpackage.  "steps" and "regimes" are subpackages riding in loop/.
 MODULE_MAP = {
