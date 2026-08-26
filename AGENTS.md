@@ -24,10 +24,13 @@ active processes, and concurrent writers. Then read only the documents needed
 for the task:
 
 1. `README.md`
-2. `docs/contracts/README.md`
-3. `docs/components/README.md`
-4. the relevant component README
-5. `humanizer-context.md` for public prose
+2. `docs/architecture/CONSTITUTION.md`
+3. `architecture.yaml`
+4. `terminology.yaml`
+5. `docs/contracts/README.md`
+6. `docs/components/README.md`
+7. the relevant component README
+8. `humanizer-context.md` for public prose
 6. `docs/context/CODEX-START-HERE.md` after a new or compacted session
 7. `docs/context/REFERENCE-SOURCES.md` before consulting an older repository
 
@@ -38,6 +41,30 @@ restore, reformat, commit, or publish changes without resolving ownership.
 
 Every executable graph vertex is a Loop. Do not create another operational
 runtime type.
+
+Before creating a class whose name ends in `Node`:
+
+1. Stop.
+2. Determine whether the object is the canonical LoopNode.
+3. If it is not, represent it as a typed object inside LoopNode, a
+   LoopNodePreset, a payload, a reference, a result, a receipt, a policy,
+   a contract, an artifact, or a RepositoryEntity.
+4. Do not create a new Node subclass. The canonical Loop class refuses
+   subclassing at class-creation time.
+
+Before creating a new top-level folder:
+
+1. Identify its stable architectural boundary.
+2. Explain why attributes, records, or catalog queries are insufficient.
+3. Add a README and architecture contract.
+4. Add import-boundary tests.
+5. Update `architecture.yaml`.
+6. Create an ADR when the architectural model changes.
+
+Do not infer executable behavior from prose, tags, labels, filenames,
+folder names, examples, or comments. Permissions, contracts, routing,
+budgets, compatibility, and lifecycle must come from structured typed
+fields.
 
 Keep these dimensions separate:
 
@@ -79,7 +106,7 @@ have one execution mode. It may declare only a policy for the modes permitted
 on its member Loops.
 
 Every operational boundary must appear in the existing
-`static_architecture.boundary_registry` with runtime type `Loop` and either an
+`core.boundary_registry` with runtime type `Loop` and either an
 exact registered role profile or a validated typed profile source. Static
 Architecture has only three public capability groups: Intelligence Search and
 Retrieval, Web Research, and Custom Plugins. Providers, settings, workspaces,

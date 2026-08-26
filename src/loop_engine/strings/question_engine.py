@@ -28,8 +28,8 @@ from dataclasses import dataclass
 from typing import Sequence
 
 from ..strings.knowledge import Knowledge
-from ..static_architecture.model_call import AskSpec
-from ..static_architecture.store_serve import StoreRecord, TIERS
+from ..core.model_call import AskSpec
+from ..core.store_serve import StoreRecord, TIERS
 
 # What a form's answer is expected to look like (drives parsing/validation).
 ANSWER_SHAPES = ("proposals", "ranking", "score", "elimination", "verdict",
@@ -243,7 +243,7 @@ def register_generated_form(forms: dict, *, name: str, template: str,
 
 def as_store_records(forms: dict) -> list:
     """Forms as store records so the strict search/serve DAG finds them."""
-    from ..static_architecture.facets import context_facets
+    from ..core.facets import context_facets
     return [StoreRecord(
         record_id=f"qform.{f.name}", kind="question", title=f.template[:80],
         body={"template": f.template, "answer_shape": f.answer_shape,
@@ -363,7 +363,7 @@ def self_test() -> dict:
           "history")
 
     # 7. forms are searchable through the strict search/serve DAG.
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=as_store_records(core_forms()))
     hit = store.search("eliminate candidate solutions", kind="question")
     check("forms_are_searchable_via_the_strict_search_dag",

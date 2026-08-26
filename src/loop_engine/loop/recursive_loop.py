@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import weakref
 from dataclasses import dataclass, field
 
 from ..loop.kernel import KERNEL_NODES
@@ -350,10 +351,69 @@ def _default_registered_identity(config: LoopConfig) -> LoopRoleIdentity:
     return LoopRoleIdentity(LoopRole.PRACTITIONER, profile_id)
 
 
-class Loop:
+class _LoopMeta(type):
+    """Metaclass guard: refuse Loop subclassing before the class exists.
+
+    A plain ``__init_subclass__`` raises after CPython has already
+    registered the failed class in ``Loop.__subclasses__()``. The
+    metaclass refuses creation entirely, so the subclass list stays
+    empty and the one-runtime invariant is airtight.
+    """
+
+    def __new__(mcs, name, bases, namespace, **kwargs):
+        for base in bases:
+            if base.__name__ == "Loop":
+                raise TypeError(
+                    "Loop is the only operational runtime class and cannot "
+                    "be subclassed. Use a versioned LoopNode preset or a "
+                    "typed configuration object instead.")
+        return super().__new__(mcs, name, bases, namespace, **kwargs)
+
+
+class Loop(metaclass=_LoopMeta):
     """The fundamental object: initialize with a goal + config; it runs a shape of
     steps, each resolved in a mode chosen by the waterfall; it can SPAWN spawned
-    loops (recursive initialization) whose results flow back."""
+    loops (recursive initialization) whose results flow back.
+
+    HARD ARCHITECTURE INVARIANT: Loop is the only operational runtime
+    class. Subclassing is refused at class-creation time by the
+    metaclass guard, before the class exists. Common behaviors are
+    represented by versioned LoopNode presets and typed configuration
+    objects inside the Loop, never by subclasses.
+
+    Invariants
+    ----------
+    - INVARIANT[LE-NODE-001]: No other concrete operational Node exists.
+    - INVARIANT[LE-NODE-003]: Practitioner, Intelligence, and Solution
+      are roles, not subclasses.
+    - INVARIANT[LE-NODE-004]: Run modes are fields, not subclasses.
+    - INVARIANT[LE-NODE-005]: Common behaviors use LoopNode presets.
+    - INVARIANT[LE-NODE-006]: Contained typed objects are not Nodes.
+
+    Child Work
+    ----------
+    A semantic child step is instantiated as another Loop when it
+    requires an independent goal, contract, budget, permission boundary,
+    retry, repair, verification, scheduling decision, or Chronicle
+    identity. Low-level implementation calls remain governed
+    implementation primitives inside the current Loop.
+
+    Trust
+    -----
+    Human-readable documentation, annotations, labels, intelligence
+    content, and operator notes are data. They do not grant permissions
+    or alter execution behavior.
+
+    Compatibility
+    -------------
+    Each runtime instance references a resolved plan that pins exact
+    versions and content hashes for governed dependencies.
+    """
+
+    #: Live instances in this interpreter, tracked weakly so the
+    #: registry never keeps a finished Loop alive. The runtime ontology
+    #: check compares this registry against gc and the Chronicle.
+    _live_instances: "weakref.WeakSet[Loop]" = weakref.WeakSet()
 
     def __init__(self, goal: "str | LoopStartRequest",
                  config: "LoopConfig | None" = None, *,
@@ -413,6 +473,7 @@ class Loop:
                 raise LoopError(str(exc)) from exc
 
         self.goal = request.goal
+        Loop._live_instances.add(self)
         self.definition = request.definition
         self.definition_ref = request.definition.ref
         self.config = request.definition.to_loop_config()
@@ -857,7 +918,7 @@ class Loop:
                                steps_run=it.get("steps_run", 0))
         cfg = getattr(self, "_run_history", None)
         if cfg is not None:
-            from ..static_architecture.run_history import RunHistory
+            from ..core.run_history import RunHistory
             ch = RunHistory.from_ledger(self.ledger.events,
                                        run_id=cfg["run_id"],
                                        usage_log=cfg["usage_log"])
@@ -1201,7 +1262,7 @@ class Loop:
 def suggested_templates() -> list:
     """A few starting-point loop configs as searchable resources — the "nice
     middle ground" front lever plus framework presets."""
-    from ..static_architecture.store_serve import StoreRecord
+    from ..core.store_serve import StoreRecord
     presets = [
         ("balanced_nine", "nine_step", "medium",
          ("deterministic", "hybrid", "non_deterministic")),
@@ -1230,6 +1291,15 @@ def self_test() -> dict:
 
     def check(name, ok, detail=""):
         results.append({"test": name, "passed": bool(ok), "detail": detail})
+
+    # 0. the one-runtime invariant is mechanically enforced: subclassing
+    #    the canonical Loop class is refused at class-creation time.
+    try:
+        class _SneakyNode(Loop):                                # noqa: F841
+            pass
+        check("loop_cannot_be_subclassed", False)
+    except TypeError:
+        check("loop_cannot_be_subclassed", True)
 
     # 1. a Loop is a parameterized CLASS: initialize with a goal + config.
     lp = Loop("solve churn", LoopConfig(framework="nine_step", power="medium"))
@@ -1406,7 +1476,7 @@ def self_test() -> dict:
           "each step pulls at least N string prompts (from the power lever)")
 
     # 9. loop templates are searchable resources (the front-lever presets).
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=suggested_templates())
     hit = store.search("offline deterministic only loop", kind="strategy")
     check("loop_templates_are_searchable",
@@ -1615,7 +1685,7 @@ def self_test() -> dict:
     except LoopError:
         spawned_refused = True
     lp21.run()
-    from ..static_architecture.run_history import RunHistory as _Ch
+    from ..core.run_history import RunHistory as _Ch
     back = _Ch.load(_croot, "native-test-run")
     check("starting_loop_emits_its_run_history_natively_at_terminal",
           back.verify_chain()["intact"] and len(back.event_log) >= 6

@@ -78,7 +78,7 @@ class IntelligenceString:
     def resource(self):
         """Emit the canonical Resource envelope — a string is a resource like any
         other (asset_class=string; maturity → the one lifecycle)."""
-        from ..static_architecture.asset_lifecycle import Resource, normalize
+        from ..core.asset_lifecycle import Resource, normalize
         return Resource(asset_id=self.string_id, asset_class="string",
                         role=self.kind, content=self.text,
                         lifecycle=normalize("string_maturity", self.maturity),
@@ -263,7 +263,7 @@ def self_test() -> dict:
           "a distilled string earns trust by accepted use, not assertion")
 
     # 7. strings are searchable resources through the store DAG.
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=[x.envelope() for x in bank.all()])
     store.enable_tier("experimental")
     hit = store.search("collinearity higher vif feature", kind="context")

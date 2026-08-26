@@ -3,7 +3,7 @@
   "observed_at_utc": "2026-08-25T15:33:12Z",
   "repository_base_commit": "3491e2369639361893819ac6975a21bec47ea68c",
   "working_tree_changes_present": true,
-  "implementation_path": "src/loop_engine/static_architecture/workspace_optional.py",
+  "implementation_path": "src/loop_engine/core/workspace_optional.py",
   "implementation_sha256": "b61186c2a33e19c4e1e0ae7b2cea2c27cadd4bfc872b5e67c1969596046b6e33",
   "python_version": "3.14.4",
   "docker_client_version": "29.5.2",

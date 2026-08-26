@@ -382,9 +382,9 @@ def self_test() -> dict:
     def check(name, ok, note=""):
         results.append({"test": name, "passed": bool(ok), "detail": note})
 
-    from ..static_architecture.store_serve import StoreRecord
+    from ..core.store_serve import StoreRecord
     from .recursive_loop import LoopLedger
-    from ..static_architecture.run_history import to_canonical_events
+    from ..core.run_history import to_canonical_events
 
     recs = [StoreRecord("q.leak", "question",
                         "has leakage been checked before scoring?",

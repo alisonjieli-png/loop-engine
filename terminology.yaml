@@ -1,0 +1,82 @@
+schema_version: 1
+
+terms:
+  LoopNode:
+    kind: canonical
+    definition: The sole concrete graph-addressable operational Node.
+
+  Node:
+    kind: conceptual_only
+    definition: Ontological category and package namespace.
+    concrete_class_allowed: false
+
+  LoopNodePreset:
+    kind: canonical
+    definition: Versioned partial configuration for a common LoopNode behavior.
+
+  FunctionalIntelligenceDomain:
+    kind: canonical
+    cardinality: many
+
+  IntelligenceAccessPolicy:
+    kind: canonical
+    definition: Hard constraints on what may be queried, returned, or exposed.
+
+  IntelligenceSeekingStrategy:
+    kind: canonical
+    definition: Declarative search, expansion, challenge, selection, and stopping behavior.
+
+  IntelligenceQueryProfile:
+    kind: canonical
+    definition: Reusable soft preferences and ranking parameters.
+
+  ResolvedLoopNodePlan:
+    kind: canonical
+    definition: Exact pinned runtime configuration for one invocation.
+
+  CatalogRecord:
+    kind: canonical
+    definition: Passive persistent record at rest. Not a Node.
+
+deprecated_terms:
+  Loop:
+    replacement: LoopNode
+    removal_target: "2.0.0"
+
+  CodeNode:
+    replacement: LoopNode with an implementation-execution preset
+    forbidden_in_new_code: true
+
+forbidden_class_names:
+  - Node
+  - ConfigurationNode
+  - StringNode
+  - CodeNode
+  - PractitionerNode
+  - IntelligenceNode
+  - SolutionNode
+
+qualified_terms:
+  memory:
+    allowed:
+      - RuntimeMemory
+      - ExperienceIntelligence
+      - Checkpoint
+      - Cache
+
+  store:
+    allowed:
+      - RecordStore
+      - BlobStore
+      - CandidateStore
+      - ChronicleStore
+
+  version:
+    allowed:
+      - engine_version
+      - ontology_version
+      - schema_version
+      - definition_version
+      - plugin_version
+      - protocol_version
+      - implementation_version

@@ -145,5 +145,5 @@ The current gateway enforces physical call and provider-reported token limits.
 - `OperatingProfile`
 - `SolverConfig`
 
-Read [Model gateway and provider configuration](../components/static-architecture/MODEL-GATEWAY.md)
+Read [Model gateway and provider configuration](../components/core-architecture/MODEL-GATEWAY.md)
 for the complete object map and custom endpoint example.

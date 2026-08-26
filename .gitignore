@@ -33,3 +33,6 @@ Thumbs.db
 predictions.csv
 *.csv.out
 example-output/
+
+# Development Assurance Plane generated state
+.loop-engine-dev/

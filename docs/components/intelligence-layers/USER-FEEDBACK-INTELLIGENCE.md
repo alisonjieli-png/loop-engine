@@ -125,7 +125,7 @@ These are separate rows. The original guidance row is not rewritten.
 Create a store and add guidance:
 
 ```python
-from loop_engine.static_architecture.user_feedback_intelligence import AdviceStore
+from loop_engine.core.user_feedback_intelligence import AdviceStore
 
 store = AdviceStore("./state/user-advice.jsonl")
 
@@ -154,7 +154,7 @@ from loop_engine.loop.intelligence_loops import (
     consult_guidance_as_loop,
     leave_guidance_as_loop,
 )
-from loop_engine.static_architecture.user_feedback_intelligence import AdviceStore
+from loop_engine.core.user_feedback_intelligence import AdviceStore
 
 ledger = LoopLedger()
 store = AdviceStore("./state/user-advice.jsonl")
@@ -198,7 +198,7 @@ loop is actually checking guidance before a decision.
 
 ```python
 from loop_engine.loop.loop_capsule import LoopRef
-from loop_engine.static_architecture.intelligence_layers import (
+from loop_engine.core.intelligence_layers import (
     build_intelligence_catalog,
     materialize_intelligence_ref,
     query_intelligence,
@@ -253,7 +253,7 @@ A working loop may need guidance from several scopes. Use
 deterministic Practitioner Loop and rank the combined snapshot.
 
 ```python
-from loop_engine.static_architecture.user_feedback_intelligence import (
+from loop_engine.core.user_feedback_intelligence import (
     resolve_user_feedback_intelligence,
 )
 

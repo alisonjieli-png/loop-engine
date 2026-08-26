@@ -1,6 +1,6 @@
 # Register a Brave Web Search plugin
 
-This example discovers a Static Architecture capability from a local handshake
+This example discovers a Core Architecture capability from a local handshake
 card, selects its Code Intelligence `LoopRef`, and invokes one capability loop.
 
 Install and run the offline fixture:
@@ -33,5 +33,5 @@ Search is not browsing. Fetching or extracting a selected result page should
 use a separate registered capability with its own permissions and event
 history.
 
-Read the [Brave plugin contract](../../docs/components/static-architecture/BRAVE-SEARCH-PLUGIN.md)
+Read the [Brave plugin contract](../../docs/components/core-architecture/BRAVE-SEARCH-PLUGIN.md)
 for request limits, failure behavior, secret handling, and official API links.

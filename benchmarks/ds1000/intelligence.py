@@ -5,12 +5,12 @@ from dataclasses import dataclass
 
 from loop_engine.loop.loop_capsule import LoopRef
 from loop_engine.loop.recursive_loop import Loop, LoopConfig, StepOutcome
-from loop_engine.static_architecture.intelligence_layers import (
+from loop_engine.core.intelligence_layers import (
     LAYERS,
     materialize_intelligence_ref,
     query_intelligence,
 )
-from loop_engine.static_architecture.store_serve import StoreRecord
+from loop_engine.core.store_serve import StoreRecord
 
 from code_intelligence import code_intelligence_records
 

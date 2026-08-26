@@ -1,0 +1,19 @@
+schema: catalog_manifest/v1
+folder_id: intelligence.code.core
+source_class: core
+notes: >
+  Records the shipped Code Intelligence provenance pointers. Executable
+  machinery still lives in its mapped modules (loop.loop_profile_catalog,
+  loop.loop_profile_ontology); code_ref payloads digest their own locator
+  string, so a record here is a stable pointer, not a copy.
+objects:
+  - id: core.code.role_profile_ontology
+    version: 1.0.0
+    artifact_kind: policy
+    lifecycle: registered
+    payload: code_ref:loop_engine.loop.loop_profile_catalog.LOOP_PROFILE_ONTOLOGY
+  - id: core.code.profile_catalog_surface
+    version: 1.0.0
+    artifact_kind: contract
+    lifecycle: registered
+    payload: code_ref:loop_engine.loop.loop_profile_catalog.profile_catalog

@@ -18,7 +18,7 @@ from .effect_approval import (
     ApprovalDecision, ApprovalRequest, ApprovalStatus, EffectApprovalService,
     EffectClass, EffectSpec)
 from .recursive_loop import Loop, LoopConfig, LoopLedger
-from ..static_architecture.runtime_observer import RuntimeObservationServices
+from ..core.runtime_observer import RuntimeObservationServices
 
 
 class _OrderingStore:

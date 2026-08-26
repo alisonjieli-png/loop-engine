@@ -209,7 +209,7 @@ def run_setup(*, interactive: bool = True, knowledge_path: str = "",
     _say()
     _say("  [2/5] MODEL PROVIDERS  (optional)")
     step = report.add(SetupStep("providers"))
-    from ..static_architecture.autoconfigure import KEY_ENV, configure
+    from ..core.autoconfigure import KEY_ENV, configure
     present = [n for n, var in KEY_ENV.items() if os.environ.get(var)]
     if not present:
         _say("      No provider keys found in the environment.")
@@ -249,7 +249,7 @@ def run_setup(*, interactive: bool = True, knowledge_path: str = "",
                    interactive=interactive)
         model = _ask("      Model name:", interactive=interactive)
         if url and model:
-            from ..static_architecture.custom_endpoint import (
+            from ..core.custom_endpoint import (
                 CustomEndpoint, make_adapter)
             wire = "ollama" if "11434" in url and "/v1" not in url else "openai"
             ep = CustomEndpoint(name="my_server", base_url=url, model=model,
@@ -283,7 +283,7 @@ def run_setup(*, interactive: bool = True, knowledge_path: str = "",
         path = _ask("      Path to a file or folder:",
                     interactive=interactive)
     if path:
-        from ..static_architecture.knowledge_loader import load_knowledge
+        from ..core.knowledge_loader import load_knowledge
         res = load_knowledge(path)
         step.ran = True
         step.ok = bool(res.records)
@@ -299,7 +299,7 @@ def run_setup(*, interactive: bool = True, knowledge_path: str = "",
         step.detail = "not loaded"
         _say("      Skipped. Markdown, text, CSV, JSON, JSONL and Python")
         _say("      docstrings all load — point it at a folder any time:")
-        _say("        from loop_engine.static_architecture.knowledge_loader "
+        _say("        from loop_engine.core.knowledge_loader "
              "import load_knowledge")
 
     # -- 5. run a real loop -------------------------------------------------

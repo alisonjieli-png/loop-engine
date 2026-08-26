@@ -377,7 +377,7 @@ def serve_intelligence(pillar: str, records: list, *, query: str,
     ACT of retrieving and returning it is a thin code loop, so every pillar
     inherits the loop envelope — the Universal Loop Standard made literal.
     Records the layer-labeled retrieval event on the ledger."""
-    from ..static_architecture.retrieval import Retriever
+    from ..core.retrieval import Retriever
     out = as_loop(f"retrieve {pillar} intelligence for {query!r}",
                    lambda: Retriever(records).search(query, mode="hybrid",
                                                       top_n=5),
@@ -513,7 +513,7 @@ def self_test() -> dict:
     # on the timeline, so a provider call can never be a silent side effect
     # of a helper; a failing call still leaves evidence before it raises.
     from .recursive_loop import LoopLedger as _LL2
-    from ..static_architecture.run_history import to_canonical_events as _tce
+    from ..core.run_history import to_canonical_events as _tce
 
     class _Res:
         ok, model_used, prompt_tokens, eval_tokens = True, "m", 11, 22

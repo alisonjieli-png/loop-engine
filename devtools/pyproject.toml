@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "loop-engine-devtools"
+version = "0.1.0"
+description = "Development Assurance Plane for Loop Engine"
+requires-python = ">=3.10"
+dependencies = ["loop-engine"]
+
+[project.scripts]
+loop-dev = "loop_engine_devtools.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }

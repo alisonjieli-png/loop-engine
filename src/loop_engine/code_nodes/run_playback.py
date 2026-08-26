@@ -7,8 +7,9 @@ Owns:
       (what happened, step by step, with modes, spawns, fallbacks, and
       terminal reasons: the "play back what the practitioner did" surface);
     - render_run_report: ONE canonical dict (ledger + run_analytics rollup +
-      optional Solution Canvas) -> Mermaid loop-tree flowchart + HTML report
-      with the du-style hotspot bars and token quantization.
+      semantic relationship DAG + optional Solution Canvas) -> ownership and
+      relationship Mermaid flowcharts + HTML report with the du-style hotspot
+      bars and token quantization.
 
 Does not own:
     - the numbers (run_analytics.py computes them; this module renders);
@@ -25,6 +26,7 @@ Side effects and authority: pure computation; the caller writes files.
 
 Key invariants:
     - every view derives from the one canonical dict, never a UI-only truth;
+    - empty Loop IDs never become transcript lines or Mermaid vertices;
     - unknowns render as "unknown", never as zero.
 
 Verification: self_test() (folded into the package suite).
@@ -34,20 +36,52 @@ from __future__ import annotations
 import html as _html
 import json
 
-from .run_analytics import analyze_run, propose_edits
+from .run_analytics import (
+    analyze_run, loop_relationship_dag, propose_edits)
+
+
+_RELATIONSHIP_LABELS = {
+    "starting": "Starting",
+    "spawned_by": "Spawned by",
+    "queried_by": "Queried by",
+    "retrieved_by": "Retrieved by",
+    "connected_from": "Connected from",
+}
+
+
+def _relationship_line(event: dict, loop_id: str) -> str:
+    kind = str(event.get("relationship_kind", "") or "")
+    if kind not in _RELATIONSHIP_LABELS:
+        return ""
+    endpoints = {
+        "starting": (),
+        "spawned_by": (event.get("spawned_by_loop_id", ""),),
+        "queried_by": (event.get("queried_by_loop_id", ""),),
+        "retrieved_by": (event.get("retrieved_by_loop_id", ""),),
+        "connected_from": tuple(event.get("connected_from_loop_ids", ()) or ()),
+    }[kind]
+    related = ", ".join(str(value) for value in endpoints if value)
+    suffix = f": {related}" if related else ""
+    return f"[{loop_id}] RELATIONSHIP {_RELATIONSHIP_LABELS[kind]}{suffix}"
 
 
 def playback(events) -> list:
     """The ordered transcript of a run: one line per meaningful event."""
-    from ..static_architecture.run_history import as_ledger_events
+    from ..core.run_history import as_ledger_events
     events = as_ledger_events(events)
     lines = []
     for e in events:
-        ev, lid = e.get("event"), e.get("loop_id", "?")
+        ev = e.get("event")
+        lid = str(e.get("loop_id", "") or "").strip()
+        if not lid:
+            continue
         if ev == "init":
             lines.append(f"[{lid}] INIT depth={e.get('depth', 0)} "
                          f"{e.get('framework', '?')}/{e.get('power', '?')}: "
                          f"goal: {e.get('goal', '')[:80]}")
+            relationship = _relationship_line(e, lid)
+            if relationship:
+                lines.append(relationship)
         elif ev == "spawn":
             spawning_loop_id = str(
                 e.get("spawning_loop_id", "")
@@ -79,34 +113,47 @@ def playback(events) -> list:
 def _mermaid_tree(events, analysis) -> str:
     """The loop tree as a flowchart, pain-annotated."""
     lines = ["flowchart TD"]
-    loops = analysis["loops"]
-    for lid, row in loops.items():
+    loops = {str(loop_id): row for loop_id, row in analysis["loops"].items()
+             if str(loop_id).strip()}
+    identifiers = {loop_id: f"ownership_loop_{index}"
+                   for index, loop_id in enumerate(sorted(loops))}
+    for lid in sorted(loops):
+        row = loops[lid]
         pain = next((h["pain"] for h in analysis["hotspots"]
                      if h["loop"] == lid), 0)
-        label = (f"{lid}<br/>{row['steps']} steps · "
+        label = (f"{_html.escape(lid)}<br/>{row['steps']} steps · "
                  f"{row['semantic_calls']} calls · pain {pain}")
-        lines.append(f'  {lid}["{label}"]')
+        lines.append(f'  {identifiers[lid]}["{label}"]')
     for e in events:
         if e.get("event") == "spawn":
             spawning_loop_id = str(
                 e.get("spawning_loop_id", "")
-                or e.get("spawned_by_loop_id", "") or "?")
-            lines.append(f"  {spawning_loop_id} --> {e.get('loop_id')}")
+                or e.get("spawned_by_loop_id", "") or "").strip()
+            spawned_loop_id = str(e.get("loop_id", "") or "").strip()
+            if (spawning_loop_id in identifiers
+                    and spawned_loop_id in identifiers
+                    and spawning_loop_id != spawned_loop_id):
+                lines.append(
+                    f"  {identifiers[spawning_loop_id]} --> "
+                    f"{identifiers[spawned_loop_id]}")
     return "\n".join(lines)
 
 
 def render_run_report(events, usage_log=(), trace=None, *, canvas=None,
                       title: str = "Practitioner run") -> dict:
     """ONE canonical dict -> Mermaid + a self-contained HTML report."""
-    from ..static_architecture.run_history import as_ledger_events
+    from ..core.run_history import as_ledger_events
     events = as_ledger_events(events)
     analysis = analyze_run(events, usage_log, trace=trace)
     proposals = propose_edits(analysis)
     transcript = playback(events)
     mermaid = _mermaid_tree(events, analysis)
+    relationships = loop_relationship_dag(events)
     canonical = {"record_type": "run_report/v1", "title": title,
                  "analysis": analysis, "proposals": proposals,
                  "transcript": transcript, "mermaid": mermaid,
+                 "relationship_dag": relationships.as_dict(),
+                 "relationship_mermaid": relationships.mermaid(),
                  "canvas_mermaid": (canvas or {}).get("mermaid", "")}
 
     tok = analysis["tokens"]
@@ -130,7 +177,8 @@ steps · {analysis['totals']['semantic_calls']} semantic calls ·
 {tok['prompt']}+{tok['eval']} provider tokens
 ({tok['calls_with_usage']} calls with usage)</p>
 <h2>Troublesome loops (pain-ranked)</h2>{bars}
-<h2>Loop tree</h2><pre class="mermaid">{_html.escape(mermaid)}</pre>
+<h2>Loop ownership tree</h2><pre class="mermaid">{_html.escape(mermaid)}</pre>
+<h2>Semantic relationship DAG</h2><pre class="mermaid">{_html.escape(canonical["relationship_mermaid"])}</pre>
 {'<h2>Solution canvas</h2><pre class="mermaid">' + _html.escape(canonical["canvas_mermaid"]) + '</pre>' if canonical["canvas_mermaid"] else ''}
 <h2>Stuck signals</h2><ul>{stuck_rows}</ul>
 <h2>Proposed edits (candidates: never self-applied)</h2><ul>{prop_rows}</ul>
@@ -199,7 +247,7 @@ def self_test() -> dict:
 
     # 4. Loaded saved-run events use a different storage envelope. Playback
     # and analytics must use the shared adapter rather than render an empty run.
-    from ..static_architecture.run_history import RunHistory
+    from ..core.run_history import RunHistory
     ch = RunHistory.from_ledger(lp.ledger.events, run_id="playback-saved",
                                usage_log=usage)
     ch.commit()
@@ -211,6 +259,55 @@ def self_test() -> dict:
           and saved_report["analysis"]["totals"]["loops"] >= 2
           and saved_report["analysis"]["tokens"]["prompt"] == 50,
           "stored events produced transcript, tree, and provider usage")
+
+    relationship_events = (
+        {"event": "init", "loop_id": "p", "goal": "practice",
+         "role": "practitioner", "profile_id": "practitioner.solver",
+         "relationship_kind": "starting"},
+        {"event": "init", "loop_id": "s", "goal": "spawned work",
+         "relationship_kind": "spawned_by", "spawned_by_loop_id": "p"},
+        {"event": "spawn", "loop_id": "s", "spawning_loop_id": "p",
+         "relationship_kind": "spawned_by", "spawned_by_loop_id": "p"},
+        {"event": "init", "loop_id": "q", "goal": "query",
+         "relationship_kind": "queried_by", "queried_by_loop_id": "p"},
+        {"event": "init", "loop_id": "i", "goal": "item",
+         "relationship_kind": "retrieved_by", "retrieved_by_loop_id": "q"},
+        {"event": "init", "loop_id": "adapter", "goal": "adapt",
+         "relationship_kind": "starting"},
+        {"event": "init", "loop_id": "z", "goal": "solution",
+         "relationship_kind": "connected_from",
+         "connected_from_loop_ids": ("p", "adapter")},
+        {"event": "custom", "loop_id": ""},
+    )
+    adapted_history = RunHistory.from_ledger(
+        relationship_events, run_id="relationship-playback")
+    relationship_report = render_run_report(adapted_history.event_log)
+    relationship_transcript = relationship_report["transcript"]
+    check("playback_and_report_cover_all_five_relationships_after_adapter",
+          relationship_report["relationship_dag"]["complete"] is True
+          and len(relationship_report["relationship_dag"]["vertices"]) == 6
+          and len(relationship_report["relationship_dag"]["edges"]) == 5
+          and all(any(label in line for line in relationship_transcript)
+                  for label in ("Starting", "Spawned by", "Queried by",
+                                "Retrieved by", "Connected from"))
+          and "Semantic relationship DAG" in relationship_report["html"]
+          and '["<br/>' not in relationship_report["mermaid"]
+          and '["<br/>' not in relationship_report["relationship_mermaid"])
+
+    broken = render_run_report((
+        {"event": "custom", "loop_id": ""},
+        {"event": "init", "loop_id": "visible",
+         "relationship_kind": "retrieved_by",
+         "retrieved_by_loop_id": "absent"},
+    ))
+    check("playback_omits_blank_ids_and_reports_missing_relationship_endpoints",
+          all("[]" not in line and "[?]" not in line
+              for line in broken["transcript"])
+          and len(broken["relationship_dag"]["vertices"]) == 1
+          and broken["relationship_dag"]["complete"] is False
+          and broken["relationship_dag"]["diagnostics"][0]["code"]
+              == "relationship_endpoint_unknown"
+          and "absent[" not in broken["relationship_mermaid"])
 
     passed = sum(1 for r in results if r["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

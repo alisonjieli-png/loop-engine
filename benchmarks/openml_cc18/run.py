@@ -70,20 +70,20 @@ from loop_engine.loop.recursive_loop import (  # noqa: E402
     LoopLedger,
     StepOutcome,
 )
-from loop_engine.static_architecture.run_history import RunHistory  # noqa: E402
-from loop_engine.static_architecture.model_capabilities import (  # noqa: E402
+from loop_engine.core.run_history import RunHistory  # noqa: E402
+from loop_engine.core.model_capabilities import (  # noqa: E402
     require_declared_maximum,
 )
-from loop_engine.static_architecture.ollama_client import (  # noqa: E402
+from loop_engine.core.ollama_client import (  # noqa: E402
     DEFAULT_MODEL,
     live_models,
     output_capability_for,
 )
-from loop_engine.static_architecture.provider_pinned import (  # noqa: E402
+from loop_engine.core.provider_pinned import (  # noqa: E402
     ProviderPinnedRequest,
     invoke_provider_model,
 )
-from loop_engine.static_architecture.store_serve import StoreRecord  # noqa: E402
+from loop_engine.core.store_serve import StoreRecord  # noqa: E402
 
 
 TRACK_ID = "openml_cc18_smallest_metadata_workload_slice"
@@ -758,7 +758,7 @@ def select_and_materialize_core_portfolio(
         consumed_intelligence_refs=materialized.consumption.consumed_refs,
         consumption_digest=materialized.consumption.record_digest,
         selected_record_ids=tuple(selected_ids),
-        selector="static_architecture.intelligence_portfolio",
+        selector="core.intelligence_portfolio",
         selection_model_calls=portfolio.selection_model_calls,
         materialization_model_calls=materialized.consumption.materialization_model_calls,
     )
@@ -1389,7 +1389,7 @@ def run_one_task(
             portfolio_id=intelligence.portfolio.portfolio_id,
             consumed_intelligence_refs=intelligence.consumption.consumed_refs,
             consumption_digest=intelligence.consumption.record_digest,
-            selector="static_architecture.intelligence_portfolio",
+            selector="core.intelligence_portfolio",
         )
         return intelligence.portfolio.to_dict()
 
@@ -1771,7 +1771,7 @@ Choose logistic or random_forest for one final compile, execution, and evaluator
         "selected_algorithm": state.get("selected_algorithm"),
         "candidate_calls": calls,
         "intelligence_portfolios": {
-            "selector": "static_architecture.intelligence_portfolio",
+            "selector": "core.intelligence_portfolio",
             "portfolio_count": len(state["intelligence_portfolios"]),
             "consumption_count": len(state["intelligence_consumption"]),
             "fold_digest": intelligence_export["consumption"]["fold_digest"],

@@ -183,7 +183,7 @@ def merge_into_candidates(obligations: Sequence, candidates: list) -> list:
 
 def policy_records() -> list:
     """Each follow-up policy as a searchable strategy record."""
-    from ..static_architecture.store_serve import StoreRecord
+    from ..core.store_serve import StoreRecord
     recs = []
     for p in CORE_FOLLOW_UP_POLICIES:
         recs.append(StoreRecord(
@@ -265,7 +265,7 @@ def self_test() -> dict:
           "each bias names its adversarial alternative for paired trials")
 
     # 8. follow-up policies are searchable resources.
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=policy_records())
     hit = store.search("when should we justify an expensive model action",
                        kind="strategy")

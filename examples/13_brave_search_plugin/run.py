@@ -6,14 +6,14 @@ import os
 
 from loop_engine import LoopLedger
 from loop_engine.loop.capability_loops import run_capability_ref_as_loop
-from loop_engine.static_architecture.brave_search import (
+from loop_engine.core.brave_search import (
     BraveWebSearchRequest,
     HttpResponse,
     MappingSecretProvider,
     SequenceTransport,
     register_brave_search,
 )
-from loop_engine.static_architecture.capability_directory import (
+from loop_engine.core.capability_directory import (
     CapabilityDirectory,
 )
 
@@ -72,7 +72,7 @@ def main():
     calls_before_discovery = (
         len(transport.requests) if transport is not None else "not observable"
     )
-    refs = directory.search_static_architecture("search the current public web")
+    refs = directory.search_core("search the current public web")
     selected = next(
         ref for ref in refs
         if ref.handshake.loop_id == "brave_web_search"

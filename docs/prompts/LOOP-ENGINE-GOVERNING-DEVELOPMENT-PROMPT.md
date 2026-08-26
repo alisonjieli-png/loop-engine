@@ -128,9 +128,9 @@ roles. `SolutionSpec` and `Canvas` build or project this graph. They do not
 create another graph authority.
 
 Every known operational boundary must be classified in the existing
-`static_architecture.boundary_registry`. Its ontology entry must say
+`core.boundary_registry`. Its ontology entry must say
 `runtime_type: Loop` and bind either an exact registered versioned role profile
-or a validated typed profile source. Static Architecture has only
+or a validated typed profile source. Core Architecture has only
 Intelligence Search and Retrieval, Web Research, and Custom Plugins. Internal
 runtime mechanics remain separate. A classified Loop must own each
 work-producing call. Treat a missing, extra, unknown, unversioned, or
@@ -209,7 +209,7 @@ Solution Canvas
 ├── Connects typed Solution Loop ports
 └── Defines routing, fallback, ensemble, validation, and output behavior
 
-Static Architecture
+Core Architecture
 ├── Intelligence Search and Retrieval
 ├── Web Research
 └── Custom Plugins

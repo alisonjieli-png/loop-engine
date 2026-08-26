@@ -21,7 +21,8 @@ def spawn_practitioner_loop(
         spawning_loop: "Loop", spec: "DelegationSpec", *,
         executor: "SpawnedExecutor | None" = None,
         limits: "SpawnedTaskManagerLimits | None" = None,
-        runtime_memory=None, context_artifacts=None) -> "SpawnedTaskSnapshot":
+        services=None, runtime_memory=None,
+        context_artifacts=None) -> "SpawnedTaskSnapshot":
     """Run one registered Practitioner profile as a Spawned Loop."""
     from .delegation_runtime import (
         DelegationError,
@@ -34,6 +35,7 @@ def spawn_practitioner_loop(
             "spawn_practitioner_loop requires a Practitioner profile")
     manager = SpawnedTaskManager(
         spawning_loop, executor, limits,
+        services=services,
         runtime_memory=runtime_memory,
         context_artifacts=context_artifacts,
     )

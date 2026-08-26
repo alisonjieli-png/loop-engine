@@ -135,7 +135,7 @@ def self_test() -> dict:
         executor_missing = True
     check("semantic_mode_never_uses_the_structural_handler", executor_missing)
 
-    public_keys = set(intelligence_context.public_static_architecture())
+    public_keys = set(intelligence_context.public_core())
     check("runtime_context_has_exactly_three_public_service_ports",
           public_keys == {"intelligence_search_retrieval", "web_research",
                           "custom_plugins"})

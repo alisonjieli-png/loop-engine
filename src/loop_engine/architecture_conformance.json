@@ -1,7 +1,7 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 223,
+ "files_scanned": 220,
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "reachable_legacy_flat_paths": 0,
@@ -42,15 +42,15 @@
    "ontology_conforming": 47,
    "coverage": 1.0,
    "by_binding_kind": {
-    "native_loop": 17,
+    "native_loop": 20,
     "stage_loop_tree": 1,
-    "practitioner_loop": 20,
+    "practitioner_loop": 17,
     "api_dispatch": 1,
     "template_governed": 5,
     "component_loop": 3
    },
    "by_role": {
-    "practitioner": 26,
+    "practitioner": 23,
     "intelligence": 11,
     "solution": 6
    },
@@ -63,10 +63,10 @@
     "intelligence.runtime_history_solution.replay@1.0.0": 1,
     "intelligence.search@1.0.0": 1,
     "intelligence.user_feedback.scope@1.0.0": 1,
-    "practitioner.code_execution@1.0.0": 11,
+    "practitioner.code_execution@1.0.0": 10,
     "practitioner.reference_nine_step@1.0.0": 2,
-    "practitioner.self_improvement@1.0.0": 2,
-    "practitioner.solver@1.0.0": 6,
+    "practitioner.self_improvement@1.0.0": 1,
+    "practitioner.solver@1.0.0": 5,
     "practitioner.verifier@1.0.0": 5,
     "solution.atomic_component@1.0.0": 2,
     "solution.ensemble@1.0.0": 1,
@@ -75,19 +75,19 @@
     "solution.validator@1.0.0": 1
    },
    "by_relationship_kind": {
-    "starting": 20,
+    "starting": 18,
     "spawned_by": 30,
     "queried_by": 4,
     "retrieved_by": 8,
     "connected_from": 5
    },
    "dynamic_profile_sources": {
-    "practitioner:static_architecture.external_harness.HarnessRunRequest.profile_id": 1,
-    "practitioner|intelligence|solution:loop.spawned_task_checkpoint.SpawnedTaskCheckpoint.spec": 1,
-    "practitioner|intelligence|solution:loop.delegation_runtime.DelegationSpec.profile": 2
+    "practitioner:core.external_harness.HarnessRunRequest.profile_id": 1,
+    "practitioner|intelligence|solution:loop.spawned_task_checkpoint.SpawnedTaskCheckpoint.spec": 2,
+    "practitioner|intelligence|solution:loop.delegation_runtime.DelegationSpec.profile": 4
    },
-   "exact_profile_boundaries": 43,
-   "dynamic_profile_boundaries": 4,
+   "exact_profile_boundaries": 40,
+   "dynamic_profile_boundaries": 7,
    "invalid_rows": [],
    "invalid_relationship_rows": [],
    "unclassified_rows": [],

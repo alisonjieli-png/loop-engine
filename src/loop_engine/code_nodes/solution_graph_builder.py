@@ -8,7 +8,7 @@ from __future__ import annotations
 from ..loop.loop_definition import ConfigurationFacts, LoopDefinition
 from .solution_graph import (
     LoopGraphDefinition, LoopGraphEdge, LoopGraphEndpoint, LoopGraphGroup,
-    LoopGraphInputPort, LoopGraphOutputPort, LoopGraphStage, LoopGraphVertex,
+    LoopGraphInputPort, LoopGraphOutputPort, LoopGraphStage, LoopGraphVertexRecord,
     SolutionLoopDefinitionRequest, make_solution_loop_definition,
     vertex_from_definition,
 )
@@ -21,7 +21,7 @@ def _safe_id(value: str) -> str:
 
 def build_solution_graph(spec: SolutionSpec) -> LoopGraphDefinition:
     """Compile compatibility builders into one complete Loop graph."""
-    vertices: list[LoopGraphVertex] = []
+    vertices: list[LoopGraphVertexRecord] = []
     edges: list[LoopGraphEdge] = []
     groups: list[LoopGraphGroup] = []
     edge_counter = 0

@@ -198,8 +198,8 @@ def bias_schema(name: str) -> DecisionSchema:
 
 def schema_records() -> list:
     """Each decision schema as a searchable store record — a swappable resource."""
-    from ..static_architecture.store_serve import StoreRecord
-    from ..static_architecture.facets import context_facets
+    from ..core.store_serve import StoreRecord
+    from ..core.facets import context_facets
     recs = []
     for s in SCHEMA_REGISTRY.values():
         example = {}
@@ -307,7 +307,7 @@ def self_test() -> dict:
           f"{len(names)} appendix fields")
 
     # 6. schemas are searchable resources.
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=schema_records())
     hit = store.search("what should the next action be why now prerequisites",
                        kind="strategy")

@@ -171,7 +171,7 @@ Practitioner may spawn a deterministic verifier. A Solution pipeline normally
 uses `CONNECTED_FROM`; it uses `SPAWNED_BY` only for a real dynamic branch,
 fallback, repair, or ensemble action.
 
-## Runtime context and Static Architecture
+## Runtime context and Core Architecture
 
 [`LoopRuntimeContext`](../../src/loop_engine/loop/runtime_context.py) gives one
 Loop an explicit least-authority service context.
@@ -187,7 +187,7 @@ LoopRuntimeContext
     └── installed mode executors
 ```
 
-The first three ports are the only public Static Architecture groups.
+The first three ports are the only public Core Architecture groups.
 `LoopRuntimeContext.require()` refuses missing capabilities, permissions, or
 executors. `derive()` can remove authority but cannot add it.
 
@@ -276,7 +276,7 @@ Runtime Memory is temporary. It is not a fifth persistent layer.
 | Intelligence reference | `LoopRef`, `LoopCapsule` | [`loop_capsule.py`](../../src/loop_engine/loop/loop_capsule.py) |
 | Spawned work | `SpawnedTaskManager`, `DelegationSpec`, `SpawnedLoopRuntimePort` | [`delegation_runtime.py`](../../src/loop_engine/loop/delegation_runtime.py) |
 | Ordered event log | `LoopLedger` | [`recursive_loop.py`](../../src/loop_engine/loop/recursive_loop.py) |
-| Saved run | `RunHistory`, `RunHistoryEvent` | [`run_history.py`](../../src/loop_engine/static_architecture/run_history.py) |
+| Saved run | `RunHistory`, `RunHistoryEvent` | [`run_history.py`](../../src/loop_engine/core/run_history.py) |
 
 ## Separation rules
 

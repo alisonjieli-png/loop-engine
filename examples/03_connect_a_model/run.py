@@ -16,7 +16,7 @@ choosing "AI mode": you are permitting an escalation.
 from loop_engine import configure, call_with_failover, LoopLedger
 from loop_engine.loop.encapsulate import as_model_loop
 from loop_engine.code_nodes.loop_report import report_from_ledger, render_text
-from loop_engine.static_architecture.custom_endpoint import CustomEndpoint
+from loop_engine.core.custom_endpoint import CustomEndpoint
 
 
 def show_what_this_installation_can_do():

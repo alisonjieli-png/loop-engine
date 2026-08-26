@@ -23,14 +23,14 @@ fail-closed.  Every serve is accepted-success-once, deterministic, zero
 semantic calls, with ``intelligence.<layer>.retrieved`` recorded.
 
 Owns:
-    - IntelligenceLoop (the named envelope kind + the serve);
+    - IntelligenceItemEnvelope (the named envelope kind + the serve);
     - serve_context_intelligence / serve_code / serve_guidance /
       serve_historical (one call per pillar);
     - serve_pillar(pillar, ...) -> the right kind for any of the four.
 
 Does not own:
     - the runtime (recursive_loop), the encapsulators (encapsulate), or the
-      retriever (static_architecture/retrieval).  This module COMPOSES them.
+      retriever (core/retrieval).  This module COMPOSES them.
 
 Key invariants:
     - every serve returns through a loop, never raw;
@@ -85,8 +85,8 @@ class IntelligenceLoopKindError(ValueError):
 
 
 @dataclass
-class IntelligenceLoop:
-    """The named loop envelope for one intelligence item.
+class IntelligenceItemEnvelope:
+    """The named item envelope for one intelligence item.
 
     The item's content is the DATA it carries; the envelope is the loop.  A
     ``serve()`` runs the envelope as a thin accepted-success loop and returns
@@ -197,9 +197,9 @@ class IntelligenceLoop:
 
 def make_intelligence_loop(pillar: str, name: str, content, *,
                            query_hint: str = "", profile_id: str = ""
-                           ) -> IntelligenceLoop:
+                           ) -> IntelligenceItemEnvelope:
     """The single constructor — build the right loop kind for a pillar."""
-    return IntelligenceLoop(pillar=pillar, name=name, content=content,
+    return IntelligenceItemEnvelope(pillar=pillar, name=name, content=content,
                             query_hint=query_hint, profile_id=profile_id)
 
 
@@ -210,7 +210,7 @@ def serve_context_intelligence(name: str, content, *, ledger=None, parent=None,
     rest configure the capsule — an earlier version forwarded everything to
     the constructor, so no caller could put the retrieval on a run's
     timeline."""
-    return IntelligenceLoop(pillar="context_intelligence", name=name,
+    return IntelligenceItemEnvelope(pillar="context_intelligence", name=name,
                             content=content, **kw).serve(ledger=ledger,
                                                          parent=parent)
 
@@ -219,7 +219,7 @@ def serve_code_intelligence(name: str, content, *, ledger=None, parent=None,
                             **kw) -> dict:
     """Serve this pillar as a loop.  ``ledger``/``parent`` reach serve(); the
     rest configure the capsule."""
-    return IntelligenceLoop(pillar="code_intelligence", name=name,
+    return IntelligenceItemEnvelope(pillar="code_intelligence", name=name,
                             content=content, **kw).serve(ledger=ledger,
                                                          parent=parent)
 
@@ -228,7 +228,7 @@ def serve_guidance_intelligence(name: str, content, *, ledger=None, parent=None,
                                 **kw) -> dict:
     """Serve this pillar as a loop.  ``ledger``/``parent`` reach serve(); the
     rest configure the capsule."""
-    return IntelligenceLoop(pillar="user_feedback_intelligence", name=name,
+    return IntelligenceItemEnvelope(pillar="user_feedback_intelligence", name=name,
                             content=content, **kw).serve(ledger=ledger,
                                                          parent=parent)
 
@@ -237,7 +237,7 @@ def serve_historical_intelligence(name: str, content, *, ledger=None, parent=Non
                                   **kw) -> dict:
     """Serve this pillar as a loop.  ``ledger``/``parent`` reach serve(); the
     rest configure the capsule."""
-    return IntelligenceLoop(pillar="runtime_history_solution_intelligence", name=name,
+    return IntelligenceItemEnvelope(pillar="runtime_history_solution_intelligence", name=name,
                             content=content, **kw).serve(ledger=ledger,
                                                          parent=parent)
 
@@ -411,7 +411,7 @@ def self_test() -> dict:
 
     # 4. the layer-labeled retrieval event lands on the ledger.
     lg = LoopLedger()
-    IntelligenceLoop(pillar="user_feedback_intelligence", name="a",
+    IntelligenceItemEnvelope(pillar="user_feedback_intelligence", name="a",
                      content={"text": "hi"}).serve(ledger=lg)
     check("retrieval_is_layer_labeled_on_the_ledger",
           any(e.get("event") == "intelligence.user_feedback.retrieved"
@@ -427,7 +427,7 @@ def self_test() -> dict:
     # 6. the catalog's read side returns NAMED LOOPS, not bare records —
     # the whole store maps to pillars and a "node" code record becomes a
     # code loop.
-    from ..static_architecture.store_serve import SolverStore, core_seed
+    from ..core.store_serve import SolverStore, core_seed
     s = SolverStore(core_records=core_seed())
     loops = s.records_as_loops()
     check("catalog_reads_return_named_loops_everywhere",

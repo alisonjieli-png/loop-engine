@@ -364,7 +364,7 @@ def scan_public_node_naming(root: str, rules: dict) -> list:
     )
     policed = {
         "code_nodes/solution_canvas.py", "code_nodes/solution_compiler.py",
-        "static_architecture/saas_routes.py", "static_architecture/studio_server.py",
+        "core/saas_routes.py", "core/studio_server.py",
     }
     # In the CANARY tree a planted fixture must be inspected even though its
     # filename is not one of the policed modules.
@@ -392,7 +392,7 @@ def scan_unmapped_event_kinds(root: str, rules: dict) -> list:
     would reach the live console and the browser as an untyped ``x.<kind>``
     passthrough — a second semantic event model growing in the dark.  Fail
     the build instead: map the kind, or do not emit it."""
-    from .static_architecture.run_history import _CANONICAL_EVENT_MAP
+    from .core.run_history import _CANONICAL_EVENT_MAP
     v = []
     for rel in _py_files(root):
         try:
@@ -501,7 +501,7 @@ def scan_unregistered_boundaries(root: str, rules: dict) -> list:
     it.  An envelope-owning module absent from the register is either a
     missing row or a deliberate exemption, and both should be visible.
     """
-    from .static_architecture.boundary_registry import BOUNDARIES
+    from .core.boundary_registry import BOUNDARIES
     exempt = set(rules.get("boundary_register_exempt_modules", {}))
     registered = " ".join(str(r.get("envelope", "")) + " " + str(r.get("test", ""))
                           for r in BOUNDARIES)
@@ -632,7 +632,7 @@ def scan_uncollected_self_tests(root: str, rules: dict) -> list:
     # uncollected, which is exactly what the planted canary asserts.
     src = open(suite).read() if os.path.exists(suite) else ""
     collected = set(re.findall(
-        r'"((?:loop|strings|code_nodes|static_architecture)\.[a-z_]+)"', src))
+        r'"((?:loop|strings|code_nodes|core|ontology|catalog|memory|generation)\.[a-z_]+)"', src))
     collected |= {f"{a}.{b}" for a, b in
                   re.findall(r"from \.(\w+)\.(\w+) import", src)}
     v = []

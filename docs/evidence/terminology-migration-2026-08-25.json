@@ -89,7 +89,7 @@
   },
   "showcase": {
     "source_directory": "showcase",
-    "static_architecture_groups": [
+    "core_groups": [
       "Intelligence Search and Retrieval",
       "Web Research",
       "Custom Plugins"

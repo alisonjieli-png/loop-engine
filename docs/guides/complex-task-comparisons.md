@@ -5,7 +5,7 @@ does not rerun Deep Agents, Pydantic AI, OpenAI Agents, or Microsoft Agent
 Framework through this catalog.
 
 This research catalog is separate from the
-[optional external harness adapters](../components/static-architecture/EXTERNAL-HARNESS-ADAPTERS.md).
+[optional external harness adapters](../components/core-architecture/EXTERNAL-HARNESS-ADAPTERS.md).
 The catalog reads published evidence. An adapter would execute a selected
 package inside one bounded Loop. Neither one proves the other.
 

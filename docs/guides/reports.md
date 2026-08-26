@@ -51,10 +51,31 @@ loop1: prepare a quarterly plan
             [hybrid] 1.2s, 9 events, 1 model call, 294 tokens (mistral)
 ```
 
-The relationships matter. A flat list hides which Loop spawned work, queried
-Intelligence, retrieved an item, or received a connected value. The current
-report renders the spawning structure. One complete relationship-DAG report
-is still a consolidation gap.
+The relationships matter. Every report now contains two separate projections:
+
+```text
+Loop ownership tree
+└── which Loop physically spawned and owns each nested run
+
+Semantic relationship DAG
+├── Starting
+├── Spawned by
+├── Queried by
+├── Retrieved by
+└── Connected from
+```
+
+The ownership tree remains useful for runtime depth and budget analysis. The
+semantic DAG explains why each Loop entered the graph and how typed values or
+Intelligence moved between Loops. A Connected from relationship may contain
+several incoming edges.
+
+The DAG reads only current relationship fields carried by canonical events. It
+does not infer a semantic edge from event order or from the ownership tree.
+Conflicting declarations, missing endpoints, self-references, invalid records,
+and cycles appear under relationship diagnostics. An unknown endpoint does not
+become an anonymous Mermaid vertex. Events without a Loop ID are excluded from
+both graph displays.
 
 ```python
 report.loops                  # how many
@@ -63,6 +84,8 @@ report.model_calls
 report.total_tokens
 report.cost_by_provider()     # {'mistral': 294}
 report.summary()              # the structured form
+report.relationship_dag       # typed vertices, edges, and diagnostics
+report.relationship_dag.mermaid()
 ```
 
 ## Four renderings, one projection
@@ -75,6 +98,9 @@ report.summary()              # the structured form
 | `json` | a dashboard or a downstream check |
 
 All four project the **same** underlying report, so they cannot disagree.
+Text shows a readable edge list. Markdown includes Mermaid. HTML includes the
+same semantic DAG as a self-contained text block. JSON contains the typed DAG,
+its completion state, and every diagnostic.
 
 ## What makes a report trustworthy
 

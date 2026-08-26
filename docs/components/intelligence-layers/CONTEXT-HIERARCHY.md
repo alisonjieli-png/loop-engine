@@ -65,7 +65,7 @@ frozen and checks that every field is a string. The ontology then normalizes
 and validates controlled fields.
 
 ```python
-from loop_engine.static_architecture.facets import (
+from loop_engine.core.facets import (
     ContextFacetSpec,
     context_facets,
 )
@@ -277,13 +277,13 @@ Research output stays at candidate status until a separate review accepts it.
 ## Code locations
 
 - Typed facet settings:
-  `loop_engine.static_architecture.facets.ContextFacetSpec`
+  `loop_engine.core.facets.ContextFacetSpec`
 - Ontology and format contracts:
-  `loop_engine.static_architecture.context_ontology`
+  `loop_engine.core.context_ontology`
 - Classification:
-  `loop_engine.static_architecture.context_classification`
+  `loop_engine.core.context_classification`
 - Catalog projection:
-  `loop_engine.static_architecture.context_catalog`
+  `loop_engine.core.context_catalog`
 - Question forms:
   `loop_engine.strings.question_engine`
 - Balanced domain seeding:

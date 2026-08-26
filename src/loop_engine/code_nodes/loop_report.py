@@ -26,7 +26,8 @@ Token counts are provider-reported and carry the provider that produced them,
 because a count with no provider attached cannot be checked later.
 
 Owns:
-    - LoopReport: the projection (tree, per-loop rollups, cost, timings);
+    - LoopReport: ownership tree, semantic relationship DAG, per-loop
+      rollups, cost, and timings;
     - render_text / render_markdown / render_html;
     - report_from_ledger() / report_from_run(): the two entry points.
 
@@ -38,6 +39,8 @@ Key invariants:
     - every figure traces to a ledger event; nothing is estimated;
     - an empty run reports an empty run rather than a plausible-looking one;
     - model cost is attributed per provider, or reported as unknown;
+    - semantic edges come from current relationship fields on canonical events;
+    - invalid relationships remain visible without anonymous graph vertices;
     - the rendered HTML is self-contained (no external assets).
 
 Verification: self_test(): tree shape from real nesting, cost attribution,
@@ -50,7 +53,8 @@ import html as _html
 import json
 from dataclasses import dataclass, field
 
-from ..static_architecture.run_history import to_canonical_events
+from ..core.run_history import to_canonical_events
+from .run_analytics import LoopRelationshipDag, loop_relationship_dag
 
 #: Events that open and close a loop, used to build the tree and the timings.
 _OPEN = "init"
@@ -58,7 +62,7 @@ _TERMINAL_EVENTS = ("terminal", "loop.completed", "loop.failed")
 
 
 @dataclass
-class LoopNode:
+class LoopReportRecord:
     """One loop in the tree, with what it did and what it cost."""
     loop_id: str
     goal: str = ""
@@ -111,6 +115,8 @@ class LoopReport:
     total_events: int = 0
     families: dict = field(default_factory=dict)
     chain_intact: "bool | None" = None
+    relationship_dag: LoopRelationshipDag = field(
+        default_factory=LoopRelationshipDag)
 
     @property
     def loops(self) -> int:
@@ -141,19 +147,27 @@ class LoopReport:
                 "total_tokens": self.total_tokens,
                 "tokens_by_provider": self.cost_by_provider(),
                 "event_families": dict(self.families),
-                "chain_intact": self.chain_intact}
+                "chain_intact": self.chain_intact,
+                "relationship_dag_complete": self.relationship_dag.complete,
+                "relationship_edges": len(self.relationship_dag.edges),
+                "relationship_diagnostics": len(
+                    self.relationship_dag.diagnostics)}
 
     def as_dict(self) -> dict:
         return {**self.summary(),
-                "tree": [loop.as_dict() for loop in self.starting_loops]}
+                "tree": [loop.as_dict() for loop in self.starting_loops],
+                "relationship_dag": self.relationship_dag.as_dict(),
+                "relationship_mermaid": self.relationship_dag.mermaid()}
 
 
 def report_from_ledger(events, *, run_id: str = "",
                        chain_intact: "bool | None" = None) -> LoopReport:
     """Project a ledger into a report. Nothing is recomputed from elsewhere."""
-    from ..static_architecture.run_history import as_ledger_events
+    from ..core.run_history import as_ledger_events
     events = as_ledger_events(events)
-    rep = LoopReport(run_id=run_id, chain_intact=chain_intact)
+    rep = LoopReport(
+        run_id=run_id, chain_intact=chain_intact,
+        relationship_dag=loop_relationship_dag(events))
     rep.total_events = len(events)
 
     for e in events:
@@ -162,7 +176,7 @@ def report_from_ledger(events, *, run_id: str = "",
             continue
         node = rep.by_id.get(lid)
         if node is None:
-            node = LoopNode(loop_id=lid)
+            node = LoopReportRecord(loop_id=lid)
             rep.by_id[lid] = node
         node.events += 1
         kind = str(e.get("event", ""))
@@ -183,7 +197,7 @@ def report_from_ledger(events, *, run_id: str = "",
             if spawned_id:
                 spawned = rep.by_id.get(spawned_id)
                 if spawned is None:
-                    spawned = LoopNode(loop_id=spawned_id)
+                    spawned = LoopReportRecord(loop_id=spawned_id)
                     rep.by_id[spawned_id] = spawned
                 spawned.spawning_loop_id = lid
         if kind == "spawn":
@@ -252,7 +266,7 @@ def report_from_run(root: str, run_id: str, *, ledger=None) -> LoopReport:
     than by opening saved run history directly: past runs are one of the four
     intelligence pillars, and a reader that bypasses the envelope is exactly
     the direct-resource-access the conformance gate refuses."""
-    from ..static_architecture.run_history import RunHistory
+    from ..core.run_history import RunHistory
     from ..loop.intelligence_loops import serve_historical_intelligence
     ch = serve_historical_intelligence(
         f"report:{run_id}", lambda: RunHistory.load(root, run_id),
@@ -261,11 +275,36 @@ def report_from_run(root: str, run_id: str, *, ledger=None) -> LoopReport:
                               chain_intact=ch.verify_chain()["intact"])
 
 
-def _cost_line(n: LoopNode) -> str:
+def _cost_line(n: LoopReportRecord) -> str:
     if n.model_calls == 0:
         return "0 model calls"
     who = "/".join(n.providers) if n.providers else "provider unknown"
     return f"{n.model_calls} model call(s), {n.total_tokens} tokens ({who})"
+
+
+def _ownership_tree_lines(rep: LoopReport, *, show_steps: bool = True
+                          ) -> list[str]:
+    lines = []
+
+    def walk(node, prefix=""):
+        secs = node.seconds
+        timing = f" {secs}s" if secs is not None else ""
+        head = f"{prefix}{node.loop_id}"
+        if node.goal:
+            head += f": {node.goal[:70]}"
+        lines.append(head)
+        lines.append(
+            f"{prefix}    [{node.mode or 'mode unrecorded'}]{timing}, "
+            f"{node.events} events, {_cost_line(node)}")
+        if show_steps and node.steps:
+            lines.append(
+                f"{prefix}    steps: {' -> '.join(node.steps)}")
+        for spawned in node.spawned_loops:
+            walk(spawned, prefix + "    ")
+
+    for starting in rep.starting_loops:
+        walk(starting)
+    return lines
 
 
 def render_text(rep: LoopReport, *, show_steps: bool = True) -> str:
@@ -285,23 +324,8 @@ def render_text(rep: LoopReport, *, show_steps: bool = True) -> str:
         return "\n".join(out)
     out.append("")
 
-    def walk(n, prefix=""):
-        secs = n.seconds
-        timing = f" {secs}s" if secs is not None else ""
-        head = f"{prefix}{n.loop_id}"
-        if n.goal:
-            head += f": {n.goal[:70]}"
-        out.append(head)
-        detail = f"{prefix}    [{n.mode or 'mode unrecorded'}]{timing}, " \
-                 f"{n.events} events, {_cost_line(n)}"
-        out.append(detail)
-        if show_steps and n.steps:
-            out.append(f"{prefix}    steps: {' -> '.join(n.steps)}")
-        for c in n.spawned_loops:
-            walk(c, prefix + "    ")
-
-    for r in rep.starting_loops:
-        walk(r)
+    out.extend(_ownership_tree_lines(rep, show_steps=show_steps))
+    out += ["", *rep.relationship_dag.text_lines()]
     return "\n".join(out)
 
 
@@ -325,9 +349,15 @@ def render_markdown(rep: LoopReport) -> str:
         out += ["", "_This run recorded no loops._"]
         return "\n".join(out)
 
-    out += ["", "## Loop tree", "", "```"]
-    out.append(render_text(rep).split("\n\n", 1)[-1])
-    out += ["```", "", "## Event families", "",
+    out += ["", "## Loop ownership tree", "", "```"]
+    out.append("\n".join(_ownership_tree_lines(rep)))
+    out += ["```", "", "## Semantic relationship DAG", "", "```mermaid",
+            rep.relationship_dag.mermaid(), "```"]
+    if rep.relationship_dag.diagnostics:
+        out += ["", "### Relationship diagnostics", "", "```"]
+        out += rep.relationship_dag.text_lines()[1:]
+        out += ["```"]
+    out += ["", "## Event families", "",
             "| Family | Count |", "|---|---:|"]
     out += [f"| `{k}` | {v} |" for k, v in sorted(rep.families.items())]
     return "\n".join(out)
@@ -367,6 +397,7 @@ def render_html(rep: LoopReport) -> str:
                   for k, v in sorted(rep.families.items()))
     prov = "".join(f"<tr><td>{esc(k)}</td><td>{v}</td></tr>"
                    for k, v in sorted(rep.cost_by_provider().items()))
+    relationship_text = "\n".join(rep.relationship_dag.text_lines())
     chain = ("" if rep.chain_intact is None else
              f"<div class='stat'><b>{'yes' if rep.chain_intact else 'NO'}</b>"
              "<span>chain verified</span></div>")
@@ -419,7 +450,8 @@ border-top:1px solid var(--line);padding-top:1rem}}
 <div class="stat"><b>{rep.total_tokens}</b><span>tokens</span></div>
 {chain}
 </div>
-<h2>Loop tree</h2>{tree}
+<h2>Loop ownership tree</h2>{tree}
+<h2>Semantic relationship DAG</h2><pre>{esc(relationship_text)}</pre>
 {"<h2>Cost by provider</h2><table>" + prov + "</table>" if prov else ""}
 <h2>Event families</h2><table>{fam}</table>
 <p class="foot">Every figure is projected from the run's own ledger.
@@ -562,6 +594,55 @@ def self_test() -> dict:
           and "prefers-color-scheme" in h,
           "no external assets, no network, both themes")
 
+    relationship_events = (
+        {"event": "init", "loop_id": "p", "goal": "practice",
+         "role": "practitioner", "profile_id": "practitioner.solver",
+         "relationship_kind": "starting"},
+        {"event": "init", "loop_id": "s", "goal": "research",
+         "role": "practitioner", "profile_id": "practitioner.research",
+         "relationship_kind": "spawned_by", "spawned_by_loop_id": "p"},
+        {"event": "init", "loop_id": "q", "goal": "query",
+         "role": "intelligence", "profile_id": "intelligence.search",
+         "relationship_kind": "queried_by", "queried_by_loop_id": "p"},
+        {"event": "init", "loop_id": "i", "goal": "materialize",
+         "role": "intelligence", "profile_id": "intelligence.materialize",
+         "relationship_kind": "retrieved_by", "retrieved_by_loop_id": "q"},
+        {"event": "init", "loop_id": "z", "goal": "solution",
+         "role": "solution", "profile_id": "solution.pipeline",
+         "relationship_kind": "connected_from",
+         "connected_from_loop_ids": ("p", "i")},
+    )
+    relationship_report = report_from_ledger(relationship_events)
+    relationship_dict = relationship_report.as_dict()
+    relationship_text = render_text(relationship_report)
+    relationship_markdown = render_markdown(relationship_report)
+    relationship_html = render_html(relationship_report)
+    check("semantic_DAG_renders_consistently_in_text_markdown_html_and_JSON",
+          relationship_report.relationship_dag.complete
+          and len(relationship_report.relationship_dag.edges) == 5
+          and relationship_dict["relationship_dag"]["complete"] is True
+          and "p -- Queried by --> q" in relationship_text
+          and "```mermaid" in relationship_markdown
+          and "Connected from" in relationship_markdown
+          and "Semantic relationship DAG" in relationship_html
+          and '["<br/>' not in relationship_dict["relationship_mermaid"])
+
+    broken_report = report_from_ledger((
+        {"event": "custom", "loop_id": ""},
+        {"event": "init", "loop_id": "visible",
+         "relationship_kind": "queried_by",
+         "queried_by_loop_id": "missing"},
+    ))
+    broken_text = render_text(broken_report)
+    check("missing_endpoints_are_visible_without_blank_vertices",
+          broken_report.loops == 1
+          and len(broken_report.relationship_dag.vertices) == 1
+          and not broken_report.relationship_dag.complete
+          and "relationship_endpoint_unknown" in broken_text
+          and 'relationship_loop_0["visible' in
+              broken_report.relationship_dag.mermaid()
+          and '["<br/>' not in broken_report.relationship_dag.mermaid())
+
     # 7. ADVERSARIAL: a missing spawning Loop must not drop a Loop, and a
     # self-spawning reference must not hang the report.
     lg3 = LoopLedger()
@@ -586,7 +667,7 @@ def self_test() -> dict:
     # adapter must preserve the goal, model-call count, and tokens.
     import shutil
     import tempfile
-    from ..static_architecture.run_history import RunHistory
+    from ..core.run_history import RunHistory
     saved_ledger = LoopLedger()
     saved_ledger.record(loop_id="saved", event="init", goal="saved work")
     saved_ledger.record(loop_id="saved", event="run_step", step="decide",

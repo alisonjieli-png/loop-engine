@@ -40,13 +40,287 @@ Verification: self_test() (folded into the package suite).
 from __future__ import annotations
 
 from collections import Counter, defaultdict
+from dataclasses import dataclass
 
 SEMANTIC_MODES = ("hybrid", "non_deterministic")
+_RELATIONSHIP_FIELDS = (
+    "spawned_by_loop_id", "queried_by_loop_id",
+    "retrieved_by_loop_id", "connected_from_loop_ids")
+_RELATIONSHIP_LABELS = {
+    "starting": "Starting",
+    "spawned_by": "Spawned by",
+    "queried_by": "Queried by",
+    "retrieved_by": "Retrieved by",
+    "connected_from": "Connected from",
+}
+_RELATIONSHIP_ORDER = tuple(_RELATIONSHIP_LABELS)
+
+
+@dataclass(frozen=True)
+class LoopRelationshipRecord:
+    """One observed Loop in the semantic relationship projection."""
+
+    loop_id: str
+    goal: str = ""
+    role: str = ""
+    profile_id: str = ""
+    mode: str = ""
+    relationship_kind: str = "unrecorded"
+
+    def as_dict(self) -> dict:
+        return {
+            "loop_id": self.loop_id,
+            "goal": self.goal,
+            "role": self.role,
+            "profile_id": self.profile_id,
+            "mode": self.mode,
+            "relationship_kind": self.relationship_kind,
+        }
+
+
+@dataclass(frozen=True)
+class LoopRelationshipEdge:
+    """One validated semantic edge directed from source Loop to target Loop."""
+
+    source_loop_id: str
+    target_loop_id: str
+    relationship_kind: str
+
+    def as_dict(self) -> dict:
+        return {
+            "source_loop_id": self.source_loop_id,
+            "target_loop_id": self.target_loop_id,
+            "relationship_kind": self.relationship_kind,
+        }
+
+
+@dataclass(frozen=True)
+class LoopRelationshipDiagnostic:
+    """One relationship record that could not safely become a graph edge."""
+
+    code: str
+    loop_id: str = ""
+    endpoint_loop_id: str = ""
+    relationship_kind: str = ""
+    detail: str = ""
+
+    def as_dict(self) -> dict:
+        return {
+            "code": self.code,
+            "loop_id": self.loop_id,
+            "endpoint_loop_id": self.endpoint_loop_id,
+            "relationship_kind": self.relationship_kind,
+            "detail": self.detail,
+        }
+
+
+def _label_text(value: object) -> str:
+    return (str(value).replace("&", "&amp;").replace('"', "&quot;")
+            .replace("<", "&lt;").replace(">", "&gt;")
+            .replace("\n", " ").strip())
+
+
+@dataclass(frozen=True)
+class LoopRelationshipDag:
+    """Typed semantic DAG plus visible validation diagnostics."""
+
+    vertices: tuple[LoopRelationshipRecord, ...] = ()
+    edges: tuple[LoopRelationshipEdge, ...] = ()
+    diagnostics: tuple[LoopRelationshipDiagnostic, ...] = ()
+    acyclic: bool = True
+
+    @property
+    def complete(self) -> bool:
+        return self.acyclic and not self.diagnostics
+
+    def as_dict(self) -> dict:
+        return {
+            "record_type": "loop_relationship_dag/v1",
+            "vertices": [item.as_dict() for item in self.vertices],
+            "edges": [item.as_dict() for item in self.edges],
+            "diagnostics": [item.as_dict() for item in self.diagnostics],
+            "acyclic": self.acyclic,
+            "complete": self.complete,
+        }
+
+    def text_lines(self) -> list[str]:
+        lines = ["SEMANTIC RELATIONSHIP DAG"]
+        if not self.vertices:
+            return lines + ["  (no Loop relationship records)"]
+        for item in self.vertices:
+            label = _RELATIONSHIP_LABELS.get(
+                item.relationship_kind, item.relationship_kind or "Unrecorded")
+            identity = "/".join(
+                value for value in (item.role, item.profile_id) if value)
+            suffix = f" {identity}" if identity else ""
+            lines.append(f"  {item.loop_id} [{label}]{suffix}")
+        if self.edges:
+            lines.append("  edges:")
+            for edge in self.edges:
+                label = _RELATIONSHIP_LABELS[edge.relationship_kind]
+                lines.append(
+                    f"    {edge.source_loop_id} -- {label} --> "
+                    f"{edge.target_loop_id}")
+        if self.diagnostics:
+            lines.append("  diagnostics:")
+            for item in self.diagnostics:
+                endpoint = (f" endpoint={item.endpoint_loop_id}"
+                            if item.endpoint_loop_id else "")
+                lines.append(
+                    f"    {item.code}: loop={item.loop_id or 'unknown'}"
+                    f"{endpoint} {item.detail}".rstrip())
+        return lines
+
+    def mermaid(self) -> str:
+        lines = ["flowchart TD"]
+        identifiers = {
+            item.loop_id: f"relationship_loop_{index}"
+            for index, item in enumerate(self.vertices)}
+        for item in self.vertices:
+            relationship = _RELATIONSHIP_LABELS.get(
+                item.relationship_kind, item.relationship_kind or "Unrecorded")
+            role = f"<br/>{_label_text(item.role)}" if item.role else ""
+            label = (f"{_label_text(item.loop_id)}{role}"
+                     f"<br/>{_label_text(relationship)}")
+            lines.append(f'  {identifiers[item.loop_id]}["{label}"]')
+        for edge in self.edges:
+            source = identifiers[edge.source_loop_id]
+            target = identifiers[edge.target_loop_id]
+            label = _label_text(_RELATIONSHIP_LABELS[edge.relationship_kind])
+            lines.append(f"  {source} -->|{label}| {target}")
+        for item in self.diagnostics:
+            detail = _label_text(
+                f"{item.code} loop={item.loop_id} "
+                f"endpoint={item.endpoint_loop_id}")
+            lines.append(f"  %% {detail}")
+        return "\n".join(lines)
+
+
+def _cycle_nodes(vertex_ids: set[str],
+                 edges: tuple[LoopRelationshipEdge, ...]) -> tuple[str, ...]:
+    adjacency = {loop_id: set() for loop_id in vertex_ids}
+    indegree = {loop_id: 0 for loop_id in vertex_ids}
+    for edge in edges:
+        if edge.target_loop_id not in adjacency[edge.source_loop_id]:
+            adjacency[edge.source_loop_id].add(edge.target_loop_id)
+            indegree[edge.target_loop_id] += 1
+    ready = sorted(loop_id for loop_id, count in indegree.items() if count == 0)
+    visited = []
+    while ready:
+        loop_id = ready.pop(0)
+        visited.append(loop_id)
+        for target in sorted(adjacency[loop_id]):
+            indegree[target] -= 1
+            if indegree[target] == 0:
+                ready.append(target)
+                ready.sort()
+    return tuple(sorted(vertex_ids - set(visited)))
+
+
+def loop_relationship_dag(events) -> LoopRelationshipDag:
+    """Project current relationship declarations from canonical events only."""
+    from ..loop.loop_role import LoopRelationship
+    from ..core.run_history import (
+        as_ledger_events, to_canonical_events)
+
+    canonical = to_canonical_events(as_ledger_events(events))
+    metadata: dict[str, dict[str, str]] = {}
+    declarations: dict[str, set[LoopRelationship]] = defaultdict(set)
+    relationship_seen = set()
+    diagnostics = []
+    for item in canonical:
+        source = dict(item["source"])
+        loop_id = str(source.get("loop_id", "") or "").strip()
+        if not loop_id:
+            continue
+        row = metadata.setdefault(loop_id, {
+            "goal": "", "role": "", "profile_id": "", "mode": ""})
+        for name in row:
+            value = str(source.get(name, "") or "").strip()
+            if value and not row[name]:
+                row[name] = value
+        if "relationship_kind" not in source:
+            continue
+        relationship_seen.add(loop_id)
+        raw_kind = source.get("relationship_kind", "")
+        kind = str(getattr(raw_kind, "value", raw_kind) or "")
+        payload = {"relationship_kind": kind}
+        payload.update({name: source[name] for name in _RELATIONSHIP_FIELDS
+                        if name in source})
+        try:
+            declarations[loop_id].add(LoopRelationship.from_dict(payload))
+        except (TypeError, ValueError) as exc:
+            diagnostics.append(LoopRelationshipDiagnostic(
+                "relationship_record_invalid", loop_id,
+                relationship_kind=kind,
+                detail=f"{type(exc).__name__}: {str(exc)[:120]}"))
+
+    relationship_kinds = {}
+    selected_relationships = {}
+    for loop_id in sorted(metadata):
+        declared = declarations.get(loop_id, set())
+        if len(declared) > 1:
+            relationship_kinds[loop_id] = "conflict"
+            diagnostics.append(LoopRelationshipDiagnostic(
+                "relationship_conflict", loop_id,
+                detail=f"{len(declared)} distinct declarations"))
+        elif declared:
+            selected = next(iter(declared))
+            relationship_kinds[loop_id] = selected.kind.value
+            selected_relationships[loop_id] = selected
+        else:
+            relationship_kinds[loop_id] = "unrecorded"
+            if loop_id not in relationship_seen:
+                diagnostics.append(LoopRelationshipDiagnostic(
+                    "relationship_not_recorded", loop_id,
+                    detail="no current relationship declaration"))
+
+    vertices = tuple(LoopRelationshipRecord(
+        loop_id, **metadata[loop_id],
+        relationship_kind=relationship_kinds[loop_id])
+        for loop_id in sorted(metadata))
+    vertex_ids = {item.loop_id for item in vertices}
+    edge_values = set()
+    for loop_id, relationship in selected_relationships.items():
+        kind = relationship.kind.value
+        if kind == "starting":
+            continue
+        endpoints = {
+            "spawned_by": (relationship.spawned_by_loop_id,),
+            "queried_by": (relationship.queried_by_loop_id,),
+            "retrieved_by": (relationship.retrieved_by_loop_id,),
+            "connected_from": relationship.connected_from_loop_ids,
+        }[kind]
+        for endpoint in endpoints:
+            if endpoint == loop_id:
+                diagnostics.append(LoopRelationshipDiagnostic(
+                    "relationship_self_reference", loop_id, endpoint, kind,
+                    "self-referential edge rejected"))
+            elif endpoint not in vertex_ids:
+                diagnostics.append(LoopRelationshipDiagnostic(
+                    "relationship_endpoint_unknown", loop_id, endpoint, kind,
+                    "referenced Loop was not observed"))
+            else:
+                edge_values.add((endpoint, loop_id, kind))
+    kind_index = {kind: index for index, kind in enumerate(_RELATIONSHIP_ORDER)}
+    edges = tuple(LoopRelationshipEdge(*value) for value in sorted(
+        edge_values, key=lambda value: (
+            kind_index[value[2]], value[0], value[1])))
+    cycles = _cycle_nodes(vertex_ids, edges)
+    if cycles:
+        diagnostics.append(LoopRelationshipDiagnostic(
+            "relationship_cycle", detail=
+            f"cycle includes {', '.join(cycles)}"))
+    diagnostics = tuple(sorted(
+        diagnostics, key=lambda item: (
+            item.code, item.loop_id, item.endpoint_loop_id,
+            item.relationship_kind, item.detail)))
+    return LoopRelationshipDag(vertices, edges, diagnostics, not cycles)
 
 
 def analyze_run(events, usage_log=(), trace: "dict | None" = None) -> dict:
     """One canonical rollup of a loop ledger (the shared-tree history)."""
-    from ..static_architecture.run_history import as_ledger_events
+    from ..core.run_history import as_ledger_events
     events = as_ledger_events(events)
     per_loop: dict = defaultdict(lambda: {
         "steps": 0, "semantic_calls": 0, "fallbacks": 0, "deferrals": 0,
@@ -289,6 +563,91 @@ def self_test() -> dict:
     check("empty_loop_identity_does_not_create_a_display_vertex",
           tuple(without_blank["loops"]) == ("loop1",)
           and without_blank["totals"]["loops"] == 1)
+
+    # All five semantic relationships survive the saved-history adapter. The
+    # connected Solution has two explicit input edges, including an adapter
+    # Loop, rather than one hidden connection.
+    from ..core.run_history import RunHistory
+    relationship_events = (
+        {"event": "init", "loop_id": "start", "goal": "build",
+         "role": "practitioner", "profile_id": "practitioner.solver",
+         "relationship_kind": "starting"},
+        {"event": "init", "loop_id": "spawned", "goal": "research",
+         "role": "practitioner", "profile_id": "practitioner.research",
+         "relationship_kind": "spawned_by",
+         "spawned_by_loop_id": "start"},
+        {"event": "init", "loop_id": "query", "goal": "search",
+         "role": "intelligence", "profile_id": "intelligence.search",
+         "relationship_kind": "queried_by",
+         "queried_by_loop_id": "start"},
+        {"event": "init", "loop_id": "item", "goal": "materialize",
+         "role": "intelligence", "profile_id": "intelligence.materialize",
+         "relationship_kind": "retrieved_by",
+         "retrieved_by_loop_id": "query"},
+        {"event": "init", "loop_id": "adapter", "goal": "adapt value",
+         "role": "solution", "profile_id": "solution.atomic_component",
+         "relationship_kind": "starting"},
+        {"event": "init", "loop_id": "solution", "goal": "run solution",
+         "role": "solution", "profile_id": "solution.pipeline",
+         "relationship_kind": "connected_from",
+         "connected_from_loop_ids": ("start", "adapter")},
+        {"event": "custom", "loop_id": "", "relationship_kind": "starting"},
+    )
+    adapted = RunHistory.from_ledger(
+        relationship_events, run_id="relationship-adapter")
+    relationship_dag = loop_relationship_dag(adapted.event_log)
+    relationship_edges = {
+        (edge.source_loop_id, edge.target_loop_id, edge.relationship_kind)
+        for edge in relationship_dag.edges}
+    check("all_five_relationships_and_connection_edges_are_projected",
+          relationship_dag.complete and relationship_dag.acyclic
+          and len(relationship_dag.vertices) == 6
+          and relationship_edges == {
+              ("start", "spawned", "spawned_by"),
+              ("start", "query", "queried_by"),
+              ("query", "item", "retrieved_by"),
+              ("start", "solution", "connected_from"),
+              ("adapter", "solution", "connected_from"),
+          }
+          and {item.relationship_kind for item in relationship_dag.vertices}
+          == set(_RELATIONSHIP_ORDER)
+          and all(item.loop_id for item in relationship_dag.vertices)
+          and '["<br/>' not in relationship_dag.mermaid())
+
+    adversarial_dag = loop_relationship_dag((
+        {"event": "init", "loop_id": "start",
+         "relationship_kind": "starting"},
+        {"event": "init", "loop_id": "conflict",
+         "relationship_kind": "starting"},
+        {"event": "custom", "loop_id": "conflict",
+         "relationship_kind": "spawned_by",
+         "spawned_by_loop_id": "start"},
+        {"event": "init", "loop_id": "orphan",
+         "relationship_kind": "queried_by",
+         "queried_by_loop_id": "not-observed"},
+        {"event": "init", "loop_id": "missing",
+         "relationship_kind": "connected_from"},
+        {"event": "init", "loop_id": "self",
+         "relationship_kind": "connected_from",
+         "connected_from_loop_ids": ("self",)},
+        {"event": "init", "loop_id": "cycle-a",
+         "relationship_kind": "connected_from",
+         "connected_from_loop_ids": ("cycle-b",)},
+        {"event": "init", "loop_id": "cycle-b",
+         "relationship_kind": "connected_from",
+         "connected_from_loop_ids": ("cycle-a",)},
+        {"event": "custom", "loop_id": ""},
+    ))
+    diagnostic_codes = {item.code for item in adversarial_dag.diagnostics}
+    check("invalid_relationships_are_visible_without_implicit_vertices",
+          not adversarial_dag.complete and not adversarial_dag.acyclic
+          and {"relationship_conflict", "relationship_endpoint_unknown",
+               "relationship_record_invalid", "relationship_self_reference",
+               "relationship_cycle"} <= diagnostic_codes
+          and all(item.loop_id for item in adversarial_dag.vertices)
+          and "not-observed[" not in adversarial_dag.mermaid()
+          and any("diagnostics:" in line
+                  for line in adversarial_dag.text_lines()))
 
     passed = sum(1 for r in results if r["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

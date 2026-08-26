@@ -211,6 +211,50 @@ request. Small text and non-text values keep their exact original types and
 values inline. Delegation creates no second artifact store and never gives the
 executor the store object.
 
+## Manager services and durable task state
+
+Use `SpawnedTaskServices` to pass optional manager services as one object:
+
+```python
+from loop_engine.loop.spawned_task_state_store import (
+    LocalJsonSpawnedTaskStateStore,
+    SpawnedTaskServices,
+)
+
+services = SpawnedTaskServices(
+    runtime_memory=run_note_board,
+    context_artifacts=context_artifact_manager,
+    state_store=LocalJsonSpawnedTaskStateStore("./run/task-state"),
+)
+manager = SpawnedTaskManager(spawning_loop, executor, services=services)
+```
+
+Use a separate store root for each run. Loop IDs are run-local identities.
+The local store uses only SHA-256 values in directory and file names. Each
+state file has mode `0600`, a record digest, the checkpoint digest, and a
+monotonic store revision. Writes flush the file, replace it atomically, and
+flush the containing directory. Compare-and-swap prevents two managers from
+advancing the same saved revision. Local process locking uses `flock` when the
+platform provides it.
+
+When a state store is present, the manager persists these transitions without
+an extra caller step:
+
+1. task start;
+2. accepted task update;
+3. success or typed failure;
+4. cancellation or deadline failure.
+
+`load_saved_checkpoints()` loads every saved task for the same owning Loop.
+Terminal results remain terminal. Saved queued or running work becomes an
+`INTERRUPTED` result. Python does not pretend that its old coroutine resumed.
+
+To try interrupted work again, call `restart_as_new_attempt(task_id)` for a
+synchronous executor or `await restart_as_new_attempt_async(task_id)` for an
+asynchronous executor. The manager creates a new task ID and a new Spawned
+Loop. The interrupted record remains unchanged and the event log connects the
+old task ID to the new attempt.
+
 ## Lifecycle operations
 
 The manager has one small lifecycle surface:
@@ -227,7 +271,9 @@ The manager has one small lifecycle surface:
 - `join(...)` is the same bounded ordered join operation;
 - `checkpoint(task_id)` and `checkpoints()` serialize lifecycle state; and
 - `restore_checkpoint(...)` or `restore_checkpoint_json(...)` restores durable
-  terminal metadata.
+  terminal metadata;
+- `load_saved_checkpoints()` loads all saved tasks for the owning Loop; and
+- `restart_as_new_attempt(...)` starts interrupted work under a new identity.
 
 `SpawnedTaskStatus` is a closed enum with queued, running, succeeded, failed,
 canceled, and interrupted states. A task cannot be updated after it reaches a

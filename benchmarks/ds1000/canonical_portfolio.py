@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from loop_engine.static_architecture.intelligence_portfolio import (
+from loop_engine.core.intelligence_portfolio import (
     LoopIntelligenceMaterialization,
     PortfolioMaterializationServices,
     PortfolioRequest,

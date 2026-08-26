@@ -29,6 +29,7 @@ if TYPE_CHECKING:
 SPAWNED_TASK_CHECKPOINT_VERSION = "spawned_task_checkpoint/v2"
 _SUPPORTED_SPAWNED_TASK_CHECKPOINT_VERSIONS = (
     SPAWNED_TASK_CHECKPOINT_VERSION,)
+_UNSET = object()
 
 
 class SpawnedTaskCheckpointError(ValueError):
@@ -62,9 +63,13 @@ def _encode_value(value: Any) -> Any:
                 "checkpoint dictionaries require string keys")
         return {"type": "dict", "items": {
             key: _encode_value(item) for key, item in sorted(value.items())}}
-    from ..static_architecture.context_artifacts import ContextArtifactRef
+    from ..core.context_artifacts import ContextArtifactRef
     if isinstance(value, ContextArtifactRef):
         return {"type": "context_artifact_ref", "value": value.to_dict()}
+    from .spawned_workspace_executor import WorkspaceSpawnedCommandOutput
+    if isinstance(value, WorkspaceSpawnedCommandOutput):
+        return {"type": "workspace_spawned_command_output",
+                "value": value.safe_summary()}
     raise SpawnedTaskCheckpointError(
         f"checkpoint value type {type(value).__name__!r} is not serializable")
 
@@ -86,8 +91,24 @@ def _decode_value(value: Any) -> Any:
                 for key, item in value["items"].items()}
     if kind == "context_artifact_ref":
         _known(value, ("type", "value"), "artifact value")
-        from ..static_architecture.context_artifacts import ContextArtifactRef
+        from ..core.context_artifacts import ContextArtifactRef
         return ContextArtifactRef.from_dict(value["value"])
+    if kind == "workspace_spawned_command_output":
+        _known(value, ("type", "value"), "workspace output value")
+        from .spawned_workspace_executor import WorkspaceSpawnedCommandOutput
+        summary = value["value"]
+        from ..core.context_artifacts import ContextArtifactRef
+        return WorkspaceSpawnedCommandOutput(
+            plan_digest=summary["plan_digest"],
+            workspace_id=summary["workspace_id"],
+            backend_kind=summary["backend_kind"],
+            ok=summary["ok"],
+            exit_code=summary["exit_code"],
+            output_ref=ContextArtifactRef.from_dict(summary["output_ref"]),
+            offloaded=summary["offloaded"],
+            output_truncated=summary["output_truncated"],
+            command_attempts=summary["command_attempts"],
+            error_code=summary["error_code"])
     raise SpawnedTaskCheckpointError(
         f"unknown encoded value type {kind!r}")
 
@@ -379,6 +400,19 @@ class SpawnedTaskCheckpoint:
 class SpawnedTaskLifecycleMixin:
     """Bounded join and checkpoint operations for SpawnedTaskManager."""
 
+    def _initialize_lifecycle_services(
+            self, services=None, *, runtime_memory=None,
+            context_artifacts=None) -> None:
+        from .spawned_task_state_store import SpawnedTaskServices
+        selected = SpawnedTaskServices.compose(
+            services, runtime_memory=runtime_memory,
+            context_artifacts=context_artifacts)
+        self._services = selected
+        self._runtime_memory = selected.runtime_memory
+        self._context_artifacts = selected.context_artifacts
+        self._state_store = selected.state_store
+        self._saved_states = {}
+
     def list(self):
         return tuple(self._snapshot(record) for record in self._records.values())
 
@@ -433,31 +467,79 @@ class SpawnedTaskLifecycleMixin:
         return await self.wait_all(
             task_ids, timeout_seconds=timeout_seconds)
 
-    def checkpoint(self, task_id) -> SpawnedTaskCheckpoint:
-        record = self._record(task_id)
+    def _checkpoint_for_record(
+            self, record, *, status=None, result=_UNSET,
+            update_count: "int | None" = None) -> SpawnedTaskCheckpoint:
         counters = (record.runtime.counters if record.runtime is not None
                     else None)
-        steps = (counters.steps_run if counters is not None
-                 else record.result.steps_run if record.result else 0)
-        calls = (counters.model_calls if counters is not None
-                 else record.result.model_calls if record.result else 0)
+        selected_result = record.result if result is _UNSET else result
+        selected_status = status or record.status
+        steps = (selected_result.steps_run if selected_result is not None
+                 else counters.steps_run if counters is not None else 0)
+        calls = (selected_result.model_calls if selected_result is not None
+                 else counters.model_calls if counters is not None else 0)
         return SpawnedTaskCheckpoint(
             task_id=record.task_id,
             spec=record.spec,
             identity=record.identity,
             relationship=record.relationship,
-            status=record.status,
-            update_count=len(record.control.updates()),
+            status=selected_status,
+            update_count=(len(record.control.updates()) if update_count is None
+                          else update_count),
             steps_run=steps,
             model_calls=calls,
-            result=record.result,
+            result=selected_result,
         )
+
+    def checkpoint(self, task_id) -> SpawnedTaskCheckpoint:
+        return self._checkpoint_for_record(self._record(task_id))
 
     def checkpoints(self) -> tuple[SpawnedTaskCheckpoint, ...]:
         return tuple(self.checkpoint(record.task_id)
                      for record in self._records.values())
 
+    def _persist_created(self, record) -> None:
+        if self._state_store is None:
+            return
+        try:
+            state = self._state_store.create(
+                self._parent.loop_id, self._checkpoint_for_record(record))
+        except Exception:
+            if record.spawned_loop is not None \
+                    and not record.spawned_loop.is_terminal:
+                record.spawned_loop.cancel("durable task creation failed")
+            self._records.pop(record.task_id, None)
+            raise
+        self._saved_states[record.task_id] = state
+
+    def _persist_transition(self, record, checkpoint) -> None:
+        if self._state_store is None:
+            return
+        expected = self._saved_states.get(record.task_id)
+        if expected is None:
+            expected = self._state_store.load(
+                self._parent.loop_id, str(record.task_id))
+        state = self._state_store.compare_and_swap(expected, checkpoint)
+        self._saved_states[record.task_id] = state
+
+    def _persist_update(self, record, update) -> None:
+        record.control._add_update(update)
+        try:
+            self._persist_transition(
+                record, self._checkpoint_for_record(record))
+        except Exception:
+            record.control._remove_last_update()
+            raise
+
+    def _persist_terminal(self, record, result) -> None:
+        self._persist_transition(record, self._checkpoint_for_record(
+            record, status=result.status, result=result))
+
     def restore_checkpoint(self, checkpoint: SpawnedTaskCheckpoint):
+        return self._restore_checkpoint(checkpoint)
+
+    def _restore_checkpoint(
+            self, checkpoint: SpawnedTaskCheckpoint, *, saved_state=None):
         if not isinstance(checkpoint, SpawnedTaskCheckpoint):
             raise SpawnedTaskCheckpointError(
                 "restore_checkpoint needs SpawnedTaskCheckpoint")
@@ -508,6 +590,24 @@ class SpawnedTaskLifecycleMixin:
             status=status,
             result=result,
         )
+        if self._state_store is not None:
+            from .spawned_task_state_store import SpawnedTaskStateNotFound
+            if saved_state is None:
+                try:
+                    saved_state = self._state_store.load(
+                        self._parent.loop_id, str(checkpoint.task_id))
+                except SpawnedTaskStateNotFound:
+                    saved_state = self._state_store.create(
+                        self._parent.loop_id, checkpoint)
+                if saved_state.checkpoint.checkpoint_digest \
+                        != checkpoint.checkpoint_digest:
+                    raise SpawnedTaskCheckpointError(
+                        "saved checkpoint conflicts with restore input")
+            self._saved_states[checkpoint.task_id] = saved_state
+            if checkpoint.status != status:
+                self._persist_transition(
+                    record, self._checkpoint_for_record(
+                        record, status=status, result=result))
         self._records[checkpoint.task_id] = record
         suffix = re.search(
             r"\.spawned-task\.(\d+)$", str(checkpoint.task_id))
@@ -530,3 +630,58 @@ class SpawnedTaskLifecycleMixin:
 
     def restore_checkpoint_json(self, value: str):
         return self.restore_checkpoint(SpawnedTaskCheckpoint.from_json(value))
+
+    def load_saved_checkpoints(self):
+        """Load every saved task for this owner and close active work honestly."""
+        if self._state_store is None:
+            raise SpawnedTaskCheckpointError(
+                "loading saved checkpoints requires a state store")
+        states = self._state_store.load_owner(self._parent.loop_id)
+        existing = set(self._records)
+        saved_ids = {state.checkpoint.task_id for state in states}
+        if existing & saved_ids:
+            raise SpawnedTaskCheckpointError(
+                "one or more saved tasks are already loaded")
+        if len(self._records) + len(states) > self._limits.max_total:
+            raise SpawnedTaskCheckpointError(
+                "saved task population exceeds the manager limit")
+        snapshots = []
+        for state in states:
+            snapshots.append(self._restore_checkpoint(
+                state.checkpoint, saved_state=state))
+        return tuple(snapshots)
+
+    def restart_as_new_attempt(self, task_id):
+        """Start interrupted work under a new task and Loop identity."""
+        if self._executor_is_async():
+            raise SpawnedTaskCheckpointError(
+                "an asynchronous executor needs restart_as_new_attempt_async")
+        record = self._require_interrupted(task_id)
+        new_id = self.start(record.spec)
+        self._record_restart(record.task_id, new_id)
+        return new_id
+
+    async def restart_as_new_attempt_async(self, task_id):
+        """Schedule interrupted work as a new asynchronous task attempt."""
+        if not self._executor_is_async():
+            raise SpawnedTaskCheckpointError(
+                "a synchronous executor needs restart_as_new_attempt")
+        record = self._require_interrupted(task_id)
+        new_id = await self.start_async(record.spec)
+        self._record_restart(record.task_id, new_id)
+        return new_id
+
+    def _require_interrupted(self, task_id):
+        from .delegation_runtime import SpawnedTaskStatus
+        record = self._record(task_id)
+        if record.status is not SpawnedTaskStatus.INTERRUPTED:
+            raise SpawnedTaskCheckpointError(
+                "only interrupted work can start a new attempt")
+        return record
+
+    def _record_restart(self, previous_task_id, new_task_id) -> None:
+        self._parent.ledger.record(
+            loop_id=self._parent.loop_id, event="custom",
+            custom_kind="spawned_task_restarted_as_new_attempt",
+            previous_task_id=str(previous_task_id),
+            new_task_id=str(new_task_id))

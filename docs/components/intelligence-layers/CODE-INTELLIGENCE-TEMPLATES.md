@@ -22,7 +22,7 @@ The card and the body are separate. This is what makes large code practical.
 | `worker_system` | Preflight, execution, postflight, diagnostics, logging, and configuration loops. |
 | `llm_harness` | A model harness with tool contracts, model policy, effects, and verification. |
 | `command_line_tool` | A pinned command, arguments, environment, effects, and tests. |
-| `static_architecture_plugin` | A manual registration function and complete capability handshake. |
+| `core_plugin` | A manual registration function and complete capability handshake. |
 | `agent_skill_bundle` | Context references, optional Code references, assets, triggers, permissions, and tests. |
 | `workflow` | A multi-step manifest whose selected steps run as loops. |
 | `notebook` | A pinned notebook, environment lock, inputs, outputs, effects, and tests. |
@@ -61,7 +61,7 @@ a component loop.
 
 ```python
 from loop_engine.loop.loop_capsule import ExternalPayloadRef
-from loop_engine.static_architecture.code_intelligence_assets import (
+from loop_engine.core.code_intelligence_assets import (
     code_asset_capsule,
     execute_code_ref,
     spec_from_template,

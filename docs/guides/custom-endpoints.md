@@ -12,8 +12,8 @@ server.
 
 ```python
 from loop_engine import configure
-from loop_engine.static_architecture.custom_endpoint import CustomEndpoint
-from loop_engine.static_architecture.model_capabilities import (
+from loop_engine.core.custom_endpoint import CustomEndpoint
+from loop_engine.core.model_capabilities import (
     ModelOutputCapability,
 )
 

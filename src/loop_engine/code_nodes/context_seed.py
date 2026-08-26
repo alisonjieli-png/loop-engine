@@ -265,8 +265,8 @@ def build_context_candidates(spec: ContextSeedSpec, *,
                              roles: "tuple | None" = None,
                              limit: "int | None" = None) -> list:
     """Build a bounded, coverage-balanced candidate population lazily."""
-    from ..static_architecture.store_serve import StoreRecord
-    from ..static_architecture.facets import context_facets
+    from ..core.store_serve import StoreRecord
+    from ..core.facets import context_facets
     roles = tuple(roles or spec.job_roles)
     if (any(not str(role).strip() for role in roles)
             or len(roles) != len(set(roles))):
@@ -350,7 +350,7 @@ def run_context_seed(spec: ContextSeedSpec, *, existing_context_records=(),
     """Run domain seeding through one Starting Loop and one Loop per job role."""
     from ..loop.recursive_loop import Loop, LoopConfig, LoopLedger, StepOutcome
     from ..loop.loop_templates import TEMPLATE_LIBRARY, config_from_template
-    from ..static_architecture.intelligence_layers import classified_record
+    from ..core.intelligence_layers import classified_record
     from .housekeeping import guard_improvement_action
 
     template = next(item for item in TEMPLATE_LIBRARY
@@ -590,7 +590,7 @@ def self_test() -> dict:
                   for question in first.research_questions)
           and all(record.body.get("claim_status") == "proposal"
                   for record in first.candidates))
-    from ..static_architecture.intelligence_layers import query_intelligence
+    from ..core.intelligence_layers import query_intelligence
     hidden = query_intelligence(
         "space mission risk", {"context": list(first.candidates)})
     visible = query_intelligence(

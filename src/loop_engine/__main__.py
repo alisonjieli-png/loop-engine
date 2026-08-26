@@ -1,7 +1,7 @@
 """Command-line interface for Loop Engine.
 
     PYTHONPATH=. python3 -m loop_engine --self-test
-    ... --categories     # print the resolver categories, levels, and move types
+    ... --self-test      # run the deterministic self-test suite
 """
 
 from __future__ import annotations
@@ -12,8 +12,6 @@ import json
 import sys
 import tempfile
 
-from .loop.resolvers import RESOLVER_CATEGORIES, DEFAULT_CATEGORY_LEVEL
-from .loop.moves import MOVE_TYPES
 from ._self_test import self_test
 
 
@@ -61,7 +59,7 @@ def main(argv=None) -> int:
         "--self-test-verbose", action="store_true",
         help="run all tests with module demo output and the full JSON report")
     parser.add_argument("--categories", action="store_true",
-                        help="print resolver categories, levels, and move types")
+                        help="print the retired resolver category view (empty)")
     parser.add_argument("--map", action="store_true",
                         help="print the nine-step kernel map: where every "
                         "capability lives")
@@ -85,6 +83,14 @@ def main(argv=None) -> int:
                         "zero-tolerance gates; writes "
                         "architecture_conformance.json; exits nonzero on any "
                         "violation")
+    parser.add_argument("--structure", action="store_true",
+                        help="print the repository structure report")
+    parser.add_argument("--structure-json", action="store_true",
+                        help="print the repository structure report as JSON")
+    parser.add_argument("--repo-conformance", action="store_true",
+                        help="run the repository conformance harness")
+    parser.add_argument("--architecture-contract", action="store_true",
+                        help="validate the machine-readable architecture contract")
     parser.add_argument("--report", metavar="RUN_ID", nargs="?", const="@last",
                         help="render a loop report for a saved run "
                              "(default: the most recent). Use --format and "
@@ -159,7 +165,7 @@ def main(argv=None) -> int:
         raw_argv[:2] = ["--settings-action", raw_argv[1]]
     args = parser.parse_args(raw_argv)
     if args.verify_live_model:
-        from .static_architecture.live_model_verification import (
+        from .core.live_model_verification import (
             LiveModelVerificationError, LiveModelVerificationRequest,
             plan_live_model_verification, run_live_model_verification)
         try:
@@ -194,9 +200,9 @@ def main(argv=None) -> int:
             }, indent=1))
             return 2
     if args.settings_action:
-        from .static_architecture.settings_loader import (
+        from .core.settings_loader import (
             load_runtime_settings, write_default_settings)
-        from .static_architecture.runtime_settings import SettingsError
+        from .core.runtime_settings import SettingsError
         try:
             if args.settings_action == "init":
                 created = write_default_settings(args.settings_file)
@@ -230,7 +236,7 @@ def main(argv=None) -> int:
         from .code_nodes.campaign_runner import (
             CAMPAIGN_MODES, CampaignRunOptions, CampaignRunner, campaign_arms,
             default_campaign_spec, default_problem_cases)
-        from .static_architecture.settings_loader import load_runtime_settings
+        from .core.settings_loader import load_runtime_settings
         try:
             loaded = load_runtime_settings(args.settings_file)
         except ValueError as exc:
@@ -284,7 +290,7 @@ def main(argv=None) -> int:
         except ValueError as exc:
             print(f"Campaign refused: {exc}")
             return 2
-        from .static_architecture.run_history import default_runs_dir
+        from .core.run_history import default_runs_dir
         runs_dir = default_runs_dir(
             args.runs_dir or runtime_settings.history.resolved_runs_dir())
         result = CampaignRunner(spec, CampaignRunOptions(
@@ -301,7 +307,7 @@ def main(argv=None) -> int:
         return 0
     if args.runs or args.report:
         import os
-        from .static_architecture.run_history import default_runs_dir
+        from .core.run_history import default_runs_dir
         from .code_nodes.loop_report import (report_from_run, render_text,
                                              render_markdown, render_html)
         runs_dir = default_runs_dir(args.runs_dir or "")
@@ -341,7 +347,7 @@ def main(argv=None) -> int:
                       serve_forever=True, runs_dir=args.runs_dir or "")
         return 0
     if args.studio:
-        from .static_architecture.studio_server import serve
+        from .core.studio_server import serve
         serve(args.port or 8765, runs_dir=args.runs_dir or "")
         return 0
     if args.conformance:
@@ -349,12 +355,28 @@ def main(argv=None) -> int:
         report = run_conformance()
         print(report["human_summary"])
         return 0 if report["all_gates_pass"] else 1
+    if args.structure:
+        from .repository_structure import (render_structure_text,
+                                           structure_report)
+        print(render_structure_text(structure_report()))
+        return 0
+    if args.structure_json:
+        from .repository_structure import structure_report
+        print(json.dumps(structure_report(), indent=1))
+        return 0
+    if args.repo_conformance:
+        from .repository_conformance import run_repository_conformance
+        report = run_repository_conformance()
+        print(json.dumps(report, indent=1))
+        return 0 if report["passed"] else 1
+    if args.architecture_contract:
+        from .architecture_contract import run_architecture_contract_checks
+        report = run_architecture_contract_checks()
+        print(json.dumps(report, indent=1))
+        return 0 if report["passed"] else 1
     if args.map:
         from .architecture_map import render_map as render_architecture
-        from .loop.step_registry import render_map
         print(render_architecture())
-        print()
-        print(render_map())
         return 0
     if args.profiles:
         from .loop.loop_profile_catalog import (
@@ -367,9 +389,9 @@ def main(argv=None) -> int:
         }, indent=1))
         return 0
     if args.categories:
-        print(json.dumps({"resolver_categories": list(RESOLVER_CATEGORIES),
-                          "default_levels": DEFAULT_CATEGORY_LEVEL,
-                          "move_types": list(MOVE_TYPES)}, indent=1))
+        print(json.dumps({"resolver_categories": [],
+                          "default_levels": {},
+                          "move_types": []}, indent=1))
         return 0
     if args.self_test or args.self_test_verbose:
         if args.self_test_verbose:

@@ -77,13 +77,13 @@ def _legacy_flat_paths_reachable() -> list:
     reachable = []
     # NOTE: "loop" is excluded — it is now the subpackage name, so the flat
     # spelling legitimately resolves to the subpackage, not the old module.
+    # A documentation-only folder (no __init__.py) is not a real module even
+    # when Python namespace-package rules would allow an empty import.
     for legacy in ("kernel", "recursive_loop", "capability_directory",
                    "intelligence_strings", "solver"):
-        try:
-            importlib.import_module(f"{PACKAGE}.{legacy}")
+        spec = importlib.util.find_spec(f"{PACKAGE}.{legacy}")
+        if spec is not None and spec.origin is not None:
             reachable.append(legacy)
-        except ModuleNotFoundError:
-            pass
     return reachable
 
 
@@ -148,24 +148,40 @@ def operational_graph_vertex_violations(root: "str | None" = None) -> list:
     base = root or _HERE
     retired = {"CanvasNode", "GoalNode", "CodeNode", "NodeResult"}
     passive = {
-        "LoopNode": {"loop_id"},
-        "LoopGraphVertex": {"definition_ref", "definition", "selected_mode"},
+        "LoopNode": {"identity"},
+        "LoopGraphVertexRecord": {"definition_ref", "definition", "selected_mode"},
+        "LoopRelationshipRecord": {"loop_id"},
+        "LoopReportRecord": {"loop_id"},
     }
     violations = []
+    # At-rest ontology records are not runtime graph vertices. The ontology
+    # LoopNode inherits its identity field from Node in a sibling module, so
+    # the local field scan cannot see it; the record is admitted explicitly.
+    passive_files = {"ontology/loop_node.py", "ontology/node.py"}
     for directory, _, files in os.walk(base):
         for filename in files:
             if not filename.endswith(".py"):
                 continue
             path = os.path.join(directory, filename)
+            if os.path.relpath(path, base).replace(os.sep, "/") in passive_files:
+                continue
             try:
                 tree = ast.parse(open(path, encoding="utf-8").read(), path)
             except (OSError, SyntaxError):
                 continue
-            for item in (node for node in ast.walk(tree)
-                         if isinstance(node, ast.ClassDef)):
+            classes = {node.name: node for node in ast.walk(tree)
+                       if isinstance(node, ast.ClassDef)}
+            for item in classes.values():
                 fields = {node.target.id for node in item.body
                           if isinstance(node, ast.AnnAssign)
                           and isinstance(node.target, ast.Name)}
+                for base_node in item.bases:
+                    base_name = getattr(base_node, "id", "")
+                    if base_name in classes:
+                        fields |= {node.target.id
+                                   for node in classes[base_name].body
+                                   if isinstance(node, ast.AnnAssign)
+                                   and isinstance(node.target, ast.Name)}
                 methods = {node.name for node in item.body
                            if isinstance(node, (ast.FunctionDef,
                                                 ast.AsyncFunctionDef))}
@@ -192,8 +208,8 @@ def operational_graph_vertex_violations(root: "str | None" = None) -> list:
 
 def run_conformance() -> dict:
     from ._conformance_scan import run_scan
-    from .static_architecture.api_quality import scan_public_signatures
-    from .static_architecture.boundary_registry import boundary_report
+    from .core.api_quality import scan_public_signatures
+    from .core.boundary_registry import boundary_report
     scan = run_scan()
     api_violations = scan_public_signatures()
     boundaries = boundary_report()
@@ -321,7 +337,7 @@ def self_test() -> dict:
                 "    def run(self): pass\n\n"
                 "class GoalItem:\n    goal_id: str\n\n"
                 "class SolutionSlot:\n    slot_id: str\n\n"
-                "class LoopGraphVertex:\n    definition_ref: object\n"
+                "class LoopGraphVertexRecord:\n    definition_ref: object\n"
                 "    definition: object\n    selected_mode: str\n\n"
                 "GoalNode = GoalItem\n")
         canary = operational_graph_vertex_violations(directory)

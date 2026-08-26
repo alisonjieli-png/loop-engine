@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, Callable, TypeVar
 if TYPE_CHECKING:
     from .approval_state_store import ApprovalStateStore
     from .recursive_loop import Loop
-    from ..static_architecture.runtime_observer import (
+    from ..core.runtime_observer import (
         RuntimeObservationServices)
 
 
@@ -404,7 +404,7 @@ class EffectApprovalService:
         compare=False)
 
     def __post_init__(self) -> None:
-        from ..static_architecture.runtime_observer import (
+        from ..core.runtime_observer import (
             RuntimeObservationServices)
         if not isinstance(self.runtime, RuntimeObservationServices):
             raise TypeError("runtime must be RuntimeObservationServices")
@@ -578,14 +578,14 @@ def _approval_operation_effects(
 
 
 def _runtime_services():
-    from ..static_architecture.runtime_observer import (
+    from ..core.runtime_observer import (
         RuntimeObservationServices)
     return RuntimeObservationServices()
 
 
 def _approval_observation(kind: str, state: PendingApprovalState, *,
                           loop_id: str = ""):
-    from ..static_architecture.runtime_observer import RuntimeObservation
+    from ..core.runtime_observer import RuntimeObservation
     effect = state.request.effect
     if (state.decision is not None
             and state.decision.edited_effect is not None):
@@ -626,7 +626,7 @@ def self_test() -> dict:
         reason="Send one reviewed job payload.",
         requested_by="practitioner",
     )
-    from ..static_architecture.runtime_observer import (
+    from ..core.runtime_observer import (
         RuntimeObservationServices)
     from .recursive_loop import LoopLedger
     ledger = LoopLedger()

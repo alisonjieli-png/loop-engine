@@ -8,14 +8,14 @@ from pathlib import Path
 from loop_engine.code_nodes import loop_report, run_playback, solution_canvas
 from loop_engine.loop import loop_templates
 from loop_engine.loop.recursive_loop import Loop, LoopConfig, StepOutcome
-from loop_engine.static_architecture import (
+from loop_engine.core import (
     run_history,
     intelligence_layers,
     intelligence_portfolio,
     model_gateway,
     ollama_client,
 )
-from loop_engine.static_architecture.model_gateway import ModelGatewayConfig
+from loop_engine.core.model_gateway import ModelGatewayConfig
 
 from code_intelligence import (
     CodeCandidate,

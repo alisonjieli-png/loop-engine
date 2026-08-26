@@ -19,7 +19,7 @@ from loop_engine.code_nodes.solution_canvas import (
     run_solution,
 )
 from loop_engine.code_nodes.solution_compiler import compile_solution, render_canvas
-from loop_engine.static_architecture.store_serve import StoreRecord
+from loop_engine.core.store_serve import StoreRecord
 
 from prepare import SOURCE_DIR, row_by_id, verify_source
 from runtime import RuntimeImage, sandbox_command
@@ -509,10 +509,10 @@ def validate_code_intelligence_pack() -> dict:
 def benchmark_code_pack():
     """Project the six admitted callables into the canonical Code pack."""
     from loop_engine.loop.loop_capsule import ExternalPayloadRef
-    from loop_engine.static_architecture.code_intelligence_assets import (
+    from loop_engine.core.code_intelligence_assets import (
         CodeAssetSpec,
     )
-    from loop_engine.static_architecture.intelligence_portfolio import (
+    from loop_engine.core.intelligence_portfolio import (
         BenchmarkCodePack,
         BenchmarkCodeRegistration,
         LensFamily,

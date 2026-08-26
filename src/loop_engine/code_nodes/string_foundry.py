@@ -204,8 +204,8 @@ IMPROVEMENT_SEED_PACK = (
 def improvement_seed_records() -> list:
     """The meta-pack as registered searchable records (hand-authored core
     intelligence, like the measurement pack — not runtime-generated)."""
-    from ..static_architecture.store_serve import StoreRecord
-    from ..static_architecture.facets import string_facets
+    from ..core.store_serve import StoreRecord
+    from ..core.facets import string_facets
     out = []
     for i, (kind, sub, text) in enumerate(IMPROVEMENT_SEED_PACK):
         out.append(StoreRecord(
@@ -371,7 +371,7 @@ def default_bank_path() -> str:
 def packaged_bank_path() -> str:
     """The shipped candidate snapshot, read-only at runtime."""
     return os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                        "strings", "generated_candidates.jsonl")
+                        "governance", "candidates", "part-00000.jsonl")
 
 
 def stage_candidates(cands, provenance: str, ledger=None,
@@ -412,8 +412,8 @@ def load_candidate_bank(path: "str | None" = None) -> list:
     With no explicit path, load the packaged read-only snapshot plus the
     user-data candidate bank. An explicit path loads only that path.
     """
-    from ..static_architecture.store_serve import StoreRecord
-    from ..static_architecture.facets import string_facets
+    from ..core.store_serve import StoreRecord
+    from ..core.facets import string_facets
     paths = [path] if path else [packaged_bank_path(), default_bank_path()]
     out, seen = [], set()
     for candidate_path in paths:
@@ -503,9 +503,10 @@ def foundry_wave_as_loop(raw_outputs: list, provenance: str,
 
 
 def seed_pack_paths() -> tuple:
-    base = os.path.join(os.path.dirname(os.path.dirname(__file__)), "strings")
-    return (os.path.join(base, "core_seed_intelligence_v2.jsonl"),
-            os.path.join(base, "core_seed_intelligence_v2.manifest.json"))
+    base = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                        "intelligence", "context", "core", "records")
+    return (os.path.join(base, "part-00000.jsonl"),
+            os.path.join(base, "part-00000.manifest.json"))
 
 
 def load_seed_pack(verify: bool = True) -> dict:
@@ -533,8 +534,8 @@ def load_seed_pack(verify: bool = True) -> dict:
 
 def seed_pack_store_records(records: list) -> list:
     """Seed records as searchable StoreRecords for the ONE Retriever."""
-    from ..static_architecture.store_serve import StoreRecord
-    from ..static_architecture.facets import string_facets
+    from ..core.store_serve import StoreRecord
+    from ..core.facets import string_facets
     return [StoreRecord(r["string_id"], "context", r["text"],
                         body={"category": r["category"],
                               "subcategory": r["subcategory"],
@@ -600,7 +601,7 @@ def self_test() -> dict:
           "candidates never blur into registered; provenance rides each row")
 
     # 4. the bank flows through the one search DAG.
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=recs)
     hidden = store.search("join keys merge explosion")
     store.enable_tier("experimental")
@@ -696,7 +697,7 @@ def self_test() -> dict:
 
     # 13. the pack is REACHABLE through the one Retriever: an exact-term
     # query surfaces the Popper falsifiability lens from the 1000.
-    from ..static_architecture.retrieval import Retriever
+    from ..core.retrieval import Retriever
     r_seed = Retriever(seed_pack_store_records(recs))
     hits = r_seed.search("falsifiability and severe tests", mode="lexical")
     check("seed_pack_searchable_through_one_retriever",

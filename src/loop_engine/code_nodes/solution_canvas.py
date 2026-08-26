@@ -133,8 +133,8 @@ class SolutionSpec:
 
     def to_record(self):
         """The searchable String record (facets ride the card)."""
-        from ..static_architecture.store_serve import StoreRecord
-        from ..static_architecture.facets import string_facets
+        from ..core.store_serve import StoreRecord
+        from ..core.facets import string_facets
         return StoreRecord(
             f"solution.{self.solution_id}", "strategy",
             f"Solution spec: {self.solution_id} ({self.ensemble}; modes "

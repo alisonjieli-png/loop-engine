@@ -9,7 +9,7 @@ Task
     ├── may spawn Practitioner Loops
     ├── queries Intelligence Query Loops
     │   └── retrieves Intelligence Item Loops
-    ├── uses Static Architecture capabilities
+    ├── uses Core Architecture capabilities
     └── builds one or more candidate Solutions
         └── Solution Canvas
             └── Starting Solution Loop
@@ -30,7 +30,7 @@ The four persistent intelligence layers are Context Intelligence, Code
 Intelligence, Runtime History and Solution Intelligence, and User Feedback
 Intelligence. Runtime Memory is temporary and remains outside those layers.
 
-Static Architecture provides Intelligence Search and Retrieval, Web Research,
+Core Architecture provides Intelligence Search and Retrieval, Web Research,
 and Custom Plugins. These capabilities are not graph vertices. Work that uses
 a capability belongs to a classified Loop. Providers, settings, workspaces,
 approvals, stores, memory, history, and viewing are internal runtime mechanics.

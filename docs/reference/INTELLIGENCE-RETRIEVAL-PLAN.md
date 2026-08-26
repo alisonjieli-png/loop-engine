@@ -17,7 +17,7 @@ is fine - the plug is ours, the engines are theirs.** Every serious
 turbopuffer) covers lexical + vector + hybrid + filters, several add
 reranking; none ships typed contracts, structural code search, or the
 compiler/test admission gate. So the durable asset is the CONTRACT in
-`static_architecture/retrieval.py` - `backend_handshakes()`,
+`core/retrieval.py` - `backend_handshakes()`,
 `EmbeddingSpace`, `require_same_space()`, and the constructor-name swap
 form the plug. Engines are commodity backends behind it, adopted one tournament
 at a time. This is executable today: five backends declare handshakes;

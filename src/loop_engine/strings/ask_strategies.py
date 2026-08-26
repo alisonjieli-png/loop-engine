@@ -24,8 +24,8 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Sequence
 
 from ..strings.knowledge import Knowledge
-from ..static_architecture.model_call import AskSpec, execute_ask, AskResult
-from ..static_architecture.store_serve import TIERS
+from ..core.model_call import AskSpec, execute_ask, AskResult
+from ..core.store_serve import TIERS
 
 # A strategy is simple (one AskSpec) or compound (a scripted multi-ask flow).
 STRATEGY_SHAPES = ("single", "compound")

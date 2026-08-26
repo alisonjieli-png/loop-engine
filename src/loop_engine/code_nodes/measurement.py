@@ -375,7 +375,7 @@ def interpret_measurement(signals: MeasurementSignals, *,
 
 def measurement_nodes() -> list:
     """The selection DAG and the gap-reader as searchable node records."""
-    from ..static_architecture.store_serve import StoreRecord
+    from ..core.store_serve import StoreRecord
     return [
         StoreRecord(
             record_id="node.measurement.select_measures", kind="node",
@@ -482,7 +482,7 @@ def self_test() -> dict:
           "the verify node gets metrics + strings + a numeric gap verdict")
 
     # 11. measurement is searchable through the one store DAG.
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=measurement_nodes() + pack_records(bank))
     hit = store.search("is my model overfitting train vs cross validation",
                        kind="node")

@@ -37,7 +37,7 @@ runtime class name.
 - Solution Canvas
 - Solution Loop
 - self-improvement Practitioner task
-- Static Architecture
+- Core Architecture
 - Intelligence Search and Retrieval
 - Web Research
 - Custom Plugins

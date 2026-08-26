@@ -21,7 +21,7 @@ from benchmarks.openml_cc18.openml_runtime import (  # noqa: E402
     load_task_bundle,
 )
 from benchmarks.openml_cc18.run import load_track_contract  # noqa: E402
-from loop_engine.static_architecture.run_history import RunHistory  # noqa: E402
+from loop_engine.core.run_history import RunHistory  # noqa: E402
 
 
 EXPECTED_STEPS = [

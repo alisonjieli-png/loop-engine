@@ -14,18 +14,18 @@ from loop_engine.code_nodes.loop_report import report_from_run
 from loop_engine.code_nodes.run_playback import playback, render_run_report
 from loop_engine.loop.loop_templates import TEMPLATE_LIBRARY, config_from_template
 from loop_engine.loop.recursive_loop import Loop, LoopConfig, StepOutcome
-from loop_engine.static_architecture import ollama_client
-from loop_engine.static_architecture.run_history import (
+from loop_engine.core import ollama_client
+from loop_engine.core.run_history import (
     RunHistory,
     as_ledger_events,
 )
-from loop_engine.static_architecture.model_gateway import (
+from loop_engine.core.model_gateway import (
     ModelGateway,
     ModelGatewayConfig,
     ModelGatewayRequest,
     builtin_provider_specs,
 )
-from loop_engine.static_architecture.model_routes import ModelRoute
+from loop_engine.core.model_routes import ModelRoute
 
 from code_intelligence import (
     CanvasExecution,

@@ -1,0 +1,100 @@
+{
+ "entries": [
+  {
+   "manifest_path": "intelligence/code/core/manifest.yaml",
+   "node": {
+    "artifact_kind": "policy",
+    "identity": {
+     "content_digest": "4ef0c97a1335413b2286a58f99ac33eea43f89c2d7f6ba84c8bb69e181a7aecf",
+     "object_id": "core.code.role_profile_ontology",
+     "version": "1.0.0"
+    },
+    "input_roles": [],
+    "kind": "node",
+    "layer": "code_intelligence",
+    "lifecycle": "registered",
+    "output_roles": [],
+    "parent_collection": "intelligence.code.core",
+    "source_class": "core"
+   },
+   "physical_root": "package_core"
+  },
+  {
+   "manifest_path": "intelligence/code/core/manifest.yaml",
+   "node": {
+    "artifact_kind": "contract",
+    "identity": {
+     "content_digest": "c35664c2344adc198a3f5e6ce729af337d6f62b6175e540c90060ed2ae040d7d",
+     "object_id": "core.code.profile_catalog_surface",
+     "version": "1.0.0"
+    },
+    "input_roles": [],
+    "kind": "node",
+    "layer": "code_intelligence",
+    "lifecycle": "registered",
+    "output_roles": [],
+    "parent_collection": "intelligence.code.core",
+    "source_class": "core"
+   },
+   "physical_root": "package_core"
+  },
+  {
+   "manifest_path": "intelligence/context/core/manifest.yaml",
+   "node": {
+    "artifact_kind": "intelligence_record",
+    "identity": {
+     "content_digest": "400229d47342e0593fb75d14e210ca04d47407411c8682e0f37c5acdc16e7b36",
+     "object_id": "core.context.seed_corpus",
+     "version": "2.0.0"
+    },
+    "input_roles": [],
+    "kind": "node",
+    "layer": "context_intelligence",
+    "lifecycle": "registered",
+    "output_roles": [],
+    "parent_collection": "intelligence.context.core",
+    "source_class": "core"
+   },
+   "physical_root": "package_core"
+  },
+  {
+   "manifest_path": "intelligence/runtime_history_solution/core/manifest.yaml",
+   "node": {
+    "artifact_kind": "contract",
+    "identity": {
+     "content_digest": "da38cec717b88c72537c022967314fb08b06bc09235fbe22f07533a3e186e40c",
+     "object_id": "core.runtime_history_solution.run_history_surface",
+     "version": "1.0.0"
+    },
+    "input_roles": [],
+    "kind": "node",
+    "layer": "runtime_history_solution_intelligence",
+    "lifecycle": "registered",
+    "output_roles": [],
+    "parent_collection": "intelligence.runtime_history_solution.core",
+    "source_class": "core"
+   },
+   "physical_root": "package_core"
+  },
+  {
+   "manifest_path": "intelligence/runtime_history_solution/core/manifest.yaml",
+   "node": {
+    "artifact_kind": "contract",
+    "identity": {
+     "content_digest": "a7b4f74048d04da696a31d3700d769efd2c93be6f5058a564fe99c6a4affabb6",
+     "object_id": "core.runtime_history_solution.solution_records_surface",
+     "version": "1.0.0"
+    },
+    "input_roles": [],
+    "kind": "node",
+    "layer": "runtime_history_solution_intelligence",
+    "lifecycle": "registered",
+    "output_roles": [],
+    "parent_collection": "intelligence.runtime_history_solution.core",
+    "source_class": "core"
+   },
+   "physical_root": "package_core"
+  }
+ ],
+ "record_type": "ontology_catalog_index/v1"
+}

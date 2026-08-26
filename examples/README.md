@@ -27,7 +27,7 @@ network, model, file, cost, and external-effect notes.
 | [09 search the intelligence layers](09_search_the_intelligence_layers/) | Searches all four layers as a loop, returns `LoopRef` objects, and materializes one selected item. |
 | [11 seed space Context Intelligence](11_seed_space_context/) | Gives a self-improvement task to a Practitioner Loop and prepares balanced categorized domain candidates. |
 | [12 wrap a large codebase](12_wrap_a_large_codebase/) | Represents a million-line worker and a 9 GB dataset with small cards and selected component loops. |
-| [13 Brave Search plugin](13_brave_search_plugin/) | Registers, discovers, and invokes a Static Architecture capability. The default run is offline. |
+| [13 Brave Search plugin](13_brave_search_plugin/) | Registers, discovers, and invokes a Core Architecture capability. The default run is offline. |
 | [14 five-problem campaign](14_five_problem_campaign/) | Runs five frozen utility problems with deterministic loops and saves replayable histories. |
 | [15 verify a deployment profile](15_verify_a_deployment_profile/) | Binds a versioned Verifier profile and checks typed loop ports before a deterministic release decision. |
 | [16 audit published harness evidence](16_compare_complex_harnesses/) | Validates source-backed published results without running a harness or model. |

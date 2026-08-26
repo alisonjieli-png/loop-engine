@@ -295,7 +295,7 @@ def _string_kinds() -> tuple:
 def candidate_records(report: CaptureReport, *, run_ref: str = "") -> list:
     """Every capture candidate as a searchable store record (the harvested
     learning, findable next time)."""
-    from ..static_architecture.store_serve import StoreRecord
+    from ..core.store_serve import StoreRecord
     recs = []
     for i, c in enumerate(report.candidates):
         kind = "question" if c.target_kind == "question" else \
@@ -392,7 +392,7 @@ def self_test() -> dict:
           f"{len(strings)} captured strings materialized (candidate maturity)")
 
     # 8. captured candidates are searchable store records.
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     recs = candidate_records(rep, run_ref="t1")
     store = SolverStore(core_records=[])
     store.enable_tier("experimental")

@@ -47,7 +47,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Sequence
 
-from ..static_architecture.asset_class import classify
+from ..core.asset_class import classify
 from ..loop.kernel import (KernelRunRequest, ProblemSpec, ResultPacket,
                            default_impls, run_kernel_passes)
 
@@ -162,7 +162,7 @@ class ImprovementCandidate:
 
     def resource(self):
         """Emit the canonical Resource — maturity → the one lifecycle."""
-        from ..static_architecture.asset_lifecycle import Resource, normalize
+        from ..core.asset_lifecycle import Resource, normalize
         return Resource(
             asset_id=f"imp.{self.kind}.{abs(hash(self.proposal)) % 10**8}",
             asset_class=self.asset_class, role=self.kind, content=self.proposal,
@@ -443,7 +443,7 @@ def run_housekeeping(*, runs: "Sequence[dict]" = (),
 def candidate_records(report: HousekeepingReport) -> list:
     """Every proposal as a searchable RUNTIME (provisional) record — findable by
     the solving practitioner, never serving as truth until promoted."""
-    from ..static_architecture.store_serve import StoreRecord
+    from ..core.store_serve import StoreRecord
     recs = []
     for i, c in enumerate(report.candidates):
         recs.append(StoreRecord(
@@ -550,7 +550,7 @@ def self_test() -> dict:
           "scheduled / event / threshold / manual; a distinct purpose from solving")
 
     # 8. proposals are searchable RUNTIME records (findable, provisional).
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=candidate_records(report))
     store.enable_tier("experimental")
     hit = store.search("build a code node imbalanced dataset fell back to llm")

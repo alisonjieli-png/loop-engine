@@ -37,7 +37,7 @@ temporary and run-scoped. It is not a fifth persistent layer.
 ```python
 from loop_engine import LoopLedger
 from loop_engine.loop.loop_capsule import LoopRef
-from loop_engine.static_architecture.intelligence_layers import (
+from loop_engine.core.intelligence_layers import (
     build_intelligence_catalog,
     materialize_intelligence_ref,
     query_intelligence,
@@ -99,14 +99,14 @@ capabilities.
 
 ```python
 from loop_engine.loop.capability_loops import run_capability_ref_as_loop
-from loop_engine.static_architecture.capability_directory import (
+from loop_engine.core.capability_directory import (
     CapabilityDirectory,
 )
 
 directory = CapabilityDirectory()
 register_my_plugin(directory)
 
-refs = directory.search_static_architecture("search the current public web")
+refs = directory.search_core("search the current public web")
 selected = refs[0]
 
 result = run_capability_ref_as_loop(

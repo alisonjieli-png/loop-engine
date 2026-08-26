@@ -173,7 +173,7 @@ def self_test() -> dict:
     def check(name, ok, note=""):
         results.append({"name": name, "passed": bool(ok), "note": note})
 
-    from ..static_architecture.run_history import RunHistory
+    from ..core.run_history import RunHistory
 
     ch = RunHistory("q_run")
     ch.append("run_started")

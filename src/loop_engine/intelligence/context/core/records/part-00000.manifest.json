@@ -1,0 +1,43 @@
+{
+ "pack_id": "loop_engine.core.seed-intelligence.v2",
+ "asset_class": "string_pack",
+ "version": "2.0.0",
+ "status": "candidate",
+ "scope": "core_seed",
+ "record_count": 1000,
+ "category_count": 20,
+ "records_per_category": 50,
+ "category_counts": {
+  "adversarial_and_falsification": 50,
+  "author_strategy_and_design_lenses": 50,
+  "blueprint_and_decomposition": 50,
+  "continuous_improvement_and_runtime_mining": 50,
+  "cross_domain_analogies": 50,
+  "data_quality_and_leakage": 50,
+  "distillation_and_reuse": 50,
+  "failure_recovery_and_reliability": 50,
+  "geography_and_market_context": 50,
+  "goal_and_completion": 50,
+  "measurement_and_evaluation": 50,
+  "models_ensembles_and_specialists": 50,
+  "product_saas_and_marketplace": 50,
+  "professional_perspectives": 50,
+  "research_and_evidence": 50,
+  "residuals_and_latent_structure": 50,
+  "scientist_and_thinker_lenses": 50,
+  "situational_constraints": 50,
+  "software_architecture_and_code_quality": 50,
+  "timeframes_and_regimes": 50
+ },
+ "content_digest_sha256": "400229d47342e0593fb75d14e210ca04d47407411c8682e0f37c5acdc16e7b36",
+ "authoritative_source": "owner-pasted master prompt appendix A (2026-08-24); reconstructed deterministically via its generation grammar (the appendix text is itself grammar-generated); structural fidelity machine-verified, byte fidelity to the paste not independently verifiable in-repo",
+ "materialized_target": "intelligence/context/core/records/part-00000.jsonl",
+ "migration": "Current Loop relationship and evidence terms replace retired wording; record and pack digests were recomputed",
+ "promotion": "evidence_gate_only",
+ "automatic_preference": "forbidden",
+ "deduplication": {
+  "against": "strings/generated_candidates.jsonl",
+  "overlapping_digests": 0
+ },
+ "outcome_tracking": "required"
+}

@@ -29,7 +29,7 @@ from loop_engine import (
     select_intelligence_portfolio,
     materialize_portfolio_for_loop,
 )
-from loop_engine.static_architecture.intelligence_layers import (
+from loop_engine.core.intelligence_layers import (
     build_intelligence_catalog,
 )
 
@@ -92,7 +92,7 @@ Run the focused verification with:
 
 ```bash
 PYTHONPATH=src python3 -c \
-  'from loop_engine.static_architecture.intelligence_portfolio import self_test; print(self_test())'
+  'from loop_engine.core.intelligence_portfolio import self_test; print(self_test())'
 ```
 
 The check uses the packaged active Context catalog and an actual record from

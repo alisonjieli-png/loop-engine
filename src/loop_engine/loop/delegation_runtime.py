@@ -14,7 +14,7 @@ from dataclasses import dataclass, field, replace
 from enum import Enum
 from typing import Any, Awaitable, Protocol, TYPE_CHECKING
 
-from ..static_architecture.facets import EFFECTS
+from ..core.facets import EFFECTS
 from .spawned_runtime_port import (DeterministicSpawnedExecutor,
     RuntimeMemoryService, SpawnedLoopRuntimeMemoryPort, SpawnedLoopRuntimePort)
 from .spawned_task_checkpoint import SpawnedTaskLifecycleMixin
@@ -26,7 +26,8 @@ from .loop_templates import TEMPLATE_LIBRARY, config_from_template
 from .recursive_loop import (MODEL_THINKING_POWER_LEVELS, MODES, Loop, LoopConfig)
 
 if TYPE_CHECKING:  # pragma: no cover
-    from ..static_architecture.context_artifacts import ContextArtifactManager
+    from ..core.context_artifacts import ContextArtifactManager
+    from .spawned_task_state_store import SpawnedTaskServices
 
 
 class DelegationError(RuntimeError):
@@ -296,6 +297,9 @@ class SpawnedTaskControl:
     def _add_update(self, update: SpawnedTaskUpdate) -> None:
         self._updates.append(update)
 
+    def _remove_last_update(self) -> None:
+        self._updates.pop()
+
     def _request_cancel(self) -> None:
         self._cancel_requested = True
 
@@ -416,6 +420,7 @@ class SpawnedTaskManager(SpawnedTaskLifecycleMixin):
 
     def __init__(self, parent: Loop, executor: SpawnedExecutor | None = None,
                  limits: SpawnedTaskManagerLimits | None = None, *,
+                 services: "SpawnedTaskServices | None" = None,
                  runtime_memory: RuntimeMemoryService | None = None,
                  context_artifacts: "ContextArtifactManager | None" = None) -> None:
         if not isinstance(parent, Loop):
@@ -423,20 +428,11 @@ class SpawnedTaskManager(SpawnedTaskLifecycleMixin):
         self._parent = parent
         self._executor = executor or DeterministicSpawnedExecutor()
         self._limits = limits or SpawnedTaskManagerLimits()
-        if runtime_memory is not None and any(not callable(getattr(
-                runtime_memory, name, None))
-                for name in ("write", "read", "search")):
-            raise DelegationError(
-                "runtime_memory must implement write, read, and search")
-        if context_artifacts is not None:
-            from ..static_architecture.context_artifacts import ContextArtifactManager
-            if not isinstance(context_artifacts, ContextArtifactManager):
-                raise DelegationError(
-                    "context_artifacts must be a ContextArtifactManager")
-        self._runtime_memory = runtime_memory
-        self._context_artifacts = context_artifacts
         self._records: dict[SpawnedTaskId, _SpawnedTaskRecord] = {}
         self._counter = 0
+        self._initialize_lifecycle_services(
+            services, runtime_memory=runtime_memory,
+            context_artifacts=context_artifacts)
 
     def start(self, spec: DelegationSpec) -> SpawnedTaskId:
         """Start one synchronous spawned executor and return its task ID."""
@@ -484,7 +480,7 @@ class SpawnedTaskManager(SpawnedTaskLifecycleMixin):
         if unexpected:
             raise DelegationError(
                 f"update roles are outside the input contract {unexpected!r}")
-        record.control._add_update(update)
+        self._persist_update(record, update)
         self._parent.ledger.record(
             loop_id=self._parent.loop_id,
             event="custom",
@@ -551,6 +547,7 @@ class SpawnedTaskManager(SpawnedTaskLifecycleMixin):
             status=SpawnedTaskStatus.RUNNING,
         )
         self._records[task_id] = record
+        self._persist_created(record)
         self._parent.ledger.record(
             loop_id=self._parent.loop_id,
             event="custom",
@@ -757,6 +754,7 @@ class SpawnedTaskManager(SpawnedTaskLifecycleMixin):
 
     def _publish(self, record: _SpawnedTaskRecord,
                  result: SpawnedLoopResult) -> None:
+        self._persist_terminal(record, result)
         record.status = result.status
         record.result = result
         self._parent.ledger.record(

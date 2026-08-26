@@ -245,7 +245,7 @@
     "fold_digest": "02a17bf1aa4cf00227c128dd4bffc55fb0662a44e30ef0e89d18b268dd7fe0bc",
     "payload_bodies_exported": false,
     "portfolio_count": 4,
-    "selector": "static_architecture.intelligence_portfolio"
+    "selector": "core.intelligence_portfolio"
   },
   "live_mapping": {
     "checks": {

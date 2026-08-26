@@ -7,9 +7,9 @@ import time
 from loop_engine import LoopLedger
 from loop_engine.loop.encapsulate import as_practitioner_loop
 from loop_engine.loop.loop_capsule import LoopRef
-from loop_engine.static_architecture.run_history import RunHistory
-from loop_engine.static_architecture.user_feedback_intelligence import AdviceStore
-from loop_engine.static_architecture.intelligence_layers import (
+from loop_engine.core.run_history import RunHistory
+from loop_engine.core.user_feedback_intelligence import AdviceStore
+from loop_engine.core.intelligence_layers import (
     build_intelligence_catalog, catalog_summary, materialize_intelligence_ref,
     query_intelligence)
 

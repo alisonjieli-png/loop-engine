@@ -1,0 +1,103 @@
+schema_version: 1
+
+invariants:
+  LE-NODE-001:
+    title: LoopNode is the only operational Node
+    severity: constitutional
+    required: true
+    canonical_class:
+      module: loop_engine.loop.recursive_loop
+      name: Loop
+    forbidden_concrete_classes:
+      - Node
+      - PractitionerNode
+      - IntelligenceNode
+      - SolutionNode
+      - ConfigurationNode
+      - StringNode
+      - CodeNode
+      - ContractNode
+      - DeterministicNode
+      - HybridNode
+      - NonDeterministicNode
+    forbidden_plugin_behavior:
+      - define_node_type
+      - replace_node_runtime
+      - bypass_loop_node_executor
+
+  LE-NODE-005:
+    title: Reusable behaviors use LoopNode presets
+    preset_artifact_kind: loop_node_preset
+    presets_are_subclasses: false
+
+  LE-DOC-001:
+    title: Prose is non-executable
+    prohibited_behavior_sources:
+      - documentation
+      - comments
+      - free_form_tags
+      - display_labels
+      - operator_notes
+
+node_ontology:
+  only_operational_node:
+    kind: loop_node
+    class: loop_engine.loop.recursive_loop.Loop
+  allow_generic_concrete_node: false
+  allow_additional_node_subtypes: false
+  allow_plugin_node_kinds: false
+  allow_role_specific_node_classes: false
+  allow_mode_specific_node_classes: false
+
+loop_dimensions:
+  roles:
+    - practitioner
+    - intelligence
+    - solution
+  positions:
+    - root
+    - child
+  run_modes:
+    - deterministic
+    - hybrid
+    - non_deterministic
+
+intelligence_layers:
+  - context
+  - code
+  - previous_run_and_solution
+  - user
+
+source_collections:
+  - core
+  - learned
+  - plugin
+
+forbidden_paths:
+  - src/loop_engine/static_architecture
+  - src/loop_engine/node/node.py
+
+forbidden_class_names:
+  - Node
+  - PractitionerNode
+  - IntelligenceNode
+  - SolutionNode
+  - RootNode
+  - ChildNode
+  - CodeNode
+  - ToolNode
+  - ModelNode
+  - CapabilityNode
+  - DeterministicNode
+  - HybridNode
+  - NonDeterministicNode
+  - ConfigurationNode
+  - StringNode
+  - ContractNode
+
+development_import_boundaries:
+  src_must_not_import:
+    - devtools
+    - tests
+    - examples
+    - benchmarks

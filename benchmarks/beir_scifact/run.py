@@ -36,9 +36,9 @@ from loop_engine.loop.recursive_loop import (
     LoopLedger,
     StepOutcome,
 )
-from loop_engine.static_architecture.run_history import RunHistory
-from loop_engine.static_architecture.retrieval import Retriever
-from loop_engine.static_architecture.store_serve import (
+from loop_engine.core.run_history import RunHistory
+from loop_engine.core.retrieval import Retriever
+from loop_engine.core.store_serve import (
     SolverStore,
     StoreRecord,
     core_seed,

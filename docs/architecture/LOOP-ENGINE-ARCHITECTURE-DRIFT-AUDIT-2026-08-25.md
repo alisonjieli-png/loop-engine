@@ -90,7 +90,7 @@ DAG and dynamic Practitioner graph answer different questions. Both use
 
 ### Three public capability groups
 
-`LoopRuntimeContext` exposes three public Static Architecture ports:
+`LoopRuntimeContext` exposes three public Core Architecture ports:
 
 1. Intelligence Search and Retrieval
 2. Web Research
@@ -204,7 +204,7 @@ Each behavior violates the current architecture.
 
 Status: implemented.
 
-`LoopRuntimeContext` groups the three public Static Architecture ports and
+`LoopRuntimeContext` groups the three public Core Architecture ports and
 internal runtime mechanics. `require()` checks capabilities, permissions, and
 mode executors. `derive()` can only remove authority.
 
@@ -254,7 +254,7 @@ on it.
 | Several graph records without one authority | Consolidated under `LoopGraphDefinition`; Canvas and SolutionSpec are builders or projections. |
 | Mode labels without physical executors | Rejected before execution. |
 | Intelligence wrappers without exact profiles | Registered Intelligence profiles cover all four branches. |
-| Services presented as many peer Static Architecture systems | Reduced to three public capability groups. |
+| Services presented as many peer Core Architecture systems | Reduced to three public capability groups. |
 | Self-improvement presented as another architecture system | Classified as a Practitioner task. |
 | Passive Canvas records described as runtime vertices | Candidates remain passive until projected into Loop graph vertices. |
 | Public role aliases that implied another runtime | Removed from the package root. |
@@ -300,7 +300,7 @@ the current worktree:
 - every Loop receives only the capabilities and permissions it requires;
 - every Canvas candidate remains passive before graph projection;
 - every self-improvement output remains a candidate pending separate review;
-- Static Architecture exposes only the three approved public groups;
+- Core Architecture exposes only the three approved public groups;
 - the full self-test and conformance commands pass;
 - examples run from the installation instructions;
 - the README and showcase match the current class and profile names.
@@ -314,4 +314,4 @@ semantic Solution executors, compatibility-path reduction, and the deferred
 internal event-log class rename.
 
 Those gaps matter. None requires a second runtime, another graph authority, or
-another Static Architecture group.
+another Core Architecture group.

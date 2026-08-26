@@ -70,7 +70,7 @@ _PUBLIC: dict[str, tuple[str, str]] = {
         "LoopDefinitionRegistry", "LoopGraphDefinition", "LoopGraphEdge",
         "LoopGraphEndpoint", "LoopGraphError", "LoopGraphGroup",
         "LoopGraphInputPort", "LoopGraphOutputPort", "LoopGraphStage",
-        "LoopGraphValidation", "LoopGraphVertex",
+        "LoopGraphValidation", "LoopGraphVertexRecord",
     ),
     **_names(
         "code_nodes.solution_canvas",
@@ -86,7 +86,7 @@ _PUBLIC: dict[str, tuple[str, str]] = {
     # Intelligence references, portfolios, and useful workflows.
     **_names("loop.loop_capsule", "LoopRef", "LoopCapsule"),
     **_names(
-        "static_architecture.intelligence_portfolio",
+        "core.intelligence_portfolio",
         "IntelligencePortfolioError", "PortfolioCoverageError", "LensFamily",
         "REQUIRED_LENS_FAMILIES", "BenchmarkCodeRegistration",
         "BenchmarkCodePack", "PortfolioRequest", "PortfolioSelectionServices",
@@ -103,14 +103,14 @@ _PUBLIC: dict[str, tuple[str, str]] = {
 
     # Saved Run History and event vocabulary.
     **_names(
-        "static_architecture.run_history",
+        "core.run_history",
         "RunHistory", "RunHistoryEvent", "RunHistoryIntegrityError",
     ),
-    **_names("static_architecture.event_vocabulary", "EVENT_FAMILIES"),
+    **_names("core.event_vocabulary", "EVENT_FAMILIES"),
 
     # Typed settings and provider entry points.
     **_names(
-        "static_architecture.runtime_settings",
+        "core.runtime_settings",
         "SETTINGS_VERSION", "SEARCH_MODES", "SettingsError", "LoopDefaults",
         "LoopConfigOverride", "SearchSettings", "HistorySettings",
         "ProviderSettings", "ModelTier", "EscalationSettings",
@@ -118,29 +118,29 @@ _PUBLIC: dict[str, tuple[str, str]] = {
         "SettingsLoadResult", "SettingsWriteResult", "RuntimeSettings",
     ),
     **_names(
-        "static_architecture.settings_loader",
+        "core.settings_loader",
         "runtime_settings_from_mapping", "default_user_settings_path",
         "load_runtime_settings", "default_settings_yaml",
         "write_default_settings",
     ),
     **_names(
-        "static_architecture.model_gateway",
+        "core.model_gateway",
         "ProviderAdapter", "ProviderSpec", "ModelRouteAttemptSpec",
         "ModelGatewayConfig", "ModelGatewayRequest", "GatewayAttempt",
         "ModelGatewayResult", "ModelGateway", "builtin_provider_specs",
         "provider_spec_from_endpoint", "invoke_model_gateway",
     ),
     **_names(
-        "static_architecture.model_routes",
+        "core.model_routes",
         "ModelProviderCapabilities", "ModelRoute", "RoutePolicy",
         "RouteRegistry", "resolve_route",
     ),
-    **_names("static_architecture.custom_endpoint", "CustomEndpoint"),
+    **_names("core.custom_endpoint", "CustomEndpoint"),
     **_names(
-        "static_architecture.autoconfigure",
+        "core.autoconfigure",
         "configure", "ModelAccess", "advice_function",
     ),
-    **_names("static_architecture.provider_failover", "call_with_failover"),
+    **_names("core.provider_failover", "call_with_failover"),
 
     # Typed spawned-Loop delegation and isolated context.
     **_names(
@@ -183,7 +183,7 @@ _PUBLIC: dict[str, tuple[str, str]] = {
         "ApprovalStateIntegrityError",
     ),
     **_names(
-        "static_architecture.workspace_backends",
+        "core.workspace_backends",
         "WorkspaceSpec", "WorkspaceRef", "WorkspaceSnapshotRef",
         "WorkspaceBackend", "BackendAvailability", "FileOperation",
         "FileRequest", "FileResult", "CommandRequest", "CommandResult",
@@ -193,14 +193,14 @@ _PUBLIC: dict[str, tuple[str, str]] = {
         "ModalWorkspaceDeclaration", "verify_live_docker_workspace",
     ),
     **_names(
-        "static_architecture.workspace_operations",
+        "core.workspace_operations",
         "WorkspaceApprovalPlan", "WorkspaceOperationError",
         "WorkspaceOperationService",
     ),
 
     # Context offloading and compaction.
     **_names(
-        "static_architecture.context_artifacts",
+        "core.context_artifacts",
         "ContextArtifactRef", "ContextArtifactStoreSpec",
         "ContextArtifactStore", "ContextOffloadPolicy", "ContextPayload",
         "ContextArtifactManager", "Utf8ChunkTokenCounter",
@@ -210,30 +210,30 @@ _PUBLIC: dict[str, tuple[str, str]] = {
 
     # MCP and skill adapters.
     **_names(
-        "static_architecture.mcp_adapter",
+        "core.mcp_adapter",
         "McpServerSpec", "McpDiscoveryPolicy", "McpToolSpec",
         "McpCallRequest", "McpCallResult", "McpApprovalBinding",
         "McpApprovalPlan", "McpInvocationServices", "McpRegistry",
         "InjectedMcpTransport",
     ),
     **_names(
-        "static_architecture.mcp_sdk_transport",
+        "core.mcp_sdk_transport",
         "McpToolPolicy", "McpSecretResolver", "McpSdkTransport",
     ),
     **_names(
-        "static_architecture.skill_registry",
+        "core.skill_registry",
         "SkillLoadPurpose", "SkillAdmissionRecord", "SkillManifest",
         "LoadedSkill", "SkillRegistry",
     ),
 
     # Observability and OpenTelemetry export.
     **_names(
-        "static_architecture.runtime_observer",
+        "core.runtime_observer",
         "RuntimeObservation", "RuntimeObserver", "NullRuntimeObserver",
         "LedgerRuntimeObserver", "RuntimeObservationServices",
     ),
     **_names(
-        "static_architecture.otel_export",
+        "core.otel_export",
         "RawLedgerEvents", "OtelSpanRecord", "InMemorySpanExporter",
         "OpenTelemetrySpanExporter", "run_history_to_spans",
         "export_run_history_as_loop",
@@ -241,14 +241,14 @@ _PUBLIC: dict[str, tuple[str, str]] = {
 
     # External harness boundaries and published comparison evidence.
     **_names(
-        "static_architecture.external_harness",
+        "core.external_harness",
         "ModelOutputLimit", "StaticModelOutputResolver",
         "HarnessBudget", "HarnessRunRequest", "HarnessModelCall",
         "HarnessRunResult", "HarnessAdapterInfo", "HarnessRuntimeBinding",
         "HarnessRegistry", "HarnessServices", "run_external_harness",
     ),
     **_names(
-        "static_architecture.external_harness_adapters",
+        "core.external_harness_adapters",
         "ConfiguredHarnessAdapter", "builtin_harness_adapters",
     ),
     **_names(
@@ -266,7 +266,7 @@ _PUBLIC: dict[str, tuple[str, str]] = {
     # Main user workflows and package verification.
     **_names("code_nodes.universal_solve", "solve", "read_task", "TaskReading"),
     **_names(
-        "static_architecture.knowledge_loader",
+        "core.knowledge_loader",
         "load_knowledge", "load_into_store",
     ),
     **_names("_self_test", "self_test"),

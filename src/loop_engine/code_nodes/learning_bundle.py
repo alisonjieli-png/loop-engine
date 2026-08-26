@@ -83,7 +83,7 @@ class LearningCandidate:
 
     def resource(self):
         """Emit the canonical Resource envelope — validation_status → lifecycle."""
-        from ..static_architecture.asset_lifecycle import Resource
+        from ..core.asset_lifecycle import Resource
         code = {"logic_candidate", "node_candidate", "subgraph_candidate",
                 "task_graph_candidate", "specialist_model_candidate",
                 "ensemble_candidate"}
@@ -258,7 +258,7 @@ def promote_stage(bundle: LearningBundle, *, validated: bool) -> str:
 def bundle_records(bundle: LearningBundle) -> list:
     """The bundle's candidates as searchable, RUN-LOCAL (provisional) records —
     visible as provisional, never overwriting accepted knowledge."""
-    from ..static_architecture.store_serve import StoreRecord
+    from ..core.store_serve import StoreRecord
     recs = []
     for i, c in enumerate(bundle.resource_candidates):
         recs.append(StoreRecord(
@@ -363,7 +363,7 @@ def self_test() -> dict:
           "no silent jump from raw capture to shared promotion")
 
     # 8. bundle candidates are searchable as PROVISIONAL run-local records.
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=bundle_records(b))
     store.enable_tier("experimental")
     hit = store.search("backtest rolling origin outline")

@@ -2,21 +2,21 @@
  "record_type": "forbidden_paths/v1",
  "scope": "src/loop_engine (self-contained package)",
  "network_allowed_modules": [
-  "static_architecture/ollama_client.py",
-  "static_architecture/mistral_client.py",
-  "static_architecture/openrouter_client.py",
-  "static_architecture/custom_endpoint.py",
-  "static_architecture/brave_search.py",
-  "static_architecture/external_harness_adapters.py",
-  "static_architecture/mcp_sdk_transport.py",
-  "static_architecture/studio_server.py",
+  "core/ollama_client.py",
+  "core/mistral_client.py",
+  "core/openrouter_client.py",
+  "core/custom_endpoint.py",
+  "core/brave_search.py",
+  "core/external_harness_adapters.py",
+  "core/mcp_sdk_transport.py",
+  "core/studio_server.py",
   "code_nodes/live_run_demo.py"
  ],
  "subprocess_allowed_modules": [
-  "static_architecture/opencode_client.py",
-  "static_architecture/mcp_sdk_transport.py",
-  "static_architecture/workspace_local.py",
-  "static_architecture/workspace_optional.py",
+  "core/opencode_client.py",
+  "core/mcp_sdk_transport.py",
+  "core/workspace_local.py",
+  "core/workspace_optional.py",
   "code_nodes/smoke_ladder.py",
   "_conformance_scan.py"
  ],
@@ -28,8 +28,15 @@
   "conformance_report.py",
   "loop/step_registry.py",
   "loop/steps/_facade_test.py",
-  "static_architecture/external_harness_adapters.py",
-  "__init__.py"
+  "core/external_harness_adapters.py",
+  "__init__.py",
+  "ontology/__init__.py",
+  "catalog/__init__.py",
+  "architecture_contract.py",
+  "repository_conformance.py",
+  "backend_isolation.py",
+  "memory/__init__.py",
+  "generation/__init__.py"
  ],
  "public_parallel_runtime_names": [
   "SolverCell",
@@ -70,11 +77,12 @@
    "whatnext",
    "whatisnext",
    "what's next",
-   "what’s next",
+   "what\u2019s next",
    "root loop"
   ],
   "excluded_files": [
-   "forbidden_paths.json"
+   "forbidden_paths.json",
+   "architecture_conformance.json"
   ],
   "allowed_fragments": {
    "_conformance_scan.py": [
@@ -90,15 +98,121 @@
     ".children",
     "last-child",
     "appendChild"
+   ],
+   "ontology/ontology_checks.py": [
+    "_README_BANNED",
+    "retired term",
+    "Uses the retired word",
+    "chronicles?",
+    "receipts?",
+    "root loops?",
+    "children?"
+   ],
+   "node/__init__.py": [
+    "ChildNode"
+   ],
+   "node/README.md": [
+    "Child LoopNode",
+    "Chronicle",
+    "receipts",
+    "Child LoopNode Handles"
+   ],
+   "node/loop_node/README.md": [
+    "ChildLoopNodeHandles",
+    "ChronicleRef",
+    "Child LoopNode"
+   ],
+   "repository_structure.py": [
+    "children"
+   ],
+   "loop/recursive_loop.py": [
+    "Child Work",
+    "child LoopNode",
+    "Chronicle",
+    "semantic child step"
+   ],
+   "catalog/registry.py": [
+    "receipted"
+   ],
+   "scheduling.py": [
+    "parallel children",
+    "child LoopNode",
+    "children",
+    "composite LoopNode overlaps its children"
+   ],
+   "memory/__init__.py": [
+    "Chronicle provenance",
+    "receipt",
+    "receipts"
+   ],
+   "memory/working/state.py": [
+    "child",
+    "evictions",
+    "receipts"
+   ],
+   "memory/episodic/record.py": [
+    "Chronicle",
+    "Chronicle events",
+    "child",
+    "chronicle_refs",
+    "parent_child_edges",
+    "receipts"
+   ],
+   "memory/semantic/record.py": [
+    "receipts"
+   ],
+   "memory/procedural/record.py": [
+    "receipts"
+   ],
+   "memory/query/query.py": [
+    "receipt",
+    "MemoryRetrievalReceipt",
+    "receipts"
+   ],
+   "memory/query/receipts.py": [
+    "receipt"
+   ],
+   "memory/query/__init__.py": [
+    "receipt",
+    "receipts"
+   ],
+   "memory/lifecycle/lifecycle.py": [
+    "receipt",
+    "MemoryReviewReceipt",
+    "MemoryConsolidationReceipt"
+   ],
+   "memory/lifecycle/__init__.py": [
+    "MemoryReviewReceipt",
+    "MemoryConsolidationReceipt"
+   ],
+   "memory/storage/store.py": [
+    "MemoryRetrievalReceipt",
+    "child",
+    "receipt"
+   ],
+   "memory/loop_integration.py": [
+    "receipt"
+   ],
+   "architecture_map.py": [
+    "receipt"
+   ],
+   "ARCHITECTURE-MAP.md": [
+    "receipts",
+    "MemoryReviewReceipt",
+    "MemoryConsolidationReceipt",
+    "MemoryRetrievalReceipt"
+   ],
+   "generation/model/campaign.py": [
+    "stop_conditions"
    ]
   }
  },
  "kimi_mention_allowed_modules": [
-  "static_architecture/model_routes.py",
-  "static_architecture/ollama_resolvers.py",
-  "static_architecture/ollama_client.py",
-  "static_architecture/opencode_client.py",
-  "static_architecture/config.py",
+  "core/model_routes.py",
+  "core/ollama_resolvers.py",
+  "core/ollama_client.py",
+  "core/opencode_client.py",
+  "core/config.py",
   "_conformance_test.py",
   "_conformance_scan.py",
   "conformance_report.py"
@@ -128,21 +242,22 @@
   "code_nodes/universal_solve.py:solve": "Legacy universal front door. Add one SolveRequest object and retain solve as a compatibility wrapper during alpha.",
   "code_nodes/measurement.py:read_generalization_gap": "Legacy metric helper. Group train, validation, direction, and tolerance fields in one GeneralizationGapInput.",
   "loop/decision_need.py:detect_decision_need": "Legacy decision classifier. Group state signals in one DecisionContext object.",
-  "static_architecture/ollama_client.py:chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead.",
-  "static_architecture/mistral_client.py:chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead.",
-  "static_architecture/openrouter_client.py:chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead.",
-  "static_architecture/custom_endpoint.py:_Adapter.chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead."
+  "core/ollama_client.py:chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead.",
+  "core/mistral_client.py:chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead.",
+  "core/openrouter_client.py:chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead.",
+  "core/custom_endpoint.py:_Adapter.chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead."
  },
  "module_size_exceptions": {
   "loop/kernel.py": "the nine-step executor's default implementations; split plan: move per-step defaults into loop/steps/ facades one step at a time",
-  "loop/recursive_loop.py": "the canonical Loop runtime; split plan: extract LoopSpec/pause-resume into loop/spec.py once the kernel routes through run_next_iteration"
+  "loop/recursive_loop.py": "the canonical Loop runtime; split plan: extract LoopSpec/pause-resume into loop/spec.py once the kernel routes through run_next_iteration",
+  "core/intelligence_layers.py": "the four-layer handshake and memory-type vocabulary; split plan: move the memory-type vocabulary into core/memory_types.py once the layer handshake consumes it through an import"
  },
  "docstring_min_lines": 3,
  "docstring_exception_modules": [],
  "suite_collection_exceptions": {
   "code_nodes/complex_task_published_evidence.py": "the public complex_task_benchmark facade calls this helper self_test and adds validation of the current reviewed catalog; folding both modules would count the same contract checks twice.",
-  "static_architecture/ollama_client.py": "its self_test makes LIVE provider calls; folding it would make the suite non-deterministic and bill a provider on every run. Exercised by the dated live-mode canary record instead.",
-  "static_architecture/event_vocabulary.py": "no self_test of its own: it was split out of run_history.py at the size cap and every one of its behaviours is exercised by run_history.self_test (closed vocabulary, total projection, coverage honesty, adversarial undeclared-family refusal). A duplicate suite would test the same code twice and drift."
+  "core/ollama_client.py": "its self_test makes LIVE provider calls; folding it would make the suite non-deterministic and bill a provider on every run. Exercised by the dated live-mode canary record instead.",
+  "core/event_vocabulary.py": "no self_test of its own: it was split out of run_history.py at the size cap and every one of its behaviours is exercised by run_history.self_test (closed vocabulary, total projection, coverage honesty, adversarial undeclared-family refusal). A duplicate suite would test the same code twice and drift."
  },
  "resource_surfaces": {
   "store_serve": {
@@ -200,20 +315,29 @@
  "resource_envelope_modules": {
   "loop/intelligence_loops.py": "IS the loop envelope for the four intelligence pillars \u2014 wrapping a store record into a loop requires reaching the store. The envelope's own body is the base case for that boundary, not a crossing of it.",
   "loop/recursive_loop.py": "the runtime kernel: committing a run's own RunHistory is the machinery that executes the loop abstraction, not a product-level caller reaching past it.",
-  "static_architecture/retrieval.py": "the search substrate itself \u2014 the Retriever reading the store it ranks is surface-internal, the same class as a surface calling itself.",
+  "core/retrieval.py": "the search substrate itself \u2014 the Retriever reading the store it ranks is surface-internal, the same class as a surface calling itself.",
   "loop/loop_capsule.py": "IS the ref/capsule layer: turning a store row into a LoopRef requires reading the row. The layer that creates the boundary is the base case for it, not a crossing of it."
  },
  "direct_resource_access_baseline": 0,
  "direct_resource_access_note": "ZERO-TOLERANCE as of 2026-08-24. The rule graduated from a ratchet: every product-level direct resource access was routed through its loop envelope, so the baseline is 0 and any new one fails the build. Do not raise this to make a build pass \u2014 route the call through a loop.",
  "boundary_register_exempt_modules": {
-  "static_architecture/reasoning_call.py": "the CALLER that crosses the model-invocation boundary, which is already a register row (envelope: as_model_loop). It owns no separate boundary of its own.",
+  "core/reasoning_call.py": "the CALLER that crosses the model-invocation boundary, which is already a register row (envelope: as_model_loop). It owns no separate boundary of its own.",
   "code_nodes/guided_setup.py": "the first-run WALKTHROUGH: it orchestrates existing boundaries (the practitioner envelope, provider discovery, the knowledge loader) and owns none of them. Every envelope it calls is already a register row; adding a second row for the caller would claim ownership it does not have.",
   "code_nodes/universal_solve.py": "the ROUTING front door: it orients on a task and dispatches to an executor that owns the boundary, using the practitioner envelope only as a caller when no executor fits the modality. Every envelope it touches is already a register row; a second row would claim ownership it does not have.",
-  "code_nodes/public_examples.py": "installed examples orchestrate existing practitioner, report, and intelligence boundaries for teaching. They own no new boundary; registering them would duplicate the envelopes they demonstrate."
+  "code_nodes/public_examples.py": "installed examples orchestrate existing practitioner, report, and intelligence boundaries for teaching. They own no new boundary; registering them would duplicate the envelopes they demonstrate.",
+  "memory/loop_integration.py": "memory recall runs through as_practitioner_loop; the memory package is a data-and-preset subsystem, and every governed memory operation is owned by the presets, not by this facade",
+  "generation/operators.py": "candidate generation runs through as_practitioner_loop; generation is a preset-governed operation on the canonical engine, not a separate boundary"
  },
  "dynamic_import_allowed_modules_reasons": {
   "__init__.py": "the package's documented public surface (from loop_engine import PractitionerLoop) resolved LAZILY, so importing the package stays cheap and no import cycle is created. This is a re-export of the canonical runtime, NOT the registration bypass the gate exists to catch: it registers nothing, and every name resolves to an already-mapped module.",
-  "static_architecture/external_harness_adapters.py": "the adapter checks installed optional harness packages and their versions without registering or importing them during discovery; actual framework imports occur only after a caller selects and runs that explicit adapter."
+  "core/external_harness_adapters.py": "the adapter checks installed optional harness packages and their versions without registering or importing them during discovery; actual framework imports occur only after a caller selects and runs that explicit adapter.",
+  "ontology/__init__.py": "lazy public-name resolution for the ontology package, same pattern as the root package",
+  "catalog/__init__.py": "lazy public-name resolution for the catalog package, same pattern as the root package",
+  "architecture_contract.py": "resolves the canonical runtime class declared in architecture.yaml",
+  "repository_conformance.py": "resolves code_ref manifest payloads during reference validation",
+  "backend_isolation.py": "proves the base package imports without optional backends",
+  "memory/__init__.py": "lazy public-name resolution for the memory package, same pattern as the root package",
+  "generation/__init__.py": "lazy public-name resolution for the generation package, same pattern as the root package"
  },
  "min_python": "3.10"
 }

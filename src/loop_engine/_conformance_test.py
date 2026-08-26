@@ -25,7 +25,7 @@ def self_test() -> dict:
 
     # ------------------------------------------------------------------ §22
     # Asset binary: every classified asset is String or Code Node.
-    from .static_architecture.asset_class import KIND_CLASS, classify
+    from .core.asset_class import KIND_CLASS, classify
     other = {k: v for k, v in KIND_CLASS.items() if v not in ("string", "code")}
     check("conformance_every_asset_kind_is_string_or_code",
           not other and classify("loop") == "code"
@@ -39,15 +39,15 @@ def self_test() -> dict:
 
     # Obsolete package-root module paths are dead. This checks path layout only;
     # the scanner separately checks root exports for parallel runtime surfaces.
+    # A documentation-only folder (no __init__.py) is not a real module even
+    # when Python namespace-package rules would allow an empty import.
     from .architecture_map import PACKAGE
     legacy_reachable = []
     for legacy in ("kernel", "recursive_loop", "capability_directory",
                    "intelligence_strings", "measurement"):
-        try:
-            importlib.import_module(f"{PACKAGE}.{legacy}")
+        spec = importlib.util.find_spec(f"{PACKAGE}.{legacy}")
+        if spec is not None and spec.origin is not None:
             legacy_reachable.append(legacy)
-        except ModuleNotFoundError:
-            pass
     check("conformance_obsolete_flat_module_paths_are_dead", not legacy_reachable,
           f"still importable at the old root: {legacy_reachable}")
 
@@ -226,7 +226,7 @@ def self_test() -> dict:
           "stage yes; promote/overwrite/delete-evidence raise SafeguardError")
 
     # Adversarial: lifecycle promotion without evidence is refused.
-    from .static_architecture.asset_lifecycle import (PromotionRefused, advance)
+    from .core.asset_lifecycle import (PromotionRefused, advance)
     lifecycle_refused = False
     try:
         advance("validated", "registered", evidence={})
@@ -236,7 +236,7 @@ def self_test() -> dict:
 
     # Adversarial: the cloud-only model gate — local counted generation refused
     # by policy; kimi-k3 refused at construction, any route, any purpose.
-    from .static_architecture.model_routes import (ModelRoute, RoutePolicy,
+    from .core.model_routes import (ModelRoute, RoutePolicy,
                                                    RouteViolation, screen_route)
     local_refused = kimi_refused = False
     try:

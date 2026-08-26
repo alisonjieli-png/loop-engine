@@ -131,9 +131,9 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
     import tempfile
     from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
     from .smoke_ladder import run_smoke_loop, _fixture
-    from ..static_architecture.user_feedback_intelligence import AdviceStore
+    from ..core.user_feedback_intelligence import AdviceStore
 
-    from ..static_architecture.run_history import default_runs_dir
+    from ..core.run_history import default_runs_dir
     shared_runs_dir = default_runs_dir(runs_dir)
     state = {"events": [], "raw": [], "done": False, "runs": 0,
              "run_id": "", "runs_dir": shared_runs_dir, "saved_path": ""}
@@ -164,7 +164,7 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
         workdir = tempfile.mkdtemp(prefix="live_demo_")
         train, test, sample, out = _fixture(workdir)
         ledger = TappedLedger(on_event=on_event)
-        from ..static_architecture.runtime_memory import RunNoteBoard
+        from ..core.runtime_memory import RunNoteBoard
         board = RunNoteBoard(f"live-demo-{state['runs']}", ledger=ledger)
         board.write(f"run {state['runs']} starting: fixture ready",
                     loop_id="live", topic="status")
@@ -243,7 +243,7 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
                 self.wfile.write(body)
                 return
             if self.path == "/api/runs/live/events":
-                from ..static_architecture.run_history import to_canonical_events
+                from ..core.run_history import to_canonical_events
                 body = json.dumps(to_canonical_events(state["raw"]),
                                   default=str).encode()
                 self.send_response(200)
@@ -253,7 +253,7 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
                 self.wfile.write(body)
                 return
             if self.path == "/api/runs/live/runtime":
-                from ..static_architecture.studio_operational_views import (
+                from ..core.studio_operational_views import (
                     project_run_runtime)
                 body = json.dumps(
                     project_run_runtime(state["raw"]), default=str).encode()

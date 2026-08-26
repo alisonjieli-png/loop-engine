@@ -1,6 +1,6 @@
 """Permission-limited services available to one Loop.
 
-Static Architecture has three public service groups. Internal execution
+Core Architecture has three public service groups. Internal execution
 mechanics remain in one separate object so they cannot be mistaken for peer
 architecture systems or executable graph vertices.
 """
@@ -167,7 +167,7 @@ class InternalRuntimeMechanics:
 class LoopRuntimeContext:
     """The complete, explicit service context carried by one Loop.
 
-    The first three fields are the only public Static Architecture ports.
+    The first three fields are the only public Core Architecture ports.
     Everything else belongs to the grouped internal mechanics object.
     """
 
@@ -204,7 +204,7 @@ class LoopRuntimeContext:
             frozenset(port.capabilities) if port is not None else frozenset()
             for port in public))
 
-    def public_static_architecture(self) -> dict[str, object | None]:
+    def public_core(self) -> dict[str, object | None]:
         """Return exactly the three public service groups."""
         return {
             "intelligence_search_retrieval":

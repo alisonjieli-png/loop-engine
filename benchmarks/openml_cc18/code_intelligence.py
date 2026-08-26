@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-from loop_engine.static_architecture.store_serve import StoreRecord
+from loop_engine.core.store_serve import StoreRecord
 
 
 PACK_VERSION = "1.0.0"
@@ -239,7 +239,7 @@ def build_portfolio_code_pack(
     """
 
     from loop_engine.loop.loop_capsule import ExternalPayloadRef
-    from loop_engine.static_architecture.code_intelligence_assets import (
+    from loop_engine.core.code_intelligence_assets import (
         CodeAssetSpec,
     )
     from loop_engine import (

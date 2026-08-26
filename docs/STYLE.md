@@ -42,7 +42,7 @@ The short list is:
 - Solution Canvas
 - Solution Loop
 - self-improvement Practitioner task
-- Static Architecture
+- Core Architecture
 - Retrieval Engine
 - Context Intelligence
 - Code Intelligence

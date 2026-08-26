@@ -168,7 +168,7 @@ def _warm_store():
     first). Passing both a warm store and a model means the store answers and
     the model is never reached: which is correct behaviour, and a trap if you
     are trying to measure whether the model helps."""
-    from loop_engine.static_architecture.store_serve import (SolverStore,
+    from loop_engine.core.store_serve import (SolverStore,
                                                              StoreRecord)
     return SolverStore(core_records=[
         StoreRecord("n.tabular", "node",

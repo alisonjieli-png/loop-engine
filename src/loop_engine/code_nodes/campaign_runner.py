@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
-    from ..static_architecture.runtime_settings import RuntimeSettings
+    from ..core.runtime_settings import RuntimeSettings
 
 
 CAMPAIGN_MODES = ("deterministic", "hybrid", "non_deterministic")
@@ -388,9 +388,9 @@ class CampaignRunner:
         self.tokens_used = 0
 
     def _live_model_call(self, case, arm, baseline, *, ledger, parent):
-        from ..static_architecture.provider_pinned import (
+        from ..core.provider_pinned import (
             ProviderPinnedRequest, invoke_provider_model)
-        from ..static_architecture.provider_failover import PROVIDERS
+        from ..core.provider_failover import PROVIDERS
         adapter = PROVIDERS.get(arm.provider)
         model = getattr(adapter, "DEFAULT_MODEL", "") if adapter else ""
         prompt = (
@@ -400,7 +400,7 @@ class CampaignRunner:
                if arm.mode == "hybrid" else "")
             + f"Return only this JSON shape: {case.output_contract}")
         if self.runtime_settings is not None:
-            from ..static_architecture.runtime_settings import (
+            from ..core.runtime_settings import (
                 ModelPolicyRequest, ModelTask)
             gateway = self.runtime_settings.build_gateway()
             tier = self.runtime_settings.models.tier(

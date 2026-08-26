@@ -1,7 +1,7 @@
 # Documentation
 
 Start with the [main README](../README.md). Its first diagram shows how a task,
-Practitioner loops, a Solution Canvas, Static Architecture, and the four
+Practitioner loops, a Solution Canvas, Core Architecture, and the four
 intelligence layers fit together.
 
 The [architecture showcase](../showcase/) explains the same system as a linear
@@ -19,7 +19,7 @@ slide deck, browser player, and exported video.
 | 6 | [Loop profile ontology](components/loop-object/LOOP-PROFILE-ONTOLOGY.md) | Versioned Practitioner, Intelligence, and Solution profiles with inheritance and handshakes. |
 | 7 | [Loop Practitioner](components/practitioner/) | How Practitioner Loops build and test work. |
 | 8 | [Solution Canvas](components/solution-canvas/) | How Solution Loops represent and run finished work. |
-| 9 | [Static Architecture](components/static-architecture/) | Intelligence Search and Retrieval, Web Research, and Custom Plugins. |
+| 9 | [Core Architecture](components/core-architecture/) | Intelligence Search and Retrieval, Web Research, and Custom Plugins. |
 | 10 | [The four intelligence layers](components/intelligence-layers/) | Ontology, Code templates, Loop-bound retrieval, and Runtime Memory. |
 
 ## Practitioner workflows

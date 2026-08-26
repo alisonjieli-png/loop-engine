@@ -228,7 +228,7 @@ class ContractDefinition:
     def resource(self):
         """Emit the canonical Resource — a contract is a code node that validates
         (a published definition is registered / database tier)."""
-        from ..static_architecture.asset_lifecycle import Resource
+        from ..core.asset_lifecycle import Resource
         return Resource(asset_id=f"{self.contract_id}.{self.version}",
                         asset_class="code", role="contract",
                         content=self.as_model_instruction(), lifecycle="registered",
@@ -365,7 +365,7 @@ class ContractRegistry:
         return list(self._by_key.values())
 
     def records(self) -> list:
-        from ..static_architecture.store_serve import StoreRecord
+        from ..core.store_serve import StoreRecord
         recs = []
         for c in self._by_key.values():
             recs.append(StoreRecord(
@@ -481,7 +481,7 @@ def self_test() -> dict:
           "hard contract / soft constraint / policy / preference each own a lane")
 
     # 9. contracts are searchable through the ONE search DAG (own registry).
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=reg.records())
     hit = store.search("required output columns prediction confidence",
                        kind="strategy")

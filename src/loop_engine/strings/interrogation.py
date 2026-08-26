@@ -175,7 +175,7 @@ def interrogate(*, category: "str | None" = None, subcategory: "str | None" = No
 
 def question_records() -> list:
     """The interrogation questions as searchable String resources (role=question)."""
-    from ..static_architecture.store_serve import StoreRecord
+    from ..core.store_serve import StoreRecord
     recs = []
     for i, q in enumerate(interrogation_bank()):
         recs.append(StoreRecord(
@@ -230,8 +230,8 @@ def preset_goal(preset: str, **params) -> str:
 
 def preset_records() -> list:
     """The presets as searchable strategy records (role=improvement_preset)."""
-    from ..static_architecture.store_serve import StoreRecord
-    from ..static_architecture.facets import context_facets
+    from ..core.store_serve import StoreRecord
+    from ..core.facets import context_facets
     return [StoreRecord(
         record_id=f"preset.{name}", kind="strategy",
         title=preset_goal(name),
@@ -327,7 +327,7 @@ def self_test() -> dict:
           "categories and presets are closed sets")
 
     # 8. interrogations + presets are searchable String resources.
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=question_records() + preset_records())
     hit = store.search("are there patterns in the residuals of the model",
                        kind="question")

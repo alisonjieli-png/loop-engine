@@ -39,10 +39,10 @@ The host can pass authoritative objects to Studio. Studio holds references. It
 does not copy their records into another registry.
 
 ```python
-from loop_engine.static_architecture.studio_operational_views import (
+from loop_engine.core.studio_operational_views import (
     StudioReadSources,
 )
-from loop_engine.static_architecture.studio_server import serve
+from loop_engine.core.studio_server import serve
 
 sources = StudioReadSources(
     harness_registry=harness_registry,

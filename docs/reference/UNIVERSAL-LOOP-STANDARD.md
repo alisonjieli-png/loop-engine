@@ -121,7 +121,7 @@ retrieval. A review path must request candidates explicitly.
 
 ## 9. Runtime context
 
-Every Loop receives a `LoopRuntimeContext`. Its public Static Architecture
+Every Loop receives a `LoopRuntimeContext`. Its public Core Architecture
 ports are Intelligence Search and Retrieval, Web Research, and Custom Plugins.
 Internal mechanics contain providers, settings, workspaces, approvals, stores,
 Runtime Memory, events, reports, playback, MCP, skills, and trace export.

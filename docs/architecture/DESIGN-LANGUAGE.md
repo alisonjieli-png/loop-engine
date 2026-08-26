@@ -27,7 +27,7 @@ Then explain the shared runtime and support system:
 - Solution Loops run the finished solution.
 - A self-improvement Practitioner task reviews history and intelligence, then
   stages candidates.
-- Static Architecture gives all three roles access to Intelligence Search and
+- Core Architecture gives all three roles access to Intelligence Search and
   Retrieval, Web Research, and Custom Plugins when permitted.
 - The Retrieval Engine searches classified records across all four layers.
 - Custom Plugin discovery returns typed capability references without making
@@ -49,7 +49,7 @@ profile. It is not the product map.
 | Solution Canvas | The declarative finished solution. |
 | Solution Loop | One executable graph vertex in a Solution Canvas. |
 | Self-improvement Practitioner task | A bounded task that reviews history, audits intelligence, and stages candidates. |
-| Static Architecture | Intelligence Search and Retrieval, Web Research, and Custom Plugins. |
+| Core Architecture | Intelligence Search and Retrieval, Web Research, and Custom Plugins. |
 | Retrieval Engine | One search interface with lexical, vector, and hybrid modes. |
 | Capability Directory | The search and handshake surface for executable services. |
 | Intelligence Library | One searchable view across the four persistent intelligence layers. |
@@ -166,7 +166,7 @@ Use the figure order in
 3. Practitioner Loop graph
 4. Solution Canvas
 5. Self-improvement Practitioner task
-6. Static Architecture and intelligence layers
+6. Core Architecture and intelligence layers
 7. Run history
 
 Canvases use left-to-right graphs. Run History timelines are horizontal with the
@@ -193,10 +193,10 @@ but it appears only after the reader sees the full system.
 - Practitioner, Intelligence, and Solution are clearly shown as Loop roles.
 - Self-improvement is clearly shown as a Practitioner task.
 - The shared Loop object, modes, and step profiles are visible.
-- The three Static Architecture capability groups and all four intelligence
+- The three Core Architecture capability groups and all four intelligence
   layers appear early.
 - Providers, settings, workspaces, stores, history, and viewing are shown as
-  internal runtime mechanics, not peer Static Architecture components.
+  internal runtime mechanics, not peer Core Architecture components.
 - Runtime Memory is not drawn as a fifth persistent layer.
 - Potential plugins are labeled as potential.
 - The nine-step profile is presented as one option.

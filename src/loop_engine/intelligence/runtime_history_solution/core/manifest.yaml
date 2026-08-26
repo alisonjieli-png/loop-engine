@@ -1,0 +1,20 @@
+schema: catalog_manifest/v1
+folder_id: intelligence.runtime_history_solution.core
+source_class: core
+notes: >
+  Records the shipped Runtime History and Solution Intelligence provenance
+  pointers. The authoritative run-history machinery lives in
+  core.run_history and code_nodes.solution_records;
+  code_ref payloads digest their own locator string, so a record here is
+  a stable pointer, not a copy.
+objects:
+  - id: core.runtime_history_solution.run_history_surface
+    version: 1.0.0
+    artifact_kind: contract
+    lifecycle: registered
+    payload: code_ref:loop_engine.core.run_history.RunHistory
+  - id: core.runtime_history_solution.solution_records_surface
+    version: 1.0.0
+    artifact_kind: contract
+    lifecycle: registered
+    payload: code_ref:loop_engine.code_nodes.solution_records.SolutionRecord

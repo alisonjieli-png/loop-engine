@@ -1,10 +1,11 @@
-"""Architecture map: the four top-level abstractions as one projection authority.
+"""Architecture map: the top-level abstractions as one projection authority.
 
-Every module in this package belongs to exactly one of the four frozen
-abstractions (loop | strings | code_nodes | static_architecture) or is package
-plumbing at the root.  This map IS the folder shape: the mover consulted it,
-`--map` prints it, `step_registry` resolves module paths through it, and the
-self-test refuses any module on disk that is not classified here, so the
+Every module in this package belongs to exactly one of the five frozen
+abstractions (ontology | loop | strings | code_nodes |
+core) or is package plumbing at the root.  This map IS
+the folder shape: the mover consulted it, `--map` prints it,
+`step_registry` resolves module paths through it, and the self-test
+refuses any module on disk that is not classified here, so the
 projection can never silently drift from the code.
 """
 from __future__ import annotations
@@ -14,10 +15,11 @@ import os
 # The package has one public import root.
 PACKAGE = __package__ or "loop_engine"
 
-#: the four frozen top-level abstractions (never a fifth)
-SUBPACKAGES = ("loop", "strings", "code_nodes", "static_architecture")
+#: the frozen top-level abstractions
+SUBPACKAGES = ("ontology", "loop", "strings", "code_nodes",
+               "core", "catalog", "memory", "generation")
 
-PUBLIC_STATIC_ARCHITECTURE_CAPABILITY_GROUPS = (
+PUBLIC_CORE_ARCHITECTURE_CAPABILITY_GROUPS = (
     ("Intelligence Search and Retrieval",
      ("intelligence_layers", "retrieval", "capability_directory")),
     ("Web Research", ("brave_search",)),
@@ -26,64 +28,103 @@ PUBLIC_STATIC_ARCHITECTURE_CAPABILITY_GROUPS = (
 
 #: package plumbing that stays at the root
 ROOT_MODULES = ("__init__", "__main__", "_self_test", "_conformance_test",
-                "_conformance_scan", "architecture_map", "conformance_report",
-                "nomenclature_conformance", "public_runtime_conformance")
+                "_conformance_scan", "architecture_contract",
+                "architecture_map", "conformance_report",
+                "nomenclature_conformance", "public_runtime_conformance",
+                "repository_conformance", "repository_structure",
+                "backend_isolation", "structure_review",
+                "runtime_ontology_check", "scheduling", "campaign")
 
 #: module -> subpackage.  "steps" and "regimes" are subpackages riding in loop/.
 MODULE_MAP = {
+    "ontology": (
+        "artifacts", "catalog", "folders", "loop_node", "node",
+        "ontology_checks",
+    ),
+    "catalog.stores": (
+        "duckdb_files", "duckdb_store", "in_memory", "package_jsonl",
+        "sqlite_store",
+    ),
+    "memory": (
+        "loop_integration",
+    ),
+    "memory.model": (
+        "identity", "lifecycle", "memory_type", "reference", "scope",
+    ),
+    "memory.working": (
+        "state",
+    ),
+    "memory.episodic": (
+        "record",
+    ),
+    "memory.semantic": (
+        "record",
+    ),
+    "memory.procedural": (
+        "record",
+    ),
+    "memory.query": (
+        "query", "receipts",
+    ),
+    "memory.lifecycle": (
+        "lifecycle",
+    ),
+    "memory.storage": (
+        "store",
+    ),
+    "generation": (
+        "expansion", "operators",
+    ),
+    "generation.model": (
+        "campaign", "dimensions", "fragments", "seeds",
+    ),
+    "catalog": (
+        "capabilities", "composite", "conformance", "handshake",
+        "protocol", "registry", "query",
+    ),
     "loop": (
-        "acceptance", "approval_state_store", "approval_state_store_checks",
-        "arbiter", "builtin_resolvers", "capability_loops",
+        "approval_state_store", "approval_state_store_checks",
+        "capability_loops",
         "canvas", "spawned_runtime_port", "spawned_task_checkpoint",
-        "context_shuffle", "decision_engine", "decision_service",
-        "decision_slates", "escalation_governor", "hybrid_dimension_lattice",
-        "research_to_capability", "list_intelligence",
-        "decision_envelope", "decision_episode", "decision_need",
-        "delegation", "delegation_checkpoint_checks", "delegation_runtime",
+        "spawned_task_state_store", "spawned_task_state_store_checks",
+        "spawned_workspace_executor", "spawned_workspace_executor_checks",
+        "delegation_checkpoint_checks", "delegation_runtime",
         "delegation_runtime_checks",
-        "deliberation", "effect_approval", "kernel", "kernel_runtime",
-        "kernel_model_impls", "lens",
-        "loop_handlers", "loop_templates", "methodical", "moves",
-        "intelligence_loops", "practitioner_campaign", "practitioner_loop",
-        "practitioner_methods", "iteration_records",
-        "effective_spec", "encapsulate", "loop_capsule", "loop_contract",
+        "effect_approval", "kernel", "kernel_runtime",
+        "loop_templates", "lens",
+        "intelligence_loops",
+        "encapsulate", "loop_capsule", "loop_contract",
         "loop_definition", "loop_definition_checks", "runtime_context",
         "loop_doctrine", "loop_profile_catalog", "loop_profile_ontology",
         "loop_role", "loop_control",
-        "recursive_loop", "regimes", "registry", "service_loop_envelope",
-        "resolvers", "route_bridge", "runner",
-        "solve", "solver", "step_registry",
-        "steps", "studio", "spawned_practitioner",
-        "tuning", "wiring",
+        "recursive_loop", "service_loop_envelope",
+        "spawned_practitioner",
     ),
     "strings": (
-        "ask_strategies", "bias_checklist", "biases",
-        "context", "decision_schemas", "domain_pack",
+        "ask_strategies", "context", "decision_schemas",
         "frame", "intelligence_strings", "interrogation",
         "knowledge", "knowledge_state", "notes",
-        "output_templates", "packs", "prompt_fragments",
-        "question_bank", "question_engine", "solution_shaping",
-        "task_blueprint",
+        "output_templates", "prompt_fragments",
+        "question_engine", "solution_shaping",
     ),
     "code_nodes": (
-        "blueprint", "campaign_runner", "capture", "closure", "context_seed",
-        "competition_solver", "complex_task_benchmark",
+        "blueprint", "campaign_runner", "capture", "context_seed",
+        "complex_task_benchmark",
         "complex_task_native_evidence", "complex_task_published_evidence",
-        "enrichment", "failure_response",
         "follow_up", "housekeeping", "kaggle_executor", "live_run_demo",
         "learning_bundle", "guided_setup", "logic_ast", "universal_solve", "loop_report", "measurement",
-        "pack_curation", "planning", "public_examples", "review_mode",
-        "change_proposals", "foundry_probes", "guidance_ledger",
-        "rl_vocabulary", "run_analytics",
+        "public_examples",
+        "guidance_ledger",
+        "run_analytics",
         "run_playback", "run_quality",
-        "runtime_contracts", "self_improve", "self_improvement_loop",
+        "runtime_contracts", "self_improvement_loop",
         "smoke_ladder",
         "solution_canvas", "solution_canvas_checks", "solution_compiler",
         "solution_graph", "solution_graph_builder", "solution_graph_checks",
         "solution_graph_validation", "solution_records",
         "string_foundry",
     ),
-    "static_architecture": (
+    "core": (
         "api_quality", "asset_class", "asset_lifecycle", "brave_search",
         "capability_directory",
         "run_history", "config", "context_artifacts", "context_catalog",
@@ -99,7 +140,7 @@ MODULE_MAP = {
         "mcp_sdk_transport",
         "model_call", "model_capabilities", "model_gateway", "otel_export",
         "runtime_observer", "runtime_settings", "settings_loader",
-        "model_routes", "ollama_client", "ollama_resolvers",
+        "model_routes", "ollama_client",
         "mistral_client", "openrouter_client", "provider_failover",
         "provider_pinned",
         "model_discovery", "autoconfigure", "custom_endpoint", "knowledge_loader",
@@ -131,15 +172,20 @@ def module_path(module: str) -> str:
 
 
 def render_map() -> str:
-    out = ["ARCHITECTURE MAP: four top-level abstractions"]
+    out = ["ARCHITECTURE MAP: six top-level abstractions"]
     for s in SUBPACKAGES:
         mods = MODULE_MAP[s]
         out.append(f"  {s}/  ({len(mods)} modules)")
         out.append("    " + ", ".join(mods))
-    out.append("PUBLIC STATIC ARCHITECTURE CAPABILITY GROUPS (3)")
-    for title, modules in PUBLIC_STATIC_ARCHITECTURE_CAPABILITY_GROUPS:
+        for nested in sorted(k for k in MODULE_MAP
+                             if k.startswith(s + ".")):
+            nested_mods = MODULE_MAP[nested]
+            out.append(f"    {nested}/  ({len(nested_mods)} modules)")
+            out.append("      " + ", ".join(nested_mods))
+    out.append("PUBLIC CORE ARCHITECTURE CAPABILITY GROUPS (3)")
+    for title, modules in PUBLIC_CORE_ARCHITECTURE_CAPABILITY_GROUPS:
         out.append(f"  {title}: {', '.join(modules)}")
-    out.append("All other static_architecture modules are internal runtime "
+    out.append("All other core modules are internal runtime "
                "services, not peer public capability groups.")
     return "\n".join(out)
 
@@ -165,17 +211,19 @@ def self_test() -> dict:
     # 2. every mapped module exists on disk where the map says.
     missing = []
     for m, s in _FLAT.items():
-        target = os.path.join(here, s, m)
+        target = os.path.join(here, s.replace(".", os.sep), m)
         if not (os.path.exists(target + ".py") or os.path.isdir(target)):
             missing.append(f"{s}/{m}")
     check("every_mapped_module_exists_on_disk", not missing, str(missing))
-    # 3. exactly four abstractions, frozen.
-    check("exactly_four_top_level_abstractions",
-          tuple(MODULE_MAP) == SUBPACKAGES, "never a fifth")
+    # 3. the top-level abstraction set is frozen; nested subpackages ride
+    #    inside their owning abstraction.
+    check("top_level_abstractions_are_frozen",
+          set(s for s in MODULE_MAP if "." not in s) == set(SUBPACKAGES),
+          "the set is closed")
     public_groups = tuple(
         title for title, _modules in
-        PUBLIC_STATIC_ARCHITECTURE_CAPABILITY_GROUPS)
-    check("static_architecture_has_three_public_capability_groups",
+        PUBLIC_CORE_ARCHITECTURE_CAPABILITY_GROUPS)
+    check("core_has_three_public_capability_groups",
           public_groups == ("Intelligence Search and Retrieval",
                             "Web Research", "Custom Plugins"),
           "internal services do not become peer public capability groups")

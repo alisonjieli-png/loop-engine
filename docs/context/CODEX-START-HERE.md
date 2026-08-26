@@ -65,7 +65,7 @@ perform external effects unless the current request authorizes that action.
    repository material may be relevant
 7. [Loop object and profiles](../components/loop-object/README.md)
 8. [Intelligence layers](../components/intelligence-layers/README.md)
-9. [Static Architecture](../components/static-architecture/README.md)
+9. [Core Architecture](../components/core-architecture/README.md)
 10. [Solution Canvas](../components/solution-canvas/README.md)
 11. [Case studies](../../case-studies/README.md) only when the task concerns
    measured full-system runs

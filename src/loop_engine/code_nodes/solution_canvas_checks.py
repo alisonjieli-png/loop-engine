@@ -120,7 +120,7 @@ def solution_canvas_self_test_checks() -> dict:
           "the authoritative graph carries only each Loop's selected mode")
 
     # 7. specs are searchable Strings (round-trip through the store, faceted).
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=[det.to_record(), avg.to_record()])
     hits = store.search("solution average blend ensemble")
     check("solution_specs_are_searchable_strings",
@@ -140,7 +140,7 @@ def solution_canvas_self_test_checks() -> dict:
 
     # 9. A standalone run is one Starting Solution pipeline whose components
     # are exact Spawned Solution loops on the same ledger.
-    from ..static_architecture.run_history import to_canonical_events
+    from ..core.run_history import to_canonical_events
     lg = LoopLedger()
     tr: list = []
     two = SolutionSpec("two.step", loops=(SolutionLoopSpec("prep", "clean"),

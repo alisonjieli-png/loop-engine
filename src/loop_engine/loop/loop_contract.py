@@ -13,7 +13,7 @@ named object.
 
 The insight to preserve, not blur: the RUNTIME mode vocabulary
 (``recursive_loop.MODES``: deterministic / hybrid / non_deterministic) and
-the EXECUTION vocabulary (``static_architecture.facets.EXECUTION_MODES``:
+the EXECUTION vocabulary (``core.facets.EXECUTION_MODES``:
 code_only / hybrid / model_led) are two projections of the SAME three modes
 — ``recursive_loop.INTERNAL_MODE_NAMES`` already states this.  The contract
 declares the loop's mode in the INTERNAL execution names (that is what a
@@ -50,7 +50,7 @@ Owns:
 
 Does not own:
     - the Loop runtime (recursive_loop), templates (loop_templates), the
-      facet vocab authority (static_architecture.facets), or any semantic
+      facet vocab authority (core.facets), or any semantic
       path — a code_only contract makes a semantic call impossible by
       construction downstream.
 
@@ -69,7 +69,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ..static_architecture.facets import (EXECUTION_MODES, LOCALITY,
+from ..core.facets import (EXECUTION_MODES, LOCALITY,
                                           COST_CLASSES, EFFECTS)
 
 #: runtime mode name  <-  internal execution-mode name (the ONE map).

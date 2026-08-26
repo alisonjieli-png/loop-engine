@@ -8,7 +8,7 @@ pages in this order if the system is new to you.
 | 1 | [The Loop object and step profiles](loop-object/) | What runs, and what controls one run? |
 | 2 | [Loop Practitioner](practitioner/) | How does Loop Engine build and test a solution? |
 | 3 | [Solution Canvas](solution-canvas/) | What does the finished solution contain and run? |
-| 4 | [Static Architecture](static-architecture/) | How do Intelligence Search and Retrieval, Web Research, and Custom Plugins support Loops? |
+| 4 | [Core Architecture](core-architecture/) | How do Intelligence Search and Retrieval, Web Research, and Custom Plugins support Loops? |
 | 5 | [The four intelligence layers](intelligence-layers/) | What reusable context, code, history, solutions, and user guidance can a loop search? |
 
 Self-improvement is a Practitioner workflow, not another component. Read
@@ -55,7 +55,7 @@ The short version is:
 4. Solution loops in that Canvas produce the result.
 5. Self-improvement tasks ask the same Practitioner to review history and stage candidates.
 6. Practitioner, Intelligence, and Solution Loops use the same Loop object.
-   They may use the three Static Architecture capability groups when permitted.
+   They may use the three Core Architecture capability groups when permitted.
 
 The [main README](../../README.md) shows this complete relationship in one
 diagram.

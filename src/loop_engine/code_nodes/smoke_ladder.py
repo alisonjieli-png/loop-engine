@@ -76,7 +76,7 @@ def _research_probe(store, query: str) -> list:
     """Research retrieval through the ONE Retriever plug, so the live
     lane fronts the same swappable contract as everything else. Bodies
     stay behind store.serve() — reference, not body."""
-    from ..static_architecture.retrieval import Retriever
+    from ..core.retrieval import Retriever
     from ..loop.intelligence_loops import records_as_loop
     return Retriever(records_as_loop(store)["value"],
                      lexical_backend=RESEARCH_BACKEND).search(
@@ -313,7 +313,7 @@ def run_smoke_loop(goal: str, *, train_csv: str, test_csv: str,
         config = config_from_template(tmpl, power="deep")
     loop = Loop(goal, config, ledger=ledger)
     if run_history_run_id:
-        from ..static_architecture.run_history import default_runs_dir
+        from ..core.run_history import default_runs_dir
         loop.enable_run_history(run_history_run_id,
                               root_dir=default_runs_dir(runs_dir),
                               usage_log=usage_log)
@@ -444,7 +444,7 @@ def self_test() -> dict:
     cold = run_smoke_loop("cold", train_csv=train, test_csv=test,
                           sample_csv=sample, out_csv=out,
                           advice_fn=stub_advice)
-    from ..static_architecture.store_serve import SolverStore, StoreRecord
+    from ..core.store_serve import SolverStore, StoreRecord
     store = SolverStore(core_records=[StoreRecord(
         "advice.fixture", "strategy",
         "estimator feature advice for tabular fixture (mined, CANDIDATE)",

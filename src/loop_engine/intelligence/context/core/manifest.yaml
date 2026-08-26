@@ -1,0 +1,15 @@
+schema: catalog_manifest/v1
+folder_id: intelligence.context.core
+source_class: core
+notes: >
+  Points at the shipped seed Context Intelligence corpus. The payload
+  stays in its authoritative location; this manifest records provenance
+  and integrity for catalog discovery. Regenerate the digest when the
+  corpus changes in a new release.
+objects:
+  - id: core.context.seed_corpus
+    version: 2.0.0
+    artifact_kind: intelligence_record
+    lifecycle: registered
+    content_digest: 400229d47342e0593fb75d14e210ca04d47407411c8682e0f37c5acdc16e7b36
+    payload: file:records/part-00000.jsonl

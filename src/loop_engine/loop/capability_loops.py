@@ -121,7 +121,7 @@ def run_capability_as_loop(directory, surface: str, operation: str, *,
         input_roles=(handshake.input_schema or "capability_request",),
         output_roles=(handshake.output_schema or "capability_result",),
         effects=tuple(handshake.effects), locality=handshake.locality,
-        cost_class=handshake.cost_class, role="static_architecture")
+        cost_class=handshake.cost_class, role="core")
     config = LoopConfig(
         framework="custom", custom_steps=("invoke",), power="light",
         logical_kind="execution", replay_guarantee="event_equivalent",
@@ -191,7 +191,7 @@ def run_capability_as_loop(directory, surface: str, operation: str, *,
 
 
 def self_test() -> dict:
-    from ..static_architecture.capability_directory import (
+    from ..core.capability_directory import (
         CapabilityDirectory, CapabilityHandshake, Endpoint)
     from .recursive_loop import LoopLedger
 
@@ -213,7 +213,7 @@ def self_test() -> dict:
             "ok": False, "error_code": "rate_limited",
             "retry_after_reset": "1"})])
 
-    refs = directory.search_static_architecture("search fixture")
+    refs = directory.search_core("search fixture")
     search_ref = next(ref for ref in refs
                       if ref.handshake.loop_id == "fixture_search")
     before = len(calls)

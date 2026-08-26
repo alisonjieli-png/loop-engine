@@ -6,7 +6,7 @@ import time
 
 from loop_engine import LoopLedger
 from loop_engine.loop.recursive_loop import Loop, LoopConfig, StepOutcome
-from loop_engine.static_architecture.run_history import RunHistory
+from loop_engine.core.run_history import RunHistory
 from loop_engine.code_nodes.run_playback import playback
 from loop_engine.code_nodes.loop_report import report_from_run, write_report
 

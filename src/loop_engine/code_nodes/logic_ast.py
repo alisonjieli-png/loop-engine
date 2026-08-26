@@ -159,7 +159,7 @@ class LogicRule:
 
     def resource(self):
         """Emit the canonical Resource — a logic rule is a code node that decides."""
-        from ..static_architecture.asset_lifecycle import Resource, normalize
+        from ..core.asset_lifecycle import Resource, normalize
         life = (normalize("string_maturity", self.maturity)
                 if self.maturity in ("ephemeral", "candidate", "validated",
                                      "preferred") else "candidate")
@@ -231,7 +231,7 @@ def _fallback_actions(rule: LogicRule) -> tuple:
 
 def rule_record(rule: LogicRule):
     """A logic rule as a searchable node record (the Logic category)."""
-    from ..static_architecture.store_serve import StoreRecord
+    from ..core.store_serve import StoreRecord
     return StoreRecord(
         record_id=f"logic.{rule.logic_id}", kind="node",
         title=rule.title,
@@ -321,7 +321,7 @@ def self_test() -> dict:
           res4.fired, "thr=0.4 clamped up to 0.5; 0.6>=0.5 fires")
 
     # 8. a logic rule is a searchable node (the Logic category).
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=[rule_record(rule)])
     store.enable_tier("experimental")
     hit = store.search("feature redundancy collinearity review", kind="node")

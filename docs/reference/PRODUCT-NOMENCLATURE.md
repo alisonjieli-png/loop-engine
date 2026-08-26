@@ -27,7 +27,7 @@ them would break compatibility.
 | Solution Canvas | The declarative finished solution. |
 | Solution Loop | One executable Loop represented in the Canvas. |
 | Self-improvement Practitioner task | A task that reviews history and intelligence, seeds domains, and stages candidates. |
-| Static Architecture | Intelligence Search and Retrieval, Web Research, and Custom Plugins. |
+| Core Architecture | Intelligence Search and Retrieval, Web Research, and Custom Plugins. |
 | Retrieval Engine | One search interface with lexical, vector, and hybrid modes. |
 | Intelligence Library | One searchable view across the four persistent layers. |
 | Runtime Memory | Temporary notes shared inside the current run. |

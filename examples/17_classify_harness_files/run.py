@@ -6,7 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from loop_engine.static_architecture.harness_intelligence_bridge import (
+from loop_engine.core.harness_intelligence_bridge import (
     HarnessMemoryItem,
     import_harness_memory_as_loop,
 )

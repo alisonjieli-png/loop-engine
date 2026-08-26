@@ -495,18 +495,22 @@ def solve(goal: str, data: str = "", *, out: str = "", modality: str = "",
         out_dict.update(ran=True, record=record)
     elif not data:
         # NO DATA is not a failure — it is a reasoning task. Hand it to the
-        # knowledge solver rather than inventing a second front door: two
-        # public functions called `solve` is precisely the confusion this
-        # module exists to remove.
-        from ..loop.solver import solve as solve_from_knowledge
-        res = solve_from_knowledge(goal, **(knowledge or {}))
+        # canonical Practitioner kernel rather than inventing a second front
+        # door: two public functions called `solve` is precisely the
+        # confusion this module exists to remove.
+        from ..loop.kernel import (KernelRunRequest, ProblemSpec,
+                                   default_impls, run_kernel_passes)
+        run = run_kernel_passes(KernelRunRequest(
+            spec=ProblemSpec(objective=goal,
+                             seed_facts=dict(knowledge or {})),
+            impls=default_impls()))
         out_dict.update(ran=True, record={
-                            "trace": {"loop_id": res.loop_id,
+                            "trace": {"loop_id": run.get("loop_id"),
                                       "runtime_type": "Loop"},
-                            "value": res},
+                            "value": run},
                         route="knowledge")
         out_dict["note"] = ("no data given, so this ran as a reasoning task "
-                            "through the knowledge solver")
+                            "through the canonical Practitioner kernel")
     else:
         # An executor for this shape does not exist yet. Say so plainly — an
         # honest refusal beats routing a text task through a tabular executor

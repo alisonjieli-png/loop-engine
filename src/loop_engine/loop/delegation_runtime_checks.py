@@ -11,14 +11,14 @@ import asyncio
 import tempfile
 from typing import Any
 
-from ..static_architecture.context_artifacts import (
+from ..core.context_artifacts import (
     ContextArtifactManager,
     ContextArtifactRef,
     ContextArtifactStore,
     ContextArtifactStoreSpec,
     ContextOffloadPolicy,
 )
-from ..static_architecture.runtime_memory import RunNoteBoard
+from ..core.runtime_memory import RunNoteBoard
 from .spawned_runtime_port import (
     SpawnedLoopRuntimeConfigFacts,
     SpawnedLoopRuntimeCounters,

@@ -28,7 +28,7 @@ Owner doctrine (2026-08-23→24, escalating rulings that converge here):
 This module is that doctrine executable.  It does NOT replace the runtime
 (``recursive_loop.Loop``), the templates (``loop_templates``), the typed
 contract (``loop_contract.LoopContract``), or the facet vocabulary
-(``static_architecture.facets``).  It is the DECLARATIVE BASELINE that names
+(``core.facets``).  It is the DECLARATIVE BASELINE that names
 what every loop — practitioner, internal-service, intelligence, or Solution
 DAG vertex — has in common, so each is an instance of the same shape rather
 than a bespoke object.  The thesis this makes concrete:

@@ -52,7 +52,7 @@ Create and save a Run History from a loop ledger:
 
 ```python
 from loop_engine import LoopLedger
-from loop_engine.static_architecture.run_history import RunHistory
+from loop_engine.core.run_history import RunHistory
 
 ledger = LoopLedger()
 provider_usage = []
@@ -80,12 +80,12 @@ specification record, the compiled Code digest, evaluation information,
 runtime information, failure history, applicability, lineage, and maturity.
 
 ```python
-from loop_engine.static_architecture.solution_library import (
+from loop_engine.core.solution_library import (
     SolutionAsset,
     SolutionLibrary,
     task_fingerprint,
 )
-from loop_engine.static_architecture.store_serve import SolverStore
+from loop_engine.core.store_serve import SolverStore
 
 fingerprint = task_fingerprint(
     problem="classification",
@@ -133,7 +133,7 @@ returns ranked `LoopRef` objects.
 ```python
 from loop_engine import LoopLedger
 from loop_engine.loop.loop_capsule import LoopRef
-from loop_engine.static_architecture.intelligence_layers import (
+from loop_engine.core.intelligence_layers import (
     build_intelligence_catalog,
     materialize_intelligence_ref,
     query_intelligence,
@@ -189,7 +189,7 @@ Load the full event history only after selecting a run:
 from loop_engine.loop.intelligence_loops import (
     serve_historical_intelligence,
 )
-from loop_engine.static_architecture.run_history import RunHistory
+from loop_engine.core.run_history import RunHistory
 
 selected_run_id = summary["run_id"]
 

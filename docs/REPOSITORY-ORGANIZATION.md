@@ -22,7 +22,7 @@ loop-engine/
 |---|---|
 | `src/loop_engine/` | Runtime classes, typed contracts, adapters, validation, CLI code, and tests shipped with the package. |
 | `docs/contracts/` | A short index to canonical contract objects. It does not duplicate their definitions. |
-| `docs/components/` | Architecture explanations organized by Loop, Practitioner, Intelligence, Solution Canvas, the three Static Architecture capability groups, and self-improvement as a Practitioner task. |
+| `docs/components/` | Architecture explanations organized by Loop, Practitioner, Intelligence, Solution Canvas, the three Core Architecture capability groups, and self-improvement as a Practitioner task. |
 | `docs/guides/` | Instructions for installing, configuring, running, viewing, and verifying Loop Engine. |
 | `examples/` | Useful runnable tasks that teach one boundary at a time. |
 | `benchmarks/` | Reproducible task populations, fixed evaluators, run controls, and raw benchmark outputs. |

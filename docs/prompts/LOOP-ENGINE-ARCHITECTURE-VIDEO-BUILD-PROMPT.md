@@ -36,7 +36,7 @@ Read these files before editing the showcase:
 - `docs/components/practitioner/README.md`
 - `docs/components/intelligence-layers/README.md`
 - `docs/components/solution-canvas/README.md`
-- `docs/components/static-architecture/README.md`
+- `docs/components/core-architecture/README.md`
 - `src/loop_engine/loop/loop_definition.py`
 - `src/loop_engine/loop/runtime_context.py`
 - `src/loop_engine/loop/loop_profile_catalog.py`
@@ -147,7 +147,7 @@ ensemble member as registered profiles.
 
 Runtime Memory is temporary. It is not a fifth layer.
 
-### Three Static Architecture groups
+### Three Core Architecture groups
 
 Show exactly:
 
@@ -186,7 +186,7 @@ Use one main idea per slide. Keep titles short. Use at least these scenes:
 
 1. **Loop Engine.** Subtitle: "Loops are all you need."
 2. **Architecture map.** Four Intelligence layers, Loop Practitioner,
-   Solution Canvas, and the three Static Architecture groups. Add a small
+   Solution Canvas, and the three Core Architecture groups. Add a small
    note that self-improvement is a later Practitioner task.
 3. **One Loop object.** Reveal the complete definition and runtime context.
 4. **A Loop is a typed graph vertex.** Show input, bounded work, output, loop
@@ -212,7 +212,7 @@ Use one main idea per slide. Keep titles short. Use at least these scenes:
     paths. Candidates are passive.
 17. **One authoritative Solution DAG.** Project selected candidates into
     `LoopGraphDefinition` with typed edges.
-18. **Static Architecture.** Show only the three public groups.
+18. **Core Architecture.** Show only the three public groups.
 19. **Internal runtime mechanics.** Show providers, settings, workspaces,
     approvals, stores, Runtime Memory, events, reports, playback, MCP, skills,
     and trace export as internal support, not peer architecture groups.
@@ -252,7 +252,7 @@ several architecture boundaries into one unreadable diagram.
 - Practitioner Loops: blue circles.
 - Intelligence Loops: violet circles.
 - Solution Loops: green circles.
-- Static Architecture: gray service containers.
+- Core Architecture: gray service containers.
 - Deterministic mode: solid outline.
 - Hybrid mode: double outline.
 - Non-deterministic mode: dotted outline with restrained motion.
@@ -334,7 +334,7 @@ The showcase fails if it:
 - shows a service, file, record, candidate, or edge as a Loop;
 - gives a Canvas or pipeline one inherited mode;
 - lists an invented profile as registered;
-- presents more than three public Static Architecture groups;
+- presents more than three public Core Architecture groups;
 - shows a mode granting permissions;
 - merges Runtime Memory into persistent intelligence;
 - automatically approves self-improvement output;

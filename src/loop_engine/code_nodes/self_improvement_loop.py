@@ -64,7 +64,7 @@ def audit_intelligence_summary(summary: dict) -> list:
 def load_run_history(runs_dir: str, *, limit: int = 100,
                            ledger=None, parent=None) -> dict:
     """Load an exact verified run population for improvement review."""
-    from ..static_architecture.run_history import (RunHistory, default_runs_dir,
+    from ..core.run_history import (RunHistory, default_runs_dir,
                                                   as_ledger_events)
     from ..loop.intelligence_loops import serve_historical_intelligence
     from .housekeeping import trace_from_loop_ledger
@@ -120,7 +120,7 @@ def run_self_improvement(*, runs_dir: str = "", layer_records=None,
                                rank_opportunities, classify_intelligence)
     if trigger_class not in TRIGGER_CLASSES:
         raise ValueError(f"trigger_class must be one of {TRIGGER_CLASSES}")
-    from ..static_architecture.intelligence_layers import (
+    from ..core.intelligence_layers import (
         build_intelligence_catalog, catalog_summary, query_intelligence)
     from ..loop.loop_templates import TEMPLATE_LIBRARY, config_from_template
     from ..loop.recursive_loop import (Loop, LoopConfig, LoopLedger,
@@ -209,8 +209,8 @@ def self_test() -> dict:
     import json
     import tempfile
     from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome
-    from ..static_architecture.run_history import RunHistory
-    from ..static_architecture.store_serve import StoreRecord
+    from ..core.run_history import RunHistory
+    from ..core.store_serve import StoreRecord
 
     with tempfile.TemporaryDirectory() as history_root:
         for index in range(2):

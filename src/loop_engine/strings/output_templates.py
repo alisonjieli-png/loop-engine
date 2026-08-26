@@ -220,8 +220,8 @@ def recommend_form(*, is_code: bool = False, is_judgement: bool = False,
 
 def template_records() -> list:
     """Each output template as a searchable strategy record."""
-    from ..static_architecture.store_serve import StoreRecord
-    from ..static_architecture.facets import context_facets
+    from ..core.store_serve import StoreRecord
+    from ..core.facets import context_facets
     format_by_form = {"json_list": "json", "code_or_test": "markdown"}
     list_by_form = {"json_list": "flat_list", "evaluation": "checklist"}
     response_by_form = {
@@ -336,7 +336,7 @@ def self_test() -> dict:
           "a rule is requested as a rule, a metric as a metric, code as code")
 
     # 8. output templates are searchable resources.
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=template_records())
     hit = store.search("return a runnable statistical test as code",
                        kind="strategy")

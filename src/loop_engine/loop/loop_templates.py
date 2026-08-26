@@ -195,8 +195,8 @@ def config_from_template(body: dict, *, power: str = "standard",
 
 def template_records() -> list:
     """The library as searchable String records for the one store."""
-    from ..static_architecture.store_serve import StoreRecord
-    from ..static_architecture.facets import string_facets
+    from ..core.store_serve import StoreRecord
+    from ..core.facets import string_facets
     return [StoreRecord(
         record_id=f"looptmpl.{t['template_id']}", kind="strategy",
         title=f"Loop template: {t['template_id']}: {t['description'][:60]}",
@@ -279,7 +279,7 @@ def self_test() -> dict:
           "current conditions are stored; unknown values are refused")
 
     # 5. templates are searchable Strings through the one store, faceted.
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     store = SolverStore(core_records=template_records())
     hits = store.search("adversarial review refute claims", kind="strategy")
     check("templates_are_searchable_faceted_strings",

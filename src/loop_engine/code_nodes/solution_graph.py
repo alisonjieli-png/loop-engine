@@ -190,7 +190,7 @@ class LoopDefinitionRegistry:
 
 
 @dataclass(frozen=True)
-class LoopGraphVertex:
+class LoopGraphVertexRecord:
     """One executable graph vertex, always an exact versioned Loop."""
 
     vertex_id: str
@@ -254,13 +254,13 @@ class LoopGraphVertex:
         }
 
     @classmethod
-    def from_dict(cls, value: dict) -> "LoopGraphVertex":
+    def from_dict(cls, value: dict) -> "LoopGraphVertexRecord":
         required = {
             "vertex_id", "definition_ref", "definition", "selected_mode",
             "purpose", "operation_ref", "parameters",
         }
         if not isinstance(value, dict) or set(value) != required:
-            raise LoopGraphError("LoopGraphVertex has an invalid shape")
+            raise LoopGraphError("LoopGraphVertexRecord has an invalid shape")
         definition = value["definition"]
         return cls(
             vertex_id=value["vertex_id"],
@@ -318,7 +318,7 @@ class LoopGraphEdge:
         if not isinstance(value, dict) or set(value) != required:
             raise LoopGraphError(
                 "LoopGraphEdge has an invalid shape; an Adapter must be an "
-                "explicit LoopGraphVertex, never an edge field")
+                "explicit LoopGraphVertexRecord, never an edge field")
         return cls(
             edge_id=value["edge_id"],
             source=LoopGraphEndpoint.from_dict(value["source"]),
@@ -466,7 +466,7 @@ class LoopGraphDefinition:
     permitted_vertex_modes: tuple[str, ...]
     input_ports: tuple[LoopGraphInputPort, ...]
     output_ports: tuple[LoopGraphOutputPort, ...]
-    vertices: tuple[LoopGraphVertex, ...]
+    vertices: tuple[LoopGraphVertexRecord, ...]
     edges: tuple[LoopGraphEdge, ...]
     groups: tuple[LoopGraphGroup, ...]
     starting_group_id: str
@@ -483,7 +483,7 @@ class LoopGraphDefinition:
         typed_fields = (
             ("input_ports", LoopGraphInputPort),
             ("output_ports", LoopGraphOutputPort),
-            ("vertices", LoopGraphVertex), ("edges", LoopGraphEdge),
+            ("vertices", LoopGraphVertexRecord), ("edges", LoopGraphEdge),
             ("groups", LoopGraphGroup),
         )
         for name, expected in typed_fields:
@@ -495,7 +495,7 @@ class LoopGraphDefinition:
         object.__setattr__(self, "permitted_vertex_modes", modes)
         _identifier("starting_group_id", self.starting_group_id)
 
-    def vertex(self, vertex_id: str) -> LoopGraphVertex:
+    def vertex(self, vertex_id: str) -> LoopGraphVertexRecord:
         matches = [item for item in self.vertices
                    if item.vertex_id == vertex_id]
         if len(matches) != 1:
@@ -572,7 +572,7 @@ class LoopGraphDefinition:
                   for item in value["input_ports"]),
             tuple(LoopGraphOutputPort.from_dict(item)
                   for item in value["output_ports"]),
-            tuple(LoopGraphVertex.from_dict(item)
+            tuple(LoopGraphVertexRecord.from_dict(item)
                   for item in value["vertices"]),
             tuple(LoopGraphEdge.from_dict(item) for item in value["edges"]),
             tuple(LoopGraphGroup.from_dict(item) for item in value["groups"]),
@@ -675,9 +675,9 @@ def make_solution_loop_definition(
 def vertex_from_definition(
         vertex_id: str, definition: LoopDefinition, *, selected_mode: str,
         purpose: str, operation_ref: str = "", parameters: dict | None = None
-        ) -> LoopGraphVertex:
+        ) -> LoopGraphVertexRecord:
     """Bind a complete Loop definition and its exact reference once."""
-    return LoopGraphVertex(
+    return LoopGraphVertexRecord(
         vertex_id, definition.ref, definition, selected_mode, purpose,
         operation_ref, ConfigurationFacts.from_mapping(parameters))
 
@@ -687,7 +687,7 @@ class AdapterLoopRunRequest:
     """All inputs for executing one explicit Adapter Loop vertex."""
 
     graph_id: str
-    adapter_vertex: LoopGraphVertex
+    adapter_vertex: LoopGraphVertexRecord
     value: Any
     registry: dict = field(repr=False, compare=False)
     parent: Any = field(default=None, repr=False, compare=False)
@@ -696,7 +696,7 @@ class AdapterLoopRunRequest:
 
     def __post_init__(self) -> None:
         _identifier("graph_id", self.graph_id)
-        if (not isinstance(self.adapter_vertex, LoopGraphVertex)
+        if (not isinstance(self.adapter_vertex, LoopGraphVertexRecord)
                 or self.adapter_vertex.purpose != "adapter"):
             raise LoopGraphError(
                 "adapter_vertex must be an explicit Adapter Loop vertex")

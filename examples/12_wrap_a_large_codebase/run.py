@@ -4,7 +4,7 @@ import json
 
 from loop_engine import LoopLedger
 from loop_engine.loop.loop_capsule import ExternalPayloadRef, MaterializedPayload
-from loop_engine.static_architecture.code_intelligence_assets import (
+from loop_engine.core.code_intelligence_assets import (
     MaterializationCache,
     code_asset_capsule,
     code_asset_record,

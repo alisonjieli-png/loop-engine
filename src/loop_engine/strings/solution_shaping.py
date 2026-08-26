@@ -329,7 +329,7 @@ def shape_solution_ask(signals: DecompositionSignals, *,
 
 def shaping_decision_node():
     """The decision DAG as a searchable node record (kind='node')."""
-    from ..static_architecture.store_serve import StoreRecord
+    from ..core.store_serve import StoreRecord
     return StoreRecord(
         record_id="node.solution_shaping.should_decompose", kind="node",
         title="Decide whether to decompose into sub-models / sub-processes",
@@ -432,7 +432,7 @@ def self_test() -> dict:
           "accepted model reasoning becomes a new, retrievable shaping string")
 
     # 8. shaping is searchable: the decision node and strings register.
-    from ..static_architecture.store_serve import SolverStore
+    from ..core.store_serve import SolverStore
     recs = [shaping_decision_node()] + pack_records(bank)
     store = SolverStore(core_records=recs)
     hit = store.search("should we build separate sub-models or an ensemble",

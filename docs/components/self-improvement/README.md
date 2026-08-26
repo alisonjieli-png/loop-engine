@@ -5,7 +5,7 @@ runtime role, service layer, or architectural peer. The Practitioner uses
 ordinary loops to inspect past work and the current Intelligence Library, then
 propose useful changes.
 
-It is not a separate Static Architecture group. It may use Intelligence Search
+It is not a separate Core Architecture group. It may use Intelligence Search
 and Retrieval like any other permitted Practitioner task. Run History, stores,
 and validation are internal runtime mechanics.
 

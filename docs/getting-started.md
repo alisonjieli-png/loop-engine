@@ -125,7 +125,7 @@ More: [providers and keys](guides/providers-and-keys.md) ·
 | [Runtime settings and model tiers](guides/settings.md) | YAML defaults, search choices, providers, and bounded model escalation |
 | [Custom endpoints](guides/custom-endpoints.md) | your own server or a third party's |
 | [Reports](guides/reports.md) | reading and exporting a run |
-| [Component guide](components/) | the Loop object, roles, Static Architecture, and intelligence layers |
+| [Component guide](components/) | the Loop object, roles, Core Architecture, and intelligence layers |
 | [Architecture](architecture/) | deeper implementation and visual guidance |
 | [`examples/`](../examples/) | categorized example folders |
 | [Customer import Canvas](../examples/10_validate_customer_import/) | a realistic compiled Solution Canvas with fallback |

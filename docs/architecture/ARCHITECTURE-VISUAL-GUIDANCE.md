@@ -19,7 +19,7 @@ The same figure must show only the architecture needed to orient a new reader:
 
 - the shared Loop runtime used by Practitioner, Intelligence, and Solution;
 - all four intelligence layers;
-- the three Static Architecture groups;
+- the three Core Architecture groups;
 - the Practitioner building a Solution Canvas;
 - Solution Loops producing the result; and
 - self-improvement labeled as a later Practitioner task, not a separate
@@ -61,12 +61,12 @@ status, and bounded goal.
 Use `Spawned by` in a relationship label. Do not imply that queried,
 retrieved, or connected Loops were spawned.
 
-## V4: Static Architecture and intelligence
+## V4: Core Architecture and intelligence
 
-Show exactly three Static Architecture capability groups: Intelligence Search
+Show exactly three Core Architecture capability groups: Intelligence Search
 and Retrieval, Web Research, and Custom Plugins. Do not draw providers,
 settings, workspaces, approvals, stores, Runtime Memory, Run History, reports,
-playback, or provider adapters as peer Static Architecture components. Those
+playback, or provider adapters as peer Core Architecture components. Those
 are internal runtime mechanics.
 
 The Retrieval Engine searches classified records across the four layers. Its

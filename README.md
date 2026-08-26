@@ -21,7 +21,7 @@ flowchart LR
     C -->|projects one typed DAG| S((Solution Loops))
     S --> O[Result]
 
-    A[Static Architecture<br/>1. Intelligence Search and Retrieval<br/>2. Web Research<br/>3. Custom Plugins]
+    A[Core Architecture<br/>1. Intelligence Search and Retrieval<br/>2. Web Research<br/>3. Custom Plugins]
     A --> P
     A --> I
     A --> S
@@ -170,9 +170,9 @@ repositories, packages, transcripts, and vector rows are source formats, not
 new intelligence layers. Imported or generated items remain candidates until
 an independent review accepts them.
 
-## Static Architecture
+## Core Architecture
 
-Static Architecture exposes exactly three public capability groups:
+Core Architecture exposes exactly three public capability groups:
 
 | Group | Purpose |
 |---|---|
@@ -257,7 +257,7 @@ population, model, effort, evaluator, metric, and environment.
 - [Loop Practitioner](docs/components/practitioner/)
 - [Four intelligence layers](docs/components/intelligence-layers/)
 - [Solution Canvas](docs/components/solution-canvas/)
-- [Static Architecture](docs/components/static-architecture/)
+- [Core Architecture](docs/components/core-architecture/)
 - [Reports and playback](docs/guides/reports.md)
 
 ## Current limits

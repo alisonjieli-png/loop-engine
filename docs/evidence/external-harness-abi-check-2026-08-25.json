@@ -30,16 +30,43 @@
       ]
     },
     "pydantic-ai": {
-      "status": "not_installed",
-      "reason": "The clean temporary environment hit the host disk quota."
+      "status": "separate_target_install_and_signature_checked",
+      "version": "2.34.0",
+      "observed_contract": [
+        "Agent(model=..., instructions=...)",
+        "Agent.run_sync(model_settings=..., usage_limits=...)",
+        "ModelSettings.max_tokens",
+        "ModelSettings.timeout",
+        "UsageLimits.request_limit",
+        "UsageLimits.total_tokens_limit"
+      ]
     },
     "deepagents": {
-      "status": "not_installed",
-      "reason": "The clean temporary environment hit the host disk quota."
+      "status": "separate_target_install_and_signature_checked",
+      "version": "0.7.8",
+      "observed_create_deep_agent_parameters": [
+        "model",
+        "tools",
+        "system_prompt",
+        "subagents",
+        "skills",
+        "memory",
+        "permissions",
+        "backend",
+        "interrupt_on",
+        "checkpointer"
+      ]
     },
     "openai-agents": {
-      "status": "not_installed",
-      "reason": "The clean temporary environment hit the host disk quota."
+      "status": "separate_target_install_and_signature_checked",
+      "version": "0.22.0",
+      "observed_contract": [
+        "Agent(model=..., tools=[], mcp_servers=[], handoffs=[])",
+        "ModelSettings.max_tokens",
+        "ModelSettings.include_usage",
+        "RunConfig.tracing_disabled",
+        "Runner.run_sync(max_turns=..., run_config=...)"
+      ]
     }
   },
   "source_documents": [
@@ -52,6 +79,7 @@
     "This checks installability and one SDK signature only.",
     "No optional harness executed a task.",
     "No provider was called.",
-    "The Pydantic AI, Deep Agents, and OpenAI Agents package calls remain source-reviewed but locally ABI-unverified."
+    "The separate target installations are ABI checks, not dependency-isolated runtime proofs.",
+    "The optional package code paths did not execute an agent task."
   ]
 }

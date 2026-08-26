@@ -51,7 +51,7 @@ A positive answer to one question does not answer the others.
 ## Python example
 
 ```python
-from loop_engine.static_architecture.harness_intelligence_bridge import (
+from loop_engine.core.harness_intelligence_bridge import (
     HarnessMemoryItem,
     import_harness_memory_as_loop,
 )

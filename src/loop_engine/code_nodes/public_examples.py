@@ -51,7 +51,7 @@ def support_queue_example() -> str:
 
 
 def intelligence_layers_example() -> str:
-    from ..static_architecture.intelligence_layers import (
+    from ..core.intelligence_layers import (
         build_intelligence_catalog, catalog_summary)
     active_catalog = build_intelligence_catalog()
     review_catalog = build_intelligence_catalog(include_candidates=True)
