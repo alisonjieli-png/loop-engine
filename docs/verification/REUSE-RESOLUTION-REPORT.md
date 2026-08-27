@@ -129,6 +129,13 @@ feedback, and autonomous solve. The solve did not ask a question; it returned
 The installed test count is one lower than the source count because one
 repository-only check is unavailable outside a checkout.
 
+## Publication
+
+Implementation commit `f264e002ec980f50349d8d6c43f0ab7048607919` is on
+`origin/main`. GitHub Actions run `33116324964` passed the Python 3.10, 3.11,
+and 3.12 suites, conformance, all examples, distribution build, public prose,
+links, architecture diagrams, and visual audit.
+
 ## Remaining work
 
 The next batch should adapt these producers into the same

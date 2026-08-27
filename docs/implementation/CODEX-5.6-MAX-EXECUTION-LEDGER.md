@@ -425,6 +425,6 @@ against the exact intended public paths before committing.
 | Measurement | Repository parameter findings reduced from `175` to `174`; current records emit structured identity; deterministic selection and compilation make zero model calls; autonomous compile continues with two constrained choices; optional feedback binds; autonomous solve terminates without a question when its executor is unavailable. |
 | Result | `VERIFIED WORKING` for the scoped Solution-prior slice. Broader Checkpoint -0.5 and RSL remain `NOT YET PROVEN`. |
 | Remaining uncertainty | Capability, procedure, Canvas, analogy, discovery, and novel-design adapters; matched trials; held-out transfer; negative-transfer proof. |
-| Commit | pending |
-| GitHub Actions run | pending |
-| Publication state | locally verified; pending main push |
+| Commit | `f264e002ec980f50349d8d6c43f0ab7048607919` |
+| GitHub Actions run | `33116324964`, all five required jobs passed |
+| Publication state | typed resolution, autonomous interaction, optional task feedback, README, and examples published to `origin/main` |
