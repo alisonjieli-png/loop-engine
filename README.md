@@ -120,14 +120,35 @@ not read OpenCode's credential file and does not define a generic
 
 ### Compile the flagship modeling request
 
-Use this command to inspect how Loop Engine understands a larger request:
+Use `--file` for a longer request. The task stays readable in the README and in
+your shell:
 
 ```bash
-loop-engine task compile --text \
-  "Download an authorized public dataset. Train a linear model, tree model, boosted-tree model, and MLP on identical validation folds to predict the target variable. Compare them honestly and produce verified PDF and HTML reports."
+cat > flagship-modeling-task.txt <<'EOF'
+Download an authorized public dataset.
+Train a linear model, tree model, boosted-tree model, and MLP to predict the
+target variable. Use identical validation folds for every model. Compare the
+results honestly and produce verified PDF and HTML reports.
+EOF
+
+loop-engine task compile --file flagship-modeling-task.txt
 ```
 
-This command compiles the request. It does not run the modeling job.
+On PowerShell 7:
+
+```powershell
+@'
+Download an authorized public dataset.
+Train a linear model, tree model, boosted-tree model, and MLP to predict the
+target variable. Use identical validation folds for every model. Compare the
+results honestly and produce verified PDF and HTML reports.
+'@ | Set-Content -Encoding utf8 flagship-modeling-task.txt
+
+loop-engine task compile --file flagship-modeling-task.txt
+```
+
+This command compiles the complete file contents. It does not run the modeling
+job. Use `--text` for short one-line requests.
 
 The compiler preserves the original text and binds it to the registered
 tabular model-comparison template. The request deliberately leaves the dataset
@@ -156,7 +177,7 @@ loop-engine task compile \
   --max-model-calls 1 \
   --max-total-tokens 70000 \
   --interaction-mode autonomous \
-  --text "Download an authorized public dataset. Train a linear model, tree model, boosted-tree model, and MLP on identical validation folds to predict the target variable. Compare them honestly and produce verified PDF and HTML reports."
+  --file flagship-modeling-task.txt
 ```
 
 To avoid putting a key in shell history, let Loop Engine prompt for it:
@@ -169,7 +190,7 @@ loop-engine task compile \
   --max-model-calls 1 \
   --max-total-tokens 70000 \
   --interaction-mode autonomous \
-  --text "Download an authorized public dataset and compare the requested model families."
+  --file flagship-modeling-task.txt
 ```
 
 Use `openrouter` with `OPENROUTER_API_KEY`. Use `opencode_go` with
@@ -184,7 +205,7 @@ loop-engine task compile \
   --max-model-calls 1 \
   --max-total-tokens 70000 \
   --interaction-mode autonomous \
-  --text "Download an authorized public dataset and compare the requested model families."
+  --file flagship-modeling-task.txt
 
 loop-engine task compile \
   --compile-provider opencode_go \
@@ -193,7 +214,7 @@ loop-engine task compile \
   --max-model-calls 1 \
   --max-total-tokens 400000 \
   --interaction-mode autonomous \
-  --text "Download an authorized public dataset and compare the requested model families."
+  --file flagship-modeling-task.txt
 ```
 
 There is intentionally no `--api-key VALUE` option. Command arguments can
@@ -205,7 +226,9 @@ action. The review cannot grant permission or prove execution.
 Use autonomous interaction mode when the run must not pause for questions:
 
 ```bash
-loop-engine task compile --interaction-mode autonomous --text \
+loop-engine task compile \
+  --interaction-mode autonomous \
+  --text \
   "Train and compare several supervised prediction models."
 ```
 
