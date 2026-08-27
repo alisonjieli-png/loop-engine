@@ -1,0 +1,9 @@
+branch: checkpoint/loop-engine-architecture-20260825
+commit: cd0a9cd57329ab85b87904a27074d833fd055cca
+
+ M src/loop_engine/loop/encapsulate.py
+ M src/loop_engine/loop/kernel.py
+ M src/loop_engine/loop/loop_templates.py
+ M src/loop_engine/loop/recursive_loop.py
+?? checkpoints/
+?? tools/
