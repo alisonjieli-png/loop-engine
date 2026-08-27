@@ -116,6 +116,8 @@ This file is generated from the semantic constitution in `terminology.yaml`. The
 | `RequirementDisposition` | `result` | Typed next action, constraints, dependencies, and optional feedback slot for one required task value. | `loop_engine.templates.model:RequirementDisposition` | state_reason_constraints_dependencies_and_feedback_slot | none | none |
 | `InteractionMode` | `policy` | Closed task-compilation policy choosing material questions or terminal autonomous behavior. | `loop_engine.templates.model:InteractionMode` | enum_value | none | none |
 | `TaskFeedback` | `request` | Optional invocation input for one registered task preference slot. | `loop_engine.templates.model:TaskFeedback` | slot_ref_and_value | none | none |
+| `LiveTextScenario` | `scenario` | Reviewed public text task with one interaction policy and independently checkable next-state outcome. | `loop_engine.core.live_text_scenarios:LiveTextScenario` | task_text_interaction_mode_expected_status_and_source | none | none |
+| `LiveTextScenarioSuiteRequest` | `request` | Explicit provider authority, route, call ceiling, token ceiling, timeout, and evidence destination for five live text tasks. | `loop_engine.core.live_text_scenarios:LiveTextScenarioSuiteRequest` | cohesive_live_suite_request_fields | none | none |
 
 ## Compatibility rule
 

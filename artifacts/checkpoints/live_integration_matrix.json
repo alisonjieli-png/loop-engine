@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-27T13:28:13-04:00",
+  "generated_at": "2026-08-27T18:40:21-04:00",
   "repository": "alisonjieli-png/loop-engine",
   "branch": "main",
-  "baseline_sha": "6a26978c5e6cd2e3852818c4bb4b2dac23b0da76",
+  "baseline_sha": "57efe4cc3368afa3a4b2e066b0e2c0c6a2108331",
   "summary": {
-    "real_provider_runs": 0,
+    "real_provider_runs": 1,
     "local_model_runs": 0,
     "offline_fixtures": 0,
     "simulations": 0,
     "mocks": 0,
-    "static_validations": 5,
+    "static_validations": 4,
     "unproven": 3
   },
   "records": [
@@ -18,17 +18,18 @@
       "integration_id": "MODEL-OLLAMA-CLOUD",
       "provider": "ollama_cloud",
       "endpoint": "provider default",
-      "model": "runtime discovered",
+      "model": "deepseek-v4-flash:0731",
       "date": "2026-08-27",
-      "configuration": "Built-in ProviderSpec documented by the repository",
+      "configuration": "Pinned cloud.default route, no failover, one physical attempt for each of five reviewed public text tasks",
       "credentials_by_reference": "OLLAMA_API_KEY",
-      "test": "Source and public documentation inspection only",
-      "result": "STATIC VALIDATION",
+      "test": "Five live model-assisted Orientation decisions with exact typed grading and secret-safe evidence",
+      "result": "REAL PROVIDER RUN",
       "evidence": [
-        "docs/components/core-architecture/MODEL-GATEWAY.md",
-        "src/loop_engine/core/model_gateway.py"
+        "docs/verification/LIVE-OLLAMA-TEXT-SCENARIO-REPORT.md",
+        "examples/20_compile_text_tasks/run_live.py",
+        "src/loop_engine/core/live_text_scenarios.py"
       ],
-      "limitations": "No provider request was made in this reconciliation task. Availability, exact model, usage, latency, cost, and output limits are unproven."
+      "limitations": "One provider route and five public orientation tasks passed locally. This proves bounded provider use and typed output handling, not full task execution, broad model quality, cost calibration, or external-effect authority."
     },
     {
       "integration_id": "MODEL-MISTRAL",

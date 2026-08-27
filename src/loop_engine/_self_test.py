@@ -152,6 +152,7 @@ def self_test() -> dict:
                 "core.model_gateway",
         "core.model_capabilities",
         "core.live_model_verification",
+        "core.live_text_scenarios",
         "core.runtime_observer",
         "core.settings_loader",
                                                                                                                                                                                     ]

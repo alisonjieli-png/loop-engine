@@ -108,7 +108,10 @@ loop-engine task compile --interaction-mode autonomous \
 
 Without that feedback, the dataset remains a constrained delegated choice. See
 [five text-only compilation examples](examples/20_compile_text_tasks/) for
-ready, clarification, and terminal-abstention behavior.
+ready, clarification, and terminal-abstention behavior. The same five public
+task files run through one bounded Ollama Cloud check after trusted pushes to
+`main`. The provider check is separate from the model-free compiler matrix and
+does not claim that the five requested solutions were executed.
 
 ## System at a glance
 

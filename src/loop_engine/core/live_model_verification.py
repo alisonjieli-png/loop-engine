@@ -1,16 +1,15 @@
 """Opt-in verification of one real provider call against repository data.
 
 Ordinary self-tests never contact a model provider.  This module is the only
-verification path that may claim provider integration.  It requires explicit
+verification path that may claim provider integration. It requires explicit
 authorization, one physical call, a source-backed model output maximum, a
-declared total-token budget, exact grading, and a secret-safe saved result.
+declared total-token budget, exact grading, and secret-safe saved evidence.
 """
 from __future__ import annotations
 
 import hashlib
 import json
 import os
-import re
 import tempfile
 import time
 from dataclasses import dataclass

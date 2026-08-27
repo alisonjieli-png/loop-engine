@@ -1726,3 +1726,57 @@ semantic_terms:
   - one_term_one_meaning
   - one_source_of_truth
   - no_authority_from_alias
+- term_id: core.term.live_text_scenario
+  canonical_name: LiveTextScenario
+  primary_category: scenario
+  definition: Reviewed public text task with one interaction policy and independently checkable next-state outcome.
+  source_of_truth: loop_engine.core.live_text_scenarios:LiveTextScenario
+  source_symbol: loop_engine.core.live_text_scenarios:LiveTextScenario
+  public_or_internal: internal
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: live_text_scenario_result/v1
+  related_terms: []
+  difference_from_neighbors: LiveTextScenario is passive test input; the Practitioner and model-attempt Loops perform its work.
+  parameterization_decision: task_text_interaction_mode_expected_status_and_source
+  composition_decision: compose into one bounded live scenario suite
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: reviewed fixture
+  legacy_aliases: []
+  migration: none
+  examples:
+  - model-portfolio
+  negative_examples:
+  - a scenario-specific runtime class
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.live_text_scenario_suite_request
+  canonical_name: LiveTextScenarioSuiteRequest
+  primary_category: request
+  definition: Explicit provider authority, route, call ceiling, token ceiling, timeout, and evidence destination for five live text tasks.
+  source_of_truth: loop_engine.core.live_text_scenarios:LiveTextScenarioSuiteRequest
+  source_symbol: loop_engine.core.live_text_scenarios:LiveTextScenarioSuiteRequest
+  public_or_internal: internal
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: interpreted by live_text_scenario_suite/v1
+  related_terms: []
+  difference_from_neighbors: LiveTextScenarioSuiteRequest authorizes one bounded verification campaign; it is not a Loop or provider credential.
+  parameterization_decision: cohesive_live_suite_request_fields
+  composition_decision: consumed by the existing live verification service and ModelGateway
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: invocation scoped
+  legacy_aliases: []
+  migration: none
+  examples:
+  - five Ollama Cloud text scenarios with five physical calls
+  negative_examples:
+  - an embedded API key
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
