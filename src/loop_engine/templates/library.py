@@ -6,7 +6,7 @@ catalog. A template is data; binding is a governed Loop operation.
 """
 from __future__ import annotations
 
-from .model import TaskTemplate, TemplateError
+from .model import RequirementPolicy, TaskTemplate, TemplateError
 
 #: Core task templates shipped with the package.
 CORE_TEMPLATES = (
@@ -57,6 +57,55 @@ CORE_TEMPLATES = (
         required_variables=("dataset_source", "target_column"),
         optional_variables=(
             "model_families", "validation_strategy", "report_formats"),
+        requirement_policies=(
+            RequirementPolicy(
+                requirement_id="dataset_source",
+                allow_delegated_choice=True,
+                delegation_cues=(
+                    "an authorized public dataset",
+                    "a public dataset",
+                    "any public dataset",
+                    "choose a public dataset",
+                    "select a public dataset",
+                ),
+                clarification_cues=(
+                    "do not choose a dataset",
+                    "do not select a dataset",
+                    "do not use any public dataset",
+                    "ask me which dataset",
+                    "use a specific dataset",
+                ),
+                constraint_refs=(
+                    "source.public",
+                    "source.license_known",
+                    "source.access_permitted",
+                    "dataset.tabular",
+                    "dataset.target_documented",
+                ),
+                feedback_slot_ref="task.preference.dataset_source"),
+            RequirementPolicy(
+                requirement_id="target_column",
+                allow_delegated_choice=True,
+                delegation_cues=(
+                    "the target variable",
+                    "a target variable",
+                    "choose a target",
+                    "select a target",
+                ),
+                clarification_cues=(
+                    "do not choose a target",
+                    "do not select a target",
+                    "ask me which target",
+                    "use a specific target",
+                ),
+                constraint_refs=(
+                    "target.documented",
+                    "target.non_identifier",
+                    "target.supported_prediction_operator",
+                ),
+                depends_on=("dataset_source",),
+                feedback_slot_ref="task.preference.target_column"),
+        ),
         file_refs=(),
         input_contract="authorized_tabular_dataset",
         output_contract="verified_model_comparison_report"),

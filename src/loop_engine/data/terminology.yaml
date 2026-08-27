@@ -1370,3 +1370,359 @@ semantic_terms:
   - one_term_one_meaning
   - one_source_of_truth
   - no_authority_from_alias
+- term_id: core.term.task_fingerprint_request
+  canonical_name: TaskFingerprintRequest
+  primary_category: request
+  definition: Raw typed task facts used to construct one normalized TaskFingerprint.
+  source_of_truth: loop_engine.core.task_fingerprint:TaskFingerprintRequest
+  source_symbol: loop_engine.core.task_fingerprint:TaskFingerprintRequest
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned through the produced fingerprint contract
+  related_terms: []
+  difference_from_neighbors: TaskFingerprintRequest carries construction input; TaskFingerprint is the normalized identity.
+  parameterization_decision: cohesive_request_fields
+  composition_decision: compose into TaskFingerprint; never create another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: invocation scoped
+  legacy_aliases: []
+  migration: none
+  examples:
+  - TaskFingerprintRequest
+  negative_examples: []
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.task_fingerprint
+  canonical_name: TaskFingerprint
+  primary_category: contract
+  definition: Versioned structured task identity used for compatibility, search, and evidence.
+  source_of_truth: loop_engine.core.task_fingerprint:TaskFingerprint
+  source_symbol: loop_engine.core.task_fingerprint:TaskFingerprint
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: schema version and canonical content digest
+  related_terms: []
+  difference_from_neighbors: TaskFingerprint is structured identity; search text is only a projection and semantic similarity is not compatibility.
+  parameterization_decision: typed_fingerprint_fields
+  composition_decision: compose from TaskFingerprintRequest and exact contract facts
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: immutable versioned contract
+  legacy_aliases: []
+  migration: exact pre-v1 five-field reader; current code emits only task_fingerprint/v1
+  examples:
+  - TaskFingerprint
+  negative_examples:
+  - pipe-concatenated identity
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.compatibility_assessment
+  canonical_name: CompatibilityAssessment
+  primary_category: result
+  definition: Hard, soft, and unknown contract comparisons for one reusable candidate.
+  source_of_truth: loop_engine.core.task_fingerprint:CompatibilityAssessment
+  source_symbol: loop_engine.core.task_fingerprint:CompatibilityAssessment
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: derived from exact TaskFingerprint digests
+  related_terms: []
+  difference_from_neighbors: CompatibilityAssessment reports fit; ResolutionDecision selects a permitted next route.
+  parameterization_decision: comparison_dimensions
+  composition_decision: compose into ResolutionCandidate
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: immutable assessment
+  legacy_aliases: []
+  migration: none
+  examples:
+  - CompatibilityAssessment
+  negative_examples:
+  - text similarity as executable proof
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.resolution_origin
+  canonical_name: ResolutionOrigin
+  primary_category: contract
+  definition: Closed classification of how one candidate proposes to satisfy work.
+  source_of_truth: loop_engine.core.resolution:ResolutionOrigin
+  source_symbol: loop_engine.core.resolution:ResolutionOrigin
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned with the resolution decision schema
+  related_terms: []
+  difference_from_neighbors: ResolutionOrigin does not determine Loop role, run mode, placement, scheduling, or human authority.
+  parameterization_decision: enum_value
+  composition_decision: compose into ResolutionCandidate
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: immutable contract value
+  legacy_aliases: []
+  migration: none
+  examples:
+  - exact_reuse
+  - parameterized_reuse
+  - composition
+  negative_examples:
+  - human_resolution
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.resolution_candidate
+  canonical_name: ResolutionCandidate
+  primary_category: candidate
+  definition: Passive proposed route with origin, compatibility, eligibility, expected outcomes, and evidence.
+  source_of_truth: loop_engine.core.resolution:ResolutionCandidate
+  source_symbol: loop_engine.core.resolution:ResolutionCandidate
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: references versioned fingerprints and evidence
+  related_terms: []
+  difference_from_neighbors: ResolutionCandidate proposes a route; only Loop executes selected work.
+  parameterization_decision: origin_contract_metrics_and_refs
+  composition_decision: compose many candidates into ResolutionRequest
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: candidate for one decision
+  legacy_aliases: []
+  migration: none
+  examples:
+  - ResolutionCandidate
+  negative_examples:
+  - task-specific resolver subclass
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.resolution_request
+  canonical_name: ResolutionRequest
+  primary_category: request
+  definition: Hard constraints and soft origin preferences for one resolution decision.
+  source_of_truth: loop_engine.core.resolution:ResolutionRequest
+  source_symbol: loop_engine.core.resolution:ResolutionRequest
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned with the resolution decision schema
+  related_terms: []
+  difference_from_neighbors: ResolutionRequest limits and ranks candidates; it grants no permissions or effects.
+  parameterization_decision: constraints_preferences_and_candidates
+  composition_decision: consume typed candidates through one deterministic selector
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: invocation scoped
+  legacy_aliases: []
+  migration: none
+  examples:
+  - ResolutionRequest
+  negative_examples:
+  - untyped resolver options
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.resolution_decision
+  canonical_name: ResolutionDecision
+  primary_category: result
+  definition: Digest-pinned selection or abstention with considered candidates, rejection reasons, and required delta.
+  source_of_truth: loop_engine.core.resolution:ResolutionDecision
+  source_symbol: loop_engine.core.resolution:ResolutionDecision
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: resolution_decision/v1 and canonical content digest
+  related_terms: []
+  difference_from_neighbors: ResolutionDecision records selection; LoopResult records the outcome after work executes.
+  parameterization_decision: selected_ref_rejections_and_delta
+  composition_decision: project through Run History and later approach evidence
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: immutable decision result
+  legacy_aliases: []
+  migration: none
+  examples:
+  - ResolutionDecision
+  negative_examples:
+  - capability invocation
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.resolution_run_result
+  canonical_name: ResolutionRunResult
+  primary_category: result
+  definition: ResolutionDecision plus the Practitioner Loop identity and model-call count.
+  source_of_truth: loop_engine.core.resolution:ResolutionRunResult
+  source_symbol: loop_engine.core.resolution:ResolutionRunResult
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: resolution_run_result/v1
+  related_terms: []
+  difference_from_neighbors: ResolutionRunResult proves the selection operation ran through Loop; it is not the selected work outcome.
+  parameterization_decision: loop_identity_and_decision
+  composition_decision: compose with Run History without becoming another history authority
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: immutable operation result
+  legacy_aliases: []
+  migration: none
+  examples:
+  - ResolutionRunResult
+  negative_examples:
+  - second runtime result system
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.requirement_policy
+  canonical_name: RequirementPolicy
+  primary_category: policy
+  definition: Template-owned hard rule for whether interactive or autonomous compilation may delegate a missing choice and under which constraints.
+  source_of_truth: loop_engine.templates.model:RequirementPolicy
+  source_symbol: loop_engine.templates.model:RequirementPolicy
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: included in the versioned TaskTemplate content digest
+  related_terms: []
+  difference_from_neighbors: RequirementPolicy permits or refuses delegated choice; ranking a candidate remains a separate strategy.
+  parameterization_decision: cues_constraints_dependencies_and_feedback_slot
+  composition_decision: compose into TaskTemplate and TemplateBinding
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: immutable template policy
+  legacy_aliases: []
+  migration: none
+  examples:
+  - RequirementPolicy
+  negative_examples:
+  - unchecked model best judgment
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.requirement_disposition_state
+  canonical_name: RequirementDispositionState
+  primary_category: contract
+  definition: Closed state distinguishing provided values, delegated choices, values requiring clarification, and autonomous abstention.
+  source_of_truth: loop_engine.templates.model:RequirementDispositionState
+  source_symbol: loop_engine.templates.model:RequirementDispositionState
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned with the task-template contract
+  related_terms: []
+  difference_from_neighbors: RequirementDispositionState describes the next resolution obligation; it is not TemplateBinding mode or task completion state.
+  parameterization_decision: enum_value
+  composition_decision: compose into RequirementDisposition
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: immutable contract value
+  legacy_aliases: []
+  migration: none
+  examples:
+  - provided
+  - delegated_choice
+  - needs_clarification
+  - abstain_required
+  negative_examples:
+  - unknown silently treated as no
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.requirement_disposition
+  canonical_name: RequirementDisposition
+  primary_category: result
+  definition: Typed next action, constraints, dependencies, and optional feedback slot for one required task value.
+  source_of_truth: loop_engine.templates.model:RequirementDisposition
+  source_symbol: loop_engine.templates.model:RequirementDisposition
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: serialized with TemplateBinding and WorkItemIR
+  related_terms: []
+  difference_from_neighbors: RequirementDisposition records how to handle one value; ResolutionDecision selects among concrete candidate routes.
+  parameterization_decision: state_reason_constraints_dependencies_and_feedback_slot
+  composition_decision: compose into TemplateBinding and WorkItemIR
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: immutable compilation result
+  legacy_aliases: []
+  migration: additive WorkItemIR and TemplateBinding field
+  examples:
+  - RequirementDisposition
+  negative_examples:
+  - free-form ambiguity string
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.interaction_mode
+  canonical_name: InteractionMode
+  primary_category: policy
+  definition: Closed task-compilation policy choosing material questions or terminal autonomous behavior.
+  source_of_truth: loop_engine.templates.model:InteractionMode
+  source_symbol: loop_engine.templates.model:InteractionMode
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned with the task-compilation contract
+  related_terms: []
+  difference_from_neighbors: InteractionMode controls whether compilation may ask; it grants no model, network, spending, or effect authority.
+  parameterization_decision: enum_value
+  composition_decision: compose into TaskCompileRequest and RequirementDisposition
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: invocation-scoped policy
+  legacy_aliases: []
+  migration: none
+  examples:
+  - ask_when_material
+  - autonomous
+  negative_examples:
+  - autonomy grants permission
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.task_feedback
+  canonical_name: TaskFeedback
+  primary_category: request
+  definition: Optional invocation input for one registered task preference slot.
+  source_of_truth: loop_engine.templates.model:TaskFeedback
+  source_symbol: loop_engine.templates.model:TaskFeedback
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: interpreted through the selected versioned TaskTemplate
+  related_terms: []
+  difference_from_neighbors: TaskFeedback supplies initial structured input; persistent later guidance remains User Feedback Intelligence.
+  parameterization_decision: slot_ref_and_value
+  composition_decision: compose into TaskCompileRequest; never create another feedback store
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: invocation scoped
+  legacy_aliases: []
+  migration: none
+  examples:
+  - task.preference.dataset_source=openml:61
+  negative_examples:
+  - unregistered arbitrary option
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias

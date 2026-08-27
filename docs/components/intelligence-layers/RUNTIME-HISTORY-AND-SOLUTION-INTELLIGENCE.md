@@ -76,24 +76,35 @@ an existing run directory.
 
 `SolutionLibrary` stores `SolutionAsset` records in a supplied Loop Engine
 store. A Solution asset contains a task fingerprint, the Solution
-specification record, the compiled Code digest, evaluation information,
+specification record, a compiled capability digest, evaluation information,
 runtime information, failure history, applicability, lineage, and maturity.
+The fingerprint is a versioned typed record. Compatibility compares contracts;
+text search only discovers candidates.
 
 ```python
 from loop_engine.core.solution_library import (
     SolutionAsset,
     SolutionLibrary,
+    TaskFingerprintRequest,
     task_fingerprint,
+)
+from loop_engine.core.resolution import (
+    ResolutionRequest,
+    select_resolution_as_loop,
 )
 from loop_engine.core.store_serve import SolverStore
 
-fingerprint = task_fingerprint(
+fingerprint = task_fingerprint(TaskFingerprintRequest(
     problem="classification",
     output_role="risk_label",
     metric="roc_auc",
     rows=85000,
     modality="tabular",
-)
+    operator="predict",
+    response_topology="label",
+    input_contract="tabular_dataset/v1",
+    output_contract="prediction_labels/v1",
+))
 
 library = SolutionLibrary(SolverStore())
 library.add(SolutionAsset(
@@ -102,18 +113,42 @@ library.add(SolutionAsset(
     fingerprint=fingerprint,
     compiled_digest="a" * 64,
     evaluation_evidence=("one local holdout evaluation",),
-    runtime={"model_calls": 0},
+    runtime={
+        "model_calls": 0,
+        "quality": 0.91,
+        "cost": 0.0,
+        "wall_seconds": 1.2,
+        "verification_strength": 0.9,
+    },
     applicability="tabular binary classification with the same output role",
-    maturity="candidate",
+    maturity="registered",
 ))
 
-similar = library.find_similar(fingerprint, top_n=3)
-assert all(item["prior_not_proof"] for item in similar)
+candidates = library.find_candidates(fingerprint, top_n=3)
+result = select_resolution_as_loop(ResolutionRequest(
+    task_fingerprint=fingerprint,
+    candidates=candidates,
+    maximum_cost=1.0,
+    maximum_latency_seconds=10.0,
+    minimum_quality=0.8,
+    minimum_verification_strength=0.8,
+))
+
+assert result.model_calls == 0
+assert result.decision.selected_candidate_ref == "solasset.risk-baseline-v1"
 ```
 
-The fingerprint separates modality, problem kind, output role, metric, and
-scale band. The library keeps a regression Solution out of a classification
-result. Exact fingerprint matches rank before broader family matches.
+The fingerprint keeps modality, problem kind, operator, response topology,
+input and output contracts, output role, metric, scale, environment, and domain
+as separate fields. Hard incompatibilities fail before ranking. Origin order,
+quality, cost, latency, and verification strength are parameters on one
+`ResolutionRequest` rather than separate resolver classes.
+If the task requires a hard contract field and the candidate omits it, the
+assessment fails closed instead of treating the missing fact as a match.
+
+New records emit `task_fingerprint/v1`. The isolated compatibility reader still
+loads the exact pre-v1 five-field fingerprint. Current code does not emit that
+legacy representation.
 
 ## Search history as loops
 
@@ -292,10 +327,12 @@ Unreadable runs, missing manifests, and broken chains appear in `excluded`.
 | `query_intelligence(...)` | Search all supplied intelligence layers in one loop |
 | `materialize_intelligence_ref(ref, catalog, ...)` | Load one selected summary through a historical loop |
 | `serve_historical_intelligence(name, content, ...)` | Serve selected historical data through one loop |
-| `task_fingerprint(...)` | Build the Solution family search key |
+| `task_fingerprint(TaskFingerprintRequest(...))` | Build a typed, versioned task fingerprint |
 | `SolutionAsset(...).to_record()` | Convert a Solution asset into a store record |
 | `SolutionLibrary(store).add(asset)` | Add a Solution asset to its supplied store |
+| `SolutionLibrary(store).find_candidates(fingerprint)` | Return typed candidates and compatibility evidence |
 | `SolutionLibrary(store).find_similar(fingerprint)` | Return family-matched Solution priors |
+| `select_resolution_as_loop(ResolutionRequest(...))` | Select a permitted candidate through a deterministic Practitioner Loop |
 | `load_run_history(...)` | Load and verify a bounded run population |
 
 ## Current limitations
@@ -313,8 +350,11 @@ Unreadable runs, missing manifests, and broken chains appear in `excluded`.
   automatically synchronize it with cloud or team storage.
 - The hash chain detects changes. It does not validate a task result, model
   statement, metric, or external fact.
-- `SolutionLibrary.find_similar()` uses its supplied store and a dedicated
-  search path. It is not yet joined to `build_intelligence_catalog()`.
+- `SolutionLibrary` uses its supplied store and a dedicated search path. It is
+  not yet joined to `build_intelligence_catalog()`.
+- The current resolution selector covers typed Solution priors. Procedure,
+  capability-directory, analogy, discovery, and novel-design candidates still
+  need adapters into the same `ResolutionCandidate` contract.
 
 These limitations are integration work, not reasons to merge history into
 another layer. The third layer already has a clear identity and loop boundary.

@@ -53,6 +53,50 @@ A Practitioner can use a registered reference, compact, research, solver,
 verifier, self-improvement, or code-execution profile. A validated extension
 may add another versioned profile. The role does not require nine steps.
 
+## Ambiguity during orientation
+
+Missing text does not always require a question. The task compiler records one
+typed disposition for each required value:
+
+```text
+provided
+delegated_choice
+needs_clarification
+```
+
+`delegated_choice` applies only when the task wording and registered template
+policy permit it. The disposition includes constraint references and
+dependencies. Orient may then discover candidates and use the shared typed
+resolution contract. It cannot accept an unchecked model suggestion.
+An explicit instruction to ask, or not to choose, overrides a delegation cue.
+
+`needs_clarification` applies when the choice could change the contract,
+authority, safety, cost, or acceptance result and the user has not delegated
+it. Unknown remains unknown until a governed operation resolves it.
+
+Task compilation supports two interaction modes:
+
+```text
+ask_when_material
+└── ask only when an unresolved value can materially change the work
+
+autonomous
+├── use a registered delegated-choice policy when safe
+└── return abstain_required when no safe policy exists
+```
+
+Autonomous mode never waits indefinitely, but it can still end without a
+selection. Terminal abstention is preferable to invented facts or permissions.
+
+Templates may expose optional task feedback slots. A value supplied through a
+slot becomes structured task input. If the user supplies nothing, a permitted
+autonomous choice continues under the same constraints. Ongoing advice during
+or after a run still belongs to User Feedback Intelligence; task feedback does
+not create another feedback store.
+
+See [compile five text tasks](../../../examples/20_compile_text_tasks/) for
+ready, clarification-required, and autonomous-abstention outcomes.
+
 ## The Practitioner Loop graph
 
 When one Practitioner Loop spawns another, the event log records a typed

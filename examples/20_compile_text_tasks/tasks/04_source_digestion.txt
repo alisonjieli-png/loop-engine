@@ -1,0 +1,1 @@
+Digest official sources about data governance into output_kinds=[claims,procedures,verification_rules]. Preserve source identity and contradictions.

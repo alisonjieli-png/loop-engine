@@ -1,0 +1,1 @@
+Download an authorized public dataset. Train a linear model, tree model, boosted-tree model, and MLP on identical validation folds to predict the target variable. Compare them honestly and produce verified PDF and HTML reports.

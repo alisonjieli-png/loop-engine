@@ -103,6 +103,19 @@ This file is generated from the semantic constitution in `terminology.yaml`. The
 | `NgramIndex` | `index` | Rebuildable exact external retrieval materialization, never intelligence truth. | `loop_engine.core.ngram_retrieval:NgramIndex` | NgramSpaceDefinition | none | none |
 | `CapabilityDirectory` | `service` | Effect-free plugin and capability discovery with typed handshakes. | `loop_engine.core.capability_directory:CapabilityDirectory` | registered_manifests | none | none |
 | `HarnessRunResult` | `benchmark` | One exact task, harness, provider, model, budget, evaluator, and result cell. | `loop_engine.core.external_harness:HarnessRunResult` | immutable_comparison_key | none | none |
+| `TaskFingerprintRequest` | `request` | Raw typed task facts used to construct one normalized TaskFingerprint. | `loop_engine.core.task_fingerprint:TaskFingerprintRequest` | cohesive_request_fields | none | none |
+| `TaskFingerprint` | `contract` | Versioned structured task identity used for compatibility, search, and evidence. | `loop_engine.core.task_fingerprint:TaskFingerprint` | typed_fingerprint_fields | none | none |
+| `CompatibilityAssessment` | `result` | Hard, soft, and unknown contract comparisons for one reusable candidate. | `loop_engine.core.task_fingerprint:CompatibilityAssessment` | comparison_dimensions | none | none |
+| `ResolutionOrigin` | `contract` | Closed classification of how one candidate proposes to satisfy work. | `loop_engine.core.resolution:ResolutionOrigin` | enum_value | none | none |
+| `ResolutionCandidate` | `candidate` | Passive proposed route with origin, compatibility, eligibility, expected outcomes, and evidence. | `loop_engine.core.resolution:ResolutionCandidate` | origin_contract_metrics_and_refs | none | none |
+| `ResolutionRequest` | `request` | Hard constraints and soft origin preferences for one resolution decision. | `loop_engine.core.resolution:ResolutionRequest` | constraints_preferences_and_candidates | none | none |
+| `ResolutionDecision` | `result` | Digest-pinned selection or abstention with considered candidates, rejection reasons, and required delta. | `loop_engine.core.resolution:ResolutionDecision` | selected_ref_rejections_and_delta | none | none |
+| `ResolutionRunResult` | `result` | ResolutionDecision plus the Practitioner Loop identity and model-call count. | `loop_engine.core.resolution:ResolutionRunResult` | loop_identity_and_decision | none | none |
+| `RequirementPolicy` | `policy` | Template-owned hard rule for whether interactive or autonomous compilation may delegate a missing choice and under which constraints. | `loop_engine.templates.model:RequirementPolicy` | cues_constraints_dependencies_and_feedback_slot | none | none |
+| `RequirementDispositionState` | `contract` | Closed state distinguishing provided values, delegated choices, values requiring clarification, and autonomous abstention. | `loop_engine.templates.model:RequirementDispositionState` | enum_value | none | none |
+| `RequirementDisposition` | `result` | Typed next action, constraints, dependencies, and optional feedback slot for one required task value. | `loop_engine.templates.model:RequirementDisposition` | state_reason_constraints_dependencies_and_feedback_slot | none | none |
+| `InteractionMode` | `policy` | Closed task-compilation policy choosing material questions or terminal autonomous behavior. | `loop_engine.templates.model:InteractionMode` | enum_value | none | none |
+| `TaskFeedback` | `request` | Optional invocation input for one registered task preference slot. | `loop_engine.templates.model:TaskFeedback` | slot_ref_and_value | none | none |
 
 ## Compatibility rule
 

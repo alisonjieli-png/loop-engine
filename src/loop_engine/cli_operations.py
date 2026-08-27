@@ -152,6 +152,19 @@ def run_models_action(args) -> int:
     return 0 if selected["decision"].status != "abstained" else 1
 
 
+def _task_feedback_from_args(args) -> tuple:
+    from .templates.model import TaskFeedback
+
+    feedback = []
+    for raw in args.task_feedback:
+        if "=" not in raw:
+            raise ValueError(
+                "--task-feedback must use registered_slot=value")
+        slot_ref, value = raw.split("=", 1)
+        feedback.append(TaskFeedback(slot_ref, value))
+    return tuple(feedback)
+
+
 def run_task_compile(args) -> int:
     from .templates.compiler import TaskCompileRequest, compile_task
     from .templates.intake import TaskIntakeError
@@ -159,7 +172,9 @@ def run_task_compile(args) -> int:
         intake = task_intake_from_args(args)
         result = compile_task(TaskCompileRequest(
             text=intake.original_input, source_kind=intake.kind,
-            source_refs=intake.source_refs))
+            source_refs=intake.source_refs,
+            interaction_mode=args.interaction_mode,
+            feedback=_task_feedback_from_args(args)))
         print(json.dumps({"intake": intake.to_dict(), **result}, indent=1))
         return 0
     except (TaskIntakeError, ValueError) as exc:
@@ -197,7 +212,9 @@ def run_solve(args) -> int:
         outcome = solve_task(SolveRequest(
             intake=intake, model_execution=model_execution,
             runs_dir=(args.runs_dir or settings.history.resolved_runs_dir()),
-            save_run_history=settings.history.save_run_history))
+            save_run_history=settings.history.save_run_history,
+            interaction_mode=args.interaction_mode,
+            feedback=_task_feedback_from_args(args)))
         print(json.dumps(outcome.to_dict(), indent=1))
         return 0 if outcome.solved else 1
     except (OSError, ValueError) as exc:

@@ -10,8 +10,19 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from .library import TemplateLibrary
-from .model import (BINDING_MODES, CompiledTask, SemanticCoordinates,
-                    TaskTemplate, TemplateBinding, TemplateError, WorkItemIR)
+from .model import (
+    BINDING_MODES,
+    CompiledTask,
+    InteractionMode,
+    RequirementDisposition,
+    RequirementDispositionState,
+    SemanticCoordinates,
+    TaskTemplate,
+    TaskFeedback,
+    TemplateBinding,
+    TemplateError,
+    WorkItemIR,
+)
 
 
 _TASK_OPERATOR = {
@@ -58,6 +69,24 @@ class TaskCompileRequest:
     task_id: str = ""
     source_kind: str = "text"
     source_refs: tuple[str, ...] = field(default_factory=tuple)
+    interaction_mode: InteractionMode = InteractionMode.ASK_WHEN_MATERIAL
+    feedback: tuple[TaskFeedback, ...] = field(default_factory=tuple)
+
+    def __post_init__(self) -> None:
+        mode = self.interaction_mode
+        if not isinstance(mode, InteractionMode):
+            try:
+                mode = InteractionMode(mode)
+            except (TypeError, ValueError) as exc:
+                raise TemplateError("interaction_mode is not recognized") from exc
+            object.__setattr__(self, "interaction_mode", mode)
+        feedback = tuple(self.feedback)
+        if any(not isinstance(item, TaskFeedback) for item in feedback):
+            raise TemplateError("feedback must contain TaskFeedback values")
+        slots = tuple(item.slot_ref for item in feedback)
+        if len(slots) != len(set(slots)):
+            raise TemplateError("task feedback slots cannot repeat")
+        object.__setattr__(self, "feedback", feedback)
 
 
 def _operator_from_text(text: str) -> str:
@@ -125,6 +154,60 @@ def _extract_variables(template: TaskTemplate, text: str) -> dict:
     return variables
 
 
+def _feedback_variables(
+        template: TaskTemplate,
+        feedback: tuple[TaskFeedback, ...]) -> dict:
+    policies = {
+        policy.feedback_slot_ref: policy
+        for policy in template.requirement_policies
+        if policy.feedback_slot_ref
+    }
+    variables: dict = {}
+    for item in feedback:
+        policy = policies.get(item.slot_ref)
+        if policy is None:
+            raise TemplateError(
+                f"feedback slot {item.slot_ref!r} is not registered for "
+                f"{template.template_id}")
+        if template.variables.get(policy.requirement_id) != "string":
+            raise TemplateError(
+                "this compiler accepts feedback only for string requirements")
+        variables[policy.requirement_id] = item.value
+    return variables
+
+
+def _requirement_dispositions(
+        template: TaskTemplate,
+        request: TaskCompileRequest,
+        mapped: dict) -> tuple[RequirementDisposition, ...]:
+    """Resolve provided, delegated, and clarification-required values."""
+    policies = {
+        policy.requirement_id: policy
+        for policy in template.requirement_policies
+    }
+    dispositions: list[RequirementDisposition] = []
+    for requirement_id in template.required_variables:
+        provided = requirement_id in mapped
+        policy = policies.get(requirement_id)
+        if policy is not None:
+            dispositions.append(policy.resolve(
+                request.text, provided, request.interaction_mode))
+            continue
+        state = (
+            RequirementDispositionState.PROVIDED if provided else
+            RequirementDispositionState.ABSTAIN_REQUIRED
+            if request.interaction_mode == InteractionMode.AUTONOMOUS else
+            RequirementDispositionState.NEEDS_CLARIFICATION)
+        dispositions.append(RequirementDisposition(
+            requirement_id=requirement_id,
+            state=state,
+            reason_code=("explicit_value" if provided
+                         else "autonomous_run_cannot_resolve_safely"
+                         if request.interaction_mode == InteractionMode.AUTONOMOUS
+                         else "required_value_missing")))
+    return tuple(dispositions)
+
+
 def compile_task_value(request: TaskCompileRequest) -> dict:
     """Pure compiler body, intended to run inside an owning Practitioner Loop."""
     if not isinstance(request, TaskCompileRequest):
@@ -148,9 +231,21 @@ def compile_task_value(request: TaskCompileRequest) -> dict:
         if compatible:
             candidates = compatible
     if not candidates:
+        if request.feedback:
+            raise TemplateError(
+                "task feedback cannot bind without a registered template")
+        open_state = (
+            RequirementDispositionState.ABSTAIN_REQUIRED
+            if request.interaction_mode == InteractionMode.AUTONOMOUS
+            else RequirementDispositionState.NEEDS_CLARIFICATION)
         binding = TemplateBinding(
             template_id="", template_version="", binding_mode="open",
-            unmapped_requirements=("no template matched",))
+            unmapped_requirements=("template_match",),
+            requirement_dispositions=(RequirementDisposition(
+                "template_match", open_state,
+                ("autonomous_run_cannot_resolve_safely"
+                 if open_state == RequirementDispositionState.ABSTAIN_REQUIRED
+                 else "no_template_matched")),))
         task_type, output_kind = "unknown", "unknown"
         compiled_id = request.task_id or "task:open"
         mapped = {}
@@ -158,9 +253,19 @@ def compile_task_value(request: TaskCompileRequest) -> dict:
         best = candidates[0]
         score = _score_template(best, text)
         variables = _extract_variables(best, text)
+        feedback_variables = _feedback_variables(best, request.feedback)
+        conflicts = [
+            name for name, value in feedback_variables.items()
+            if name in variables and variables[name] != value
+        ]
+        if conflicts:
+            raise TemplateError(
+                f"structured feedback conflicts with task text: {conflicts!r}")
+        variables.update(feedback_variables)
         mapped = {key: value for key, value in variables.items() if value}
         unmapped = tuple(value for value in best.required_variables
                          if value not in mapped)
+        dispositions = _requirement_dispositions(best, request, mapped)
         if score >= 0.5 and not unmapped:
             mode = "exact"
         elif score >= 0.3:
@@ -171,6 +276,7 @@ def compile_task_value(request: TaskCompileRequest) -> dict:
             template_id=best.template_id, template_version=best.version,
             binding_mode=mode, confidence=round(score, 3),
             mapped_variables=mapped, unmapped_requirements=unmapped,
+            requirement_dispositions=dispositions,
             rejected_bindings=tuple(
                 candidate.template_id for candidate in candidates[1:3]))
         task_type, output_kind = best.task_type, best.output_kind
@@ -194,6 +300,7 @@ def compile_task_value(request: TaskCompileRequest) -> dict:
         acceptance_criteria=("output contract validates",
                              "independent verification passes"),
         unknowns=tuple(binding.unmapped_requirements),
+        requirement_dispositions=tuple(binding.requirement_dispositions),
         tags=(f"task:{task_type}", f"response:{output_kind}"),
         provenance="deterministic task compiler")
     return CompiledTask(
@@ -212,6 +319,7 @@ def compile_task(request: TaskCompileRequest) -> dict:
         "compile and bind task",
         lambda: compile_task_value(request))
     return {"loop_id": result["loop_id"],
+            "model_calls": result["model_calls"],
             "compiled_task": result["value"]}
 
 
@@ -226,7 +334,8 @@ def self_test() -> dict:
         "predict churn from customers.csv target_column=churn"))
     compiled = result["compiled_task"]
     check("compilation_runs_through_canonical_loop",
-          result["loop_id"].startswith("loop"))
+          result["loop_id"].startswith("loop")
+          and result["model_calls"] == 0)
     check("original_input_is_preserved",
           compiled["original_input"]
           == "predict churn from customers.csv target_column=churn")
@@ -245,7 +354,16 @@ def self_test() -> dict:
     open_result = compile_task(TaskCompileRequest(
         "do something completely novel"))
     check("open_task_falls_back_honestly",
-          open_result["compiled_task"]["binding"]["binding_mode"] == "open")
+          open_result["compiled_task"]["binding"]["binding_mode"] == "open"
+          and open_result["compiled_task"]["binding"]
+              ["requires_clarification"])
+    autonomous_open = compile_task(TaskCompileRequest(
+        "do something completely novel",
+        interaction_mode=InteractionMode.AUTONOMOUS))
+    check("autonomous_open_task_abstains_instead_of_waiting",
+          autonomous_open["compiled_task"]["binding"]["requires_abstention"]
+          and not autonomous_open["compiled_task"]["binding"]
+              ["requires_clarification"])
 
     partial = compile_task(TaskCompileRequest(
         "predict something from data.csv"))
@@ -253,7 +371,9 @@ def self_test() -> dict:
           partial["compiled_task"]["binding"]["binding_mode"]
           in ("partial", "ambiguous")
           and "target_column" in partial["compiled_task"]["binding"]
-          ["unmapped_requirements"])
+          ["unmapped_requirements"]
+          and partial["compiled_task"]["binding"]
+          ["requires_clarification"])
     flagship = compile_task(TaskCompileRequest(
         "Download an authorized public dataset. Train a linear model, tree "
         "model, boosted-tree model, and MLP on identical validation folds to "
@@ -269,4 +389,42 @@ def self_test() -> dict:
           and flagship_task["output_kind"] == "report"
           and flagship_task["work_item"]["coordinates"]["response_topology"]
           == "artifact")
+    flagship_binding = flagship_task["binding"]
+    dispositions = {
+        item["requirement_id"]: item
+        for item in flagship_binding["requirement_dispositions"]
+    }
+    check("flagship_delegates_low_risk_dataset_and_target_choices",
+          not flagship_binding["requires_clarification"]
+          and flagship_binding["delegated_requirements"]
+              == ["dataset_source", "target_column"]
+          and dispositions["dataset_source"]["state"]
+              == "delegated_choice"
+          and dispositions["target_column"]["depends_on"]
+              == ["dataset_source"])
+    autonomous = compile_task(TaskCompileRequest(
+        "Train and compare several supervised prediction models.",
+        interaction_mode=InteractionMode.AUTONOMOUS))
+    autonomous_binding = autonomous["compiled_task"]["binding"]
+    check("autonomous_mode_uses_policy_without_waiting_for_feedback",
+          autonomous_binding["can_continue_without_user_input"]
+          and autonomous_binding["delegated_requirements"]
+              == ["dataset_source", "target_column"])
+    feedback = compile_task(TaskCompileRequest(
+        "Train and compare several supervised prediction models.",
+        interaction_mode=InteractionMode.AUTONOMOUS,
+        feedback=(TaskFeedback(
+            "task.preference.dataset_source", "openml:61"),)))
+    check("optional_feedback_slot_binds_without_becoming_required",
+          feedback["compiled_task"]["variables"]["dataset_source"]
+              == "openml:61"
+          and feedback["compiled_task"]["binding"]["delegated_requirements"]
+              == ["target_column"])
+    no_safe_policy = compile_task(TaskCompileRequest(
+        "predict class label from tabular data",
+        interaction_mode=InteractionMode.AUTONOMOUS))
+    check("autonomous_mode_abstains_instead_of_asking_or_inventing",
+          no_safe_policy["compiled_task"]["binding"]["requires_abstention"]
+          and not no_safe_policy["compiled_task"]["binding"]
+              ["requires_clarification"])
     return {"tests": results}

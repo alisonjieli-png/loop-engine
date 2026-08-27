@@ -108,6 +108,16 @@ def main(argv=None) -> int:
                         help="validate the machine-readable architecture contract")
     parser.add_argument("--task-compile", action="store_true",
                         help="compile freeform text into a typed task")
+    parser.add_argument(
+        "--interaction-mode",
+        choices=("ask_when_material", "autonomous"),
+        default="ask_when_material",
+        help="task compilation during compile or solve may ask for material "
+             "missing information, or run autonomously and abstain when "
+             "policy cannot resolve safely")
+    parser.add_argument(
+        "--task-feedback", action="append", default=[], metavar="SLOT=VALUE",
+        help="optional registered task feedback slot; repeat when needed")
     parser.add_argument("--text", default="",
                         help="freeform task text for --task-compile or --solve")
     parser.add_argument("--file", default="",

@@ -84,6 +84,8 @@ def self_test() -> dict:
         "core.workspace_operations",
         "core.user_feedback_intelligence",
         "core.runtime_memory",
+        "core.task_fingerprint",
+        "core.resolution",
         "core.solution_library",
                         "code_nodes.live_run_demo",
         "code_nodes.string_foundry",

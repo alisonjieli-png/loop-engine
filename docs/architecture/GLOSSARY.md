@@ -129,7 +129,24 @@ Constitution are the authority until an ADR changes them.
 | StoreRecord / SolverStore | Legacy search/serve record shapes in core/store_serve.py. | Legacy shapes; the catalog stores are canonical. |
 | DuckDBCatalogBackend | Query layer over JSONL files, never a second truth. | A derived index; the JSONL is authority. |
 
-## 8. Development planes
+## 8. Task compilation and resolution
+
+| Term | Definition | Difference from neighbors |
+|---|---|---|
+| TaskFingerprintRequest | Raw typed task facts used to construct a normalized fingerprint. | A request carries input; `TaskFingerprint` is the resulting identity. |
+| TaskFingerprint | Versioned structured task identity with a canonical digest. | Search text discovers candidates; the fingerprint supports compatibility. |
+| CompatibilityAssessment | Hard matches, hard failures, soft differences, and unknown contract dimensions. | It reports fit; `ResolutionDecision` selects a route. |
+| ResolutionOrigin | Exact reuse, parameterized reuse, derived candidate, composition, analogy, discovery, or novel design. | Origin is separate from role, mode, scheduling, placement, and human authority. |
+| ResolutionEligibility | Whether a candidate is executable, candidate-only, guidance-only, or unavailable for this decision. | It is a projection and does not replace the source lifecycle. |
+| ResolutionCandidate | Passive proposed route with compatibility, eligibility, expected outcomes, and evidence. | A candidate proposes; a `Loop` executes selected work. |
+| ResolutionRequest | Hard constraints and soft origin preferences for one selection. | Constraints filter; preferences rank the survivors. |
+| ResolutionDecision | Digest-pinned selection or abstention with considered candidates, rejections, and required delta. | A decision selects the next route; `LoopResult` records executed work. |
+| RequirementPolicy | Template-owned permission and constraints for accepting delegated choice. | It permits bounded choice; it does not rank concrete candidates. |
+| InteractionMode | `ask_when_material` or `autonomous` task-compilation behavior. | It controls questions; it grants no model, network, spending, or effect authority. |
+| TaskFeedback | Optional value for one registered task preference slot. | Initial task input only; persistent later guidance remains User Feedback Intelligence. |
+| RequirementDisposition | Provided, delegated-choice, clarification-required, or abstention-required result for one task value. | It directs Orient; `ResolutionDecision` chooses among discovered candidates. |
+
+## 9. Development planes
 
 | Term | Definition | Difference from neighbors |
 |---|---|---|
@@ -143,7 +160,7 @@ Constitution are the authority until an ADR changes them.
 | FindingPattern | Reviewed reusable intelligence generalized from occurrences. | Patterns require independent review. |
 | AssuranceCase | Claim, argument, evidence, counterevidence, uncertainty, conclusion. | A case certifies; a finding reports. |
 
-## 9. Conformance and contracts
+## 10. Conformance and contracts
 
 | Term | Definition | Difference from neighbors |
 |---|---|---|
@@ -158,7 +175,7 @@ Constitution are the authority until an ADR changes them.
 | structure_review.py | Evidence packet for LLM semantic review with the no-waiver rule. | LLM may identify; never waive. |
 | scheduling.py | ConcurrencyContract, SchedulingConfiguration, ConcurrencyDecision. | Typed parallel-safety decisions. |
 
-## 10. The strongest distinctions
+## 11. The strongest distinctions
 
 ```text
 Node is the category. Loop is the only operational runtime.

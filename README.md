@@ -61,19 +61,54 @@ own credential file. Loop Engine does not define or serialize an
 `OPENCODE_API_KEY`. Its optional OpenCode harness adapter launches the already
 configured CLI. See [OpenCode provider setup](https://opencode.ai/docs/providers/).
 
-### Flagship modeling task
+### Compile the flagship modeling request
 
-The intended first multidisciplinary task is:
+Use this command to inspect how Loop Engine understands a larger request:
 
 ```bash
 loop-engine task compile --text \
   "Download an authorized public dataset. Train a linear model, tree model, boosted-tree model, and MLP on identical validation folds to predict the target variable. Compare them honestly and produce verified PDF and HTML reports."
 ```
 
-Task compilation works today and preserves that original request. Full
-execution of this flagship remains a Checkpoint -0.5 and modeling acceptance
-gate; the README does not claim that the current five-step fixture performs the
-download, model training, or report rendering yet.
+This command compiles the request. It does not run the modeling job.
+
+The compiler preserves the original text and binds it to the registered
+tabular model-comparison template. The request deliberately leaves the dataset
+and target open. Loop Engine records both as delegated choices, with explicit
+source, license, access, dataset, and target constraints. It does not invent a
+dataset name or ask an unnecessary question.
+
+Loop Engine does not yet download the dataset, train the models, compare them,
+or render the reports. That full workflow remains an acceptance target. Its
+Orient step must search approved candidates, apply the recorded constraints,
+and save a typed resolution decision. If no candidate passes, the Loop must
+ask for more information or abstain. A model suggestion by itself is not an
+accepted selection.
+
+Use autonomous interaction mode when the run must not pause for questions:
+
+```bash
+loop-engine task compile --interaction-mode autonomous --text \
+  "Train and compare several supervised prediction models."
+```
+
+Autonomous mode uses a registered delegated-choice policy where one exists. A
+non-delegable missing fact returns `abstain_required` instead of waiting or
+inventing a value. This mode does not grant network access, model access,
+spending, or permission for external effects.
+
+Feedback is optional. Supply a registered slot only when you care about that
+choice:
+
+```bash
+loop-engine task compile --interaction-mode autonomous \
+  --task-feedback task.preference.dataset_source=openml:61 \
+  --text "Train and compare several supervised prediction models."
+```
+
+Without that feedback, the dataset remains a constrained delegated choice. See
+[five text-only compilation examples](examples/20_compile_text_tasks/) for
+ready, clarification, and terminal-abstention behavior.
 
 ## System at a glance
 

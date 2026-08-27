@@ -91,6 +91,44 @@ return destination, cancellation behavior, or Run History identity. Otherwise
 it stays inside the owning Loop as a procedure step, control check, strategy
 call, adapter call, or function.
 
+## Typed reuse resolution
+
+The implemented first slice resolves existing Solution priors through typed
+records and the canonical Practitioner `Loop`:
+
+```text
+TaskFingerprintRequest
+└── TaskFingerprint
+    ├── SolutionLibrary candidate discovery
+    ├── CompatibilityAssessment
+    │   ├── hard matches
+    │   ├── hard failures
+    │   ├── soft differences
+    │   └── unknown dimensions
+    └── ResolutionRequest
+        └── Practitioner Loop
+            └── ResolutionDecision
+```
+
+`ResolutionOrigin` distinguishes exact reuse, parameterized reuse, a derived
+candidate, composition, analogical guidance, external discovery, and novel
+design. Human authority remains an independent permission or review dimension.
+Run mode, scheduling, model thinking power, and placement also remain separate.
+
+Hard compatibility and eligibility checks run before soft origin preferences,
+quality, cost, latency, or verification ranking. Candidate-only derived work
+cannot become executable reuse. A missing required candidate contract fails
+closed. The selector makes zero model calls.
+
+New Solution records store `task_fingerprint/v1` as structured fields with a
+canonical digest. An exact compatibility reader accepts the former five-field
+pipe representation. New code never emits it.
+
+This slice does not complete Recursive Strategy Learning. Capability,
+procedure, analogy, discovery, and novel-design producers still need adapters
+to the shared `ResolutionCandidate` contract. Matched experiments, ablation,
+held-out transfer, and suitability promotion remain part of this checkpoint.
+
 ## Minute guidance and Loop-specific instructions
 
 Guidance must not become one giant prompt or an ambient shared-memory channel.
@@ -123,6 +161,29 @@ Spawning Loop
 The default remains isolated. The spawning Loop must explicitly select every
 shared reference and Runtime Memory capability. A preference or cached value
 never grants authority.
+
+## Interaction and optional feedback
+
+Task compilation keeps interaction separate from execution authority:
+
+```text
+ask_when_material
+├── continue through provided and delegated choices
+└── ask only for a material non-delegable value
+
+autonomous
+├── continue through provided and policy-approved delegated choices
+└── terminate with abstain_required when no safe policy exists
+```
+
+Autonomous mode does not grant model, network, spending, file, or external
+effect authority. It prevents indefinite waiting; it does not guarantee that
+every request can be completed.
+
+A versioned template may expose optional `TaskFeedback` slots. Supplied values
+become structured task input. Empty slots do not block autonomous work.
+Persistent guidance during or after execution continues to use User Feedback
+Intelligence rather than another feedback store.
 
 ## Memory type and access cost are independent
 

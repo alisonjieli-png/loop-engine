@@ -1,0 +1,1 @@
+Inspect a repository for architectural drift, unsafe string-built identities, duplicate authorities, missing tests, and opportunities to replace specialized behavior with typed configuration.

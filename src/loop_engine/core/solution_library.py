@@ -1,208 +1,300 @@
-"""Solution Library — first-class composite Solution Assets, searchable.
+"""Searchable prior solutions with typed task compatibility.
 
-Architectural role: internal solution storage and search service.
+``SolutionLibrary`` stores passive Solution assets in a supplied store. A hit
+is prior evidence, never proof that the solution applies again. New records
+emit a versioned ``TaskFingerprint`` mapping. The pre-v1 pipe-delimited value
+is accepted only by the exact compatibility reader in ``task_fingerprint``.
 
-Owns:
-    - SolutionAsset: the first-class COMPOSITE object — it reduces entirely
-      to the two foundational forms (spec/manifest/evidence/history are
-      Strings; the compiled solution is a composite Code Node) and is NEVER
-      a third primitive;
-    - the task fingerprint (problem kind, output role, metric, scale band,
-      modality) used as the similarity key;
-    - find_similar: search the library by fingerprint + facets and return
-      ranked PRIORS — a prior Solution is a STARTING POINT, never proof it
-      will work again (every result carries that stance).
-
-Does not own:
-    - solution semantics (solution_canvas), compilation (solution_compiler),
-      promotion (asset_lifecycle), or the store engine (store_serve /
-      duckdb_catalog serve the records like any other Strings).
-
-Public entry points:
-    - SolutionAsset(...).to_record() / fingerprint()
-    - task_fingerprint(problem, output_role, metric, rows, modality)
-    - SolutionLibrary(store).add(asset) / find_similar(fingerprint)
-
-Key invariants:
-    - every hit is labeled prior_not_proof=True;
-    - evidence/scores ride the record with their honesty labels intact.
-
-Verification: self_test() (folded into the package suite).
+The library discovers and assesses candidates. It does not select or execute
+them, compile a Solution Canvas, promote a candidate, or own storage.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from .resolution import (
+    ResolutionCandidate,
+    ResolutionEligibility,
+    ResolutionOrigin,
+)
+from .task_fingerprint import (
+    TaskFingerprint,
+    TaskFingerprintError,
+    TaskFingerprintRequest,
+    assess_compatibility,
+    parse_task_fingerprint,
+    task_fingerprint,
+)
 
-def _scale_band(rows: int) -> str:
-    if rows < 10_000:
-        return "small"
-    if rows < 1_000_000:
-        return "medium"
-    return "large"
+
+def _observed_number(value: object) -> float | None:
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return float(value)
+    return None
 
 
-def task_fingerprint(*, problem: str, output_role: str, metric: str = "",
-                     rows: int = 0, modality: str = "tabular") -> str:
-    """The similarity key: coarse enough to match FAMILIES, precise enough
-    to keep regression away from classification."""
-    return "|".join((modality, problem, output_role, metric or "any",
-                     _scale_band(rows)))
+def _verification_strength(maturity: str, runtime: dict) -> float:
+    observed = _observed_number(runtime.get("verification_strength"))
+    if observed is not None:
+        return max(0.0, min(1.0, observed))
+    return {
+        "candidate": 0.0,
+        "draft": 0.0,
+        "validated": 0.7,
+        "registered": 0.8,
+        "quarantined": 0.0,
+        "deprecated": 0.0,
+        "superseded": 0.0,
+        "retired": 0.0,
+    }.get(maturity, 0.0)
+
+
+def _resolution_eligibility(maturity: str) -> ResolutionEligibility:
+    if maturity == "registered":
+        return ResolutionEligibility.EXECUTABLE
+    if maturity in ("draft", "candidate", "validated"):
+        return ResolutionEligibility.CANDIDATE_ONLY
+    return ResolutionEligibility.UNAVAILABLE
 
 
 @dataclass
 class SolutionAsset:
-    """The composite: references, evidence, boundaries — Strings all the way
-    down, plus the compiled Code Node's digest."""
+    """Passive references, evidence, runtime observations, and lineage."""
+
     asset_id: str
-    spec_record_id: str                 # the SolutionSpec String
-    fingerprint: str
-    compiled_digest: str = ""           # the composite Code Node's plan digest
-    evaluation_evidence: tuple = ()     # honesty-labeled score lines
-    runtime: dict = field(default_factory=dict)   # calls/tokens/wall observed
+    spec_record_id: str
+    fingerprint: TaskFingerprint | dict | str
+    compiled_digest: str = ""
+    evaluation_evidence: tuple = ()
+    runtime: dict = field(default_factory=dict)
     failure_history: tuple = ()
     applicability: str = ""
-    lineage: tuple = ()                 # parent assets / originating runs
+    lineage: tuple = ()
     maturity: str = "candidate"
 
+    def __post_init__(self) -> None:
+        self.fingerprint = parse_task_fingerprint(self.fingerprint)
+        if self.maturity not in (
+                "draft", "candidate", "validated", "registered", "quarantined",
+                "deprecated", "superseded", "retired"):
+            raise ValueError("solution maturity is not recognized")
+
     def to_record(self):
-        from .store_serve import StoreRecord
         from .facets import string_facets
-        modality, problem, out_role, metric, band = \
-            (self.fingerprint.split("|") + ["", "", "", "", ""])[:5]
+        from .store_serve import StoreRecord
+
+        fingerprint = self.fingerprint
+        assert isinstance(fingerprint, TaskFingerprint)
         return StoreRecord(
-            f"solasset.{self.asset_id}", "strategy",
-            f"Solution asset: {self.asset_id} — {problem} {out_role} "
-            f"({metric}, {band} {modality})",
-            body={"role": "solution_asset",
-                  "fingerprint": self.fingerprint,
-                  "spec_record_id": self.spec_record_id,
-                  "compiled_digest": self.compiled_digest,
-                  "evaluation_evidence": list(self.evaluation_evidence),
-                  "runtime": dict(self.runtime),
-                  "failure_history": list(self.failure_history),
-                  "applicability": self.applicability,
-                  "lineage": list(self.lineage),
-                  "maturity": self.maturity,
-                  "facets": string_facets(category="solution_asset",
-                                          subcategory=problem,
-                                          lifecycle=self.maturity)},
-            tags=("solution_asset", problem, out_role, band, modality,
-                  self.maturity))
+            f"solasset.{self.asset_id}",
+            "strategy",
+            (f"Solution asset: {self.asset_id}: {fingerprint.problem} "
+             f"{fingerprint.output_role} ({fingerprint.metric or 'any'}, "
+             f"{fingerprint.scale_band.value} {fingerprint.modality})"),
+            body={
+                "role": "solution_asset",
+                "fingerprint": fingerprint.to_dict(),
+                "fingerprint_digest": fingerprint.digest,
+                "spec_record_id": self.spec_record_id,
+                "compiled_digest": self.compiled_digest,
+                "evaluation_evidence": list(self.evaluation_evidence),
+                "runtime": dict(self.runtime),
+                "failure_history": list(self.failure_history),
+                "applicability": self.applicability,
+                "lineage": list(self.lineage),
+                "maturity": self.maturity,
+                "facets": string_facets(
+                    category="solution_asset",
+                    subcategory=fingerprint.problem,
+                    lifecycle=self.maturity),
+            },
+            tags=(
+                "solution_asset", fingerprint.problem, fingerprint.output_role,
+                fingerprint.scale_band.value, fingerprint.modality,
+                self.maturity),
+        )
 
 
 class SolutionLibrary:
-    """The searchable library over any store backend (file or DuckDB)."""
+    """Search prior Solution assets through a supplied store."""
 
-    def __init__(self, store):
+    def __init__(self, store) -> None:
         self._store = store
 
     def add(self, asset: SolutionAsset) -> str:
-        rec = asset.to_record()
-        self._store.add(rec)
-        return rec.record_id
+        if not isinstance(asset, SolutionAsset):
+            raise TypeError("SolutionLibrary.add needs SolutionAsset")
+        record = asset.to_record()
+        self._store.add(record)
+        return record.record_id
 
-    def find_similar(self, fingerprint: str, *, top_n: int = 5) -> list:
-        """Ranked priors: exact-fingerprint hits first, then same
-        problem/output family.  Every hit says prior_not_proof."""
-        modality, problem, out_role = (fingerprint.split("|") + ["", ""])[:3]
-        from ..loop.intelligence_loops import search_as_loop
-        res = search_as_loop(
-            self._store, f"solution_asset {modality} {problem} {out_role}",
+    def _assessed_records(
+            self, fingerprint: TaskFingerprint) -> list[tuple[object, object]]:
+        from ..loop.intelligence_loops import (
+            search_as_loop,
+            serve_record_as_loop,
+        )
+
+        result = search_as_loop(
+            self._store,
+            f"solution_asset {fingerprint.search_text()}",
             pillar="runtime_history_solution_intelligence")["value"]
-        hits = []
-        for h in res.get("hits", ()):
-            if (h.get("facets") or {}).get("category") != "solution_asset":
+        assessed: list[tuple[object, object]] = []
+        for hit in result.get("hits", ()):
+            if (hit.get("facets") or {}).get("category") != "solution_asset":
                 continue
-            from ..loop.intelligence_loops import serve_record_as_loop
-            rec = serve_record_as_loop(
-                self._store, h["record_id"],
+            record = serve_record_as_loop(
+                self._store, hit["record_id"],
                 pillar="runtime_history_solution_intelligence")["value"]
-            if rec is None:
+            if record is None:
                 continue
-            their = (rec.body.get("fingerprint") or "").split("|")
-            # HARD family filter: modality and problem kind must match — a
-            # regression prior never advises a classification task.
-            if their[:2] != [modality, problem]:
+            try:
+                candidate_fingerprint = parse_task_fingerprint(
+                    record.body.get("fingerprint"))
+            except TaskFingerprintError:
                 continue
-            exact = rec.body.get("fingerprint") == fingerprint
-            hits.append({"record_id": h["record_id"],
-                         "fingerprint": rec.body.get("fingerprint"),
-                         "exact_fingerprint_match": exact,
-                         "maturity": rec.body.get("maturity"),
-                         "evaluation_evidence":
-                             rec.body.get("evaluation_evidence", []),
-                         "runtime": rec.body.get("runtime", {}),
-                         "spec_record_id": rec.body.get("spec_record_id"),
-                         "prior_not_proof": True})
-        hits.sort(key=lambda x: (not x["exact_fingerprint_match"],
-                                 x["maturity"] != "registered"))
-        return hits[:top_n]
+            assessment = assess_compatibility(
+                fingerprint, candidate_fingerprint)
+            assessed.append((record, assessment))
+        assessed.sort(key=lambda pair: (
+            not pair[1].exact,
+            bool(pair[1].hard_failures),
+            pair[0].record_id,
+        ))
+        return assessed
+
+    def find_candidates(
+            self, fingerprint: TaskFingerprint, *,
+            top_n: int = 5) -> tuple[ResolutionCandidate, ...]:
+        """Return typed candidates with hard and soft compatibility evidence."""
+        if not isinstance(fingerprint, TaskFingerprint):
+            raise TypeError("find_candidates needs TaskFingerprint")
+        if not isinstance(top_n, int) or isinstance(top_n, bool) or top_n < 1:
+            raise ValueError("top_n must be a positive integer")
+        candidates: list[ResolutionCandidate] = []
+        for record, assessment in self._assessed_records(fingerprint):
+            body = record.body
+            candidate_fingerprint = parse_task_fingerprint(body["fingerprint"])
+            runtime = body.get("runtime") or {}
+            maturity = body.get("maturity") or "candidate"
+            candidates.append(ResolutionCandidate(
+                candidate_ref=record.record_id,
+                origin=(ResolutionOrigin.EXACT_REUSE if assessment.exact
+                        else ResolutionOrigin.PARAMETERIZED_REUSE),
+                fingerprint=candidate_fingerprint,
+                compatibility=assessment,
+                eligibility=_resolution_eligibility(maturity),
+                source_state=maturity,
+                expected_quality=_observed_number(runtime.get("quality")),
+                expected_cost=_observed_number(runtime.get("cost")),
+                expected_latency_seconds=_observed_number(
+                    runtime.get("wall_seconds")),
+                verification_strength=_verification_strength(
+                    maturity, runtime),
+                evidence_refs=(f"solution_asset:{record.record_id}",),
+            ))
+        return tuple(candidates[:top_n])
+
+    def find_similar(
+            self, fingerprint: TaskFingerprint, *, top_n: int = 5) -> list[dict]:
+        """Return a compatibility projection for existing callers and reports."""
+        candidates = self.find_candidates(fingerprint, top_n=top_n)
+        return [{
+            **candidate.to_dict(),
+            "record_id": candidate.candidate_ref,
+            "fingerprint_digest": candidate.fingerprint.digest,
+            "exact_fingerprint_match": candidate.compatibility.exact,
+            "prior_not_proof": True,
+        } for candidate in candidates]
 
 
 def self_test() -> dict:
-    results = []
+    tests = []
 
     def check(name, ok, note=""):
-        results.append({"name": name, "passed": bool(ok), "note": note})
+        tests.append({"name": name, "passed": bool(ok), "note": note})
 
-    from .store_serve import SolverStore
+    from .resolution import (
+        ResolutionRequest,
+        select_resolution_as_loop,
+    )
+    from .store_serve import SolverStore, StoreRecord
 
-    fp_s6e8 = task_fingerprint(problem="classification",
-                               output_role="addicted_label",
-                               metric="roc_auc", rows=691369)
-    fp_titanic = task_fingerprint(problem="classification",
-                                  output_role="Survived",
-                                  metric="accuracy", rows=891)
-    fp_reg = task_fingerprint(problem="regression", output_role="price",
-                              metric="rmse", rows=50000)
+    requested = task_fingerprint(TaskFingerprintRequest(
+        problem="classification", output_role="addicted_label",
+        metric="roc_auc", rows=691_369, modality="tabular",
+        operator="predict", response_topology="label",
+        input_contract="tabular_dataset/v1",
+        output_contract="prediction_labels/v1"))
+    related = task_fingerprint(TaskFingerprintRequest(
+        problem="classification", output_role="Survived",
+        metric="accuracy", rows=891, modality="tabular",
+        operator="predict", response_topology="label",
+        input_contract="tabular_dataset/v1",
+        output_contract="prediction_labels/v1"))
+    regression = task_fingerprint(TaskFingerprintRequest(
+        problem="regression", output_role="price", metric="rmse",
+        rows=50_000, modality="tabular", operator="predict",
+        response_topology="score", input_contract="tabular_dataset/v1",
+        output_contract="prediction_scores/v1"))
 
-    lib = SolutionLibrary(SolverStore())
-    lib.add(SolutionAsset(
-        "s6e8_lightgbm", "solution.tabular_lightgbm", fp_s6e8,
-        compiled_digest="d" * 64,
-        evaluation_evidence=("public roc_auc 0.95663 (SMOKE, one run — "
-                             "never benchmark evidence)",),
-        runtime={"model_calls": 1, "wall_seconds": 77.3},
-        maturity="candidate"))
-    lib.add(SolutionAsset(
-        "titanic_lightgbm", "solution.tabular_lightgbm_titanic", fp_titanic,
-        evaluation_evidence=("public 0.76794 (SMOKE)",),
-        maturity="candidate"))
-    lib.add(SolutionAsset(
-        "house_ridge", "solution.tabular_ridge", fp_reg,
-        maturity="candidate"))
+    store = SolverStore()
+    library = SolutionLibrary(store)
+    library.add(SolutionAsset(
+        "s6e8_lightgbm", "solution.tabular_lightgbm", requested,
+        compiled_digest="d" * 64, maturity="registered",
+        runtime={"quality": 0.95, "cost": 0.1, "wall_seconds": 2.0,
+                 "verification_strength": 1.0}))
+    library.add(SolutionAsset(
+        "titanic_lightgbm", "solution.tabular_lightgbm_titanic", related,
+        maturity="validated",
+        runtime={"quality": 0.8, "cost": 0.05, "wall_seconds": 1.0}))
+    library.add(SolutionAsset(
+        "house_ridge", "solution.tabular_ridge", regression,
+        maturity="registered"))
+    legacy_record = StoreRecord(
+        "solasset.legacy", "strategy", "Legacy classification solution",
+        body={
+            "role": "solution_asset",
+            "fingerprint": "tabular|classification|legacy_label|accuracy|small",
+            "runtime": {}, "maturity": "registered",
+            "facets": {"category": "solution_asset"},
+        },
+        tags=("solution_asset", "classification", "legacy_label"))
+    store.add(legacy_record)
 
-    # 1. the fingerprint separates families (scale band, problem, metric).
-    check("fingerprint_separates_task_families",
-          fp_s6e8 == "tabular|classification|addicted_label|roc_auc|medium"
-          and fp_titanic.endswith("|small") and "regression" in fp_reg,
-          fp_s6e8)
+    current_record = SolutionAsset(
+        "current", "solution.current", requested).to_record()
+    check("new_solution_records_emit_typed_fingerprints",
+          isinstance(current_record.body["fingerprint"], dict)
+          and current_record.body["fingerprint"]["schema_version"]
+              == "task_fingerprint/v1")
+    candidates = library.find_candidates(requested, top_n=10)
+    refs = {candidate.candidate_ref for candidate in candidates}
+    check("legacy_and_current_solution_records_are_read",
+          "solasset.legacy" in refs and "solasset.s6e8_lightgbm" in refs)
+    exact = next(candidate for candidate in candidates
+                 if candidate.candidate_ref == "solasset.s6e8_lightgbm")
+    wrong_family = next(candidate for candidate in candidates
+                        if candidate.candidate_ref == "solasset.house_ridge")
+    check("compatibility_is_typed_and_family_safe",
+          exact.compatibility.exact
+          and not wrong_family.compatibility.compatible)
+    run = select_resolution_as_loop(ResolutionRequest(
+        requested, candidates, maximum_cost=1.0,
+        maximum_latency_seconds=10.0,
+        minimum_quality=0.7,
+        minimum_verification_strength=0.7))
+    check("verified_exact_reuse_is_selected_through_loop",
+          run.decision.selected_candidate_ref == "solasset.s6e8_lightgbm"
+          and run.model_calls == 0)
+    projected = library.find_similar(requested, top_n=10)
+    check("prior_projection_never_claims_present_proof",
+          projected and all(item["prior_not_proof"] for item in projected))
+    return {"tests": tests}
 
-    # 2. exact-fingerprint priors rank first; regression never leaks into a
-    # classification query.
-    hits = lib.find_similar(fp_s6e8)
-    check("similar_solutions_rank_exact_first_and_stay_in_family",
-          hits and hits[0]["record_id"] == "solasset.s6e8_lightgbm"
-          and hits[0]["exact_fingerprint_match"]
-          and all("regression" not in (h["fingerprint"] or "")
-                  for h in hits),
-          f"{len(hits)} priors; top is the exact-family asset")
 
-    # 3. every hit carries the stance: a prior is not proof.
-    check("every_prior_is_labeled_not_proof",
-          all(h["prior_not_proof"] for h in hits))
-
-    # 4. the asset reduces to the two foundational forms: the record is a
-    # String; the compiled digest points at a composite Code Node.
-    rec = SolutionAsset("x", "solution.x", fp_titanic,
-                        compiled_digest="e" * 64).to_record()
-    check("asset_reduces_to_strings_plus_a_code_node_digest",
-          rec.body["role"] == "solution_asset"
-          and len(rec.body["compiled_digest"]) == 64
-          and rec.body["facets"]["category"] == "solution_asset",
-          "no third primitive — a composite of the two")
-
-    passed = sum(1 for r in results if r["passed"])
-    return {"tests": results, "passed": passed, "total": len(results),
-            "all_passed": passed == len(results)}
+__all__ = (
+    "SolutionAsset", "SolutionLibrary", "TaskFingerprint",
+    "TaskFingerprintRequest", "task_fingerprint",
+)

@@ -5,10 +5,10 @@
 `NOT YET PROVEN`. These are measured repair candidates for Checkpoint -0.5,
 not completed architecture claims.
 
-The current parameter scan covers 251 first-party Python files and 1,923
-public or cross-module callables. It reports 175 unapproved findings:
+The current parameter scan covers 253 first-party Python files and 1,966
+public or cross-module callables. It reports 174 unapproved findings:
 
-- 135 direct parameter-count violations;
+- 134 direct parameter-count violations;
 - 31 `**kwargs` escape hatches;
 - 6 boolean-control matrices;
 - 3 `*args` escape hatches;
@@ -32,6 +32,16 @@ public or cross-module callables. It reports 175 unapproved findings:
 7. Replace dynamic event dictionaries and internal string-built identities
    with typed event payloads and canonical SHA-256 identities.
 8. Complete the folder semantic owner map and classify every public symbol.
+
+## First bounded batch
+
+The typed reuse-resolution slice is verified. It replaces the five-parameter
+fingerprint helper and pipe-concatenated identity with `TaskFingerprintRequest`
+and `TaskFingerprint`. It adds typed compatibility evidence and a parameterized
+`ResolutionRequest`, then executes selection through the canonical
+Practitioner `Loop` with zero model calls.
+
+See [Typed reuse-resolution report](REUSE-RESOLUTION-REPORT.md).
 
 ## Preservation rule
 

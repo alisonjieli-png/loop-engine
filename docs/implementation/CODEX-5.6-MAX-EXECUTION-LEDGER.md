@@ -408,3 +408,23 @@ against the exact intended public paths before committing.
 | Commit | `9ca80fdaec8c393561cacb623c8c3f0e523c3461` |
 | GitHub Actions run | `33109648651`, all five required jobs passed |
 | Publication state | architecture contract, onboarding, and flagship template published to `origin/main` |
+
+### LE-WORK-M4: typed reuse-resolution vertical slice
+
+| Field | Value |
+|---|---|
+| Work item ID | `LE-WORK-M4` |
+| Goal | Select verified reuse through typed task identity and compatibility, and distinguish delegated best judgment from clarification, before broader Recursive Strategy Learning work. |
+| Source requirement | Owner guidance on reuse, parameterized reuse, bounded derivation, composition, analogy, discovery, and novel design. |
+| Affected invariant or product path | Solution Library, task identity, compatibility, resolution selection, semantic constitution, and later work-approach experiments. |
+| Baseline | Solution Library used a five-parameter helper, pipe-concatenated task identity, split parsing, and dictionary projections. |
+| Implementation | Added `TaskFingerprintRequest`, `TaskFingerprint`, typed compatibility, resolution-origin and eligibility contracts, parameterized candidate selection, exact legacy reading, Practitioner Loop execution, `RequirementPolicy`, `RequirementDisposition`, `InteractionMode`, optional registered `TaskFeedback`, solve propagation, and five text-only examples. |
+| Files changed | Core task-fingerprint and resolution contracts, Solution Library, architecture map, semantic authority and projections, component guide, work-approach guide, and verification evidence. |
+| Commands run | Focused tests, parameter-boundary scan, semantic conformance, Markdown checks, full self-test, and repository conformance. |
+| Tests | Resolution focused `16/16`; template and compiler focused `27/27`; solve interaction `4/4`; semantic `4/4`; five text tasks passed; full source `1361/1361`; clean Python 3.10 wheel `1360/1360`; source and wheel conformance `28/28`; doctor passed; changed-file parameter findings `0`. |
+| Measurement | Repository parameter findings reduced from `175` to `174`; current records emit structured identity; deterministic selection and compilation make zero model calls; autonomous compile continues with two constrained choices; optional feedback binds; autonomous solve terminates without a question when its executor is unavailable. |
+| Result | `VERIFIED WORKING` for the scoped Solution-prior slice. Broader Checkpoint -0.5 and RSL remain `NOT YET PROVEN`. |
+| Remaining uncertainty | Capability, procedure, Canvas, analogy, discovery, and novel-design adapters; matched trials; held-out transfer; negative-transfer proof. |
+| Commit | pending |
+| GitHub Actions run | pending |
+| Publication state | locally verified; pending main push |

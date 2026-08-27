@@ -1,0 +1,1 @@
+Classify customer churn with file_path=customers.csv target_column=churn metric=roc_auc. Preserve the validation design and return a verified prediction artifact.

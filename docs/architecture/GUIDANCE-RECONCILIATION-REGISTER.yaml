@@ -583,3 +583,35 @@ guidance:
     implementation_state: REQUIRED_NOT_IMPLEMENTED
     required_action: Complete semantic recovery and universal parameterization first, then implement exact approach evidence, matched trials, ablations, and governed suitability learning.
     verification: Frozen matched trials, exact prompt and approach replay, contribution ablations, held-out evaluation, negative-transfer tests, and independent promotion.
+
+  - guidance_id: LE-GUIDE-024
+    source: [SRC-CURRENT-MANDATE, SRC-AGENTS]
+    source_version_or_commit: current-context
+    source_date_when_known: "2026-08-27"
+    statement: Each material subproblem resolves through typed compatibility and a governed origin before novel design; resolution origin remains independent of role, mode, scheduling, placement, and human authority.
+    topic: hierarchical_resolution
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-003, LE-GUIDE-016, LE-GUIDE-020, LE-GUIDE-023]
+    current_runtime_evidence: TaskFingerprint, CompatibilityAssessment, ResolutionCandidate, ResolutionRequest, and ResolutionDecision implement the first Solution-prior slice through a deterministic Practitioner Loop.
+    current_test_evidence: Focused identity, legacy, incompatibility, missing-contract, eligibility, digest-mutation, and zero-model-call checks pass; broader origin adapters remain absent.
+    current_documentation_evidence: docs/verification/REUSE-RESOLUTION-REPORT.md records implementation, mapping, proof, and limitations.
+    accepted_interpretation: Reuse is selected per subproblem after hard gates; semantic similarity only discovers candidates; human authority can gate any origin and is not an origin itself.
+    implementation_state: IMPLEMENTED_BUT_UNPROVEN
+    required_action: Add capability, procedure, Canvas, analogy, discovery, and novel-design adapters without adding another selector or runtime authority.
+    verification: Exact reuse, parameterized reuse, composition, analogy, discovery, novel design, negative transfer, and Run History route evidence.
+
+  - guidance_id: LE-GUIDE-025
+    source: [SRC-CURRENT-MANDATE, SRC-AGENTS]
+    source_version_or_commit: current-context
+    source_date_when_known: "2026-08-27"
+    statement: A missing required value is classified as provided, delegated choice, clarification required, or autonomous abstention; delegated best judgment needs an explicit template policy, constraints, recorded dependencies, and optional registered feedback slots.
+    topic: ambiguity_and_best_judgment
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-016, LE-GUIDE-023, LE-GUIDE-024]
+    current_runtime_evidence: RequirementPolicy extends TaskTemplate; InteractionMode and optional TaskFeedback parameterize TaskCompileRequest; RequirementDisposition is preserved in TemplateBinding and WorkItemIR.
+    current_test_evidence: Interactive and autonomous fixtures prove constrained delegation, optional feedback, clarification, explicit delegation denial, terminal abstention, and zero model calls.
+    current_documentation_evidence: README.md, docs/components/practitioner/README.md, and examples/20_compile_text_tasks distinguish compilation, autonomous choice, questions, abstention, and execution.
+    accepted_interpretation: Orient may exercise bounded best judgment only through governed candidate discovery and typed resolution; autonomous runs terminate instead of waiting when no safe policy exists; an LLM suggestion alone is not selection evidence.
+    implementation_state: IMPLEMENTED_AND_PROVEN
+    required_action: Preserve the distinction and reuse User Feedback Intelligence for ongoing advice when external discovery and modeling execution are implemented.
+    verification: Positive delegated-choice, optional-feedback, clarification, autonomous-abstention, constraint-preservation, zero-model-call, and later governed-selection proofs.

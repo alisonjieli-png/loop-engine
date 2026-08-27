@@ -203,6 +203,7 @@ jobs:
           python examples/15_verify_a_deployment_profile/run.py
           python examples/16_compare_complex_harnesses/run.py
           python examples/17_classify_harness_files/run.py
+          python examples/20_compile_text_tasks/run.py
 
   build:
     name: build the distribution

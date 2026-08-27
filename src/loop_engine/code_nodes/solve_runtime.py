@@ -16,6 +16,7 @@ from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
 from ..loop.recursive_loop import Loop, LoopConfig, LoopLedger, StepOutcome
 from ..templates.compiler import TaskCompileRequest, compile_task_value
 from ..templates.intake import TaskIntake
+from ..templates.model import InteractionMode, TaskFeedback
 from .solution_canvas import (SolutionLoopSpec, SolutionSpec, run_solution)
 from .solution_model_port import ModelExecution, ModelInvocationRequest
 
@@ -39,6 +40,24 @@ class SolveRequest:
         default=None, repr=False, compare=False)
     runs_dir: str = ""
     save_run_history: bool = True
+    interaction_mode: InteractionMode = InteractionMode.ASK_WHEN_MATERIAL
+    feedback: tuple[TaskFeedback, ...] = ()
+
+    def __post_init__(self) -> None:
+        mode = self.interaction_mode
+        if not isinstance(mode, InteractionMode):
+            try:
+                mode = InteractionMode(mode)
+            except (TypeError, ValueError) as exc:
+                raise SolveError("interaction_mode is not recognized") from exc
+            object.__setattr__(self, "interaction_mode", mode)
+        feedback = tuple(self.feedback)
+        if any(not isinstance(item, TaskFeedback) for item in feedback):
+            raise SolveError("feedback must contain TaskFeedback values")
+        slots = tuple(item.slot_ref for item in feedback)
+        if len(slots) != len(set(slots)):
+            raise SolveError("task feedback slots cannot repeat")
+        object.__setattr__(self, "feedback", feedback)
 
 
 @dataclass(frozen=True)
@@ -206,7 +225,9 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             state["compiled"] = compile_task_value(TaskCompileRequest(
                 text=request.intake.original_input,
                 source_kind=request.intake.kind,
-                source_refs=request.intake.source_refs))
+                source_refs=request.intake.source_refs,
+                interaction_mode=request.interaction_mode,
+                feedback=request.feedback))
             active.ledger.record(
                 loop_id=active.loop_id, event="state.committed",
                 artifact_kind="compiled_task",
@@ -379,4 +400,17 @@ def self_test() -> dict:
         check("unavailable_executor_never_returns_solved_true",
               not unavailable.solved
               and unavailable.failure_code == "EXECUTOR_UNAVAILABLE")
+        autonomous = solve_task(SolveRequest(
+            intake_task(TaskIntakeRequest(
+                text="Train and compare several supervised prediction models.")),
+            runs_dir=root,
+            interaction_mode=InteractionMode.AUTONOMOUS))
+        check("autonomous_interaction_terminates_without_a_question",
+              not autonomous.solved
+              and autonomous.failure_code == "EXECUTOR_UNAVAILABLE"
+              and autonomous.compiled_task["binding"]
+                  ["can_continue_without_user_input"]
+              and autonomous.compiled_task["binding"]
+                  ["delegated_requirements"]
+                  == ["dataset_source", "target_column"])
     return {"tests": results}
