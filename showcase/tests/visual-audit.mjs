@@ -30,19 +30,20 @@ const canvasAuditScript = () => {
     const metrics = this.measureText(value);
     const declaredMaximum = Number(maxWidth);
     const naturalWidth = Number(metrics.width || 0);
+    const fontSizeMatch = String(this.font).match(/([0-9]+(?:\.[0-9]+)?)px/);
+    const fontSize = Number(fontSizeMatch?.[1] || 16);
+    const ascent = Number(metrics.actualBoundingBoxAscent || fontSize * 0.8);
+    const descent = Number(metrics.actualBoundingBoxDescent || fontSize * 0.2);
     const drawnWidth = Number.isFinite(declaredMaximum) && declaredMaximum > 0
       ? Math.min(naturalWidth, declaredMaximum)
       : naturalWidth;
     let left = Number(x);
     if (this.textAlign === "center") left -= drawnWidth / 2;
     if (this.textAlign === "right" || this.textAlign === "end") left -= drawnWidth;
-    let top = Number(y) - Number(metrics.actualBoundingBoxAscent || parseFloat(this.font) || 16);
+    let top = Number(y) - ascent;
     if (this.textBaseline === "top" || this.textBaseline === "hanging") top = Number(y);
-    if (this.textBaseline === "middle") top = Number(y) - Number(parseFloat(this.font) || 16) / 2;
-    const bottom = top + Number(
-      (metrics.actualBoundingBoxAscent || parseFloat(this.font) || 16) +
-      (metrics.actualBoundingBoxDescent || 4)
-    );
+    if (this.textBaseline === "middle") top = Number(y) - fontSize / 2;
+    const bottom = top + ascent + descent;
     const transform = this.getTransform();
     const points = [
       new DOMPoint(left, top).matrixTransform(transform),
