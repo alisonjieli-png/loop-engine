@@ -91,7 +91,7 @@ The governing invariants:
 > objects contained by or passed among LoopNodes. The Intelligence
 > Foundry and the Capability Proving Campaign are applications of Loop
 > Engine, not separate engines.
-
+>
 > Loop Engine is a self-improving work compiler and execution runtime.
 > The prompt is an emitted artifact, not the architecture.
 

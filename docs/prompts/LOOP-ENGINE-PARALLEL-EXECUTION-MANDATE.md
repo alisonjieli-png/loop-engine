@@ -80,7 +80,7 @@ The governing invariants:
 > as a LoopNode. Parallelism, asynchrony, and microservice deployment
 > are execution placements and lifecycle policies of LoopNodes, never
 > new Node types, never new runtimes, and never a second engine.
-
+>
 > A LoopNode may start work and continue while that work runs. The
 > parent owns the lifecycle: start, status, typed update, cancel, wait,
 > terminal result, deadline handling, and no orphaned tasks.

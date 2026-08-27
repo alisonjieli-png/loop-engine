@@ -212,8 +212,31 @@ python3 examples/10_validate_customer_import/run.py
 python3 examples/12_wrap_a_large_codebase/run.py
 ```
 
-[Browse all examples](examples/README.md). Each numbered folder contains a
+ [Browse all examples](examples/README.md). Each numbered folder contains a
 runnable `run.py` and a short `README.md`.
+
+## The five-step product demo
+
+One command runs install, configure, compile, solve, and learn:
+
+```bash
+loop-engine --demo five-step \
+  --text "Train a linear model, neural network, and tree model, then ensemble them"
+```
+
+Or run each step separately:
+
+```bash
+loop-engine --self-test                      # 1. verify the install
+loop-engine setup                            # 2. configure settings
+loop-engine --task-compile --text "..."      # 3. compile text into a typed task
+loop-engine --solve --text "..."             # 4. solve it through a Loop
+loop-engine --learn                          # 5. stage one learning candidate
+loop-engine --candidates                     # list staged candidates
+loop-engine --templates                      # list registered task templates
+```
+
+Every candidate stays staged until an independent review promotes it.
 
 ## View a run
 

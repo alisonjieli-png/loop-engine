@@ -31,8 +31,8 @@ for the task:
 6. `docs/components/README.md`
 7. the relevant component README
 8. `humanizer-context.md` for public prose
-6. `docs/context/CODEX-START-HERE.md` after a new or compacted session
-7. `docs/context/REFERENCE-SOURCES.md` before consulting an older repository
+9. `docs/context/CODEX-START-HERE.md` after a new or compacted session
+10. `docs/context/REFERENCE-SOURCES.md` before consulting an older repository
 
 Treat existing changes as user or concurrent-agent work. Do not discard,
 restore, reformat, commit, or publish changes without resolving ownership.

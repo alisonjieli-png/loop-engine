@@ -241,7 +241,7 @@ Exact steps:
 git mv src/loop_engine/core src/loop_engine/core
 ```
 
-2. Replace every import. Run these replacements across `src/`, `examples/`,
+1. Replace every import. Run these replacements across `src/`, `examples/`,
    `benchmarks/`, and `tools/`:
 
 ```text
@@ -251,21 +251,21 @@ from loop_engine.core -> from loop_engine.core
 loop_engine.core   -> loop_engine.core
 ```
 
-3. Update `src/loop_engine/architecture_map.py`:
+1. Update `src/loop_engine/architecture_map.py`:
    - `SUBPACKAGES` becomes `("ontology", "loop", "strings", "code_nodes", "core")`
      or without `strings` if Phase A removed it;
    - rename the `"core"` key in `MODULE_MAP` to `"core"`;
    - update `PUBLIC_STATIC_ARCHITECTURE_CAPABILITY_GROUPS` to
      `PUBLIC_CORE_ARCHITECTURE_CAPABILITY_GROUPS` and update every caller.
-4. Update `src/loop_engine/forbidden_paths.json`: replace every
+2. Update `src/loop_engine/forbidden_paths.json`: replace every
    `core/` path with `core/`.
-5. Update `src/loop_engine/__init__.py` public exports that reference
+3. Update `src/loop_engine/__init__.py` public exports that reference
    `core`.
-6. Update `src/loop_engine/loop/recursive_loop.py` and every other module that
+4. Update `src/loop_engine/loop/recursive_loop.py` and every other module that
    imports `..core` or `..core` relative paths.
-7. Update `src/loop_engine/core/boundary_registry.py` (now
+5. Update `src/loop_engine/core/boundary_registry.py` (now
    `core/boundary_registry.py`) if it names its own package.
-8. Update the docs. Replace `core` with `core` and
+6. Update the docs. Replace `core` with `core` and
    `Core Architecture` with `Core Architecture` in:
    - `README.md`
    - `AGENTS.md`
@@ -274,9 +274,9 @@ loop_engine.core   -> loop_engine.core
    - `docs/prompts/` (all files)
    - `src/loop_engine/ARCHITECTURE-MAP.md`
    - `src/loop_engine/ontology/README.md` if it names the package
-9. Update `docs/components/core-architecture/` folder name to
+7. Update `docs/components/core-architecture/` folder name to
    `docs/components/core-architecture/` and fix every link to it.
-10. Run the gates in section 7. Fix every failure before continuing.
+8. Run the gates in section 7. Fix every failure before continuing.
 
 ## 5. Phase C: fix every conformance gate
 

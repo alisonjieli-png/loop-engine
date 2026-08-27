@@ -797,11 +797,11 @@ class Loop:
             "configuration object instead.")
 ```
 
-2. No concrete Node class: the passive catalog record is named
+1. No concrete Node class: the passive catalog record is named
    CatalogRecord, not Node. LoopNode is the only node-named class, and
    it is a record at rest, not a runtime.
 
-3. Conformance gate: the operational-graph-vertex scanner fails the
+1. Conformance gate: the operational-graph-vertex scanner fails the
    build on any class named Node or ending in Node or Vertex outside
    the explicit passive-record allowlist. Report projections use
    Record names (LoopReportRecord, LoopGraphVertexRecord,
