@@ -118,6 +118,8 @@ This file is generated from the semantic constitution in `terminology.yaml`. The
 | `TaskFeedback` | `request` | Optional invocation input for one registered task preference slot. | `loop_engine.templates.model:TaskFeedback` | slot_ref_and_value | none | none |
 | `LiveTextScenario` | `scenario` | Reviewed public text task with one interaction policy and independently checkable next-state outcome. | `loop_engine.core.live_text_scenarios:LiveTextScenario` | task_text_interaction_mode_expected_status_and_source | none | none |
 | `LiveTextScenarioSuiteRequest` | `request` | Explicit provider authority, route, call ceiling, token ceiling, timeout, and evidence destination for five live text tasks. | `loop_engine.core.live_text_scenarios:LiveTextScenarioSuiteRequest` | cohesive_live_suite_request_fields | none | none |
+| `ModelAssistedCompileRequest` | `request` | Exact compiled task, provider route, interaction policy, and model budgets for one optional advisory Orientation review. | `loop_engine.core.task_compile_model:ModelAssistedCompileRequest` | cohesive_compiled_task_route_policy_and_budget_fields | none | none |
+| `ModelAssistedCompileReview` | `result` | Validated advisory task summary, family, unresolved facts, delegated choices, questions, next action, and confidence. | `loop_engine.core.task_compile_model:ModelAssistedCompileReview` | typed_review_fields | none | none |
 
 ## Compatibility rule
 

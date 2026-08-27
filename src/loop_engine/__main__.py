@@ -109,6 +109,19 @@ def main(argv=None) -> int:
     parser.add_argument("--task-compile", action="store_true",
                         help="compile freeform text into a typed task")
     parser.add_argument(
+        "--compile-provider",
+        choices=("ollama_cloud", "openrouter", "opencode_go"),
+        default="",
+        help="optionally add one authorized model-assisted Orientation review; "
+             "the deterministic compilation remains authoritative")
+    parser.add_argument(
+        "--provider-key-env", default="", metavar="ENV_NAME",
+        help="read the selected provider key from this environment variable; "
+             "the key value is never a command argument")
+    parser.add_argument(
+        "--prompt-for-provider-key", action="store_true",
+        help="read the selected provider key through a hidden terminal prompt")
+    parser.add_argument(
         "--interaction-mode",
         choices=("ask_when_material", "autonomous"),
         default="ask_when_material",
@@ -178,9 +191,11 @@ def main(argv=None) -> int:
                         help="verify one real Ollama Cloud, Mistral, or custom "
                              "provider call against repository metadata")
     parser.add_argument("--model-route", default="",
-                        help="exact route for --verify-live-model")
+                        help="exact route for live verification or "
+                             "provider-assisted task compilation")
     parser.add_argument("--model-id", default="",
-                        help="exact model for --verify-live-model")
+                        help="exact model for live verification or "
+                             "provider-assisted task compilation")
     parser.add_argument("--models-action",
                         choices=("inventory", "routes", "explain", "benchmark"),
                         help="inspect or explain model routing without provider calls")
@@ -221,7 +236,7 @@ def main(argv=None) -> int:
     parser.add_argument("--cases", default="",
                         help="comma-separated campaign case IDs; default all")
     parser.add_argument("--authorize-model-calls", action="store_true",
-                        help="explicitly allow campaign model calls")
+                        help="explicitly allow bounded model calls")
     parser.add_argument("--max-model-calls", type=int, default=0,
                         help="hard physical model-call ceiling")
     parser.add_argument("--max-total-tokens", type=int,

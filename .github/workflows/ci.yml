@@ -206,7 +206,7 @@ jobs:
           python examples/20_compile_text_tasks/run.py
 
   live-ollama:
-    name: five live Ollama text scenarios
+    name: live Ollama compile and five scenarios
     if: >-
       github.ref == 'refs/heads/main' &&
       (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
@@ -246,12 +246,51 @@ jobs:
             --timeout 180 \
             --evidence-out "$RUNNER_TEMP/live-ollama-scenarios.json"
 
+      - name: Run one provider-assisted task compilation
+        env:
+          OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
+        run: |
+          if [ -z "${OLLAMA_API_KEY:-}" ]; then
+            echo "OLLAMA_API_KEY is not configured for this trusted workflow."
+            exit 1
+          fi
+          python -m loop_engine task compile \
+            --compile-provider ollama_cloud \
+            --authorize-model-calls \
+            --max-model-calls 1 \
+            --max-total-tokens 70000 \
+            --interaction-mode autonomous \
+            --text "Download an authorized public dataset. Train a linear model, tree model, boosted-tree model, and MLP on identical validation folds. Compare them honestly and produce verified PDF and HTML reports." \
+            > "$RUNNER_TEMP/model-assisted-task-compile.json"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ["RUNNER_TEMP"]) / "model-assisted-task-compile.json"
+          body = path.read_text(encoding="utf-8")
+          result = json.loads(body)
+          review = result["model_assisted_orientation"]
+          assert result["model_calls"] == 0
+          assert result["total_model_calls"] == 1
+          assert review["ok"] is True
+          assert review["advisory_only"] is True
+          assert review["model_calls"] == 1
+          assert review["usage_accounting_complete"] is True
+          assert review["review"]["status"] == "ready"
+          assert review["review"]["material_questions"] == []
+          assert os.environ["OLLAMA_API_KEY"] not in body
+          print("provider-assisted task compile: accepted and secret-safe")
+          PY
+
       - name: Upload secret-safe live evidence
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: live-ollama-scenarios
-          path: ${{ runner.temp }}/live-ollama-scenarios.json
+          path: |
+            ${{ runner.temp }}/live-ollama-scenarios.json
+            ${{ runner.temp }}/model-assisted-task-compile.json
           if-no-files-found: warn
           retention-days: 14
 

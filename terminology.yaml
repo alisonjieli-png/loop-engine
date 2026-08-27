@@ -1780,3 +1780,57 @@ semantic_terms:
   - one_term_one_meaning
   - one_source_of_truth
   - no_authority_from_alias
+- term_id: core.term.model_assisted_compile_request
+  canonical_name: ModelAssistedCompileRequest
+  primary_category: request
+  definition: Exact compiled task, provider route, interaction policy, and model budgets for one optional advisory Orientation review.
+  source_of_truth: loop_engine.core.task_compile_model:ModelAssistedCompileRequest
+  source_symbol: loop_engine.core.task_compile_model:ModelAssistedCompileRequest
+  public_or_internal: internal
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: interpreted by model_assisted_task_compile/v1
+  related_terms: []
+  difference_from_neighbors: ModelAssistedCompileRequest authorizes one semantic review; TaskCompileRequest remains the deterministic compilation input.
+  parameterization_decision: cohesive_compiled_task_route_policy_and_budget_fields
+  composition_decision: consumed by ModelGateway through the existing Loop runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: invocation scoped
+  legacy_aliases: []
+  migration: none
+  examples:
+  - one Ollama Cloud review after deterministic compilation
+  negative_examples:
+  - a raw API key field
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.model_assisted_compile_review
+  canonical_name: ModelAssistedCompileReview
+  primary_category: result
+  definition: Validated advisory task summary, family, unresolved facts, delegated choices, questions, next action, and confidence.
+  source_of_truth: loop_engine.core.task_compile_model:ModelAssistedCompileReview
+  source_symbol: loop_engine.core.task_compile_model:ModelAssistedCompileReview
+  public_or_internal: internal
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: model_assisted_task_compile/v1
+  related_terms: []
+  difference_from_neighbors: ModelAssistedCompileReview cannot replace deterministic bindings, grant permission, or prove task execution.
+  parameterization_decision: typed_review_fields
+  composition_decision: returned beside the deterministic compiled task
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: invocation-scoped advisory result
+  legacy_aliases: []
+  migration: none
+  examples:
+  - one selected preparation action
+  negative_examples:
+  - an unvalidated model response
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias

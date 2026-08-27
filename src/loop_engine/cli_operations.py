@@ -5,7 +5,24 @@ model-routing, solve, and learning workflows so the CLI stays a thin adapter.
 """
 from __future__ import annotations
 
+import contextlib
+import getpass
 import json
+import os
+import re
+import sys
+
+
+_COMPILE_PROVIDER_ENV = {
+    "ollama_cloud": "OLLAMA_API_KEY",
+    "openrouter": "OPENROUTER_API_KEY",
+    "opencode_go": "OPENCODE_GO_API_KEY",
+}
+_COMPILE_PROVIDER_ROUTE = {
+    "ollama_cloud": "cloud.default",
+    "openrouter": "cloud.openrouter",
+    "opencode_go": "cloud.opencode_go",
+}
 
 
 def task_intake_from_args(args):
@@ -165,6 +182,79 @@ def _task_feedback_from_args(args) -> tuple:
     return tuple(feedback)
 
 
+def _compile_provider_key(args) -> tuple[str, str]:
+    provider = args.compile_provider
+    standard_env = _COMPILE_PROVIDER_ENV[provider]
+    if args.prompt_for_provider_key and args.provider_key_env:
+        raise ValueError(
+            "use --prompt-for-provider-key or --provider-key-env, not both")
+    if args.prompt_for_provider_key:
+        if not sys.stdin.isatty():
+            raise ValueError(
+                "--prompt-for-provider-key requires an interactive terminal")
+        key = getpass.getpass(f"{provider} API key: ").strip()
+    else:
+        source_env = args.provider_key_env or standard_env
+        if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", source_env):
+            raise ValueError("--provider-key-env is not a valid environment name")
+        key = os.environ.get(source_env, "").strip()
+        if not key:
+            raise ValueError(
+                f"provider key environment variable {source_env} is empty")
+    if not key:
+        raise ValueError("provider key is empty")
+    return standard_env, key
+
+
+@contextlib.contextmanager
+def _temporary_provider_key(env_name: str, key: str):
+    previous = os.environ.get(env_name)
+    os.environ[env_name] = key
+    try:
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop(env_name, None)
+        else:
+            os.environ[env_name] = previous
+
+
+def _compile_gateway(args, key: str):
+    from .core.settings_loader import load_runtime_settings
+    from .core.task_compile_model import (
+        OPENCODE_GO_DEFAULT_MODEL, opencode_go_gateway)
+
+    provider = args.compile_provider
+    if provider == "opencode_go":
+        if args.model_id and args.model_id != OPENCODE_GO_DEFAULT_MODEL:
+            raise ValueError(
+                "the current OpenCode Go compile route is pinned to "
+                f"{OPENCODE_GO_DEFAULT_MODEL}")
+        route_name = args.model_route or _COMPILE_PROVIDER_ROUTE[provider]
+        if route_name != _COMPILE_PROVIDER_ROUTE[provider]:
+            raise ValueError(
+                "the current OpenCode Go compile route is cloud.opencode_go")
+        return opencode_go_gateway(key), route_name
+
+    loaded = load_runtime_settings(args.settings_file or None)
+    gateway = loaded.settings.build_gateway()
+    candidates = [
+        route for route in gateway.registry.all()
+        if route.provider == provider
+        and "counted_generation" in route.purposes
+        and (not args.model_route or route.name == args.model_route)
+        and (not args.model_id or route.model == args.model_id)
+    ]
+    if not candidates:
+        raise ValueError(
+            "no configured counted-generation route matches the selected "
+            "compile provider, route, and model")
+    preferred = _COMPILE_PROVIDER_ROUTE[provider]
+    route = next(
+        (item for item in candidates if item.name == preferred), candidates[0])
+    return gateway, route.name
+
+
 def run_task_compile(args) -> int:
     from .templates.compiler import TaskCompileRequest, compile_task
     from .templates.intake import TaskIntakeError
@@ -175,8 +265,44 @@ def run_task_compile(args) -> int:
             source_refs=intake.source_refs,
             interaction_mode=args.interaction_mode,
             feedback=_task_feedback_from_args(args)))
-        print(json.dumps({"intake": intake.to_dict(), **result}, indent=1))
-        return 0
+        output = {"intake": intake.to_dict(), **result}
+        if not args.compile_provider:
+            if (args.prompt_for_provider_key or args.provider_key_env
+                    or args.authorize_model_calls):
+                raise ValueError(
+                    "provider key and model-call options require "
+                    "--compile-provider")
+            print(json.dumps(output, indent=1))
+            return 0
+        if not args.authorize_model_calls:
+            raise ValueError(
+                "--compile-provider requires --authorize-model-calls")
+        if args.max_model_calls != 1 or not args.max_total_tokens:
+            raise ValueError(
+                "provider-assisted compilation requires --max-model-calls 1 "
+                "and --max-total-tokens")
+
+        from .core.task_compile_model import (
+            ModelAssistedCompileRequest, review_compiled_task)
+
+        env_name, key = _compile_provider_key(args)
+        with _temporary_provider_key(env_name, key):
+            gateway, route_name = _compile_gateway(args, key)
+            review = review_compiled_task(ModelAssistedCompileRequest(
+                compiled_task=result["compiled_task"],
+                provider=args.compile_provider,
+                route_name=route_name,
+                interaction_mode=args.interaction_mode,
+                max_physical_model_calls=args.max_model_calls,
+                max_total_tokens=args.max_total_tokens,
+                timeout_seconds=args.live_timeout,
+                thinking_power=args.thinking_power or "medium",
+            ), gateway)
+        output["model_assisted_orientation"] = review
+        output["total_model_calls"] = (
+            result["model_calls"] + review["model_calls"])
+        print(json.dumps(output, indent=1))
+        return 0 if review["ok"] else 1
     except (TaskIntakeError, ValueError) as exc:
         print(json.dumps({"record_type": "task_compile_failure/v1",
                           "error": str(exc)}, indent=1))

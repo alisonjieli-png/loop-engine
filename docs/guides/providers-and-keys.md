@@ -10,6 +10,7 @@ Deterministic loops need no provider. Hybrid and non-deterministic loops use
 | Ollama Cloud | `OLLAMA_API_KEY` | Hosted Ollama API. |
 | Mistral | `MISTRAL_API_KEY` | Mistral hosted API. |
 | OpenRouter | `OPENROUTER_API_KEY` | OpenAI-compatible gateway to several upstream providers. |
+| OpenCode Go task compilation | `OPENCODE_GO_API_KEY` | Direct OpenAI-compatible OpenCode Go route for one advisory task review. |
 | Custom endpoint | Supplied in `CustomEndpoint` | OpenAI-compatible or native Ollama server. |
 
 Ollama Cloud is not local Ollama. Configure a local Ollama server as a custom
@@ -35,6 +36,8 @@ This check may consume tokens. Run it only when provider calls are authorized.
 export OLLAMA_API_KEY="your-key"       # Ollama Cloud
 # or
 export OPENROUTER_API_KEY="your-key"   # OpenRouter
+# or
+export OPENCODE_GO_API_KEY="your-key"  # OpenCode Go task review
 
 loop-engine settings init --settings-file ./loop-engine.yaml
 loop-engine settings check --settings-file ./loop-engine.yaml
@@ -48,10 +51,13 @@ The settings file records `credential_ref: env:OLLAMA_API_KEY` or
 
 OpenCode Go and OpenCode Zen use OpenCode's own connection flow. Start the
 OpenCode TUI, run `/connect`, choose the provider, and paste its key. OpenCode
-stores the credential in its own data directory. Loop Engine has no
-`OPENCODE_API_KEY` setting. Its optional harness adapter invokes the configured
-OpenCode CLI and does not turn OpenCode into a raw model gateway. See the
-[OpenCode provider documentation](https://opencode.ai/docs/providers/).
+stores the credential in its own data directory. Loop Engine's optional harness
+adapter invokes the configured OpenCode CLI and does not read that credential.
+
+The separate `opencode_go` task-compilation route calls OpenCode Go's
+OpenAI-compatible API directly. It reads `OPENCODE_GO_API_KEY` or a hidden
+terminal prompt. Loop Engine does not define a generic `OPENCODE_API_KEY`. See
+the [OpenCode provider documentation](https://opencode.ai/docs/providers/).
 
 With no working provider:
 

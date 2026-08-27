@@ -162,7 +162,7 @@ MODULE_MAP = {
         "model_discovery", "autoconfigure", "custom_endpoint", "knowledge_loader",
         "opencode_client", "operating_profile", "persistence",
         "reasoning_call", "resolution", "retrieval", "skill_registry",
-        "solution_library", "task_fingerprint",
+        "solution_library", "task_compile_model", "task_fingerprint",
         "store_serve",
         "boundary_registry", "boundary_runtime_checks", "saas_routes",
         "studio_operational_views", "studio_server", "workspace_backends",

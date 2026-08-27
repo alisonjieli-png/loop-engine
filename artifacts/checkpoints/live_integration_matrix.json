@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-27T18:45:57-04:00",
+  "generated_at": "2026-08-27T19:12:04-04:00",
   "repository": "alisonjieli-png/loop-engine",
   "branch": "main",
-  "baseline_sha": "57efe4cc3368afa3a4b2e066b0e2c0c6a2108331",
+  "baseline_sha": "f0163fbbaa7799040d7354ccb1e1faaa240b7550",
   "summary": {
-    "real_provider_runs": 1,
+    "real_provider_runs": 2,
     "local_model_runs": 0,
     "offline_fixtures": 0,
     "simulations": 0,
     "mocks": 0,
-    "static_validations": 4,
-    "unproven": 3
+    "static_validations": 5,
+    "unproven": 2
   },
   "records": [
     {
@@ -36,6 +36,24 @@
         "src/loop_engine/core/live_text_scenarios.py"
       ],
       "limitations": "One provider route and five public orientation tasks passed locally and in GitHub Actions. This proves bounded provider use and typed output handling, not full task execution, broad model quality, cost calibration, or external-effect authority."
+    },
+    {
+      "integration_id": "MODEL-ASSISTED-COMPILE-OLLAMA",
+      "provider": "ollama_cloud",
+      "endpoint": "https://ollama.com/api/chat",
+      "model": "deepseek-v4-flash:0731",
+      "date": "2026-08-27",
+      "configuration": "Deterministic task compilation followed by one pinned advisory Orientation review with no failover",
+      "credentials_by_reference": "OLLAMA_API_KEY",
+      "test": "Flagship public modeling request compiled and reviewed through one real ModelGateway attempt",
+      "result": "REAL PROVIDER RUN",
+      "physical_model_calls": 1,
+      "provider_reported_tokens": 1092,
+      "evidence": [
+        "docs/verification/MODEL-ASSISTED-TASK-COMPILE-REPORT.md",
+        "src/loop_engine/core/task_compile_model.py"
+      ],
+      "limitations": "One Ollama review passed locally. The deterministic compiler remains authoritative, and no dataset selection, training, or report generation was executed."
     },
     {
       "integration_id": "MODEL-MISTRAL",
@@ -119,17 +137,18 @@
     {
       "integration_id": "OPENCODE-GO-MODEL-API",
       "provider": "opencode_go",
-      "endpoint": "not configured in accepted evidence",
-      "model": "not selected",
+      "endpoint": "https://opencode.ai/zen/go/v1/chat/completions",
+      "model": "deepseek-v4-flash",
       "date": "2026-08-27",
-      "configuration": "Requested provider form when API-compatible",
-      "credentials_by_reference": null,
-      "test": "No Loop Engine provider test",
-      "result": "UNPROVEN",
+      "configuration": "Existing CustomEndpoint and ModelGateway contracts with one exact source-backed model output maximum",
+      "credentials_by_reference": "OPENCODE_GO_API_KEY",
+      "test": "Offline route, output-capability, key-redaction, and typed-review contract checks",
+      "result": "STATIC VALIDATION",
       "evidence": [
-        "current user mandate"
+        "docs/verification/MODEL-ASSISTED-TASK-COMPILE-REPORT.md",
+        "src/loop_engine/core/task_compile_model.py"
       ],
-      "limitations": "OpenCode coding-harness sessions are not raw model-provider evidence."
+      "limitations": "No OpenCode Go key was available for a real provider request. The direct API route remains distinct from the OpenCode coding harness and its stored /connect credential."
     },
     {
       "integration_id": "EXTERNAL-CODING-HARNESSES",

@@ -95,6 +95,9 @@ export OLLAMA_API_KEY="your-key"
 # Or OpenRouter
 export OPENROUTER_API_KEY="your-key"
 
+# Or OpenCode Go for direct provider-assisted task compilation
+export OPENCODE_GO_API_KEY="your-key"
+
 loop-engine settings init --settings-file ./loop-engine.yaml
 loop-engine settings check --settings-file ./loop-engine.yaml
 loop-engine models inventory --settings-file ./loop-engine.yaml
@@ -106,11 +109,14 @@ Studio, llama.cpp, and similar servers use a custom endpoint entry. See
 [`loop-engine.settings.example.yaml`](loop-engine.settings.example.yaml).
 
 OpenCode CLI credentials are configured in OpenCode itself. Run OpenCode,
-enter `/connect`, select OpenCode Go, OpenCode Zen, OpenRouter, or another
-provider, and paste the provider key. OpenCode stores that connection in its
-own credential file. Loop Engine does not define or serialize an
-`OPENCODE_API_KEY`. Its optional OpenCode harness adapter launches the already
-configured CLI. See [OpenCode provider setup](https://opencode.ai/docs/providers/).
+enter `/connect`, and select OpenCode Go, OpenCode Zen, OpenRouter, or another
+provider. Loop Engine's coding-harness adapter uses that existing connection.
+
+Provider-assisted task compilation can also call the OpenCode Go API directly.
+That path reads `OPENCODE_GO_API_KEY` or uses a hidden terminal prompt. It does
+not read OpenCode's credential file and does not define a generic
+`OPENCODE_API_KEY`. See
+[OpenCode provider setup](https://opencode.ai/docs/providers/).
 
 ### Compile the flagship modeling request
 
@@ -135,6 +141,66 @@ Orient step must search approved candidates, apply the recorded constraints,
 and save a typed resolution decision. If no candidate passes, the Loop must
 ask for more information or abstain. A model suggestion by itself is not an
 accepted selection.
+
+### Add one model-assisted Orientation review
+
+Task compilation stays model-free unless you select a provider and authorize
+one call. Keep the key in an environment variable:
+
+```bash
+export OLLAMA_API_KEY="your-key"
+
+loop-engine task compile \
+  --compile-provider ollama_cloud \
+  --authorize-model-calls \
+  --max-model-calls 1 \
+  --max-total-tokens 70000 \
+  --interaction-mode autonomous \
+  --text "Download an authorized public dataset. Train a linear model, tree model, boosted-tree model, and MLP on identical validation folds to predict the target variable. Compare them honestly and produce verified PDF and HTML reports."
+```
+
+To avoid putting a key in shell history, let Loop Engine prompt for it:
+
+```bash
+loop-engine task compile \
+  --compile-provider ollama_cloud \
+  --prompt-for-provider-key \
+  --authorize-model-calls \
+  --max-model-calls 1 \
+  --max-total-tokens 70000 \
+  --interaction-mode autonomous \
+  --text "Download an authorized public dataset and compare the requested model families."
+```
+
+Use `openrouter` with `OPENROUTER_API_KEY`. Use `opencode_go` with
+`OPENCODE_GO_API_KEY`; its current pinned model needs a `400000` token safety
+ceiling because the provider declares a larger output maximum.
+
+```bash
+loop-engine task compile \
+  --compile-provider openrouter \
+  --provider-key-env OPENROUTER_API_KEY \
+  --authorize-model-calls \
+  --max-model-calls 1 \
+  --max-total-tokens 70000 \
+  --interaction-mode autonomous \
+  --text "Download an authorized public dataset and compare the requested model families."
+
+loop-engine task compile \
+  --compile-provider opencode_go \
+  --provider-key-env OPENCODE_GO_API_KEY \
+  --authorize-model-calls \
+  --max-model-calls 1 \
+  --max-total-tokens 400000 \
+  --interaction-mode autonomous \
+  --text "Download an authorized public dataset and compare the requested model families."
+```
+
+There is intentionally no `--api-key VALUE` option. Command arguments can
+appear in shell history, process listings, and CI logs. The output keeps the
+deterministic compiled task and adds a separately labeled advisory review with
+the provider, exact model, model Loop identity, token usage, and typed next
+action. The review cannot grant permission or prove execution.
 
 Use autonomous interaction mode when the run must not pause for questions:
 
