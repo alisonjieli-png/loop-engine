@@ -97,6 +97,14 @@ class SemanticMemoryRecord:
             "superseded_by": self.superseded_by,
             "retracted": self.retracted,
             "lifecycle": self.lifecycle.value,
+            "provenance": {
+                "producer_origin": self.provenance.producer_origin,
+                "producer_loop_id": self.provenance.producer_loop_id,
+                "producer_run_id": self.provenance.producer_run_id,
+                "derivation_method": self.provenance.derivation_method,
+                "source_refs": [ref.to_dict()
+                                for ref in self.provenance.source_refs],
+            },
         }
 
     def content_digest(self) -> str:

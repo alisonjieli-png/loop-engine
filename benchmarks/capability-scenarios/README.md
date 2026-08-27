@@ -62,5 +62,5 @@ not silent failures.
 - A subjective output (does it look right) requires a declared visual
   verifier path — a deterministic check where possible, a bounded model
   check where authorized, never an unchecked "it seems fine."
-- The engine may decline a scenario with a capability-gap receipt. Decline
+- The engine may decline a scenario with a capability-gap report. Decline
   is an honest result; silent failure is not.

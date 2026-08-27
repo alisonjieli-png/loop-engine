@@ -1,0 +1,3 @@
+{"record_type":"legacy_compatibility_result/v1","legacy_value":"kind: loop_node","reader":"loop_engine.ontology.loop_node.read_legacy_loop_node_record","canonical_type":"LoopDefinitionRecord","canonical_emitted_kind":"loop_definition_record","legacy_emitted":false,"result":"VERIFIED WORKING","tests_passed":4,"tests_total":4}
+{"record_type":"legacy_compatibility_result/v1","legacy_value":"LoopNode public runtime or alias","public_exported":false,"active_class_count":0,"result":"VERIFIED WORKING"}
+{"record_type":"saved_history_compatibility_result/v1","population":"docs/evidence/runs","runs_loaded":11,"runs_failed":0,"hash_chains_intact":11,"result":"VERIFIED WORKING"}

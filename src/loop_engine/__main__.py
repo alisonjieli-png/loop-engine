@@ -77,6 +77,9 @@ def main(argv=None) -> int:
                         "capability lives")
     parser.add_argument("--profiles", action="store_true",
                         help="print the versioned Loop profile catalog")
+    parser.add_argument("--doctor", action="store_true",
+                        help="check package, architecture, settings, and the "
+                             "no-key deterministic lane without network calls")
     parser.add_argument("--live-demo", action="store_true",
                         help="watch a real canonical Loop run live: "
                         "localhost page with the step rail + console log "
@@ -109,14 +112,35 @@ def main(argv=None) -> int:
                         help="freeform task text for --task-compile or --solve")
     parser.add_argument("--file", default="",
                         help="task file for --task-compile or --solve")
+    parser.add_argument("--url", default="",
+                        help="URL source for task compilation or solve")
+    parser.add_argument("--dataset", default="",
+                        help="dataset path; pair with --text for its goal")
+    parser.add_argument("--repository", default="",
+                        help="repository path; pair with --text for its goal")
+    parser.add_argument("--task-pack", default="",
+                        help="versioned JSON task-pack path")
     parser.add_argument("--solve", action="store_true",
                         help="solve a task from --text or --file")
     parser.add_argument("--templates", action="store_true",
                         help="list registered task templates")
     parser.add_argument("--learn", action="store_true",
                         help="stage learning candidates from the latest run")
+    parser.add_argument("--lesson", default="",
+                        help="evidence-bounded candidate lesson for --learn")
     parser.add_argument("--candidates", action="store_true",
                         help="list staged learning candidates")
+    parser.add_argument("--candidate-action",
+                        choices=("review", "promote", "rollback"),
+                        help="govern one exact learning-candidate version")
+    parser.add_argument("--candidate-id", default="")
+    parser.add_argument("--candidate-version", default="")
+    parser.add_argument("--candidate-digest", default="")
+    parser.add_argument("--decision", choices=("accept", "reject"),
+                        default="accept")
+    parser.add_argument("--decision-reason", default="")
+    parser.add_argument("--evidence", action="append", default=[],
+                        help="evidence reference; repeat for multiple refs")
     parser.add_argument("--demo", choices=("five-step",),
                         help="run the five-step product demo")
     parser.add_argument("--report", metavar="RUN_ID", nargs="?", const="@last",
@@ -147,6 +171,20 @@ def main(argv=None) -> int:
                         help="exact route for --verify-live-model")
     parser.add_argument("--model-id", default="",
                         help="exact model for --verify-live-model")
+    parser.add_argument("--models-action",
+                        choices=("inventory", "routes", "explain", "benchmark"),
+                        help="inspect or explain model routing without provider calls")
+    parser.add_argument("--model-purpose", default="decide_label",
+                        help="gateway purpose for models explain")
+    parser.add_argument("--operator", default="",
+                        help="task operator override for models explain")
+    parser.add_argument("--response-topology", default="",
+                        help="response topology override for models explain")
+    parser.add_argument("--local-only", action="store_true",
+                        help="restrict model selection to local routes")
+    parser.add_argument("--deterministic-sufficient", action="store_true",
+                        help="declare a source-backed deterministic procedure "
+                             "for models explain")
     parser.add_argument("--repository-root", default=".",
                         help="repository whose pyproject.toml is used by the "
                              "live verification")
@@ -183,6 +221,31 @@ def main(argv=None) -> int:
     raw_argv = list(sys.argv[1:] if argv is None else argv)
     if raw_argv[:1] == ["setup"]:
         raw_argv[:1] = ["--setup"]
+    elif raw_argv[:1] == ["doctor"]:
+        raw_argv[:1] = ["--doctor"]
+    elif raw_argv[:1] == ["solve"]:
+        raw_argv[:1] = ["--solve"]
+    elif raw_argv[:2] == ["task", "compile"]:
+        raw_argv[:2] = ["--task-compile"]
+    elif raw_argv[:2] == ["models", "probe"]:
+        if len(raw_argv) < 3 or raw_argv[2].startswith("-"):
+            parser.error("models probe requires a provider id")
+        raw_argv[:3] = ["--verify-live-model", raw_argv[2]]
+    elif raw_argv[:1] == ["models"]:
+        if len(raw_argv) < 2 or raw_argv[1] not in (
+                "inventory", "routes", "explain", "benchmark"):
+            parser.error(
+                "models requires inventory, routes, explain, benchmark, or probe")
+        raw_argv[:2] = ["--models-action", raw_argv[1]]
+    elif raw_argv[:1] == ["learn"]:
+        raw_argv[:1] = ["--learn"]
+    elif raw_argv[:2] == ["candidates", "list"]:
+        raw_argv[:2] = ["--candidates"]
+    elif raw_argv[:1] == ["candidates"]:
+        if len(raw_argv) < 2 or raw_argv[1] not in (
+                "review", "promote", "rollback"):
+            parser.error("candidates requires list, review, promote, or rollback")
+        raw_argv[:2] = ["--candidate-action", raw_argv[1]]
     elif raw_argv[:1] == ["campaign"]:
         if len(raw_argv) < 2 or raw_argv[1] not in ("plan", "run"):
             parser.error("campaign requires plan or run")
@@ -192,6 +255,12 @@ def main(argv=None) -> int:
             parser.error("settings requires init, show, or check")
         raw_argv[:2] = ["--settings-action", raw_argv[1]]
     args = parser.parse_args(raw_argv)
+    if args.doctor:
+        from .cli_operations import run_doctor
+        return run_doctor(args)
+    if args.models_action:
+        from .cli_operations import run_models_action
+        return run_models_action(args)
     if args.verify_live_model:
         from .core.live_model_verification import (
             LiveModelVerificationError, LiveModelVerificationRequest,
@@ -412,56 +481,17 @@ def main(argv=None) -> int:
         }, indent=1))
         return 0
     if args.task_compile:
-        from .templates.compiler import compile_task
-        text_input = args.text or _read_task_file(args.file)
-        if not text_input:
-            print("error: --task-compile needs --text or --file")
-            return 2
-        result = compile_task(text_input)
-        print(json.dumps(result, indent=1))
-        return 0
+        from .cli_operations import run_task_compile
+        return run_task_compile(args)
     if args.solve:
-        from .templates.compiler import compile_task
-        from .loop.encapsulate import as_practitioner_loop
-        text_input = args.text or _read_task_file(args.file)
-        if not text_input:
-            print("error: --solve needs --text or --file")
-            return 2
-        compiled = compile_task(text_input)
-        solved = as_practitioner_loop(
-            f"solve: {text_input[:60]}",
-            lambda: {"compiled_task": compiled["compiled_task"],
-                     "solved": True})
-        print(json.dumps({
-            "record_type": "solve/v1",
-            "compile_loop_id": compiled["loop_id"],
-            "solve_loop_id": solved["loop_id"],
-            "compiled_task": compiled["compiled_task"],
-            "solved": solved["value"]["solved"],
-        }, indent=1))
-        return 0
+        from .cli_operations import run_solve
+        return run_solve(args)
     if args.learn:
-        from .memory.model.memory_type import (MemoryIdentity,
-                                               MemoryLifecycle,
-                                               MemoryType)
-        from .memory.semantic.record import SemanticMemoryRecord
-        from .memory.storage.repository import CandidateJournal
-        journal = CandidateJournal()
-        record_id = journal.stage(SemanticMemoryRecord(
-            identity=MemoryIdentity("candidate.learn.1", "1.0.0",
-                                    "a" * 64, MemoryType.SEMANTIC),
-            subject="latest_run", predicate="produced",
-            object_value="a reusable lesson",
-            claim_type="derived",
-            lifecycle=MemoryLifecycle.CANDIDATE))
-        print(json.dumps({
-            "record_type": "learning_candidates/v1",
-            "staged": [record_id],
-            "storage": str(journal.journal),
-            "note": "candidates are staged only; promotion requires "
-                    "independent review",
-        }, indent=1))
-        return 0
+        from .cli_operations import run_learn
+        return run_learn(args)
+    if args.candidate_action:
+        from .cli_operations import run_candidate_action
+        return run_candidate_action(args)
     if args.candidates:
         from .memory.storage.repository import CandidateJournal
         journal = CandidateJournal()
@@ -477,44 +507,8 @@ def main(argv=None) -> int:
         }, indent=1))
         return 0
     if args.demo == "five-step":
-        from .templates.compiler import compile_task
-        from .loop.encapsulate import as_practitioner_loop
-        from .memory.model.memory_type import (MemoryIdentity,
-                                               MemoryLifecycle,
-                                               MemoryType)
-        from .memory.semantic.record import SemanticMemoryRecord
-        from .memory.storage.store import InMemoryMemoryStore
-        text_input = args.text or (
-            "Train a linear model, neural network, and tree model, "
-            "then ensemble them")
-        compiled = compile_task(text_input)
-        solved = as_practitioner_loop(
-            f"solve: {text_input[:60]}",
-            lambda: {"compiled_task": compiled["compiled_task"],
-                     "solved": True})
-        store = InMemoryMemoryStore()
-        candidate = SemanticMemoryRecord(
-            identity=MemoryIdentity("candidate.demo.1", "1.0.0",
-                                    "a" * 64, MemoryType.SEMANTIC),
-            subject="demo_run", predicate="produced",
-            object_value="a reusable lesson",
-            claim_type="derived",
-            lifecycle=MemoryLifecycle.CANDIDATE)
-        store.put(candidate)
-        print(json.dumps({
-            "record_type": "five_step_demo/v1",
-            "steps": {
-                "1_install": "loop-engine --self-test",
-                "2_configure": "loop-engine setup",
-                "3_compile": compiled["loop_id"],
-                "4_solve": solved["loop_id"],
-                "5_learn": "candidate.demo.1 staged, promotion "
-                           "requires independent review",
-            },
-            "compiled_task": compiled["compiled_task"],
-            "solved": solved["value"]["solved"],
-        }, indent=1))
-        return 0
+        from .cli_operations import run_five_step_demo
+        return run_five_step_demo(args)
     if args.map:
         from .architecture_map import render_map as render_architecture
         print(render_architecture())

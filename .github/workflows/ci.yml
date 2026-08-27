@@ -46,18 +46,26 @@ jobs:
             sudo apt-get update -y && sudo apt-get install -y ripgrep
           fi
           rg --version
+          # Source terminology is owned by the conformance gate
+          # (python -m loop_engine --conformance), which applies the
+          # machine-readable allowed_fragments contract in
+          # forbidden_paths.json. This check owns public prose only.
+          # docs/prompts and docs/evidence are historical evidence, not
+          # current public language.
           if rg --hidden -n -i \
             --glob '!src/loop_engine/forbidden_paths.json' \
+            --glob '!docs/prompts/**' --glob '!docs/evidence/**' \
             --glob '!showcase/node_modules/**' --glob '!**/.cache/**' \
             '\bchronicles?\b|\breceipts?\b' \
             README.md CHANGELOG.md humanizer-context.md docs examples \
-            case-studies benchmarks showcase src; then
+            case-studies benchmarks showcase; then
             echo "Retired public language found. Use Run History, event log, record, report, or evidence."
             exit 1
           fi
 
           if rg --hidden -n -i \
-            --glob '!docs/evidence/**' --glob '!showcase/assets/**' \
+            --glob '!docs/prompts/**' --glob '!docs/evidence/**' \
+            --glob '!showcase/assets/**' \
             --glob '!showcase/node_modules/**' --glob '!**/.cache/**' \
             '\bchild(?:ren)?\b|\broot[[:space:]_-]+loop\b|what[[:space:]_-]*is[[:space:]_-]*next|what[[:space:]_-]+next|whats[[:space:]_-]*next|whatnext' \
             README.md CHANGELOG.md humanizer-context.md docs examples \

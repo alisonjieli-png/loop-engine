@@ -268,17 +268,19 @@ def code_asset_record(spec: CodeAssetSpec):
 
 
 def code_asset_capsule(spec: CodeAssetSpec):
-    """Wrap the card as a lazy Code Intelligence Loop capsule."""
-    from ..loop.loop_capsule import LoopCapsule, LoopHandshake
-    handshake = LoopHandshake(
-        loop_id=spec.asset_id, role="code_intelligence", modes=spec.modes,
+    """Wrap the card as a lazy Code Intelligence package."""
+    from ..loop.loop_capsule import IntelligenceItemPackage, IntelligenceItemHandshake
+    handshake = IntelligenceItemHandshake(
+        item_id=spec.asset_id, layer="code_intelligence",
+        supported_modes=spec.modes,
         input_contract=spec.input_contract,
         output_contract="code_asset_ref",
-        effects=",".join(spec.effects),
+        effects=tuple(spec.effects),
         cost_class="metered" if "network" in spec.effects else "free",
         maturity=spec.lifecycle, version=spec.version)
-    return LoopCapsule(
-        loop_id=spec.asset_id, role="code_intelligence", handshake=handshake,
+    return IntelligenceItemPackage(
+        item_id=spec.asset_id, layer="code_intelligence",
+        handshake=handshake,
         payload_ref=spec.body_ref.uri, payload_digest=spec.body_ref.digest,
         provenance=spec.source_kind,
         lifecycle=spec.lifecycle if spec.lifecycle in (
@@ -336,23 +338,50 @@ class MaterializationCache:
         return self._by_digest[key]
 
 
-def execute_code_ref(ref, resolver, *, entrypoint: str = "", bind=None,
-                     inputs=None, ledger=None, parent=None):
+@dataclass(frozen=True)
+class CodeRefExecutionRequest:
+    """Passive input for loading and executing one selected Code reference."""
+
+    ref: object
+    resolver: object
+    entrypoint: str = ""
+    bind: object | None = None
+    inputs: object | None = None
+
+
+@dataclass(frozen=True)
+class CodeRefExecutionContext:
+    """Optional Loop ownership context for Code reference execution."""
+
+    ledger: object | None = None
+    parent: object | None = None
+
+
+def execute_code_ref(
+        request: CodeRefExecutionRequest,
+        context: CodeRefExecutionContext | None = None):
     """Materialize a selected Code ref, then execute it in a component loop."""
-    from ..loop.loop_capsule import invoke_ref
+    from ..loop.loop_capsule import (
+        IntelligenceLoadContext, IntelligenceLoadRequest,
+        load_intelligence_ref)
     from ..loop.encapsulate import as_component_loop
-    loaded = invoke_ref(ref, resolver, ledger=ledger, parent=parent)
+    selected_context = context or CodeRefExecutionContext()
+    loaded = load_intelligence_ref(
+        IntelligenceLoadRequest(request.ref, request.resolver),
+        IntelligenceLoadContext(
+            selected_context.ledger, selected_context.parent))
     payload = loaded["value"]
     operation = payload
-    if not callable(operation) and bind is not None:
-        operation = bind(payload, entrypoint)
+    if not callable(operation) and request.bind is not None:
+        operation = request.bind(payload, request.entrypoint)
     elif not callable(operation) and isinstance(payload, dict):
-        operation = payload.get(entrypoint)
+        operation = payload.get(request.entrypoint)
     if not callable(operation):
         raise TypeError("the selected Code asset did not resolve the entrypoint")
     executed = as_component_loop(
-        f"execute Code Intelligence {ref.handshake.loop_id}", operation,
-        inputs=inputs, ledger=ledger, parent=parent)
+        f"execute Code Intelligence {request.ref.handshake.item_id}",
+        operation, inputs=request.inputs, ledger=selected_context.ledger,
+        parent=selected_context.parent)
     return {"materialization": loaded, "execution": executed,
             "value": executed["value"]}
 
@@ -420,18 +449,20 @@ def self_test() -> dict:
             {"worker.run": lambda value: value + 1}, payload_digest,
             local_ref="/cache/large-worker"))
     resolver = lambda payload_ref: cache(payload_ref, million_line_ref.digest)
-    out = execute_code_ref(ref, resolver, entrypoint="worker.run",
-                           inputs=41, ledger=ledger)
-    out_again = execute_code_ref(ref, resolver, entrypoint="worker.run",
-                                 inputs=9, ledger=ledger)
+    out = execute_code_ref(CodeRefExecutionRequest(
+        ref, resolver, entrypoint="worker.run", inputs=41),
+        CodeRefExecutionContext(ledger=ledger))
+    out_again = execute_code_ref(CodeRefExecutionRequest(
+        ref, resolver, entrypoint="worker.run", inputs=9),
+        CodeRefExecutionContext(ledger=ledger))
     records = code_template_records()
     subsystems = subsystem_records(spec)
     bad_digest = False
     try:
-        execute_code_ref(
+        execute_code_ref(CodeRefExecutionRequest(
             ref, lambda payload_ref: MaterializedPayload(
                 {"worker.run": lambda value: value}, "b" * 64),
-            entrypoint="worker.run", inputs=1)
+            entrypoint="worker.run", inputs=1))
     except ValueError:
         bad_digest = True
     self_admission = False

@@ -65,7 +65,7 @@ def run_checks() -> dict:
         check("real_active_catalog_maps_all_required_lenses",
               active_count >= 396 and len(portfolio.items) == 7
               and len({item.family for item in portfolio.items}) == 7
-              and len({item.ref.loop_ref for item in portfolio.items}) == 7,
+              and len({item.ref.item_ref for item in portfolio.items}) == 7,
               f"{active_count} active Context records; 7 unique lens refs")
         check("candidate_only_records_are_refused",
               packaged_candidate.record_id not in selected_ids
@@ -134,9 +134,10 @@ def run_checks() -> dict:
         materialized = materialize_portfolio_for_loop(
             code_portfolio, PortfolioMaterializationServices(
                 layer_records=catalog, code_pack=code_pack))
-        executed = execute_code_ref(
+        from .code_intelligence_assets import CodeRefExecutionRequest
+        executed = execute_code_ref(CodeRefExecutionRequest(
             verify_item.ref, code_pack.resolve,
-            entrypoint="normalize_scores", inputs=(2, 3))
+            entrypoint="normalize_scores", inputs=(2, 3)))
         policy = materialized.consumption.context_policy()
         check("benchmark_code_pack_is_registered_real_and_callable",
               verify_item.record_id == code_spec.asset_id
@@ -153,7 +154,8 @@ def run_checks() -> dict:
               and materialized.consumption.materialization_model_calls == 0,
               "delegation and eventual RunHistory fields use the same 7 refs")
         context_values = [item.value for item in materialized.values
-                          if item.ref.handshake.role == "context_intelligence"]
+                          if item.ref.handshake.layer
+                          == "context_intelligence"]
         check("selected_loop_refs_materialize_existing_context_bodies",
               len(materialized.values) == 7 and context_values
               and all(value not in (None, "") for value in context_values),
@@ -164,7 +166,7 @@ def run_checks() -> dict:
             variant = select_intelligence_portfolio(
                 PortfolioRequest(request.task, f"consumer.variant.{index}"),
                 PortfolioSelectionServices(layer_records=catalog))
-            variants.append(tuple(ref.loop_ref for ref in variant.refs))
+            variants.append(tuple(ref.item_ref for ref in variant.refs))
             if index < 2:
                 variant_materializations.append(
                     materialize_portfolio_for_loop(

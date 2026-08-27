@@ -6,8 +6,8 @@ that reviews the repository against its own rules.
 ## Identity
 
 - Devtools is NOT a second Node engine or second runtime.
-- Every supervisor, specialist, scanner, and reviewer is an ordinary
-  LoopNode running on the canonical Loop kernel.
+- Every independently governed supervisor, specialist, scanner, and reviewer
+  runs as an ordinary `Loop` through the canonical runtime.
 - The root is the Repository Assurance Practitioner.
 
 ## Dependency direction
@@ -26,7 +26,7 @@ loop_engine must never import loop_engine_devtools.
 ```text
 devtools/
 ├── src/loop_engine_devtools/
-│   ├── assurance/          review LoopNode definitions and operations
+│   ├── assurance/          review Loop definitions and operations
 │   ├── intelligence/core/  shipped review rules, presets, proof obligations
 │   └── cli/                loop-dev command
 └── pyproject.toml
@@ -36,5 +36,5 @@ devtools/
 
 A small deterministic verifier must run without importing Loop Engine.
 It checks syntax, forbidden Node classes, forbidden paths, and the
-devtools/runtime dependency direction. A broken LoopNode runtime must
+devtools/runtime dependency direction. A broken Loop runtime must
 never be able to disable all review.

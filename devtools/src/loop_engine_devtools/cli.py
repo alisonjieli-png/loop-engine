@@ -1,6 +1,6 @@
 """loop-dev: the Development Assurance Plane command line.
 
-Local, CI, and OpenCode all call the same assurance LoopNode
+Local, CI, and coding harnesses all call the same assurance Loop
 definitions. There is no separate shell-script review system.
 """
 from __future__ import annotations
@@ -41,9 +41,11 @@ def main(argv=None) -> int:
         return 0 if report["passed"] else 1
 
     if args.assurance:
-        from loop_engine_devtools.assurance import run_repository_assurance
-        report = run_repository_assurance(scope=args.scope,
-                                          strict=args.strict)
+        from pathlib import Path
+        from loop_engine_devtools.assurance import (
+            RepositoryAssuranceRequest, run_repository_assurance)
+        report = run_repository_assurance(RepositoryAssuranceRequest(
+            Path.cwd().resolve(), scope=args.scope, strict=args.strict))
         if args.json:
             print(json.dumps(report, indent=1))
         else:

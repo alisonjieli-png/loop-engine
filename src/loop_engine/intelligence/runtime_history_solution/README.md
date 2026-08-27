@@ -1,7 +1,7 @@
 ---
 folder_id: intelligence.runtime_history_solution
 parent: intelligence
-ontology_version: 1.0.0
+ontology_version: 2.0.0
 ---
 
 # Runtime history solution

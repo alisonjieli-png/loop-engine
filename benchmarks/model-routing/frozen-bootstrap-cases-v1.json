@@ -1,0 +1,91 @@
+{
+  "benchmark_id": "loop-engine-model-routing-bootstrap",
+  "benchmark_version": "1.0.0",
+  "frozen_at": "2026-08-27T16:00:00Z",
+  "scope": "offline_contract_only",
+  "portfolio_id": "core.intelligence_portfolio.model_routing@1",
+  "provider_calls_allowed": false,
+  "notes": "Synthetic routes and outcomes test selector contracts. They are not provider or model quality evidence.",
+  "cases": [
+    {
+      "case_id": "portfolio-four-layers",
+      "assertion": "portfolio_uses_exactly_the_four_existing_layers",
+      "expected": "portfolio reuses the four persistent intelligence layers",
+      "expected_detail_contains": "core.intelligence_portfolio.model_routing@1"
+    },
+    {
+      "case_id": "record-separation",
+      "assertion": "capability_suitability_and_availability_stay_distinct",
+      "expected": "technical facts, measured quality, and current state use separate records",
+      "expected_detail_contains": "independent digests"
+    },
+    {
+      "case_id": "hard-filter-before-rank",
+      "assertion": "hard_filtering_precedes_explainable_ranking",
+      "expected": "only eligible routes receive score contributions",
+      "expected_detail_contains": "local.small.fixture"
+    },
+    {
+      "case_id": "deterministic-no-model",
+      "assertion": "deterministic_evidence_can_return_no_model_required",
+      "expected": "no_model_required",
+      "expected_detail_contains": "no_model_required"
+    },
+    {
+      "case_id": "local-only",
+      "assertion": "local_only_policy_selects_zero_cloud_routes",
+      "expected": "one local candidate and no cloud candidate",
+      "expected_detail_contains": "local.small.fixture"
+    },
+    {
+      "case_id": "role-parity",
+      "assertion": "role_does_not_determine_model_level",
+      "expected": "Practitioner, Intelligence, and Solution receive the same bounded route"
+    },
+    {
+      "case_id": "negative-transfer",
+      "assertion": "small_task_suitability_does_not_transfer_to_large_architecture",
+      "expected": "short-classification evidence cannot select a route for repository architecture",
+      "expected_detail_contains": "cloud.high.fixture"
+    },
+    {
+      "case_id": "deployment-staleness",
+      "assertion": "deployment_change_invalidates_stale_suitability",
+      "expected": "abstained",
+      "expected_detail_contains": "abstained"
+    },
+    {
+      "case_id": "availability-staleness",
+      "assertion": "stale_runtime_availability_is_rejected",
+      "expected": "abstained",
+      "expected_detail_contains": "abstained"
+    },
+    {
+      "case_id": "zero-provider-calls",
+      "assertion": "bootstrap_selection_makes_no_adapter_calls",
+      "expected": 0,
+      "expected_detail_contains": "untouched"
+    },
+    {
+      "case_id": "gateway-translation",
+      "assertion": "decision_translates_to_existing_gateway_config",
+      "expected": "selected route becomes ModelGatewayConfig route plan",
+      "expected_detail_contains": "local.small.fixture"
+    },
+    {
+      "case_id": "governed-selection-loop",
+      "assertion": "model_selection_executes_as_a_governed_loop",
+      "expected": "selection has a Loop identity and canonical model-selection events"
+    },
+    {
+      "case_id": "unknown-usage",
+      "assertion": "unknown_usage_remains_unknown_not_zero",
+      "expected": "missing token accounting remains null"
+    },
+    {
+      "case_id": "independent-review",
+      "assertion": "routing_learning_requires_independent_review",
+      "expected": "producer cannot approve its own candidate"
+    }
+  ]
+}

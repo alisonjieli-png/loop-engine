@@ -10,7 +10,7 @@
      "version": "1.0.0"
     },
     "input_roles": [],
-    "kind": "node",
+    "kind": "catalog_record",
     "layer": "code_intelligence",
     "lifecycle": "registered",
     "output_roles": [],
@@ -29,7 +29,7 @@
      "version": "1.0.0"
     },
     "input_roles": [],
-    "kind": "node",
+    "kind": "catalog_record",
     "layer": "code_intelligence",
     "lifecycle": "registered",
     "output_roles": [],
@@ -48,7 +48,7 @@
      "version": "2.0.0"
     },
     "input_roles": [],
-    "kind": "node",
+    "kind": "catalog_record",
     "layer": "context_intelligence",
     "lifecycle": "registered",
     "output_roles": [],
@@ -67,7 +67,7 @@
      "version": "1.0.0"
     },
     "input_roles": [],
-    "kind": "node",
+    "kind": "catalog_record",
     "layer": "runtime_history_solution_intelligence",
     "lifecycle": "registered",
     "output_roles": [],
@@ -86,7 +86,7 @@
      "version": "1.0.0"
     },
     "input_roles": [],
-    "kind": "node",
+    "kind": "catalog_record",
     "layer": "runtime_history_solution_intelligence",
     "lifecycle": "registered",
     "output_roles": [],

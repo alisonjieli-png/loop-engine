@@ -198,11 +198,14 @@ def as_model_loop(objective: str, fn, *, inputs=None,
     # LITERAL kinds on both arms: a conditional expression is a computed
     # event name, which the vocabulary gate refuses (rightly — it cannot be
     # checked against the canonical families).
+    _prompt_tokens = int(getattr(value, "prompt_tokens", 0) or 0)
+    _eval_tokens = int(getattr(value, "eval_tokens", 0) or 0)
     _usage = {"model": str(getattr(value, "model_used", "")
                            or getattr(value, "model", ""))[:60],
               "provider": str(getattr(value, "provider", ""))[:60],
-              "prompt_tokens": int(getattr(value, "prompt_tokens", 0) or 0),
-              "eval_tokens": int(getattr(value, "eval_tokens", 0) or 0)}
+              "prompt_tokens": _prompt_tokens,
+              "eval_tokens": _eval_tokens,
+              "accounting_complete": bool(_prompt_tokens or _eval_tokens)}
     if ok:
         lg.record(loop_id=loop.loop_id, event="model_led", **_usage)
     else:

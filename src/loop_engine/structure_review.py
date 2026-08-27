@@ -34,7 +34,7 @@ REVIEW_QUESTIONS = (
     "Does this directory classify solutions semantically in folders "
     "where typed attributes would be more appropriate?",
     "Does the structure still allow replacing DuckDB without changing "
-    "LoopNode or IntelligenceRecord?",
+    "Loop runtime or IntelligenceRecord?",
 )
 
 

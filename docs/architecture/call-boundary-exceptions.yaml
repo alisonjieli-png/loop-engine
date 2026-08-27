@@ -1,0 +1,30 @@
+schema_version: 1
+
+policy:
+  max_direct_parameters: 3
+  boolean_flag_threshold: 2
+  scope:
+    - src/loop_engine
+    - devtools/src
+  generated_schema_constructors_are_handwritten: false
+  parameter_bundles_are_operational_loops: false
+
+# Exceptions must identify one file, one qualified symbol, and one rule.
+# Every future entry must also declare:
+#
+# exception_id: stable identifier
+# file: exact repository-relative Python file
+# symbol: exact function, Class.method, or Class.__init__
+# rule: one exemptable detector rule
+# external_contract: signature source that cannot be changed locally
+# reason: why typed request migration cannot be used now
+# owner: accountable maintainer or team
+# test: exact test that protects the compatibility contract
+# introduced_version: package version that added the exception
+# removal_version: version by which the exception must be removed
+#
+# Use permanent_justification instead of removal_version only when the external
+# contract has no versioned migration path. Optional expires_on dates use
+# YYYY-MM-DD. Wildcards, directory entries, broad rules, and expired entries
+# fail conformance.
+exceptions: []

@@ -32,9 +32,10 @@ def self_test() -> dict:
           and classify("context") == "string",
           f"non-binary kinds: {other}")
 
-    # One canonical runtime: no parallel runtime class or public alias.
+    # One canonical runtime. The retired spelling is not publicly importable.
     check("conformance_one_canonical_runtime",
-          Loop.__name__ == "Loop" and Loop.run_to_completion is Loop.run,
+          Loop.__name__ == "Loop"
+          and Loop.run_to_completion is Loop.run,
           "Loop is the only runtime class")
 
     # Obsolete package-root module paths are dead. This checks path layout only;
@@ -68,7 +69,9 @@ def self_test() -> dict:
           and "PractitionerLoop" not in public_package.__dict__.get(
               "__all__", ())
           and not hasattr(public_package, "PractitionerLoop")
-          and public_package.Loop is Loop,
+          and public_package.Loop is Loop
+          and "LoopNode" not in public_package.__all__
+          and not hasattr(public_package, "LoopNode"),
           f"parallel root runtime names: {sorted(forbidden)}")
 
     from .__main__ import (

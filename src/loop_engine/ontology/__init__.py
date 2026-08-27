@@ -4,8 +4,8 @@ This package defines the two object classes every persistent record
 shares, the vocabularies that classify them, the authoritative folder
 table that mirrors the architecture onto directories, and the unified
 catalog that resolves package core, instance learned, and plugin roots
-into one logical view. It adds no runtime: execution still starts only
-through ``LoopStartRequest`` into the one ``Loop`` runtime.
+into one logical view. It adds no runtime: execution starts through
+``LoopStartRequest`` into the sole ``Loop`` runtime.
 """
 from __future__ import annotations
 
@@ -21,10 +21,13 @@ _PUBLIC = {
     "INTELLIGENCE_LAYERS": ("artifacts", "LAYERS"),
     "LAYER_FOLDER_SEGMENTS": ("artifacts", "LAYER_FOLDER_SEGMENTS"),
     # Foundational object classes.
-    "NodeError": ("node", "NodeError"),
-    "ObjectIdentity": ("node", "ObjectIdentity"),
-    "CatalogRecord": ("node", "CatalogRecord"),
-    "LoopNode": ("loop_node", "LoopNode"),
+    "OntologyRecordError": ("records", "OntologyRecordError"),
+    "ObjectIdentity": ("records", "ObjectIdentity"),
+    "CatalogRecord": ("records", "CatalogRecord"),
+    "LoopDefinitionRecord": (
+        "loop_definition_record", "LoopDefinitionRecord"),
+    "LoopDefinitionProjectionRequest": (
+        "loop_definition_record", "LoopDefinitionProjectionRequest"),
     # Folder table and structural validation.
     "FolderSpec": ("folders", "FolderSpec"),
     "FOLDER_ONTOLOGY": ("folders", "FOLDER_ONTOLOGY"),

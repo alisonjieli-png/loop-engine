@@ -1,7 +1,7 @@
 ---
 folder_id: intelligence.user_feedback.plugin
 parent: intelligence.user_feedback
-ontology_version: 1.0.0
+ontology_version: 2.0.0
 ---
 
 # Plugin

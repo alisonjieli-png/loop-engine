@@ -2,7 +2,7 @@
 
 # HARD ARCHITECTURE INVARIANT - DO NOT REMOVE OR WEAKEN:
 #
-# Every operational node in Loop Engine is a LoopNode.
+# Every executable graph vertex runs as the canonical Loop runtime.
 #
 # Never add:
 # - a generic concrete Node class;
@@ -18,7 +18,7 @@
 # results, evidence, evaluations, governance events, or materializations.
 # They are not Nodes.
 #
-# Common behaviors are represented by versioned LoopNode presets.
+# Common behaviors are represented by versioned passive Loop profiles.
 """
 from __future__ import annotations
 

@@ -116,11 +116,11 @@ Self-improvement belongs under Practitioner. It is a task given to the Loop
 Practitioner. It is not a fourth runtime role and it cannot approve its own
 candidates.
 
-The current Solution Canvas runner executes deterministic Solution Loops.
-For that reason, the registered atomic component, pipeline, router and
-fallback, ensemble, and validator profiles are deterministic-only. A future
-profile version may allow hybrid or non-deterministic execution after those
-Canvas adapters exist and pass their own tests.
+The Solution Canvas runner executes deterministic, hybrid, and
+non-deterministic Solution Loops through the shared mode contract. Model-using
+leaves require an installed gateway-backed executor and exact model-call
+authority. When either is absent, execution fails with a typed unavailable
+executor result and never changes mode silently.
 
 ## Terms that stay separate
 

@@ -25,15 +25,19 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable, Mapping, Sequence
 
-from ..loop.loop_capsule import LoopRef, MaterializedPayload
+from ..loop.loop_capsule import IntelligenceItemRef, MaterializedPayload
 from .code_intelligence_assets import CodeAssetSpec, code_asset_record
 from .context_ontology import (CONTEXT_KINDS, QUESTION_FAMILIES,
                                RESPONSE_SHAPES, SERIALIZATION_FORMATS,
                                THINKING_METHODS)
 from .intelligence_layers import (LAYERS, LAYER_PUBLIC_KEY,
                                   LAYER_PUBLIC_LABEL,
+                                  IntelligenceCatalogLoadContext,
+                                  IntelligenceCatalogLoadRequest,
+                                  IntelligenceSearchContext,
+                                  IntelligenceSearchRequest,
                                   build_intelligence_catalog,
-                                  materialize_intelligence_ref,
+                                  load_intelligence_item,
                                   normalize_layer_records,
                                   query_intelligence)
 
@@ -349,7 +353,7 @@ class LensQueryTrace:
 @dataclass(frozen=True)
 class PortfolioItem:
     family: LensFamily
-    ref: LoopRef
+    ref: IntelligenceItemRef
     record_id: str
     layer: str
     public_label: str
@@ -365,7 +369,7 @@ class PortfolioItem:
                 "retrieval_score": self.retrieval_score,
                 "affinity": self.affinity,
                 "selection_reasons": list(self.selection_reasons),
-                "loop_ref": self.ref.as_dict()}
+                "intelligence_item_ref": self.ref.as_dict()}
 
 
 @dataclass(frozen=True)
@@ -399,7 +403,7 @@ class IntelligencePortfolio:
 
     def __post_init__(self) -> None:
         families = [item.family for item in self.items]
-        refs = [item.ref.loop_ref for item in self.items]
+        refs = [item.ref.item_ref for item in self.items]
         if (len(self.items) != len(REQUIRED_LENS_FAMILIES)
                 or set(families) != set(REQUIRED_LENS_FAMILIES)
                 or len(families) != len(set(families))):
@@ -414,7 +418,7 @@ class IntelligencePortfolio:
                 "zero-model")
 
     @property
-    def refs(self) -> tuple[LoopRef, ...]:
+    def refs(self) -> tuple[IntelligenceItemRef, ...]:
         return tuple(item.ref for item in self.items)
 
     def to_dict(self) -> dict:
@@ -527,18 +531,16 @@ def _affinity(definition: LensDefinition, hit: dict, record,
         reasons.append(f"registered_benchmark_code:{benchmark_id}")
     return score, tuple(reasons)
 
-
 def _portfolio_id(request: PortfolioRequest,
                   items: Sequence[PortfolioItem]) -> str:
     body = {"selector": SELECTOR_VERSION, "task": request.task,
             "consuming_loop_id": request.consuming_loop_id,
             "benchmark_id": request.benchmark_id,
-            "items": [(item.family.value, item.ref.loop_ref, item.ref.digest)
+            "items": [(item.family.value, item.ref.item_ref, item.ref.digest)
                       for item in items]}
     digest = hashlib.sha256(
         json.dumps(body, sort_keys=True).encode()).hexdigest()
     return f"intelligence-portfolio:{digest[:24]}"
-
 
 def select_intelligence_portfolio(
         request: PortfolioRequest,
@@ -560,10 +562,11 @@ def select_intelligence_portfolio(
                        for label in definition.retrieval_labels)
         # Keep ontology labels inside the FTS backend's bounded term prefix.
         lexical_query = " ".join((*labels, request.benchmark_id, request.task))
-        result = query_intelligence(
-            lexical_query, catalog, mode="lexical", top_n=max(1, population),
-            include_candidates=False, ledger=services.ledger,
-            parent=services.parent)
+        result = query_intelligence(IntelligenceSearchRequest(
+            lexical_query, catalog, mode="lexical",
+            top_n=max(1, population), include_candidates=False),
+            IntelligenceSearchContext(
+                ledger=services.ledger, parent=services.parent))
         query_loop = dict(result["query_loop"])
         if query_loop.get("model_calls") != 0:
             raise IntelligencePortfolioError(
@@ -576,8 +579,9 @@ def select_intelligence_portfolio(
             if (record is None or not _eligible(
                     record, benchmark_id=request.benchmark_id, family=family)):
                 continue
-            ref = LoopRef.from_dict(hit["loop_ref"])
-            if (ref.loop_ref in used_refs
+            ref = IntelligenceItemRef.from_dict(
+                hit["intelligence_item_ref"])
+            if (ref.item_ref in used_refs
                     or ref.handshake.maturity == "candidate"):
                 continue
             affinity, reasons = _affinity(
@@ -589,7 +593,7 @@ def select_intelligence_portfolio(
                 f"active four-layer retrieval found no unique ref for "
                 f"{family.value}")
         candidates.sort(key=lambda row: (-row[0], -row[1], row[2],
-                                         row[4].loop_ref))
+                                         row[4].item_ref))
         best_affinity = candidates[0][0]
         cohort = [row for row in candidates if row[0] == best_affinity]
         lane_digest = hashlib.sha256(
@@ -597,7 +601,7 @@ def select_intelligence_portfolio(
             .encode()).digest()
         chosen = cohort[int.from_bytes(lane_digest[:8], "big") % len(cohort)]
         affinity, retrieval_score, rank, hit, ref, reasons = chosen
-        used_refs.add(ref.loop_ref)
+        used_refs.add(ref.item_ref)
         item = PortfolioItem(
             family, ref, hit["record_id"], hit["layer"],
             hit["public_label"], rank, retrieval_score, affinity, reasons)
@@ -605,7 +609,7 @@ def select_intelligence_portfolio(
         traces.append(LensQueryTrace(
             family, definition.retrieval_labels,
             str(query_loop.get("loop_id", "")), len(result["hits"]),
-            len(candidates), len(cohort), rank, ref.loop_ref,
+            len(candidates), len(cohort), rank, ref.item_ref,
             tuple(result["unqueried"]), model_calls=0))
 
     coverage = []
@@ -628,14 +632,15 @@ def select_intelligence_portfolio(
 @dataclass(frozen=True)
 class MaterializedLensValue:
     family: LensFamily
-    ref: LoopRef
+    ref: IntelligenceItemRef
     value: object
     access_loop_id: str
     access_digest: str
     observed_payload_digest: str
 
     def evidence_dict(self) -> dict:
-        return {"family": self.family.value, "loop_ref": self.ref.loop_ref,
+        return {"family": self.family.value,
+                "intelligence_item_ref": self.ref.item_ref,
                 "ref_digest": self.ref.digest,
                 "access_loop_id": self.access_loop_id,
                 "access_digest": self.access_digest,
@@ -652,7 +657,7 @@ class LoopIntelligenceConsumption:
 
     def __post_init__(self) -> None:
         families = [item.family for item in self.consumed]
-        refs = [item.ref.loop_ref for item in self.consumed]
+        refs = [item.ref.item_ref for item in self.consumed]
         if self.mode != "non_deterministic":
             raise IntelligencePortfolioError(
                 "consumption belongs to a non_deterministic consuming Loop")
@@ -667,7 +672,7 @@ class LoopIntelligenceConsumption:
 
     @property
     def consumed_refs(self) -> tuple[str, ...]:
-        return tuple(item.ref.loop_ref for item in self.consumed)
+        return tuple(item.ref.item_ref for item in self.consumed)
 
     def to_dict(self) -> dict:
         return {"record_type": "intelligence_consumption_record/v2",
@@ -704,7 +709,7 @@ def _consumption_digest(portfolio: IntelligencePortfolio,
                         values: Sequence[MaterializedLensValue]) -> str:
     body = {"consuming_loop_id": portfolio.consuming_loop_id,
             "mode": portfolio.mode, "portfolio_id": portfolio.portfolio_id,
-            "consumed": [(value.family.value, value.ref.loop_ref,
+            "consumed": [(value.family.value, value.ref.item_ref,
                           value.ref.digest, value.access_digest,
                           value.observed_payload_digest)
                          for value in values]}
@@ -731,9 +736,10 @@ def materialize_portfolio_for_loop(
         raise ValueError(f"no resolver registered for {payload_ref!r}")
     values = []
     for item in portfolio.items:
-        out = materialize_intelligence_ref(
-            item.ref, catalog, external_resolver=resolve_external,
-            ledger=services.ledger, parent=services.parent)
+        out = load_intelligence_item(IntelligenceCatalogLoadRequest(
+            item.ref, catalog, external_resolver=resolve_external),
+            IntelligenceCatalogLoadContext(
+                ledger=services.ledger, parent=services.parent))
         if out.get("model_calls") != 0:
             raise IntelligencePortfolioError(
                 "intelligence materialization made a model call")
@@ -773,8 +779,6 @@ def fold_loop_intelligence_consumption(
             "unique_ref_count": len(unique_refs),
             "fold_digest": hashlib.sha256(
                 json.dumps(body, sort_keys=True).encode()).hexdigest()}
-
-
 def export_intelligence_portfolios(
         portfolios: Sequence[IntelligencePortfolio],
         consumptions: Sequence[LoopIntelligenceConsumption] = ()) -> dict:
@@ -790,8 +794,6 @@ def export_intelligence_portfolios(
             "portfolios": [portfolio.to_dict() for portfolio in portfolios],
             "consumption": fold_loop_intelligence_consumption(consumptions),
             "payload_bodies_exported": False}
-
-
 def self_test() -> dict:
     """Run real-catalog and real-callable checks from the test companion."""
     from .intelligence_portfolio_checks import run_checks

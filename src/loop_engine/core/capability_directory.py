@@ -145,7 +145,7 @@ class CapabilityMatch:
     fallbacks: tuple = ()
     facets: dict = field(default_factory=dict)
     facet_score: int = 0                # prefer-facet matches (rank only)
-    loop_ref: object = None
+    item_ref: object = None
 
 
 @dataclass
@@ -224,7 +224,7 @@ class CapabilityDirectory:
 
     def search_core(self, need: str, *, top_n: int = 8) -> list:
         """Search local handshake cards without invoking any capability."""
-        from ..loop.loop_capsule import LoopCapsule, LoopHandshake
+        from ..loop.loop_capsule import IntelligenceItemPackage, IntelligenceItemHandshake
         terms = set(str(need).lower().replace("_", " ").split())
         ranked = []
         for handshake in self._hs.values():
@@ -238,22 +238,23 @@ class CapabilityDirectory:
             digest = hashlib.sha256(json.dumps(
                 handshake.describe(), sort_keys=True, default=str).encode()
                                     ).hexdigest()
-            loop_handshake = LoopHandshake(
-                loop_id=handshake.surface, role="code_intelligence",
-                modes=("deterministic",), input_contract="capability_request",
-                output_contract="capability_handshake", effects="pure",
+            item_handshake = IntelligenceItemHandshake(
+                item_id=handshake.surface, layer="code_intelligence",
+                supported_modes=("deterministic",),
+                input_contract="capability_request",
+                output_contract="capability_handshake", effects=(),
                 cost_class="free", maturity="registered",
                 version=handshake.protocol_version)
-            capsule = LoopCapsule(
-                loop_id=handshake.surface, role="code_intelligence",
-                handshake=loop_handshake,
+            package = IntelligenceItemPackage(
+                item_id=handshake.surface, layer="code_intelligence",
+                handshake=item_handshake,
                 payload_ref=f"capability://{handshake.surface}",
                 payload_digest=digest,
                 provenance="core", lifecycle="registered",
                 facets={"surface_kind": handshake.surface_kind,
                         "handshake_digest": digest})
             ranked.append((score, handshake.surface,
-                           capsule.to_ref(score=float(score),
+                           package.to_ref(score=float(score),
                                           source="core")))
         return [item[2] for item in sorted(
             ranked, key=lambda item: (-item[0], item[1]))[:top_n]]
@@ -766,9 +767,9 @@ def self_test() -> dict:
     static_refs = d.search_core(
         "provider neutral model routes")
     check("core_search_returns_local_loop_refs_without_calls",
-          static_refs and static_refs[0].loop_ref.endswith("model_gateway")
+          static_refs and static_refs[0].item_ref.endswith("model_gateway")
           and static_refs[0].source == "core"
-          and static_refs[0].handshake.role == "code_intelligence")
+          and static_refs[0].handshake.layer == "code_intelligence")
 
     unsafe_calls = []
     d.register(CapabilityHandshake(
@@ -782,7 +783,7 @@ def self_test() -> dict:
         obligation="find fixture", desired_capability="remote fixture search"))
     check("federated_discovery_never_executes_effectful_search_endpoints",
           remote_refs and not unsafe_calls
-          and remote_refs[0].loop_ref.endswith("remote_fixture_search"),
+          and remote_refs[0].item_ref.endswith("remote_fixture_search"),
           "effectful capability is discoverable as a local ref, not called")
 
     duplicate_refused = False

@@ -6,12 +6,11 @@ import time
 
 from loop_engine import LoopLedger
 from loop_engine.loop.encapsulate import as_practitioner_loop
-from loop_engine.loop.loop_capsule import LoopRef
+from loop_engine.loop.loop_capsule import IntelligenceItemRef
 from loop_engine.core.run_history import RunHistory
 from loop_engine.core.user_feedback_intelligence import AdviceStore
 from loop_engine.core.intelligence_layers import (
-    build_intelligence_catalog, catalog_summary, materialize_intelligence_ref,
-    query_intelligence)
+    build_intelligence_catalog, catalog_summary, query_intelligence)
 
 
 def add_runtime_history(runs_dir):
@@ -49,20 +48,27 @@ def main():
             print(f"  {layer['public_label']:<38} {layer['items']:>4}  {groups}")
 
         access_ledger = LoopLedger()
-        result = query_intelligence(
+        from loop_engine.core.intelligence_layers import (
+            IntelligenceCatalogLoadContext, IntelligenceCatalogLoadRequest,
+            IntelligenceSearchContext, IntelligenceSearchRequest,
+            load_intelligence_item)
+        result = query_intelligence(IntelligenceSearchRequest(
             "validate customer records and quarantine invalid country codes",
-            catalog, mode="lexical", top_n=3, ledger=access_ledger)
+            catalog, mode="lexical", top_n=3),
+            IntelligenceSearchContext(ledger=access_ledger))
         print("\nTOP MATCHES")
         for hit in result["hits"][:8]:
             c = hit["classification"]
             print(f"  {hit['public_label']:<38} {c['category_group']:<12} "
                   f"{hit['record_id']}  {hit['title'][:70]}")
-        selected = LoopRef.from_dict(result["loop_refs"][0])
-        loaded = materialize_intelligence_ref(
-            selected, catalog, ledger=access_ledger)
+        selected = IntelligenceItemRef.from_dict(
+            result["intelligence_item_refs"][0])
+        loaded = load_intelligence_item(IntelligenceCatalogLoadRequest(
+            selected, catalog),
+            IntelligenceCatalogLoadContext(ledger=access_ledger))
         print("\nSELECTED ITEM")
         print(f"  search loop: {result['query_loop']['loop_id']}")
-        print(f"  selected ref: {selected.loop_ref}")
+        print(f"  selected ref: {selected.item_ref}")
         print(f"  access loop: {loaded['loop_id']}")
         print(f"  value: {str(loaded['value'])[:160]}")
         print(f"  loops recorded: {len(access_ledger.loops())}")

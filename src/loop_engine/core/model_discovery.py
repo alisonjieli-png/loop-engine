@@ -75,6 +75,7 @@ class ModelChoice:
     model: str
     role: str
     context_length: int = 0
+    maximum_output_tokens: "int | None" = None
     price_out: float = 0.0
     supports_reasoning: bool = False
     supports_tools: bool = False
@@ -87,6 +88,7 @@ class ModelChoice:
     def as_dict(self) -> dict:
         return {"provider": self.provider, "model": self.model,
                 "role": self.role, "context_length": self.context_length,
+                "maximum_output_tokens": self.maximum_output_tokens,
                 "price_out": self.price_out, "basis": self.basis,
                 "measured": self.measured,
                 "supports_reasoning": self.supports_reasoning,
@@ -212,8 +214,17 @@ def _listing_catalog(mod, provider: str, limit: int) -> list:
     for mid in mod.live_models():
         if not mid or _forbidden(mid):
             continue
-        ceiling = getattr(mod, "MODEL_MAX_OUTPUT", {}).get(mid, 0)
-        out.append(classify(mid, provider=provider, context_length=ceiling))
+        output_limit = getattr(mod, "MODEL_MAX_OUTPUT", {}).get(mid)
+        choice = classify(mid, provider=provider, context_length=0)
+        out.append(ModelChoice(
+            provider=choice.provider, model=choice.model, role=choice.role,
+            context_length=0,
+            maximum_output_tokens=(int(output_limit)
+                                   if output_limit is not None else None),
+            price_out=choice.price_out,
+            supports_reasoning=choice.supports_reasoning,
+            supports_tools=choice.supports_tools,
+            basis=choice.basis, measured=choice.measured))
         if len(out) >= limit:
             break
     return out
@@ -319,13 +330,26 @@ def self_test() -> dict:
           unpriced.role == "generate" and unpriced.price_out == 0.0,
           "name heuristics are not evidence")
 
-    # 4. FORBIDDEN MODELS never enter a roster, whatever a catalog offers.
+    class _ListingFixture:
+        MODEL_MAX_OUTPUT = {"fixture/model": 4096}
+
+        @staticmethod
+        def live_models():
+            return ["fixture/model"]
+
+    listed = _listing_catalog(_ListingFixture, "fixture", 1)[0]
+    check("output_capacity_never_becomes_context_capacity",
+          listed.context_length == 0
+          and listed.maximum_output_tokens == 4096,
+          "thin catalogs preserve unknown context separately from output")
+
+    # 5. FORBIDDEN MODELS never enter a roster, whatever a catalog offers.
     banned = f"vendor/{FORBIDDEN_MODELS[0]}"
     check("forbidden_models_are_excluded_from_discovery",
           _forbidden(banned) and not _forbidden("vendor/allowed-model"),
           "a catalog cannot introduce a banned model")
 
-    # 5. ROSTER SEMANTICS: ordering, mode support, and empty honesty.
+    # 6. ROSTER SEMANTICS: ordering, mode support, and empty honesty.
     r = ModelRoster(
         choices=[cheap, mid, exp], providers_working=["declared_provider"])
     empty = ModelRoster()
@@ -338,7 +362,7 @@ def self_test() -> dict:
           and not empty.usable,
           "an empty roster runs deterministic loops and says so plainly")
 
-    # 6. ADVERSARIAL: a provider whose probe FAILS must not appear as working,
+    # 7. ADVERSARIAL: a provider whose probe FAILS must not appear as working,
     # and must not contribute models — a catalog is not proof of reach.
     failed = ModelRoster(providers_failed={"dead": "HTTP 401"})
     check("a_provider_that_failed_its_probe_is_not_in_the_roster",
@@ -346,7 +370,7 @@ def self_test() -> dict:
           and failed.summary()["providers_failed"]["dead"] == "HTTP 401",
           "verified by use; a key is not a working provider")
 
-    # 7. the roster converts to route DATA the existing registry accepts —
+    # 8. the roster converts to route DATA the existing registry accepts —
     # discovery FEEDS the route table rather than forking a second one.
     routes = roster_to_routes(r)
     check("a_roster_becomes_routes_the_existing_registry_accepts",

@@ -535,7 +535,12 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
                 facts=dict(spec.seed_facts),
                 failures=state.failures, resets_used=state.resets_used,
                 last_route="cold_restart")
+    structural_fixture = impls.get("act") is default_act
     return {"record_type": "practitioner_run/v1",
+            "execution_evidence_state": (
+                "STRUCTURAL_FIXTURE" if structural_fixture
+                else "CALLER_SUPPLIED_EXECUTOR"),
+            "task_solved": False if structural_fixture else None,
             "node_names": dict(KERNEL_NODE_NAMES),
             "objective": spec.objective, "passes": len(records),
             "final_route": records[-1].route.route if records and
@@ -649,9 +654,13 @@ def default_act(state: PractitionerState, plan: ExecutionPlan) -> list:
         return [ResultPacket(objective=plan.handle,
                              result={"built": plan.handle},
                              artifact_refs=(plan.handle,), confidence=0.8,
-                             cost=1.0)]
+                             cost=1.0,
+                             limitations=("structural fixture; no external "
+                                          "task executor ran",))]
     return [ResultPacket(objective=plan.handle, result={"ran": plan.handle},
-                         confidence=0.9, cost=0.2)]
+                         confidence=0.9, cost=0.2,
+                         limitations=("structural fixture; no external task "
+                                      "executor ran",))]
 
 
 def default_verify(state: PractitionerState, plan: ExecutionPlan,
@@ -882,6 +891,10 @@ def self_test() -> dict:
                       for e in events),
               f"{out['passes']} passes, all in events.jsonl, ended "
               f"stop_success")
+        check("structural_default_never_claims_task_completion",
+              out["execution_evidence_state"] == "STRUCTURAL_FIXTURE"
+              and out["task_solved"] is False,
+              "kernel control-flow success is not external task success")
 
         check("every_success_criterion_was_met_before_stopping",
               out["facts"].get("met:baseline")

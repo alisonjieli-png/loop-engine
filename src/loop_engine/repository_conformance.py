@@ -1,7 +1,7 @@
 """Repository conformance harness: file-by-file, symbol-by-symbol, relationship-by-relationship.
 
 This module indexes every production Python file, class, function, and
-import; validates the one-LoopNode invariant, import boundaries, and
+import; validates the one-Loop-runtime invariant, import boundaries, and
 reference integrity; and canary-proves every detector against
 intentionally bad fixtures before judging the live tree.
 
@@ -21,8 +21,8 @@ import yaml
 _PACKAGE_ROOT = os.path.dirname(os.path.abspath(__file__))
 _REPO_ROOT = os.path.dirname(os.path.dirname(_PACKAGE_ROOT))
 
-#: The only node-named class permitted in the package.
-ALLOWED_NODE_CLASSES = frozenset({"LoopNode"})
+#: Node is an abstract category. Active first-party Node classes are forbidden.
+ALLOWED_NODE_CLASSES = frozenset()
 
 #: Roots production code must never import.
 FORBIDDEN_IMPORT_ROOTS = ("devtools", "tests", "examples", "benchmarks")
@@ -106,7 +106,7 @@ def node_class_violations(root: str) -> list[dict]:
                     "rule": "node_class",
                     "file": relative, "line": node.lineno,
                     "class": node.name,
-                    "detail": "LoopNode must be the only node-named class"})
+                    "detail": "Node is conceptual; executable work uses Loop"})
     return violations
 
 

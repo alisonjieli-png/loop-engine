@@ -90,8 +90,11 @@ class LearningCandidate:
         ac = "code" if self.candidate_type in code else "string"
         life = "validated" if self.validation_status == "validated" \
             else "candidate"
+        from ..ontology.records import StableIdentityRequest, stable_content_id
         return Resource(
-            asset_id=f"cand.{self.candidate_type}.{abs(hash(self.content)) % 10**8}",
+            asset_id=stable_content_id(StableIdentityRequest(
+                f"cand.{self.candidate_type}",
+                (self.content, self.originating_run))),
             asset_class=ac, role=self.candidate_type, content=self.content,
             lifecycle=life, provenance=self.originating_run or "runtime")
 

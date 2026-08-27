@@ -189,7 +189,7 @@ BOUNDARIES = (
     {"boundary": "loop reference invocation",
      "crosses": "a chosen LoopRef becomes content",
      "binding": "practitioner_loop",
-     "envelope": "loop.loop_capsule.invoke_ref",
+     "envelope": "loop.loop_capsule.load_intelligence_ref",
      "test": "loop_capsule:invoking_a_ref_runs_the_loop_and_returns_content"},
     {"boundary": "custom plugin invocation",
      "crosses": "a selected registered plugin performs work",

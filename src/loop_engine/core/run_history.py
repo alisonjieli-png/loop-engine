@@ -229,6 +229,16 @@ class RunHistory:
                    "model_led": "model_invocation",
                    "model_escalation": "model_invocation",
                    "model_invocation_failed": "model_invocation",
+                   "model.invocation.started": "model_invocation",
+                   "model.invocation.completed": "model_invocation",
+                   "model.invocation.failed": "model_invocation",
+                   "model.selection.requested": "capability_search",
+                   "model.selection.completed": "capability_search",
+                   "model.route.rejected": "fallback",
+                   "model.route.selected": "capability_search",
+                   "model.no_model_required": "capability_search",
+                   "model.outcome.recorded": "model_invocation",
+                   "model.routing.candidate.staged": "learning",
                    "intelligence_pull": "context_retrieval",
                    "infra_call": "capability_search",
                    "solution.canvas.updated": "solution_built"}
@@ -246,7 +256,9 @@ class RunHistory:
         ui = 0
         explicit_model_events = any(
             event.get("event") in (
-                "model_led", "model_escalation", "model_invocation_failed")
+                "model_led", "model_escalation", "model_invocation_failed",
+                "model.invocation.started", "model.invocation.completed",
+                "model.invocation.failed")
             for event in ledger_events)
         for e in ledger_events:
             et = cls._LEDGER_MAP.get(e.get("event", ""), "custom")
@@ -338,7 +350,6 @@ class RunHistory:
             raise RunHistoryIntegrityError(
                 "saved event log does not match its manifest or digest chain")
         return ch
-
     # --- OTLP-shaped export (a projection, never the store) ----------------
 
     def to_otel_spans(self) -> list:
@@ -348,6 +359,20 @@ class RunHistory:
 
         records = run_history_to_spans(self, run_id=self.run_id)
         return [asdict(record) for record in records]
+
+
+def verify_saved_run(root: str, run_id: str) -> dict:
+    """Read back one saved run at the owning storage boundary and verify it."""
+    history = RunHistory.load(root, run_id)
+    chain = history.verify_chain()
+    return {
+        "run_id": run_id, "events": len(history.event_log),
+        "head_digest": (history.event_log[-1].event_digest
+                        if history.event_log else ""),
+        "chain_intact": chain["intact"],
+        "broken_at": chain["broken_at"],
+        "path": os.path.join(root, run_id),
+    }
 
 
 def recorded_output_handler(run_history: RunHistory, base_handler,

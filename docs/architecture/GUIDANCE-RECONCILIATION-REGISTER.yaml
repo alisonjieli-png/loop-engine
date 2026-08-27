@@ -1,0 +1,569 @@
+schema_version: 1
+register_id: loop_engine.guidance_reconciliation
+register_version: 0.1.0
+generated_at: "2026-08-27T13:28:13-04:00"
+status: INITIAL_EVIDENCE_BASELINE
+
+repository_baseline:
+  repository: alisonjieli-png/loop-engine
+  remote: https://github.com/alisonjieli-png/loop-engine.git
+  canonical_branch: main
+  starting_sha: 6a26978c5e6cd2e3852818c4bb4b2dac23b0da76
+  origin_main_sha: 6a26978c5e6cd2e3852818c4bb4b2dac23b0da76
+  worktree_state: DIRTY_INHERITED_AND_CONCURRENT
+  initial_observation:
+    tracked_modified_paths: 44
+    untracked_paths: 2
+    note: No listed change was assumed to belong to this reconciliation task.
+  refreshed_observation:
+    observed_at: "2026-08-27T13:28:13-04:00"
+    tracked_modified_paths: 46
+    untracked_paths: 2
+    note: The increase was treated as concurrent work, not as this task's output.
+  inherited_untracked_paths:
+    - src/loop_engine/code_nodes/solution_model_port.py
+    - src/loop_engine/core/model_response_text.py
+  github_actions:
+    workflow: CI
+    run_id: 33081066312
+    url: https://github.com/alisonjieli-png/loop-engine/actions/runs/33081066312
+    conclusion: failure
+    successful_jobs:
+      - suite + conformance gates (3.10)
+      - suite + conformance gates (3.11)
+      - suite + conformance gates (3.12)
+      - build the distribution
+    failed_job: public documentation
+    failed_step: Refuse retired public language
+    failure_summary: The scan included historical prompt text and source text that used retired vocabulary.
+
+authority_precedence:
+  - safety_law_access_and_current_user_restrictions
+  - repository_local_instructions
+  - latest_explicit_loop_engine_user_direction
+  - reconciled_constitution_adrs_and_machine_contracts
+  - verified_current_runtime_schemas_and_tests
+  - current_public_documentation_and_examples
+  - git_and_github_history
+  - earlier_loop_engine_prompts_and_transcripts
+  - exploratory_brainstorming_and_generated_summaries
+
+source_corpus:
+  current_authority:
+    - source_id: SRC-CURRENT-MANDATE
+      kind: current_user_message
+      date: "2026-08-27"
+      location: conversation://loop-engine/execution-first-main-mandate
+      availability: AVAILABLE_IN_CURRENT_CONTEXT
+      authority: current_user_direction
+      scope: Complete execution-first, evidence-first, main-branch mandate.
+    - source_id: SRC-AGENTS
+      kind: repository_instruction
+      location: AGENTS.md
+      content_sha256: b5c132e1ec43cd0773eb4801ca64b3343955f1f292190e6a33e7de3dcee1a644
+      availability: AVAILABLE_DIRTY_WORKTREE
+      authority: repository_local_instruction
+    - source_id: SRC-CONSTITUTION
+      kind: normative_document
+      location: docs/architecture/CONSTITUTION.md
+      content_sha256: 1eadee00babb95f596fd0c8aade8fb6a8deef882158f3d88a56bbc6bdde2882c
+      availability: AVAILABLE_DIRTY_WORKTREE
+      authority: reconciled_constitution
+    - source_id: SRC-ARCHITECTURE-YAML
+      kind: machine_contract
+      location: architecture.yaml
+      content_sha256: 760ac7cfad3265e7227289bbe03cb2246ce895010db0b75e0bee40dbb777976f
+      availability: AVAILABLE_DIRTY_WORKTREE
+      authority: machine_contract
+    - source_id: SRC-TERMINOLOGY-YAML
+      kind: machine_contract
+      location: terminology.yaml
+      content_sha256: 7cf510d3426beef7fd3541d48214bdd18d0b87f9ffaabe635a14068302a4d6a1
+      availability: AVAILABLE_DIRTY_WORKTREE
+      authority: machine_contract
+    - source_id: SRC-README
+      kind: public_documentation
+      location: README.md
+      content_sha256: ff5c978d8ba1daf631d1f76b0b0573f2679e8c84a725c42e10908cd1a6163bbb
+      availability: AVAILABLE
+      authority: public_documentation
+
+  repository_prompt_history:
+    availability: AVAILABLE
+    source_commits:
+      - 5d22a1dc496d5289b9ea39d54f3db384842b5081
+      - 55c78de8825c16c79391ad4de8da7229157184dc
+    paths:
+      - docs/prompts/LOOP-ENGINE-ADVERSARIAL-INTELLIGENCE-SEEKING-MANDATE.md
+      - docs/prompts/LOOP-ENGINE-ARCHITECTURE-VIDEO-BUILD-PROMPT.md
+      - docs/prompts/LOOP-ENGINE-CLEANUP-AND-INTELLIGENCE-ACCESS-PROMPT.md
+      - docs/prompts/LOOP-ENGINE-DEVELOPMENT-ASSURANCE-INTELLIGENCE-MANDATE.md
+      - docs/prompts/LOOP-ENGINE-DEVELOPMENT-ASSURANCE-PLANE-MANDATE.md
+      - docs/prompts/LOOP-ENGINE-DEVELOPMENT-ENGINEERING-ASSURANCE-PLANES-MANDATE.md
+      - docs/prompts/LOOP-ENGINE-FOUNDRY-AND-CAMPAIGN-MANDATE.md
+      - docs/prompts/LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md
+      - docs/prompts/LOOP-ENGINE-LOOPNODE-SPEC-MANDATE.md
+      - docs/prompts/LOOP-ENGINE-PARALLEL-EXECUTION-MANDATE.md
+      - docs/prompts/LOOP-ENGINE-PLANE-INTERACTION-MANDATE.md
+      - docs/prompts/LOOP-ENGINE-UNIVERSAL-EVOLUTION-PROMPT.md
+    interpretation: Historical design evidence only. Current authority is resolved per decision below.
+
+  downloaded_prompt_history:
+    availability: AVAILABLE_LOCAL_ONLY
+    paths:
+      - path: /home/username/Downloads/LOOP_ENGINE_COMPLETE_START_TO_FINISH_MASTER_IMPLEMENTATION_MANDATE.md
+        content_sha256: b9adc701df208ebbc7c59c47cc92f393626397173df047c72224ef3e5c07f589
+      - path: /home/username/Downloads/LOOP_ENGINE_ABSOLUTE_BUILD_FIX_MEASURE_ALIGN_AND_KAGGLE_RSI_MANDATE.md
+        content_sha256: 3cc4e3fff8cdf2714db5b40f643e919b2abc73b5559771ad3f17ba2b3986aaa1
+      - path: /home/username/Downloads/LOOP_ENGINE_AGGRESSIVE_ARCHITECTURE_CLEANUP_AND_IMPLEMENTATION_MANDATE.md
+        content_sha256: 2a0830a6fa56d0c2de1e3307927cedfce1cb86ba9a651a399c06eb55c6928dfa
+      - path: /home/username/Downloads/LOOP_ENGINE_UNIVERSAL_EVOLUTION_COMPATIBILITY_IMPLEMENTATION_HARNESS.md
+        content_sha256: 470f58694c22ddc56d6c742f54f36e007ca12cc1ee9519127882b18bcd318a87
+    duplicates:
+      - path: /home/username/Downloads/LOOP_ENGINE_ABSOLUTE_BUILD_FIX_MEASURE_ALIGN_AND_KAGGLE_RSI_MANDATE(1).md
+        duplicate_of_sha256: 3cc4e3fff8cdf2714db5b40f643e919b2abc73b5559771ad3f17ba2b3986aaa1
+
+  opencode_sessions:
+    database: /home/username/.local/share/opencode/opencode.db
+    selection_rule: Include sessions or exact message fragments whose material work concerns Loop Engine, regardless of session directory.
+    included:
+      - session_id: ses_fc1d8ab0bffeHhNf0snsl3rRF5
+        title: Loop-engine folder full review
+        created_utc: "2026-08-26T12:59:20.180000+00:00"
+        user_messages: 8
+        user_prompt_sha256: 6c42520143ebe495de0bcad5e07b6e675cf56fdffb1304c82ad91760657aaab8
+      - session_id: ses_fc1d70e52ffeoAKSRdXAVCme02
+        title: Review loop-engine docs tree (@explore subagent)
+        created_utc: "2026-08-26T13:01:05.837000+00:00"
+        user_messages: 1
+        user_prompt_sha256: 03b01aed94d368fc0cb50510aa191c80cea491bef71b5db8e1aa5abdae0cad82
+      - session_id: ses_fc1d68daeffeQeDv3SOIRFFZCE
+        title: Review legacy + scratch projects (@general subagent)
+        created_utc: "2026-08-26T13:01:38.769000+00:00"
+        user_messages: 1
+        user_prompt_sha256: 210ce34b55bbfbe7ef983390cb8df20c83d58f66df15c0a05ed207c2b6b6f05e
+      - session_id: ses_fc1d62ca3ffevCkPkvy5wHXssN
+        title: Mine coding-agent session logs (@general subagent)
+        created_utc: "2026-08-26T13:02:03.612000+00:00"
+        user_messages: 1
+        user_prompt_sha256: c05e874c107c669e1b88774255a146cfd193d95b520f30279b0ed405cec86189
+      - session_id: ses_fc1d5caafffeBHXPda7iEPdEoP
+        title: Audit tests, CI, packaging (@explore subagent)
+        created_utc: "2026-08-26T13:02:28.689000+00:00"
+        user_messages: 1
+        user_prompt_sha256: c4354ec7cc4d106275b9c71de6e1212b359c6976f7508f06c6cb79ca0030a7f7
+      - session_id: ses_fc17e65e9ffenj1YspcUk1LZfn
+        title: Loop Engine ontology and versioned storage design
+        created_utc: "2026-08-26T14:37:56.118000+00:00"
+        user_messages: 71
+        user_prompt_sha256: 97ad9b5e43f6e5e3819eb31567ee2cab9b1c9a5ff897ae275ee3a48a09de4a00
+      - session_id: ses_fbea89c0affesmurc6ijvyxuXi
+        title: Reviewing past loop-engine improvement prompts
+        created_utc: "2026-08-27T03:50:41.397000+00:00"
+        user_messages: 32
+        user_prompt_sha256: 3a65c29beb2c1af0267bf0dde35b22874b41f8c56ce6c5fda5257438b15ee26c
+      - session_id: ses_fbea5059effe5m402A1k4D2Vav
+        title: Summarize repo docs state (@explore subagent)
+        created_utc: "2026-08-27T03:54:36.513000+00:00"
+        user_messages: 1
+        user_prompt_sha256: 261bebf8498bcd9027ee1cb7369bd0a3cd86358b73f852dde8a695e8d5fd3d85
+    cross_directory_relevant_fragments:
+      - session_id: ses_fc992ecc3ffeRyHo24s8yTSy4o
+        directory: /home/username/taedri.dev
+        title: Reviewing Claude design files and docs
+        message_id: msg_03732e2dd001WURpgNcuufTHWl
+        part_id: prt_03732e2de001UKGZV9rglUJOtC
+        message_content_sha256: 22b4463bf753ce480d67669ead06445a5bc9f76f5edf9ad65f716c2c0556d346
+        relevance: Predecessor repository naming, one-Loop framing, simple public language, and the decision to retire vague evidence vocabulary.
+        boundary: This fragment is design provenance only; Taedri runtime and governance are not imported.
+      - session_id: ses_fbef6c871ffehUsPFnetz3RyEG
+        directory: /home/username/philippines_wins_everyday
+        title: MCP Luxe and beehiiv connection
+        message_id: msg_043d2d9d3001X10eJMpupiIVg9
+        part_id: prt_043d2d9d4001dcl1f6Ab6LVOe8
+        message_content_sha256: c8f0f2b1ec25afb270a64af185b36b057c538a73536ff4b7e178f1df9f9baaeb
+        relevance: Exact Loop Engine core-proof mandate pasted into an unrelated session.
+        boundary: Only this message fragment is included; newsletter content is excluded.
+      - session_id: ses_fbef6c871ffehUsPFnetz3RyEG
+        directory: /home/username/philippines_wins_everyday
+        title: MCP Luxe and beehiiv connection
+        message_id: msg_043e21564001xzjrYz8KI2tW4d
+        part_id: prt_043e21564002QGFd0WQKz6PkV4
+        message_content_sha256: 1f2e5f7612c4aff7a887bac18008378437e1063f4c0b02efd4dfe85349e0de83
+        relevance: Repeated Loop Engine core-proof mandate pasted into an unrelated session.
+        boundary: Duplicate decision content is retained as provenance and does not create a new decision.
+    excluded:
+      - session_id: ses_fbc999fadffeDYjo74tDKNOvsy
+        title: GLM 5.3 not visible in opencode
+        reason: The session changes OpenCode model discovery, not the Loop Engine repository.
+      - session_id: ses_fce795f17ffekjrf5BE8knBxty
+        title: Taedri universal prompt and harness integration strategy
+        reason: Generic one-Loop language appears, but the material task is Taedri harness architecture rather than Loop Engine.
+    prompt_history_index:
+      path: /home/username/.local/state/opencode/prompt-history.jsonl
+      content_sha256: 5a7b7b9f993d7850a866ca188d1c480fbff1b67ef217f22df40b59544ba803f2
+      relevant_entry_numbers: [1, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 41, 42, 44, 46, 49, 50]
+      note: Duplicate entries were retained as history but did not create duplicate decisions.
+
+  unavailable_standalone_sources:
+    - LOOP_ENGINE_ARCHITECTURE_VERIFICATION_HISTORY_RECONCILIATION_AND_CONDITIONAL_CORRECTION_MANDATE.md
+    - LOOP_ENGINE_CORE_PROOF_NO_SCOPE_DRIFT_MANDATE.md
+    - LOOP_ENGINE_UNIFIED_GUIDANCE_HISTORY_GITHUB_RECONCILIATION_AND_EXECUTION_MANDATE.md
+    - LOOP_ENGINE_MODEL_ROUTING_INTELLIGENCE_AND_UNIFIED_PROVIDER_SELECTION_MANDATE.md
+    - LOOP_ENGINE_AGGRESSIVE_BENCHMARK_AND_STATISTICAL_LEXICAL_INTELLIGENCE_MANDATE.md
+    - LOOP_ENGINE_OPEN_ENDED_MULTIMODAL_SOLUTION_FACTORY_SCENARIO_EXECUTION_MANDATE.md
+    - LOOP_ENGINE_AUTONOMOUS_CAPABILITY_PROVING_AND_SELF_IMPROVEMENT_CAMPAIGN.md
+  unavailable_note: Some content is embedded in current or OpenCode messages, but no exact standalone file was located in the approved roots.
+
+guidance:
+  - guidance_id: LE-GUIDE-001
+    source: [SRC-CURRENT-MANDATE, SRC-AGENTS, SRC-CONSTITUTION, SRC-ARCHITECTURE-YAML]
+    source_version_or_commit: current-context-and-dirty-worktree-at-6a26978
+    source_date_when_known: "2026-08-27"
+    statement: Loop is the sole concrete operational runtime and executable graph vertex.
+    topic: runtime_identity
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-002, LE-GUIDE-003, LE-GUIDE-004]
+    current_runtime_evidence: src/loop_engine/loop/recursive_loop.py defines Loop and refuses subclassing.
+    current_test_evidence: Runtime ontology and repository conformance checks name Loop as the canonical class.
+    current_documentation_evidence: README.md already presents Loop as the executable vertex.
+    accepted_interpretation: Loop is the public and concrete runtime identity.
+    implementation_state: IMPLEMENTED_BUT_UNPROVEN
+    required_action: Reconcile every normative and compatibility surface, then run current conformance and clean-install proof.
+    verification: Pending full regression and a green main workflow.
+
+  - guidance_id: LE-GUIDE-002
+    source: [SRC-CURRENT-MANDATE, SRC-TERMINOLOGY-YAML]
+    source_version_or_commit: current-context-and-dirty-worktree-at-6a26978
+    source_date_when_known: "2026-08-27"
+    statement: LoopNode has no active public meaning; legacy loop_node records migrate to LoopDefinitionRecord.
+    topic: loopnode_qualification
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-001]
+    current_runtime_evidence: src/loop_engine/ontology/loop_node.py is an ontology projection in the inherited dirty worktree.
+    current_test_evidence: Current conformance edits target the one-runtime invariant.
+    current_documentation_evidence: terminology.yaml isolates loop_node under legacy_serialized_terms.
+    accepted_interpretation: Preserve compatibility only when the passive or graph concept is explicit.
+    implementation_state: IMPLEMENTED_BUT_UNPROVEN
+    required_action: Audit imports, saved records, schemas, public exports, and migration behavior before committing.
+    verification: Pending tests against baseline and serialized compatibility cases.
+
+  - guidance_id: LE-GUIDE-003
+    source: [SRC-CURRENT-MANDATE, SRC-AGENTS, SRC-CONSTITUTION]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: Practitioner, Intelligence, and Solution are roles or profile bindings, not runtime subclasses.
+    topic: roles
+    authority: IMPLEMENTED_AND_PROVEN
+    relationships_to_other_guidance: [LE-GUIDE-001, LE-GUIDE-005]
+    current_runtime_evidence: LoopDefinition and Loop identity carry the role and profile fields.
+    current_test_evidence: Existing self-tests reject role-specific runtime classes.
+    current_documentation_evidence: README.md and the Constitution state the separation.
+    accepted_interpretation: Role answers responsibility and never creates another runtime.
+    implementation_state: IMPLEMENTED_AND_PROVEN
+    required_action: Preserve during every later checkpoint.
+    verification: Re-run repository conformance after all changes.
+
+  - guidance_id: LE-GUIDE-004
+    source: [SRC-CURRENT-MANDATE, SRC-AGENTS]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: Passive records, policies, contracts, settings, canvases, model definitions, indexes, and statistics are not Loops.
+    topic: governed_work_boundary
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-001, LE-GUIDE-009, LE-GUIDE-013]
+    current_runtime_evidence: The runtime composes typed passive objects inside Loop definitions and contexts.
+    current_test_evidence: Existing conformance checks reject forbidden runtime class names.
+    current_documentation_evidence: AGENTS.md provides the independent-governance threshold.
+    accepted_interpretation: Only independently governed operational work needs a Loop identity.
+    implementation_state: IMPLEMENTED_BUT_UNPROVEN
+    required_action: Extend mutation checks to every new capability family.
+    verification: Negative fixtures must detect a second runtime and plugin-defined runtime types.
+
+  - guidance_id: LE-GUIDE-005
+    source: [SRC-CURRENT-MANDATE, SRC-AGENTS, SRC-README]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: Every role uses the same per-Loop mode contract; mode is independent of role and authority.
+    topic: role_mode_independence
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-003, LE-GUIDE-006, LE-GUIDE-014]
+    current_runtime_evidence: LoopDefinition supports deterministic, hybrid, and non_deterministic modes; the baseline Solution runner documents a narrower executor implementation.
+    current_test_evidence: Structural mode checks exist, but the full nine-cell execution matrix is not yet proven on current main.
+    current_documentation_evidence: README.md states the shared contract and also discloses the deterministic-only Solution runner limit.
+    accepted_interpretation: Role never rejects a mode; definition, policy, permissions, and installed executor decide eligibility.
+    implementation_state: REQUIRED_NOT_IMPLEMENTED
+    required_action: Prove or finish hybrid and non-deterministic Solution execution through the shared boundary.
+    verification: Nine role-mode cells must run or return typed executor-unavailable results.
+
+  - guidance_id: LE-GUIDE-006
+    source: [SRC-CURRENT-MANDATE, SRC-README]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: LoopGraphDefinition is the only authoritative reusable executable graph; Solution Canvas is a passive builder, candidate, comparison object, and projection.
+    topic: graph_authority
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-001, LE-GUIDE-009]
+    current_runtime_evidence: src/loop_engine/code_nodes/solution_graph.py defines LoopGraphDefinition and solution_canvas.py projects into it.
+    current_test_evidence: Graph and canvas self-check modules exist; round-trip proof remains to be rerun after concurrent edits.
+    current_documentation_evidence: README.md and docs/components/solution-canvas/README.md state the separation.
+    accepted_interpretation: A selected canvas must resolve to exact Loop definitions and one validated graph before execution.
+    implementation_state: IMPLEMENTED_BUT_UNPROVEN
+    required_action: Complete candidate comparison, execution, export, reload, and equivalence evidence.
+    verification: Round-trip digest and typed-edge equivalence on an installed wheel.
+
+  - guidance_id: LE-GUIDE-007
+    source: [SRC-CURRENT-MANDATE, SRC-AGENTS]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: Preserve four persistent intelligence layers and use nine Functional Intelligence Domains only as non-exclusive metadata.
+    topic: intelligence_classification
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-008, LE-GUIDE-013]
+    current_runtime_evidence: architecture.yaml declares context, code, runtime_history_solution, and user_feedback layers.
+    current_test_evidence: Existing checks enforce non-exclusive function classification and step-independent access.
+    current_documentation_evidence: README.md lists the four layers; the current mandate qualifies the nine functions.
+    accepted_interpretation: Functions describe why a record is useful and do not create physical layers.
+    implementation_state: IMPLEMENTED_BUT_UNPROVEN
+    required_action: Remove stale exclusive-layer claims without creating nine storage trees.
+    verification: Cross-layer query and multi-function record tests.
+
+  - guidance_id: LE-GUIDE-008
+    source: [SRC-CURRENT-MANDATE, SRC-CONSTITUTION]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: Intelligence access policy, seeking strategy, query profile, portfolio definition, and one-run snapshot remain distinct.
+    topic: intelligence_access_and_ranking
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-007]
+    current_runtime_evidence: Existing intelligence portfolio and memory query objects separate filters from preferences.
+    current_test_evidence: The Constitution names checks for policy and preference separation.
+    current_documentation_evidence: AGENTS.md states that preference must not grant permission.
+    accepted_interpretation: Hard authority is applied before search expansion and soft ranking.
+    implementation_state: IMPLEMENTED_BUT_UNPROVEN
+    required_action: Verify scope, lifecycle, ranking, selection, materialization, and empty-result behavior end to end.
+    verification: Adversarial query tests and no-cross-scope-leak proof.
+
+  - guidance_id: LE-GUIDE-009
+    source: [SRC-CURRENT-MANDATE, SRC-README]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: The public solve path must perform governed task compilation, intelligence use, execution, verification, and Run History recording.
+    topic: core_solve
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-005, LE-GUIDE-006, LE-GUIDE-010]
+    current_runtime_evidence: src/loop_engine/__main__.py delegates to universal_solve; the resulting depth and verification remain under review.
+    current_test_evidence: No current clean-wheel end-to-end evidence has yet been recorded for text, file, and task-pack convergence.
+    current_documentation_evidence: README.md advertises task compile and solve commands.
+    accepted_interpretation: A success boolean is a summary of proven work, never the implementation itself.
+    implementation_state: IMPLEMENTED_BUT_UNPROVEN
+    required_action: Reproduce all intake forms and close every missing stage on one canonical path.
+    verification: Installed-wheel deterministic, hybrid, and model-led proof tasks with saved history.
+
+  - guidance_id: LE-GUIDE-010
+    source: [SRC-CURRENT-MANDATE, SRC-README]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: Learning is complete only after durable staging, independent review, promotion, later retrieval and use, measured improvement, and negative-transfer protection.
+    topic: governed_learning
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-009, LE-GUIDE-011]
+    current_runtime_evidence: The baseline public CLI stages candidates; concurrent changes add local review and promotion methods that are not yet accepted evidence.
+    current_test_evidence: Lifecycle self-checks cover self-review refusal, but the two-run installed proof is not yet recorded.
+    current_documentation_evidence: README.md discloses that the fifth demo step stages only.
+    accepted_interpretation: Candidate presence and candidate listing are not promotion or reuse proof.
+    implementation_state: REQUIRED_NOT_IMPLEMENTED
+    required_action: Complete durable review, promotion, active collection retrieval, later use, control comparison, and rollback behavior.
+    verification: Two-run holdout proof plus an incompatible-scope case.
+
+  - guidance_id: LE-GUIDE-011
+    source: [SRC-CURRENT-MANDATE, SRC-CONSTITUTION]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: Runtime Memory, Working, Episodic, Semantic, and Procedural Memory, Run History, candidates, and active Learned intelligence are distinct.
+    topic: memory_and_history
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-010, LE-GUIDE-012]
+    current_runtime_evidence: Separate packages and lifecycle records exist for these concerns.
+    current_test_evidence: Existing self-tests check distinct memory types and lifecycle transitions.
+    current_documentation_evidence: The current mandate defines each boundary and its persistence meaning.
+    accepted_interpretation: Conversion between any two concepts requires an explicit governed transition.
+    implementation_state: IMPLEMENTED_BUT_UNPROVEN
+    required_action: Verify storage identity, replay, candidate promotion, and later retrieval without silent conversion.
+    verification: Round-trip and cross-run tests with exact record references.
+
+  - guidance_id: LE-GUIDE-012
+    source: [SRC-CURRENT-MANDATE, SRC-README]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: Run History is the public history term and one canonical event history serves core, routing, research, benchmarks, scenarios, and Studio.
+    topic: history_vocabulary_and_authority
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-011, LE-GUIDE-019]
+    current_runtime_evidence: src/loop_engine/core/run_history.py is the current named projection; older internal names remain in baseline source.
+    current_test_evidence: GitHub run 33081066312 failed the public vocabulary step while suite jobs passed.
+    current_documentation_evidence: README.md consistently uses Run History while historical prompt files preserve older vocabulary.
+    accepted_interpretation: Preserve historical artifacts as evidence; use Run History, event log, record, report, or evidence in current public prose.
+    implementation_state: REQUIRED_NOT_IMPLEMENTED
+    required_action: Fix the scanner boundary and current vocabulary at the source without erasing historical evidence.
+    verification: Public documentation job green on main and conformance green on source.
+
+  - guidance_id: LE-GUIDE-013
+    source: [SRC-CURRENT-MANDATE, SRC-README]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: Core Architecture exposes exactly Intelligence Search and Retrieval, Web Research, and Custom Plugins as public capability groups.
+    topic: capability_groups
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-004, LE-GUIDE-007, LE-GUIDE-014]
+    current_runtime_evidence: LoopRuntimeContext exposes three typed ports and internal mechanics separately.
+    current_test_evidence: Boundary registry and conformance checks cover registered runtime boundaries.
+    current_documentation_evidence: README.md names exactly these groups.
+    accepted_interpretation: Providers, storage, settings, Studio, and routing support Loop work but are not extra public groups.
+    implementation_state: IMPLEMENTED_BUT_UNPROVEN
+    required_action: Preserve the boundary while filling typed adapters needed for the core path.
+    verification: Capability handshake, unavailable result, and plugin isolation tests.
+
+  - guidance_id: LE-GUIDE-014
+    source: [SRC-CURRENT-MANDATE, SRC-AGENTS]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: ModelGateway is the one canonical model invocation boundary for local, organization, cloud, subscription, and custom routes.
+    topic: model_gateway
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-005, LE-GUIDE-015]
+    current_runtime_evidence: ProviderAdapter, ProviderSpec, ModelRoute, and ModelGateway exist; built-ins document Ollama Cloud, Mistral, and OpenRouter.
+    current_test_evidence: Existing gateway self-checks cover attempts and failover; local and role-parity proof remains incomplete.
+    current_documentation_evidence: docs/components/core-architecture/MODEL-GATEWAY.md describes one provider-neutral boundary.
+    accepted_interpretation: Locality is route metadata and never creates another runtime or model plane.
+    implementation_state: IMPLEMENTED_BUT_UNPROVEN
+    required_action: Finish deterministic-first selection, exact deployment identity, local-only policy, typed failover, and escalation evidence.
+    verification: Offline fixtures plus an authorized live local endpoint run when available.
+
+  - guidance_id: LE-GUIDE-015
+    source: [SRC-CURRENT-MANDATE]
+    source_version_or_commit: current-context
+    source_date_when_known: "2026-08-27"
+    statement: Dedicated model-routing intelligence is a record family and portfolio across existing layers, not a fifth layer.
+    topic: model_routing_intelligence
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-007, LE-GUIDE-014]
+    current_runtime_evidence: Current route, policy, capabilities, and settings objects cover part of the contract; suitability and learning records are not yet proven complete.
+    current_test_evidence: No frozen holdout routing benchmark is recorded for the current worktree.
+    current_documentation_evidence: The current mandate defines capability, suitability, availability, policy, preference, and outcome as separate facts.
+    accepted_interpretation: Deterministic filtering bootstraps selection; optional models may only rank already valid candidates.
+    implementation_state: REQUIRED_NOT_IMPLEMENTED
+    required_action: Reuse existing types, add only missing typed records, then measure routing value.
+    verification: Ten required routing scenarios and holdout regret measurement.
+
+  - guidance_id: LE-GUIDE-016
+    source: [SRC-CURRENT-MANDATE]
+    source_version_or_commit: current-context
+    source_date_when_known: "2026-08-27"
+    statement: Original input and normalized interpretation must both survive task compilation with Question, Operator, Response, and Decision contracts.
+    topic: task_compiler
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-009, LE-GUIDE-017]
+    current_runtime_evidence: Template compiler work is present in concurrent edits; acceptance evidence is not yet available.
+    current_test_evidence: Current worktree tests have not yet been recorded for preservation and semantic coordinates.
+    current_documentation_evidence: The current mandate specifies WorkItemIR and the four independent coordinates.
+    accepted_interpretation: Templates may assist interpretation but cannot erase requirements, grant authority, or define success.
+    implementation_state: REQUIRED_NOT_IMPLEMENTED
+    required_action: Finish one typed compiler shared by text, file, URL, dataset, repository, and task-pack adapters.
+    verification: Original-input round trip, explicit unknowns, conditional question graph, and intake convergence.
+
+  - guidance_id: LE-GUIDE-017
+    source: [SRC-CURRENT-MANDATE, SRC-AGENTS]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: The reference Practitioner may preserve its versioned nine-step identity while task compilation remains an explicit governed responsibility and custom profiles remain flexible.
+    topic: practitioner_profiles
+    authority: ACCEPTED_WITH_QUALIFICATION
+    relationships_to_other_guidance: [LE-GUIDE-003, LE-GUIDE-016]
+    current_runtime_evidence: The kernel includes compile_bind_task and the catalog retains practitioner.reference_nine_step.
+    current_test_evidence: Existing kernel checks exercise the reference sequence; arbitrary procedures need renewed proof.
+    current_documentation_evidence: The current mandate permits a governed subprocedure, binding, or versioned stage migration.
+    accepted_interpretation: Responsibility is mandatory; one universal step count is not.
+    implementation_state: IMPLEMENTED_BUT_UNPROVEN
+    required_action: Document the binding and test atomic, sequence, DAG, conditional, bounded-cycle, and dynamic profiles.
+    verification: Profile-version compatibility and custom procedure conformance.
+
+  - guidance_id: LE-GUIDE-018
+    source: [SRC-CURRENT-MANDATE]
+    source_version_or_commit: current-context
+    source_date_when_known: "2026-08-27"
+    statement: N-grams, frequency statistics, vectors, SQL indexes, and graph indexes are rebuildable retrieval materializations, not intelligence truth or ontology.
+    topic: retrieval_materialization
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-007, LE-GUIDE-020]
+    current_runtime_evidence: Existing retrieval code has lexical, vector, and hybrid paths; the required versioned n-gram space is not proven.
+    current_test_evidence: Historical retrieval measures do not substitute for a new frozen development and holdout tournament.
+    current_documentation_evidence: The current mandate separates model-internal learned n-grams from external Loop Engine retrieval indexes.
+    accepted_interpretation: Canonical records remain the authority and every index is traceable and rebuildable.
+    implementation_state: FUTURE_BACKLOG
+    required_action: Admit after core proof; implement only against frozen judgments and scoped leakage checks.
+    verification: Recall, precision, MRR, nDCG, latency, size, build, update, and scope-leak measures.
+
+  - guidance_id: LE-GUIDE-019
+    source: [SRC-CURRENT-MANDATE]
+    source_version_or_commit: current-context
+    source_date_when_known: "2026-08-27"
+    statement: Spawned and durable work must be owned, bounded, cancelable, terminally recorded, and free of orphan execution.
+    topic: concurrency_and_lifecycle
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-001, LE-GUIDE-012]
+    current_runtime_evidence: SpawnedTaskManager and delegation contracts exist; commit 6a26978 repaired Python 3.10 timeout handling.
+    current_test_evidence: GitHub suite jobs passed on Python 3.10, 3.11, and 3.12 at 6a26978.
+    current_documentation_evidence: AGENTS.md requires explicit relationship, budget, ownership, and terminal conditions.
+    accepted_interpretation: Scheduling and placement change execution conditions, not runtime ontology.
+    implementation_state: IMPLEMENTED_AND_PROVEN
+    required_action: Preserve and rerun after current concurrent edits.
+    verification: Timeout, cancellation, failure propagation, join, and orphan checks.
+
+  - guidance_id: LE-GUIDE-020
+    source: [SRC-CURRENT-MANDATE]
+    source_version_or_commit: current-context
+    source_date_when_known: "2026-08-27"
+    statement: Benchmarks and scenario claims require exact matched conditions, frozen populations, independent evaluation, failures, uncertainty, and artifact provenance.
+    topic: measurement
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-015, LE-GUIDE-018, LE-GUIDE-021]
+    current_runtime_evidence: Benchmark registry, campaign runner, harness adapters, and scenario catalog exist.
+    current_test_evidence: A registered adapter or fixture is not evidence of a real provider or external harness run.
+    current_documentation_evidence: AGENTS.md and the current mandate define the full-system benchmark chain and evidence limits.
+    accepted_interpretation: Keep offline fixture, simulation, static validation, local model, and real provider evidence explicitly distinct.
+    implementation_state: IMPLEMENTED_BUT_UNPROVEN
+    required_action: Run matched canonical campaigns only after core proof, then publish supported claims.
+    verification: Exact comparison keys, trial counts, failure accounting, uncertainty, and Pareto views.
+
+  - guidance_id: LE-GUIDE-021
+    source: [SRC-CURRENT-MANDATE]
+    source_version_or_commit: current-context
+    source_date_when_known: "2026-08-27"
+    statement: Large research, Solution Factory, benchmark, retrieval, and Kaggle RSI work follows the proven core path and does not replace it.
+    topic: checkpoint_order
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-009, LE-GUIDE-010, LE-GUIDE-020]
+    current_runtime_evidence: Several adapters and scenario artifacts already exist, but their presence does not prove the core path.
+    current_test_evidence: Current main has a red documentation job and no accepted final core completion report.
+    current_documentation_evidence: The latest mandate defines checkpoint order from reconciliation through release.
+    accepted_interpretation: Preserve valuable existing work, close the earliest incomplete hard checkpoint, then expand.
+    implementation_state: ACCEPTED_CURRENT
+    required_action: Maintain checkpoint order and exact blocker reporting.
+    verification: Each checkpoint has current tests, commit, main workflow evidence, and publication state.
+
+  - guidance_id: LE-GUIDE-022
+    source: [SRC-CURRENT-MANDATE, SRC-AGENTS]
+    source_version_or_commit: current
+    source_date_when_known: "2026-08-27"
+    statement: Work converges directly on main with coherent commits; no force push, competing implementation tree, or known-red publication is allowed.
+    topic: repository_workflow
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-021]
+    current_runtime_evidence: HEAD and origin/main both resolve to 6a26978; the inherited worktree is dirty and concurrent.
+    current_test_evidence: No new commit or push is claimed by this initial register.
+    current_documentation_evidence: The current mandate authorizes commits and push only after gates pass.
+    accepted_interpretation: Preserve concurrent work, isolate ownership, and commit only verified coherent changes.
+    implementation_state: ACCEPTED_CURRENT
+    required_action: Recheck ownership and status before every commit.
+    verification: Clean staged diff, targeted tests, full tests, main push, and GitHub readback.

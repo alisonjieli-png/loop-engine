@@ -3,7 +3,7 @@
 A memory type answers: what kind of retained cognition is this?
 
 - working: bounded, run-scoped state for one Loop's current cycle;
-- episodic: a bounded, time-ordered experience with Chronicle provenance;
+- episodic: a bounded, time-ordered experience with Run History provenance;
 - semantic: generalized knowledge with evidence, validity, and scope;
 - procedural: contracted, versioned, evidence-backed know-how.
 

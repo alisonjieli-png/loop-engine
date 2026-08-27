@@ -1,7 +1,7 @@
 """Three-model ensemble through the canonical Loop runtime.
 
 Build a linear model, a neural-network model, and a tree model, then
-ensemble them. Each model trains as an independent child Loop with its
+ensemble them. Each model trains as an independent Spawned Loop with its
 own typed contract. The same immutable split is shared across all
 members. Per-member and ensemble metrics are reported, and the
 ensemble is verified not to be silently worse than every member.
@@ -65,7 +65,7 @@ class DatasetSplit:
 
 @dataclass(frozen=True)
 class ModelArtifact:
-    """Typed result of one model-training child Loop."""
+    """Typed result of one model-training Spawned Loop."""
 
     model_id: str
     family: str
@@ -117,7 +117,7 @@ def _make_split(spec: DatasetSpec) -> DatasetSplit:
 
 def _train_member(family: str, split: DatasetSplit, seed: int,
                   parent: Loop, ledger: LoopLedger) -> ModelArtifact:
-    """Train one model as an independent child Loop."""
+    """Train one model as an independent Spawned Loop."""
     x_train = np.asarray(split.x_train)
     x_test = np.asarray(split.x_test)
     y_train = np.asarray(split.y_train)
@@ -203,7 +203,7 @@ def main() -> None:
     ensemble = result["ensemble"]
     print("THREE-MODEL ENSEMBLE")
     print(f"split digest: {result['split_digest'][:16]}...")
-    print(f"root loop: {result['root_loop_id']}")
+    print(f"starting loop: {result['root_loop_id']}")
     print(f"ledger events: {result['ledger_events']}")
     print()
     print("MEMBER RESULTS")

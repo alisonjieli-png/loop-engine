@@ -57,7 +57,7 @@ import json
 import os
 import urllib.error
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .ollama_client import ChatResult, FORBIDDEN_MODELS
 from .model_capabilities import (
@@ -70,7 +70,7 @@ from .provider_failover import PROVIDERS
 #: self-hosted servers; "ollama" is the native /api/chat shape.
 WIRE_FORMATS = ("openai", "ollama")
 
-LOCALITIES = ("cloud", "local")
+LOCALITIES = ("cloud", "organization", "local")
 
 
 class EndpointError(ValueError):
@@ -88,7 +88,7 @@ class CustomEndpoint:
     name: str
     base_url: str
     model: str
-    api_key: str = ""
+    api_key: str = field(default="", repr=False, compare=False)
     wire: str = "openai"
     locality: str = "local"
     output_capability: "ModelOutputCapability | None" = None
@@ -447,6 +447,7 @@ def self_test() -> dict:
     d = ep.describe()
     check("the_record_shape_records_that_a_key_exists_never_the_key",
           d["has_key"] is True and "secret-key-xyz" not in json.dumps(d)
+          and "secret-key-xyz" not in repr(ep)
           and d["counts_as_evidence"] is False,
           "records carry posture, never credentials")
 

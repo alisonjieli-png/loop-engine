@@ -1,7 +1,7 @@
 ---
 folder_id: ontology
 parent: ""
-ontology_version: 1.0.0
+ontology_version: 2.0.0
 ---
 
 # Ontology
@@ -14,14 +14,14 @@ into one logical catalog.
 It adds no runtime. There is still exactly one operational runtime type,
 the Loop, and work starts only through `LoopStartRequest`.
 
-## The two foundational object classes
+## Record shapes and the separate runtime
 
-The system needs two object definitions, and only these two:
+The ontology package has two passive record shapes. Neither is a runtime:
 
 ```text
-Node                        (passive persistent record at rest)
+CatalogRecord               (passive persistent record at rest)
 ├── identity: object_id, version, content_digest
-├── kind: node | loop_node
+├── kind: catalog_record | loop_definition_record
 ├── artifact_kind: loop_definition, loop_graph, intelligence_record,
 │                 contract, binding, code_unit, policy
 ├── source_class: core | learned | plugin
@@ -31,7 +31,7 @@ Node                        (passive persistent record at rest)
 ├── parent_collection
 └── typed input roles and output roles
 
-LoopNode(Node)              (the only executable specialization)
+LoopDefinitionRecord(CatalogRecord)  (projection of a LoopDefinition)
 ├── role: practitioner | intelligence | solution
 ├── role_profile_id and version
 ├── supported_modes: deterministic, hybrid, non_deterministic
@@ -40,13 +40,13 @@ LoopNode(Node)              (the only executable specialization)
 └── effects, permissions, required capabilities
 ```
 
-A `Node` never runs. A `LoopNode` names work that can run; it is a
-definition at rest, not a live process. A `LoopNode` becomes live only
-when its exact definition reference resolves through the existing
-registry and starts through `LoopStartRequest`. Both classes are
-projections of existing authoritative contracts, so their digests match
-the runtime definitions they describe and neither view can drift from
-the other silently.
+A `CatalogRecord` never runs. The sole concrete operational runtime is
+`loop_engine.loop.recursive_loop.Loop`. Work starts only when an exact
+`LoopDefinitionRef` resolves and a `LoopStartRequest` creates a `Loop`.
+Historical `kind: loop_node` input is accepted only by the exact compatibility
+reader and is never emitted.
+The catalog projection and runtime definition share an identity and digest;
+they do not create two execution authorities.
 
 ## What folders mean
 

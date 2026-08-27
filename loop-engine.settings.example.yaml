@@ -31,9 +31,21 @@ models:
     - id: openrouter
       kind: builtin
       credential_env: OPENROUTER_API_KEY
+    # Optional keyless local route. Publisher model-card facts are not a
+    # verified deployment capability. Pin the exact revision/deployment and
+    # add maximum_output_tokens plus maximum_output_source only after probing
+    # the server you actually run.
+    - id: local_qwen38_2b
+      kind: custom
+      endpoint: http://127.0.0.1:8000/v1
+      model: empero-ai/Qwen3.8-2B-Distill
+      wire: openai
+      locality: local
+      credential_env: ""
+      purposes: [decide_label, query_rewrite, structured_extract]
   tiers:
     small:
-      routes: [cloud.mistral, cloud.default]
+      routes: [custom.local_qwen38_2b, cloud.mistral, cloud.default]
       timeout_seconds: 120
       max_attempts: 2
     medium:

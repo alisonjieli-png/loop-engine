@@ -97,7 +97,7 @@ def main():
     )
 
     print("BRAVE STATIC ARCHITECTURE PLUGIN")
-    print(f"  selected ref: {selected.loop_ref}")
+    print(f"  selected ref: {selected.item_ref}")
     print(f"  calls before discovery: {calls_before_discovery}")
     print(f"  calls after discovery: {calls_after_discovery}")
     print(f"  capability loop: {result['loop_id']}")

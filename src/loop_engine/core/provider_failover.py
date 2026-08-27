@@ -24,10 +24,10 @@ small and boring:
     that must be visible, not smoothed over.
 
 Owns:
-    - PROVIDERS: the adapter table (provider name -> module);
-    - ProviderAttempt / FailoverResult: what was tried, what answered, the cost;
-    - call_with_failover(): the ordered attempt itself;
-    - available_providers(): which credentials actually work, verified by USE.
+    - PROVIDERS: compatibility adapter discovery data;
+    - ProviderAttempt / FailoverResult: compatibility result projections;
+    - call_with_failover(): a typed delegation into ModelGateway;
+    - available_providers(): explicit provider probes.
 
 Does not own:
     - the adapters (ollama_client, openrouter_client, mistral_client), route
@@ -113,62 +113,93 @@ class FailoverResult:
                 "providers_tried": [a.provider for a in self.attempts]}
 
 
-def call_with_failover(prompt: str, *, order=DEFAULT_ORDER, models=None,
-                       system: str = "", timeout: float = 900.0,
-                       maxout: bool = True, ledger=None,
-                       loop_id: str = "provider.failover") -> FailoverResult:
-    """Try providers in order; return the first success, naming who answered.
+@dataclass(frozen=True)
+class ProviderFailoverRequest:
+    """Passive compatibility request delegated to the canonical gateway."""
 
-    ``models`` optionally maps provider -> model name; a provider not named
-    uses its own default. Every attempt is recorded, successes and refusals
-    alike, because "we tried three providers and the third worked" is a
-    materially different record from "a model answered"."""
-    models = models or {}
-    res = FailoverResult()
+    prompt: str
+    order: tuple[str, ...] = DEFAULT_ORDER
+    models: tuple[tuple[str, str], ...] = ()
+    system: str = ""
+    timeout_seconds: float = 900.0
 
-    for name in order:
-        mod = PROVIDERS.get(name)
-        if mod is None:
-            res.attempts.append(ProviderAttempt(
-                provider=name, model="", ok=False,
-                error=f"unknown provider {name!r}; have {sorted(PROVIDERS)}"))
+    def __post_init__(self) -> None:
+        if not self.prompt.strip() or not self.order:
+            raise ValueError("failover request needs a prompt and route order")
+        names = [name for name, _model in self.models]
+        if len(names) != len(set(names)):
+            raise ValueError("failover model overrides must be unique")
+        if self.timeout_seconds <= 0:
+            raise ValueError("timeout_seconds must be positive")
+
+
+@dataclass(frozen=True)
+class ProviderFailoverContext:
+    """Optional Loop ownership and event context for gateway execution."""
+
+    ledger: object | None = None
+    parent: object | None = None
+
+
+def call_with_failover(
+        request: ProviderFailoverRequest,
+        context: ProviderFailoverContext | None = None) -> FailoverResult:
+    """Delegate one ordered compatibility request to ``ModelGateway``."""
+    from .model_gateway import (
+        ModelGateway, ModelGatewayConfig, ModelGatewayRequest,
+        builtin_provider_specs)
+    from .model_routes import ModelRoute, RoutePolicy
+
+    if not isinstance(request, ProviderFailoverRequest):
+        raise TypeError("call_with_failover needs ProviderFailoverRequest")
+    selected_context = context or ProviderFailoverContext()
+    model_overrides = dict(request.models)
+    preflight_attempts: list[ProviderAttempt] = []
+    routes = []
+    for index, provider_id in enumerate(request.order):
+        adapter = PROVIDERS.get(provider_id)
+        if adapter is None:
+            preflight_attempts.append(ProviderAttempt(
+                provider_id, "", False,
+                error=f"unknown provider {provider_id!r}; "
+                      f"have {sorted(PROVIDERS)}"))
             continue
-        model = models.get(name, mod.DEFAULT_MODEL)
-        # policy before contact: a banned model is never sent anywhere
+        model = model_overrides.get(provider_id, adapter.DEFAULT_MODEL)
         base = model.split("/")[-1].split(":")[0]
-        if any(f in model or f in base for f in FORBIDDEN_MODELS):
-            res.attempts.append(ProviderAttempt(
-                provider=name, model=model, ok=False,
+        if any(value in model or value in base for value in FORBIDDEN_MODELS):
+            preflight_attempts.append(ProviderAttempt(
+                provider_id, model, False,
                 error=f"model {model!r} is forbidden by policy"))
             continue
-
-        fn = mod.chat_maxout if maxout else mod.chat
-        r = fn(prompt, model=model, system=system, timeout=timeout)
-        res.attempts.append(ProviderAttempt(
-            provider=name, model=r.model, ok=bool(r.ok),
-            prompt_tokens=r.prompt_tokens, eval_tokens=r.eval_tokens,
-            error=r.error))
-        if ledger is not None:
-            # literal event kinds in both arms: a computed kind cannot have its
-            # canonical family checked, so the conformance gate refuses one
-            _u = {"model": r.model, "provider": name,
-                  "prompt_tokens": r.prompt_tokens,
-                  "eval_tokens": r.eval_tokens}
-            if r.ok:
-                ledger.record(loop_id=loop_id, event="model_led", **_u)
-            else:
-                ledger.record(loop_id=loop_id,
-                              event="model_invocation_failed", **_u)
-        if r.ok and str(r.text).strip():
-            res.text, res.provider, res.model, res.ok = (
-                str(r.text), name, r.model, True)
-            res.prompt_tokens, res.eval_tokens = (r.prompt_tokens,
-                                                  r.eval_tokens)
-            return res
-
-    # EVERY provider refused. This is a failure and stays one — the caller
-    # must not be able to mistake it for an answer.
-    return res
+        routes.append(ModelRoute(
+            name=f"compat.failover.{index}.{provider_id}",
+            provider=provider_id, model=model, locality="cloud",
+            purposes=("generation",)))
+    if not routes:
+        return FailoverResult(attempts=preflight_attempts)
+    gateway = ModelGateway(
+        providers=builtin_provider_specs(PROVIDERS), routes=tuple(routes),
+        policy=RoutePolicy())
+    gateway_result = gateway.invoke(ModelGatewayRequest(
+        prompt=request.prompt, system=request.system,
+        config=ModelGatewayConfig(
+            purpose="generation",
+            route_names=tuple(route.name for route in routes),
+            allowed_localities=("cloud",), allow_failover=True,
+            max_route_attempts=len(routes),
+            timeout_seconds=request.timeout_seconds)),
+        ledger=selected_context.ledger, parent=selected_context.parent)
+    attempts = [*preflight_attempts, *(ProviderAttempt(
+        attempt.provider, attempt.model, attempt.ok,
+        prompt_tokens=attempt.input_tokens or 0,
+        eval_tokens=attempt.output_tokens or 0,
+        error=attempt.error) for attempt in gateway_result.attempts)]
+    return FailoverResult(
+        text=gateway_result.text, provider=gateway_result.provider,
+        model=gateway_result.model, ok=gateway_result.ok,
+        prompt_tokens=gateway_result.input_tokens or 0,
+        eval_tokens=gateway_result.output_tokens or 0,
+        attempts=attempts)
 
 
 def available_providers(order=DEFAULT_ORDER) -> dict:
@@ -194,15 +225,16 @@ def self_test() -> dict:
     def check(name, ok, note=""):
         results.append({"test": name, "passed": bool(ok), "detail": note})
 
-    unknown = call_with_failover("q", order=("not_configured",))
+    unknown = call_with_failover(ProviderFailoverRequest(
+        "q", order=("not_configured",)))
     check("an_unknown_provider_is_a_typed_refusal",
           not unknown.ok and len(unknown.attempts) == 1
           and "unknown provider" in unknown.attempts[0].error,
           "no provider boundary was invoked")
 
-    banned = call_with_failover(
+    banned = call_with_failover(ProviderFailoverRequest(
         "q", order=("ollama_cloud",),
-        models={"ollama_cloud": f"vendor/{FORBIDDEN_MODELS[0]}"})
+        models=(("ollama_cloud", f"vendor/{FORBIDDEN_MODELS[0]}"),)))
     check("a_forbidden_model_is_refused_before_provider_use",
           not banned.ok and len(banned.attempts) == 1
           and "forbidden" in banned.attempts[0].error

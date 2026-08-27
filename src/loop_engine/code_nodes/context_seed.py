@@ -590,12 +590,13 @@ def self_test() -> dict:
                   for question in first.research_questions)
           and all(record.body.get("claim_status") == "proposal"
                   for record in first.candidates))
-    from ..core.intelligence_layers import query_intelligence
-    hidden = query_intelligence(
-        "space mission risk", {"context": list(first.candidates)})
-    visible = query_intelligence(
+    from ..core.intelligence_layers import (
+        IntelligenceSearchRequest, query_intelligence)
+    hidden = query_intelligence(IntelligenceSearchRequest(
+        "space mission risk", {"context": list(first.candidates)}))
+    visible = query_intelligence(IntelligenceSearchRequest(
         "space mission risk", {"context_intelligence": list(first.candidates)},
-        include_candidates=True)
+        include_candidates=True))
     check("candidate_context_is_excluded_until_explicitly_requested",
           not hidden["hits"] and visible["hits"]
           and visible["hits"][0]["public_label"] == "Context Intelligence")

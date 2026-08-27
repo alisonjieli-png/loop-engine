@@ -72,6 +72,7 @@ def run_demonstration() -> dict:
         repairs=("rewrite all imports",),
         exact_versions={"engine": "0.9.0"},
         summary="migration failed because imports were not rewritten",
+        scope=MemoryScope.PROJECT,
         lifecycle=MemoryLifecycle.CANDIDATE)
     store.put(episode)
     transition(episode, MemoryLifecycle.UNDER_REVIEW)

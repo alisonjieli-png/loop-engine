@@ -32,7 +32,7 @@ network, model, file, cost, and external-effect notes.
 | [15 verify a deployment profile](15_verify_a_deployment_profile/) | Binds a versioned Verifier profile and checks typed loop ports before a deterministic release decision. |
 | [16 audit published harness evidence](16_compare_complex_harnesses/) | Validates source-backed published results without running a harness or model. |
 | [17 classify harness files](17_classify_harness_files/) | Classifies real repository sources into the four intelligence layers without activating them. |
-| [18 three-model ensemble](18_three_model_ensemble/) | Trains linear, neural, and tree models as child Loops, ensembles them, and verifies the result honestly. |
+| [18 three-model ensemble](18_three_model_ensemble/) | Trains linear, neural, and tree models as Spawned Loops, ensembles them, and verifies the result honestly. |
 | [19 four-memory demonstration](19_four_memory_demonstration/) | Two-run migration scenario exercising working, episodic, semantic, and procedural memory through the canonical runtime. |
 
 ## Understand a run

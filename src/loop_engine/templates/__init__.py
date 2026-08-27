@@ -18,10 +18,18 @@ _PUBLIC = {
     "TaskTemplate": ("model", "TaskTemplate"),
     "TemplateBinding": ("model", "TemplateBinding"),
     "CompiledTask": ("model", "CompiledTask"),
+    "SemanticCoordinates": ("model", "SemanticCoordinates"),
+    "WorkItemIR": ("model", "WorkItemIR"),
     "BINDING_MODES": ("model", "BINDING_MODES"),
     "TemplateLibrary": ("library", "TemplateLibrary"),
     "CORE_TEMPLATES": ("library", "CORE_TEMPLATES"),
     "compile_task": ("compiler", "compile_task"),
+    "compile_task_value": ("compiler", "compile_task_value"),
+    "TaskCompileRequest": ("compiler", "TaskCompileRequest"),
+    "TaskIntake": ("intake", "TaskIntake"),
+    "TaskIntakeRequest": ("intake", "TaskIntakeRequest"),
+    "TaskIntakeError": ("intake", "TaskIntakeError"),
+    "intake_task": ("intake", "intake_task"),
 }
 
 __all__ = tuple(_PUBLIC)

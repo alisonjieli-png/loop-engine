@@ -1,7 +1,7 @@
 ---
 folder_id: kernel
 parent: ""
-ontology_version: 1.0.0
+ontology_version: 2.0.0
 ---
 
 # Kernel

@@ -1,0 +1,1276 @@
+schema_version: semantic_data_dictionary_projection/v1
+generated_from: terminology.yaml
+dictionary_version: 1.0.0
+categories:
+  runtime:
+    definition: Stateful executable object with governed identity and lifecycle.
+    preferred_suffixes:
+    - Loop
+    - Runtime
+  operation:
+    definition: Governed or pure work performed through a declared contract.
+    preferred_suffixes: []
+  definition:
+    definition: Immutable versioned description of permitted behavior.
+    preferred_suffixes:
+    - Definition
+    - Spec
+  contract:
+    definition: Typed compatibility and acceptance boundary.
+    preferred_suffixes:
+    - Contract
+  request:
+    definition: Passive validated input for one operation.
+    preferred_suffixes:
+    - Request
+  context:
+    definition: Scoped runtime identity, cancellation, deadline, and authority state.
+    preferred_suffixes:
+    - Context
+  record:
+    definition: Passive persisted or observed fact with identity and provenance.
+    preferred_suffixes:
+    - Record
+    - Evidence
+  snapshot:
+    definition: Immutable point-in-time projection of selected state.
+    preferred_suffixes: []
+  reference:
+    definition: Exact pointer to another object; never its full body.
+    preferred_suffixes:
+    - Ref
+    - Reference
+  policy:
+    definition: Hard permission, eligibility, budget, or effect constraint.
+    preferred_suffixes:
+    - Policy
+  preference:
+    definition: Soft choice that never grants authority.
+    preferred_suffixes: []
+  strategy:
+    definition: Replaceable algorithm or search behavior under one contract.
+    preferred_suffixes:
+    - Strategy
+  profile:
+    definition: Versioned reusable behavior and preference configuration.
+    preferred_suffixes:
+    - Profile
+    - ProfileSpec
+    - ProfileRef
+  procedure:
+    definition: Typed step, graph, state-machine, or bounded-cycle description.
+    preferred_suffixes: []
+  service:
+    definition: Stateful implementation boundary used by an owning runtime.
+    preferred_suffixes:
+    - Service
+    - Gateway
+    - Directory
+  adapter:
+    definition: Protocol-specific implementation behind a provider-neutral boundary.
+    preferred_suffixes:
+    - Adapter
+    - Port
+  provider:
+    definition: External or local service implementation identity.
+    preferred_suffixes: []
+  route:
+    definition: Configured path to an exact provider or deployment.
+    preferred_suffixes: []
+  capability:
+    definition: Declared operation that may be selected after compatibility checks.
+    preferred_suffixes: []
+  tool:
+    definition: Invocable capability with typed input, output, permission, and effects.
+    preferred_suffixes: []
+  plugin:
+    definition: Versioned extension contribution and provenance mechanism.
+    preferred_suffixes: []
+  registry:
+    definition: Exact identity resolution authority.
+    preferred_suffixes: []
+  catalog:
+    definition: Logical discovery and query surface over records.
+    preferred_suffixes: []
+  store:
+    definition: Physical persistence authority for records in a declared scope.
+    preferred_suffixes:
+    - Store
+    - Journal
+    - Catalog
+  index:
+    definition: Rebuildable query materialization traceable to canonical records.
+    preferred_suffixes:
+    - Index
+    - Materialization
+  cache:
+    definition: Discardable acceleration that owns no canonical identity.
+    preferred_suffixes: []
+  artifact:
+    definition: Digest-addressed body or output stored outside small events.
+    preferred_suffixes: []
+  event:
+    definition: One chronological typed fact in Run History.
+    preferred_suffixes: []
+  history:
+    definition: Canonical append-only evidence of governed runtime events.
+    preferred_suffixes:
+    - RunHistory
+    - Event
+  memory:
+    definition: Bounded working state or reviewed reusable experience, claim, or procedure.
+    preferred_suffixes:
+    - Memory
+    - MemoryRecord
+  candidate:
+    definition: Unapproved proposed reusable knowledge or behavior.
+    preferred_suffixes:
+    - Candidate
+  active_intelligence:
+    definition: Independently reviewed and promoted reusable intelligence.
+    preferred_suffixes: []
+  result:
+    definition: Typed outcome of one completed or refused operation.
+    preferred_suffixes:
+    - Result
+    - Outcome
+    - Decision
+  report:
+    definition: Read-only projection of canonical records and results.
+    preferred_suffixes: []
+  renderer:
+    definition: Formatting implementation that cannot re-derive business facts.
+    preferred_suffixes: []
+  evaluator:
+    definition: Independent contract-matched assessment implementation.
+    preferred_suffixes: []
+  benchmark:
+    definition: Frozen task population, conditions, evaluator, and measured result.
+    preferred_suffixes:
+    - Benchmark
+    - Campaign
+    - Trial
+  scenario:
+    definition: Passive capability-proof task definition, not achieved evidence.
+    preferred_suffixes: []
+  settings:
+    definition: Validated user or organization configuration; never runtime authority by itself.
+    preferred_suffixes:
+    - Settings
+    - Defaults
+    - Override
+  builder:
+    definition: Passive construction or comparison object that produces an authoritative definition.
+    preferred_suffixes:
+    - Canvas
+    - Builder
+    - Candidate
+  ontology_category:
+    definition: Abstract classification used to organize concepts; never executable.
+    preferred_suffixes: []
+decision_rules:
+  parameterize:
+    when: Values, roles, modes, profiles, procedures, budgets, or preferences vary while invariants and
+      lifecycle remain the same.
+    action: Use one base type with immutable typed parameters or a versioned profile.
+  compose:
+    when: Algorithms or providers vary behind the same contract and authority boundary.
+    action: Register a strategy, port, or adapter and compose it into the owning runtime.
+  separate_class:
+    when: State invariants, lifecycle, protocol, persistence authority, or effect boundary materially
+      differ.
+    action: Create a separately named class with one semantic category and explicit contract.
+  separate_function:
+    when: The operation is stateless, deterministic, and needs no independent lifecycle.
+    action: Use a typed function accepting at most three direct parameters.
+  separate_loop:
+    when: Work needs independent goal, authority, budget, scheduling, retry, verification, cancellation,
+      or Run History identity.
+    action: Create another Loop instance using a profile; never create another runtime subclass.
+  inherit:
+    when: The subtype is fully substitutable, preserves base invariants, and the extension cannot be expressed
+      safely through composition.
+    action: Record the justification and conformance test; runtime inheritance from Loop is forbidden.
+  retain_typed_data_class:
+    when: A passive type carries a cohesive stable contract, invariant, injectable configuration, or independently
+      meaningful semantic dimension.
+    action: Keep and version the typed class; consolidation must not collapse distinct data into strings
+      or generic dictionaries.
+entries:
+- term_id: core.term.node
+  canonical_name: Node
+  primary_category: ontology_category
+  definition: Abstract category containing the sole executable kind, Loop.
+  source_of_truth: terminology.yaml#terms.Node
+  source_symbol: null
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id001 []
+  difference_from_neighbors: Node is a ontology_category; neighboring categories retain separate authority.
+  parameterization_decision: not_applicable
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: no_concrete_base_class
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id001
+  migration: none
+  examples:
+  - Node
+  negative_examples: *id001
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.loop
+  canonical_name: Loop
+  primary_category: runtime
+  definition: Sole executable runtime and executable graph-vertex type.
+  source_of_truth: loop_engine.loop.recursive_loop:Loop
+  source_symbol: loop_engine.loop.recursive_loop:Loop
+  public_or_internal: public
+  runtime_or_passive: runtime
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id002 []
+  difference_from_neighbors: Loop is a runtime; neighboring categories retain separate authority.
+  parameterization_decision: role_mode_profile_procedure_and_settings
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: sealed_no_subclasses
+  storage_authority: none
+  lifecycle: sealed runtime
+  legacy_aliases: *id002
+  migration: none
+  examples:
+  - Loop
+  negative_examples: *id002
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.loop_definition
+  canonical_name: LoopDefinition
+  primary_category: definition
+  definition: Immutable digest-pinned description bound to a Loop.
+  source_of_truth: loop_engine.loop.loop_definition:LoopDefinition
+  source_symbol: loop_engine.loop.loop_definition:LoopDefinition
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id003 []
+  difference_from_neighbors: LoopDefinition is a definition; neighboring categories retain separate authority.
+  parameterization_decision: immutable_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id003
+  migration: none
+  examples:
+  - LoopDefinition
+  negative_examples: *id003
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.loop_definition_record
+  canonical_name: LoopDefinitionRecord
+  primary_category: record
+  definition: Passive searchable projection of a LoopDefinition.
+  source_of_truth: loop_engine.ontology.loop_definition_record:LoopDefinitionRecord
+  source_symbol: loop_engine.ontology.loop_definition_record:LoopDefinitionRecord
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id004 []
+  difference_from_neighbors: LoopDefinitionRecord is a record; neighboring categories retain separate
+    authority.
+  parameterization_decision: immutable_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: CatalogRecord_only
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id004
+  migration: none
+  examples:
+  - LoopDefinitionRecord
+  negative_examples: *id004
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.loop_graph_definition
+  canonical_name: LoopGraphDefinition
+  primary_category: definition
+  definition: Sole authoritative reusable executable graph contract.
+  source_of_truth: loop_engine.code_nodes.solution_graph:LoopGraphDefinition
+  source_symbol: loop_engine.code_nodes.solution_graph:LoopGraphDefinition
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id005 []
+  difference_from_neighbors: LoopGraphDefinition is a definition; neighboring categories retain separate
+    authority.
+  parameterization_decision: vertices_edges_ports_and_groups
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id005
+  migration: none
+  examples:
+  - LoopGraphDefinition
+  negative_examples: *id005
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.loop_graph_vertex_record
+  canonical_name: LoopGraphVertexRecord
+  primary_category: record
+  definition: Passive vertex record referencing one LoopDefinition.
+  source_of_truth: loop_engine.code_nodes.solution_graph:LoopGraphVertexRecord
+  source_symbol: loop_engine.code_nodes.solution_graph:LoopGraphVertexRecord
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id006 []
+  difference_from_neighbors: LoopGraphVertexRecord is a record; neighboring categories retain separate
+    authority.
+  parameterization_decision: immutable_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id006
+  migration: none
+  examples:
+  - LoopGraphVertexRecord
+  negative_examples: *id006
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.loop_profile_spec
+  canonical_name: LoopProfileSpec
+  primary_category: profile
+  definition: Versioned reusable Loop behavior configuration.
+  source_of_truth: loop_engine.loop.loop_profile_catalog:LoopProfileSpec
+  source_symbol: loop_engine.loop.loop_profile_catalog:LoopProfileSpec
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id007 []
+  difference_from_neighbors: LoopProfileSpec is a profile; neighboring categories retain separate authority.
+  parameterization_decision: profile_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: profile_lineage_not_runtime_inheritance
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id007
+  migration: none
+  examples:
+  - LoopProfileSpec
+  negative_examples: *id007
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.loop_profile_ref
+  canonical_name: LoopProfileRef
+  primary_category: reference
+  definition: Exact reference to one versioned profile.
+  source_of_truth: loop_engine.loop.loop_profile_catalog:LoopProfileRef
+  source_symbol: loop_engine.loop.loop_profile_catalog:LoopProfileRef
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id008 []
+  difference_from_neighbors: LoopProfileRef is a reference; neighboring categories retain separate authority.
+  parameterization_decision: identity_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id008
+  migration: none
+  examples:
+  - LoopProfileRef
+  negative_examples: *id008
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.loop_start_request
+  canonical_name: LoopStartRequest
+  primary_category: request
+  definition: Complete validated request that creates one Loop instance.
+  source_of_truth: loop_engine.loop.loop_definition:LoopStartRequest
+  source_symbol: loop_engine.loop.loop_definition:LoopStartRequest
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id009 []
+  difference_from_neighbors: LoopStartRequest is a request; neighboring categories retain separate authority.
+  parameterization_decision: cohesive_request_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id009
+  migration: none
+  examples:
+  - LoopStartRequest
+  negative_examples: *id009
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.loop_runtime_context
+  canonical_name: LoopRuntimeContext
+  primary_category: context
+  definition: Least-authority ports and run-scoped state available to one Loop.
+  source_of_truth: loop_engine.loop.runtime_context:LoopRuntimeContext
+  source_symbol: loop_engine.loop.runtime_context:LoopRuntimeContext
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id010 []
+  difference_from_neighbors: LoopRuntimeContext is a context; neighboring categories retain separate authority.
+  parameterization_decision: scoped_bindings
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id010
+  migration: none
+  examples:
+  - LoopRuntimeContext
+  negative_examples: *id010
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.intelligence_item_ref
+  canonical_name: IntelligenceItemRef
+  primary_category: reference
+  definition: Body-free exact pointer to one intelligence item and its compatibility facts.
+  source_of_truth: loop_engine.loop.loop_capsule:IntelligenceItemRef
+  source_symbol: loop_engine.loop.loop_capsule:IntelligenceItemRef
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id011
+  - LoopRef
+  difference_from_neighbors: IntelligenceItemRef is a reference; neighboring categories retain separate
+    authority.
+  parameterization_decision: identity_layer_contract_and_digest
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id011
+  migration: exact compatibility reader or alias only
+  examples:
+  - IntelligenceItemRef
+  negative_examples: *id011
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.intelligence_item_package
+  canonical_name: IntelligenceItemPackage
+  primary_category: record
+  definition: Passive lazy package that resolves an intelligence payload only after selection.
+  source_of_truth: loop_engine.loop.loop_capsule:IntelligenceItemPackage
+  source_symbol: loop_engine.loop.loop_capsule:IntelligenceItemPackage
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id012
+  - LoopCapsule
+  difference_from_neighbors: IntelligenceItemPackage is a record; neighboring categories retain separate
+    authority.
+  parameterization_decision: immutable_package_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id012
+  migration: exact compatibility reader or alias only
+  examples:
+  - IntelligenceItemPackage
+  negative_examples: *id012
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.loop_config
+  canonical_name: LoopConfig
+  primary_category: settings
+  definition: Compatibility constructor settings resolved into a LoopDefinition and runtime context.
+  source_of_truth: loop_engine.loop.recursive_loop:LoopConfig
+  source_symbol: loop_engine.loop.recursive_loop:LoopConfig
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id013 []
+  difference_from_neighbors: LoopConfig is a settings; neighboring categories retain separate authority.
+  parameterization_decision: typed_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id013
+  migration: none
+  examples:
+  - LoopConfig
+  negative_examples: *id013
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.solution_canvas
+  canonical_name: SolutionCanvas
+  primary_category: builder
+  definition: Candidate, comparison, and projection object that resolves to LoopGraphDefinition.
+  source_of_truth: loop_engine.code_nodes.solution_canvas:SolutionSpec
+  source_symbol: loop_engine.code_nodes.solution_canvas:SolutionSpec
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id014
+  - SolutionSpec
+  - Canvas
+  difference_from_neighbors: SolutionCanvas is a builder; neighboring categories retain separate authority.
+  parameterization_decision: candidate_solution_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id014
+  migration: exact compatibility reader or alias only
+  examples:
+  - SolutionCanvas
+  negative_examples: *id014
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.work_item_i_r
+  canonical_name: WorkItemIR
+  primary_category: record
+  definition: Typed preserved original input and normalized task interpretation.
+  source_of_truth: loop_engine.templates.model:WorkItemIR
+  source_symbol: loop_engine.templates.model:WorkItemIR
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id015 []
+  difference_from_neighbors: WorkItemIR is a record; neighboring categories retain separate authority.
+  parameterization_decision: optional_typed_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id015
+  migration: none
+  examples:
+  - WorkItemIR
+  negative_examples: *id015
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.task_compile_request
+  canonical_name: TaskCompileRequest
+  primary_category: request
+  definition: Cohesive passive input to task compilation.
+  source_of_truth: loop_engine.templates.compiler:TaskCompileRequest
+  source_symbol: loop_engine.templates.compiler:TaskCompileRequest
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id016 []
+  difference_from_neighbors: TaskCompileRequest is a request; neighboring categories retain separate authority.
+  parameterization_decision: request_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id016
+  migration: none
+  examples:
+  - TaskCompileRequest
+  negative_examples: *id016
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.intelligence_access_policy
+  canonical_name: IntelligenceAccessPolicy
+  primary_category: policy
+  definition: Hard limits on visible intelligence scopes and records.
+  source_of_truth: loop_engine.core.intelligence_query_contracts:IntelligenceAccessPolicy
+  source_symbol: loop_engine.core.intelligence_query_contracts:IntelligenceAccessPolicy
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id017 []
+  difference_from_neighbors: IntelligenceAccessPolicy is a policy; neighboring categories retain separate
+    authority.
+  parameterization_decision: policy_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id017
+  migration: none
+  examples:
+  - IntelligenceAccessPolicy
+  negative_examples: *id017
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.intelligence_seeking_strategy
+  canonical_name: IntelligenceSeekingStrategy
+  primary_category: strategy
+  definition: Search expansion and stopping behavior; cannot grant access.
+  source_of_truth: loop_engine.core.intelligence_query_contracts:IntelligenceSeekingStrategy
+  source_symbol: loop_engine.core.intelligence_query_contracts:IntelligenceSeekingStrategy
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id018 []
+  difference_from_neighbors: IntelligenceSeekingStrategy is a strategy; neighboring categories retain
+    separate authority.
+  parameterization_decision: strategy_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id018
+  migration: none
+  examples:
+  - IntelligenceSeekingStrategy
+  negative_examples: *id018
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.intelligence_query_profile
+  canonical_name: IntelligenceQueryProfile
+  primary_category: profile
+  definition: Soft ranking preferences separate from policy.
+  source_of_truth: loop_engine.core.intelligence_query_contracts:IntelligenceQueryProfile
+  source_symbol: loop_engine.core.intelligence_query_contracts:IntelligenceQueryProfile
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id019 []
+  difference_from_neighbors: IntelligenceQueryProfile is a profile; neighboring categories retain separate
+    authority.
+  parameterization_decision: ranking_preferences
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id019
+  migration: none
+  examples:
+  - IntelligenceQueryProfile
+  negative_examples: *id019
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.intelligence_portfolio_snapshot
+  canonical_name: IntelligencePortfolioSnapshot
+  primary_category: record
+  definition: Exact reviewed records selected for one invocation.
+  source_of_truth: loop_engine.core.intelligence_query_contracts:IntelligencePortfolioSnapshot
+  source_symbol: loop_engine.core.intelligence_query_contracts:IntelligencePortfolioSnapshot
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id020 []
+  difference_from_neighbors: IntelligencePortfolioSnapshot is a record; neighboring categories retain
+    separate authority.
+  parameterization_decision: immutable_selection
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id020
+  migration: none
+  examples:
+  - IntelligencePortfolioSnapshot
+  negative_examples: *id020
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.working_memory_state
+  canonical_name: WorkingMemoryState
+  primary_category: memory
+  definition: Bounded current-run state that is not automatically persistent.
+  source_of_truth: loop_engine.memory.working.state:WorkingMemoryState
+  source_symbol: loop_engine.memory.working.state:WorkingMemoryState
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id021
+  - RuntimeMemory
+  difference_from_neighbors: WorkingMemoryState is a memory; neighboring categories retain separate authority.
+  parameterization_decision: scope_and_capacity
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id021
+  migration: exact compatibility reader or alias only
+  examples:
+  - WorkingMemoryState
+  negative_examples: *id021
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.episodic_memory_record
+  canonical_name: EpisodicMemoryRecord
+  primary_category: memory
+  definition: Exact prior experience with Run History provenance.
+  source_of_truth: loop_engine.memory.episodic.record:EpisodicMemoryRecord
+  source_symbol: loop_engine.memory.episodic.record:EpisodicMemoryRecord
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id022 []
+  difference_from_neighbors: EpisodicMemoryRecord is a memory; neighboring categories retain separate
+    authority.
+  parameterization_decision: immutable_record_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id022
+  migration: none
+  examples:
+  - EpisodicMemoryRecord
+  negative_examples: *id022
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.semantic_memory_record
+  canonical_name: SemanticMemoryRecord
+  primary_category: memory
+  definition: Independently reviewed reusable claim with scope and evidence.
+  source_of_truth: loop_engine.memory.semantic.record:SemanticMemoryRecord
+  source_symbol: loop_engine.memory.semantic.record:SemanticMemoryRecord
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id023 []
+  difference_from_neighbors: SemanticMemoryRecord is a memory; neighboring categories retain separate
+    authority.
+  parameterization_decision: immutable_record_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id023
+  migration: none
+  examples:
+  - SemanticMemoryRecord
+  negative_examples: *id023
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.procedural_memory_record
+  canonical_name: ProceduralMemoryRecord
+  primary_category: memory
+  definition: Independently reviewed reusable procedure with contracts and rollback.
+  source_of_truth: loop_engine.memory.procedural.record:ProceduralMemoryRecord
+  source_symbol: loop_engine.memory.procedural.record:ProceduralMemoryRecord
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id024 []
+  difference_from_neighbors: ProceduralMemoryRecord is a memory; neighboring categories retain separate
+    authority.
+  parameterization_decision: immutable_record_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id024
+  migration: none
+  examples:
+  - ProceduralMemoryRecord
+  negative_examples: *id024
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.run_history
+  canonical_name: RunHistory
+  primary_category: history
+  definition: Canonical persisted event evidence for all Loop work.
+  source_of_truth: loop_engine.core.run_history:RunHistory
+  source_symbol: loop_engine.core.run_history:RunHistory
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id025
+  - Chronicle
+  difference_from_neighbors: RunHistory is a history; neighboring categories retain separate authority.
+  parameterization_decision: event_schema_and_storage_root
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: RunHistory
+  lifecycle: versioned passive contract
+  legacy_aliases: *id025
+  migration: exact compatibility reader or alias only
+  examples:
+  - RunHistory
+  negative_examples: *id025
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.learning_candidate
+  canonical_name: LearningCandidate
+  primary_category: candidate
+  definition: Durable unapproved proposal awaiting independent review.
+  source_of_truth: loop_engine.memory.storage.learning_records:CandidateStageRequest
+  source_symbol: null
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id026 []
+  difference_from_neighbors: LearningCandidate is a candidate; neighboring categories retain separate
+    authority.
+  parameterization_decision: candidate_kind_and_scope
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id026
+  migration: none
+  examples:
+  - LearningCandidate
+  negative_examples: *id026
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.candidate_journal
+  canonical_name: CandidateJournal
+  primary_category: store
+  definition: Durable governance store for candidate transitions and integrity.
+  source_of_truth: loop_engine.memory.storage.learning_cycle:CandidateJournal
+  source_symbol: loop_engine.memory.storage.learning_cycle:CandidateJournal
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id027 []
+  difference_from_neighbors: CandidateJournal is a store; neighboring categories retain separate authority.
+  parameterization_decision: storage_root
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: CandidateJournal
+  lifecycle: versioned passive contract
+  legacy_aliases: *id027
+  migration: none
+  examples:
+  - CandidateJournal
+  negative_examples: *id027
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.runtime_settings
+  canonical_name: RuntimeSettings
+  primary_category: settings
+  definition: Validated user and organization configuration without execution authority.
+  source_of_truth: loop_engine.core.runtime_settings:RuntimeSettings
+  source_symbol: loop_engine.core.runtime_settings:RuntimeSettings
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id028 []
+  difference_from_neighbors: RuntimeSettings is a settings; neighboring categories retain separate authority.
+  parameterization_decision: nested_typed_settings
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id028
+  migration: none
+  examples:
+  - RuntimeSettings
+  negative_examples: *id028
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.model_gateway
+  canonical_name: ModelGateway
+  primary_category: service
+  definition: Sole provider-neutral physical model invocation boundary.
+  source_of_truth: loop_engine.core.model_gateway:ModelGateway
+  source_symbol: loop_engine.core.model_gateway:ModelGateway
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id029 []
+  difference_from_neighbors: ModelGateway is a service; neighboring categories retain separate authority.
+  parameterization_decision: gateway_config_routes_and_adapters
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id029
+  migration: none
+  examples:
+  - ModelGateway
+  negative_examples: *id029
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.provider_adapter
+  canonical_name: ProviderAdapter
+  primary_category: adapter
+  definition: Provider-specific transport behind ModelGateway.
+  source_of_truth: loop_engine.core.model_gateway:ProviderAdapter
+  source_symbol: loop_engine.core.model_gateway:ProviderAdapter
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id030 []
+  difference_from_neighbors: ProviderAdapter is a adapter; neighboring categories retain separate authority.
+  parameterization_decision: provider_protocol
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: protocol_implementation
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id030
+  migration: none
+  examples:
+  - ProviderAdapter
+  negative_examples: *id030
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.model_route
+  canonical_name: ModelRoute
+  primary_category: definition
+  definition: Passive exact provider, model, locality, and capability route.
+  source_of_truth: loop_engine.core.model_routes:ModelRoute
+  source_symbol: loop_engine.core.model_routes:ModelRoute
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id031 []
+  difference_from_neighbors: ModelRoute is a definition; neighboring categories retain separate authority.
+  parameterization_decision: route_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id031
+  migration: none
+  examples:
+  - ModelRoute
+  negative_examples: *id031
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.model_capability_record
+  canonical_name: ModelCapabilityRecord
+  primary_category: record
+  definition: Source-backed technical support facts; not suitability evidence.
+  source_of_truth: loop_engine.core.model_routing_records:ModelCapabilityRecord
+  source_symbol: loop_engine.core.model_routing_records:ModelCapabilityRecord
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id032 []
+  difference_from_neighbors: ModelCapabilityRecord is a record; neighboring categories retain separate
+    authority.
+  parameterization_decision: immutable_record_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id032
+  migration: none
+  examples:
+  - ModelCapabilityRecord
+  negative_examples: *id032
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.model_suitability_record
+  canonical_name: ModelSuitabilityRecord
+  primary_category: record
+  definition: Measured task-conditioned quality and failure evidence.
+  source_of_truth: loop_engine.core.model_routing_records:ModelSuitabilityRecord
+  source_symbol: loop_engine.core.model_routing_records:ModelSuitabilityRecord
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id033 []
+  difference_from_neighbors: ModelSuitabilityRecord is a record; neighboring categories retain separate
+    authority.
+  parameterization_decision: task_population_and_metrics
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id033
+  migration: none
+  examples:
+  - ModelSuitabilityRecord
+  negative_examples: *id033
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.model_route_availability_snapshot
+  canonical_name: ModelRouteAvailabilitySnapshot
+  primary_category: record
+  definition: Time-bounded reachability state; not persistent quality evidence.
+  source_of_truth: loop_engine.core.model_routing_records:ModelRouteAvailabilitySnapshot
+  source_symbol: loop_engine.core.model_routing_records:ModelRouteAvailabilitySnapshot
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id034 []
+  difference_from_neighbors: ModelRouteAvailabilitySnapshot is a record; neighboring categories retain
+    separate authority.
+  parameterization_decision: route_and_observation_time
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id034
+  migration: none
+  examples:
+  - ModelRouteAvailabilitySnapshot
+  negative_examples: *id034
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.catalog_record
+  canonical_name: CatalogRecord
+  primary_category: record
+  definition: Passive canonical catalog fact; never an executable Node.
+  source_of_truth: loop_engine.ontology.records:CatalogRecord
+  source_symbol: loop_engine.ontology.records:CatalogRecord
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id035 []
+  difference_from_neighbors: CatalogRecord is a record; neighboring categories retain separate authority.
+  parameterization_decision: immutable_record_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: passive_record_only
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id035
+  migration: none
+  examples:
+  - CatalogRecord
+  negative_examples: *id035
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.catalog_store
+  canonical_name: CatalogStore
+  primary_category: store
+  definition: Provider-neutral persistence contract with declared capabilities.
+  source_of_truth: loop_engine.catalog.protocol:CatalogStore
+  source_symbol: loop_engine.catalog.protocol:CatalogStore
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id036 []
+  difference_from_neighbors: CatalogStore is a store; neighboring categories retain separate authority.
+  parameterization_decision: backend_configuration
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: protocol_implementation
+  storage_authority: CatalogStore
+  lifecycle: versioned passive contract
+  legacy_aliases: *id036
+  migration: none
+  examples:
+  - CatalogStore
+  negative_examples: *id036
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.ngram_index
+  canonical_name: NgramIndex
+  primary_category: index
+  definition: Rebuildable exact external retrieval materialization, never intelligence truth.
+  source_of_truth: loop_engine.core.ngram_retrieval:NgramIndex
+  source_symbol: loop_engine.core.ngram_retrieval:NgramIndex
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms: &id037 []
+  difference_from_neighbors: NgramIndex is a index; neighboring categories retain separate authority.
+  parameterization_decision: NgramSpaceDefinition
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id037
+  migration: none
+  examples:
+  - NgramIndex
+  negative_examples: *id037
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.capability_directory
+  canonical_name: CapabilityDirectory
+  primary_category: service
+  definition: Effect-free plugin and capability discovery with typed handshakes.
+  source_of_truth: loop_engine.core.capability_directory:CapabilityDirectory
+  source_symbol: loop_engine.core.capability_directory:CapabilityDirectory
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id038 []
+  difference_from_neighbors: CapabilityDirectory is a service; neighboring categories retain separate
+    authority.
+  parameterization_decision: registered_manifests
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id038
+  migration: none
+  examples:
+  - CapabilityDirectory
+  negative_examples: *id038
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.harness_run_result
+  canonical_name: HarnessRunResult
+  primary_category: benchmark
+  definition: One exact task, harness, provider, model, budget, evaluator, and result cell.
+  source_of_truth: loop_engine.core.external_harness:HarnessRunResult
+  source_symbol: loop_engine.core.external_harness:HarnessRunResult
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms: &id039 []
+  difference_from_neighbors: HarnessRunResult is a benchmark; neighboring categories retain separate authority.
+  parameterization_decision: immutable_comparison_key
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: *id039
+  migration: none
+  examples:
+  - HarnessRunResult
+  negative_examples: *id039
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+source_digest: 9b8f1bc3a505fa1cdf8ea6e6d1767c5167fa33315b046633d29321efdc5b5a56

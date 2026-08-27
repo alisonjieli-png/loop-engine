@@ -617,9 +617,10 @@ def make_solution_loop_definition(
         request: SolutionLoopDefinitionRequest) -> LoopDefinition:
     """Build one exact definition for a generated Solution graph vertex.
 
-    Unsupported semantic modes deliberately produce a deterministic definition
-    paired with the requested selected mode.  Graph validation then reports the
-    missing semantic executor before any operation can run.
+    Every leaf declares all three modes like every Loop.  Hybrid and
+    non_deterministic leaves execute through the governed model-invocation
+    port at run time; a run without explicit model authority refuses in
+    preflight before any operation callable.
     """
     if not isinstance(request, SolutionLoopDefinitionRequest):
         raise LoopGraphError(
@@ -631,18 +632,29 @@ def make_solution_loop_definition(
     delegated_modes, version = request.delegated_modes, request.version
     resolved = resolve_profile(LoopProfileRef(profile_id))
     profile_modes = tuple(resolved.allowed_modes)
-    definition_mode = (selected_mode if selected_mode in profile_modes
+    # The spec's permitted-mode policy restricts what this definition
+    # supports: profile allows, the graph policy decides. A deterministic-
+    # only spec yields deterministic-only definitions even though the
+    # profile itself also allows model modes.
+    supported_modes = tuple(
+        mode for mode in profile_modes if mode in delegated_modes)
+    definition_mode = (selected_mode if selected_mode in supported_modes
                        else "deterministic")
     execution_mode = _MODE_TO_EXECUTION[definition_mode]
     inputs = tuple(request.input_roles)
     outputs = tuple(dict.fromkeys(request.output_roles))
     custom_step = "verify_survivors" if purpose == "validator" else "act"
+    execution_delegated_modes = tuple(dict.fromkeys((
+        *delegated_modes,
+        *(("deterministic", "non_deterministic")
+          if selected_mode in ("hybrid", "non_deterministic") else ()),
+    )))
     facts = {
         "framework": "custom", "logical_kind": "execution",
         "replay_guarantee": "event_equivalent",
-        "allowable_modes": list(profile_modes),
+        "allowable_modes": list(supported_modes),
         "preferred_modes": [definition_mode],
-        "delegated_modes": list(dict.fromkeys(delegated_modes)),
+        "delegated_modes": list(execution_delegated_modes),
         "power": "light", "llm_thinking_power": "",
         "custom_steps": [custom_step], "max_depth": 32,
         "loop_condition": "steps_remain",
@@ -664,8 +676,8 @@ def make_solution_loop_definition(
             input_roles=inputs, output_roles=outputs, effects=("pure",),
             role="solution"),
         configuration_facts=ConfigurationFacts.from_mapping(facts),
-        supported_modes=profile_modes,
-        installed_executor_modes=("deterministic",),
+        supported_modes=supported_modes,
+        installed_executor_modes=supported_modes,
         step_profile=resolved.step_template_id,
         loop_condition="steps_remain", exit_condition="accepted_success",
         effects=("pure",), required_capabilities=resolved.required_capabilities,

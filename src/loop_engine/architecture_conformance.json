@@ -1,7 +1,7 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 226,
+ "files_scanned": 247,
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "reachable_legacy_flat_paths": 0,
@@ -27,6 +27,7 @@
   "operational_boundaries_outside_loop_ontology": 0,
   "operational_boundary_relationship_kind_violations": 0,
   "operational_graph_vertex_types_outside_canonical_loop": 0,
+  "semantic_identities_without_one_meaning_and_authority": 0,
   "direct_resource_access_above_baseline": 0,
   "architecture_map_freshness": 0
  },
@@ -100,6 +101,11 @@
    "honesty": "coverage counts only rows joined one-to-one to a validated Loop role profile; invalid, unclassified, extra, duplicate, and unbound rows stay visible"
   },
   "operational_graph_vertex_types": [],
+  "semantic_identity": {
+   "record_type": "semantic_conformance/v1",
+   "violations": [],
+   "passed": true
+  },
   "retired_decision_spine_terms": [],
   "scan_violations": []
  },

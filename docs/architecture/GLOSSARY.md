@@ -9,21 +9,21 @@ Constitution are the authority until an ADR changes them.
 
 | Term | Definition | Difference from neighbors |
 |---|---|---|
-| Node | Ontological category and package namespace only. There is no concrete Node class. | Node is a category; LoopNode is the only concrete class. |
-| LoopNode | The sole concrete graph-addressable operational Node. At rest it is a catalog record; at runtime it is the canonical `Loop` class. | The only node-named class in the package. |
-| Loop | The canonical runtime class in `loop/recursive_loop.py`. Refuses subclassing via a metaclass guard. | Loop is the runtime; LoopNode is the ontology name for the same object. |
+| Node | Ontological category and package namespace only. There is no concrete operational Node class. | Node classifies; it does not run. |
+| Loop | The sole concrete operational runtime and executable graph vertex, implemented in `loop/recursive_loop.py`. | A Loop runs; definitions and ontology records are passive. |
+| `kind: loop_node` | Historical serialized record spelling accepted only by the legacy migration reader. | It becomes `LoopDefinitionRecord`; new code never emits it. |
 | LoopDefinition | Immutable, versioned description used to instantiate a Loop: ID, version, digest, role profile, contract, modes, step profile, conditions, effects, permissions, capabilities. | A definition is data; a Loop is the live runtime. |
 | LoopDefinitionRef | Exact reference: definition_id + version + content_digest. | A ref is a pointer; a definition is the body. |
 | LoopStartRequest | The one object that starts a Loop: goal, complete definition, relationship, least-authority runtime context, and event log. | The only sanctioned entry point into the runtime. |
 | LoopConfig | Runtime configuration: framework, modes, power, thinking power, budgets, conditions. | Config is settings; LoopDefinition is identity and contract. |
-| LoopResult | Typed terminal result: steps run, mode counts, model calls, stop reason. | A result is output; a receipt is an explanation. |
+| LoopResult | Typed terminal result: steps run, mode counts, model calls, stop reason. | A result is output; a report is an explanation. |
 | LoopLedger | The canonical in-process event log. | The ledger is events; RunHistory is the persisted form. |
-| LoopNodePreset | Versioned partial configuration for a common behavior (constant_value, configuration_provider, validator, composite...). | A preset is data; a subclass would be a new runtime. |
-| LoopStepBinding | Typed instruction for instantiating and connecting a child Loop. | A binding describes a child; it is not itself a Node. |
+| LoopProfileSpec / LoopProfileRef | Versioned behavior specification and exact reference for a common Loop behavior. | A profile is data; a subclass would be a new runtime. |
+| LoopStepBinding | Typed instruction for instantiating and connecting a Loop Spawned by its parent. | A binding describes a Spawned Loop; it is not itself a Node. |
 | LoopProcedure | Atomic, sequence, graph, state-machine, iterative, parallel, or dynamic procedure. | A procedure is the plan; the Loop executes it. |
 | LoopGraphDefinition | The authoritative static DAG: versioned definition refs, vertices, typed edges, graph digest. | The graph is a contract; the Canvas is a builder. |
 | SolutionCanvas | Product artifact describing a reusable solution for new inputs. | A Canvas builds; the graph is the authority. |
-| LoopRef / LoopCapsule | Small typed reference returned by search: identity, handshake, digest, cost class. Content loads only on invocation. | A ref carries no payload; a capsule loads lazily. |
+| IntelligenceItemRef / IntelligenceItemPackage | Small typed reference and lazy package returned by intelligence search. | A ref carries no payload; a package loads only after selection. Historical LoopRef and LoopCapsule imports are compatibility-only. |
 
 ## 2. Roles, relationships, and modes
 
@@ -48,10 +48,10 @@ Constitution are the authority until an ADR changes them.
 | IntelligenceAccessPolicy | Hard query and visibility constraints. | Policy is permission; strategy is behavior. |
 | IntelligenceSeekingStrategy | Control flow for querying, expanding, challenging, ranking, selecting, stopping. | Strategy is how; profile is what weights. |
 | IntelligenceQueryProfile | Reusable soft priorities, weights, requirements, ranking preferences. | Profile is preferences; policy is hard limits. |
-| IntelligenceSeekingBinding | Attaches policy, strategy, profiles, inheritance, overrides to any Loop, step, child, or invocation. | One universal binding schema. |
+| IntelligenceSeekingBinding | Attaches policy, strategy, profiles, inheritance, overrides to any Loop, step, spawn, or invocation. | One universal binding schema. |
 | ResolvedIntelligenceSeekingPlan | Exact immutable runtime plan with pinned versions and hashes. | A plan is resolved; a binding is authored. |
 | IntelligencePortfolioSnapshot | Exact selected records for one invocation. | A snapshot is a result; a profile is a preference. |
-| IntelligenceSeekingReceipt | Complete explanation of queries, candidates, rankings, selections, failures, costs. | A receipt explains; a snapshot selects. |
+| IntelligenceSeekingReceipt | Complete explanation of queries, candidates, rankings, selections, failures, costs. | The seeking report explains; a snapshot selects. |
 | IntelligenceQuery | Typed backend-neutral query: layers, sources, kinds, lifecycle, attributes, limit. | A query is typed; raw SQL is a privileged escape hatch. |
 | IntelligenceItemEnvelope | Named envelope for one intelligence item served through a Loop. | An envelope is data; the Loop serves it. |
 | LensSpec | Role or method lens: focus, questions, blind spots. | A lens shapes context; a profile shapes queries. |
@@ -82,11 +82,11 @@ Constitution are the authority until an ADR changes them.
 | Term | Definition | Difference from neighbors |
 |---|---|---|
 | WorkingMemoryState | Bounded, run-scoped, Loop-scoped cognitive state with compartments, pinning, eviction, snapshots. | Working memory is transient; the other three persist. |
-| EpisodicMemoryRecord | Immutable, versioned, time-ordered experience with Chronicle provenance and failures. | An episode is one experience; a semantic claim generalizes. |
+| EpisodicMemoryRecord | Immutable, versioned, time-ordered experience with Run History provenance and failures. | An episode is one experience; a semantic claim generalizes. |
 | SemanticMemoryRecord | Evidence-backed generalized claim with validity, scope, confidence, contradiction groups. | Semantic is general; episodic is specific. |
 | ProceduralMemoryRecord | Contracted, versioned know-how with applicability, permissions, verification, evidence. | Procedural is how-to; semantic is what-is. |
 | MemoryQuery | Typed query over persistent memory with scope and lifecycle filters. | MemoryQuery queries memory; IntelligenceQuery queries intelligence. |
-| MemoryRetrievalReceipt | Explained retrieval: candidates, rejections, scores, selections, conflicts. | A receipt explains; a snapshot selects. |
+| MemoryRetrievalReceipt | Explained retrieval: candidates, rejections, scores, selections, conflicts. | The retrieval report explains; a snapshot selects. |
 | MemoryReviewReceipt | Evidence of one independent review decision. | The producer cannot be the reviewer. |
 | MemoryConsolidationReceipt | Evidence of one non-destructive consolidation. | Sources remain immutable. |
 | InMemoryMemoryStore | Deterministic in-process store for persistent memory records. | Reference backend. |
@@ -161,7 +161,7 @@ Constitution are the authority until an ADR changes them.
 ## 10. The strongest distinctions
 
 ```text
-Node is the category. LoopNode is the only operational Node.
+Node is the category. Loop is the only operational runtime.
 
 A definition is data. A Loop is the runtime.
 
@@ -179,7 +179,7 @@ A catalog is logical. A store is physical. A materialization is one representati
 
 A seed is input. A fragment is a part. A candidate is unapproved output.
 
-A task is the work. A campaign is the harness. A receipt explains. A verdict certifies.
+A task is the work. A campaign is the harness. A report explains. A verdict certifies.
 
 Engineering builds. Assurance certifies. Repair returns to Engineering.
 Reverification remains independent.

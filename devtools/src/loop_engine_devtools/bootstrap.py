@@ -1,7 +1,7 @@
 """Bootstrap verifier: runs without importing Loop Engine.
 
 The bootstrap checks the repository with plain Python only. A broken
-LoopNode runtime must never be able to disable all review. This module
+Loop runtime must never be able to disable all review. This module
 is the base case of the Development Assurance Plane.
 """
 from __future__ import annotations
@@ -14,7 +14,7 @@ _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 #: The only node-named class permitted in the production package.
-ALLOWED_NODE_CLASSES = frozenset({"LoopNode"})
+ALLOWED_NODE_CLASSES = frozenset()
 
 #: Forbidden top-level production paths.
 FORBIDDEN_PATHS = (

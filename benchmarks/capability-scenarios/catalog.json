@@ -206,12 +206,12 @@
    "task_id": "meta.capability_gap.self_awareness",
    "version": "1.0.0",
    "family": "meta.capability_gap",
-   "text": "Pick any scenario above that requires a capability the engine does not currently prove. Compile it, decline the parts you cannot do, record a typed capability-gap receipt, and route the receipt to the self-improvement candidate queue.",
+   "text": "Pick any scenario above that requires a capability the engine does not currently prove. Compile it, decline the parts you cannot do, record a typed capability-gap report, and route the report to the self-improvement candidate queue.",
    "operators": ["analyze", "diagnose", "validate", "learn"],
    "authorized_effects": ["file_write_workspace"],
    "verification": [
     "the declined portion is named exactly, with the capability ID it needed",
-    "the receipt cites the loop that declined and the run history reference",
+    "the report cites the loop that declined and the run history reference",
     "nothing outside the declared capabilities was silently attempted",
     "the gap appears in the campaign gap report"
    ],

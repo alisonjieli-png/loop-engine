@@ -5,7 +5,7 @@ the Development Assurance Plane.
 
 ## Allowed contents
 
-- Review LoopNode definitions and presets.
+- Review Loop definitions and profiles.
 - Architecture rule records and proof obligations.
 - Negative fixture definitions.
 

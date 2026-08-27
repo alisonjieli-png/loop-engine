@@ -1,7 +1,7 @@
 ---
 folder_id: runtime.artifacts
 parent: runtime
-ontology_version: 1.0.0
+ontology_version: 2.0.0
 ---
 
 # Artifacts

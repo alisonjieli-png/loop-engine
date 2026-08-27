@@ -46,11 +46,14 @@ from __future__ import annotations
 import os
 import re
 from collections import Counter
+from dataclasses import dataclass
 
 from .context_classification import (CONTEXT_HIERARCHY_FIELDS,
                                      CONTEXT_THINKING_STYLES,
                                      context_hierarchy)
 from .context_ontology import CONTEXT_KINDS
+from ..memory.model.memory_type import (
+    MEMORY_TYPES, MEMORY_TYPE_MEANING, PERSISTENT_MEMORY_TYPES)
 
 LAYERS = ("context_intelligence", "code_intelligence", "runtime_history_solution_intelligence",
           "user_feedback_intelligence")
@@ -104,40 +107,6 @@ LAYER_MEANING = {
                           "solution components — like advising a coworker; "
                           "loops may consult it before deciding; guidance, "
                           "never truth, and never a gate bypass"),
-}
-
-#: Standardized memory types. The field has converged on four cognitive
-#: memory types (working, procedural, semantic, episodic) that map directly
-#: to how human memory works. Loop Engine adds a fifth, social memory, for
-#: human feedback. These are classification labels, not new layers and not
-#: new runtimes.
-MEMORY_TYPES = ("working", "procedural", "semantic", "episodic", "social")
-
-#: Which memory type each persistent layer and Runtime Memory represents.
-MEMORY_TYPE_MEANING = {
-    "working": ("temporary, run-scoped state: the shared working notebook "
-                "for the loops active in one run; discarded when the run "
-                "ends unless explicitly promoted"),
-    "procedural": ("how-to knowledge: runnable, repeatable work, code, "
-                   "prompt-engineering operations, and executable "
-                   "definitions"),
-    "semantic": ("facts and concepts: reusable context, questions, "
-                 "methods, personas, timeframes, templates, and "
-                 "instructions"),
-    "episodic": ("what happened: previous runs, loop trees, decisions, "
-                 "failures, repairs, costs, and prior solutions; a prior, "
-                 "never proof"),
-    "social": ("advice humans leave on loops, tasks, runs, and solution "
-               "components; guidance, never truth, and never a gate "
-               "bypass"),
-}
-
-#: Memory type for each persistent intelligence layer.
-LAYER_MEMORY_TYPE = {
-    "context_intelligence": "semantic",
-    "code_intelligence": "procedural",
-    "runtime_history_solution_intelligence": "episodic",
-    "user_feedback_intelligence": "social",
 }
 
 #: Runtime Memory is working memory: temporary and run-scoped.
@@ -430,7 +399,8 @@ def layer_handshake() -> dict:
                         "public_label": LAYER_PUBLIC_LABEL[l],
                         "short_label": LAYER_SHORT_LABEL[l],
                         "meaning": LAYER_MEANING[l],
-                        "memory_type": LAYER_MEMORY_TYPE[l],
+                        "supported_persistent_memory_types":
+                            list(PERSISTENT_MEMORY_TYPES),
                         "category_groups": list(LAYER_CATEGORY_GROUPS[l]),
                         "queryable": True} for l in LAYERS],
             "memory_types": [{"memory_type": t,
@@ -465,20 +435,43 @@ def runtime_memory_write(note: str, board=None, *, loop_id: str = "",
     return board.write(note, loop_id=loop_id, topic=topic)
 
 
-def query_intelligence(need: str, layer_records: dict, *,
-                       mode: str = "lexical", top_n: int = 3,
-                       flt=None, include_candidates: bool = False,
-                       ledger=None, parent=None) -> dict:
+@dataclass(frozen=True)
+class IntelligenceSearchRequest:
+    """Passive query, catalog view, ranking, and lifecycle preferences."""
+
+    need: str
+    layer_records: dict
+    mode: str = "lexical"
+    top_n: int = 3
+    filter: object | None = None
+    include_candidates: bool = False
+
+
+@dataclass(frozen=True)
+class IntelligenceSearchContext:
+    """Optional Loop ownership context for one search."""
+
+    ledger: object | None = None
+    parent: object | None = None
+
+
+def query_intelligence(
+        request: IntelligenceSearchRequest,
+        context: IntelligenceSearchContext | None = None) -> dict:
     """Fan ONE semantic need across the four layers through the one
     Retriever. ``layer_records`` maps layer name -> list of StoreRecords
     (missing layers are reported as unqueried, never silently skipped).
     Returns {"need", "hits": [... each with "layer" ...], "unqueried"}."""
+    if not isinstance(request, IntelligenceSearchRequest):
+        raise TypeError("query_intelligence needs IntelligenceSearchRequest")
     from .retrieval import Retriever
-    normalized = normalize_layer_records(layer_records)
+    selected_context = context or IntelligenceSearchContext()
+    need = request.need
+    normalized = normalize_layer_records(request.layer_records)
     combined, identities, unqueried = [], {}, []
     for layer in LAYERS:
         recs = list(normalized.get(layer) or ())
-        if not include_candidates:
+        if not request.include_candidates:
             recs = [record for record in recs if record.tier == "core"
                     and str((record.body or {}).get("maturity", ""))
                     != "candidate"]
@@ -490,22 +483,24 @@ def query_intelligence(need: str, layer_records: dict, *,
             wrapped = classified_record(layer, record, record_id=wrapped_id)
             combined.append(wrapped)
             identities[wrapped_id] = (record, wrapped.body["classification"])
-    requested = max(top_n, top_n * max(1, len(LAYERS) - len(unqueried)))
+    requested = max(request.top_n, request.top_n * max(
+        1, len(LAYERS) - len(unqueried)))
     from ..loop.encapsulate import as_loop
     search_run = as_loop(
         f"search four intelligence layers for {need[:80]}",
         lambda: Retriever(combined).search(
-            need, mode=mode, flt=flt, top_n=requested)
+            need, mode=request.mode, flt=request.filter, top_n=requested)
         if combined else {"hits": []},
-        kind="callable", ledger=ledger, parent=parent)
+        kind="callable", ledger=selected_context.ledger,
+        parent=selected_context.parent)
     res = search_run["value"]
     hits, refs = [], []
-    from ..loop.loop_capsule import capsule_from_record
+    from ..loop.loop_capsule import intelligence_package_from_record
     for hit in res["hits"]:
         record, classification = identities[hit["record_id"]]
         score = hit.get("rrf", 0.0)
-        ref = capsule_from_record(
-            record, role=classification["layer"]).to_ref(
+        ref = intelligence_package_from_record(
+            record, layer=classification["layer"]).to_ref(
                 score=score, source=classification["layer"])
         refs.append(ref.as_dict())
         hits.append({**hit, "record_id": record.record_id,
@@ -514,32 +509,56 @@ def query_intelligence(need: str, layer_records: dict, *,
                      "public_slug": classification["public_slug"],
                      "public_label": classification["public_label"],
                      "classification": classification,
-                     "loop_ref": ref.as_dict(), "score": score})
+                     "intelligence_item_ref": ref.as_dict(), "score": score})
     return {"need": need, "hits": hits, "unqueried": unqueried,
             "unqueried_public": [LAYER_PUBLIC_KEY[layer]
                                  for layer in unqueried],
-            "candidates_included": bool(include_candidates),
-            "loop_refs": refs,
+            "candidates_included": bool(request.include_candidates),
+            "intelligence_item_refs": refs,
             "query_loop": {"loop_id": search_run["loop_id"],
                            "model_calls": search_run["model_calls"],
                            "stopped": search_run["stopped"]}}
 
 
-def query_intelligence_refs(*args, **kwargs) -> list:
-    """Typed LoopRefs in the exact order returned by unified ranking."""
-    from ..loop.loop_capsule import LoopRef
-    return [LoopRef.from_dict(body)
-            for body in query_intelligence(*args, **kwargs)["loop_refs"]]
+def query_intelligence_refs(
+        request: IntelligenceSearchRequest,
+        context: IntelligenceSearchContext | None = None) -> list:
+    """Typed item references in the exact order returned by unified ranking."""
+    from ..loop.loop_capsule import IntelligenceItemRef
+    return [IntelligenceItemRef.from_dict(body)
+            for body in query_intelligence(request, context)[
+                "intelligence_item_refs"]]
 
 
-def materialize_intelligence_ref(ref, layer_records: dict, *,
-                                 external_resolver=None, ledger=None,
-                                 parent=None) -> dict:
-    """Materialize one selected intelligence ref through its access loop."""
-    from ..loop.loop_capsule import materialize_ref_as_loop
-    normalized = normalize_layer_records(layer_records)
-    record_id = ref.loop_ref.rsplit("/", 1)[-1]
-    records = normalized.get(ref.handshake.role) or ()
+@dataclass(frozen=True)
+class IntelligenceCatalogLoadRequest:
+    """Passive selected reference, catalog records, and optional resolver."""
+
+    ref: object
+    layer_records: dict
+    external_resolver: object | None = None
+
+
+@dataclass(frozen=True)
+class IntelligenceCatalogLoadContext:
+    """Optional Loop ownership context for one catalog load."""
+
+    ledger: object | None = None
+    parent: object | None = None
+
+
+def load_intelligence_item(
+        request: IntelligenceCatalogLoadRequest,
+        context: IntelligenceCatalogLoadContext | None = None) -> dict:
+    """Load one selected intelligence item through its access Loop."""
+    from ..loop.loop_capsule import (
+        IntelligenceLoadContext, IntelligenceLoadRequest,
+        load_intelligence_ref)
+    selected_context = context or IntelligenceCatalogLoadContext()
+    ref = request.ref
+    normalized = normalize_layer_records(request.layer_records)
+    record_id = ref.item_ref.rsplit("/", 1)[-1]
+    records = normalized.get(ref.handshake.layer) or ()
     record = next((item for item in records
                    if item.record_id == record_id), None)
     if record is None:
@@ -547,16 +566,16 @@ def materialize_intelligence_ref(ref, layer_records: dict, *,
 
     def resolve(payload_ref):
         if not payload_ref.startswith("content://"):
-            if external_resolver is None:
+            if request.external_resolver is None:
                 raise ValueError(
                     f"external payload {payload_ref!r} needs a resolver")
-            return external_resolver(payload_ref)
+            return request.external_resolver(payload_ref)
         body = dict(record.body or {})
         if "text" in body:
             return body["text"]
-        if ref.handshake.role == "runtime_history_solution_intelligence":
+        if ref.handshake.layer == "runtime_history_solution_intelligence":
             return body
-        if ref.handshake.role == "code_intelligence":
+        if ref.handshake.layer == "code_intelligence":
             return body.get("handle") or body
         for key in ("value", "template", "instruction", "format_example"):
             if body.get(key) not in (None, ""):
@@ -566,8 +585,10 @@ def materialize_intelligence_ref(ref, layer_records: dict, *,
                     if body.get(key)}
         return record.title
 
-    return materialize_ref_as_loop(
-        ref, resolve, ledger=ledger, parent=parent)
+    return load_intelligence_ref(
+        IntelligenceLoadRequest(ref, resolve),
+        IntelligenceLoadContext(
+            selected_context.ledger, selected_context.parent))
 
 
 def self_test() -> dict:
@@ -593,31 +614,37 @@ def self_test() -> dict:
              "runtime_history_solution_intelligence": runs, "user_feedback_intelligence": advice}
 
     # 1. one need fans across all four layers; every hit is layer-labeled.
-    out = query_intelligence("duplicate row remover", packs)
+    out = query_intelligence(IntelligenceSearchRequest(
+        "duplicate row remover", packs))
     check("hits_are_layer_labeled",
           out["hits"] and all("layer" in h and "public_label" in h
                               for h in out["hits"])
           and out["hits"][0]["layer"] == "code_intelligence"
           and out["hits"][0]["record_id"] == "n.dedupe",
           f"top: {out['hits'][0]['record_id'] if out['hits'] else 'none'}")
-    typed_refs = query_intelligence_refs("statistician persona", packs)
+    typed_refs = query_intelligence_refs(IntelligenceSearchRequest(
+        "statistician persona", packs))
     from ..loop.recursive_loop import LoopLedger
     ref_ledger = LoopLedger()
-    materialized = materialize_intelligence_ref(
-        typed_refs[0], packs, ledger=ref_ledger)
+    materialized = load_intelligence_item(IntelligenceCatalogLoadRequest(
+        typed_refs[0], packs),
+        IntelligenceCatalogLoadContext(ledger=ref_ledger))
     check("unified_search_returns_loop_refs_and_selected_item_materializes",
           out["query_loop"]["model_calls"] == 0
-          and len(out["loop_refs"]) == len(out["hits"])
-          and typed_refs[0].loop_ref.endswith("s.persona")
+          and len(out["intelligence_item_refs"]) == len(out["hits"])
+          and typed_refs[0].item_ref.endswith("s.persona")
           and materialized["value"] == "adopt a statistician persona for review"
           and materialized["model_calls"] == 0
           and len(ref_ledger.loops()) == 1)
 
     # 2. a Context need routes to the stable internal string layer; a prior-solution
     # need routes to past runs — three DISTINCT buckets, not one soup.
-    a = query_intelligence("statistician persona", packs)
-    b = query_intelligence("prior solution titanic survival", packs)
-    c = query_intelligence("user advice rapidfuzz", packs)
+    a = query_intelligence(IntelligenceSearchRequest(
+        "statistician persona", packs))
+    b = query_intelligence(IntelligenceSearchRequest(
+        "prior solution titanic survival", packs))
+    c = query_intelligence(IntelligenceSearchRequest(
+        "user advice rapidfuzz", packs))
     check("needs_route_to_their_layers",
           a["hits"] and a["hits"][0]["layer"] == "context_intelligence"
           and a["hits"][0]["public_label"] == "Context Intelligence"
@@ -626,10 +653,12 @@ def self_test() -> dict:
 
     # 3. a missing layer is REPORTED, never silently skipped; an unknown
     # bucket is refused (the FOUR layers are an owner decision).
-    partial = query_intelligence("anything", {"code_intelligence": code})
+    partial = query_intelligence(IntelligenceSearchRequest(
+        "anything", {"code_intelligence": code}))
     refused = False
     try:
-        query_intelligence("x", {"vibes_intelligence": code})
+        query_intelligence(IntelligenceSearchRequest(
+            "x", {"vibes_intelligence": code}))
     except ValueError:
         refused = True
     check("missing_layer_reported_unknown_layer_refused",
@@ -637,12 +666,13 @@ def self_test() -> dict:
                                         "runtime_history_solution_intelligence",
                                         "user_feedback_intelligence"} and refused)
 
-    alias_hit = query_intelligence(
-        "statistician persona", {"context": strings})
+    alias_hit = query_intelligence(IntelligenceSearchRequest(
+        "statistician persona", {"context": strings}))
     duplicate_refused = False
     try:
-        query_intelligence("x", {"context": strings,
-                                  "context_intelligence": strings})
+        query_intelligence(IntelligenceSearchRequest(
+            "x", {"context": strings,
+                  "context_intelligence": strings}))
     except ValueError:
         duplicate_refused = True
     check("context_aliases_preserve_one_internal_layer",
@@ -698,7 +728,8 @@ def self_test() -> dict:
             StoreRecord("adv.1", "context",
                         "duplicate rows here are legitimate repeat orders — "
                         "do not drop them", body={}, tags=("user_advice",))]}
-    fed = query_intelligence(need, corpus, top_n=3)
+    fed = query_intelligence(IntelligenceSearchRequest(
+        need, corpus, top_n=3))
     layers_hit = {h["layer"] for h in fed["hits"]}
 
     lg5 = LoopLedger()
@@ -743,9 +774,9 @@ def self_test() -> dict:
     # 6. One common classification rides every hit and supports the same hard
     # filters across all four layers.
     from .facets import FacetFilter
-    code_only = query_intelligence(
+    code_only = query_intelligence(IntelligenceSearchRequest(
         "duplicate row remover", packs,
-        flt=FacetFilter(require={"layer": "code_intelligence"}))
+        filter=FacetFilter(require={"layer": "code_intelligence"})))
     check("classification_and_filters_span_all_layers",
           code_only["hits"]
           and all(hit["classification"]["schema"] == "classification/v1"
@@ -754,13 +785,13 @@ def self_test() -> dict:
           and "category_groups" in layer_handshake()["layers"][0],
           "shared layer/category/scope/lifecycle facets")
 
-    weak_vs_exact = query_intelligence(
+    weak_vs_exact = query_intelligence(IntelligenceSearchRequest(
         "alpha beta gamma delta",
         {"context_intelligence": [StoreRecord(
              "weak", "context", "alpha", body={}, tags=())],
          "code_intelligence": [StoreRecord(
              "exact", "node", "alpha beta gamma delta", body={}, tags=())]},
-        mode="lexical", top_n=2)
+        mode="lexical", top_n=2))
     check("global_ranking_compares_layers_in_one_corpus",
           weak_vs_exact["hits"][0]["record_id"] == "exact"
           and weak_vs_exact["hits"][0]["layer"] == "code_intelligence",
@@ -803,11 +834,11 @@ def self_test() -> dict:
 
     candidate = next(record for record in review["context_intelligence"]
                      if record.record_id == "SI-0001")
-    hidden = query_intelligence(
-        candidate.title, {"context_intelligence": [candidate]})
-    visible = query_intelligence(
+    hidden = query_intelligence(IntelligenceSearchRequest(
+        candidate.title, {"context_intelligence": [candidate]}))
+    visible = query_intelligence(IntelligenceSearchRequest(
         candidate.title, {"context_intelligence": [candidate]},
-        include_candidates=True)
+        include_candidates=True))
     check("candidate_context_is_off_by_default",
           not hidden["hits"] and visible["hits"]
           and visible["hits"][0]["public_label"] == "Context Intelligence")

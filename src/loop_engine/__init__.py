@@ -20,7 +20,8 @@ _PUBLIC: dict[str, tuple[str, str]] = {
     # One operational runtime.
     **_names(
         "loop.recursive_loop",
-        "Loop", "LoopConfig", "LoopLedger", "LoopResult", "StepOutcome",
+        "Loop", "LoopConfig", "LoopLedger", "LoopResult",
+        "StepOutcome",
     ),
 
     # Versioned Loop definition, identity, relationship, and runtime context.
@@ -77,6 +78,21 @@ _PUBLIC: dict[str, tuple[str, str]] = {
         "SolutionSpec", "SolutionLoopSpec", "run_solution",
     ),
     **_names(
+        "code_nodes.solution_model_port",
+        "ModelExecution", "ModelInvocationPort", "SolutionModelError",
+    ),
+    **_names(
+        "code_nodes.solve_runtime",
+        "SolveRequest", "SolveOutcome", "SolveError", "solve_task",
+    ),
+    **_names(
+        "templates.intake",
+        "TaskIntake", "TaskIntakeRequest", "TaskIntakeError", "intake_task",
+    ),
+    **_names(
+        "templates.model", "WorkItemIR", "SemanticCoordinates",
+    ),
+    **_names(
         "loop.canvas",
         "CANVAS_KINDS", "TypeContract", "SolutionLoopCandidate",
         "SolutionSlot", "Canvas", "SlotOutcome", "MatrixExecution",
@@ -84,7 +100,12 @@ _PUBLIC: dict[str, tuple[str, str]] = {
     ),
 
     # Intelligence references, portfolios, and useful workflows.
-    **_names("loop.loop_capsule", "LoopRef", "LoopCapsule"),
+    **_names(
+        "loop.loop_capsule", "IntelligenceItemHandshake",
+        "IntelligenceItemPackage", "IntelligenceItemRef",
+        "IntelligenceLoadContext", "IntelligenceLoadRequest",
+        "IntelligenceReframeRequest", "load_intelligence_ref",
+        "reframe_intelligence_ref"),
     **_names(
         "core.intelligence_portfolio",
         "IntelligencePortfolioError", "PortfolioCoverageError", "LensFamily",
@@ -105,6 +126,7 @@ _PUBLIC: dict[str, tuple[str, str]] = {
     **_names(
         "core.run_history",
         "RunHistory", "RunHistoryEvent", "RunHistoryIntegrityError",
+        "verify_saved_run",
     ),
     **_names("core.event_vocabulary", "EVENT_FAMILIES"),
 
@@ -131,6 +153,15 @@ _PUBLIC: dict[str, tuple[str, str]] = {
         "provider_spec_from_endpoint", "invoke_model_gateway",
     ),
     **_names(
+        "core.model_routing_intelligence",
+        "MODEL_ROUTING_PORTFOLIO", "MODEL_ROUTING_PORTFOLIO_ID",
+        "ModelCapabilityRecord", "ModelSuitabilityRecord",
+        "ModelRouteAvailabilitySnapshot", "ModelSelectionRequest",
+        "ModelSelectionDecision", "ModelOutcomeEvidence",
+        "ModelRoutingLearningCandidate", "ModelRouteBootstrapSelector",
+        "select_model_as_loop",
+    ),
+    **_names(
         "core.model_routes",
         "ModelProviderCapabilities", "ModelRoute", "RoutePolicy",
         "RouteRegistry", "resolve_route",
@@ -140,7 +171,9 @@ _PUBLIC: dict[str, tuple[str, str]] = {
         "core.autoconfigure",
         "configure", "ModelAccess", "advice_function",
     ),
-    **_names("core.provider_failover", "call_with_failover"),
+    **_names(
+        "core.provider_failover", "ProviderFailoverContext",
+        "ProviderFailoverRequest", "call_with_failover"),
 
     # Typed spawned-Loop delegation and isolated context.
     **_names(

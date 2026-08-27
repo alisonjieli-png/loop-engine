@@ -39,6 +39,7 @@ def build_solution_graph(spec: SolutionSpec) -> LoopGraphDefinition:
                    output_roles: tuple, mode: str = "deterministic",
                    purpose: str = "component", operation_ref: str = "",
                    params: dict | None = None,
+                   delegated_modes: tuple | None = None,
                    definition: LoopDefinition | None = None) -> str:
         selected_definition = definition or make_solution_loop_definition(
             SolutionLoopDefinitionRequest(
@@ -48,7 +49,9 @@ def build_solution_graph(spec: SolutionSpec) -> LoopGraphDefinition:
                 operation_ref=operation_ref,
                 parameters=ConfigurationFacts.from_mapping(params),
                 purpose=purpose,
-                delegated_modes=tuple(spec.permitted_loop_modes)))
+                delegated_modes=tuple(delegated_modes
+                                      if delegated_modes is not None else
+                                      spec.permitted_loop_modes)))
         vertices.append(vertex_from_definition(
             vertex_id, selected_definition, selected_mode=mode,
             purpose=purpose, operation_ref=operation_ref,
@@ -78,7 +81,10 @@ def build_solution_graph(spec: SolutionSpec) -> LoopGraphDefinition:
             controller_id, profile_id=controller_profile,
             input_roles=(input_role,),
             output_roles=tuple(dict.fromkeys((input_role, output_role))),
-            purpose="controller", params={
+            purpose="controller",
+            delegated_modes=tuple(dict.fromkeys(
+                ("deterministic", *current.permitted_loop_modes))),
+            params={
                 "logical_solution_id": current.solution_id,
                 "max_members": current.max_members,
             })
@@ -110,7 +116,9 @@ def build_solution_graph(spec: SolutionSpec) -> LoopGraphDefinition:
                         input_roles=(loop_spec.input_role,),
                         output_roles=tuple(dict.fromkeys((
                             loop_spec.input_role, loop_spec.output_role))),
-                        purpose="fallback_router")
+                        purpose="fallback_router",
+                        delegated_modes=tuple(dict.fromkeys(
+                            ("deterministic", *current.permitted_loop_modes))))
                     add_edge(source_id, source_role, router_id,
                              loop_spec.input_role, "connected_from")
                     source_id, source_role = router_id, loop_spec.input_role
@@ -191,7 +199,8 @@ def build_solution_graph(spec: SolutionSpec) -> LoopGraphDefinition:
                         else starting.controller_vertex_id)
     graph = LoopGraphDefinition(
         graph_id=spec.solution_id, version="1.0.0",
-        permitted_vertex_modes=tuple(spec.permitted_loop_modes),
+        permitted_vertex_modes=tuple(dict.fromkeys(
+            ("deterministic", *spec.permitted_loop_modes))),
         input_ports=(LoopGraphInputPort(
             "input", input_role,
             (LoopGraphEndpoint(starting.controller_vertex_id, input_role),)),),

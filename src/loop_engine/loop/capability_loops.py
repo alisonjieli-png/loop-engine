@@ -76,12 +76,12 @@ def run_capability_ref_as_loop(directory, ref, operation: str, *,
     """
     import hashlib
     import json
-    from .loop_capsule import LoopRef
+    from .loop_capsule import IntelligenceItemRef
 
-    if not isinstance(ref, LoopRef):
+    if not isinstance(ref, IntelligenceItemRef):
         raise CapabilityLoopError("capability invocation requires a LoopRef")
     surface = ref.handshake.loop_id
-    if (ref.handshake.role != "code_intelligence"
+    if (ref.handshake.layer != "code_intelligence"
             or ref.payload_ref != f"capability://{surface}"):
         raise CapabilityLoopError(
             "the selected ref is not a registered plugin or retrieval capability")
@@ -231,9 +231,9 @@ def self_test() -> dict:
                     and event.get("loop_id") == run["loop_id"])
     tool_events = [event for event in ledger.events
                    if str(event.get("event", "")).startswith("tool_invocation")]
-    from .loop_capsule import LoopRef
-    changed_ref = LoopRef(
-        search_ref.loop_ref, search_ref.handshake, search_ref.payload_ref,
+    from .loop_capsule import IntelligenceItemRef
+    changed_ref = IntelligenceItemRef(
+        search_ref.item_ref, search_ref.handshake, search_ref.payload_ref,
         "0" * 64, search_ref.digest, search_ref.score, search_ref.source)
     changed_ref_refused = False
     try:

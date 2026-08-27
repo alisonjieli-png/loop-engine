@@ -1,39 +1,61 @@
 """Concurrency contract: typed declarations for safe parallel execution.
 
 A scheduler cannot safely answer "can these run in parallel?" from
-names alone. Each LoopNode declares its dependencies, state access,
+names alone. Each Loop declares its dependencies, state access,
 side effects, safety properties, consistency requirements, resources,
 and lifecycle. The scheduler computes a typed ConcurrencyDecision.
 
 This module adds no runtime. Scheduling decisions are computed by
-ordinary LoopNodes; the declarations are typed objects inside them.
+ordinary Loops; the declarations are typed objects inside them.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import Enum
 
-#: Scheduling patterns a composite LoopNode may declare.
-SCHEDULING_PATTERNS = (
-    "sequential", "fork_join", "bounded_fanout", "pipeline", "race",
-    "quorum", "speculative", "map_reduce", "detached",
-)
+class SchedulingPattern(str, Enum):
+    """Supported placement-independent scheduling shapes."""
 
-#: Join policies for parallel children.
-JOIN_POLICIES = (
-    "all", "all_settled", "first_completed", "first_success", "quorum",
-    "best_before_deadline", "none",
-)
+    SEQUENTIAL = "sequential"
+    FORK_JOIN = "fork_join"
+    BOUNDED_FANOUT = "bounded_fanout"
+    PIPELINE = "pipeline"
+    FIRST_SUCCESS = "first_success"
+    QUORUM = "quorum"
+    ENSEMBLE = "ensemble"
+    DURABLE = "durable"
 
-#: Failure policies for parallel children.
-FAILURE_POLICIES = (
-    "fail_fast", "isolate", "retry_failed", "fallback_failed",
-    "repair_failed", "continue_partial", "compensate", "escalate",
-)
 
-#: Parent-close policies for detached or long-running children.
-PARENT_CLOSE_POLICIES = (
-    "await", "request_cancel", "terminate", "reparent", "detach",
-)
+class JoinPolicy(str, Enum):
+    """Join semantics implemented by the canonical parallel executor."""
+
+    ALL = "all"
+    FIRST_SUCCESS = "first_success"
+    QUORUM = "quorum"
+    ENSEMBLE = "ensemble"
+
+
+class FailurePolicy(str, Enum):
+    """Failure behavior implemented inside the parallel executor."""
+
+    FAIL_FAST = "fail_fast"
+    ISOLATE = "isolate"
+
+
+class ParentClosePolicy(str, Enum):
+    """Lifecycle behavior when an owning Loop closes."""
+
+    AWAIT = "await"
+    REQUEST_CANCEL = "request_cancel"
+    TERMINATE = "terminate"
+    REPARENT = "reparent"
+    DETACH = "detach"
+
+
+SCHEDULING_PATTERNS = tuple(value.value for value in SchedulingPattern)
+JOIN_POLICIES = tuple(value.value for value in JoinPolicy)
+FAILURE_POLICIES = tuple(value.value for value in FailurePolicy)
+PARENT_CLOSE_POLICIES = tuple(value.value for value in ParentClosePolicy)
 
 #: Execution placements. Separate from run mode.
 PLACEMENTS = (
@@ -45,7 +67,7 @@ PLACEMENTS = (
 
 @dataclass(frozen=True)
 class ConcurrencyContract:
-    """What one LoopNode declares about overlapping execution."""
+    """What one Loop declares about overlapping execution."""
 
     dependencies: tuple[str, ...] = ()
     reads: tuple[str, ...] = ()
@@ -94,31 +116,32 @@ class ConcurrencyContract:
 
 @dataclass(frozen=True)
 class SchedulingConfiguration:
-    """How a composite LoopNode overlaps its children."""
+    """How a composite Loop overlaps its children."""
 
-    scheduling_pattern: str = "sequential"
+    scheduling_pattern: SchedulingPattern = SchedulingPattern.SEQUENTIAL
     maximum_concurrency: int = 1
     priority_policy: str = "declared_order"
-    join_policy: str = "all"
-    failure_policy: str = "fail_fast"
-    parent_close_policy: str = "request_cancel"
+    join_policy: JoinPolicy = JoinPolicy.ALL
+    failure_policy: FailurePolicy = FailurePolicy.FAIL_FAST
+    parent_close_policy: ParentClosePolicy = ParentClosePolicy.REQUEST_CANCEL
     result_aggregation: str = "typed_list"
     checkpoint_policy: str = "none"
     detached_lifecycle_policy: str = ""
 
     def __post_init__(self) -> None:
-        if self.scheduling_pattern not in SCHEDULING_PATTERNS:
+        try:
+            object.__setattr__(self, "scheduling_pattern",
+                               SchedulingPattern(self.scheduling_pattern))
+            object.__setattr__(self, "join_policy",
+                               JoinPolicy(self.join_policy))
+            object.__setattr__(self, "failure_policy",
+                               FailurePolicy(self.failure_policy))
+            object.__setattr__(self, "parent_close_policy",
+                               ParentClosePolicy(self.parent_close_policy))
+        except ValueError as exc:
             raise ValueError(
-                f"scheduling_pattern must be one of {SCHEDULING_PATTERNS}")
-        if self.join_policy not in JOIN_POLICIES:
-            raise ValueError(f"join_policy must be one of {JOIN_POLICIES}")
-        if self.failure_policy not in FAILURE_POLICIES:
-            raise ValueError(
-                f"failure_policy must be one of {FAILURE_POLICIES}")
-        if self.parent_close_policy not in PARENT_CLOSE_POLICIES:
-            raise ValueError(
-                f"parent_close_policy must be one of "
-                f"{PARENT_CLOSE_POLICIES}")
+                "scheduling configuration names an unsupported executor "
+                "policy") from exc
         if self.maximum_concurrency < 1:
             raise ValueError("maximum_concurrency must be at least 1")
 
@@ -151,7 +174,7 @@ class ConcurrencyDecision:
 def decide_overlap(a: ConcurrencyContract, b: ConcurrencyContract,
                    *, available_resources: dict | None = None) \
         -> ConcurrencyDecision:
-    """Deterministically decide whether two LoopNodes may overlap.
+    """Deterministically decide whether two Loops may overlap.
 
     The decision is computed from typed declarations, never guessed
     from names. Unknown safety defaults to not parallel.
@@ -165,7 +188,7 @@ def decide_overlap(a: ConcurrencyContract, b: ConcurrencyContract,
     if a_deps & set(b.writes) or b_deps & set(a.writes):
         return ConcurrencyDecision(
             verdict="unsafe",
-            reasons=("one LoopNode depends on the other's incomplete "
+            reasons=("one Loop depends on the other's incomplete "
                      "output",))
 
     a_writes = set(a.writes) | set(a.compare_and_swap_writes)
@@ -215,9 +238,9 @@ def decide_overlap(a: ConcurrencyContract, b: ConcurrencyContract,
                              f"available {available}",))
 
     if not a.thread_safe and not a.process_safe:
-        constraints.append("LoopNode A is not thread or process safe")
+        constraints.append("Loop A is not thread or process safe")
     if not b.thread_safe and not b.process_safe:
-        constraints.append("LoopNode B is not thread or process safe")
+        constraints.append("Loop B is not thread or process safe")
 
     if constraints:
         return ConcurrencyDecision(

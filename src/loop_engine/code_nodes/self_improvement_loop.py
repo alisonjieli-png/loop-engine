@@ -153,10 +153,14 @@ def run_self_improvement(*, runs_dir: str = "", layer_records=None,
                        f"excluded={len(history['excluded'])}",
                 mode="deterministic", confidence=0.95)
         if step == "audit_intelligence":
-            retrieved = query_intelligence(
+            from ..core.intelligence_layers import (
+                IntelligenceSearchContext, IntelligenceSearchRequest)
+            retrieved = query_intelligence(IntelligenceSearchRequest(
                 "review context method failure and repeated model work",
-                catalog, top_n=5, include_candidates=include_candidates,
-                ledger=log, parent=active_loop)
+                catalog, top_n=5,
+                include_candidates=include_candidates),
+                IntelligenceSearchContext(
+                    ledger=log, parent=active_loop))
             state["retrieval_hits"] = list(retrieved["hits"])
             found = audit_intelligence_summary(summary)
             state["candidates"].extend(found)

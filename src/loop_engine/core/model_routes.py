@@ -31,9 +31,13 @@ from typing import Sequence
 
 from ..core.ollama_client import FORBIDDEN_MODELS, DEFAULT_MODEL
 
-LOCALITIES = ("cloud", "local")
+LOCALITIES = ("cloud", "organization", "local")
 # What a model call is FOR — the axis the cloud-only rule actually turns on.
-PURPOSES = ("counted_generation", "decide_label", "embedding")
+PURPOSES = (
+    "counted_generation", "decide_label", "generation", "reasoning", "code",
+    "vision", "tool_use", "embedding", "reranking", "query_rewrite",
+    "structured_extract",
+)
 
 
 class RouteViolation(RuntimeError):
@@ -86,6 +90,8 @@ class RoutePolicy:
     allow_local_counted_generation: bool = False   # HARD rule: cloud-only now
     allow_local_decide_label: bool = True          # narrow SLM exception: allowed
     allow_local_embedding: bool = True             # embeddings are local
+    allow_local_query_rewrite: bool = False        # off until a local route
+    allow_local_structured_extract: bool = False   #   proves it on fixtures
 
 
 class RouteRegistry:
@@ -225,6 +231,15 @@ def screen_route(route: ModelRoute, *, purpose: str,
         if purpose == "embedding" and not pol.allow_local_embedding:
             raise RouteViolation(
                 f"local embedding disabled by policy for {route.name!r}")
+        if purpose == "query_rewrite" \
+                and not pol.allow_local_query_rewrite:
+            raise RouteViolation(
+                f"local query rewrite disabled by policy for {route.name!r}")
+        if purpose == "structured_extract" \
+                and not pol.allow_local_structured_extract:
+            raise RouteViolation(
+                f"local structured extract disabled by policy for "
+                f"{route.name!r}")
     return route
 
 
@@ -293,6 +308,37 @@ def self_test() -> dict:
     check("local_decide_label_is_allowed_the_slm_waterfall_exception",
           dl.name == "local.slm",
           "a local model may decide/label, never be the generation workhorse")
+
+    # 4b. Bounded local jobs are their own purposes with their own switches:
+    # off by default (fail-closed like counted generation), enableable per
+    # policy once a local route proves itself on fixtures.
+    rewrite_refused = ""
+    try:
+        screen_route(
+            ModelRoute("local.rw", "ollama_local", "qwen3.5:local", "local",
+                       purposes=("query_rewrite",)),
+            purpose="query_rewrite")
+    except RouteViolation as e:
+        rewrite_refused = str(e)
+    rewrite_ok = screen_route(
+        ModelRoute("local.rw2", "ollama_local", "qwen3.5:local", "local",
+                   purposes=("query_rewrite",)),
+        purpose="query_rewrite",
+        policy=RoutePolicy(allow_local_query_rewrite=True))
+    extract_refused = ""
+    try:
+        screen_route(
+            ModelRoute("local.se", "ollama_local", "qwen3.5:local", "local",
+                       purposes=("structured_extract",)),
+            purpose="structured_extract")
+    except RouteViolation as e:
+        extract_refused = str(e)
+    check("bounded_local_purposes_are_fail_closed_then_enableable",
+          "disabled by policy" in rewrite_refused
+          and rewrite_ok.locality == "local"
+          and "disabled by policy" in extract_refused,
+          "query_rewrite and structured_extract follow the same switch "
+          "pattern as every other purpose")
 
     # 5. kimi-k3 can never be a route, any purpose, any locality.
     bad = 0

@@ -1,30 +1,9 @@
-"""The Loop — the fundamental object.  Everything is a loop, run deterministically,
-hybrid, or non-deterministically, and a loop can initialize another loop.
+"""The sole concrete operational runtime and executable graph vertex.
 
-Owner vision (2026-08-23): move from "everything is a node" to "everything is a
-LOOP".  A loop is a CLASS you initialize with its core configuration; one loop can
-initialize (spawn) another loop that, say, does research and returns an answer the
-parent uses to proceed — recursive initialization of loops, all tracked on a shared
-ledger (decisions, inputs, outputs, modes, spawns, infra calls, confidence).  The
-wedge is then just reusable Code Nodes + String intelligence flowing through a
-universally flexible loop.
-
-What you pass into a Loop at initialization:
-
-  * ``framework`` — the shape: ``nine_step`` (the default), ``five_step``,
-    ``custom`` (your own steps), or ``open`` (an engine picks the next step each
-    iteration — maximum variety, not a fixed sequence).
-  * ``allowable_modes`` — which of deterministic / hybrid / non_deterministic this
-    loop MAY use; ``preferred_modes`` — the WATERFALL order (e.g. deterministic
-    first, then hybrid, then non-deterministic), with fallback when a mode fails.
-  * ``power`` — small / medium / large / max: a simple front lever that sets how
-    much Context Intelligence it pulls, how often it iterates, and how many model
-    calls it may make (advanced settings can override on the back end).
-
-The three modes map to the per-node resolution paths (see [[decision_engine.py]]):
-deterministic = code only, hybrid = code-first with model escalation/repair,
-non_deterministic = model-led.  This module is the parameterized, recursive shell;
-the kernel's nine-node run is the concrete executor for the ``nine_step`` framework.
+``Loop`` binds one immutable ``LoopDefinition`` and executes it in a
+permitted deterministic, hybrid, or non-deterministic mode. Role, mode,
+procedure shape, profile, placement, and relationship are independent typed
+parameters. They produce different Loop instances, not runtime subclasses.
 """
 
 from __future__ import annotations
@@ -365,7 +344,7 @@ class _LoopMeta(type):
             if base.__name__ == "Loop":
                 raise TypeError(
                     "Loop is the only operational runtime class and cannot "
-                    "be subclassed. Use a versioned LoopNode preset or a "
+                    "be subclassed. Use a versioned Loop profile or a "
                     "typed configuration object instead.")
         return super().__new__(mcs, name, bases, namespace, **kwargs)
 
@@ -378,7 +357,7 @@ class Loop(metaclass=_LoopMeta):
     HARD ARCHITECTURE INVARIANT: Loop is the only operational runtime
     class. Subclassing is refused at class-creation time by the
     metaclass guard, before the class exists. Common behaviors are
-    represented by versioned LoopNode presets and typed configuration
+    represented by versioned Loop profiles and typed configuration
     objects inside the Loop, never by subclasses.
 
     Invariants
@@ -387,14 +366,14 @@ class Loop(metaclass=_LoopMeta):
     - INVARIANT[LE-NODE-003]: Practitioner, Intelligence, and Solution
       are roles, not subclasses.
     - INVARIANT[LE-NODE-004]: Run modes are fields, not subclasses.
-    - INVARIANT[LE-NODE-005]: Common behaviors use LoopNode presets.
+    - INVARIANT[LE-NODE-005]: Common behaviors use versioned Loop profiles.
     - INVARIANT[LE-NODE-006]: Contained typed objects are not Nodes.
 
     Child Work
     ----------
     A semantic child step is instantiated as another Loop when it
     requires an independent goal, contract, budget, permission boundary,
-    retry, repair, verification, scheduling decision, or Chronicle
+    retry, repair, verification, scheduling decision, or Run History
     identity. Low-level implementation calls remain governed
     implementation primitives inside the current Loop.
 
@@ -412,7 +391,7 @@ class Loop(metaclass=_LoopMeta):
 
     #: Live instances in this interpreter, tracked weakly so the
     #: registry never keeps a finished Loop alive. The runtime ontology
-    #: check compares this registry against gc and the Chronicle.
+    #: check compares this registry against gc and Run History state.
     _live_instances: "weakref.WeakSet[Loop]" = weakref.WeakSet()
 
     def __init__(self, goal: "str | LoopStartRequest",
@@ -1295,7 +1274,7 @@ def self_test() -> dict:
     # 0. the one-runtime invariant is mechanically enforced: subclassing
     #    the canonical Loop class is refused at class-creation time.
     try:
-        class _SneakyNode(Loop):                                # noqa: F841
+        class _SneakyRuntimeSubclass(Loop):                     # noqa: F841
             pass
         check("loop_cannot_be_subclassed", False)
     except TypeError:

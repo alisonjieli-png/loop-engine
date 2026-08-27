@@ -13,7 +13,7 @@ The example:
 
 - generates a small deterministic synthetic classification dataset;
 - splits it once and shares the same immutable split across all models;
-- trains the three models as independent child Loops;
+- trains the three models as independent Spawned Loops;
 - ensembles their probability predictions;
 - reports per-member and ensemble metrics;
 - verifies the ensemble is not silently worse than every member;

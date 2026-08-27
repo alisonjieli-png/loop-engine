@@ -15,13 +15,8 @@ import time
 from dataclasses import dataclass, field
 
 from .scheduling import (ConcurrencyContract, ConcurrencyDecision,
+                         FailurePolicy, JoinPolicy,
                          SchedulingConfiguration, decide_overlap)
-
-#: Join policies this runner implements.
-JOIN_POLICIES = ("all", "any", "quorum", "first_success", "ensemble")
-
-#: Failure policies this runner implements.
-FAILURE_POLICIES = ("fail_fast", "isolate")
 
 
 class ParallelExecutionError(RuntimeError):
@@ -59,16 +54,16 @@ class ParallelOutcome:
     """Typed outcome of one parallel execution."""
 
     results: tuple[BranchResult, ...]
-    join_policy: str
-    failure_policy: str
+    join_policy: JoinPolicy
+    failure_policy: FailurePolicy
     succeeded: bool
     selected: tuple[BranchResult, ...] = ()
     elapsed_seconds: float = 0.0
 
     def to_dict(self) -> dict:
         return {"results": [r.to_dict() for r in self.results],
-                "join_policy": self.join_policy,
-                "failure_policy": self.failure_policy,
+                "join_policy": self.join_policy.value,
+                "failure_policy": self.failure_policy.value,
                 "succeeded": self.succeeded,
                 "selected": [r.to_dict() for r in self.selected],
                 "elapsed_seconds": self.elapsed_seconds}
@@ -87,19 +82,17 @@ def _check_pairwise_safety(branches: tuple[BranchSpec, ...]) -> list[str]:
     return problems
 
 
-def _apply_join(results: tuple[BranchResult, ...], policy: str,
+def _apply_join(results: tuple[BranchResult, ...], policy: JoinPolicy,
                 quorum: int = 1) -> tuple[bool, tuple[BranchResult, ...]]:
     """Apply one join policy to branch results."""
     ok_results = tuple(r for r in results if r.ok)
-    if policy == "all":
+    if policy is JoinPolicy.ALL:
         return all(r.ok for r in results), ok_results
-    if policy == "any":
-        return bool(ok_results), ok_results[:1]
-    if policy == "quorum":
+    if policy is JoinPolicy.QUORUM:
         return len(ok_results) >= quorum, ok_results
-    if policy == "first_success":
+    if policy is JoinPolicy.FIRST_SUCCESS:
         return bool(ok_results), ok_results[:1]
-    if policy == "ensemble":
+    if policy is JoinPolicy.ENSEMBLE:
         return bool(ok_results), ok_results
     raise ParallelExecutionError(f"unknown join policy {policy!r}")
 
@@ -136,7 +129,7 @@ def run_parallel(branches: tuple[BranchSpec, ...], *,
         async def _one(branch: BranchSpec) -> None:
             nonlocal failed
             async with semaphore:
-                if failed and config.failure_policy == "fail_fast":
+                if failed and config.failure_policy is FailurePolicy.FAIL_FAST:
                     results.append(BranchResult(
                         branch.branch_id, False, error="skipped: fail_fast"))
                     return
@@ -148,7 +141,7 @@ def run_parallel(branches: tuple[BranchSpec, ...], *,
                     results.append(BranchResult(
                         branch.branch_id, False,
                         error=f"{type(exc).__name__}: {exc}"))
-                    if config.failure_policy == "fail_fast":
+                    if config.failure_policy is FailurePolicy.FAIL_FAST:
                         failed = True
 
         await asyncio.gather(*(_one(b) for b in branches))

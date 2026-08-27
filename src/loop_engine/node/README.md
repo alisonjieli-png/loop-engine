@@ -4,8 +4,9 @@
 
 `Node` is an ontological category and package namespace.
 
-`LoopNode` is the only concrete graph-addressable operational Node in
-Loop Engine.
+`Loop` is the only concrete operational runtime and executable graph vertex in
+Loop Engine. Historical serialized `kind: loop_node` records are not current
+Node objects; the compatibility reader migrates them to `LoopDefinitionRecord`.
 
 There is no concrete generic `Node` class.
 
@@ -21,15 +22,15 @@ Never create:
 - run-mode-specific Node classes
 - plugin-defined Node classes
 
-Reusable behavior is represented through versioned `LoopNodePreset`
-records. Typed values, contracts, policies, configurations, references,
-results, and receipts are objects contained by or returned from a
-`LoopNode`. They are not Nodes.
+Reusable behavior is represented through versioned passive preset records.
+Typed values, contracts, policies, configurations, references, results, and
+reports are objects contained by or returned from a `Loop`. They are not
+executable graph vertices.
 
-## LoopNode composition
+## Loop composition
 
 ```text
-LoopNode
+Loop
 ├── Definition
 │   ├── Purpose
 │   ├── Contracts
@@ -56,14 +57,14 @@ LoopNode
     ├── Resolved Configuration
     ├── Runtime State
     ├── Runtime Memory
-    ├── Child LoopNode Handles
-    ├── Chronicle
+    ├── Spawned Loop handles
+    ├── Run History
     └── Outcome
 ```
 
 ## Atomicity boundary
 
-Create a Child LoopNode when work needs:
+Create a Loop Spawned by its parent when work needs:
 
 ```text
 ├── an independent goal
@@ -74,7 +75,7 @@ Create a Child LoopNode when work needs:
 ├── independent retry or repair
 ├── independent scheduling
 ├── independent delegation
-└── a separate Chronicle identity
+└── a separate Run History identity
 ```
 
 Keep work as an implementation primitive when it is:
@@ -86,19 +87,19 @@ Keep work as an implementation primitive when it is:
 ├── one database-driver operation
 ├── one provider-SDK call
 ├── a small calculation
-└── another implementation detail governed by the current LoopNode
+└── another implementation detail governed by the current Loop
 ```
 
 ## Presets
 
-Common behaviors are represented by versioned LoopNode presets:
+Common behaviors are represented by versioned passive Loop profiles:
 
 ```text
-core.loop_node_preset.configuration_provider@1.0.0
-core.loop_node_preset.record_lookup@1.0.0
-core.loop_node_preset.validator@1.0.0
-core.loop_node_preset.transform@1.0.0
-core.loop_node_preset.composite@1.0.0
+core.loop_profile.configuration_provider@1.0.0
+core.loop_profile.record_lookup@1.0.0
+core.loop_profile.validator@1.0.0
+core.loop_profile.transform@1.0.0
+core.loop_profile.composite@1.0.0
 ```
 
 A preset is a partial typed configuration. It is never a subclass, a

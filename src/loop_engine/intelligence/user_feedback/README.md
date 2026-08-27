@@ -1,7 +1,7 @@
 ---
 folder_id: intelligence.user_feedback
 parent: intelligence
-ontology_version: 1.0.0
+ontology_version: 2.0.0
 ---
 
 # User feedback

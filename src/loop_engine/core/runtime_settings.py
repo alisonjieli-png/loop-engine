@@ -176,8 +176,9 @@ class ProviderSettings:
                 r"[A-Z][A-Z0-9_]*", self.credential_env):
             raise SettingsError(
                 "provider.credential_env must be an environment variable name")
-        if self.locality not in ("cloud", "local"):
-            raise SettingsError("provider.locality must be cloud or local")
+        if self.locality not in ("cloud", "organization", "local"):
+            raise SettingsError(
+                "provider.locality must be cloud, organization, or local")
         if self.wire not in ("openai", "ollama"):
             raise SettingsError("provider.wire must be openai or ollama")
         if self.kind == "custom" and not (self.endpoint and self.model):

@@ -1,0 +1,247 @@
+schema_version: semantic_ambiguity_register/v1
+as_of: 2026-08-27
+authority: src/loop_engine/data/semantic_data_dictionary.yaml
+
+findings:
+  - id: SEM-001
+    subsystem: intelligence_and_memory
+    collision: Five memory labels and a one-layer-to-one-memory map compete with the canonical four memory types.
+    evidence:
+      - loop_engine.core.intelligence_layers:MEMORY_TYPES
+      - loop_engine.core.intelligence_layers:LAYER_MEMORY_TYPE
+      - loop_engine.memory.model.memory_type:MemoryType
+    resolution: Import the four memory types from memory.model; remove social memory and the layer-to-memory bijection.
+    representation_decision: parameterize records with independent layer, memory type, and functional domains.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-002
+    subsystem: intelligence_runtime_identity
+    collision: LoopRef, LoopCapsule, and IntelligenceItemEnvelope make passive intelligence objects sound executable.
+    evidence:
+      - loop_engine.loop.loop_capsule:LoopRef
+      - loop_engine.loop.loop_capsule:LoopCapsule
+      - loop_engine.loop.intelligence_loops:IntelligenceItemEnvelope
+    resolution: Use IntelligenceItemRef and loaded intelligence values; use LoopDefinitionRef only when invocation is executable.
+    representation_decision: separate passive reference, loaded data, definition reference, and Loop instance.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-003
+    subsystem: catalog_records
+    collision: Passive storage emits the runtime-shaped word node.
+    evidence:
+      - loop_engine.core.store_serve:STORE_KINDS
+      - loop_engine.ontology.catalog:CatalogEntry
+      - src/loop_engine/ontology/index.json
+    resolution: Emit catalog_record or exact artifact kinds; read node only through compatibility migration.
+    representation_decision: consolidate passive storage vocabulary under records and artifacts.
+    status: IMPLEMENTED_PARTIALLY
+  - id: SEM-004
+    subsystem: catalogs
+    collision: UnifiedCatalog, CompositeCatalog, build_intelligence_catalog, and SolverStore appear to own overlapping query authority.
+    evidence:
+      - loop_engine.ontology.catalog:UnifiedCatalog
+      - loop_engine.catalog.composite:CompositeCatalog
+      - loop_engine.core.intelligence_layers:build_intelligence_catalog
+      - loop_engine.core.store_serve:SolverStore
+    resolution: CatalogStore plus CompositeCatalog own query and resolution; discovery and legacy stores become named adapters.
+    representation_decision: compose storage adapters behind one catalog contract.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-005
+    subsystem: learning_governance
+    collision: Asset lifecycle, IntelligenceRegistry, and CandidateJournal expose separate promotion authorities.
+    evidence:
+      - loop_engine.core.asset_lifecycle:Resource.promote
+      - loop_engine.core.intelligence_registry:IntelligenceRegistry.promote
+      - loop_engine.memory.storage.learning_cycle:CandidateJournal.promote
+    resolution: One governed learning repository owns promotion; former calls delegate with exact evidence and identities.
+    representation_decision: consolidate authority; parameterize candidate kind and scope.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-006
+    subsystem: model_invocation
+    collision: Public provider_failover invokes adapters beside the sole ModelGateway.
+    evidence:
+      - loop_engine.core.model_gateway:ModelGateway
+      - loop_engine.core.provider_failover:call_with_failover
+    resolution: Compatibility entry builds ModelGatewayRequest and delegates to ModelGateway.
+    representation_decision: compose provider adapters behind one gateway.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-007
+    subsystem: model_capabilities
+    collision: Model maximum output is stored as context capacity during discovery.
+    evidence:
+      - loop_engine.core.model_discovery:_listing_catalog
+      - loop_engine.core.model_discovery:roster_to_routes
+    resolution: Keep context_window_tokens and maximum_output_tokens independent with source and unknown state.
+    representation_decision: parameterize one capability evidence record with distinct fields.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-008
+    subsystem: studio
+    collision: Studio is described as read-only while its HTTP handler writes User Feedback.
+    evidence:
+      - loop_engine.core.studio_server:_leave_advice
+      - loop_engine.core.studio_server:_Handler.do_POST
+    resolution: Separate StudioReadModelServer and an authorized UserFeedbackSubmissionEndpoint, or remove the read-only claim.
+    representation_decision: separate service because effect and authorization boundaries differ.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-009
+    subsystem: studio_projections
+    collision: Studio loops, strings, solutions, and improvements use inventories that do not read canonical authorities.
+    evidence:
+      - loop_engine.core.studio_server:_loops_inventory
+      - loop_engine.core.studio_server:_strings_inventory
+      - loop_engine.core.studio_server:_solutions_inventory
+      - loop_engine.core.studio_server:_improvements
+    resolution: Project Run History, catalog, definitions, graphs, and governed candidate repository.
+    representation_decision: compose read projections; never create another store.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-010
+    subsystem: runtime_memory
+    collision: RunNoteBoard, WorkingMemoryState, and RuntimeMemoryService describe different scopes under similar names.
+    evidence:
+      - loop_engine.core.runtime_memory:RunNoteBoard
+      - loop_engine.memory.working.state:WorkingMemoryState
+      - loop_engine.loop.spawned_runtime_port:RuntimeMemoryService
+    resolution: Use RunSharedNoteBoard, LoopWorkingMemoryState, and RunSharedMemoryService.
+    representation_decision: separate classes because ownership and lifecycle differ.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-011
+    subsystem: event_history
+    collision: LoopLedger, RunHistoryEvent, EVENT_FAMILIES, and retired history references obscure buffer, stored envelope, vocabulary, and history.
+    evidence:
+      - loop_engine.loop.recursive_loop:LoopLedger
+      - loop_engine.core.run_history:RunHistoryEvent
+      - loop_engine.core.event_vocabulary:EVENT_FAMILIES
+      - loop_engine.memory.episodic.record:EpisodicMemoryRecord
+    resolution: Name live buffer, stored event, event vocabulary, and Run History separately; the retired spelling is reader-only.
+    representation_decision: separate records because lifecycle and authority differ.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-012
+    subsystem: generation_governance
+    collision: Generation stage, governed lifecycle, and writeback destination share state labels.
+    evidence:
+      - loop_engine.generation.operators:CandidateRecord
+      - loop_engine.generation.model.campaign:CANDIDATE_STATES
+      - loop_engine.generation.model.campaign:WRITEBACK_MODES
+    resolution: Separate GenerationEvaluationStage, GovernedLifecycle, and WritebackDestination.
+    representation_decision: parameterize independent enum dimensions; promotion remains a separate service.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-013
+    subsystem: settings
+    collision: SolverConfig overlaps RuntimeSettings, OperatingProfile, and LoopConfig; LoopConfig.settings returns effort only.
+    evidence:
+      - loop_engine.core.config:SolverConfig
+      - loop_engine.core.operating_profile:to_solver_config
+      - loop_engine.loop.recursive_loop:LoopConfig.settings
+    resolution: Use ResolvedOperatingConstraints, rename settings to effort_limits, and keep authored, resolved, and invocation scopes distinct.
+    representation_decision: parameterize typed settings stages; no second runtime configuration authority.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-014
+    subsystem: configuration_records
+    collision: ConfigurationFacts represents Loop configuration, vertex parameters, and edge metadata.
+    evidence:
+      - loop_engine.loop.loop_definition:ConfigurationFacts
+      - loop_engine.code_nodes.solution_graph:LoopGraphVertexRecord
+    resolution: Use CanonicalJsonObject internally with LoopConfigurationSnapshot, VertexParameters, and EdgeMetadata wrappers.
+    representation_decision: separate value types because contracts differ; share canonical JSON validation by composition.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-015
+    subsystem: model_output_limits
+    collision: Output maxima appear in provider settings, model tiers, route attempts, and gateway configuration.
+    evidence:
+      - loop_engine.core.runtime_settings:ProviderSettings
+      - loop_engine.core.runtime_settings:ModelTier
+      - loop_engine.core.model_gateway:ModelRouteAttemptSpec
+      - loop_engine.core.model_gateway:ModelGatewayConfig
+    resolution: One source-backed ModelOutputCapability; total usage budget stays a distinct max_total_tokens field.
+    representation_decision: consolidate capability authority and parameterize per-attempt budgets separately.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-016
+    subsystem: model_vocabularies
+    collision: Routing records and model discovery locally redefine Loop roles, modes, thinking powers, lifecycles, and model purposes.
+    evidence:
+      - loop_engine.core.model_routing_records:ROLES
+      - loop_engine.core.model_routing_records:RUN_MODES
+      - loop_engine.core.model_discovery:ROLES
+      - loop_engine.core.model_routes:PURPOSES
+    resolution: Import canonical vocabularies and use one ModelJobPurpose enumeration.
+    representation_decision: parameterize shared enums; do not create role-specific classes.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-017
+    subsystem: model_capability_stages
+    collision: Provider capability hints, provider binding, and deployment evidence use overlapping capability names.
+    evidence:
+      - loop_engine.core.model_routes:ModelProviderCapabilities
+      - loop_engine.core.model_gateway:ProviderSpec
+      - loop_engine.core.model_routing_records:ModelCapabilityRecord
+    resolution: Name route hints, resolved provider binding, and reviewed deployment evidence explicitly.
+    representation_decision: separate records because provenance and lifecycle differ.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-018
+    subsystem: plugins
+    collision: Plugin means provenance, adapter mechanism, and public capability port; Brave spans Web Research and Custom Plugins.
+    evidence:
+      - loop_engine.ontology.artifacts:SOURCE_CLASSES
+      - loop_engine.core.brave_search:BraveSearchPlugin
+      - loop_engine.loop.runtime_context:CustomPluginsPort
+    resolution: Reserve plugin for provenance and extension mechanism; use CustomCapabilitiesPort and BraveWebSearchAdapter.
+    representation_decision: compose adapters behind domain ports.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-019
+    subsystem: materialization
+    collision: Materialization names both persistent representations and runtime body loading.
+    evidence:
+      - loop_engine.loop.loop_capsule:materialize_ref_as_loop
+      - loop_engine.core.intelligence_layers:materialize_intelligence_ref
+      - loop_engine.core.intelligence_portfolio:materialize_portfolio_for_loop
+    resolution: Reserve materialization for at-rest representations; runtime operations use load.
+    representation_decision: separate pure storage representation from governed load operation.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-020
+    subsystem: scenarios
+    collision: Capability scenario definitions live under benchmarks and use achieved-sounding tiers before execution.
+    evidence:
+      - benchmarks/capability-scenarios/catalog.json
+    resolution: Name them validation scenarios and intended_gate until population, evaluator, execution, and evidence are frozen.
+    representation_decision: scenario definitions are passive benchmark inputs, not benchmark results.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-021
+    subsystem: intelligence_layers
+    collision: Layer and User Feedback coexist with pillar, guidance, and user intelligence names.
+    evidence:
+      - loop_engine.loop.intelligence_loops:IntelligenceItemEnvelope
+      - loop_engine.loop.intelligence_loops:serve_pillar
+      - loop_engine.core.saas_routes:intelligence_surface
+    resolution: New APIs use layer and user_feedback; former names become exact aliases only.
+    representation_decision: parameterize layer; do not create pillar-specific classes.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-022
+    subsystem: duckdb_catalog
+    collision: DuckDBCatalogBackend and DuckDBFileQueryEngine overlap legacy and canonical query paths.
+    evidence:
+      - loop_engine.core.duckdb_catalog:DuckDBCatalogBackend
+      - loop_engine.catalog.stores.duckdb_files:DuckDBFileQueryEngine
+    resolution: Former path delegates to the CatalogStore adapter and is removed after migration.
+    representation_decision: compose one backend adapter; no second catalog authority.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-023
+    subsystem: adapter_and_memory_store_names
+    collision: AdapterRegistry is domain-ambiguous and InMemoryMemoryStore does not state persistent scope.
+    evidence:
+      - loop_engine.catalog.registry:AdapterRegistry
+      - loop_engine.memory.storage.store:InMemoryMemoryStore
+    resolution: Use CatalogStoreAdapterRegistry and InMemoryPersistentMemoryRepository.
+    representation_decision: separate by domain contract; parameterize backend behavior.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-024
+    subsystem: benchmark_evidence
+    collision: complex_task_benchmark contains evidence matching rather than benchmark execution.
+    evidence:
+      - loop_engine.code_nodes.complex_task_benchmark
+    resolution: Move behavior to benchmark_evidence and retain the old module only as an import facade.
+    representation_decision: separate benchmark execution from evidence comparison.
+    status: REQUIRED_NOT_IMPLEMENTED
+
+verified_clear:
+  - MemoryQuery and IntelligenceQuery have distinct lifecycle and cross-layer contracts.
+  - RunHistory is authority while EpisodicMemoryRecord is an interpreted derivative.
+  - ModelSelectionRequest, ModelSelectionDecision, ModelGatewayConfig, and ModelGateway are distinct stages.
+  - ProviderSettings, ProviderSpec, ModelRoute, and ModelRouteAvailabilitySnapshot are distinct authored, resolved, route, and observed forms.
+  - Benchmark definitions, Loop Engine evidence, third-party evidence, and comparison matches remain distinct.

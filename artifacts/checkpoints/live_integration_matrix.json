@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-27T13:28:13-04:00",
+  "repository": "alisonjieli-png/loop-engine",
+  "branch": "main",
+  "baseline_sha": "6a26978c5e6cd2e3852818c4bb4b2dac23b0da76",
+  "summary": {
+    "real_provider_runs": 0,
+    "local_model_runs": 0,
+    "offline_fixtures": 0,
+    "simulations": 0,
+    "mocks": 0,
+    "static_validations": 5,
+    "unproven": 3
+  },
+  "records": [
+    {
+      "integration_id": "MODEL-OLLAMA-CLOUD",
+      "provider": "ollama_cloud",
+      "endpoint": "provider default",
+      "model": "runtime discovered",
+      "date": "2026-08-27",
+      "configuration": "Built-in ProviderSpec documented by the repository",
+      "credentials_by_reference": "OLLAMA_API_KEY",
+      "test": "Source and public documentation inspection only",
+      "result": "STATIC VALIDATION",
+      "evidence": [
+        "docs/components/core-architecture/MODEL-GATEWAY.md",
+        "src/loop_engine/core/model_gateway.py"
+      ],
+      "limitations": "No provider request was made in this reconciliation task. Availability, exact model, usage, latency, cost, and output limits are unproven."
+    },
+    {
+      "integration_id": "MODEL-MISTRAL",
+      "provider": "mistral",
+      "endpoint": "provider default",
+      "model": "runtime discovered",
+      "date": "2026-08-27",
+      "configuration": "Built-in ProviderSpec documented by the repository",
+      "credentials_by_reference": "MISTRAL_API_KEY",
+      "test": "Source and public documentation inspection only",
+      "result": "STATIC VALIDATION",
+      "evidence": [
+        "docs/components/core-architecture/MODEL-GATEWAY.md",
+        "src/loop_engine/core/model_gateway.py"
+      ],
+      "limitations": "No provider request was made in this reconciliation task. Availability, exact model, usage, latency, cost, and output limits are unproven."
+    },
+    {
+      "integration_id": "MODEL-OPENROUTER",
+      "provider": "openrouter",
+      "endpoint": "provider default",
+      "model": "runtime discovered",
+      "date": "2026-08-27",
+      "configuration": "Built-in ProviderSpec documented by the repository",
+      "credentials_by_reference": "OPENROUTER_API_KEY",
+      "test": "Source and public documentation inspection only",
+      "result": "STATIC VALIDATION",
+      "evidence": [
+        "docs/components/core-architecture/MODEL-GATEWAY.md",
+        "src/loop_engine/core/model_gateway.py"
+      ],
+      "limitations": "No provider request was made in this reconciliation task. Availability, exact model, usage, latency, cost, and output limits are unproven."
+    },
+    {
+      "integration_id": "CUSTOM-OPENAI-WIRE",
+      "provider": "custom",
+      "endpoint": "configured base_url",
+      "model": "configured exact model ID",
+      "date": "2026-08-27",
+      "configuration": "CustomEndpoint with wire=openai",
+      "credentials_by_reference": "optional configured environment variable",
+      "test": "Typed adapter path inspected",
+      "result": "STATIC VALIDATION",
+      "evidence": [
+        "src/loop_engine/core/custom_endpoint.py",
+        "docs/guides/custom-endpoints.md"
+      ],
+      "limitations": "No endpoint health, identity, capability, structured-output, or cancellation probe was executed."
+    },
+    {
+      "integration_id": "CUSTOM-OLLAMA-WIRE",
+      "provider": "custom",
+      "endpoint": "configured base_url",
+      "model": "configured exact model ID",
+      "date": "2026-08-27",
+      "configuration": "CustomEndpoint with wire=ollama",
+      "credentials_by_reference": null,
+      "test": "Typed adapter path inspected",
+      "result": "STATIC VALIDATION",
+      "evidence": [
+        "src/loop_engine/core/custom_endpoint.py",
+        "docs/guides/custom-endpoints.md"
+      ],
+      "limitations": "No live local Ollama endpoint was contacted."
+    },
+    {
+      "integration_id": "LOCAL-QWEN38-2B",
+      "provider": "local_qwen38_2b",
+      "endpoint": "http://127.0.0.1:8000/v1",
+      "model": "empero-ai/Qwen3.8-2B-Distill",
+      "date": "2026-08-27",
+      "configuration": "Proposed OpenAI-compatible local route; not a core dependency",
+      "credentials_by_reference": null,
+      "test": "No live test",
+      "result": "UNPROVEN",
+      "evidence": [
+        "current user mandate"
+      ],
+      "limitations": "Exact endpoint identity, model revision, deployment digest, runtime, quantization, device, context, maximum output, tools, structured output, reasoning behavior, latency, memory, and task quality remain unproven."
+    },
+    {
+      "integration_id": "OPENCODE-GO-MODEL-API",
+      "provider": "opencode_go",
+      "endpoint": "not configured in accepted evidence",
+      "model": "not selected",
+      "date": "2026-08-27",
+      "configuration": "Requested provider form when API-compatible",
+      "credentials_by_reference": null,
+      "test": "No Loop Engine provider test",
+      "result": "UNPROVEN",
+      "evidence": [
+        "current user mandate"
+      ],
+      "limitations": "OpenCode coding-harness sessions are not raw model-provider evidence."
+    },
+    {
+      "integration_id": "EXTERNAL-CODING-HARNESSES",
+      "provider": "OpenCode, Codex CLI, Claude Code, and other optional harnesses",
+      "endpoint": "external harness adapters",
+      "model": "varies",
+      "date": "2026-08-27",
+      "configuration": "Separate external-harness capability path",
+      "credentials_by_reference": null,
+      "test": "No matched live harness trial in this reconciliation task",
+      "result": "UNPROVEN",
+      "evidence": [
+        "src/loop_engine/core/external_harness_adapters.py"
+      ],
+      "limitations": "Adapter presence does not prove a real run, fair comparison, cost accounting, or task success."
+    }
+  ]
+}

@@ -16,6 +16,9 @@ from ..loop.recursive_loop import (MODES, Loop, LoopError, LoopLedger,
 from .solution_graph import (GRAPH_COMBINATIONS, LoopGraphDefinition,
                              LoopGraphError)
 from .solution_graph_builder import build_solution_graph
+from .solution_model_port import (MODEL_LEAF_MODES, ModelExecution,
+                                  ModelExecutionSession, ModelInvocationPort,
+                                  preflight_model_execution)
 
 #: how a composite combines its member solutions.  select_best and
 #: gating_router are EXTENDED strategies: they validate here but execute in
@@ -129,6 +132,12 @@ class SolutionSpec:
             v.append("weighted_average needs one weight per member")
         if self.ensemble != "single" and len(self.members) < 2:
             v.append(f"ensemble {self.ensemble!r} needs >=2 members")
+        for loop in self.loops:
+            if loop.mode not in self.permitted_loop_modes:
+                v.append(
+                    f"loop {loop.loop_id}: declared mode {loop.mode!r} is "
+                    "outside this spec's permitted_loop_modes "
+                    f"{tuple(self.permitted_loop_modes)}")
         return {"valid": not v, "violations": list(dict.fromkeys(v))}
 
     def to_record(self):
@@ -213,18 +222,16 @@ def _runtime_depth(spec: SolutionSpec) -> int:
                    default=0)
 
 
-def _adapter_violations(spec: SolutionSpec, path: str = "") -> list[str]:
-    """Report execution-adapter coverage separately from declaration shape."""
-    here = f"{path}/{spec.solution_id}" if path else spec.solution_id
-    violations = [
-        f"{here}/{loop.loop_id}: the in-process Canvas adapter supports "
-        f"deterministic execution only; declared mode {loop.mode!r} needs a "
-        "separate execution adapter"
-        for loop in spec.loops if loop.mode != "deterministic"
-    ]
-    for member in spec.members:
-        violations.extend(_adapter_violations(member, here))
-    return violations
+def _model_execution_preflight(spec, model_execution) -> list[str]:
+    """Fail-closed preflight for model-mode leaves, before any callable.
+
+    A Solution leaf declares deterministic, hybrid, or non_deterministic like
+    every Loop. Model modes are legitimate declarations: they execute only
+    under the run's explicit, budgeted ``ModelExecution`` authority. A run
+    that declares model-mode leaves without that authority refuses here,
+    before any operation callable.
+    """
+    return preflight_model_execution(spec, model_execution)
 
 
 def _runtime_identity(loop: Loop) -> dict:
@@ -311,8 +318,14 @@ def _complete_solution_loop(loop: Loop, *, solution_id: str,
 
 
 def _run_envelope(loop: Loop, *, solution_id: str, logical_loop_id: str,
-                  action_step: str, body, trace: list):
-    """Run one body through the already-bound canonical Loop runtime."""
+                  action_step: str, body, trace: list,
+                  act_mode: str = "deterministic"):
+    """Run one body through the already-bound canonical Loop runtime.
+
+    The action step reports the envelope's declared runtime mode: a
+    deterministic leaf acts deterministically; a hybrid or non_deterministic
+    leaf acts in that mode through its governed model port.
+    """
     holder: dict = {}
 
     def handler(active: Loop, step: str, context: dict) -> StepOutcome:
@@ -323,13 +336,13 @@ def _run_envelope(loop: Loop, *, solution_id: str, logical_loop_id: str,
                                confidence=confidence)
         try:
             holder["value"] = body(active)
-            return StepOutcome(output=f"{step}:done", mode="deterministic",
+            return StepOutcome(output=f"{step}:done", mode=act_mode,
                                confidence=0.95)
         except Exception as exc:  # noqa: BLE001 - terminate before surfacing
             holder["error"] = exc
             active.cancel(f"{logical_loop_id}: {type(exc).__name__}")
             return StepOutcome(output=f"{step}:failed:{type(exc).__name__}",
-                               mode="deterministic", confidence=0.0,
+                               mode=act_mode, confidence=0.0,
                                failed=True)
 
     try:
@@ -366,6 +379,7 @@ def _run_atomic_operation(*, owner: Loop, solution_id: str,
                           params: dict, input_role: str, output_role: str,
                           definition: LoopDefinition,
                           registry: dict, trace: list, max_depth: int,
+                          model_session: "ModelExecutionSession | None" = None,
                           pass_params: bool = True,
                           relationship: "LoopRelationship | None" = None
                           ) -> dict:
@@ -396,13 +410,23 @@ def _run_atomic_operation(*, owner: Loop, solution_id: str,
                     f"solution loop {logical_loop_id}: input value role "
                     f"{value.role!r} does not match {input_role!r}")
             actual_input = value.value
+        call_params = params
+        if definition.contract.runtime_mode in MODEL_LEAF_MODES:
+            if model_session is None:
+                raise SolutionError(
+                    f"solution loop {logical_loop_id}: model session missing")
+            call_params = {
+                **params,
+                "model_port": ModelInvocationPort(
+                    model_session, definition.contract.runtime_mode, active),
+            }
         active.ledger.record(
             loop_id=active.loop_id, event="tool_invocation_started",
             surface="solution_registry", operation=operation,
             solution=solution_id, logical_loop_id=logical_loop_id)
         try:
-            output = (callable_(actual_input, dict(params)) if pass_params
-                      else callable_(actual_input))
+            output = (callable_(actual_input, dict(call_params))
+                      if pass_params else callable_(actual_input))
         except Exception as exc:  # noqa: BLE001 - evidence before propagation
             active.ledger.record(
                 loop_id=active.loop_id, event="tool_invocation_failed",
@@ -434,14 +458,16 @@ def _run_atomic_operation(*, owner: Loop, solution_id: str,
         action_step=("verify_survivors" if definition.role_profile_id
                      == "solution.validator"
                      else "act"),
-        body=invoke, trace=trace)
+        body=invoke, trace=trace,
+        act_mode=definition.contract.runtime_mode)
     return {"value": output, "loop_id": loop.loop_id,
             "identity": _runtime_identity(loop)}
 
 
 def _run_solution_node(node: SolutionLoopSpec, value, *, owner: Loop,
                        solution_id: str, registry: dict, trace: list,
-                       max_depth: int, connected_from_loop_ids: tuple[str, ...]
+                       max_depth: int, connected_from_loop_ids: tuple[str, ...],
+                       model_execution: "ModelExecutionSession | None" = None
                        ) -> dict:
     operations = (node.operation,) + tuple(node.fallback_operations)
     definitions = (node.definition,) + tuple(node.fallback_definitions)
@@ -456,7 +482,7 @@ def _run_solution_node(node: SolutionLoopSpec, value, *, owner: Loop,
             value=value, params=node.params, input_role=node.input_role,
             output_role=node.output_role, definition=node.definition,
             registry=registry, trace=trace,
-            max_depth=max_depth,
+            max_depth=max_depth, model_session=model_execution,
             relationship=LoopRelationship.connected_from(
                 connected_from_loop_ids))
 
@@ -485,6 +511,7 @@ def _run_solution_node(node: SolutionLoopSpec, value, *, owner: Loop,
                     output_role=node.output_role, definition=definition,
                     registry=registry,
                     trace=trace, max_depth=max_depth,
+                    model_session=model_execution,
                     relationship=LoopRelationship.spawned_by(active.loop_id))
             except SolutionError as exc:
                 errors.append(f"{operation}: {exc}")
@@ -498,7 +525,7 @@ def _run_solution_node(node: SolutionLoopSpec, value, *, owner: Loop,
                           "component_loop_id": attempt["loop_id"],
                           "router_loop_id": active.loop_id,
                           "used_fallback": index > 0,
-                          "served_by": index, "mode": "deterministic",
+                          "served_by": index, "mode": node.mode,
                           "input_role": node.input_role,
                           "output_role": node.output_role,
                           **_runtime_identity(active)})
@@ -516,7 +543,8 @@ def _run_solution_node(node: SolutionLoopSpec, value, *, owner: Loop,
 
 
 def _run_members(spec: SolutionSpec, registry: dict, inputs, *, owner: Loop,
-                 trace: list, max_depth: int, allow_extended: bool):
+                 trace: list, max_depth: int, allow_extended: bool,
+                 model_execution: "ModelExecutionSession | None" = None):
     assert spec.graph is not None
     group = spec.graph.group(spec.group_id)
     if spec.ensemble in _EXTENDED and not allow_extended:
@@ -545,6 +573,7 @@ def _run_members(spec: SolutionSpec, registry: dict, inputs, *, owner: Loop,
                 executed = _execute_spec(
                     member, registry, inputs, parent=owner, trace=trace,
                     max_depth=max_depth, allow_extended=allow_extended,
+                    model_execution=model_execution,
                     relationship=LoopRelationship.spawned_by(owner.loop_id))
                 return executed["value"]
         raise SolutionError(
@@ -556,6 +585,7 @@ def _run_members(spec: SolutionSpec, registry: dict, inputs, *, owner: Loop,
             executed = _execute_spec(
                 member, registry, inputs, parent=owner, trace=trace,
                 max_depth=max_depth, allow_extended=allow_extended,
+                model_execution=model_execution,
                 relationship=LoopRelationship.spawned_by(owner.loop_id))
         except SolutionError as exc:
             errors.append(f"{member.solution_id}: {exc}")
@@ -612,7 +642,8 @@ def _run_members(spec: SolutionSpec, registry: dict, inputs, *, owner: Loop,
 
 def _execute_spec(spec: SolutionSpec, registry: dict, inputs, *,
                   parent: "Loop | None", trace: list, max_depth: int,
-                  allow_extended: bool, relationship: LoopRelationship):
+                  allow_extended: bool, relationship: LoopRelationship,
+                  model_execution: "ModelExecutionSession | None" = None):
     assert spec.graph is not None
     group = spec.graph.group(spec.group_id)
     controller_definition = spec.graph.resolved_definition(
@@ -630,14 +661,16 @@ def _execute_spec(spec: SolutionSpec, registry: dict, inputs, *,
         if spec.members:
             return _run_members(
                 spec, registry, inputs, owner=active, trace=trace,
-                max_depth=max_depth, allow_extended=allow_extended)
+                max_depth=max_depth, allow_extended=allow_extended,
+                model_execution=model_execution)
         value = inputs
         upstream = (active.loop_id,)
         for node in spec.loops:
             executed = _run_solution_node(
                 node, value, owner=active, solution_id=spec.solution_id,
                 registry=registry, trace=trace, max_depth=max_depth,
-                connected_from_loop_ids=upstream)
+                connected_from_loop_ids=upstream,
+                model_execution=model_execution)
             value = executed["value"]
             upstream = (executed["loop_id"],)
         return value
@@ -654,13 +687,16 @@ def _run_solution_runtime(spec: SolutionSpec, registry: dict, inputs, *,
                           trace: "list | None" = None,
                           ledger: "LoopLedger | None" = None,
                           parent: "Loop | None" = None,
-                          allow_extended: bool = False):
+                          allow_extended: bool = False,
+                          model_execution: "ModelExecution | None" = None):
     report = spec.validate()
     if not report["valid"]:
         raise SolutionError("; ".join(report["violations"]))
-    adapter_violations = _adapter_violations(spec)
-    if adapter_violations:
-        raise SolutionError("; ".join(adapter_violations))
+    model_violations = _model_execution_preflight(spec, model_execution)
+    if model_violations:
+        raise SolutionError("; ".join(model_violations))
+    model_session = (model_execution.start_session()
+                     if model_execution is not None else None)
     if parent is not None and ledger is not None and ledger is not parent.ledger:
         raise SolutionError(
             "parent and ledger do not share one timeline; Canvas execution "
@@ -699,14 +735,16 @@ def _run_solution_runtime(spec: SolutionSpec, registry: dict, inputs, *,
         if spec.members:
             return _run_members(
                 spec, registry, inputs, owner=active, trace=tr,
-                max_depth=max_depth, allow_extended=allow_extended)
+                max_depth=max_depth, allow_extended=allow_extended,
+                model_execution=model_session)
         value = inputs
         upstream = (active.loop_id,)
         for node in spec.loops:
             executed = _run_solution_node(
                 node, value, owner=active, solution_id=spec.solution_id,
                 registry=registry, trace=tr, max_depth=max_depth,
-                connected_from_loop_ids=upstream)
+                connected_from_loop_ids=upstream,
+                model_execution=model_session)
             value = executed["value"]
             upstream = (executed["loop_id"],)
         return value
@@ -719,18 +757,23 @@ def _run_solution_runtime(spec: SolutionSpec, registry: dict, inputs, *,
 
 def run_solution(spec: SolutionSpec, registry: dict, inputs,
                  *, trace: "list | None" = None, ledger=None,
-                 parent: "Loop | None" = None):
+                 parent: "Loop | None" = None,
+                 model_execution: "ModelExecution | None" = None):
     """Run one Canvas through role-correct Solution ``Loop`` envelopes.
 
     Standalone execution creates a Starting Solution envelope. With ``parent``
     it creates a Spawned Solution envelope under that exact spawning Loop.
     Member solutions, components, routers, fallback attempts, and validators
-    are Spawned Solution loops on the same ledger. The in-process adapter is
-    deterministic-only;
-    unsupported leaf modes fail in preflight before any operation callable.
+    are Spawned Solution loops on the same ledger. Every leaf declares its own
+    mode like every Loop: deterministic leaves execute natively; hybrid and
+    non_deterministic leaves execute their model work through the run's
+    explicit, budgeted ``ModelExecution`` authority and the governed
+    model-invocation port. A run with model-mode leaves and no authority
+    fails in preflight, before any operation callable.
     """
     return _run_solution_runtime(
-        spec, registry, inputs, trace=trace, ledger=ledger, parent=parent)
+        spec, registry, inputs, trace=trace, ledger=ledger, parent=parent,
+        model_execution=model_execution)
 
 
 def self_test() -> dict:

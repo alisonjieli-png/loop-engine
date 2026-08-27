@@ -139,7 +139,7 @@ def solution_graph_self_test_checks() -> dict:
             {"semantic": lambda value, params: semantic_calls.append(value)},
             "input")
     except SolutionError as exc:
-        semantic_refused = "no installed 'hybrid' Solution executor" in str(exc)
+        semantic_refused = "needs explicit model authority" in str(exc)
     check("semantic_mode_unavailable_is_refused_before_work",
           semantic_refused and not semantic_calls)
 

@@ -24,14 +24,14 @@ from .model_capabilities import (
     ModelOutputCapability, ModelOutputLimitMismatch, UnknownModelOutputLimit,
     require_declared_maximum,
 )
-from .model_routes import (ModelRoute, RoutePolicy, RouteRegistry,
-                           screen_route)
+from .model_routes import (LOCALITIES, PURPOSES, ModelRoute, RoutePolicy,
+                           RouteRegistry, screen_route)
+from .model_response_text import extract_final_answer
 
 
 class ProviderAdapter(Protocol):
     """The executable contract every model provider adapter implements."""
     DEFAULT_MODEL: str
-
     def chat_maxout(self, prompt: str, *, model: str = "", system: str = "",
                     temperature: float = 0.7, timeout: float = 900.0,
                     max_attempts: int = 1,
@@ -39,11 +39,8 @@ class ProviderAdapter(Protocol):
                     output_capability: "ModelOutputCapability | None" = None): ...
 
     def verify(self, model: str = ""): ...
-
     def live_models(self): ...
-
     def output_capability_for(self, model: str): ...
-
 
 @dataclass(frozen=True)
 class ProviderSpec:
@@ -59,12 +56,11 @@ class ProviderSpec:
     capabilities: tuple[str, ...] = ()
     model_output_capability: "ModelOutputCapability | None" = None
     model_output_capability_model: str = ""
-
     def __post_init__(self):
         if not self.provider_id:
             raise ValueError("ProviderSpec needs provider_id")
-        if self.locality not in ("cloud", "local"):
-            raise ValueError("provider locality must be cloud or local")
+        if self.locality not in LOCALITIES:
+            raise ValueError(f"provider locality must be one of {LOCALITIES}")
         required = ("chat_maxout", "verify", "live_models",
                     "output_capability_for", "DEFAULT_MODEL")
         missing = [name for name in required if not hasattr(self.adapter, name)]
@@ -154,7 +150,6 @@ def provider_spec_from_endpoint(endpoint) -> ProviderSpec:
         capabilities=("chat", "list_models", "verify"),
     )
 
-
 @dataclass(frozen=True)
 class ModelRouteAttemptSpec:
     """One route attempt with its model tier and bounded resources."""
@@ -163,7 +158,6 @@ class ModelRouteAttemptSpec:
     thinking_power: str = "medium"
     max_output_tokens: "int | None" = None
     timeout_seconds: "float | None" = None
-
     def __post_init__(self):
         if not self.route_name:
             raise ValueError("a model route attempt needs route_name")
@@ -197,8 +191,7 @@ class ModelGatewayConfig:
     escalate_on: tuple[str, ...] = ("output_validation_failed",)
 
     def __post_init__(self):
-        if self.purpose not in (
-                "counted_generation", "decide_label", "embedding"):
+        if self.purpose not in PURPOSES:
             raise ValueError("unknown model gateway purpose")
         if self.max_route_attempts < 1:
             raise ValueError("max_route_attempts must be positive")
@@ -223,9 +216,9 @@ class ModelGatewayConfig:
                for item in self.route_plan):
             raise ValueError(
                 "route_plan must contain ModelRouteAttemptSpec objects")
-        if any(value not in ("cloud", "local")
+        if any(value not in LOCALITIES
                for value in self.allowed_localities):
-            raise ValueError("allowed_localities accepts cloud and local")
+            raise ValueError(f"allowed_localities accepts {LOCALITIES}")
 
     @classmethod
     def from_operating_profile(cls, profile, **overrides):
@@ -234,9 +227,10 @@ class ModelGatewayConfig:
         localities = {
             "deterministic_only": (),
             "local_only": ("local",),
-            "deterministic_first_local_first": ("local", "cloud"),
-            "approved_remote": ("cloud",),
-            "best_available": ("cloud", "local"),
+            "deterministic_first_local_first": (
+                "local", "organization", "cloud"),
+            "approved_remote": ("organization", "cloud"),
+            "best_available": ("local", "organization", "cloud"),
         }[mode]
         timeout = (profile.limits.wall_time_seconds
                    if profile.limits.wall_time_seconds is not None else 900.0)
@@ -253,7 +247,6 @@ class ModelGatewayRequest:
     temperature: float = 0.7
     output_contract: str = ""
     trace_id: str = ""
-
     def __post_init__(self):
         if not self.prompt.strip():
             raise ValueError("a model gateway request needs a prompt")
@@ -276,7 +269,8 @@ class GatewayAttempt:
     thinking_power: str = "medium"
     maximum_output_tokens: "int | None" = None
     maximum_output_source: str = ""
-
+    expected_model: str = ""
+    reasoning_present: bool = False
     def to_dict(self) -> dict:
         return {
             "provider": self.provider,
@@ -294,6 +288,8 @@ class GatewayAttempt:
             "elapsed_seconds": self.elapsed_seconds,
             "maximum_output_tokens": self.maximum_output_tokens,
             "maximum_output_source": self.maximum_output_source,
+            "expected_model": self.expected_model,
+            "reasoning_present": self.reasoning_present,
         }
 
 
@@ -311,7 +307,7 @@ class ModelGatewayResult:
     gateway_loop_id: str = ""
     error_code: str = ""
     error: str = ""
-
+    reasoning_present: bool = False
     @property
     def total_tokens(self) -> "int | None":
         if self.input_tokens is None or self.output_tokens is None:
@@ -344,6 +340,7 @@ class ModelGatewayResult:
             "gateway_loop_id": self.gateway_loop_id,
             "error_code": self.error_code,
             "error": self.error[:200],
+            "reasoning_present": self.reasoning_present,
         }
 
 
@@ -364,6 +361,8 @@ def _error_code(error: str) -> str:
         return "missing_credential"
     if "validation" in low:
         return "output_validation_failed"
+    if "model identity" in low or "model_identity" in low:
+        return "model_identity_mismatch"
     return "provider_failed"
 
 
@@ -556,9 +555,14 @@ class ModelGateway:
                     parent=loop,
                     llm_thinking_power=current_power)
                 provider_result = call["value"]
-                text = str(getattr(provider_result, "text", "") or "")
-                provider_ok = bool(getattr(provider_result, "ok", False)
-                                   and text.strip())
+                raw_text = str(getattr(provider_result, "text", "") or "")
+                text, reasoning_present = extract_final_answer(raw_text)
+                transport_ok = bool(getattr(provider_result, "ok", False)
+                                    and raw_text.strip())
+                reported_model = str(
+                    getattr(provider_result, "model", "") or route.model)
+                identity_ok = reported_model == route.model
+                provider_ok = bool(transport_ok and text.strip() and identity_ok)
                 validation_error = ""
                 try:
                     validation_ok = (
@@ -576,11 +580,19 @@ class ModelGateway:
                 if usage_known:
                     known_tokens += raw_in + raw_out
                 error = str(getattr(provider_result, "error", "") or "")
+                if transport_ok and not identity_ok:
+                    error = (
+                        "model_identity_mismatch: requested exact model "
+                        f"{route.model!r}, provider reported {reported_model!r}")
+                elif transport_ok and reasoning_present and not text:
+                    error = (
+                        "output_validation_failed: response contained no safe "
+                        "final answer outside private reasoning")
                 if provider_ok and not validation_ok:
                     error = validation_error or "output failed validation"
                 attempt = GatewayAttempt(
                     provider=route.provider,
-                    model=str(getattr(provider_result, "model", route.model)),
+                    model=reported_model,
                     route=route.name,
                     loop_id=call["loop_id"],
                     ok=bool(provider_ok and validation_ok),
@@ -591,10 +603,12 @@ class ModelGateway:
                     else _error_code(error),
                     error=error,
                     elapsed_seconds=round(time.monotonic() - started, 6),
-                    provider_ok=provider_ok,
+                    provider_ok=transport_ok,
                     thinking_power=current_power,
                     maximum_output_tokens=attempt_output,
                     maximum_output_source=output_capability.source,
+                    expected_model=route.model,
+                    reasoning_present=reasoning_present,
                 )
                 result.attempts.append(attempt)
                 if (request.config.max_total_tokens is not None
@@ -615,6 +629,7 @@ class ModelGateway:
                     result.thinking_power = attempt.thinking_power
                     result.input_tokens = attempt.input_tokens
                     result.output_tokens = attempt.output_tokens
+                    result.reasoning_present = reasoning_present
                     return StepOutcome(
                         output=f"route:answered:{attempt.provider}",
                         mode="deterministic", confidence=1.0)
@@ -710,7 +725,7 @@ def self_test() -> dict:
     check("operating_profile_controls_gateway_route_locality",
           deterministic_config.allowed_localities == ()
           and local_config.allowed_localities == ("local",)
-          and remote_config.allowed_localities == ("cloud",))
+          and remote_config.allowed_localities == ("organization", "cloud"))
 
     request = ModelGatewayRequest(
         "one typed request",
@@ -773,6 +788,7 @@ def self_test() -> dict:
           "starting gateway retains the historical default max_depth 3")
 
     passed = sum(1 for test in results if test["passed"])
+
     return {
         "record_type": "model_gateway_contract_test/v2",
         "scope": "offline_contract_only",

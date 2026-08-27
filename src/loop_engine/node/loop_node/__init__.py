@@ -1,12 +1,13 @@
-"""The LoopNode package: the only concrete operational node.
+"""Legacy serialized ``loop_node`` record reader namespace.
 
 # HARD ARCHITECTURE INVARIANT - DO NOT REMOVE OR WEAKEN:
 #
-# LoopNode is the only concrete graph-addressable operational Node.
-# This package contains the canonical implementation and its typed
-# configuration objects. It must never contain a second executor,
+# Loop is the sole concrete operational runtime and executable graph vertex.
+# This package must never contain an executor,
 # a role-specific subclass, or a mode-specific subclass.
 """
 from __future__ import annotations
 
-__all__: tuple[str, ...] = ()
+from ...ontology.loop_node import read_legacy_loop_node_record
+
+__all__ = ("read_legacy_loop_node_record",)

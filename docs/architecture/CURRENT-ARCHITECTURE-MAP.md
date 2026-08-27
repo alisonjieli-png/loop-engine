@@ -21,7 +21,7 @@ loop-engine/
 ├── src/
 │   └── loop_engine/           the production package
 │       ├── loop/              canonical Loop runtime and definitions
-│       ├── ontology/          CatalogRecord, LoopNode, folder ontology,
+│       ├── ontology/          CatalogRecord, LoopDefinitionRecord,
 │       │                      unified catalog
 │       ├── catalog/           backend-neutral store adapters
 │       │   └── stores/        package_jsonl, duckdb_files, duckdb_store,
@@ -40,7 +40,7 @@ loop-engine/
 │       ├── runtime/           runs, runtime_memory, artifacts
 │       ├── kernel/            loader, resolver, executor, enforcement
 │       ├── node/              Node ontology namespace
-│       │   └── loop_node/     LoopNode package (canonical home)
+│       │   └── loop_node/     passive compatibility-record namespace
 │       ├── data/              benchmark evidence
 │       └── evidence/          saved run evidence
 │
@@ -81,7 +81,7 @@ src/loop_engine/
 │   ├── kernel.py              Practitioner kernel, ProblemSpec,
 │   │                          KernelRunRequest, run_kernel_passes
 │   ├── kernel_runtime.py      kernel-to-Loop operational boundary
-│   ├── delegation_runtime.py  SpawnedTaskManager, child Loops
+│   ├── delegation_runtime.py  SpawnedTaskManager, Spawned Loops
 │   ├── spawned_practitioner.py typed Spawned Practitioner entry point
 │   ├── spawned_task_checkpoint.py durable task checkpoints
 │   ├── spawned_task_state_store.py local JSONL task state
@@ -100,7 +100,7 @@ src/loop_engine/
 │
 ├── ontology/                  closed foundational vocabulary
 │   ├── node.py                CatalogRecord, ObjectIdentity
-│   ├── loop_node.py           LoopNode (at-rest record)
+│   ├── loop_node.py           exact legacy record migration reader
 │   ├── artifacts.py           closed vocabularies
 │   ├── folders.py             FOLDER_ONTOLOGY, semantic folder table
 │   ├── catalog.py             UnifiedCatalog over three physical roots
@@ -184,7 +184,7 @@ src/loop_engine/
 │   └── enforcement/          approvals, boundaries, workspaces
 │
 └── node/                      Node ontology namespace
-    └── loop_node/            LoopNode package (canonical home)
+    └── loop_node/            passive compatibility-record namespace
 ```
 
 ## 3. Database architecture
@@ -347,7 +347,7 @@ Kernel (the only non-dogfooded substrate)
 ├── instantiate Loops
 ├── execute one Loop
 ├── enforce hard contracts, permissions, budgets, stop conditions
-└── append Chronicle events atomically
+└── append Run History events atomically
 ```
 
 Practitioner kernel:
@@ -465,14 +465,14 @@ layers and not new runtimes.
 ## 10. Current invariants
 
 ```text
-LE-NODE-001  LoopNode is the only concrete operational Node
+LE-NODE-001  Loop is the sole concrete operational runtime and graph vertex
 LE-NODE-002  No concrete generic Node class
 LE-NODE-003  Roles are fields, not subclasses
 LE-NODE-004  Run modes are fields, not subclasses
-LE-NODE-005  Common behaviors use LoopNode presets
+LE-NODE-005  Common behaviors use versioned Loop profiles
 LE-NODE-006  Contained typed objects are not Nodes
-LE-NODE-007  Governed child steps are child LoopNodes
-LE-NODE-008  Implementation primitives stay inside the LoopNode
+LE-NODE-007  Governed steps run as Loops Spawned by their parent
+LE-NODE-008  Ungoverned implementation primitives stay inside their owning Loop
 LE-NODE-009  Presets are data, not subclasses
 LE-CONFIG-001 Minimum resolved configuration exists before start
 LE-CONFIG-002 No recursive configuration bootstrap
@@ -483,7 +483,7 @@ LE-PERM-001   Descendants narrow, never broaden
 LE-DOC-001    Prose is non-executable
 LE-TRUST-001  Retrieved text stays data
 LE-VERSION-001 Resolved plans pin exact versions and hashes
-LE-RUNTIME-001 Runtime Memory, Chronicle, records stay distinct
+LE-RUNTIME-001 Runtime Memory, Run History, records stay distinct
 LE-PLUGIN-001 Plugins cannot define Node types
 LE-GOV-001    No self-approval
 ```

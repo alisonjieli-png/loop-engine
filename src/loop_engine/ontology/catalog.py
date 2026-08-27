@@ -19,8 +19,7 @@ import yaml
 
 from .artifacts import PHYSICAL_ROOTS, SOURCE_CLASSES
 from .folders import FOLDER_ONTOLOGY, SEMANTIC_FOLDER_IDS, folder_path
-from .loop_node import LoopNode
-from .node import CatalogRecord, NodeError, ObjectIdentity
+from .records import CatalogRecord, ObjectIdentity, OntologyRecordError
 
 MANIFEST_SCHEMA = "catalog_manifest/v1"
 DEFAULT_LEARNED_ROOT = os.path.join(
@@ -120,13 +119,14 @@ def _record_from_manifest_object(obj: dict, *, source_class: str,
             f"payload must start with file: or code_ref: in {obj['id']!r}")
     identity = ObjectIdentity(str(obj["id"]), str(obj["version"]), digest)
     artifact_kind = obj["artifact_kind"]
-    base = dict(identity=identity, kind="node", artifact_kind=artifact_kind,
+    base = dict(identity=identity, kind="catalog_record",
+                artifact_kind=artifact_kind,
                 source_class=source_class, layer=layer,
                 lifecycle=str(obj["lifecycle"]),
                 parent_collection=parent_collection)
     try:
         return CatalogRecord(**base)
-    except NodeError as exc:
+    except OntologyRecordError as exc:
         raise CatalogError(f"manifest record refused: {exc}") from exc
 
 

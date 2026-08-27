@@ -16,6 +16,17 @@ MEMORY_TYPES = ("working", "episodic", "semantic", "procedural")
 #: The three persistent record types.
 PERSISTENT_MEMORY_TYPES = ("episodic", "semantic", "procedural")
 
+#: Plain meanings served by discovery and the public data dictionary.
+MEMORY_TYPE_MEANING = {
+    "working": ("bounded current-run state; not automatically persistent"),
+    "episodic": ("exact prior experiences and outcomes with Run History "
+                 "provenance"),
+    "semantic": ("independently reviewed reusable claims with scope, "
+                 "evidence, and validity"),
+    "procedural": ("independently reviewed reusable procedures with "
+                   "contracts, verification, and rollback"),
+}
+
 #: Nine non-exclusive Functional Intelligence Domains. These answer why
 #: intelligence is useful and are independent of memory type.
 INTELLIGENCE_FUNCTIONS = (
@@ -160,6 +171,8 @@ def self_test() -> dict:
     check("persistent_types_exclude_working",
           PERSISTENT_MEMORY_TYPES
           == ("episodic", "semantic", "procedural"))
+    check("each_memory_type_has_one_plain_meaning",
+          set(MEMORY_TYPE_MEANING) == set(MEMORY_TYPES))
     check("nine_intelligence_functions_are_defined",
           len(INTELLIGENCE_FUNCTIONS) == 9
           and "verification" in INTELLIGENCE_FUNCTIONS)

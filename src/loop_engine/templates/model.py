@@ -30,9 +30,101 @@ OUTPUT_KINDS = (
     "code", "config", "graph", "service", "decision", "unknown",
 )
 
+WORK_OPERATORS = (
+    "retrieve", "search", "browse", "extract", "validate", "classify",
+    "score", "rank", "estimate", "predict", "forecast", "detect",
+    "cluster", "match", "resolve_entities", "recommend", "optimize",
+    "plan", "diagnose", "explain", "infer_causally", "simulate",
+    "generate", "summarize", "monitor", "decide", "learn", "transform",
+    "unknown",
+)
+
+RESPONSE_TOPOLOGIES = (
+    "boolean", "label", "score", "scalar", "probability", "interval",
+    "distribution", "list", "ranked_list", "table", "matrix", "hierarchy",
+    "graph", "timeline", "scenario_tree", "plan", "schedule", "policy",
+    "action", "artifact", "alert", "abstention", "unknown",
+)
+
 
 class TemplateError(ValueError):
     """A template or binding violated its contract."""
+
+
+@dataclass(frozen=True)
+class SemanticCoordinates:
+    """Question, Operator, Response, and Decision remain separate contracts."""
+
+    question: str
+    operator: str = "unknown"
+    response_topology: str = "unknown"
+    decision_consumer: str = "return_verified_result"
+
+    def __post_init__(self) -> None:
+        if not self.question.strip():
+            raise TemplateError("semantic coordinates need a question")
+        if self.operator not in WORK_OPERATORS:
+            raise TemplateError(f"operator must be one of {WORK_OPERATORS}")
+        if self.response_topology not in RESPONSE_TOPOLOGIES:
+            raise TemplateError(
+                f"response_topology must be one of {RESPONSE_TOPOLOGIES}")
+        if not self.decision_consumer.strip():
+            raise TemplateError("decision_consumer must be explicit")
+
+    def to_dict(self) -> dict:
+        return {
+            "question": self.question,
+            "operator": self.operator,
+            "response_topology": self.response_topology,
+            "decision_consumer": self.decision_consumer,
+        }
+
+
+@dataclass(frozen=True)
+class WorkItemIR:
+    """Small typed intermediate representation shared by every intake form."""
+
+    work_item_id: str
+    source_kind: str
+    original_input: str
+    normalized_interpretation: str
+    coordinates: SemanticCoordinates
+    source_refs: tuple[str, ...] = ()
+    acceptance_criteria: tuple[str, ...] = ()
+    constraints: tuple[str, ...] = ()
+    known_facts: tuple[str, ...] = ()
+    unknowns: tuple[str, ...] = ()
+    tags: tuple[str, ...] = ()
+    risk: str = "unknown"
+    consequence: str = "unknown"
+    privacy_scope: str = "project"
+    provenance: str = ""
+
+    def __post_init__(self) -> None:
+        if not self.work_item_id or not self.source_kind:
+            raise TemplateError("WorkItemIR needs identity and source_kind")
+        if not self.original_input:
+            raise TemplateError("WorkItemIR preserves a non-empty original_input")
+
+    def to_dict(self) -> dict:
+        return {
+            "record_type": "work_item_ir/v1",
+            "work_item_id": self.work_item_id,
+            "source_kind": self.source_kind,
+            "original_input": self.original_input,
+            "normalized_interpretation": self.normalized_interpretation,
+            "coordinates": self.coordinates.to_dict(),
+            "source_refs": list(self.source_refs),
+            "acceptance_criteria": list(self.acceptance_criteria),
+            "constraints": list(self.constraints),
+            "known_facts": list(self.known_facts),
+            "unknowns": list(self.unknowns),
+            "tags": list(self.tags),
+            "risk": self.risk,
+            "consequence": self.consequence,
+            "privacy_scope": self.privacy_scope,
+            "provenance": self.provenance,
+        }
 
 
 @dataclass(frozen=True)
@@ -147,6 +239,7 @@ class CompiledTask:
     file_refs: tuple[str, ...] = ()
     source_refs: tuple[str, ...] = ()
     provenance: str = ""
+    work_item: WorkItemIR | None = None
 
     def __post_init__(self) -> None:
         if self.task_type not in TASK_TYPES:
@@ -166,6 +259,7 @@ class CompiledTask:
             "file_refs": list(self.file_refs),
             "source_refs": list(self.source_refs),
             "provenance": self.provenance,
+            "work_item": self.work_item.to_dict() if self.work_item else None,
         }
 
 

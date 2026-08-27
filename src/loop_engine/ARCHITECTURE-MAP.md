@@ -1,14 +1,14 @@
 ARCHITECTURE MAP: six top-level abstractions
-  ontology/  (6 modules)
-    artifacts, catalog, folders, loop_node, node, ontology_checks
+  ontology/  (8 modules)
+    artifacts, catalog, folders, loop_definition_record, loop_node, node, ontology_checks, records
   loop/  (33 modules)
     approval_state_store, approval_state_store_checks, capability_loops, canvas, spawned_runtime_port, spawned_task_checkpoint, spawned_task_state_store, spawned_task_state_store_checks, spawned_workspace_executor, spawned_workspace_executor_checks, delegation_checkpoint_checks, delegation_runtime, delegation_runtime_checks, effect_approval, kernel, kernel_runtime, loop_templates, lens, intelligence_loops, encapsulate, loop_capsule, loop_contract, loop_definition, loop_definition_checks, runtime_context, loop_doctrine, loop_profile_catalog, loop_profile_ontology, loop_role, loop_control, recursive_loop, service_loop_envelope, spawned_practitioner
   strings/  (13 modules)
     ask_strategies, context, decision_schemas, frame, intelligence_strings, interrogation, knowledge, knowledge_state, notes, output_templates, prompt_fragments, question_engine, solution_shaping
-  code_nodes/  (34 modules)
-    blueprint, campaign_runner, capture, context_seed, complex_task_benchmark, complex_task_native_evidence, complex_task_published_evidence, follow_up, housekeeping, kaggle_executor, live_run_demo, learning_bundle, guided_setup, logic_ast, universal_solve, loop_report, measurement, public_examples, guidance_ledger, run_analytics, run_playback, run_quality, runtime_contracts, self_improvement_loop, smoke_ladder, solution_canvas, solution_canvas_checks, solution_compiler, solution_graph, solution_graph_builder, solution_graph_checks, solution_graph_validation, solution_records, string_foundry
-  core/  (65 modules)
-    api_quality, asset_class, asset_lifecycle, brave_search, capability_directory, run_history, config, context_artifacts, context_catalog, context_classification, context_ontology, code_intelligence_assets, event_vocabulary, duckdb_catalog, external_harness, external_harness_adapters, external_harness_checks, facets, harness_intelligence_bridge, intelligence_layers, intelligence_portfolio, intelligence_portfolio_checks, runtime_memory, user_feedback_intelligence, intelligence_registry, live_model_verification, mcp_adapter, mcp_adapter_checks, mcp_sdk_transport, model_call, model_capabilities, model_gateway, otel_export, runtime_observer, runtime_settings, settings_loader, model_routes, ollama_client, mistral_client, openrouter_client, provider_failover, provider_pinned, model_discovery, autoconfigure, custom_endpoint, knowledge_loader, opencode_client, operating_profile, persistence, reasoning_call, retrieval, skill_registry, solution_library, store_serve, boundary_registry, boundary_runtime_checks, saas_routes, studio_operational_views, studio_server, workspace_backends, workspace_contracts, workspace_local, workspace_operation_checks, workspace_operations, workspace_optional
+  code_nodes/  (37 modules)
+    blueprint, campaign_runner, capture, context_seed, core_engine_proof, complex_task_benchmark, complex_task_native_evidence, complex_task_published_evidence, follow_up, housekeeping, kaggle_executor, live_run_demo, learning_bundle, guided_setup, logic_ast, universal_solve, loop_report, measurement, public_examples, guidance_ledger, run_analytics, run_playback, run_quality, runtime_contracts, self_improvement_loop, smoke_ladder, solve_runtime, solution_canvas, solution_canvas_checks, solution_compiler, solution_model_port, solution_graph, solution_graph_builder, solution_graph_checks, solution_graph_validation, solution_records, string_foundry
+  core/  (73 modules)
+    api_quality, asset_class, asset_lifecycle, brave_search, capability_directory, run_history, config, context_artifacts, context_catalog, context_classification, context_ontology, code_intelligence_assets, event_vocabulary, duckdb_catalog, external_harness, external_harness_adapters, external_harness_checks, facets, harness_intelligence_bridge, intelligence_layers, intelligence_query_contracts, intelligence_portfolio, intelligence_portfolio_checks, runtime_memory, user_feedback_intelligence, intelligence_registry, live_model_verification, mcp_adapter, mcp_adapter_checks, mcp_sdk_transport, model_call, model_capabilities, model_gateway, model_response_text, model_routing_intelligence, model_routing_intelligence_checks, model_routing_records, model_routing_selector, ngram_benchmark, ngram_retrieval, otel_export, runtime_observer, runtime_settings, settings_loader, model_routes, ollama_client, mistral_client, openrouter_client, provider_failover, provider_pinned, model_discovery, autoconfigure, custom_endpoint, knowledge_loader, opencode_client, operating_profile, persistence, reasoning_call, retrieval, skill_registry, solution_library, store_serve, boundary_registry, boundary_runtime_checks, saas_routes, studio_operational_views, studio_server, workspace_backends, workspace_contracts, workspace_local, workspace_operation_checks, workspace_operations, workspace_optional
   catalog/  (7 modules)
     capabilities, composite, conformance, handshake, protocol, registry, query
     catalog.stores/  (5 modules)
@@ -27,16 +27,16 @@ ARCHITECTURE MAP: six top-level abstractions
       query, receipts
     memory.semantic/  (1 modules)
       record
-    memory.storage/  (1 modules)
-      store
+    memory.storage/  (5 modules)
+      store, repository, learning_cycle, learning_cycle_checks, learning_records
     memory.working/  (1 modules)
       state
   generation/  (2 modules)
     expansion, operators
     generation.model/  (4 modules)
       campaign, dimensions, fragments, seeds
-  templates/  (3 modules)
-    compiler, library, model
+  templates/  (4 modules)
+    compiler, intake, library, model
 PUBLIC CORE ARCHITECTURE CAPABILITY GROUPS (3)
   Intelligence Search and Retrieval: intelligence_layers, retrieval, capability_directory
   Web Research: brave_search

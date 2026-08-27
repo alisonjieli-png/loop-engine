@@ -45,12 +45,14 @@ runtime type.
 Before creating a class whose name ends in `Node`:
 
 1. Stop.
-2. Determine whether the object is the canonical LoopNode.
-3. If it is not, represent it as a typed object inside LoopNode, a
-   LoopNodePreset, a payload, a reference, a result, a receipt, a policy,
+2. Confirm that no active first-party `*Node` class is permitted.
+3. Represent the concept as a typed object consumed by `Loop`, a
+   `LoopProfileSpec`, a payload, a reference, a result, a report, a policy,
    a contract, an artifact, or a RepositoryEntity.
-4. Do not create a new Node subclass. The canonical Loop class refuses
-   subclassing at class-creation time.
+4. Historical serialized `kind: loop_node` records may be read only through
+   the exact migration into `LoopDefinitionRecord`.
+5. Do not create a Node subclass. The canonical Loop class refuses subclassing
+   at class-creation time.
 
 Before creating a new top-level folder:
 
@@ -208,10 +210,11 @@ Loop role profiles
 ```
 
 The Loop runtime defines three modes. A registered profile and an installed
-executor may support a subset. The current in-process Solution runner supports
-deterministic Solution Loops only. Thinking power and model routing apply only
-when a hybrid or non-deterministic Loop is authorized to call a model. They are
-not additional run modes.
+executor may support a subset. The in-process Solution runner supports all
+three modes when a compatible executor and exact model authority are supplied;
+without them, it returns a typed unavailable-executor failure. Thinking power
+and model routing apply only when a hybrid or non-deterministic Loop is
+authorized to call a model. They are not additional run modes.
 
 ## Typed boundaries and encapsulation
 

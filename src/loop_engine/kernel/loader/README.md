@@ -1,7 +1,7 @@
 ---
 folder_id: kernel.loader
 parent: kernel
-ontology_version: 1.0.0
+ontology_version: 2.0.0
 ---
 
 # Loader

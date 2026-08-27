@@ -468,13 +468,18 @@ def self_test() -> dict:
     profile_ids = {profile.profile_id for profile in LOOP_PROFILE_ONTOLOGY}
     solution_profiles = [profile for profile in LOOP_PROFILE_ONTOLOGY
                          if profile.profile_id.startswith("solution.")]
+    # Every role shares the one mode contract: all three modes declared,
+    # model modes gated by an explicit thinking-power policy. The role is
+    # never the reason a mode is unavailable.
     check("required_profile_families_are_registered",
           required_profiles <= profile_ids
-          and all(profile.allowed_modes == ("deterministic",)
-                  and profile.thinking_power_policy == "forbidden"
+          and all(profile.allowed_modes == ("deterministic", "hybrid",
+                                            "non_deterministic")
+                  and profile.thinking_power_policy
+                  == "required_for_model_modes"
                   for profile in solution_profiles),
-          f"{len(LOOP_PROFILE_ONTOLOGY)} profiles; current Solution profiles "
-          "match the deterministic Canvas runner")
+          f"{len(LOOP_PROFILE_ONTOLOGY)} profiles; Solution profiles declare "
+          "all three modes like every role, with governed model authority")
 
     catalog = profile_catalog()
     aliases = {

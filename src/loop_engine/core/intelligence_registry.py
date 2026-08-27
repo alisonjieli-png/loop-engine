@@ -232,8 +232,11 @@ def from_learning_candidate(c, *, intel_id: str = "") -> ManagedIntelligence:
                 "metric_definition": "metric", "heuristic": "string",
                 "blueprint_fragment": "blueprint_fragment"}
     tier = "database" if c.validation_status == "validated" else "runtime"
+    from ..ontology.records import StableIdentityRequest, stable_content_id
     return ManagedIntelligence(
-        intel_id=intel_id or f"cand.{c.candidate_type}.{abs(hash(c.content)) % 10**8}",
+        intel_id=intel_id or stable_content_id(StableIdentityRequest(
+            f"cand.{c.candidate_type}",
+            (c.content, c.originating_run))),
         kind=kind_map.get(c.candidate_type, "string"), content=c.content,
         tier=tier, maturity=c.maturity, provenance=c.originating_run or "runtime",
         scope="run")

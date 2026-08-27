@@ -35,13 +35,14 @@ ROOT_MODULES = ("__init__", "__main__", "_self_test", "_conformance_test",
                 "repository_conformance", "repository_structure",
                 "backend_isolation", "structure_review",
                 "runtime_ontology_check", "scheduling", "campaign",
-                "parallel_runner")
+                "parallel_runner", "cli_operations", "parameter_boundary",
+                "parameter_boundary_checks", "semantic_conformance")
 
 #: module -> subpackage.  "steps" and "regimes" are subpackages riding in loop/.
 MODULE_MAP = {
     "ontology": (
-        "artifacts", "catalog", "folders", "loop_node", "node",
-        "ontology_checks",
+        "artifacts", "catalog", "folders", "loop_definition_record",
+        "loop_node", "node", "ontology_checks", "records",
     ),
     "catalog.stores": (
         "duckdb_files", "duckdb_store", "in_memory", "package_jsonl",
@@ -72,7 +73,8 @@ MODULE_MAP = {
         "lifecycle",
     ),
     "memory.storage": (
-        "store", "repository",
+        "store", "repository", "learning_cycle", "learning_cycle_checks",
+        "learning_records",
     ),
     "generation": (
         "expansion", "operators",
@@ -81,7 +83,7 @@ MODULE_MAP = {
         "campaign", "dimensions", "fragments", "seeds",
     ),
     "templates": (
-        "compiler", "library", "model",
+        "compiler", "intake", "library", "model",
     ),
     "catalog": (
         "capabilities", "composite", "conformance", "handshake",
@@ -114,6 +116,7 @@ MODULE_MAP = {
     ),
     "code_nodes": (
         "blueprint", "campaign_runner", "capture", "context_seed",
+        "core_engine_proof",
         "complex_task_benchmark",
         "complex_task_native_evidence", "complex_task_published_evidence",
         "follow_up", "housekeeping", "kaggle_executor", "live_run_demo",
@@ -124,7 +127,9 @@ MODULE_MAP = {
         "run_playback", "run_quality",
         "runtime_contracts", "self_improvement_loop",
         "smoke_ladder",
+        "solve_runtime",
         "solution_canvas", "solution_canvas_checks", "solution_compiler",
+        "solution_model_port",
         "solution_graph", "solution_graph_builder", "solution_graph_checks",
         "solution_graph_validation", "solution_records",
         "string_foundry",
@@ -138,12 +143,17 @@ MODULE_MAP = {
         "external_harness", "external_harness_adapters",
         "external_harness_checks", "facets",
         "harness_intelligence_bridge", "intelligence_layers",
+        "intelligence_query_contracts",
         "intelligence_portfolio", "intelligence_portfolio_checks",
         "runtime_memory", "user_feedback_intelligence",
         "intelligence_registry",
         "live_model_verification", "mcp_adapter", "mcp_adapter_checks",
         "mcp_sdk_transport",
-        "model_call", "model_capabilities", "model_gateway", "otel_export",
+        "model_call", "model_capabilities", "model_gateway", "model_response_text",
+        "model_routing_intelligence", "model_routing_intelligence_checks",
+        "model_routing_records", "model_routing_selector",
+        "ngram_benchmark", "ngram_retrieval",
+        "otel_export",
         "runtime_observer", "runtime_settings", "settings_loader",
         "model_routes", "ollama_client",
         "mistral_client", "openrouter_client", "provider_failover",

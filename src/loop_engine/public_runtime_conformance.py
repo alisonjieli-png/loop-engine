@@ -1,8 +1,8 @@
 """Static checks for the one-runtime package surface.
 
 This root-plumbing module inspects only ``loop_engine.__init__``. Internal
-modules may retain deprecated algorithm aliases, but the package root may
-expose only the canonical recursive ``Loop`` runtime.
+modules may retain exact compatibility aliases, but the package root may
+expose only the canonical recursive ``Loop`` runtime class.
 """
 from __future__ import annotations
 

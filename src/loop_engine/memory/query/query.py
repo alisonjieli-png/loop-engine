@@ -121,6 +121,15 @@ def rank_records(query: MemoryQuery, records: list) -> dict:
     scored = []
     rejected = []
     for record in records:
+        record_type = record.identity.memory_type.value
+        if record_type not in query.memory_types:
+            rejected.append(MemorySearchResult(
+                ref=MemoryRef(record.identity.record_id,
+                              record.identity.version,
+                              record.identity.memory_type),
+                rejected=True,
+                reject_reason=(f"memory type {record_type} was not requested")))
+            continue
         if query.exact_ids and record.identity.record_id \
                 not in query.exact_ids:
             continue
@@ -131,6 +140,22 @@ def rank_records(query: MemoryQuery, records: list) -> dict:
                               record.identity.memory_type),
                 rejected=True,
                 reject_reason=f"lifecycle {record.lifecycle.value}"))
+            continue
+        # Scope is a hard filter, before any scoring: a record leaves its
+        # scope only as GLOBAL. A narrower record never answers a broader
+        # query, and a broader record never answers a narrower one unless
+        # the query asks for the global scope itself.
+        record_scope = getattr(record, "scope", None)
+        if (record_scope is not None
+                and record_scope is not query.scope
+                and record_scope is not MemoryScope.GLOBAL):
+            rejected.append(MemorySearchResult(
+                ref=MemoryRef(record.identity.record_id,
+                              record.identity.version,
+                              record.identity.memory_type),
+                rejected=True,
+                reject_reason=(f"scope {record_scope.value} does not answer "
+                               f"{query.scope.value} query")))
             continue
         if query.valid_at:
             valid_at = getattr(record, "valid_at", None)

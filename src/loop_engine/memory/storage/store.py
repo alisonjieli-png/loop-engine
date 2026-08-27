@@ -8,7 +8,7 @@ semantics.
 from __future__ import annotations
 
 from ..model.memory_type import (MemoryIdentity, MemoryLifecycle,
-                                 MemoryType)
+                                 MemoryScope, MemoryType)
 from ..query.query import (MemoryQuery, MemoryRetrievalReceipt,
                            rank_records)
 
@@ -113,14 +113,17 @@ def self_test() -> dict:
     check("store_lists_versions",
           store.list_versions("mem.sem.1") == ["1.0.0"])
 
-    query = MemoryQuery(memory_types=("episodic",), text="migrate")
+    query = MemoryQuery(memory_types=("episodic",), text="migrate",
+                        scope=MemoryScope.RUN)
     receipt = store.query(query)
     check("query_selects_relevant_records",
           receipt.selected and receipt.selected[0].record_id
           == "mem.ep.1")
     check("receipt_explains_rejections",
-          len(receipt.candidates_rejected) == 0
-          and receipt.candidates_considered == 3)
+          len(receipt.candidates_rejected) == 2
+          and receipt.candidates_considered == 3
+          and all("memory type" in item.reject_reason
+                  for item in receipt.candidates_rejected))
 
     evidence_query = MemoryQuery(memory_types=("semantic",),
                                  require_evidence=True)

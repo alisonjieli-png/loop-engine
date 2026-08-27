@@ -72,7 +72,7 @@ def _unclassified() -> list:
 
 def _legacy_flat_paths_reachable() -> list:
     """Probe obsolete package-root module paths; they must stay dead."""
-    import importlib
+    import importlib.util
     from .architecture_map import PACKAGE
     reachable = []
     # NOTE: "loop" is excluded — it is now the subpackage name, so the flat
@@ -139,25 +139,24 @@ def _public_retired_nomenclature() -> list:
 
 
 def operational_graph_vertex_violations(root: "str | None" = None) -> list:
-    """Find executable graph-vertex classes that compete with canonical Loop.
+    """Find executable graph-vertex classes competing with Loop.
 
-    Passive projections are admitted only when their exact Loop definition
+    Passive projections are admitted only when their exact LoopDefinition
     reference is explicit. They never own execution.
     """
     import ast
     base = root or _HERE
     retired = {"CanvasNode", "GoalNode", "CodeNode", "NodeResult"}
     passive = {
-        "LoopNode": {"identity"},
+        "LoopDefinitionRecord": {"role", "supported_modes"},
         "LoopGraphVertexRecord": {"definition_ref", "definition", "selected_mode"},
         "LoopRelationshipRecord": {"loop_id"},
         "LoopReportRecord": {"loop_id"},
     }
     violations = []
-    # At-rest ontology records are not runtime graph vertices. The ontology
-    # LoopNode inherits its identity field from Node in a sibling module, so
-    # the local field scan cannot see it; the record is admitted explicitly.
-    passive_files = {"ontology/loop_node.py", "ontology/node.py"}
+    # Compatibility reader modules and passive base records never execute.
+    passive_files = {"ontology/loop_node.py", "ontology/node.py",
+                     "ontology/records.py"}
     for directory, _, files in os.walk(base):
         for filename in files:
             if not filename.endswith(".py"):
@@ -188,17 +187,16 @@ def operational_graph_vertex_violations(root: "str | None" = None) -> list:
                 bases = {getattr(node, "id", getattr(node, "attr", ""))
                          for node in item.bases}
                 reason = ""
+                relative = os.path.relpath(path, base).replace(os.sep, "/")
                 if item.name in retired:
                     reason = "retired non-Loop graph/runtime spelling"
                 elif item.name in passive and passive[item.name] <= fields:
                     continue
-                elif (item.name.endswith(("Node", "Vertex"))
-                      and "Loop" not in bases):
-                    reason = "graph vertex type does not inherit canonical Loop"
+                elif item.name.endswith(("Node", "Vertex")):
+                    reason = "graph vertex type competes with canonical Loop"
                 elif ("node_id" in fields
-                      and methods & {"run", "execute", "invoke"}
-                      and "Loop" not in bases):
-                    reason = "executable node-shaped type bypasses canonical Loop"
+                      and methods & {"run", "execute", "invoke"}):
+                    reason = "executable node-shaped type bypasses Loop"
                 if reason:
                     violations.append({
                         "file": os.path.relpath(path, base), "line": item.lineno,
@@ -214,6 +212,8 @@ def run_conformance() -> dict:
     api_violations = scan_public_signatures()
     boundaries = boundary_report()
     graph_vertex_violations = operational_graph_vertex_violations()
+    from .semantic_conformance import semantic_conformance_report
+    semantics = semantic_conformance_report()
     public_nomenclature = _public_retired_nomenclature()
     unclassified = _unclassified()
     legacy_flat_paths = _legacy_flat_paths_reachable()
@@ -265,6 +265,8 @@ def run_conformance() -> dict:
             len(boundaries["invalid_relationship_rows"]),
         "operational_graph_vertex_types_outside_canonical_loop":
             len(graph_vertex_violations),
+        "semantic_identities_without_one_meaning_and_authority":
+            len(semantics["violations"]),
         "direct_resource_access_above_baseline": max(
             0, c.get("direct_resource_access", 0) - _access_baseline()),
         "architecture_map_freshness": _stale_architecture_map(),
@@ -282,6 +284,7 @@ def run_conformance() -> dict:
                          "operational_boundary_ontology": boundaries,
                          "operational_graph_vertex_types":
                              graph_vertex_violations,
+                         "semantic_identity": semantics,
                          "retired_decision_spine_terms":
                              public_nomenclature,
                          "scan_violations": (scan["violations"]

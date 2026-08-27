@@ -1,0 +1,224 @@
+{
+  "schema_version": "1.0.0",
+  "benchmark_id": "loop-engine-ngram-retrieval-frozen-v1",
+  "benchmark_version": "1",
+  "top_k": 3,
+  "pair_threshold": 0.42,
+  "space": {
+    "space_id": "core.ngram_space.lexical",
+    "version": "1.0.0",
+    "artifact_family": "external_retrieval_materialization",
+    "unit_types": ["character", "word"],
+    "character_n_range": [3, 5],
+    "word_n_range": [1, 2],
+    "unicode_normalization": "NFKC",
+    "case_normalization": "casefold",
+    "tokenizer": "unicode_alnum_v1",
+    "language": "und",
+    "identifier_splitting": "camel_snake_hyphen_v1",
+    "punctuation": "replace_with_space",
+    "character_boundaries": "token_markers_v1",
+    "posting_key_encoding": "utf-8",
+    "posting_key_mode": "exact_strings",
+    "hash_algorithm": "sha256",
+    "hash_seed": "none",
+    "weighting": "sublinear_tf_idf_cosine_v1",
+    "approximation": "none_exact"
+  },
+  "documents": [
+    {
+      "document_id": "address.primary",
+      "scope": "tenant:alpha",
+      "text": "Normalize customer street addresses, preserve apartment unit numbers, verify city state ZIP consistency, and route ambiguous corrections for review.",
+      "source_ref": "fixture:address-primary"
+    },
+    {
+      "document_id": "address.duplicate",
+      "scope": "tenant:alpha",
+      "text": "Customer address normalization preserves apartment units, checks city state and postal ZIP consistency, and sends ambiguous repairs to review.",
+      "source_ref": "fixture:address-duplicate"
+    },
+    {
+      "document_id": "address.private-copy",
+      "scope": "tenant:beta",
+      "text": "Normalize customer street addresses, preserve apartment unit numbers, verify city state ZIP consistency, and route ambiguous corrections for review.",
+      "source_ref": "fixture:scope-canary"
+    },
+    {
+      "document_id": "schema.jsonld",
+      "scope": "catalog:public",
+      "text": "Infer row grain, map Schema.org types and properties, emit JSON-LD, validate SHACL constraints, and keep cleaning reversible.",
+      "source_ref": "fixture:schema-jsonld"
+    },
+    {
+      "document_id": "schema.sql",
+      "scope": "catalog:public",
+      "text": "Validate relational SQL table schemas, primary keys, foreign keys, column nullability, and migration ordering.",
+      "source_ref": "fixture:schema-sql"
+    },
+    {
+      "document_id": "temporal.leakage",
+      "scope": "catalog:public",
+      "text": "Use point-in-time feature joins, split by event time, and detect future leakage before fitting a forecasting model.",
+      "source_ref": "fixture:temporal-leakage"
+    },
+    {
+      "document_id": "entity.resolution",
+      "scope": "catalog:public",
+      "text": "Resolve duplicate entities with stable identifiers, blocking keys, candidate pairs, match evidence, and conservative merge decisions.",
+      "source_ref": "fixture:entity-resolution"
+    },
+    {
+      "document_id": "async.ownership",
+      "scope": "catalog:public",
+      "text": "Bound parallel work, assign an owner, propagate timeout and cancellation, join child tasks, and prevent orphan asynchronous work.",
+      "source_ref": "fixture:async-ownership"
+    },
+    {
+      "document_id": "retrieval.fusion",
+      "scope": "catalog:public",
+      "text": "Combine exact phrase, BM25 lexical, character n-gram, semantic vector, and graph candidates with explainable reciprocal rank fusion.",
+      "source_ref": "fixture:retrieval-fusion"
+    },
+    {
+      "document_id": "model.routing",
+      "scope": "catalog:public",
+      "text": "Apply local-only privacy policy before model routing, distinguish provider failover from tier escalation, and record rejected cloud routes.",
+      "source_ref": "fixture:model-routing"
+    },
+    {
+      "document_id": "learning.review",
+      "scope": "catalog:public",
+      "text": "Stage a learning candidate, require independent review, promote only accepted evidence, retrieve it later, and block negative transfer.",
+      "source_ref": "fixture:learning-review"
+    },
+    {
+      "document_id": "video.scene",
+      "scope": "catalog:public",
+      "text": "Detect video scene boundaries, transform selected clips, preserve frame rate and audio synchronization, and inspect evidence frames.",
+      "source_ref": "fixture:video-scene"
+    },
+    {
+      "document_id": "image.editing",
+      "scope": "catalog:public",
+      "text": "Edit licensed images, preserve alpha transparency, check dimensions, and review composition and visible artifacts.",
+      "source_ref": "fixture:image-editing"
+    },
+    {
+      "document_id": "ml.oof",
+      "scope": "catalog:public",
+      "text": "Build reproducible cross-validation, save out-of-fold predictions, compare residual diversity, and accept an ensemble only with holdout evidence.",
+      "source_ref": "fixture:ml-oof"
+    },
+    {
+      "document_id": "web.research",
+      "scope": "catalog:public",
+      "text": "Fetch an approved source, preserve a snapshot and provenance, extract bounded claims, verify citations, and keep contradictions visible.",
+      "source_ref": "fixture:web-research"
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "dev-address-typo",
+      "split": "dev",
+      "query": "normalise customer addrsses and postal zip",
+      "allowed_scopes": ["tenant:alpha"],
+      "relevance": {"address.primary": 2, "address.duplicate": 1}
+    },
+    {
+      "query_id": "dev-schema-jsonld",
+      "split": "dev",
+      "query": "schema org jsonld shacl validation",
+      "allowed_scopes": ["catalog:public"],
+      "relevance": {"schema.jsonld": 2}
+    },
+    {
+      "query_id": "dev-temporal-leakage",
+      "split": "dev",
+      "query": "point in time feature leakge checks",
+      "allowed_scopes": ["catalog:public"],
+      "relevance": {"temporal.leakage": 2}
+    },
+    {
+      "query_id": "dev-entity-resolution",
+      "split": "dev",
+      "query": "deduplicate entity identifers with blocking",
+      "allowed_scopes": ["catalog:public"],
+      "relevance": {"entity.resolution": 2}
+    },
+    {
+      "query_id": "dev-async-ownership",
+      "split": "dev",
+      "query": "bounded asyncronous cancellation and orphan tasks",
+      "allowed_scopes": ["catalog:public"],
+      "relevance": {"async.ownership": 2}
+    },
+    {
+      "query_id": "holdout-retrieval-fusion",
+      "split": "holdout",
+      "query": "reciprocal rank fussion across lexical semantic candidates",
+      "allowed_scopes": ["catalog:public"],
+      "relevance": {"retrieval.fusion": 2},
+      "lexical_scores": {"retrieval.fusion": 7.5, "schema.sql": 1.0},
+      "semantic_scores": {"retrieval.fusion": 0.81, "web.research": 0.23}
+    },
+    {
+      "query_id": "holdout-model-privacy",
+      "split": "holdout",
+      "query": "provider failover with local only privcy",
+      "allowed_scopes": ["catalog:public"],
+      "relevance": {"model.routing": 2}
+    },
+    {
+      "query_id": "holdout-independent-learning",
+      "split": "holdout",
+      "query": "independant candidate review and negative transfer",
+      "allowed_scopes": ["catalog:public"],
+      "relevance": {"learning.review": 2}
+    },
+    {
+      "query_id": "holdout-video-editing",
+      "split": "holdout",
+      "query": "video scene boundary transfrom with evidence frames",
+      "allowed_scopes": ["catalog:public"],
+      "relevance": {"video.scene": 2}
+    },
+    {
+      "query_id": "holdout-ml-oof",
+      "split": "holdout",
+      "query": "kaggle out of fold predictions and ensemble residuals",
+      "allowed_scopes": ["catalog:public"],
+      "relevance": {"ml.oof": 2}
+    }
+  ],
+  "pair_judgments": [
+    {
+      "pair_id": "dev-address-duplicate",
+      "split": "dev",
+      "left_id": "address.primary",
+      "right_id": "address.duplicate",
+      "same_entity": true
+    },
+    {
+      "pair_id": "dev-schema-types",
+      "split": "dev",
+      "left_id": "schema.jsonld",
+      "right_id": "schema.sql",
+      "same_entity": false
+    },
+    {
+      "pair_id": "holdout-media-types",
+      "split": "holdout",
+      "left_id": "video.scene",
+      "right_id": "image.editing",
+      "same_entity": false
+    },
+    {
+      "pair_id": "holdout-routing-async",
+      "split": "holdout",
+      "left_id": "model.routing",
+      "right_id": "async.ownership",
+      "same_entity": false
+    }
+  ]
+}

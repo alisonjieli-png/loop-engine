@@ -66,9 +66,9 @@ loop_engine = [
     "forbidden_paths.json",
     "architecture_conformance.json",
     "ARCHITECTURE-MAP.md",
-    "strings/*.md",       # SEED-DIMENSIONS.md, read by string_foundry
-    "strings/*.html",     # studio_shell.html, served by the studio
-    "strings/*.json",
-    "strings/*.jsonl",    # the seed intelligence corpus
-    "data/*.json",        # installed published benchmark evidence
+    "**/*.md",            # folder contracts and seed dimensions
+    "**/*.html",          # Studio and report assets
+    "**/*.json",          # manifests, evidence, and published measurements
+    "**/*.jsonl",         # intelligence, governance, and run evidence
+    "**/*.yaml",          # installed architecture and semantic projections
 ]

@@ -12,20 +12,21 @@ machine-readable entry in `architecture.yaml`.
   has stronger evidence.
 - MAY: optional behavior that must remain interoperable when absent.
 
-## Node ontology
+## One operational runtime
 
 ### LE-NODE-001
 
-LoopNode MUST be the only concrete graph-addressable operational Node.
+`Loop` MUST be the only concrete operational runtime and the only executable
+graph vertex.
 
 Rationale: one operational runtime prevents parallel executors, split
 lifecycles, and competing state machines.
 
 Positive example: a Practitioner, an Intelligence query, and a Solution
-pipeline step are all instances of the same LoopNode class with
+pipeline step are all instances of the same `Loop` class with
 different role fields.
 
-Prohibited example: `class PractitionerNode(LoopNode)`.
+Prohibited example: `class PractitionerNode(Loop)`.
 
 Enforcement: `test_loop_node_is_only_operational_node`,
 `test_loop_cannot_be_subclassed`.
@@ -42,22 +43,22 @@ Enforcement: `test_no_concrete_generic_node`.
 
 ### LE-NODE-003
 
-Practitioner, Intelligence, and Solution MUST be LoopNode roles, not
-LoopNode subclasses.
+Practitioner, Intelligence, and Solution MUST be `Loop` roles, not
+runtime subclasses.
 
 Enforcement: `test_no_role_specific_node_classes`.
 
 ### LE-NODE-004
 
 Deterministic, hybrid, and non-deterministic MUST be run modes, not
-LoopNode subclasses.
+runtime subclasses.
 
 Enforcement: `test_no_mode_specific_node_classes`.
 
 ### LE-NODE-005
 
-Common behaviors MUST be represented by versioned LoopNode presets, not
-additional Node classes.
+Common behaviors MUST be represented by versioned passive Loop presets, not
+additional runtime classes.
 
 Rationale: presets are data. Subclasses are new runtimes.
 
@@ -65,36 +66,37 @@ Enforcement: `test_presets_are_not_subclasses`.
 
 ### LE-NODE-006
 
-Typed objects contained by LoopNode MUST NOT be described as Nodes.
+Typed objects contained by a `Loop` MUST NOT be described as executable
+vertices.
 
 Rationale: contracts, policies, configurations, references, results,
-and receipts are content owned by a LoopNode. Calling them Nodes
+and reports are content owned by a `Loop`. Calling them executable vertices
 recreates the parallel-ontology problem.
 
 Enforcement: `test_typed_internal_objects_state_they_are_not_nodes`.
 
 ### LE-NODE-007
 
-A semantic child step requiring independent governance MUST execute as
-a child LoopNode.
+A semantic step requiring independent governance MUST execute as
+a Loop Spawned by its parent.
 
 Enforcement: `test_semantic_child_steps_are_child_loop_nodes`.
 
 ### LE-NODE-008
 
-Low-level implementation primitives MUST NOT be promoted into child
-LoopNodes unless they require an independent goal, contract, budget,
+Low-level implementation primitives MUST NOT be promoted into Loops
+Spawned by their parent unless they require an independent goal, contract, budget,
 permission boundary, retry, verification, scheduling decision, or
-Chronicle identity.
+Run History identity.
 
-Rationale: a literal rule that every function call is a LoopNode
+Rationale: a literal rule that every function call is a Loop
 creates infinite recursion and unbounded overhead.
 
 Enforcement: `test_implementation_primitives_stay_inside_loop_node`.
 
 ### LE-NODE-009
 
-A LoopNode preset MUST be a partial typed configuration and MUST NOT be
+A Loop preset MUST be a partial typed configuration and MUST NOT be
 a runtime subclass.
 
 Enforcement: `test_presets_are_not_subclasses`.
@@ -103,10 +105,10 @@ Enforcement: `test_presets_are_not_subclasses`.
 
 ### LE-CONFIG-001
 
-The minimum resolved configuration required to start a LoopNode MUST be
+The minimum resolved configuration required to start a Loop MUST be
 available before execution begins.
 
-Rationale: a LoopNode must not need another LoopNode merely to discover
+Rationale: a Loop must not need another Loop merely to discover
 that it exists.
 
 Enforcement: `test_bootstrap_does_not_require_recursive_configuration_loops`.
@@ -114,7 +116,7 @@ Enforcement: `test_bootstrap_does_not_require_recursive_configuration_loops`.
 ### LE-CONFIG-002
 
 Configuration retrieval MUST NOT recursively require another
-configuration LoopNode without a bounded bootstrap base case.
+configuration Loop without a bounded bootstrap base case.
 
 Enforcement: `test_bootstrap_does_not_require_recursive_configuration_loops`.
 
@@ -148,7 +150,7 @@ Enforcement: `test_preference_never_grants_permission`.
 
 ### LE-PERM-001
 
-A descendant LoopNode MAY narrow inherited permissions but MUST NOT
+A descendant Loop MAY narrow inherited permissions but MUST NOT
 broaden them without an explicit delegated grant.
 
 Enforcement: `test_child_cannot_broaden_parent_scope`.
@@ -178,7 +180,7 @@ Enforcement: `test_untrusted_record_cannot_issue_runtime_instructions`.
 
 ### LE-VERSION-001
 
-A resolved LoopNode plan MUST pin exact versions and content hashes for
+A resolved Loop plan MUST pin exact versions and content hashes for
 all executable definitions and governed dependencies.
 
 Enforcement: `test_resolved_plan_pins_exact_versions`.
@@ -187,7 +189,7 @@ Enforcement: `test_resolved_plan_pins_exact_versions`.
 
 ### LE-RUNTIME-001
 
-Runtime Memory, Chronicle events, checkpoints, records, artifacts, and
+Runtime Memory, Run History events, checkpoints, records, artifacts, and
 Learned Intelligence MUST remain distinct concepts.
 
 Enforcement: `test_runtime_memory_chronicle_and_experience_are_distinct`.

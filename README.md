@@ -9,6 +9,29 @@ content digest. The definition binds the role profile, mode support, typed
 input and output roles, step profile, loop condition, exit condition,
 permissions, effects, and required capabilities.
 
+## Get started in five minutes
+
+Install the current main branch, verify the package, and run the deterministic
+no-key demonstration:
+
+```bash
+python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git@main"
+loop-engine doctor
+loop-engine --demo five-step --runs-dir ./loop-engine-runs
+loop-engine --studio --runs-dir ./loop-engine-runs
+```
+
+The demonstration preserves and compiles a structured task, executes and
+verifies a real deterministic Solution graph, saves Run History, and stages a
+learning candidate. Staging is not promotion. Independent review and a
+separate promotion decision are still required.
+
+Inspect configured model routes without making a provider call:
+
+```bash
+loop-engine models inventory
+```
+
 ## System at a glance
 
 ```mermaid
@@ -147,9 +170,11 @@ runs. Both views contain Loops as their only executable vertices.
 second runtime or a second graph authority. Every selected Canvas candidate
 resolves to a complete Solution `LoopDefinition` before execution.
 
-The current in-process Solution runner executes deterministic Solution Loops.
-It rejects hybrid and non-deterministic Solution leaves because those built-in
-execution adapters are not available yet.
+The in-process Solution runner uses the shared deterministic, hybrid, and
+non-deterministic mode contract. Model-using leaves require an installed
+gateway-backed executor and explicit model-call authority. Missing authority or
+an unavailable executor produces a typed failure and never changes mode
+silently.
 
 ## Intelligence is loop work
 
@@ -217,11 +242,11 @@ runnable `run.py` and a short `README.md`.
 
 ## The five-step product demo
 
-One command runs install, configure, compile, solve, and learn:
+After installation, one command demonstrates configuration readback, compile,
+solve, verification, saved history, and candidate staging:
 
 ```bash
-loop-engine --demo five-step \
-  --text "Train a linear model, neural network, and tree model, then ensemble them"
+loop-engine --demo five-step --runs-dir ./loop-engine-runs
 ```
 
 Or run each step separately:
@@ -231,7 +256,8 @@ loop-engine --self-test                      # 1. verify the install
 loop-engine setup                            # 2. configure settings
 loop-engine --task-compile --text "..."      # 3. compile text into a typed task
 loop-engine --solve --text "..."             # 4. solve it through a Loop
-loop-engine --learn                          # 5. stage one learning candidate
+loop-engine learn --lesson "state the evidence-bounded reusable lesson" \
+  --runs-dir ./loop-engine-runs              # 5. stage one candidate
 loop-engine --candidates                     # list staged candidates
 loop-engine --templates                      # list registered task templates
 ```
@@ -282,14 +308,17 @@ population, model, effort, evaluator, metric, and environment.
 - [Solution Canvas](docs/components/solution-canvas/)
 - [Core Architecture](docs/components/core-architecture/)
 - [Reports and playback](docs/guides/reports.md)
+- [Semantic identity dictionary](docs/architecture/SEMANTIC-IDENTITY-DICTIONARY.md)
+- [Semantic decision rules](docs/architecture/SEMANTIC-DECISION-RULES.md)
+- [Ambiguity register](docs/architecture/AMBIGUITY-REGISTER.md)
 
 ## Current limits
 
 - Typed role names are enforced at graph connections. Full value-schema
   validation for units, shapes, encodings, and field constraints is not yet
   available at every port.
-- The built-in Solution runner has no hybrid or non-deterministic leaf
-  executor.
+- Live provider and local-model quality remain unproven unless a saved run is
+  explicitly labeled `REAL PROVIDER RUN` or `LOCAL MODEL RUN`.
 - Some established constructor paths still compose a complete definition and
   restricted runtime context through an observable compatibility path.
 - `LoopLedger` is the current internal event-log class name. A public rename is

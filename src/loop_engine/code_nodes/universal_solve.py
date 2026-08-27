@@ -468,7 +468,8 @@ def solve(goal: str, data: str = "", *, out: str = "", modality: str = "",
                         id_column=id_column, target_column=target_column,
                         exclude=(out,) if out else ())
     out_dict = {"record_type": "universal_solve/v1", "goal": goal,
-                "reading": reading.summary(), "ran": False, "record": None}
+                "reading": reading.summary(), "ran": False,
+                "solved": False, "record": None}
 
     if dry_run:
         out_dict["explanation"] = reading.explain()
@@ -492,25 +493,16 @@ def solve(goal: str, data: str = "", *, out: str = "", modality: str = "",
             goal, train_csv=reading.train_file, test_csv=test,
             sample_csv=sample, out_csv=out or "predictions.csv",
             ledger=ledger, advice_fn=advice_fn)
-        out_dict.update(ran=True, record=record)
+        out_dict.update(ran=True, solved=True, record=record)
     elif not data:
-        # NO DATA is not a failure — it is a reasoning task. Hand it to the
-        # canonical Practitioner kernel rather than inventing a second front
-        # door: two public functions called `solve` is precisely the
-        # confusion this module exists to remove.
-        from ..loop.kernel import (KernelRunRequest, ProblemSpec,
-                                   default_impls, run_kernel_passes)
-        run = run_kernel_passes(KernelRunRequest(
-            spec=ProblemSpec(objective=goal,
-                             seed_facts=dict(knowledge or {})),
-            impls=default_impls()))
-        out_dict.update(ran=True, record={
-                            "trace": {"loop_id": run.get("loop_id"),
-                                      "runtime_type": "Loop"},
-                            "value": run},
-                        route="knowledge")
-        out_dict["note"] = ("no data given, so this ran as a reasoning task "
-                            "through the canonical Practitioner kernel")
+        out_dict.update(route="executor_unavailable")
+        out_dict["blocked"] = (
+            "EXECUTOR_UNAVAILABLE: no verified deterministic procedure was "
+            "selected and this compatibility API received no authorized "
+            "ModelGateway execution. Use loop-engine solve for the typed path.")
+        out_dict["note"] = (
+            "the former placeholder Practitioner packets were removed; this "
+            "path never reports solved=true without an executor")
     else:
         # An executor for this shape does not exist yet. Say so plainly — an
         # honest refusal beats routing a text task through a tabular executor
@@ -518,7 +510,8 @@ def solve(goal: str, data: str = "", *, out: str = "", modality: str = "",
         from ..loop.encapsulate import as_practitioner_loop
         res = as_practitioner_loop(
             goal, lambda: reading.summary(), ledger=ledger)
-        out_dict.update(ran=True, record={"trace": {}, "value": res["value"]},
+        out_dict.update(ran=False, solved=False,
+                        record={"trace": {}, "value": res["value"]},
                         route="oriented_only")
         out_dict["note"] = (
             f"no executor is registered for modality {reading.modality!r} yet, "
@@ -663,12 +656,11 @@ def self_test() -> dict:
         knowledge_run = solve(
             "build a churn model", knowledge={
                 "obligations": ("choose_model",), "run_log_path": None})
-        check("knowledge_route_runs_inside_the_canonical_Loop_runtime",
-              knowledge_run["route"] == "knowledge"
-              and knowledge_run["record"]["trace"]["runtime_type"] == "Loop"
-              and knowledge_run["record"]["trace"]["loop_id"].startswith(
-                  "loop"),
-              "the planning algorithm is a Code Intelligence service inside Loop")
+        check("unknown_reasoning_task_never_reports_placeholder_success",
+              knowledge_run["route"] == "executor_unavailable"
+              and not knowledge_run["ran"] and not knowledge_run["solved"]
+              and "EXECUTOR_UNAVAILABLE" in knowledge_run["blocked"],
+              "placeholder built/ran packets are not task completion")
 
         # 9. a missing dependency is named rather than crashing
         # somewhere deep in an executor

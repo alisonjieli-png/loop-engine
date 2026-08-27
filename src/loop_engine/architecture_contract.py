@@ -14,8 +14,17 @@ import yaml
 
 _PACKAGE_ROOT = os.path.dirname(os.path.abspath(__file__))
 _REPO_ROOT = os.path.dirname(os.path.dirname(_PACKAGE_ROOT))
-_ARCHITECTURE_YAML = os.path.join(_REPO_ROOT, "architecture.yaml")
-_TERMINOLOGY_YAML = os.path.join(_REPO_ROOT, "terminology.yaml")
+_PACKAGED_DATA = os.path.join(_PACKAGE_ROOT, "data")
+_REPOSITORY_ARCHITECTURE_YAML = os.path.join(_REPO_ROOT, "architecture.yaml")
+_REPOSITORY_TERMINOLOGY_YAML = os.path.join(_REPO_ROOT, "terminology.yaml")
+_ARCHITECTURE_YAML = (
+    _REPOSITORY_ARCHITECTURE_YAML
+    if os.path.isfile(_REPOSITORY_ARCHITECTURE_YAML)
+    else os.path.join(_PACKAGED_DATA, "architecture.yaml"))
+_TERMINOLOGY_YAML = (
+    _REPOSITORY_TERMINOLOGY_YAML
+    if os.path.isfile(_REPOSITORY_TERMINOLOGY_YAML)
+    else os.path.join(_PACKAGED_DATA, "terminology.yaml"))
 
 
 class ArchitectureContractError(ValueError):
@@ -142,12 +151,25 @@ def self_test() -> dict:
     check("architecture_yaml_loads", bool(contract.get("invariants")))
     terminology = load_terminology_contract()
     check("terminology_yaml_loads", bool(terminology.get("terms")))
+    if os.path.isfile(_REPOSITORY_ARCHITECTURE_YAML):
+        packaged_architecture = os.path.join(_PACKAGED_DATA,
+                                             "architecture.yaml")
+        packaged_terminology = os.path.join(_PACKAGED_DATA,
+                                            "terminology.yaml")
+        check("installed_contract_projections_are_fresh",
+              os.path.isfile(packaged_architecture)
+              and os.path.isfile(packaged_terminology)
+              and open(packaged_architecture, "rb").read()
+              == open(_REPOSITORY_ARCHITECTURE_YAML, "rb").read()
+              and open(packaged_terminology, "rb").read()
+              == open(_REPOSITORY_TERMINOLOGY_YAML, "rb").read(),
+              "wheel contract projections match repository authorities")
 
     # Canary: a forbidden class name must be detected.
     names = _class_names_in_package()
-    check("forbidden_class_detector_fires_on_known_names",
-          "LoopNode" in names and "Loop" in names,
-          "the canonical classes exist so the detector has real input")
+    check("class_detector_sees_one_canonical_runtime",
+          "Loop" in names and "LoopNode" not in names,
+          "Loop is the runtime; LoopNode is legacy serialized vocabulary")
 
     # Canary: the canonical runtime must refuse subclassing.
     import importlib

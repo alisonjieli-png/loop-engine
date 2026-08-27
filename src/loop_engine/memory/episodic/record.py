@@ -1,7 +1,7 @@
 """Episodic memory: bounded, time-ordered experience records.
 
-An episode is an indexed, reviewable interpretation of Chronicle
-events. The Chronicle remains authoritative; an episode preserves
+An episode is an indexed, reviewable interpretation of Run History
+events. Run History remains authoritative; an episode preserves
 exact links to source events and artifacts. Failures are first-class:
 a failed episode is often more useful than a successful one.
 """

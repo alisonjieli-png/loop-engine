@@ -189,10 +189,13 @@ def intelligence_surface(pillar: str, need: str = "", *,
                 "hits": [], "need": need,
                 "note": "no corpus supplied — the surface is declared, the "
                         "read is empty (an empty read is not a missing pillar)"}
-    from .intelligence_layers import query_intelligence, normalize_layer_records
+    from .intelligence_layers import (
+        IntelligenceSearchRequest, normalize_layer_records,
+        query_intelligence)
     normalized_records = normalize_layer_records(layer_records)
     scoped = {k: v for k, v in normalized_records.items() if k in layers}
-    out = query_intelligence(need, scoped) if need else {
+    out = query_intelligence(IntelligenceSearchRequest(
+        need, scoped)) if need else {
         "need": "", "hits": [], "unqueried": sorted(layers - set(scoped))}
     return {"public_layers": sorted(wanted), "pillars": sorted(wanted),
             "layers": sorted(layers), **out}

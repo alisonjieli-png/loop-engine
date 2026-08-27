@@ -3,9 +3,9 @@
 Devtools is a first-class Loop Engine application with its own
 recursive Practitioner hierarchy, Core intelligence, Learned
 intelligence, review profiles, supervisors, specialist loops, and
-development plugins. It executes through the same LoopNode ontology,
+development plugins. It executes through the same Loop runtime,
 kernel, contracts, budgets, permissions, compatibility handshakes, and
-Chronicle as every other Loop Engine application.
+Run History as every other Loop Engine application.
 
 It is NOT a second Node engine or second runtime.
 """

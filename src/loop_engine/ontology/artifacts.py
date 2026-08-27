@@ -9,12 +9,13 @@ from __future__ import annotations
 
 from ..core.intelligence_layers import LAYERS
 
-ONTOLOGY_VERSION = "1.0.0"
+ONTOLOGY_VERSION = "2.0.0"
 
-#: The two foundational object classes. A ``node`` is a passive persistent
-#: record at rest. A ``loop_node`` is its only executable specialization:
-#: the at-rest definition of one Loop graph vertex.
-ONTOLOGY_OBJECT_KINDS = ("node", "loop_node")
+#: Passive record categories. Runtime identity is deliberately absent.
+ONTOLOGY_OBJECT_KINDS = ("catalog_record", "loop_definition_record")
+
+#: Immutable pre-2.0 spellings accepted only by explicit mapping readers.
+LEGACY_ONTOLOGY_OBJECT_KINDS = ("node", "loop_node")
 
 #: Persistent artifact kinds a semantic folder may hold or reference.
 ARTIFACT_KINDS = (
@@ -60,8 +61,13 @@ def self_test() -> dict:
     def check(name, ok, note=""):
         results.append({"name": name, "passed": bool(ok), "note": note})
 
-    check("ontology_object_kinds_closed",
-          ONTOLOGY_OBJECT_KINDS == ("node", "loop_node"))
+    check("ontology_object_kinds_are_passive_and_closed",
+          ONTOLOGY_OBJECT_KINDS
+          == ("catalog_record", "loop_definition_record"))
+    check("legacy_object_kinds_are_reader_only",
+          LEGACY_ONTOLOGY_OBJECT_KINDS == ("node", "loop_node")
+          and not set(LEGACY_ONTOLOGY_OBJECT_KINDS)
+          & set(ONTOLOGY_OBJECT_KINDS))
     check("artifact_kinds_nonempty_and_unique",
           len(ARTIFACT_KINDS) == len(set(ARTIFACT_KINDS)) > 0)
     check("source_classes_exact",

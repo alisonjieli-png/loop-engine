@@ -1,8 +1,8 @@
-"""Runtime ontology introspection: prove the one-LoopNode invariant live.
+"""Runtime ontology introspection: prove the one-Loop invariant live.
 
 Python introspection gives several independent proof mechanisms:
 
-- ``Loop.__subclasses__()`` must be empty. The canonical Loop class
+- ``Loop.__subclasses__()`` must be empty. The canonical runtime class
   refuses subclassing at class-creation time, so any subclass would
   already have raised.
 - ``gc.get_objects()`` enumerates every live object in the interpreter.
@@ -25,8 +25,8 @@ import sys
 #: The canonical operational runtime class name.
 CANONICAL_RUNTIME = "Loop"
 
-#: The only node-named class permitted in the package.
-ALLOWED_NODE_CLASSES = frozenset({"LoopNode"})
+#: Node is conceptual only, so no active node-named class is permitted.
+ALLOWED_NODE_CLASSES = frozenset()
 
 
 def loaded_node_classes() -> list[dict]:
@@ -55,12 +55,12 @@ def node_class_violations() -> list[dict]:
                 "rule": "runtime_node_class",
                 "class": record["class"],
                 "module": record["module"],
-                "detail": "LoopNode must be the only node-named class"})
+                "detail": "Node is conceptual; executable work uses Loop"})
     return violations
 
 
 def subclass_violations() -> list[dict]:
-    """The canonical Loop class must have no subclasses, direct or hidden."""
+    """The canonical Loop class has no subclasses, direct or hidden."""
     from .loop.recursive_loop import Loop
     violations = []
     direct = Loop.__subclasses__()
@@ -109,7 +109,7 @@ def live_instance_report() -> dict:
 
 
 def run_runtime_ontology_check() -> dict:
-    """Prove the live process obeys the one-LoopNode invariant."""
+    """Prove every live operational instance uses canonical Loop."""
     # The ontology package uses lazy public-name resolution, so import the
     # record modules explicitly before walking sys.modules.
     import loop_engine.ontology.node as _node_module          # noqa: F401
@@ -139,17 +139,17 @@ def self_test() -> dict:
     def check(name, ok, note=""):
         results.append({"name": name, "passed": bool(ok), "note": note})
 
-    # Canary 1: the loaded-class walker must see the canonical classes.
+    # Canary 1: the loaded-class walker must see no active Node class.
     # The ontology package uses lazy public-name resolution, so import the
     # record modules explicitly before walking sys.modules.
     import loop_engine.ontology.node as _node_module          # noqa: F401
     import loop_engine.ontology.loop_node as _loop_node_module  # noqa: F401
     loaded = {r["class"] for r in loaded_node_classes()}
-    check("loaded_class_walker_sees_canonical_classes",
-          "LoopNode" in loaded and "Loop" not in loaded,
+    check("loaded_class_walker_sees_no_active_node_class",
+          not loaded,
           f"loaded node-named classes: {sorted(loaded)}")
 
-    # Canary 2: the canonical Loop class must refuse subclassing live.
+    # Canary 2: the canonical Loop class refuses subclassing live.
     from .loop.recursive_loop import Loop
     try:
         class _Probe(Loop):                                   # noqa: F841

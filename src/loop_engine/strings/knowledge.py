@@ -44,7 +44,9 @@ class Knowledge:
         facts_key = tuple(sorted((k, repr(v)) for k, v in self.facts.items()))
         key = (self.goal, self.graph_summary, self.results,
                self.open_obligations, facts_key, self.context_level)
-        return {"id": f"decision-signals:{hash(key) & 0xFFFFFF}",
+        from ..ontology.records import StableIdentityRequest, stable_content_id
+        return {"id": stable_content_id(StableIdentityRequest(
+                    "decision-signals", key, digest_length=16, separator=":")),
                 "goal": self.goal, "graph_summary": self.graph_summary,
                 "n_results": len(self.results),
                 "open_obligations": list(self.open_obligations),

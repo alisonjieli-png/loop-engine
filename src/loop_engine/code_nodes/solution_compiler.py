@@ -66,7 +66,8 @@ def compile_solution(spec: SolutionSpec, registry: dict) -> dict:
 
 
 def run_compiled(plan: dict, registry: dict, inputs, *,
-                 trace: "list | None" = None, ledger=None, parent=None):
+                 trace: "list | None" = None, ledger=None, parent=None,
+                 model_execution=None):
     """Execute a compiled plan through one role-correct Solution tree.
 
     Extended evaluator and router callables run as Spawned Solution loops
@@ -87,7 +88,7 @@ def run_compiled(plan: dict, registry: dict, inputs, *,
     spec = SolutionSpec.from_graph(graph)
     return _run_solution_runtime(
         spec, registry, inputs, trace=trace, ledger=ledger, parent=parent,
-        allow_extended=True)
+        allow_extended=True, model_execution=model_execution)
 
 
 def _spec_from_dict(d: dict) -> SolutionSpec:

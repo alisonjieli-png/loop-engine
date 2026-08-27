@@ -280,11 +280,11 @@ def search_as_loop_refs(store, query: str, *,
     caller still receives content.  This returns ranked ``LoopRef``s: address
     plus handshake, no payload.  The caller filters by compatibility, chooses,
     and only then invokes, so selection costs nothing to materialise."""
-    from .loop_capsule import refs_for_hits
+    from .loop_capsule import intelligence_refs_for_hits
     hits = search_as_loop(store, query, pillar=pillar, kind=kind,
                           top_n=top_n, ledger=ledger,
                           parent=parent)["value"]["hits"]
-    return refs_for_hits(hits, role=pillar)
+    return intelligence_refs_for_hits(hits, layer=pillar)
 
 
 def serve_record_as_loop(store, record_id: str, *,
@@ -459,7 +459,7 @@ def self_test() -> dict:
     refs = search_as_loop_refs(spy, "question card")
     check("search_refs_never_serve_unselected_bodies",
           len(refs) == 1 and spy.served == 0
-          and refs[0].loop_ref.endswith("q.card"))
+          and refs[0].item_ref.endswith("q.card"))
 
     passed = sum(1 for t in results if t["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

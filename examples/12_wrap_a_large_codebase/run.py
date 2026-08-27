@@ -112,15 +112,18 @@ def main():
     }
     ledger = LoopLedger()
 
-    preflight = execute_code_ref(
-        reference, resolver, entrypoint="worker.preflight",
-        inputs=packet, ledger=ledger)
-    exported = execute_code_ref(
-        reference, resolver, entrypoint="worker.export",
-        inputs=packet, ledger=ledger)
-    postflight = execute_code_ref(
-        reference, resolver, entrypoint="worker.postflight",
-        inputs=packet, ledger=ledger)
+    from loop_engine.core.code_intelligence_assets import (
+        CodeRefExecutionContext, CodeRefExecutionRequest)
+    execution_context = CodeRefExecutionContext(ledger=ledger)
+    preflight = execute_code_ref(CodeRefExecutionRequest(
+        reference, resolver, entrypoint="worker.preflight", inputs=packet),
+        execution_context)
+    exported = execute_code_ref(CodeRefExecutionRequest(
+        reference, resolver, entrypoint="worker.export", inputs=packet),
+        execution_context)
+    postflight = execute_code_ref(CodeRefExecutionRequest(
+        reference, resolver, entrypoint="worker.postflight", inputs=packet),
+        execution_context)
 
     print("LARGE CODEBASE CARD")
     print(f"  serialized bytes: {len(json.dumps(top_level_card.to_dict()))}")

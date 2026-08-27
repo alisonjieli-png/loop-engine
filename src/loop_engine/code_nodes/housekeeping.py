@@ -163,8 +163,10 @@ class ImprovementCandidate:
     def resource(self):
         """Emit the canonical Resource — maturity → the one lifecycle."""
         from ..core.asset_lifecycle import Resource, normalize
+        from ..ontology.records import StableIdentityRequest, stable_content_id
         return Resource(
-            asset_id=f"imp.{self.kind}.{abs(hash(self.proposal)) % 10**8}",
+            asset_id=stable_content_id(StableIdentityRequest(
+                f"imp.{self.kind}", (self.proposal, self.source))),
             asset_class=self.asset_class, role=self.kind, content=self.proposal,
             lifecycle=normalize("housekeeping_maturity", self.maturity),
             provenance=self.source)

@@ -11,6 +11,9 @@ import json
 from ..loop.recursive_loop import MODES, Loop, LoopLedger, StepOutcome
 from .solution_canvas import (SolutionError, SolutionLoopSpec, SolutionSpec,
                               _spec_dict, run_solution)
+from .solution_model_port import (FixtureModelExecutionRequest,
+                                  ModelInvocationRequest, SolutionModelError,
+                                  fixture_model_execution)
 
 
 def solution_canvas_self_test_checks() -> dict:
@@ -236,7 +239,8 @@ def solution_canvas_self_test_checks() -> dict:
         relationship=LoopRelationship.starting())
     tr4: list = []
     owned = SolutionSpec(
-        "owned", loops=(SolutionLoopSpec("clean", "clean"),))
+        "owned", permitted_loop_modes=("deterministic",),
+        loops=(SolutionLoopSpec("clean", "clean"),))
     owned_holder = {}
 
     def own_canvas(active: Loop, step: str, context: dict) -> StepOutcome:
@@ -285,25 +289,77 @@ def solution_canvas_self_test_checks() -> dict:
     check("owned_canvas_refuses_a_split_ledger", split_refused,
           "parent and components always share one timeline")
 
-    # 12. A semantic Solution vertex cannot become executable until an exact
-    # semantic Solution profile and executor exist.
+    # 12. A Solution leaf declares hybrid like every Loop. Without the run's
+    # explicit ModelExecution authority the preflight refuses before any
+    # operation callable (same zero-work guarantee, widened contract); with
+    # authority the leaf executes its model work through the governed
+    # model-invocation port, recorded in canonical events.
     calls = []
     hybrid = SolutionSpec(
         "hybrid.valid",
         loops=(SolutionLoopSpec("semantic", "semantic",
                                 mode="hybrid"),))
     hybrid_ledger = LoopLedger()
-    adapter_refused = False
+    preflight_refused = False
     try:
         run_solution(hybrid,
                      {"semantic": lambda x, p: calls.append(x)}, [1],
                      ledger=hybrid_ledger)
     except SolutionError as exc:
-        adapter_refused = "no installed 'hybrid' Solution executor" in str(exc)
-    check("semantic_solution_executor_unavailable_fails_before_work",
-          not hybrid.validate()["valid"] and adapter_refused
+        preflight_refused = "needs explicit model authority" in str(exc)
+    check("model_mode_leaf_without_authority_fails_before_work",
+          hybrid.validate()["valid"] and preflight_refused
           and not calls and not hybrid_ledger.events,
-          "unavailable semantic executor performs zero work")
+          "declared hybrid without ModelExecution performs zero work")
+
+    hybrid_result = run_solution(
+        hybrid,
+        {"semantic": lambda x, p: p["model_port"](
+            ModelInvocationRequest(f"interpret {x}")) + ":" + str(x)},
+        [1], ledger=hybrid_ledger,
+        model_execution=fixture_model_execution(FixtureModelExecutionRequest(
+            answers=("interpreted:1",), max_model_calls=3)))
+    model_events = [e for e in hybrid_ledger.events
+                    if e.get("event") == "model_led"]
+    check("hybrid_leaf_executes_through_governed_model_port",
+          hybrid_result == f"interpreted:1:{[1]}"
+          and model_events
+          and model_events[0].get("loop_id"),
+          "hybrid Solution leaf reaches ModelGateway and a model-attempt Loop")
+
+    # 12b. Non-deterministic leaves run model-led through the same port, and
+    # the call budget is fail-closed: the third ask refuses at the boundary.
+    model_led = SolutionSpec(
+        "model.led",
+        loops=(SolutionLoopSpec("lead", "lead",
+                                mode="non_deterministic"),))
+    model_ledger = LoopLedger()
+    bounded_result = run_solution(
+        model_led,
+        {"lead": lambda x, p: p["model_port"](
+            ModelInvocationRequest("ask"))}, [1],
+        ledger=model_ledger,
+        model_execution=fixture_model_execution(FixtureModelExecutionRequest(
+            answers=("led:1",), max_model_calls=1)))
+    over_budget = False
+    try:
+        run_solution(
+            model_led,
+            {"lead": lambda x, p: (
+                p["model_port"](ModelInvocationRequest("first")),
+                p["model_port"](ModelInvocationRequest("second")))}, [1],
+            ledger=LoopLedger(),
+            model_execution=fixture_model_execution(FixtureModelExecutionRequest(
+                answers=("first", "second"), max_model_calls=1)))
+    except SolutionError as exc:
+        over_budget = "budget" in str(exc) or SolutionModelError.__name__ \
+            in str(exc)
+    check("non_deterministic_leaf_runs_and_budget_is_fail_closed",
+          bounded_result == "led:1"
+          and any(e.get("event") == "model_led"
+                  for e in model_ledger.events)
+          and over_budget,
+          "model-led leaf executes; the declared call budget stops the run")
 
     # 13. Typed roles follow the actual value through the pipeline and ride
     # each runtime Loop contract.
