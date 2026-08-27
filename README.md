@@ -17,6 +17,20 @@ This keeps Loop Engine and its dependencies out of your system Python.
 On macOS or Linux:
 
 ```bash
+mkdir loop-engine-quickstart
+cd loop-engine-quickstart
+python3 --version
+git --version
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+On Debian or Ubuntu, install the standard-library virtual-environment package
+if the final command reports that `venv` or `ensurepip` is unavailable:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y python3-venv
 python3 -m venv .venv
 source .venv/bin/activate
 ```
@@ -24,7 +38,19 @@ source .venv/bin/activate
 On Windows PowerShell:
 
 ```powershell
+New-Item -ItemType Directory -Path loop-engine-quickstart
+Set-Location loop-engine-quickstart
+py --version
+git --version
 py -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+If PowerShell blocks activation scripts, permit them only for the current
+terminal and activate again:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .venv\Scripts\Activate.ps1
 ```
 
@@ -323,8 +349,9 @@ source checkout when you want the numbered examples, tests, or live five-task
 Ollama check:
 
 ```bash
-git clone https://github.com/alisonjieli-png/loop-engine.git
-cd loop-engine
+mkdir loop-engine-source-test
+cd loop-engine-source-test
+git clone https://github.com/alisonjieli-png/loop-engine.git .
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
