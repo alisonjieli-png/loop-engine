@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-08-27T15:08:43-04:00",
+  "repository": "alisonjieli-png/loop-engine",
+  "branch": "main",
+  "baseline_sha": "6a26978c5e6cd2e3852818c4bb4b2dac23b0da76",
+  "checkpoint_commit": "dc2b3f27d347cd17a8de423e54df7efe5cf7ce40",
+  "checkpoint_states": {
+    "semantic_recovery": "LOCAL_VERIFIED_REMOTE_PENDING",
+    "universal_parameterization_and_file_alignment": "NOT_YET_PROVEN",
+    "core_offline_path": "VERIFIED_WORKING",
+    "live_model_provider": "UNPROVEN",
+    "external_evidence": "NOT_YET_PROVEN",
+    "solution_factory": "NOT_YET_PROVEN",
+    "benchmark_campaign": "NOT_YET_PROVEN",
+    "bounded_kaggle_rsi": "NOT_YET_PROVEN",
+    "release": "NOT_YET_PROVEN"
+  },
+  "verified": {
+    "canonical_runtime": "Loop",
+    "source_self_tests": "1338/1338",
+    "source_conformance": "28/28",
+    "clean_wheel_self_tests": "1337/1337",
+    "clean_wheel_conformance": "28/28",
+    "ci_examples": "14/14",
+    "wheel_sha256": "41a0b4caf2479c9f9671e634235ad675542fac8191e42c7c14e3ed174c812ed6",
+    "sdist_sha256": "2ffe17e94a7000d49ffd1cada727c92f747470ae78722cfc41f3bec10b296502"
+  },
+  "next_checkpoint": "CP-0.5",
+  "next_evidence": "artifacts/architecture/alignment_results.jsonl"
+}

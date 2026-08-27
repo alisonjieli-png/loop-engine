@@ -365,7 +365,7 @@ against the exact intended public paths before committing.
 | Measurement | One runtime class; zero subclasses; zero active `LoopNode` classes; zero `LoopNode` package-root exports; zero semantic conformance violations. |
 | Result | `VERIFIED WORKING` locally; GitHub Actions pending the checkpoint push. |
 | Remaining uncertainty | Required GitHub Actions result and external publication state. |
-| Commit | pending |
+| Commit | `dc2b3f27d347cd17a8de423e54df7efe5cf7ce40` |
 | GitHub Actions run | pending |
 | Publication state | `LOCAL_VERIFIED_NOT_YET_PUSHED` |
 
