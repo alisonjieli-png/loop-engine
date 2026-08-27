@@ -161,7 +161,7 @@ compilation is bound as a governed responsibility rather than hidden.
 
 Custom Practitioner profiles may be atomic, linear, conditional, DAG-shaped,
 stateful, cyclic within a bound, dynamic, nested, or parallel. Each still
-declares typed contracts, authority, ownership, budgets, stop conditions, and
+declares typed contracts, authority, ownership, budgets, exit conditions, and
 verification.
 
 ### LE-CONFLICT-006: canvas and graph

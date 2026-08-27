@@ -405,6 +405,6 @@ against the exact intended public paths before committing.
 | Measurement | Requires matched trials, exact denominators, ablations, held-out task families, uncertainty, and negative-transfer tests. |
 | Result | `NOT YET PROVEN`. The architecture direction is recorded; implementation and experiments remain a later hard checkpoint. |
 | Remaining uncertainty | Exact reuse map for candidate passive records, implementation batch order, frozen task populations, and independent evaluator contracts. |
-| Commit | pending |
-| GitHub Actions run | pending |
-| Publication state | pending main push |
+| Commit | `9ca80fdaec8c393561cacb623c8c3f0e523c3461` |
+| GitHub Actions run | `33109648651`, all five required jobs passed |
+| Publication state | architecture contract, onboarding, and flagship template published to `origin/main` |
