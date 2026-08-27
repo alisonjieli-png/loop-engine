@@ -197,14 +197,8 @@ def self_test() -> dict:
 
     try:
         import mcp  # noqa: F401
-        # The official SDK moved LATEST_PROTOCOL_VERSION out of
-        # mcp.shared.version in the 2.x line; mcp_types.version carries it.
-        # Support both layouts so 1.29 and 2.x installs both pass.
-        try:
-            from mcp.shared.version import LATEST_PROTOCOL_VERSION
-        except ModuleNotFoundError:
-            from mcp_types.version import LATEST_PROTOCOL_VERSION  # noqa: F401
-    except (ImportError, ModuleNotFoundError):
+        from mcp.shared.version import LATEST_PROTOCOL_VERSION
+    except ImportError:
         return {"tests": [{
             "test": "official_mcp_sdk_is_installed",
             "passed": False,
