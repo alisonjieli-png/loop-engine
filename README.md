@@ -11,20 +11,45 @@ permissions, effects, and required capabilities.
 
 ## Get started in five minutes
 
-Install the current main branch, verify the package, and run the deterministic
-no-key demonstration:
+Python 3.10 or newer and Git are required. Create a virtual environment first.
+This keeps Loop Engine and its dependencies out of your system Python.
+
+On macOS or Linux:
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+On Windows PowerShell:
+
+```powershell
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+After activation, install the current `main` branch and verify it:
+
+```bash
+python -m pip install --upgrade pip
 python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git@main"
+python -m pip check
 loop-engine doctor
+python -m loop_engine --self-test
 loop-engine --demo five-step --runs-dir ./loop-engine-runs
 loop-engine --studio --runs-dir ./loop-engine-runs
 ```
 
-The demonstration preserves and compiles a structured task, executes and
-verifies a real deterministic Solution graph, saves Run History, and stages a
-learning candidate. Staging is not promotion. Independent review and a
-separate promotion decision are still required.
+The no-key demonstration uses code and rules. It does not contact a model
+provider. It preserves and compiles a structured task, runs and verifies a real
+deterministic Solution graph, saves Run History, and stages a learning
+candidate. Staging is not promotion. Independent review and a separate
+promotion decision are still required.
+
+The Studio command starts a local server and keeps running. Open the address it
+prints, then press `Ctrl+C` in the terminal to stop it.
+
+Run `deactivate` when you are finished with the virtual environment.
 
 Inspect configured model routes without making a provider call:
 
@@ -293,13 +318,29 @@ They are not extra public architecture groups or executable graph vertices.
 
 ## Install and run
 
-Install directly from GitHub:
+The quick start installs the command without cloning the repository. Use a
+source checkout when you want the numbered examples, tests, or live five-task
+Ollama check:
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+git clone https://github.com/alisonjieli-png/loop-engine.git
+cd loop-engine
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install .
+python -m pip check
+python -m loop_engine --self-test
+python -m loop_engine --conformance
 ```
 
-Python 3.10 or newer is required.
+On Windows PowerShell, replace the virtual-environment creation and activation
+lines with:
+
+```powershell
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+```
 
 Run useful installed examples:
 
@@ -312,14 +353,54 @@ loop-engine --example context-seed
 Run repository examples:
 
 ```bash
-python3 examples/01_prioritize_support_queue/run.py
-python3 examples/09_search_the_intelligence_layers/run.py
-python3 examples/10_validate_customer_import/run.py
-python3 examples/12_wrap_a_large_codebase/run.py
+python examples/01_prioritize_support_queue/run.py
+python examples/09_search_the_intelligence_layers/run.py
+python examples/10_validate_customer_import/run.py
+python examples/12_wrap_a_large_codebase/run.py
+python examples/20_compile_text_tasks/run.py
 ```
 
- [Browse all examples](examples/README.md). Each numbered folder contains a
+[Browse all examples](examples/README.md). Each numbered folder contains a
 runnable `run.py` and a short `README.md`.
+
+The first five-text command is model-free. To run the same five task files
+through Ollama Cloud, set `OLLAMA_API_KEY` in the active shell and authorize
+exactly five calls. For Bash:
+
+```bash
+read -rsp "Ollama API key: " OLLAMA_API_KEY
+echo
+export OLLAMA_API_KEY
+```
+
+For zsh:
+
+```zsh
+read -s "OLLAMA_API_KEY?Ollama API key: "
+echo
+export OLLAMA_API_KEY
+```
+
+On PowerShell 7, use:
+
+```powershell
+$env:OLLAMA_API_KEY = Read-Host "Ollama API key" -MaskInput
+```
+
+Then run:
+
+```bash
+python examples/20_compile_text_tasks/run_live.py \
+  --authorize-model-calls \
+  --max-model-calls 5 \
+  --max-total-tokens 400000 \
+  --timeout 180 \
+  --evidence-out ./live-ollama-scenarios.json
+```
+
+The `400000` value is a hard safety ceiling derived from five declared model
+output maxima. It is not expected usage. Recent accepted runs used about 3,700
+to 4,100 provider-reported tokens in total.
 
 ## The five-step product demo
 
