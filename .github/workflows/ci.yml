@@ -109,9 +109,9 @@ jobs:
           npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/self-improvement.mmd" -o "$RUNNER_TEMP/self-improvement.png" --quiet
           awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/intelligence-layers/INTELLIGENCE-AS-LOOPS.md > "$RUNNER_TEMP/intelligence-loops.mmd"
           npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/intelligence-loops.mmd" -o "$RUNNER_TEMP/intelligence-loops.png" --quiet
-          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/static-architecture/BRAVE-SEARCH-PLUGIN.md > "$RUNNER_TEMP/brave-plugin.mmd"
+          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/core-architecture/BRAVE-SEARCH-PLUGIN.md > "$RUNNER_TEMP/brave-plugin.mmd"
           npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/brave-plugin.mmd" -o "$RUNNER_TEMP/brave-plugin.png" --quiet
-          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/static-architecture/MODEL-GATEWAY.md > "$RUNNER_TEMP/model-gateway.mmd"
+          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/core-architecture/MODEL-GATEWAY.md > "$RUNNER_TEMP/model-gateway.mmd"
           npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/model-gateway.mmd" -o "$RUNNER_TEMP/model-gateway.png" --quiet
           awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/loop-object/LOOP-PROFILE-ONTOLOGY.md > "$RUNNER_TEMP/loop-profiles.mmd"
           npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/loop-profiles.mmd" -o "$RUNNER_TEMP/loop-profiles.png" --quiet
