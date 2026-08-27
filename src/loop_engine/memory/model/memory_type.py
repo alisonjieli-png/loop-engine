@@ -80,8 +80,17 @@ class MemoryIdentity:
     memory_type: MemoryType
 
     def __post_init__(self) -> None:
-        if self.memory_type not in MemoryType:
-            raise ValueError(f"unknown memory type {self.memory_type!r}")
+        # Coerce str values first: ``value in EnumClass`` is legal only for
+        # members on Python < 3.12 (it raises TypeError), and is legal for
+        # str values on 3.12+, so a raw membership test is not
+        # version-portable. isinstance + constructor coercion is.
+        if not isinstance(self.memory_type, MemoryType):
+            try:
+                memory_type = MemoryType(self.memory_type)
+            except (ValueError, KeyError):
+                raise ValueError(
+                    f"unknown memory type {self.memory_type!r}") from None
+            object.__setattr__(self, "memory_type", memory_type)
         if not self.record_id or not self.version or not self.content_digest:
             raise ValueError("memory identity needs id, version, and digest")
 
