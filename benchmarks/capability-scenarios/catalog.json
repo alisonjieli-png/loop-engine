@@ -1,0 +1,223 @@
+{
+ "schema_version": "capability_scenarios/v1",
+ "as_of": "2026-08-27",
+ "purpose": "Open-ended developer task scenarios for capability proving and self-awareness. Data, not runtimes.",
+ "notes": "Each record names what the engine would need to do, the effects it may use when authorized, how the result is verified, and the capability IDs it requires. A missing capability must surface as a typed capability-gap record, not as a silent failure.",
+ "scenarios": [
+  {
+   "task_id": "media.image_to_video.ken_burns_slideshow",
+   "version": "1.0.0",
+   "family": "media.image_to_video",
+   "text": "Search online for three images on a given subject, download them into the workspace, then generate a slideshow video with a Ken Burns pan-and-zoom effect and captions.",
+   "operators": ["retrieve", "extract", "transform", "generate", "validate", "learn"],
+   "authorized_effects": ["web_search", "http_download", "image_processing", "video_composition", "file_write_workspace"],
+   "verification": [
+    "exactly three images downloaded with correct content type and nonzero bytes",
+    "output video file exists, has the expected codec, duration, and frame count",
+    "Ken Burns motion is detectable as changing crop windows over time",
+    "no image reused, corrupted, or left in a partial-download state"
+   ],
+   "requires_capabilities": [
+    "capability.web.search_port",
+    "capability.web.fetch_port",
+    "capability.media.image_resize",
+    "capability.media.video_compose"
+   ],
+   "mode": "hybrid",
+   "tier": "flagship_smoke"
+  },
+  {
+   "task_id": "media.video_people_rigging.pose_overlay",
+   "version": "1.0.0",
+   "family": "media.video_people_rigging",
+   "text": "Download videos containing people, run limb or motion rigging on each frame, and render a highlighted rig-outlined video so movement is visible.",
+   "operators": ["retrieve", "extract", "transform", "generate", "validate", "learn"],
+   "authorized_effects": ["web_search", "http_download", "model_invocation_local", "video_ingest", "video_egress", "file_write_workspace"],
+   "verification": [
+    "videos contain detected human figures (model-based detector with a declared confidence floor)",
+    "rigging landmarks are produced for a minimum declared frame fraction",
+    "overlay video matches source frame rate and duration within tolerance",
+    "no frame silently drops limbs the detector reported"
+   ],
+   "requires_capabilities": [
+    "capability.web.search_port",
+    "capability.web.fetch_port",
+    "capability.media.video_ingest",
+    "capability.media.pose_detect",
+    "capability.media.overlay_render"
+   ],
+   "mode": "hybrid",
+   "tier": "flagship_smoke"
+  },
+  {
+   "task_id": "media.game_generation.threejs_minecraft_style",
+   "version": "1.0.0",
+   "family": "media.game_generation",
+   "text": "Generate a small Minecraft-style blocky world as a three.js scene, render frames in a headless browser, and verify the output looks like a real game world: aligned textures, no overlapping geometry, visible lighting, coherent camera path.",
+   "operators": ["generate", "transform", "validate", "diagnose", "learn"],
+   "authorized_effects": ["code_generation", "browser_render", "file_write_workspace"],
+   "verification": [
+    "scene renders without JavaScript errors",
+    "no two solid blocks occupy the same voxel",
+    "texture UVs align on adjacent faces",
+    "rendered frames pass a declared visual check (deterministic diff or bounded model review)",
+    "camera moves smoothly without clipping terrain"
+   ],
+   "requires_capabilities": [
+    "capability.codegen.javascript",
+    "capability.browser.render_port",
+    "capability.media.frame_diff",
+    "capability.media.visual_review_model"
+   ],
+   "mode": "hybrid",
+   "tier": "research_challenger"
+  },
+  {
+   "task_id": "data.open_data_report",
+   "version": "1.0.0",
+   "family": "data.open_data_report",
+   "text": "Download an open data set, profile it, and generate a written report that answers the question the data owner asked.",
+   "operators": ["retrieve", "extract", "analyze", "generate", "validate", "learn"],
+   "authorized_effects": ["http_download", "file_write_workspace", "data_profile"],
+   "verification": [
+    "download integrity verified against the publisher checksum",
+    "report cites row counts, columns, and computed statistics from the actual data",
+    "report contains no invented figures",
+    "report states its own limitations"
+   ],
+   "requires_capabilities": [
+    "capability.web.fetch_port",
+    "capability.data.profile",
+    "capability.report.generate"
+   ],
+   "mode": "deterministic",
+   "tier": "flagship_smoke"
+  },
+  {
+   "task_id": "data.sec_filings_digest",
+   "version": "1.0.0",
+   "family": "data.sec_filings",
+   "text": "Download recent SEC filings for a named company, extract the material sections, and produce a summary that respects the filing's exact language where quoted.",
+   "operators": ["retrieve", "extract", "analyze", "generate", "validate", "learn"],
+   "authorized_effects": ["web_search", "http_download_sec_edgar", "document_parse", "file_write_workspace"],
+   "verification": [
+    "filings come from the authoritative source with date and accession numbers",
+    "extracted sections match the filing's section titles",
+    "quoted language is verbatim and cited",
+    "uncertain or missing sections are marked as unknown, not invented"
+   ],
+   "requires_capabilities": [
+    "capability.web.fetch_port",
+    "capability.document.parse",
+    "capability.report.generate"
+   ],
+   "mode": "hybrid",
+   "tier": "flagship_smoke"
+  },
+  {
+   "task_id": "data.laws_states_pdf",
+   "version": "1.0.0",
+   "family": "data.laws_states_pdf",
+   "text": "Find the relevant laws in all 50 states on a named legal subject and compile a cited PDF report.",
+   "operators": ["retrieve", "extract", "analyze", "generate", "validate", "learn"],
+   "authorized_effects": ["web_search", "http_download", "document_parse", "pdf_render", "file_write_workspace"],
+   "verification": [
+    "every state is represented or explicitly marked unavailable with its source attempt logged",
+    "every claim cites its source URL, retrieval time, and the exact statute section if one was found",
+    "PDF renders and page count is nonzero",
+    "no invented statutes"
+   ],
+   "requires_capabilities": [
+    "capability.web.search_port",
+    "capability.web.fetch_port",
+    "capability.doc.pdf_render"
+   ],
+   "mode": "hybrid",
+   "tier": "release_certification"
+  },
+  {
+   "task_id": "data.stock_price_prediction",
+   "version": "1.0.0",
+   "family": "data.stock_prediction",
+   "text": "Predict a stock price. First compile the task: choose a modeling approach (fundamentals, analogy, or first principles), find and evaluate recent negative news if the approach allows it, and report confidence honestly.",
+   "operators": ["retrieve", "analyze", "predict", "validate", "learn"],
+   "authorized_effects": ["web_search", "http_download", "file_write_workspace", "model_invocation_authorized"],
+   "verification": [
+    "the chosen modeling approach is named and justified",
+    "any training data is frozen with as-of timestamps",
+    "backtesting or out-of-sample evaluation is reported with its exact window",
+    "the result is a typed prediction with a confidence interval, never one bare number",
+    "financial-advice disclaimer is present and accurate"
+   ],
+   "requires_capabilities": [
+    "capability.web.fetch_port",
+    "capability.data.profile",
+    "capability.model.time_series",
+    "capability.report.generate"
+   ],
+   "mode": "hybrid",
+   "tier": "release_certification"
+  },
+  {
+   "task_id": "data.kaggle_advanced",
+   "version": "1.0.0",
+   "family": "data.kaggle_advanced",
+   "text": "Complete an advanced Kaggle competition: audit the data, reproduce the evaluation metric, select a validation strategy, train several model families, compare them honestly, ensemble only if justified, and validate the submission file.",
+   "operators": ["retrieve", "extract", "analyze", "predict", "validate", "learn"],
+   "authorized_effects": ["http_download", "file_write_workspace", "model_invocation_authorized", "kaggle_api_authorized"],
+   "verification": [
+    "local evaluation metric matches the competition's stated metric",
+    "validation strategy is time-aware when the data has order",
+    "a linear baseline, a tree model, and an MLP are compared on identical folds",
+    "the ensemble only wins if it beats the best member on the same folds; otherwise the report says so",
+    "the submission file passes the competition's own validator"
+   ],
+   "requires_capabilities": [
+    "capability.data.profile",
+    "capability.ml.train_tabular",
+    "capability.ml.evaluate_calibration"
+   ],
+   "mode": "hybrid",
+   "tier": "release_certification"
+  },
+  {
+   "task_id": "data.schema_org_pipeline_typos_er",
+   "version": "1.0.0",
+   "family": "data.schema_org_pipeline",
+   "text": "Ingest a messy dataset, standardize it to a Schema.org-aligned model, spell-check values that look like names or places, and run entity resolution without silently merging distinct records.",
+   "operators": ["retrieve", "extract", "analyze", "transform", "validate", "learn"],
+   "authorized_effects": ["http_download", "file_write_workspace", "data_transform", "entity_resolution"],
+   "verification": [
+    "unmapped source fields are preserved, not dropped",
+    "every transformation is recorded in a reversible ledger",
+    "entity merges carry a confidence score, an evidence list, and a review route for uncertain pairs",
+    "no unit numbers, diacritics, or compound surnames silently normalized away",
+    "JSON-LD output validates against SHACL shapes"
+   ],
+   "requires_capabilities": [
+    "capability.data.profile",
+    "capability.data.standardize",
+    "capability.data.entity_resolve"
+   ],
+   "mode": "deterministic",
+   "tier": "release_certification"
+  },
+  {
+   "task_id": "meta.capability_gap.self_awareness",
+   "version": "1.0.0",
+   "family": "meta.capability_gap",
+   "text": "Pick any scenario above that requires a capability the engine does not currently prove. Compile it, decline the parts you cannot do, record a typed capability-gap receipt, and route the receipt to the self-improvement candidate queue.",
+   "operators": ["analyze", "diagnose", "validate", "learn"],
+   "authorized_effects": ["file_write_workspace"],
+   "verification": [
+    "the declined portion is named exactly, with the capability ID it needed",
+    "the receipt cites the loop that declined and the run history reference",
+    "nothing outside the declared capabilities was silently attempted",
+    "the gap appears in the campaign gap report"
+   ],
+   "requires_capabilities": [],
+   "mode": "deterministic",
+   "tier": "precommit_smoke"
+  }
+ ]
+}
