@@ -25,6 +25,75 @@ _COMPILE_PROVIDER_ROUTE = {
 }
 
 
+def _emit_cli_result(args, record: dict, lines: list[str]) -> None:
+    if args.format == "json":
+        print(json.dumps(record, indent=1))
+    else:
+        print("\n".join(lines))
+
+
+def _credential_is_present(description: dict) -> bool:
+    reference = str(description.get("credential_ref") or "")
+    return bool(reference.startswith("env:")
+                and os.environ.get(reference[4:], "").strip())
+
+
+def _safe_provider_description(provider) -> dict:
+    description = provider.describe()
+    loader = getattr(provider.adapter, "load_api_key", None)
+    description["credential_present"] = (
+        bool(loader()) if callable(loader)
+        else _credential_is_present(description))
+    description["credential_tested"] = False
+    return description
+
+
+def _task_compile_lines(output: dict) -> list[str]:
+    compiled = output["compiled_task"]
+    binding = compiled["binding"]
+    work_item = compiled["work_item"]
+    dispositions = binding.get("requirement_dispositions", ())
+    delegated = [item["requirement_id"] for item in dispositions
+                 if item.get("state") == "delegated_choice"]
+    blocking = [item["requirement_id"] for item in dispositions
+                if item.get("state") in (
+                    "needs_clarification", "abstain_required")]
+    status = (
+        "ABSTAIN" if binding.get("requires_abstention") else
+        "NEEDS INPUT" if binding.get("requires_clarification") else
+        "READY")
+    lines = [
+        f"Task compilation: {status}",
+        f"Template: {binding.get('template_id') or 'no template matched'}",
+        f"Binding: {binding.get('binding_mode')}"
+        + ("; open values have a selection policy" if delegated else ""),
+        f"Operator: {work_item['coordinates']['operator']}",
+        f"Response: {work_item['coordinates']['response_topology']}",
+        f"Default compiler model calls: {output.get('model_calls', 0)}",
+    ]
+    if delegated:
+        lines.append("Delegated choices: " + ", ".join(delegated))
+    if blocking:
+        lines.append("Blocking requirements: " + ", ".join(blocking))
+    review = output.get("model_assisted_orientation")
+    if isinstance(review, dict):
+        reviewed = review.get("review") or {}
+        lines.extend([
+            "",
+            "Model-assisted Orientation review:",
+            f"  Status: {'ACCEPTED' if review.get('ok') else 'FAILED'}",
+            f"  Provider: {review.get('provider') or 'unknown'}",
+            f"  Model: {review.get('model') or 'unknown'}",
+            f"  Physical model calls: {review.get('model_calls')}",
+            f"  Provider-reported tokens: {review.get('total_tokens')}",
+            f"  Task family: {reviewed.get('task_family') or 'unknown'}",
+            f"  Next action: {reviewed.get('next_action') or 'none'}",
+            "  Advisory only: yes",
+        ])
+    lines.extend(["", "Use --format json for the complete typed record."])
+    return lines
+
+
 def task_intake_from_args(args):
     from .templates.intake import TaskIntakeRequest, intake_task
 
@@ -64,6 +133,7 @@ def completed_learning_producer(goal: str):
 
 
 def run_doctor(args) -> int:
+    import os
     import platform
     from importlib.metadata import PackageNotFoundError, version
 
@@ -77,6 +147,8 @@ def run_doctor(args) -> int:
     architecture = run_architecture_contract_checks()
     loaded = load_runtime_settings(args.settings_file or None)
     gateway = loaded.settings.build_gateway()
+    providers = [_safe_provider_description(provider)
+                 for provider in gateway.providers.values()]
     report = {
         "record_type": "loop_engine_doctor/v1", "ok": architecture["passed"],
         "distribution_version": distribution_version,
@@ -84,12 +156,25 @@ def run_doctor(args) -> int:
         "canonical_runtime": "loop_engine.loop.recursive_loop.Loop",
         "architecture_contract": architecture,
         "settings": loaded.safe_summary(),
-        "providers_configured": [provider.describe()
-                                 for provider in gateway.providers.values()],
+        "providers_configured": providers,
         "provider_calls_made": 0,
         "deterministic_no_key_lane": "available",
     }
-    print(json.dumps(report, indent=1))
+    _emit_cli_result(args, report, [
+        f"Loop Engine doctor: {'READY' if report['ok'] else 'FAILED'}",
+        f"Version: {distribution_version}",
+        f"Python: {report['python']}",
+        "Runtime: Loop",
+        f"Architecture contract: {'passed' if architecture['passed'] else 'failed'}",
+        "No-key demonstration: available",
+        "Provider calls made: 0",
+        "Provider definitions: "
+        f"{len(providers)} configured, credentials not tested",
+        "",
+        "This command checks configuration only. It does not prove that a "
+        "provider key works.",
+        "Use --format json for the complete typed record.",
+    ])
     return 0 if report["ok"] else 1
 
 
@@ -108,17 +193,54 @@ def run_models_action(args) -> int:
     gateway = settings.build_gateway()
     routes = gateway.registry.all()
     if args.models_action in ("inventory", "routes"):
-        print(json.dumps({
+        providers = [_safe_provider_description(provider)
+                     for provider in gateway.providers.values()]
+        report = {
             "record_type": "model_inventory/v1",
-            "providers": [provider.describe()
-                          for provider in gateway.providers.values()],
+            "providers": providers,
             "routes": [{
                 "route_id": route.name, "provider_id": route.provider,
                 "exact_model_id": route.model, "locality": route.locality,
                 "purposes": list(route.purposes),
             } for route in routes],
+            "task_compile_shortcuts": [
+                {"flag": "--ollama-api-key", "provider": "ollama_cloud",
+                 "credential_env": "OLLAMA_API_KEY"},
+                {"flag": "--openrouter-api-key", "provider": "openrouter",
+                 "credential_env": "OPENROUTER_API_KEY"},
+                {"flag": "--opencode-go-api-key", "provider": "opencode_go",
+                 "credential_env": "OPENCODE_GO_API_KEY",
+                 "route_materialization": "per_invocation"},
+            ],
             "provider_calls_made": 0,
-        }, indent=1))
+        }
+        provider_lines = [
+            f"  {item['provider_id']}: key "
+            f"{'present' if item['credential_present'] else 'not present'}; "
+            "not tested"
+            for item in providers]
+        route_lines = [
+            f"  {route.name}: {route.provider} / {route.model} "
+            f"({route.locality})" for route in routes]
+        _emit_cli_result(args, report, [
+            "Model inventory: CONFIGURATION ONLY",
+            "No provider was contacted.",
+            "",
+            "Providers:",
+            *provider_lines,
+            "",
+            "Routes:",
+            *route_lines,
+            "",
+            "Task-compilation shortcuts:",
+            "  --ollama-api-key",
+            "  --openrouter-api-key",
+            "  --opencode-go-api-key (direct route created for the call)",
+            "",
+            "Use models probe PROVIDER with explicit authorization to test a "
+            "credential.",
+            "Use --format json for the complete typed record.",
+        ])
         return 0
     if args.models_action == "benchmark":
         from .core.model_routing_intelligence_checks import run_frozen_benchmark
@@ -206,6 +328,36 @@ def _compile_provider_key(args) -> tuple[str, str]:
     return standard_env, key
 
 
+def _apply_compile_provider_shortcut(args) -> None:
+    selected = [
+        ("ollama_cloud", args.ollama_api_key, 70_000),
+        ("openrouter", args.openrouter_api_key, 70_000),
+        ("opencode_go", args.opencode_go_api_key, 400_000),
+    ]
+    active = [(provider, ceiling) for provider, enabled, ceiling in selected
+              if enabled]
+    if not active:
+        return
+    provider, ceiling = active[0]
+    if args.compile_provider and args.compile_provider != provider:
+        raise ValueError(
+            "provider-specific key flag conflicts with --compile-provider")
+    if args.provider_key_env or args.prompt_for_provider_key:
+        raise ValueError(
+            "provider-specific key flag already selects a hidden prompt")
+    if args.max_model_calls not in (0, 1):
+        raise ValueError(
+            "provider-assisted task compilation allows one model call")
+    args.compile_provider = provider
+    standard_env = _COMPILE_PROVIDER_ENV[provider]
+    args.prompt_for_provider_key = not bool(
+        os.environ.get(standard_env, "").strip())
+    args.authorize_model_calls = True
+    args.max_model_calls = 1
+    if args.max_total_tokens is None:
+        args.max_total_tokens = ceiling
+
+
 @contextlib.contextmanager
 def _temporary_provider_key(env_name: str, key: str):
     previous = os.environ.get(env_name)
@@ -265,6 +417,7 @@ def run_task_compile(args) -> int:
             source_refs=intake.source_refs,
             interaction_mode=args.interaction_mode,
             feedback=_task_feedback_from_args(args)))
+        _apply_compile_provider_shortcut(args)
         output = {"intake": intake.to_dict(), **result}
         if not args.compile_provider:
             if (args.prompt_for_provider_key or args.provider_key_env
@@ -272,7 +425,7 @@ def run_task_compile(args) -> int:
                 raise ValueError(
                     "provider key and model-call options require "
                     "--compile-provider")
-            print(json.dumps(output, indent=1))
+            _emit_cli_result(args, output, _task_compile_lines(output))
             return 0
         if not args.authorize_model_calls:
             raise ValueError(
@@ -301,11 +454,16 @@ def run_task_compile(args) -> int:
         output["model_assisted_orientation"] = review
         output["total_model_calls"] = (
             result["model_calls"] + review["model_calls"])
-        print(json.dumps(output, indent=1))
+        _emit_cli_result(args, output, _task_compile_lines(output))
         return 0 if review["ok"] else 1
     except (TaskIntakeError, ValueError) as exc:
-        print(json.dumps({"record_type": "task_compile_failure/v1",
-                          "error": str(exc)}, indent=1))
+        failure = {"record_type": "task_compile_failure/v1",
+                   "error": str(exc)}
+        _emit_cli_result(args, failure, [
+            "Task compilation: FAILED",
+            str(exc),
+            "Use --format json for the complete typed failure.",
+        ])
         return 2
 
 
@@ -476,9 +634,13 @@ def run_five_step_demo(args) -> int:
             runs_dir=(args.runs_dir or settings.history.resolved_runs_dir()),
             save_run_history=True))
     if not outcome.solved:
-        print(json.dumps({"record_type": "five_step_demo/v2",
-                          "solved": False,
-                          "failure": outcome.to_dict()}, indent=1))
+        failure = {"record_type": "five_step_demo/v2",
+                   "solved": False, "failure": outcome.to_dict()}
+        _emit_cli_result(args, failure, [
+            "Five-step demonstration: FAILED",
+            f"Failure: {outcome.failure_code or 'unknown'}",
+            "Use --format json for the complete typed failure.",
+        ])
         return 1
     lesson = "Normalize surrounding whitespace without changing typed values."
     digest = hashlib.sha256(lesson.encode()).hexdigest()
@@ -494,10 +656,10 @@ def run_five_step_demo(args) -> int:
         policy=LearningPolicy(), evidence_refs=(
             f"run_history:{outcome.run_id}:"
             f"{outcome.run_history['head_digest']}",))
-    print(json.dumps({
+    report = {
         "record_type": "five_step_demo/v2", "solved": True,
         "steps": {
-            "1_install_and_verify": "loop-engine --self-test",
+            "1_install_and_verify": "loop-engine doctor",
             "2_configure": "deterministic no-key settings",
             "3_compile": outcome.compiled_task["compiled_task_id"],
             "4_solve_and_verify": {
@@ -513,5 +675,22 @@ def run_five_step_demo(args) -> int:
             },
         },
         "provider_calls": 0,
-    }, indent=1))
+    }
+    history = outcome.run_history
+    _emit_cli_result(args, report, [
+        "Five-step demonstration: PASSED",
+        f"Compiled task: {outcome.compiled_task['compiled_task_id']}",
+        f"Solution mode: {outcome.selected_mode}",
+        f"Verified: {'yes' if outcome.verification['passed'] else 'no'}",
+        f"Run History: {history['events']} events; "
+        f"chain {'intact' if history['chain_intact'] else 'broken'}",
+        f"Saved run: {history['path']}",
+        "Learning candidate: staged, not promoted",
+        "Provider calls: 0",
+        "",
+        "Next: start Studio with a free port:",
+        f"  loop-engine --studio --port 0 --runs-dir "
+        f"{args.runs_dir or settings.history.resolved_runs_dir()}",
+        "Use --format json for the complete typed record.",
+    ])
     return 0

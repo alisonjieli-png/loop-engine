@@ -1,16 +1,7 @@
-"""The machine-enforced conformance scanner.
+"""Machine-enforced conformance checks over the canonical package.
 
-Every detector reads its policy from ``forbidden_paths.json`` and scans the
-canonical package. Any detected bypass produces a nonzero violation count.
-
-Every detector is CANARY-PROVEN: the self-test plants a deliberately invalid
-fixture for each rule and asserts the detector fires, then asserts the live
-tree scans clean.  A conformance mechanism without a failing canary does not
-count as proven (§15.3).
-
-CLI: ``python3 -m loop_engine --conformance`` runs the
-scan plus the zero-tolerance gates, writes ``architecture_conformance.json``,
-and exits nonzero on any violation (§15.4).
+Every policy-backed detector has a failing canary. The CLI writes the complete
+zero-tolerance result to ``architecture_conformance.json``.
 """
 from __future__ import annotations
 
@@ -18,18 +9,20 @@ import ast
 import json
 import os
 import re
+from functools import lru_cache
 
 _HERE = os.path.dirname(__file__)
 
 _NETWORK_MODULES = ("urllib", "requests", "http", "socket", "httpx", "aiohttp")
 
-
+@lru_cache(maxsize=1)
 def _rules() -> dict:
     with open(os.path.join(_HERE, "forbidden_paths.json")) as f:
         return json.load(f)
 
 
-def _py_files(root: str) -> list:
+@lru_cache(maxsize=None)
+def _py_files_cached(root: str) -> tuple[str, ...]:
     out = []
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames
@@ -39,15 +32,29 @@ def _py_files(root: str) -> list:
             if f.endswith(".py"):
                 p = os.path.join(dirpath, f)
                 out.append(os.path.relpath(p, root))
-    return sorted(out)
+    return tuple(sorted(out))
 
 
+def _py_files(root: str) -> list:
+    return list(_py_files_cached(os.path.abspath(root)))
+
+
+@lru_cache(maxsize=None)
+def _source_text(path: str) -> str:
+    with open(path, encoding="utf-8", errors="ignore") as stream:
+        return stream.read()
+
+
+@lru_cache(maxsize=None)
+def _source_tree(path: str):
+    try:
+        return ast.parse(_source_text(path), path)
+    except SyntaxError:
+        return None
 def _legacy_prefixes() -> tuple:
     """Every mapped module's OLD flat import path — dead, and kept dead."""
     from .architecture_map import PACKAGE, MODULE_MAP
     return tuple(f"{PACKAGE}.{m}" for mods in MODULE_MAP.values() for m in mods)
-
-
 def scan_legacy_flat_imports(root: str, rules: dict) -> list:
     v = []
     prefixes = _legacy_prefixes()
@@ -55,7 +62,7 @@ def scan_legacy_flat_imports(root: str, rules: dict) -> list:
     pat = re.compile(rf"^\s*(?:from|import)\s+({re.escape(PACKAGE)}\.[\w\.]+)",
                      re.M)
     for rel in _py_files(root):
-        text = open(os.path.join(root, rel)).read()
+        text = _source_text(os.path.join(root, rel))
         for m in pat.finditer(text):
             name = m.group(1)
             # an OLD flat path is exactly PACKAGE.<mapped-module>...
@@ -87,9 +94,8 @@ def scan_retired_source_nomenclature(root: str, rules: dict) -> list:
 
 
 def _module_imports(path: str) -> set:
-    try:
-        tree = ast.parse(open(path).read())
-    except SyntaxError:
+    tree = _source_tree(path)
+    if tree is None:
         return set()
     names = set()
     for node in ast.walk(tree):
@@ -131,9 +137,8 @@ def scan_eval_exec(root: str, rules: dict) -> list:
     for rel in _py_files(root):
         if rel in allowed:
             continue
-        try:
-            tree = ast.parse(open(os.path.join(root, rel)).read())
-        except SyntaxError:
+        tree = _source_tree(os.path.join(root, rel))
+        if tree is None:
             continue
         for node in ast.walk(tree):
             if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
@@ -156,7 +161,7 @@ def scan_secrets(root: str, rules: dict, *, include_json: bool = True) -> list:
         if rel == "forbidden_paths.json":        # the patterns themselves
             continue
         try:
-            text = open(os.path.join(root, rel), errors="ignore").read()
+            text = _source_text(os.path.join(root, rel))
         except OSError:
             continue
         for pat in pats:
@@ -173,9 +178,10 @@ def scan_dynamic_imports(root: str, rules: dict) -> list:
     for rel in _py_files(root):
         if rel in allowed:
             continue
-        path = os.path.join(root, rel); text = open(path).read()
-        try: tree = ast.parse(text, path)
-        except SyntaxError: continue
+        path = os.path.join(root, rel)
+        tree = _source_tree(path)
+        if tree is None:
+            continue
         risky = any((isinstance(n, ast.Import) and any(
             a.name == "importlib" or a.name.startswith((
                 "importlib.util", "importlib.machinery")) for a in n.names))
@@ -197,7 +203,7 @@ def scan_kimi(root: str, rules: dict) -> list:
     for rel in _py_files(root):
         if rel in allowed:
             continue
-        text = open(os.path.join(root, rel)).read()
+        text = _source_text(os.path.join(root, rel))
         if "kimi-k3" in text:
             v.append({"rule": "forbidden_model_mention", "file": rel,
                       "line": text.index("kimi-k3") and
@@ -210,9 +216,8 @@ def scan_empty_modules(root: str, rules: dict) -> list:
     v = []
     for rel in _py_files(root):
         base = os.path.basename(rel)
-        try:
-            tree = ast.parse(open(os.path.join(root, rel)).read())
-        except SyntaxError:
+        tree = _source_tree(os.path.join(root, rel))
+        if tree is None:
             continue
         body = [n for n in tree.body
                 if not (isinstance(n, ast.Expr)
@@ -235,7 +240,7 @@ def scan_skip_markers(root: str, rules: dict) -> list:
             continue
         if base == "_conformance_scan.py":     # the detector's own fixtures
             continue
-        text = open(os.path.join(root, rel)).read()
+        text = _source_text(os.path.join(root, rel))
         m = pat.search(text)
         if m:
             v.append({"rule": "conformance_test_skip_marker", "file": rel,
@@ -297,7 +302,7 @@ def scan_module_size(root: str, rules: dict) -> list:
     for rel in _py_files(root):
         if rel in exceptions:
             continue
-        n = sum(1 for _ in open(os.path.join(root, rel)))
+        n = len(_source_text(os.path.join(root, rel)).splitlines())
         if n > cap:
             v.append({"rule": "module_over_size_cap", "file": rel,
                       "line": n, "detail": f"{n} lines > cap {cap}; declare "
@@ -314,11 +319,10 @@ def scan_short_docstring(root: str, rules: dict) -> list:
     for rel in _py_files(root):
         if os.path.basename(rel) == "__init__.py" or rel in exceptions:
             continue
-        try:
-            doc = ast.get_docstring(
-                ast.parse(open(os.path.join(root, rel)).read())) or ""
-        except SyntaxError:
+        tree = _source_tree(os.path.join(root, rel))
+        if tree is None:
             continue
+        doc = ast.get_docstring(tree) or ""
         if len(doc.strip().splitlines()) < minl:
             v.append({"rule": "short_module_docstring", "file": rel,
                       "line": 1, "detail": f"docstring < {minl} lines — an "
@@ -335,7 +339,7 @@ def scan_cross_component_imports(root: str, rules: dict) -> list:
     v = []
     pat = re.compile(r"^\s*(?:from|import)\s+(components\.[\w\.]+)", re.M)
     for rel in _py_files(root):
-        text = open(os.path.join(root, rel)).read()
+        text = _source_text(os.path.join(root, rel))
         for m in pat.finditer(text):
             name = m.group(1)
             if name == PACKAGE or name.startswith(PACKAGE + "."):
@@ -373,7 +377,7 @@ def scan_public_node_naming(root: str, rules: dict) -> list:
         if not root_is_canary and rel not in policed:
             continue
         try:
-            text = open(os.path.join(root, rel)).read()
+            text = _source_text(os.path.join(root, rel))
         except OSError:
             continue
         for pat in deprecated:
@@ -395,9 +399,8 @@ def scan_unmapped_event_kinds(root: str, rules: dict) -> list:
     from .core.run_history import _CANONICAL_EVENT_MAP
     v = []
     for rel in _py_files(root):
-        try:
-            tree = ast.parse(open(os.path.join(root, rel)).read())
-        except SyntaxError:
+        tree = _source_tree(os.path.join(root, rel))
+        if tree is None:
             continue
         # AST, not text: an ``event=`` in prose describing the rule is
         # documentation, and only a real call site emits an event.
@@ -515,9 +518,8 @@ def scan_unregistered_boundaries(root: str, rules: dict) -> list:
         mod = os.path.basename(norm)[:-3]
         if mod in registered or mod == "boundary_registry":
             continue
-        try:
-            tree = ast.parse(open(os.path.join(root, rel)).read())
-        except SyntaxError:
+        tree = _source_tree(os.path.join(root, rel))
+        if tree is None:
             continue
         calls = {n.func.id for n in ast.walk(tree)
                  if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)}
@@ -561,9 +563,8 @@ def scan_direct_resource_access(root: str, rules: dict) -> list:
         if norm in envelopes:
             continue
         mod = os.path.basename(norm)[:-3]
-        try:
-            tree = ast.parse(open(os.path.join(root, rel)).read())
-        except SyntaxError:
+        tree = _source_tree(os.path.join(root, rel))
+        if tree is None:
             continue
         enc = _enclosing_functions(tree)
         # A call inside a lambda/callable handed TO a loop envelope is already
@@ -630,7 +631,7 @@ def scan_uncollected_self_tests(root: str, rules: dict) -> list:
     suite = os.path.join(root, "_self_test.py")
     # No suite file means nothing is collected — every self_test is
     # uncollected, which is exactly what the planted canary asserts.
-    src = open(suite).read() if os.path.exists(suite) else ""
+    src = _source_text(suite) if os.path.exists(suite) else ""
     collected = set(re.findall(
         r'"((?:loop|strings|code_nodes|core|ontology|catalog|memory|generation|templates)\.[a-z_]+)"', src))
     collected |= {f"{a}.{b}" for a, b in
@@ -650,9 +651,8 @@ def scan_uncollected_self_tests(root: str, rules: dict) -> list:
             name = f"{parts[0]}.{parts[1][:-3]}"
         if name in collected or rel.replace(os.sep, "/") in exceptions:
             continue
-        try:
-            tree = _ast.parse(open(os.path.join(root, rel)).read())
-        except SyntaxError:
+        tree = _source_tree(os.path.join(root, rel))
+        if tree is None:
             continue
         if any(isinstance(n, _ast.FunctionDef) and n.name == "self_test"
                for n in tree.body):

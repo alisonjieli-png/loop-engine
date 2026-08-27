@@ -23,7 +23,7 @@ Does not own:
       saved event log itself (run_history.py owns the store).
 
 Public entry points:
-    - serve(port=8765) — blocking; ``--studio`` in __main__ wraps it
+    - serve(StudioServeRequest(...)) — blocking; ``--studio`` wraps it
     - build_projection(name, arg) — the API payloads (test-callable without
       a socket)
 
@@ -41,6 +41,7 @@ from __future__ import annotations
 import json
 import os
 import threading
+from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote
 
@@ -51,6 +52,19 @@ from .studio_operational_views import (
 
 _RUNS = default_runs_dir()
 _READ_SOURCES = StudioReadSources()
+
+
+@dataclass(frozen=True)
+class StudioServeRequest:
+    """Local port, Run History directory, and optional read-only sources."""
+
+    port: int = 8765
+    runs_dir: str = ""
+    read_sources: "StudioReadSources | None" = None
+
+    def __post_init__(self) -> None:
+        if not 0 <= self.port <= 65535:
+            raise ValueError("Studio port must be from 0 through 65535")
 
 
 def _load_run_as_historical_loop(run_id: str, *, ledger=None):
@@ -503,19 +517,21 @@ class _Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
 
-def serve(port: int = 8765, *, ready=None, runs_dir: str = "",
-          read_sources: "StudioReadSources | None" = None) -> None:
+def serve(request: StudioServeRequest = StudioServeRequest(), ready=None) -> None:
     """Blocking local server (127.0.0.1 only — a workbench, not a deploy)."""
     global _RUNS, _READ_SOURCES
-    if runs_dir:
-        _RUNS = default_runs_dir(runs_dir)
-    if read_sources is not None:
-        _READ_SOURCES = read_sources
-    httpd = ThreadingHTTPServer(("127.0.0.1", port), _Handler)
+    if request.runs_dir:
+        _RUNS = default_runs_dir(request.runs_dir)
+    if request.read_sources is not None:
+        _READ_SOURCES = request.read_sources
+    httpd = ThreadingHTTPServer(("127.0.0.1", request.port), _Handler)
+    actual_port = int(httpd.server_address[1])
     if ready is not None:
         ready(httpd)                      # test mode: no banner
     else:
-        print(f"Loop Engine Studio: http://127.0.0.1:{port}  (Ctrl-C to stop)")
+        print(
+            f"Loop Engine Studio: http://127.0.0.1:{actual_port} "
+            "(Ctrl+C to stop)")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
@@ -587,7 +603,8 @@ def self_test() -> dict:
     import http.client
     holder = {}
     t = threading.Thread(target=serve, kwargs={
-        "port": 0, "ready": lambda h: holder.update(h=h)}, daemon=True)
+        "request": StudioServeRequest(port=0),
+        "ready": lambda h: holder.update(h=h)}, daemon=True)
     t.start()
     import time
     for _ in range(50):

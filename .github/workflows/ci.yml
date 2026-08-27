@@ -255,11 +255,9 @@ jobs:
             exit 1
           fi
           python -m loop_engine task compile \
-            --compile-provider ollama_cloud \
-            --authorize-model-calls \
-            --max-model-calls 1 \
-            --max-total-tokens 70000 \
+            --ollama-api-key \
             --interaction-mode autonomous \
+            --format json \
             --text "Download an authorized public dataset. Train a linear model, tree model, boosted-tree model, and MLP on identical validation folds. Compare them honestly and produce verified PDF and HTML reports." \
             > "$RUNNER_TEMP/model-assisted-task-compile.json"
           python - <<'PY'

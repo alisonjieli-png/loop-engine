@@ -120,6 +120,7 @@ This file is generated from the semantic constitution in `terminology.yaml`. The
 | `LiveTextScenarioSuiteRequest` | `request` | Explicit provider authority, route, call ceiling, token ceiling, timeout, and evidence destination for five live text tasks. | `loop_engine.core.live_text_scenarios:LiveTextScenarioSuiteRequest` | cohesive_live_suite_request_fields | none | none |
 | `ModelAssistedCompileRequest` | `request` | Exact compiled task, provider route, interaction policy, and model budgets for one optional advisory Orientation review. | `loop_engine.core.task_compile_model:ModelAssistedCompileRequest` | cohesive_compiled_task_route_policy_and_budget_fields | none | none |
 | `ModelAssistedCompileReview` | `result` | Validated advisory task summary, family, unresolved facts, delegated choices, questions, next action, and confidence. | `loop_engine.core.task_compile_model:ModelAssistedCompileReview` | typed_review_fields | none | none |
+| `StudioServeRequest` | `request` | Local Studio port, Run History directory, and optional read-only source bindings for one server invocation. | `loop_engine.core.studio_server:StudioServeRequest` | cohesive_local_server_request_fields | none | none |
 
 ## Compatibility rule
 

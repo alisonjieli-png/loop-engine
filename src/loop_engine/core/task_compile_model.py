@@ -459,7 +459,8 @@ def self_test() -> dict:
 
     import os
     from ..cli_operations import (
-        _compile_provider_key, _temporary_provider_key)
+        _apply_compile_provider_shortcut, _compile_provider_key,
+        _temporary_provider_key)
 
     source_env = "LOOP_ENGINE_TEST_COMPILE_KEY"
     standard_env = "OLLAMA_API_KEY"
@@ -479,6 +480,32 @@ def self_test() -> dict:
               selected_env == standard_env
               and installed_during_call == "offline-key-not-for-network"
               and restored == previous_standard)
+
+        os.environ[standard_env] = "offline-key-not-for-network"
+        shortcut = SimpleNamespace(
+            ollama_api_key=True, openrouter_api_key=False,
+            opencode_go_api_key=False, compile_provider="",
+            provider_key_env="", prompt_for_provider_key=False,
+            authorize_model_calls=False, max_model_calls=0,
+            max_total_tokens=None)
+        _apply_compile_provider_shortcut(shortcut)
+        check("ollama_key_shortcut_selects_one_bounded_advisory_call",
+              shortcut.compile_provider == "ollama_cloud"
+              and shortcut.authorize_model_calls
+              and shortcut.max_model_calls == 1
+              and shortcut.max_total_tokens == 70_000
+              and not shortcut.prompt_for_provider_key)
+        os.environ.pop(standard_env, None)
+        prompt_shortcut = SimpleNamespace(
+            ollama_api_key=True, openrouter_api_key=False,
+            opencode_go_api_key=False, compile_provider="",
+            provider_key_env="", prompt_for_provider_key=False,
+            authorize_model_calls=False, max_model_calls=0,
+            max_total_tokens=None)
+        _apply_compile_provider_shortcut(prompt_shortcut)
+        check("ollama_key_shortcut_prompts_when_no_environment_key_exists",
+              prompt_shortcut.prompt_for_provider_key
+              and prompt_shortcut.compile_provider == "ollama_cloud")
     finally:
         if previous_source is None:
             os.environ.pop(source_env, None)

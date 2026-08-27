@@ -32,6 +32,24 @@ This check may consume tokens. Run it only when provider calls are authorized.
 
 ## CLI setup
 
+For one task-compilation review, the provider shortcut is the simplest path.
+It uses the standard environment variable when present and otherwise opens a
+hidden prompt:
+
+```bash
+loop-engine task compile \
+  --ollama-api-key \
+  --interaction-mode autonomous \
+  --file flagship-modeling-task.txt
+```
+
+Use `--openrouter-api-key` or `--opencode-go-api-key` for the other direct
+routes. Each shortcut authorizes one advisory call and applies its bounded
+default. It does not grant file, network-tool, spending, or external-effect
+permission to the task.
+
+Use environment variables when scripting or running CI:
+
 ```bash
 export OLLAMA_API_KEY="your-key"       # Ollama Cloud
 # or

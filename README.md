@@ -9,62 +9,36 @@ content digest. The definition binds the role profile, mode support, typed
 input and output roles, step profile, loop condition, exit condition,
 permissions, effects, and required capabilities.
 
-## Get started in five minutes
+## Get started on Linux
 
-Python 3.10 or newer and Git are required. Create a virtual environment first.
-This keeps Loop Engine and its dependencies out of your system Python.
+These commands change files only inside `~/loop-engine-quickstart` and its
+virtual environment.
 
-On macOS or Linux:
+Using another system? See the separate
+[Windows guide](docs/guides/install-windows/) or
+[macOS guide](docs/guides/install-macos/).
+
+Python 3.10 or newer, Git, and Python's `venv` module are required.
 
 ```bash
-mkdir loop-engine-quickstart
-cd loop-engine-quickstart
+mkdir -p ~/loop-engine-quickstart
+cd ~/loop-engine-quickstart
 python3 --version
 git --version
 python3 -m venv .venv
 source .venv/bin/activate
-```
-
-On Debian or Ubuntu, install the standard-library virtual-environment package
-if the final command reports that `venv` or `ensurepip` is unavailable:
-
-```bash
-sudo apt-get update
-sudo apt-get install -y python3-venv
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-On Windows PowerShell:
-
-```powershell
-New-Item -ItemType Directory -Path loop-engine-quickstart
-Set-Location loop-engine-quickstart
-py --version
-git --version
-py -m venv .venv
-.venv\Scripts\Activate.ps1
-```
-
-If PowerShell blocks activation scripts, permit them only for the current
-terminal and activate again:
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.venv\Scripts\Activate.ps1
-```
-
-After activation, install the current `main` branch and verify it:
-
-```bash
-python -m pip install --upgrade pip
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git@main"
+python -m pip install --quiet \
+  "git+https://github.com/alisonjieli-png/loop-engine.git@main"
 python -m pip check
 loop-engine doctor
-python -m loop_engine --self-test
 loop-engine --demo five-step --runs-dir ./loop-engine-runs
-loop-engine --studio --runs-dir ./loop-engine-runs
+loop-engine --studio --port 0 --runs-dir ./loop-engine-runs
 ```
+
+The first installation downloads Loop Engine's current data, modeling, storage,
+and integration dependencies, so it can take several minutes. `--quiet` hides
+the dependency list; remove it when troubleshooting an installation failure.
+Loop Engine does not start until you run `loop-engine doctor`.
 
 The no-key demonstration uses code and rules. It does not contact a model
 provider. It preserves and compiles a structured task, runs and verifies a real
@@ -72,10 +46,21 @@ deterministic Solution graph, saves Run History, and stages a learning
 candidate. Staging is not promotion. Independent review and a separate
 promotion decision are still required.
 
-The Studio command starts a local server and keeps running. Open the address it
-prints, then press `Ctrl+C` in the terminal to stop it.
+Studio prints the free local address selected by `--port 0` and keeps running.
+Open that address, then press `Ctrl+C` in the terminal to stop Studio.
 
 Run `deactivate` when you are finished with the virtual environment.
+
+### What each command proves
+
+| Command | Meaning |
+|---|---|
+| `pip install` | Downloads and installs the package and its declared dependencies. It does not run Loop Engine. |
+| `pip check` | Confirms that installed Python package requirements are consistent. |
+| `loop-engine doctor` | Checks the installation and configuration without contacting a provider. |
+| `loop-engine --demo five-step` | Runs one local no-key compile, Solution, verification, saved Run History, and candidate stage. |
+| `loop-engine --studio --port 0` | Opens the saved run in a local browser interface on a free port. |
+| `loop-engine models inventory` | Lists provider definitions and routes. It does not test credentials or model quality. |
 
 Inspect configured model routes without making a provider call:
 
@@ -83,40 +68,13 @@ Inspect configured model routes without making a provider call:
 loop-engine models inventory
 ```
 
-### Optional model-provider setup
-
-Choose one provider. Keep the key in your shell environment; Loop Engine
-stores only the environment-variable name in settings.
-
-```bash
-# Ollama Cloud
-export OLLAMA_API_KEY="your-key"
-
-# Or OpenRouter
-export OPENROUTER_API_KEY="your-key"
-
-# Or OpenCode Go for direct provider-assisted task compilation
-export OPENCODE_GO_API_KEY="your-key"
-
-loop-engine settings init --settings-file ./loop-engine.yaml
-loop-engine settings check --settings-file ./loop-engine.yaml
-loop-engine models inventory --settings-file ./loop-engine.yaml
-```
+The inventory lists available provider definitions and routes. It does not
+contact a provider or prove that a key works.
 
 Ollama Cloud is not a local Ollama server. Local Ollama, vLLM, SGLang, LM
 Studio, llama.cpp, and similar servers use a custom endpoint entry. See
 [Providers and keys](docs/guides/providers-and-keys.md) and the checked-in
 [`loop-engine.settings.example.yaml`](loop-engine.settings.example.yaml).
-
-OpenCode CLI credentials are configured in OpenCode itself. Run OpenCode,
-enter `/connect`, and select OpenCode Go, OpenCode Zen, OpenRouter, or another
-provider. Loop Engine's coding-harness adapter uses that existing connection.
-
-Provider-assisted task compilation can also call the OpenCode Go API directly.
-That path reads `OPENCODE_GO_API_KEY` or uses a hidden terminal prompt. It does
-not read OpenCode's credential file and does not define a generic
-`OPENCODE_API_KEY`. See
-[OpenCode provider setup](https://opencode.ai/docs/providers/).
 
 ### Compile the flagship modeling request
 
@@ -130,19 +88,6 @@ Train a linear model, tree model, boosted-tree model, and MLP to predict the
 target variable. Use identical validation folds for every model. Compare the
 results honestly and produce verified PDF and HTML reports.
 EOF
-
-loop-engine task compile --file flagship-modeling-task.txt
-```
-
-On PowerShell 7:
-
-```powershell
-@'
-Download an authorized public dataset.
-Train a linear model, tree model, boosted-tree model, and MLP to predict the
-target variable. Use identical validation folds for every model. Compare the
-results honestly and produce verified PDF and HTML reports.
-'@ | Set-Content -Encoding utf8 flagship-modeling-task.txt
 
 loop-engine task compile --file flagship-modeling-task.txt
 ```
@@ -165,63 +110,40 @@ accepted selection.
 
 ### Add one model-assisted Orientation review
 
-Task compilation stays model-free unless you select a provider and authorize
-one call. Keep the key in an environment variable:
+Task compilation stays model-free unless you select a provider. The shortcut
+uses its standard environment variable when present. Otherwise, it opens a
+hidden key prompt. The key is not part of the command and is not saved.
 
 ```bash
-export OLLAMA_API_KEY="your-key"
-
 loop-engine task compile \
-  --compile-provider ollama_cloud \
-  --authorize-model-calls \
-  --max-model-calls 1 \
-  --max-total-tokens 70000 \
+  --ollama-api-key \
   --interaction-mode autonomous \
   --file flagship-modeling-task.txt
 ```
 
-To avoid putting a key in shell history, let Loop Engine prompt for it:
+The same command shape works with OpenRouter and OpenCode Go:
 
 ```bash
 loop-engine task compile \
-  --compile-provider ollama_cloud \
-  --prompt-for-provider-key \
-  --authorize-model-calls \
-  --max-model-calls 1 \
-  --max-total-tokens 70000 \
+  --openrouter-api-key \
+  --interaction-mode autonomous \
+  --file flagship-modeling-task.txt
+
+loop-engine task compile \
+  --opencode-go-api-key \
   --interaction-mode autonomous \
   --file flagship-modeling-task.txt
 ```
 
-Use `openrouter` with `OPENROUTER_API_KEY`. Use `opencode_go` with
-`OPENCODE_GO_API_KEY`; its current pinned model needs a `400000` token safety
-ceiling because the provider declares a larger output maximum.
+The shortcut itself authorizes one advisory model call and applies the
+provider's bounded default. It keeps the deterministic compiled task and adds a
+short review with the provider, model, token usage, and selected next action.
+Use `--format json` when you need the complete typed record.
 
-```bash
-loop-engine task compile \
-  --compile-provider openrouter \
-  --provider-key-env OPENROUTER_API_KEY \
-  --authorize-model-calls \
-  --max-model-calls 1 \
-  --max-total-tokens 70000 \
-  --interaction-mode autonomous \
-  --file flagship-modeling-task.txt
-
-loop-engine task compile \
-  --compile-provider opencode_go \
-  --provider-key-env OPENCODE_GO_API_KEY \
-  --authorize-model-calls \
-  --max-model-calls 1 \
-  --max-total-tokens 400000 \
-  --interaction-mode autonomous \
-  --file flagship-modeling-task.txt
-```
-
-There is intentionally no `--api-key VALUE` option. Command arguments can
-appear in shell history, process listings, and CI logs. The output keeps the
-deterministic compiled task and adds a separately labeled advisory review with
-the provider, exact model, model Loop identity, token usage, and typed next
-action. The review cannot grant permission or prove execution.
+There is no `--api-key VALUE` form. A raw value in command arguments can appear
+in shell history, process listings, and CI logs. Advanced environment-variable,
+route, model, and budget options are documented in
+[Providers and keys](docs/guides/providers-and-keys.md).
 
 Use autonomous interaction mode when the run must not pause for questions:
 
@@ -443,19 +365,9 @@ cd loop-engine-source-test
 git clone https://github.com/alisonjieli-png/loop-engine.git .
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install .
+python -m pip install --quiet .
 python -m pip check
-python -m loop_engine --self-test
-python -m loop_engine --conformance
-```
-
-On Windows PowerShell, replace the virtual-environment creation and activation
-lines with:
-
-```powershell
-py -m venv .venv
-.venv\Scripts\Activate.ps1
+loop-engine doctor
 ```
 
 Run useful installed examples:
@@ -480,27 +392,13 @@ python examples/20_compile_text_tasks/run.py
 runnable `run.py` and a short `README.md`.
 
 The first five-text command is model-free. To run the same five task files
-through Ollama Cloud, set `OLLAMA_API_KEY` in the active shell and authorize
-exactly five calls. For Bash:
+through Ollama Cloud, enter the key through a hidden Bash prompt, export it to
+the active virtual environment, and authorize exactly five calls:
 
 ```bash
 read -rsp "Ollama API key: " OLLAMA_API_KEY
 echo
 export OLLAMA_API_KEY
-```
-
-For zsh:
-
-```zsh
-read -s "OLLAMA_API_KEY?Ollama API key: "
-echo
-export OLLAMA_API_KEY
-```
-
-On PowerShell 7, use:
-
-```powershell
-$env:OLLAMA_API_KEY = Read-Host "Ollama API key" -MaskInput
 ```
 
 Then run:
@@ -527,17 +425,15 @@ solve, verification, saved history, and candidate staging:
 loop-engine --demo five-step --runs-dir ./loop-engine-runs
 ```
 
-Or run each step separately:
+The full offline test and conformance scans are contributor checks. They scan
+the installed package and can take about a minute. A heartbeat appears every
+10 seconds so the command does not look frozen. Pressing `Ctrl+C` cancels the
+scan; rerun the command to obtain a result.
 
 ```bash
-loop-engine --self-test                      # 1. verify the install
-loop-engine setup                            # 2. configure settings
-loop-engine --task-compile --text "..."      # 3. compile text into a typed task
-loop-engine --solve --text "..."             # 4. solve it through a Loop
-loop-engine learn --lesson "state the evidence-bounded reusable lesson" \
-  --runs-dir ./loop-engine-runs              # 5. stage one candidate
-loop-engine --candidates                     # list staged candidates
-loop-engine --templates                      # list registered task templates
+loop-engine doctor
+python -m loop_engine --self-test
+python -m loop_engine --conformance
 ```
 
 Every candidate stays staged until an independent review promotes it.
@@ -554,7 +450,7 @@ Open `http://127.0.0.1:8770`. Start the playback interface against the same
 directory:
 
 ```bash
-loop-engine --studio --port 8765 --runs-dir "$HOME/.loop-engine/runs"
+loop-engine --studio --port 0 --runs-dir "$HOME/.loop-engine/runs"
 ```
 
 The interface shows the Loop graph, ordered events, model calls,
@@ -592,6 +488,9 @@ population, model, effort, evaluator, metric, and environment.
 
 ## Current limits
 
+- The alpha package currently installs data, modeling, storage, and integration
+  dependencies together. The first clean install is therefore larger than the
+  final slim-core target.
 - Typed role names are enforced at graph connections. Full value-schema
   validation for units, shapes, encodings, and field constraints is not yet
   available at every port.
@@ -605,6 +504,7 @@ population, model, effort, evaluator, metric, and environment.
 ## Verify the installation
 
 ```bash
+loop-engine doctor
 python -m loop_engine --self-test
 python -m loop_engine --conformance
 python -m loop_engine --map

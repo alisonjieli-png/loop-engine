@@ -8,25 +8,45 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import errno
 import json
 import sys
 import tempfile
+import time
 
 from ._self_test import self_test
 
 
 def _run_self_test_captured(test_fn=self_test) -> tuple[dict, int]:
     """Run noisy folded tests behind a real OS-backed text stream."""
-    with tempfile.TemporaryFile(mode="w+", encoding="utf-8") as stream:
-        with contextlib.redirect_stdout(stream), contextlib.redirect_stderr(stream):
-            report = test_fn()
-        stream.flush()
-        stream.seek(0)
-        captured_lines = sum(1 for _line in stream)
+    import threading
+    started = time.monotonic()
+    finished = threading.Event()
+
+    def heartbeat() -> None:
+        while not finished.wait(10):
+            elapsed = int(time.monotonic() - started)
+            print(f"Self-test still running: {elapsed} seconds elapsed.",
+                  file=sys.__stderr__, flush=True)
+
+    monitor = threading.Thread(target=heartbeat, daemon=True)
+    monitor.start()
+    try:
+        with tempfile.TemporaryFile(mode="w+", encoding="utf-8") as stream:
+            with contextlib.redirect_stdout(stream), \
+                    contextlib.redirect_stderr(stream):
+                report = test_fn()
+            stream.flush()
+            stream.seek(0)
+            captured_lines = sum(1 for _line in stream)
+    finally:
+        finished.set()
+        monitor.join(timeout=1)
     return report, captured_lines
 
 
-def _concise_self_test_summary(report: dict, captured_lines: int) -> dict:
+def _concise_self_test_summary(
+        report: dict, captured_lines: int, elapsed_seconds: float = 0.0) -> dict:
     failures = []
     for item in report.get("tests", ()):
         if item.get("passed"):
@@ -44,8 +64,28 @@ def _concise_self_test_summary(report: dict, captured_lines: int) -> dict:
         "all_passed": bool(report.get("all_passed")),
         "missing_dependencies": report.get("missing_dependencies", []),
         "captured_output_lines": captured_lines,
+        "elapsed_seconds": round(elapsed_seconds, 3),
+        "provider_calls_made": 0,
         "failures": failures,
     }
+
+
+def _render_self_test_summary(summary: dict) -> str:
+    lines = [
+        "Loop Engine full self-test: "
+        + ("PASSED" if summary["all_passed"] else "FAILED"),
+        f"Checks: {summary['passed']}/{summary['total']}",
+        f"Elapsed: {summary['elapsed_seconds']:.3f} seconds",
+        "Provider calls: 0",
+    ]
+    if summary["missing_dependencies"]:
+        lines.append("Missing dependencies: "
+                     + ", ".join(summary["missing_dependencies"]))
+    for failure in summary["failures"]:
+        lines.append(
+            f"FAILED {failure['test']}: {failure['detail'] or 'no detail'}")
+    lines.append("Use --format json for the complete typed summary.")
+    return "\n".join(lines)
 
 
 def _read_task_file(path: str) -> str:
@@ -121,6 +161,19 @@ def main(argv=None) -> int:
     parser.add_argument(
         "--prompt-for-provider-key", action="store_true",
         help="read the selected provider key through a hidden terminal prompt")
+    compile_key_shortcut = parser.add_mutually_exclusive_group()
+    compile_key_shortcut.add_argument(
+        "--ollama-api-key", action="store_true",
+        help="use OLLAMA_API_KEY or prompt securely, then add one bounded "
+             "advisory review to task compilation")
+    compile_key_shortcut.add_argument(
+        "--openrouter-api-key", action="store_true",
+        help="use OPENROUTER_API_KEY or prompt securely, then add one bounded "
+             "advisory review to task compilation")
+    compile_key_shortcut.add_argument(
+        "--opencode-go-api-key", action="store_true",
+        help="use OPENCODE_GO_API_KEY or prompt securely, then add one bounded "
+             "advisory review to task compilation")
     parser.add_argument(
         "--interaction-mode",
         choices=("ask_when_material", "autonomous"),
@@ -469,9 +522,20 @@ def main(argv=None) -> int:
                       serve_forever=True, runs_dir=args.runs_dir or "")
         return 0
     if args.studio:
-        from .core.studio_server import serve
-        serve(args.port or 8765, runs_dir=args.runs_dir or "")
-        return 0
+        from .core.studio_server import StudioServeRequest, serve
+        selected_port = 8765 if args.port is None else args.port
+        try:
+            serve(StudioServeRequest(
+                port=selected_port, runs_dir=args.runs_dir or ""))
+            return 0
+        except OSError as exc:
+            if getattr(exc, "errno", None) == errno.EADDRINUSE:
+                print(
+                    f"Studio could not use port {selected_port}: the port is "
+                    "already in use. Retry with --port 0 to select a free port.",
+                    file=sys.stderr)
+                return 2
+            raise
     if args.conformance:
         from .conformance_report import run_conformance
         report = run_conformance()
@@ -558,9 +622,18 @@ def main(argv=None) -> int:
             report = self_test()
             print(json.dumps(report, indent=1))
         else:
+            print(
+                "Running the full offline self-test. This scans the installed "
+                "package and may take about a minute. No provider is called.",
+                file=sys.stderr, flush=True)
+            started = time.monotonic()
             report, captured_lines = _run_self_test_captured()
-            print(json.dumps(_concise_self_test_summary(
-                report, captured_lines), indent=1))
+            summary = _concise_self_test_summary(
+                report, captured_lines, time.monotonic() - started)
+            if args.format == "json":
+                print(json.dumps(summary, indent=1))
+            else:
+                print(_render_self_test_summary(summary))
         return 0 if report["all_passed"] else 1
     parser.print_help()
     return 2
