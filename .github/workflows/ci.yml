@@ -40,6 +40,12 @@ jobs:
 
       - name: Refuse retired public language
         run: |
+          if ! command -v rg >/dev/null 2>&1; then
+            echo "ripgrep (rg) is required for retired-language checks but was not found."
+            echo "Installing ripgrep..."
+            sudo apt-get update -y && sudo apt-get install -y ripgrep
+          fi
+          rg --version
           if rg --hidden -n -i \
             --glob '!src/loop_engine/forbidden_paths.json' \
             --glob '!showcase/node_modules/**' --glob '!**/.cache/**' \
@@ -119,8 +125,32 @@ jobs:
       - name: Verify interactive architecture and video
         run: |
           npm ci --prefix showcase
+          python3 -m http.server 8082 --directory showcase > /tmp/showcase-server.log 2>&1 &
+          SHOWCASE_PID=$!
+          trap 'kill $SHOWCASE_PID 2>/dev/null || true; wait $SHOWCASE_PID 2>/dev/null || true' EXIT INT TERM
+          echo "Waiting for showcase server at http://127.0.0.1:8082 ..."
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8082/ >/dev/null 2>&1; then
+              echo "Showcase server is ready."
+              break
+            fi
+            if ! kill -0 $SHOWCASE_PID 2>/dev/null; then
+              echo "Showcase server failed to start. Log:"
+              cat /tmp/showcase-server.log || true
+              exit 1
+            fi
+            sleep 0.5
+          done
+          if ! curl -fsS http://127.0.0.1:8082/ >/dev/null 2>&1; then
+            echo "Showcase server did not become ready within 30s."
+            cat /tmp/showcase-server.log || true
+            exit 1
+          fi
           npm test --prefix showcase
           node showcase/tests/visual-audit.mjs
+          kill $SHOWCASE_PID 2>/dev/null || true
+          wait $SHOWCASE_PID 2>/dev/null || true
+          trap - EXIT INT TERM
 
   test:
     name: suite + conformance gates

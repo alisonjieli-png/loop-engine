@@ -688,7 +688,11 @@ class SpawnedTaskManager(SpawnedTaskLifecycleMixin):
                       await asyncio.wait_for(value, timeout=float(timeout)))
             if not record.status.terminal:
                 self._finish(record, result)
-        except TimeoutError:
+        # asyncio.wait_for raises builtin TimeoutError on 3.11+ but raises
+        # asyncio.exceptions.TimeoutError on 3.10 and earlier; the two are
+        # not the same class on those versions, so catching only the builtin
+        # silently lets the 3.10 timeout escape the deadline branch entirely.
+        except (TimeoutError, asyncio.TimeoutError):
             self._fail(
                 record, "DEADLINE_EXCEEDED",
                 "spawned executor exceeded its wall-time deadline",
