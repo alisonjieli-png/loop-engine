@@ -35,6 +35,8 @@ ARCHITECTURE MAP: six top-level abstractions
     expansion, operators
     generation.model/  (4 modules)
       campaign, dimensions, fragments, seeds
+  templates/  (3 modules)
+    compiler, library, model
 PUBLIC CORE ARCHITECTURE CAPABILITY GROUPS (3)
   Intelligence Search and Retrieval: intelligence_layers, retrieval, capability_directory
   Web Research: brave_search

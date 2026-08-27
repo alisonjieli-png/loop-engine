@@ -17,7 +17,8 @@ PACKAGE = __package__ or "loop_engine"
 
 #: the frozen top-level abstractions
 SUBPACKAGES = ("ontology", "loop", "strings", "code_nodes",
-               "core", "catalog", "memory", "generation")
+               "core", "catalog", "memory", "generation",
+               "templates")
 
 PUBLIC_CORE_ARCHITECTURE_CAPABILITY_GROUPS = (
     ("Intelligence Search and Retrieval",
@@ -71,13 +72,16 @@ MODULE_MAP = {
         "lifecycle",
     ),
     "memory.storage": (
-        "store",
+        "store", "repository",
     ),
     "generation": (
         "expansion", "operators",
     ),
     "generation.model": (
         "campaign", "dimensions", "fragments", "seeds",
+    ),
+    "templates": (
+        "compiler", "library", "model",
     ),
     "catalog": (
         "capabilities", "composite", "conformance", "handshake",

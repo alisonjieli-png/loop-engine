@@ -632,7 +632,7 @@ def scan_uncollected_self_tests(root: str, rules: dict) -> list:
     # uncollected, which is exactly what the planted canary asserts.
     src = open(suite).read() if os.path.exists(suite) else ""
     collected = set(re.findall(
-        r'"((?:loop|strings|code_nodes|core|ontology|catalog|memory|generation)\.[a-z_]+)"', src))
+        r'"((?:loop|strings|code_nodes|core|ontology|catalog|memory|generation|templates)\.[a-z_]+)"', src))
     collected |= {f"{a}.{b}" for a, b in
                   re.findall(r"from \.(\w+)\.(\w+) import", src)}
     v = []

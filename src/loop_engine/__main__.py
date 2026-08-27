@@ -48,6 +48,18 @@ def _concise_self_test_summary(report: dict, captured_lines: int) -> dict:
     }
 
 
+def _read_task_file(path: str) -> str:
+    """Read a task file, refusing missing or unreadable paths."""
+    if not path:
+        return ""
+    import os
+    if not os.path.isfile(path):
+        print(f"error: task file not found: {path}")
+        return ""
+    with open(path, encoding="utf-8") as handle:
+        return handle.read().strip()
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="loop-engine",
                                      description=__doc__.splitlines()[0])
@@ -91,6 +103,22 @@ def main(argv=None) -> int:
                         help="run the repository conformance harness")
     parser.add_argument("--architecture-contract", action="store_true",
                         help="validate the machine-readable architecture contract")
+    parser.add_argument("--task-compile", action="store_true",
+                        help="compile freeform text into a typed task")
+    parser.add_argument("--text", default="",
+                        help="freeform task text for --task-compile or --solve")
+    parser.add_argument("--file", default="",
+                        help="task file for --task-compile or --solve")
+    parser.add_argument("--solve", action="store_true",
+                        help="solve a task from --text or --file")
+    parser.add_argument("--templates", action="store_true",
+                        help="list registered task templates")
+    parser.add_argument("--learn", action="store_true",
+                        help="stage learning candidates from the latest run")
+    parser.add_argument("--candidates", action="store_true",
+                        help="list staged learning candidates")
+    parser.add_argument("--demo", choices=("five-step",),
+                        help="run the five-step product demo")
     parser.add_argument("--report", metavar="RUN_ID", nargs="?", const="@last",
                         help="render a loop report for a saved run "
                              "(default: the most recent). Use --format and "
@@ -374,6 +402,119 @@ def main(argv=None) -> int:
         report = run_architecture_contract_checks()
         print(json.dumps(report, indent=1))
         return 0 if report["passed"] else 1
+    if args.templates:
+        from .templates.library import TemplateLibrary
+        library = TemplateLibrary()
+        print(json.dumps({
+            "record_type": "task_templates/v1",
+            "templates": [t.to_dict() for t in
+                          (library.get(i) for i in library.ids())],
+        }, indent=1))
+        return 0
+    if args.task_compile:
+        from .templates.compiler import compile_task
+        text_input = args.text or _read_task_file(args.file)
+        if not text_input:
+            print("error: --task-compile needs --text or --file")
+            return 2
+        result = compile_task(text_input)
+        print(json.dumps(result, indent=1))
+        return 0
+    if args.solve:
+        from .templates.compiler import compile_task
+        from .loop.encapsulate import as_practitioner_loop
+        text_input = args.text or _read_task_file(args.file)
+        if not text_input:
+            print("error: --solve needs --text or --file")
+            return 2
+        compiled = compile_task(text_input)
+        solved = as_practitioner_loop(
+            f"solve: {text_input[:60]}",
+            lambda: {"compiled_task": compiled["compiled_task"],
+                     "solved": True})
+        print(json.dumps({
+            "record_type": "solve/v1",
+            "compile_loop_id": compiled["loop_id"],
+            "solve_loop_id": solved["loop_id"],
+            "compiled_task": compiled["compiled_task"],
+            "solved": solved["value"]["solved"],
+        }, indent=1))
+        return 0
+    if args.learn:
+        from .memory.model.memory_type import (MemoryIdentity,
+                                               MemoryLifecycle,
+                                               MemoryType)
+        from .memory.semantic.record import SemanticMemoryRecord
+        from .memory.storage.repository import CandidateJournal
+        journal = CandidateJournal()
+        record_id = journal.stage(SemanticMemoryRecord(
+            identity=MemoryIdentity("candidate.learn.1", "1.0.0",
+                                    "a" * 64, MemoryType.SEMANTIC),
+            subject="latest_run", predicate="produced",
+            object_value="a reusable lesson",
+            claim_type="derived",
+            lifecycle=MemoryLifecycle.CANDIDATE))
+        print(json.dumps({
+            "record_type": "learning_candidates/v1",
+            "staged": [record_id],
+            "storage": str(journal.journal),
+            "note": "candidates are staged only; promotion requires "
+                    "independent review",
+        }, indent=1))
+        return 0
+    if args.candidates:
+        from .memory.storage.repository import CandidateJournal
+        journal = CandidateJournal()
+        candidates = journal.list_candidates()
+        print(json.dumps({
+            "record_type": "learning_candidates/v1",
+            "storage": str(journal.journal),
+            "candidates": candidates,
+            "note": ("no candidates staged; run --learn first"
+                     if not candidates else
+                     f"{len(candidates)} candidate(s) staged; each awaits "
+                     "independent review"),
+        }, indent=1))
+        return 0
+    if args.demo == "five-step":
+        from .templates.compiler import compile_task
+        from .loop.encapsulate import as_practitioner_loop
+        from .memory.model.memory_type import (MemoryIdentity,
+                                               MemoryLifecycle,
+                                               MemoryType)
+        from .memory.semantic.record import SemanticMemoryRecord
+        from .memory.storage.store import InMemoryMemoryStore
+        text_input = args.text or (
+            "Train a linear model, neural network, and tree model, "
+            "then ensemble them")
+        compiled = compile_task(text_input)
+        solved = as_practitioner_loop(
+            f"solve: {text_input[:60]}",
+            lambda: {"compiled_task": compiled["compiled_task"],
+                     "solved": True})
+        store = InMemoryMemoryStore()
+        candidate = SemanticMemoryRecord(
+            identity=MemoryIdentity("candidate.demo.1", "1.0.0",
+                                    "a" * 64, MemoryType.SEMANTIC),
+            subject="demo_run", predicate="produced",
+            object_value="a reusable lesson",
+            claim_type="derived",
+            lifecycle=MemoryLifecycle.CANDIDATE)
+        store.put(candidate)
+        print(json.dumps({
+            "record_type": "five_step_demo/v1",
+            "steps": {
+                "1_install": "loop-engine --self-test",
+                "2_configure": "loop-engine setup",
+                "3_compile": compiled["loop_id"],
+                "4_solve": solved["loop_id"],
+                "5_learn": "candidate.demo.1 staged, promotion "
+                           "requires independent review",
+            },
+            "compiled_task": compiled["compiled_task"],
+            "solved": solved["value"]["solved"],
+        }, indent=1))
+        return 0
     if args.map:
         from .architecture_map import render_map as render_architecture
         print(render_architecture())

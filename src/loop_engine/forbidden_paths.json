@@ -36,7 +36,8 @@
   "repository_conformance.py",
   "backend_isolation.py",
   "memory/__init__.py",
-  "generation/__init__.py"
+  "generation/__init__.py",
+  "templates/__init__.py"
  ],
  "public_parallel_runtime_names": [
   "SolverCell",
@@ -190,6 +191,10 @@
     "child",
     "receipt"
    ],
+   "memory/storage/repository.py": [
+    "MemoryRetrievalReceipt",
+    "receipt"
+   ],
    "memory/loop_integration.py": [
     "receipt"
    ],
@@ -331,7 +336,8 @@
   "code_nodes/universal_solve.py": "the ROUTING front door: it orients on a task and dispatches to an executor that owns the boundary, using the practitioner envelope only as a caller when no executor fits the modality. Every envelope it touches is already a register row; a second row would claim ownership it does not have.",
   "code_nodes/public_examples.py": "installed examples orchestrate existing practitioner, report, and intelligence boundaries for teaching. They own no new boundary; registering them would duplicate the envelopes they demonstrate.",
   "memory/loop_integration.py": "memory recall runs through as_practitioner_loop; the memory package is a data-and-preset subsystem, and every governed memory operation is owned by the presets, not by this facade",
-  "generation/operators.py": "candidate generation runs through as_practitioner_loop; generation is a preset-governed operation on the canonical engine, not a separate boundary"
+  "generation/operators.py": "candidate generation runs through as_practitioner_loop; generation is a preset-governed operation on the canonical engine, not a separate boundary",
+  "templates/compiler.py": "task compilation runs through as_practitioner_loop; compilation is a preset-governed operation on the canonical engine, not a separate boundary"
  },
  "dynamic_import_allowed_modules_reasons": {
   "__init__.py": "the package's documented public surface (from loop_engine import PractitionerLoop) resolved LAZILY, so importing the package stays cheap and no import cycle is created. This is a re-export of the canonical runtime, NOT the registration bypass the gate exists to catch: it registers nothing, and every name resolves to an already-mapped module.",
@@ -342,7 +348,8 @@
   "repository_conformance.py": "resolves code_ref manifest payloads during reference validation",
   "backend_isolation.py": "proves the base package imports without optional backends",
   "memory/__init__.py": "lazy public-name resolution for the memory package, same pattern as the root package",
-  "generation/__init__.py": "lazy public-name resolution for the generation package, same pattern as the root package"
+  "generation/__init__.py": "lazy public-name resolution for the generation package, same pattern as the root package",
+  "templates/__init__.py": "lazy public-name resolution for the templates package, same pattern as the root package"
  },
  "min_python": "3.10"
 }

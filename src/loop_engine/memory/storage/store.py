@@ -67,14 +67,11 @@ def _detect_conflicts(results: list) -> list[tuple[str, str]]:
     """Group semantic claims that share a contradiction group."""
     groups: dict[str, list[str]] = {}
     for result in results:
-        record_id = result.ref.record_id
-        for candidate in _store_hack(result):
-            groups.setdefault(candidate, []).append(record_id)
+        record = getattr(result, "record", None)
+        group = getattr(record, "contradiction_group", "") or ""
+        if group:
+            groups.setdefault(group, []).append(result.ref.record_id)
     return [tuple(ids) for ids in groups.values() if len(ids) > 1]
-
-
-def _store_hack(_result) -> list:
-    return []
 
 
 def self_test() -> dict:
