@@ -278,7 +278,20 @@ class Model2VecBackend:
         # NOT beat base-8M (MRR 0.511/0.564 vs 0.550, n=10 — inseparable),
         # so the smallest model wins the tie; larger models are one
         # argument away, re-judged when the bank grows 10x.
-        self._model = StaticModel.from_pretrained(model or self.MODEL)
+        try:
+            self._model = StaticModel.from_pretrained(model or self.MODEL)
+        except Exception as e:
+            # The package is present but the first-time download failed
+            # (offline or rate-limited). Distinguish environment outage
+            # from a broken install so the semantic canary can report
+            # "environment unavailable" instead of "code wrong".
+            if _os.environ.get("HF_HUB_OFFLINE", "0") == "1":
+                raise
+            raise RuntimeError(
+                f"model2vec model {model or self.MODEL!r} could not be "
+                f"downloaded from the Hugging Face hub: {e}. "
+                "Set HF_HUB_OFFLINE=1 to refuse, or warm the cache first."
+            ) from e
         self.space = EmbeddingSpace(model=model or self.MODEL,
                                     revision="hf-cache-pin", dims=256)
         texts = [record_search_text(r) for r in records]
@@ -561,16 +574,34 @@ def self_test() -> dict:
     # canary.  A paraphrase query with no decisive shared tokens: the
     # learned backend separates the right record by a wide margin while
     # hashed vectors sit at noise level (measured, not assumed).  Explicit
-    # failure if model2vec is missing, never a silent downgrade.
+    # failure if model2vec is missing, never a silent downgrade.  If the
+    # package is installed but the model files cannot be fetched because
+    # of an environment outage (offline or a rate-limited hub), report
+    # environment_unavailable distinctly so a CI flake is not conflated
+    # with a broken installation.
     try:
         rm = Retriever(records, vector_backend="model2vec")
-    except RuntimeError:
-        # NOT a silent downgrade: the missing declared dependency is a failure.
-        results.append({
-            "test": "model2vec_semantic_canary", "passed": False,
-            "missing_dependency": "model2vec",
-            "detail": "FAILED: missing model2vec. Reinstall with: "
-                      "python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git"})
+    except RuntimeError as e:
+        message = str(e)
+        if "could not be downloaded from the Hugging Face hub" in message:
+            results.append({
+                "test": "model2vec_semantic_canary", "passed": False,
+                "environment_unavailable": True,
+                "detail": "ENVIRONMENT UNAVAILABLE, NOT A CODE DEFECT: "
+                          "model2vec is installed but its model weights "
+                          "could not be fetched from the Hugging Face hub "
+                          f"in this run: {message}. The semantic canary did"
+                          " not execute, so this is not evidence of"
+                          " semantics, and it is not silently skipped:"
+                          " warm the HF cache and rerun to get a real"
+                          " verdict."})
+        else:
+            # NOT a silent downgrade: the missing declared dependency is a
+            # failure.
+            results.append({
+                "test": "model2vec_semantic_canary", "passed": False,
+                "missing_dependency": "model2vec",
+                "detail": f"FAILED: missing model2vec. {message}"})
     else:
         # ZERO token overlap between query and target record text — the
         # hash leg cannot win on morphology, so only learned semantics can
