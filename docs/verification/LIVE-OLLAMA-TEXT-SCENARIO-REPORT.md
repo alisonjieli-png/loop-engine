@@ -40,6 +40,24 @@ The accepted run used:
 - failover: disabled;
 - result: five accepted `ready` decisions.
 
+## GitHub Actions result
+
+GitHub Actions run
+[`33123560731`](https://github.com/alisonjieli-png/loop-engine/actions/runs/33123560731)
+passed all six jobs at feature commit
+`c203aa2a8a6857a700014fc8fa12bb870e2ca340`.
+
+The `five live Ollama text scenarios` job:
+
+- completed in `55` seconds;
+- made `5` physical model attempts;
+- accepted all `5` typed decisions;
+- recorded `3,733` provider-reported tokens;
+- uploaded `live-ollama-scenarios.json`;
+- produced artifact content SHA-256
+  `2919306eba0faba9c53d0b884dce919711ac8487e96b8473587ad49468895894`;
+- passed a downloaded-artifact secret-shaped value scan.
+
 The five live tasks reuse the text files in
 `examples/20_compile_text_tasks/tasks/`. Their live policy is autonomous. A
 `ready` result means the next governed preparation step may begin. It does not

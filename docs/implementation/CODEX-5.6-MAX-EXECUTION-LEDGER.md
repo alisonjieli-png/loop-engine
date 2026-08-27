@@ -428,3 +428,23 @@ against the exact intended public paths before committing.
 | Commit | `f264e002ec980f50349d8d6c43f0ab7048607919` |
 | GitHub Actions run | `33116324964`, all five required jobs passed |
 | Publication state | typed resolution, autonomous interaction, optional task feedback, README, and examples published to `origin/main` |
+
+### LE-WORK-M5: bounded live Ollama text scenarios
+
+| Field | Value |
+|---|---|
+| Work item ID | `LE-WORK-M5` |
+| Goal | Run five Getting Started-style text tasks through one exact Ollama Cloud route after trusted pushes to `main`. |
+| Source requirement | Owner request for secret-backed push CI with five model-using text scenarios, 2026-08-27. |
+| Affected invariant or product path | ModelGateway, per-attempt Loop identity, prompt assembly, autonomous Orientation, provider secrets, CI, and evidence handling. |
+| Baseline | The five public text tasks ran in the three-version matrix but deliberately made zero model calls. `OLLAMA_API_KEY` was not consumed by CI. |
+| Implementation | Added a bounded live-scenario request and passive task contract, standard prompt-block assembly, one exact ModelGateway attempt per task, typed grading, secret-safe evidence, a thin example runner, and one push-to-main GitHub job. |
+| Files changed | Live scenario service, five-text example, semantic dictionary and architecture map, CI workflow, provider report, and live-integration matrix. |
+| Commands run | Offline injected-provider checks; source self-test and conformance; parameter scan; Markdown and public-language checks; package build and Twine; clean-wheel check; two local live suites; GitHub Actions; artifact download and secret scan. |
+| Tests | Live verifier `3/3`; live suite `4/4`; source self-test `1365/1365`; conformance all gates; focused parameter findings `0`; clean-wheel live suite `4/4`; final local live tasks `5/5`; GitHub live tasks `5/5`; all six GitHub jobs passed. |
+| Measurement | Local final run: five calls, 4,043 provider tokens, 12.876548 seconds. GitHub run: five calls, 3,733 provider tokens, 55-second job, artifact SHA-256 `2919306eba0faba9c53d0b884dce919711ac8487e96b8473587ad49468895894`. |
+| Result | `VERIFIED WORKING` for the scoped live provider and typed-orientation lane. |
+| Remaining uncertainty | Full task execution, broader model suitability, provider pricing, dataset selection, modeling, and report generation remain unproven. |
+| Commit | `c203aa2a8a6857a700014fc8fa12bb870e2ca340` |
+| GitHub Actions run | `33123560731`, all six jobs passed; live job `98696158048` passed and uploaded sanitized evidence. |
+| Publication state | Feature implementation published to `origin/main`; this evidence update records its verified run. |

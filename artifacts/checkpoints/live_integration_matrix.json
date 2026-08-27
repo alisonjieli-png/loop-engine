@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-27T18:40:21-04:00",
+  "generated_at": "2026-08-27T18:45:57-04:00",
   "repository": "alisonjieli-png/loop-engine",
   "branch": "main",
   "baseline_sha": "57efe4cc3368afa3a4b2e066b0e2c0c6a2108331",
@@ -24,12 +24,18 @@
       "credentials_by_reference": "OLLAMA_API_KEY",
       "test": "Five live model-assisted Orientation decisions with exact typed grading and secret-safe evidence",
       "result": "REAL PROVIDER RUN",
+      "github_actions_run": 33123560731,
+      "github_actions_job": 98696158048,
+      "github_actions_duration_seconds": 55,
+      "physical_model_calls": 5,
+      "provider_reported_tokens": 3733,
+      "artifact_sha256": "2919306eba0faba9c53d0b884dce919711ac8487e96b8473587ad49468895894",
       "evidence": [
         "docs/verification/LIVE-OLLAMA-TEXT-SCENARIO-REPORT.md",
         "examples/20_compile_text_tasks/run_live.py",
         "src/loop_engine/core/live_text_scenarios.py"
       ],
-      "limitations": "One provider route and five public orientation tasks passed locally. This proves bounded provider use and typed output handling, not full task execution, broad model quality, cost calibration, or external-effect authority."
+      "limitations": "One provider route and five public orientation tasks passed locally and in GitHub Actions. This proves bounded provider use and typed output handling, not full task execution, broad model quality, cost calibration, or external-effect authority."
     },
     {
       "integration_id": "MODEL-MISTRAL",
