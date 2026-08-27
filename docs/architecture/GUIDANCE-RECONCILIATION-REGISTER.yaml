@@ -567,3 +567,19 @@ guidance:
     implementation_state: ACCEPTED_CURRENT
     required_action: Recheck ownership and status before every commit.
     verification: Clean staged diff, targeted tests, full tests, main push, and GitHub readback.
+
+  - guidance_id: LE-GUIDE-023
+    source: [SRC-CURRENT-MANDATE, SRC-AGENTS]
+    source_version_or_commit: current-context
+    source_date_when_known: "2026-08-27"
+    statement: Observable work strategies are typed, versioned Loop configuration and evidence that can be tested through matched trials; they do not create another runtime or authorize storage of private reasoning.
+    topic: work_approach_instrumentation
+    authority: ACCEPTED_CURRENT
+    relationships_to_other_guidance: [LE-GUIDE-003, LE-GUIDE-007, LE-GUIDE-015, LE-GUIDE-017, LE-GUIDE-020]
+    current_runtime_evidence: ReasoningRequest, PromptAssemblySpec, named prompt blocks, layout policies, experiment seeds, prompt digests, intelligence portfolios, typed delegation, and Run History cover part of the boundary.
+    current_test_evidence: Existing prompt assembly and delegation checks do not yet prove exact approach snapshots, matched contribution experiments, held-out suitability, or negative-transfer prevention.
+    current_documentation_evidence: docs/architecture/WORK-APPROACH-INSTRUMENTATION.md records the accepted split among active deliberation, attention, automatic controls, compiled procedures, metacognitive monitoring, and delegation.
+    accepted_interpretation: Extend current typed authorities with the smallest missing passive contracts; execute every independent experiment arm and evaluator through Loop; require independent review before suitability evidence becomes active intelligence.
+    implementation_state: REQUIRED_NOT_IMPLEMENTED
+    required_action: Complete semantic recovery and universal parameterization first, then implement exact approach evidence, matched trials, ablations, and governed suitability learning.
+    verification: Frozen matched trials, exact prompt and approach replay, contribution ablations, held-out evaluation, negative-transfer tests, and independent promotion.

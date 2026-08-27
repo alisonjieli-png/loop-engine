@@ -32,6 +32,49 @@ Inspect configured model routes without making a provider call:
 loop-engine models inventory
 ```
 
+### Optional model-provider setup
+
+Choose one provider. Keep the key in your shell environment; Loop Engine
+stores only the environment-variable name in settings.
+
+```bash
+# Ollama Cloud
+export OLLAMA_API_KEY="your-key"
+
+# Or OpenRouter
+export OPENROUTER_API_KEY="your-key"
+
+loop-engine settings init --settings-file ./loop-engine.yaml
+loop-engine settings check --settings-file ./loop-engine.yaml
+loop-engine models inventory --settings-file ./loop-engine.yaml
+```
+
+Ollama Cloud is not a local Ollama server. Local Ollama, vLLM, SGLang, LM
+Studio, llama.cpp, and similar servers use a custom endpoint entry. See
+[Providers and keys](docs/guides/providers-and-keys.md) and the checked-in
+[`loop-engine.settings.example.yaml`](loop-engine.settings.example.yaml).
+
+OpenCode CLI credentials are configured in OpenCode itself. Run OpenCode,
+enter `/connect`, select OpenCode Go, OpenCode Zen, OpenRouter, or another
+provider, and paste the provider key. OpenCode stores that connection in its
+own credential file. Loop Engine does not define or serialize an
+`OPENCODE_API_KEY`. Its optional OpenCode harness adapter launches the already
+configured CLI. See [OpenCode provider setup](https://opencode.ai/docs/providers/).
+
+### Flagship modeling task
+
+The intended first multidisciplinary task is:
+
+```bash
+loop-engine task compile --text \
+  "Download an authorized public dataset. Train a linear model, tree model, boosted-tree model, and MLP on identical validation folds to predict the target variable. Compare them honestly and produce verified PDF and HTML reports."
+```
+
+Task compilation works today and preserves that original request. Full
+execution of this flagship remains a Checkpoint -0.5 and modeling acceptance
+gate; the README does not claim that the current five-step fixture performs the
+download, model training, or report rendering yet.
+
 ## System at a glance
 
 ```mermaid

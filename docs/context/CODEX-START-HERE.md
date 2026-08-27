@@ -60,14 +60,17 @@ perform external effects unless the current request authorizes that action.
 2. [`README.md`](../../README.md)
 3. [Contract index](../contracts/README.md)
 4. [Taxonomy and class map](../architecture/TAXONOMY-ONTOLOGY-AND-CLASS-MAP.md)
-5. [Component map](../components/README.md)
-6. [Older reference-source boundaries](REFERENCE-SOURCES.md) only when older
+5. [Work-approach instrumentation](../architecture/WORK-APPROACH-INSTRUMENTATION.md)
+   when work concerns prompt, context, memory-access, delegation, or approach
+   experiments
+6. [Component map](../components/README.md)
+7. [Older reference-source boundaries](REFERENCE-SOURCES.md) only when older
    repository material may be relevant
-7. [Loop object and profiles](../components/loop-object/README.md)
-8. [Intelligence layers](../components/intelligence-layers/README.md)
-9. [Core Architecture](../components/core-architecture/README.md)
-10. [Solution Canvas](../components/solution-canvas/README.md)
-11. [Case studies](../../case-studies/README.md) only when the task concerns
+8. [Loop object and profiles](../components/loop-object/README.md)
+9. [Intelligence layers](../components/intelligence-layers/README.md)
+10. [Core Architecture](../components/core-architecture/README.md)
+11. [Solution Canvas](../components/solution-canvas/README.md)
+12. [Case studies](../../case-studies/README.md) only when the task concerns
    measured full-system runs
 
 For broad continued development rather than one narrow task, use the

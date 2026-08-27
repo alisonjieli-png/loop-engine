@@ -32,12 +32,20 @@ _OUTPUT_RESPONSE = {
     "unknown": "unknown",
 }
 
-_OPERATOR_TASK = {
-    "classify": "classification", "rank": "ranking",
-    "optimize": "optimization", "recommend": "recommendation",
-    "monitor": "monitoring", "transform": "transformation",
-    "validate": "validation", "generate": "generation",
-    "retrieve": "retrieval", "search": "retrieval", "browse": "retrieval",
+_OPERATOR_TASK_TYPES = {
+    "classify": ("classification",),
+    "predict": ("prediction", "classification", "regression"),
+    "forecast": ("prediction",),
+    "rank": ("ranking",),
+    "optimize": ("optimization",),
+    "recommend": ("recommendation",),
+    "monitor": ("monitoring",),
+    "transform": ("transformation",),
+    "validate": ("validation",),
+    "generate": ("generation",),
+    "retrieve": ("retrieval",),
+    "search": ("retrieval",),
+    "browse": ("retrieval",),
 }
 
 
@@ -57,11 +65,11 @@ def _operator_from_text(text: str) -> str:
     low = text.lower()
     patterns = (
         ("classify", r"\b(classify|classification|label)\b"),
+        ("predict", r"\b(predict|prediction|regression)\b"),
+        ("forecast", r"\b(forecast)\b"),
         ("validate", r"\b(validate|validation|verify|check schema)\b"),
         ("extract", r"\b(extract|parse)\b"),
         ("rank", r"\b(rank|ranking|prioritize)\b"),
-        ("predict", r"\b(predict|prediction|regression)\b"),
-        ("forecast", r"\b(forecast)\b"),
         ("summarize", r"\b(summarize|summarise|summary)\b"),
         ("search", r"\b(search|find sources)\b"),
         ("browse", r"\b(browse|website|url)\b"),
@@ -128,15 +136,15 @@ def compile_task_value(request: TaskCompileRequest) -> dict:
     candidates = lib.search(text)
     normalized = " ".join(text.split())
     explicit_operator = _operator_from_text(normalized)
-    expected_task = _OPERATOR_TASK.get(explicit_operator)
-    if expected_task:
+    expected_task_types = _OPERATOR_TASK_TYPES.get(explicit_operator)
+    if expected_task_types:
         compatible = [candidate for candidate in candidates
-                      if candidate.task_type == expected_task]
+                      if candidate.task_type in expected_task_types]
         if not compatible:
             compatible = [candidate for candidate in
                           (lib.get(template_id) for template_id in lib.ids())
                           if candidate is not None
-                          and candidate.task_type == expected_task]
+                          and candidate.task_type in expected_task_types]
         if compatible:
             candidates = compatible
     if not candidates:
@@ -246,4 +254,19 @@ def self_test() -> dict:
           in ("partial", "ambiguous")
           and "target_column" in partial["compiled_task"]["binding"]
           ["unmapped_requirements"])
+    flagship = compile_task(TaskCompileRequest(
+        "Download an authorized public dataset. Train a linear model, tree "
+        "model, boosted-tree model, and MLP on identical validation folds to "
+        "predict the target variable. Compare them honestly and produce "
+        "verified PDF and HTML reports."))
+    flagship_task = flagship["compiled_task"]
+    check("prediction_goal_precedes_downstream_verification_wording",
+          flagship_task["work_item"]["coordinates"]["operator"] == "predict")
+    check("flagship_binds_model_comparison_template",
+          flagship_task["binding"]["template_id"]
+          == "core.task.tabular_model_comparison"
+          and flagship_task["task_type"] == "prediction"
+          and flagship_task["output_kind"] == "report"
+          and flagship_task["work_item"]["coordinates"]["response_topology"]
+          == "artifact")
     return {"tests": results}

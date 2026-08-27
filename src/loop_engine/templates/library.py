@@ -39,6 +39,28 @@ CORE_TEMPLATES = (
         input_contract="tabular_dataset",
         output_contract="prediction_scores"),
     TaskTemplate(
+        template_id="core.task.tabular_model_comparison",
+        version="1.0.0",
+        name="Tabular model comparison",
+        description=(
+            "Train and compare several supervised prediction models on "
+            "shared validation folds and produce a verified report."),
+        task_type="prediction",
+        output_kind="report",
+        variables={
+            "dataset_source": "string",
+            "target_column": "string",
+            "model_families": "list",
+            "validation_strategy": "string",
+            "report_formats": "list",
+        },
+        required_variables=("dataset_source", "target_column"),
+        optional_variables=(
+            "model_families", "validation_strategy", "report_formats"),
+        file_refs=(),
+        input_contract="authorized_tabular_dataset",
+        output_contract="verified_model_comparison_report"),
+    TaskTemplate(
         template_id="core.task.data_standardization",
         version="1.0.0",
         name="Data standardization",
@@ -137,7 +159,7 @@ def self_test() -> dict:
 
     library = TemplateLibrary()
     check("core_templates_are_registered",
-          len(library.ids()) == 5
+          len(library.ids()) == 6
           and library.get("core.task.tabular_classification") is not None)
     check("exact_version_lookup",
           library.get("core.task.tabular_classification",
@@ -149,6 +171,11 @@ def self_test() -> dict:
     check("lexical_search_finds_relevant_templates",
           hits and hits[0].template_id
           == "core.task.tabular_classification")
+    model_hits = library.search(
+        "train and compare linear tree boosted model mlp prediction report")
+    check("lexical_search_finds_model_comparison_template",
+          model_hits and model_hits[0].template_id
+          == "core.task.tabular_model_comparison")
     try:
         conflicting = TaskTemplate(
             template_id="core.task.tabular_classification",

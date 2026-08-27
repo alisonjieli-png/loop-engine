@@ -363,11 +363,11 @@ against the exact intended public paths before committing.
 | Commands run | Source self-test and conformance; wheel/sdist build; Twine checks; clean Python 3.10 wheel install; installed self-test and conformance; saved Run History readback. |
 | Tests | Source `1337/1337`; source conformance `28/28`; clean wheel `1337/1337`; clean wheel conformance `28/28`; legacy record migration `4/4`; saved canonical histories `11/11`. |
 | Measurement | One runtime class; zero subclasses; zero active `LoopNode` classes; zero `LoopNode` package-root exports; zero semantic conformance violations. |
-| Result | `VERIFIED WORKING` locally; GitHub Actions pending the checkpoint push. |
+| Result | `VERIFIED WORKING`; pushed main is green. |
 | Remaining uncertainty | Required GitHub Actions result and external publication state. |
 | Commit | `dc2b3f27d347cd17a8de423e54df7efe5cf7ce40` |
-| GitHub Actions run | pending |
-| Publication state | `LOCAL_VERIFIED_NOT_YET_PUSHED` |
+| GitHub Actions run | `33108407104`, success on Python 3.10, 3.11, and 3.12, distribution build, examples, and public documentation |
+| Publication state | published to `origin/main` through commit `571d533a550d4254a6064bc672c0ca6189da5eb6` |
 
 ### LE-WORK-M2: Checkpoint -0.5 universal parameterization and repository alignment
 
@@ -377,7 +377,7 @@ against the exact intended public paths before committing.
 | Goal | Represent varied behavior through typed definitions, profiles, procedures, portfolios, strategies, adapters, and Loop instances; assess every first-party file, symbol, and folder. |
 | Source requirement | Universal Parameterized Loop Architecture and File-by-File Alignment Mandate, 2026-08-27. |
 | Affected invariant or product path | Procedure model, Practitioner profiles, repository assurance, folder ontology, strings and serialized contracts. |
-| Baseline | Static audit found 183 call-boundary violations and high-value duplicated vocabularies, unstable IDs, and string-encoded behavior. |
+| Baseline | Static audit found 175 call-boundary violations and high-value duplicated vocabularies, unstable IDs, and string-encoded behavior. |
 | Implementation | Repository-assurance request/profile and initial file records exist; full inventories and twenty-behavior proof remain. Cohesive configuration and data classes are explicitly protected from unjustified deletion. |
 | Files changed | Initial devtools assurance and semantic decision rules only. |
 | Commands run | AST parameter and semantic audits. |
@@ -388,3 +388,23 @@ against the exact intended public paths before committing.
 | Commit | none |
 | GitHub Actions run | none |
 | Publication state | backlog for the next Codex audit session |
+
+### LE-WORK-M3: Work-Approach Instrumentation and Optimization
+
+| Field | Value |
+|---|---|
+| Work item ID | `LE-WORK-M3` |
+| Goal | Make work strategy, prompt assembly, context selection, memory access, delegation, confidence, response shape, and verification experimentally traceable without creating another runtime. |
+| Source requirement | Current owner guidance on instrumenting observable human work strategies, 2026-08-27. |
+| Affected invariant or product path | Loop profiles, procedures, prompt assembly, intelligence selection, delegation, Run History, benchmarks, and governed learning. |
+| Baseline | `ReasoningRequest`, `PromptAssemblySpec`, named blocks, layout policies, seeds, prompt digests, intelligence portfolios, and typed delegation already cover part of the boundary. Exact approach snapshots, contribution tests, and suitability learning are not complete. |
+| Implementation | Added the accepted architecture and checkpoint contract in `docs/architecture/WORK-APPROACH-INSTRUMENTATION.md`. Existing typed configuration and data classes remain protected. No new runtime or competing authority was added. |
+| Files changed | Architecture direction, Codex start context, guidance register, and this ledger. |
+| Commands run | Compiler checks; source self-test and conformance; complete Markdown lint; retired-language scans; YAML and JSONL parsing; package build; Twine validation. |
+| Tests | Compiler `9/9`; template library `5/5`; source `1341/1341`; conformance `28/28`; Markdown `132` files with zero issues; retired-language matches `0`; Twine passed for wheel and sdist. |
+| Measurement | Requires matched trials, exact denominators, ablations, held-out task families, uncertainty, and negative-transfer tests. |
+| Result | `NOT YET PROVEN`. The architecture direction is recorded; implementation and experiments remain a later hard checkpoint. |
+| Remaining uncertainty | Exact reuse map for candidate passive records, implementation batch order, frozen task populations, and independent evaluator contracts. |
+| Commit | pending |
+| GitHub Actions run | pending |
+| Publication state | pending main push |

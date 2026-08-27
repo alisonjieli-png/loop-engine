@@ -29,6 +29,30 @@ reported as working only when the provider answers.
 
 This check may consume tokens. Run it only when provider calls are authorized.
 
+## CLI setup
+
+```bash
+export OLLAMA_API_KEY="your-key"       # Ollama Cloud
+# or
+export OPENROUTER_API_KEY="your-key"   # OpenRouter
+
+loop-engine settings init --settings-file ./loop-engine.yaml
+loop-engine settings check --settings-file ./loop-engine.yaml
+loop-engine models inventory --settings-file ./loop-engine.yaml
+```
+
+The settings file records `credential_ref: env:OLLAMA_API_KEY` or
+`credential_ref: env:OPENROUTER_API_KEY`. It does not contain the secret value.
+
+## OpenCode CLI
+
+OpenCode Go and OpenCode Zen use OpenCode's own connection flow. Start the
+OpenCode TUI, run `/connect`, choose the provider, and paste its key. OpenCode
+stores the credential in its own data directory. Loop Engine has no
+`OPENCODE_API_KEY` setting. Its optional harness adapter invokes the configured
+OpenCode CLI and does not turn OpenCode into a raw model gateway. See the
+[OpenCode provider documentation](https://opencode.ai/docs/providers/).
+
 With no working provider:
 
 ```text
