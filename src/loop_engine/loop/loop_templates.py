@@ -25,8 +25,9 @@ TEMPLATE_LIBRARY = (
     {"template_id": "reference_nine_step", "framework": "nine_step",
      "steps": (), "maturity": "registered",
      "description": "The reference practitioner loop: reconstruct state, "
-                    "reconcile goal, assess evidence, decide next, choose how, "
-                    "act, verify, capture learning, commit."},
+                    "compile and bind the task, reconcile goal, assess "
+                    "evidence, decide next, choose how, act, verify, capture "
+                    "learning, commit."},
     {"template_id": "atomic_code_only", "framework": "custom",
      "steps": ("act",), "allowed_modes": ("code_only",),
      "maturity": "registered",

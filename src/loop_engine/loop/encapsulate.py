@@ -475,14 +475,14 @@ def self_test() -> dict:
     returns = [e for e in lg7.events if e.get("event") == "spawned_return"]
     parents = {r["spawning_loop_id"] for r in tree["stage_records"]}
     check("reference_nine_step_runs_as_nine_stage_loops",
-          len(tree["stages"]) == 9 and len(tree["spawned_loop_ids"]) == 9
-          and len(set(tree["spawned_loop_ids"])) == 9      # nine DISTINCT ids
-          and len(envelopes) == 10                          # starting + nine
-          and len(spawns) == 9 and len(returns) == 9        # spawn AND return
+          len(tree["stages"]) == 10 and len(tree["spawned_loop_ids"]) == 10
+          and len(set(tree["spawned_loop_ids"])) == 10      # ten DISTINCT ids
+          and len(envelopes) == 11                          # starting + ten
+          and len(spawns) == 10 and len(returns) == 10      # spawn AND return
           and parents == {tree["starting_loop_id"]}
           and tree["result"].model_calls == 0
           and all(r["stopped"] == "done" for r in tree["stage_records"]),
-          f"starting {tree['starting_loop_id']} + 9 stage loops, "
+          f"starting {tree['starting_loop_id']} + 10 stage loops, "
           f"{len(spawns)} spawns / {len(returns)} returns, 0 semantic calls")
 
     # 8. ADVERSARIAL: a stage is a Spawned Loop, so the delegation clamp holds
@@ -498,7 +498,7 @@ def self_test() -> dict:
         inline_refused = True
     check("stage_loops_stay_clamped_and_templates_stay_registered",
           all(r["model_calls"] == 0 for r in clamped["stage_records"])
-          and len(clamped["stage_records"]) == 9 and inline_refused,
+          and len(clamped["stage_records"]) == 10 and inline_refused,
           "stage spawned_loops make no semantic calls; unregistered template raises")
 
     check("component_walks_its_whole_fallback_chain_then_fails_closed",

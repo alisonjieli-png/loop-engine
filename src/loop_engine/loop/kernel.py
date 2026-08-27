@@ -61,8 +61,9 @@ from typing import Any, Callable, Sequence
 # (assess sufficiency + prepare reasoning resources) and #7 (integrate + commit),
 # separating three things that must never collapse into one vague "context":
 # PROBLEM STATE/EVIDENCE vs REASONING RESOURCES vs the MODEL-READY PROMPT.
-KERNEL_NODES = ("orient", "reconcile_horizon", "assess_prepare", "decide_next",
-                "how", "act", "verify", "integrate_commit", "route")
+KERNEL_NODES = ("orient", "compile_bind_task", "reconcile_horizon",
+                "assess_prepare", "decide_next", "how", "act", "verify",
+                "integrate_commit", "route")
 
 # No backward-compatibility aliases (they are technical debt).  Instead an impls
 # set declares its capability via a HANDSHAKE: six nodes are REQUIRED, and the
@@ -71,8 +72,8 @@ KERNEL_NODES = ("orient", "reconcile_horizon", "assess_prepare", "decide_next",
 # fails loudly at run start rather than being papered over.
 KERNEL_REQUIRED_NODES = ("orient", "decide_next", "how", "act", "verify",
                          "route")
-KERNEL_OPTIONAL_NODES = ("reconcile_horizon", "assess_prepare",
-                         "integrate_commit")
+KERNEL_OPTIONAL_NODES = ("compile_bind_task", "reconcile_horizon",
+                         "assess_prepare", "integrate_commit")
 
 
 class KernelHandshakeError(RuntimeError):
@@ -127,6 +128,9 @@ def validate_impls(impls: "dict") -> None:
 KERNEL_NODE_NAMES = {
     "orient": "Reconstruct the latest accepted problem state and assemble the "
               "verified context already available",
+    "compile_bind_task": "Compile the raw request into a typed task and bind "
+                         "it to the best available template without losing "
+                         "the original input",
     "reconcile_horizon": "Reconcile the ultimate goal, active checkpoint, and "
                          "working blueprint with the latest accepted state",
     "assess_prepare": "Assess whether the current decision is sufficiently "
@@ -154,6 +158,9 @@ KERNEL_NODE_NAMES = {
 KERNEL_NODE_QUESTIONS = {
     "orient": "What problem are we solving, and what verified context do we "
               "already have?",
+    "compile_bind_task": "What typed task does this raw request represent, and "
+                         "which template best binds it without losing the "
+                         "original input?",
     "reconcile_horizon": "Where does this stand against the ultimate goal, the "
                          "active checkpoint, and the working blueprint?",
     "assess_prepare": "Is the current decision sufficiently supported, and if "
@@ -247,6 +254,7 @@ class Situation:
     signals: tuple = ()          # missing_info | conflicting | no_progress | ...
     resources_hint: tuple = ()
     anchor: Any = None           # LongHorizonAnchorPacket, set by reconcile step
+    compiled_task: Any = None    # CompiledTask, set by compile_bind_task step
 
 
 @dataclass
@@ -354,6 +362,7 @@ class PassRecord:
     pass_number: int
     state_version_in: int
     situation: Situation = None
+    compiled_task: Any = None
     anchor: Any = None
     portfolio: "DecisionSupportPortfolio | None" = None
     candidates: list = field(default_factory=list)
@@ -374,6 +383,7 @@ class PassRecord:
                 "state_in": self.state_version_in,
                 "skipped_nodes": list(self.skipped_nodes),
                 "situation": d(self.situation),
+                "compiled_task": d(self.compiled_task),
                 "plan_health": (getattr(self.anchor, "plan_health", None)
                                 if self.anchor is not None else None),
                 "sufficiency": (self.portfolio.sufficiency
@@ -439,7 +449,14 @@ def _calculate_kernel_pass(state: PractitionerState, impls: KernelImpls,
     situation: Situation = impls["orient"](state)
     rec.situation = situation
 
-    # Node 2 — reconcile the ultimate goal / active checkpoint / working
+    # Node 2 — compile the raw request into a typed task and bind it to the
+    # best available template (skippable per pass for a trivial task).
+    if "compile_bind_task" not in skip:
+        situation.compiled_task = impls.get(
+            "compile_bind_task", default_compile_bind_task)(state, situation)
+        rec.compiled_task = situation.compiled_task
+
+    # Node 3 — reconcile the ultimate goal / active checkpoint / working
     # blueprint with the latest state (skippable per pass for a trivial task).
     if "reconcile_horizon" not in skip:
         situation.anchor = impls.get("reconcile_horizon",
@@ -690,6 +707,29 @@ def default_route(state: PractitionerState, rec: PassRecord) -> tuple:
             state.derive(last_route="stop_unprofitable"))
 
 
+def default_compile_bind_task(state: PractitionerState,
+                                  situation: Situation):
+    """Node 2 default: compile the raw request into a typed task.
+
+    The deterministic default preserves the original input verbatim and
+    records the binding mode as open when no template was supplied. A
+    model-backed impl can discover templates and bind them; the default
+    never invents a template and never loses the original request.
+    """
+    from dataclasses import asdict
+    original = state.spec.objective
+    return {
+        "compiled_task_id": f"task:{state.version}",
+        "original_input": original,
+        "normalized_interpretation": original,
+        "binding_mode": "open",
+        "selected_template": "",
+        "unmapped_requirements": tuple(situation.unknowns),
+        "assumptions": (),
+        "ambiguities": tuple(situation.signals),
+    }
+
+
 def default_reconcile_horizon(state: PractitionerState, situation: Situation):
     """Node 2 default: build the LongHorizonAnchorPacket from any goal stack /
     blueprint / progress the state carries (reserved facts keys), computed not
@@ -731,6 +771,7 @@ def default_integrate_commit(state: PractitionerState,
 
 def default_impls() -> KernelImpls:
     return {"orient": default_orient,
+            "compile_bind_task": default_compile_bind_task,
             "reconcile_horizon": default_reconcile_horizon,
             "assess_prepare": default_assess_prepare,
             "decide_next": default_decide_next,
@@ -789,7 +830,7 @@ def self_test() -> dict:
     st0 = PractitionerState(spec=spec)
     rec, st1 = _calculate_kernel_pass(st0, default_impls())
     check("one_pass_runs_the_nine_nodes_acyclically_with_typed_outputs",
-          len(KERNEL_NODES) == 9
+          len(KERNEL_NODES) == 10
           and isinstance(rec.situation, Situation)
           and rec.anchor is not None
           and isinstance(rec.portfolio, DecisionSupportPortfolio)

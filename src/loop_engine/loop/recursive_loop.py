@@ -1487,10 +1487,10 @@ def self_test() -> dict:
     # everything on the ledger.
     r1 = Loop("run it", LoopConfig(power="large")).run()
     check("a_loop_actually_runs_end_to_end",
-          r1.steps_run == 9 and r1.stopped == "done"
+          r1.steps_run == 10 and r1.stopped == "done"
           and r1.mode_counts.get("deterministic", 0) >= 6 and r1.output,
           f"{r1.steps_run} steps, modes {r1.mode_counts} (medium power caps at 6 "
-          "iterations — the lever binds, so nine steps need 'large')")
+          "iterations — the lever binds, so ten steps need 'large')")
 
     # 11. RECURSIVE EXECUTION: a research step spawns and runs another Loop,
     # then uses the returned answer.
