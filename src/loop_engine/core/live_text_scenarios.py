@@ -171,10 +171,12 @@ def _validate_output(
     if not isinstance(value, dict) or set(value) != required:
         return False, {}
     summary = value.get("decision_summary")
+    observed_status = value.get("status")
     valid = (
         value.get("scenario_id") == scenario.scenario_id
-        and value.get("status") == scenario.expected_status
-        and value.get("question_required") is scenario.question_required
+        and observed_status in LIVE_TEXT_SCENARIO_STATUSES
+        and value.get("question_required")
+            is (observed_status == "needs_clarification")
         and isinstance(summary, str)
         and bool(summary.strip())
         and len(summary) <= 240)
@@ -296,9 +298,12 @@ def run_live_text_scenarios(
             accounting_complete = False
         else:
             known_total_tokens += result.total_tokens
-        accepted = bool(
-            result.ok and result.provider_responded and len(attempts) == 1
-            and result.accounting_complete
+        provider_accepted = bool(
+            result.provider_responded and len(attempts) == 1
+            and result.accounting_complete)
+        contract_accepted = bool(provider_accepted and result.ok and parsed)
+        semantic_match = bool(
+            contract_accepted
             and parsed.get("status") == scenario.expected_status)
         scenario_evidence.append({
             "record_type": "live_text_scenario_result/v1",
@@ -309,7 +314,9 @@ def run_live_text_scenarios(
             "expected_status": scenario.expected_status,
             "observed_status": parsed.get("status", ""),
             "question_required": parsed.get("question_required"),
-            "status": "accepted" if accepted else "failed",
+            "status": "accepted" if provider_accepted else "failed",
+            "output_contract_valid": contract_accepted,
+            "semantic_match": semantic_match,
             "provider": result.provider or request.provider,
             "model": result.model or route.model,
             "route_name": result.route or route.name,
@@ -328,9 +335,12 @@ def run_live_text_scenarios(
             "output_sha256": (
                 _sha256(result.text.encode("utf-8")) if result.text else ""),
             "reasoning_present": result.reasoning_present,
-            "failure_code": "" if accepted else result.error_code,
+            "failure_code": "" if provider_accepted else result.error_code,
+            "output_contract_failure_code": (
+                "" if contract_accepted else result.error_code),
             "failure_detail_sha256": (
-                "" if accepted else _sha256(result.error.encode("utf-8"))),
+                "" if provider_accepted
+                else _sha256(result.error.encode("utf-8"))),
         })
 
     accepted = bool(
@@ -343,6 +353,14 @@ def run_live_text_scenarios(
         "created_at": datetime.now(timezone.utc).isoformat(),
         "status": "accepted" if accepted else "failed",
         "provider_integration_proven": accepted,
+        "output_contract_agreement_complete": all(
+            item["output_contract_valid"] for item in scenario_evidence),
+        "output_contracts_valid": sum(
+            item["output_contract_valid"] for item in scenario_evidence),
+        "semantic_agreement_complete": all(
+            item["semantic_match"] for item in scenario_evidence),
+        "semantic_matches": sum(
+            item["semantic_match"] for item in scenario_evidence),
         "provider": request.provider,
         "model": route.model,
         "route_name": route.name,
@@ -425,7 +443,7 @@ def self_test() -> dict:
                 purposes=("counted_generation",))]
 
     class FakeGateway:
-        def __init__(self):
+        def __init__(self, forced_statuses=None):
             capability = ModelOutputCapability(
                 512, "offline injected test capability")
             self.registry = FakeRegistry()
@@ -434,16 +452,20 @@ def self_test() -> dict:
                 adapter=SimpleNamespace(),
                 output_capability_for=lambda model: capability)}
             self.calls = 0
+            self.forced_statuses = dict(forced_statuses or {})
 
         def invoke(self, request, validate=None):
             self.calls += 1
             found = re.search(
                 r'"scenario_id":"([^"]+)"', request.prompt)
             scenario = expected[found.group(1) if found else ""]
+            observed_status = self.forced_statuses.get(
+                scenario.scenario_id, scenario.expected_status)
             text = json.dumps({
                 "scenario_id": scenario.scenario_id,
-                "status": scenario.expected_status,
-                "question_required": scenario.question_required,
+                "status": observed_status,
+                "question_required": (
+                    observed_status == "needs_clarification"),
                 "decision_summary": "Typed offline fixture decision.",
             }, separators=(",", ":"))
             valid = bool(validate and validate(text))
@@ -470,6 +492,7 @@ def self_test() -> dict:
         check("five_tasks_use_five_bounded_gateway_attempts",
               suite["provider_integration_proven"]
               and suite["physical_model_calls"] == 5
+              and suite["output_contracts_valid"] == 5
               and fake_gateway.calls == 5
               and suite["total_token_ceiling_source"]
               == "declared_model_output_maxima_plus_exact_prompt_bytes")
@@ -481,6 +504,30 @@ def self_test() -> dict:
               and "Typed offline fixture decision" not in saved
               and "OLLAMA_API_KEY" not in saved
               and "Authorization" not in saved)
+
+    with tempfile.TemporaryDirectory() as directory:
+        evidence_path = Path(directory) / "semantic-disagreement.json"
+        injected = replace(request, evidence_path=str(evidence_path))
+        disagreement = run_live_text_scenarios(
+            injected, scenarios,
+            FakeGateway({"repository-audit": "ready"}))
+        check("provider_integration_is_separate_from_semantic_agreement",
+              disagreement["provider_integration_proven"]
+              and not disagreement["semantic_agreement_complete"]
+              and disagreement["semantic_matches"] == 4,
+              "valid provider output preserves one semantic disagreement")
+
+    with tempfile.TemporaryDirectory() as directory:
+        evidence_path = Path(directory) / "contract-disagreement.json"
+        injected = replace(request, evidence_path=str(evidence_path))
+        contract_gap = run_live_text_scenarios(
+            injected, scenarios,
+            FakeGateway({"source-digestion": "not_registered"}))
+        check("provider_integration_is_separate_from_output_contract_quality",
+              contract_gap["provider_integration_proven"]
+              and not contract_gap["output_contract_agreement_complete"]
+              and contract_gap["output_contracts_valid"] == 4,
+              "provider response remains proven while schema gap is visible")
 
     passed = sum(1 for item in results if item["passed"])
     return {

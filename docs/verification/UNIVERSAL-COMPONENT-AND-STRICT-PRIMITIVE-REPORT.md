@@ -61,7 +61,7 @@ standalone qualification lab: 3/3 passed
 zero-tolerance architecture gates: all passed
 ```
 
-The final complete offline suite reported `1457/1457` with zero provider
+The final complete offline suite reported `1459/1459` with zero provider
 calls after the input-use and recovery-contract changes.
 
 ## Clean package evidence
@@ -210,6 +210,12 @@ The standalone black-box lab audited both successful runs. It returned `PASS`
 with no findings for the flagship run and the changed-task run. The same lab
 returned `FAIL` for the earlier 24-pass stuck run and preserved its exact
 progress, verification, and terminal-state defects.
+
+A separate five-call Ollama provider suite received five real responses with
+complete usage accounting and five valid output contracts. Four semantic
+labels matched the reviewed expectations. The one disagreement remains saved
+as semantic evidence and does not invalidate the separately measured provider
+integration result.
 
 ## Remaining gates
 

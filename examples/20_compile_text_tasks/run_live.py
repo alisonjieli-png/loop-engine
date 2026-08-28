@@ -11,8 +11,7 @@ from loop_engine.core.live_text_scenarios import (
     run_live_text_scenarios,
 )
 
-from scenario_definitions import (
-    LIVE_EXPECTED_STATUS, LIVE_INTERACTION_MODE, TASK_SCENARIOS)
+from scenario_definitions import TASK_SCENARIOS
 from run import inspect_text_tasks
 
 
@@ -22,12 +21,12 @@ def load_scenarios(tasks_dir: Path) -> tuple[LiveTextScenario, ...]:
             scenario_id=scenario_id,
             task_text=(tasks_dir / filename).read_text(
                 encoding="utf-8").strip(),
-            interaction_mode=LIVE_INTERACTION_MODE.value,
-            expected_status=LIVE_EXPECTED_STATUS,
+            interaction_mode=mode.value,
+            expected_status=expected_status,
             source_ref=(
                 f"examples/20_compile_text_tasks/tasks/{filename}"),
         )
-        for filename, scenario_id, _mode, _expected_status in TASK_SCENARIOS)
+        for filename, scenario_id, mode, expected_status in TASK_SCENARIOS)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -73,12 +72,17 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"{scenario['scenario_id']}: {scenario['status']} | "
             f"decision={scenario['observed_status'] or 'invalid'} | "
+            f"expected={scenario['expected_status']} | "
+            f"contract_valid={scenario['output_contract_valid']} | "
+            f"semantic_match={scenario['semantic_match']} | "
             f"calls={scenario['physical_model_calls']}")
     print(
         f"Live suite: {result['status']} | "
         f"inspected={len(inspected)} | "
         f"provider={result['provider']} | model={result['model']} | "
         f"calls={result['physical_model_calls']} | "
+        f"contracts={result['output_contracts_valid']}/5 | "
+        f"semantic_matches={result['semantic_matches']}/5 | "
         f"evidence={result['evidence_path']}")
     return 0 if result["provider_integration_proven"] else 1
 
