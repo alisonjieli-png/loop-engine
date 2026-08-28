@@ -126,7 +126,7 @@ class ModelAssistedCompileRequest:
     route_name: str
     interaction_mode: str
     max_physical_model_calls: int
-    max_total_tokens: int
+    max_total_tokens: "int | None" = None
     timeout_seconds: float = 180.0
     thinking_power: str = "medium"
 
@@ -144,7 +144,8 @@ class ModelAssistedCompileRequest:
         if self.max_physical_model_calls != 1:
             raise ModelAssistedCompileError(
                 "model-assisted compilation requires exactly one model call")
-        if self.max_total_tokens < 1 or self.timeout_seconds <= 0:
+        if (self.max_total_tokens is not None and self.max_total_tokens < 1) \
+                or self.timeout_seconds <= 0:
             raise ModelAssistedCompileError(
                 "model-assisted compile budgets must be positive")
         if not self.compiled_task.get("compiled_task_id"):
@@ -287,7 +288,8 @@ def review_compiled_task(request: ModelAssistedCompileRequest, gateway) -> dict:
     minimum_total = (
         capability.maximum_output_tokens
         + len(invocation.prompt.encode("utf-8")))
-    if request.max_total_tokens < minimum_total:
+    effective_total = request.max_total_tokens or minimum_total
+    if effective_total < minimum_total:
         raise ModelAssistedCompileError(
             "max_total_tokens is too small for the selected model's exact "
             f"output maximum; required minimum is {minimum_total}")
@@ -313,7 +315,7 @@ def review_compiled_task(request: ModelAssistedCompileRequest, gateway) -> dict:
             allow_failover=False,
             max_route_attempts=1,
             timeout_seconds=request.timeout_seconds,
-            max_total_tokens=request.max_total_tokens,
+            max_total_tokens=effective_total,
             thinking_power=request.thinking_power),
         temperature=0.0,
         output_contract="one model-assisted task compile review JSON object",
@@ -339,6 +341,10 @@ def review_compiled_task(request: ModelAssistedCompileRequest, gateway) -> dict:
         "input_tokens": result.input_tokens,
         "output_tokens": result.output_tokens,
         "total_tokens": result.total_tokens,
+        "total_token_ceiling": effective_total,
+        "total_token_ceiling_source": (
+            "user_override" if request.max_total_tokens is not None
+            else "declared_model_output_maximum_plus_exact_prompt_bytes"),
         "elapsed_seconds": round(time.monotonic() - started, 6),
         "prompt_version": MODEL_ASSISTED_COMPILE_PROMPT_VERSION,
         "prompt_blocks": list(ordered_blocks),
@@ -371,7 +377,7 @@ def self_test() -> dict:
     request = ModelAssistedCompileRequest(
         compiled_task=compiled, provider="ollama_cloud",
         route_name="cloud.default", interaction_mode="autonomous",
-        max_physical_model_calls=1, max_total_tokens=10_000)
+        max_physical_model_calls=1, max_total_tokens=None)
 
     class FakeRegistry:
         def get(self, name):
@@ -418,7 +424,9 @@ def self_test() -> dict:
     reviewed = review_compiled_task(request, fake)
     check("one_authorized_review_uses_one_gateway_attempt",
           reviewed["ok"] and reviewed["model_calls"] == 1
-          and fake.calls == 1 and reviewed["review"]["status"] == "ready")
+          and fake.calls == 1 and reviewed["review"]["status"] == "ready"
+          and reviewed["total_token_ceiling_source"]
+          == "declared_model_output_maximum_plus_exact_prompt_bytes")
     check("the_review_is_advisory_and_preserves_delegated_choices",
           reviewed["advisory_only"]
           and reviewed["review"]["delegated_choices"]
@@ -483,22 +491,26 @@ def self_test() -> dict:
 
         os.environ[standard_env] = "offline-key-not-for-network"
         shortcut = SimpleNamespace(
-            ollama_api_key=True, openrouter_api_key=False,
-            opencode_go_api_key=False, compile_provider="",
+            ollama_api_key="direct-test-key", openrouter_api_key=None,
+            opencode_go_api_key=None, compile_provider="",
             provider_key_env="", prompt_for_provider_key=False,
             authorize_model_calls=False, max_model_calls=0,
             max_total_tokens=None)
         _apply_compile_provider_shortcut(shortcut)
+        direct_env, direct_key = _compile_provider_key(shortcut)
         check("ollama_key_shortcut_selects_one_bounded_advisory_call",
               shortcut.compile_provider == "ollama_cloud"
               and shortcut.authorize_model_calls
               and shortcut.max_model_calls == 1
-              and shortcut.max_total_tokens == 70_000
-              and not shortcut.prompt_for_provider_key)
+              and shortcut.max_total_tokens is None
+              and not shortcut.prompt_for_provider_key
+              and shortcut._provider_key_value == "direct-test-key"
+              and direct_env == standard_env
+              and direct_key == "direct-test-key")
         os.environ.pop(standard_env, None)
         prompt_shortcut = SimpleNamespace(
-            ollama_api_key=True, openrouter_api_key=False,
-            opencode_go_api_key=False, compile_provider="",
+            ollama_api_key="__prompt__", openrouter_api_key=None,
+            opencode_go_api_key=None, compile_provider="",
             provider_key_env="", prompt_for_provider_key=False,
             authorize_model_calls=False, max_model_calls=0,
             max_total_tokens=None)

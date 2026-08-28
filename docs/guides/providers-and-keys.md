@@ -32,23 +32,21 @@ This check may consume tokens. Run it only when provider calls are authorized.
 
 ## CLI setup
 
-For one task-compilation review, the provider shortcut is the simplest path.
-It uses the standard environment variable when present and otherwise opens a
-hidden prompt:
+For a local test, pass the key value directly:
 
 ```bash
 loop-engine task compile \
-  --ollama-api-key \
+  --ollama-api-key 'YOUR_OLLAMA_API_KEY' \
   --interaction-mode autonomous \
   --file flagship-modeling-task.txt
 ```
 
-Use `--openrouter-api-key` or `--opencode-go-api-key` for the other direct
-routes. Each shortcut authorizes one advisory call and applies its bounded
-default. It does not grant file, network-tool, spending, or external-effect
-permission to the task.
+Use `--openrouter-api-key VALUE` or `--opencode-go-api-key VALUE` for the other
+direct routes. Each shortcut authorizes one advisory call. The token ceiling is
+derived from the selected model's declared maximum and the exact prompt. It
+does not grant file, network-tool, spending, or external-effect permission.
 
-Use environment variables when scripting or running CI:
+Export the key when you do not want it in the command:
 
 ```bash
 export OLLAMA_API_KEY="your-key"       # Ollama Cloud
@@ -57,13 +55,24 @@ export OPENROUTER_API_KEY="your-key"   # OpenRouter
 # or
 export OPENCODE_GO_API_KEY="your-key"  # OpenCode Go task review
 
+loop-engine task compile \
+  --ollama-api-key \
+  --interaction-mode autonomous \
+  --file flagship-modeling-task.txt
+```
+
+If the environment variable is absent, omitting `VALUE` opens a hidden prompt.
+
+Runtime settings remain separate:
+
+```bash
 loop-engine settings init --settings-file ./loop-engine.yaml
 loop-engine settings check --settings-file ./loop-engine.yaml
 loop-engine models inventory --settings-file ./loop-engine.yaml
 ```
 
-The settings file records `credential_ref: env:OLLAMA_API_KEY` or
-`credential_ref: env:OPENROUTER_API_KEY`. It does not contain the secret value.
+The settings file records credential references. It does not contain the
+secret value.
 
 ## OpenCode CLI
 

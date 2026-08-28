@@ -242,7 +242,6 @@ jobs:
           python examples/20_compile_text_tasks/run_live.py \
             --authorize-model-calls \
             --max-model-calls 5 \
-            --max-total-tokens 400000 \
             --timeout 180 \
             --evidence-out "$RUNNER_TEMP/live-ollama-scenarios.json"
 

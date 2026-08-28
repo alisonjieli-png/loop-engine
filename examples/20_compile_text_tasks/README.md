@@ -43,7 +43,6 @@ Run it only when provider calls are authorized:
 python examples/20_compile_text_tasks/run_live.py \
   --authorize-model-calls \
   --max-model-calls 5 \
-  --max-total-tokens 400000 \
   --evidence-out /tmp/live-ollama-scenarios.json
 ```
 
@@ -51,6 +50,11 @@ The live runner uses `ModelGateway`, pins one provider route, disables
 failover, and allows one physical attempt per task. Its saved evidence contains
 task, prompt, output, and error digests. It does not contain credentials, raw
 prompts, raw model output, private reasoning, or provider error text.
+
+The suite derives its total token ceiling from the selected model's declared
+maximum and the five exact assembled prompts. `--max-total-tokens` is optional
+and can impose a stricter user ceiling, but it cannot undercut that derived
+minimum.
 
 GitHub Actions runs this live check once on trusted pushes to `main`. It does
 not run in the three-version Python matrix or on pull requests. Only the live

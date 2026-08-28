@@ -163,17 +163,20 @@ def main(argv=None) -> int:
         help="read the selected provider key through a hidden terminal prompt")
     compile_key_shortcut = parser.add_mutually_exclusive_group()
     compile_key_shortcut.add_argument(
-        "--ollama-api-key", action="store_true",
-        help="use OLLAMA_API_KEY or prompt securely, then add one bounded "
-             "advisory review to task compilation")
+        "--ollama-api-key", nargs="?", const="__prompt__", default=None,
+        metavar="VALUE",
+        help="accept an Ollama key value, or omit VALUE to use "
+             "OLLAMA_API_KEY or a hidden prompt")
     compile_key_shortcut.add_argument(
-        "--openrouter-api-key", action="store_true",
-        help="use OPENROUTER_API_KEY or prompt securely, then add one bounded "
-             "advisory review to task compilation")
+        "--openrouter-api-key", nargs="?", const="__prompt__", default=None,
+        metavar="VALUE",
+        help="accept an OpenRouter key value, or omit VALUE to use "
+             "OPENROUTER_API_KEY or a hidden prompt")
     compile_key_shortcut.add_argument(
-        "--opencode-go-api-key", action="store_true",
-        help="use OPENCODE_GO_API_KEY or prompt securely, then add one bounded "
-             "advisory review to task compilation")
+        "--opencode-go-api-key", nargs="?", const="__prompt__", default=None,
+        metavar="VALUE",
+        help="accept an OpenCode Go key value, or omit VALUE to use "
+             "OPENCODE_GO_API_KEY or a hidden prompt")
     parser.add_argument(
         "--interaction-mode",
         choices=("ask_when_material", "autonomous"),

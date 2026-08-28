@@ -23,6 +23,7 @@ _COMPILE_PROVIDER_ROUTE = {
     "openrouter": "cloud.openrouter",
     "opencode_go": "cloud.opencode_go",
 }
+_KEY_PROMPT_SENTINEL = "__prompt__"
 
 
 def _emit_cli_result(args, record: dict, lines: list[str]) -> None:
@@ -78,6 +79,10 @@ def _task_compile_lines(output: dict) -> list[str]:
     review = output.get("model_assisted_orientation")
     if isinstance(review, dict):
         reviewed = review.get("review") or {}
+        ceiling_source = (
+            "user override" if review.get("total_token_ceiling_source")
+            == "user_override" else
+            "derived from model maximum and exact prompt")
         lines.extend([
             "",
             "Model-assisted Orientation review:",
@@ -86,6 +91,8 @@ def _task_compile_lines(output: dict) -> list[str]:
             f"  Model: {review.get('model') or 'unknown'}",
             f"  Physical model calls: {review.get('model_calls')}",
             f"  Provider-reported tokens: {review.get('total_tokens')}",
+            f"  Token ceiling: {review.get('total_token_ceiling')} "
+            f"({ceiling_source})",
             f"  Task family: {reviewed.get('task_family') or 'unknown'}",
             f"  Next action: {reviewed.get('next_action') or 'none'}",
             "  Advisory only: yes",
@@ -307,6 +314,9 @@ def _task_feedback_from_args(args) -> tuple:
 def _compile_provider_key(args) -> tuple[str, str]:
     provider = args.compile_provider
     standard_env = _COMPILE_PROVIDER_ENV[provider]
+    explicit_key = getattr(args, "_provider_key_value", "")
+    if explicit_key:
+        return standard_env, explicit_key
     if args.prompt_for_provider_key and args.provider_key_env:
         raise ValueError(
             "use --prompt-for-provider-key or --provider-key-env, not both")
@@ -330,15 +340,15 @@ def _compile_provider_key(args) -> tuple[str, str]:
 
 def _apply_compile_provider_shortcut(args) -> None:
     selected = [
-        ("ollama_cloud", args.ollama_api_key, 70_000),
-        ("openrouter", args.openrouter_api_key, 70_000),
-        ("opencode_go", args.opencode_go_api_key, 400_000),
+        ("ollama_cloud", args.ollama_api_key),
+        ("openrouter", args.openrouter_api_key),
+        ("opencode_go", args.opencode_go_api_key),
     ]
-    active = [(provider, ceiling) for provider, enabled, ceiling in selected
-              if enabled]
+    active = [(provider, value)
+              for provider, value in selected if value is not None]
     if not active:
         return
-    provider, ceiling = active[0]
+    provider, supplied_value = active[0]
     if args.compile_provider and args.compile_provider != provider:
         raise ValueError(
             "provider-specific key flag conflicts with --compile-provider")
@@ -349,13 +359,14 @@ def _apply_compile_provider_shortcut(args) -> None:
         raise ValueError(
             "provider-assisted task compilation allows one model call")
     args.compile_provider = provider
+    args._provider_key_value = (
+        supplied_value if supplied_value != _KEY_PROMPT_SENTINEL else "")
     standard_env = _COMPILE_PROVIDER_ENV[provider]
-    args.prompt_for_provider_key = not bool(
-        os.environ.get(standard_env, "").strip())
+    args.prompt_for_provider_key = (
+        supplied_value == _KEY_PROMPT_SENTINEL
+        and not bool(os.environ.get(standard_env, "").strip()))
     args.authorize_model_calls = True
     args.max_model_calls = 1
-    if args.max_total_tokens is None:
-        args.max_total_tokens = ceiling
 
 
 @contextlib.contextmanager
@@ -430,10 +441,9 @@ def run_task_compile(args) -> int:
         if not args.authorize_model_calls:
             raise ValueError(
                 "--compile-provider requires --authorize-model-calls")
-        if args.max_model_calls != 1 or not args.max_total_tokens:
+        if args.max_model_calls != 1:
             raise ValueError(
-                "provider-assisted compilation requires --max-model-calls 1 "
-                "and --max-total-tokens")
+                "provider-assisted compilation requires --max-model-calls 1")
 
         from .core.task_compile_model import (
             ModelAssistedCompileRequest, review_compiled_task)

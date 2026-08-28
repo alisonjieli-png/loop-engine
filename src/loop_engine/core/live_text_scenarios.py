@@ -242,10 +242,6 @@ def run_live_text_scenarios(
     if request.max_physical_model_calls != len(frozen):
         raise LiveModelVerificationError(
             "max_physical_model_calls must equal the five-task suite size")
-    if request.max_total_tokens is None:
-        raise LiveModelVerificationError(
-            "live text scenarios require an explicit total-token ceiling")
-
     if gateway is None:
         from .model_gateway import ModelGateway
         gateway = ModelGateway()
@@ -259,7 +255,8 @@ def run_live_text_scenarios(
     minimum_total = sum(
         capability.maximum_output_tokens + len(prompt.encode("utf-8"))
         for _, prompt, _, _ in assembled)
-    if request.max_total_tokens < minimum_total:
+    effective_total = request.max_total_tokens or minimum_total
+    if effective_total < minimum_total:
         raise LiveModelVerificationError(
             "max_total_tokens is too small for five calls at the exact "
             "source-backed model maximum; required minimum is "
@@ -341,7 +338,7 @@ def run_live_text_scenarios(
     accepted = bool(
         physical_calls == request.max_physical_model_calls
         and accounting_complete
-        and known_total_tokens <= request.max_total_tokens
+        and known_total_tokens <= effective_total
         and all(item["status"] == "accepted" for item in scenario_evidence))
     evidence = {
         "record_type": "live_text_scenario_suite/v1",
@@ -355,7 +352,10 @@ def run_live_text_scenarios(
         "scenario_count": len(frozen),
         "physical_model_call_ceiling": request.max_physical_model_calls,
         "physical_model_calls": physical_calls,
-        "total_token_ceiling": request.max_total_tokens,
+        "total_token_ceiling": effective_total,
+        "total_token_ceiling_source": (
+            "user_override" if request.max_total_tokens is not None
+            else "declared_model_output_maxima_plus_exact_prompt_bytes"),
         "known_total_tokens": (
             known_total_tokens if accounting_complete else None),
         "usage_accounting_complete": accounting_complete,
@@ -402,7 +402,7 @@ def self_test() -> dict:
     request = LiveTextScenarioSuiteRequest(
         provider="ollama_cloud", repository_root=".",
         route_name="cloud.default", authorize_model_calls=True,
-        max_physical_model_calls=5, max_total_tokens=20_000,
+        max_physical_model_calls=5, max_total_tokens=None,
         evidence_path="unused-in-refusal.json")
     unauthorized = False
     try:
@@ -472,7 +472,9 @@ def self_test() -> dict:
         check("five_tasks_use_five_bounded_gateway_attempts",
               suite["provider_integration_proven"]
               and suite["physical_model_calls"] == 5
-              and fake_gateway.calls == 5)
+              and fake_gateway.calls == 5
+              and suite["total_token_ceiling_source"]
+              == "declared_model_output_maxima_plus_exact_prompt_bytes")
         check("five_outcomes_are_independently_validated",
               [item["observed_status"] for item in suite["scenarios"]]
               == [item.expected_status for item in scenarios])

@@ -55,6 +55,15 @@ loop-engine task compile \
 Loop Engine uses `OLLAMA_API_KEY` when it is already set. Otherwise, it asks
 for the key through a hidden prompt.
 
+For a disposable local test, pass the value directly:
+
+```bash
+loop-engine task compile \
+  --ollama-api-key 'YOUR_OLLAMA_API_KEY' \
+  --interaction-mode autonomous \
+  --file flagship-modeling-task.txt
+```
+
 ## Run the full contributor checks
 
 The full self-test scans the installed package and can take about a minute.

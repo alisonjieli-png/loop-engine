@@ -110,27 +110,38 @@ accepted selection.
 
 ### Add one model-assisted Orientation review
 
-Task compilation stays model-free unless you select a provider. The shortcut
-uses its standard environment variable when present. Otherwise, it opens a
-hidden key prompt. The key is not part of the command and is not saved.
+Task compilation stays model-free unless you select a provider. For a local
+test, pass the Ollama key directly:
 
 ```bash
+loop-engine task compile \
+  --ollama-api-key 'YOUR_OLLAMA_API_KEY' \
+  --interaction-mode autonomous \
+  --file flagship-modeling-task.txt
+```
+
+You can also export it once and omit the value:
+
+```bash
+export OLLAMA_API_KEY='YOUR_OLLAMA_API_KEY'
+
 loop-engine task compile \
   --ollama-api-key \
   --interaction-mode autonomous \
   --file flagship-modeling-task.txt
 ```
 
-The same command shape works with OpenRouter and OpenCode Go:
+When no value or environment variable exists, `--ollama-api-key` opens a
+hidden prompt. The same forms work with OpenRouter and OpenCode Go:
 
 ```bash
 loop-engine task compile \
-  --openrouter-api-key \
+  --openrouter-api-key 'YOUR_OPENROUTER_API_KEY' \
   --interaction-mode autonomous \
   --file flagship-modeling-task.txt
 
 loop-engine task compile \
-  --opencode-go-api-key \
+  --opencode-go-api-key 'YOUR_OPENCODE_GO_API_KEY' \
   --interaction-mode autonomous \
   --file flagship-modeling-task.txt
 ```
@@ -140,9 +151,9 @@ provider's bounded default. It keeps the deterministic compiled task and adds a
 short review with the provider, model, token usage, and selected next action.
 Use `--format json` when you need the complete typed record.
 
-There is no `--api-key VALUE` form. A raw value in command arguments can appear
-in shell history, process listings, and CI logs. Advanced environment-variable,
-route, model, and budget options are documented in
+Direct values are convenient for local testing, but they can appear in shell
+history and process listings. Use the environment-variable or hidden-prompt
+form for shared machines and CI. Advanced route, model, and budget options are documented in
 [Providers and keys](docs/guides/providers-and-keys.md).
 
 Use autonomous interaction mode when the run must not pause for questions:
@@ -407,14 +418,13 @@ Then run:
 python examples/20_compile_text_tasks/run_live.py \
   --authorize-model-calls \
   --max-model-calls 5 \
-  --max-total-tokens 400000 \
   --timeout 180 \
   --evidence-out ./live-ollama-scenarios.json
 ```
 
-The `400000` value is a hard safety ceiling derived from five declared model
-output maxima. It is not expected usage. Recent accepted runs used about 3,700
-to 4,100 provider-reported tokens in total.
+The suite derives its ceiling from the selected model's declared maximum and
+the five exact prompts. Recent accepted runs used about 3,700 to 4,100
+provider-reported tokens in total.
 
 ## The five-step product demo
 

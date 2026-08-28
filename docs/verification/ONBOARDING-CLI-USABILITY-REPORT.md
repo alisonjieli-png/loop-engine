@@ -72,17 +72,19 @@ No traceback is shown for an ordinary address-in-use failure.
 
 ## Provider shortcut
 
-These flags select one advisory review, apply one bounded call, and use the
-standard environment variable when present. Otherwise, they open a hidden
-prompt:
+These flags select one advisory review and one bounded call. They accept a
+direct test value, use the standard environment variable when no value is
+given, or open a hidden prompt when neither exists:
 
 - `--ollama-api-key`;
 - `--openrouter-api-key`;
 - `--opencode-go-api-key`.
 
-The Ollama shortcut passed one real provider call. The deterministic compiler
-made zero calls, the advisory review made one call, and the command did not
-contain or print the raw key.
+The Ollama direct-value shortcut passed one real provider call. The
+deterministic compiler made zero calls, the advisory review made one call, and
+the output did not contain the raw key. Its `68,834` token ceiling was derived
+from the declared model output maximum and the exact prompt, not a rounded
+constant.
 
 ## Current limit
 
