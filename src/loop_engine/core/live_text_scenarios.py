@@ -28,7 +28,7 @@ from .model_capabilities import UnknownModelOutputLimit
 
 
 LIVE_TEXT_SCENARIO_PROMPT_VERSION = \
-    "core.prompt.live_text_orientation@1"
+    "core.prompt.live_text_orientation@2"
 LIVE_TEXT_SCENARIO_STATUSES = (
     "ready", "needs_clarification", "abstain_required")
 LIVE_TEXT_SCENARIO_INTERACTION_MODES = (
@@ -139,15 +139,13 @@ def _scenario_prompt(
         "hard_constraints_and_tools": (
             "Classify readiness to begin the next governed preparation step, "
             "not whether the whole task is already executable or complete. "
-            "The live suite has a current checked-out repository available. "
-            "A safe ordinary selection may be delegated when the request "
-            "clearly permits best judgment. For the public modeling task, an "
-            "authorized public dataset and its documented target are delegated "
-            "choices. An explicit file_path counts as supplied for orientation; "
-            "a later step must verify that it exists. A generic repository "
-            "audit may use the current checkout. Discovery of appropriate "
-            "official public sources is a safe delegated preparation choice. "
-            "These facts do not grant network or file-effect permission. "
+            "A safe ordinary selection may be delegated when the request says "
+            "that any compatible choice is acceptable or clearly permits best "
+            "judgment. A value that depends on a later selected input is derived, "
+            "not missing. An explicit path or source reference counts as supplied "
+            "for orientation; a later step must verify it. Discovery of suitable "
+            "official public sources may be a delegated preparation choice. None "
+            "of these states grants network or file-effect permission. "
             "In ask_when_material mode, a missing non-delegable input requires "
             "needs_clarification. In autonomous mode, the same gap requires "
             "abstain_required. Otherwise return ready."),

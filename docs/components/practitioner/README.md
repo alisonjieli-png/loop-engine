@@ -94,7 +94,7 @@ autonomous choice continues under the same constraints. Ongoing advice during
 or after a run still belongs to User Feedback Intelligence; task feedback does
 not create another feedback store.
 
-See [compile five text tasks](../../../examples/20_compile_text_tasks/) for
+See [inspect five text requests](../../../examples/20_compile_text_tasks/) for
 ready, clarification-required, and autonomous-abstention outcomes.
 
 ## The Practitioner Loop graph

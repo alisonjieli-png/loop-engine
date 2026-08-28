@@ -131,6 +131,8 @@ class WorkspaceOperationService:
             f"workspace:{workspace.workspace_id}:command:{request.argv[0]}",
             tuple(sorted({
                 "backend_kind": workspace.backend_kind,
+                "network_access": str(
+                    bool(self.backend.spec.network_access)).lower(),
                 "request_digest": _mapping_digest(request.to_dict()),
                 "root_digest": _text_digest(workspace.root),
                 "workspace_id": workspace.workspace_id,

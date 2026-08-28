@@ -185,9 +185,17 @@ jobs:
       - name: Conformance gates
         run: python -m loop_engine --conformance
 
+      - name: Independent component qualification lab
+        run: |
+          cd devtools/qualification_lab
+          python -m unittest -v test_runner.py
+
       - name: Examples run
         run: |
-          python -m loop_engine task build --interaction-mode autonomous --text "Train and compare several supervised prediction models."
+          if python -m loop_engine task build --practitioner-mode deterministic --interaction-mode autonomous --text "Train and compare several supervised prediction models."; then
+            echo "An unsupported deterministic build must not report success."
+            exit 1
+          fi
           python examples/01_prioritize_support_queue/run.py
           python examples/02_predict_customer_renewal/run.py
           python examples/04_read_run_reports/run.py
@@ -205,7 +213,7 @@ jobs:
           python examples/20_compile_text_tasks/run.py
 
   live-ollama:
-    name: live Ollama compile and five scenarios
+    name: live Ollama orientation for five text scenarios
     if: >-
       github.ref == 'refs/heads/main' &&
       (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
@@ -244,41 +252,6 @@ jobs:
             --timeout 180 \
             --evidence-out "$RUNNER_TEMP/live-ollama-scenarios.json"
 
-      - name: Run one provider-assisted task compilation
-        env:
-          OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
-        run: |
-          if [ -z "${OLLAMA_API_KEY:-}" ]; then
-            echo "OLLAMA_API_KEY is not configured for this trusted workflow."
-            exit 1
-          fi
-          python -m loop_engine task build \
-            --ollama-api-key \
-            --interaction-mode autonomous \
-            --format json \
-            --text "Download an authorized public dataset. Train a linear model, tree model, boosted-tree model, and MLP on identical validation folds. Compare them honestly and produce verified PDF and HTML reports." \
-            > "$RUNNER_TEMP/model-assisted-task-compile.json"
-          python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          path = Path(os.environ["RUNNER_TEMP"]) / "model-assisted-task-compile.json"
-          body = path.read_text(encoding="utf-8")
-          result = json.loads(body)
-          review = result["model_assisted_orientation"]
-          assert result["model_calls"] == 0
-          assert result["total_model_calls"] == 1
-          assert review["ok"] is True
-          assert review["advisory_only"] is True
-          assert review["model_calls"] == 1
-          assert review["usage_accounting_complete"] is True
-          assert review["review"]["status"] == "ready"
-          assert review["review"]["material_questions"] == []
-          assert os.environ["OLLAMA_API_KEY"] not in body
-          print("provider-assisted task build: accepted and secret-safe")
-          PY
-
       - name: Upload secret-safe live evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -286,7 +259,6 @@ jobs:
           name: live-ollama-scenarios
           path: |
             ${{ runner.temp }}/live-ollama-scenarios.json
-            ${{ runner.temp }}/model-assisted-task-compile.json
           if-no-files-found: warn
           retention-days: 14
 

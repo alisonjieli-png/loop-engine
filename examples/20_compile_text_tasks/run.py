@@ -1,4 +1,4 @@
-"""Compile five text-only tasks in autonomous interaction mode."""
+"""Inspect deterministic intake records for five text-only tasks."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -8,7 +8,7 @@ from loop_engine.templates.compiler import TaskCompileRequest, compile_task
 from scenario_definitions import TASK_SCENARIOS
 
 
-def compile_text_tasks(tasks_dir: Path) -> tuple[dict, ...]:
+def inspect_text_tasks(tasks_dir: Path) -> tuple[dict, ...]:
     results = []
     for filename, scenario_id, mode, expected_status in TASK_SCENARIOS:
         path = tasks_dir / filename
@@ -49,7 +49,7 @@ def compile_text_tasks(tasks_dir: Path) -> tuple[dict, ...]:
 
 
 def main() -> int:
-    results = compile_text_tasks(Path(__file__).parent / "tasks")
+    results = inspect_text_tasks(Path(__file__).parent / "tasks")
     for result in results:
         print(
             f"{result['task']}: {result['status']} | "

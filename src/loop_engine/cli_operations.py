@@ -355,7 +355,7 @@ def _compile_provider_key(args) -> tuple[str, str]:
     return standard_env, key
 
 
-def _apply_compile_provider_shortcut(args) -> None:
+def _apply_compile_provider_shortcut(args, default_model_calls: int = 1) -> None:
     selected = [
         ("ollama_cloud", args.ollama_api_key),
         ("openrouter", args.openrouter_api_key),
@@ -372,9 +372,8 @@ def _apply_compile_provider_shortcut(args) -> None:
     if args.provider_key_env or args.prompt_for_provider_key:
         raise ValueError(
             "provider-specific key flag already selects a hidden prompt")
-    if args.max_model_calls not in (0, 1):
-        raise ValueError(
-            "provider-assisted task compilation allows one model call")
+    if default_model_calls < 1 or args.max_model_calls < 0:
+        raise ValueError("model-call budget must be positive")
     args.compile_provider = provider
     args._provider_key_value = (
         supplied_value if supplied_value != _KEY_PROMPT_SENTINEL else "")
@@ -383,7 +382,8 @@ def _apply_compile_provider_shortcut(args) -> None:
         supplied_value == _KEY_PROMPT_SENTINEL
         and not bool(os.environ.get(standard_env, "").strip()))
     args.authorize_model_calls = True
-    args.max_model_calls = 1
+    if args.max_model_calls == 0:
+        args.max_model_calls = default_model_calls
 
 
 @contextlib.contextmanager
@@ -505,10 +505,9 @@ def run_solve(args) -> int:
         settings = loaded.settings
         model_execution = None
         if args.authorize_model_calls:
-            if args.max_model_calls < 1 or not args.max_total_tokens:
+            if args.max_model_calls < 1:
                 raise ValueError(
-                    "authorized solve requires --max-model-calls >= 1 and "
-                    "--max-total-tokens")
+                    "authorized solve requires --max-model-calls >= 1")
             policy = ModelPolicyRequest(
                 thinking_power=(args.thinking_power
                                 or settings.models.default_thinking_power),
@@ -525,7 +524,17 @@ def run_solve(args) -> int:
             runs_dir=(args.runs_dir or settings.history.resolved_runs_dir()),
             save_run_history=settings.history.save_run_history,
             interaction_mode=args.interaction_mode,
-            feedback=_task_feedback_from_args(args)))
+            feedback=_task_feedback_from_args(args),
+            max_passes=args.max_passes,
+            allow_network_reads=settings.operating.access_mode in (
+                "approved_external_read", "broad_external_read",
+                "approved_external_write"),
+            allow_workspace_writes=(
+                settings.operating.construction_and_execution_mode
+                in ("sandbox_generate", "promotion_authorized")),
+            allow_sandbox_commands=(
+                settings.operating.construction_and_execution_mode
+                in ("sandbox_generate", "promotion_authorized"))))
         print(json.dumps(outcome.to_dict(), indent=1))
         return 0 if outcome.solved else 1
     except (OSError, ValueError) as exc:

@@ -21,6 +21,8 @@ from ..loop.recursive_loop import (EXIT_CONDITIONS, FRAMEWORKS, MODES,
                                    MODEL_THINKING_POWER_LEVELS)
 from .model_routes import PURPOSES, ModelRoute, RoutePolicy, default_routes
 from .operating_profile import OperatingProfile
+from .component_contracts import (
+    LoopComponentDraft, component_payload_digest, define_loop_component)
 
 
 SETTINGS_VERSION = 1
@@ -613,3 +615,13 @@ class RuntimeSettings:
                 "resolved_runs_dir": self.history.resolved_runs_dir(),
             },
         }
+
+    def component_definition(self):
+        """Represent the resolved settings snapshot as one static component."""
+        payload = self.safe_summary()
+        return define_loop_component(LoopComponentDraft(
+            "core.settings.runtime", "1.0.0", "settings", "static",
+            "runtime_settings/v1", component_payload_digest(payload),
+            "resolved Core and user settings",
+            role_affinities=("practitioner", "intelligence", "solution"),
+            mode_support=("deterministic", "hybrid", "non_deterministic")))

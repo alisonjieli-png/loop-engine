@@ -13,7 +13,7 @@ from loop_engine.core.live_text_scenarios import (
 
 from scenario_definitions import (
     LIVE_EXPECTED_STATUS, LIVE_INTERACTION_MODE, TASK_SCENARIOS)
-from run import compile_text_tasks
+from run import inspect_text_tasks
 
 
 def load_scenarios(tasks_dir: Path) -> tuple[LiveTextScenario, ...]:
@@ -49,7 +49,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     tasks_dir = Path(__file__).resolve().parent / "tasks"
-    compiled = compile_text_tasks(tasks_dir)
+    inspected = inspect_text_tasks(tasks_dir)
     try:
         result = run_live_text_scenarios(
             LiveTextScenarioSuiteRequest(
@@ -76,7 +76,7 @@ def main(argv: list[str] | None = None) -> int:
             f"calls={scenario['physical_model_calls']}")
     print(
         f"Live suite: {result['status']} | "
-        f"compiled={len(compiled)} | "
+        f"inspected={len(inspected)} | "
         f"provider={result['provider']} | model={result['model']} | "
         f"calls={result['physical_model_calls']} | "
         f"evidence={result['evidence_path']}")

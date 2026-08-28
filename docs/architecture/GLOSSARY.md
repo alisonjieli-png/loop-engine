@@ -5,12 +5,32 @@ between similar-sounding components. It is normative: when code,
 records, tests, and documentation disagree, this glossary and the
 Constitution are the authority until an ADR changes them.
 
+The [component glossary](COMPONENT-GLOSSARY.md) adds the shared passive
+component envelope, `LoopValue`, atomic primitives, `LLMWorkPacket`, and prompt
+assembly terms. It does not change the runtime rule: `Loop` is the only
+executable type.
+
+Strict operation rule:
+
+```text
+semantic value or transformation
+→ logical Loop
+
+native Python operation
+→ audited intrinsic kernel only
+```
+
 ## 1. Node and Loop
 
 | Term | Definition | Difference from neighbors |
 |---|---|---|
 | Node | Ontological category and package namespace only. There is no concrete operational Node class. | Node classifies; it does not run. |
 | Loop | The sole concrete operational runtime and executable graph vertex, implemented in `loop/recursive_loop.py`. | A Loop runs; definitions and ontology records are passive. |
+| Loop component | Versioned, typed, digest-pinned semantic building block. Static components are inert; executable definitions instantiate through `Loop`. | A component participates in one ontology; it is not another runtime. |
+| LoopComponentDefinition / LoopComponentRef | Passive component envelope and exact pointer. | The definition describes; the ref points; neither executes. |
+| LoopValue / LoopValueRef | Typed produced value and body-free reference with producer, contract, digest, lineage, privacy, materialization, and verification. | A raw Python value does not cross a protected component boundary. |
+| AtomicPrimitiveDefinition | Passive registered description of one small semantic operation. | The primitive runs through `Loop`; it is not a subclass. |
+| Intrinsic kernel | Finite audited native substrate for registered deterministic primitives. | It owns no task, domain, provider, storage, policy, permission, or routing logic. |
 | `kind: loop_node` | Historical serialized record spelling accepted only by the legacy migration reader. | It becomes `LoopDefinitionRecord`; new code never emits it. |
 | LoopDefinition | Immutable, versioned description used to instantiate a Loop: ID, version, digest, role profile, contract, modes, step profile, conditions, effects, permissions, capabilities. | A definition is data; a Loop is the live runtime. |
 | LoopDefinitionRef | Exact reference: definition_id + version + content_digest. | A ref is a pointer; a definition is the body. |
@@ -24,6 +44,8 @@ Constitution are the authority until an ADR changes them.
 | LoopGraphDefinition | The authoritative static DAG: versioned definition refs, vertices, typed edges, graph digest. | The graph is a contract; the Canvas is a builder. |
 | SolutionCanvas | Product artifact describing a reusable solution for new inputs. | A Canvas builds; the graph is the authority. |
 | IntelligenceItemRef / IntelligenceItemPackage | Small typed reference and lazy package returned by intelligence search. | A ref carries no payload; a package loads only after selection. Historical LoopRef and LoopCapsule imports are compatibility-only. |
+| LLMWorkPacket | Passive provider-neutral packet for one bounded semantic model step. | The packet is data; context selection, prompt assembly, and model invocation are separate Loops. |
+| PromptAssemblySnapshot | Exact block order, selection, digests, packet digest, and prompt digest for one assembly. | A snapshot is evidence; it is not the raw prompt or task authority. |
 
 ## 2. Roles, relationships, and modes
 

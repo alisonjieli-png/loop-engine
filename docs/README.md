@@ -27,6 +27,13 @@ slide deck, browser player, and exported video.
 | Page | What it explains |
 |---|---|
 | [Self-improvement as a Practitioner task](components/self-improvement/) | Run History review, intelligence audits, candidates, and domain seeds. |
+| [Adaptive Practitioner architecture](architecture/ADAPTIVE-WORK-APPROACH-ARCHITECTURE.md) | Generic orientation, typed actions, research, construction, repair, and completion rules. |
+| [Component glossary](architecture/COMPONENT-GLOSSARY.md) | Static components, executable Loops, atomic primitives, packets, values, and neighboring terms. |
+| [Component data dictionary](architecture/COMPONENT-DATA-DICTIONARY.md) | Fields and invariants for the first universal component contracts. |
+| [Component interaction dictionary](architecture/COMPONENT-INTERACTION-DICTIONARY.md) | Exact context, packet, prompt, model, Solution, and Spawned-work interactions. |
+| [Component extension rules](architecture/COMPONENT-EXTENSION-AND-PARAMETERIZATION-RULES.md) | When to parameterize, compose, adapt, add a component, or create another Loop. |
+| [Context handoff ontology](architecture/CONTEXT-HANDOFF-ONTOLOGY.md) | Global-to-local task hierarchy, references, materialization, demand pull, and isolation. |
+| [Prompt and invocation encapsulation](architecture/PROMPT-AND-INVOCATION-ENCAPSULATION.md) | LLMWorkPacket, deterministic atomic prompt assembly, ModelGateway, repair, and evidence. |
 | [Five-problem campaign](guides/campaigns.md) | Bounded provider and mode comparison with saved playback histories. |
 | [Benchmark candidate registry](benchmarks/) | Cataloged tracks with source, evaluator, access, cost, and eligibility fields. |
 

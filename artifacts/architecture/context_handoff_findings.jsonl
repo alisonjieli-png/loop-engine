@@ -1,0 +1,1 @@
+{"evidence": "typed spawned work exists, but global, long, medium, short, parent, local, availability, materialization, and demand-pull fields are not yet one complete component contract", "finding_id": "context.handoff.full_horizon_stack", "severity": "HIGH", "state": "REQUIRED_NOT_IMPLEMENTED"}

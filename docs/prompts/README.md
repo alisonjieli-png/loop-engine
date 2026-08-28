@@ -3,6 +3,17 @@
 These prompts help start a new coding-agent session. They defer to the current
 repository and `AGENTS.md`. They are not parallel architecture authorities.
 
+- [Universal component prompt suite](UNIVERSAL-COMPONENT-PROMPT-SUITE.md)
+  is the current implementation, adversarial review, ideation, and continuous
+  conformance set for passive component encapsulation, typed context handoff,
+  deterministic prompt assembly, and recursive Practitioner work.
+- [Strict everything-is-a-Loop primitives](STRICT-EVERYTHING-IS-A-LOOP-PRIMITIVES.md)
+  moves semantic values and transformations into deterministic atomic Loops
+  over one finite audited intrinsic kernel.
+- [Ollama component qualification lab](OLLAMA-COMPONENT-QUALIFICATION-LAB.md)
+  builds an independent black-box lab that qualifies one component,
+  interaction, state transition, and architecture classification at a time.
+
 - [Governing development prompt](LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md)
   continues implementation, cleanup, testing, falsification, documentation,
   and completion auditing in OpenCode or Codex.
@@ -22,7 +33,9 @@ repository and `AGENTS.md`. They are not parallel architecture authorities.
   persistence, and observability, all served by one shared resolution,
   merge, compatibility, adaptation, budget, and receipt engine.
 - [LoopNode specification mandate](LOOP-ENGINE-LOOPNODE-SPEC-MANDATE.md)
-  implements the universal LoopNodeSpec configuration envelope:
+  is retained as superseded design history. Its active `LoopNode` terminology
+  must not override the canonical `Loop` runtime or the current component
+  prompt suite. It described a configuration envelope using:
   LoopNodeDefinitionRecord, LoopProcedureSpec, LoopStepBinding,
   RunModePolicy, ModelPolicy, ResolvedLoopNodePlan, and the small runtime
   LoopNode that carries references rather than bodies.

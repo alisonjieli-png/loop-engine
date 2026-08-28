@@ -18,7 +18,7 @@ network, model, file, cost, and external-effect notes.
 | [05 Kaggle competition](05_kaggle_competition/) | Runs a narrow external competition workflow. |
 | [06 reconcile invoices](06_reconcile_invoices/) | Reconciles invoices with nested loops and visible retries. |
 | [10 validate a customer import](10_validate_customer_import/) | Compiles and runs a deterministic Solution Canvas with validation and fallback. |
-| [20 compile five text tasks](20_compile_text_tasks/) | Compiles five plain-text tasks in autonomous mode without model calls or blocking questions. |
+| [20 inspect five text requests](20_compile_text_tasks/) | Checks five task-intake records without claiming that their solutions ran. |
 
 ## Models and intelligence
 

@@ -1,0 +1,2 @@
+{"decision": "REUSE_AS_IS_AND_EXTEND", "evidence": "adaptive Practitioner now reuses this layout authority", "finding_id": "component.redundancy.prompt_assembly_authority", "subject": "core.reasoning_call.PromptAssemblySpec"}
+{"count": 3141, "decision": "REPLACE_WITH_LOOP_OPERATION_IN_BOUNDED_BATCHES", "evidence": "exact file, symbol, line, and operation inventory", "finding_id": "component.redundancy.semantic_native_baseline", "subject": "remaining native semantic operations"}

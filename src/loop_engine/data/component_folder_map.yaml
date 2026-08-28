@@ -1,0 +1,75 @@
+record_type: component_folder_map/v1
+version: 1.0.0
+folders:
+  - path: src/loop_engine/loop
+    semantic_owner: canonical_loop_runtime_and_runtime_contracts
+    allowed_component_kinds: [runtime_definition, profile, procedure, policy]
+    forbidden_component_kinds: [provider, adapter]
+    public_boundary: loop_engine.Loop
+    dependency_direction: ontology_and_passive_contracts_to_runtime
+  - path: src/loop_engine/core
+    semantic_owner: internal_runtime_services_and_component_operations
+    allowed_component_kinds:
+      - settings
+      - policy
+      - strategy
+      - guidance
+      - context_assembly
+      - prompt_assembly
+      - llm_work_packet
+      - capability
+      - adapter
+      - provider
+      - route
+      - artifact
+      - result
+    forbidden_component_kinds: [new_runtime]
+    public_boundary: three_core_architecture_capability_groups
+    dependency_direction: contracts_to_adapters_not_adapters_to_ontology
+  - path: src/loop_engine/data
+    semantic_owner: installed_static_component_and_policy_data
+    allowed_component_kinds:
+      - persona
+      - guidance
+      - question_portfolio
+      - prompt_assembly
+      - configuration
+    forbidden_component_kinds: [runtime_definition, executable_code]
+    public_boundary: none
+    dependency_direction: loaded_by_typed_core_readers
+  - path: src/loop_engine/templates
+    semantic_owner: passive_task_patterns_and_exact_baseline_binding
+    allowed_component_kinds: [procedure, procedure_step, input_contract]
+    forbidden_component_kinds: [new_runtime, provider]
+    public_boundary: task_intake_and_binding
+    dependency_direction: task_records_to_practitioner
+  - path: src/loop_engine/code_nodes
+    semantic_owner: reusable_solution_capabilities_and_compatibility_facades
+    allowed_component_kinds: [capability, procedure, verification_contract]
+    forbidden_component_kinds: [new_runtime, passive_loopnode]
+    public_boundary: selected_solution_operations
+    dependency_direction: solution_contracts_to_runtime
+  - path: examples
+    semantic_owner: thin_launchers_inputs_and_acceptance_fixtures
+    allowed_component_kinds: [experiment_definition, benchmark_definition]
+    forbidden_component_kinds: [generic_solver_authority]
+    public_boundary: installed_or_checkout_examples
+    dependency_direction: examples_depend_on_package_never_reverse
+  - path: docs
+    semantic_owner: human_projections_of_machine_and_runtime_authorities
+    allowed_component_kinds: [report_projection]
+    forbidden_component_kinds: [runtime_authority]
+    public_boundary: documentation
+    dependency_direction: generated_or_validated_from_current_sources
+  - path: devtools/qualification_lab
+    semantic_owner: independent_black_box_component_qualification
+    allowed_component_kinds:
+      - qualification_case
+      - experiment_definition
+      - report_projection
+      - adapter
+      - provider
+    forbidden_component_kinds:
+      - runtime_definition
+    public_boundary: standalone_copyable_lab
+    dependency_direction: may_invoke_public_cli_but_never_import_loop_engine

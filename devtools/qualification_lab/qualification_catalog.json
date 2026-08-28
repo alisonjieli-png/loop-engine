@@ -1,0 +1,159 @@
+{
+  "record_type": "component_qualification_catalog/v1",
+  "cases": [
+    {
+      "case_id": "component-identity",
+      "component_kind": "static_or_executable_component",
+      "stage": "identity_and_authority",
+      "goal": "Prove one component has one identity, version, digest, operationality, authority, and source of truth.",
+      "questions": [
+        "What exact semantic responsibility does this component own?",
+        "Is it passive data or independently governed work?",
+        "What authority does it explicitly not possess?",
+        "What neighboring component is easiest to confuse with it?"
+      ],
+      "invariants": [
+        "one_semantic_identity",
+        "version_and_digest_present",
+        "static_component_has_no_hidden_io",
+        "authority_is_explicit"
+      ],
+      "adversarial_cases": [
+        "duplicate identity",
+        "missing digest",
+        "passive record performs provider call",
+        "preference broadens permission"
+      ]
+    },
+    {
+      "case_id": "atomic-deterministic-operation",
+      "component_kind": "atomic_loop_definition",
+      "stage": "single_operation",
+      "goal": "Prove one pure operation executes as a deterministic logical Loop with typed lineage.",
+      "questions": [
+        "What are the exact input and output contracts?",
+        "What native intrinsic implements the operation?",
+        "Is execution deterministic, idempotent, cacheable, and fusible?",
+        "Can the failed primitive be located from Run History?"
+      ],
+      "invariants": [
+        "canonical_loop_runtime",
+        "deterministic_default",
+        "typed_loop_value",
+        "input_output_digests",
+        "intrinsic_kernel_only_native_operation"
+      ],
+      "adversarial_cases": [
+        "raw string crosses boundary",
+        "direct intrinsic invocation",
+        "cache hit loses producer identity",
+        "fusion hides failed primitive"
+      ]
+    },
+    {
+      "case_id": "packet-assembly",
+      "component_kind": "llm_work_packet",
+      "stage": "bounded_semantic_call",
+      "goal": "Prove one model call receives a typed packet and cannot acquire execution authority.",
+      "questions": [
+        "Is the original task immutable and separate from interpretation?",
+        "Are persona, task, Loop, intelligence, questions, capabilities, directive, and output contract distinct?",
+        "Does every selected block have a version and digest?",
+        "Can two provider adapters render the same logical packet?"
+      ],
+      "invariants": [
+        "packet_is_passive",
+        "one_bounded_directive",
+        "versioned_output_contract",
+        "no_secret_or_private_scratch",
+        "model_cannot_grant_permission"
+      ],
+      "adversarial_cases": [
+        "original task omitted",
+        "parent scratch leaked",
+        "unregistered capability proposed as available",
+        "rendered prompt becomes source of truth"
+      ]
+    },
+    {
+      "case_id": "verification-scope",
+      "component_kind": "verification_policy",
+      "stage": "claim_acceptance",
+      "goal": "Prove verification checks the user contract without silently adding a new acceptance contract.",
+      "questions": [
+        "Which original acceptance criterion does each failure map to?",
+        "Is this a blocking defect or an advisory improvement?",
+        "What deterministic evidence supports the verdict?",
+        "Is the verifier independent from the producing route?"
+      ],
+      "invariants": [
+        "every_blocking_gap_maps_to_registered_criterion",
+        "advisory_findings_do_not_block_completion",
+        "deterministic_artifact_checks_preserved",
+        "unknown_is_not_failure_or_success"
+      ],
+      "adversarial_cases": [
+        "verifier invents full-dataset requirement",
+        "quality preference becomes hard constraint",
+        "producer accepts own output",
+        "missing evidence treated as false"
+      ]
+    },
+    {
+      "case_id": "route-breakout",
+      "component_kind": "route_and_exit_policy",
+      "stage": "multi_pass_control",
+      "goal": "Prove continue, retry, repair, and stop decisions make measurable progress and cannot cycle forever.",
+      "questions": [
+        "What exact state changed during the last pass?",
+        "Did the action produce novel evidence, a new artifact, or a new verified claim?",
+        "Does a repair bind an executable capability?",
+        "Has the same gap and method repeated beyond its budget?",
+        "Which terminal contract now applies?"
+      ],
+      "invariants": [
+        "measurable_progress_required",
+        "repair_is_executable_or_rejected",
+        "research_has_novelty_and_budget",
+        "prior_verified_artifacts_are_not_lost",
+        "stall_detector_does_not_choose_terminal_route",
+        "stall_triggers_diagnosis_competing_changes_and_adjudication",
+        "bounded_no_progress_breakout"
+      ],
+      "adversarial_cases": [
+        "same fetch repeated with different wording",
+        "repair routes to no-op handle",
+        "later failure overwrites verified artifact state",
+        "READY treated as success",
+        "pass budget exhausted without typed terminal reason"
+      ]
+    },
+    {
+      "case_id": "layer-and-plane-boundaries",
+      "component_kind": "architecture_classification",
+      "stage": "ontology",
+      "goal": "Prove roles, modes, relationships, layers, namespaces, functions, and capability groups remain orthogonal.",
+      "questions": [
+        "Which one architectural axis does this label answer?",
+        "Is the item a Loop, passive component, capability, adapter, record, or projection?",
+        "Which persistent intelligence layer owns it?",
+        "Does its folder create a duplicate semantic authority?"
+      ],
+      "invariants": [
+        "one_loop_runtime",
+        "three_roles_only",
+        "mode_is_per_loop",
+        "four_persistent_intelligence_layers",
+        "functional_domains_are_metadata",
+        "three_public_capability_groups",
+        "one_loop_graph_authority"
+      ],
+      "adversarial_cases": [
+        "provider becomes graph vertex",
+        "functional domain becomes storage layer",
+        "persona becomes runtime role",
+        "Solution Canvas executes directly"
+      ]
+    }
+  ]
+}

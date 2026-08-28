@@ -469,6 +469,13 @@ def self_test() -> dict:
           config.framework == "custom" and config.power == "standard"
           and config.llm_thinking_power == "high"
           and config.allowable_modes == ("hybrid",))
+    settings_component = parsed.component_definition()
+    check("resolved_settings_are_one_static_loop_component",
+          settings_component.component_kind == "settings"
+          and settings_component.operationality == "static"
+          and not settings_component.permissions
+          and not settings_component.effects,
+          settings_component.identity.content_digest)
 
     direct = parsed.models.gateway_config(ModelPolicyRequest(
         thinking_power="small"))

@@ -150,6 +150,8 @@ def main(argv=None) -> int:
                         help="validate the machine-readable architecture contract")
     parser.add_argument("--task-compile", action="store_true",
                         help=argparse.SUPPRESS)
+    parser.add_argument("--task-build", action="store_true",
+                        help=argparse.SUPPRESS)
     parser.add_argument(
         "--compile-provider",
         choices=("ollama_cloud", "openrouter", "opencode_go"),
@@ -186,6 +188,16 @@ def main(argv=None) -> int:
         help="task compilation during compile or solve may ask for material "
              "missing information, or run autonomously and abstain when "
              "policy cannot resolve safely")
+    parser.add_argument(
+        "--practitioner-mode",
+        choices=("deterministic", "hybrid", "non_deterministic"),
+        default="hybrid",
+        help="per-Loop resolution mode for task build; hybrid runs the exact "
+             "deterministic attempt before model repair")
+    parser.add_argument(
+        "--max-passes", type=int, default=24,
+        help="safety ceiling for complete Practitioner passes; a verified "
+             "run stops earlier")
     parser.add_argument(
         "--task-feedback", action="append", default=[], metavar="SLOT=VALUE",
         help="optional registered task feedback slot; repeat when needed")
@@ -308,7 +320,9 @@ def main(argv=None) -> int:
         raw_argv[:1] = ["--doctor"]
     elif raw_argv[:1] == ["solve"]:
         raw_argv[:1] = ["--solve"]
-    elif raw_argv[:2] in (["task", "build"], ["task", "compile"]):
+    elif raw_argv[:2] == ["task", "build"]:
+        raw_argv[:2] = ["--task-build"]
+    elif raw_argv[:2] == ["task", "compile"]:
         raw_argv[:2] = ["--task-compile"]
     elif raw_argv[:2] == ["models", "probe"]:
         if len(raw_argv) < 3 or raw_argv[2].startswith("-"):
@@ -574,6 +588,9 @@ def main(argv=None) -> int:
                           (library.get(i) for i in library.ids())],
         }, indent=1))
         return 0
+    if args.task_build:
+        from .adaptive_practitioner_cli import run_task_build
+        return run_task_build(args)
     if args.task_compile:
         from .cli_operations import run_task_compile
         return run_task_compile(args)

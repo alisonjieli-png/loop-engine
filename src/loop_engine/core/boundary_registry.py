@@ -13,7 +13,6 @@ from ..loop.loop_profile_catalog import LoopProfileError, LoopProfileRef
 from ..loop.loop_profile_ontology import get_profile
 from ..loop.loop_role import LOOP_RELATIONSHIP_KINDS
 
-
 ROLE_FAMILIES = ("practitioner", "intelligence", "solution")
 ROLE_RELATIONSHIP_KINDS = MappingProxyType({
     "practitioner": frozenset(("starting", "spawned_by")),
@@ -27,7 +26,6 @@ PUBLIC_CAPABILITY_GROUP_BOUNDARIES = MappingProxyType({
     "Custom Plugins": ("custom plugin invocation",),
 })
 
-
 @dataclass(frozen=True)
 class DynamicProfileSource:
     """A typed runtime source of an exact, catalog-validated profile."""
@@ -35,7 +33,6 @@ class DynamicProfileSource:
     source: str
     validator: str
     allowed_families: tuple[str, ...]
-
 
 @dataclass(frozen=True)
 class BoundaryOntologyBinding:
@@ -47,11 +44,9 @@ class BoundaryOntologyBinding:
     profile_ref: str = ""
     dynamic_profile_source: "DynamicProfileSource | None" = None
 
-
 def _exact(role: str, profile_ref: str, *relationships: str) -> BoundaryOntologyBinding:
     return BoundaryOntologyBinding(
         "Loop", (role,), tuple(relationships), profile_ref=profile_ref)
-
 
 def _dynamic(*roles: str, source: str,
              validator: str,
@@ -61,7 +56,6 @@ def _dynamic(*roles: str, source: str,
         "Loop", families, tuple(relationships),
         dynamic_profile_source=DynamicProfileSource(
             source, validator, families))
-
 
 def _dynamic_spawned(source: str, validator: str) -> BoundaryOntologyBinding:
     return _dynamic(*ROLE_FAMILIES, source=source, validator=validator,
@@ -96,6 +90,31 @@ BOUNDARIES = (
      "binding": "practitioner_loop",
      "envelope": "loop.encapsulate.as_practitioner_loop",
      "test": "encapsulate:deterministic_check_runs_as_practitioner_loop"},
+    {"boundary": "adaptive deterministic resolution",
+     "crosses": "an arbitrary task searches exact registered resolvers before model escalation",
+     "binding": "practitioner_loop",
+     "envelope": "core.adaptive_practitioner_deterministic.run_deterministic_attempt",
+     "test": "adaptive_practitioner:deterministic_exact_capability_uses_zero_model_calls"},
+    {"boundary": "atomic semantic primitive",
+     "crosses": "one semantic value is exposed or transformed",
+     "binding": "native_loop",
+     "envelope": "loop.atomic_primitives.run_atomic_primitive",
+     "test": "atomic_primitives:atomic_text_combine_runs_as_deterministic_loop"},
+    {"boundary": "LLM work packet prompt assembly",
+     "crosses": "selected passive context components become provider input",
+     "binding": "native_loop",
+     "envelope": "core.adaptive_practitioner_prompting.assemble_work_packet",
+     "test": "adaptive_practitioner:work_packet_selection_and_assembly_are_governed_loops"},
+    {"boundary": "adaptive capability pre-execution validation",
+     "crosses": "a generated capability proposal is checked before effects",
+     "binding": "practitioner_loop",
+     "envelope": "core.adaptive_practitioner_capabilities.execute_adaptive_capability",
+     "test": "generated_project:generated_project_refuses_offline_network_import"},
+    {"boundary": "repository component inventory",
+     "crosses": "first-party files and symbols become an audit projection",
+     "binding": "practitioner_loop",
+     "envelope": "core.component_inventory.run_component_inventory",
+     "test": "component_inventory:component_inventory_runs_through_practitioner_loop"},
     {"boundary": "solution component",
      "crosses": "a Solution Canvas box executes",
      "binding": "native_loop",
@@ -310,7 +329,6 @@ BOUNDARIES = (
      "test": "persistence.self_test"},
 )
 
-
 #: The boundary and ontology key sets must match exactly.
 BOUNDARY_ONTOLOGY = MappingProxyType({
     "task entry": _exact(
@@ -324,6 +342,21 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
     "deterministic check": _exact(
         "practitioner", "practitioner.code_execution@1.0.0",
         "starting", "spawned_by"),
+    "adaptive deterministic resolution": _exact(
+        "practitioner", "practitioner.code_execution@1.0.0",
+        "spawned_by"),
+    "atomic semantic primitive": _exact(
+        "practitioner", "practitioner.code_execution@1.0.0",
+        "spawned_by"),
+    "LLM work packet prompt assembly": _exact(
+        "practitioner", "practitioner.code_execution@1.0.0",
+        "spawned_by"),
+    "adaptive capability pre-execution validation": _exact(
+        "practitioner", "practitioner.code_execution@1.0.0",
+        "spawned_by"),
+    "repository component inventory": _exact(
+        "practitioner", "practitioner.code_execution@1.0.0",
+        "starting"),
     "solution component": _exact(
         "solution", "solution.atomic_component@1.0.0", "connected_from"),
     "api endpoint": _exact(
@@ -433,10 +466,8 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
         "practitioner", "practitioner.code_execution@1.0.0", "spawned_by"),
 })
 
-
 class BoundaryError(ValueError):
     """A register row that claims more than it can show."""
-
 
 def _profile_ref(value: str) -> LoopProfileRef:
     if not isinstance(value, str) or value.count("@") != 1:
@@ -450,7 +481,6 @@ def _profile_ref(value: str) -> LoopProfileRef:
         return LoopProfileRef(profile_id, version)
     except LoopProfileError as exc:
         raise BoundaryError(str(exc)) from exc
-
 
 def _mapped_symbol_exists(reference: str) -> bool:
     """Resolve a mapped module symbol without importing or running it."""

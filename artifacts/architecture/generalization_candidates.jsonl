@@ -1,0 +1,3 @@
+{"candidate_id": "generalize.native_semantic_operations", "remaining_count": 3141, "route": "parameterized_atomic_primitives", "state": "candidate"}
+{"candidate_id": "generalize.context_handoff", "route": "extend_existing_spawn_contract", "state": "candidate"}
+{"candidate_id": "generalize.component_classification", "route": "file_and_symbol_review_batches", "state": "candidate", "unclassified_symbols": 2084}

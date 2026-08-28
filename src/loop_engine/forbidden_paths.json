@@ -7,6 +7,8 @@
   "core/openrouter_client.py",
   "core/custom_endpoint.py",
   "core/brave_search.py",
+  "core/web_fetch.py",
+  "core/web_search.py",
   "core/external_harness_adapters.py",
   "core/mcp_sdk_transport.py",
   "core/studio_server.py",

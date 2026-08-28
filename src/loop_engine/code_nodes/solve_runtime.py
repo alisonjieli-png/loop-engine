@@ -7,18 +7,16 @@ from __future__ import annotations
 
 import csv
 import json
-import time
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 from pathlib import Path
 
-from ..core.run_history import default_runs_dir, verify_saved_run
-from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
-from ..loop.recursive_loop import Loop, LoopConfig, LoopLedger, StepOutcome
+from ..core.adaptive_practitioner import run_adaptive_practitioner
+from ..core.adaptive_practitioner_records import (
+    AdaptivePractitionerDependencies, AdaptivePractitionerRequest)
 from ..templates.compiler import TaskCompileRequest, compile_task_value
 from ..templates.intake import TaskIntake
 from ..templates.model import InteractionMode, TaskFeedback
-from .solution_canvas import (SolutionLoopSpec, SolutionSpec, run_solution)
-from .solution_model_port import ModelExecution, ModelInvocationRequest
+from .solution_model_port import ModelExecution
 
 
 SOLVE_FAILURE_CODES = (
@@ -42,6 +40,10 @@ class SolveRequest:
     save_run_history: bool = True
     interaction_mode: InteractionMode = InteractionMode.ASK_WHEN_MATERIAL
     feedback: tuple[TaskFeedback, ...] = ()
+    max_passes: int = 24
+    allow_network_reads: bool = False
+    allow_workspace_writes: bool = False
+    allow_sandbox_commands: bool = False
 
     def __post_init__(self) -> None:
         mode = self.interaction_mode
@@ -58,6 +60,8 @@ class SolveRequest:
         if len(slots) != len(set(slots)):
             raise SolveError("task feedback slots cannot repeat")
         object.__setattr__(self, "feedback", feedback)
+        if not 1 <= self.max_passes <= 32:
+            raise SolveError("max_passes must be from 1 through 32")
 
 
 @dataclass(frozen=True)
@@ -139,221 +143,95 @@ def _normalize_structured(value: dict) -> dict:
             "verified": True, "transformation": "whitespace_normalization"}
 
 
-def _valid_model_result(text: str) -> bool:
-    try:
-        value = json.loads(text)
-    except (TypeError, json.JSONDecodeError):
-        return False
-    return (isinstance(value, dict) and "answer" in value
-            and isinstance(value.get("evidence", []), list)
-            and "uncertainty" in value)
+@dataclass(frozen=True)
+class StructuredNormalizationResolver:
+    """Exact registered file procedure used by the deterministic baseline."""
+
+    path: Path
+    resolver_id: str = "core.structured.normalize@1"
+
+    def supports(self, task: str) -> bool:
+        return bool(task.strip() and self.path.is_file())
+
+    def execute(self, task: str) -> dict:
+        del task
+        return _normalize_structured(_load_structured(self.path))
 
 
-def _model_prompt(compiled: dict, intelligence: dict) -> str:
-    refs = [str(item.get("record_id", "")) for item in
-            intelligence.get("hits", ())[:8]]
-    return (
-        "Perform the compiled task. Return exactly one JSON object with keys "
-        "answer, evidence, and uncertainty. Evidence must be a list of short "
-        "source or verification references. Do not include private reasoning.\n"
-        f"Original request: {compiled['original_input']}\n"
-        f"Operator: {compiled['work_item']['coordinates']['operator']}\n"
-        f"Response topology: "
-        f"{compiled['work_item']['coordinates']['response_topology']}\n"
-        f"Selected intelligence refs: {refs}")
-
-
-def _query_intelligence(goal: str, *, parent: Loop) -> dict:
-    from ..core.intelligence_layers import (
-        IntelligenceSearchContext, IntelligenceSearchRequest,
-        build_intelligence_catalog, query_intelligence)
-    from ..loop.intelligence_loops import serve_context_intelligence
-
-    catalog = build_intelligence_catalog()
-    served = serve_context_intelligence(
-        "solve-query", lambda: query_intelligence(
-            IntelligenceSearchRequest(goal, catalog),
-            IntelligenceSearchContext(parent=parent)),
-        parent=parent, query_hint=goal,
-        profile_id="intelligence.search")
-    value = dict(served["value"])
-    compact_hits = [{
-        "record_id": item.get("record_id", ""),
-        "layer": item.get("layer", ""),
-        "score": item.get("score"),
-        "intelligence_item_ref": (item.get("intelligence_item_ref") or {}).get(
-            "intelligence_item_ref", ""),
-    } for item in value.get("hits", [])]
-    return {
-        "query_loop_id": served["loop_id"], "need": value.get("need", goal),
-        "hits": compact_hits,
-        "unqueried": value.get("unqueried_public", value.get("unqueried", [])),
-        "intelligence_item_refs": value.get("intelligence_item_refs", []),
-    }
+def _failure_code(result: dict) -> str:
+    code = str(result.get("failure_code") or "")
+    if code in ("NO_VERIFIED_CAPABILITY", "EXECUTOR_UNAVAILABLE"):
+        return "EXECUTOR_UNAVAILABLE"
+    if code in ("SolutionModelError", "MODEL_PROVIDER_UNAVAILABLE"):
+        return "MODEL_PROVIDER_UNAVAILABLE"
+    if code in ("PermissionError", "PERMISSION_DENIED"):
+        return "PERMISSION_DENIED"
+    if code in ("AdaptivePractitionerError", "OUTPUT_CONTRACT_VIOLATION"):
+        return "OUTPUT_CONTRACT_VIOLATION"
+    return "VERIFICATION_FAILED"
 
 
 def solve_task(request: SolveRequest) -> SolveOutcome:
-    """Run one intake through a Starting Practitioner and owned Solution graph."""
+    """Run one intake through the universal adaptive Practitioner."""
     if not isinstance(request, SolveRequest):
         raise SolveError("solve_task needs SolveRequest")
-    run_id = ("solve-" + request.intake.content_digest[:12] + "-"
-              + str(time.time_ns()))
-    ledger = LoopLedger()
-    config = LoopConfig(
-        framework="custom",
-        custom_steps=("orient", "compile_bind_task", "query_intelligence",
-                      "act", "verify"),
-        power="deep", allowable_modes=("deterministic",),
-        preferred_modes=("deterministic",),
-        delegated_modes=("deterministic", "hybrid", "non_deterministic"),
-        max_depth=10, exit_condition="steps_complete")
-    practitioner = Loop(
-        f"solve {request.intake.kind} task", config, ledger=ledger,
-        identity=LoopRoleIdentity(LoopRole.PRACTITIONER,
-                                  "practitioner.solver"),
-        relationship=LoopRelationship.starting())
-    selected_runs_dir = default_runs_dir(request.runs_dir)
-    if request.save_run_history:
-        practitioner.enable_run_history(run_id, root_dir=selected_runs_dir)
-    state: dict = {"failure_code": "", "result": None,
-                   "verification": {"passed": False}}
-
-    def handler(active: Loop, step: str, context: dict) -> StepOutcome:
-        if step == "orient":
-            state["intake"] = request.intake.to_dict()
-        elif step == "compile_bind_task":
-            state["compiled"] = compile_task_value(TaskCompileRequest(
-                text=request.intake.original_input,
-                source_kind=request.intake.kind,
-                source_refs=request.intake.source_refs,
-                interaction_mode=request.interaction_mode,
-                feedback=request.feedback))
-            active.ledger.record(
-                loop_id=active.loop_id, event="state.committed",
-                artifact_kind="compiled_task",
-                compiled_task_id=state["compiled"]["compiled_task_id"])
-        elif step == "query_intelligence":
-            state["intelligence"] = _query_intelligence(
-                request.intake.original_input, parent=active)
-        elif step == "act":
-            source = _structured_source(request.intake)
-            if source is not None:
-                spec = SolutionSpec(
-                    "core.solve.structured",
-                    permitted_loop_modes=("deterministic",),
-                    loops=(
-                        SolutionLoopSpec(
-                            "load", "load_structured",
-                            input_role="task.input/v1",
-                            output_role="structured.value/v1",
-                            params={"path": str(source)}),
-                        SolutionLoopSpec(
-                            "normalize", "normalize_structured",
-                            input_role="structured.value/v1",
-                            output_role="solution.verified_result/v1"),
-                    ))
-                registry = {
-                    "load_structured": lambda _value, params: _load_structured(
-                        Path(params["path"])),
-                    "normalize_structured": lambda value, _params:
-                        _normalize_structured(value),
-                }
-                state["selected_mode"] = "deterministic"
-                state["result"] = run_solution(
-                    spec, registry, state["compiled"], parent=active)
-            elif request.model_execution is not None:
-                authority = replace(request.model_execution,
-                                    validator=_valid_model_result)
-                spec = SolutionSpec(
-                    "core.solve.model",
-                    permitted_loop_modes=("deterministic",
-                                          "non_deterministic"),
-                    loops=(
-                        SolutionLoopSpec(
-                            "answer", "model_answer",
-                            mode="non_deterministic",
-                            input_role="task.compiled/v1",
-                            output_role="solution.answer_text/v1"),
-                        SolutionLoopSpec(
-                            "verify", "verify_answer",
-                            input_role="solution.answer_text/v1",
-                            output_role="solution.verified_result/v1"),
-                    ))
-                prompt = _model_prompt(state["compiled"], state["intelligence"])
-                registry = {
-                    "model_answer": lambda _value, params:
-                        params["model_port"](ModelInvocationRequest(
-                            prompt, temperature=0.2)),
-                    "verify_answer": lambda value, _params: {
-                        **json.loads(value), "verified": _valid_model_result(value)},
-                }
-                state["selected_mode"] = "non_deterministic"
-                state["result"] = run_solution(
-                    spec, registry, state["compiled"], parent=active,
-                    model_execution=authority)
-            else:
-                state["failure_code"] = "EXECUTOR_UNAVAILABLE"
-                state["failure"] = (
-                    "no verified deterministic procedure matches this intake, "
-                    "and no authorized ModelGateway execution was supplied")
-                return StepOutcome(
-                    output="act:executor_unavailable", mode="deterministic",
-                    confidence=0.0, failed=True)
-            state["canvas"] = spec.graph.to_dict() if spec.graph else {}
-            state["graph_digest"] = (
-                spec.graph.content_digest if spec.graph else "")
-        elif step == "verify":
-            if state.get("failure_code"):
-                return StepOutcome(
-                    output="verify:not_run_after_execution_failure",
-                    mode="deterministic", confidence=0.0, failed=True)
-            value = state.get("result")
-            passed = bool(isinstance(value, dict) and value.get("verified"))
-            state["verification"] = {
-                "passed": passed,
-                "method": "deterministic output-contract verification",
-                "independent_from_provider": True,
-            }
-            if not passed:
-                state["failure_code"] = "VERIFICATION_FAILED"
-                return StepOutcome(
-                    output="verify:failed", mode="deterministic",
-                    confidence=0.0, failed=True)
-        return StepOutcome(output=f"{step}:done", mode="deterministic",
-                           confidence=0.95)
-
-    try:
-        practitioner.run(handler=handler,
-                         max_steps=len(practitioner.steps()) + 1)
-    except Exception as exc:  # the typed outcome retains the failure
-        if not state.get("failure_code"):
-            state["failure_code"] = (
-                "MODEL_PROVIDER_UNAVAILABLE" if request.model_execution
-                else "VERIFICATION_FAILED")
-        state["failure"] = f"{type(exc).__name__}: {exc}"[:500]
-
-    if request.save_run_history:
-        history_summary = verify_saved_run(selected_runs_dir, run_id)
-    else:
-        history_summary = {
-            "run_id": run_id, "events": len(ledger.events),
-            "head_digest": "", "chain_intact": None, "broken_at": [],
-            "path": "",
-        }
-    solved = bool(state.get("verification", {}).get("passed")
-                  and not state.get("failure_code"))
+    compiled = compile_task_value(TaskCompileRequest(
+        text=request.intake.original_input,
+        source_kind=request.intake.kind,
+        source_refs=request.intake.source_refs,
+        interaction_mode=request.interaction_mode,
+        feedback=request.feedback))
+    source = _structured_source(request.intake)
+    exact = bool(source is not None and compiled.get("binding", {}).get(
+        "template_id") == "core.task.data_standardization")
+    resolvers = ((StructuredNormalizationResolver(source),)
+                 if exact and source is not None else ())
+    mode = "hybrid" if request.model_execution is not None else "deterministic"
+    adaptive = run_adaptive_practitioner(
+        AdaptivePractitionerRequest(
+            request.intake.original_input, mode=mode,
+            runs_dir=request.runs_dir,
+            max_passes=(1 if resolvers else request.max_passes),
+            interaction_mode=request.interaction_mode.value,
+            allow_network_reads=request.allow_network_reads,
+            allow_workspace_writes=request.allow_workspace_writes,
+            allow_sandbox_commands=request.allow_sandbox_commands,
+            source_kind=request.intake.kind,
+            source_refs=request.intake.source_refs,
+            feedback=request.feedback),
+        AdaptivePractitionerDependencies(
+            model_execution=request.model_execution,
+            deterministic_resolvers=resolvers))
+    solved = bool(adaptive.get("solved"))
+    selected = adaptive.get("selected_solution_canvas") or {}
+    verification = ((adaptive.get("verification") or [{}])[-1]
+                    if adaptive.get("verification") else {
+                        "passed": solved,
+                        "method": ("exact registered deterministic resolver"
+                                   if resolvers else "not completed"),
+                        "independent_from_provider": bool(resolvers)})
+    if "passed" not in verification:
+        verification = {**verification, "passed": bool(
+            solved or verification.get("verdict") == "accept")}
     return SolveOutcome(
-        run_id=run_id, status="VERIFIED_WORKING" if solved else "NOT_YET_PROVEN",
-        solved=solved, failure_code=state.get("failure_code", ""),
-        result=state.get("result") if solved else {
-            "error": state.get("failure", "solve did not complete")},
-        compiled_task=state.get("compiled", {}),
-        intelligence=state.get("intelligence", {}),
-        selected_mode=state.get("selected_mode", "deterministic"),
-        selected_canvas=state.get("canvas", {}),
-        graph_digest=state.get("graph_digest", ""),
-        verification=state.get("verification", {}),
-        run_history=history_summary)
+        run_id=str(adaptive.get("run_id") or ""),
+        status=str(adaptive.get("status") or "NOT_YET_PROVEN"),
+        solved=solved,
+        failure_code="" if solved else _failure_code(adaptive),
+        result=(adaptive.get("result") if solved else {
+            "error": adaptive.get("failure") or adaptive.get("failures")
+                     or "solve did not complete"}),
+        compiled_task=compiled,
+        intelligence={
+            "context": adaptive.get("context_intelligence", {}),
+            "search_candidates": adaptive.get("web_search_candidates", []),
+            "fetched_sources": adaptive.get("web_evidence", []),
+        },
+        selected_mode=mode,
+        selected_canvas=selected,
+        graph_digest=str(selected.get("graph_digest") or ""),
+        verification=verification,
+        run_history=adaptive.get("run_history") or {})
 
 
 def self_test() -> dict:
@@ -390,10 +268,10 @@ def self_test() -> dict:
                         "answer": "done", "evidence": ["fixture"],
                         "uncertainty": "offline fixture",
                     }),), max_model_calls=1)), runs_dir=root))
-        check("model_task_uses_solution_gateway_and_verifier",
-              model.solved and model.selected_mode == "non_deterministic"
-              and model.result["answer"] == "done"
-              and model.verification["independent_from_provider"])
+        check("one_model_answer_cannot_bypass_the_practitioner_cycle",
+              not model.solved
+              and model.failure_code == "OUTPUT_CONTRACT_VIOLATION"
+              and model.run_history["chain_intact"])
         unavailable = solve_task(SolveRequest(
             intake_task(TaskIntakeRequest(text="invent a new theorem")),
             runs_dir=root))

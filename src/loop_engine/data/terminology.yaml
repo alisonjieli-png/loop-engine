@@ -9,6 +9,39 @@ terms:
   LoopDefinitionRecord:
     kind: canonical
     definition: Passive searchable catalog projection of a LoopDefinition.
+  LoopComponentDefinition:
+    kind: canonical
+    definition: Passive versioned envelope for a semantic building block; never a runtime.
+  LoopComponentRef:
+    kind: canonical
+    definition: Exact ID, version, digest, kind, scope, and compatibility pointer to a passive component.
+  LoopValue:
+    kind: canonical
+    definition: Typed value with producer Loop, source refs, digest, lineage, privacy, materialization, and verification state.
+  LLMWorkPacket:
+    kind: canonical
+    definition: Passive provider-neutral component packet for one bounded semantic model step.
+  PractitionerStallSignal:
+    kind: canonical
+    definition: Passive deterministic evidence that progress requires semantic diagnosis; never a terminal decision.
+  FailureDiagnosis:
+    kind: canonical
+    definition: Passive typed model result that identifies evidenced causes, failed strategy, missing context, and invalid assumptions.
+  RecoveryProposal:
+    kind: canonical
+    definition: Passive candidate changed strategy with capability requirements, expected progress, risk, and follow-up budget.
+  PractitionerRecoveryDirective:
+    kind: canonical
+    definition: Passive independently selected and runtime-validated recovery proposal carried into later next-action work.
+  QualificationCase:
+    kind: canonical
+    definition: Passive versioned black-box proof obligation for one component, interaction, state transition, or architecture classification.
+  AtomicPrimitiveDefinition:
+    kind: canonical
+    definition: Passive description of one small semantic operation that defaults to deterministic Loop execution.
+  IntrinsicKernel:
+    kind: internal_only
+    definition: Finite audited native substrate beneath atomic Loops; owns no task, provider, storage, policy, permission, or routing semantics.
   LoopGraphDefinition:
     kind: canonical
     definition: The one authoritative reusable executable graph contract.
@@ -99,6 +132,11 @@ qualified_terms:
     - implementation_version
 semantic_schema_version: semantic_constitution/v1
 semantic_categories:
+  component:
+    definition: Versioned typed semantic building block that is passive unless an executable definition is instantiated through Loop.
+    preferred_suffixes:
+    - ComponentDefinition
+    - ComponentRef
   runtime:
     definition: Stateful executable object with governed identity and lifecycle.
     preferred_suffixes:
@@ -265,6 +303,12 @@ semantic_categories:
   ontology_category:
     definition: Abstract classification used to organize concepts; never executable.
     preferred_suffixes: []
+component_ontology:
+  source_of_truth: src/loop_engine/data/component_ontology.yaml
+  interaction_source: src/loop_engine/data/component_interactions.yaml
+  folder_source: src/loop_engine/data/component_folder_map.yaml
+  runtime_type: Loop
+  active_loopnode_allowed: false
 semantic_decision_rules:
   parameterize:
     when: Values, roles, modes, profiles, procedures, budgets, or preferences vary while invariants and

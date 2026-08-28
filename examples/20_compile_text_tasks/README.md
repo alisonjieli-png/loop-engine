@@ -1,8 +1,11 @@
-# Build five text tasks
+# Inspect five text requests
 
-This example builds five plain-text requests through the same Practitioner
-`Loop`. Four use autonomous interaction mode and one demonstrates a material
-clarification. The task-building step makes no model or network calls.
+This is a task-intake component check. It does not execute the five requested
+solutions.
+
+The example sends five plain-text requests through the same Practitioner
+`Loop`. Four use autonomous interaction mode. One contains a material gap that
+requires a question. This first inspection makes no model or network calls.
 
 The output labels each request as:
 
@@ -31,11 +34,11 @@ it returns `needs_clarification` without opening an interactive prompt.
 
 ## Live Ollama check
 
-The same five task files also support an authorized live check. That check
-keeps the initial task build model-free, then asks one Ollama Cloud model to
-review the next-state decision for each task. Ordinary code validates the five
-typed model responses. The model cannot grant permissions or claim that the
-tasks were executed.
+The same five task files also support an authorized live orientation check.
+The first inspection stays model-free. One Ollama Cloud model then reviews the
+next-state decision for each task, and ordinary code validates all five typed
+responses. This check does not execute the requested solutions. The model
+cannot grant permissions or claim that work ran.
 
 Run it only when provider calls are authorized:
 

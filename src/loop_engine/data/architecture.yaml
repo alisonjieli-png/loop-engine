@@ -18,6 +18,66 @@ semantic_identity:
     - create_loop_instance_for_independently_governed_work
     - compatibility_aliases_never_own_authority
 
+component_architecture:
+  ontology: src/loop_engine/data/component_ontology.yaml
+  interactions: src/loop_engine/data/component_interactions.yaml
+  folder_map: src/loop_engine/data/component_folder_map.yaml
+  definition: loop_engine.core.component_contracts.LoopComponentDefinition
+  reference: loop_engine.core.component_contracts.LoopComponentRef
+  static_invariants:
+    - does_not_execute
+    - does_not_call_provider
+    - does_not_read_files_through_hidden_io
+    - does_not_mutate_itself
+    - does_not_grant_permission
+    - is_not_a_graph_vertex
+  execution_rule: every_semantic_value_and_transformation_is_a_logical_loop
+  default_atomic_mode: deterministic
+  value_contract: loop_engine.loop.atomic_primitives.LoopValue
+  intrinsic_kernel: loop_engine.loop.intrinsic_kernel
+  intrinsic_forbidden_authority:
+    - task
+    - domain
+    - provider
+    - storage
+    - permission
+    - policy
+    - routing
+    - example
+  physical_fusion_requires_logical_history: true
+
+adaptive_recovery:
+  stall_detector_authority: signal_only
+  semantic_panel_steps:
+    - diagnose_stall
+    - propose_recovery
+    - propose_recovery_alternative
+    - adjudicate_recovery
+  adjudication_selects_validated_proposal: true
+  proposal_executes_directly: false
+  next_action_validation_required: true
+  semantic_repair_attempts_per_panel_step: 1
+  deterministic_terminal_authorities:
+    - permission
+    - safety
+    - cancellation
+    - declared_budget_exhaustion
+  verification_scope:
+    blocking_gap_requires_registered_criterion: true
+    advisory_finding_blocks_completion: false
+    proposed_new_requirement_blocks_completion: false
+    semantic_step_contract_is_task_acceptance: false
+
+independent_qualification:
+  starter: devtools/qualification_lab
+  imports_loop_engine: false
+  model_provider: ollama
+  unit_of_qualification:
+    - component
+    - interaction
+    - state_transition
+    - architecture_classification
+
 invariants:
   LE-NODE-001:
     title: Loop is the only operational runtime and executable graph vertex

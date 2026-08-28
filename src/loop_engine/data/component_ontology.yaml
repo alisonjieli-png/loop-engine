@@ -1,0 +1,74 @@
+record_type: loop_component_ontology/v1
+version: 1.0.0
+source_of_truth: src/loop_engine/data/component_ontology.yaml
+operationality:
+  - static
+  - executable_definition
+  - capability
+  - adapter_binding
+component_kinds:
+  - runtime_definition
+  - settings
+  - configuration
+  - policy
+  - preference
+  - strategy
+  - profile
+  - procedure
+  - procedure_step
+  - question
+  - question_portfolio
+  - persona
+  - persona_panel
+  - guidance
+  - context_block
+  - context_assembly
+  - prompt_assembly
+  - llm_work_packet
+  - task_context
+  - loop_context
+  - handoff
+  - intelligence_record
+  - intelligence_portfolio
+  - memory_record
+  - capability
+  - adapter
+  - provider
+  - route
+  - input_contract
+  - output_contract
+  - verification_contract
+  - stall_signal
+  - failure_diagnosis
+  - recovery_proposal
+  - recovery_directive
+  - qualification_case
+  - artifact
+  - result
+  - event
+  - report_projection
+  - learning_candidate
+  - benchmark_definition
+  - experiment_definition
+roles:
+  - practitioner
+  - intelligence
+  - solution
+modes:
+  - deterministic
+  - hybrid
+  - non_deterministic
+lifecycles:
+  - candidate
+  - under_review
+  - active
+  - deprecated
+  - rejected
+  - archived
+static_invariants:
+  - does_not_execute
+  - does_not_call_provider
+  - does_not_read_files_through_hidden_io
+  - does_not_mutate_itself
+  - does_not_grant_permission
+  - is_not_a_graph_vertex

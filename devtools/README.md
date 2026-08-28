@@ -25,12 +25,16 @@ loop_engine must never import loop_engine_devtools.
 
 ```text
 devtools/
+├── qualification_lab/     standalone Ollama and black-box qualification lab
 ├── src/loop_engine_devtools/
 │   ├── assurance/          review Loop definitions and operations
 │   ├── intelligence/core/  shipped review rules, presets, proof obligations
 │   └── cli/                loop-dev command
 └── pyproject.toml
 ```
+
+`qualification_lab` has no Loop Engine import. It can be copied into a separate
+repository and used as an independent reference and falsification harness.
 
 ## Bootstrap rule
 

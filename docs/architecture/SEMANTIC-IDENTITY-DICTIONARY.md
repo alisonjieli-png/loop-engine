@@ -18,6 +18,7 @@ This file is generated from the semantic constitution in `terminology.yaml`. The
 
 | Category | Meaning | Preferred suffixes |
 |---|---|---|
+| `component` | Versioned typed semantic building block that is passive unless an executable definition is instantiated through Loop. | ComponentDefinition, ComponentRef |
 | `runtime` | Stateful executable object with governed identity and lifecycle. | Loop, Runtime |
 | `operation` | Governed or pure work performed through a declared contract. | none |
 | `definition` | Immutable versioned description of permitted behavior. | Definition, Spec |
