@@ -189,6 +189,7 @@ jobs:
 
       - name: Examples run
         run: |
+          python -m loop_engine task build --interaction-mode autonomous --text "Train and compare several supervised prediction models."
           python examples/01_prioritize_support_queue/run.py
           python examples/02_predict_customer_renewal/run.py
           python examples/04_read_run_reports/run.py
@@ -253,7 +254,7 @@ jobs:
             echo "OLLAMA_API_KEY is not configured for this trusted workflow."
             exit 1
           fi
-          python -m loop_engine task compile \
+          python -m loop_engine task build \
             --ollama-api-key \
             --interaction-mode autonomous \
             --format json \
@@ -277,7 +278,7 @@ jobs:
           assert review["review"]["status"] == "ready"
           assert review["review"]["material_questions"] == []
           assert os.environ["OLLAMA_API_KEY"] not in body
-          print("provider-assisted task compile: accepted and secret-safe")
+          print("provider-assisted task build: accepted and secret-safe")
           PY
 
       - name: Upload secret-safe live evidence

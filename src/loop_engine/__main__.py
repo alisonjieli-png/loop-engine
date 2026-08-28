@@ -101,8 +101,10 @@ def _read_task_file(path: str) -> str:
 
 
 def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(prog="loop-engine",
-                                     description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(
+        prog="loop-engine",
+        description=__doc__.splitlines()[0],
+        epilog='Build a task: loop-engine task build --text "your request"')
     test_output = parser.add_mutually_exclusive_group()
     test_output.add_argument(
         "--self-test", action="store_true",
@@ -147,7 +149,7 @@ def main(argv=None) -> int:
     parser.add_argument("--architecture-contract", action="store_true",
                         help="validate the machine-readable architecture contract")
     parser.add_argument("--task-compile", action="store_true",
-                        help="compile freeform text into a typed task")
+                        help=argparse.SUPPRESS)
     parser.add_argument(
         "--compile-provider",
         choices=("ollama_cloud", "openrouter", "opencode_go"),
@@ -306,7 +308,7 @@ def main(argv=None) -> int:
         raw_argv[:1] = ["--doctor"]
     elif raw_argv[:1] == ["solve"]:
         raw_argv[:1] = ["--solve"]
-    elif raw_argv[:2] == ["task", "compile"]:
+    elif raw_argv[:2] in (["task", "build"], ["task", "compile"]):
         raw_argv[:2] = ["--task-compile"]
     elif raw_argv[:2] == ["models", "probe"]:
         if len(raw_argv) < 3 or raw_argv[2].startswith("-"):

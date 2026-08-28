@@ -63,19 +63,35 @@ def _task_compile_lines(output: dict) -> list[str]:
         "ABSTAIN" if binding.get("requires_abstention") else
         "NEEDS INPUT" if binding.get("requires_clarification") else
         "READY")
+    pattern_id = str(binding.get("template_id") or "")
+    pattern_name = (
+        pattern_id.rsplit(".", 1)[-1].replace("_", " ")
+        if pattern_id else "no supported task type matched")
+    operation = str(work_item["coordinates"]["operator"]).replace("_", " ")
+    response = str(
+        work_item["coordinates"]["response_topology"]).replace("_", " ")
+    if response == "artifact":
+        response = "file or report"
+    details = (
+        "enough to continue" if status == "READY" else
+        "required input is missing" if status == "NEEDS INPUT" else
+        "cannot continue safely")
     lines = [
-        f"Task compilation: {status}",
-        f"Template: {binding.get('template_id') or 'no template matched'}",
-        f"Binding: {binding.get('binding_mode')}"
-        + ("; open values have a selection policy" if delegated else ""),
-        f"Operator: {work_item['coordinates']['operator']}",
-        f"Response: {work_item['coordinates']['response_topology']}",
-        f"Default compiler model calls: {output.get('model_calls', 0)}",
+        f"Task build: {status}",
+        f"Task type: {pattern_name}",
+        f"Task details: {details}",
+        f"Main work: {operation}",
+        f"Expected output: {response}",
+        f"Model calls before optional review: {output.get('model_calls', 0)}",
     ]
     if delegated:
-        lines.append("Delegated choices: " + ", ".join(delegated))
+        lines.append("Choices the Solution may make: "
+                     + ", ".join(item.replace("_", " ")
+                                 for item in delegated))
     if blocking:
-        lines.append("Blocking requirements: " + ", ".join(blocking))
+        lines.append("Required details still missing: "
+                     + ", ".join(item.replace("_", " ")
+                                 for item in blocking))
     review = output.get("model_assisted_orientation")
     if isinstance(review, dict):
         reviewed = review.get("review") or {}
@@ -85,17 +101,18 @@ def _task_compile_lines(output: dict) -> list[str]:
             "derived from model maximum and exact prompt")
         lines.extend([
             "",
-            "Model-assisted Orientation review:",
+            "Model review:",
             f"  Status: {'ACCEPTED' if review.get('ok') else 'FAILED'}",
             f"  Provider: {review.get('provider') or 'unknown'}",
             f"  Model: {review.get('model') or 'unknown'}",
-            f"  Physical model calls: {review.get('model_calls')}",
+            f"  Provider calls: {review.get('model_calls')}",
             f"  Provider-reported tokens: {review.get('total_tokens')}",
             f"  Token ceiling: {review.get('total_token_ceiling')} "
             f"({ceiling_source})",
-            f"  Task family: {reviewed.get('task_family') or 'unknown'}",
+            "  Task type: " + str(
+                reviewed.get("task_family") or "unknown").replace("_", " "),
             f"  Next action: {reviewed.get('next_action') or 'none'}",
-            "  Advisory only: yes",
+            "  Ran the Solution: no",
         ])
     lines.extend(["", "Use --format json for the complete typed record."])
     return lines
@@ -470,7 +487,7 @@ def run_task_compile(args) -> int:
         failure = {"record_type": "task_compile_failure/v1",
                    "error": str(exc)}
         _emit_cli_result(args, failure, [
-            "Task compilation: FAILED",
+            "Task build: FAILED",
             str(exc),
             "Use --format json for the complete typed failure.",
         ])

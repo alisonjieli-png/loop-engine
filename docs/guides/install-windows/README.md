@@ -36,7 +36,7 @@ loop-engine --studio --port 0 --runs-dir .\loop-engine-runs
 Studio prints a free local address. Open it in a browser and press `Ctrl+C` to
 stop the server.
 
-## Compile a longer task
+## Build a longer task
 
 ```powershell
 @'
@@ -46,13 +46,13 @@ target variable. Use identical validation folds for every model. Compare the
 results honestly and produce verified PDF and HTML reports.
 '@ | Set-Content -Encoding utf8 flagship-modeling-task.txt
 
-loop-engine task compile --file flagship-modeling-task.txt
+loop-engine task build --file flagship-modeling-task.txt
 ```
 
 Add one Ollama review without putting a key in the command:
 
 ```powershell
-loop-engine task compile `
+loop-engine task build `
   --ollama-api-key `
   --interaction-mode autonomous `
   --file flagship-modeling-task.txt
@@ -64,7 +64,7 @@ for the key through a hidden prompt.
 For a disposable local test, pass the value directly:
 
 ```powershell
-loop-engine task compile `
+loop-engine task build `
   --ollama-api-key "YOUR_OLLAMA_API_KEY" `
   --interaction-mode autonomous `
   --file flagship-modeling-task.txt

@@ -41,8 +41,8 @@ the dependency list; remove it when troubleshooting an installation failure.
 Loop Engine does not start until you run `loop-engine doctor`.
 
 The no-key demonstration uses code and rules. It does not contact a model
-provider. It preserves and compiles a structured task, runs and verifies a real
-deterministic Solution graph, saves Run History, and stages a learning
+provider. It keeps the original request, builds a structured task, runs and
+verifies a real Solution graph, saves Run History, and stages a learning
 candidate. Staging is not promotion. Independent review and a separate
 promotion decision are still required.
 
@@ -58,7 +58,7 @@ Run `deactivate` when you are finished with the virtual environment.
 | `pip install` | Downloads and installs the package and its declared dependencies. It does not run Loop Engine. |
 | `pip check` | Confirms that installed Python package requirements are consistent. |
 | `loop-engine doctor` | Checks the installation and configuration without contacting a provider. |
-| `loop-engine --demo five-step` | Runs one local no-key compile, Solution, verification, saved Run History, and candidate stage. |
+| `loop-engine --demo five-step` | Builds one local task, runs its Solution, verifies it, saves Run History, and stages a candidate. |
 | `loop-engine --studio --port 0` | Opens the saved run in a local browser interface on a free port. |
 | `loop-engine models inventory` | Lists provider definitions and routes. It does not test credentials or model quality. |
 
@@ -76,7 +76,7 @@ Studio, llama.cpp, and similar servers use a custom endpoint entry. See
 [Providers and keys](docs/guides/providers-and-keys.md) and the checked-in
 [`loop-engine.settings.example.yaml`](loop-engine.settings.example.yaml).
 
-### Compile the flagship modeling request
+### Build a modeling task
 
 Use `--file` for a longer request. The task stays readable in the README and in
 your shell:
@@ -89,45 +89,42 @@ target variable. Use identical validation folds for every model. Compare the
 results honestly and produce verified PDF and HTML reports.
 EOF
 
-loop-engine task compile \
+loop-engine task build \
   --ollama-api-key 'YOUR_OLLAMA_API_KEY' \
   --interaction-mode autonomous \
   --file flagship-modeling-task.txt
 ```
 
-Replace `YOUR_OLLAMA_API_KEY` with your Ollama Cloud key. This command compiles
-the complete file and uses one Ollama call to review the compiler's
-interpretation. It does not download data, train models, or create reports.
-Use `--text` for a short one-line request.
+Replace `YOUR_OLLAMA_API_KEY` with your Ollama Cloud key. This command turns the
+complete file into a structured task and uses one Ollama call to review how
+Loop Engine understood it. It does not run the modeling Solution. Use `--text`
+for a short one-line request.
 
-To run the compiler without a model or an API key, omit the provider option:
+To build the task without a model or an API key, omit the provider option:
 
 ```bash
-loop-engine task compile --file flagship-modeling-task.txt
+loop-engine task build --file flagship-modeling-task.txt
 ```
 
-The compiler preserves the original text and binds it to the registered
-tabular model-comparison template. The request deliberately leaves the dataset
-and target open. Loop Engine records both as delegated choices, with explicit
-source, license, access, dataset, and target constraints. It does not invent a
-dataset name or ask an unnecessary question.
+Leaving the dataset open is allowed. Loop Engine records it as a choice the
+Solution may make instead of stopping to ask which dataset you prefer. This
+command stops after building and reviewing the task, so it does not choose or
+download the dataset.
 
-Loop Engine does not yet download the dataset, train the models, compare them,
-or render the reports. That full workflow remains an acceptance target. Its
-Orient step must search approved candidates, apply the recorded constraints,
-and save a typed resolution decision. If no candidate passes, the Loop must
-ask for more information or abstain. A model suggestion by itself is not an
-accepted selection.
+`task build` returns a structured task. It does not pretend that the task was
+solved. Run the five-step demo above to see a supported Solution execute from
+start to finish. The four-model modeling Solution is not available in this
+release.
 
 ### Choose how to provide a model key
 
-The flagship command passes the key directly for a quick local test. You can
+The modeling command passes the key directly for a quick local test. You can
 instead export it once and omit the value:
 
 ```bash
 export OLLAMA_API_KEY='YOUR_OLLAMA_API_KEY'
 
-loop-engine task compile \
+loop-engine task build \
   --ollama-api-key \
   --interaction-mode autonomous \
   --file flagship-modeling-task.txt
@@ -137,21 +134,21 @@ When no value or environment variable exists, `--ollama-api-key` opens a
 hidden prompt. The same forms work with OpenRouter and OpenCode Go:
 
 ```bash
-loop-engine task compile \
+loop-engine task build \
   --openrouter-api-key 'YOUR_OPENROUTER_API_KEY' \
   --interaction-mode autonomous \
   --file flagship-modeling-task.txt
 
-loop-engine task compile \
+loop-engine task build \
   --opencode-go-api-key 'YOUR_OPENCODE_GO_API_KEY' \
   --interaction-mode autonomous \
   --file flagship-modeling-task.txt
 ```
 
-The shortcut itself authorizes one advisory model call and applies the
-provider's bounded default. It keeps the deterministic compiled task and adds a
-short review with the provider, model, token usage, and selected next action.
-Use `--format json` when you need the complete typed record.
+The shortcut authorizes one review call. The model may suggest how Loop Engine
+understood the task and what should happen next. It does not run the Solution
+or change the original request. The result includes the provider, model, token
+usage, and selected next action. Use `--format json` for the complete record.
 
 Direct values are convenient for local testing, but they can appear in shell
 history and process listings. Use the environment-variable or hidden-prompt
@@ -167,32 +164,31 @@ model's maximum is unknown. Advanced route, model, and budget options are in
 Use autonomous interaction mode when the run must not pause for questions:
 
 ```bash
-loop-engine task compile \
+loop-engine task build \
   --interaction-mode autonomous \
   --text \
   "Train and compare several supervised prediction models."
 ```
 
-Autonomous mode uses a registered delegated-choice policy where one exists. A
-non-delegable missing fact returns `abstain_required` instead of waiting or
-inventing a value. This mode does not grant network access, model access,
-spending, or permission for external effects.
+Autonomous mode does not pause for optional preferences. It uses a registered
+safe choice when one exists. If a required fact cannot be chosen safely, the
+task stops with `abstain_required`. This mode does not add network, model,
+spending, or file permissions.
 
 Feedback is optional. Supply a registered slot only when you care about that
 choice:
 
 ```bash
-loop-engine task compile --interaction-mode autonomous \
+loop-engine task build --interaction-mode autonomous \
   --task-feedback task.preference.dataset_source=openml:61 \
   --text "Train and compare several supervised prediction models."
 ```
 
-Without that feedback, the dataset remains a constrained delegated choice. See
-[five text-only compilation examples](examples/20_compile_text_tasks/) for
-ready, clarification, and terminal-abstention behavior. The same five public
-task files run through one bounded Ollama Cloud check after trusted pushes to
-`main`. The provider check is separate from the model-free compiler matrix and
-does not claim that the five requested solutions were executed.
+Without that feedback, the Solution may choose a suitable dataset later. See
+[five text-only task-building examples](examples/20_compile_text_tasks/) for
+ready, clarification, and stop behavior. The same five public task files run
+through one bounded Ollama Cloud review after trusted pushes to `main`. That
+review does not run the five requested Solutions.
 
 ## System at a glance
 
@@ -436,8 +432,8 @@ provider-reported tokens in total.
 
 ## The five-step product demo
 
-After installation, one command demonstrates configuration readback, compile,
-solve, verification, saved history, and candidate staging:
+After installation, one command builds a task, runs its Solution, verifies the
+result, saves Run History, and stages a learning candidate:
 
 ```bash
 loop-engine --demo five-step --runs-dir ./loop-engine-runs

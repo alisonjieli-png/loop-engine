@@ -35,7 +35,7 @@ This check may consume tokens. Run it only when provider calls are authorized.
 For a local test, pass the key value directly:
 
 ```bash
-loop-engine task compile \
+loop-engine task build \
   --ollama-api-key 'YOUR_OLLAMA_API_KEY' \
   --interaction-mode autonomous \
   --file flagship-modeling-task.txt
@@ -55,7 +55,7 @@ export OPENROUTER_API_KEY="your-key"   # OpenRouter
 # or
 export OPENCODE_GO_API_KEY="your-key"  # OpenCode Go task review
 
-loop-engine task compile \
+loop-engine task build \
   --ollama-api-key \
   --interaction-mode autonomous \
   --file flagship-modeling-task.txt

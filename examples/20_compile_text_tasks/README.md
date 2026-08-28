@@ -1,8 +1,8 @@
-# Compile five text tasks
+# Build five text tasks
 
-This example compiles five plain-text requests through the same Practitioner
+This example builds five plain-text requests through the same Practitioner
 `Loop`. Four use autonomous interaction mode and one demonstrates a material
-clarification. Compilation makes no model or network calls.
+clarification. The task-building step makes no model or network calls.
 
 The output labels each request as:
 
@@ -32,7 +32,7 @@ it returns `needs_clarification` without opening an interactive prompt.
 ## Live Ollama check
 
 The same five task files also support an authorized live check. That check
-keeps the initial compilation model-free, then asks one Ollama Cloud model to
+keeps the initial task build model-free, then asks one Ollama Cloud model to
 review the next-state decision for each task. Ordinary code validates the five
 typed model responses. The model cannot grant permissions or claim that the
 tasks were executed.
