@@ -117,8 +117,6 @@ jobs:
 
       - name: Render current architecture diagrams
         run: |
-          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' README.md > "$RUNNER_TEMP/readme-overview.mmd"
-          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/readme-overview.mmd" -o "$RUNNER_TEMP/readme-overview.png" --quiet
           awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/self-improvement/README.md > "$RUNNER_TEMP/self-improvement.mmd"
           npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/self-improvement.mmd" -o "$RUNNER_TEMP/self-improvement.png" --quiet
           awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/intelligence-layers/INTELLIGENCE-AS-LOOPS.md > "$RUNNER_TEMP/intelligence-loops.mmd"
