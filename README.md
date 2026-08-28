@@ -89,11 +89,22 @@ target variable. Use identical validation folds for every model. Compare the
 results honestly and produce verified PDF and HTML reports.
 EOF
 
-loop-engine task compile --file flagship-modeling-task.txt
+loop-engine task compile \
+  --ollama-api-key 'YOUR_OLLAMA_API_KEY' \
+  --interaction-mode autonomous \
+  --file flagship-modeling-task.txt
 ```
 
-This command compiles the complete file contents. It does not run the modeling
-job. Use `--text` for short one-line requests.
+Replace `YOUR_OLLAMA_API_KEY` with your Ollama Cloud key. This command compiles
+the complete file and uses one Ollama call to review the compiler's
+interpretation. It does not download data, train models, or create reports.
+Use `--text` for a short one-line request.
+
+To run the compiler without a model or an API key, omit the provider option:
+
+```bash
+loop-engine task compile --file flagship-modeling-task.txt
+```
 
 The compiler preserves the original text and binds it to the registered
 tabular model-comparison template. The request deliberately leaves the dataset
@@ -108,19 +119,10 @@ and save a typed resolution decision. If no candidate passes, the Loop must
 ask for more information or abstain. A model suggestion by itself is not an
 accepted selection.
 
-### Add one model-assisted Orientation review
+### Choose how to provide a model key
 
-Task compilation stays model-free unless you select a provider. For a local
-test, pass the Ollama key directly:
-
-```bash
-loop-engine task compile \
-  --ollama-api-key 'YOUR_OLLAMA_API_KEY' \
-  --interaction-mode autonomous \
-  --file flagship-modeling-task.txt
-```
-
-You can also export it once and omit the value:
+The flagship command passes the key directly for a quick local test. You can
+instead export it once and omit the value:
 
 ```bash
 export OLLAMA_API_KEY='YOUR_OLLAMA_API_KEY'
@@ -153,7 +155,13 @@ Use `--format json` when you need the complete typed record.
 
 Direct values are convenient for local testing, but they can appear in shell
 history and process listings. Use the environment-variable or hidden-prompt
-form for shared machines and CI. Advanced route, model, and budget options are documented in
+form for shared machines and CI.
+
+Loop Engine does not invent a round token limit for this review. It derives
+the ceiling from the selected model's registered output maximum and the
+assembled prompt. You may set `--max-total-tokens` as a stricter limit. The
+command stops before contacting the provider if that limit is too small or the
+model's maximum is unknown. Advanced route, model, and budget options are in
 [Providers and keys](docs/guides/providers-and-keys.md).
 
 Use autonomous interaction mode when the run must not pause for questions:
