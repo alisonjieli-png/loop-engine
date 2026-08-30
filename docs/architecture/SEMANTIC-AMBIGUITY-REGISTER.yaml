@@ -62,7 +62,7 @@ findings:
       - loop_engine.core.provider_failover:call_with_failover
     resolution: Compatibility entry builds ModelGatewayRequest and delegates to ModelGateway.
     representation_decision: compose provider adapters behind one gateway.
-    status: REQUIRED_NOT_IMPLEMENTED
+    status: IMPLEMENTED
   - id: SEM-007
     subsystem: model_capabilities
     collision: Model maximum output is stored as context capacity during discovery.
@@ -71,16 +71,15 @@ findings:
       - loop_engine.core.model_discovery:roster_to_routes
     resolution: Keep context_window_tokens and maximum_output_tokens independent with source and unknown state.
     representation_decision: parameterize one capability evidence record with distinct fields.
-    status: REQUIRED_NOT_IMPLEMENTED
+    status: IMPLEMENTED
   - id: SEM-008
     subsystem: studio
     collision: Studio is described as read-only while its HTTP handler writes User Feedback.
     evidence:
-      - loop_engine.core.studio_server:_leave_advice
       - loop_engine.core.studio_server:_Handler.do_POST
     resolution: Separate StudioReadModelServer and an authorized UserFeedbackSubmissionEndpoint, or remove the read-only claim.
     representation_decision: separate service because effect and authorization boundaries differ.
-    status: REQUIRED_NOT_IMPLEMENTED
+    status: IMPLEMENTED
   - id: SEM-009
     subsystem: studio_projections
     collision: Studio loops, strings, solutions, and improvements use inventories that do not read canonical authorities.
@@ -89,9 +88,11 @@ findings:
       - loop_engine.core.studio_server:_strings_inventory
       - loop_engine.core.studio_server:_solutions_inventory
       - loop_engine.core.studio_server:_improvements
+      - loop_engine.core.run_history:load_saved_run_bundle
+      - loop_engine.core.studio_server:_product_projection
     resolution: Project Run History, catalog, definitions, graphs, and governed candidate repository.
     representation_decision: compose read projections; never create another store.
-    status: REQUIRED_NOT_IMPLEMENTED
+    status: IMPLEMENTED_PARTIALLY
   - id: SEM-010
     subsystem: runtime_memory
     collision: RunNoteBoard, WorkingMemoryState, and RuntimeMemoryService describe different scopes under similar names.
@@ -152,7 +153,7 @@ findings:
       - loop_engine.core.model_gateway:ModelGatewayConfig
     resolution: One source-backed ModelOutputCapability; total usage budget stays a distinct max_total_tokens field.
     representation_decision: consolidate capability authority and parameterize per-attempt budgets separately.
-    status: REQUIRED_NOT_IMPLEMENTED
+    status: IMPLEMENTED
   - id: SEM-016
     subsystem: model_vocabularies
     collision: Routing records and model discovery locally redefine Loop roles, modes, thinking powers, lifecycles, and model purposes.

@@ -76,13 +76,14 @@ Read [Runtime settings and model tiers](settings.md).
 ## View reports and playback
 
 ```bash
-loop-engine --runs --runs-dir "$HOME/.loop-engine/pilot/runs"
-loop-engine --report --runs-dir "$HOME/.loop-engine/pilot/runs"
-loop-engine --studio --port 8765 \
+loop-engine runs --runs-dir "$HOME/.loop-engine/pilot/runs"
+loop-engine report @last --runs-dir "$HOME/.loop-engine/pilot/runs"
+loop-engine studio --port 0 \
   --runs-dir "$HOME/.loop-engine/pilot/runs"
 ```
 
-Open `http://127.0.0.1:8765/app` for the Loop graph and saved-event playback.
+Open the local URL printed by Studio for the Loop graph and saved-event
+playback.
 `--watch` provides live console events while the campaign runs. Browser-based
 live campaign streaming is separate work; the current browser live view is the
 fixed local demonstration.

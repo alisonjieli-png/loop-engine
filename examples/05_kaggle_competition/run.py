@@ -1,6 +1,6 @@
 """5: A real Kaggle competition, end to end.
 
-    python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+    python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
     # put your kaggle.json at ~/.kaggle/kaggle.json  (Account -> Create New Token)
     python3 examples/05_kaggle_competition/run.py --competition titanic
 

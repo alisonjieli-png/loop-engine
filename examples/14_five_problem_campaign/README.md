@@ -5,7 +5,7 @@ loops. Each problem uses a frozen input and evaluator. Every run is saved as a
 Run History in a temporary directory.
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 python3 examples/14_five_problem_campaign/run.py
 ```
 

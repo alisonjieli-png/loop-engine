@@ -6,7 +6,7 @@ card, selects its Code Intelligence `LoopRef`, and invokes one capability loop.
 Install and run the offline fixture:
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 python3 examples/13_brave_search_plugin/run.py
 ```
 

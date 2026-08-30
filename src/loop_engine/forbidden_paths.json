@@ -267,7 +267,8 @@
   "cli_operations.py": "public CLI projections over existing services; split plan: move provider and extension inspection commands into cli_provider_operations.py without moving domain authority",
   "core/adaptive_practitioner_records.py": "typed Practitioner records and run-scoped service bindings; split plan: move model context assembly bindings into adaptive_practitioner_model_context.py without changing the control cycle",
   "core/extension_discovery.py": "one deterministic resolver over provider, capability, skill, plugin, and intelligence added files; split plan: move passive provider route contracts and YAML parsing into extension_provider_contracts.py while retaining one resolver",
-  "core/model_gateway.py": "canonical provider-neutral route executor plus its offline contract checks; split plan: move only the offline fixtures into model_gateway_checks.py while preserving ModelGateway as the sole execution boundary"
+  "core/model_gateway.py": "canonical provider-neutral route executor plus its offline contract checks; split plan: move only the offline fixtures into model_gateway_checks.py while preserving ModelGateway as the sole execution boundary",
+  "core/studio_server.py": "local read-only HTTP projection boundary and acceptance checks; split plan: move socket and browser-contract checks into studio_server_checks.py after the product-outcome projection stabilizes"
  },
  "docstring_min_lines": 3,
  "docstring_exception_modules": [],

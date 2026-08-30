@@ -1,8 +1,7 @@
-"""Architecture map: the top-level abstractions as one projection authority.
+"""Architecture map: top-level package ownership as one projection authority.
 
-Every module in this package belongs to exactly one of the five frozen
-abstractions (ontology | loop | strings | code_nodes |
-core) or is package plumbing at the root.  This map IS
+Every module in this package belongs to exactly one of nine top-level package
+groups or is package plumbing at the root. This map is
 the folder shape: the mover consulted it, `--map` prints it,
 `step_registry` resolves module paths through it, and the self-test
 refuses any module on disk that is not classified here, so the
@@ -15,7 +14,7 @@ import os
 # The package has one public import root.
 PACKAGE = __package__ or "loop_engine"
 
-#: the frozen top-level abstractions
+#: the nine governed top-level package groups
 SUBPACKAGES = ("ontology", "loop", "strings", "code_nodes",
                "core", "catalog", "memory", "generation",
                "templates")
@@ -37,7 +36,7 @@ ROOT_MODULES = ("__init__", "__main__", "_self_test", "_conformance_test",
                 "backend_isolation", "structure_review",
                 "runtime_ontology_check", "scheduling", "campaign",
                 "parallel_runner", "cli_operations", "parameter_boundary",
-                "solve_cli",
+                "solve_cli", "cli_help", "run_history_cli",
                 "parameter_boundary_checks", "semantic_conformance")
 
 #: module -> subpackage.  "steps" and "regimes" are subpackages riding in loop/.
@@ -154,7 +153,8 @@ MODULE_MAP = {
         "component_inventory",
         "asset_lifecycle", "brave_search",
         "capability_directory",
-        "run_history", "config", "context_artifacts", "context_catalog",
+        "run_history", "run_history_paths", "config", "context_artifacts",
+        "context_catalog",
         "context_classification", "context_ontology",
         "code_intelligence_assets", "event_vocabulary", "duckdb_catalog",
         "external_harness", "external_harness_adapters",
@@ -188,6 +188,7 @@ MODULE_MAP = {
         "mistral_client", "openrouter_client", "provider_failover",
         "provider_pinned",
         "model_discovery", "autoconfigure", "custom_endpoint",
+        "product_outcome_store",
         "generated_project", "generated_project_artifact_validation",
         "knowledge_loader",
         "llm_work_packet",
@@ -223,7 +224,7 @@ def module_path(module: str) -> str:
 
 
 def render_map() -> str:
-    out = ["ARCHITECTURE MAP: six top-level abstractions"]
+    out = [f"ARCHITECTURE MAP: {len(SUBPACKAGES)} top-level package groups"]
     for s in SUBPACKAGES:
         mods = MODULE_MAP[s]
         out.append(f"  {s}/  ({len(mods)} modules)")

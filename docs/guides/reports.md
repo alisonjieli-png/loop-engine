@@ -7,17 +7,17 @@ Reports turn either form into something a person can act on.
 
 ```bash
 RUNS_DIR="$HOME/.loop-engine/runs"
-loop-engine --runs --runs-dir "$RUNS_DIR"
-loop-engine --report --runs-dir "$RUNS_DIR"
-loop-engine --report <run_id> --runs-dir "$RUNS_DIR"
-loop-engine --report <run_id> --format html --out report.html \
+loop-engine runs --runs-dir "$RUNS_DIR"
+loop-engine report @last --runs-dir "$RUNS_DIR"
+loop-engine report <run_id> --runs-dir "$RUNS_DIR"
+loop-engine report <run_id> --format html --out report.html \
   --runs-dir "$RUNS_DIR"
 ```
 
 For interactive playback:
 
 ```bash
-loop-engine --studio --runs-dir "$RUNS_DIR" --port 8765
+loop-engine studio --runs-dir "$RUNS_DIR" --port 8765
 ```
 
 ## In code
@@ -69,6 +69,19 @@ The ownership tree remains useful for runtime depth and budget analysis. The
 semantic DAG explains why each Loop entered the graph and how typed values or
 Intelligence moved between Loops. A Connected from relationship may contain
 several incoming edges.
+
+New `solve` runs also bind one product outcome to the Run History manifest.
+The report shows:
+
+- the product terminal code;
+- verification status;
+- result summary;
+- workspace and artifacts;
+- limitations and next action;
+- the selected Solution Canvas in JSON and Studio.
+
+Older saved runs remain readable and state that no product outcome was
+recorded.
 
 The DAG reads only current relationship fields carried by canonical events. It
 does not infer a semantic edge from event order or from the ownership tree.

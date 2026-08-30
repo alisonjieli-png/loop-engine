@@ -11,7 +11,7 @@ need review. The run does not drop bad data or hide the fallback.
 Install Loop Engine directly from GitHub:
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 ```
 
 Run the example from the repository directory:

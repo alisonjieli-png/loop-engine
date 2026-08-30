@@ -95,11 +95,37 @@ def run_task_build(args) -> int:
             args, default_model_calls=calls_per_pass * args.max_passes)
         model_execution = None
         settings = load_runtime_settings(args.settings_file or None).settings
+        if not args.compile_provider:
+            from .templates.compiler import TaskCompileRequest, compile_task_value
+            compiled = compile_task_value(TaskCompileRequest(
+                text=intake.original_input, source_kind=intake.kind,
+                source_refs=intake.source_refs,
+                interaction_mode=args.interaction_mode,
+                feedback=_task_feedback_from_args(args)))
+            result = {
+                "record_type": "task_build/v2",
+                "status": "COMPILED_NEEDS_SEMANTIC_REVIEW",
+                "build_complete": True, "solved": False,
+                "execution_performed": False,
+                "original_task": intake.original_input,
+                "compiled_task": compiled,
+                "model_calls": 0, "provider_calls": 0,
+                "artifacts": [], "run_history": {},
+                "next_action": (
+                    "Run solve to perform work. Add one provider key option "
+                    "when semantic review is required."),
+            }
+            _emit_cli_result(args, result, [
+                "Task build: COMPILED",
+                "Execution performed: no",
+                "Provider calls: 0",
+                f"Task type: {compiled.get('task_type')}",
+                f"Output kind: {compiled.get('output_kind')}",
+                "",
+                f"Next: {result['next_action']}",
+            ])
+            return 0
         if args.practitioner_mode != "deterministic":
-            if not args.compile_provider:
-                raise ValueError(
-                    "hybrid or non-deterministic task build needs one provider "
-                    "key option")
             if not args.authorize_model_calls or args.max_model_calls < 1:
                 raise ValueError("task build needs a positive model-call budget")
             env_name, key = _compile_provider_key(args)

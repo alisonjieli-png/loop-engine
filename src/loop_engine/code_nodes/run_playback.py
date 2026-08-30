@@ -110,6 +110,39 @@ def playback(events) -> list:
     return lines
 
 
+def product_playback_lines(outcome: "dict | None") -> list[str]:
+    """Render the saved product result without reinterpreting its claims."""
+    if not outcome:
+        return ["[run] PRODUCT OUTCOME NOT RECORDED (legacy run)"]
+    verification = dict(outcome.get("verification") or {})
+    verified = bool(verification.get("passed")
+                    or verification.get("verdict") == "accept")
+    lines = [
+        f"[run] PRODUCT TERMINAL: {outcome.get('terminal_code', '')}",
+        f"[run] PRODUCT VERIFICATION: "
+        f"{'passed' if verified else 'not passed'}",
+    ]
+    if outcome.get("summary"):
+        lines.append(f"[run] RESULT: {outcome['summary']}")
+    if outcome.get("workspace"):
+        lines.append(f"[run] WORKSPACE: {outcome['workspace']}")
+    lines.extend(
+        f"[run] ARTIFACT: {item.get('path', '')}"
+        for item in outcome.get("artifacts", ()))
+    lines.extend(
+        f"[run] LIMITATION: {item}"
+        for item in outcome.get("limitations", ()))
+    return lines
+
+
+def playback_saved_run(root: str, run_id: str) -> list[str]:
+    """Play back one verified saved-run bundle without rerunning its work."""
+    from ..core.run_history import load_saved_run_bundle
+    bundle = load_saved_run_bundle(root, run_id)
+    return [*playback(bundle.history.event_log),
+            *product_playback_lines(bundle.outcome)]
+
+
 def _mermaid_tree(events, analysis) -> str:
     """The loop tree as a flowchart, pain-annotated."""
     lines = ["flowchart TD"]
@@ -247,7 +280,8 @@ def self_test() -> dict:
 
     # 4. Loaded saved-run events use a different storage envelope. Playback
     # and analytics must use the shared adapter rather than render an empty run.
-    from ..core.run_history import RunHistory
+    import tempfile
+    from ..core.run_history import RunHistory, bind_product_outcome
     ch = RunHistory.from_ledger(lp.ledger.events, run_id="playback-saved",
                                usage_log=usage)
     ch.commit()
@@ -259,6 +293,23 @@ def self_test() -> dict:
           and saved_report["analysis"]["totals"]["loops"] >= 2
           and saved_report["analysis"]["tokens"]["prompt"] == 50,
           "stored events produced transcript, tree, and provider usage")
+    with tempfile.TemporaryDirectory() as saved_root:
+        ch.save(saved_root)
+        bind_product_outcome(saved_root, "playback-saved", {
+            "record_type": "solve_outcome/v3", "run_id": "playback-saved",
+            "terminal_code": "COMPLETED_VERIFIED",
+            "status": "COMPLETED_VERIFIED", "solved": True,
+            "summary": "Playback product.", "failure_code": "",
+            "verification": {"passed": True},
+            "artifacts": [{"path": "/tmp/result.txt"}],
+            "workspace": "/tmp", "limitations": [],
+            "selected_canvas": {},
+        })
+        product_tx = playback_saved_run(saved_root, "playback-saved")
+    check("saved_playback_ends_with_the_product_terminal_and_artifacts",
+          any("PRODUCT TERMINAL: COMPLETED_VERIFIED" in line
+              for line in product_tx)
+          and product_tx[-1] == "[run] ARTIFACT: /tmp/result.txt")
 
     relationship_events = (
         {"event": "init", "loop_id": "p", "goal": "practice",

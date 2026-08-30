@@ -101,6 +101,15 @@ def _read_task_file(path: str) -> str:
 
 
 def main(argv=None) -> int:
+    from .cli_help import ROOT_HELP, command_help
+    raw_argv = list(sys.argv[1:] if argv is None else argv)
+    if not raw_argv:
+        print(ROOT_HELP)
+        return 0
+    focused_help = command_help(raw_argv)
+    if focused_help:
+        print(focused_help)
+        return 0
     parser = argparse.ArgumentParser(
         prog="loop-engine",
         description=__doc__.splitlines()[0],
@@ -122,6 +131,9 @@ def main(argv=None) -> int:
     parser.add_argument("--doctor", action="store_true",
                         help="check package, architecture, settings, and the "
                              "no-key deterministic lane without network calls")
+    parser.add_argument("--configure", action="store_true",
+                        help="inspect provider key references and print the "
+                             "next exact probe without contacting a provider")
     parser.add_argument("--live-demo", action="store_true",
                         help="watch a real canonical Loop run live: "
                         "localhost page with the step rail + console log "
@@ -183,7 +195,7 @@ def main(argv=None) -> int:
                         help=argparse.SUPPRESS)
     parser.add_argument(
         "--compile-provider",
-        choices=("ollama_cloud", "openrouter", "opencode_zen",
+        choices=("ollama_cloud", "mistral", "openrouter", "opencode_zen",
                  "opencode_go"),
         default="",
         help="optionally add one authorized model-assisted Orientation review; "
@@ -201,6 +213,11 @@ def main(argv=None) -> int:
         metavar="VALUE",
         help="accept an Ollama key value, or omit VALUE to use "
              "OLLAMA_API_KEY or a hidden prompt")
+    compile_key_shortcut.add_argument(
+        "--mistral-api-key", nargs="?", const="__prompt__", default=None,
+        metavar="VALUE",
+        help="accept a Mistral key value, or omit VALUE to use "
+             "MISTRAL_API_KEY or a hidden prompt")
     compile_key_shortcut.add_argument(
         "--openrouter-api-key", nargs="?", const="__prompt__", default=None,
         metavar="VALUE",
@@ -224,6 +241,11 @@ def main(argv=None) -> int:
         help="task compilation during compile or solve may ask for material "
              "missing information, or run autonomously and abstain when "
              "policy cannot resolve safely")
+    parser.add_argument(
+        "--quickstart", action="store_true",
+        help="use the bounded onboarding profile: one detected provider, "
+             "autonomous interaction, at most 16 model calls and 1,000,000 "
+             "provider-reported tokens")
     parser.add_argument(
         "--practitioner-mode",
         choices=("deterministic", "hybrid", "non_deterministic"),
@@ -356,13 +378,24 @@ def main(argv=None) -> int:
                         help="hard provider-reported token ceiling")
     parser.add_argument("--watch", action="store_true",
                         help="print campaign events while arms run")
-    raw_argv = list(sys.argv[1:] if argv is None else argv)
     if raw_argv[:1] == ["setup"]:
         raw_argv[:1] = ["--setup"]
+    elif raw_argv[:1] == ["configure"]:
+        raw_argv[:1] = ["--configure"]
     elif raw_argv[:1] == ["doctor"]:
         raw_argv[:1] = ["--doctor"]
     elif raw_argv[:1] == ["solve"]:
         raw_argv[:1] = ["--solve"]
+    elif raw_argv[:1] == ["studio"]:
+        raw_argv[:1] = ["--studio"]
+    elif raw_argv[:1] == ["runs"]:
+        raw_argv[:1] = ["--runs"]
+    elif raw_argv[:1] == ["report"]:
+        raw_argv[:1] = ["--report"]
+    elif raw_argv[:1] == ["templates"]:
+        raw_argv[:1] = ["--templates"]
+    elif raw_argv[:1] == ["profiles"]:
+        raw_argv[:1] = ["--profiles"]
     elif raw_argv[:2] == ["task", "build"]:
         raw_argv[:2] = ["--task-build"]
     elif raw_argv[:2] == ["task", "compile"]:
@@ -411,6 +444,9 @@ def main(argv=None) -> int:
     if args.doctor:
         from .cli_operations import run_doctor
         return run_doctor(args)
+    if args.configure:
+        from .cli_operations import run_configure
+        return run_configure(args)
     if args.models_action:
         from .cli_operations import run_models_action
         return run_models_action(args)
@@ -462,7 +498,10 @@ def main(argv=None) -> int:
         try:
             if args.settings_action == "init":
                 created = write_default_settings(args.settings_file)
-                print(f"Created Loop Engine settings at {created.path} "
+                value = {"record_type": "settings_created/v1",
+                         "path": created.path, "loop_id": created.loop_id}
+                print(json.dumps(value, indent=1) if args.format == "json"
+                      else f"Created Loop Engine settings at {created.path} "
                       f"through {created.loop_id}")
                 return 0
             loaded = load_runtime_settings(args.settings_file)
@@ -486,7 +525,10 @@ def main(argv=None) -> int:
             print(json.dumps(summary, indent=1))
             return 0
         except (SettingsError, KeyError, ValueError, RuntimeError) as exc:
-            print(f"Settings refused: {exc}")
+            value = {"record_type": "settings_error/v1",
+                     "error_code": "SETTINGS_INVALID", "error": str(exc)}
+            print(json.dumps(value, indent=1) if args.format == "json"
+                  else f"Settings refused: {exc}")
             return 2
     if args.campaign:
         from .code_nodes.campaign_runner import (
@@ -556,46 +598,25 @@ def main(argv=None) -> int:
         return 0 if result.accepted == len(result.arms) else 1
     if args.setup:
         from .code_nodes.guided_setup import run_setup
-        return 0 if run_setup().ready else 1
+        if args.format == "json":
+            import io
+            stream = io.StringIO()
+            with contextlib.redirect_stdout(stream):
+                report = run_setup(interactive=False)
+            value = report.summary()
+            value["captured_walkthrough_lines"] = len(
+                stream.getvalue().splitlines())
+            print(json.dumps(value, indent=1))
+        else:
+            report = run_setup(interactive=sys.stdin.isatty())
+        return 0 if report.ready else 1
     if args.example:
         from .code_nodes.public_examples import run_example
         print(run_example(args.example))
         return 0
     if args.runs or args.report:
-        from .core.run_history import default_runs_dir, saved_run_ids
-        from .code_nodes.loop_report import (report_from_run, render_text,
-                                             render_markdown, render_html)
-        runs_dir = default_runs_dir(args.runs_dir or "")
-        saved = saved_run_ids(runs_dir)
-        if args.runs:
-            if not saved:
-                print("No saved runs yet. Run a Loop and save its run history "
-                      "to make it appear here.")
-                return 0
-            print(f"{len(saved)} saved run(s):")
-            for r in saved:
-                print(f"  {r}")
-            return 0
-        if not saved:
-            print("No saved runs to report on yet.")
-            return 1
-        run_id = saved[-1] if args.report == "@last" else args.report
-        if run_id not in saved:
-            print(f"No saved run named {run_id!r}. Known runs: "
-                  + ", ".join(saved[:8]) + ("…" if len(saved) > 8 else ""))
-            return 1
-        rep = report_from_run(runs_dir, run_id)
-        body = {"text": render_text, "markdown": render_markdown,
-                "html": render_html,
-                "json": lambda r: json.dumps(r.as_dict(), indent=1)
-                }[args.format](rep)
-        if args.out:
-            with open(args.out, "w", encoding="utf-8") as f:
-                f.write(body)
-            print(f"wrote {args.format} report for {run_id} -> {args.out}")
-        else:
-            print(body)
-        return 0
+        from .run_history_cli import run_history_command
+        return run_history_command(args)
     if args.live_demo:
         from .code_nodes.live_run_demo import run_live_demo
         run_live_demo(port=args.port or 8770, pace_seconds=0.6,

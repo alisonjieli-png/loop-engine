@@ -125,6 +125,11 @@ _PUBLIC: dict[str, tuple[str, str]] = {
 
     # Saved Run History and event vocabulary.
     **_names(
+        "core.product_outcome_store",
+        "PRODUCT_OUTCOME_FILENAME", "ProductOutcomeRef", "SavedRunBundle",
+        "bind_product_outcome", "load_saved_run_bundle",
+    ),
+    **_names(
         "core.run_history",
         "RunHistory", "RunHistoryEvent", "RunHistoryIntegrityError",
         "verify_saved_run",

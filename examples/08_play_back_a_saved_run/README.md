@@ -4,14 +4,14 @@ This example records a nested inventory run, verifies its saved hash chain,
 prints the event transcript, and points Studio at the same run directory.
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 ```
 
 Run from the repository checkout:
 
 ```bash
 python3 examples/08_play_back_a_saved_run/run.py
-loop-engine --studio --runs-dir example-output/runs --port 8765
+loop-engine studio --runs-dir example-output/runs --port 0
 ```
 
 Open the playback URL printed by `run.py`.

@@ -1,11 +1,10 @@
-"""The routed SaaS + Studio surface — and the rule that every API call is a loop.
+"""The routed local Studio surface and its Loop-governed read APIs.
 
 Architectural role: internal front-end and back-end routing service.
 
-The design handoff (Claude Design project 265b684e, imported 2026-08-23) ships
-the public site and Studio as routed pages backed by named endpoints. This
-module owns that contract on the backend side, and it owns one law the earlier
-server broke by omission:
+This module owns the routes that are implemented by the local Studio server.
+Unbuilt marketing, account, and hosted-product pages are not declared. It also
+owns one law the earlier server broke by omission:
 
     An API endpoint is an operational boundary — externally invokable,
     observable, retryable, budgeted, governed. So it is a PractitionerLoop,
@@ -19,9 +18,8 @@ fixing it there, because this is the seam outsiders see: every harness, MCP
 client, browser, and SaaS tenant enters through it.
 
 Owns:
-    - PUBLIC_ROUTES / STUDIO_ROUTES: the declared page contract (the design's
-      route list), so routing is data a test can check rather than branches
-      buried in a request handler;
+    - PUBLIC_ROUTES / STUDIO_ROUTES: the implemented page contract, so routing
+      is data a test can check rather than branches buried in a handler;
     - API_ROUTES: every endpoint bound to its projection AND the registered
       loop template it runs under;
     - serve_api(): dispatch that runs the projection INSIDE a PractitionerLoop
@@ -54,22 +52,17 @@ route-table integrity, and the adversarial unknown-route/unknown-pillar path.
 """
 from __future__ import annotations
 
-#: The public site's routes, exactly as the design handoff declares them.
-#: A page listed here is a contract; whether it is BUILT is a separate fact
-#: the design README tracks as NOT RUN.
-PUBLIC_ROUTES = (
-    "/", "/product", "/how-it-works", "/practitioner-loops", "/intelligence",
-    "/intelligence/context", "/intelligence/strings", "/intelligence/code",
-    "/intelligence/previous-runs-solutions", "/intelligence/user",
-    "/solutions", "/solution-canvas", "/studio", "/marketplace", "/pricing",
-    "/docs", "/blog", "/news", "/case-studies", "/about", "/contact",
-    "/login", "/signup", "/security", "/status", "/privacy", "/terms",
-)
+#: Public routes that render working content in the local Studio server.
+#: Marketing, account, and hosted-product routes are not declared until their
+#: pages exist. A 200 response carrying a shell that renders "Not found" is not
+#: an implemented route.
+PUBLIC_ROUTES = ("/", "/studio")
 
 #: The authenticated Studio's routes.
 STUDIO_ROUTES = (
     "/app", "/app/runs", "/app/runs/:id", "/app/runs/:id/overview",
-    "/app/runs/:id/tree", "/app/runs/:id/canvas",
+    "/app/runs/:id/result", "/app/runs/:id/tree",
+    "/app/runs/:id/runtime", "/app/runs/:id/canvas",
     "/app/runs/:id/playback", "/app/runs/:id/calls",
     "/app/intelligence", "/app/context", "/app/strings", "/app/nodes",
     "/app/solutions", "/app/improvements", "/app/runtime",
@@ -241,7 +234,9 @@ def route_contract() -> dict:
             "layers": sorted(LAYER_ROUTES),
             "pillars": sorted(LAYER_ROUTES),
             "every_api_endpoint_runs_as_a_loop": True,
-            "read_endpoints_make_zero_semantic_calls": True}
+            "read_endpoints_make_zero_semantic_calls": True,
+            "studio_read_only": True,
+            "allowed_http_methods": ["GET"]}
 
 
 def self_test() -> dict:
@@ -301,15 +296,18 @@ def self_test() -> dict:
     playback_route = resolve_route("/app/runs/run-7/playback")
     intelligence_route = resolve_route("/app/intelligence")
     runtime_route = resolve_route("/app/runtime")
-    context_route = resolve_route("/intelligence/context")
+    result_route = resolve_route("/app/runs/run-7/result")
+    run_runtime_route = resolve_route("/app/runs/run-7/runtime")
     check("declared_routes_resolve_including_parameters",
           home and home["kind"] == "public"
           and playback_route and playback_route["kind"] == "studio"
           and playback_route["params"]["id"] == "run-7"
           and intelligence_route and intelligence_route["kind"] == "studio"
           and runtime_route and runtime_route["kind"] == "studio"
-          and context_route and context_route["kind"] == "public"
-          and len(PUBLIC_ROUTES) >= 26,
+          and result_route and result_route["params"]["id"] == "run-7"
+          and run_runtime_route and run_runtime_route["params"]["id"] == "run-7"
+          and resolve_route("/pricing") is None
+          and len(PUBLIC_ROUTES) == 2,
           f"{len(PUBLIC_ROUTES)} public + {len(STUDIO_ROUTES)} studio routes")
 
     # 5. the browser stream speaks the ONE vocabulary: canonical families,

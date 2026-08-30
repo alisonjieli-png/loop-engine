@@ -42,3 +42,9 @@ A small deterministic verifier must run without importing Loop Engine.
 It checks syntax, forbidden Node classes, forbidden paths, and the
 devtools/runtime dependency direction. A broken Loop runtime must
 never be able to disable all review.
+
+Repository assurance blocks current architecture, structure, semantic, and
+portability violations. The staged three-parameter API migration is reported
+as warnings by default because it is not a product-path release gate. Use
+`loop-dev --assurance --strict` when working that migration; strict mode makes
+every unapproved call-boundary finding blocking.

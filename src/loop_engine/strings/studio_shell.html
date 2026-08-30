@@ -1,8 +1,9 @@
-<!-- Loop Engine Studio shell — a passive String served by studio_server.py.
+<!-- Loop Engine Studio shell: a passive String served by studio_server.py.
      Every number on every page is fetched from /api/* at request time
-     (saved run history + live stores) — never a generated snapshot. -->
+     (saved run history + live stores), never a generated snapshot. -->
 <!DOCTYPE html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
 <title>Loop Engine Studio</title>
 <style>
 :root { --bg:#f4f6f5; --panel:#fdfffe; --ink:#1d2422; --mut:#5f6c68;
@@ -66,14 +67,15 @@ tr.row { cursor:pointer; } tr.row:hover td { background:var(--code); }
 .cards { display:grid; grid-template-columns:repeat(auto-fill,
   minmax(9.5rem,1fr)); gap:.6rem; margin:.6rem 0 1.2rem; }
 .card { background:var(--panel); border:1px solid var(--line);
-  border-radius:.5rem; padding:.6rem .8rem; cursor:pointer; }
+  border-radius:.5rem; padding:.6rem .8rem; cursor:pointer; color:var(--ink);
+  text-decoration:none; }
 .card b { display:block; font-size:1.3rem;
   font-variant-numeric:tabular-nums; }
 .card span { font-size:.7rem; color:var(--mut); text-transform:uppercase;
   letter-spacing:.05em; }
 .chip { background:var(--chip); border-radius:.3rem; padding:.05rem .45rem;
   font-size:.72rem; font-family:"IBM Plex Mono",monospace; margin:0 .15rem;
-  display:inline-block; cursor:pointer; }
+  display:inline-block; cursor:pointer; color:var(--ink); border:0; }
 .chip.on { background:var(--acc); color:#fff; }
 .chip.reg { background:var(--acc); color:#fff; }
 .chip.cand { background:var(--warn); color:#fff; }
@@ -96,12 +98,39 @@ pre { background:var(--code); border-radius:.4rem; padding:.6rem;
   padding:.4rem .8rem; color:var(--mut); font-size:.82rem; margin:.6rem 0; }
 button { background:var(--acc); color:#fff; border:0; border-radius:.35rem;
   padding:.3rem .7rem; font:inherit; cursor:pointer; }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,
+[role=button]:focus-visible { outline:2px solid var(--acc); outline-offset:2px; }
+@media (max-width:760px) {
+  body { height:auto; min-height:100vh; }
+  header { flex-wrap:wrap; }
+  header input { order:3; flex-basis:100%; max-width:none; }
+  #layout { display:block; }
+  nav { width:100%; border-right:0; border-bottom:1px solid var(--line);
+    display:flex; overflow-x:auto; padding:.25rem; }
+  nav a { flex:0 0 auto; padding:.45rem .65rem; }
+  nav a.on { border-left:0; border-bottom:3px solid var(--acc);
+    padding-left:.65rem; }
+  main { min-height:60vh; }
+  aside,aside.open { position:fixed; inset:4rem .5rem .5rem .5rem;
+    width:auto; z-index:10; border:1px solid var(--line); border-radius:.5rem;
+    box-shadow:0 12px 40px #0004; }
+  .tabs { overflow-x:auto; }
+  .tl { flex-wrap:wrap; }
+  .tl input[type=range] { flex:1 1 calc(100% - 4rem); min-width:0; }
+  #pos { flex:0 0 3rem; white-space:nowrap; text-align:right; }
+  th,td { white-space:normal; min-width:6rem; }
+}
 </style></head><body>
 <header><b>Loop Engine Studio</b>
-<input id="q" placeholder="Filter the current page — or facet:value (class:string maturity:candidate role:question)">
-<span id="status">…</span></header>
-<div id="layout"><nav id="nav"></nav><main id="main">Loading…</main>
-<aside id="insp"></aside></div>
+<label class="sr-only" for="q">Filter the current page</label>
+<input id="q" aria-label="Filter the current page"
+  placeholder="Filter this page or use facet:value">
+<span id="status" aria-live="polite">Loading</span></header>
+<div id="layout"><nav id="nav" aria-label="Studio sections"></nav>
+<main id="main" tabindex="-1">Loading</main>
+<aside id="insp" aria-label="Selected item details"></aside></div>
 <script>
 const NAV = [["home","Home"],["runs","Runs"],
   ["runtime","Runtime"],
@@ -116,26 +145,34 @@ async function api(p) { const r = await fetch("/api/" + p);
 function nav(page) { $("#nav").innerHTML = NAV.map(([k, l]) =>
   `<a href="#/${k}" class="${page === k ? "on" : ""}">${l}</a>`).join(""); }
 function inspect(html) { const a = $("#insp");
-  a.className = html ? "open" : ""; a.innerHTML = html || ""; }
+  a.className = html ? "open" : "";
+  a.innerHTML = html ? `<button aria-label="close details"
+    onclick="inspect('')">Close</button>` + html : ""; }
 function filterRows() { const v = $("#q").value.toLowerCase();
   document.querySelectorAll("[data-s]").forEach(r =>
     r.style.display = !v || r.dataset.s.includes(v) ? "" : "none"); }
 $("#q").addEventListener("input", filterRows);
-function sortable(tbl) { tbl.querySelectorAll("th").forEach((th, i) =>
-  th.onclick = () => { const rows = [...tbl.querySelectorAll("tr.row")];
+function sortable(tbl) { tbl.querySelectorAll("th").forEach((th, i) => {
+  th.tabIndex = 0; th.setAttribute("role", "button");
+  const sort = () => { const rows = [...tbl.querySelectorAll("tr.row")];
     const num = th.classList.contains("num");
     const dir = th.dataset.d = -(th.dataset.d || -1);
     rows.sort((a, b) => { const x = a.children[i].textContent,
       y = b.children[i].textContent;
       return dir * (num ? (parseFloat(x) || 0) - (parseFloat(y) || 0)
                         : x.localeCompare(y)); });
-    rows.forEach(r => tbl.appendChild(r)); }); }
+    rows.forEach(r => tbl.appendChild(r)); };
+  th.onclick = sort;
+  th.onkeydown = event => { if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault(); sort(); } };
+  th.setAttribute("aria-label", "Sort by " + th.textContent);
+}); }
 
 const pages = {
   async home() { const s = await api("summary");
     $("#main").innerHTML = `<h1>Operations</h1><div class="cards">` +
-      s.cards.map(c => `<div class="card" onclick="location.hash='#/${c.link}'">
-        <b>${esc(c.value)}</b><span>${esc(c.label)}</span></div>`).join("") +
+      s.cards.map(c => `<a class="card" href="#/${c.link}">
+        <b>${esc(c.value)}</b><span>${esc(c.label)}</span></a>`).join("") +
       `</div><div class="warnbox">${esc(s.honesty)}</div>
       <h1 style="font-size:1.05rem">Recent runs</h1>` + runsTable(s.recent);
     sortable($("#main table")); },
@@ -146,7 +183,9 @@ const pages = {
 
   async run(id, tab) { tab = tab || "overview";
     const d = await api("run/" + encodeURIComponent(id));
-    const T = ["overview","tree","runtime","canvas","playback","calls"];
+    const T = ["overview","result","tree","runtime","canvas","playback","calls"];
+    const product = d.product || {available:false,artifacts:[],verification:{},
+      limitations:[],selected_canvas:{}};
     let body = "";
     if (tab === "overview") body = `<div class="cards">` + [
       ["events", d.totals.events], ["iterations", d.totals.iterations],
@@ -158,8 +197,44 @@ const pages = {
       </div>`).join("") + `</div><p class="k">${esc(d.goal)}</p>` +
       (d.stuckness.dominant_indicators.length ?
         `<div class="warnbox">stuck: ${esc(d.stuckness.dominant_indicators
-          .map(i => i.indicator).join(", "))} → try ${esc(d.stuckness
-          .suggested_interventions.join(", "))}</div>` : "");
+          .map(i => i.indicator).join(", "))}; try ${esc(d.stuckness
+          .suggested_interventions.join(", "))}</div>` : "") +
+      (product.available
+        ? `<h2>Product result</h2><div class="warnbox"><b>${esc(
+            product.terminal_code)}</b>: ${esc(product.summary)}<br>
+            ${product.artifacts.length} artifact(s), verification ${
+            product.verification.passed || product.verification.verdict === "accept"
+              ? "passed" : "not passed"}</div>`
+        : `<div class="warnbox">This legacy run has no bound product outcome.
+           Loop activity remains available below.</div>`);
+    if (tab === "result") {
+      if (!product.available) body = `<div class="warnbox">This legacy run
+        has no bound product outcome.</div>`;
+      else {
+        const artifacts = product.artifacts.length ? `<table><tr><th>artifact</th>
+          <th>type</th><th class="num">bytes</th><th>verified</th>
+          <th>available now</th><th>digest</th></tr>` +
+          product.artifacts.map(a => `<tr><td><code>${esc(a.relative_path)}</code></td>
+          <td>${esc(a.media_type)}</td><td class="num">${a.byte_count}</td>
+          <td>${a.verified && a.format_valid ? "yes" : "no"}</td>
+          <td>${a.present ? "yes" : "missing"}</td>
+          <td><code>${esc((a.digest || "").slice(0,12))}</code></td></tr>`).join("") +
+          `</table>` : `<p class="k">No artifacts were recorded.</p>`;
+        body = `<div class="cards">
+          <div class="card"><b>${esc(product.terminal_code)}</b><span>terminal</span></div>
+          <div class="card"><b>${product.solved ? "yes" : "no"}</b><span>solved</span></div>
+          <div class="card"><b>${product.verification.passed ||
+            product.verification.verdict === "accept" ? "passed" : "not passed"}</b>
+            <span>verification</span></div>
+          <div class="card"><b>${product.artifacts.length}</b><span>artifacts</span></div>
+          </div><p>${esc(product.summary)}</p>
+          <p class="k">Workspace: <code>${esc(product.workspace || "not recorded")}</code></p>
+          <h2>Artifacts</h2>${artifacts}` +
+          (product.limitations.length ? `<h2>Limitations</h2><ul>` +
+            product.limitations.map(item => `<li>${esc(item)}</li>`).join("") + `</ul>` : "") +
+          (product.next_action ? `<h2>Next action</h2><p>${esc(product.next_action)}</p>` : "");
+      }
+    }
     if (tab === "tree") {
       window.__loops = {};
       (d.loops || []).forEach(l => { window.__loops[l.loop_id] = l; });
@@ -170,9 +245,7 @@ const pages = {
           .map(([m, c]) => chip(m, c)).join("");
         return `<div class="lnode" style="margin-left:${depth * 1.1}rem"
           tabindex="0" role="button"
-          onclick="pickLoop('${esc(n.loop_id)}')"
-          onkeydown="if(event.key==='Enter'||event.key===' ')
-            {event.preventDefault();pickLoop('${esc(n.loop_id)}')}">
+          onclick="pickLoop('${esc(n.loop_id)}')">
           <b>${esc(n.loop_id)}</b> <span class="k">${esc(
             (n.goal || "").slice(0, 64))}</span>
           <span class="k">iter ${n.iterations || 0} · calls ${
@@ -186,19 +259,19 @@ const pages = {
          it produced, and how it resolved each step.</p>`;
     }
     if (tab === "canvas") {
-      // The SOLUTION CANVAS: what the run SHIPPED, as loops.  Distinct from
-      // the Loop Tree, which is how it was built.
-      const sol = (d.events || []).filter(e =>
-        (e.type || "").startsWith("solution"));
-      body = sol.length
-        ? `<div class="canvas">` + sol.map(e =>
-            `<div class="cnode"><b>${esc(e.loop || "component")}</b>
-             <span class="k">${esc(e.type)}</span>
-             <span class="k">${esc(e.detail || "")}</span></div>`).join("") +
-          `</div>`
+      const canvas = product.selected_canvas || {};
+      const graph = canvas.loop_graph || {};
+      const vertices = graph.vertices || [];
+      body = vertices.length
+        ? `<p class="k">Graph: <code>${esc(product.graph_digest)}</code></p>
+          <div class="canvas">` + vertices.map(vertex =>
+            `<div class="cnode"><b>${esc(vertex.vertex_id)}</b>
+             <span class="k">${esc(vertex.purpose || "component")}</span>
+             <span class="k">${esc(vertex.operation_ref || "controller")}</span>
+             <span class="k">${esc(vertex.selected_mode || "")}</span></div>`).join("") +
+          `</div><h2>Graph definition</h2><pre>${esc(canvas.mermaid || "")}</pre>`
         : `<div class="warnbox">This run recorded no Solution components.
-           The canvas shows what a run SHIPPED; a run that only explored has
-           nothing to show here, which is honest rather than empty.</div>`;
+           A run that only explored has no executable product graph.</div>`;
     }
     if (tab === "runtime") {
       const r = d.runtime || {};
@@ -263,17 +336,20 @@ const pages = {
         (r.history_gaps || []).map(g =>
           `<div class="warnbox">${esc(g)}</div>`).join("");
     }
-    if (tab === "playback") body = `<div class="tl">
+    const timeline = d.playback_events || d.events || [];
+    if (tab === "playback") body = `<p class="k">${timeline.length} key event(s)
+      from ${d.events.length} stored event(s).</p><div class="tl">
       <button onclick="stepEv(-1)" aria-label="previous event">◀</button>
-      <button id="playbtn" onclick="togglePlay()">Play</button>
+      <button id="playbtn" onclick="togglePlay()" aria-label="play timeline">Play</button>
       <button onclick="stepEv(1)" aria-label="next event">▶</button>
-      <label class="k">speed <select id="speed">
+      <label class="k">Speed <select id="speed" aria-label="playback speed">
         <option value="1000">0.5x</option><option value="500" selected>1x</option>
         <option value="250">2x</option><option value="100">5x</option>
       </select></label>
-      <input type="range" id="scrub" min="0" max="${d.events.length - 1}"
+      <input type="range" id="scrub" aria-label="playback position"
+        min="0" max="${Math.max(0,timeline.length - 1)}"
         value="0" oninput="showEv()"><span class="k" id="pos"></span></div>
-      <div id="evs">` + d.events.map((e, i) =>
+      <div id="evs">` + timeline.map((e, i) =>
         `<div class="ev ${e.type === "model_invocation" ? "model" : ""}"
           id="ev${i}">[${i}] <b>${esc(e.type)}</b> ${esc(e.loop)}
           ${esc(e.step)} ${e.mode ? "(" + esc(e.mode) + ")" : ""}
@@ -286,7 +362,7 @@ const pages = {
         <td>${esc(c.loop)}</td><td>${esc(c.step)}</td><td>${esc(c.model)}
         </td><td class="num">${c.prompt_tokens}</td>
         <td class="num">${c.eval_tokens}</td></tr>`).join("") + "</table>"
-      : `<p class="k">zero semantic calls — fully code-served</p>`;
+      : `<p class="k">zero semantic calls, fully code-served</p>`;
     $("#main").innerHTML = `<h1>${esc(id)}</h1><div class="tabs">` +
       T.map(t => `<a href="#/runs/${encodeURIComponent(id)}/${t}"
         class="${t === tab ? "on" : ""}">${t}</a>`).join("") +
@@ -296,29 +372,30 @@ const pages = {
         e.classList.remove("cur"));
       const el = $("#ev" + i); if (el) { el.classList.add("cur");
         el.scrollIntoView({block: "center"}); }
-      $("#pos").textContent = i + " / " + d.events.length; };
+      $("#pos").textContent = timeline.length ?
+        (i + 1) + " / " + timeline.length : "0 / 0"; };
     window.__playTimer = null;
     window.stepEv = delta => { const scrub = $("#scrub");
-      scrub.value = Math.max(0, Math.min(d.events.length - 1,
+      scrub.value = Math.max(0, Math.min(timeline.length - 1,
         +scrub.value + delta)); showEv(); };
     window.togglePlay = () => { const button = $("#playbtn");
       if (window.__playTimer) { clearTimeout(window.__playTimer);
         window.__playTimer = null; button.textContent = "Play"; return; }
       button.textContent = "Pause";
       const advance = () => { const scrub = $("#scrub");
-        if (+scrub.value >= d.events.length - 1) { window.__playTimer = null;
+        if (+scrub.value >= timeline.length - 1) { window.__playTimer = null;
           button.textContent = "Play"; return; }
         scrub.value = +scrub.value + 1; showEv();
         window.__playTimer = setTimeout(advance, +$("#speed").value); };
       window.__playTimer = setTimeout(advance, +$("#speed").value); };
-    if (tab === "playback" && d.events.length) showEv(); },
+    if (tab === "playback" && timeline.length) showEv(); },
 
   async intelligence() { const d = await api("intelligence");
-    const cards = d.summary.layers.map(l => `<div class="card"
+    const cards = d.summary.layers.map(l => `<button class="card"
       onclick="$('#q').value='layer:${esc(l.layer)}';filterRows()">
       <b>${l.items}</b><span>${esc(l.public_label)}</span>
       <span class="k">${esc(Object.entries(l.category_groups)
-        .map(([k,v]) => k + ' ' + v).join(' · ') || 'no items')}</span></div>`
+        .map(([k,v]) => k + ' ' + v).join(' · ') || 'no items')}</span></button>`
     ).join("");
     const rows = d.items.map(item => { const c = item.classification;
       return `<tr class="row" data-s="${esc((item.title + ' ' + item.layer +
@@ -351,13 +428,14 @@ const pages = {
       <span class="k">(${d.items.length})</span></h1>
       <div class="warnbox">This review catalog can show candidates. Normal
       retrieval excludes candidate and experimental items.</div><p>` +
-      d.facets.map(f => `<span class="chip" onclick="$('#q').value=
-        'category:${f}';filterRows()">${esc(f)}</span>`).join("") +
+      d.facets.map(f => `<button class="chip" onclick="$('#q').value=
+        'category:${f}';filterRows()">${esc(f)}</button>`).join("") +
       `</p><table><tr><th>kind</th><th>text</th><th>category</th>
       <th>maturity</th><th>source</th></tr>` +
       d.items.map(s => `<tr class="row" data-s="${esc((s.kind + " " +
         s.text + " " + s.category + " category:" + s.category +
         " maturity:" + s.maturity + " class:string").toLowerCase())}"
+        tabindex="0" role="button"
         onclick="location.hash='#/context/${encodeURIComponent(s.id)}'">
         <td><span class="chip">${esc(s.kind)}</span></td>
         <td style="white-space:normal">${esc(s.text.slice(0, 110))}</td>
@@ -376,6 +454,7 @@ const pages = {
       <th>purpose</th></tr>` +
       d.loops.map(n => `<tr class="row" data-s="${esc((n.module + " " +
         n.group + " " + n.purpose + " class:code").toLowerCase())}"
+        tabindex="0" role="button"
         onclick="location.hash='#/nodes/${encodeURIComponent(n.module)}'">
         <td><b>${esc(n.module)}</b></td><td>${esc(n.group)}</td>
         <td class="num">${n.loc}</td>
@@ -405,7 +484,7 @@ const pages = {
       <th>run</th><th class="num">score</th><th>indicators</th>
       <th>interventions</th></tr>` +
       d.stuckness.map(s => `<tr class="row" data-s="${esc(s.run
-        .toLowerCase())}" onclick="location.hash=
+        .toLowerCase())}" tabindex="0" role="button" onclick="location.hash=
         '#/runs/${encodeURIComponent(s.run)}/overview'">
         <td>${esc(s.run)}</td><td class="num">${s.score}</td>
         <td class="k">${esc(s.indicators)}</td>
@@ -463,15 +542,21 @@ const pages = {
     document.querySelectorAll("#main table").forEach(sortable); },
 };
 pages.strings = pages.context;
+pages.studio = pages.home;
 
 function runsTable(rows) { return `<table><tr><th>run</th><th>goal</th>
+  <th>terminal</th><th class="num">artifacts</th>
   <th class="num">events</th><th class="num">calls</th>
   <th class="num">tokens</th><th>chain</th></tr>` +
-  rows.map(r => `<tr class="row" data-s="${esc((r.run_id + " " + r.goal)
-    .toLowerCase())}" onclick="location.hash=
-    '#/runs/${encodeURIComponent(r.run_id)}/overview'">
-    <td><b>${esc(r.run_id)}</b></td>
+  rows.map(r => `<tr class="row" data-s="${esc((r.run_id + " " + r.goal +
+    " " + r.terminal_code).toLowerCase())}">
+    <td>${r.error_code ? `<b>${esc(r.run_id)}</b>` :
+      `<a href="/app/runs/${encodeURIComponent(r.run_id)}/overview"><b>${
+      esc(r.run_id)}</b></a>`}</td>
     <td style="white-space:normal" class="k">${esc(r.goal.slice(0, 70))}</td>
+    <td>${esc(r.terminal_code || "legacy")}${r.error_code ?
+      `<div class="k">${esc(r.error)}</div>` : ""}</td>
+    <td class="num">${r.artifact_count || 0}</td>
     <td class="num">${r.events}</td><td class="num">${r.calls}</td>
     <td class="num">${r.tokens}</td>
     <td>${r.intact ? "intact" : "<b>BROKEN</b>"}</td></tr>`).join("") +
@@ -479,7 +564,7 @@ function runsTable(rows) { return `<table><tr><th>run</th><th>goal</th>
 
 // PATH routing with a hash fallback. The server serves the declared paths
 // (GET /routes enumerates them), so a Studio URL is shareable and
-// bookmarkable — a hash-only shell cannot be deep-linked into by anything
+// bookmarkable. A hash-only shell cannot be deep-linked into by anything
 // that does not already run the page.
 function currentParts() {
   if (location.hash.length > 2)
@@ -508,6 +593,11 @@ document.addEventListener("click", (e) => {
   e.preventDefault();
   history.pushState({}, "", a.getAttribute("href"));
   route();
+});
+document.addEventListener("keydown", (event) => {
+  const target = event.target.closest && event.target.closest('[role="button"]');
+  if (!target || !["Enter", " "].includes(event.key)) return;
+  event.preventDefault(); target.click();
 });
 function pickLoop(id) {
   const l = (window.__loops || {})[id];

@@ -8,7 +8,7 @@ from __future__ import annotations
 import csv
 import json
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from enum import Enum
 from pathlib import Path
 
@@ -292,7 +292,8 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             feedback=request.feedback,
             workspace_root=request.workspace_root,
             allow_source_materialization_to_model=
-                request.allow_source_materialization_to_model),
+                request.allow_source_materialization_to_model,
+            persist_run_history=request.save_run_history),
         AdaptivePractitionerDependencies(
             model_execution=request.model_execution,
             deterministic_resolvers=resolvers,
@@ -313,10 +314,10 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
                 else _failure_code(adaptive))
     history = adaptive.get("run_history") or {}
     inspect = tuple(filter(None, (
-        (f"loop-engine --report {adaptive.get('run_id')} --runs-dir "
+        (f"loop-engine report {adaptive.get('run_id')} --runs-dir "
          f"{request.runs_dir}" if adaptive.get("run_id") and request.runs_dir
          else ""),
-        (f"loop-engine --studio --runs-dir {request.runs_dir}"
+        (f"loop-engine studio --port 0 --runs-dir {request.runs_dir}"
          if request.runs_dir else ""),
     )))
     deterministic_trace = adaptive.get("deterministic_attempt") or {}
@@ -325,7 +326,7 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         or deterministic_trace.get("unresolved_requirements")
         or deterministic_trace.get("diagnostics")
         or ("No compatible verified capability completed the task.",))))
-    return SolveOutcome(
+    outcome = SolveOutcome(
         run_id=str(adaptive.get("run_id") or ""),
         status=terminal,
         solved=solved,
@@ -355,6 +356,14 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         loop_count=len(adaptive.get("loop_details") or ()),
         elapsed_seconds=round(time.monotonic() - started, 3),
         model_usage=_model_usage(adaptive))
+    if request.save_run_history and outcome.run_id and history.get("path"):
+        from ..core.run_history import bind_product_outcome
+        run_root = str(Path(str(history["path"])).parent)
+        outcome_ref = bind_product_outcome(
+            run_root, outcome.run_id, outcome.to_dict())
+        outcome = replace(outcome, run_history={
+            **dict(history), "product_outcome": outcome_ref.to_dict()})
+    return outcome
 
 
 def _next_recovery(terminal: str) -> str:
@@ -409,6 +418,16 @@ def self_test() -> dict:
         check("solve_result_preserves_exact_added_file_snapshot",
               deterministic.intelligence["extensions"]
               == extension_snapshot)
+        from ..core.run_history import load_saved_run_bundle
+        deterministic_bundle = load_saved_run_bundle(
+            root, deterministic.run_id)
+        check("solve_terminal_and_result_are_bound_to_run_history",
+              deterministic_bundle.outcome["terminal_code"]
+              == "COMPLETED_VERIFIED"
+              and deterministic_bundle.outcome["verification"]["passed"]
+              and deterministic.run_history["product_outcome"][
+                  "content_digest"]
+              == deterministic_bundle.outcome_ref.content_digest)
         model = solve_task(SolveRequest(
             intake_task(TaskIntakeRequest(text="explain this bounded task")),
             model_execution=fixture_model_execution(
@@ -427,6 +446,14 @@ def self_test() -> dict:
         check("unavailable_executor_never_returns_solved_true",
               not unavailable.solved
               and unavailable.failure_code == "CAPABILITY_GAP")
+        unsaved_root = str(Path(root) / "unsaved")
+        unsaved = solve_task(SolveRequest(
+            intake_task(TaskIntakeRequest(text="invent another theorem")),
+            runs_dir=unsaved_root, save_run_history=False))
+        from ..core.run_history import saved_run_ids
+        check("save_run_history_false_creates_no_saved_run_authority",
+              not unsaved.solved and unsaved.run_history["path"] == ""
+              and saved_run_ids(unsaved_root) == [])
         autonomous = solve_task(SolveRequest(
             intake_task(TaskIntakeRequest(
                 text="Train and compare several supervised prediction models.")),

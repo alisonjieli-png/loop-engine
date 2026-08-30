@@ -1,7 +1,8 @@
 # Studio runtime views
 
-Studio shows bounded runtime metadata without copying private agent context.
-The views are computed at request time from a saved Run History or from live
+Studio is a local, read-only interface. It shows the bound product outcome and
+bounded runtime metadata without copying private agent context. The views are
+computed at request time from a verified saved-run bundle or from read-only
 objects supplied by the host application.
 
 ## Available views
@@ -20,12 +21,17 @@ ledger with the same field allowlist used for saved runs.
 
 | Surface | Saved playback | Source |
 |---|---|---|
+| Product terminal, verification, workspace, artifacts, and Canvas | Yes | Digest-bound `outcome.json` referenced by the Run History manifest. |
 | Spawned Loop delegation tasks | Yes | `spawned_task_started`, `spawned_task_updated`, and `spawned_task_terminal` details in Run History `custom` events. |
 | External harness runs | Yes | `external_harness_result/v2` safe summaries in Run History `custom` events. |
 | MCP calls | Yes | Completed, failed, refused, unavailable, and approval-required results record safe terminal metadata. |
 | Effect approvals | Yes | Requested and decided observations record safe identity, status, action, and revision fields. |
 | Context artifacts and compaction | Yes | Capture and compaction observations record digests, counts, strategy, and Loop profile. |
 | Skill loads | Yes | Terminal observations record skill id, version, lifecycle, manifest digest, and file count. |
+
+Artifact verification records what passed during the run. Studio also checks
+whether each recorded artifact path is still present when the page opens, so
+a later deletion appears as `missing` instead of looking available.
 
 The implementation does not create another node type or event store. A shared
 `RuntimeObservationServices` object writes safe raw kinds to the existing Loop
@@ -42,7 +48,7 @@ does not copy their records into another registry.
 from loop_engine.core.studio_operational_views import (
     StudioReadSources,
 )
-from loop_engine.core.studio_server import serve
+from loop_engine.core.studio_server import StudioServeRequest, serve
 
 sources = StudioReadSources(
     harness_registry=harness_registry,
@@ -54,22 +60,27 @@ sources = StudioReadSources(
     compactions=tuple(current_compaction_results),
 )
 
-serve(port=8765, read_sources=sources)
+serve(StudioServeRequest(port=8765, read_sources=sources))
 ```
 
 MCP server ids are explicit because `McpRegistry` does not have a public
 all-server inventory method. Studio does not inspect the registry's private
 dictionaries.
 
-Supplied live objects show current state. Saved playback comes from the
-Run History observations and remains available after those objects disappear.
+Supplied live objects show current state. Saved playback comes from the Run
+History observations and bound product outcome. It remains available after
+those objects disappear.
+
+Studio accepts GET requests only. User Feedback Intelligence uses a separate
+governed operation and cannot be written through the Studio server.
 
 ## Privacy boundary
 
 The projections use fixed output fields. They do not pass event details or
 object dictionaries through to the browser.
 
-Studio does not expose:
+Studio exposes the local workspace and artifact paths recorded by `solve` so a
+person can open the result. It does not expose:
 
 - raw prompts or model responses;
 - spawned inputs, updates, summaries, output values, or private history;
@@ -79,7 +90,8 @@ Studio does not expose:
 - approval reasons, targets, reviewer identity, resume tokens, or token
   digests;
 - raw context or compacted text;
-- checkpoint, trace, artifact, or raw-event locations.
+- checkpoint, trace, or raw-event locations;
+- generated source bodies or artifact contents.
 
 The view may show counts, statuses, public roles, digest prefixes, and boolean
 signals such as whether a stored output exists. A digest prefix helps a person

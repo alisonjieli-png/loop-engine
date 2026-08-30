@@ -379,6 +379,7 @@ class AdaptivePractitionerRequest:
     workspace_root: str = ""
     allow_source_materialization_to_model: bool = False
     granularity_profile: str = "governed_semantic"
+    persist_run_history: bool = True
 
     def __post_init__(self) -> None:
         if not self.task.strip():
@@ -400,6 +401,9 @@ class AdaptivePractitionerRequest:
                 "governed_semantic", "strict_atomic"):
             raise AdaptivePractitionerError(
                 "granularity_profile must be governed_semantic or strict_atomic")
+        if not isinstance(self.persist_run_history, bool):
+            raise AdaptivePractitionerError(
+                "persist_run_history must be a boolean")
         feedback = tuple(self.feedback)
         if (any(not isinstance(item, TaskFeedback) for item in feedback)
                 or len({item.slot_ref for item in feedback}) != len(feedback)):

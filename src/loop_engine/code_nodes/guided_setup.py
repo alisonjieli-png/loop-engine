@@ -90,6 +90,7 @@ class SetupReport:
 
     def summary(self) -> dict:
         return {"record_type": "guided_setup/v1", "ready": self.ready,
+                "provider_calls_made": 0,
                 "modes_available": list(self.modes_available),
                 "steps": [{"name": s.name, "status": s.status,
                            "detail": s.detail, "fix": s.fix}
@@ -195,21 +196,21 @@ def run_setup(*, interactive: bool = True, knowledge_path: str = "",
     }
     have = [k for k, v in dependencies.items() if v]
     missing = [k for k, v in dependencies.items() if not v]
-    _say(f"      dependencies checked: {', '.join(have) or 'none'}")
+    _say(f"      optional data adapters installed: {', '.join(have) or 'none'}")
     if missing:
-        step.ok = False
-        step.detail = "missing dependencies: " + ", ".join(missing)
-        step.fix = "python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git"
-        _say(f"      MISSING: {', '.join(missing)}. Reinstall with:")
-        _say("      python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git")
-        return report
-    _say("      The complete installation is ready.")
+        step.detail += "; optional data adapters absent: " + ", ".join(missing)
+        _say(f"      Optional data adapters not installed: {', '.join(missing)}")
+        _say("      This is a complete installation for the public solve path.")
+        _say("      Add data adapters only when a task needs them:")
+        _say("      python -m pip install pandas duckdb model2vec")
+    else:
+        _say("      Core and optional data adapters are ready.")
 
     # -- 2. providers -------------------------------------------------------
     _say()
     _say("  [2/5] MODEL PROVIDERS  (optional)")
     step = report.add(SetupStep("providers"))
-    from ..core.autoconfigure import KEY_ENV, configure
+    from ..core.autoconfigure import KEY_ENV
     present = [n for n, var in KEY_ENV.items() if os.environ.get(var)]
     if not present:
         _say("      No provider keys found in the environment.")
@@ -222,19 +223,15 @@ def run_setup(*, interactive: bool = True, knowledge_path: str = "",
         step.detail = "no provider configured (deterministic only)"
         report.modes_available = ["deterministic"]
     else:
-        _say(f"      Found keys for: {', '.join(present)}")
-        _say("      Checking each one by making a real call ...")
-        access = configure()
-        step.ran = True
-        step.ok = access.has_model
-        report.modes_available = access.modes_available()
-        for line in access.explain().splitlines():
-            _say(f"      {line}")
-        step.detail = (f"working: {', '.join(access.providers_working)}"
-                       if access.has_model else "no provider answered")
-        if not access.has_model:
-            step.fix = ("check the key values; a key that exists is not a key "
-                        "that works")
+        _say(f"      Found credential references for: {', '.join(present)}")
+        _say("      No provider call was made. Test one exact route with:")
+        _say("      loop-engine models probe PROVIDER --model-route ROUTE \\")
+        _say("        --model-id MODEL --authorize-model-calls \\")
+        _say("        --max-model-calls 1 --max-total-tokens LIMIT")
+        step.ran, step.ok = True, True
+        step.detail = "configured but not tested: " + ", ".join(present)
+        step.fix = "run one exact bounded models probe before solve"
+        report.modes_available = ["deterministic"]
 
     # -- 3. your own server -------------------------------------------------
     _say()
@@ -345,7 +342,7 @@ def run_setup(*, interactive: bool = True, knowledge_path: str = "",
         _say(f"    {m:<16}{mark}")
     _say()
     _say("  Next:")
-    _say("    loop-engine --report            what a run did")
+    _say("    loop-engine report @last       what the latest run did")
     _say("    loop-engine --self-test         verify the installation")
     _say("    python3 examples/01_prioritize_support_queue/run.py")
     _say("    python3 examples/06_reconcile_invoices/run.py")

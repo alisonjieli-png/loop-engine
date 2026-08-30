@@ -14,6 +14,7 @@ Set the provider once before running a task:
 
 ```bash
 export OLLAMA_API_KEY="your-key"
+loop-engine configure
 
 loop-engine models probe ollama_cloud \
   --model-route cloud.default \
@@ -32,14 +33,7 @@ Stop if the provider probe fails.
 ```bash
 loop-engine solve \
   --file 01-expense-report.txt \
-  --workspace ./expense-workspace \
-  --runs-dir ./expense-runs \
-  --interaction-mode autonomous \
-  --model-route cloud.default \
-  --model-id deepseek-v4-flash:0731 \
-  --authorize-model-calls \
-  --max-model-calls 16 \
-  --max-total-tokens 1000000
+  --quickstart
 ```
 
 ## 2. Transform inventory data
@@ -52,13 +46,7 @@ loop-engine solve \
   --file 02-inventory-transform.txt \
   --dataset inventory.csv \
   --allow-source-to-model \
-  --workspace ./inventory-workspace \
-  --runs-dir ./inventory-runs \
-  --interaction-mode autonomous \
-  --model-route cloud.default \
-  --authorize-model-calls \
-  --max-model-calls 16 \
-  --max-total-tokens 1000000
+  --quickstart
 ```
 
 ## 3. Index Markdown documents
@@ -75,13 +63,7 @@ loop-engine solve \
   --file 03-document-index.txt \
   --repository ./sample-docs \
   --allow-source-to-model \
-  --workspace ./document-workspace \
-  --runs-dir ./document-runs \
-  --interaction-mode autonomous \
-  --model-route cloud.default \
-  --authorize-model-calls \
-  --max-model-calls 16 \
-  --max-total-tokens 1000000
+  --quickstart
 ```
 
 ## 4. Repair a failing package
@@ -98,13 +80,7 @@ loop-engine solve \
   --file 04-package-repair.txt \
   --repository ./failing-package \
   --allow-source-to-model \
-  --workspace ./repair-workspace \
-  --runs-dir ./repair-runs \
-  --interaction-mode autonomous \
-  --model-route cloud.default \
-  --authorize-model-calls \
-  --max-model-calls 16 \
-  --max-total-tokens 1000000
+  --quickstart
 ```
 
 ## 5. See an honest blocker
@@ -116,9 +92,9 @@ must return an authority or capability blocker, not `COMPLETED_VERIFIED`.
 ## Inspect any run
 
 ```bash
-loop-engine --runs --runs-dir ./expense-runs
-loop-engine --report @last --runs-dir ./expense-runs
-loop-engine --studio --runs-dir ./expense-runs --port 8765
+loop-engine runs
+loop-engine report @last
+loop-engine studio --port 0
 ```
 
 The Studio reads saved Run History. It does not rerun the task.

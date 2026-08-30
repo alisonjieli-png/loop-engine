@@ -16,12 +16,14 @@ from pathlib import Path
 
 _COMPILE_PROVIDER_ENV = {
     "ollama_cloud": "OLLAMA_API_KEY",
+    "mistral": "MISTRAL_API_KEY",
     "openrouter": "OPENROUTER_API_KEY",
     "opencode_zen": "OPENCODE_ZEN_API_KEY",
     "opencode_go": "OPENCODE_GO_API_KEY",
 }
 _COMPILE_PROVIDER_ROUTE = {
     "ollama_cloud": "cloud.default",
+    "mistral": "cloud.mistral",
     "openrouter": "cloud.openrouter",
     "opencode_zen": "cloud.opencode_zen.zero_cost",
     "opencode_go": "cloud.opencode_go",
@@ -240,6 +242,76 @@ def completed_learning_producer(goal: str):
     return loop
 
 
+def run_configure(args) -> int:
+    """Inspect provider configuration and print one safe next action."""
+    from .core.settings_loader import load_runtime_settings
+
+    loaded = load_runtime_settings(args.settings_file or None)
+    extensions = resolve_cli_extensions(args, loaded.settings)
+    gateway = extensions.settings.build_gateway()
+    providers = [_safe_provider_description(provider)
+                 for provider in gateway.providers.values()]
+    shortcuts = []
+    configured_ids = {item["provider_id"] for item in providers}
+    for provider_id, environment_name in _COMPILE_PROVIDER_ENV.items():
+        if provider_id in configured_ids:
+            continue
+        shortcuts.append({
+            "provider_id": provider_id,
+            "credential_ref": f"env:{environment_name}",
+            "credential_present": bool(os.environ.get(
+                environment_name, "").strip()),
+            "credential_tested": False,
+            "route_materialization": "per_invocation",
+        })
+    all_routes = [*providers, *shortcuts]
+    present = [item for item in all_routes
+               if item.get("credential_present")]
+    if not present:
+        next_action = (
+            "Set one provider environment variable, then run configure again. "
+            "For Ollama Cloud: export OLLAMA_API_KEY=your-key")
+    elif len(present) == 1 and present[0]["provider_id"] == "ollama_cloud":
+        next_action = (
+            "loop-engine models probe ollama_cloud --model-route "
+            "cloud.default --model-id deepseek-v4-flash:0731 "
+            "--authorize-model-calls --max-model-calls 1 "
+            "--max-total-tokens 70000")
+    elif len(present) == 1 and present[0]["provider_id"] == "openrouter":
+        next_action = (
+            "Use --openrouter-api-key on solve to select a current exact "
+            "zero-price route, or probe an explicitly configured paid route.")
+    elif len(present) == 1 and present[0]["provider_id"] == "opencode_zen":
+        next_action = (
+            "Use --opencode-zen-api-key on solve. The command stops if the "
+            "live catalog has no compatible zero-cost route.")
+    else:
+        next_action = (
+            "Choose one exact provider and run models probe with bounded "
+            "model-call authority before solve.")
+    report = {
+        "record_type": "provider_configuration/v1",
+        "providers": all_routes,
+        "credentials_present": [item["provider_id"] for item in present],
+        "credentials_tested": False,
+        "provider_calls_made": 0,
+        "settings_source": loaded.file_path or "registered defaults",
+        "extension_snapshot_digest": extensions.snapshot.content_digest,
+        "next_action": next_action,
+    }
+    _emit_cli_result(args, report, [
+        "Loop Engine provider configuration",
+        "Provider calls made: 0",
+        "Credentials present: " + (
+            ", ".join(report["credentials_present"])
+            if report["credentials_present"] else "none"),
+        "Credentials tested: no",
+        "",
+        f"Next: {next_action}",
+    ])
+    return 0
+
+
 def run_doctor(args) -> int:
     import os
     import platform
@@ -336,7 +408,9 @@ def run_models_action(args) -> int:
         providers = [_safe_provider_description(provider)
                      for provider in gateway.providers.values()]
         report = {
-            "record_type": "model_inventory/v1",
+            "record_type": ("model_routes/v1"
+                            if args.models_action == "routes"
+                            else "model_inventory/v1"),
             "providers": providers,
             "routes": [{
                 "route_id": route.name, "provider_id": route.provider,
@@ -346,6 +420,8 @@ def run_models_action(args) -> int:
             "task_compile_shortcuts": [
                 {"flag": "--ollama-api-key", "provider": "ollama_cloud",
                  "credential_env": "OLLAMA_API_KEY"},
+                {"flag": "--mistral-api-key", "provider": "mistral",
+                 "credential_env": "MISTRAL_API_KEY"},
                 {"flag": "--openrouter-api-key", "provider": "openrouter",
                  "credential_env": "OPENROUTER_API_KEY"},
                 {"flag": "--opencode-zen-api-key",
@@ -380,6 +456,7 @@ def run_models_action(args) -> int:
             "",
             "Task-compilation shortcuts:",
             "  --ollama-api-key",
+            "  --mistral-api-key",
             "  --openrouter-api-key",
             "  --opencode-zen-api-key (current zero-cost route)",
             "  --opencode-go-api-key (direct route created for the call)",
@@ -481,6 +558,7 @@ def _compile_provider_key(args) -> tuple[str, str]:
 def _apply_compile_provider_shortcut(args, default_model_calls: int = 1) -> None:
     selected = [
         ("ollama_cloud", args.ollama_api_key),
+        ("mistral", args.mistral_api_key),
         ("openrouter", args.openrouter_api_key),
         ("opencode_zen", args.opencode_zen_api_key),
         ("opencode_go", args.opencode_go_api_key),
@@ -586,7 +664,8 @@ def run_task_compile(args) -> int:
             interaction_mode=args.interaction_mode,
             feedback=_task_feedback_from_args(args)))
         _apply_compile_provider_shortcut(args)
-        output = {"intake": intake.to_dict(), **result}
+        output = {"record_type": "task_compile_result/v1",
+                  "intake": intake.to_dict(), **result}
         if not args.compile_provider:
             if (args.prompt_for_provider_key or args.provider_key_env
                     or args.authorize_model_calls):
@@ -815,7 +894,7 @@ def run_five_step_demo(args) -> int:
         "Provider calls: 0",
         "",
         "Next: start Studio with a free port:",
-        f"  loop-engine --studio --port 0 --runs-dir "
+        f"  loop-engine studio --port 0 --runs-dir "
         f"{args.runs_dir or settings.history.resolved_runs_dir()}",
         "Use --format json for the complete typed record.",
     ])

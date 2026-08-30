@@ -7,7 +7,7 @@ history, and a user writing guide do not belong in one generic memory bucket.
 ## Install
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 ```
 
 ## Run it

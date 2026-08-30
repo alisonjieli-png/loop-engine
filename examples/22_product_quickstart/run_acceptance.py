@@ -11,6 +11,8 @@ from loop_engine.code_nodes.solution_model_port import (
     FixtureModelExecutionRequest, fixture_model_execution)
 from loop_engine.code_nodes.solve_runtime import SolveRequest, solve_task
 from loop_engine.core.adaptive_practitioner_records import NextActionDecision
+from loop_engine.core.run_history import load_saved_run_bundle
+from loop_engine.code_nodes.loop_report import report_from_run
 from loop_engine.templates.intake import TaskIntakeRequest, intake_task
 
 
@@ -259,6 +261,15 @@ def main() -> int:
             raise SystemExit(f"task {task_id} failed: {outcome.failure_code}")
         if not all(Path(item["path"]).is_file() for item in value["artifacts"]):
             raise SystemExit(f"task {task_id} artifact is not readable")
+        bundle = load_saved_run_bundle(str(run_root), outcome.run_id)
+        report = report_from_run(str(run_root), outcome.run_id)
+        if (bundle.outcome["terminal_code"] != "COMPLETED_VERIFIED"
+                or report.product_summary()["terminal_code"]
+                != "COMPLETED_VERIFIED"
+                or len(report.product_summary()["artifacts"])
+                != len(value["artifacts"])):
+            raise SystemExit(
+                f"task {task_id} saved bundle or report lost its product result")
     repair_commands = records[-1]["result"]["commands"]
     report = {
         "record_type": "product_acceptance/v1",
@@ -271,6 +282,7 @@ def main() -> int:
         and repair_commands[0]["exit_code"] == 1,
         "repair_verified": repair_commands[-1]["expectation_met"]
         and repair_commands[-1]["exit_code"] == 0,
+        "saved_product_outcomes_bound": len(records),
         "limitations": [
             "Model semantics use a typed offline fixture in this acceptance run.",
             "A separate authorized live-provider solve is required."],
@@ -278,6 +290,7 @@ def main() -> int:
     (output / "acceptance.json").write_text(
         json.dumps(report, indent=2) + "\n")
     print(json.dumps(report, indent=2))
+    return 0
     return 0
 
 

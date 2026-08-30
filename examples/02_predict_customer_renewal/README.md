@@ -4,7 +4,7 @@ This example creates a small customer dataset, trains a deterministic tabular
 workflow, writes predictions, and grades them against a hidden holdout.
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 ```
 
 Run from the repository checkout:

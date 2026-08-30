@@ -42,7 +42,7 @@ slide deck, browser player, and exported video.
 | Page | Purpose |
 |---|---|
 | [Getting started](getting-started.md) | Install from GitHub and run useful examples. |
-| [Examples](../examples/) | Seventeen realistic example folders with their own instructions. |
+| [Examples](../examples/) | Numbered example folders with their own instructions and effect notes. |
 | [Case studies](../case-studies/) | Completed full-system runs, failures, accounting, and limitations. |
 | [Loops and modes](guides/loops-and-modes.md) | A shorter runtime guide. |
 | [Spawned Loop delegation](guides/spawned-loop-delegation.md) | Typed spawned tasks, private request context, runtime ports, updates, and cancellation. |

@@ -7,12 +7,48 @@ canonical owners.
 from __future__ import annotations
 
 import json
+import os
 
 from .cli_operations import (
     _apply_compile_provider_shortcut, _compile_gateway,
     _compile_provider_key, _task_feedback_from_args,
     _temporary_provider_key, resolve_cli_extensions, task_intake_from_args,
 )
+
+
+class ProviderSetupError(ValueError):
+    """The selected onboarding profile has no usable provider reference."""
+
+
+def _apply_quickstart(args) -> None:
+    """Apply one explicit bounded onboarding authority profile."""
+    if not args.quickstart:
+        return
+    selected_flags = [value for value in (
+        args.ollama_api_key, args.mistral_api_key, args.openrouter_api_key,
+        args.opencode_zen_api_key, args.opencode_go_api_key)
+                      if value is not None]
+    if not args.compile_provider and not selected_flags:
+        priority = (
+            ("openrouter", "OPENROUTER_API_KEY"),
+            ("opencode_zen", "OPENCODE_ZEN_API_KEY"),
+            ("ollama_cloud", "OLLAMA_API_KEY"),
+            ("mistral", "MISTRAL_API_KEY"),
+            ("opencode_go", "OPENCODE_GO_API_KEY"),
+        )
+        present = [provider for provider, environment_name in priority
+                   if os.environ.get(environment_name, "").strip()]
+        if not present:
+            raise ProviderSetupError(
+                "--quickstart needs one supported provider environment "
+                "variable; run `loop-engine configure` for exact names")
+        args.compile_provider = present[0]
+    args.interaction_mode = "autonomous"
+    args.authorize_model_calls = True
+    if args.max_model_calls == 0:
+        args.max_model_calls = 16
+    if args.max_total_tokens is None:
+        args.max_total_tokens = 1_000_000
 
 
 def run_solve(args) -> int:
@@ -26,6 +62,7 @@ def run_solve(args) -> int:
     from .core.settings_loader import load_runtime_settings
 
     try:
+        _apply_quickstart(args)
         intake = task_intake_from_args(args)
         loaded = load_runtime_settings(args.settings_file or None)
         extension_application = resolve_cli_extensions(args, loaded.settings)
@@ -106,6 +143,7 @@ def run_solve(args) -> int:
             if (args.provider_key_env or args.prompt_for_provider_key
                     or any(value is not None for value in (
                         args.ollama_api_key, args.openrouter_api_key,
+                        args.mistral_api_key,
                         args.opencode_zen_api_key,
                         args.opencode_go_api_key))):
                 raise ValueError(
@@ -134,6 +172,7 @@ def run_solve(args) -> int:
                 "Verification: " + (
                     "passed" if value["verification"].get("passed")
                     else "not passed"),
+                f"Run ID: {value['run_id']}",
                 f"Run History: {value['run_history'].get('path', 'unavailable')}",
                 f"Loops: {value['loop_count']}",
                 f"Model calls: {value['model_calls']}",
@@ -151,6 +190,8 @@ def run_solve(args) -> int:
         return 0 if outcome.solved else 1
     except (OSError, RuntimeError, ValueError) as exc:
         terminal = ("AUTHORITY_REQUIRED" if isinstance(exc, PermissionError)
+                    else "PROVIDER_UNAVAILABLE"
+                    if isinstance(exc, ProviderSetupError)
                     else "VERIFICATION_FAILED")
         value = {
             "record_type": "solve_failure/v3", "solved": False,
@@ -162,6 +203,9 @@ def run_solve(args) -> int:
             "next_action": (
                 "Grant the exact requested authority and retry."
                 if isinstance(exc, PermissionError)
+                else "Run `loop-engine configure`, set one provider key, "
+                     "and retry."
+                if isinstance(exc, ProviderSetupError)
                 else "Correct the request or configuration and retry."),
             "error": str(exc),
         }

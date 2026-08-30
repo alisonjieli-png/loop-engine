@@ -46,7 +46,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote
 
 _PKG = os.path.dirname(os.path.dirname(__file__))
-from .run_history import default_runs_dir, saved_run_ids
+from .run_history import (
+    RunHistoryIntegrityError, SavedRunBundle, default_runs_dir,
+    load_saved_run_bundle, saved_run_ids)
 from .studio_operational_views import (
     StudioReadSources, project_run_runtime, project_runtime_inventory)
 
@@ -67,8 +69,8 @@ class StudioServeRequest:
             raise ValueError("Studio port must be from 0 through 65535")
 
 
-def _load_run_as_historical_loop(run_id: str, *, ledger=None):
-    """Read ONE saved run through a Historical Run Loop.
+def _load_run_bundle_as_historical_loop(run_id: str, *, ledger=None):
+    """Read one verified saved-run bundle through a Historical Run Loop.
 
     No caller reads saved run history
     directly — it invokes the loop that owns the history.  The read is
@@ -76,39 +78,122 @@ def _load_run_as_historical_loop(run_id: str, *, ledger=None):
     ``intelligence.runtime_history_solution.retrieved`` on the caller's ledger when one is
     given, so "the Studio read the history" is evidence rather than an
     assumption."""
-    from .run_history import RunHistory
     from ..loop.intelligence_loops import serve_historical_intelligence
-    return serve_historical_intelligence(
+    value = serve_historical_intelligence(
         f"run:{run_id}",
-                            lambda: RunHistory.load(_RUNS, run_id),
-                            ledger=ledger)["value"]
+        lambda: load_saved_run_bundle(_RUNS, run_id), ledger=ledger)["value"]
+    if not isinstance(value, SavedRunBundle):
+        raise RunHistoryIntegrityError(
+            f"saved run {run_id!r} could not be verified")
+    return value
+
+
+def _load_run_as_historical_loop(run_id: str, *, ledger=None):
+    """Compatibility helper returning only the verified event history."""
+    return _load_run_bundle_as_historical_loop(
+        run_id, ledger=ledger).history
+
+
+def _run_loads() -> tuple[list[SavedRunBundle], list[dict]]:
+    bundles, errors = [], []
+    if not os.path.isdir(_RUNS):
+        return bundles, errors
+    from ..loop.recursive_loop import LoopError
+    for run_id in saved_run_ids(_RUNS):
+        try:
+            bundles.append(_load_run_bundle_as_historical_loop(run_id))
+        except (OSError, KeyError, ValueError, TypeError, AttributeError,
+                json.JSONDecodeError, RunHistoryIntegrityError, LoopError) as exc:
+            errors.append({
+                "run_id": run_id, "events": 0, "calls": 0, "tokens": 0,
+                "intact": False, "goal": "Unreadable saved run",
+                "outcome_available": False, "terminal_code": "RUN_INVALID",
+                "solved": False, "artifact_count": 0,
+                "verification_passed": False,
+                "error_code": "RUN_HISTORY_INVALID",
+                "error": str(exc)[:240],
+            })
+    return bundles, errors
 
 
 def _run_histories():
-    out = []
-    if not os.path.isdir(_RUNS):
-        return out
-    for rid in saved_run_ids(_RUNS):
-        try:
-            out.append(_load_run_as_historical_loop(rid))
-        except (OSError, KeyError, json.JSONDecodeError):
-            continue
-    return out
+    bundles, _errors = _run_loads()
+    return [bundle.history for bundle in bundles]
 
 
-def _run_row(ch) -> dict:
+def _product_projection(outcome: "dict | None") -> dict:
+    if not outcome:
+        return {"record_type": "studio_product_outcome/v1",
+                "available": False, "terminal_code": "", "solved": False,
+                "summary": "", "failure_code": "", "verification": {},
+                "artifacts": [], "workspace": "", "limitations": [],
+                "next_action": "", "graph_digest": "",
+                "selected_canvas": {}}
+    workspace = str(outcome.get("workspace") or "")
+    artifacts = []
+    for item in outcome.get("artifacts", ()):
+        path = str(item.get("path") or "")
+        relative = path
+        if workspace and path:
+            try:
+                relative = os.path.relpath(path, workspace)
+            except ValueError:
+                relative = os.path.basename(path)
+        artifacts.append({
+            "path": path, "relative_path": relative,
+            "media_type": str(item.get("media_type") or ""),
+            "byte_count": int(item.get("byte_count") or 0),
+            "digest": str(item.get("digest") or ""),
+            "verified": bool(item.get("verified")),
+            "format_valid": bool(item.get("format_valid")),
+            "present": bool(path and os.path.isfile(path)),
+        })
+    return {
+        "record_type": "studio_product_outcome/v1", "available": True,
+        "terminal_code": str(outcome.get("terminal_code") or ""),
+        "solved": bool(outcome.get("solved")),
+        "summary": str(outcome.get("summary") or ""),
+        "failure_code": str(outcome.get("failure_code") or ""),
+        "verification": dict(outcome.get("verification") or {}),
+        "artifacts": artifacts, "workspace": workspace,
+        "limitations": list(outcome.get("limitations") or ()),
+        "next_action": str(outcome.get("next_action") or ""),
+        "graph_digest": str(outcome.get("graph_digest") or ""),
+        "selected_canvas": dict(outcome.get("selected_canvas") or {}),
+    }
+
+
+def _run_row(bundle: SavedRunBundle) -> dict:
+    ch = bundle.history
     calls = [e for e in ch.event_log if e.event_type == "model_invocation"]
     goal = next((e.detail.get("goal", "") for e in ch.event_log
                  if e.event_type == "loop_init"), "")
+    product = _product_projection(bundle.outcome)
+    verification = product["verification"]
     return {"run_id": ch.run_id, "events": len(ch.event_log),
             "calls": len(calls),
             "tokens": sum(e.prompt_tokens + e.eval_tokens for e in calls),
-            "intact": ch.verify_chain()["intact"], "goal": goal}
+            "intact": ch.verify_chain()["intact"], "goal": goal,
+            "outcome_available": product["available"],
+            "terminal_code": product["terminal_code"],
+            "solved": product["solved"],
+            "artifact_count": len(product["artifacts"]),
+            "verification_passed": bool(
+                verification.get("passed")
+                or verification.get("verdict") == "accept"),
+            "error_code": "", "error": ""}
+
+
+def _run_rows() -> list[dict]:
+    bundles, errors = _run_loads()
+    return [*[_run_row(bundle) for bundle in bundles], *errors]
 
 
 def _run_detail(rid: str) -> dict:
     from ..code_nodes.run_quality import stuckness_report
-    ch = _load_run_as_historical_loop(rid)
+    bundle = _load_run_bundle_as_historical_loop(rid)
+    ch = bundle.history
+    product = _product_projection(bundle.outcome)
     calls, events, iters = [], [], 0
     spawned_by_owner: dict = {}
     goals: dict = {}
@@ -181,6 +266,29 @@ def _run_detail(rid: str) -> dict:
                                   for k in spawned_by_owner.get(lid, [])]}
 
     tree_json = [node(loop_id) for loop_id in starting_ids]
+    starting_loop_ids = set(starting_ids)
+    playback_events = [event for event in events if (
+        event["type"] == "model_invocation"
+        or event["loop"] in starting_loop_ids
+        and event["type"] in {"loop_init", "iteration", "terminal",
+                              "fallback", "budget_stop", "cancel"})]
+    product_events = []
+    if product["available"]:
+        product_events.extend((
+            {"type": "product.verification", "loop": "run", "step": "verify",
+             "mode": "deterministic", "tokens": "",
+             "detail": ("passed" if product["verification"].get("passed")
+                        or product["verification"].get("verdict") == "accept"
+                        else "not passed")},
+            {"type": "product.terminal", "loop": "run", "step": "route",
+             "mode": "deterministic", "tokens": "",
+             "detail": product["terminal_code"]},
+        ))
+        product_events.extend({
+            "type": "product.artifact", "loop": "run", "step": "integrate",
+            "mode": "deterministic", "tokens": "",
+            "detail": item["relative_path"]}
+            for item in product["artifacts"])
     return {"run_id": rid,
             "goal": next(iter(goals.values()), ""),
             "totals": {"events": len(ch.event_log), "iterations": iters,
@@ -192,7 +300,9 @@ def _run_detail(rid: str) -> dict:
             "stuckness": stuckness_report(ch.event_log),
             "tree": tree_txt, "tree_json": tree_json,
             "loops": list(per_loop.values()),
-            "events": events, "calls": calls,
+            "events": events,
+            "playback_events": [*playback_events, *product_events],
+            "calls": calls, "product": product,
             "runtime": project_run_runtime(ch.event_log)}
 
 
@@ -328,7 +438,7 @@ def _improvements() -> dict:
 
 
 def _summary() -> dict:
-    rows = [_run_row(ch) for ch in _run_histories()]
+    rows = _run_rows()
     intelligence = _intelligence_inventory()["summary"]
     return {"cards": [
         {"label": "saved runs", "value": len(rows), "link": "runs"},
@@ -354,7 +464,7 @@ def build_projection(name: str, arg: str = "") -> dict:
     if name == "summary":
         return _summary()
     if name == "runs":
-        return {"runs": [_run_row(ch) for ch in _run_histories()]}
+        return {"runs": _run_rows()}
     if name == "run":
         return _run_detail(arg)
     if name in ("context", "strings"):
@@ -384,55 +494,45 @@ def _ledger_events_for(run_id: str) -> list:
     return []
 
 
-#: where Studio writes land.  Overridable so a TEST never writes into the
-#: source tree — the first version of this appended to a file inside the
-#: package on every suite run, which grew unboundedly and made the repository
-#: dirty as a side effect of running tests.
+#: Optional read source for previously governed User Feedback Intelligence.
 ADVICE_STORE_PATH: "str | None" = None
-
-
-def _leave_advice(data: dict) -> dict:
-    """Store one piece of User Feedback Intelligence from the Studio.
-
-    Refuses an empty note, an undeclared scope, and an undeclared guidance
-    type — the store's own closed vocabularies, enforced at the edge so a
-    malformed request never becomes a malformed record.
-    """
-    from .user_feedback_intelligence import AdviceStore
-    text = str(data.get("text", "")).strip()
-    if not text:
-        raise ValueError("empty advice is refused")
-    store = AdviceStore(ADVICE_STORE_PATH
-                        or os.path.join(_data_dir(), "user-advice.jsonl"))
-    from ..loop.intelligence_loops import leave_guidance_as_loop
-    # the envelope carries the loop evidence; the CLIENT gets the advice
-    # record it asked for, so the boundary crossing is invisible to the API
-    # contract while still being recorded.
-    return leave_guidance_as_loop(
-        store, text, scope=str(data.get("scope", "loop")),
-        target=str(data.get("target", "")),
-        author=str(data.get("author", "studio-user")),
-        guidance_type=str(data.get("guidance_type", "advice")),
-        strength=str(data.get("strength", "suggestion")),
-        timing=str(data.get("timing", "next_safe_boundary")))["value"]
-
-
-def _data_dir() -> str:
-    d = os.path.join(os.path.dirname(_RUNS), "studio")
-    os.makedirs(d, exist_ok=True)
-    return d
 
 
 class _Handler(BaseHTTPRequestHandler):
     def log_message(self, *a):                    # quiet by design
         pass
 
+    def _security_headers(self) -> None:
+        """Headers for a local interface that renders saved task content."""
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'self'; img-src 'self' data:; "
+            "style-src 'self' 'unsafe-inline'; "
+            "script-src 'self' 'unsafe-inline'; connect-src 'self'; "
+            "frame-ancestors 'none'; base-uri 'none'; form-action 'none'")
+
     def do_GET(self):
         from .saas_routes import serve_api, live_events, resolve_route
         try:
-            if self.path.startswith("/api/"):
+            clean_path = self.path.split("?")[0]
+            if clean_path.rstrip("/") in ("/routes", "/api/routes"):
+                # Serve the route contract before the generic /api dispatcher.
+                # Otherwise /api/routes is mistaken for a projection name.
+                from .saas_routes import route_contract, PUBLIC_ROUTES, \
+                    STUDIO_ROUTES
+                payload = {**route_contract(),
+                           "public": list(PUBLIC_ROUTES),
+                           "studio": list(STUDIO_ROUTES)}
+                body = json.dumps(payload).encode()
+                ctype = "application/json"
+            elif clean_path.startswith("/api/"):
                 parts = [unquote(p) for p in
-                         self.path[5:].split("?")[0].split("/") if p]
+                         clean_path[5:].split("/") if p]
+                if not parts:
+                    raise KeyError("/api/ is not a declared endpoint")
                 # /api/runs/<id>/events — the browser's live stream, one
                 # canonical vocabulary shared with the console and the tree.
                 if len(parts) == 3 and parts[0] == "runs" \
@@ -450,26 +550,8 @@ class _Handler(BaseHTTPRequestHandler):
                         payload = {**payload, "_loop": served["loop"]}
                 body = json.dumps(payload, default=str).encode()
                 ctype = "application/json"
-            elif self.path.split("?")[0].rstrip("/") in ("/routes",
-                                                          "/api/routes"):
-                # the route contract, served as data: a client (or a test)
-                # can enumerate what this deployment actually serves rather
-                # than discovering it by 404.
-                from .saas_routes import route_contract, PUBLIC_ROUTES, \
-                    STUDIO_ROUTES
-                payload = {**route_contract(),
-                           "public": list(PUBLIC_ROUTES),
-                           "studio": list(STUDIO_ROUTES)}
-                body = json.dumps(payload).encode()
-                ctype = "application/json"
-                self.send_response(200)
-                self.send_header("Content-Type", ctype)
-                self.send_header("Content-Length", str(len(body)))
-                self.end_headers()
-                self.wfile.write(body)
-                return
             else:
-                route = resolve_route(self.path.split("?")[0])
+                route = resolve_route(clean_path)
                 body = open(os.path.join(_PKG, "strings",
                                          "studio_shell.html"), "rb").read()
                 ctype = "text/html; charset=utf-8"
@@ -482,36 +564,34 @@ class _Handler(BaseHTTPRequestHandler):
                     self.wfile.write(body)
                     return
             self.send_response(200)
+        except (RunHistoryIntegrityError, ValueError) as e:
+            body = json.dumps({
+                "error": str(e), "error_code": "RUN_HISTORY_INVALID"}).encode()
+            ctype = "application/json"
+            self.send_response(422)
         except (KeyError, FileNotFoundError) as e:
             body = json.dumps({"error": str(e)}).encode()
             ctype = "application/json"
             self.send_response(404)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
+        self._security_headers()
         self.end_headers()
         self.wfile.write(body)
 
     def do_POST(self):
-        """The one write the Studio offers: advising a loop.
-
-        A person clicks a loop, sees what it was GIVEN and what it is
-        PRODUCING, and types guidance like a message to a coworker. It is
-        stored scoped and attributable; it never bypasses a gate, and the
-        loop's own disposition of it is a separate record.
-        """
-        try:
-            n = int(self.headers.get("Content-Length") or 0)
-            data = json.loads(self.rfile.read(n) or b"{}")
-            if not self.path.rstrip("/").endswith("/user-intelligence"):
-                raise KeyError(f"no write surface at {self.path}")
-            rec = _leave_advice(data)
-            body = json.dumps(rec, default=str).encode()
-            self.send_response(201)
-        except (KeyError, ValueError) as e:
-            body = json.dumps({"error": str(e)}).encode()
-            self.send_response(400)
+        """Studio is read-only. Mutations require a separate governed API."""
+        body = json.dumps({
+            "error": "Loop Engine Studio is read-only",
+            "error_code": "METHOD_NOT_ALLOWED",
+            "next_action": (
+                "Submit feedback through a separately authorized User "
+                "Feedback Intelligence operation.")}).encode()
+        self.send_response(405)
+        self.send_header("Allow", "GET")
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
+        self._security_headers()
         self.end_headers()
         self.wfile.write(body)
 
@@ -540,6 +620,7 @@ def serve(request: StudioServeRequest = StudioServeRequest(), ready=None) -> Non
 
 
 def self_test() -> dict:
+    import hashlib
     import tempfile
     import shutil
     global _RUNS, _READ_SOURCES
@@ -566,6 +647,32 @@ def self_test() -> dict:
                                     run_id="studio-self-test-fixture")
         _ch.commit()
         _ch.save(_RUNS)          # commit() only marks it; save() writes the run
+        fixture_artifact = os.path.join(_RUNS, "result.txt")
+        with open(fixture_artifact, "w", encoding="utf-8") as stream:
+            stream.write("ok")
+        from .run_history import bind_product_outcome
+        bind_product_outcome(_RUNS, "studio-self-test-fixture", {
+            "record_type": "solve_outcome/v3",
+            "run_id": "studio-self-test-fixture",
+            "terminal_code": "COMPLETED_VERIFIED",
+            "status": "COMPLETED_VERIFIED", "solved": True,
+            "summary": "Verified Studio fixture.", "failure_code": "",
+            "verification": {"passed": True},
+            "artifacts": [{"path": fixture_artifact,
+                           "media_type": "text/plain", "byte_count": 2,
+                           "digest": hashlib.sha256(b"ok").hexdigest(),
+                           "verified": True,
+                           "format_valid": True}],
+            "workspace": _RUNS, "limitations": [],
+            "next_action": "Inspect the result.",
+            "graph_digest": "b" * 64,
+            "selected_canvas": {"mermaid": "flowchart TD\n  A --> B",
+                                "loop_graph": {"vertices": [{
+                                    "vertex_id": "solution.a",
+                                    "purpose": "component",
+                                    "operation_ref": "fixture",
+                                    "selected_mode": "deterministic"}]}},
+        })
 
     # 1. every projection builds from live data (no server needed).
     s = build_projection("summary")
@@ -591,7 +698,11 @@ def self_test() -> dict:
           d["chain_intact"] and d["events"] and d["tree"]
           and "stuckness_score" in d["stuckness"]
           and d["totals"]["events"] == len(d["events"])
-          and d["runtime"]["record_type"] == "studio_run_runtime/v2")
+          and d["runtime"]["record_type"] == "studio_run_runtime/v2"
+          and d["product"]["terminal_code"] == "COMPLETED_VERIFIED"
+          and d["product"]["artifacts"][0]["relative_path"] == "result.txt"
+          and d["product"]["artifacts"][0]["present"] is True
+          and d["playback_events"][-1]["type"] == "product.artifact")
 
     # Safe operational views use allowlists and report missing saved-history
     # emitters instead of starting a second history store.
@@ -613,7 +724,8 @@ def self_test() -> dict:
     port = holder["h"].server_address[1]
     conn = http.client.HTTPConnection("127.0.0.1", port, timeout=10)
     conn.request("GET", "/")
-    shell = conn.getresponse().read().decode()
+    shell_response = conn.getresponse()
+    shell = shell_response.read().decode()
     conn.request("GET", "/api/summary")
     api = json.loads(conn.getresponse().read())
     conn.request("GET", "/api/runtime")
@@ -629,28 +741,21 @@ def self_test() -> dict:
                    and api["_loop"]["template"] == "atomic_code_only"
                    and api["_loop"]["loop_id"])
 
-    # the write test uses a TEMP store: a suite run must not modify the
-    # source tree, and the first version of this appended to the package on
-    # every run.
+    # Candidate User Feedback may be read from an explicit test store. Studio
+    # itself remains read-only.
     global ADVICE_STORE_PATH
     _prev_store, ADVICE_STORE_PATH = ADVICE_STORE_PATH, os.path.join(
         tempfile.mkdtemp(prefix="studio_advice_"), "user-advice.jsonl")
 
-    # THE ONE WRITE: advising a loop, exactly as the Studio design has it —
-    # a person types guidance on a specific loop and it is stored scoped and
-    # attributable. An empty note is refused at the edge.
+    # A POST is refused at the server boundary. User Feedback Intelligence has
+    # a separate governed operation and must not hide behind a read-only UI.
     conn.request("POST", "/api/runs/run-1/user-intelligence",
                  body=json.dumps({"text": "try sklearn VIF for collinearity",
                                   "scope": "loop", "target": "loop7",
                                   "guidance_type": "package_suggestion"}),
                  headers={"Content-Type": "application/json"})
     wrote = conn.getresponse()
-    advice = json.loads(wrote.read())
-    conn.request("POST", "/api/runs/run-1/user-intelligence",
-                 body=json.dumps({"text": "   "}),
-                 headers={"Content-Type": "application/json"})
-    empty = conn.getresponse()
-    empty_body = json.loads(empty.read())
+    write_refusal = json.loads(wrote.read())
 
     # the browser's event stream speaks the canonical vocabulary — against a
     # REAL saved run, so "no untyped passthrough" is a finding rather than a
@@ -675,11 +780,16 @@ def self_test() -> dict:
         return status, payload
 
     contract = json.loads(_get("/routes")[1])
+    api_contract_status, api_contract_body = _get("/api/routes")
+    empty_api_status, _empty_api_body = _get("/api/")
     declared_ok = all(_get(p)[0] == 200
-                      for p in ("/", "/pricing", "/app", "/app/runs"))
+                      for p in ("/", "/studio", "/app", "/app/runs",
+                                f"/app/runs/{real_id}/result",
+                                f"/app/runs/{real_id}/runtime"))
     shell_src = _get("/app/runs")[1].decode()
     undeclared_404 = all(_get(p)[0] == 404
-                         for p in ("/app/admin/secrets",
+                         for p in ("/pricing", "/login", "/signup",
+                                   "/app/admin/secrets",
                                    "/definitely-not-a-page"))
 
     ADVICE_STORE_PATH = _prev_store
@@ -688,20 +798,20 @@ def self_test() -> dict:
           "Loop Engine Studio" in shell and api["cards"]
           and runtime_api["record_type"] == "studio_runtime_inventory/v1"
           and len(runtime_api["harnesses"]["items"]) == 4
-          and notfound.status == 404 and "error" in nf_body,
+          and notfound.status == 404 and "error" in nf_body
+          and shell_response.getheader("X-Content-Type-Options") == "nosniff"
+          and "frame-ancestors 'none'" in str(
+              shell_response.getheader("Content-Security-Policy") or ""),
           f"live on an ephemeral port ({port})")
     check("reads_cross_into_a_loop_and_say_so_over_the_wire",
           envelope_ok,
           f"_loop {api.get('_loop', {}).get('loop_id')} rode back with the "
           "payload, 0 semantic calls")
-    check("a_person_can_advise_a_loop_and_an_empty_note_is_refused",
-          wrote.status == 201 and advice["scope"] == "loop"
-          and advice["target"] == "loop7"
-          and advice["guidance_type"] == "package_suggestion"
-          and advice["author"] == "studio-user" and advice["advice_id"]
-          and empty.status == 400 and "error" in empty_body,
-          f"advice {advice.get('advice_id')} stored scoped + attributable; "
-          "empty refused with 400")
+    check("studio_is_read_only_and_refuses_hidden_feedback_writes",
+          wrote.status == 405
+          and wrote.getheader("Allow") == "GET"
+          and write_refusal["error_code"] == "METHOD_NOT_ALLOWED",
+          "feedback requires a separate governed operation")
     from .event_vocabulary import EVENT_FAMILIES
     check("the_event_stream_is_the_canonical_vocabulary",
           stream["vocabulary_size"] == len(EVENT_FAMILIES)
@@ -722,7 +832,9 @@ def self_test() -> dict:
           and isinstance(detail.get("tree_json"), list)
           and isinstance(detail.get("loops"), list) and detail["loops"]
           and "iterations" in detail["loops"][0]
-          and "modes" in detail["loops"][0],
+          and "modes" in detail["loops"][0]
+          and isinstance(detail.get("product"), dict)
+          and isinstance(detail.get("playback_events"), list),
           f"{len(detail['loops'])} loops with per-loop rollups; tree is "
           "clickable and keyboard-reachable")
 
@@ -741,15 +853,35 @@ def self_test() -> dict:
 
     check("the_routed_surface_serves_declared_paths_and_404s_the_rest",
           declared_ok and undeclared_404
-          and contract["public_routes"] >= 26
-          and contract["studio_routes"] >= 13
+          and api_contract_status == 200
+          and json.loads(api_contract_body) == contract
+          and empty_api_status == 404
+          and contract["public_routes"] == 2
+          and contract["studio_routes"] >= 17
           and contract["every_api_endpoint_runs_as_a_loop"] is True
+          and contract["studio_read_only"] is True
+          and contract["allowed_http_methods"] == ["GET"]
           and "/app/runs/:id/playback" in contract["studio"]
+          and "/app/runs/:id/result" in contract["studio"]
+          and "/app/runs/:id/runtime" in contract["studio"]
           and "/app/intelligence" in contract["studio"]
           and "/app/runtime" in contract["studio"]
           and "runtime" in contract["api_endpoints"],
           f"{contract['public_routes']} public + {contract['studio_routes']} "
           "studio routes served; unknown paths 404")
+
+    source_run = os.path.join(_RUNS, real_id)
+    corrupt_run = os.path.join(_RUNS, "corrupt-run")
+    shutil.copytree(source_run, corrupt_run)
+    corrupt_rows = build_projection("runs")["runs"]
+    corrupt = next(row for row in corrupt_rows
+                   if row["run_id"] == "corrupt-run")
+    check("one_corrupt_run_is_isolated_without_breaking_the_runs_list",
+          corrupt["error_code"] == "RUN_HISTORY_INVALID"
+          and corrupt["intact"] is False
+          and any(row["run_id"] == real_id and row["intact"]
+                  for row in corrupt_rows),
+          "invalid run remains visible; verified siblings remain readable")
 
     passed = sum(1 for r in results if r["passed"])
     report = {"tests": results, "passed": passed, "total": len(results),

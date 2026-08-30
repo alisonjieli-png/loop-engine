@@ -78,6 +78,12 @@ terms:
   ExtensionApplicationRequest:
     kind: canonical
     definition: Passive request that combines exact RuntimeSettings, an ExtensionSnapshot, and explicit nonzero-cost route policy.
+  ProductOutcomeRef:
+    kind: canonical
+    definition: Digest-bound reference from one Run History manifest to the exact saved solve outcome.
+  SavedRunBundle:
+    kind: canonical
+    definition: Verified composition of one immutable Run History and its optional bound product outcome.
   CapabilityCandidate:
     kind: canonical
     definition: Passive added-file description of a possible capability and implementation reference; never executable merely because it was discovered.
@@ -1135,6 +1141,64 @@ semantic_terms:
   examples:
   - RunHistory
   negative_examples: *id025
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.product_outcome_ref
+  canonical_name: ProductOutcomeRef
+  primary_category: reference
+  definition: Digest-bound manifest reference to one exact saved solve outcome.
+  source_of_truth: loop_engine.core.product_outcome_store:ProductOutcomeRef
+  source_symbol: loop_engine.core.product_outcome_store:ProductOutcomeRef
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: product_outcome_ref/v1
+  related_terms:
+  - RunHistory
+  - SolveOutcome
+  difference_from_neighbors: ProductOutcomeRef identifies an outcome body; RunHistory stores immutable Loop events and SolveOutcome is the returned result.
+  parameterization_decision: run_identity_and_content_digest
+  composition_decision: compose with RunHistory through SavedRunBundle
+  inheritance_decision: none
+  storage_authority: RunHistory manifest
+  lifecycle: immutable after run finalization
+  legacy_aliases: []
+  migration: absent on legacy runs
+  examples:
+  - ProductOutcomeRef
+  negative_examples:
+  - SolveOutcome
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.saved_run_bundle
+  canonical_name: SavedRunBundle
+  primary_category: snapshot
+  definition: Verified composition of one RunHistory and its optional digest-bound product outcome.
+  source_of_truth: loop_engine.core.product_outcome_store:SavedRunBundle
+  source_symbol: loop_engine.core.product_outcome_store:SavedRunBundle
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: composed from versioned members
+  related_terms:
+  - RunHistory
+  - ProductOutcomeRef
+  difference_from_neighbors: SavedRunBundle loads and verifies authoritative members; it does not create another event or outcome authority.
+  parameterization_decision: run_identity
+  composition_decision: verified composition only
+  inheritance_decision: none
+  storage_authority: RunHistory manifest
+  lifecycle: immutable loaded snapshot
+  legacy_aliases: []
+  migration: legacy runs load with no product outcome
+  examples:
+  - SavedRunBundle
+  negative_examples:
+  - RunHistory
   conformance_rules:
   - one_term_one_meaning
   - one_source_of_truth

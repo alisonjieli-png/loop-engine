@@ -4,7 +4,7 @@ This example shows the same run through the console, incremental JSON, and a
 server-sent event stream. The finished Run History is saved for Studio playback.
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 ```
 
 Run from the repository checkout:

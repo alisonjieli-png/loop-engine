@@ -90,6 +90,8 @@ This file is generated from the semantic constitution in `terminology.yaml`. The
 | `SemanticMemoryRecord` | `memory` | Independently reviewed reusable claim with scope and evidence. | `loop_engine.memory.semantic.record:SemanticMemoryRecord` | immutable_record_fields | none | none |
 | `ProceduralMemoryRecord` | `memory` | Independently reviewed reusable procedure with contracts and rollback. | `loop_engine.memory.procedural.record:ProceduralMemoryRecord` | immutable_record_fields | none | none |
 | `RunHistory` | `history` | Canonical persisted event evidence for all Loop work. | `loop_engine.core.run_history:RunHistory` | event_schema_and_storage_root | none | none |
+| `ProductOutcomeRef` | `reference` | Digest-bound manifest reference to one exact saved solve outcome. | `loop_engine.core.product_outcome_store:ProductOutcomeRef` | run_identity_and_content_digest | none | none |
+| `SavedRunBundle` | `snapshot` | Verified composition of one RunHistory and its optional digest-bound product outcome. | `loop_engine.core.product_outcome_store:SavedRunBundle` | run_identity | none | none |
 | `LearningCandidate` | `candidate` | Durable unapproved proposal awaiting independent review. | `loop_engine.memory.storage.learning_records:CandidateStageRequest` | candidate_kind_and_scope | none | none |
 | `CandidateJournal` | `store` | Durable governance store for candidate transitions and integrity. | `loop_engine.memory.storage.learning_cycle:CandidateJournal` | storage_root | none | none |
 | `RuntimeSettings` | `settings` | Validated user and organization configuration without execution authority. | `loop_engine.core.runtime_settings:RuntimeSettings` | nested_typed_settings | none | none |

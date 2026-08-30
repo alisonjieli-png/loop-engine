@@ -62,9 +62,13 @@ def main():
     write_report(report, report_path)
     print(f"\nStatic report: {report_path}")
     print("Interactive playback:")
-    print(f"  loop-engine --studio --port {args.studio_port} "
+    print(f"  loop-engine studio --port {args.studio_port} "
           f"--runs-dir {args.runs_dir}")
-    print(f"  http://127.0.0.1:{args.studio_port}/app/runs/{run_id}/playback")
+    if args.studio_port:
+        print(f"  http://127.0.0.1:{args.studio_port}/app/runs/"
+              f"{run_id}/playback")
+    else:
+        print("  Studio prints the selected local address.")
 
 
 if __name__ == "__main__":

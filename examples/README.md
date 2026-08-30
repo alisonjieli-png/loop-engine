@@ -3,7 +3,7 @@
 Install the complete package directly from GitHub:
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 ```
 
 Each numbered folder has a runnable `run.py` and its own `README.md` with
@@ -60,7 +60,7 @@ loop-engine --example support-queue
 loop-engine --example intelligence-layers
 loop-engine --example context-seed
 loop-engine --live-demo --port 8770
-loop-engine --studio --runs-dir "$HOME/.loop-engine/runs" --port 8765
+loop-engine studio --runs-dir "$HOME/.loop-engine/runs" --port 8765
 ```
 
 New examples should follow the

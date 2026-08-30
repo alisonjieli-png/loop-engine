@@ -4,7 +4,7 @@ This example runs a checkout incident investigation with a Spawned Loop, then
 writes text, Markdown, HTML, and JSON views of the same log.
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 ```
 
 Run from the repository checkout:

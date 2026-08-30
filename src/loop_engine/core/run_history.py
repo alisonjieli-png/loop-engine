@@ -8,6 +8,8 @@ Owns:
     - RunHistory: append-only, monotonically sequenced, HASH-CHAINED history —
       immutable after commit, tamper-evident, persistable to the standard
       ``runs/<run_id>/`` layout (manifest.json + events.jsonl), replayable;
+    - ProductOutcomeRef and SavedRunBundle: an optional digest-bound final
+      solve result stored as outcome.json without changing committed events;
     - from_ledger: the projection from the runtime's lightweight LoopLedger
       into canonical events (the ledger records; the RunHistory is the record);
     - to_otel_spans: the OpenTelemetry-shaped export projection (runs→traces,
@@ -43,39 +45,15 @@ import os
 import time
 from dataclasses import dataclass, field
 
+from .run_history_paths import (
+    RUNS_DIR_ENV, RunHistoryIntegrityError, default_runs_dir, saved_run_ids,
+    validated_run_id)
+
 EVENT_TYPES = ("run_started", "loop_init", "loop_spawn", "iteration",
                "capability_search", "context_retrieval", "code_execution",
                "model_invocation", "fallback", "model_boundary_deferred",
                "budget_stop", "evaluation", "terminal", "cancel",
                "solution_built", "solution_run", "learning", "custom")
-
-RUNS_DIR_ENV = "LOOP_ENGINE_RUNS_DIR"
-
-
-def default_runs_dir(path: str = "") -> str:
-    """One shared run directory for live runs, reports, playback, and Studio."""
-    selected = path or os.environ.get(RUNS_DIR_ENV, "")
-    if selected:
-        return os.path.abspath(os.path.expanduser(selected))
-    return os.path.join(os.path.expanduser("~"), ".loop-engine", "runs")
-
-
-def saved_run_ids(root: str) -> list[str]:
-    """Return only directories that have the complete saved-run file shape.
-
-    A solve may keep content-addressed artifacts beside its Run History.  Those
-    directories are useful, but they are not runs and must never become the
-    target of ``@last`` merely because their names sort later.
-    """
-    if not os.path.isdir(root):
-        return []
-    required = ("manifest.json", "events.jsonl")
-    return sorted(
-        name for name in os.listdir(root)
-        if os.path.isdir(os.path.join(root, name))
-        and all(os.path.isfile(os.path.join(root, name, filename))
-                for filename in required))
-
 
 _RUN_HISTORY_TO_LEDGER = {
     "run_started": "run_started",
@@ -143,10 +121,6 @@ def _digest(obj) -> str:
         json.dumps(obj, sort_keys=True, default=str).encode()).hexdigest()
 
 
-class RunHistoryIntegrityError(ValueError):
-    """Saved run history is incomplete, inconsistent, or has been changed."""
-
-
 @dataclass
 class RunHistoryEvent:
     """The one canonical event envelope."""
@@ -181,8 +155,9 @@ class RunHistory:
     """Append-only, hash-chained, persistable event history for one run."""
 
     def __init__(self, run_id: str, *, parent_run_id: str = ""):
-        self.run_id = run_id
-        self.parent_run_id = parent_run_id
+        self.run_id = validated_run_id(run_id)
+        self.parent_run_id = (
+            validated_run_id(parent_run_id) if parent_run_id else "")
         self.event_log: list[RunHistoryEvent] = []
         self._committed = False
 
@@ -339,6 +314,7 @@ class RunHistory:
 
     @classmethod
     def load(cls, root: str, run_id: str) -> "RunHistory":
+        run_id = validated_run_id(run_id)
         d = os.path.join(root, run_id)
         man = json.load(open(os.path.join(d, "manifest.json")))
         if man.get("record_type") != "run_history_manifest/v1":
@@ -378,9 +354,15 @@ class RunHistory:
         return [asdict(record) for record in records]
 
 
+from .product_outcome_store import (                         # noqa: E402
+    PRODUCT_OUTCOME_FILENAME, ProductOutcomeRef, SavedRunBundle,
+    bind_product_outcome, load_saved_run_bundle)
+
+
 def verify_saved_run(root: str, run_id: str) -> dict:
     """Read back one saved run at the owning storage boundary and verify it."""
-    history = RunHistory.load(root, run_id)
+    bundle = load_saved_run_bundle(root, run_id)
+    history = bundle.history
     chain = history.verify_chain()
     return {
         "run_id": run_id, "events": len(history.event_log),
@@ -389,6 +371,12 @@ def verify_saved_run(root: str, run_id: str) -> dict:
         "chain_intact": chain["intact"],
         "broken_at": chain["broken_at"],
         "path": os.path.join(root, run_id),
+        "product_outcome_bound": bundle.outcome is not None,
+        "product_outcome_digest": (
+            bundle.outcome_ref.content_digest if bundle.outcome_ref else ""),
+        "terminal_code": (
+            str(bundle.outcome.get("terminal_code") or "")
+            if bundle.outcome else ""),
     }
 
 
@@ -482,6 +470,19 @@ def self_test() -> dict:
     ch2.commit()
     tmp = tempfile.mkdtemp(prefix="chron_")
     try:
+        unsafe_construct_refused = unsafe_load_refused = False
+        try:
+            RunHistory("../outside")
+        except RunHistoryIntegrityError:
+            unsafe_construct_refused = True
+        try:
+            RunHistory.load(tmp, "%2e%2e/outside")
+        except RunHistoryIntegrityError:
+            unsafe_load_refused = True
+        check("run_ids_are_confined_portable_path_segments",
+              unsafe_construct_refused and unsafe_load_refused,
+              "construction and load reject traversal before filesystem use")
+
         ch2.save(tmp)
         back = RunHistory.load(tmp, "run_rt")
         check("runs_layout_round_trips_and_verifies",
@@ -506,6 +507,39 @@ def self_test() -> dict:
         check("saved_run_listing_excludes_artifact_siblings",
               saved_run_ids(tmp) == ["run_rt"],
               "@last resolves only complete manifest plus event-log folders")
+
+        outcome = {
+            "record_type": "solve_outcome/v3", "run_id": "run_rt",
+            "terminal_code": "COMPLETED_VERIFIED",
+            "status": "COMPLETED_VERIFIED", "solved": True,
+            "summary": "Verified fixture.", "failure_code": "",
+            "verification": {"passed": True}, "artifacts": [],
+            "workspace": "", "limitations": [], "selected_canvas": {},
+        }
+        outcome_ref = bind_product_outcome(tmp, "run_rt", outcome)
+        bound = load_saved_run_bundle(tmp, "run_rt")
+        check("product_outcome_is_digest_bound_to_the_saved_run",
+              bound.outcome["terminal_code"] == "COMPLETED_VERIFIED"
+              and bound.outcome_ref == outcome_ref
+              and verify_saved_run(tmp, "run_rt")[
+                  "product_outcome_bound"] is True,
+              "event chain and product terminal load as one bundle")
+
+        outcome_path = os.path.join(tmp, "run_rt", PRODUCT_OUTCOME_FILENAME)
+        original_outcome = json.load(open(outcome_path))
+        changed_outcome = {**original_outcome, "summary": "tampered"}
+        with open(outcome_path, "w") as stream:
+            json.dump(changed_outcome, stream)
+        outcome_refused = False
+        try:
+            load_saved_run_bundle(tmp, "run_rt")
+        except RunHistoryIntegrityError:
+            outcome_refused = True
+        with open(outcome_path, "w") as stream:
+            json.dump(original_outcome, stream)
+        check("changed_product_outcome_is_refused_on_load",
+              outcome_refused,
+              "outcome digest must match the run manifest")
 
         manifest_path = os.path.join(tmp, "run_rt", "manifest.json")
         manifest = json.load(open(manifest_path))

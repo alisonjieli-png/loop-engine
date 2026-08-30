@@ -5,7 +5,7 @@ one small top-level card and six subsystem cards. The repository body and a 9 GB
 dataset remain behind separate digest-bound references.
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 python3 examples/12_wrap_a_large_codebase/run.py
 ```
 

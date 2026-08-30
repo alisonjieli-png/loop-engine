@@ -1,9 +1,9 @@
 {
  "authorized": true,
- "created_at": "2026-08-30T00:08:47.842150+00:00",
- "elapsed_seconds": 0.412008,
+ "created_at": "2026-08-30T03:55:09.825818+00:00",
+ "elapsed_seconds": 0.419002,
  "failure_code": "rate_limited",
- "failure_detail_sha256": "6eb50e2cfe5f8404c223956d417dcdb9ad0fdc788d3351bc57afe568d8fb6b1a",
+ "failure_detail_sha256": "83f44b222c3c8a8ce8df06c70abc0f7554bd7faf959573f04f55cec756b1ddab",
  "input_tokens": null,
  "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
  "maximum_output_tokens": 65536,
@@ -19,9 +19,9 @@
  "provider_responded": false,
  "record_type": "live_model_verification/v1",
  "repository_input": {
-  "source_bytes": 2549,
+  "source_bytes": 2915,
   "source_path": "pyproject.toml",
-  "source_sha256": "de3732bc83fbb830931609ec26e68bc9892083899a7bb1c5e623a2edf5e6e014"
+  "source_sha256": "b3fb1539efbc68ffe5e008fd14eb9a90a0b9831c44636db99eb578c09b67b562"
  },
  "route_name": "cloud.default",
  "secret_policy": "raw prompt, raw output, credentials, and provider error text are not saved",

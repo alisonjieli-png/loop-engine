@@ -85,3 +85,14 @@ loop_engine = [
     "**/*.jsonl",         # intelligence, governance, and run evidence
     "**/*.yaml",          # installed architecture and semantic projections
 ]
+
+[tool.setuptools.exclude-package-data]
+# Local Run History and Studio state may sit below the source package in a
+# developer checkout.  They are evidence from that machine, not product data,
+# and must never be copied into a wheel or source distribution.
+loop_engine = [
+    "evidence/runs/*",
+    "evidence/runs/**/*",
+    "evidence/studio/*",
+    "evidence/studio/**/*",
+]

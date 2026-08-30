@@ -17,7 +17,11 @@ Deterministic loops need no provider. Hybrid and non-deterministic loops use
 Ollama Cloud is not local Ollama. Configure a local Ollama server as a custom
 endpoint with `wire="ollama"` and `locality="local"`.
 
-## Check configured providers
+## Library provider verification
+
+The CLI command `loop-engine configure` only inspects credential references.
+It makes zero provider calls. The Python helper below is a different,
+explicit verification operation and does contact configured providers.
 
 ```python
 from loop_engine import configure
@@ -79,31 +83,13 @@ performs one real call. A solve should not continue when the probe fails.
 
 ## CLI setup
 
-For a local test, pass the key value directly:
-
-```bash
-loop-engine solve \
-  --ollama-api-key 'YOUR_OLLAMA_API_KEY' \
-  --interaction-mode autonomous \
-  --file task.txt \
-  --workspace ./workspace \
-  --runs-dir ./runs \
-  --max-model-calls 16 \
-  --max-total-tokens 1000000
-```
-
-Use `--openrouter-api-key VALUE`, `--opencode-zen-api-key VALUE`, or
-`--opencode-go-api-key VALUE` for the other direct routes. The OpenRouter and
-OpenCode Zen shortcuts resolve current zero-cost models from live catalogs
-after model-call authority exists. Each selected route is exact for that run.
-The token ceiling is derived from the selected model's declared maximum and
-the exact prompt. It does not grant file, network-tool, spending, or
-external-effect permission.
-
-Export the key when you do not want it in the command:
+Export one key, inspect it without a call, probe it once, then use the bounded
+quickstart profile:
 
 ```bash
 export OLLAMA_API_KEY="your-key"       # Ollama Cloud
+# or
+export MISTRAL_API_KEY="your-key"      # Mistral
 # or
 export OPENROUTER_API_KEY="your-key"   # OpenRouter
 # or
@@ -111,17 +97,17 @@ export OPENCODE_ZEN_API_KEY="your-key" # OpenCode Zen zero-cost catalog
 # or
 export OPENCODE_GO_API_KEY="your-key"  # OpenCode Go task review
 
-loop-engine solve \
-  --ollama-api-key \
-  --interaction-mode autonomous \
-  --file task.txt \
-  --workspace ./workspace \
-  --runs-dir ./runs \
-  --max-model-calls 16 \
-  --max-total-tokens 1000000
+loop-engine configure
+loop-engine solve --file task.txt --quickstart
 ```
 
-If the environment variable is absent, omitting `VALUE` opens a hidden prompt.
+For a disposable terminal session, the direct key flags are
+`--ollama-api-key`, `--mistral-api-key`, `--openrouter-api-key`,
+`--opencode-zen-api-key`, and `--opencode-go-api-key`. Omitting the value reads
+the standard environment variable or opens a hidden prompt.
+
+The OpenRouter and OpenCode Zen shortcuts accept a route only when current
+catalog facts establish an exact compatible zero-cost model and output limit.
 
 Runtime settings remain separate:
 

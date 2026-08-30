@@ -1,7 +1,8 @@
 # Install Loop Engine on Windows
 
 These commands create one user-owned folder and one virtual environment.
-Python 3.10 or newer and Git must already be available.
+Install Python 3.10 or newer and Docker Desktop first. Start Docker
+Desktop before the provider-backed solve.
 
 ## Create the environment
 
@@ -11,7 +12,6 @@ Open PowerShell:
 New-Item -ItemType Directory -Force -Path "$HOME\loop-engine-quickstart"
 Set-Location "$HOME\loop-engine-quickstart"
 py --version
-git --version
 py -m venv .venv
 .venv\Scripts\Activate.ps1
 ```
@@ -26,49 +26,49 @@ With the environment activated:
 
 ```powershell
 python -m pip install --quiet `
-  "git+https://github.com/alisonjieli-png/loop-engine.git@main"
+  "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 python -m pip check
+docker pull `
+  python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3
 loop-engine doctor
-loop-engine --demo five-step --runs-dir .\loop-engine-runs
-loop-engine --studio --port 0 --runs-dir .\loop-engine-runs
 ```
 
-Studio prints a free local address. Open it in a browser and press `Ctrl+C` to
-stop the server.
+## Configure and solve
 
-## Build a longer task
+Set the Ollama Cloud key for this PowerShell session:
 
 ```powershell
-@'
-Download an authorized public dataset.
-Train a linear model, tree model, boosted-tree model, and MLP to predict the
-target variable. Use identical validation folds for every model. Compare the
-results honestly and produce verified PDF and HTML reports.
-'@ | Set-Content -Encoding utf8 flagship-modeling-task.txt
-
-loop-engine task build --file flagship-modeling-task.txt
+$env:OLLAMA_API_KEY = "your-key"
+loop-engine configure
 ```
 
-Add one Ollama review without putting a key in the command:
+Make one bounded provider probe:
 
 ```powershell
-loop-engine task build `
-  --ollama-api-key `
-  --interaction-mode autonomous `
-  --file flagship-modeling-task.txt
+loop-engine models probe ollama_cloud `
+  --model-route cloud.default `
+  --model-id deepseek-v4-flash:0731 `
+  --authorize-model-calls `
+  --max-model-calls 1 `
+  --max-total-tokens 70000
 ```
 
-Loop Engine uses `OLLAMA_API_KEY` when it is already set. Otherwise, it asks
-for the key through a hidden prompt.
-
-For a disposable local test, pass the value directly:
+Stop if the probe fails. Then download and solve the first task:
 
 ```powershell
-loop-engine task build `
-  --ollama-api-key "YOUR_OLLAMA_API_KEY" `
-  --interaction-mode autonomous `
-  --file flagship-modeling-task.txt
+Invoke-WebRequest `
+  -Uri "https://raw.githubusercontent.com/alisonjieli-png/loop-engine/main/examples/tasks/01-expense-report.txt" `
+  -OutFile "01-expense-report.txt"
+
+loop-engine solve --file 01-expense-report.txt --quickstart
+loop-engine runs
+loop-engine report @last
+loop-engine studio --port 0
 ```
+
+Studio prints a local address. Open it in a browser. The Result tab shows the
+terminal state, verification, workspace, and artifacts. Press `Ctrl+C` in
+PowerShell to stop Studio.
 
 ## Run the full contributor checks
 

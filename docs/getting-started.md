@@ -1,131 +1,105 @@
 # Getting started
 
-The first examples run without an API key.
+Loop Engine takes a task, performs work in a confined Docker workspace,
+verifies the result, and saves the product outcome with its Run History.
 
-## 1. Install
+The [main README](../README.md) is the canonical onboarding path. This page
+explains the same commands with a little more context.
 
-```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
-```
+## Install
 
-Python 3.10 or newer.
-
-Verify it:
+Install Python 3.10 or newer and Docker first. Git is not required. Then run:
 
 ```bash
-loop-engine --self-test
+mkdir loop-engine-quickstart
+cd loop-engine-quickstart
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install \
+  "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
+docker pull \
+  python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3
+loop-engine doctor
 ```
 
-If that exits 0, the installation passed its built-in test suite.
-The default output is a short summary plus any failures. Run
-`loop-engine --self-test-verbose` to inspect module demo output and the full
-test record.
+Use the separate [Windows](guides/install-windows/) or
+[macOS](guides/install-macos/) instructions when needed.
 
-## 2. Your first loop
+## Configure a provider
+
+Set one supported key. Ollama Cloud is the preferred first route:
+
+```bash
+export OLLAMA_API_KEY="your-key"
+loop-engine configure
+```
+
+`configure` inspects credential references without contacting a provider.
+Make one explicit probe before solve:
+
+```bash
+loop-engine models probe ollama_cloud \
+  --model-route cloud.default \
+  --model-id deepseek-v4-flash:0731 \
+  --authorize-model-calls \
+  --max-model-calls 1 \
+  --max-total-tokens 70000
+```
+
+Stop if the probe fails.
+
+## Solve and verify a task
+
+```bash
+curl -LO \
+  https://raw.githubusercontent.com/alisonjieli-png/loop-engine/main/examples/tasks/01-expense-report.txt
+
+loop-engine solve --file 01-expense-report.txt --quickstart
+```
+
+The quickstart profile is explicit authority for the bounded onboarding run.
+It permits at most 16 model calls and 1,000,000 provider-reported tokens. The
+generated program runs without network access inside the pinned Docker image.
+
+A successful result returns `COMPLETED_VERIFIED`, artifact paths, the
+workspace, verification details, and a saved Run History.
+
+## Inspect the saved result
+
+```bash
+loop-engine runs
+loop-engine report @last
+loop-engine studio --port 0
+```
+
+The report and Studio read the same verified saved-run bundle. They show the
+product terminal state, verification result, artifacts, workspace, Solution
+Canvas, Loop activity, and model calls.
+
+## Use Loop Engine as a library
+
+The CLI is the shortest first experience. Library users can create the same
+canonical runtime directly:
 
 ```python
 from loop_engine import LoopLedger
 from loop_engine.loop.encapsulate import as_practitioner_loop
 
 ledger = LoopLedger()
-
 result = as_practitioner_loop(
-    "choose the next support ticket",
+    "choose the highest severity ticket",
     lambda: max([
         {"id": "SUP-1042", "severity": 2},
         {"id": "SUP-1044", "severity": 3},
     ], key=lambda ticket: ticket["severity"]),
-    ledger=ledger)
+    ledger=ledger,
+)
 
-print(result["value"]["id"])       # SUP-1044
-print(result["model_calls"])       # 0
-print(len(ledger.events))          # 13: the run recorded itself
+print(result["value"]["id"])
+print(result["model_calls"])
 ```
 
-You got an answer and an event log from the same run. The answer is the task
-result. The event log supports reports, inspection, and debugging.
-
-`as_practitioner_loop()` is a compatibility entry point. It composes a
-complete `LoopDefinition` and restricted `LoopRuntimeContext` before the Loop
-starts. Use the [Loop object guide](components/loop-object/) for the low-level
-typed start contract.
-
-Runnable version:
-[support queue example](../examples/01_prioritize_support_queue/)
-
-## 3. Send it a real problem
-
-```python
-from loop_engine.code_nodes.smoke_ladder import run_smoke_loop
-
-run_result = run_smoke_loop(
-    "predict which customers renew",
-    train_csv="train.csv",
-    test_csv="test.csv",
-    sample_csv="sample_submission.csv",
-    out_csv="predictions.csv",
-    ledger=ledger)
-
-trace = run_result["trace"]
-trace["estimator"]      # what it chose
-trace["cv_score"]       # its honest local score
-trace["model_calls"]    # []: nothing was sent to a model
-```
-
-The deterministic data workflow inspects the files, chooses an approach,
-builds predictions, and validates the output. It makes no model call.
-
-Runnable version, which generates its own dataset:
-[`examples/02_predict_customer_renewal/`](../examples/02_predict_customer_renewal/)
-
-## 4. See what it did
-
-```bash
-python3 examples/04_read_run_reports/run.py
-```
-
-The example prints the Loop graph and keeps Markdown, HTML, and JSON reports
-under `example-output/incident-report/`.
-
-Or in code, for a run you have in hand:
-
-```python
-from loop_engine.code_nodes.loop_report import report_from_ledger, render_text
-print(render_text(report_from_ledger(ledger.events, run_id="my-run")))
-```
-
-More: [reports guide](guides/reports.md).
-
-## 5. Add a model, when you want one
-
-Nothing so far touched a provider. To permit one:
-
-```python
-from loop_engine import configure, advice_function
-
-access = configure(openrouter_key="...")
-print(access.explain())
-
-advise = advice_function(access)     # None if nothing is reachable
-```
-
-`configure()` probes each configured provider with a real call. It reports the
-available loop modes before a job starts. A capped or rejected key becomes a
-setup error instead of a failure during the job.
-
-More: [providers and keys](guides/providers-and-keys.md) ·
-[custom endpoints](guides/custom-endpoints.md)
-
-## Where to go next
-
-| | |
-|---|---|
-| [Loops and modes](guides/loops-and-modes.md) | how nesting, exit conditions, and permissions work |
-| [Providers and keys](guides/providers-and-keys.md) | discovery, failover, cost attribution |
-| [Runtime settings and model tiers](guides/settings.md) | YAML defaults, search choices, providers, and bounded model escalation |
-| [Custom endpoints](guides/custom-endpoints.md) | your own server or a third party's |
-| [Reports](guides/reports.md) | reading and exporting a run |
-| [Component guide](components/) | the Loop object, roles, Core Architecture, and intelligence layers |
-| [Architecture](architecture/) | deeper implementation and visual guidance |
-| [`examples/`](../examples/) | categorized example folders |
-| [Customer import Canvas](../examples/10_validate_customer_import/) | a realistic compiled Solution Canvas with fallback |
+Continue with [loops and modes](guides/loops-and-modes.md),
+[providers and keys](guides/providers-and-keys.md), and
+[reports](guides/reports.md).

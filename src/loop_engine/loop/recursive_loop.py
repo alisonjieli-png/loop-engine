@@ -438,8 +438,7 @@ class Loop(metaclass=_LoopMeta):
             if contract is None:
                 from .loop_doctrine import baseline_for_practitioner
                 contract = baseline_for_practitioner(
-                    goal, output_roles=(
-                        f"{goal[:24].replace(' ', '_')}_out",))
+                    goal, output_roles=("result",))
             try:
                 definition = LoopDefinition.from_runtime(
                     identity=selected_identity, contract=contract,
@@ -647,8 +646,7 @@ class Loop(metaclass=_LoopMeta):
             if contract is None:
                 from .loop_doctrine import baseline_for_practitioner
                 contract = baseline_for_practitioner(
-                    goal, output_roles=(
-                        f"{goal[:24].replace(' ', '_')}_out",))
+                    goal, output_roles=("result",))
             try:
                 definition = LoopDefinition.from_runtime(
                     identity=selected_identity, contract=contract,
@@ -1774,6 +1772,15 @@ def self_test() -> dict:
           and init23.get("exit_condition") == "steps_complete"
           and tuple(init23.get("output_roles", ())) == ("out",),
           "identity carries goal, typing, terminal mode, and both conditions")
+
+    # Compatibility construction uses a stable typed port. Human goal prose
+    # is descriptive data and must not silently create executable port names.
+    prose_a = Loop("Summarize invoices")
+    prose_b = Loop("Résumé invoices with punctuation!? and spaces")
+    check("goal_prose_does_not_define_executable_output_ports",
+          prose_a.contract.output_roles == ("result",)
+          and prose_b.contract.output_roles == ("result",),
+          "compatibility Loops use the fixed result port")
 
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "recursive_loop_self_test", "tests": results,

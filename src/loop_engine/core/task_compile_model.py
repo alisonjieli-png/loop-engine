@@ -633,7 +633,8 @@ def self_test() -> dict:
 
         os.environ[standard_env] = "offline-key-not-for-network"
         shortcut = SimpleNamespace(
-            ollama_api_key="direct-test-key", openrouter_api_key=None,
+            ollama_api_key="direct-test-key", mistral_api_key=None,
+            openrouter_api_key=None,
             opencode_zen_api_key=None, opencode_go_api_key=None,
             compile_provider="",
             provider_key_env="", prompt_for_provider_key=False,
@@ -652,7 +653,8 @@ def self_test() -> dict:
               and direct_key == "direct-test-key")
         os.environ.pop(standard_env, None)
         prompt_shortcut = SimpleNamespace(
-            ollama_api_key="__prompt__", openrouter_api_key=None,
+            ollama_api_key="__prompt__", mistral_api_key=None,
+            openrouter_api_key=None,
             opencode_zen_api_key=None, opencode_go_api_key=None,
             compile_provider="",
             provider_key_env="", prompt_for_provider_key=False,
@@ -662,6 +664,65 @@ def self_test() -> dict:
         check("ollama_key_shortcut_prompts_when_no_environment_key_exists",
               prompt_shortcut.prompt_for_provider_key
               and prompt_shortcut.compile_provider == "ollama_cloud")
+        from ..solve_cli import ProviderSetupError, _apply_quickstart
+        os.environ[standard_env] = "offline-key-not-for-network"
+        quickstart = SimpleNamespace(
+            quickstart=True, ollama_api_key=None, mistral_api_key=None,
+            openrouter_api_key=None, opencode_zen_api_key=None,
+            opencode_go_api_key=None, compile_provider="",
+            interaction_mode="ask_when_material",
+            authorize_model_calls=False, max_model_calls=0,
+            max_total_tokens=None)
+        _apply_quickstart(quickstart)
+        check("quickstart_selects_one_known_key_and_bounded_authority",
+              quickstart.compile_provider == "ollama_cloud"
+              and quickstart.interaction_mode == "autonomous"
+              and quickstart.authorize_model_calls
+              and quickstart.max_model_calls == 16
+              and quickstart.max_total_tokens == 1_000_000)
+        previous_openrouter = os.environ.get("OPENROUTER_API_KEY")
+        try:
+            os.environ["OPENROUTER_API_KEY"] = "offline-key-not-for-network"
+            preferred_free = SimpleNamespace(
+                quickstart=True, ollama_api_key=None, mistral_api_key=None,
+                openrouter_api_key=None, opencode_zen_api_key=None,
+                opencode_go_api_key=None, compile_provider="",
+                interaction_mode="ask_when_material",
+                authorize_model_calls=False, max_model_calls=0,
+                max_total_tokens=None)
+            _apply_quickstart(preferred_free)
+            check(
+                "quickstart_prefers_a_dynamic_zero_price_route_when_available",
+                preferred_free.compile_provider == "openrouter")
+        finally:
+            if previous_openrouter is None:
+                os.environ.pop("OPENROUTER_API_KEY", None)
+            else:
+                os.environ["OPENROUTER_API_KEY"] = previous_openrouter
+        os.environ.pop(standard_env, None)
+        missing_refused = False
+        provider_environment_names = (
+            "OPENROUTER_API_KEY", "OPENCODE_ZEN_API_KEY",
+            "MISTRAL_API_KEY", "OPENCODE_GO_API_KEY")
+        saved_provider_environment = {
+            name: os.environ.pop(name, None)
+            for name in provider_environment_names}
+        try:
+            _apply_quickstart(SimpleNamespace(
+                quickstart=True, ollama_api_key=None, mistral_api_key=None,
+                openrouter_api_key=None, opencode_zen_api_key=None,
+                opencode_go_api_key=None, compile_provider="",
+                interaction_mode="ask_when_material",
+                authorize_model_calls=False, max_model_calls=0,
+                max_total_tokens=None))
+        except ProviderSetupError:
+            missing_refused = True
+        finally:
+            os.environ.update({name: value for name, value in
+                               saved_provider_environment.items()
+                               if value is not None})
+        check("quickstart_without_a_provider_is_an_actionable_refusal",
+              missing_refused)
     finally:
         if previous_source is None:
             os.environ.pop(source_env, None)

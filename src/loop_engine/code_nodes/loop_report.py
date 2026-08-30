@@ -115,6 +115,7 @@ class LoopReport:
     total_events: int = 0
     families: dict = field(default_factory=dict)
     chain_intact: "bool | None" = None
+    product_outcome: dict = field(default_factory=dict)
     relationship_dag: LoopRelationshipDag = field(
         default_factory=LoopRelationshipDag)
 
@@ -140,6 +141,32 @@ class LoopReport:
     def deepest(self) -> int:
         return max((n.depth for n in self.by_id.values()), default=0)
 
+    def product_summary(self) -> dict:
+        """Safe product facts bound to this run, or an explicit legacy gap."""
+        if not self.product_outcome:
+            return {"record_type": "solve_outcome_projection/v1",
+                    "available": False, "terminal_code": "",
+                    "solved": False, "summary": "", "failure_code": "",
+                    "verification": {}, "artifacts": [], "workspace": "",
+                    "limitations": [], "next_action": "",
+                    "graph_digest": "", "selected_canvas": {}}
+        outcome = self.product_outcome
+        return {
+            "record_type": "solve_outcome_projection/v1",
+            "available": True,
+            "terminal_code": str(outcome.get("terminal_code") or ""),
+            "solved": bool(outcome.get("solved")),
+            "summary": str(outcome.get("summary") or ""),
+            "failure_code": str(outcome.get("failure_code") or ""),
+            "verification": dict(outcome.get("verification") or {}),
+            "artifacts": list(outcome.get("artifacts") or ()),
+            "workspace": str(outcome.get("workspace") or ""),
+            "limitations": list(outcome.get("limitations") or ()),
+            "next_action": str(outcome.get("next_action") or ""),
+            "graph_digest": str(outcome.get("graph_digest") or ""),
+            "selected_canvas": dict(outcome.get("selected_canvas") or {}),
+        }
+
     def summary(self) -> dict:
         return {"record_type": "loop_report/v1", "run_id": self.run_id,
                 "loops": self.loops, "events": self.total_events,
@@ -151,7 +178,8 @@ class LoopReport:
                 "relationship_dag_complete": self.relationship_dag.complete,
                 "relationship_edges": len(self.relationship_dag.edges),
                 "relationship_diagnostics": len(
-                    self.relationship_dag.diagnostics)}
+                    self.relationship_dag.diagnostics),
+                "product": self.product_summary()}
 
     def as_dict(self) -> dict:
         return {**self.summary(),
@@ -266,13 +294,16 @@ def report_from_run(root: str, run_id: str, *, ledger=None) -> LoopReport:
     than by opening saved run history directly: past runs are one of the four
     intelligence pillars, and a reader that bypasses the envelope is exactly
     the direct-resource-access the conformance gate refuses."""
-    from ..core.run_history import RunHistory
+    from ..core.run_history import load_saved_run_bundle
     from ..loop.intelligence_loops import serve_historical_intelligence
-    ch = serve_historical_intelligence(
-        f"report:{run_id}", lambda: RunHistory.load(root, run_id),
+    bundle = serve_historical_intelligence(
+        f"report:{run_id}", lambda: load_saved_run_bundle(root, run_id),
         ledger=ledger)["value"]
-    return report_from_ledger(ch.event_log, run_id=run_id,
-                              chain_intact=ch.verify_chain()["intact"])
+    rep = report_from_ledger(
+        bundle.history.event_log, run_id=run_id,
+        chain_intact=bundle.history.verify_chain()["intact"])
+    rep.product_outcome = dict(bundle.outcome or {})
+    return rep
 
 
 def _cost_line(n: LoopReportRecord) -> str:
@@ -315,6 +346,22 @@ def render_text(rep: LoopReport, *, show_steps: bool = True) -> str:
            f"  {rep.model_calls} model calls, {rep.total_tokens} tokens"]
     if rep.chain_intact is not None:
         out.append(f"  chain verified: {'yes' if rep.chain_intact else 'NO'}")
+    product = rep.product_summary()
+    if product["available"]:
+        verified = bool(product["verification"].get("passed")
+                        or product["verification"].get("verdict") == "accept")
+        out += [f"  product terminal: {product['terminal_code']}",
+                f"  verification: {'passed' if verified else 'not passed'}"]
+        if product["summary"]:
+            out.append(f"  result: {product['summary']}")
+        if product["workspace"]:
+            out.append(f"  workspace: {product['workspace']}")
+        if product["artifacts"]:
+            out.append("  artifacts:")
+            out += [f"    {item.get('path', '')}"
+                    for item in product["artifacts"]]
+    else:
+        out.append("  product outcome: not recorded (legacy run)")
     prov = rep.cost_by_provider()
     if prov:
         out.append("  by provider: "
@@ -340,6 +387,25 @@ def render_markdown(rep: LoopReport) -> str:
            f"| Tokens (provider-reported) | {rep.total_tokens} |"]
     if rep.chain_intact is not None:
         out.append(f"| Chain verified | {'yes' if rep.chain_intact else 'NO'} |")
+    product = rep.product_summary()
+    if product["available"]:
+        verified = bool(product["verification"].get("passed")
+                        or product["verification"].get("verdict") == "accept")
+        out += [f"| Product terminal | `{product['terminal_code']}` |",
+                f"| Product verification | {'passed' if verified else 'not passed'} |",
+                "", "## Product result", "",
+                product["summary"] or "No product summary was recorded."]
+        if product["workspace"]:
+            out += ["", f"Workspace: `{product['workspace']}`"]
+        if product["artifacts"]:
+            out += ["", "### Artifacts", ""]
+            out += [f"- `{item.get('path', '')}`"
+                    for item in product["artifacts"]]
+        if product["limitations"]:
+            out += ["", "### Limitations", ""]
+            out += [f"- {item}" for item in product["limitations"]]
+    else:
+        out += ["| Product outcome | not recorded (legacy run) |"]
     prov = rep.cost_by_provider()
     if prov:
         out += ["", "## Cost by provider", "",
@@ -398,6 +464,22 @@ def render_html(rep: LoopReport) -> str:
     prov = "".join(f"<tr><td>{esc(k)}</td><td>{v}</td></tr>"
                    for k, v in sorted(rep.cost_by_provider().items()))
     relationship_text = "\n".join(rep.relationship_dag.text_lines())
+    product = rep.product_summary()
+    product_html = "<p class='empty'>Product outcome was not recorded for this legacy run.</p>"
+    if product["available"]:
+        verified = bool(product["verification"].get("passed")
+                        or product["verification"].get("verdict") == "accept")
+        artifact_items = "".join(
+            f"<li><code>{esc(item.get('path', ''))}</code></li>"
+            for item in product["artifacts"])
+        product_html = (
+            f"<div class='product'><b>{esc(product['terminal_code'])}</b>"
+            f"<span>{esc(product['summary'])}</span>"
+            f"<span>verification: {'passed' if verified else 'not passed'}</span>"
+            + (f"<span>workspace: <code>{esc(product['workspace'])}</code></span>"
+               if product["workspace"] else "")
+            + (f"<ul>{artifact_items}</ul>" if artifact_items else "")
+            + "</div>")
     chain = ("" if rep.chain_intact is None else
              f"<div class='stat'><b>{'yes' if rep.chain_intact else 'NO'}</b>"
              "<span>chain verified</span></div>")
@@ -436,6 +518,10 @@ table{{border-collapse:collapse;width:100%;max-width:28rem}}
 td{{border-bottom:1px solid var(--line);padding:.35rem .5rem;font-size:.86rem}}
 td:last-child{{text-align:right;font-variant-numeric:tabular-nums}}
 .empty{{color:var(--dim)}}
+.product{{border:1px solid var(--line);border-radius:8px;padding:.8rem 1rem}}
+.product b,.product span{{display:block;margin:.15rem 0}}
+.product ul{{margin:.5rem 0 0;padding-left:1.25rem}}
+.product code{{overflow-wrap:anywhere}}
 .foot{{margin-top:2.5rem;color:var(--dim);font-size:.78rem;
 border-top:1px solid var(--line);padding-top:1rem}}
 </style>
@@ -450,6 +536,7 @@ border-top:1px solid var(--line);padding-top:1rem}}
 <div class="stat"><b>{rep.total_tokens}</b><span>tokens</span></div>
 {chain}
 </div>
+<h2>Product result</h2>{product_html}
 <h2>Loop ownership tree</h2>{tree}
 <h2>Semantic relationship DAG</h2><pre>{esc(relationship_text)}</pre>
 {"<h2>Cost by provider</h2><table>" + prov + "</table>" if prov else ""}
@@ -667,7 +754,7 @@ def self_test() -> dict:
     # adapter must preserve the goal, model-call count, and tokens.
     import shutil
     import tempfile
-    from ..core.run_history import RunHistory
+    from ..core.run_history import RunHistory, bind_product_outcome
     saved_ledger = LoopLedger()
     saved_ledger.record(loop_id="saved", event="init", goal="saved work")
     saved_ledger.record(loop_id="saved", event="run_step", step="decide",
@@ -680,13 +767,27 @@ def self_test() -> dict:
     saved_run_history.commit()
     saved_root = tempfile.mkdtemp(prefix="loop_report_saved_")
     saved_run_history.save(saved_root)
+    bind_product_outcome(saved_root, "saved-report", {
+        "record_type": "solve_outcome/v3", "run_id": "saved-report",
+        "terminal_code": "COMPLETED_VERIFIED",
+        "status": "COMPLETED_VERIFIED", "solved": True,
+        "summary": "Saved product.", "failure_code": "",
+        "verification": {"passed": True},
+        "artifacts": [{"path": "/tmp/result.txt"}],
+        "workspace": "/tmp", "limitations": [], "selected_canvas": {},
+    })
     saved_report = report_from_run(saved_root, "saved-report")
     check("saved_run_history_report_preserves_usage_and_goal",
           saved_report.model_calls == 1
           and saved_report.total_tokens == 30
           and saved_report.by_id["saved"].goal == "saved work"
-          and saved_report.chain_intact is True,
-          "1 call, 30 tokens, goal and chain preserved")
+          and saved_report.chain_intact is True
+          and saved_report.product_summary()["terminal_code"]
+              == "COMPLETED_VERIFIED"
+          and "/tmp/result.txt" in render_text(saved_report)
+          and "Saved product." in render_markdown(saved_report)
+          and "COMPLETED_VERIFIED" in render_html(saved_report),
+          "usage, goal, product terminal, artifact, and chain preserved")
     shutil.rmtree(saved_root, ignore_errors=True)
 
     passed = sum(1 for t in results if t["passed"])

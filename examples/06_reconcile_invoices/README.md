@@ -4,7 +4,7 @@ This example gives each invoice its own Spawned Loop and makes retry attempts in
 a vendor lookup visible.
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 ```
 
 Run from the repository checkout:

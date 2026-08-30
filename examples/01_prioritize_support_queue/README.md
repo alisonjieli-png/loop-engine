@@ -4,7 +4,7 @@ This deterministic example ranks real-shaped support tickets by severity,
 wait time, and customer impact.
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 ```
 
 Run from the repository checkout:

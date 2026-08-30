@@ -23,6 +23,18 @@ First public release.
 - **Product quickstart acceptance.** Four changed tasks create a utility,
   transform local data, index documents, and reproduce and repair a failing
   Python package through real Docker execution.
+- **Saved product outcomes.** Each completed or blocked solve now binds its
+  typed terminal result, verification, artifacts, workspace, limitations, and
+  selected Canvas to the saved Run History manifest by digest. Reports,
+  playback, the runs command, and Studio read the same verified bundle.
+- **Product-first CLI and Studio.** Concise `configure`, `doctor`, `solve`,
+  `runs`, `report`, and `studio` commands support the complete first-user
+  journey. Studio is read-only, isolates corrupt runs, and renders result,
+  tree, runtime, Canvas, playback, and call views on desktop and mobile.
+- **Added-file extensions.** Reviewed provider routes, capability candidates,
+  skills, plugins, and intelligence can be discovered from extension folders
+  without editing the package. OpenRouter and OpenCode Zen resolve current
+  compatible zero-cost catalog entries at invocation time.
 - **Downloadable task library.** Plain text tasks and sample inputs can be
   downloaded from GitHub. A task instruction file can now be combined with one
   dataset, repository, or URL source.
@@ -79,6 +91,15 @@ test:
   not produced. Exact deterministic resolvers must now be bound explicitly.
 - The default wheel pulled large benchmark, ML, and GPU dependencies before a
   new user could run `doctor` or `solve`. Those packages are now optional.
+- Broad package-data patterns could include ignored local Run History and
+  Studio state in a distribution. Wheels and source distributions now exclude
+  local run state and check the built archive before clean installation.
+- Saved run IDs were used as path components without a portable segment check.
+  Save, load, report, playback, and Studio now reject traversal-shaped IDs
+  before filesystem access.
+- Compatibility Loop construction derived output-port names from human goal
+  prose. It now uses a stable `result` port unless a typed contract supplies a
+  more specific role.
 
 - `advice_function` used the global provider order instead of the providers the
   caller's own `configure()` verified. Configuring only a self-hosted

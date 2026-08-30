@@ -10,7 +10,11 @@ honest `CAPABILITY_GAP`.
 
 ## Install
 
-You need Python 3.10 or newer, Git, and Docker.
+You need [Python 3.10 or newer](https://www.python.org/downloads/) and
+[Docker](https://docs.docker.com/get-docker/). Git is not required for the
+quickstart. Starting from an empty computer? Use the
+[Windows](docs/guides/install-windows/) or
+[macOS](docs/guides/install-macos/) instructions first.
 
 ```bash
 mkdir loop-engine-quickstart
@@ -20,7 +24,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install \
-  "git+https://github.com/alisonjieli-png/loop-engine.git@main"
+  "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 
 docker pull \
   python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3
@@ -34,10 +38,12 @@ every first-party optional adapter.
 
 ## Configure one provider
 
-The shortest hosted path uses Ollama Cloud:
+The shortest hosted path uses Ollama Cloud. Set the key, then inspect the
+configuration without making a provider call:
 
 ```bash
 export OLLAMA_API_KEY="your-key"
+loop-engine configure
 ```
 
 Check the exact route with one authorized call:
@@ -94,18 +100,25 @@ that still need a reviewed adapter.
 
 ## Solve a real task
 
+Download the first example task and run the bounded quickstart profile:
+
 ```bash
-loop-engine solve \
-  --text "Create a small Python command-line program that reads a JSON file of expenses, totals spending by category, writes a Markdown report, and includes runnable verification." \
-  --workspace ./workspace \
-  --runs-dir ./runs \
-  --interaction-mode autonomous \
-  --model-route cloud.default \
-  --model-id deepseek-v4-flash:0731 \
-  --authorize-model-calls \
-  --max-model-calls 16 \
-  --max-total-tokens 1000000
+curl -LO \
+  https://raw.githubusercontent.com/alisonjieli-png/loop-engine/main/examples/tasks/01-expense-report.txt
+
+loop-engine solve --file 01-expense-report.txt --quickstart
 ```
+
+`--quickstart` is an explicit authority profile. It selects one configured
+provider, uses autonomous interaction, permits the existing confined Docker
+workspace, and limits the run to 16 model calls and 1,000,000
+provider-reported tokens. It does not authorize deployment, publication, or
+network access from generated code.
+
+If several known provider keys are present, quickstart prefers the dynamic
+zero-price OpenRouter route, then the zero-cost OpenCode Zen route, before the
+fixed Ollama Cloud, Mistral, and OpenCode Go routes. This chooses a candidate
+route; it does not promise that the provider quota is currently available.
 
 A successful result has this shape:
 
@@ -117,9 +130,10 @@ Artifacts:
   .../workspace/attempt-1/expense_report.py (verified)
   .../workspace/attempt-1/report.md (verified)
 
-Workspace: .../workspace/attempt-1
+Workspace: .../<run-id>-workspace/attempt-1
 Verification: passed
-Run History: .../runs/<run-id>
+Run ID: <run-id>
+Run History: ~/.loop-engine/runs/<run-id>
 ```
 
 A generated-project solve writes only inside the selected workspace. Commands
@@ -129,24 +143,21 @@ execute or verify steps. Dependency setup requires separate authority.
 ## Inspect the result
 
 ```bash
-loop-engine --runs --runs-dir ./runs
-loop-engine --report @last --runs-dir ./runs
-loop-engine --studio --runs-dir ./runs --port 8765
+loop-engine runs
+loop-engine report @last
+loop-engine studio --port 0
 ```
+
+Studio selects an available local port and prints the address. Open the Result
+tab for artifacts and verification, Playback for the event sequence, Tree for
+the Loop hierarchy, and Calls for provider activity.
 
 Use JSON when another program consumes the result:
 
 ```bash
 loop-engine solve \
   --file task.txt \
-  --workspace ./workspace-from-file \
-  --runs-dir ./runs-from-file \
-  --interaction-mode autonomous \
-  --model-route cloud.default \
-  --model-id deepseek-v4-flash:0731 \
-  --authorize-model-calls \
-  --max-model-calls 16 \
-  --max-total-tokens 1000000 \
+  --quickstart \
   --format json
 ```
 
@@ -164,15 +175,7 @@ Create a Python command-line program that reads a JSON file, produces a
 Markdown summary, and includes runnable verification.
 EOF
 
-loop-engine solve \
-  --file task.txt \
-  --workspace ./task-workspace \
-  --runs-dir ./task-runs \
-  --interaction-mode autonomous \
-  --model-route cloud.default \
-  --authorize-model-calls \
-  --max-model-calls 16 \
-  --max-total-tokens 1000000
+loop-engine solve --file task.txt --quickstart
 ```
 
 ## Use a local dataset or repository
@@ -184,13 +187,7 @@ loop-engine solve \
   --dataset ./inventory.csv \
   --text "Normalize product names, mark quantities of five or lower as low stock, and write a cleaned CSV plus a summary." \
   --allow-source-to-model \
-  --workspace ./inventory-workspace \
-  --runs-dir ./inventory-runs \
-  --interaction-mode autonomous \
-  --model-route cloud.default \
-  --authorize-model-calls \
-  --max-model-calls 16 \
-  --max-total-tokens 1000000
+  --quickstart
 ```
 
 Use `--repository PATH --text "task"` for a document folder or small Python

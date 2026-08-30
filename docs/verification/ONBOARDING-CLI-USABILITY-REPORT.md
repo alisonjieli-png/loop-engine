@@ -60,7 +60,7 @@ test process. Every mutation canary and live-tree check still passes.
 
 ## Studio behavior
 
-`loop-engine --studio --port 0` asks the operating system for a free local
+`loop-engine studio --port 0` asks the operating system for a free local
 port, prints the selected address, and starts normally. A fixed occupied port
 returns exit code `2` with this recovery instruction:
 

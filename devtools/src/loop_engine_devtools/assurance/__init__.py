@@ -151,9 +151,10 @@ def run_repository_assurance(request: RepositoryAssuranceRequest) -> dict:
     warnings: list[AssuranceFinding] = []
 
     def collect(problems: list[dict], *, rule_prefix: str,
-                severity: str = "high") -> None:
+                severity: str = "high", warning: bool = False) -> None:
+        target = warnings if warning else findings
         for problem in problems:
-            findings.append(AssuranceFinding(
+            target.append(AssuranceFinding(
                 rule=f"{rule_prefix}.{problem.get('rule', 'unknown')}",
                 severity=severity,
                 path=problem.get("file", problem.get("path", "")),
@@ -210,11 +211,13 @@ def run_repository_assurance(request: RepositoryAssuranceRequest) -> dict:
                 current_version="0.1.0", revision="working-tree",
                 require_registry=True))
             collect(state["parameter_report"]["violations"],
-                    rule_prefix="call_boundary")
+                    rule_prefix="call_boundary",
+                    severity=("high" if request.strict else "medium"),
+                    warning=not request.strict)
             count = state["parameter_report"]["unapproved_violations"]
         elif step == "report":
             state["file_records"] = _file_records(
-                request.repository_root, findings)
+                request.repository_root, [*findings, *warnings])
             count = len(state["file_records"])
         else:
             raise ValueError(f"unknown assurance step {step!r}")
@@ -242,7 +245,8 @@ def run_repository_assurance(request: RepositoryAssuranceRequest) -> dict:
                        for record in file_records),
         "requires_alignment": sum(record.status == "REQUIRED_NOT_ALIGNED"
                                   for record in file_records),
-        "findings": len(findings), "verdict": verdict,
+        "findings": len(findings), "warnings": len(warnings),
+        "verdict": verdict,
         "loop_id": run.loop_id,
     }
     evidence_path = _write_file_evidence(request, file_records, summary)
@@ -287,5 +291,13 @@ def self_test() -> dict:
           and report["evidence"]["directories"] > 20)
     check("assurance_findings_are_typed",
           all("rule" in f and "severity" in f and "path" in f
-              for f in report["findings"]))
+              for f in [*report["findings"], *report["warnings"]]))
+    parameter_debt = report["evidence"]["parameter_boundary"][
+        "unapproved_violations"]
+    check("default_assurance_reports_staged_parameter_debt_as_warnings",
+          (not parameter_debt and report["verdict"] == "PASS")
+          or (parameter_debt > 0
+              and report["verdict"] == "PASS_WITH_DOCUMENTED_WARNINGS"
+              and len(report["warnings"]) == parameter_debt),
+          f"{parameter_debt} staged call-boundary finding(s)")
     return {"tests": results}

@@ -6,7 +6,7 @@ returns body-free `LoopRef` objects. The example selects one reference and
 materializes only that item through a second loop.
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 ```
 
 Run from the repository checkout:

@@ -491,6 +491,35 @@ def _loop_details(events: list[dict]) -> list[dict]:
             "reason", ""),
     } for item in events if item.get("event") == "init"]
 
+
+def _history_record(owner: Loop, services: AdaptiveRunServices,
+                    runs_dir: Path) -> dict:
+    """Return a verified saved or in-memory Run History summary."""
+    if services.request.persist_run_history:
+        return verify_saved_run(str(runs_dir), services.run_id)
+    from .run_history import RunHistory
+    history = RunHistory.from_ledger(
+        owner.ledger.events, run_id=services.run_id)
+    head = history.commit()
+    verification = history.verify_chain()
+    return {
+        "run_id": services.run_id, "events": len(history.event_log),
+        "head_digest": head, "chain_intact": verification["intact"],
+        "broken_at": verification["broken_at"], "path": "",
+        "saved": False, "product_outcome_bound": False,
+        "product_outcome_digest": "", "terminal_code": "",
+    }
+
+
+def _save_adaptive_result(history: dict, output: dict) -> None:
+    """Write the internal adaptive result only when persistence is enabled."""
+    if not history.get("path"):
+        return
+    result_path = Path(history["path"]) / "adaptive-result.json"
+    result_path.write_text(json.dumps(
+        output, indent=2, default=str, ensure_ascii=False), encoding="utf-8")
+    output["result_path"] = str(result_path)
+
 def _finish_deterministic_attempt(owner: Loop, services: AdaptiveRunServices,
                                   runs_dir: Path) -> dict:
     """Terminate, verify, and save an exact-first run with zero model calls."""
@@ -517,7 +546,7 @@ def _finish_deterministic_attempt(owner: Loop, services: AdaptiveRunServices,
             1.0 if resolved else 0.5)
 
     owner.run(handler=handler, max_steps=len(owner.steps()) + 1)
-    history = verify_saved_run(str(runs_dir), services.run_id)
+    history = _history_record(owner, services, runs_dir)
     output = {
         "record_type": ADAPTIVE_PRACTITIONER_RECORD_TYPE,
         "run_id": services.run_id,
@@ -536,10 +565,7 @@ def _finish_deterministic_attempt(owner: Loop, services: AdaptiveRunServices,
         "loop_details": _loop_details(owner.ledger.events),
         "run_history": history,
     }
-    result_path = Path(history["path"]) / "adaptive-result.json"
-    result_path.write_text(json.dumps(
-        output, indent=2, default=str, ensure_ascii=False), encoding="utf-8")
-    output["result_path"] = str(result_path)
+    _save_adaptive_result(history, output)
     return output
 
 def run_adaptive_practitioner(
@@ -592,7 +618,8 @@ def run_adaptive_practitioner(
         identity=LoopRoleIdentity(
             LoopRole.PRACTITIONER, "practitioner.reference_nine_step"),
         relationship=LoopRelationship.starting())
-    owner.enable_run_history(run_id, root_dir=str(runs_dir))
+    if request.persist_run_history:
+        owner.enable_run_history(run_id, root_dir=str(runs_dir))
     if request.mode == "non_deterministic":
         services.deterministic_attempt = DeterministicAttemptTrace(
             hashlib.sha256(request.task.encode()).hexdigest(), request.task,
@@ -622,7 +649,7 @@ def run_adaptive_practitioner(
     except Exception as exc:  # noqa: BLE001 - preserve a terminal run record
         if not owner.is_terminal:
             owner.cancel("adaptive_practitioner_failed")
-        history = verify_saved_run(str(runs_dir), run_id)
+        history = _history_record(owner, services, runs_dir)
         failure_code = (exc.error_code or type(exc).__name__
                         if isinstance(exc, SolutionModelError)
                         else type(exc).__name__)
@@ -651,13 +678,9 @@ def run_adaptive_practitioner(
             "loop_details": _loop_details(ledger.events),
             "run_history": history,
         }
-        result_path = Path(history["path"]) / "adaptive-result.json"
-        result_path.write_text(json.dumps(
-            output, indent=2, default=str, ensure_ascii=False),
-            encoding="utf-8")
-        output["result_path"] = str(result_path)
+        _save_adaptive_result(history, output)
         return output
-    history = verify_saved_run(str(runs_dir), run_id)
+    history = _history_record(owner, services, runs_dir)
     final_attempt = services.project_attempts[-1] \
         if services.project_attempts else None
     solved = bool(
@@ -698,8 +721,8 @@ def run_adaptive_practitioner(
         "loop_details": _loop_details(ledger.events),
         "run_history": history,
     }
-    run_path = Path(history["path"])
-    if workspace.exists():
+    run_path = Path(history["path"]) if history.get("path") else None
+    if workspace.exists() and run_path is not None:
         destination = run_path / "solution-attempts"
         if destination.exists():
             shutil.rmtree(destination)
@@ -707,10 +730,9 @@ def run_adaptive_practitioner(
             workspace, destination,
             ignore=shutil.ignore_patterns(".venv", "__pycache__", "*.pyc"))
         output["solution_attempts_path"] = str(destination)
-    result_path = run_path / "adaptive-result.json"
-    result_path.write_text(json.dumps(
-        output, indent=2, default=str, ensure_ascii=False), encoding="utf-8")
-    output["result_path"] = str(result_path)
+    elif workspace.exists():
+        output["solution_attempts_path"] = str(workspace)
+    _save_adaptive_result(history, output)
     return output
 
 

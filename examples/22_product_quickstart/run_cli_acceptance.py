@@ -12,6 +12,9 @@ from pathlib import Path
 
 import yaml
 
+from loop_engine.core.run_history import load_saved_run_bundle
+from loop_engine.code_nodes.loop_report import report_from_run
+
 from run_acceptance import _task_a, _task_b
 
 
@@ -93,6 +96,7 @@ def main() -> int:
         environment.pop("PYTHONPATH", None)
     else:
         environment["PYTHONPATH"] = str(repository / "src")
+    command_cwd = root if args.installed_package else repository
     command = [
         sys.executable, "-m", "loop_engine", "solve",
         "--text", intake.text,
@@ -128,15 +132,15 @@ def main() -> int:
         root / "dataset-runs")
     try:
         completed = subprocess.run(
-            command, cwd=repository, env=environment, capture_output=True,
+            command, cwd=command_cwd, env=environment, capture_output=True,
             text=True, timeout=180)
         _ProviderHandler.answers = list(answers)
         completed_file = subprocess.run(
-            file_command, cwd=repository, env=environment,
+            file_command, cwd=command_cwd, env=environment,
             capture_output=True, text=True, timeout=180)
         _ProviderHandler.answers = list(dataset_answers)
         completed_dataset = subprocess.run(
-            dataset_command, cwd=repository, env=environment,
+            dataset_command, cwd=command_cwd, env=environment,
             capture_output=True, text=True, timeout=180)
     finally:
         server.shutdown()
@@ -180,6 +184,21 @@ def main() -> int:
                        for item in dataset_result["artifacts"])):
         raise SystemExit(
             "task-file plus dataset CLI path did not preserve and solve the task")
+    bound_results = (
+        (root / "runs", result),
+        (root / "runs-from-file", file_result),
+        (root / "dataset-runs", dataset_result),
+    )
+    for run_root, saved_result in bound_results:
+        bundle = load_saved_run_bundle(str(run_root), saved_result["run_id"])
+        report = report_from_run(str(run_root), saved_result["run_id"])
+        if (bundle.outcome["terminal_code"] != "COMPLETED_VERIFIED"
+                or report.product_summary()["terminal_code"]
+                != "COMPLETED_VERIFIED"
+                or len(report.product_summary()["artifacts"])
+                != len(saved_result["artifacts"])):
+            raise SystemExit(
+                "saved CLI bundle or report lost the product result")
     result["acceptance_environment"] = {
         "provider": "local HTTP contract fixture",
         "live_external_provider_proven": False,
@@ -200,6 +219,7 @@ def main() -> int:
         "model_calls": result["model_calls"],
         "tool_calls": result["tool_calls"],
         "run_history_chain_intact": result["run_history"]["chain_intact"],
+        "saved_product_outcomes_bound": len(bound_results),
         "evidence": str(evidence),
         "file_evidence": str(file_evidence),
         "dataset_evidence": str(dataset_evidence),

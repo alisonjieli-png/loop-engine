@@ -231,6 +231,8 @@ product_solve:
   command: loop-engine solve
   request: loop_engine.code_nodes.solve_runtime.SolveRequest
   outcome: loop_engine.code_nodes.solve_runtime.SolveOutcome
+  saved_outcome_ref: loop_engine.core.product_outcome_store.ProductOutcomeRef
+  saved_run_bundle: loop_engine.core.product_outcome_store.SavedRunBundle
   terminal_vocabulary: loop_engine.code_nodes.solve_runtime.SolveTerminalCode
   practitioner: loop_engine.core.adaptive_practitioner.run_adaptive_practitioner
   generated_project: loop_engine.core.generated_project.execute_generated_project
@@ -246,6 +248,9 @@ product_solve:
     - generated_commands_run_in_a_confined_pinned_docker_image
     - unsupported_work_returns_a_typed_blocker
     - every_run_preserves_run_history
+    - saved_run_manifest_binds_the_exact_product_outcome_digest
+    - reports_playback_and_studio_project_the_bound_product_outcome
+    - one_corrupt_run_cannot_break_verified_sibling_runs
     - external_provider_support_requires_a_separate_live_result
 
 independent_qualification:

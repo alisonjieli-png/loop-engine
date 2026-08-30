@@ -33,7 +33,7 @@ The current package provides:
 One GitHub install includes these adapters and their Python dependencies:
 
 ```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
+python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
 ```
 
 Missing declared dependencies fail clearly. The Retrieval Engine does not

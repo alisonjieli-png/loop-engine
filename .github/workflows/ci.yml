@@ -154,6 +154,25 @@ jobs:
           fi
           npm test --prefix showcase
           node showcase/tests/visual-audit.mjs
+          STUDIO_RUNS="$RUNNER_TEMP/studio-runs"
+          PYTHONPATH=src python tools/create_studio_acceptance_fixture.py \
+            --runs-dir "$STUDIO_RUNS" > "$RUNNER_TEMP/studio-fixture.json"
+          PYTHONPATH=src python -m loop_engine studio \
+            --runs-dir "$STUDIO_RUNS" --port 8766 \
+            > "$RUNNER_TEMP/studio-server.log" 2>&1 &
+          STUDIO_PID=$!
+          trap 'kill $STUDIO_PID $SHOWCASE_PID 2>/dev/null || true; wait $STUDIO_PID $SHOWCASE_PID 2>/dev/null || true' EXIT INT TERM
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:8766/app >/dev/null 2>&1; then
+              break
+            fi
+            sleep 0.25
+          done
+          node showcase/tests/studio-visual-audit.mjs \
+            --base-url http://127.0.0.1:8766 \
+            --run-id studio-browser-fixture
+          kill $STUDIO_PID 2>/dev/null || true
+          wait $STUDIO_PID 2>/dev/null || true
           kill $SHOWCASE_PID 2>/dev/null || true
           wait $SHOWCASE_PID 2>/dev/null || true
           trap - EXIT INT TERM
@@ -192,13 +211,21 @@ jobs:
 
       - name: Examples run
         run: |
-          if python -m loop_engine task build --practitioner-mode deterministic --interaction-mode autonomous --text "Train and compare several supervised prediction models."; then
-            echo "An unsupported deterministic build must not report success."
-            exit 1
-          fi
+          python -m loop_engine task build --practitioner-mode deterministic --interaction-mode autonomous --text "Train and compare several supervised prediction models." --format json > "$RUNNER_TEMP/task-build.json"
+          python - <<'PY'
+          import json, os
+          value = json.load(open(os.path.join(
+              os.environ["RUNNER_TEMP"], "task-build.json")))
+          assert value["status"] == "COMPILED_NEEDS_SEMANTIC_REVIEW"
+          assert value["build_complete"] is True
+          assert value["execution_performed"] is False
+          assert value["provider_calls"] == 0
+          PY
           python examples/01_prioritize_support_queue/run.py
           python examples/02_predict_customer_renewal/run.py
+          python examples/03_connect_a_model/run.py
           python examples/04_read_run_reports/run.py
+          python examples/05_kaggle_competition/run.py
           python examples/06_reconcile_invoices/run.py
           python examples/08_play_back_a_saved_run/run.py
           python examples/09_search_the_intelligence_layers/run.py
@@ -210,7 +237,11 @@ jobs:
           python examples/15_verify_a_deployment_profile/run.py
           python examples/16_compare_complex_harnesses/run.py
           python examples/17_classify_harness_files/run.py
+          python examples/18_three_model_ensemble/run.py
+          python examples/19_four_memory_demonstration/run.py
           python examples/20_compile_text_tasks/run.py
+          python examples/21_schema_org_data_standardization/run.py
+          python examples/23_drop_in_extensions/run.py
 
       - name: Product solve acceptance
         run: |
@@ -222,6 +253,44 @@ jobs:
             --output-root "$RUNNER_TEMP/product-cli-acceptance"
           python tools/check_readme_quickstart.py \
             --repository "$GITHUB_WORKSPACE"
+
+      - name: Default-install onboarding proof
+        if: matrix.python-version == '3.12'
+        run: |
+          python -m pip install build
+          python -m build --wheel --outdir "$RUNNER_TEMP/default-dist"
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from zipfile import ZipFile
+
+          wheels = list(
+              (Path(os.environ["RUNNER_TEMP"]) / "default-dist").glob("*.whl"))
+          assert len(wheels) == 1, wheels
+          with ZipFile(wheels[0]) as archive:
+              local_runs = [name for name in archive.namelist()
+                            if "/evidence/runs/" in name
+                            or "/evidence/studio/" in name]
+          assert local_runs == [], local_runs
+          print("wheel contains no local Run History or Studio state")
+          PY
+          python -m venv "$RUNNER_TEMP/default-install"
+          "$RUNNER_TEMP/default-install/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/default-install/bin/python" -m pip install \
+            "$RUNNER_TEMP/default-dist/"*.whl
+          "$RUNNER_TEMP/default-install/bin/python" -m pip check
+          "$RUNNER_TEMP/default-install/bin/loop-engine" doctor --format json > "$RUNNER_TEMP/default-doctor.json"
+          "$RUNNER_TEMP/default-install/bin/loop-engine" setup --format json > "$RUNNER_TEMP/default-setup.json"
+          "$RUNNER_TEMP/default-install/bin/python" - <<'PY'
+          from loop_engine.core.studio_server import self_test
+
+          report = self_test()
+          assert report["all_passed"], report
+          print(f"installed Studio checks: {report['passed']}/{report['total']}")
+          PY
+          "$RUNNER_TEMP/default-install/bin/python" examples/22_product_quickstart/run_cli_acceptance.py \
+            --installed-package \
+            --output-root "$RUNNER_TEMP/default-product-cli-acceptance"
 
   live-ollama:
     name: manual live Ollama orientation for five text scenarios
