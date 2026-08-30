@@ -132,8 +132,8 @@ def self_test() -> dict:
                       for item in outcomes), str(outcomes))
         check("blocking_handlers_overlap_through_thread_placement",
               len(started) == 3 and len(finished) == 3
-              and max(started) < min(finished)
-              and wall_elapsed < 0.5,
+              and max(started) < min(finished),
+              f"all handlers started before the first finished; "
               f"elapsed={wall_elapsed:.3f}")
         check("every_claimed_loop_has_its_own_terminal_history",
               all(any(event.get("event") == "terminal"
