@@ -54,7 +54,8 @@ A complete `LoopHandoffEnvelope` or existing equivalent must carry:
 - available context manifest and materialized payload refs;
 - capability snapshot;
 - typed input, output, confidence, verification, and return contracts;
-- permissions, budget, deadline, cancellation, and stop conditions;
+- permissions, budget, deadline, cancellation, loop condition, and exit
+  condition;
 - integration instructions and provenance.
 
 The current runtime already owns typed spawned work, relationships, budgets,

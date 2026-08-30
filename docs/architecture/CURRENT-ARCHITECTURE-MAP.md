@@ -346,7 +346,7 @@ Kernel (the only non-dogfooded substrate)
 ├── resolve references
 ├── instantiate Loops
 ├── execute one Loop
-├── enforce hard contracts, permissions, budgets, stop conditions
+├── enforce hard contracts, permissions, budgets, loop and exit conditions
 └── append Run History events atomically
 ```
 
