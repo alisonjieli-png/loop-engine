@@ -60,9 +60,12 @@ def main() -> int:
             json.dumps(_compact(value), indent=2) + "\n")
     cli_text = json.loads((args.cli_root / "cli-acceptance.json").read_text())
     cli_file = json.loads((args.cli_root / "cli-file-acceptance.json").read_text())
+    cli_dataset = json.loads((
+        args.cli_root / "cli-dataset-task-acceptance.json").read_text())
     (output / "readme-quickstart.json").write_text(json.dumps({
         "record_type": "readme_quickstart_evidence/v1",
         "text_task": _compact(cli_text), "file_task": _compact(cli_file),
+        "dataset_with_task_file": _compact(cli_dataset),
         "external_provider_proven": False,
         "limitations": [
             "CLI semantics used a local HTTP contract fixture.",

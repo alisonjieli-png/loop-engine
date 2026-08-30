@@ -1,0 +1,3 @@
+Reproduce the supplied Python package failure, diagnose it, create a repaired
+copy inside the output workspace, rerun its verification, and return the
+repaired files with the original failing and final passing command evidence.

@@ -5,7 +5,7 @@
     "original_task": "Create a Python command-line program that reads a JSON file of expenses, totals spending by category, writes a Markdown report, and includes runnable verification.",
     "terminal_code": "COMPLETED_VERIFIED",
     "summary": "Expense report command and verified Markdown output.",
-    "run_id": "adaptive-428fbdb98f1f6691d8210e1c",
+    "run_id": "adaptive-fdbf359a942ae39529efa92e",
     "providers": [
       "acceptance"
     ],
@@ -58,15 +58,15 @@
     "graph_digest": "f7c2d45c35fb7697020eb7245c0834b79b90da5db933b0f95104fb6e80319576",
     "manifest_digest": "0792ee8ffdfc2fa94d3ca5ecd559f7ec5d9b90a4ab35b7c4f48a4e31596651f5",
     "run_history": {
-      "run_id": "adaptive-428fbdb98f1f6691d8210e1c",
+      "run_id": "adaptive-fdbf359a942ae39529efa92e",
       "events": 758,
-      "head_digest": "82737b9dad523e5588b0bedf1fd76074d44de1c6fb33415de854830c91eb8bf1",
+      "head_digest": "9f01ad2bf121aed466b86ed5f4e19111f88f39888c88b4484e74944068573d94",
       "chain_intact": true,
       "broken_at": [],
-      "path": "/home/username/loop-engine/artifacts/product-proof/cli/runs/adaptive-428fbdb98f1f6691d8210e1c",
+      "path": "/home/username/loop-engine/artifacts/product-proof/cli/runs/adaptive-fdbf359a942ae39529efa92e",
       "raw_history_retained": true
     },
-    "elapsed_seconds": 1.076,
+    "elapsed_seconds": 0.57,
     "limitations": [],
     "command_results": [
       {
@@ -88,7 +88,7 @@
     "original_task": "Create a Python command-line program that reads a JSON file of expenses, totals spending by category, writes a Markdown report, and includes runnable verification.\n",
     "terminal_code": "COMPLETED_VERIFIED",
     "summary": "Expense report command and verified Markdown output.",
-    "run_id": "adaptive-22637249950dbd3ff9a85512",
+    "run_id": "adaptive-13dcb0990316b1ded95fdb1a",
     "providers": [
       "acceptance"
     ],
@@ -141,16 +141,16 @@
     "graph_digest": "f7c2d45c35fb7697020eb7245c0834b79b90da5db933b0f95104fb6e80319576",
     "manifest_digest": "0792ee8ffdfc2fa94d3ca5ecd559f7ec5d9b90a4ab35b7c4f48a4e31596651f5",
     "run_history": {
-      "run_id": "adaptive-22637249950dbd3ff9a85512",
+      "run_id": "adaptive-13dcb0990316b1ded95fdb1a",
       "events": 758,
-      "head_digest": "c3f55c3501757f5e0c645829ab54033ac3e76a748fcfe17b1072fd27dddfd425",
+      "head_digest": "b55be433283d3f79b0c2c00b567b50b02f1ce5b0fba39bfe324c38271d662d76",
       "chain_intact": true,
       "broken_at": [],
-      "path": "/home/username/loop-engine/artifacts/product-proof/cli/runs-from-file/adaptive-22637249950dbd3ff9a85512",
+      "path": "/home/username/loop-engine/artifacts/product-proof/cli/runs-from-file/adaptive-13dcb0990316b1ded95fdb1a",
       "raw_history_retained": false,
       "reproduction_command": "PYTHONPATH=src python examples/22_product_quickstart/run_cli_acceptance.py --output-root <empty-directory>"
     },
-    "elapsed_seconds": 0.976,
+    "elapsed_seconds": 0.572,
     "limitations": [],
     "command_results": [
       {
@@ -162,6 +162,101 @@
         "exit_code": 0,
         "expectation_met": true,
         "stdout": "expense report verified\n",
+        "stderr": ""
+      }
+    ],
+    "assurance": {}
+  },
+  "dataset_with_task_file": {
+    "record_type": "product_task_evidence/v1",
+    "original_task": "Normalize product names in the supplied CSV, mark rows with quantity five or lower as low stock, and write a cleaned CSV plus a summary.\n",
+    "terminal_code": "COMPLETED_VERIFIED",
+    "summary": "Cleaned inventory and low-stock summary.",
+    "run_id": "adaptive-483d6f8b23bd2f9f6caf0561",
+    "providers": [
+      "acceptance"
+    ],
+    "models": [
+      "fixture-model"
+    ],
+    "loop_count": 93,
+    "model_call_count": 8,
+    "tool_call_count": 5,
+    "workspace": "/home/username/loop-engine/artifacts/product-proof/cli/dataset-workspace/attempt-1",
+    "artifacts": [
+      {
+        "path": "/home/username/loop-engine/artifacts/product-proof/cli/dataset-workspace/attempt-1/cleaned.csv",
+        "media_type": "text/csv",
+        "byte_count": 104,
+        "digest": "58a572b63fe7b98708a2bc27a443687f9068cffced1b34efda5d94e5545d8956",
+        "verified": true,
+        "verification_method": "utf8_decode"
+      },
+      {
+        "path": "/home/username/loop-engine/artifacts/product-proof/cli/dataset-workspace/attempt-1/summary.md",
+        "media_type": "text/markdown",
+        "byte_count": 43,
+        "digest": "51cbc931cc18e9863446b3299aee94e84c0fab6747febe48c4c49c96ce17e7e2",
+        "verified": true,
+        "verification_method": "utf8_decode"
+      }
+    ],
+    "verification": {
+      "record_type": "adaptive_verification/v1",
+      "verdict": "accept",
+      "deterministic_checks_passed": true,
+      "notes": "Commands met their exit contracts and artifacts passed inspection.",
+      "remaining_gaps": [],
+      "gap_assessments": [],
+      "advisory_findings": [],
+      "new_requirement_proposals": [],
+      "registered_acceptance_criteria": [
+        {
+          "criterion_ref": "criterion:0",
+          "text": "all declared commands meet their expected exit contracts"
+        },
+        {
+          "criterion_ref": "criterion:1",
+          "text": "every requested artifact exists and opens"
+        }
+      ],
+      "passed": true
+    },
+    "graph_digest": "f7c2d45c35fb7697020eb7245c0834b79b90da5db933b0f95104fb6e80319576",
+    "manifest_digest": "96f2206b55e4ab805a5b8700873ded0fcff338148880a7656495b1c89896a063",
+    "run_history": {
+      "run_id": "adaptive-483d6f8b23bd2f9f6caf0561",
+      "events": 826,
+      "head_digest": "cb340a48671b073d521a4ba368450ece5016c105228134e1348a3f915a11e68b",
+      "chain_intact": true,
+      "broken_at": [],
+      "path": "/home/username/loop-engine/artifacts/product-proof/cli/dataset-runs/adaptive-483d6f8b23bd2f9f6caf0561",
+      "raw_history_retained": false,
+      "reproduction_command": "PYTHONPATH=src python examples/22_product_quickstart/run_cli_acceptance.py --output-root <empty-directory>"
+    },
+    "elapsed_seconds": 0.71,
+    "limitations": [],
+    "command_results": [
+      {
+        "purpose": "Create outputs.",
+        "command_kind": "execute",
+        "expected_exit_codes": [
+          0
+        ],
+        "exit_code": 0,
+        "expectation_met": true,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "purpose": "Verify outputs.",
+        "command_kind": "verify",
+        "expected_exit_codes": [
+          0
+        ],
+        "exit_code": 0,
+        "expectation_met": true,
+        "stdout": "inventory verified\n",
         "stderr": ""
       }
     ],
@@ -180,7 +275,8 @@
     "no_key_run_history_chain_intact": true,
     "pinned_docker_image_present": true,
     "markdown_lint_passed": true,
-    "local_links_resolve": true
+    "local_links_resolve": true,
+    "task_file_with_dataset_passed": true
   },
   "clean_install_ref": "artifacts/product-proof/clean-install.json",
   "live_provider_attempts": [

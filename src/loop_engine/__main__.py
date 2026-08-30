@@ -219,7 +219,8 @@ def main(argv=None) -> int:
     parser.add_argument("--text", default="",
                         help="freeform task text for --task-compile or --solve")
     parser.add_argument("--file", default="",
-                        help="task file for --task-compile or --solve")
+                        help="task instruction file; may be combined with one "
+                             "--dataset, --repository, or --url source")
     parser.add_argument("--url", default="",
                         help="URL source for task compilation or solve")
     parser.add_argument("--dataset", default="",

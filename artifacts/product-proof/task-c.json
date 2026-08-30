@@ -3,7 +3,7 @@
   "original_task": "Inspect the supplied Markdown folder and create an index containing each title, headings, file path, and a short summary.",
   "terminal_code": "COMPLETED_VERIFIED",
   "summary": "Verified index of supplied Markdown documents.",
-  "run_id": "adaptive-22964d351303af0f549a8eed",
+  "run_id": "adaptive-38203a4cab5516892f66375c",
   "providers": [
     "fixture"
   ],
@@ -48,16 +48,16 @@
   "graph_digest": "f7c2d45c35fb7697020eb7245c0834b79b90da5db933b0f95104fb6e80319576",
   "manifest_digest": "a6e98e9a7ae9adaa0a4dbf98146c0ecc774eb624f01d7de5ccf111f692b0734a",
   "run_history": {
-    "run_id": "adaptive-22964d351303af0f549a8eed",
+    "run_id": "adaptive-38203a4cab5516892f66375c",
     "events": 844,
-    "head_digest": "5b65e70ef4a2c40648c83d89c6c6751f9785f37d37755953c373af4546ace3c1",
+    "head_digest": "b272cfaa8b0cd90de2305ff0079ff63c5625592a8cdb5a7eed0aa678505a89a9",
     "chain_intact": true,
     "broken_at": [],
-    "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-c-runs/adaptive-22964d351303af0f549a8eed",
+    "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-c-runs/adaptive-38203a4cab5516892f66375c",
     "raw_history_retained": false,
     "reproduction_command": "PYTHONPATH=src python examples/22_product_quickstart/run_acceptance.py --output-root <empty-directory>"
   },
-  "elapsed_seconds": 1.114,
+  "elapsed_seconds": 0.663,
   "limitations": [],
   "command_results": [
     {

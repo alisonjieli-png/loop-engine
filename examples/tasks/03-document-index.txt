@@ -1,0 +1,4 @@
+Inspect the supplied folder of Markdown documents and create an index that
+contains each document title, headings, relative file path, and a short
+summary. Include runnable verification that checks every supplied document is
+represented.

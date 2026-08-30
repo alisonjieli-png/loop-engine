@@ -33,6 +33,7 @@ def main() -> int:
         "loop-engine solve", "--workspace", "--runs-dir",
         "COMPLETED_VERIFIED", "CAPABILITY_GAP",
         "loop-engine --report @last", "Task build is not solve",
+        "download ready-to-run task files",
     )
     missing = [value for value in required if value not in readme]
     help_result = _run(

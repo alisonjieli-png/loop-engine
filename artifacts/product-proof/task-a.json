@@ -3,7 +3,7 @@
   "original_task": "Create a Python command-line program that reads a JSON file of expenses, totals spending by category, writes a Markdown report, and includes runnable verification.",
   "terminal_code": "COMPLETED_VERIFIED",
   "summary": "Expense report command and verified Markdown output.",
-  "run_id": "adaptive-7c0f77fa44a756a7af99d33b",
+  "run_id": "adaptive-bbcc934e906b0a960a5e404f",
   "providers": [
     "fixture"
   ],
@@ -56,16 +56,16 @@
   "graph_digest": "f7c2d45c35fb7697020eb7245c0834b79b90da5db933b0f95104fb6e80319576",
   "manifest_digest": "0792ee8ffdfc2fa94d3ca5ecd559f7ec5d9b90a4ab35b7c4f48a4e31596651f5",
   "run_history": {
-    "run_id": "adaptive-7c0f77fa44a756a7af99d33b",
+    "run_id": "adaptive-bbcc934e906b0a960a5e404f",
     "events": 758,
-    "head_digest": "f404d4bbedc821dace92a5a2e88fdce43443a95370be6918db906390994aed2d",
+    "head_digest": "8e82bcc96ba693e4b5b3c219b41aa53f271024ac459a2891c238eeaa2fac504c",
     "chain_intact": true,
     "broken_at": [],
-    "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-a-runs/adaptive-7c0f77fa44a756a7af99d33b",
+    "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-a-runs/adaptive-bbcc934e906b0a960a5e404f",
     "raw_history_retained": false,
     "reproduction_command": "PYTHONPATH=src python examples/22_product_quickstart/run_acceptance.py --output-root <empty-directory>"
   },
-  "elapsed_seconds": 0.714,
+  "elapsed_seconds": 0.595,
   "limitations": [],
   "command_results": [
     {

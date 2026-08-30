@@ -120,21 +120,46 @@ def _task_compile_lines(output: dict) -> list[str]:
 
 
 def task_intake_from_args(args):
+    from dataclasses import replace
     from .templates.intake import TaskIntakeRequest, intake_task
 
+    external = tuple(value for value in (
+        args.dataset, args.repository, args.url, args.task_pack) if value)
+    if len(external) > 1:
+        raise ValueError(
+            "supply only one dataset, repository, URL, or task pack")
+    instruction_file = None
+    instruction = args.text
+    if args.file and external:
+        if args.text:
+            raise ValueError(
+                "use --text or --file for the task instruction, not both")
+        instruction_file = intake_task(TaskIntakeRequest(file=args.file))
+        instruction = instruction_file.original_input
     if args.dataset:
-        request = TaskIntakeRequest(dataset=args.dataset, goal=args.text)
+        request = TaskIntakeRequest(dataset=args.dataset, goal=instruction)
     elif args.repository:
-        request = TaskIntakeRequest(repository=args.repository, goal=args.text)
+        request = TaskIntakeRequest(repository=args.repository, goal=instruction)
     elif args.url:
-        request = TaskIntakeRequest(url=args.url, goal=args.text)
+        request = TaskIntakeRequest(url=args.url, goal=instruction)
     elif args.task_pack:
+        if args.file or args.text:
+            raise ValueError(
+                "task packs already contain their task instruction")
         request = TaskIntakeRequest(task_pack=args.task_pack)
     elif args.file:
+        if args.text:
+            raise ValueError("use --text or --file, not both")
         request = TaskIntakeRequest(file=args.file)
     else:
         request = TaskIntakeRequest(text=args.text)
-    return intake_task(request)
+    result = intake_task(request)
+    if instruction_file is not None:
+        result = replace(result, metadata=(
+            *result.metadata,
+            ("task_file_ref", instruction_file.source_refs[0]),
+            ("task_file_digest", instruction_file.content_digest)))
+    return result
 
 
 def completed_learning_producer(goal: str):

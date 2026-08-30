@@ -1,0 +1,8 @@
+{
+ "record_type": "run_history_manifest/v1",
+ "run_id": "adaptive-fdbf359a942ae39529efa92e",
+ "parent_run_id": "",
+ "events": 758,
+ "head_digest": "9f01ad2bf121aed466b86ed5f4e19111f88f39888c88b4484e74944068573d94",
+ "committed": true
+}

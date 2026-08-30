@@ -19,6 +19,8 @@ network, model, file, cost, and external-effect notes.
 | [06 reconcile invoices](06_reconcile_invoices/) | Reconciles invoices with nested loops and visible retries. |
 | [10 validate a customer import](10_validate_customer_import/) | Compiles and runs a deterministic Solution Canvas with validation and fallback. |
 | [20 inspect five text requests](20_compile_text_tasks/) | Checks five task-intake records without claiming that their solutions ran. |
+| [22 product quickstart](22_product_quickstart/) | Builds, transforms, indexes, and repairs through the public solver and real Docker effects. |
+| [Downloadable tasks](tasks/) | Plain text tasks and matching sample inputs for the GitHub quickstart. |
 
 ## Models and intelligence
 

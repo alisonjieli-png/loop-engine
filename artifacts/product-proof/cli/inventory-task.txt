@@ -1,0 +1,1 @@
+Normalize product names in the supplied CSV, mark rows with quantity five or lower as low stock, and write a cleaned CSV plus a summary.

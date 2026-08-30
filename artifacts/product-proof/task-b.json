@@ -3,7 +3,7 @@
   "original_task": "Normalize product names in the supplied CSV, mark rows with quantity five or lower as low stock, and write a cleaned CSV plus a summary.",
   "terminal_code": "COMPLETED_VERIFIED",
   "summary": "Cleaned inventory and low-stock summary.",
-  "run_id": "adaptive-1ca599dffcadd25ee7cd777b",
+  "run_id": "adaptive-23b84795d488e3b9165c2e6d",
   "providers": [
     "fixture"
   ],
@@ -56,16 +56,16 @@
   "graph_digest": "f7c2d45c35fb7697020eb7245c0834b79b90da5db933b0f95104fb6e80319576",
   "manifest_digest": "96f2206b55e4ab805a5b8700873ded0fcff338148880a7656495b1c89896a063",
   "run_history": {
-    "run_id": "adaptive-1ca599dffcadd25ee7cd777b",
+    "run_id": "adaptive-23b84795d488e3b9165c2e6d",
     "events": 826,
-    "head_digest": "d409d34c4b61e21ed11a548f3bc1d8bc34ebd85b3c033591afc2ece947ca1df6",
+    "head_digest": "863925a3e8ee422830b567ff9075a78748f115848c463dd3bf7bdafefaada107",
     "chain_intact": true,
     "broken_at": [],
-    "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-b-runs/adaptive-1ca599dffcadd25ee7cd777b",
+    "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-b-runs/adaptive-23b84795d488e3b9165c2e6d",
     "raw_history_retained": false,
     "reproduction_command": "PYTHONPATH=src python examples/22_product_quickstart/run_acceptance.py --output-root <empty-directory>"
   },
-  "elapsed_seconds": 0.889,
+  "elapsed_seconds": 0.674,
   "limitations": [],
   "command_results": [
     {

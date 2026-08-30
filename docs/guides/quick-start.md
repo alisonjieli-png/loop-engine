@@ -37,6 +37,9 @@ Do not continue if the probe fails.
 
 ## Solve a task
 
+Start with a [downloadable example task](../../examples/tasks/) or create your
+own `task.txt`.
+
 Create `task.txt`:
 
 ```text

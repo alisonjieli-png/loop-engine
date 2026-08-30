@@ -121,6 +121,8 @@ History location.
 
 ## Solve from a task file
 
+You can also [download ready-to-run task files](examples/tasks/) from GitHub.
+
 ```bash
 cat > task.txt <<'EOF'
 Create a Python command-line program that reads a JSON file, produces a

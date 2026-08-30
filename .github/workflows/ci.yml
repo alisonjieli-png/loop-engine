@@ -212,11 +212,20 @@ jobs:
           python examples/17_classify_harness_files/run.py
           python examples/20_compile_text_tasks/run.py
 
+      - name: Product solve acceptance
+        run: |
+          docker pull python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3
+          python examples/22_product_quickstart/run_acceptance.py \
+            --output-root "$RUNNER_TEMP/product-acceptance"
+          python examples/22_product_quickstart/run_cli_acceptance.py \
+            --installed-package \
+            --output-root "$RUNNER_TEMP/product-cli-acceptance"
+          python tools/check_readme_quickstart.py \
+            --repository "$GITHUB_WORKSPACE"
+
   live-ollama:
-    name: live Ollama orientation for five text scenarios
-    if: >-
-      github.ref == 'refs/heads/main' &&
-      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    name: manual live Ollama orientation for five text scenarios
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:

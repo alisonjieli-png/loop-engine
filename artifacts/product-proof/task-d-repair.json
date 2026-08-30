@@ -3,7 +3,7 @@
   "original_task": "Reproduce the supplied Python package failure, repair the package, rerun its verification, and return the repaired files.",
   "terminal_code": "COMPLETED_VERIFIED",
   "summary": "Reproduced failure, executable repair, and passing package.",
-  "run_id": "adaptive-c897a5460bd4ed43aa7551bd",
+  "run_id": "adaptive-a9f7ffeeafbc83344271972d",
   "providers": [
     "fixture"
   ],
@@ -48,16 +48,16 @@
   "graph_digest": "f7c2d45c35fb7697020eb7245c0834b79b90da5db933b0f95104fb6e80319576",
   "manifest_digest": "e4dc8159a7b92d98060ae26e02e0ccc1223a0c84439fe05767d27aafca724e08",
   "run_history": {
-    "run_id": "adaptive-c897a5460bd4ed43aa7551bd",
+    "run_id": "adaptive-a9f7ffeeafbc83344271972d",
     "events": 775,
-    "head_digest": "c5fc19404b829c8de3eda4bb6a2d300972cb732397b251fc51a43ff35713bf61",
+    "head_digest": "93075e55ecea0151b6bbd7bbf25dca5e0f609a64f87bd04d8ef544ea922ba967",
     "chain_intact": true,
     "broken_at": [],
-    "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-d-runs/adaptive-c897a5460bd4ed43aa7551bd",
+    "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-d-runs/adaptive-a9f7ffeeafbc83344271972d",
     "raw_history_retained": false,
     "reproduction_command": "PYTHONPATH=src python examples/22_product_quickstart/run_acceptance.py --output-root <empty-directory>"
   },
-  "elapsed_seconds": 1.832,
+  "elapsed_seconds": 0.807,
   "limitations": [],
   "command_results": [
     {

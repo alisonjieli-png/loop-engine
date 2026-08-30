@@ -12,20 +12,20 @@
     "one_starting_loop_terminal_event": true,
     "bounded_model_calls": true,
     "executable_repair_delta": true,
+    "task_file_plus_dataset_verified": true,
+    "downloadable_task_files_present": true,
     "external_provider_success_claimed": false
   },
   "blocking_failures": [],
   "external_blocker": {
     "provider": "ollama_cloud",
     "failure_code": "rate_limited",
-    "evidence_ref": "artifacts/product-proof/live-provider-smoke.json"
+    "evidence_refs": [
+      "artifacts/product-proof/live-provider-smoke.json",
+      "artifacts/product-proof/live-provider-smoke-retry.json"
+    ]
   },
   "task_literal_findings": [],
-  "starting_loop_terminal_counts": [
-    1,
-    1,
-    1,
-    1
-  ],
+  "starting_loop_terminal_count": 1,
   "all_non_live_gates_passed": true
 }

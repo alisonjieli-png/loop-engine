@@ -5,7 +5,7 @@ models:
   providers:
   - id: acceptance
     kind: custom
-    endpoint: http://127.0.0.1:41427/v1
+    endpoint: http://127.0.0.1:34021/v1
     model: fixture-model
     wire: openai
     locality: local

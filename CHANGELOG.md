@@ -23,6 +23,9 @@ First public release.
 - **Product quickstart acceptance.** Four changed tasks create a utility,
   transform local data, index documents, and reproduce and repair a failing
   Python package through real Docker execution.
+- **Downloadable task library.** Plain text tasks and sample inputs can be
+  downloaded from GitHub. A task instruction file can now be combined with one
+  dataset, repository, or URL source.
 - **One recursive `Loop` runtime.** Search, advice, model calls, adapters,
   validators and whole solutions all execute inside the same envelope, with
   `deterministic`, `hybrid`, and `non_deterministic` modes configured per loop.

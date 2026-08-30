@@ -12,7 +12,7 @@ from pathlib import Path
 
 import yaml
 
-from run_acceptance import _task_a
+from run_acceptance import _task_a, _task_b
 
 
 class _ProviderHandler(BaseHTTPRequestHandler):
@@ -51,6 +51,8 @@ def main() -> int:
     if any(root.iterdir()):
         raise SystemExit("output root must be empty")
     intake, answers = _task_a()
+    fixtures = Path(__file__).resolve().parent / "fixtures"
+    dataset_intake, dataset_answers = _task_b(fixtures)
     _ProviderHandler.answers = list(answers)
     server = ThreadingHTTPServer(("127.0.0.1", 0), _ProviderHandler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -112,6 +114,18 @@ def main() -> int:
         root / "workspace-from-file")
     file_command[file_command.index(str(root / "runs"))] = str(
         root / "runs-from-file")
+    dataset_task_file = root / "inventory-task.txt"
+    dataset_task_file.write_text(dataset_intake.goal + "\n")
+    dataset_command = list(command)
+    text_index = dataset_command.index("--text")
+    dataset_command[text_index:text_index + 2] = [
+        "--file", str(dataset_task_file),
+        "--dataset", dataset_intake.dataset,
+        "--allow-source-to-model"]
+    dataset_command[dataset_command.index(str(root / "workspace"))] = str(
+        root / "dataset-workspace")
+    dataset_command[dataset_command.index(str(root / "runs"))] = str(
+        root / "dataset-runs")
     try:
         completed = subprocess.run(
             command, cwd=repository, env=environment, capture_output=True,
@@ -119,6 +133,10 @@ def main() -> int:
         _ProviderHandler.answers = list(answers)
         completed_file = subprocess.run(
             file_command, cwd=repository, env=environment,
+            capture_output=True, text=True, timeout=180)
+        _ProviderHandler.answers = list(dataset_answers)
+        completed_dataset = subprocess.run(
+            dataset_command, cwd=repository, env=environment,
             capture_output=True, text=True, timeout=180)
     finally:
         server.shutdown()
@@ -132,8 +150,14 @@ def main() -> int:
         raise SystemExit(
             f"file CLI solve failed ({completed_file.returncode}): "
             f"{completed_file.stderr}\n{completed_file.stdout[-2000:]}")
+    if completed_dataset.returncode != 0:
+        raise SystemExit(
+            f"dataset task-file CLI solve failed "
+            f"({completed_dataset.returncode}): "
+            f"{completed_dataset.stderr}\n{completed_dataset.stdout[-2000:]}")
     result = json.loads(completed.stdout)
     file_result = json.loads(completed_file.stdout)
+    dataset_result = json.loads(completed_dataset.stdout)
     if result["terminal_code"] != "COMPLETED_VERIFIED":
         raise SystemExit(f"unexpected terminal result: {result['terminal_code']}")
     if not all(Path(item["path"]).is_file() and item["verified"]
@@ -149,6 +173,13 @@ def main() -> int:
             or not all(Path(item["path"]).is_file() and item["verified"]
                        for item in file_result["artifacts"])):
         raise SystemExit("task-file CLI path did not produce verified artifacts")
+    if (dataset_result["terminal_code"] != "COMPLETED_VERIFIED"
+            or dataset_result["compiled_task"]["original_input"]
+            .strip() != dataset_intake.goal.strip()
+            or not all(Path(item["path"]).is_file() and item["verified"]
+                       for item in dataset_result["artifacts"])):
+        raise SystemExit(
+            "task-file plus dataset CLI path did not preserve and solve the task")
     result["acceptance_environment"] = {
         "provider": "local HTTP contract fixture",
         "live_external_provider_proven": False,
@@ -158,16 +189,20 @@ def main() -> int:
     evidence.write_text(json.dumps(result, indent=2) + "\n")
     file_evidence = root / "cli-file-acceptance.json"
     file_evidence.write_text(json.dumps(file_result, indent=2) + "\n")
+    dataset_evidence = root / "cli-dataset-task-acceptance.json"
+    dataset_evidence.write_text(json.dumps(dataset_result, indent=2) + "\n")
     print(json.dumps({
         "record_type": "product_cli_acceptance/v1",
         "terminal_code": result["terminal_code"],
         "file_terminal_code": file_result["terminal_code"],
+        "dataset_file_terminal_code": dataset_result["terminal_code"],
         "run_id": result["run_id"], "artifacts": len(result["artifacts"]),
         "model_calls": result["model_calls"],
         "tool_calls": result["tool_calls"],
         "run_history_chain_intact": result["run_history"]["chain_intact"],
         "evidence": str(evidence),
         "file_evidence": str(file_evidence),
+        "dataset_evidence": str(dataset_evidence),
     }, indent=2))
     return 0
 

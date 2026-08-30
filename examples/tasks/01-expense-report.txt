@@ -1,0 +1,3 @@
+Create a Python command-line program that reads a JSON file of expenses,
+totals spending by category, writes a Markdown report, and includes runnable
+verification.

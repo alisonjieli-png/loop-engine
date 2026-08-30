@@ -1,0 +1,3 @@
+Read the supplied CSV inventory file, normalize product names, mark quantities
+of five or lower as low stock, and write a cleaned CSV plus a Markdown summary.
+Preserve every input row and include runnable verification.
