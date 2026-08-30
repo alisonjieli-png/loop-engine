@@ -61,14 +61,15 @@ def _model_state(state: PractitionerState,
             "purpose": item.get("purpose"),
             "results": item.get("results"),
             "evidence_state": item.get("evidence_state"),
-        } for item in services.web_search_results[-4:]],
+        } for item in services.web_search_results],
         "web_evidence": [{
             "final_url": item.get("final_url"),
             "media_type": item.get("media_type"),
             "sha256": item.get("sha256"),
             "text": item.get("text"),
             "text_truncated": item.get("text_truncated"),
-        } for item in services.web_results[-6:]],
+        } for item in services.web_results],
+        "source_inspections": services.source_inspections,
         "project_attempts": [{
             "manifest_digest": item.get("manifest_digest"),
             "deterministic_checks_passed": item.get(
@@ -77,12 +78,12 @@ def _model_state(state: PractitionerState,
                 "purpose": command.get("purpose"),
                 "ok": command.get("ok"),
                 "exit_code": command.get("exit_code"),
-                "stdout": str(command.get("stdout", ""))[:4000],
-                "stderr": str(command.get("stderr", ""))[:4000],
+                "stdout": str(command.get("stdout", "")),
+                "stderr": str(command.get("stderr", "")),
                 "error_code": command.get("error_code"),
             } for command in item.get("commands", ())],
             "artifacts": item.get("artifacts", ()),
-        } for item in services.project_attempts[-3:]],
+        } for item in services.project_attempts],
         "supervision": supervision_context(services, state),
     }
 def _adaptive_impls(services: AdaptiveRunServices) -> dict:
@@ -192,7 +193,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
             signals=(("missing_info",) if parsed.unknowns else ()),
             resources_hint=tuple(item["capability_ref"]
                                  for item in services.available_capabilities()))
-    def compile_bind_task(state: PractitionerState, situation: Situation):
+    def standardize_task(state: PractitionerState, situation: Situation):
         orientation = situation.knowns["orientation"]
         return {
             "record_type": "work_item_ir/v1",
@@ -263,13 +264,14 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                 "expected_output": "string",
                 "required_capabilities": ["registered capability ref"],
                 "permissions": [
-                    "network_read|workspace_write|sandbox_command"],
+                    "source_read|network_read|workspace_write|sandbox_command"],
                 "budget": {},
                 "dependencies": ["string"], "scheduling": "string",
                 "verification": "string", "return_destination": "string",
                 "confidence": 0.0, "fallback": {},
-            }]}, separators=(",", ":"))
+            }], "selected_action_index": 0}, separators=(",", ":"))
         decisions = None
+        selected_index = 0
         failure = ""
         for attempt in (1, 2):
             try:
@@ -283,9 +285,21 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                      "orientation": situation.knowns["orientation"].to_dict(),
                      "next_action_validation_failure": failure}, schema))
                 actions = value.get("actions")
-                if not isinstance(actions, list) or not 1 <= len(actions) <= 12:
+                if not isinstance(actions, list) or not actions:
                     raise AdaptivePractitionerError(
-                        "decide_next must return from 1 through 12 actions")
+                        "decide_next must return at least one action")
+                raw_selected = value.get("selected_action_index")
+                if raw_selected is None:
+                    if len(actions) != 1:
+                        raise AdaptivePractitionerError(
+                            "multiple next actions require a model-selected "
+                            "action index")
+                    raw_selected = 0
+                if (not isinstance(raw_selected, int)
+                        or isinstance(raw_selected, bool)
+                        or not 0 <= raw_selected < len(actions)):
+                    raise AdaptivePractitionerError(
+                        "selected_action_index is outside the action list")
                 parsed = []
                 for item in actions:
                     decision = NextActionDecision.from_mapping(item)
@@ -308,6 +322,9 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                             "NextActionDecision selected unknown capabilities "
                             f"{sorted(unknown)}")
                     granted = {name for name, allowed in (
+                        ("source_read",
+                         services.request.allow_source_materialization_to_model
+                         and bool(services.request.source_refs)),
                         ("network_read", services.request.allow_network_reads),
                         ("workspace_write",
                          services.request.allow_workspace_writes),
@@ -325,6 +342,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                         float(budget.get(key, 0.0))
                     parsed.append(decision)
                 decisions = parsed
+                selected_index = raw_selected
                 break
             except SolutionModelError:
                 raise
@@ -346,6 +364,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                 "return_destination": "current Practitioner",
                 "confidence": 0.0, "fallback": {"action_kind": "ABSTAIN"},
             })]
+            selected_index = 0
         candidates = []
         canvas_candidates = []
         for decision in decisions:
@@ -372,7 +391,10 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                 parallelizable=decision.action_kind == "RUN_PARALLEL"))
         services.candidate_canvases.extend(canvas_candidates)
         services.plan_details["current_candidate_canvases"] = canvas_candidates
-        return candidates
+        selected_action = candidates[selected_index]
+        services.plan_details["model_selected_action_id"] = (
+            selected_action.action)
+        return [selected_action]
 
     def determine_how(state: PractitionerState, situation: Situation,
                       chosen: CandidateAction) -> ExecutionPlan:
@@ -453,7 +475,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
 
     return {
         "orient": orient,
-        "compile_bind_task": compile_bind_task,
+        "standardize_task": standardize_task,
         "reconcile_horizon": reconcile_horizon,
         "assess_prepare": assess_prepare,
         "decide_next": decide_next,
@@ -522,7 +544,7 @@ def _save_adaptive_result(history: dict, output: dict) -> None:
 
 def _finish_deterministic_attempt(owner: Loop, services: AdaptiveRunServices,
                                   runs_dir: Path) -> dict:
-    """Terminate, verify, and save an exact-first run with zero model calls."""
+    """Terminate, verify, and save an explicitly selected exact reuse run."""
     trace = services.deterministic_attempt
     if trace is None:
         raise AdaptivePractitionerError("deterministic attempt trace is missing")
@@ -611,7 +633,8 @@ def run_adaptive_practitioner(
                          else (request.mode, "deterministic")),
         delegated_modes=("deterministic", "hybrid", "non_deterministic"),
         power="deep", llm_thinking_power=(
-            "" if request.mode == "deterministic" else "medium"), max_depth=5,
+            "" if request.mode == "deterministic" else "medium"),
+        max_depth=None,
         loop_condition="steps_remain", exit_condition="steps_complete")
     owner = Loop(
         request.task, config, ledger=ledger,
@@ -671,6 +694,7 @@ def run_adaptive_practitioner(
                 "active_canvas", {}),
             "web_search_candidates": services.web_search_results,
             "web_evidence": services.web_results,
+            "source_inspections": services.source_inspections,
             "project_attempts": services.project_attempts,
             "verification": services.verification_records,
             "supervision": services.supervision_findings,
@@ -698,6 +722,7 @@ def run_adaptive_practitioner(
             "portfolio_id": portfolio.portfolio_id,
             "version": portfolio.version,
             "persona": portfolio.persona.to_dict(),
+            "selected_refs": list(services.selected_intelligence_refs),
         },
         "deterministic_attempt": services.deterministic_attempt.to_dict(),
         "passes": run.get("passes"),
@@ -712,6 +737,7 @@ def run_adaptive_practitioner(
             "active_canvas", {}),
         "web_search_candidates": services.web_search_results,
         "web_evidence": services.web_results,
+        "source_inspections": services.source_inspections,
         "project_attempts": services.project_attempts,
         "verification": services.verification_records,
         "supervision": services.supervision_findings,

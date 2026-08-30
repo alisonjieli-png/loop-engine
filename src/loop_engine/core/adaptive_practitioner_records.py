@@ -42,14 +42,27 @@ from .web_search import (
 ADAPTIVE_PRACTITIONER_RECORD_TYPE = "adaptive_practitioner_run/v1"
 ADAPTIVE_CAPABILITIES = (
     {
+        "capability_ref": "core.source.inspect",
+        "purpose": (
+            "Inspect supplied local source manifests and selected text bodies "
+            "before deciding how to solve or repair the task."),
+        "arguments": {
+            "paths": "optional exact relative source paths",
+            "query": "optional lexical query for source selection",
+            "include_contents": "false for manifest only, true for bodies",
+        },
+        "required_permissions": ["source_read"],
+        "effects": ["reads_fs"],
+    },
+    {
         "capability_ref": "core.web.search",
         "purpose": (
             "Search public web sources and return ranked candidates. Search "
             "results are not evidence until a selected URL is fetched."),
         "arguments": {
-            "query": "one bounded search query",
+            "query": "one search query",
             "purpose": "why candidate sources are needed",
-            "maximum_results": "optional integer from 1 through 10",
+            "maximum_results": "optional positive integer owner limit",
         },
         "required_permissions": ["network_read"],
         "effects": ["network_read"],
@@ -91,7 +104,7 @@ class AdaptivePractitionerError(ValueError):
     """The adaptive Practitioner could not satisfy a typed runtime contract."""
 @dataclass(frozen=True)
 class DeterministicAttemptTrace:
-    """Complete exact-first attempt preserved for hybrid escalation."""
+    """Complete explicit exact-reuse attempt preserved for later reasoning."""
 
     original_input_digest: str
     literal_input: str
@@ -238,9 +251,9 @@ class TaskOrientationResult:
             _short_strings(value["unknowns"], "unknowns"),
             _short_strings(value["assumptions"], "assumptions"),
             tuple(AmbiguityDisposition(
-                _short_text(item.get("subject"), "ambiguity subject", 300),
+                _short_text(item.get("subject"), "ambiguity subject"),
                 str(item.get("state")),
-                _short_text(item.get("reason"), "ambiguity reason", 500))
+                _short_text(item.get("reason"), "ambiguity reason"))
                 for item in ambiguities if isinstance(item, dict)),
             _short_strings(value["delegated_choices"], "delegated_choices"),
             _short_strings(value["safe_defaults"], "safe_defaults"),
@@ -257,7 +270,7 @@ class TaskOrientationResult:
             tuple(sorted((str(key), float(item))
                          for key, item in confidence.items())),
             _short_text(value["proposed_next_action"],
-                        "proposed_next_action", 500),
+                        "proposed_next_action"),
         )
 
     def to_dict(self) -> dict:
@@ -332,10 +345,10 @@ class NextActionDecision:
             _short_strings(value["permissions"], "permissions"),
             tuple(sorted(budget.items())),
             _short_strings(value["dependencies"], "dependencies"),
-            _short_text(value["scheduling"], "scheduling", 200),
-            _short_text(value["verification"], "verification", 500),
+            _short_text(value["scheduling"], "scheduling"),
+            _short_text(value["verification"], "verification"),
             _short_text(value["return_destination"],
-                        "return_destination", 200),
+                        "return_destination"),
             float(value["confidence"]), tuple(sorted(fallback.items())))
 
     def to_dict(self) -> dict:
@@ -363,13 +376,13 @@ class DeterministicTaskResolver(Protocol):
 
 @dataclass(frozen=True)
 class AdaptivePractitionerRequest:
-    """One task plus mode, authority, and bounded pass settings."""
+    """One task plus mode, authority, and optional pass settings."""
 
     task: str
-    mode: str = "hybrid"
+    mode: str = "non_deterministic"
     runs_dir: str = ""
-    max_passes: int = 24
-    interaction_mode: str = "autonomous"
+    max_passes: "int | None" = None
+    interaction_mode: str = "ask_when_material"
     allow_network_reads: bool = True
     allow_workspace_writes: bool = True
     allow_sandbox_commands: bool = True
@@ -387,8 +400,12 @@ class AdaptivePractitionerRequest:
         if self.mode not in ("deterministic", "hybrid", "non_deterministic"):
             raise AdaptivePractitionerError(
                 "adaptive Practitioner mode is not registered")
-        if not 1 <= self.max_passes <= 32:
-            raise AdaptivePractitionerError("max_passes must be from 1 through 32")
+        if (self.max_passes is not None
+                and (not isinstance(self.max_passes, int)
+                     or isinstance(self.max_passes, bool)
+                     or self.max_passes < 1)):
+            raise AdaptivePractitionerError(
+                "max_passes must be positive when provided")
         if self.interaction_mode not in ("autonomous", "ask_when_material"):
             raise AdaptivePractitionerError("interaction mode is not registered")
         refs = tuple(self.source_refs)
@@ -483,6 +500,7 @@ class AdaptiveRunServices:
         default_factory=dict)
     web_search_results: list[dict] = field(default_factory=list)
     web_results: list[dict] = field(default_factory=list)
+    source_inspections: list[dict] = field(default_factory=list)
     project_attempts: list[dict] = field(default_factory=list)
     verification_records: list[dict] = field(default_factory=list)
     context_snapshots: list[dict] = field(default_factory=list)
@@ -494,7 +512,6 @@ class AdaptiveRunServices:
     recovery_directives: list[dict] = field(default_factory=list)
     active_recovery_directive: dict | None = None
     recovery_rounds: int = 0
-    recovery_evidence_baseline: int = 0
 
     def available_capabilities(self) -> tuple[dict, ...]:
         """Return only capabilities usable under this run's current authority."""
@@ -502,6 +519,9 @@ class AdaptiveRunServices:
         for item in ADAPTIVE_CAPABILITIES:
             ref = item["capability_ref"]
             usable = (
+                bool(self.request.source_refs)
+                and self.request.allow_source_materialization_to_model
+                if ref == "core.source.inspect" else
                 self.request.allow_network_reads
                 if ref == "core.web.get" else
                 self.request.allow_network_reads
@@ -565,11 +585,22 @@ class AdaptiveRunServices:
             if event.get("custom_kind") == "llm_work_packet_assembled":
                 break
             prior_events.append({
-                key: (value[:500] if isinstance(value, str) else value)
+                key: value
                 for key, value in event.items() if key != "ts"
                 and not any(marker in key.lower() for marker in (
                     "secret", "token", "authorization", "prompt", "content"))})
         capability_descriptors = self.available_capabilities()
+        from ..templates.library import TemplateLibrary
+        template_candidates = [{
+            "template_id": item.template_id,
+            "version": item.version,
+            "name": item.name,
+            "description": item.description,
+            "task_type": item.task_type,
+            "output_kind": item.output_kind,
+            "required_variables": list(item.required_variables),
+            "advisory_only": True,
+        } for item in TemplateLibrary().search(self.request.task)]
         extension_candidates = {
             "capabilities": list(
                 self.dependencies.extension_snapshot.get(
@@ -604,7 +635,8 @@ class AdaptiveRunServices:
                 step_context.to_dict()),
             LLMContextBlock.create(
                 "deterministic_attempt", "attempt_trace", "1.0.0",
-                "adaptive_practitioner", "hybrid escalation evidence", 3,
+                "adaptive_practitioner",
+                "exact-attempt result or explicit LLM-first skip", 3,
                 self.deterministic_attempt.to_dict()),
             LLMContextBlock.create(
                 "current_state", "task_context", "1.0.0",
@@ -617,13 +649,18 @@ class AdaptiveRunServices:
                  "interaction_mode": self.request.interaction_mode,
                  "run_mode": self.request.mode}),
             LLMContextBlock.create(
+                "template_candidates", "procedure_candidates", "1.0.0",
+                "core template library", "optional reusable patterns", 5,
+                {"binding_authority": "none",
+                 "candidates": template_candidates}),
+            LLMContextBlock.create(
                 "capability_descriptors", "capability_snapshot", "1.0.0",
-                "core capability registry", "available execution paths", 5,
+                "core capability registry", "available execution paths", 6,
                 {"active": list(capability_descriptors),
                  "added_file_candidates": extension_candidates}),
             LLMContextBlock.create(
                 "deterministic_event_history", "attempt_event_history", "1.0.0",
-                "canonical Loop event log", "complete exact-first history", 6,
+                "canonical Loop event log", "complete prior event history", 7,
                 prior_events),
         )
         requested_state_version = int(request.state.get("state_version", -1))
@@ -634,13 +671,16 @@ class AdaptiveRunServices:
             self.orientation_by_version[max(eligible_orientation_versions)]
             if eligible_orientation_versions else None)
         permissions = tuple(name for name, allowed in (
+                ("source_read",
+                 self.request.allow_source_materialization_to_model
+                 and bool(self.request.source_refs)),
                 ("network_read", self.request.allow_network_reads),
                 ("workspace_write", self.request.allow_workspace_writes),
                 ("sandbox_command", self.request.allow_sandbox_commands))
                 if allowed)
-        remaining_calls = max(
-            0, self.model_session.authority.max_model_calls
-            - self.model_session.calls_used)
+        maximum_calls = self.model_session.authority.max_model_calls
+        remaining_calls = (None if maximum_calls is None else max(
+            0, maximum_calls - self.model_session.calls_used))
         owner_init = next((item for item in owner.ledger.events
                            if item.get("event") == "init"
                            and item.get("loop_id") == owner.loop_id), {})

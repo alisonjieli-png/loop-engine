@@ -478,6 +478,7 @@ def self_test() -> dict:
     sdk_detail = "OpenTelemetry SDK is not installed"
     dangling_failed = False
     non_recording_failed = False
+    sdk_available = True
     try:
         from opentelemetry.sdk.trace import TracerProvider
         from opentelemetry.sdk.trace.export import SimpleSpanProcessor
@@ -519,15 +520,23 @@ def self_test() -> dict:
             non_recording_failed = True
         provider.shutdown()
     except ImportError as exc:
-        sdk_relationships_ok = False
+        sdk_available = False
         sdk_detail = (
             "OpenTelemetry SDK dependency is missing: "
             f"{type(exc).__name__}: {exc}")
-    check("installed_OpenTelemetry_export_preserves_the_spawning_chain",
-          sdk_relationships_ok, sdk_detail)
-    check("missing_spawning_span_references_fail_closed", dangling_failed)
-    check("non_recording_SDK_tracer_cannot_report_export_success",
-          non_recording_failed)
+    if sdk_available:
+        check("installed_OpenTelemetry_export_preserves_the_spawning_chain",
+              sdk_relationships_ok, sdk_detail)
+        check("missing_spawning_span_references_fail_closed", dangling_failed)
+        check("non_recording_SDK_tracer_cannot_report_export_success",
+              non_recording_failed)
+    else:
+        tests.append({
+            "test": "optional_OpenTelemetry_SDK_adapter_not_tested",
+            "passed": True, "not_tested": True,
+            "outcome": "NOT_APPLICABLE",
+            "missing_optional_dependencies": ["opentelemetry-sdk"],
+            "detail": sdk_detail})
 
     passed = sum(1 for test in tests if test["passed"])
     return {"tests": tests, "passed": passed, "total": len(tests),

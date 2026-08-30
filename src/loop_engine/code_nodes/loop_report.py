@@ -148,7 +148,7 @@ class LoopReport:
                     "available": False, "terminal_code": "",
                     "solved": False, "summary": "", "failure_code": "",
                     "verification": {}, "artifacts": [], "workspace": "",
-                    "limitations": [], "next_action": "",
+                    "limitations": [], "questions": [], "next_action": "",
                     "graph_digest": "", "selected_canvas": {}}
         outcome = self.product_outcome
         return {
@@ -162,6 +162,7 @@ class LoopReport:
             "artifacts": list(outcome.get("artifacts") or ()),
             "workspace": str(outcome.get("workspace") or ""),
             "limitations": list(outcome.get("limitations") or ()),
+            "questions": list(outcome.get("questions") or ()),
             "next_action": str(outcome.get("next_action") or ""),
             "graph_digest": str(outcome.get("graph_digest") or ""),
             "selected_canvas": dict(outcome.get("selected_canvas") or {}),
@@ -360,6 +361,11 @@ def render_text(rep: LoopReport, *, show_steps: bool = True) -> str:
             out.append("  artifacts:")
             out += [f"    {item.get('path', '')}"
                     for item in product["artifacts"]]
+        if product["questions"]:
+            out.append("  material questions:")
+            out += [f"    [{item.get('answer_slot', '')}] "
+                    f"{item.get('question', '')}"
+                    for item in product["questions"]]
     else:
         out.append("  product outcome: not recorded (legacy run)")
     prov = rep.cost_by_provider()
@@ -401,6 +407,11 @@ def render_markdown(rep: LoopReport) -> str:
             out += ["", "### Artifacts", ""]
             out += [f"- `{item.get('path', '')}`"
                     for item in product["artifacts"]]
+        if product["questions"]:
+            out += ["", "### Material questions", ""]
+            out += [f"- `{item.get('answer_slot', '')}`: "
+                    f"{item.get('question', '')}"
+                    for item in product["questions"]]
         if product["limitations"]:
             out += ["", "### Limitations", ""]
             out += [f"- {item}" for item in product["limitations"]]
@@ -472,6 +483,10 @@ def render_html(rep: LoopReport) -> str:
         artifact_items = "".join(
             f"<li><code>{esc(item.get('path', ''))}</code></li>"
             for item in product["artifacts"])
+        question_items = "".join(
+            f"<li><code>{esc(item.get('answer_slot', ''))}</code>: "
+            f"{esc(item.get('question', ''))}</li>"
+            for item in product["questions"])
         product_html = (
             f"<div class='product'><b>{esc(product['terminal_code'])}</b>"
             f"<span>{esc(product['summary'])}</span>"
@@ -479,6 +494,8 @@ def render_html(rep: LoopReport) -> str:
             + (f"<span>workspace: <code>{esc(product['workspace'])}</code></span>"
                if product["workspace"] else "")
             + (f"<ul>{artifact_items}</ul>" if artifact_items else "")
+            + (f"<h3>Material questions</h3><ul>{question_items}</ul>"
+               if question_items else "")
             + "</div>")
     chain = ("" if rep.chain_intact is None else
              f"<div class='stat'><b>{'yes' if rep.chain_intact else 'NO'}</b>"
@@ -768,13 +785,20 @@ def self_test() -> dict:
     saved_root = tempfile.mkdtemp(prefix="loop_report_saved_")
     saved_run_history.save(saved_root)
     bind_product_outcome(saved_root, "saved-report", {
-        "record_type": "solve_outcome/v3", "run_id": "saved-report",
+        "record_type": "solve_outcome/v4", "run_id": "saved-report",
         "terminal_code": "COMPLETED_VERIFIED",
         "status": "COMPLETED_VERIFIED", "solved": True,
         "summary": "Saved product.", "failure_code": "",
         "verification": {"passed": True},
         "artifacts": [{"path": "/tmp/result.txt"}],
-        "workspace": "/tmp", "limitations": [], "selected_canvas": {},
+        "workspace": "/tmp", "limitations": [], "questions": [{
+            "record_type": "material_question/v1",
+            "question_id": "question:fixture",
+            "question": "Which destination is required?",
+            "subject": "required destination",
+            "answer_slot": "required_destination",
+            "reason": "Delivery authority changes."}],
+        "selected_canvas": {},
     })
     saved_report = report_from_run(saved_root, "saved-report")
     check("saved_run_history_report_preserves_usage_and_goal",
@@ -785,7 +809,9 @@ def self_test() -> dict:
           and saved_report.product_summary()["terminal_code"]
               == "COMPLETED_VERIFIED"
           and "/tmp/result.txt" in render_text(saved_report)
+          and "required_destination" in render_text(saved_report)
           and "Saved product." in render_markdown(saved_report)
+          and "Which destination is required?" in render_markdown(saved_report)
           and "COMPLETED_VERIFIED" in render_html(saved_report),
           "usage, goal, product terminal, artifact, and chain preserved")
     shutil.rmtree(saved_root, ignore_errors=True)

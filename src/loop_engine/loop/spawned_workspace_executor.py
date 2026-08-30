@@ -302,7 +302,8 @@ class WorkspaceSpawnedExecutor:
             raise SpawnedWorkspaceExecutorError(
                 "workspace executor accepts no spawning context references")
         command = plan.approval_plan.request
-        if command.max_output_bytes > spec.budget.max_output_bytes:
+        if (spec.budget.max_output_bytes is not None
+                and command.max_output_bytes > spec.budget.max_output_bytes):
             raise SpawnedWorkspaceExecutorError(
                 "command output limit exceeds the Spawned Loop output budget")
         wall_time = spec.budget.wall_time_seconds

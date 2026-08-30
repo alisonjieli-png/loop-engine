@@ -155,7 +155,7 @@ Memory rather than becoming persistent intelligence.
 ### LE-CONFLICT-005: reference profile and flexible procedures
 
 The repository retains `practitioner.reference_nine_step` as a versioned
-profile. The kernel also has an explicit `compile_bind_task` responsibility.
+profile. The kernel also has an explicit `standardize_task` responsibility.
 These facts are compatible when the profile keeps its stable identity and task
 compilation is bound as a governed responsibility rather than hidden.
 

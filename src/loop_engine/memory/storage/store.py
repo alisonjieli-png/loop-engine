@@ -51,7 +51,8 @@ class InMemoryMemoryStore:
             record for versions in self._records.values()
             for record in versions]
         ranked = rank_records(query, candidates)
-        results = ranked["ranked"][:query.max_selected]
+        results = (ranked["ranked"] if query.max_selected is None
+                   else ranked["ranked"][:query.max_selected])
         selected = tuple(r.ref for r in results)
         conflicts = _detect_conflicts(results)
         return MemoryRetrievalReceipt(

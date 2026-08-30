@@ -310,8 +310,11 @@ class SpawnedTaskCheckpoint:
                              self.model_calls)):
             raise SpawnedTaskCheckpointError(
                 "checkpoint counters must be non-negative integers")
-        if (self.steps_run > self.spec.budget.max_iterations
-                or self.model_calls > self.spec.budget.max_model_calls):
+        if ((self.spec.budget.max_iterations is not None
+             and self.steps_run > self.spec.budget.max_iterations)
+                or (self.spec.budget.max_model_calls is not None
+                    and self.model_calls
+                    > self.spec.budget.max_model_calls)):
             raise SpawnedTaskCheckpointError(
                 "checkpoint counters exceed the delegation budget")
         if self.status.terminal:
@@ -546,7 +549,8 @@ class SpawnedTaskLifecycleMixin:
         if checkpoint.task_id in self._records:
             raise SpawnedTaskCheckpointError(
                 f"spawned task {checkpoint.task_id} is already present")
-        if len(self._records) >= self._limits.max_total:
+        if (self._limits.max_total is not None
+                and len(self._records) >= self._limits.max_total):
             raise SpawnedTaskCheckpointError(
                 "the total spawned-task limit is reached")
         if not str(checkpoint.task_id).startswith(
@@ -642,7 +646,9 @@ class SpawnedTaskLifecycleMixin:
         if existing & saved_ids:
             raise SpawnedTaskCheckpointError(
                 "one or more saved tasks are already loaded")
-        if len(self._records) + len(states) > self._limits.max_total:
+        if (self._limits.max_total is not None
+                and len(self._records) + len(states)
+                > self._limits.max_total):
             raise SpawnedTaskCheckpointError(
                 "saved task population exceeds the manager limit")
         snapshots = []

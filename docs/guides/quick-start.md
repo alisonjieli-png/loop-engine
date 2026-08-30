@@ -62,4 +62,8 @@ A successful solve returns `COMPLETED_VERIFIED`, real artifact paths, the
 workspace, verification details, and the saved Run History. A blocked result
 preserves the exact reason and recovery action.
 
+`BLOCKED_MATERIAL_INPUT` includes answer slots. Rerun the same task with
+`--task-feedback 'answer_slot=value'`; feedback remains separate from the
+immutable original task.
+
 `loop-engine task build` only structures a task. It does not perform the work.

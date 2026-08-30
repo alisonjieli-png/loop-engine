@@ -33,21 +33,20 @@ class WebSearchError(ValueError):
 
 @dataclass(frozen=True)
 class WebSearchRequest:
-    """One bounded query to a registered search provider."""
+    """One query to a registered search provider with an optional limit."""
 
     query: str
     purpose: str
-    maximum_results: int = 5
+    maximum_results: "int | None" = None
 
     def __post_init__(self) -> None:
-        if not self.query.strip() or len(self.query) > 2_000:
+        if not self.query.strip():
+            raise WebSearchError("web search query must be non-empty")
+        if not self.purpose.strip():
+            raise WebSearchError("web search purpose must be non-empty")
+        if self.maximum_results is not None and self.maximum_results < 1:
             raise WebSearchError(
-                "web search query must be 1 through 2,000 characters")
-        if not self.purpose.strip() or len(self.purpose) > 1_000:
-            raise WebSearchError(
-                "web search purpose must be 1 through 1,000 characters")
-        if not 1 <= self.maximum_results <= 10:
-            raise WebSearchError("maximum_results must be from 1 through 10")
+                "maximum_results must be positive when provided")
 
 
 @dataclass(frozen=True)
@@ -94,7 +93,9 @@ def _effect(request: WebSearchRequest) -> EffectSpec:
         "ollama_web_search",
         OLLAMA_WEB_SEARCH_ENDPOINT,
         tuple(sorted({
-            "maximum_results": str(request.maximum_results),
+            "maximum_results": (
+                str(request.maximum_results)
+                if request.maximum_results is not None else "unset"),
             "purpose_digest": hashlib.sha256(
                 request.purpose.encode("utf-8")).hexdigest(),
             "query_digest": hashlib.sha256(
@@ -122,10 +123,10 @@ def _approve(request, authority, parent) -> EffectApprovalService:
 
 
 def _ollama_transport(request: WebSearchRequest, api_key: str) -> dict:
-    body = json.dumps({
-        "query": request.query,
-        "max_results": request.maximum_results,
-    }, separators=(",", ":")).encode("utf-8")
+    body_value = {"query": request.query}
+    if request.maximum_results is not None:
+        body_value["max_results"] = request.maximum_results
+    body = json.dumps(body_value, separators=(",", ":")).encode("utf-8")
     source = urllib.request.Request(
         OLLAMA_WEB_SEARCH_ENDPOINT,
         data=body,
@@ -137,14 +138,12 @@ def _ollama_transport(request: WebSearchRequest, api_key: str) -> dict:
         method="POST")
     try:
         with urllib.request.urlopen(source, timeout=45.0) as response:
-            raw = response.read(2 * 1024 * 1024 + 1)
+            raw = response.read()
     except urllib.error.HTTPError as exc:
         raise WebSearchError(
             f"Ollama web search returned HTTP {exc.code}") from exc
     except urllib.error.URLError as exc:
         raise WebSearchError("Ollama web search was unavailable") from exc
-    if len(raw) > 2 * 1024 * 1024:
-        raise WebSearchError("web search response exceeded two MiB")
     try:
         value = json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -152,11 +151,13 @@ def _ollama_transport(request: WebSearchRequest, api_key: str) -> dict:
     return value
 
 
-def _validated_results(value: object, maximum: int) -> tuple[dict, ...]:
+def _validated_results(
+        value: object, maximum: "int | None") -> tuple[dict, ...]:
     if not isinstance(value, dict) or set(value) != {"results"}:
         raise WebSearchError("web search response fields do not match version 1")
     candidates = value.get("results")
-    if not isinstance(candidates, list) or len(candidates) > maximum:
+    if (not isinstance(candidates, list)
+            or (maximum is not None and len(candidates) > maximum)):
         raise WebSearchError("web search returned an invalid result count")
     results = []
     for index, item in enumerate(candidates, 1):
@@ -165,16 +166,14 @@ def _validated_results(value: object, maximum: int) -> tuple[dict, ...]:
         title = str(item.get("title") or "").strip()
         url = str(item.get("url") or "").strip()
         raw_content = str(item.get("content") or "").strip()
-        if (not title or len(title) > 1_000 or not url
-                or len(url) > 4_000 or len(raw_content) > 256_000):
+        if not title or not url:
             raise WebSearchError("web search result fields are invalid")
-        content = raw_content[:4_000]
         results.append({
             "rank": index,
             "title": title,
             "url": url,
-            "content": content,
-            "content_truncated": len(raw_content) > len(content),
+            "content": raw_content,
+            "content_truncated": False,
             "evidence_state": "candidate_only",
         })
     return tuple(results)
@@ -250,9 +249,8 @@ def self_test() -> dict:
     """Validate request limits and strict provider response handling."""
     tests = []
     for label, query, maximum in (
-            ("empty_query", "", 5),
-            ("zero_results", "sources", 0),
-            ("too_many_results", "sources", 11)):
+            ("empty_query", "", None),
+            ("zero_results", "sources", 0)):
         refused = False
         try:
             WebSearchRequest(query, "contract test", maximum)

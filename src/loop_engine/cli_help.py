@@ -33,9 +33,9 @@ Check installation, settings, Docker, extensions, and provider references withou
     "setup": """usage: loop-engine setup [--format text|json]
 
 Run the first-use walkthrough and one deterministic Loop. Provider steps are optional.""",
-    "solve": """usage: loop-engine solve (--text TASK | --file PATH) [--quickstart] [options]
+    "solve": """usage: loop-engine solve (--text TASK | --file PATH) [--quickstart] [--unattended] [options]
 
-Perform and verify work. Use --quickstart for the bounded onboarding profile.""",
+Perform and verify work. Quickstart uses LLM-first reasoning, asks material questions, and applies only explicitly configured numeric limits.""",
     "studio": """usage: loop-engine studio [--runs-dir PATH] [--port PORT]
 
 Open the local read-only interface for results, Loop activity, playback, and model calls.""",

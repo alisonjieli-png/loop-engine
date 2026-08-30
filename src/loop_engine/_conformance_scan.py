@@ -664,6 +664,11 @@ def scan_uncollected_self_tests(root: str, rules: dict) -> list:
     return v
 
 
+def scan_llm_first_semantic_freedom(root: str, rules: dict) -> list:
+    from .semantic_freedom_conformance import scan_semantic_freedom
+    return scan_semantic_freedom(root, rules, _py_files, _source_tree)
+
+
 #: Rules that report KNOWN DEBT held flat by a declared baseline rather than
 #: a zero-tolerance gate.  A ratchet is not a pass: the count is published,
 #: its own gate fails if it rises, and the baseline may only be lowered.
@@ -684,7 +689,8 @@ DETECTORS = (scan_legacy_flat_imports,
              scan_short_docstring, scan_cross_component_imports,
              scan_unmapped_event_kinds, scan_public_node_naming,
              scan_uncollected_self_tests, scan_direct_resource_access,
-             scan_unregistered_boundaries)
+             scan_unregistered_boundaries,
+             scan_llm_first_semantic_freedom)
 
 
 def run_scan(root: "str | None" = None) -> dict:
@@ -730,6 +736,11 @@ _FIXTURES = {
         'ledger.record(loop_id="l", event="a_kind_nobody_mapped")\n',
     "public_node_naming":
         'SolutionSpec("s", nodes=(SolutionLoopSpec("a", "clean"),))\n',
+    "task_text_controls_solution":
+        'def route(task):\n    if "expense report" in task.lower():\n'
+        '        return "fixed.template"\n',
+    "implicit_semantic_work_ceiling":
+        'class SolverRequest:\n    max_passes: int = 12\n',
 }
 
 

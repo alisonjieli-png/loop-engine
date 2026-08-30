@@ -274,7 +274,8 @@ def invoke(inv: ModelInvocationRequest, *,
             ModelGatewayConfig(
                 route_names=inv.route_chain,
                 allowed_models=inv.model_chain,
-                max_route_attempts=max(1, len(inv.route_chain) or 3)),
+                max_route_attempts=(len(inv.route_chain)
+                                    if inv.route_chain else None)),
             temperature=inv.temperature),
         ledger=ledger, parent=parent)
     return ModelInvocationResult(

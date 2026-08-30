@@ -352,7 +352,7 @@ guidance:
     topic: core_solve
     authority: ACCEPTED_CURRENT
     relationships_to_other_guidance: [LE-GUIDE-005, LE-GUIDE-006, LE-GUIDE-010]
-    current_runtime_evidence: src/loop_engine/__main__.py delegates to universal_solve; the resulting depth and verification remain under review.
+    current_runtime_evidence: src/loop_engine/__main__.py delegates to solve_cli.run_solve and code_nodes.solve_runtime.solve_task; the removed heuristic public path is no longer a competing authority.
     current_test_evidence: No current clean-wheel end-to-end evidence has yet been recorded for text, file, and task-pack convergence.
     current_documentation_evidence: README.md advertises task compile and solve commands.
     accepted_interpretation: A success boolean is a summary of proven work, never the implementation itself.
@@ -437,7 +437,7 @@ guidance:
     current_documentation_evidence: docs/components/core-architecture/MODEL-GATEWAY.md describes one provider-neutral boundary.
     accepted_interpretation: Locality is route metadata and never creates another runtime or model plane.
     implementation_state: IMPLEMENTED_BUT_UNPROVEN
-    required_action: Finish deterministic-first selection, exact deployment identity, local-only policy, typed failover, and escalation evidence.
+    required_action: Finish availability discovery, exact deployment identity, local-only policy, typed failover, and escalation evidence without selecting task semantics.
     verification: Offline fixtures plus an authorized live local endpoint run when available.
 
   - guidance_id: LE-GUIDE-015
@@ -480,7 +480,7 @@ guidance:
     topic: practitioner_profiles
     authority: ACCEPTED_WITH_QUALIFICATION
     relationships_to_other_guidance: [LE-GUIDE-003, LE-GUIDE-016]
-    current_runtime_evidence: The kernel includes compile_bind_task and the catalog retains practitioner.reference_nine_step.
+    current_runtime_evidence: The kernel includes standardize_task and the catalog retains practitioner.reference_nine_step.
     current_test_evidence: Existing kernel checks exercise the reference sequence; arbitrary procedures need renewed proof.
     current_documentation_evidence: The current mandate permits a governed subprocedure, binding, or versioned stage migration.
     accepted_interpretation: Responsibility is mandatory; one universal step count is not.

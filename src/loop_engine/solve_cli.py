@@ -21,7 +21,7 @@ class ProviderSetupError(ValueError):
 
 
 def _apply_quickstart(args) -> None:
-    """Apply one explicit bounded onboarding authority profile."""
+    """Apply one explicit LLM-first onboarding authority profile."""
     if not args.quickstart:
         return
     selected_flags = [value for value in (
@@ -43,12 +43,10 @@ def _apply_quickstart(args) -> None:
                 "--quickstart needs one supported provider environment "
                 "variable; run `loop-engine configure` for exact names")
         args.compile_provider = present[0]
-    args.interaction_mode = "autonomous"
+    args.practitioner_mode = "non_deterministic"
     args.authorize_model_calls = True
-    if args.max_model_calls == 0:
-        args.max_model_calls = 16
-    if args.max_total_tokens is None:
-        args.max_total_tokens = 1_000_000
+    if args.max_model_calls == 0:  # compatibility with older callers
+        args.max_model_calls = None
 
 
 def run_solve(args) -> int:
@@ -67,7 +65,7 @@ def run_solve(args) -> int:
         loaded = load_runtime_settings(args.settings_file or None)
         extension_application = resolve_cli_extensions(args, loaded.settings)
         settings = extension_application.settings
-        _apply_compile_provider_shortcut(args, default_model_calls=16)
+        _apply_compile_provider_shortcut(args, default_model_calls=None)
         if args.allow_source_to_model and not args.authorize_model_calls:
             raise ValueError(
                 "--allow-source-to-model requires --authorize-model-calls")
@@ -86,18 +84,25 @@ def run_solve(args) -> int:
                     "--workspace must be empty or not yet created")
             workspace = str(selected)
         runs_dir = args.runs_dir or settings.history.resolved_runs_dir()
+        maximum_model_calls = (
+            args.max_model_calls if args.max_model_calls is not None
+            else settings.loop.max_model_calls)
+        maximum_passes = (
+            args.max_passes if args.max_passes is not None
+            else settings.loop.max_iterations)
 
         def execute_with_gateway(gateway=None, route_name=""):
             model_execution = None
             if args.authorize_model_calls:
-                if args.max_model_calls < 1:
+                if (maximum_model_calls is not None
+                        and maximum_model_calls < 1):
                     raise ValueError(
-                        "authorized solve requires --max-model-calls >= 1")
+                        "--max-model-calls must be positive when provided")
                 policy = ModelPolicyRequest(
                     thinking_power=(args.thinking_power
                                     or settings.models.default_thinking_power),
                     max_total_tokens=args.max_total_tokens,
-                    max_route_attempts=args.max_model_calls,
+                    max_route_attempts=None,
                     route_names=((route_name or args.model_route,)
                                  if (route_name or args.model_route) else ()))
                 request = settings.model_request(ModelTask(
@@ -107,15 +112,16 @@ def run_solve(args) -> int:
                     config = replace(config, allowed_models=(args.model_id,))
                 model_execution = ModelExecution(
                     gateway or settings.build_gateway(), config,
-                    max_model_calls=args.max_model_calls,
+                    max_model_calls=maximum_model_calls,
                     llm_thinking_power=policy.thinking_power)
             return solve_task(SolveRequest(
                 intake=intake, model_execution=model_execution,
                 runs_dir=runs_dir,
                 save_run_history=settings.history.save_run_history,
                 interaction_mode=args.interaction_mode,
+                practitioner_mode=args.practitioner_mode,
                 feedback=_task_feedback_from_args(args),
-                max_passes=args.max_passes,
+                max_passes=maximum_passes,
                 allow_network_reads=settings.operating.access_mode in (
                     "approved_external_read", "broad_external_read",
                     "approved_external_write"),
@@ -178,6 +184,11 @@ def run_solve(args) -> int:
                 f"Model calls: {value['model_calls']}",
                 f"Tool calls: {value['tool_calls']}",
             ])
+            if value.get("questions"):
+                lines.extend(("", "Material questions:"))
+                lines.extend(
+                    f"  [{item['answer_slot']}] {item['question']}"
+                    for item in value["questions"])
             if value["limitations"]:
                 lines.extend(("", "Limitations:"))
                 lines.extend(f"  {item}" for item in value["limitations"])

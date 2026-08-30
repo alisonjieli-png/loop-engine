@@ -50,7 +50,7 @@ LoopGraphDefinition
 | Intelligence reference | [`LoopRef`, `LoopCapsule`](../../src/loop_engine/loop/loop_capsule.py) | Small reference, exact locator, contract, digest, and selected materialization. |
 | Event log and saved run | [`LoopLedger`](../../src/loop_engine/loop/recursive_loop.py), [`RunHistory`, `RunHistoryEvent`](../../src/loop_engine/core/run_history.py), [`ProductOutcomeRef`, `SavedRunBundle`](../../src/loop_engine/core/product_outcome_store.py) | Ordered events, definition references, relationship records, digest-bound product outcome, saved playback, and chain checking. |
 | User settings | [`RuntimeSettings`, `LoopDefaults`, `LoopConfigOverride`, `ModelSettings`](../../src/loop_engine/core/runtime_settings.py) | Typed defaults and overrides for modes, search, providers, effort, and model routing. |
-| Public solve | [`SolveRequest`, `SolveOutcome`, `SolveTerminalCode`](../../src/loop_engine/code_nodes/solve_runtime.py) | Immutable original task intake, bounded model and effect authority, verified artifact records, workspace, Run History, and one honest terminal code. |
+| Public solve | [`SolveRequest`, `SolveOutcome`, `SolveTerminalCode`, `MaterialQuestion`](../../src/loop_engine/code_nodes/solve_runtime.py) | Immutable original task intake, answerable material questions, authorized model and effect calls, verified artifact records, workspace, Run History, and one honest terminal code. |
 
 ## Public Core Architecture ports
 

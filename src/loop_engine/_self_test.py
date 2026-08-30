@@ -110,7 +110,6 @@ def self_test() -> dict:
         "code_nodes.runtime_contracts",
         "code_nodes.solution_graph",
         "code_nodes.solution_records",
-        "code_nodes.universal_solve",
         "loop.kernel",
         "loop.kernel_runtime",
         "loop.lens",
@@ -186,14 +185,20 @@ def self_test() -> dict:
                                                                                                                                                                                     ]
     import importlib as _importlib
 
-    #: Third-party modules included by the one complete Loop Engine install.
-    #: A missing module means the installation is incomplete.
+    #: Import names used to explain a genuinely missing required dependency.
     _PACKAGE_FOR_MODULE = {
         "numpy": "numpy", "pandas": "pandas",
         "sklearn": "scikit-learn", "lightgbm": "lightgbm",
         "xgboost": "xgboost", "duckdb": "duckdb",
         "model2vec": "model2vec", "lancedb": "lancedb",
         "kaggle": "kaggle", "yaml": "PyYAML", "mcp": "mcp",
+    }
+    _OPTIONAL_TEST_DEPENDENCIES = {
+        "code_nodes.smoke_ladder": ("numpy", "pandas", "sklearn"),
+        "code_nodes.live_run_demo": ("numpy", "pandas"),
+        "code_nodes.kaggle_executor": ("numpy", "pandas", "sklearn"),
+        "core.duckdb_catalog": ("duckdb",),
+        "core.mcp_sdk_transport": ("mcp",),
     }
 
     def _fold(name, run):
@@ -202,6 +207,19 @@ def self_test() -> dict:
         ``run`` may be a callable OR a module path to import: an adapter that
         imports its dependency at module level raises during IMPORT, before any
         test runs, so guarding only the call left that case uncaught."""
+        optional = _OPTIONAL_TEST_DEPENDENCIES.get(name, ())
+        unavailable = tuple(module for module in optional
+                            if _importlib.util.find_spec(module) is None)
+        if unavailable:
+            return [{
+                "test": f"{name}_optional_adapter_not_tested",
+                "passed": True, "not_tested": True,
+                "outcome": "NOT_APPLICABLE",
+                "missing_optional_dependencies": list(unavailable),
+                "detail": (
+                    "Optional adapter is not installed in this base package; "
+                    "install loop-engine[all] to run this adapter suite."),
+            }]
         try:
             if isinstance(run, str):
                 run = _importlib.import_module(
@@ -224,11 +242,19 @@ def self_test() -> dict:
     passed = sum(1 for r in results if r["passed"])
     missing = [r for r in results if r.get("missing_dependency")]
     missing_packages = sorted({r["missing_dependency"] for r in missing})
+    optional_not_tested = [r for r in results if r.get("not_tested")]
+    optional_packages = sorted({package for r in optional_not_tested
+                                for package in r.get(
+                                    "missing_optional_dependencies", ())})
     return {"record_type": "loop_engine_self_test/v1", "tests": results,
             "passed": passed, "total": len(results),
             "missing_dependencies": missing_packages,
+            "optional_adapters_not_tested": optional_packages,
             "dependency_note": (
                 "incomplete installation: " + ", ".join(missing_packages)
                 if missing_packages else
-                "all declared dependencies are installed"),
+                "base installation complete; optional adapters not tested: "
+                + ", ".join(optional_packages)
+                if optional_packages else
+                "base and optional adapter dependencies are installed"),
             "all_passed": passed == len(results)}

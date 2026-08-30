@@ -61,7 +61,7 @@ from typing import Any, Callable, Sequence
 # (assess sufficiency + prepare reasoning resources) and #7 (integrate + commit),
 # separating three things that must never collapse into one vague "context":
 # PROBLEM STATE/EVIDENCE vs REASONING RESOURCES vs the MODEL-READY PROMPT.
-KERNEL_NODES = ("orient", "compile_bind_task", "reconcile_horizon",
+KERNEL_NODES = ("orient", "standardize_task", "reconcile_horizon",
                 "assess_prepare", "decide_next", "how", "act", "verify",
                 "integrate_commit", "route")
 
@@ -72,7 +72,7 @@ KERNEL_NODES = ("orient", "compile_bind_task", "reconcile_horizon",
 # fails loudly at run start rather than being papered over.
 KERNEL_REQUIRED_NODES = ("orient", "decide_next", "how", "act", "verify",
                          "route")
-KERNEL_OPTIONAL_NODES = ("compile_bind_task", "reconcile_horizon",
+KERNEL_OPTIONAL_NODES = ("standardize_task", "reconcile_horizon",
                          "assess_prepare", "integrate_commit")
 
 
@@ -128,9 +128,9 @@ def validate_impls(impls: "dict") -> None:
 KERNEL_NODE_NAMES = {
     "orient": "Reconstruct the latest accepted problem state and assemble the "
               "verified context already available",
-    "compile_bind_task": "Compile the raw request into a typed task and bind "
-                         "it to the best available template without losing "
-                         "the original input",
+    "standardize_task": "Standardize the raw request as an open typed task "
+                         "without selecting a template or losing the original "
+                         "input",
     "reconcile_horizon": "Reconcile the ultimate goal, active checkpoint, and "
                          "working blueprint with the latest accepted state",
     "assess_prepare": "Assess whether the current decision is sufficiently "
@@ -158,8 +158,8 @@ KERNEL_NODE_NAMES = {
 KERNEL_NODE_QUESTIONS = {
     "orient": "What problem are we solving, and what verified context do we "
               "already have?",
-    "compile_bind_task": "What typed task does this raw request represent, and "
-                         "which template best binds it without losing the "
+    "standardize_task": "What open typed task does this raw request represent "
+                         "without preselecting its solution or losing the "
                          "original input?",
     "reconcile_horizon": "Where does this stand against the ultimate goal, the "
                          "active checkpoint, and the working blueprint?",
@@ -203,7 +203,7 @@ ROUTES = ("stop_success", "continue", "retry", "repair", "explore_branch",
 RESET_MODES = ("soft_retry", "reframe", "context_reset", "persona_model_reset",
                "branch_reset", "cold_restart", "capability_escalation")
 
-MAX_SPAWN_DEPTH = 5
+MAX_SPAWN_DEPTH = None
 
 
 # ===========================================================================
@@ -217,10 +217,17 @@ class ProblemSpec:
     objective: str
     constraints: tuple = ()
     success_criteria: tuple = ()
-    budget_passes: int = 12
+    budget_passes: int | None = None
     depth: int = 0
     namespace: str = "run"
     seed_facts: dict = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if (self.budget_passes is not None
+                and (not isinstance(self.budget_passes, int)
+                     or isinstance(self.budget_passes, bool)
+                     or self.budget_passes < 1)):
+            raise ValueError("budget_passes must be positive when provided")
 
 
 @dataclass
@@ -254,7 +261,7 @@ class Situation:
     signals: tuple = ()          # missing_info | conflicting | no_progress | ...
     resources_hint: tuple = ()
     anchor: Any = None           # LongHorizonAnchorPacket, set by reconcile step
-    compiled_task: Any = None    # CompiledTask, set by compile_bind_task step
+    compiled_task: Any = None    # Open typed task from standardization
 
 
 @dataclass
@@ -449,11 +456,11 @@ def _calculate_kernel_pass(state: PractitionerState, impls: KernelImpls,
     situation: Situation = impls["orient"](state)
     rec.situation = situation
 
-    # Node 2 — compile the raw request into a typed task and bind it to the
-    # best available template (skippable per pass for a trivial task).
-    if "compile_bind_task" not in skip:
+    # Standardize the raw request as an open typed task. Templates remain
+    # advisory inputs to later semantic method selection.
+    if "standardize_task" not in skip:
         situation.compiled_task = impls.get(
-            "compile_bind_task", default_compile_bind_task)(state, situation)
+            "standardize_task", default_standardize_task)(state, situation)
         rec.compiled_task = situation.compiled_task
 
     # Node 3 — reconcile the ultimate goal / active checkpoint / working
@@ -518,7 +525,8 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
     if request.event_dir:
         os.makedirs(request.event_dir, exist_ok=True)
         events_path = os.path.join(request.event_dir, "events.jsonl")
-    for n in range(1, limit + 1):
+    n = 1
+    while limit is None or n <= limit:
         rec, state = _calculate_kernel_pass(state, impls, pass_number=n)
         records.append(rec)
         if events_path:
@@ -535,6 +543,7 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
                 facts=dict(spec.seed_facts),
                 failures=state.failures, resets_used=state.resets_used,
                 last_route="cold_restart")
+        n += 1
     structural_fixture = impls.get("act") is default_act
     return {"record_type": "practitioner_run/v1",
             "execution_evidence_state": (
@@ -608,7 +617,7 @@ def default_decide_next(state: PractitionerState,
 
 def default_how(state: PractitionerState, situation: Situation,
                 chosen: CandidateAction) -> ExecutionPlan:
-    # reuse-first: do we already have it?
+    # The structural fixture uses an explicitly supplied exact registry fact.
     have = state.facts.get(f"registry_has:{chosen.action}")
     if have:
         return ExecutionPlan("use", "run_direct", handle=str(have),
@@ -629,7 +638,8 @@ def default_how(state: PractitionerState, situation: Situation,
 
 def default_act(state: PractitionerState, plan: ExecutionPlan) -> list:
     if plan.act_mode == "spawn_practitioners":
-        if state.spec.depth + 1 > MAX_SPAWN_DEPTH:
+        if (MAX_SPAWN_DEPTH is not None
+                and state.spec.depth + 1 > MAX_SPAWN_DEPTH):
             return [ResultPacket(objective="spawn", errors=("depth exceeded",),
                                  confidence=0.0)]
         packets = []
@@ -716,14 +726,13 @@ def default_route(state: PractitionerState, rec: PassRecord) -> tuple:
             state.derive(last_route="stop_unprofitable"))
 
 
-def default_compile_bind_task(state: PractitionerState,
-                                  situation: Situation):
-    """Node 2 default: compile the raw request into a typed task.
+def default_standardize_task(state: PractitionerState,
+                             situation: Situation):
+    """Standardize the raw request without preselecting a solution.
 
     The deterministic default preserves the original input verbatim and
-    records the binding mode as open when no template was supplied. A
-    model-backed impl can discover templates and bind them; the default
-    never invents a template and never loses the original request.
+    records the task as open. A model may inspect optional template candidates
+    later while deciding how to act. This operation never chooses one.
     """
     from dataclasses import asdict
     original = state.spec.objective
@@ -780,7 +789,7 @@ def default_integrate_commit(state: PractitionerState,
 
 def default_impls() -> KernelImpls:
     return {"orient": default_orient,
-            "compile_bind_task": default_compile_bind_task,
+            "standardize_task": default_standardize_task,
             "reconcile_horizon": default_reconcile_horizon,
             "assess_prepare": default_assess_prepare,
             "decide_next": default_decide_next,
@@ -911,12 +920,12 @@ def self_test() -> dict:
           "the gap-reduction spawned ran the same six-node kernel; "
           "'learned:' facts flowed up")
 
-    # 5. reuse-first: a registry fact short-circuits HOW to 'use'.
+    # 5. An explicit registry fact lets the structural fixture use exact work.
     spec_u = ProblemSpec(objective="x", success_criteria=("thing",),
                          seed_facts={"registry_has:meet:thing": "node_v1"})
     st = PractitionerState(spec=spec_u, facts=dict(spec_u.seed_facts))
     rec_u, _ = _calculate_kernel_pass(st, default_impls())
-    check("how_is_reuse_first_use_mode_when_already_built",
+    check("explicit_registry_candidate_can_be_used_by_structural_fixture",
           rec_u.plan.how_mode == "use" and rec_u.plan.handle == "node_v1",
           "'do we already have it?' answered before any generation")
 
@@ -962,16 +971,11 @@ def self_test() -> dict:
     check("all_kernel_taxonomies_are_closed", bad == 5,
           "how/act/verdict/route/reset vocabularies reject inventions")
 
-    # 9. depth guard: spawning past the limit degrades to an error packet.
-    deep_spec = ProblemSpec(objective="deep", depth=MAX_SPAWN_DEPTH)
-    st_deep = PractitionerState(spec=deep_spec)
-    plan = ExecutionPlan("research", "spawn_practitioners",
-                         spawned_loops=(ProblemSpec(objective="spawned",
-                                               depth=MAX_SPAWN_DEPTH + 1),))
-    packs = default_act(st_deep, plan)
-    check("runaway_spawn_depth_degrades_honestly", packs
-          and packs[0].errors, "past the depth guard: an error packet, not "
-          "silent recursion")
+    # 9. Product code does not invent a recursion ceiling. An owner may still
+    # supply one through LoopConfig, where the canonical runtime enforces it.
+    check("kernel_has_no_implicit_spawn_depth_ceiling",
+          MAX_SPAWN_DEPTH is None,
+          "an explicit owner policy may set max_depth when required")
 
     # 10. every node carries a full-sentence name and its complete question —
     # never a bare verb — and every run record self-describes with them.

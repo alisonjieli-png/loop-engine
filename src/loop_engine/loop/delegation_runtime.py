@@ -114,26 +114,29 @@ class ContextVisibilityPolicy:
 
 @dataclass(frozen=True)
 class DelegationBudget:
-    """Hard result ceilings for one Spawned Loop."""
+    """Optional owner-supplied ceilings for one Spawned Loop."""
 
-    max_iterations: int = 10
-    max_model_calls: int = 0
-    max_output_bytes: int = 1_000_000
-    max_updates: int = 20
+    max_iterations: "int | None" = None
+    max_model_calls: "int | None" = None
+    max_output_bytes: "int | None" = None
+    max_updates: "int | None" = None
     wall_time_seconds: "float | None" = None
 
     def __post_init__(self) -> None:
-        if any(not isinstance(value, int) or isinstance(value, bool) for value in (
-                self.max_iterations, self.max_model_calls,
-                self.max_output_bytes, self.max_updates)):
-            raise DelegationError("delegation budget values must be integers")
-        if self.max_iterations < 1:
-            raise DelegationError("max_iterations must be positive")
-        if self.max_model_calls < 0:
+        for name in ("max_iterations", "max_model_calls",
+                     "max_output_bytes", "max_updates"):
+            value = getattr(self, name)
+            if value is not None and (
+                    not isinstance(value, int) or isinstance(value, bool)):
+                raise DelegationError(
+                    f"{name} must be an integer when provided")
+        if self.max_iterations is not None and self.max_iterations < 1:
+            raise DelegationError("max_iterations must be positive when set")
+        if self.max_model_calls is not None and self.max_model_calls < 0:
             raise DelegationError("max_model_calls cannot be negative")
-        if self.max_output_bytes < 1:
-            raise DelegationError("max_output_bytes must be positive")
-        if self.max_updates < 0:
+        if self.max_output_bytes is not None and self.max_output_bytes < 1:
+            raise DelegationError("max_output_bytes must be positive when set")
+        if self.max_updates is not None and self.max_updates < 0:
             raise DelegationError("max_updates cannot be negative")
         if (self.wall_time_seconds is not None
                 and (not isinstance(self.wall_time_seconds, (int, float))
@@ -252,7 +255,7 @@ class DelegationSpec:
             raise DelegationError(
                 "a deterministic Spawned Loop cannot request LLM thinking power")
         if (self.mode == "non_deterministic"
-                and self.budget.max_model_calls < 1):
+                and self.budget.max_model_calls == 0):
             raise DelegationError(
                 "a non_deterministic Spawned Loop needs a positive model-call "
                 "budget")
@@ -379,18 +382,21 @@ class SpawnedTaskSnapshot:
 
 @dataclass(frozen=True)
 class SpawnedTaskManagerLimits:
-    """Bounded task counts for one parent manager."""
+    """Optional owner-supplied task ceilings for one parent manager."""
 
-    max_active: int = 8
-    max_total: int = 100
+    max_active: "int | None" = None
+    max_total: "int | None" = None
 
     def __post_init__(self) -> None:
-        if any(not isinstance(value, int) or isinstance(value, bool)
-               for value in (self.max_active, self.max_total)):
-            raise DelegationError("manager limits must be integers")
-        if self.max_active < 1 or self.max_total < 1:
-            raise DelegationError("manager limits must be positive")
-        if self.max_active > self.max_total:
+        for name in ("max_active", "max_total"):
+            value = getattr(self, name)
+            if value is not None and (
+                    not isinstance(value, int) or isinstance(value, bool)
+                    or value < 1):
+                raise DelegationError(
+                    f"{name} must be a positive integer when provided")
+        if (self.max_active is not None and self.max_total is not None
+                and self.max_active > self.max_total):
             raise DelegationError("max_active cannot exceed max_total")
 
 
@@ -473,7 +479,9 @@ class SpawnedTaskManager(SpawnedTaskLifecycleMixin):
         record = self._record(task_id)
         if record.status.terminal:
             raise DelegationError("a terminal spawned task cannot be updated")
-        if len(record.control.updates()) >= record.spec.budget.max_updates:
+        if (record.spec.budget.max_updates is not None
+                and len(record.control.updates())
+                >= record.spec.budget.max_updates):
             raise DelegationError("the spawned update budget is exhausted")
         unexpected = [value.role for value in update.inputs
                       if value.role not in record.spec.contract.input_roles]
@@ -521,9 +529,11 @@ class SpawnedTaskManager(SpawnedTaskLifecycleMixin):
             raise DelegationError("start expects a DelegationSpec")
         active = sum(1 for record in self._records.values()
                      if not record.status.terminal)
-        if active >= self._limits.max_active:
+        if (self._limits.max_active is not None
+                and active >= self._limits.max_active):
             raise DelegationError("the active spawned-task limit is reached")
-        if len(self._records) >= self._limits.max_total:
+        if (self._limits.max_total is not None
+                and len(self._records) >= self._limits.max_total):
             raise DelegationError("the total spawned-task limit is reached")
         self._validate_spec(spec)
         spec, offloaded = self._prepare_input_context(spec)
@@ -726,16 +736,19 @@ class SpawnedTaskManager(SpawnedTaskLifecycleMixin):
                     "the context policy requires a return summary")
         if not record.spec.context.summary_return and result.summary:
             result = replace(result, summary="")
-        if result.steps_run > record.spec.budget.max_iterations:
+        if (record.spec.budget.max_iterations is not None
+                and result.steps_run > record.spec.budget.max_iterations):
             raise DelegationError("spawned task exceeded its iteration budget")
-        if result.model_calls > record.spec.budget.max_model_calls:
+        if (record.spec.budget.max_model_calls is not None
+                and result.model_calls > record.spec.budget.max_model_calls):
             raise DelegationError("spawned task exceeded its model-call budget")
         size = sum(
             len(value.role.encode("utf-8"))
             + len(repr(value.value).encode("utf-8"))
             for value in result.outputs)
         size += len(result.summary.encode("utf-8"))
-        if size > record.spec.budget.max_output_bytes:
+        if (record.spec.budget.max_output_bytes is not None
+                and size > record.spec.budget.max_output_bytes):
             raise DelegationError("spawned result exceeded its output budget")
         self._publish(record, result)
 

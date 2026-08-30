@@ -232,7 +232,8 @@ def advice_function(access: "ModelAccess | None" = None, *, role: str = "",
         r = gateway.invoke(ModelGatewayRequest(
             prompt,
             ModelGatewayConfig(route_names=route_names,
-                               max_route_attempts=max(1, len(route_names)))))
+                               max_route_attempts=(len(route_names)
+                                                   if route_names else None))))
         if not r.ok:
             tried = "; ".join(f"{a.provider}: {a.error[:60]}"
                               for a in r.attempts)

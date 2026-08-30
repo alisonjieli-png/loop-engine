@@ -130,6 +130,10 @@ def product_playback_lines(outcome: "dict | None") -> list[str]:
         f"[run] ARTIFACT: {item.get('path', '')}"
         for item in outcome.get("artifacts", ()))
     lines.extend(
+        f"[run] MATERIAL QUESTION [{item.get('answer_slot', '')}]: "
+        f"{item.get('question', '')}"
+        for item in outcome.get("questions", ()))
+    lines.extend(
         f"[run] LIMITATION: {item}"
         for item in outcome.get("limitations", ()))
     return lines
@@ -296,20 +300,28 @@ def self_test() -> dict:
     with tempfile.TemporaryDirectory() as saved_root:
         ch.save(saved_root)
         bind_product_outcome(saved_root, "playback-saved", {
-            "record_type": "solve_outcome/v3", "run_id": "playback-saved",
+            "record_type": "solve_outcome/v4", "run_id": "playback-saved",
             "terminal_code": "COMPLETED_VERIFIED",
             "status": "COMPLETED_VERIFIED", "solved": True,
             "summary": "Playback product.", "failure_code": "",
             "verification": {"passed": True},
             "artifacts": [{"path": "/tmp/result.txt"}],
-            "workspace": "/tmp", "limitations": [],
+            "workspace": "/tmp", "limitations": [], "questions": [{
+                "record_type": "material_question/v1",
+                "question_id": "question:fixture",
+                "question": "Which destination is required?",
+                "subject": "required destination",
+                "answer_slot": "required_destination",
+                "reason": "Delivery authority changes."}],
             "selected_canvas": {},
         })
         product_tx = playback_saved_run(saved_root, "playback-saved")
     check("saved_playback_ends_with_the_product_terminal_and_artifacts",
           any("PRODUCT TERMINAL: COMPLETED_VERIFIED" in line
               for line in product_tx)
-          and product_tx[-1] == "[run] ARTIFACT: /tmp/result.txt")
+          and "[run] ARTIFACT: /tmp/result.txt" in product_tx
+          and any("MATERIAL QUESTION [required_destination]" in line
+                  for line in product_tx))
 
     relationship_events = (
         {"event": "init", "loop_id": "p", "goal": "practice",

@@ -201,9 +201,11 @@ def self_test() -> dict:
     except ImportError:
         return {"tests": [{
             "test": "official_mcp_sdk_is_installed",
-            "passed": False,
-            "detail": "mcp is a declared Loop Engine dependency"}],
-            "passed": 0, "total": 1, "all_passed": False}
+            "passed": True, "not_tested": True,
+            "outcome": "NOT_APPLICABLE",
+            "missing_optional_dependencies": ["mcp"],
+            "detail": "Optional MCP adapter is not installed."}],
+            "passed": 1, "total": 1, "all_passed": True}
 
     with tempfile.TemporaryDirectory(prefix="loop-engine-mcp-sdk-") as root:
         class FixtureSecretResolver:

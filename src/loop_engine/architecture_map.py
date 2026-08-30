@@ -37,7 +37,8 @@ ROOT_MODULES = ("__init__", "__main__", "_self_test", "_conformance_test",
                 "runtime_ontology_check", "scheduling", "campaign",
                 "parallel_runner", "cli_operations", "parameter_boundary",
                 "solve_cli", "cli_help", "run_history_cli",
-                "parameter_boundary_checks", "semantic_conformance")
+                "parameter_boundary_checks", "semantic_conformance",
+                "semantic_freedom_conformance")
 
 #: module -> subpackage.  "steps" and "regimes" are subpackages riding in loop/.
 MODULE_MAP = {
@@ -125,7 +126,7 @@ MODULE_MAP = {
         "complex_task_benchmark",
         "complex_task_native_evidence", "complex_task_published_evidence",
         "follow_up", "housekeeping", "kaggle_executor", "live_run_demo",
-        "learning_bundle", "guided_setup", "logic_ast", "universal_solve", "loop_report", "measurement",
+        "learning_bundle", "guided_setup", "logic_ast", "loop_report", "measurement",
         "public_examples",
         "guidance_ledger",
         "run_analytics",

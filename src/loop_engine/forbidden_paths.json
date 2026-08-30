@@ -1,6 +1,45 @@
 {
  "record_type": "forbidden_paths/v1",
  "scope": "src/loop_engine (self-contained package)",
+ "llm_first_semantic_modules": [
+  "code_nodes/solve_runtime.py",
+  "core/adaptive_practitioner.py",
+  "core/adaptive_practitioner_capabilities.py",
+  "core/adaptive_practitioner_orientation.py",
+  "core/adaptive_practitioner_planning.py",
+  "core/adaptive_practitioner_records.py",
+  "core/adaptive_practitioner_recovery.py",
+  "core/adaptive_practitioner_supervision.py",
+  "core/adaptive_practitioner_verification.py"
+ ],
+ "llm_first_defaults": {
+  "code_nodes/solve_runtime.py:SolveRequest": {
+   "practitioner_mode": "non_deterministic",
+   "interaction_mode": "InteractionMode.ASK_WHEN_MATERIAL",
+   "max_passes": null
+  },
+  "core/adaptive_practitioner_records.py:AdaptivePractitionerRequest": {
+   "mode": "non_deterministic",
+   "interaction_mode": "ask_when_material",
+   "max_passes": null
+  }
+ },
+ "unset_default_ceiling_fields": [
+  "max_active",
+  "max_candidates",
+  "max_depth",
+  "max_iterations",
+  "max_members",
+  "max_model_calls",
+  "max_operations",
+  "max_passes",
+  "max_route_attempts",
+  "max_selected",
+  "max_spawned_tasks",
+  "max_total",
+  "max_total_tokens",
+  "max_updates"
+ ],
  "network_allowed_modules": [
   "core/ollama_client.py",
   "core/mistral_client.py",
@@ -252,7 +291,6 @@
   "loop/iteration_records.py:build_iteration_record": "Iteration evidence builder. Replace the parameter list with one typed IterationRecordInput while preserving the stored format.",
   "code_nodes/smoke_ladder.py:run_smoke_loop": "Legacy smoke runner. Move run controls into one SmokeRunSpec and keep the current function as a compatibility adapter.",
   "loop/studio.py:build_studio_view": "Legacy projection builder. Add one StudioProjectionInput that groups run state, usage, and display options.",
-  "code_nodes/universal_solve.py:solve": "Legacy universal front door. Add one SolveRequest object and retain solve as a compatibility wrapper during alpha.",
   "code_nodes/measurement.py:read_generalization_gap": "Legacy metric helper. Group train, validation, direction, and tolerance fields in one GeneralizationGapInput.",
   "loop/decision_need.py:detect_decision_need": "Legacy decision classifier. Group state signals in one DecisionContext object.",
   "core/ollama_client.py:chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead.",
@@ -261,6 +299,9 @@
   "core/custom_endpoint.py:_Adapter.chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead."
  },
  "module_size_exceptions": {
+  "_conformance_scan.py": "the deterministic scanner registry and canary harness; split plan: move detector families into conformance/ modules while keeping one run_scan facade",
+  "code_nodes/loop_report.py": "one Run History projection shared by text, Markdown, HTML, and JSON; split plan: move only offline renderer checks into loop_report_checks.py without creating another report authority",
+  "loop/delegation_runtime.py": "the canonical Spawned Loop task manager and its passive contracts; split plan: move passive delegation request and result records into delegation_contracts.py while keeping one manager",
   "loop/kernel.py": "the nine-step executor's default implementations; split plan: move per-step defaults into loop/steps/ facades one step at a time",
   "loop/recursive_loop.py": "the canonical Loop runtime; split plan: extract LoopSpec/pause-resume into loop/spec.py once the kernel routes through run_next_iteration",
   "core/intelligence_layers.py": "the four-layer handshake and memory-type vocabulary; split plan: move the memory-type vocabulary into core/memory_types.py once the layer handshake consumes it through an import",
@@ -341,7 +382,6 @@
  "boundary_register_exempt_modules": {
   "core/reasoning_call.py": "the CALLER that crosses the model-invocation boundary, which is already a register row (envelope: as_model_loop). It owns no separate boundary of its own.",
   "code_nodes/guided_setup.py": "the first-run WALKTHROUGH: it orchestrates existing boundaries (the practitioner envelope, provider discovery, the knowledge loader) and owns none of them. Every envelope it calls is already a register row; adding a second row for the caller would claim ownership it does not have.",
-  "code_nodes/universal_solve.py": "the ROUTING front door: it orients on a task and dispatches to an executor that owns the boundary, using the practitioner envelope only as a caller when no executor fits the modality. Every envelope it touches is already a register row; a second row would claim ownership it does not have.",
   "code_nodes/public_examples.py": "installed examples orchestrate existing practitioner, report, and intelligence boundaries for teaching. They own no new boundary; registering them would duplicate the envelopes they demonstrate.",
   "memory/loop_integration.py": "memory recall runs through as_practitioner_loop; the memory package is a data-and-preset subsystem, and every governed memory operation is owned by the presets, not by this facade",
   "generation/operators.py": "candidate generation runs through as_practitioner_loop; generation is a preset-governed operation on the canonical engine, not a separate boundary",

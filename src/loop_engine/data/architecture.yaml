@@ -51,7 +51,6 @@ adaptive_recovery:
   semantic_panel_steps:
     - diagnose_stall
     - propose_recovery
-    - propose_recovery_alternative
     - adjudicate_recovery
   adjudication_selects_validated_proposal: true
   proposal_executes_directly: false
@@ -235,12 +234,23 @@ product_solve:
   saved_run_bundle: loop_engine.core.product_outcome_store.SavedRunBundle
   terminal_vocabulary: loop_engine.code_nodes.solve_runtime.SolveTerminalCode
   practitioner: loop_engine.core.adaptive_practitioner.run_adaptive_practitioner
+  source_inspection: loop_engine.core.adaptive_practitioner_capabilities._source_inspection_operation
   generated_project: loop_engine.core.generated_project.execute_generated_project
   graph_authority: loop_engine.code_nodes.solution_graph.LoopGraphDefinition
   default_granularity: governed_semantic
   optional_granularity: strict_atomic
   invariants:
     - original_task_is_immutable
+    - model_route_means_llm_first_task_orientation
+    - templates_and_fingerprints_are_advisory_not_task_binding_authority
+    - task_words_never_select_a_solution_branch
+    - the_model_explicitly_selects_the_next_semantic_action
+    - practitioner_control_points_do_not_preselect_task_semantics
+    - product_imposes_no_default_pass_depth_model_call_or_token_ceiling
+    - repeated_work_stops_on_an_identical_state_action_failure_not_a_fixed_count
+    - material_questions_return_typed_answer_slots
+    - selected_local_source_content_requires_explicit_source_to_model_authority
+    - the_model_selects_local_sources_before_project_materialization
     - task_build_does_not_claim_execution
     - completion_requires_verified_artifact_or_state_change
     - local_source_materialization_requires_explicit_model_authority

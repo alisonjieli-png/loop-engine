@@ -183,9 +183,9 @@ class ModelGatewayConfig:
     route_plan: tuple[ModelRouteAttemptSpec, ...] = ()
     thinking_power: str = "medium"
     allowed_models: tuple[str, ...] = ()
-    allowed_localities: tuple[str, ...] = ("cloud", "local")
+    allowed_localities: tuple[str, ...] = LOCALITIES
     allow_failover: bool = True
-    max_route_attempts: int = 3
+    max_route_attempts: "int | None" = None
     timeout_seconds: float = 900.0
     max_output_tokens: "int | None" = None
     max_total_tokens: "int | None" = None
@@ -196,8 +196,10 @@ class ModelGatewayConfig:
     def __post_init__(self):
         if self.purpose not in PURPOSES:
             raise ValueError("unknown model gateway purpose")
-        if self.max_route_attempts < 1:
-            raise ValueError("max_route_attempts must be positive")
+        if (self.max_route_attempts is not None
+                and self.max_route_attempts < 1):
+            raise ValueError(
+                "max_route_attempts must be positive when provided")
         if self.timeout_seconds <= 0:
             raise ValueError("timeout_seconds must be positive")
         if (self.max_output_tokens is not None
@@ -452,7 +454,8 @@ class ModelGateway:
             selected.sort(key=lambda pair: locality_order[pair[0].locality])
         if not config.allow_failover:
             selected = selected[:1]
-        return selected[:config.max_route_attempts]
+        return (selected if config.max_route_attempts is None
+                else selected[:config.max_route_attempts])
 
     def invoke(self, request: ModelGatewayRequest, *,
                validate: "Callable[[str], bool] | None" = None,
@@ -876,9 +879,9 @@ def self_test() -> dict:
           and attempt.parent is routing
           and attempt.depth == 4,
           "practitioner -> spawned stage -> candidate -> route -> attempt")
-    check("starting_gateway_keeps_compatible_depth",
-          starting_config.max_depth == 3,
-          "starting gateway retains the historical default max_depth 3")
+    check("starting_gateway_has_no_implicit_depth_ceiling",
+          starting_config.max_depth is None,
+          "starting gateway uses no product-imposed recursion ceiling")
 
     passed = sum(1 for test in results if test["passed"])
 

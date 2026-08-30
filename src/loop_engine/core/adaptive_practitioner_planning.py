@@ -54,14 +54,16 @@ def _validate_plan_response(value, request, services) -> ExecutionPlan:
         raise AdaptivePractitionerError(
             "how selected a capability outside NextActionDecision")
     spawned_values = value.get("spawned_tasks") or []
-    if not isinstance(spawned_values, list) or len(spawned_values) > 8:
+    if not isinstance(spawned_values, list):
         raise AdaptivePractitionerError("spawned_tasks has an invalid shape")
     spawned = tuple(ProblemSpec(
         _short_text(item.get("objective"), "spawn objective"),
         constraints=_short_strings(item.get("constraints") or [], "constraints"),
         success_criteria=_short_strings(
             item.get("success_criteria") or [], "success_criteria"),
-        budget_passes=max(1, services.request.max_passes - 1),
+        budget_passes=(
+            None if services.request.max_passes is None
+            else max(1, services.request.max_passes - 1)),
         depth=state.spec.depth + 1)
         for item in spawned_values if isinstance(item, dict))
     arguments = value.get("arguments") or {}

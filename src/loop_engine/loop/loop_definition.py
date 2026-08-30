@@ -407,6 +407,8 @@ class LoopDefinition:
             "llm_thinking_power": config.llm_thinking_power,
             "custom_steps": list(config.custom_steps),
             "max_depth": config.max_depth,
+            "max_iterations": config.max_iterations,
+            "max_model_calls": config.max_model_calls,
             "loop_condition": config.loop_condition,
             "exit_condition": config.exit_condition,
             "success_confidence_min": config.success_confidence_min,
@@ -446,7 +448,14 @@ class LoopDefinition:
             power=facts.get("power", "standard"),
             llm_thinking_power=facts.get("llm_thinking_power", ""),
             custom_steps=tuple(facts.get("custom_steps", ())),
-            max_depth=int(facts.get("max_depth", 3)),
+            max_depth=(None if facts.get("max_depth") is None
+                       else int(facts["max_depth"])),
+            max_iterations=(
+                None if facts.get("max_iterations") is None
+                else int(facts["max_iterations"])),
+            max_model_calls=(
+                None if facts.get("max_model_calls") is None
+                else int(facts["max_model_calls"])),
             loop_condition=self.loop_condition,
             exit_condition=self.exit_condition,
             success_confidence_min=float(

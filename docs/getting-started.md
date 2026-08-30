@@ -58,9 +58,11 @@ curl -LO \
 loop-engine solve --file 01-expense-report.txt --quickstart
 ```
 
-The quickstart profile is explicit authority for the bounded onboarding run.
-It permits at most 16 model calls and 1,000,000 provider-reported tokens. The
-generated program runs without network access inside the pinned Docker image.
+The quickstart profile is explicit authority for the LLM-first onboarding run.
+The LLM-first profile has no product-imposed pass, model-call, or token ceiling.
+Explicit user, provider, cost, deadline, and deployment policies may still set
+limits. Generated programs run without network access inside the pinned Docker
+image.
 
 A successful result returns `COMPLETED_VERIFIED`, artifact paths, the
 workspace, verification details, and a saved Run History.

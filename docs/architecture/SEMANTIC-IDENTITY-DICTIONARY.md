@@ -92,6 +92,7 @@ This file is generated from the semantic constitution in `terminology.yaml`. The
 | `RunHistory` | `history` | Canonical persisted event evidence for all Loop work. | `loop_engine.core.run_history:RunHistory` | event_schema_and_storage_root | none | none |
 | `ProductOutcomeRef` | `reference` | Digest-bound manifest reference to one exact saved solve outcome. | `loop_engine.core.product_outcome_store:ProductOutcomeRef` | run_identity_and_content_digest | none | none |
 | `SavedRunBundle` | `snapshot` | Verified composition of one RunHistory and its optional digest-bound product outcome. | `loop_engine.core.product_outcome_store:SavedRunBundle` | run_identity | none | none |
+| `MaterialQuestion` | `record` | Passive typed clarification returned when a material answer is required before solving can continue. | `loop_engine.code_nodes.solve_runtime:MaterialQuestion` | question_subject_reason_and_answer_slot | none | none |
 | `LearningCandidate` | `candidate` | Durable unapproved proposal awaiting independent review. | `loop_engine.memory.storage.learning_records:CandidateStageRequest` | candidate_kind_and_scope | none | none |
 | `CandidateJournal` | `store` | Durable governance store for candidate transitions and integrity. | `loop_engine.memory.storage.learning_cycle:CandidateJournal` | storage_root | none | none |
 | `RuntimeSettings` | `settings` | Validated user and organization configuration without execution authority. | `loop_engine.core.runtime_settings:RuntimeSettings` | nested_typed_settings | none | none |

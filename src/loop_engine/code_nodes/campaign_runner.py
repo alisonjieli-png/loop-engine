@@ -88,7 +88,7 @@ class CampaignSpec:
     cases: tuple
     arms: tuple
     authorize_model_calls: bool = False
-    max_model_calls: int = 0
+    max_model_calls: "int | None" = None
     max_total_tokens: "int | None" = None
 
     def __post_init__(self):
@@ -99,7 +99,8 @@ class CampaignSpec:
         if model_arms and not self.authorize_model_calls:
             raise ValueError(
                 "model arms require authorize_model_calls=True")
-        if model_arms and self.max_model_calls < model_arms:
+        if (model_arms and self.max_model_calls is not None
+                and self.max_model_calls < model_arms):
             raise ValueError(
                 f"campaign needs at least {model_arms} model calls but the "
                 f"declared ceiling is {self.max_model_calls}")
@@ -317,7 +318,7 @@ def default_campaign_spec(*, modes=CAMPAIGN_MODES,
                           llm_thinking_power: str = "medium",
                           cases=None,
                           authorize_model_calls: bool = False,
-                          max_model_calls: int = 0,
+                          max_model_calls: "int | None" = None,
                           max_total_tokens: "int | None" = None,
                           campaign_id: str = "five-utility-problems") -> CampaignSpec:
     return CampaignSpec(
@@ -433,7 +434,8 @@ class CampaignRunner:
             ledger=ledger, parent=parent)
 
     def _model(self, case, arm, baseline, *, ledger, parent):
-        if self.model_calls_used >= self.spec.max_model_calls:
+        if (self.spec.max_model_calls is not None
+                and self.model_calls_used >= self.spec.max_model_calls):
             raise RuntimeError("campaign model-call ceiling reached")
         response = self.model_call(
             case, arm, baseline, ledger=ledger, parent=parent)

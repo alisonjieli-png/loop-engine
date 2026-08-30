@@ -303,7 +303,9 @@ def _prompt(request: ModelAssistedCompileRequest):
         PromptAssemblySpec, ReasoningRequest, assemble_prompt, to_invocation)
 
     compiled = request.compiled_task
-    binding = compiled.get("binding")
+    binding = compiled.get("binding") or {
+        "binding_mode": "open", "mapped_variables": {},
+        "unmapped_requirements": [], "requirement_dispositions": []}
     work_item = compiled.get("work_item")
     if not isinstance(binding, dict) or not isinstance(work_item, dict):
         raise ModelAssistedCompileError(
@@ -402,8 +404,8 @@ def review_compiled_task(request: ModelAssistedCompileRequest, gateway) -> dict:
     minimum_total = (
         capability.maximum_output_tokens
         + len(invocation.prompt.encode("utf-8")))
-    effective_total = request.max_total_tokens or minimum_total
-    if effective_total < minimum_total:
+    effective_total = request.max_total_tokens
+    if effective_total is not None and effective_total < minimum_total:
         raise ModelAssistedCompileError(
             "max_total_tokens is too small for the selected model's exact "
             f"output maximum; required minimum is {minimum_total}")
@@ -458,7 +460,7 @@ def review_compiled_task(request: ModelAssistedCompileRequest, gateway) -> dict:
         "total_token_ceiling": effective_total,
         "total_token_ceiling_source": (
             "user_override" if request.max_total_tokens is not None
-            else "declared_model_output_maximum_plus_exact_prompt_bytes"),
+            else "unset"),
         "elapsed_seconds": round(time.monotonic() - started, 6),
         "prompt_version": MODEL_ASSISTED_COMPILE_PROMPT_VERSION,
         "prompt_blocks": list(ordered_blocks),
@@ -540,7 +542,7 @@ def self_test() -> dict:
           reviewed["ok"] and reviewed["model_calls"] == 1
           and fake.calls == 1 and reviewed["review"]["status"] == "ready"
           and reviewed["total_token_ceiling_source"]
-          == "declared_model_output_maximum_plus_exact_prompt_bytes")
+          == "unset" and reviewed["total_token_ceiling"] is None)
     check("the_review_is_advisory_and_preserves_delegated_choices",
           reviewed["advisory_only"]
           and reviewed["review"]["delegated_choices"]
@@ -676,10 +678,11 @@ def self_test() -> dict:
         _apply_quickstart(quickstart)
         check("quickstart_selects_one_known_key_and_bounded_authority",
               quickstart.compile_provider == "ollama_cloud"
-              and quickstart.interaction_mode == "autonomous"
+              and quickstart.interaction_mode == "ask_when_material"
+              and quickstart.practitioner_mode == "non_deterministic"
               and quickstart.authorize_model_calls
-              and quickstart.max_model_calls == 16
-              and quickstart.max_total_tokens == 1_000_000)
+              and quickstart.max_model_calls is None
+              and quickstart.max_total_tokens is None)
         previous_openrouter = os.environ.get("OPENROUTER_API_KEY")
         try:
             os.environ["OPENROUTER_API_KEY"] = "offline-key-not-for-network"

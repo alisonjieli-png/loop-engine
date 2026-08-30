@@ -127,7 +127,7 @@ def _product_projection(outcome: "dict | None") -> dict:
                 "available": False, "terminal_code": "", "solved": False,
                 "summary": "", "failure_code": "", "verification": {},
                 "artifacts": [], "workspace": "", "limitations": [],
-                "next_action": "", "graph_digest": "",
+                "questions": [], "next_action": "", "graph_digest": "",
                 "selected_canvas": {}}
     workspace = str(outcome.get("workspace") or "")
     artifacts = []
@@ -157,6 +157,7 @@ def _product_projection(outcome: "dict | None") -> dict:
         "verification": dict(outcome.get("verification") or {}),
         "artifacts": artifacts, "workspace": workspace,
         "limitations": list(outcome.get("limitations") or ()),
+        "questions": list(outcome.get("questions") or ()),
         "next_action": str(outcome.get("next_action") or ""),
         "graph_digest": str(outcome.get("graph_digest") or ""),
         "selected_canvas": dict(outcome.get("selected_canvas") or {}),
@@ -284,6 +285,12 @@ def _run_detail(rid: str) -> dict:
              "mode": "deterministic", "tokens": "",
              "detail": product["terminal_code"]},
         ))
+        product_events.extend({
+            "type": "product.material_question", "loop": "run",
+            "step": "route", "mode": "deterministic", "tokens": "",
+            "detail": f"[{item.get('answer_slot', '')}] "
+                      f"{item.get('question', '')}"}
+            for item in product["questions"])
         product_events.extend({
             "type": "product.artifact", "loop": "run", "step": "integrate",
             "mode": "deterministic", "tokens": "",

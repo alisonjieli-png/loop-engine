@@ -33,7 +33,7 @@ class SpawnedLoopRuntimeConfigFacts:
     delegated_modes: tuple[str, ...]
     power: str
     llm_thinking_power: str
-    max_depth: int
+    max_depth: "int | None"
     exit_condition: str
     success_confidence_min: float
     steps: tuple[str, ...]
@@ -154,14 +154,17 @@ class SpawnedLoopRuntimePort:
 
     __slots__ = ("__loop", "__max_iterations")
 
-    def __init__(self, spawned_loop: Loop, *, max_iterations: int) -> None:
+    def __init__(self, spawned_loop: Loop, *,
+                 max_iterations: "int | None") -> None:
         if not isinstance(spawned_loop, Loop) or spawned_loop.parent is None:
             raise SpawnedLoopRuntimePortError(
                 "a runtime port needs an internally owned Spawned Loop")
-        if not isinstance(max_iterations, int) or isinstance(max_iterations, bool) \
-                or max_iterations < 1:
+        if (max_iterations is not None
+                and (not isinstance(max_iterations, int)
+                     or isinstance(max_iterations, bool)
+                     or max_iterations < 1)):
             raise SpawnedLoopRuntimePortError(
-                "max_iterations must be positive")
+                "max_iterations must be positive when provided")
         self.__loop = spawned_loop
         self.__max_iterations = max_iterations
 
@@ -208,8 +211,11 @@ class SpawnedLoopRuntimePort:
     def run(self, *, handler: "SpawnedStepHandler | None" = None,
             max_steps: "int | None" = None) -> SpawnedLoopRuntimeOutcome:
         selected_max = self.__max_iterations if max_steps is None else max_steps
-        if (not isinstance(selected_max, int) or isinstance(selected_max, bool)
-                or selected_max < 1 or selected_max > self.__max_iterations):
+        if (selected_max is not None and (
+                not isinstance(selected_max, int)
+                or isinstance(selected_max, bool) or selected_max < 1
+                or (self.__max_iterations is not None
+                    and selected_max > self.__max_iterations))):
             raise SpawnedLoopRuntimePortError(
                 "max_steps must be positive and within the spawned budget")
 

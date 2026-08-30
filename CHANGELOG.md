@@ -9,6 +9,20 @@ First public release.
 
 ### Added
 
+- **LLM-first open-task solving.** Public solve preserves an unbound typed task,
+  gives templates and prior solutions to the model as optional candidates, and
+  requires the model to select the next action. Task words and fingerprint
+  scores cannot select a solution branch.
+- **Model-selected source inspection.** Repository and dataset runs can inspect
+  a manifest, select exact text bodies with digests, then use those same inputs
+  in a later build or repair pass.
+- **Answerable material questions.** A blocked solve returns typed question and
+  answer-slot records. A later activation accepts feedback without changing the
+  original task.
+- **Optional work ceilings.** Pass, model-call, token, recursion, spawned-work,
+  candidate, and provider-attempt ceilings are unset unless an owner, provider,
+  or policy supplies one. Exact repeated state, action, evidence, and failure
+  still triggers diagnosis instead of no-op churn.
 - **Artifact-producing `loop-engine solve` command.** Text, task-file, dataset,
   and repository inputs can now run through the canonical Practitioner,
   generated-project capability, confined Docker workspace, artifact inspection,
@@ -88,7 +102,16 @@ test:
 
 - A generic structured-data solve could report success after whitespace
   normalization even when the requested transform and output artifacts were
-  not produced. Exact deterministic resolvers must now be bound explicitly.
+  not produced. An exact deterministic resolver may run only when explicitly
+  selected and independently verified.
+- The package exported a second heuristic `solve()` function that guessed
+  tabular roles from filenames and task words. It was removed. `SolveRequest`,
+  `solve_task()`, and `loop-engine solve` are the only solve authorities.
+- The task compiler selected the nearest template even for weak lexical
+  matches. Default compilation now returns an open task and advisory candidates.
+- The base wheel self-test treated optional data, MCP, telemetry, and vector
+  adapters as missing required dependencies. It now verifies the base product
+  and reports absent optional adapter suites as not tested.
 - The default wheel pulled large benchmark, ML, and GPU dependencies before a
   new user could run `doctor` or `solve`. Those packages are now optional.
 - Broad package-data patterns could include ignored local Run History and

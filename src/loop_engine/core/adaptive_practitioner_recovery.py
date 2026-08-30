@@ -1,9 +1,10 @@
-"""Multi-call semantic diagnosis and strategy mutation for stalled work.
+"""Model-led diagnosis and strategy mutation for stalled work.
 
 Deterministic supervision emits a stall signal. This module asks separate
-bounded model steps to diagnose the failure, propose competing changes, and
-adjudicate one recovery directive. The directive is passive data; the normal
-Practitioner decision and capability validation path remains authoritative.
+model steps to diagnose the failure, propose any useful changed strategies,
+and adjudicate one recovery directive. The directive is passive data; the
+normal Practitioner decision and capability validation path remains
+authoritative.
 """
 from __future__ import annotations
 
@@ -51,17 +52,16 @@ def _diagnosis_schema() -> str:
 
 
 def _proposal_schema() -> str:
-    return json.dumps({
-        "proposal_id": "string",
+    return json.dumps({"proposals": [{
+        "proposal_id": "unique string",
         "change_kind": (
             "configure|modify|mutate|compose|repair|research|reframe|delegate"),
         "directive": "string",
         "required_capabilities": ["registered capability ref"],
         "expected_progress": "string",
         "risks": ["string"],
-        "maximum_followup_passes": 1,
         "confidence": 0.0,
-    }, separators=(",", ":"))
+    }]}, separators=(",", ":"))
 
 
 def _adjudication_schema() -> str:
@@ -76,15 +76,15 @@ def _validate_diagnosis(value: dict) -> dict:
     diagnosis_id = _short_text(
         value.get("diagnosis_id"), "diagnosis_id", 120)
     roots = value.get("root_causes")
-    if not isinstance(roots, list) or not 1 <= len(roots) <= 8:
+    if not isinstance(roots, list) or not roots:
         raise AdaptivePractitionerError(
-            "recovery diagnosis needs from 1 through 8 root causes")
+            "recovery diagnosis needs at least one evidenced root cause")
     normalized = []
     for item in roots:
         if not isinstance(item, dict):
             raise AdaptivePractitionerError("root cause must be an object")
         normalized.append({
-            "cause": _short_text(item.get("cause"), "root cause", 500),
+            "cause": _short_text(item.get("cause"), "root cause"),
             "evidence_refs": list(_short_strings(
                 item.get("evidence_refs") or [], "evidence_refs")),
             "confidence": float(item.get("confidence", 0.0)),
@@ -97,7 +97,7 @@ def _validate_diagnosis(value: dict) -> dict:
         "diagnosis_id": diagnosis_id,
         "root_causes": normalized,
         "failed_strategy": _short_text(
-            value.get("failed_strategy"), "failed_strategy", 1000),
+            value.get("failed_strategy"), "failed_strategy"),
         "missing_context": list(_short_strings(
             value.get("missing_context") or [], "missing_context")),
         "invalid_assumptions": list(_short_strings(
@@ -118,25 +118,43 @@ def _validate_proposal(value: dict, services: AdaptiveRunServices) -> dict:
     if set(capabilities) - registered:
         raise AdaptivePractitionerError(
             "recovery proposal names an unavailable capability")
-    followup = int(value.get("maximum_followup_passes", 1))
-    if not 1 <= followup <= 4:
-        raise AdaptivePractitionerError(
-            "recovery proposal follow-up budget must be from 1 through 4")
     return {
         "proposal_id": _short_text(
             value.get("proposal_id"), "proposal_id", 120),
         "change_kind": change_kind,
         "route": route,
         "directive": _short_text(
-            value.get("directive"), "recovery directive", 1500),
+            value.get("directive"), "recovery directive"),
         "required_capabilities": list(capabilities),
         "forbidden_action_kinds": [],
         "expected_progress": _short_text(
-            value.get("expected_progress"), "expected_progress", 1000),
+            value.get("expected_progress"), "expected_progress"),
         "risks": list(_short_strings(value.get("risks") or [], "risks")),
-        "maximum_followup_passes": followup,
         "confidence": float(value.get("confidence", 0.0)),
     }
+
+
+def _validate_proposals(value: dict, services: AdaptiveRunServices) -> tuple:
+    raw = value.get("proposals")
+    if not isinstance(raw, list) or not raw:
+        raise AdaptivePractitionerError(
+            "recovery needs at least one executable changed strategy")
+    proposals = tuple(_validate_proposal(item, services)
+                      for item in raw if isinstance(item, dict))
+    if len(proposals) != len(raw):
+        raise AdaptivePractitionerError(
+            "every recovery proposal must be an object")
+    identities = [item["proposal_id"] for item in proposals]
+    if len(identities) != len(set(identities)):
+        raise AdaptivePractitionerError("recovery proposal identities repeat")
+    signatures = {
+        (item["change_kind"], tuple(item["required_capabilities"]),
+         item["directive"])
+        for item in proposals}
+    if len(signatures) != len(proposals):
+        raise AdaptivePractitionerError(
+            "recovery proposals must contain materially different changes")
+    return proposals
 
 
 def _resolve_validated_step(
@@ -172,24 +190,19 @@ def resolve_stall_with_panel(
         **request.model_state,
         "stall_signal": request.stall_signal,
         "pass_number": request.pass_number,
-        "prior_recovery_directives": services.recovery_directives[-3:],
+        "prior_recovery_directives": services.recovery_directives,
     }
     diagnosis = _resolve_validated_step(
         services, "diagnose_stall",
         "Diagnose why governed work stopped making useful progress.",
         common, _diagnosis_schema(), _validate_diagnosis)
-    first = _resolve_validated_step(
+    proposal_values = _resolve_validated_step(
         services, "propose_recovery",
-        "Propose one executable changed strategy from the diagnosis.",
+        "Propose every useful executable changed strategy from the diagnosis. "
+        "Do not repeat the same change under different wording.",
         {**common, "diagnosis": diagnosis}, _proposal_schema(),
-        lambda value: _validate_proposal(value, services))
-    second = _resolve_validated_step(
-        services, "propose_recovery_alternative",
-        "Propose a materially different recovery strategy and challenge the first.",
-        {**common, "diagnosis": diagnosis, "first_proposal": first},
-        _proposal_schema(),
-        lambda value: _validate_proposal(value, services))
-    proposals = {item["proposal_id"]: item for item in (first, second)}
+        lambda value: _validate_proposals(value, services))
+    proposals = {item["proposal_id"]: item for item in proposal_values}
 
     def validate_adjudication(raw_value):
         selected = _short_text(
@@ -199,7 +212,7 @@ def resolve_stall_with_panel(
             raise AdaptivePractitionerError(
                 "recovery adjudication selected an unknown proposal")
         reason = _short_text(
-            raw_value.get("reason"), "recovery reason", 1000)
+            raw_value.get("reason"), "recovery reason")
         confidence = float(raw_value.get("confidence", 0.0))
         if not 0.0 <= confidence <= 1.0:
             raise AdaptivePractitionerError(
@@ -210,7 +223,8 @@ def resolve_stall_with_panel(
         _resolve_validated_step(
         services, "adjudicate_recovery",
         "Select one recovery directive using evidence, progress, authority, and risk.",
-        {**common, "diagnosis": diagnosis, "proposals": [first, second]},
+        {**common, "diagnosis": diagnosis,
+         "proposals": list(proposal_values)},
         _adjudication_schema(), validate_adjudication))
     adjudicated = proposals[selected_id]
     directive = {
@@ -218,7 +232,7 @@ def resolve_stall_with_panel(
         "recovery_round": services.recovery_rounds + 1,
         "stall_signal": request.stall_signal,
         "diagnosis": diagnosis,
-        "proposals": [first, second],
+        "proposals": list(proposal_values),
         "selected_proposal_id": selected_id,
         "route": adjudicated["route"],
         "reason": adjudication_reason,
@@ -226,11 +240,9 @@ def resolve_stall_with_panel(
         "required_capabilities": adjudicated["required_capabilities"],
         "forbidden_action_kinds": adjudicated["forbidden_action_kinds"],
         "expected_progress": adjudicated["expected_progress"],
-        "maximum_followup_passes": adjudicated["maximum_followup_passes"],
         "confidence": adjudication_confidence,
     }
     services.recovery_rounds += 1
-    services.recovery_evidence_baseline = len(services.web_results)
     services.unchanged_progress_snapshots = 0
     services.recovery_directives.append(directive)
     services.active_recovery_directive = directive

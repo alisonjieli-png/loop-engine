@@ -112,7 +112,7 @@ def run_extensions_action(args) -> int:
 
 def _task_compile_lines(output: dict) -> list[str]:
     compiled = output["compiled_task"]
-    binding = compiled["binding"]
+    binding = compiled.get("binding") or {}
     work_item = compiled["work_item"]
     dispositions = binding.get("requirement_dispositions", ())
     delegated = [item["requirement_id"] for item in dispositions
@@ -121,19 +121,21 @@ def _task_compile_lines(output: dict) -> list[str]:
                 if item.get("state") in (
                     "needs_clarification", "abstain_required")]
     status = (
+        "OPEN" if not binding else
         "ABSTAIN" if binding.get("requires_abstention") else
         "NEEDS INPUT" if binding.get("requires_clarification") else
         "READY")
     pattern_id = str(binding.get("template_id") or "")
     pattern_name = (
         pattern_id.rsplit(".", 1)[-1].replace("_", " ")
-        if pattern_id else "no supported task type matched")
+        if pattern_id else "open task for LLM orientation")
     operation = str(work_item["coordinates"]["operator"]).replace("_", " ")
     response = str(
         work_item["coordinates"]["response_topology"]).replace("_", " ")
     if response == "artifact":
         response = "file or report"
     details = (
+        "awaiting LLM orientation" if status == "OPEN" else
         "enough to continue" if status == "READY" else
         "required input is missing" if status == "NEEDS INPUT" else
         "cannot continue safely")
@@ -555,7 +557,8 @@ def _compile_provider_key(args) -> tuple[str, str]:
     return standard_env, key
 
 
-def _apply_compile_provider_shortcut(args, default_model_calls: int = 1) -> None:
+def _apply_compile_provider_shortcut(
+        args, default_model_calls: "int | None" = 1) -> None:
     selected = [
         ("ollama_cloud", args.ollama_api_key),
         ("mistral", args.mistral_api_key),
@@ -574,8 +577,12 @@ def _apply_compile_provider_shortcut(args, default_model_calls: int = 1) -> None
     if args.provider_key_env or args.prompt_for_provider_key:
         raise ValueError(
             "provider-specific key flag already selects a hidden prompt")
-    if default_model_calls < 1 or args.max_model_calls < 0:
-        raise ValueError("model-call budget must be positive")
+    if args.max_model_calls == 0:
+        args.max_model_calls = None
+    if (default_model_calls is not None and default_model_calls < 1) \
+            or (args.max_model_calls is not None
+                and args.max_model_calls < 1):
+        raise ValueError("model-call budget must be positive when provided")
     args.compile_provider = provider
     args._provider_key_value = (
         supplied_value if supplied_value != _KEY_PROMPT_SENTINEL else "")
@@ -584,7 +591,7 @@ def _apply_compile_provider_shortcut(args, default_model_calls: int = 1) -> None
         supplied_value == _KEY_PROMPT_SENTINEL
         and not bool(os.environ.get(standard_env, "").strip()))
     args.authorize_model_calls = True
-    if args.max_model_calls == 0:
+    if args.max_model_calls is None and default_model_calls is not None:
         args.max_model_calls = default_model_calls
 
 

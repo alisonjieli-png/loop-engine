@@ -397,6 +397,149 @@ def run_checks() -> dict:
               and bool(led["selected_solution_canvas"]),
               f"{led['passes']} pass, {led['model_calls']} model calls")
 
+    low_confidence_build = _decision(confidence=0.1)
+    high_confidence_stop = _decision(
+        "ABSTAIN", confidence=0.99,
+        goal="Stop without producing the requested artifact.",
+        reason="One possible candidate is to stop.")
+    selected_answers = list(_success_answers(
+        decision=low_confidence_build))
+    selected_answers[1] = json.dumps({
+        "actions": [high_confidence_stop, low_confidence_build],
+        "selected_action_index": 1})
+    with tempfile.TemporaryDirectory() as root:
+        selected = _run(
+            "Compare possible actions, select one, and build the artifact.",
+            tuple(selected_answers), root, mode="non_deterministic")
+        selected_canvases = [item for item in
+                             selected["candidate_solution_canvases"]
+                             if item.get("selected")]
+        check("model_explicitly_selects_among_actions_without_local_rescoring",
+              selected["solved"] and len(selected_canvases) == 1
+              and selected_canvases[0]["action_kind"] == "BUILD_CAPABILITY"
+              and [item["confidence"]
+                   for item in selected["action_decisions"]] == [0.99, 0.1],
+              "the selected index wins even when another candidate has a "
+              "larger advisory confidence")
+
+    with tempfile.TemporaryDirectory() as root:
+        source_root = Path(root) / "source"
+        source_root.mkdir()
+        source_body = (
+            "def normalize(value):\n"
+            "    return value.upper()  # defect: expected casefold\n")
+        (source_root / "unseen_module.py").write_text(
+            source_body, encoding="utf-8")
+        inspect_decision = _decision(
+            "RESEARCH_SOURCE",
+            goal="Inspect the supplied implementation before changing it.",
+            required_capabilities=["core.source.inspect"],
+            permissions=["source_read"],
+            expected_output="Selected source content and its digest.")
+        inspect_how = {
+            "action_id": _decision_id(inspect_decision),
+            "how_mode": "research", "act_mode": "run_dag",
+            "capability_ref": "core.source.inspect",
+            "arguments": {"query": "normalize casefold",
+                          "include_contents": True},
+            "steps": ["inspect supplied source"], "spawned_tasks": [],
+            "rationale": "Read the exact implementation before proposing a fix.",
+        }
+        build_decision = _decision(
+            "REPAIR", goal="Build and verify the source-informed repair.")
+        build_how = {
+            "action_id": _decision_id(build_decision),
+            "how_mode": "modify", "act_mode": "run_dag",
+            "capability_ref": "core.generated_project", "arguments": {},
+            "steps": ["build repair", "verify repair"],
+            "spawned_tasks": [],
+            "rationale": "Use the selected source content to build the repair.",
+        }
+        candidate = {
+            "record_type": "generated_project_candidate/v1",
+            "project_id": "source_informed_repair",
+            "summary": "Repair the supplied implementation.",
+            "files": [{"path": "repair.py", "purpose": "Apply the repair.",
+                       "acceptance": ["The selected source is read."]}],
+            "commands": [{"argv": ["python", "repair.py"],
+                          "purpose": "Run the repair.",
+                          "timeout_seconds": 30}],
+            "expected_artifacts": [{"path": "repair.py",
+                                    "media_type": "text/x-python",
+                                    "minimum_bytes": 1}],
+        }
+        repair_content = (
+            "from pathlib import Path\n"
+            "source = Path('inputs/source/unseen_module.py').read_text()\n"
+            "assert 'return value.upper()' in source\n"
+            "print('repair uses selected source')\n")
+        inspect_verification = {
+            "verdict": "research_more", "best_index": 0,
+            "scores": [1.0], "notes": "The source is now available.",
+            "remaining_gaps": [{"criterion_ref": "criterion:0",
+                                 "gap": "the repair has not been built"}],
+            "advisory_findings": [], "new_requirement_proposals": [],
+        }
+        accept_verification = {
+            "verdict": "accept", "best_index": 0, "scores": [1.0],
+            "notes": "The source-informed repair passed.",
+            "remaining_gaps": [], "advisory_findings": [],
+            "new_requirement_proposals": [],
+        }
+        answers = tuple(json.dumps(item) for item in (
+            _orientation(
+                current_state="A supplied implementation must be inspected.",
+                unknowns=["exact defect in supplied source"],
+                candidate_capabilities=["core.source.inspect",
+                                        "core.generated_project"]),
+            {"actions": [inspect_decision]}, inspect_how,
+            inspect_verification,
+            {"route": "continue", "reason": "Inspect before editing."},
+            _orientation(
+                current_state="Selected source content is available.",
+                knowns=["the implementation uppercases instead of casefolding"],
+                unknowns=[], candidate_capabilities=["core.generated_project"]),
+            {"actions": [build_decision]}, build_how, candidate,
+            {"path": "repair.py", "content": repair_content},
+            accept_verification,
+            {"route": "stop_success", "reason": "Repair is verified."},
+        ))
+        observed_inputs = []
+
+        def source_project_fixture(request, context):
+            observed_inputs.extend(request.input_artifacts)
+            result = _project_fixture(request, context)
+            result["input_use_validation"] = {
+                "passed": bool(request.input_artifacts),
+                "supplied_paths": [item.path
+                                   for item in request.input_artifacts],
+            }
+            return result
+
+        execution = fixture_model_execution(FixtureModelExecutionRequest(
+            answers=answers, max_model_calls=len(answers)))
+        source_led = run_adaptive_practitioner(
+            AdaptivePractitionerRequest(
+                "Repair the supplied unfamiliar module after inspecting it.",
+                mode="non_deterministic", runs_dir=root, max_passes=2,
+                source_kind="repository", source_refs=(str(source_root),),
+                allow_source_materialization_to_model=True,
+                allow_network_reads=False),
+            AdaptivePractitionerDependencies(
+                execution, project_executor=source_project_fixture))
+        selected = source_led["source_inspections"][0]["selected"]
+        check("model_can_inspect_unseen_source_then_choose_a_different_action",
+              source_led["solved"] and source_led["passes"] == 2
+              and selected[0]["content"] == source_body
+              and observed_inputs
+              and observed_inputs[0].content == source_body.encode("utf-8")
+              and [item["action_kind"]
+                   for item in source_led["action_decisions"]]
+                  == ["RESEARCH_SOURCE", "REPAIR"],
+              f"{source_led['passes']} passes; "
+              f"{len(selected)} selected source; "
+              f"{len(observed_inputs)} executed input")
+
     incomplete_decision = _decision(
         "RETURN_RESULT", goal="Return without building.",
         reason="Attempt premature completion.",

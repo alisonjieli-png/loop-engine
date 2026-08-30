@@ -100,7 +100,8 @@ def _spec_from_dict(d: dict) -> SolutionSpec:
         d["solution_id"], permitted_loop_modes=tuple(
             d.get("permitted_loop_modes", d.get("allowed_modes", MODES))),
         ensemble=d["ensemble"], weights=tuple(d.get("weights", ())),
-        max_members=int(d.get("max_members", 5)),
+        max_members=(None if d.get("max_members") is None
+                     else int(d["max_members"])),
         loops=tuple(SolutionLoopSpec(n["loop_id"], n["operation"],
                                  mode=n.get("mode", "deterministic"),
                                  fallback_operations=tuple(

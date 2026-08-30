@@ -25,7 +25,7 @@ TEMPLATE_LIBRARY = (
     {"template_id": "reference_nine_step", "framework": "nine_step",
      "steps": (), "maturity": "registered",
      "description": "The reference practitioner loop: reconstruct state, "
-                    "compile and bind the task, reconcile goal, assess "
+                    "standardize the open task, reconcile goal, assess "
                     "evidence, decide next, choose how, act, verify, capture "
                     "learning, commit."},
     {"template_id": "atomic_code_only", "framework": "custom",
@@ -166,7 +166,7 @@ def validate_template(body: dict) -> dict:
 
 
 def config_from_template(body: dict, *, power: str = "standard",
-                         max_depth: int = 3) -> LoopConfig:
+                         max_depth: "int | None" = None) -> LoopConfig:
     """Build the runnable LoopConfig from a VALID, ADMITTED template.  A
     candidate template is refused — it cannot run until registered (the
     evidence gate; generators never admit their own output)."""

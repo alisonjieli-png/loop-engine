@@ -148,31 +148,25 @@ def run_checks() -> dict:
         "detail": "source contains universal contracts and capability refs only",
     })
     supervised = SimpleNamespace(
-        web_results=[], project_attempts=[], progress_snapshots=[],
+        web_results=[], source_inspections=[], project_attempts=[],
+        action_history=[], verification_records=[], progress_snapshots=[],
         unchanged_progress_snapshots=0, supervision_findings=[],
-        recovery_evidence_baseline=0, active_recovery_directive=None)
+        recovery_rounds=0, active_recovery_directive=None)
     state = PractitionerState(ProblemSpec("qualify progress breakout"))
-    signals = [detect_stall(supervised, state) for _item in range(4)]
+    signals = [detect_stall(supervised, state) for _item in range(2)]
     results.append({
         "test": "unchanged_task_state_triggers_diagnosis_not_terminal_route",
-        "passed": signals[-1] is not None
-        and signals[-1]["code"] == "RECOVERY_DIAGNOSIS_REQUIRED"
+        "passed": signals[0] is None and signals[1] is not None
+        and signals[1]["code"] == "RECOVERY_DIAGNOSIS_REQUIRED"
         and bool(supervised.supervision_findings),
         "detail": str([item is not None for item in signals]),
     })
-    exhausted = SimpleNamespace(
-        web_results=[{"sha256": str(index)} for index in range(3)],
-        project_attempts=[{"context_evidence_count": 0}],
-        progress_snapshots=[], unchanged_progress_snapshots=0,
-        supervision_findings=[], recovery_evidence_baseline=0,
-        active_recovery_directive=None)
-    signal = detect_stall(exhausted, state)
+    supervised.web_results.append({"sha256": "new-evidence"})
+    signal = detect_stall(supervised, state)
     results.append({
-        "test": "post_project_research_budget_triggers_recovery_panel",
-        "passed": signal is not None
-        and "post-project research repeated without resolution"
-        in signal["reasons"],
-        "detail": "detector emits evidence; LLM panel selects the change",
+        "test": "new_evidence_clears_exact_repeat_without_a_numeric_cap",
+        "passed": signal is None,
+        "detail": "novel evidence may continue regardless of attempt count",
     })
     panel_answers = iter((
         {
@@ -184,24 +178,23 @@ def run_checks() -> dict:
             "missing_context": [], "invalid_assumptions": [],
             "recommended_change_types": ["mutate", "reframe"],
         },
-        {
+        {"proposals": [{
             "proposal_id": "proposal-a", "change_kind": "mutate",
             "route": "repair", "directive": "Mutate the failed project.",
             "required_capabilities": ["core.generated_project"],
             "forbidden_action_kinds": ["RESEARCH_SOURCE"],
             "expected_progress": "A second project attempt exists.",
-            "risks": ["bounded rebuild"], "maximum_followup_passes": 2,
+            "risks": ["rebuild risk"],
             "confidence": 0.8,
-        },
-        {
+        }, {
             "proposal_id": "proposal-b", "change_kind": "reframe",
             "route": "reframe", "directive": "Reframe the failed criteria.",
             "required_capabilities": [],
             "forbidden_action_kinds": ["RESEARCH_SOURCE"],
             "expected_progress": "Blocking gaps map to the user contract.",
-            "risks": ["criterion drift"], "maximum_followup_passes": 1,
+            "risks": ["criterion drift"],
             "confidence": 0.7,
-        },
+        }]},
         {
             "selected_proposal_id": "proposal-a", "route": "repair",
             "reason": "The executable mutation best addresses the cause.",
@@ -209,7 +202,7 @@ def run_checks() -> dict:
             "required_capabilities": ["core.generated_project"],
             "forbidden_action_kinds": ["RESEARCH_SOURCE"],
             "expected_progress": "A second project attempt exists.",
-            "maximum_followup_passes": 2, "confidence": 0.9,
+            "confidence": 0.9,
         },
     ))
 
@@ -219,7 +212,6 @@ def run_checks() -> dict:
             self.recovery_directives = []
             self.active_recovery_directive = None
             self.recovery_rounds = 0
-            self.recovery_evidence_baseline = 0
             self.unchanged_progress_snapshots = 3
             self.web_results = []
 
@@ -237,8 +229,7 @@ def run_checks() -> dict:
     results.append({
         "test": "stall_runs_diagnosis_competing_mutations_and_adjudication",
         "passed": panel_services.steps == [
-            "diagnose_stall", "propose_recovery",
-            "propose_recovery_alternative", "adjudicate_recovery"]
+            "diagnose_stall", "propose_recovery", "adjudicate_recovery"]
         and directive["route"] == "repair"
         and directive["required_capabilities"]
             == ["core.generated_project"],

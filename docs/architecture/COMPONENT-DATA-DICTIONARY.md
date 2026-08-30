@@ -126,14 +126,13 @@ The signal has no route, capability, permission, or terminal authority.
 | `recovery_round` | integer | Ordered panel activation in the current run. |
 | `stall_signal` | signal | Exact activation evidence. |
 | `diagnosis` | typed result | Root causes and evidence refs from the diagnosis call. |
-| `proposals` | recovery proposals | Two materially different candidate changes. |
+| `proposals` | recovery proposals | Model-proposed, materially different candidate changes. |
 | `selected_proposal_id` | proposal ID | Adjudicator selection. |
 | `route` | route ID | Validated route carried into the next pass. |
 | `reason` | string | Evidence-based selection reason. |
-| `directive` | string | Bounded instruction for later next-action selection. |
+| `directive` | string | Instruction for later next-action selection. |
 | `required_capabilities` | capability refs | Available capabilities required by the proposal. |
 | `expected_progress` | string | State change that the next pass must demonstrate. |
-| `maximum_followup_passes` | integer | Proposal-specific follow-up budget. |
 | `confidence` | float | Advisory confidence from zero through one. |
 
 The directive is passive. It does not execute the repair.

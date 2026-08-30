@@ -105,6 +105,9 @@ terms:
   SolveTerminalCode:
     kind: canonical
     definition: User-visible terminal vocabulary distinguishing verified completion, material blockers, authority, capability, provider, verification, repair, progress, budget, deadline, abstention, and cancellation.
+  MaterialQuestion:
+    kind: canonical
+    definition: Passive answerable clarification containing the exact question, material subject, reason, and feedback slot required before a solve can continue.
   WorkerAssignmentEnvelope:
     kind: canonical
     definition: Exact digest-bound child handoff carrying resolved workspace, settings, capabilities, extensions, context, authority, contracts, budget, and return destination.
@@ -1203,6 +1206,35 @@ semantic_terms:
   - one_term_one_meaning
   - one_source_of_truth
   - no_authority_from_alias
+- term_id: core.term.material_question
+  canonical_name: MaterialQuestion
+  primary_category: record
+  definition: Passive typed clarification returned when a material answer is required before solving can continue.
+  source_of_truth: loop_engine.code_nodes.solve_runtime:MaterialQuestion
+  source_symbol: loop_engine.code_nodes.solve_runtime:MaterialQuestion
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: material_question/v1
+  related_terms:
+  - ClarificationDisposition
+  - SolveOutcome
+  difference_from_neighbors: ClarificationDisposition classifies ambiguity; MaterialQuestion gives the user one answer slot; SolveOutcome carries the current terminal result.
+  parameterization_decision: question_subject_reason_and_answer_slot
+  composition_decision: compose inside SolveOutcome without creating an executable object
+  inheritance_decision: none
+  storage_authority: bound product outcome
+  lifecycle: immutable for one solve activation
+  legacy_aliases: []
+  migration: absent on solve_outcome/v3 records
+  examples:
+  - MaterialQuestion
+  negative_examples:
+  - TaskOrientationResult
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
 - term_id: core.term.learning_candidate
   canonical_name: LearningCandidate
   primary_category: candidate
@@ -1758,7 +1790,7 @@ semantic_terms:
   public_or_internal: public
   runtime_or_passive: passive
   authoritative_or_projection: authoritative
-  versioning: resolution_decision/v1 and canonical content digest
+  versioning: resolution_decision/v2 and canonical content digest
   related_terms: []
   difference_from_neighbors: ResolutionDecision records selection; LoopResult records the outcome after work executes.
   parameterization_decision: selected_ref_rejections_and_delta

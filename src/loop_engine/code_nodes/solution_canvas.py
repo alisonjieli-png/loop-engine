@@ -82,7 +82,7 @@ class SolutionSpec:
     members: tuple = ()
     ensemble: str = "single"
     weights: tuple = ()
-    max_members: int = 5
+    max_members: "int | None" = None
     graph: LoopGraphDefinition | None = field(default=None, repr=False)
     group_id: str = field(default="", repr=False)
     allowed_modes: InitVar["tuple | None"] = None
@@ -124,7 +124,8 @@ class SolutionSpec:
         """Fail-closed validation; the report IS the result."""
         assert self.graph is not None
         v = list(self.graph.validate().violations)
-        if len(self.members) > self.max_members:
+        if (self.max_members is not None
+                and len(self.members) > self.max_members):
             v.append(f"{len(self.members)} members exceeds the "
                      f"max_members bound {self.max_members}")
         if self.ensemble == "weighted_average" and \
@@ -185,7 +186,7 @@ def _project_group(graph: LoopGraphDefinition, group_id: str) -> dict:
     return {"solution_id": controller.parameters.to_dict().get(
                 "logical_solution_id", group.group_id),
             "max_members": controller.parameters.to_dict().get(
-                "max_members", 5), "loops": tuple(loops),
+                "max_members"), "loops": tuple(loops),
             "members": members, "ensemble": group.combination,
             "weights": group.weights}
 
@@ -253,7 +254,8 @@ def _new_solution_loop(*, definition: LoopDefinition, goal: str,
                        relationship: LoopRelationship, trace: list) -> Loop:
     profile_id = definition.role_profile_id
     try:
-        if parent is not None and parent.depth + 1 > max_depth:
+        if (parent is not None and max_depth is not None
+                and parent.depth + 1 > max_depth):
             raise LoopError(f"max Loop depth {max_depth} reached")
         if parent is not None and relationship.kind is \
                 LoopRelationshipKind.SPAWNED_BY:
@@ -705,7 +707,8 @@ def _run_solution_runtime(spec: SolutionSpec, registry: dict, inputs, *,
         ledger if ledger is not None else LoopLedger())
     required_depth = ((parent.depth + 1 if parent is not None else 0)
                       + _runtime_depth(spec))
-    if parent is not None and parent.config.max_depth < required_depth:
+    if (parent is not None and parent.config.max_depth is not None
+            and parent.config.max_depth < required_depth):
         raise SolutionError(
             f"solution {spec.solution_id!r} needs absolute Loop depth "
             f"{required_depth}, but parent {parent.loop_id} allows only "

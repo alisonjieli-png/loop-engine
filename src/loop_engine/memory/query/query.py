@@ -25,8 +25,8 @@ class MemoryQuery:
     text: str = ""
     exact_ids: tuple[str, ...] = ()
     valid_at: str = ""
-    max_candidates: int = 100
-    max_selected: int = 10
+    max_candidates: "int | None" = None
+    max_selected: "int | None" = None
     require_evidence: bool = False
     include_failures: bool = True
 
@@ -36,8 +36,9 @@ class MemoryQuery:
             raise ValueError(
                 f"queryable memory types are {QUERYABLE_TYPES}; "
                 f"rejected {unknown}")
-        if self.max_candidates < 1 or self.max_selected < 1:
-            raise ValueError("query limits must be positive")
+        if any(value is not None and value < 1 for value in (
+                self.max_candidates, self.max_selected)):
+            raise ValueError("query limits must be positive when provided")
 
 
 @dataclass(frozen=True)
@@ -241,7 +242,8 @@ def self_test() -> dict:
 
     query = MemoryQuery(memory_types=("episodic", "semantic"),
                         text="migration")
-    check("query_validates", query.max_selected == 10)
+    check("query_is_unbounded_unless_the_caller_sets_a_window",
+          query.max_candidates is None and query.max_selected is None)
     try:
         MemoryQuery(memory_types=("working",))
         check("working_memory_is_not_queryable", False)

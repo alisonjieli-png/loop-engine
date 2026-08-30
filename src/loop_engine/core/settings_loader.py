@@ -60,6 +60,7 @@ def _loop(value: Mapping) -> LoopDefaults:
     body = _mapping(value, "loop")
     _known(body, ("framework", "allowable_modes", "preferred_modes",
                   "delegated_modes", "max_depth",
+                  "max_iterations", "max_model_calls",
                   "exit_condition", "success_confidence_min"), "loop")
     base = LoopDefaults()
     return LoopDefaults(
@@ -70,7 +71,14 @@ def _loop(value: Mapping) -> LoopDefaults:
             "preferred_modes", base.preferred_modes), "loop.preferred_modes"),
         delegated_modes=_tuple(body.get(
             "delegated_modes", base.delegated_modes), "loop.delegated_modes"),
-        max_depth=int(body.get("max_depth", base.max_depth)),
+        max_depth=(None if body.get("max_depth", base.max_depth) is None
+                   else int(body["max_depth"])),
+        max_iterations=(
+            None if body.get("max_iterations", base.max_iterations) is None
+            else int(body["max_iterations"])),
+        max_model_calls=(
+            None if body.get("max_model_calls", base.max_model_calls) is None
+            else int(body["max_model_calls"])),
         exit_condition=str(body.get(
             "exit_condition", base.exit_condition)),
         success_confidence_min=float(body.get(
@@ -149,7 +157,9 @@ def _tiers(value: Mapping, base: ModelSettings) -> tuple[ModelTier, ...]:
                                else int(output_value)),
             timeout_seconds=float(item.get(
                 "timeout_seconds", old.timeout_seconds)),
-            max_attempts=int(item.get("max_attempts", old.max_attempts)))
+            max_attempts=(None if item.get(
+                "max_attempts", old.max_attempts) is None else int(item.get(
+                    "max_attempts", old.max_attempts))))
     return tuple(by_name[name] for name in MODEL_THINKING_POWER_LEVELS)
 
 
@@ -177,8 +187,10 @@ def _models(value: Mapping) -> ModelSettings:
         on_errors=_tuple(raw_escalation.get(
             "on_errors", base.escalation.on_errors),
             "models.escalation.on_errors"),
-        max_tier_changes=int(raw_escalation.get(
-            "max_tier_changes", base.escalation.max_tier_changes)))
+        max_tier_changes=(None if raw_escalation.get(
+            "max_tier_changes", base.escalation.max_tier_changes) is None
+            else int(raw_escalation.get(
+                "max_tier_changes", base.escalation.max_tier_changes))))
     return ModelSettings(
         default_thinking_power=str(body.get(
             "default_thinking_power", base.default_thinking_power)),
@@ -366,7 +378,9 @@ loop:
   allowable_modes: [deterministic, hybrid, non_deterministic]
   preferred_modes: [deterministic, hybrid, non_deterministic]
   delegated_modes: [deterministic, hybrid, non_deterministic]
-  max_depth: 3
+  max_depth: null
+  max_iterations: null
+  max_model_calls: null
   exit_condition: steps_complete
   success_confidence_min: 0.5
 
@@ -389,32 +403,32 @@ models:
     small:
       routes: [cloud.mistral, cloud.default]
       timeout_seconds: 120
-      max_attempts: 2
+      max_attempts: null
     medium:
       routes: [cloud.default, cloud.mistral.large, cloud.openrouter]
       timeout_seconds: 300
-      max_attempts: 3
+      max_attempts: null
     high:
       routes: [cloud.mistral.large, cloud.hard, cloud.openrouter.reasoning]
       timeout_seconds: 600
-      max_attempts: 3
+      max_attempts: null
     max:
       routes: [cloud.hard, cloud.openrouter.reasoning, cloud.mistral.large]
       timeout_seconds: 900
-      max_attempts: 3
+      max_attempts: null
     specialized:
       routes: []
       timeout_seconds: 600
-      max_attempts: 2
+      max_attempts: null
   escalation:
     enabled: false
     order: [small, medium, high, max]
     on_errors: [output_validation_failed]
-    max_tier_changes: 1
+    max_tier_changes: null
 
 operating:
   access_mode: approved_external_read
-  reasoning_and_model_mode: deterministic_first_local_first
+  reasoning_and_model_mode: best_available
   construction_and_execution_mode: sandbox_generate
   effort_mode: standard
   optimization_mode: quality_first
@@ -475,6 +489,13 @@ def self_test() -> dict:
           config.framework == "custom" and config.power == "standard"
           and config.llm_thinking_power == "high"
           and config.allowable_modes == ("hybrid",))
+    check("default_runtime_limits_are_unset_not_arbitrary_numbers",
+          parsed.loop.max_depth is None
+          and parsed.loop.max_iterations is None
+          and parsed.loop.max_model_calls is None
+          and config.max_depth is None
+          and config.max_iterations is None
+          and config.max_model_calls is None)
     settings_component = parsed.component_definition()
     check("resolved_settings_are_one_static_loop_component",
           settings_component.component_kind == "settings"

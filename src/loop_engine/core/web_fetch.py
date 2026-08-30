@@ -3,7 +3,7 @@
 The model may choose a URL, but it cannot perform the request directly. This
 module validates the URL, binds one exact network-read effect, executes GET in
 an Intelligence Loop, stores the complete body as an immutable artifact, and
-returns only bounded text plus metadata to active context.
+returns the selected text plus metadata to active context.
 """
 from __future__ import annotations
 
@@ -30,17 +30,19 @@ class WebFetchError(ValueError):
 
 @dataclass(frozen=True)
 class WebFetchRequest:
-    """One bounded public HTTPS resource request."""
+    """One public HTTPS resource request with optional owner limits."""
 
     url: str
     purpose: str
     timeout_seconds: float = 30.0
-    maximum_bytes: int = 4 * 1024 * 1024
+    maximum_bytes: "int | None" = None
 
     def __post_init__(self) -> None:
         if not self.purpose.strip():
             raise WebFetchError("web fetch needs a purpose")
-        if self.timeout_seconds <= 0 or not 1 <= self.maximum_bytes <= 16 * 1024 * 1024:
+        if (self.timeout_seconds <= 0
+                or (self.maximum_bytes is not None
+                    and self.maximum_bytes < 1)):
             raise WebFetchError("web fetch limits are invalid")
         _validate_public_https(self.url)
 
@@ -161,10 +163,13 @@ def fetch_web_resource(
                 final_url = str(response.geturl())
                 _validate_public_https(final_url)
                 declared = response.headers.get("Content-Length")
-                if declared and int(declared) > request.maximum_bytes:
+                if (request.maximum_bytes is not None and declared
+                        and int(declared) > request.maximum_bytes):
                     raise WebFetchError("web resource exceeds maximum_bytes")
-                body = response.read(request.maximum_bytes + 1)
-                if len(body) > request.maximum_bytes:
+                body = (response.read() if request.maximum_bytes is None
+                        else response.read(request.maximum_bytes + 1))
+                if (request.maximum_bytes is not None
+                        and len(body) > request.maximum_bytes):
                     raise WebFetchError("web resource exceeds maximum_bytes")
                 media_type = response.headers.get_content_type()
                 charset = response.headers.get_content_charset() or "utf-8"
@@ -183,8 +188,8 @@ def fetch_web_resource(
                 "byte_count": len(body),
                 "sha256": artifact.digest,
                 "artifact_ref": artifact.to_dict(),
-                "text": text[:32_000],
-                "text_truncated": len(text) > 32_000,
+                "text": text,
+                "text_truncated": False,
             }
             return StepOutcome("fetch:completed", "deterministic", 1.0)
         except Exception as exc:  # noqa: BLE001

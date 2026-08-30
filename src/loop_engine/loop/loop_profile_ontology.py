@@ -93,7 +93,7 @@ class LoopProfileBindingRequest:
     logical_kind: str = ""
     effort: str = "standard"
     llm_thinking_power: str = ""
-    max_depth: int = 3
+    max_depth: "int | None" = None
     relationship: LoopRelationship = field(
         default_factory=LoopRelationship.starting)
 
@@ -112,8 +112,12 @@ class LoopProfileBindingRequest:
             raise LoopProfileError("delegated_modes cannot be empty")
         if self.effort not in POWER_LEVELS:
             raise LoopProfileError(f"effort must be one of {POWER_LEVELS}")
-        if self.max_depth < 0:
-            raise LoopProfileError("max_depth cannot be negative")
+        if (self.max_depth is not None
+                and (not isinstance(self.max_depth, int)
+                     or isinstance(self.max_depth, bool)
+                     or self.max_depth < 0)):
+            raise LoopProfileError(
+                "max_depth must be non-negative when provided")
         if not isinstance(self.relationship, LoopRelationship):
             raise LoopProfileError("relationship must be a LoopRelationship")
 

@@ -91,9 +91,9 @@ RAILS = (
     "every iteration is durably recorded",
     "every spawned has a parent and a declared return destination",
     "spawned modes never exceed the parent's delegation authority",
-    "recursion depth and spawned count are bounded",
+    "recursion depth and spawned count honor explicit policy when supplied",
     "every capability search flows through the directory",
-    "every semantic model call is visible and budgeted",
+    "every semantic model call is visible; optional budgets are enforced",
     "generated source stays a String until admitted as a Code Node",
     "improvement loops stage candidates, never promote themselves",
     "MAX power raises effort, never permissions",
@@ -105,14 +105,14 @@ RAILS = (
 # The simple front lever → concrete settings (monotonic).  "How much power?"
 # Power raises EFFORT; it never raises permissions.
 POWER_SETTINGS = {
-    "light":    {"min_intelligence_per_step": 1, "max_iterations": 3,
-                 "max_model_calls": 2, "string_pull": 5},
-    "standard": {"min_intelligence_per_step": 3, "max_iterations": 6,
-                 "max_model_calls": 8, "string_pull": 20},
-    "deep":     {"min_intelligence_per_step": 5, "max_iterations": 15,
-                 "max_model_calls": 40, "string_pull": 100},
-    "max":      {"min_intelligence_per_step": 8, "max_iterations": 60,
-                 "max_model_calls": 300, "string_pull": 1000},
+    "light":    {"min_intelligence_per_step": 1, "max_iterations": None,
+                 "max_model_calls": None, "string_pull": 5},
+    "standard": {"min_intelligence_per_step": 3, "max_iterations": None,
+                 "max_model_calls": None, "string_pull": 20},
+    "deep":     {"min_intelligence_per_step": 5, "max_iterations": None,
+                 "max_model_calls": None, "string_pull": 100},
+    "max":      {"min_intelligence_per_step": 8, "max_iterations": None,
+                 "max_model_calls": None, "string_pull": 1000},
 }
 
 
@@ -145,7 +145,9 @@ class LoopConfig:
     power: str = "medium"
     llm_thinking_power: str = ""
     custom_steps: tuple[str, ...] = ()
-    max_depth: int = 3
+    max_depth: "int | None" = None
+    max_iterations: "int | None" = None
+    max_model_calls: "int | None" = None
     loop_condition: str = ""
     exit_condition: str = ""
     success_confidence_min: float = 0.5
@@ -175,6 +177,17 @@ class LoopConfig:
                 "hybrid or non_deterministic mode")
         if self.framework == "custom" and not self.custom_steps:
             raise ValueError("a custom framework needs custom_steps")
+        if (self.max_depth is not None
+                and (not isinstance(self.max_depth, int)
+                     or isinstance(self.max_depth, bool)
+                     or self.max_depth < 0)):
+            raise ValueError("max_depth must be non-negative when provided")
+        for name in ("max_iterations", "max_model_calls"):
+            value = getattr(self, name)
+            if (value is not None
+                    and (not isinstance(value, int)
+                         or isinstance(value, bool) or value < 1)):
+                raise ValueError(f"{name} must be positive when provided")
         if self.replay_guarantee not in REPLAY_GUARANTEES:
             raise ValueError(
                 f"replay_guarantee must be one of {REPLAY_GUARANTEES} — "
@@ -199,7 +212,9 @@ class LoopConfig:
 
     @property
     def settings(self) -> dict:
-        return POWER_SETTINGS[self.power]
+        return {**POWER_SETTINGS[self.power],
+                "max_iterations": self.max_iterations,
+                "max_model_calls": self.max_model_calls}
 
 
 @dataclass
@@ -583,7 +598,8 @@ class Loop(metaclass=_LoopMeta):
         that the parent did not grant. Power may differ; effort never grants
         new authority.
         """
-        if self.depth + 1 > self.config.max_depth:
+        if (self.config.max_depth is not None
+                and self.depth + 1 > self.config.max_depth):
             raise LoopError(f"max recursion depth {self.config.max_depth} reached")
         if definition is not None and any(
                 value is not None for value in (config, contract, identity)):
@@ -623,6 +639,8 @@ class Loop(metaclass=_LoopMeta):
                             ("hybrid", "non_deterministic")) else ""),
                     custom_steps=config.custom_steps,
                     max_depth=config.max_depth,
+                    max_iterations=config.max_iterations,
+                    max_model_calls=config.max_model_calls,
                     loop_condition=config.loop_condition,
                     exit_condition=config.exit_condition,
                     success_confidence_min=config.success_confidence_min)
@@ -792,7 +810,15 @@ class Loop(metaclass=_LoopMeta):
             llm_thinking_power=(spec.get("models") or {}).get(
                 "thinking_power", ""),
             custom_steps=tuple(template.get("steps", ())),
-            max_depth=int(spawned_loops.get("maximum_depth", 3)),
+            max_depth=(
+                None if spawned_loops.get("maximum_depth") is None
+                else int(spawned_loops["maximum_depth"])),
+            max_iterations=(
+                None if limits.get("maximum_iterations") is None
+                else int(limits["maximum_iterations"])),
+            max_model_calls=(
+                None if limits.get("maximum_model_calls") is None
+                else int(limits["maximum_model_calls"])),
             loop_condition=conditions.get("loop_condition", ""),
             exit_condition=conditions.get("exit_condition", ""),
             success_confidence_min=float(
@@ -968,6 +994,8 @@ class Loop(metaclass=_LoopMeta):
                                self.config.llm_thinking_power,
                            "custom_steps": list(self.config.custom_steps),
                            "max_depth": self.config.max_depth,
+                           "max_iterations": self.config.max_iterations,
+                           "max_model_calls": self.config.max_model_calls,
                            "loop_condition": self.config.loop_condition,
                            "exit_condition": self.config.exit_condition,
                            "success_confidence_min":
@@ -992,6 +1020,7 @@ class Loop(metaclass=_LoopMeta):
             "framework", "logical_kind", "replay_guarantee",
             "allowable_modes", "preferred_modes", "delegated_modes",
             "power", "llm_thinking_power", "custom_steps", "max_depth",
+            "max_iterations", "max_model_calls",
             "loop_condition", "exit_condition", "success_confidence_min",
         }
         unknown = set(c) - current_keys
@@ -1020,6 +1049,8 @@ class Loop(metaclass=_LoopMeta):
             llm_thinking_power=c.get("llm_thinking_power", ""),
             custom_steps=tuple(c["custom_steps"]),
             max_depth=c["max_depth"],
+            max_iterations=c.get("max_iterations"),
+            max_model_calls=c.get("max_model_calls"),
             loop_condition=c.get("loop_condition", ""),
             exit_condition=c.get("exit_condition", ""),
             success_confidence_min=float(c.get(
@@ -1080,7 +1111,7 @@ class Loop(metaclass=_LoopMeta):
         if it["stopped"]:
             rec.update(terminal=True, note=f"already terminal: {it['stopped']}")
             return rec
-        if it["steps_run"] >= it["limit"]:
+        if it["limit"] is not None and it["steps_run"] >= it["limit"]:
             self._terminate(it, "budget")
             rec.update(terminal=True, note="iteration limit reached")
             return rec
@@ -1165,7 +1196,9 @@ class Loop(metaclass=_LoopMeta):
                                       confidence=0.6)
                 self._require_allowed_outcome_mode(outcome, step)
                 attempts += 1
-        if outcome.spawn_goal and self.depth + 1 <= self.config.max_depth:
+        if outcome.spawn_goal and (
+                self.config.max_depth is None
+                or self.depth + 1 <= self.config.max_depth):
             spawned = self.spawn(outcome.spawn_goal)   # loops initialize loops
             cres = spawned.run(handler=handler, chooser=chooser)
             it["context"][f"{step}:spawned"] = cres.output
@@ -1182,7 +1215,8 @@ class Loop(metaclass=_LoopMeta):
                     "model call")
             it["model_calls"] += physical_model_calls
             rec["semantic_calls"] = physical_model_calls
-            if it["model_calls"] > st["max_model_calls"]:
+            if (st["max_model_calls"] is not None
+                    and it["model_calls"] > st["max_model_calls"]):
                 self.ledger.record(loop_id=self.loop_id, event="budget_stop",
                                    model_calls=it["model_calls"])
                 self._terminate(it, "budget")
@@ -1324,15 +1358,17 @@ def self_test() -> dict:
           "custom can reorder/repeat (orient→research→research→decide→build); "
           "open has no fixed sequence")
 
-    # 3. the mode WATERFALL: deterministic-first; a deterministic-only loop never
-    # goes non-deterministic.
+    # 3. Each Loop follows its configured mode preference. The bare structural
+    # fixture prefers deterministic work; the public solve profile explicitly
+    # prefers non-deterministic model-led work.
     det_only = Loop("g", LoopConfig(allowable_modes=("deterministic",)))
     balanced = Loop("g", LoopConfig())
     check("mode_waterfall_respects_allowable_and_preferred",
           balanced.choose_mode() == "deterministic"
           and det_only.choose_mode(needs_judgement=True) == "deterministic"
           and balanced.choose_mode(deterministic_available=False) == "hybrid",
-          "deterministic first; det-only stays deterministic; no code → hybrid")
+          "base structural default is deterministic; explicit profiles choose "
+          "their own order")
 
     disallowed_mode = Loop(
         "mode guard",
@@ -1410,13 +1446,18 @@ def self_test() -> dict:
           and model_spawned.parent is det_parent and code_spawned.parent is model_parent,
           "deterministic starts model-led; model-led starts deterministic")
 
-    # 6. POWER is a simple lever with monotonic concrete settings.
+    # 6. POWER scales reasoning support, never hidden numeric ceilings.
     s = {p: POWER_SETTINGS[p]["max_model_calls"] for p in POWER_LEVELS}
     i = {p: POWER_SETTINGS[p]["min_intelligence_per_step"] for p in POWER_LEVELS}
     check("power_lever_sets_monotonic_settings",
-          s["light"] < s["standard"] < s["deep"] < s["max"]
+          all(value is None for value in s.values())
           and i["light"] < i["standard"] < i["deep"] < i["max"],
-          "light to max scales model calls and required Context Intelligence")
+          "light to max scales Context Intelligence, not call ceilings")
+    default_limits = LoopConfig()
+    check("default_loop_has_no_product_imposed_numeric_limits",
+          default_limits.max_depth is None
+          and default_limits.max_iterations is None
+          and default_limits.max_model_calls is None)
 
     invalid_thinking_power = False
     try:
@@ -1459,7 +1500,7 @@ def self_test() -> dict:
     check("plan_requires_context_intelligence_per_step",
           plan["steps"]
           and all(r["required_intelligence"] == 5 for r in plan["steps"])
-          and plan["max_model_calls"] == 40,
+          and plan["max_model_calls"] is None,
           "each step pulls at least N string prompts (from the power lever)")
 
     # 9. loop templates are searchable resources (the front-lever presets).
@@ -1526,16 +1567,17 @@ def self_test() -> dict:
                   for e in lp3.ledger.events if e.get("event") == "run_step"),
           "deterministic failed → recovered on hybrid, on the ledger")
 
-    # 13. the POWER budget stops a model-heavy loop honestly.
+    # 13. An explicitly configured budget stops a model-heavy loop honestly.
     heavy = Loop("model heavy",
                  LoopConfig(allowable_modes=("non_deterministic",),
                             preferred_modes=("non_deterministic",),
-                            power="small"))
+                            power="small", max_model_calls=2))
     r4 = heavy.run(handler=lambda loop, step, context: StepOutcome(
         output="model attempt", mode="non_deterministic", model_calls=1))
-    check("power_budget_stops_a_model_heavy_loop",
+    check("explicit_budget_stops_a_model_heavy_loop",
           r4.stopped == "budget" and r4.model_calls == 3 and r4.steps_run <= 2,
-          f"small power = 2 model calls; stopped at the 3rd ({r4.steps_run} steps)")
+          f"explicit limit = 2 model calls; stopped at the 3rd "
+          f"({r4.steps_run} steps)")
 
     # 14. an OPEN loop runs via a chooser until it says finish — no fixed order.
     def chooser(done):
@@ -1718,7 +1760,7 @@ def self_test() -> dict:
     # terminated "done" with ZERO accepted successes, and reported success —
     # the exact opposite of the stop condition's name. Found by writing the
     # example for it.
-    def _succeeds_on_nth(n):
+    def _succeeds_on_nth(n, max_iterations=None):
         state = {"tries": 0}
 
         def handler(loop, step, context):
@@ -1731,15 +1773,16 @@ def self_test() -> dict:
                   LoopConfig(framework="custom", custom_steps=("attempt",),
                              allowable_modes=("deterministic",),
                              preferred_modes=("deterministic",),
-                             exit_condition="accepted_success", power="light"))
+                             exit_condition="accepted_success", power="light",
+                             max_iterations=max_iterations))
         while not lp.is_terminal:
             lp.run_next_iteration(handler=handler)
         return state["tries"], lp.result()
 
     third_tries, third = _succeeds_on_nth(3)
-    never_tries, never = _succeeds_on_nth(10 ** 6)
+    never_tries, never = _succeeds_on_nth(10 ** 6, max_iterations=8)
     first_tries, first = _succeeds_on_nth(1)
-    check("success_once_retries_a_failed_pass_and_stays_bounded",
+    check("success_once_retries_and_honors_an_explicit_limit",
           third_tries == 3 and third.stopped == "success_once"
           and third.accepted_successes == 1
           and first_tries == 1 and first.stopped == "success_once"

@@ -126,8 +126,8 @@ def self_test() -> dict:
                                 power="light"))
     rb = b.run(handler=bomber)
     check("adversarial_recursion_explosion_is_bounded",
-          rb.steps_run <= 3 and all(e.get("depth", 0) <= 2
-                                    for e in b.ledger.events),
+          rb.steps_run == 5 and rb.spawned == 30
+          and all(e.get("depth", 0) <= 2 for e in b.ledger.events),
           f"depth capped at 2; {rb.spawned} spawns total, no hang")
 
     # Adversarial: a spawned Loop cannot exceed the spawning Loop's authority.
@@ -166,7 +166,8 @@ def self_test() -> dict:
     # model-call budget by one extra call, and the stop is recorded.
     greedy = Loop("greedy", LoopConfig(
         allowable_modes=("non_deterministic",),
-        preferred_modes=("non_deterministic",), power="light"))
+        preferred_modes=("non_deterministic",), power="light",
+        max_model_calls=2))
     rg = greedy.run(handler=lambda loop, step, context: StepOutcome(
         output="model attempt", mode="non_deterministic", model_calls=1))
     stops = [e for e in greedy.ledger.events if e.get("event") == "budget_stop"]

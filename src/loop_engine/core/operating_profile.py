@@ -54,7 +54,7 @@ class Limits:
 @dataclass
 class OperatingProfile:
     access_mode: str = "approved_external_read"
-    reasoning_and_model_mode: str = "deterministic_first_local_first"
+    reasoning_and_model_mode: str = "best_available"
     construction_and_execution_mode: str = "sandbox_generate"
     effort_mode: str = "standard"
     optimization_mode: str = "quality_first"

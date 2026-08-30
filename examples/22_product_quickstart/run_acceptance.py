@@ -69,7 +69,8 @@ def _action_id(decision: dict) -> str:
 
 
 def _answers(summary: str, outputs: list[str], candidate: dict,
-             files: dict[str, str]) -> tuple[str, ...]:
+             files: dict[str, str], *, source_query: str = ""
+             ) -> tuple[str, ...]:
     decision = _decision()
     how = {
         "action_id": _action_id(decision), "how_mode": "generate",
@@ -84,8 +85,54 @@ def _answers(summary: str, outputs: list[str], candidate: dict,
         "new_requirement_proposals": [],
     }
     route = {"route": "stop_success", "reason": "Artifacts are verified."}
-    sequence = [
-        _orientation(summary, outputs), {"actions": [decision]}, how, candidate]
+    sequence = []
+    if source_query:
+        source_orientation = _orientation(summary, outputs)
+        source_orientation.update({
+            "current_state": (
+                "The source manifest is available but the model has not "
+                "selected source content."),
+            "unknowns": ["exact supplied source content"],
+            "candidate_capabilities": [
+                "core.source.inspect", "core.generated_project"],
+            "proposed_next_action": (
+                "Inspect the supplied source before designing the project."),
+        })
+        inspect_decision = {
+            "action_kind": "RESEARCH_SOURCE",
+            "goal": "Inspect the supplied source before building.",
+            "reason": "The implementation must use the actual supplied input.",
+            "inputs": {}, "expected_output": "Selected source text and digest.",
+            "required_capabilities": ["core.source.inspect"],
+            "permissions": ["source_read"],
+            "budget": {"estimated_cost": 0.0, "risk": 0.0,
+                       "reversibility": 1.0},
+            "dependencies": [], "scheduling": "sequential",
+            "verification": "Confirm selected content has an exact digest.",
+            "return_destination": "current Practitioner", "confidence": 0.9,
+            "fallback": {"action_kind": "ABSTAIN"},
+        }
+        inspect_how = {
+            "action_id": _action_id(inspect_decision),
+            "how_mode": "research", "act_mode": "run_dag",
+            "capability_ref": "core.source.inspect",
+            "arguments": {"query": source_query, "include_contents": True},
+            "steps": ["select exact source content"], "spawned_tasks": [],
+            "rationale": "Read the input selected by the model.",
+        }
+        inspect_verification = {
+            "verdict": "research_more", "best_index": 0, "scores": [1.0],
+            "notes": "Selected source content is now available.",
+            "remaining_gaps": [{"criterion_ref": "criterion:0",
+                                 "gap": "the requested work is not built yet"}],
+            "advisory_findings": [], "new_requirement_proposals": [],
+        }
+        sequence.extend((
+            source_orientation, {"actions": [inspect_decision]}, inspect_how,
+            inspect_verification,
+            {"route": "continue", "reason": "Build from selected source."}))
+    sequence.extend((
+        _orientation(summary, outputs), {"actions": [decision]}, how, candidate))
     sequence.extend({"path": path, "content": content}
                     for path, content in files.items())
     sequence.extend((verification, route))
@@ -155,7 +202,8 @@ def _task_b(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
     }
     return TaskIntakeRequest(dataset=str(fixtures / "inventory.csv"), goal=goal), _answers(
         "Transform and verify a supplied inventory table.",
-        ["cleaned CSV", "summary"], candidate, files)
+        ["cleaned CSV", "summary"], candidate, files,
+        source_query="inventory")
 
 
 def _task_c(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
@@ -187,7 +235,7 @@ def _task_c(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
     }
     return TaskIntakeRequest(repository=str(fixtures / "docs"), goal=goal), _answers(
         "Index and verify supplied Markdown documents.",
-        ["Markdown document index"], candidate, files)
+        ["Markdown document index"], candidate, files, source_query="docs")
 
 
 def _task_d(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
@@ -221,7 +269,8 @@ def _task_d(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
     }
     return TaskIntakeRequest(repository=str(fixtures / "failing_package"), goal=goal), _answers(
         "Repair and verify the supplied failing package.",
-        ["repaired Python package"], candidate, files)
+        ["repaired Python package"], candidate, files,
+        source_query="failing_package")
 
 
 def main() -> int:
@@ -245,7 +294,8 @@ def main() -> int:
             answers=answers, max_model_calls=len(answers)))
         outcome = solve_task(SolveRequest(
             intake_task(intake_request), model_execution=execution,
-            runs_dir=str(run_root), interaction_mode="autonomous", max_passes=1,
+            runs_dir=str(run_root), interaction_mode="autonomous",
+            max_passes=(2 if index > 1 else 1),
             allow_workspace_writes=True, allow_sandbox_commands=True,
             workspace_root=str(workspace),
             allow_source_materialization_to_model=(index > 1)))
@@ -254,6 +304,30 @@ def main() -> int:
             "model_semantics": "offline typed fixture, not live quality proof",
             "effects": "real Docker execution and real file inspection",
         }
+        adaptive_result = json.loads(
+            (Path(value["run_history"]["path"])
+             / "adaptive-result.json").read_text())
+        value["llm_first_deterministic_attempt"] = adaptive_result[
+            "deterministic_attempt"]["status"]
+        value["llm_runtime_seams"] = {
+            "orientation": bool(adaptive_result.get("orientations")),
+            "next_action": bool(adaptive_result.get("action_decisions")),
+            "solution_canvas": bool(
+                adaptive_result.get("selected_solution_canvas")),
+            "model_output_materialized": bool(
+                adaptive_result.get("project_attempts")
+                and adaptive_result["project_attempts"][-1].get("writes")),
+            "commands_executed": bool(
+                adaptive_result.get("project_attempts")
+                and adaptive_result["project_attempts"][-1].get("commands")),
+            "artifacts_inspected": bool(value["artifacts"]),
+            "semantic_verification": bool(
+                adaptive_result.get("verification")),
+            "route": adaptive_result.get("final_route") == "stop_success",
+        }
+        if index > 1 and not adaptive_result.get("source_inspections"):
+            raise SystemExit(
+                f"task {task_id} built without a model-selected source")
         path = output / f"task-{task_id}.json"
         path.write_text(json.dumps(value, indent=2, default=str) + "\n")
         records.append(value)
@@ -261,6 +335,10 @@ def main() -> int:
             raise SystemExit(f"task {task_id} failed: {outcome.failure_code}")
         if not all(Path(item["path"]).is_file() for item in value["artifacts"]):
             raise SystemExit(f"task {task_id} artifact is not readable")
+        if not all(value["llm_runtime_seams"].values()):
+            raise SystemExit(
+                f"task {task_id} did not cross every LLM/runtime seam: "
+                f"{value['llm_runtime_seams']}")
         bundle = load_saved_run_bundle(str(run_root), outcome.run_id)
         report = report_from_run(str(run_root), outcome.run_id)
         if (bundle.outcome["terminal_code"] != "COMPLETED_VERIFIED"
@@ -271,6 +349,11 @@ def main() -> int:
             raise SystemExit(
                 f"task {task_id} saved bundle or report lost its product result")
     repair_commands = records[-1]["result"]["commands"]
+    if any(item["selected_mode"] != "non_deterministic"
+           or item["llm_first_deterministic_attempt"] != "SKIPPED_LLM_LED"
+           for item in records):
+        raise SystemExit(
+            "product acceptance did not use the LLM-first Practitioner path")
     report = {
         "record_type": "product_acceptance/v1",
         "tasks": len(records), "completed_verified": sum(
@@ -278,6 +361,13 @@ def main() -> int:
         "unique_graph_digests": len({item["graph_digest"] for item in records}),
         "total_model_calls": sum(item["model_calls"] for item in records),
         "total_tool_calls": sum(item["tool_calls"] for item in records),
+        "llm_first_runs": sum(
+            item["selected_mode"] == "non_deterministic" for item in records),
+        "deterministic_shortcuts_skipped": sum(
+            item["llm_first_deterministic_attempt"] == "SKIPPED_LLM_LED"
+            for item in records),
+        "complete_llm_runtime_seam_traces": sum(
+            all(item["llm_runtime_seams"].values()) for item in records),
         "repair_reproduced_failure": repair_commands[0]["expectation_met"]
         and repair_commands[0]["exit_code"] == 1,
         "repair_verified": repair_commands[-1]["expectation_met"]
@@ -290,7 +380,6 @@ def main() -> int:
     (output / "acceptance.json").write_text(
         json.dumps(report, indent=2) + "\n")
     print(json.dumps(report, indent=2))
-    return 0
     return 0
 
 

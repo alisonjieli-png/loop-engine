@@ -185,7 +185,7 @@ const pages = {
     const d = await api("run/" + encodeURIComponent(id));
     const T = ["overview","result","tree","runtime","canvas","playback","calls"];
     const product = d.product || {available:false,artifacts:[],verification:{},
-      limitations:[],selected_canvas:{}};
+      limitations:[],questions:[],selected_canvas:{}};
     let body = "";
     if (tab === "overview") body = `<div class="cards">` + [
       ["events", d.totals.events], ["iterations", d.totals.iterations],
@@ -230,6 +230,8 @@ const pages = {
           </div><p>${esc(product.summary)}</p>
           <p class="k">Workspace: <code>${esc(product.workspace || "not recorded")}</code></p>
           <h2>Artifacts</h2>${artifacts}` +
+          (product.questions.length ? `<h2>Material questions</h2><ul>` +
+            product.questions.map(item => `<li><code>${esc(item.answer_slot)}</code>: ${esc(item.question)}</li>`).join("") + `</ul>` : "") +
           (product.limitations.length ? `<h2>Limitations</h2><ul>` +
             product.limitations.map(item => `<li>${esc(item)}</li>`).join("") + `</ul>` : "") +
           (product.next_action ? `<h2>Next action</h2><p>${esc(product.next_action)}</p>` : "");

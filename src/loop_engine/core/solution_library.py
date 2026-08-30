@@ -165,12 +165,14 @@ class SolutionLibrary:
 
     def find_candidates(
             self, fingerprint: TaskFingerprint, *,
-            top_n: int = 5) -> tuple[ResolutionCandidate, ...]:
+            top_n: "int | None" = None) -> tuple[ResolutionCandidate, ...]:
         """Return typed candidates with hard and soft compatibility evidence."""
         if not isinstance(fingerprint, TaskFingerprint):
             raise TypeError("find_candidates needs TaskFingerprint")
-        if not isinstance(top_n, int) or isinstance(top_n, bool) or top_n < 1:
-            raise ValueError("top_n must be a positive integer")
+        if (top_n is not None
+                and (not isinstance(top_n, int) or isinstance(top_n, bool)
+                     or top_n < 1)):
+            raise ValueError("top_n must be positive when provided")
         candidates: list[ResolutionCandidate] = []
         for record, assessment in self._assessed_records(fingerprint):
             body = record.body
@@ -193,10 +195,11 @@ class SolutionLibrary:
                     maturity, runtime),
                 evidence_refs=(f"solution_asset:{record.record_id}",),
             ))
-        return tuple(candidates[:top_n])
+        return tuple(candidates if top_n is None else candidates[:top_n])
 
     def find_similar(
-            self, fingerprint: TaskFingerprint, *, top_n: int = 5) -> list[dict]:
+            self, fingerprint: TaskFingerprint, *,
+            top_n: "int | None" = None) -> list[dict]:
         """Return a compatibility projection for existing callers and reports."""
         candidates = self.find_candidates(fingerprint, top_n=top_n)
         return [{
@@ -284,8 +287,9 @@ def self_test() -> dict:
         requested, candidates, maximum_cost=1.0,
         maximum_latency_seconds=10.0,
         minimum_quality=0.7,
-        minimum_verification_strength=0.7))
-    check("verified_exact_reuse_is_selected_through_loop",
+        minimum_verification_strength=0.7,
+        semantic_selection_ref="solasset.s6e8_lightgbm"))
+    check("model_selected_exact_reuse_is_validated_through_loop",
           run.decision.selected_candidate_ref == "solasset.s6e8_lightgbm"
           and run.model_calls == 0)
     projected = library.find_similar(requested, top_n=10)

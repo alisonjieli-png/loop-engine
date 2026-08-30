@@ -63,6 +63,8 @@ def _concise_self_test_summary(
         "total": report.get("total", 0),
         "all_passed": bool(report.get("all_passed")),
         "missing_dependencies": report.get("missing_dependencies", []),
+        "optional_adapters_not_tested": report.get(
+            "optional_adapters_not_tested", []),
         "captured_output_lines": captured_lines,
         "elapsed_seconds": round(elapsed_seconds, 3),
         "provider_calls_made": 0,
@@ -81,6 +83,11 @@ def _render_self_test_summary(summary: dict) -> str:
     if summary["missing_dependencies"]:
         lines.append("Missing dependencies: "
                      + ", ".join(summary["missing_dependencies"]))
+    if summary["optional_adapters_not_tested"]:
+        lines.append(
+            "Optional adapters not tested: "
+            + ", ".join(summary["optional_adapters_not_tested"])
+            + ". Install loop-engine[all] to test them.")
     for failure in summary["failures"]:
         lines.append(
             f"FAILED {failure['test']}: {failure['detail'] or 'no detail'}")
@@ -238,24 +245,23 @@ def main(argv=None) -> int:
         "--interaction-mode",
         choices=("ask_when_material", "autonomous"),
         default="ask_when_material",
-        help="task compilation during compile or solve may ask for material "
-             "missing information, or run autonomously and abstain when "
-             "policy cannot resolve safely")
+        help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--unattended", action="store_true",
+        help="do not pause for material answers; abstain instead of guessing")
     parser.add_argument(
         "--quickstart", action="store_true",
-        help="use the bounded onboarding profile: one detected provider, "
-             "autonomous interaction, at most 16 model calls and 1,000,000 "
-             "provider-reported tokens")
+        help="use the LLM-first onboarding profile: one detected provider, "
+             "LLM-first reasoning, and material clarification questions")
     parser.add_argument(
         "--practitioner-mode",
         choices=("deterministic", "hybrid", "non_deterministic"),
-        default="hybrid",
-        help="per-Loop resolution mode for task build; hybrid runs the exact "
-             "deterministic attempt before model repair")
+        default="non_deterministic",
+        help=argparse.SUPPRESS)
     parser.add_argument(
-        "--max-passes", type=int, default=24,
-        help="safety ceiling for complete Practitioner passes; a verified "
-             "run stops earlier")
+        "--max-passes", type=int,
+        help="optional ceiling for complete Practitioner passes; omitted "
+             "means no product-imposed pass ceiling")
     parser.add_argument(
         "--task-feedback", action="append", default=[], metavar="SLOT=VALUE",
         help="optional registered task feedback slot; repeat when needed")
@@ -371,11 +377,11 @@ def main(argv=None) -> int:
     parser.add_argument("--cases", default="",
                         help="comma-separated campaign case IDs; default all")
     parser.add_argument("--authorize-model-calls", action="store_true",
-                        help="explicitly allow bounded model calls")
-    parser.add_argument("--max-model-calls", type=int, default=0,
-                        help="hard physical model-call ceiling")
+                        help="explicitly allow governed model calls")
+    parser.add_argument("--max-model-calls", type=int,
+                        help="optional physical model-call ceiling")
     parser.add_argument("--max-total-tokens", type=int,
-                        help="hard provider-reported token ceiling")
+                        help="optional provider-reported token ceiling")
     parser.add_argument("--watch", action="store_true",
                         help="print campaign events while arms run")
     if raw_argv[:1] == ["setup"]:
@@ -441,6 +447,8 @@ def main(argv=None) -> int:
             parser.error("plugin requires discover, resolve, or inspect")
         raw_argv[:2] = ["--plugin-action", raw_argv[1]]
     args = parser.parse_args(raw_argv)
+    if args.unattended:
+        args.interaction_mode = "autonomous"
     if args.doctor:
         from .cli_operations import run_doctor
         return run_doctor(args)
@@ -468,7 +476,7 @@ def main(argv=None) -> int:
                 route_name=args.model_route,
                 model=args.model_id,
                 authorize_model_calls=args.authorize_model_calls,
-                max_physical_model_calls=args.max_model_calls,
+                max_physical_model_calls=args.max_model_calls or 0,
                 max_total_tokens=args.max_total_tokens,
                 timeout_seconds=args.live_timeout,
                 evidence_path=args.live_evidence_out)

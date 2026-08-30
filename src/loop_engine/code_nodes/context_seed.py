@@ -138,7 +138,7 @@ class ContextSeedSpec:
     time_horizon: str = "current"
     source_policy: str = "primary_first"
     source_refs: tuple = ()
-    max_candidates: int = 120
+    max_candidates: "int | None" = None
 
     def __post_init__(self):
         if not self.domain.strip():
@@ -154,8 +154,8 @@ class ContextSeedSpec:
                 raise ValueError(f"{name} cannot contain blank values")
             if len(values) != len(set(values)):
                 raise ValueError(f"{name} must be unique")
-        if not 1 <= self.max_candidates <= 500:
-            raise ValueError("max_candidates must be between 1 and 500")
+        if self.max_candidates is not None and self.max_candidates < 1:
+            raise ValueError("max_candidates must be positive when provided")
 
 
 @dataclass
@@ -272,11 +272,12 @@ def build_context_candidates(spec: ContextSeedSpec, *,
             or len(roles) != len(set(roles))):
         raise ValueError("roles must be nonblank and unique")
     requested = spec.max_candidates if limit is None else max(0, int(limit))
-    maximum = min(requested, spec.max_candidates)
+    maximum = (requested if spec.max_candidates is None or requested is None
+               else min(requested, spec.max_candidates))
     out = []
     for pattern, role, project, task in _coverage_balanced_coordinates(spec,
                                                                        roles):
-        if len(out) >= maximum:
+        if maximum is not None and len(out) >= maximum:
             break
         text = pattern["text"].format(
             role=role, task=task, project=project,

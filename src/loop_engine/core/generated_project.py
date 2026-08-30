@@ -62,9 +62,6 @@ class GeneratedProjectFile:
         object.__setattr__(self, "path", _relative_path(self.path))
         if not isinstance(self.content, str):
             raise GeneratedProjectError("generated file content must be text")
-        if len(self.content.encode("utf-8")) > 512_000:
-            raise GeneratedProjectError(
-                f"generated file {self.path!r} exceeds 512000 bytes")
 
     def to_dict(self) -> dict:
         return {"path": self.path, "content": self.content}
@@ -105,7 +102,7 @@ class GeneratedProjectCommand:
             raise GeneratedProjectError(
                 "network access is limited to python -m pip install setup")
         expected = tuple(self.expected_exit_codes)
-        if (not expected or len(expected) > 4
+        if (not expected
                 or any(not isinstance(item, int) or isinstance(item, bool)
                        or item < 0 or item > 255 for item in expected)
                 or len(expected) != len(set(expected))):
@@ -159,10 +156,9 @@ class GeneratedProjectFileSpec:
     def __post_init__(self) -> None:
         object.__setattr__(self, "path", _relative_path(self.path))
         acceptance = tuple(self.acceptance)
-        if (not self.purpose.strip() or len(self.purpose) > 2_000
-                or len(acceptance) > 20
+        if (not self.purpose.strip()
                 or any(not isinstance(item, str) or not item.strip()
-                       or len(item) > 500 for item in acceptance)):
+                       for item in acceptance)):
             raise GeneratedProjectError("generated file specification is invalid")
         object.__setattr__(self, "acceptance", acceptance)
 
@@ -192,10 +188,9 @@ class GeneratedProjectCandidate:
         files = tuple(self.files)
         commands = tuple(self.commands)
         artifacts = tuple(self.expected_artifacts)
-        if (not self.summary.strip() or not 1 <= len(files) <= 12
-                or not 1 <= len(commands) <= 12
-                or not 1 <= len(artifacts) <= 20):
-            raise GeneratedProjectError("project candidate bounds are invalid")
+        if (not self.summary.strip() or not files
+                or not commands or not artifacts):
+            raise GeneratedProjectError("project candidate is incomplete")
         paths = tuple(item.path for item in files)
         if len(paths) != len(set(paths)):
             raise GeneratedProjectError("project candidate file paths repeat")
@@ -303,16 +298,11 @@ class GeneratedProjectManifest:
         files = tuple(self.files)
         commands = tuple(self.commands)
         artifacts = tuple(self.expected_artifacts)
-        if (not files or len(files) > 30 or len(commands) > 12
-                or not commands or not artifacts or len(artifacts) > 20):
-            raise GeneratedProjectError(
-                "generated project exceeds its file, command, or artifact bounds")
+        if not files or not commands or not artifacts:
+            raise GeneratedProjectError("generated project is incomplete")
         paths = tuple(item.path for item in files)
         if len(paths) != len(set(paths)):
             raise GeneratedProjectError("generated project file paths repeat")
-        if sum(len(item.content.encode("utf-8")) for item in files) > 2_000_000:
-            raise GeneratedProjectError(
-                "generated project exceeds the 2000000-byte source budget")
         object.__setattr__(self, "files", files)
         object.__setattr__(self, "commands", commands)
         object.__setattr__(self, "expected_artifacts", artifacts)
@@ -407,12 +397,11 @@ class GeneratedProjectExecutionRequest:
         if not isinstance(self.authority, GeneratedProjectAuthority):
             raise GeneratedProjectError("execution request needs authority")
         inputs = tuple(self.input_artifacts)
-        if (len(inputs) > 20
-                or any(not isinstance(item, GeneratedProjectInputArtifact)
+        if (any(not isinstance(item, GeneratedProjectInputArtifact)
                        for item in inputs)
                 or len({item.path for item in inputs}) != len(inputs)):
             raise GeneratedProjectError(
-                "project input artifacts must be unique and bounded")
+                "project input artifacts must be unique")
         object.__setattr__(self, "input_artifacts", inputs)
 
 

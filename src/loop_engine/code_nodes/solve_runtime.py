@@ -6,7 +6,9 @@ graph. Unknown work returns a typed failure instead of placeholder success.
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
+import re
 import time
 from dataclasses import dataclass, field, replace
 from enum import Enum
@@ -47,6 +49,37 @@ class SolveError(ValueError):
 
 
 @dataclass(frozen=True)
+class MaterialQuestion:
+    """One material clarification the Practitioner needs before continuing."""
+
+    question_id: str
+    question: str
+    subject: str
+    answer_slot: str
+    reason: str
+
+    def __post_init__(self) -> None:
+        values = (
+            self.question_id, self.question, self.subject,
+            self.answer_slot, self.reason)
+        if any(not isinstance(value, str) or not value.strip()
+               for value in values):
+            raise SolveError("material question fields must be non-empty text")
+        if not re.fullmatch(r"[a-z][a-z0-9_.-]{0,127}", self.answer_slot):
+            raise SolveError("material question answer_slot is not portable")
+
+    def to_dict(self) -> dict:
+        return {
+            "record_type": "material_question/v1",
+            "question_id": self.question_id,
+            "question": self.question,
+            "subject": self.subject,
+            "answer_slot": self.answer_slot,
+            "reason": self.reason,
+        }
+
+
+@dataclass(frozen=True)
 class SolveRequest:
     intake: TaskIntake
     model_execution: ModelExecution | None = field(
@@ -54,8 +87,9 @@ class SolveRequest:
     runs_dir: str = ""
     save_run_history: bool = True
     interaction_mode: InteractionMode = InteractionMode.ASK_WHEN_MATERIAL
+    practitioner_mode: str = "non_deterministic"
     feedback: tuple[TaskFeedback, ...] = ()
-    max_passes: int = 24
+    max_passes: "int | None" = None
     allow_network_reads: bool = False
     allow_workspace_writes: bool = False
     allow_sandbox_commands: bool = False
@@ -73,6 +107,9 @@ class SolveRequest:
             except (TypeError, ValueError) as exc:
                 raise SolveError("interaction_mode is not recognized") from exc
             object.__setattr__(self, "interaction_mode", mode)
+        if self.practitioner_mode not in (
+                "deterministic", "hybrid", "non_deterministic"):
+            raise SolveError("practitioner_mode is not recognized")
         feedback = tuple(self.feedback)
         if any(not isinstance(item, TaskFeedback) for item in feedback):
             raise SolveError("feedback must contain TaskFeedback values")
@@ -80,8 +117,11 @@ class SolveRequest:
         if len(slots) != len(set(slots)):
             raise SolveError("task feedback slots cannot repeat")
         object.__setattr__(self, "feedback", feedback)
-        if not 1 <= self.max_passes <= 32:
-            raise SolveError("max_passes must be from 1 through 32")
+        if (self.max_passes is not None
+                and (not isinstance(self.max_passes, int)
+                     or isinstance(self.max_passes, bool)
+                     or self.max_passes < 1)):
+            raise SolveError("max_passes must be positive when provided")
         if any(not callable(getattr(item, "supports", None))
                or not callable(getattr(item, "execute", None))
                for item in self.deterministic_resolvers):
@@ -112,6 +152,7 @@ class SolveOutcome:
     artifacts: tuple[dict, ...] = ()
     workspace: str = ""
     limitations: tuple[str, ...] = ()
+    questions: tuple[MaterialQuestion, ...] = ()
     next_action: str = ""
     inspect_commands: tuple[str, ...] = ()
     model_calls: int = 0
@@ -128,10 +169,21 @@ class SolveOutcome:
             raise SolveError(f"unknown solve failure code {self.failure_code!r}")
         if self.solved and self.failure_code:
             raise SolveError("a solved outcome cannot carry a failure code")
+        if any(not isinstance(item, MaterialQuestion)
+               for item in self.questions):
+            raise SolveError("questions must contain MaterialQuestion values")
+        if self.questions and self.status != \
+                SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value:
+            raise SolveError(
+                "material questions require BLOCKED_MATERIAL_INPUT")
+        if (self.status == SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value
+                and not self.questions):
+            raise SolveError(
+                "BLOCKED_MATERIAL_INPUT requires an answerable question")
 
     def to_dict(self) -> dict:
         return {
-            "record_type": "solve_outcome/v3", "run_id": self.run_id,
+            "record_type": "solve_outcome/v4", "run_id": self.run_id,
             "terminal_code": self.status, "status": self.status,
             "solved": self.solved, "summary": self.summary,
             "failure_code": self.failure_code, "result": self.result,
@@ -144,6 +196,7 @@ class SolveOutcome:
             "run_history": self.run_history,
             "artifacts": list(self.artifacts), "workspace": self.workspace,
             "limitations": list(self.limitations),
+            "questions": [item.to_dict() for item in self.questions],
             "next_action": self.next_action,
             "inspect_commands": list(self.inspect_commands),
             "model_calls": self.model_calls, "tool_calls": self.tool_calls,
@@ -209,6 +262,55 @@ class StructuredNormalizationResolver:
     def execute(self, task: str) -> dict:
         del task
         return _normalize_structured(_load_structured(self.path))
+
+
+def _question_slot(subject: str, index: int) -> str:
+    normalized = re.sub(r"[^a-z0-9]+", "_", subject.lower()).strip("_")
+    if not normalized or not normalized[0].isalpha():
+        normalized = f"material_input_{index + 1}"
+    return normalized[:128]
+
+
+def _material_questions(result: dict) -> tuple[MaterialQuestion, ...]:
+    """Project the latest accepted orientation into answerable questions."""
+    orientations = tuple(result.get("orientations") or ())
+    if not orientations:
+        return ()
+    latest = orientations[-1]
+    raw_questions = tuple(str(value).strip() for value in
+                          latest.get("blocking_questions", ())
+                          if str(value).strip())
+    if not raw_questions:
+        return ()
+    ambiguities = [
+        item for item in latest.get("ambiguities", ())
+        if isinstance(item, dict) and item.get("state")
+        in ("USER_CLARIFICATION_REQUIRED", "BLOCKED")]
+    output = []
+    used_slots = set()
+    for index, question in enumerate(raw_questions):
+        question_terms = set(re.findall(r"[a-z0-9]{4,}", question.lower()))
+        matched = next((
+            item for item in ambiguities
+            if question_terms & set(re.findall(
+                r"[a-z0-9]{4,}", str(item.get("subject") or "").lower()))
+        ), ambiguities[index] if index < len(ambiguities) else {})
+        subject = str(matched.get("subject") or f"material input {index + 1}")
+        reason = str(matched.get("reason") or
+                     "The answer can materially change the work or result.")
+        base_slot = _question_slot(subject, index)
+        slot = base_slot
+        suffix = 2
+        while slot in used_slots:
+            slot = f"{base_slot[:120]}_{suffix}"
+            suffix += 1
+        used_slots.add(slot)
+        question_id = "question:" + hashlib.sha256(json.dumps(
+            {"question": question, "subject": subject, "slot": slot},
+            sort_keys=True, separators=(",", ":")).encode()).hexdigest()[:20]
+        output.append(MaterialQuestion(
+            question_id, question, subject, slot, reason))
+    return tuple(output)
 
 
 def _failure_code(result: dict) -> str:
@@ -277,7 +379,8 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         interaction_mode=request.interaction_mode,
         feedback=request.feedback))
     resolvers = tuple(request.deterministic_resolvers)
-    mode = "hybrid" if request.model_execution is not None else "deterministic"
+    mode = (request.practitioner_mode
+            if request.model_execution is not None else "deterministic")
     adaptive = run_adaptive_practitioner(
         AdaptivePractitionerRequest(
             request.intake.original_input, mode=mode,
@@ -310,7 +413,10 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
     if "passed" not in verification:
         verification = {**verification, "passed": bool(
             solved or verification.get("verdict") == "accept")}
+    questions = _material_questions(adaptive)
     terminal = (SolveTerminalCode.COMPLETED_VERIFIED.value if solved
+                else SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value
+                if questions
                 else _failure_code(adaptive))
     history = adaptive.get("run_history") or {}
     inspect = tuple(filter(None, (
@@ -326,6 +432,9 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         or deterministic_trace.get("unresolved_requirements")
         or deterministic_trace.get("diagnostics")
         or ("No compatible verified capability completed the task.",))))
+    summary = ("Material input is required before work can continue."
+               if terminal == SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value
+               else product["summary"])
     outcome = SolveOutcome(
         run_id=str(adaptive.get("run_id") or ""),
         status=terminal,
@@ -346,8 +455,9 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         graph_digest=str(selected.get("graph_digest") or ""),
         verification=verification,
         run_history=history,
-        summary=product["summary"], artifacts=product["artifacts"],
+        summary=summary, artifacts=product["artifacts"],
         workspace=product["workspace"], limitations=limitations,
+        questions=questions,
         next_action=("Inspect the verified artifacts and Run History."
                      if solved else _next_recovery(terminal)),
         inspect_commands=inspect,
@@ -362,12 +472,18 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         outcome_ref = bind_product_outcome(
             run_root, outcome.run_id, outcome.to_dict())
         outcome = replace(outcome, run_history={
-            **dict(history), "product_outcome": outcome_ref.to_dict()})
+            **dict(history), "product_outcome_bound": True,
+            "product_outcome_digest": outcome_ref.content_digest,
+            "terminal_code": outcome.status,
+            "product_outcome": outcome_ref.to_dict()})
     return outcome
 
 
 def _next_recovery(terminal: str) -> str:
     return {
+        SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value:
+            "Answer the listed material questions with --task-feedback "
+            "answer_slot=value, then run the same task again.",
         SolveTerminalCode.CAPABILITY_GAP.value:
             "Configure a supported model route or install a compatible capability.",
         SolveTerminalCode.PROVIDER_UNAVAILABLE.value:
@@ -427,7 +543,10 @@ def self_test() -> dict:
               and deterministic_bundle.outcome["verification"]["passed"]
               and deterministic.run_history["product_outcome"][
                   "content_digest"]
-              == deterministic_bundle.outcome_ref.content_digest)
+              == deterministic_bundle.outcome_ref.content_digest
+              and deterministic.run_history["product_outcome_bound"] is True
+              and deterministic.run_history["terminal_code"]
+                  == "COMPLETED_VERIFIED")
         model = solve_task(SolveRequest(
             intake_task(TaskIntakeRequest(text="explain this bounded task")),
             model_execution=fixture_model_execution(
@@ -440,6 +559,51 @@ def self_test() -> dict:
               not model.solved
               and model.failure_code == "BUDGET_EXHAUSTED"
               and model.run_history["chain_intact"])
+        from ..core.adaptive_practitioner_acceptance_checks import (
+            _decision, _orientation)
+        material_orientation = _orientation(
+            unknowns=["required destination"],
+            ambiguities=[{
+                "subject": "required destination",
+                "state": "USER_CLARIFICATION_REQUIRED",
+                "reason": "The destination changes authority and delivery."}],
+            blocking_questions=["Which destination is required?"],
+            proposed_next_action="ASK_USER")
+        ask_answers = tuple(json.dumps(item) for item in (
+            material_orientation,
+            {"actions": [_decision(
+                "ASK_USER", goal="Ask for the required destination.",
+                reason="The answer materially changes delivery authority.",
+                expected_output="One destination answer.")]},
+            {"verdict": "stop", "best_index": 0, "scores": [0.0],
+             "notes": "Material input is missing.",
+             "remaining_gaps": [{"criterion_ref": "criterion:destination",
+                                  "gap": "required destination"}],
+             "advisory_findings": [], "new_requirement_proposals": []},
+            {"route": "stop_unprofitable",
+             "reason": "Material input is missing."},
+        ))
+        asked = solve_task(SolveRequest(
+            intake_task(TaskIntakeRequest(
+                text="Deliver the verified result to the required destination.")),
+            model_execution=fixture_model_execution(
+                FixtureModelExecutionRequest(
+                    answers=ask_answers, max_model_calls=len(ask_answers))),
+            runs_dir=root,
+            interaction_mode=InteractionMode.ASK_WHEN_MATERIAL))
+        asked_bundle = load_saved_run_bundle(root, asked.run_id)
+        check("material_question_is_a_typed_answerable_terminal_result",
+              not asked.solved
+              and asked.failure_code == "BLOCKED_MATERIAL_INPUT"
+              and len(asked.questions) == 1
+              and asked.questions[0].answer_slot == "required_destination"
+              and asked.run_history["product_outcome_bound"] is True
+              and asked.run_history["terminal_code"]
+                  == "BLOCKED_MATERIAL_INPUT"
+              and asked.to_dict()["record_type"] == "solve_outcome/v4"
+              and asked_bundle.outcome["questions"][0]["answer_slot"]
+                  == "required_destination",
+              asked.summary)
         unavailable = solve_task(SolveRequest(
             intake_task(TaskIntakeRequest(text="invent a new theorem")),
             runs_dir=root))
@@ -462,9 +626,8 @@ def self_test() -> dict:
         check("autonomous_interaction_terminates_without_a_question",
               not autonomous.solved
               and autonomous.failure_code == "CAPABILITY_GAP"
-              and autonomous.compiled_task["binding"]
-                  ["can_continue_without_user_input"]
-              and autonomous.compiled_task["binding"]
-                  ["delegated_requirements"]
-                  == ["dataset_source", "target_column"])
+              and autonomous.compiled_task["binding"] is None
+              and autonomous.compiled_task["template_selection_authority"]
+                  == "model_only"
+              and autonomous.compiled_task["template_candidates"])
     return {"tests": results}

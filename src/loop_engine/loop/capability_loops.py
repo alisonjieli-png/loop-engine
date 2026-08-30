@@ -51,7 +51,8 @@ def _new_loop(*, goal: str, config, contract, ledger=None, parent=None):
 
     if parent is None:
         return Loop(goal, config, ledger=ledger, contract=contract)
-    if parent.depth + 1 > parent.config.max_depth:
+    if (parent.config.max_depth is not None
+            and parent.depth + 1 > parent.config.max_depth):
         raise CapabilityLoopError(
             f"max recursion depth {parent.config.max_depth} reached")
     if ledger is not None and ledger is not parent.ledger:

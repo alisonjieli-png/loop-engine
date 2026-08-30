@@ -90,11 +90,15 @@ def run_task_build(args) -> int:
 
     try:
         intake = task_intake_from_args(args)
-        calls_per_pass = 14
-        _apply_compile_provider_shortcut(
-            args, default_model_calls=calls_per_pass * args.max_passes)
+        _apply_compile_provider_shortcut(args, default_model_calls=None)
         model_execution = None
         settings = load_runtime_settings(args.settings_file or None).settings
+        maximum_model_calls = (
+            args.max_model_calls if args.max_model_calls is not None
+            else settings.loop.max_model_calls)
+        maximum_passes = (
+            args.max_passes if args.max_passes is not None
+            else settings.loop.max_iterations)
         if not args.compile_provider:
             from .templates.compiler import TaskCompileRequest, compile_task_value
             compiled = compile_task_value(TaskCompileRequest(
@@ -126,8 +130,12 @@ def run_task_build(args) -> int:
             ])
             return 0
         if args.practitioner_mode != "deterministic":
-            if not args.authorize_model_calls or args.max_model_calls < 1:
-                raise ValueError("task build needs a positive model-call budget")
+            if not args.authorize_model_calls or (
+                    maximum_model_calls is not None
+                    and maximum_model_calls < 1):
+                raise ValueError(
+                    "task build needs model-call authority; an optional "
+                    "ceiling must be positive")
             env_name, key = _compile_provider_key(args)
             with _temporary_provider_key(env_name, key):
                 gateway, route_name = _compile_gateway(args, key)
@@ -139,7 +147,7 @@ def run_task_build(args) -> int:
                         timeout_seconds=args.live_timeout,
                         max_total_tokens=args.max_total_tokens,
                         thinking_power=args.thinking_power or "medium"),
-                    max_model_calls=args.max_model_calls,
+                    max_model_calls=maximum_model_calls,
                     llm_thinking_power=args.thinking_power or "medium")
                 result = run_adaptive_practitioner(
                     AdaptivePractitionerRequest(
@@ -147,7 +155,7 @@ def run_task_build(args) -> int:
                         mode=args.practitioner_mode,
                         runs_dir=(args.runs_dir
                                   or settings.history.resolved_runs_dir()),
-                        max_passes=args.max_passes,
+                        max_passes=maximum_passes,
                         interaction_mode=args.interaction_mode,
                         allow_network_reads=settings.operating.access_mode in (
                             "approved_external_read", "broad_external_read",
@@ -170,7 +178,7 @@ def run_task_build(args) -> int:
                     intake.original_input, mode="deterministic",
                     runs_dir=(args.runs_dir
                               or settings.history.resolved_runs_dir()),
-                    max_passes=args.max_passes,
+                    max_passes=maximum_passes,
                     interaction_mode=args.interaction_mode,
                     allow_network_reads=False,
                     allow_workspace_writes=False,

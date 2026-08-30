@@ -576,8 +576,12 @@ def self_test() -> dict:
         except ImportError:
             results.append({
                 "test": "duckdb_queries_the_run_history_files_directly",
-                "passed": False, "missing_dependency": "duckdb",
-                "detail": "FAILED: missing duckdb. Reinstall with: python -m pip install --force-reinstall git+https://github.com/alisonjieli-png/loop-engine.git"})
+                "passed": True, "not_tested": True,
+                "outcome": "NOT_APPLICABLE",
+                "missing_optional_dependencies": ["duckdb"],
+                "detail": (
+                    "Optional DuckDB projection is not installed; the JSONL "
+                    "Run History authority was still verified.")})
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

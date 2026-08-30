@@ -16,12 +16,12 @@ guidance:
   - record_id: core.guidance.preserve_original_request
     version: 1.0.0
     intelligence_functions: [ask, horizon, verification]
-    step_affinities: [orient, compile_bind_task, verify]
+    step_affinities: [orient, standardize_task, verify]
     content: Preserve the original task beside every interpretation.
   - record_id: core.guidance.separate_fact_assumption
     version: 1.0.0
     intelligence_functions: [ask, readiness, deliberation]
-    step_affinities: [orient, compile_bind_task, assess_prepare]
+    step_affinities: [orient, standardize_task, assess_prepare]
     content: Separate explicit facts, derived values, assumptions, and unknowns.
   - record_id: core.guidance.ask_only_material_questions
     version: 1.0.0
@@ -76,7 +76,7 @@ guidance:
   - record_id: core.guidance.return_typed_output
     version: 1.0.0
     intelligence_functions: [implementation, execution, routing]
-    step_affinities: [compile_bind_task, how, act, route]
+    step_affinities: [standardize_task, how, act, route]
     content: Return only the requested schema for machine-controlled steps.
   - record_id: core.guidance.diagnose_before_breakout
     version: 1.0.0
@@ -84,7 +84,6 @@ guidance:
     step_affinities:
       - diagnose_stall
       - propose_recovery
-      - propose_recovery_alternative
       - adjudicate_recovery
     content: >-
       A no-progress signal requires evidence-based diagnosis, competing changed
@@ -106,7 +105,7 @@ guidance:
     intelligence_functions: [horizon, verification, routing]
     step_affinities:
       - orient
-      - compile_bind_task
+      - standardize_task
       - verify
       - adjudicate_recovery
     content: >-
@@ -198,7 +197,7 @@ steps:
       - What requires research, user clarification, or additional authority?
       - Which independent subcomponents or decisions does the task require?
       - What depends on what, and what can run in parallel?
-  compile_bind_task:
+  standardize_task:
     output_contract: work_item_ir/v1
     questions:
       - How can the original request be represented as a typed task without losing information?
@@ -286,24 +285,15 @@ steps:
       - Which assumptions or repeated strategies should be rejected?
       - What materially different change types could restore progress?
   propose_recovery:
-    output_contract: recovery_proposal/v1
+    output_contract: recovery_proposal_portfolio/v1
     persona_refs:
       - core.persona.strategy_mutator
       - core.persona.systems_builder
     questions:
-      - What one executable changed strategy addresses the diagnosed cause?
+      - Which executable changed strategies address the diagnosed cause?
       - Which registered capabilities and existing evidence does it need?
       - What measurable state change should occur on the next pass?
       - What repeated action must be forbidden?
-  propose_recovery_alternative:
-    output_contract: recovery_proposal/v1
-    persona_refs:
-      - core.persona.reuse_specialist
-      - core.persona.resource_steward
-    questions:
-      - What materially different recovery avoids the first proposal's failure mode?
-      - Can configuration, reuse, composition, or reframing replace more research or rebuilding?
-      - What evidence would falsify this alternative quickly?
   adjudicate_recovery:
     output_contract: recovery_directive/v1
     persona_refs:

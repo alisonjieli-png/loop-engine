@@ -3,10 +3,11 @@
 Loop Engine takes a task, performs real work in a confined workspace, verifies
 the result, and saves an inspectable Run History.
 
-The first supported solve path is intentionally bounded. It can build small
-Python utilities, transform supplied local files, summarize documents, analyze
-repositories, and repair small Python packages. Unsupported work returns an
-honest `CAPABILITY_GAP`.
+Task interpretation is not limited to a fixed list or template. The current
+effect capabilities can build small Python utilities, transform supplied local
+files, summarize documents, analyze repositories, and repair small Python
+packages. A task that needs another physical capability returns an honest
+`CAPABILITY_GAP`.
 
 ## Install
 
@@ -34,7 +35,9 @@ loop-engine doctor
 
 The default install is lightweight. In a source checkout, install `.[data]`
 for the larger ML, Kaggle, vector, and analytical adapters, or `.[all]` for
-every first-party optional adapter.
+every first-party optional adapter. The base self-test reports optional
+adapters as not tested; it does not misreport a lightweight installation as
+broken.
 
 ## Configure one provider
 
@@ -100,7 +103,7 @@ that still need a reviewed adapter.
 
 ## Solve a real task
 
-Download the first example task and run the bounded quickstart profile:
+Download the first example task and run the LLM-first quickstart profile:
 
 ```bash
 curl -LO \
@@ -110,15 +113,24 @@ loop-engine solve --file 01-expense-report.txt --quickstart
 ```
 
 `--quickstart` is an explicit authority profile. It selects one configured
-provider, uses autonomous interaction, permits the existing confined Docker
-workspace, and limits the run to 16 model calls and 1,000,000
-provider-reported tokens. It does not authorize deployment, publication, or
-network access from generated code.
+provider, starts the LLM-first Practitioner, asks material
+questions when needed, and permits the existing confined Docker workspace. It
+does not impose a numeric pass, model-call, or token ceiling unless the user or
+settings provide one. It does not authorize deployment, publication, or network
+access from generated code.
+
+Users do not choose deterministic, hybrid, or model-led execution during the
+normal solve path. The runtime selects model-led reasoning when a model is
+available. Use `--unattended` only when a run must abstain instead of returning
+a material question.
 
 If several known provider keys are present, quickstart prefers the dynamic
 zero-price OpenRouter route, then the zero-cost OpenCode Zen route, before the
 fixed Ollama Cloud, Mistral, and OpenCode Go routes. This chooses a candidate
 route; it does not promise that the provider quota is currently available.
+
+Read [LLM-first universal solving](docs/guides/llm-first-universal-solver.md)
+for the model/runtime boundary and the future fingerprinting and reuse path.
 
 A successful result has this shape:
 
@@ -139,6 +151,15 @@ Run History: ~/.loop-engine/runs/<run-id>
 A generated-project solve writes only inside the selected workspace. Commands
 run in the pinned Docker image with bounded resources and no network during
 execute or verify steps. Dependency setup requires separate authority.
+
+If an answer can materially change the goal, authority, inputs, or acceptance,
+the solve returns `BLOCKED_MATERIAL_INPUT` with a named answer slot instead of
+guessing. Supply the answer separately and rerun the unchanged task:
+
+```bash
+loop-engine solve --file task.txt --quickstart \
+  --task-feedback 'required_destination=./results/final-report.md'
+```
 
 ## Inspect the result
 
@@ -191,16 +212,17 @@ loop-engine solve \
 ```
 
 Use `--repository PATH --text "task"` for a document folder or small Python
-package. Loop Engine accepts only bounded text source files, excludes common
-dependency and version-control folders, and records exact input digests.
+package. The Practitioner first sees an input manifest. The model selects the
+text files it needs, then Loop Engine materializes those exact files, excludes
+common dependency and version-control folders, and records input digests.
 
 ## What is supported now
 
 | Area | Current behavior |
 |---|---|
 | Small Python utilities | Model proposes typed files and commands. Docker executes and verifies them. |
-| Local data transforms | CSV, JSON, text, and related bounded inputs can be copied into the workspace. |
-| Document and repository analysis | Bounded text files can be materialized with explicit source-to-model authority. |
+| Local data transforms | Selected CSV, JSON, text, and related inputs can be copied into the workspace. |
+| Document and repository analysis | Model-selected text files can be materialized with explicit source-to-model authority. |
 | Small Python package repair | The run can reproduce a nonzero exit, apply a changed source artifact, and rerun verification. |
 | Providers | Ollama Cloud, Mistral, OpenRouter, OpenCode Go, and typed custom endpoints. Availability must be probed. |
 | Effects | Workspace writes and commands require configured sandbox authority and exact per-effect approval. |
@@ -228,8 +250,9 @@ loop-engine solve
 Original task
 └─ Starting Practitioner Loop
    ├─ orient and standardize
-   ├─ select the next bounded action
-   ├─ bind a registered capability
+   ├─ select the next concrete action
+   ├─ propose a registered capability or a new local implementation
+   ├─ validate permissions and capability availability
    ├─ run Solution Loops in a confined workspace
    ├─ inspect commands and artifacts
    └─ return one terminal result with Run History

@@ -1,7 +1,7 @@
-"""Parameterized reuse-resolution decisions executed through one Loop.
+"""Parameterized reuse candidates validated through one Loop.
 
 The records in this module are passive. They describe candidate origins, hard
-constraints, preferences, rejections, and the selected next route. They do not
+constraints, preferences, rejections, and an explicit semantic selection. They do not
 execute capabilities, mutate active assets, create graph authority, or grant
 human approval. ``select_resolution_as_loop`` owns the deterministic operation
 through the canonical Practitioner ``Loop``.
@@ -24,7 +24,7 @@ from .task_fingerprint import (
 )
 
 
-RESOLUTION_SCHEMA_VERSION = "resolution_decision/v1"
+RESOLUTION_SCHEMA_VERSION = "resolution_decision/v2"
 
 
 class ResolutionError(ValueError):
@@ -185,7 +185,7 @@ class ResolutionCandidate:
 
 @dataclass(frozen=True)
 class ResolutionRequest:
-    """Hard constraints and soft origin preferences for one decision."""
+    """Hard constraints, candidate preferences, and optional model selection."""
 
     task_fingerprint: TaskFingerprint
     candidates: tuple[ResolutionCandidate, ...]
@@ -199,6 +199,7 @@ class ResolutionRequest:
     maximum_latency_seconds: float | None = None
     minimum_quality: float = 0.0
     minimum_verification_strength: float = 0.0
+    semantic_selection_ref: str = ""
 
     def __post_init__(self) -> None:
         if not isinstance(self.task_fingerprint, TaskFingerprint):
@@ -215,6 +216,10 @@ class ResolutionRequest:
                != self.task_fingerprint.digest for item in candidates):
             raise ResolutionError(
                 "all assessments must target the request fingerprint")
+        if (self.semantic_selection_ref
+                and self.semantic_selection_ref not in refs):
+            raise ResolutionError(
+                "semantic_selection_ref must name a supplied candidate")
         object.__setattr__(self, "candidates", candidates)
         for name in ("allowed_origins", "preferred_origins"):
             values = tuple(getattr(self, name))
@@ -265,12 +270,13 @@ class ResolutionRequest:
 
 @dataclass(frozen=True)
 class ResolutionDecision:
-    """Typed result of one deterministic, evidence-bounded selection."""
+    """Typed result of hard filtering plus optional semantic selection."""
 
     request_fingerprint_digest: str
     selected_candidate_ref: str = ""
     selected_origin: ResolutionOrigin | None = None
     considered_refs: tuple[str, ...] = ()
+    eligible_refs: tuple[str, ...] = ()
     rejected: tuple[tuple[str, tuple[str, ...]], ...] = ()
     required_delta: tuple[str, ...] = ()
     rationale: str = ""
@@ -307,6 +313,14 @@ class ResolutionDecision:
             raise ResolutionError(
                 "considered references must be unique non-empty strings")
         object.__setattr__(self, "considered_refs", considered)
+        eligible = tuple(self.eligible_refs)
+        if (any(not isinstance(ref, str) or not ref.strip()
+                for ref in eligible)
+                or len(eligible) != len(set(eligible))
+                or not set(eligible) <= set(considered)):
+            raise ResolutionError(
+                "eligible references must be unique considered candidates")
+        object.__setattr__(self, "eligible_refs", eligible)
         rejected = tuple((ref, tuple(reasons)) for ref, reasons in self.rejected)
         if any(
                 not isinstance(ref, str) or not ref.strip() or not reasons
@@ -344,6 +358,7 @@ class ResolutionDecision:
             "selected_origin": (
                 self.selected_origin.value if self.selected_origin else ""),
             "considered_refs": list(self.considered_refs),
+            "eligible_refs": list(self.eligible_refs),
             "rejected": [
                 {"candidate_ref": ref, "reasons": list(reasons)}
                 for ref, reasons in self.rejected
@@ -418,7 +433,7 @@ def _candidate_rejections(
 
 
 def select_resolution(request: ResolutionRequest) -> ResolutionDecision:
-    """Select one valid candidate after hard filtering and stable ranking."""
+    """Validate candidates and one optional model-selected candidate."""
     if not isinstance(request, ResolutionRequest):
         raise ResolutionError("select_resolution needs ResolutionRequest")
     rejected: list[tuple[str, tuple[str, ...]]] = []
@@ -429,47 +444,36 @@ def select_resolution(request: ResolutionRequest) -> ResolutionDecision:
             rejected.append((candidate.candidate_ref, reasons))
         else:
             eligible.append(candidate)
-    preference = {
-        origin: index for index, origin in enumerate(request.preferred_origins)}
-    fallback_rank = len(preference)
-
-    def rank(candidate: ResolutionCandidate) -> tuple[object, ...]:
-        return (
-            preference.get(candidate.origin, fallback_rank),
-            not candidate.compatibility.exact,
-            -(candidate.expected_quality
-              if candidate.expected_quality is not None else -1.0),
-            candidate.expected_cost
-            if candidate.expected_cost is not None else float("inf"),
-            candidate.expected_latency_seconds
-            if candidate.expected_latency_seconds is not None else float("inf"),
-            -candidate.verification_strength,
-            candidate.candidate_ref,
-        )
-
-    eligible.sort(key=rank)
-    selected = eligible[0] if eligible else None
+    eligible_by_ref = {item.candidate_ref: item for item in eligible}
+    selected = (eligible_by_ref.get(request.semantic_selection_ref)
+                if request.semantic_selection_ref else None)
+    if request.semantic_selection_ref and selected is None:
+        raise ResolutionError(
+            "the semantic selection did not pass every hard gate")
     return ResolutionDecision(
         request_fingerprint_digest=request.task_fingerprint.digest,
         selected_candidate_ref=(selected.candidate_ref if selected else ""),
         selected_origin=(selected.origin if selected else None),
         considered_refs=tuple(
             candidate.candidate_ref for candidate in request.candidates),
+        eligible_refs=tuple(candidate.candidate_ref for candidate in eligible),
         rejected=tuple(rejected),
         required_delta=(selected.compatibility.required_delta
                         if selected else ()),
         rationale=(
-            "selected the highest-ranked candidate that passed every hard gate"
-            if selected else "no candidate passed every hard gate"),
+            "validated the model-selected candidate against every hard gate"
+            if selected else
+            "eligible candidates await model-led semantic selection"
+            if eligible else "no candidate passed every hard gate"),
     )
 
 
 def select_resolution_as_loop(request: ResolutionRequest) -> ResolutionRunResult:
-    """Run deterministic resolution selection through the canonical Loop."""
+    """Run deterministic candidate validation through the canonical Loop."""
     from ..loop.encapsulate import as_practitioner_loop
 
     result = as_practitioner_loop(
-        "select a contract-compatible resolution",
+        "validate contract-compatible resolution candidates",
         lambda: select_resolution(request))
     if result["model_calls"] != 0:
         raise ResolutionError(
@@ -527,10 +531,20 @@ def self_test() -> dict[str, object]:
         maximum_latency_seconds=10.0, minimum_quality=0.8,
         minimum_verification_strength=0.8)
     decision = select_resolution(request)
-    check("exact_verified_reuse_precedes_parameterized_reuse",
-          decision.selected_candidate_ref == exact.candidate_ref)
+    check("eligible_reuse_candidates_wait_for_semantic_selection",
+          not decision.selected
+          and set(decision.eligible_refs)
+              == {exact.candidate_ref, parameterized.candidate_ref})
+    model_selected = select_resolution(ResolutionRequest(
+        required, (parameterized, incompatible, exact), maximum_cost=1.0,
+        maximum_latency_seconds=10.0, minimum_quality=0.8,
+        minimum_verification_strength=0.8,
+        semantic_selection_ref=parameterized.candidate_ref))
+    check("explicit_semantic_selection_is_validated_without_local_ranking",
+          model_selected.selected_candidate_ref
+              == parameterized.candidate_ref)
     rejection_map = dict(decision.rejected)
-    check("hard_incompatible_candidate_is_rejected_before_ranking",
+    check("hard_incompatible_candidate_is_rejected_before_selection",
           any(reason.startswith("hard_incompatible:")
               for reason in rejection_map[incompatible.candidate_ref]))
     try:
@@ -553,7 +567,7 @@ def self_test() -> dict[str, object]:
     check("unreviewed_derived_candidate_cannot_become_active_reuse",
           not abstained.selected)
     loop_result = select_resolution_as_loop(request)
-    check("selection_runs_through_loop_with_zero_model_calls",
+    check("candidate_validation_runs_through_loop_with_zero_model_calls",
           loop_result.loop_id.startswith("loop")
           and loop_result.model_calls == 0
           and loop_result.decision.decision_digest.startswith("sha256:"))

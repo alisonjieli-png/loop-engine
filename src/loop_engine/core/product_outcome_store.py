@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
 
 PRODUCT_OUTCOME_FILENAME = "outcome.json"
+PRODUCT_OUTCOME_RECORD_TYPES = ("solve_outcome/v3", "solve_outcome/v4")
 
 
 def _error(message: str):
@@ -37,7 +38,7 @@ class ProductOutcomeRef:
     def __post_init__(self) -> None:
         if (self.path != PRODUCT_OUTCOME_FILENAME
                 or not _is_digest(self.content_digest)
-                or self.record_type != "solve_outcome/v3"
+                or self.record_type not in PRODUCT_OUTCOME_RECORD_TYPES
                 or not self.terminal_code):
             raise _error("product outcome reference is malformed")
 
@@ -86,14 +87,17 @@ def _product_outcome_ref(value: Mapping) -> ProductOutcomeRef:
 
 def _validate_product_outcome(value: Mapping, run_id: str) -> dict:
     body = dict(value)
-    if (body.get("record_type") != "solve_outcome/v3"
+    if (body.get("record_type") not in PRODUCT_OUTCOME_RECORD_TYPES
             or body.get("run_id") != run_id
             or not isinstance(body.get("solved"), bool)
             or not str(body.get("terminal_code") or "")
             or body.get("terminal_code") != body.get("status")
             or not isinstance(body.get("artifacts"), list)
             or not isinstance(body.get("verification"), dict)):
-        raise _error("saved product outcome violates solve_outcome/v3")
+        raise _error("saved product outcome violates its solve outcome contract")
+    if (body.get("record_type") == "solve_outcome/v4"
+            and not isinstance(body.get("questions"), list)):
+        raise _error("solve_outcome/v4 questions must be a list")
     return body
 
 
@@ -184,5 +188,6 @@ def load_saved_run_bundle(root: str, run_id: str) -> SavedRunBundle:
 
 
 __all__ = (
-    "PRODUCT_OUTCOME_FILENAME", "ProductOutcomeRef", "SavedRunBundle",
+    "PRODUCT_OUTCOME_FILENAME", "PRODUCT_OUTCOME_RECORD_TYPES",
+    "ProductOutcomeRef", "SavedRunBundle",
     "bind_product_outcome", "load_saved_run_bundle")

@@ -7,43 +7,35 @@ whether repeated passes have changed the governed task state.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
+import json
 
 
 @dataclass(frozen=True)
 class PractitionerSupervisionPolicy:
-    """Define when governed diagnosis is required without deciding the route."""
+    """Require real progress without imposing a numerical work ceiling."""
 
-    maximum_research_actions_after_project: int = 3
-    maximum_unchanged_progress_snapshots: int = 3
+    require_executable_repair_delta: bool = True
+    diagnose_identical_state_action_failure: bool = True
 
 
 DEFAULT_SUPERVISION_POLICY = PractitionerSupervisionPolicy()
 
 
-def _research_after_latest_intervention(services) -> int:
-    if not services.project_attempts:
-        return 0
-    evidence_at_project = int(
-        services.project_attempts[-1].get("context_evidence_count", 0))
-    baseline = max(evidence_at_project, services.recovery_evidence_baseline)
-    return max(0, len(services.web_results) - baseline)
-
-
 def supervision_context(services, state) -> dict:
-    """Return the bounded control state exposed to semantic decisions."""
-    policy = DEFAULT_SUPERVISION_POLICY
-    research_used = _research_after_latest_intervention(services)
+    """Return exact progress facts without deciding how much work is enough."""
+    latest = _progress_snapshot(services, state)
+    repeated = bool(services.progress_snapshots
+                    and services.progress_snapshots[-1] == latest)
     return {
         "record_type": "practitioner_supervision_context/v1",
-        "research_actions_after_latest_project": research_used,
-        "research_actions_remaining_after_project": max(
-            0, policy.maximum_research_actions_after_project - research_used),
         "project_attempts": len(services.project_attempts),
         "verified_project_attempts": sum(
             bool(item.get("deterministic_checks_passed"))
             for item in services.project_attempts),
         "artifact_refs": sorted(str(key) for key in state.artifacts),
-        "unchanged_progress_snapshots": services.unchanged_progress_snapshots,
+        "identical_state_action_failure_repeated": repeated,
+        "progress_fingerprint": _snapshot_digest(latest),
         "recovery_rounds": services.recovery_rounds,
         "active_recovery_directive": (
             services.active_recovery_directive),
@@ -68,18 +60,43 @@ def validate_progressing_action(decision, services) -> None:
 
 
 def _progress_snapshot(services, state) -> tuple:
-    unique_evidence = tuple(sorted({
+    unique_web_evidence = tuple(sorted({
         str(item.get("sha256") or "") for item in services.web_results
         if item.get("sha256")}))
-    projects = tuple(
+    unique_source_evidence = tuple(sorted({
+        str(item.get("digest") or "")
+        for inspection in services.source_inspections
+        for item in inspection.get("selected", ())
+        if item.get("digest")}))
+    projects = tuple(sorted({
         (str(item.get("manifest_digest") or ""),
          bool(item.get("deterministic_checks_passed")))
-        for item in services.project_attempts)
+        for item in services.project_attempts}))
+    action = services.action_history[-1] if services.action_history else {}
+    action_fingerprint = hashlib.sha256(json.dumps(
+        action, sort_keys=True, separators=(",", ":"), default=str
+    ).encode()).hexdigest() if action else ""
+    verification = (
+        services.verification_records[-1]
+        if services.verification_records else {})
+    verification_fingerprint = hashlib.sha256(json.dumps(
+        verification, sort_keys=True, separators=(",", ":"), default=str
+    ).encode()).hexdigest() if verification else ""
     return (
-        unique_evidence,
+        unique_web_evidence,
+        unique_source_evidence,
         projects,
         tuple(sorted(str(key) for key in state.artifacts)),
+        action_fingerprint,
+        verification_fingerprint,
+        tuple(state.failures[-1:]),
     )
+
+
+def _snapshot_digest(snapshot: tuple) -> str:
+    return hashlib.sha256(json.dumps(
+        snapshot, sort_keys=True, separators=(",", ":"), default=str
+    ).encode()).hexdigest()
 
 
 def detect_stall(services, state) -> dict | None:
@@ -94,27 +111,24 @@ def detect_stall(services, state) -> dict | None:
     else:
         services.unchanged_progress_snapshots = 0
         services.active_recovery_directive = None
-    policy = DEFAULT_SUPERVISION_POLICY
-    reasons = []
-    if (services.unchanged_progress_snapshots
-            >= policy.maximum_unchanged_progress_snapshots):
-        reasons.append("governed task state did not measurably change")
-    research_used = _research_after_latest_intervention(services)
-    if (services.project_attempts and research_used
-            >= policy.maximum_research_actions_after_project):
-        reasons.append("post-project research repeated without resolution")
-    if not reasons:
+    if (not DEFAULT_SUPERVISION_POLICY.
+            diagnose_identical_state_action_failure
+            or snapshot != previous):
         return None
+    reasons = [
+        "the same state, action, evidence, and failure repeated without an "
+        "executable delta"]
     finding = {
         "record_type": "practitioner_stall_signal/v1",
         "code": "RECOVERY_DIAGNOSIS_REQUIRED",
         "unchanged_snapshots": services.unchanged_progress_snapshots,
-        "research_actions_since_intervention": research_used,
         "reasons": reasons,
+        "progress_fingerprint": _snapshot_digest(snapshot),
         "progress_snapshot": {
-            "unique_evidence": len(snapshot[0]),
-            "project_attempts": len(snapshot[1]),
-            "artifact_refs": len(snapshot[2]),
+            "unique_web_evidence": len(snapshot[0]),
+            "unique_source_evidence": len(snapshot[1]),
+            "project_attempts": len(snapshot[2]),
+            "artifact_refs": len(snapshot[3]),
         },
     }
     services.supervision_findings.append(finding)

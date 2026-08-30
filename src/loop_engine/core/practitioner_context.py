@@ -19,11 +19,10 @@ from .component_contracts import (
 
 
 _CORE_STEP_IDS = (
-    "orient", "compile_bind_task", "reconcile_horizon", "assess_prepare",
+    "orient", "standardize_task", "reconcile_horizon", "assess_prepare",
     "decide_next", "how", "act", "verify", "integrate_commit", "route")
 _RECOVERY_STEP_IDS = (
-    "diagnose_stall", "propose_recovery",
-    "propose_recovery_alternative", "adjudicate_recovery")
+    "diagnose_stall", "propose_recovery", "adjudicate_recovery")
 _STEP_IDS = _CORE_STEP_IDS + _RECOVERY_STEP_IDS
 _SEMVER = re.compile(
     r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")

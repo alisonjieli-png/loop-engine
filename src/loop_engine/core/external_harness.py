@@ -70,7 +70,7 @@ class HarnessBudget:
     max_total_tokens: "int | None" = None
     max_cost: "float | None" = None
     max_seconds: "float | None" = None
-    max_spawned_tasks: int = 8
+    max_spawned_tasks: "int | None" = None
     output_limit: "ModelOutputLimit | None" = None
 
     def __post_init__(self) -> None:
@@ -80,7 +80,8 @@ class HarnessBudget:
             value = getattr(self, field_name)
             if value is not None and value <= 0:
                 raise HarnessError(f"{field_name} must be positive when set")
-        if self.max_spawned_tasks < 0:
+        if (self.max_spawned_tasks is not None
+                and self.max_spawned_tasks < 0):
             raise HarnessError("max_spawned_tasks cannot be negative")
         if (self.output_limit is not None
                 and not isinstance(self.output_limit, ModelOutputLimit)):
@@ -591,7 +592,9 @@ def _budget_failure(request: HarnessRunRequest,
             and result.elapsed_seconds is not None
             and result.elapsed_seconds > request.budget.max_seconds):
         return "time_budget_exhausted"
-    if len(result.spawned_task_ids) > request.budget.max_spawned_tasks:
+    if (request.budget.max_spawned_tasks is not None
+            and len(result.spawned_task_ids)
+            > request.budget.max_spawned_tasks):
         return "spawned_task_budget_exhausted"
     return None
 

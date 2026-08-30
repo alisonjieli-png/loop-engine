@@ -83,7 +83,7 @@ class ModelExecution:
 
     gateway: ModelGateway = field(repr=False, compare=False)
     config: ModelGatewayConfig
-    max_model_calls: int = 1
+    max_model_calls: "int | None" = None
     llm_thinking_power: str = "medium"
     validator: "Callable[[str], bool] | None" = field(
         default=None, repr=False, compare=False)
@@ -95,11 +95,12 @@ class ModelExecution:
         if not isinstance(self.config, ModelGatewayConfig):
             raise SolutionModelError(
                 "ModelExecution.config must be a ModelGatewayConfig")
-        if (not isinstance(self.max_model_calls, int)
-                or isinstance(self.max_model_calls, bool)
-                or self.max_model_calls < 1):
+        if (self.max_model_calls is not None
+                and (not isinstance(self.max_model_calls, int)
+                     or isinstance(self.max_model_calls, bool)
+                     or self.max_model_calls < 1)):
             raise SolutionModelError(
-                "ModelExecution.max_model_calls must be a positive integer")
+                "ModelExecution.max_model_calls must be positive when set")
         if self.llm_thinking_power not in MODEL_THINKING_POWER_LEVELS:
             raise SolutionModelError(
                 "ModelExecution.llm_thinking_power must be one of "
@@ -127,10 +128,11 @@ class ModelExecutionSession:
         if not isinstance(request, ModelInvocationRequest):
             raise SolutionModelError(
                 "ModelExecutionSession.invoke requires ModelInvocationRequest")
-        if self.calls_used >= self.authority.max_model_calls:
+        maximum_calls = self.authority.max_model_calls
+        if maximum_calls is not None and self.calls_used >= maximum_calls:
             raise SolutionModelError(
                 "whole-Solution model-call budget exhausted: "
-                f"{self.calls_used}/{self.authority.max_model_calls}",
+                f"{self.calls_used}/{maximum_calls}",
                 error_code="model_call_budget_exhausted")
         config = self.authority.config
         if request.model:
@@ -260,6 +262,9 @@ def self_test() -> dict:
     authority = fixture_model_execution(FixtureModelExecutionRequest(
         answers=("<think>private scratch</think>first", "second"),
         max_model_calls=2))
+    uncapped_authority = ModelExecution(authority.gateway, authority.config)
+    check("model_execution_has_no_implicit_whole_run_call_ceiling",
+          uncapped_authority.max_model_calls is None)
     session = authority.start_session()
     owner = Loop("fixture Solution owner")
     port = ModelInvocationPort(session, "hybrid", owner)

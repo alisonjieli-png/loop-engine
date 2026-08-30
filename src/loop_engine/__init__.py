@@ -84,6 +84,7 @@ _PUBLIC: dict[str, tuple[str, str]] = {
     **_names(
         "code_nodes.solve_runtime",
         "SolveRequest", "SolveOutcome", "SolveError", "SolveTerminalCode",
+        "MaterialQuestion",
         "solve_task",
     ),
     **_names(
@@ -415,7 +416,6 @@ _PUBLIC: dict[str, tuple[str, str]] = {
     ),
 
     # Main user workflows and package verification.
-    **_names("code_nodes.universal_solve", "solve", "read_task", "TaskReading"),
     **_names(
         "core.knowledge_loader",
         "load_knowledge", "load_into_store",

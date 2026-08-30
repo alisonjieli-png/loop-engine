@@ -25,7 +25,7 @@ from .adaptive_practitioner_supervision import detect_stall
 
 @dataclass(frozen=True)
 class AdaptiveVerificationRequest:
-    """Current state, action plan, results, and bounded model projection."""
+    """Current state, action plan, results, and safe model projection."""
 
     state: PractitionerState
     plan: ExecutionPlan
@@ -35,7 +35,7 @@ class AdaptiveVerificationRequest:
 
 @dataclass(frozen=True)
 class AdaptiveRouteRequest:
-    """Integrated state, pass record, and bounded model projection."""
+    """Integrated state, pass record, and safe model projection."""
 
     state: PractitionerState
     record: object
@@ -106,7 +106,7 @@ def verify_adaptive_results(
             raise AdaptivePractitionerError("verification verdict is invalid")
         if verdict == "accept" and not deterministic_pass:
             verdict = "repair"
-        notes = _short_text(value.get("notes"), "verification notes", 2000)
+        notes = _short_text(value.get("notes"), "verification notes")
         gap_values = value.get("remaining_gaps") or []
         if not isinstance(gap_values, list):
             raise AdaptivePractitionerError("remaining_gaps must be a list")
@@ -121,7 +121,7 @@ def verify_adaptive_results(
                     "verification gap references an unknown criterion")
             gap_assessments.append({
                 "criterion_ref": criterion_ref,
-                "gap": _short_text(item.get("gap"), "verification gap", 1000),
+                "gap": _short_text(item.get("gap"), "verification gap"),
             })
         gaps = tuple(item["gap"] for item in gap_assessments)
         advisory = _short_strings(
@@ -182,7 +182,7 @@ def route_adaptive_result(
         selected = str(value.get("route"))
         if selected not in MODEL_ROUTE_VALUES:
             raise AdaptivePractitionerError("route response is invalid")
-        reason = _short_text(value.get("reason"), "route reason", 1000)
+        reason = _short_text(value.get("reason"), "route reason")
     except (AdaptivePractitionerError, SolutionModelError,
             TypeError, ValueError) as exc:
         services.diagnostic("route_model_unavailable", {

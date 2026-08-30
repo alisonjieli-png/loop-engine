@@ -48,7 +48,9 @@ class LoopDefaults:
     allowable_modes: tuple[str, ...] = MODES
     preferred_modes: tuple[str, ...] = MODES
     delegated_modes: tuple[str, ...] = MODES
-    max_depth: int = 3
+    max_depth: "int | None" = None
+    max_iterations: "int | None" = None
+    max_model_calls: "int | None" = None
     exit_condition: str = "steps_complete"
     success_confidence_min: float = 0.5
 
@@ -64,8 +66,19 @@ class LoopDefaults:
                for value in self.preferred_modes):
             raise SettingsError(
                 "loop.preferred_modes must be a subset of allowable_modes")
-        if self.max_depth < 0:
-            raise SettingsError("loop.max_depth cannot be negative")
+        if (self.max_depth is not None
+                and (not isinstance(self.max_depth, int)
+                     or isinstance(self.max_depth, bool)
+                     or self.max_depth < 0)):
+            raise SettingsError(
+                "loop.max_depth must be non-negative when provided")
+        for name in ("max_iterations", "max_model_calls"):
+            value = getattr(self, name)
+            if (value is not None
+                    and (not isinstance(value, int)
+                         or isinstance(value, bool) or value < 1)):
+                raise SettingsError(
+                    f"loop.{name} must be positive when provided")
         if self.exit_condition not in EXIT_CONDITIONS:
             raise SettingsError(
                 f"loop.exit_condition must be one of {EXIT_CONDITIONS}")
@@ -86,6 +99,8 @@ class LoopConfigOverride:
     llm_thinking_power: str = ""
     custom_steps: tuple[str, ...] = ()
     max_depth: "int | None" = None
+    max_iterations: "int | None" = None
+    max_model_calls: "int | None" = None
     exit_condition: str = ""
     success_confidence_min: "float | None" = None
 
@@ -276,14 +291,16 @@ class ModelTier:
     routes: tuple[str, ...] = ()
     max_output_tokens: "int | None" = None
     timeout_seconds: float = 300.0
-    max_attempts: int = 2
+    max_attempts: "int | None" = None
 
     def __post_init__(self) -> None:
         if self.name not in MODEL_THINKING_POWER_LEVELS:
             raise SettingsError(
                 f"model tier name must be one of {MODEL_THINKING_POWER_LEVELS}")
         if ((self.max_output_tokens is not None
-             and self.max_output_tokens < 1) or self.max_attempts < 1):
+             and self.max_output_tokens < 1)
+                or (self.max_attempts is not None
+                    and self.max_attempts < 1)):
             raise SettingsError("model tier limits must be positive")
         if self.timeout_seconds <= 0:
             raise SettingsError("model tier timeout_seconds must be positive")
@@ -300,7 +317,7 @@ class EscalationSettings:
     enabled: bool = False
     order: tuple[str, ...] = ("small", "medium", "high", "max")
     on_errors: tuple[str, ...] = ("output_validation_failed",)
-    max_tier_changes: int = 1
+    max_tier_changes: "int | None" = None
 
     def __post_init__(self) -> None:
         if (not self.order or len(set(self.order)) != len(self.order)
@@ -312,7 +329,8 @@ class EscalationSettings:
             raise SettingsError(
                 "specialized is selected by task capability, not automatic "
                 "power escalation")
-        if self.max_tier_changes < 0:
+        if (self.max_tier_changes is not None
+                and self.max_tier_changes < 0):
             raise SettingsError(
                 "model escalation max_tier_changes cannot be negative")
         if any(error not in ESCALATION_ERROR_CODES
@@ -325,14 +343,14 @@ def _default_tiers() -> tuple[ModelTier, ...]:
     """Conservative route hints. They are not a measured quality ranking."""
     return (
         ModelTier("small", ("cloud.mistral", "cloud.default"),
-                  None, 120.0, 2),
+                  None, 120.0),
         ModelTier("medium", ("cloud.default", "cloud.mistral.large",
-                             "cloud.openrouter"), None, 300.0, 3),
+                             "cloud.openrouter"), None, 300.0),
         ModelTier("high", ("cloud.mistral.large", "cloud.hard",
-                           "cloud.openrouter.reasoning"), None, 600.0, 3),
+                           "cloud.openrouter.reasoning"), None, 600.0),
         ModelTier("max", ("cloud.hard", "cloud.openrouter.reasoning",
-                          "cloud.mistral.large"), None, 900.0, 3),
-        ModelTier("specialized", (), None, 600.0, 2),
+                          "cloud.mistral.large"), None, 900.0),
+        ModelTier("specialized", (), None, 600.0),
     )
 
 
@@ -428,7 +446,9 @@ class ModelSettings:
         if start not in order:
             return (first,)
         index = order.index(start)
-        names = order[index:index + self.escalation.max_tier_changes + 1]
+        changes = self.escalation.max_tier_changes
+        names = (order[index:] if changes is None
+                 else order[index:index + changes + 1])
         return tuple(self.tier(name) for name in names)
 
     def gateway_config(self, request: "ModelPolicyRequest | None" = None):
@@ -446,20 +466,22 @@ class ModelSettings:
                 tier.timeout_seconds) for route in req.route_names)
         else:
             for tier in tiers:
+                routes = (tier.routes if tier.max_attempts is None
+                          else tier.routes[:tier.max_attempts])
                 route_plan.extend(ModelRouteAttemptSpec(
                     route, tier.name, tier.max_output_tokens,
-                    tier.timeout_seconds) for route in
-                    tier.routes[:tier.max_attempts])
+                    tier.timeout_seconds) for route in routes)
         if not route_plan:
             raise SettingsError(
                 f"model tier {tiers[0].name!r} has no configured routes")
-        maximum_attempts = (req.max_route_attempts or len(route_plan))
-        maximum_attempts = min(maximum_attempts, len(route_plan))
+        maximum_attempts = req.max_route_attempts
+        selected_attempts = (len(route_plan) if maximum_attempts is None
+                             else min(maximum_attempts, len(route_plan)))
         return ModelGatewayConfig(
             purpose=req.purpose,
             thinking_power=tiers[0].name,
             route_plan=tuple(route_plan),
-            allow_failover=maximum_attempts > 1,
+            allow_failover=selected_attempts > 1,
             max_route_attempts=maximum_attempts,
             timeout_seconds=max(item.timeout_seconds for item in route_plan),
             max_output_tokens=(max(
@@ -549,6 +571,12 @@ class RuntimeSettings:
             custom_steps=change.custom_steps,
             max_depth=(self.loop.max_depth if change.max_depth is None
                        else change.max_depth),
+            max_iterations=(
+                self.loop.max_iterations if change.max_iterations is None
+                else change.max_iterations),
+            max_model_calls=(
+                self.loop.max_model_calls if change.max_model_calls is None
+                else change.max_model_calls),
             exit_condition=(change.exit_condition
                             or self.loop.exit_condition),
             success_confidence_min=(

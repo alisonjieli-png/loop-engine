@@ -180,13 +180,13 @@ def grounding_summary(goals: "GoalStack | None",
 
 @dataclass
 class WorkPacket:
-    """A bounded unit of work the practitioner admits so a Task Graph can run
+    """A unit of work the practitioner admits so a Task Graph can run
     MANY deterministic operations before the next decision — the answer to
     'a 10,000-operation task is not 10,000 practitioner passes'."""
     packet_id: str
     checkpoint: str
     objective: str
-    max_operations: int = 100
+    max_operations: "int | None" = None
     stop_at: tuple = DECISION_BOUNDARIES     # boundaries that end this packet
     operations_done: int = 0
     stopped_because: str = ""
@@ -194,8 +194,9 @@ class WorkPacket:
     def should_stop(self, boundary: str) -> bool:
         if boundary not in DECISION_BOUNDARIES:
             raise ValueError(f"unknown decision boundary {boundary!r}")
-        return boundary in self.stop_at or \
-            self.operations_done >= self.max_operations
+        return (boundary in self.stop_at
+                or (self.max_operations is not None
+                    and self.operations_done >= self.max_operations))
 
 
 @dataclass

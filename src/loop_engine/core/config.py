@@ -62,7 +62,7 @@ class SolverConfig:
     budgets: Budgets = field(default_factory=Budgets)
     optimize_for: str = "accuracy"
     # --- advanced (defaulted, out of the way) -----------------------------
-    deterministic_first: bool = True
+    deterministic_first: bool = False
     reuse_sources: tuple = ("internal", "github", "pypi")
 
     def __post_init__(self):

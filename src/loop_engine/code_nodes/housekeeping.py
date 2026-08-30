@@ -64,8 +64,8 @@ _IMP_ASSET_KIND = {
 LEGACY_SOURCE_KINDS = ("github_url", "local_path", "package")
 
 # The four JOB FAMILIES of the Continuous Improvement Plane (job families, not
-# primitives) and the COST TIER each runs at (cheap-deterministic-first, so a few
-# high-value opportunities reach an LLM, never millions of raw records).
+# primitives) and the COST TIER each runs at (catalog scans are deterministic;
+# selected semantic opportunities may reach an LLM).
 JOB_FAMILIES = ("runtime_housekeeping", "capability_mining",
                 "capability_engineering", "legacy_assimilation")
 COST_TIERS = ("housekeeping_scan", "opportunity_mining",

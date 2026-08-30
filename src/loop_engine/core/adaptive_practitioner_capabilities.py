@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import mimetypes
+import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -106,8 +107,9 @@ def _project_manifest(
                 "failures": list(request.state.failures),
             },
             "execution_plan": asdict(request.plan),
-            "web_search_candidates": services.web_search_results[-4:],
-            "web_evidence": services.web_results[-6:],
+            "web_search_candidates": services.web_search_results,
+            "web_evidence": services.web_results,
+            "source_inspections": services.source_inspections,
             "available_input_artifacts": [
                 item.to_dict() for item in input_artifacts],
             "available_input_text": ([{
@@ -123,12 +125,12 @@ def _project_manifest(
                     "deterministic_checks_passed"),
                 "commands": item.get("commands"),
                 "artifacts": item.get("artifacts"),
-            } for item in services.project_attempts[-3:]],
+            } for item in services.project_attempts],
             "previous_construction_failures": {
                 "candidate": services.plan_details.get(
-                    "candidate_validation_failures", [])[-6:],
+                    "candidate_validation_failures", []),
                 "files": services.plan_details.get(
-                    "file_validation_failures", [])[-6:],
+                    "file_validation_failures", []),
             },
             "project_contract": {
                 "record_type": "generated_project_candidate/v1",
@@ -257,23 +259,26 @@ def _project_manifest(
 
 
 def _web_operation(arguments, services, owner):
+    maximum_bytes = arguments.get("maximum_bytes")
     return services.dependencies.web_fetcher(
         WebFetchRequest(
             str(arguments.get("url") or ""),
             str(arguments.get("purpose") or ""),
-            maximum_bytes=int(arguments.get(
-                "maximum_bytes", 4 * 1024 * 1024))),
+            maximum_bytes=(None if maximum_bytes is None
+                           else int(maximum_bytes))),
         WebFetchAuthority(
             services.run_id, services.request.allow_network_reads),
         WebFetchContext(owner, services.artifacts))
 
 
 def _search_operation(arguments, services, owner):
+    maximum_results = arguments.get("maximum_results")
     return services.dependencies.web_searcher(
         WebSearchRequest(
             str(arguments.get("query") or ""),
             str(arguments.get("purpose") or ""),
-            maximum_results=int(arguments.get("maximum_results", 5))),
+            maximum_results=(None if maximum_results is None
+                             else int(maximum_results))),
         WebSearchAuthority(
             services.run_id, services.request.allow_network_reads),
         WebSearchContext(owner))
@@ -301,7 +306,7 @@ def _project_inputs(
     inputs = list(_local_project_inputs(services))
     used_paths = set()
     used_paths.update(item.path for item in inputs)
-    for index, result in enumerate(services.web_results[-12:], 1):
+    for index, result in enumerate(services.web_results, 1):
         reference = ContextArtifactRef.from_dict(result["artifact_ref"])
         body = services.artifacts.store.get(reference)
         relative_path = _input_artifact_path(
@@ -321,13 +326,45 @@ def _local_project_inputs(
     if not services.request.allow_source_materialization_to_model:
         raise PermissionError(
             "local task sources require explicit source-to-model authority")
+    selected_records = {}
+    for inspection in services.source_inspections:
+        for item in inspection.get("selected", ()):
+            relative = str(item.get("path") or "")
+            if relative:
+                selected_records[relative] = str(item.get("digest") or "")
+    selected_paths = tuple(selected_records)
+    if not selected_paths:
+        raise GeneratedProjectError(
+            "local sources were supplied but the model has not selected any "
+            "through core.source.inspect")
+    available = dict(_inspectable_source_files(services))
+    missing = sorted(set(selected_paths) - set(available))
+    if missing:
+        raise GeneratedProjectError(
+            f"selected local source paths are no longer available: {missing}")
+    return tuple(GeneratedProjectInputArtifact(
+        f"inputs/{relative}", available[relative].read_bytes(),
+        mimetypes.guess_type(available[relative].name)[0] or "text/plain",
+        selected_records[relative])
+        for relative in selected_paths)
+
+
+def _inspectable_source_files(
+        services: AdaptiveRunServices) -> tuple[tuple[str, Path], ...]:
+    """Resolve confined text sources without selecting their task meaning."""
+    if not services.request.allow_source_materialization_to_model:
+        raise PermissionError(
+            "source inspection requires explicit source-to-model authority")
     allowed_names = {"pyproject.toml", "requirements.txt", "setup.cfg"}
     allowed_suffixes = {
-        ".csv", ".json", ".jsonl", ".md", ".py", ".rst", ".toml",
-        ".tsv", ".txt", ".yaml", ".yml"}
-    excluded_parts = {".git", ".venv", "__pycache__", "node_modules"}
-    selected = []
-    total_bytes = 0
+        ".bib", ".cfg", ".csv", ".eml", ".fasta", ".fa", ".geojson",
+        ".graphql", ".ics", ".ini", ".json", ".jsonl", ".md", ".po",
+        ".py", ".rst", ".sql", ".srt", ".toml", ".tsv", ".txt",
+        ".vcf", ".xml", ".yaml", ".yml"}
+    excluded_parts = {
+        ".git", ".venv", "__pycache__", "node_modules", "build", "dist"}
+    resolved = []
+    used = set()
     for source_ref in services.request.source_refs:
         source = Path(source_ref).expanduser().resolve()
         if not source.exists() or source.is_symlink():
@@ -337,27 +374,68 @@ def _local_project_inputs(
             if item.is_file() and not item.is_symlink()
             and not excluded_parts.intersection(item.relative_to(source).parts)))
         for path in candidates:
-            if path.name.startswith(".") or (
-                    path.name not in allowed_names
+            if (path.name.startswith(".") or path.name not in allowed_names
                     and path.suffix.lower() not in allowed_suffixes):
                 continue
-            body = path.read_bytes()
-            if len(body) > 512_000 or total_bytes + len(body) > 2_000_000:
-                raise GeneratedProjectError(
-                    "local source material exceeds the model context budget")
-            if len(selected) >= 20:
-                raise GeneratedProjectError(
-                    "local source material exceeds the 20-file limit")
             relative = (path.name if source.is_file()
                         else f"{source.name}/{path.relative_to(source).as_posix()}")
-            media_type = mimetypes.guess_type(path.name)[0] or "text/plain"
-            selected.append(GeneratedProjectInputArtifact(
-                f"inputs/{relative}", body, media_type))
-            total_bytes += len(body)
-    if not selected:
-        raise GeneratedProjectError(
-            "no supported local source files were available to the task")
-    return tuple(selected)
+            if relative in used:
+                continue
+            used.add(relative)
+            resolved.append((relative, path))
+    return tuple(resolved)
+
+
+def _source_inspection_operation(
+        arguments: dict, services: AdaptiveRunServices) -> dict:
+    files = _inspectable_source_files(services)
+    requested = arguments.get("paths") or []
+    if not isinstance(requested, list) or any(
+            not isinstance(item, str) or not item.strip()
+            for item in requested):
+        raise AdaptivePractitionerError(
+            "source inspection paths must be a list of non-empty text")
+    query = str(arguments.get("query") or "").strip()
+    include_contents = arguments.get("include_contents", False)
+    if not isinstance(include_contents, bool):
+        raise AdaptivePractitionerError(
+            "source inspection include_contents must be boolean")
+    by_path = {relative: path for relative, path in files}
+    unknown_paths = sorted(set(requested) - set(by_path))
+    if unknown_paths:
+        raise AdaptivePractitionerError(
+            f"source inspection requested unknown paths {unknown_paths}")
+    selected = []
+    query_terms = tuple(re.findall(r"[a-z0-9_]{2,}", query.lower()))
+    for relative, path in files:
+        body = path.read_bytes()
+        text = body.decode("utf-8", errors="replace")
+        matches_query = (not query_terms or all(
+            term in text.lower() or term in relative.lower()
+            for term in query_terms))
+        chosen = relative in requested or bool(query and matches_query)
+        row = {
+            "path": relative, "byte_count": len(body),
+            "digest": hashlib.sha256(body).hexdigest(),
+            "media_type": mimetypes.guess_type(path.name)[0] or "text/plain",
+        }
+        if chosen and include_contents:
+            row["content"] = text
+        if chosen:
+            selected.append(row)
+    manifest = [{
+        "path": relative, "byte_count": path.stat().st_size,
+        "digest": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "media_type": mimetypes.guess_type(path.name)[0] or "text/plain",
+    } for relative, path in files]
+    return {
+        "record_type": "source_inspection_result/v1",
+        "source_manifest": manifest,
+        "selected": selected,
+        "query": query,
+        "contents_included": include_contents,
+        "source_count": len(manifest),
+    }
 
 
 def execute_adaptive_capability(
@@ -368,7 +446,13 @@ def execute_adaptive_capability(
     owner = request.owner_loop
     arguments = dict(plan.experiment.get("arguments") or {})
     manifest = None
-    if plan.handle == "core.web.search":
+    if plan.handle == "core.source.inspect":
+        operation = lambda _value, _params: _source_inspection_operation(
+            arguments, services)
+        input_value = arguments
+        input_role = "next_action_decision/v1"
+        output_role = "source_inspection_result/v1"
+    elif plan.handle == "core.web.search":
         operation = lambda _value, _params: _search_operation(
             arguments, services, owner)
         input_value = arguments
@@ -486,6 +570,20 @@ def execute_adaptive_capability(
         "mermaid": canvas["mermaid"],
         "runtime_trace": trace,
     }
+    if plan.handle == "core.source.inspect":
+        services.source_inspections.append(output)
+        services.selected_intelligence_refs.extend(
+            f"source:{item['digest']}" for item in output["selected"]
+            if f"source:{item['digest']}"
+            not in services.selected_intelligence_refs)
+        return ResultPacket(
+            objective=(str(arguments.get("query") or "")
+                       or "inspect supplied source"),
+            result=output,
+            evidence_refs=tuple(
+                f"source:{item['digest']}" for item in output["selected"]),
+            confidence=1.0,
+            lineage=(compiled["digest"],))
     if plan.handle == "core.web.search":
         services.web_search_results.append(output)
         return ResultPacket(
@@ -521,6 +619,8 @@ def execute_adaptive_capability(
 
 def self_test() -> dict:
     """Static contract check; execution is covered by the adaptive suite."""
+    import tempfile
+    from types import SimpleNamespace
     source = Path(__file__).read_text(encoding="utf-8").split(
         "def self_test()", 1)[0].lower()
     task_words = ("openml", "iris", "boosted-tree", "target_column=", "kaggle")
@@ -534,6 +634,23 @@ def self_test() -> dict:
     paths_passed = (
         first_path == "inputs/records.data"
         and duplicate_path == "inputs/source-2.data")
+    with tempfile.TemporaryDirectory() as directory:
+        source_root = Path(directory) / "source"
+        source_root.mkdir()
+        source_file = source_root / "unexpected_format.py"
+        source_file.write_text(
+            "def convert(value):\n    return value.casefold()\n",
+            encoding="utf-8")
+        services = SimpleNamespace(request=SimpleNamespace(
+            source_refs=(str(source_root),),
+            allow_source_materialization_to_model=True))
+        inspected = _source_inspection_operation({
+            "paths": ["source/unexpected_format.py"],
+            "include_contents": True}, services)
+        source_inspection_passed = (
+            inspected["source_count"] == 1
+            and inspected["selected"][0]["content"].startswith("def convert")
+            and len(inspected["selected"][0]["digest"]) == 64)
     tests = [{
         "test": "capability_graph_compiler_has_no_example_route",
         "passed": passed,
@@ -542,6 +659,10 @@ def self_test() -> dict:
         "test": "fetched_inputs_preserve_safe_authoritative_basenames",
         "passed": paths_passed,
         "detail": f"{first_path}; {duplicate_path}",
+    }, {
+        "test": "source_inspection_returns_model_selected_exact_content",
+        "passed": source_inspection_passed,
+        "detail": "manifest plus selected UTF-8 body and digest",
     }]
     return {
         "record_type": "adaptive_capability_compilation_test/v1",
