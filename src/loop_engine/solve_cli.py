@@ -11,7 +11,7 @@ import json
 from .cli_operations import (
     _apply_compile_provider_shortcut, _compile_gateway,
     _compile_provider_key, _task_feedback_from_args,
-    _temporary_provider_key, task_intake_from_args,
+    _temporary_provider_key, resolve_cli_extensions, task_intake_from_args,
 )
 
 
@@ -28,7 +28,8 @@ def run_solve(args) -> int:
     try:
         intake = task_intake_from_args(args)
         loaded = load_runtime_settings(args.settings_file or None)
-        settings = loaded.settings
+        extension_application = resolve_cli_extensions(args, loaded.settings)
+        settings = extension_application.settings
         _apply_compile_provider_shortcut(args, default_model_calls=16)
         if args.allow_source_to_model and not args.authorize_model_calls:
             raise ValueError(
@@ -89,7 +90,9 @@ def run_solve(args) -> int:
                     in ("sandbox_generate", "promotion_authorized")),
                 workspace_root=workspace,
                 allow_source_materialization_to_model=
-                    args.allow_source_to_model))
+                    args.allow_source_to_model,
+                extension_snapshot=
+                    extension_application.snapshot.to_dict()))
 
         if args.compile_provider:
             if not args.authorize_model_calls:
@@ -103,6 +106,7 @@ def run_solve(args) -> int:
             if (args.provider_key_env or args.prompt_for_provider_key
                     or any(value is not None for value in (
                         args.ollama_api_key, args.openrouter_api_key,
+                        args.opencode_zen_api_key,
                         args.opencode_go_api_key))):
                 raise ValueError(
                     "provider key options need a selected provider")
@@ -171,4 +175,3 @@ def run_solve(args) -> int:
 
 
 __all__ = ("run_solve",)
-

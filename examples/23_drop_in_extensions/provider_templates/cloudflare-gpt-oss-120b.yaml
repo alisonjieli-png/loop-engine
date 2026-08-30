@@ -1,0 +1,58 @@
+schema_version: provider_route_bundle/v2
+bundle_id: cloudflare_gpt_oss_120b
+version: 1.0.0
+description: Cloudflare Workers AI GPT-OSS route reviewed 2026-08-29.
+sources:
+  - kind: protocol
+    url: https://developers.cloudflare.com/workers-ai/configuration/open-ai-compatibility/
+    observed_at: 2026-08-29
+  - kind: pricing
+    url: https://developers.cloudflare.com/workers-ai/platform/pricing/
+    observed_at: 2026-08-29
+  - kind: model_metadata
+    url: https://models.dev/api.json
+    observed_at: 2026-08-29
+provider:
+  enabled: true
+  auth:
+    kind: bearer_env
+    credential_env: CLOUDFLARE_API_KEY
+    header: ""
+    plugin_ref: ""
+  endpoint: https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/v1
+  model: "@cf/openai/gpt-oss-120b"
+  protocol: openai_chat
+  locality: cloud
+  counts_as_evidence: false
+  maximum_output_tokens: 16384
+  maximum_output_source: Models.dev Cloudflare Workers AI limit.output observed 2026-08-29
+  purposes:
+    - counted_generation
+    - decide_label
+  headers:
+    cf-aig-gateway-id: default
+routing:
+  tiers:
+    - medium
+  access_class: recurring_quota
+pricing:
+  input_cost_per_million: 0.35
+  output_cost_per_million: 0.75
+quota:
+  scope: account
+  requests_per_minute: null
+  requests_per_day: null
+  tokens_per_minute: null
+  tokens_per_day: null
+  concurrency: null
+  credit_amount: null
+  reset: daily_0000_utc
+capabilities: [text, structured_output, tools, reasoning, streaming]
+data_policy:
+  confidential_allowed: null
+  training_use: unknown
+  retention: provider_defined
+  regions: []
+health:
+  catalog_refresh_seconds: 86400
+  probe_timeout_seconds: 60

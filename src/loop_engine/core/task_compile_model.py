@@ -17,7 +17,8 @@ from typing import Mapping
 
 
 COMPILE_MODEL_PROVIDERS = (
-    "ollama_cloud", "openrouter", "opencode_go")
+    "ollama_cloud", "mistral", "openrouter", "opencode_zen",
+    "opencode_go")
 MODEL_ASSISTED_COMPILE_PROMPT_VERSION = \
     "core.prompt.model_assisted_task_compile@1"
 COMPILE_REVIEW_STATUSES = (
@@ -25,6 +26,7 @@ COMPILE_REVIEW_STATUSES = (
 OPENCODE_GO_ENDPOINT = "https://opencode.ai/zen/go/v1"
 OPENCODE_GO_DEFAULT_MODEL = "deepseek-v4-flash"
 OPENCODE_GO_MAXIMUM_OUTPUT = 384_000
+OPENCODE_ZEN_ENDPOINT = "https://opencode.ai/zen/v1"
 
 
 class ModelAssistedCompileError(ValueError):
@@ -133,8 +135,8 @@ class ModelAssistedCompileRequest:
     def __post_init__(self) -> None:
         if self.provider not in COMPILE_MODEL_PROVIDERS:
             raise ModelAssistedCompileError(
-                "compile provider must be ollama_cloud, openrouter, or "
-                "opencode_go")
+                "compile provider must be ollama_cloud, mistral, openrouter, "
+                "opencode_zen, or opencode_go")
         if not self.route_name.strip():
             raise ModelAssistedCompileError("a compile model route is required")
         if self.interaction_mode not in (
@@ -181,6 +183,118 @@ def opencode_go_gateway(api_key: str):
     route = ModelRoute(
         "cloud.opencode_go", "opencode_go", endpoint.model, "cloud",
         purposes=("counted_generation",))
+    return ModelGateway(providers=(provider,), routes=(route,))
+
+
+def openrouter_zero_cost_gateway(api_key: str, model: str = "", *,
+                                 selection=None):
+    """Bind one current zero-price OpenRouter model to an exact route.
+
+    Selection uses the live provider catalog after model-call authority exists.
+    The chosen model and declared output maximum are then frozen for the run.
+    """
+    if not api_key.strip():
+        raise ModelAssistedCompileError("OpenRouter API key is empty")
+    from datetime import datetime, timezone
+
+    from . import openrouter_client
+    from .custom_endpoint import CustomEndpoint
+    from .model_capabilities import ModelOutputCapability
+    from .model_gateway import ModelGateway, provider_spec_from_endpoint
+    from .model_routes import ModelRoute
+
+    rows = (openrouter_client.zero_cost_models()
+            if selection is None else [selection])
+    if model:
+        rows = [item for item in rows if str(item.get("id")) == model]
+    if not rows:
+        raise ModelAssistedCompileError(
+            "OpenRouter has no current zero-price structured model with a "
+            "declared output maximum matching this request")
+    selected = rows[0]
+    selected_model = str(selected.get("id") or "")
+    maximum = (selected.get("top_provider") or {}).get(
+        "max_completion_tokens")
+    if not selected_model or not isinstance(maximum, int) or maximum < 1:
+        raise ModelAssistedCompileError(
+            "OpenRouter zero-price selection lacks an exact model or output "
+            "maximum")
+    endpoint = CustomEndpoint(
+        name="openrouter_zero_cost",
+        base_url="https://openrouter.ai/api/v1",
+        model=selected_model, api_key=api_key, wire="openai",
+        locality="cloud",
+        output_capability=ModelOutputCapability(
+            maximum,
+            "OpenRouter live Models API zero input/output price and "
+            "top_provider.max_completion_tokens",
+            endpoint=openrouter_client.MODELS_URL,
+            observed_at=datetime.now(timezone.utc).isoformat()),
+        counts_as_evidence=True, timeout=180.0)
+    provider = provider_spec_from_endpoint(endpoint)
+    route = ModelRoute(
+        "cloud.openrouter.zero_cost", "openrouter_zero_cost",
+        endpoint.model, "cloud", purposes=("counted_generation",))
+    return ModelGateway(providers=(provider,), routes=(route,))
+
+
+def opencode_zen_gateway(api_key: str, model: str = "", *, selection=None):
+    """Bind a currently offered zero-cost OpenCode Zen model.
+
+    ``selection`` is an injected typed catalog record for offline contract
+    checks.  Production resolution intersects the live OpenCode list with
+    Models.dev metadata before this gateway is built.
+    """
+    if not api_key.strip():
+        raise ModelAssistedCompileError("OpenCode Zen API key is empty")
+    from datetime import datetime, timezone
+
+    from .custom_endpoint import CustomEndpoint
+    from .model_capabilities import ModelOutputCapability
+    from .model_gateway import ModelGateway, provider_spec_from_endpoint
+    from .model_routes import ModelRoute
+    from .opencode_zen_catalog import (
+        OpenCodeZenModel, select_zero_cost_model, zero_cost_models)
+
+    selected = selection
+    if selected is None:
+        if model:
+            selected = next(
+                (item for item in zero_cost_models(api_key=api_key)
+                 if item.model == model), None)
+            if selected is None:
+                raise ModelAssistedCompileError(
+                    "the selected OpenCode Zen model is not currently offered "
+                    "as a zero-cost OpenAI-compatible model with a declared "
+                    "output limit")
+        else:
+            selected = select_zero_cost_model(api_key=api_key)
+    if not isinstance(selected, OpenCodeZenModel):
+        raise ModelAssistedCompileError(
+            "OpenCode Zen selection is not a typed catalog record")
+    if model and model != selected.model:
+        raise ModelAssistedCompileError(
+            "OpenCode Zen model does not match the resolved catalog record")
+    endpoint = CustomEndpoint(
+        name="opencode_zen",
+        base_url=OPENCODE_ZEN_ENDPOINT,
+        model=selected.model,
+        api_key=api_key,
+        wire="openai",
+        locality="cloud",
+        output_capability=ModelOutputCapability(
+            selected.maximum_output_tokens,
+            "OpenCode live models intersected with Models.dev price and "
+            "limit metadata",
+            endpoint="https://models.dev/api.json",
+            observed_at=datetime.now(timezone.utc).isoformat()),
+        counts_as_evidence=True,
+        timeout=180.0,
+    )
+    provider = provider_spec_from_endpoint(endpoint)
+    route = ModelRoute(
+        "cloud.opencode_zen.zero_cost", "opencode_zen", endpoint.model,
+        "cloud", purposes=("counted_generation",))
     return ModelGateway(providers=(provider,), routes=(route,))
 
 
@@ -465,6 +579,34 @@ def self_test() -> dict:
           and description["credential_ref"] == "custom:opencode_go"
           and "test-key-not-saved" not in json.dumps(description))
 
+    from .opencode_zen_catalog import OpenCodeZenModel
+    zen = opencode_zen_gateway(
+        "test-key-not-saved",
+        selection=OpenCodeZenModel(
+            "fixture-free", 100_000, 20_000, True))
+    zen_description = zen.providers["opencode_zen"].describe()
+    check("opencode_zen_uses_a_typed_zero_cost_dynamic_route",
+          zen.registry.get("cloud.opencode_zen.zero_cost").model
+              == "fixture-free"
+          and zen_description["model_output_capability"][
+              "maximum_output_tokens"] == 20_000
+          and "test-key-not-saved" not in json.dumps(zen_description))
+
+    openrouter_free = openrouter_zero_cost_gateway(
+        "test-key-not-saved", selection={
+            "id": "fixture/free", "pricing": {"prompt": "0",
+                                                  "completion": "0"},
+            "supported_parameters": ["response_format"],
+            "top_provider": {"max_completion_tokens": 12_345}})
+    free_description = openrouter_free.providers[
+        "openrouter_zero_cost"].describe()
+    check("openrouter_key_uses_a_current_zero_price_exact_route",
+          openrouter_free.registry.get(
+              "cloud.openrouter.zero_cost").model == "fixture/free"
+          and free_description["model_output_capability"][
+              "maximum_output_tokens"] == 12_345
+          and "test-key-not-saved" not in json.dumps(free_description))
+
     import os
     from ..cli_operations import (
         _apply_compile_provider_shortcut, _compile_provider_key,
@@ -492,7 +634,8 @@ def self_test() -> dict:
         os.environ[standard_env] = "offline-key-not-for-network"
         shortcut = SimpleNamespace(
             ollama_api_key="direct-test-key", openrouter_api_key=None,
-            opencode_go_api_key=None, compile_provider="",
+            opencode_zen_api_key=None, opencode_go_api_key=None,
+            compile_provider="",
             provider_key_env="", prompt_for_provider_key=False,
             authorize_model_calls=False, max_model_calls=0,
             max_total_tokens=None)
@@ -510,7 +653,8 @@ def self_test() -> dict:
         os.environ.pop(standard_env, None)
         prompt_shortcut = SimpleNamespace(
             ollama_api_key="__prompt__", openrouter_api_key=None,
-            opencode_go_api_key=None, compile_provider="",
+            opencode_zen_api_key=None, opencode_go_api_key=None,
+            compile_provider="",
             provider_key_env="", prompt_for_provider_key=False,
             authorize_model_calls=False, max_model_calls=0,
             max_total_tokens=None)

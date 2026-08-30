@@ -161,6 +161,20 @@ def main(argv=None) -> int:
                         help="exact plugin id for plugin inspect")
     parser.add_argument("--engine-api-version", default="1",
                         help="required plugin engine API version")
+    parser.add_argument(
+        "--extensions-action",
+        choices=("discover", "providers", "capabilities", "intelligence",
+                 "plugins", "skills"),
+        help="inspect automatically discovered added-file extensions")
+    parser.add_argument(
+        "--extension-root", action="append", default=[],
+        help="added-file extension root; repeat as needed")
+    parser.add_argument(
+        "--no-default-extensions", action="store_true",
+        help="ignore project and user extension folders")
+    parser.add_argument(
+        "--allow-paid-extension-routes", action="store_true",
+        help="allow paid added-file provider routes to enter automatic tiers")
     parser.add_argument("--architecture-contract", action="store_true",
                         help="validate the machine-readable architecture contract")
     parser.add_argument("--task-compile", action="store_true",
@@ -169,7 +183,8 @@ def main(argv=None) -> int:
                         help=argparse.SUPPRESS)
     parser.add_argument(
         "--compile-provider",
-        choices=("ollama_cloud", "openrouter", "opencode_go"),
+        choices=("ollama_cloud", "openrouter", "opencode_zen",
+                 "opencode_go"),
         default="",
         help="optionally add one authorized model-assisted Orientation review; "
              "the deterministic compilation remains authoritative")
@@ -191,6 +206,12 @@ def main(argv=None) -> int:
         metavar="VALUE",
         help="accept an OpenRouter key value, or omit VALUE to use "
              "OPENROUTER_API_KEY or a hidden prompt")
+    compile_key_shortcut.add_argument(
+        "--opencode-zen-api-key", nargs="?", const="__prompt__", default=None,
+        metavar="VALUE",
+        help="accept an OpenCode Zen key value, or omit VALUE to use "
+             "OPENCODE_ZEN_API_KEY or a hidden prompt; selects a current "
+             "zero-cost compatible model")
     compile_key_shortcut.add_argument(
         "--opencode-go-api-key", nargs="?", const="__prompt__", default=None,
         metavar="VALUE",
@@ -356,6 +377,14 @@ def main(argv=None) -> int:
             parser.error(
                 "models requires inventory, routes, explain, benchmark, or probe")
         raw_argv[:2] = ["--models-action", raw_argv[1]]
+    elif raw_argv[:1] == ["extensions"]:
+        if len(raw_argv) < 2 or raw_argv[1] not in (
+                "discover", "providers", "capabilities", "intelligence",
+                "plugins", "skills"):
+            parser.error(
+                "extensions requires discover, providers, capabilities, "
+                "intelligence, plugins, or skills")
+        raw_argv[:2] = ["--extensions-action", raw_argv[1]]
     elif raw_argv[:1] == ["learn"]:
         raw_argv[:1] = ["--learn"]
     elif raw_argv[:2] == ["candidates", "list"]:
@@ -385,6 +414,9 @@ def main(argv=None) -> int:
     if args.models_action:
         from .cli_operations import run_models_action
         return run_models_action(args)
+    if args.extensions_action:
+        from .cli_operations import run_extensions_action
+        return run_extensions_action(args)
     if args.plugin_action:
         from .cli_operations import run_plugin_action
         return run_plugin_action(args)
@@ -530,12 +562,11 @@ def main(argv=None) -> int:
         print(run_example(args.example))
         return 0
     if args.runs or args.report:
-        import os
-        from .core.run_history import default_runs_dir
+        from .core.run_history import default_runs_dir, saved_run_ids
         from .code_nodes.loop_report import (report_from_run, render_text,
                                              render_markdown, render_html)
         runs_dir = default_runs_dir(args.runs_dir or "")
-        saved = sorted(os.listdir(runs_dir)) if os.path.isdir(runs_dir) else []
+        saved = saved_run_ids(runs_dir)
         if args.runs:
             if not saved:
                 print("No saved runs yet. Run a Loop and save its run history "

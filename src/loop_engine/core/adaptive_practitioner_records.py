@@ -422,6 +422,7 @@ class AdaptivePractitionerDependencies:
         default=search_web, repr=False, compare=False)
     progress: "Callable[[dict], None] | None" = field(
         default=None, repr=False, compare=False)
+    extension_snapshot: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.model_execution is not None and not isinstance(
@@ -443,6 +444,12 @@ class AdaptivePractitionerDependencies:
                 "adaptive capability executors must be callable")
         if self.progress is not None and not callable(self.progress):
             raise AdaptivePractitionerError("progress must be callable")
+        if (not isinstance(self.extension_snapshot, dict)
+                or self.extension_snapshot
+                and self.extension_snapshot.get("record_type")
+                != "extension_snapshot/v1"):
+            raise AdaptivePractitionerError(
+                "extension_snapshot has an invalid contract")
 @dataclass(frozen=True)
 class ModelStepRequest:
     """One question-portfolio step and exact safe problem state."""
@@ -559,6 +566,21 @@ class AdaptiveRunServices:
                 and not any(marker in key.lower() for marker in (
                     "secret", "token", "authorization", "prompt", "content"))})
         capability_descriptors = self.available_capabilities()
+        extension_candidates = {
+            "capabilities": list(
+                self.dependencies.extension_snapshot.get(
+                    "capabilities", ())),
+            "intelligence_refs": list(
+                self.dependencies.extension_snapshot.get(
+                    "intelligence_entries", ())),
+            "skills": list(
+                self.dependencies.extension_snapshot.get("skills", ())),
+            "plugins": list(
+                self.dependencies.extension_snapshot.get("plugins", ())),
+            "snapshot_digest": str(
+                self.dependencies.extension_snapshot.get(
+                    "content_digest", "")),
+        }
         blocks = (
             LLMContextBlock.create(
                 "persona", "persona_context", selected_persona.version,
@@ -593,7 +615,8 @@ class AdaptiveRunServices:
             LLMContextBlock.create(
                 "capability_descriptors", "capability_snapshot", "1.0.0",
                 "core capability registry", "available execution paths", 5,
-                list(capability_descriptors)),
+                {"active": list(capability_descriptors),
+                 "added_file_candidates": extension_candidates}),
             LLMContextBlock.create(
                 "deterministic_event_history", "attempt_event_history", "1.0.0",
                 "canonical Loop event log", "complete exact-first history", 6,
@@ -706,6 +729,7 @@ class AdaptiveRunServices:
             question_portfolio=context_value["question_portfolio"],
             capability_context={
                 "available_capabilities": list(capability_descriptors),
+                "added_file_candidates": extension_candidates,
                 "selected_intelligence_refs": list(
                     self.selected_intelligence_refs),
                 "selected_memory_refs": list(self.selected_memory_refs),
@@ -768,7 +792,7 @@ class AdaptiveRunServices:
                 deterministic_attempt_status=self.deterministic_attempt.status,
                 output_schema_digest=hashlib.sha256(
                     request.output_contract.encode("utf-8")).hexdigest())
-            for transport_attempt in (1, 2):
+            for transport_attempt in (1,):
                 self.publish(
                     "model.step.started", step=request.step_id,
                     objective=request.objective[:160],
@@ -780,13 +804,13 @@ class AdaptiveRunServices:
                             assembled.prompt,
                             temperature=assembled.temperature), owner)
                     break
-                except SolutionModelError:
+                except SolutionModelError as exc:
                     self.publish(
                         "model.step.transport_failed", step=request.step_id,
                         format_attempt=format_attempt,
-                        transport_attempt=transport_attempt)
-                    if transport_attempt == 2:
-                        raise
+                        transport_attempt=transport_attempt,
+                        error_code=exc.error_code or "model_gateway_failed")
+                    raise
             value = parse_model_json(text, owner)
             if value is not None:
                 break

@@ -1,0 +1,52 @@
+schema_version: provider_route_bundle/v2
+bundle_id: example_free_gateway
+version: 1.0.0
+description: Illustrative zero-cost OpenAI-compatible route.
+sources:
+  - kind: protocol
+    url: https://gateway.example/provider-docs
+    observed_at: 2026-08-29
+provider:
+  enabled: true
+  auth:
+    kind: bearer_env
+    credential_env: EXAMPLE_GATEWAY_API_KEY
+    header: ""
+    plugin_ref: ""
+  endpoint: ${EXAMPLE_GATEWAY_BASE_URL}
+  model: example/model-free
+  protocol: openai_chat
+  locality: cloud
+  counts_as_evidence: false
+  maximum_output_tokens: 4096
+  maximum_output_source: illustrative example metadata, not provider evidence
+  purposes:
+    - counted_generation
+    - decide_label
+  headers:
+    X-Route-Class: example
+routing:
+  tiers:
+    - medium
+  access_class: zero_price
+pricing:
+  input_cost_per_million: 0
+  output_cost_per_million: 0
+quota:
+  scope: none
+  requests_per_minute: null
+  requests_per_day: null
+  tokens_per_minute: null
+  tokens_per_day: null
+  concurrency: null
+  credit_amount: null
+  reset: not_applicable
+capabilities: [text, structured_output]
+data_policy:
+  confidential_allowed: null
+  training_use: unknown
+  retention: unknown
+  regions: []
+health:
+  catalog_refresh_seconds: 86400
+  probe_timeout_seconds: 30

@@ -5,6 +5,7 @@
   "core/ollama_client.py",
   "core/mistral_client.py",
   "core/openrouter_client.py",
+  "core/opencode_zen_catalog.py",
   "core/custom_endpoint.py",
   "core/brave_search.py",
   "core/web_fetch.py",
@@ -262,7 +263,11 @@
  "module_size_exceptions": {
   "loop/kernel.py": "the nine-step executor's default implementations; split plan: move per-step defaults into loop/steps/ facades one step at a time",
   "loop/recursive_loop.py": "the canonical Loop runtime; split plan: extract LoopSpec/pause-resume into loop/spec.py once the kernel routes through run_next_iteration",
-  "core/intelligence_layers.py": "the four-layer handshake and memory-type vocabulary; split plan: move the memory-type vocabulary into core/memory_types.py once the layer handshake consumes it through an import"
+  "core/intelligence_layers.py": "the four-layer handshake and memory-type vocabulary; split plan: move the memory-type vocabulary into core/memory_types.py once the layer handshake consumes it through an import",
+  "cli_operations.py": "public CLI projections over existing services; split plan: move provider and extension inspection commands into cli_provider_operations.py without moving domain authority",
+  "core/adaptive_practitioner_records.py": "typed Practitioner records and run-scoped service bindings; split plan: move model context assembly bindings into adaptive_practitioner_model_context.py without changing the control cycle",
+  "core/extension_discovery.py": "one deterministic resolver over provider, capability, skill, plugin, and intelligence added files; split plan: move passive provider route contracts and YAML parsing into extension_provider_contracts.py while retaining one resolver",
+  "core/model_gateway.py": "canonical provider-neutral route executor plus its offline contract checks; split plan: move only the offline fixtures into model_gateway_checks.py while preserving ModelGateway as the sole execution boundary"
  },
  "docstring_min_lines": 3,
  "docstring_exception_modules": [],

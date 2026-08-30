@@ -1,0 +1,58 @@
+schema_version: provider_route_bundle/v2
+bundle_id: zai_glm47_flash
+version: 1.0.0
+description: Z.ai GLM-4.7-Flash zero-price route reviewed 2026-08-29.
+sources:
+  - kind: protocol
+    url: https://docs.z.ai/api-reference/introduction
+    observed_at: 2026-08-29
+  - kind: model
+    url: https://docs.z.ai/guides/llm/glm-4.7
+    observed_at: 2026-08-29
+  - kind: pricing
+    url: https://docs.z.ai/guides/overview/pricing
+    observed_at: 2026-08-29
+provider:
+  enabled: true
+  auth:
+    kind: bearer_env
+    credential_env: ZAI_API_KEY
+    header: ""
+    plugin_ref: ""
+  endpoint: https://api.z.ai/api/paas/v4
+  model: glm-4.7-flash
+  protocol: openai_chat
+  locality: cloud
+  counts_as_evidence: true
+  maximum_output_tokens: 131072
+  maximum_output_source: Z.ai GLM-4.7 guide and chat-completion reference
+  purposes:
+    - counted_generation
+    - decide_label
+  headers: {}
+routing:
+  tiers:
+    - medium
+    - high
+  access_class: zero_price
+pricing:
+  input_cost_per_million: 0
+  output_cost_per_million: 0
+quota:
+  scope: account
+  requests_per_minute: null
+  requests_per_day: null
+  tokens_per_minute: null
+  tokens_per_day: null
+  concurrency: null
+  credit_amount: null
+  reset: provider_defined
+capabilities: [text, structured_output, tools, reasoning, streaming]
+data_policy:
+  confidential_allowed: null
+  training_use: unknown
+  retention: provider_defined
+  regions: []
+health:
+  catalog_refresh_seconds: 86400
+  probe_timeout_seconds: 60

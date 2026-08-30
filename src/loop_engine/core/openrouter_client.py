@@ -146,6 +146,45 @@ def live_models(api_key: "str | None" = None) -> list:
     return sorted(m.get("id", "") for m in catalog(api_key))
 
 
+def zero_cost_models(rows: "list | None" = None) -> list[dict]:
+    """Return current free, structured models with declared output limits."""
+    choices = []
+    for row in catalog() if rows is None else rows:
+        if not isinstance(row, dict) or _forbidden(str(row.get("id", ""))):
+            continue
+        pricing = row.get("pricing") or {}
+        maximum = (row.get("top_provider") or {}).get(
+            "max_completion_tokens")
+        parameters = row.get("supported_parameters") or ()
+        try:
+            zero_cost = (float(pricing.get("prompt") or 0) == 0
+                         and float(pricing.get("completion") or 0) == 0)
+        except (TypeError, ValueError):
+            zero_cost = False
+        if (not row.get("id") or not zero_cost
+                or not isinstance(maximum, int) or maximum < 1
+                or not ({"structured_outputs", "response_format"}
+                        & set(parameters))):
+            continue
+        choices.append(row)
+    return sorted(
+        choices,
+        key=lambda row: (-int((row.get("top_provider") or {}).get(
+                                  "max_completion_tokens") or 0),
+                         -int(row.get("context_length") or 0),
+                         str(row.get("id"))))
+
+
+def select_zero_cost_model(rows: "list | None" = None) -> str:
+    """Select a free model from live declared facts, not a frozen name."""
+    choices = zero_cost_models(rows)
+    if not choices:
+        raise UnknownModelOutputLimit(
+            "OpenRouter has no current zero-cost structured model with a "
+            "declared maximum output")
+    return str(choices[0]["id"])
+
+
 def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
          max_tokens: "int | None" = None, temperature: float = 0.7,
          timeout: float = 90.0, api_key: "str | None" = None,
@@ -270,6 +309,26 @@ def self_test() -> dict:
     check("no_static_default_can_replace_live_catalog_capability_discovery",
           not MODEL_OUTPUT_CAPABILITIES and not MODEL_MAX_OUTPUT,
           "the provider catalog supplies max_completion_tokens at call time")
+
+    free_rows = [
+        {"id": "vendor/free-small", "pricing": {"prompt": "0",
+         "completion": "0"}, "context_length": 100,
+         "top_provider": {"max_completion_tokens": 40},
+         "supported_parameters": ["structured_outputs"]},
+        {"id": "vendor/free-wide", "pricing": {"prompt": "0",
+         "completion": "0"}, "context_length": 200,
+         "top_provider": {"max_completion_tokens": 80},
+         "supported_parameters": ["response_format"]},
+        {"id": "vendor/paid", "pricing": {"prompt": "1",
+         "completion": "2"}, "context_length": 300,
+         "top_provider": {"max_completion_tokens": 120},
+         "supported_parameters": ["structured_outputs"]},
+    ]
+    check("zero_cost_selection_uses_live_price_contract_and_capacity",
+          select_zero_cost_model(free_rows) == "vendor/free-wide"
+          and [row["id"] for row in zero_cost_models(free_rows)]
+              == ["vendor/free-wide", "vendor/free-small"],
+          "paid rows and rows without a declared structured output are absent")
 
     passed = sum(1 for t in results if t["passed"])
     return {"record_type": "openrouter_client_contract_test/v2",

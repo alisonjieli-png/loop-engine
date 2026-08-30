@@ -1,0 +1,10 @@
+schema: catalog_manifest/v1
+folder_id: intelligence.context.plugin
+source_class: plugin
+objects:
+  - id: plugin.example.summary_guidance
+    version: 1.0.0
+    artifact_kind: intelligence_record
+    lifecycle: candidate
+    content_digest: b93fc5c807e2d05e7d7ce8d3219b67bafd6221e263ce8f426b2debd5433e947d
+    payload: file:records.jsonl

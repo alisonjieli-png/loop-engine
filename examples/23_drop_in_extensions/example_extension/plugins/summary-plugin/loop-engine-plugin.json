@@ -1,0 +1,21 @@
+{
+  "schema_version": "plugin_bundle/v1",
+  "plugin_id": "summary-plugin",
+  "version": "1.0.0",
+  "description": "Example passive bundle for the summary candidate.",
+  "engine_api_version": "1",
+  "skills": [
+    {
+      "skill_id": "summary-skill",
+      "version": "1.0.0",
+      "manifest_digest": "82374f9a95f0b9f53869741656bc6f60638173f72d8ec9f17169fd33f9f83b81"
+    }
+  ],
+  "profile_refs": [],
+  "capability_refs": [
+    "plugin.example.summarize"
+  ],
+  "event_subscriptions": [
+    "loop.completed"
+  ]
+}

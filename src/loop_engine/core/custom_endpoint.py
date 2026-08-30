@@ -55,6 +55,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
@@ -94,6 +95,9 @@ class CustomEndpoint:
     output_capability: "ModelOutputCapability | None" = None
     counts_as_evidence: bool = False
     timeout: float = 900.0
+    headers: tuple[tuple[str, str], ...] = ()
+    auth_scheme: str = "bearer"
+    auth_header: str = ""
 
     def __post_init__(self):
         if not self.name or not self.name.replace("_", "").isalnum():
@@ -104,6 +108,25 @@ class CustomEndpoint:
             raise EndpointError(f"wire {self.wire!r} not in {WIRE_FORMATS}")
         if self.locality not in LOCALITIES:
             raise EndpointError(f"locality must be one of {LOCALITIES}")
+        if self.auth_scheme not in ("bearer", "header", "none"):
+            raise EndpointError(
+                "auth_scheme must be bearer, header, or none")
+        if self.auth_scheme == "header":
+            if (not self.auth_header.strip()
+                    or not re.fullmatch(
+                        r"[!#$%&'*+.^_`|~0-9A-Za-z-]+",
+                        self.auth_header)
+                    or self.auth_header.casefold() in {
+                        "authorization", "proxy-authorization", "cookie",
+                        "set-cookie"}):
+                raise EndpointError(
+                    "header authentication needs a valid HTTP header name")
+        elif self.auth_header:
+            raise EndpointError(
+                "auth_header is only valid for header authentication")
+        if self.auth_scheme == "none" and self.api_key:
+            raise EndpointError(
+                "auth_scheme none cannot carry an API key")
         if (self.output_capability is not None
                 and not isinstance(self.output_capability,
                                    ModelOutputCapability)):
@@ -121,6 +144,24 @@ class CustomEndpoint:
             # Allowed, but it must be a DECLARED choice by someone who knows
             # what it means, so it is stated in the record rather than assumed.
             pass
+        forbidden = {"authorization", "proxy-authorization", "cookie",
+                     "set-cookie", "x-api-key", "api-key"}
+        headers = tuple(self.headers)
+        if any(not isinstance(item, tuple) or len(item) != 2
+               or not all(isinstance(value, str) for value in item)
+               for item in headers):
+            raise EndpointError(
+                "custom endpoint headers must contain text name/value pairs")
+        if (len(headers) != len({item[0].casefold() for item in headers})
+                or any(not item[0].strip() or not item[1].strip()
+                       or item[0].casefold() in forbidden
+                       or item[0].casefold() == self.auth_header.casefold()
+                       or "\n" in item[0] or "\r" in item[0]
+                       or "\n" in item[1] or "\r" in item[1]
+                       for item in headers)):
+            raise EndpointError(
+                "custom endpoint headers must be unique non-secret headers")
+        object.__setattr__(self, "headers", tuple(sorted(headers)))
 
     @property
     def chat_url(self) -> str:
@@ -138,7 +179,22 @@ class CustomEndpoint:
                 "output_capability": (self.output_capability.summary()
                                       if self.output_capability else None),
                 "counts_as_evidence": self.counts_as_evidence,
-                "has_key": bool(self.api_key)}
+                "has_key": bool(self.api_key),
+                "header_names": [item[0] for item in self.headers],
+                "auth_scheme": self.auth_scheme,
+                "auth_header": self.auth_header}
+
+
+def _request_headers(ep: CustomEndpoint) -> dict[str, str]:
+    """Resolve one secret-bearing request header without serializing it."""
+    headers = {"Content-Type": "application/json", **dict(ep.headers)}
+    if not ep.api_key or ep.auth_scheme == "none":
+        return headers
+    if ep.auth_scheme == "bearer":
+        headers["Authorization"] = f"Bearer {ep.api_key}"
+    else:
+        headers[ep.auth_header] = ep.api_key
+    return headers
 
 
 def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
@@ -155,9 +211,7 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
         payload = {"model": ep.model, "messages": messages,
                    "max_tokens": int(max_tokens), "temperature": temperature}
 
-    headers = {"Content-Type": "application/json"}
-    if ep.api_key:
-        headers["Authorization"] = f"Bearer {ep.api_key}"
+    headers = _request_headers(ep)
     req = urllib.request.Request(ep.chat_url, data=json.dumps(payload).encode(),
                                  headers=headers)
     try:
@@ -253,8 +307,7 @@ def make_adapter(ep: CustomEndpoint):
             """Whatever the endpoint lists, or just its configured model."""
             url = ep.base_url.rstrip("/") + (
                 "/api/tags" if ep.wire == "ollama" else "/models")
-            headers = ({"Authorization": f"Bearer {ep.api_key}"}
-                       if ep.api_key else {})
+            headers = _request_headers(ep)
             try:
                 with urllib.request.urlopen(
                         urllib.request.Request(url, headers=headers),
@@ -325,7 +378,8 @@ def endpoints_from_env(value: "str | None" = None) -> list:
             fields[k.strip()] = v.strip()
         unknown = set(fields) - {"name", "url", "model", "key", "wire",
                                  "locality", "max_output",
-                                 "max_output_source", "evidence"}
+                                 "max_output_source", "evidence",
+                                 "auth_scheme", "auth_header"}
         if unknown:
             raise EndpointError(
                 f"unknown endpoint field(s) {sorted(unknown)} — refused rather "
@@ -342,6 +396,8 @@ def endpoints_from_env(value: "str | None" = None) -> list:
             model=fields.get("model", ""), api_key=fields.get("key", ""),
             wire=fields.get("wire", "openai"),
             locality=fields.get("locality", "local"),
+            auth_scheme=fields.get("auth_scheme", "bearer"),
+            auth_header=fields.get("auth_header", ""),
             output_capability=capability,
             counts_as_evidence=fields.get("evidence", "").lower()
             in ("1", "true", "yes")))
@@ -450,6 +506,16 @@ def self_test() -> dict:
           and "secret-key-xyz" not in repr(ep)
           and d["counts_as_evidence"] is False,
           "records carry posture, never credentials")
+
+    header_ep = CustomEndpoint(
+        name="header_auth", base_url="https://api.example/v1", model="m",
+        api_key="header-secret", locality="cloud", auth_scheme="header",
+        auth_header="x-api-key")
+    resolved_headers = _request_headers(header_ep)
+    check("header_auth_uses_runtime_secret_without_serializing_it",
+          resolved_headers["x-api-key"] == "header-secret"
+          and "header-secret" not in json.dumps(header_ep.describe())
+          and "Authorization" not in resolved_headers)
 
     # 7. ENVIRONMENT CONFIG: deployment without code, and a typo'd field is
     # refused rather than silently dropped.

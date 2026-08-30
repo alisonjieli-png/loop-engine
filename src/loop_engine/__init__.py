@@ -305,6 +305,17 @@ _PUBLIC: dict[str, tuple[str, str]] = {
         "resolve_plugin_snapshot_as_loop",
     ),
     **_names(
+        "core.extension_discovery", "CAPABILITY_SCHEMA", "EXTENSION_FOLDER",
+        "EXTENSION_ROOTS_ENV", "PROVIDER_SCHEMA", "CapabilityCandidate",
+        "ExtensionApplication", "ExtensionDiscoveryError",
+        "ExtensionDiscoveryRequest", "ExtensionRoot", "ExtensionSnapshot",
+        "ExtensionApplicationRequest", "ProviderAuthDefinition",
+        "ProviderEndpointDefinition", "ProviderRouteBundle",
+        "ProviderSourceRef",
+        "apply_provider_extensions",
+        "discover_extensions", "discover_extensions_as_loop",
+    ),
+    **_names(
         "core.development_planning", "AssuranceVerdict",
         "ClarificationDisposition", "ClarificationItem",
         "ConcurrencyDecisionRecord", "DevelopmentPlanError",

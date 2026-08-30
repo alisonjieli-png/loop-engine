@@ -99,9 +99,11 @@ def _provider(value: Mapping) -> ProviderSettings:
     _known(body, ("id", "kind", "enabled", "credential_env", "endpoint",
                   "model", "wire", "locality", "counts_as_evidence",
                   "maximum_output_tokens", "maximum_output_source",
-                  "purposes"), "provider")
+                  "purposes", "headers", "auth_scheme", "auth_header"),
+           "provider")
     if not body.get("id"):
         raise SettingsError("each models.providers item needs id")
+    raw_headers = _mapping(body.get("headers", {}), "provider.headers")
     return ProviderSettings(
         provider_id=str(body["id"]),
         kind=str(body.get("kind", "builtin")),
@@ -119,7 +121,11 @@ def _provider(value: Mapping) -> ProviderSettings:
         maximum_output_source=str(body.get("maximum_output_source", "")),
         purposes=_tuple(body.get(
             "purposes", ("counted_generation", "decide_label")),
-            "provider.purposes"))
+            "provider.purposes"),
+        headers=tuple(sorted((str(key), str(item))
+                             for key, item in raw_headers.items())),
+        auth_scheme=str(body.get("auth_scheme", "bearer")),
+        auth_header=str(body.get("auth_header", "")))
 
 
 def _tiers(value: Mapping, base: ModelSettings) -> tuple[ModelTier, ...]:

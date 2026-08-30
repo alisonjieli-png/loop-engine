@@ -17,11 +17,13 @@ from pathlib import Path
 _COMPILE_PROVIDER_ENV = {
     "ollama_cloud": "OLLAMA_API_KEY",
     "openrouter": "OPENROUTER_API_KEY",
+    "opencode_zen": "OPENCODE_ZEN_API_KEY",
     "opencode_go": "OPENCODE_GO_API_KEY",
 }
 _COMPILE_PROVIDER_ROUTE = {
     "ollama_cloud": "cloud.default",
     "openrouter": "cloud.openrouter",
+    "opencode_zen": "cloud.opencode_zen.zero_cost",
     "opencode_go": "cloud.opencode_go",
 }
 _KEY_PROMPT_SENTINEL = "__prompt__"
@@ -48,6 +50,62 @@ def _safe_provider_description(provider) -> dict:
         else _credential_is_present(description))
     description["credential_tested"] = False
     return description
+
+
+def resolve_cli_extensions(args, settings, *, environ=None):
+    """Apply recognized provider files and return the exact safe snapshot."""
+    from .core.extension_discovery import (
+        ExtensionApplicationRequest, ExtensionDiscoveryRequest,
+        apply_provider_extensions,
+        discover_extensions_as_loop)
+
+    selected_env = os.environ if environ is None else environ
+    snapshot = discover_extensions_as_loop(
+        ExtensionDiscoveryRequest(
+            explicit_roots=tuple(getattr(args, "extension_root", ()) or ()),
+            project_root=os.getcwd(),
+            include_defaults=not bool(getattr(
+                args, "no_default_extensions", False))),
+        selected_env)
+    return apply_provider_extensions(ExtensionApplicationRequest(
+        settings, snapshot, allow_paid=bool(getattr(
+            args, "allow_paid_extension_routes", False))), selected_env)
+
+
+def run_extensions_action(args) -> int:
+    """Inspect added files without probing providers or executing code."""
+    from .core.settings_loader import load_runtime_settings
+
+    loaded = load_runtime_settings(args.settings_file or None)
+    application = resolve_cli_extensions(args, loaded.settings)
+    snapshot = application.snapshot
+    value = snapshot.to_dict()
+    value["provider_application"] = application.to_dict()
+    action = args.extensions_action
+    if action != "discover":
+        field = {
+            "providers": "providers", "capabilities": "capabilities",
+            "intelligence": "intelligence_entries", "plugins": "plugins",
+            "skills": "skills"}[action]
+        value = {
+            "record_type": f"extension_{action}_view/v1",
+            "snapshot_digest": snapshot.content_digest,
+            field: value[field],
+            "provider_application": application.to_dict(),
+        }
+    if args.format == "json":
+        print(json.dumps(value, indent=1))
+    else:
+        lines = [snapshot.ascii_tree(), "",
+                 f"Activated provider routes: {len(application.activated_routes)}"]
+        lines.extend(f"  {item}" for item in application.activated_routes)
+        if application.inactive_routes:
+            lines.append("Inactive provider routes:")
+            lines.extend(f"  {route}: {reason}"
+                         for route, reason in application.inactive_routes)
+        lines.append("Use --format json for exact file and digest records.")
+        print("\n".join(lines))
+    return 0
 
 
 def _task_compile_lines(output: dict) -> list[str]:
@@ -197,7 +255,8 @@ def run_doctor(args) -> int:
         distribution_version = "source-tree"
     architecture = run_architecture_contract_checks()
     loaded = load_runtime_settings(args.settings_file or None)
-    gateway = loaded.settings.build_gateway()
+    extensions = resolve_cli_extensions(args, loaded.settings)
+    gateway = extensions.settings.build_gateway()
     providers = [_safe_provider_description(provider)
                  for provider in gateway.providers.values()]
     credential_ready = [item for item in providers
@@ -209,7 +268,9 @@ def run_doctor(args) -> int:
         "python": platform.python_version(),
         "canonical_runtime": "loop_engine.loop.recursive_loop.Loop",
         "architecture_contract": architecture,
-        "settings": loaded.safe_summary(),
+        "settings": extensions.settings.safe_summary(),
+        "extensions": extensions.snapshot.to_dict(),
+        "extension_provider_application": extensions.to_dict(),
         "providers_configured": providers,
         "provider_calls_made": 0,
         "deterministic_no_key_lane": "available",
@@ -238,6 +299,9 @@ def run_doctor(args) -> int:
         "Provider calls made: 0",
         "Provider definitions: "
         f"{len(providers)} configured, credentials not tested",
+        "Added-file extensions: "
+        f"{len(extensions.snapshot.roots)} root(s), "
+        f"{len(extensions.activated_routes)} provider route(s) activated",
         "Credential references present: " + (
             ", ".join(item["provider_id"] for item in credential_ready)
             if credential_ready else "none"),
@@ -264,7 +328,8 @@ def run_models_action(args) -> int:
     from .templates.compiler import TaskCompileRequest, compile_task_value
 
     loaded = load_runtime_settings(args.settings_file or None)
-    settings = loaded.settings
+    extensions = resolve_cli_extensions(args, loaded.settings)
+    settings = extensions.settings
     gateway = settings.build_gateway()
     routes = gateway.registry.all()
     if args.models_action in ("inventory", "routes"):
@@ -283,11 +348,17 @@ def run_models_action(args) -> int:
                  "credential_env": "OLLAMA_API_KEY"},
                 {"flag": "--openrouter-api-key", "provider": "openrouter",
                  "credential_env": "OPENROUTER_API_KEY"},
+                {"flag": "--opencode-zen-api-key",
+                 "provider": "opencode_zen",
+                 "credential_env": "OPENCODE_ZEN_API_KEY",
+                 "route_materialization": "live_zero_cost_catalog"},
                 {"flag": "--opencode-go-api-key", "provider": "opencode_go",
                  "credential_env": "OPENCODE_GO_API_KEY",
                  "route_materialization": "per_invocation"},
             ],
             "provider_calls_made": 0,
+            "extensions": extensions.snapshot.to_dict(),
+            "extension_provider_application": extensions.to_dict(),
         }
         provider_lines = [
             f"  {item['provider_id']}: key "
@@ -310,6 +381,7 @@ def run_models_action(args) -> int:
             "Task-compilation shortcuts:",
             "  --ollama-api-key",
             "  --openrouter-api-key",
+            "  --opencode-zen-api-key (current zero-cost route)",
             "  --opencode-go-api-key (direct route created for the call)",
             "",
             "Use models probe PROVIDER with explicit authorization to test a "
@@ -410,6 +482,7 @@ def _apply_compile_provider_shortcut(args, default_model_calls: int = 1) -> None
     selected = [
         ("ollama_cloud", args.ollama_api_key),
         ("openrouter", args.openrouter_api_key),
+        ("opencode_zen", args.opencode_zen_api_key),
         ("opencode_go", args.opencode_go_api_key),
     ]
     active = [(provider, value)
@@ -453,7 +526,8 @@ def _temporary_provider_key(env_name: str, key: str):
 def _compile_gateway(args, key: str):
     from .core.settings_loader import load_runtime_settings
     from .core.task_compile_model import (
-        OPENCODE_GO_DEFAULT_MODEL, opencode_go_gateway)
+        OPENCODE_GO_DEFAULT_MODEL, opencode_go_gateway,
+        opencode_zen_gateway, openrouter_zero_cost_gateway)
 
     provider = args.compile_provider
     if provider == "opencode_go":
@@ -466,6 +540,21 @@ def _compile_gateway(args, key: str):
             raise ValueError(
                 "the current OpenCode Go compile route is cloud.opencode_go")
         return opencode_go_gateway(key), route_name
+    if provider == "opencode_zen":
+        route_name = args.model_route or _COMPILE_PROVIDER_ROUTE[provider]
+        if route_name != _COMPILE_PROVIDER_ROUTE[provider]:
+            raise ValueError(
+                "the OpenCode Zen shortcut materializes "
+                "cloud.opencode_zen.zero_cost")
+        return opencode_zen_gateway(key, args.model_id), route_name
+    if provider == "openrouter":
+        route_name = args.model_route or "cloud.openrouter.zero_cost"
+        if route_name != "cloud.openrouter.zero_cost":
+            raise ValueError(
+                "the OpenRouter key shortcut materializes "
+                "cloud.openrouter.zero_cost; configure a named settings "
+                "route for an explicitly paid model")
+        return openrouter_zero_cost_gateway(key, args.model_id), route_name
 
     loaded = load_runtime_settings(args.settings_file or None)
     gateway = loaded.settings.build_gateway()
@@ -549,7 +638,8 @@ def run_learn(args) -> int:
     import hashlib
     import os
 
-    from .core.run_history import default_runs_dir, verify_saved_run
+    from .core.run_history import (
+        default_runs_dir, saved_run_ids, verify_saved_run)
     from .memory.model.memory_type import (MemoryIdentity, MemoryLifecycle,
                                            MemoryScope, MemoryType)
     from .memory.semantic.record import SemanticMemoryRecord
@@ -562,10 +652,8 @@ def run_learn(args) -> int:
         return 2
     runs_dir = default_runs_dir(args.runs_dir or "")
     saved = sorted(
-        (name for name in os.listdir(runs_dir)
-         if os.path.isdir(os.path.join(runs_dir, name))),
-        key=lambda name: os.path.getmtime(os.path.join(runs_dir, name))) \
-        if os.path.isdir(runs_dir) else []
+        saved_run_ids(runs_dir),
+        key=lambda name: os.path.getmtime(os.path.join(runs_dir, name)))
     if not saved:
         print(json.dumps({"record_type": "learning_candidate_failure/v1",
                           "error": "no saved Run History exists"}, indent=1))

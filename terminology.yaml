@@ -57,6 +57,30 @@ terms:
   ResolvedPluginSnapshot:
     kind: canonical
     definition: Deterministic full-content and admission-bound plugin population selected for one run.
+  ExtensionRoot:
+    kind: canonical
+    definition: Added-file directory resolved from explicit, environment, project, or user configuration without granting execution authority.
+  ExtensionSnapshot:
+    kind: canonical
+    definition: Immutable secret-free view of provider routes, capability candidates, skill candidates, plugin bundles, and intelligence candidates discovered from added files.
+  ProviderRouteBundle:
+    kind: canonical
+    definition: Passive exact provider and model route file composed into existing RuntimeSettings and ModelGateway contracts.
+  ProviderAuthDefinition:
+    kind: canonical
+    definition: Passive secret-free description of how a provider credential is supplied; unsupported authentication remains inactive.
+  ProviderEndpointDefinition:
+    kind: canonical
+    definition: Passive provider endpoint, model, protocol, output-limit, and authentication facts independent from an installed executor.
+  ProviderSourceRef:
+    kind: canonical
+    definition: Passive exact source URL, fact class, and observation date supporting one provider route declaration.
+  ExtensionApplicationRequest:
+    kind: canonical
+    definition: Passive request that combines exact RuntimeSettings, an ExtensionSnapshot, and explicit nonzero-cost route policy.
+  CapabilityCandidate:
+    kind: canonical
+    definition: Passive added-file description of a possible capability and implementation reference; never executable merely because it was discovered.
   PlanDefinition:
     kind: canonical
     definition: Passive versioned planning contract containing an immutable original task reference, goal, scope, clarification dispositions, and typed task slices.

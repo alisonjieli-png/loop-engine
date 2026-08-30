@@ -57,6 +57,41 @@ or availability failure. A configured key is not proof that a provider works.
 See [providers and keys](docs/guides/providers-and-keys.md) for OpenRouter,
 Mistral, local Ollama, OpenCode Go, and custom endpoints.
 
+If you have an OpenRouter key and want a current zero-price route, export the
+key and add `--openrouter-api-key` to `solve`. Loop Engine reads OpenRouter's
+live catalog, selects an exact zero-price structured model with a declared
+output maximum, and freezes that route for the run. `--opencode-zen-api-key`
+does the same for current compatible OpenCode Zen zero-cost models.
+
+## Add providers and capabilities with files
+
+Loop Engine automatically checks these optional folders:
+
+```text
+.loop-engine/extensions
+~/.config/loop-engine/extensions
+```
+
+They may contain provider routes, capability candidates, skills, plugin
+bundles, and plugin intelligence. Inspect everything without a provider call:
+
+```bash
+loop-engine extensions discover
+loop-engine extensions providers --format json
+```
+
+Zero-price routes and local routes activate automatically when their required
+configuration exists. Free-plan allowances and paid routes require
+`--allow-paid-extension-routes` because billing may begin after a quota.
+Dropped code and intelligence remain candidates until their existing admission
+and review requirements pass.
+
+See [added-file extensions](docs/architecture/ADDED-FILE-EXTENSIONS.md) and the
+[complete example](examples/23_drop_in_extensions/). The
+[provider endpoint landscape](docs/guides/provider-endpoint-landscape.md)
+lists the protocol and authentication families, including native cloud APIs
+that still need a reviewed adapter.
+
 ## Solve a real task
 
 ```bash

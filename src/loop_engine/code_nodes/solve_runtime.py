@@ -63,6 +63,7 @@ class SolveRequest:
     allow_source_materialization_to_model: bool = False
     deterministic_resolvers: tuple[object, ...] = field(
         default=(), repr=False, compare=False)
+    extension_snapshot: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         mode = self.interaction_mode
@@ -86,6 +87,11 @@ class SolveRequest:
                for item in self.deterministic_resolvers):
             raise SolveError(
                 "deterministic_resolvers must implement supports and execute")
+        if (not isinstance(self.extension_snapshot, dict)
+                or self.extension_snapshot
+                and self.extension_snapshot.get("record_type")
+                != "extension_snapshot/v1"):
+            raise SolveError("extension_snapshot has an invalid contract")
 
 
 @dataclass(frozen=True)
@@ -209,7 +215,15 @@ def _failure_code(result: dict) -> str:
     code = str(result.get("failure_code") or "")
     if code in ("NO_VERIFIED_CAPABILITY", "EXECUTOR_UNAVAILABLE"):
         return SolveTerminalCode.CAPABILITY_GAP.value
-    if code in ("SolutionModelError", "MODEL_PROVIDER_UNAVAILABLE"):
+    if code == "model_call_budget_exhausted":
+        return SolveTerminalCode.BUDGET_EXHAUSTED.value
+    if code in (
+            "SolutionModelError", "MODEL_PROVIDER_UNAVAILABLE",
+            "model_gateway_failed", "no_eligible_route",
+            "provider_not_configured", "missing_credential",
+            "authentication_failed", "payment_required", "model_not_found",
+            "rate_limited", "provider_unavailable", "timeout",
+            "provider_failed"):
         return SolveTerminalCode.PROVIDER_UNAVAILABLE.value
     if code in ("PermissionError", "PERMISSION_DENIED"):
         return SolveTerminalCode.AUTHORITY_REQUIRED.value
@@ -281,7 +295,8 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
                 request.allow_source_materialization_to_model),
         AdaptivePractitionerDependencies(
             model_execution=request.model_execution,
-            deterministic_resolvers=resolvers))
+            deterministic_resolvers=resolvers,
+            extension_snapshot=request.extension_snapshot))
     solved = bool(adaptive.get("solved"))
     product = _product_result(adaptive, solved)
     selected = adaptive.get("selected_solution_canvas") or {}
@@ -323,6 +338,7 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             "context": adaptive.get("context_intelligence", {}),
             "search_candidates": adaptive.get("web_search_candidates", []),
             "fetched_sources": adaptive.get("web_evidence", []),
+            "extensions": dict(request.extension_snapshot),
         },
         selected_mode=mode,
         selected_canvas=selected,
@@ -371,16 +387,28 @@ def self_test() -> dict:
     with tempfile.TemporaryDirectory() as root:
         data = Path(root) / "rows.csv"
         data.write_text("id,name\n1, Alice \n2,Bob\n", encoding="utf-8")
+        extension_snapshot = {
+            "record_type": "extension_snapshot/v1",
+            "content_digest": "a" * 64, "loop_id": "loop-extension",
+            "roots": [], "providers": [],
+            "capabilities": [{"capability_ref": "plugin.test.candidate",
+                              "lifecycle": "candidate"}],
+            "skills": [], "plugins": [], "intelligence_entries": [],
+            "reasons": []}
         deterministic = solve_task(SolveRequest(
             intake_task(TaskIntakeRequest(
                 dataset=str(data), goal="validate and normalize this dataset")),
             runs_dir=root,
-            deterministic_resolvers=(StructuredNormalizationResolver(data),)))
+            deterministic_resolvers=(StructuredNormalizationResolver(data),),
+            extension_snapshot=extension_snapshot))
         check("deterministic_structured_task_does_real_work",
               deterministic.solved
               and deterministic.result["artifact"]["rows"][0]["name"]
                   == "Alice"
               and deterministic.run_history["chain_intact"])
+        check("solve_result_preserves_exact_added_file_snapshot",
+              deterministic.intelligence["extensions"]
+              == extension_snapshot)
         model = solve_task(SolveRequest(
             intake_task(TaskIntakeRequest(text="explain this bounded task")),
             model_execution=fixture_model_execution(
@@ -391,7 +419,7 @@ def self_test() -> dict:
                     }),), max_model_calls=1)), runs_dir=root))
         check("one_model_answer_cannot_bypass_the_practitioner_cycle",
               not model.solved
-              and model.failure_code == "VERIFICATION_FAILED"
+              and model.failure_code == "BUDGET_EXHAUSTED"
               and model.run_history["chain_intact"])
         unavailable = solve_task(SolveRequest(
             intake_task(TaskIntakeRequest(text="invent a new theorem")),

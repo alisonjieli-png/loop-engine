@@ -165,6 +165,9 @@ class ProviderSettings:
     maximum_output_tokens: "int | None" = None
     maximum_output_source: str = ""
     purposes: tuple[str, ...] = ("counted_generation", "decide_label")
+    headers: tuple[tuple[str, str], ...] = ()
+    auth_scheme: str = "bearer"
+    auth_header: str = ""
 
     def __post_init__(self) -> None:
         if not self.provider_id or not re.fullmatch(
@@ -183,6 +186,25 @@ class ProviderSettings:
                 "provider.locality must be cloud, organization, or local")
         if self.wire not in ("openai", "ollama"):
             raise SettingsError("provider.wire must be openai or ollama")
+        if self.auth_scheme not in ("bearer", "header", "none"):
+            raise SettingsError(
+                "provider.auth_scheme must be bearer, header, or none")
+        if self.auth_scheme == "header":
+            if (not self.auth_header.strip()
+                    or not re.fullmatch(
+                        r"[!#$%&'*+.^_`|~0-9A-Za-z-]+",
+                        self.auth_header)
+                    or self.auth_header.casefold() in {
+                        "authorization", "proxy-authorization", "cookie",
+                        "set-cookie"}):
+                raise SettingsError(
+                    "header authentication needs a valid HTTP header name")
+        elif self.auth_header:
+            raise SettingsError(
+                "provider.auth_header is only valid for header authentication")
+        if self.auth_scheme == "none" and self.credential_env:
+            raise SettingsError(
+                "provider auth_scheme none cannot declare a credential")
         if self.kind == "custom" and not (self.endpoint and self.model):
             raise SettingsError(
                 "a custom provider needs endpoint and model")
@@ -202,6 +224,25 @@ class ProviderSettings:
         if not self.purposes or any(
                 purpose not in PURPOSES for purpose in self.purposes):
             raise SettingsError(f"provider.purposes must use {PURPOSES}")
+        headers = tuple(self.headers)
+        forbidden_headers = {
+            "authorization", "proxy-authorization", "cookie", "set-cookie",
+            "x-api-key", "api-key"}
+        if any(not isinstance(item, tuple) or len(item) != 2
+               or not all(isinstance(value, str) for value in item)
+               for item in headers):
+            raise SettingsError(
+                "provider.headers must contain text name/value pairs")
+        if (len(headers) != len({item[0].casefold() for item in headers})
+                or any(not item[0].strip() or not item[1].strip()
+                       or item[0].casefold() in forbidden_headers
+                       or item[0].casefold() == self.auth_header.casefold()
+                       or "\n" in item[0] or "\r" in item[0]
+                       or "\n" in item[1] or "\r" in item[1]
+                       for item in headers)):
+            raise SettingsError(
+                "provider.headers must be unique non-secret HTTP headers")
+        object.__setattr__(self, "headers", tuple(sorted(headers)))
 
     @property
     def route_name(self) -> str:
@@ -221,6 +262,9 @@ class ProviderSettings:
             "counts_as_evidence": self.counts_as_evidence,
             "maximum_output_tokens": self.maximum_output_tokens,
             "maximum_output_source": self.maximum_output_source,
+            "header_names": [item[0] for item in self.headers],
+            "auth_scheme": self.auth_scheme,
+            "auth_header": self.auth_header,
         }
 
 
@@ -577,7 +621,10 @@ class RuntimeSettings:
                     configured.maximum_output_source,
                     endpoint=configured.endpoint)
                     if configured.maximum_output_tokens is not None else None),
-                counts_as_evidence=configured.counts_as_evidence)
+                counts_as_evidence=configured.counts_as_evidence,
+                headers=configured.headers,
+                auth_scheme=configured.auth_scheme,
+                auth_header=configured.auth_header)
             spec = provider_spec_from_endpoint(endpoint)
             providers.append(replace(
                 spec, credential_ref=(

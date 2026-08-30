@@ -60,6 +60,23 @@ def default_runs_dir(path: str = "") -> str:
     return os.path.join(os.path.expanduser("~"), ".loop-engine", "runs")
 
 
+def saved_run_ids(root: str) -> list[str]:
+    """Return only directories that have the complete saved-run file shape.
+
+    A solve may keep content-addressed artifacts beside its Run History.  Those
+    directories are useful, but they are not runs and must never become the
+    target of ``@last`` merely because their names sort later.
+    """
+    if not os.path.isdir(root):
+        return []
+    required = ("manifest.json", "events.jsonl")
+    return sorted(
+        name for name in os.listdir(root)
+        if os.path.isdir(os.path.join(root, name))
+        and all(os.path.isfile(os.path.join(root, name, filename))
+                for filename in required))
+
+
 _RUN_HISTORY_TO_LEDGER = {
     "run_started": "run_started",
     "loop_init": "init",
@@ -481,6 +498,14 @@ def self_test() -> dict:
         check("saved_run_identity_is_immutable",
               collision_refused,
               "a second save with the same run id is refused")
+
+        artifact_sibling = os.path.join(tmp, "run_rt-artifacts")
+        os.makedirs(artifact_sibling)
+        with open(os.path.join(artifact_sibling, "artifact.json"), "w") as f:
+            json.dump({"artifact": True}, f)
+        check("saved_run_listing_excludes_artifact_siblings",
+              saved_run_ids(tmp) == ["run_rt"],
+              "@last resolves only complete manifest plus event-log folders")
 
         manifest_path = os.path.join(tmp, "run_rt", "manifest.json")
         manifest = json.load(open(manifest_path))

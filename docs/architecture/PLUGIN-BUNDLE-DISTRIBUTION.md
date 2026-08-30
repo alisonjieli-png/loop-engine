@@ -35,5 +35,7 @@ Current limitations:
 - No marketplace installer is implemented.
 - No Claude Code or Codex wrapper is packaged yet.
 - Profile and capability admission remain future bundle gates.
-- Bundle discovery currently receives explicit roots.
+- Plugin bundles may be discovered from explicit roots or from an added-file
+  extension root's `plugins/` folder. Resolution still requires exact admitted
+  skills.
 - Signing, remote acquisition, and publisher trust are not implemented.

@@ -148,6 +148,9 @@ def provider_spec_from_endpoint(endpoint) -> ProviderSpec:
         wire_format=endpoint.wire,
         endpoint=endpoint.base_url,
         capabilities=("chat", "list_models", "verify"),
+        model_output_capability=endpoint.output_capability,
+        model_output_capability_model=(endpoint.model
+                                       if endpoint.output_capability else ""),
     )
 
 @dataclass(frozen=True)
@@ -352,8 +355,17 @@ def _error_code(error: str) -> str:
         return "model_output_limit_mismatch"
     if "401" in low or "403" in low or "unauthor" in low or "api_key" in low:
         return "authentication_failed"
+    if "402" in low or "payment required" in low or "insufficient credit" in low:
+        return "payment_required"
+    if "404" in low or "model not found" in low:
+        return "model_not_found"
     if "429" in low or "rate" in low and "limit" in low:
         return "rate_limited"
+    if (any(code in low for code in ("500", "502", "503", "504"))
+            or "service unavailable" in low or "high demand" in low):
+        return "provider_unavailable"
+    if "400" in low or "bad request" in low:
+        return "invalid_request"
     if "timeout" in low or "timed out" in low:
         return "timeout"
     if (("not found" in low or "missing" in low)
@@ -364,6 +376,12 @@ def _error_code(error: str) -> str:
     if "model identity" in low or "model_identity" in low:
         return "model_identity_mismatch"
     return "provider_failed"
+
+
+_FAILOVER_FORBIDDEN_ERRORS = {
+    "authentication_failed", "invalid_request",
+    "model_output_limit_mismatch", "model_identity_mismatch",
+}
 
 
 def _gateway_orchestration_config(parent=None):
@@ -611,6 +629,13 @@ class ModelGateway:
                     reasoning_present=reasoning_present,
                 )
                 result.attempts.append(attempt)
+                if (not attempt.ok
+                        and attempt.error_code in _FAILOVER_FORBIDDEN_ERRORS):
+                    result.error_code = attempt.error_code
+                    result.error = attempt.error
+                    return StepOutcome(
+                        output=f"route:refused:{attempt.error_code}",
+                        mode="deterministic", confidence=0.1, failed=True)
                 if (request.config.max_total_tokens is not None
                         and known_tokens > request.config.max_total_tokens):
                     result.error_code = "token_budget_exhausted"
@@ -654,7 +679,9 @@ def invoke_model_gateway(gateway: ModelGateway, request: ModelGatewayRequest,
 
 def self_test() -> dict:
     """Offline contract and refusal tests.  No provider is contacted."""
-    from .model_capabilities import UnknownModelOutputLimit
+    from .model_capabilities import (
+        ModelOutputCapability, UnknownModelOutputLimit)
+    from .ollama_client import ChatResult
     from .operating_profile import OperatingProfile
 
     results = []
@@ -736,6 +763,72 @@ def self_test() -> dict:
     check("an_unspecified_output_limit_remains_unspecified_until_capability_resolution",
           request.config.max_output_tokens is None
           and request.config.route_plan[0].max_output_tokens is None)
+
+    class ErrorAdapter:
+        DEFAULT_MODEL = "first-model"
+
+        def __init__(self, error: str):
+            self.error = error
+            self.calls = 0
+
+        @staticmethod
+        def output_capability_for(model):
+            return ModelOutputCapability(16, "fixture maximum")
+
+        def chat_maxout(self, prompt, **kwargs):
+            self.calls += 1
+            return ChatResult("", kwargs.get("model", "first-model"),
+                              ok=False, error=self.error)
+
+        def verify(self, model=""):
+            return {"ok": False}
+
+        def live_models(self):
+            return [self.DEFAULT_MODEL]
+
+    class SuccessAdapter(ErrorAdapter):
+        DEFAULT_MODEL = "second-model"
+
+        def __init__(self):
+            super().__init__("")
+
+        def chat_maxout(self, prompt, **kwargs):
+            self.calls += 1
+            return ChatResult("accepted", kwargs.get("model", "second-model"),
+                              prompt_tokens=1, eval_tokens=1, ok=True)
+
+    auth, auth_fallback = ErrorAdapter("HTTP 401 unauthorized"), SuccessAdapter()
+    auth_gateway = ModelGateway(
+        providers=(ProviderSpec("first", auth, "fixture", "env:FIRST"),
+                   ProviderSpec("second", auth_fallback, "fixture",
+                                "env:SECOND")),
+        routes=(ModelRoute("first.route", "first", "first-model"),
+                ModelRoute("second.route", "second", "second-model")))
+    auth_result = auth_gateway.invoke(ModelGatewayRequest(
+        "authentication failure must stop",
+        ModelGatewayConfig(route_names=("first.route", "second.route"),
+                           max_route_attempts=2)))
+    check("authentication_failure_does_not_silently_fail_over",
+          not auth_result.ok
+          and auth_result.error_code == "authentication_failed"
+          and auth.calls == 1 and auth_fallback.calls == 0)
+
+    payment, payment_fallback = ErrorAdapter(
+        "HTTP 402 insufficient credits"), SuccessAdapter()
+    payment_gateway = ModelGateway(
+        providers=(ProviderSpec("first", payment, "fixture", "env:FIRST"),
+                   ProviderSpec("second", payment_fallback, "fixture",
+                                "env:SECOND")),
+        routes=(ModelRoute("first.route", "first", "first-model"),
+                ModelRoute("second.route", "second", "second-model")))
+    payment_result = payment_gateway.invoke(ModelGatewayRequest(
+        "payment failure may use another authorized provider",
+        ModelGatewayConfig(route_names=("first.route", "second.route"),
+                           max_route_attempts=2)))
+    check("payment_failure_can_fail_over_to_another_authorized_provider",
+          payment_result.ok and payment_result.provider == "second"
+          and payment_result.attempts[0].error_code == "payment_required"
+          and payment.calls == 1 and payment_fallback.calls == 1)
 
     # A provider attempt remains below the named spawned model-led Loop even
     # when that Loop is already two levels below a full Practitioner. The

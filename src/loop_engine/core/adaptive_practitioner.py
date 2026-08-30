@@ -125,7 +125,12 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                      "TaskOrientationResult."),
                     {**_model_state(state, services),
                      "orientation_validation_failures": failures}, schema))
-            except (AdaptivePractitionerError, SolutionModelError) as exc:
+            except SolutionModelError as exc:
+                services.diagnostic("orientation_provider_unavailable", {
+                    "attempt": attempt,
+                    "error_code": exc.error_code or "model_gateway_failed"})
+                raise
+            except AdaptivePractitionerError as exc:
                 failures.append({
                     "attempt": attempt,
                     "findings": [f"{type(exc).__name__}: {str(exc)[:500]}"],
@@ -321,8 +326,9 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                     parsed.append(decision)
                 decisions = parsed
                 break
-            except (AdaptivePractitionerError, SolutionModelError,
-                    TypeError, ValueError) as exc:
+            except SolutionModelError:
+                raise
+            except (AdaptivePractitionerError, TypeError, ValueError) as exc:
                 failure = str(exc)[:500]
                 services.diagnostic("next_action_invalid", {
                     "attempt": attempt, "error": failure})
@@ -617,10 +623,13 @@ def run_adaptive_practitioner(
         if not owner.is_terminal:
             owner.cancel("adaptive_practitioner_failed")
         history = verify_saved_run(str(runs_dir), run_id)
+        failure_code = (exc.error_code or type(exc).__name__
+                        if isinstance(exc, SolutionModelError)
+                        else type(exc).__name__)
         output = {
             "record_type": ADAPTIVE_PRACTITIONER_RECORD_TYPE,
             "run_id": run_id, "status": "NOT_YET_PROVEN", "solved": False,
-            "failure_code": type(exc).__name__, "failure": str(exc)[:1000],
+            "failure_code": failure_code, "failure": str(exc)[:1000],
             "original_task": request.task, "mode": request.mode,
             "task_feedback": [item.to_dict() for item in request.feedback],
             "deterministic_attempt": services.deterministic_attempt.to_dict(),

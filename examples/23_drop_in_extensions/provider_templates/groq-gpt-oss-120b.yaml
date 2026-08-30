@@ -1,0 +1,58 @@
+schema_version: provider_route_bundle/v2
+bundle_id: groq_gpt_oss_120b
+version: 1.0.0
+description: Groq GPT-OSS 120B Free Plan route reviewed 2026-08-29.
+sources:
+  - kind: protocol
+    url: https://console.groq.com/docs/openai
+    observed_at: 2026-08-29
+  - kind: model
+    url: https://console.groq.com/docs/model/openai/gpt-oss-120b
+    observed_at: 2026-08-29
+  - kind: quota
+    url: https://console.groq.com/docs/rate-limits
+    observed_at: 2026-08-29
+provider:
+  enabled: true
+  auth:
+    kind: bearer_env
+    credential_env: GROQ_API_KEY
+    header: ""
+    plugin_ref: ""
+  endpoint: https://api.groq.com/openai/v1
+  model: openai/gpt-oss-120b
+  protocol: openai_chat
+  locality: cloud
+  counts_as_evidence: true
+  maximum_output_tokens: 65536
+  maximum_output_source: Groq GPT-OSS 120B model documentation observed 2026-08-29
+  purposes:
+    - counted_generation
+    - decide_label
+  headers: {}
+routing:
+  tiers:
+    - medium
+    - high
+  access_class: recurring_quota
+pricing:
+  input_cost_per_million: 0.15
+  output_cost_per_million: 0.6
+quota:
+  scope: account
+  requests_per_minute: 30
+  requests_per_day: 1000
+  tokens_per_minute: 8000
+  tokens_per_day: 200000
+  concurrency: null
+  credit_amount: null
+  reset: provider_defined
+capabilities: [text, structured_output, tools, reasoning, streaming]
+data_policy:
+  confidential_allowed: null
+  training_use: unknown
+  retention: provider_defined
+  regions: []
+health:
+  catalog_refresh_seconds: 86400
+  probe_timeout_seconds: 60

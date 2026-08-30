@@ -131,6 +131,43 @@ plugin_distribution:
     - changed_skill_body_invalidates_resolution
     - text_and_json_views_share_one_snapshot
 
+added_file_extensions:
+  operational_runtime_type: Loop
+  discovery_contract: loop_engine.core.extension_discovery.ExtensionDiscoveryRequest
+  resolved_snapshot: loop_engine.core.extension_discovery.ExtensionSnapshot
+  provider_route_contract: loop_engine.core.extension_discovery.ProviderRouteBundle
+  capability_candidate_contract: loop_engine.core.extension_discovery.CapabilityCandidate
+  provider_settings_authority: loop_engine.core.runtime_settings.ProviderSettings
+  skill_authority: loop_engine.core.skill_registry.SkillAdmissionRecord
+  plugin_authority: loop_engine.core.plugin_bundles.PluginBundleManifest
+  intelligence_authority: loop_engine.ontology.catalog.UnifiedCatalog
+  conventional_roots:
+    project: .loop-engine/extensions
+    user: ~/.config/loop-engine/extensions
+    environment: LOOP_ENGINE_EXTENSION_ROOTS
+  recognized_folders:
+    - providers
+    - capabilities
+    - skills
+    - plugins
+    - intelligence
+  invariants:
+    - file_discovery_is_effect_free
+    - added_files_are_passive_and_create_no_runtime
+    - conflicting_identity_and_version_fail_closed
+    - exact_content_may_deduplicate
+    - credential_values_never_enter_snapshots
+    - endpoint_templates_cannot_interpolate_credentials
+    - only_zero_price_and_local_routes_auto_activate_by_default
+    - included_quota_paid_and_unknown_routes_need_explicit_opt_in
+    - wire_protocol_and_authentication_are_independent
+    - unsupported_protocol_or_auth_remains_visible_and_inactive
+    - capability_files_are_candidate_only
+    - skill_files_require_independent_admission
+    - intelligence_files_cannot_self_register_or_self_promote
+    - plugin_bundles_remain_under_existing_plugin_authority
+    - model_calls_and_effects_still_require_runtime_authority
+
 planning_and_execution:
   operational_runtime_type: Loop
   graph_authority: loop_engine.code_nodes.solution_graph.LoopGraphDefinition

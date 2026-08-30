@@ -1,0 +1,58 @@
+schema_version: provider_route_bundle/v2
+bundle_id: gemini_37_flash
+version: 1.0.0
+description: Google Gemini 3.7 Flash free-tier route reviewed 2026-08-29.
+sources:
+  - kind: protocol
+    url: https://ai.google.dev/gemini-api/docs/openai
+    observed_at: 2026-08-29
+  - kind: model
+    url: https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash
+    observed_at: 2026-08-29
+  - kind: pricing
+    url: https://ai.google.dev/gemini-api/docs/pricing
+    observed_at: 2026-08-29
+provider:
+  enabled: true
+  auth:
+    kind: bearer_env
+    credential_env: GEMINI_API_KEY
+    header: ""
+    plugin_ref: ""
+  endpoint: https://generativelanguage.googleapis.com/v1beta/openai
+  model: gemini-3.7-flash
+  protocol: openai_chat
+  locality: cloud
+  counts_as_evidence: true
+  maximum_output_tokens: 65536
+  maximum_output_source: Google Gemini 3.7 Flash official model documentation
+  purposes:
+    - counted_generation
+    - decide_label
+  headers: {}
+routing:
+  tiers:
+    - medium
+    - high
+  access_class: recurring_quota
+pricing:
+  input_cost_per_million: 0.75
+  output_cost_per_million: 3.75
+quota:
+  scope: project
+  requests_per_minute: null
+  requests_per_day: null
+  tokens_per_minute: null
+  tokens_per_day: null
+  concurrency: null
+  credit_amount: null
+  reset: provider_defined
+capabilities: [text, structured_output, tools, reasoning, streaming, vision]
+data_policy:
+  confidential_allowed: false
+  training_use: "yes"
+  retention: free-tier provider policy
+  regions: []
+health:
+  catalog_refresh_seconds: 86400
+  probe_timeout_seconds: 120

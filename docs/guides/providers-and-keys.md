@@ -10,6 +10,7 @@ Deterministic loops need no provider. Hybrid and non-deterministic loops use
 | Ollama Cloud | `OLLAMA_API_KEY` | Hosted Ollama API. |
 | Mistral | `MISTRAL_API_KEY` | Mistral hosted API. |
 | OpenRouter | `OPENROUTER_API_KEY` | OpenAI-compatible gateway to several upstream providers. |
+| OpenCode Zen zero-cost shortcut | `OPENCODE_ZEN_API_KEY` | Resolves one current zero-cost OpenAI-compatible model for the run. |
 | OpenCode Go task compilation | `OPENCODE_GO_API_KEY` | Direct OpenAI-compatible OpenCode Go route for one advisory task review. |
 | Custom endpoint | Supplied in `CustomEndpoint` | OpenAI-compatible or native Ollama server. |
 
@@ -29,6 +30,36 @@ print(access.explain())
 reported as working only when the provider answers.
 
 This check may consume tokens. Run it only when provider calls are authorized.
+
+## Add an OpenAI-compatible provider with one file
+
+Copy a reviewed `provider_route_bundle/v2` YAML file into:
+
+```text
+.loop-engine/extensions/providers/
+```
+
+Then inspect the route without contacting it:
+
+```bash
+loop-engine extensions providers
+loop-engine models inventory
+```
+
+The repository includes reviewed example templates for Z.ai, Groq, Gemini,
+Cerebras, and Cloudflare under
+[`examples/23_drop_in_extensions/provider_templates/`](../../examples/23_drop_in_extensions/provider_templates/).
+Availability and pricing can change. Review the cited provider source before
+copying a template.
+
+See [Provider endpoint landscape](provider-endpoint-landscape.md) for the
+supported protocol and authentication families, additional compatible
+services, and the difference between zero price, a recurring quota, trial
+credit, local inference, community capacity, and user-pays access.
+
+Only exact zero-price routes activate automatically when their credential is
+present. Free-plan quotas, trial credits, paid routes, and unknown prices need
+`--allow-paid-extension-routes` because charges may begin after the allowance.
 
 ## Preferred first setup
 
@@ -61,10 +92,13 @@ loop-engine solve \
   --max-total-tokens 1000000
 ```
 
-Use `--openrouter-api-key VALUE` or `--opencode-go-api-key VALUE` for the other
-direct routes. Each shortcut authorizes one advisory call. The token ceiling is
-derived from the selected model's declared maximum and the exact prompt. It
-does not grant file, network-tool, spending, or external-effect permission.
+Use `--openrouter-api-key VALUE`, `--opencode-zen-api-key VALUE`, or
+`--opencode-go-api-key VALUE` for the other direct routes. The OpenRouter and
+OpenCode Zen shortcuts resolve current zero-cost models from live catalogs
+after model-call authority exists. Each selected route is exact for that run.
+The token ceiling is derived from the selected model's declared maximum and
+the exact prompt. It does not grant file, network-tool, spending, or
+external-effect permission.
 
 Export the key when you do not want it in the command:
 
@@ -72,6 +106,8 @@ Export the key when you do not want it in the command:
 export OLLAMA_API_KEY="your-key"       # Ollama Cloud
 # or
 export OPENROUTER_API_KEY="your-key"   # OpenRouter
+# or
+export OPENCODE_ZEN_API_KEY="your-key" # OpenCode Zen zero-cost catalog
 # or
 export OPENCODE_GO_API_KEY="your-key"  # OpenCode Go task review
 

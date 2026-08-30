@@ -20,3 +20,18 @@ override installed content. Changed skill files invalidate plugin resolution.
 Claude Code and Codex adapter packages are maintained as thin integrations.
 Marketplace installation and remote publisher trust remain separate release
 gates until their conformance and clean-install checks pass.
+
+## Add files without changing Loop Engine source
+
+Place provider routes, capability candidates, skills, plugin bundles, or
+plugin-provenance intelligence under `.loop-engine/extensions/` in a project,
+under `~/.config/loop-engine/extensions/` for one user, or in a root listed by
+`LOOP_ENGINE_EXTENSION_ROOTS`.
+
+```bash
+loop-engine extensions discover
+```
+
+Discovery validates and lists the files without executing code or calling a
+provider. See [Added-file extensions](../architecture/ADDED-FILE-EXTENSIONS.md)
+for folder layouts, schemas, activation rules, and examples.

@@ -46,7 +46,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote
 
 _PKG = os.path.dirname(os.path.dirname(__file__))
-from .run_history import default_runs_dir
+from .run_history import default_runs_dir, saved_run_ids
 from .studio_operational_views import (
     StudioReadSources, project_run_runtime, project_runtime_inventory)
 
@@ -88,12 +88,11 @@ def _run_histories():
     out = []
     if not os.path.isdir(_RUNS):
         return out
-    for rid in sorted(os.listdir(_RUNS)):
-        if os.path.exists(os.path.join(_RUNS, rid, "manifest.json")):
-            try:
-                out.append(_load_run_as_historical_loop(rid))
-            except (OSError, KeyError, json.JSONDecodeError):
-                continue
+    for rid in saved_run_ids(_RUNS):
+        try:
+            out.append(_load_run_as_historical_loop(rid))
+        except (OSError, KeyError, json.JSONDecodeError):
+            continue
     return out
 
 

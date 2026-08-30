@@ -25,6 +25,10 @@ MODEL_LEAF_MODES = ("hybrid", "non_deterministic")
 class SolutionModelError(ValueError):
     """A model-using Solution Loop lacked valid or sufficient authority."""
 
+    def __init__(self, message: str, *, error_code: str = "") -> None:
+        super().__init__(message)
+        self.error_code = error_code
+
 
 @dataclass(frozen=True)
 class ModelInvocationRequest:
@@ -126,7 +130,8 @@ class ModelExecutionSession:
         if self.calls_used >= self.authority.max_model_calls:
             raise SolutionModelError(
                 "whole-Solution model-call budget exhausted: "
-                f"{self.calls_used}/{self.authority.max_model_calls}")
+                f"{self.calls_used}/{self.authority.max_model_calls}",
+                error_code="model_call_budget_exhausted")
         config = self.authority.config
         if request.model:
             config = replace(config, allowed_models=(request.model,))
@@ -140,7 +145,8 @@ class ModelExecutionSession:
         if not result.ok:
             raise SolutionModelError(
                 f"ModelGateway failed with {result.error_code or 'unknown'}: "
-                f"{result.error[:200]}")
+                f"{result.error[:200]}",
+                error_code=result.error_code or "model_gateway_failed")
         return result.text
 
 

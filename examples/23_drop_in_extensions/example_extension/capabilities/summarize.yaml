@@ -1,0 +1,16 @@
+schema_version: capability_candidate/v1
+capability_ref: plugin.example.summarize
+version: 1.0.0
+description: Candidate text summarization capability.
+input_roles:
+  - text
+output_roles:
+  - summary
+permissions: []
+effects: []
+implementation:
+  kind: skill
+  ref: summary-skill
+tags:
+  - summary
+lifecycle: candidate
