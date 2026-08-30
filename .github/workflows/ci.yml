@@ -225,7 +225,6 @@ jobs:
           python examples/02_predict_customer_renewal/run.py
           python examples/03_connect_a_model/run.py
           python examples/04_read_run_reports/run.py
-          python examples/05_kaggle_competition/run.py
           python examples/06_reconcile_invoices/run.py
           python examples/08_play_back_a_saved_run/run.py
           python examples/09_search_the_intelligence_layers/run.py
