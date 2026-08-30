@@ -19,13 +19,11 @@ ROLE_RELATIONSHIP_KINDS = MappingProxyType({
     "intelligence": frozenset(("starting", "queried_by", "retrieved_by")),
     "solution": frozenset(("starting", "spawned_by", "connected_from")),
 })
-
 PUBLIC_CAPABILITY_GROUP_BOUNDARIES = MappingProxyType({
     "Intelligence Search and Retrieval": ("retrieval tournament", "intelligence serving"),
     "Web Research": ("custom plugin invocation",),
     "Custom Plugins": ("custom plugin invocation",),
 })
-
 @dataclass(frozen=True)
 class DynamicProfileSource:
     """A typed runtime source of an exact, catalog-validated profile."""
@@ -33,7 +31,6 @@ class DynamicProfileSource:
     source: str
     validator: str
     allowed_families: tuple[str, ...]
-
 @dataclass(frozen=True)
 class BoundaryOntologyBinding:
     """The one Loop classification joined to an operational boundary row."""
@@ -43,7 +40,6 @@ class BoundaryOntologyBinding:
     relationship_kinds: tuple[str, ...]
     profile_ref: str = ""
     dynamic_profile_source: "DynamicProfileSource | None" = None
-
 def _exact(role: str, profile_ref: str, *relationships: str) -> BoundaryOntologyBinding:
     return BoundaryOntologyBinding(
         "Loop", (role,), tuple(relationships), profile_ref=profile_ref)
@@ -322,6 +318,8 @@ BOUNDARIES = (
      "binding": "native_loop",
      "envelope": "code_nodes.solution_canvas._run_members",
      "test": "solution_canvas_checks.self_test"},
+    {"boundary": "development dependency-wave execution", "crosses": "an accepted task plan enters a bounded Solution Loop wave", "binding": "native_loop", "envelope": "core.development_execution.execute_development_plan", "test": "development_execution_checks.self_test"},
+    {"boundary": "development task attempt", "crosses": "one task attempt executes and returns typed verification evidence", "binding": "native_loop", "envelope": "core.development_execution.execute_development_plan", "test": "development_execution_checks.self_test"},
     {"boundary": "persistence",
      "crosses": "an artifact is written to disk",
      "binding": "practitioner_loop",
@@ -462,6 +460,8 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
         "solution", "solution.router_fallback@1.0.0", "spawned_by"),
     "solution validator execution": _exact(
         "solution", "solution.validator@1.0.0", "connected_from"),
+    "development dependency-wave execution": _exact("solution", "solution.pipeline@1.0.0", "starting"),
+    "development task attempt": _exact("solution", "solution.atomic_component@1.0.0", "spawned_by"),
     "persistence": _exact(
         "practitioner", "practitioner.code_execution@1.0.0", "spawned_by"),
 })

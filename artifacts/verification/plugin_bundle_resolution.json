@@ -1,0 +1,36 @@
+{
+  "record_type": "plugin_bundle_resolution_verification/v1",
+  "date": "2026-08-29",
+  "repository": "/home/username/loop-engine",
+  "starting_sha": "a7db02f25167a68c4d1e0b64b2fe57730fa35e80",
+  "inspiration": {
+    "repository": "https://github.com/markshust/hcf",
+    "reviewed_sha": "9cfca7de63c309ee6b5b38088cd446af85e9ff46",
+    "upstream_tests_observed": {"passed": 152, "total": 152}
+  },
+  "loop_engine_checks": {
+    "plugin_bundle_focused": {"passed": 5, "total": 5},
+    "full_self_test": {"passed": 1509, "total": 1509},
+    "provider_calls": 0,
+    "conformance": "passed",
+    "focused_parameter_findings": 0,
+    "repository_preexisting_parameter_findings": 175
+  },
+  "proved": [
+    "exact_installed_and_project_bundle_deduplication",
+    "changed_project_bundle_override_refusal",
+    "full_skill_file_drift_detection",
+    "exact_skill_admission_binding",
+    "intelligence_loop_owned_resolution",
+    "shared_json_and_ascii_snapshot"
+  ],
+  "not_proved": [
+    "marketplace_installation",
+    "claude_code_adapter",
+    "codex_adapter",
+    "remote_plugin_acquisition",
+    "publisher_signatures",
+    "profile_and_capability_admission",
+    "ci"
+  ]
+}

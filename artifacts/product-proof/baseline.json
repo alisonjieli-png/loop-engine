@@ -1,0 +1,45 @@
+{
+  "record_type": "product_mandate_baseline/v1",
+  "branch": "main",
+  "starting_sha": "a7db02f25167a68c4d1e0b64b2fe57730fa35e80",
+  "starting_remote_sha": "a7db02f25167a68c4d1e0b64b2fe57730fa35e80",
+  "latest_starting_actions": {
+    "workflow": "CI",
+    "run_id": 33158570083,
+    "conclusion": "success",
+    "url": "https://github.com/alisonjieli-png/loop-engine/actions/runs/33158570083"
+  },
+  "worktree_at_start": {
+    "modified_tracked": 21,
+    "untracked": 58,
+    "preserved": true
+  },
+  "readme_gap": "README documented task build rather than a real artifact-producing solve.",
+  "solve_gap": "Public solve auto-bound a narrow whitespace normalizer for structured inputs and otherwise stopped without a general generated-project action.",
+  "baseline_self_test": {
+    "passed": 1532,
+    "total": 1534,
+    "all_passed": false,
+    "failures": [
+      "development_execution module was not classified",
+      "zero-tolerance unclassified-file gate"
+    ]
+  },
+  "baseline_conformance": {
+    "all_passed": false,
+    "unclassified_files": 1
+  },
+  "baseline_build": {
+    "wheel_built": true,
+    "sdist_built": true,
+    "twine_check": true
+  },
+  "baseline_clean_install": {
+    "passed": false,
+    "blocker": "disk quota exhausted while default dependencies installed nvidia-nccl-cu13"
+  },
+  "provider_state": {
+    "ollama_cloud_credential_present": true,
+    "credential_tested": false
+  }
+}

@@ -79,6 +79,7 @@ class GeneratedProjectCommand:
     timeout_seconds: float = 300.0
     command_kind: str = "execute"
     network_access: bool = False
+    expected_exit_codes: tuple[int, ...] = (0,)
 
     def __post_init__(self) -> None:
         argv = tuple(self.argv)
@@ -103,7 +104,15 @@ class GeneratedProjectCommand:
                 or tuple(argv[1:4]) != ("-m", "pip", "install")):
             raise GeneratedProjectError(
                 "network access is limited to python -m pip install setup")
+        expected = tuple(self.expected_exit_codes)
+        if (not expected or len(expected) > 4
+                or any(not isinstance(item, int) or isinstance(item, bool)
+                       or item < 0 or item > 255 for item in expected)
+                or len(expected) != len(set(expected))):
+            raise GeneratedProjectError(
+                "expected exit codes must be unique integers from 0 through 255")
         object.__setattr__(self, "argv", argv)
+        object.__setattr__(self, "expected_exit_codes", expected)
 
     def to_dict(self) -> dict:
         return {
@@ -112,6 +121,7 @@ class GeneratedProjectCommand:
             "timeout_seconds": self.timeout_seconds,
             "command_kind": self.command_kind,
             "network_access": self.network_access,
+            "expected_exit_codes": list(self.expected_exit_codes),
         }
 
 
@@ -222,7 +232,9 @@ class GeneratedProjectCandidate:
                 str(item.get("purpose", "")),
                 float(item.get("timeout_seconds", 300.0)),
                 str(item.get("command_kind", "execute")),
-                bool(item.get("network_access", False)))
+                bool(item.get("network_access", False)),
+                tuple(int(code) for code in item.get(
+                    "expected_exit_codes", (0,))))
                 for item in commands if isinstance(item, dict)),
             expected_artifacts=tuple(ExpectedProjectArtifact(
                 str(item.get("path", "")), str(item.get("media_type", "")),
@@ -254,8 +266,8 @@ class GeneratedProjectInputArtifact:
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "path", _relative_path(self.path))
-        if not isinstance(self.content, bytes) or not self.content:
-            raise GeneratedProjectError("project input artifact must contain bytes")
+        if not isinstance(self.content, bytes):
+            raise GeneratedProjectError("project input artifact content must be bytes")
         observed = hashlib.sha256(self.content).hexdigest()
         if self.digest and self.digest != observed:
             raise GeneratedProjectError("project input artifact digest changed")
@@ -333,7 +345,9 @@ class GeneratedProjectManifest:
                 str(item.get("purpose", "")),
                 float(item.get("timeout_seconds", 300.0)),
                 str(item.get("command_kind", "execute")),
-                bool(item.get("network_access", False)))
+                bool(item.get("network_access", False)),
+                tuple(int(code) for code in item.get(
+                    "expected_exit_codes", (0,))))
                 for item in commands if isinstance(item, dict)),
             expected_artifacts=tuple(ExpectedProjectArtifact(
                 str(item.get("path", "")), str(item.get("media_type", "")),
@@ -576,8 +590,10 @@ def execute_generated_project(
             "purpose": command.purpose,
             "command_kind": command.command_kind,
             "network_access": command.network_access,
+            "expected_exit_codes": list(command.expected_exit_codes),
+            "expectation_met": result.exit_code in command.expected_exit_codes,
             **result.to_dict()})
-        if not result.ok:
+        if result.exit_code not in command.expected_exit_codes:
             break
 
     artifacts = []
@@ -603,7 +619,7 @@ def execute_generated_project(
         })
     snapshot = operations.snapshot(SnapshotRequest(include_hidden=False))
     deterministic_pass = bool(
-        commands and all(item["ok"] for item in commands)
+        commands and all(item["expectation_met"] for item in commands)
         and all(item["verified"] for item in artifacts))
     return {
         "record_type": "generated_project_execution/v1",

@@ -9,6 +9,20 @@ First public release.
 
 ### Added
 
+- **Artifact-producing `loop-engine solve` command.** Text, task-file, dataset,
+  and repository inputs can now run through the canonical Practitioner,
+  generated-project capability, confined Docker workspace, artifact inspection,
+  and Run History. Results use an honest terminal vocabulary and include exact
+  workspace, artifact, verification, model, tool, and inspection details.
+- **Governed semantic and strict atomic granularity profiles.** Public solve
+  uses one governed assembly Loop per model packet. Strict atomic assembly
+  remains available when logical value-operation history is required.
+- **Optional dependency groups.** The default install supports the solve path
+  without downloading the full ML and GPU stack. `data`, `integrations`, and
+  `all` extras retain the larger adapters.
+- **Product quickstart acceptance.** Four changed tasks create a utility,
+  transform local data, index documents, and reproduce and repair a failing
+  Python package through real Docker execution.
 - **One recursive `Loop` runtime.** Search, advice, model calls, adapters,
   validators and whole solutions all execute inside the same envelope, with
   `deterministic`, `hybrid`, and `non_deterministic` modes configured per loop.
@@ -56,6 +70,12 @@ First public release.
 
 Defects found by running against live models, each now carrying a regression
 test:
+
+- A generic structured-data solve could report success after whitespace
+  normalization even when the requested transform and output artifacts were
+  not produced. Exact deterministic resolvers must now be bound explicitly.
+- The default wheel pulled large benchmark, ML, and GPU dependencies before a
+  new user could run `doctor` or `solve`. Those packages are now optional.
 
 - `advice_function` used the global provider order instead of the providers the
   caller's own `configure()` verified. Configuring only a self-hosted

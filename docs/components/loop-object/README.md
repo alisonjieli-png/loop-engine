@@ -180,10 +180,41 @@ The exact start request also needs a relationship, a compatible
 `LoopRuntimeContext`, and an event log. See the
 [contract index](../../contracts/) for those objects.
 
+## Reactive capability
+
+Every Loop can participate in a reactive series without becoming another
+runtime type. The series, trigger, lease, candidate, evaluation, and portfolio
+are passive records. Every claimed activation still starts one exact `Loop`.
+
+```text
+ReactiveSeriesDefinition
+├── exact LoopDefinitionRef
+├── exact ReactiveLoopProfile identity
+├── input contract
+├── output ports
+├── attempt limit
+└── active-activation limit
+    ↓
+TriggerEnvelope
+    ↓
+finite Loop activation
+    ↓
+CandidateOutput and Run History
+```
+
+The safe default remains one-shot and ephemeral. A durable series explicitly
+enables reactivation, storage, scheduling, liveness, output portfolio, and
+retention policies. Reading the current output portfolio does not wake the
+producer.
+
+See [Reactive Loop activation and output serving](../../architecture/REACTIVE-LOOP-ACTIVATION-AND-OUTPUT-SERVING.md).
+
 ## Current limits
 
 - Typed input and output role names are enforced. Complete value schemas are
   not yet checked at every edge.
 - Some established constructors still use compatibility composition.
+- Existing `LoopDefinition` records do not yet carry an exact reactive profile
+  reference. The current series definition binds it separately.
 - `LoopLedger` remains the internal event-log class name pending a versioned
   migration.

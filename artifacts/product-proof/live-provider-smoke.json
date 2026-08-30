@@ -1,0 +1,33 @@
+{
+ "authorized": true,
+ "created_at": "2026-08-30T00:08:47.842150+00:00",
+ "elapsed_seconds": 0.412008,
+ "failure_code": "rate_limited",
+ "failure_detail_sha256": "6eb50e2cfe5f8404c223956d417dcdb9ad0fdc788d3351bc57afe568d8fb6b1a",
+ "input_tokens": null,
+ "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+ "maximum_output_tokens": 65536,
+ "model": "deepseek-v4-flash:0731",
+ "output_accepted_by_exact_grader": false,
+ "output_sha256": "",
+ "output_tokens": null,
+ "physical_model_call_ceiling": 1,
+ "physical_model_calls": 1,
+ "prompt_sha256": "8a7d8ea8ef34e0ee3642e0612030517c27578dea774a0b1acb4f4708e0ece381",
+ "provider": "ollama_cloud",
+ "provider_integration_proven": false,
+ "provider_responded": false,
+ "record_type": "live_model_verification/v1",
+ "repository_input": {
+  "source_bytes": 2549,
+  "source_path": "pyproject.toml",
+  "source_sha256": "de3732bc83fbb830931609ec26e68bc9892083899a7bb1c5e623a2edf5e6e014"
+ },
+ "route_name": "cloud.default",
+ "secret_policy": "raw prompt, raw output, credentials, and provider error text are not saved",
+ "status": "failed",
+ "timeout_seconds": 300.0,
+ "total_token_ceiling": 70000,
+ "total_tokens": null,
+ "usage_accounting_complete": false
+}

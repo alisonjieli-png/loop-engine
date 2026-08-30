@@ -550,7 +550,17 @@ def run_adaptive_practitioner(
         f"{request.task}\0{time.time_ns()}".encode()).hexdigest()[:24]
     runs_dir = Path(default_runs_dir(request.runs_dir))
     runs_dir.mkdir(parents=True, exist_ok=True)
-    workspace = runs_dir / f"{run_id}-workspace"
+    workspace = (Path(request.workspace_root).expanduser().resolve()
+                 if request.workspace_root else
+                 runs_dir / f"{run_id}-workspace")
+    source_paths = tuple(Path(value).expanduser().resolve()
+                         for value in request.source_refs
+                         if not value.startswith(("http://", "https://")))
+    if any(workspace == path or workspace in path.parents
+           or path in workspace.parents
+           for path in source_paths):
+        raise AdaptivePractitionerError(
+            "workspace must not contain an input source")
     artifact_store = ContextArtifactStore(ContextArtifactStoreSpec(
         str(runs_dir / f"{run_id}-artifacts"), namespace="adaptive"))
     portfolio = dependencies.context_portfolio or load_practitioner_context()
@@ -615,6 +625,7 @@ def run_adaptive_practitioner(
             "task_feedback": [item.to_dict() for item in request.feedback],
             "deterministic_attempt": services.deterministic_attempt.to_dict(),
             "model_calls": services.model_session.calls_used,
+            "model_usage": _safe_model_usage(services),
             "orientations": [item.to_dict()
                              for item in services.orientation_by_version.values()],
             "action_decisions": services.action_history,
@@ -674,6 +685,7 @@ def run_adaptive_practitioner(
         "supervision": services.supervision_findings,
         "recovery_directives": services.recovery_directives,
         "model_calls": services.model_session.calls_used,
+        "model_usage": _safe_model_usage(services),
         "loop_details": _loop_details(ledger.events),
         "run_history": history,
     }
@@ -691,6 +703,17 @@ def run_adaptive_practitioner(
         output, indent=2, default=str, ensure_ascii=False), encoding="utf-8")
     output["result_path"] = str(result_path)
     return output
+
+
+def _safe_model_usage(services: AdaptiveRunServices) -> list[dict]:
+    if services.model_session is None:
+        return []
+    rows = []
+    for result in services.model_session.results:
+        value = result.to_dict()
+        value.pop("text", None)
+        rows.append(value)
+    return rows
 
 def self_test() -> dict:
     """Run focused task-agnostic adaptive Practitioner checks."""

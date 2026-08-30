@@ -1,0 +1,10 @@
+{
+  "name": "loop-engine",
+  "version": "0.1.0",
+  "description": "Run and inspect governed Loop Engine tasks from Claude Code",
+  "author": {"name": "Loop Engine contributors"},
+  "homepage": "https://github.com/alisonjieli-png/loop-engine",
+  "repository": "https://github.com/alisonjieli-png/loop-engine",
+  "license": "MIT",
+  "keywords": ["loop-engine", "tasks", "verification", "run-history"]
+}

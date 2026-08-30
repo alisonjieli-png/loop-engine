@@ -208,13 +208,23 @@ class LoopLedger:
     outputs, modes, spawns, infra calls.  Shared across a loop and its spawned_loops so
     the whole recursive tree has one history."""
     events: list[dict] = field(default_factory=list)
+    id_namespace: str = ""
     _counter: int = 0
     _definition_refs: dict[str, dict[str, str]] = field(
         default_factory=dict, repr=False)
 
+    def __post_init__(self) -> None:
+        if (not isinstance(self.id_namespace, str)
+                or any(character.isspace() for character in self.id_namespace)
+                or len(self.id_namespace) > 192):
+            raise LoopError(
+                "Loop ledger namespace must be bounded text without spaces")
+
     def next_id(self) -> str:
         self._counter += 1
-        return f"loop{self._counter}"
+        local_id = f"loop{self._counter}"
+        return (f"{self.id_namespace}.{local_id}"
+                if self.id_namespace else local_id)
 
     def register_definition(self, loop_id: str,
                             definition_ref: LoopDefinitionRef) -> None:

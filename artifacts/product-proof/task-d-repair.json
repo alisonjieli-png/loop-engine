@@ -1,0 +1,101 @@
+{
+  "record_type": "product_task_evidence/v1",
+  "original_task": "Reproduce the supplied Python package failure, repair the package, rerun its verification, and return the repaired files.",
+  "terminal_code": "COMPLETED_VERIFIED",
+  "summary": "Reproduced failure, executable repair, and passing package.",
+  "run_id": "adaptive-c897a5460bd4ed43aa7551bd",
+  "providers": [
+    "fixture"
+  ],
+  "models": [
+    "fixture-model"
+  ],
+  "loop_count": 87,
+  "model_call_count": 7,
+  "tool_call_count": 6,
+  "workspace": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-d-workspace/attempt-1",
+  "artifacts": [
+    {
+      "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-d-workspace/attempt-1/repaired_package/calc.py",
+      "media_type": "text/x-python",
+      "byte_count": 46,
+      "digest": "63098273a7aaa630762d6f145dfcf9c61c8c9b290c6ebeb2a05fea5854ccb476",
+      "verified": true,
+      "verification_method": "utf8_decode"
+    }
+  ],
+  "verification": {
+    "record_type": "adaptive_verification/v1",
+    "verdict": "accept",
+    "deterministic_checks_passed": true,
+    "notes": "Commands met their exit contracts and artifacts passed inspection.",
+    "remaining_gaps": [],
+    "gap_assessments": [],
+    "advisory_findings": [],
+    "new_requirement_proposals": [],
+    "registered_acceptance_criteria": [
+      {
+        "criterion_ref": "criterion:0",
+        "text": "all declared commands meet their expected exit contracts"
+      },
+      {
+        "criterion_ref": "criterion:1",
+        "text": "every requested artifact exists and opens"
+      }
+    ],
+    "passed": true
+  },
+  "graph_digest": "f7c2d45c35fb7697020eb7245c0834b79b90da5db933b0f95104fb6e80319576",
+  "manifest_digest": "e4dc8159a7b92d98060ae26e02e0ccc1223a0c84439fe05767d27aafca724e08",
+  "run_history": {
+    "run_id": "adaptive-c897a5460bd4ed43aa7551bd",
+    "events": 775,
+    "head_digest": "c5fc19404b829c8de3eda4bb6a2d300972cb732397b251fc51a43ff35713bf61",
+    "chain_intact": true,
+    "broken_at": [],
+    "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-d-runs/adaptive-c897a5460bd4ed43aa7551bd",
+    "raw_history_retained": false,
+    "reproduction_command": "PYTHONPATH=src python examples/22_product_quickstart/run_acceptance.py --output-root <empty-directory>"
+  },
+  "elapsed_seconds": 1.832,
+  "limitations": [],
+  "command_results": [
+    {
+      "purpose": "Reproduce the original failure.",
+      "command_kind": "verify",
+      "expected_exit_codes": [
+        1
+      ],
+      "exit_code": 1,
+      "expectation_met": true,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/workspace/inputs/failing_package/test_calc.py\", line 3, in <module>\n    assert add(2, 3) == 5\nAssertionError\n"
+    },
+    {
+      "purpose": "Apply repair.",
+      "command_kind": "execute",
+      "expected_exit_codes": [
+        0
+      ],
+      "exit_code": 0,
+      "expectation_met": true,
+      "stdout": "repair applied\n",
+      "stderr": ""
+    },
+    {
+      "purpose": "Verify the repaired package.",
+      "command_kind": "verify",
+      "expected_exit_codes": [
+        0
+      ],
+      "exit_code": 0,
+      "expectation_met": true,
+      "stdout": "repair verified\n",
+      "stderr": ""
+    }
+  ],
+  "assurance": {
+    "model_semantics": "offline typed fixture, not live quality proof",
+    "effects": "real Docker execution and real file inspection"
+  }
+}

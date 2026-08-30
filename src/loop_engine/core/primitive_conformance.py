@@ -1,4 +1,4 @@
-"""AST conformance for strict logical Loop primitive enforcement.
+"""AST conformance for strict and governed-semantic primitive profiles.
 
 The repository still contains a measured legacy baseline outside the adaptive
 prompt path. New strict modules must have zero native semantic string or JSON
@@ -17,6 +17,8 @@ STRICT_MODULES = (
     "loop/atomic_primitives.py",
 )
 INTRINSIC_MODULE = "loop/intrinsic_kernel.py"
+GOVERNED_SEMANTIC_NATIVE = {
+    ("core/adaptive_practitioner_prompting.py", "_render_packet_governed")}
 
 
 @dataclass(frozen=True)
@@ -109,7 +111,11 @@ def self_test() -> dict:
     """Enforce the strict path now and preserve the full migration baseline."""
     root = Path(__file__).resolve().parents[1]
     findings = scan_native_semantic_operations(root)
-    strict = [item for item in findings if item["path"] in STRICT_MODULES]
+    governed = [item for item in findings if (
+        item["path"], item["symbol"]) in GOVERNED_SEMANTIC_NATIVE]
+    strict = [item for item in findings if item["path"] in STRICT_MODULES
+              and (item["path"], item["symbol"])
+              not in GOVERNED_SEMANTIC_NATIVE]
     direct_intrinsic = []
     for path in root.rglob("*.py"):
         relative = path.relative_to(root).as_posix()
@@ -127,9 +133,15 @@ def self_test() -> dict:
         "import json\ndef bad(x):\n return json.dumps(x)\n",
     ))
     tests = [{
-        "test": "strict_prompt_and_atomic_modules_have_no_native_bypass",
+        "test": "strict_atomic_symbols_have_no_native_bypass",
         "passed": not strict,
         "detail": str(strict[:10]),
+    }, {
+        "test": "governed_semantic_native_allowance_is_one_exact_function",
+        "passed": bool(governed) and all(
+            (item["path"], item["symbol"])
+            in GOVERNED_SEMANTIC_NATIVE for item in governed),
+        "detail": str(governed[:10]),
     }, {
         "test": "intrinsic_kernel_has_one_exact_call_boundary",
         "passed": not direct_intrinsic,

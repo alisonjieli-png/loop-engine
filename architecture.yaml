@@ -68,6 +68,149 @@ adaptive_recovery:
     proposed_new_requirement_blocks_completion: false
     semantic_step_contract_is_task_acceptance: false
 
+reactive_execution:
+  operational_runtime_type: Loop
+  series_definition: loop_engine.loop.reactive_activation.ReactiveSeriesDefinition
+  reactive_profile: loop_engine.loop.reactive_contracts.ReactiveLoopProfile
+  trigger_contract: loop_engine.loop.reactive_activation.TriggerEnvelope
+  activation_record: loop_engine.loop.reactive_activation.ActivationRecord
+  lease_contract: loop_engine.loop.reactive_activation.WorkLease
+  scheduler_mechanic: loop_engine.core.reactive_scheduler.SQLiteReactiveScheduler
+  canonical_executor: loop_engine.core.reactive_worker.CanonicalReactiveExecutor
+  asynchronous_worker: loop_engine.core.reactive_worker.AsyncReactiveWorker
+  information_identity: loop_engine.loop.atomic_primitives.LoopValueRef
+  information_resolver: loop_engine.core.information_access.InformationResolver
+  candidate_output: loop_engine.loop.reactive_outputs.CandidateOutput
+  candidate_evaluation: loop_engine.loop.reactive_outputs.CandidateEvaluation
+  portfolio_snapshot: loop_engine.loop.reactive_outputs.OutputPortfolioSnapshot
+  output_store: loop_engine.core.reactive_output_store.SQLiteReactiveOutputStore
+  invariants:
+    - series_is_passive_and_never_a_graph_vertex
+    - every_activation_is_finite_budgeted_and_terminal
+    - every_claimed_activation_starts_the_exact_loop_definition
+    - process_local_information_never_claims_restart_durability
+    - reference_possession_never_grants_access
+    - rank_belongs_to_one_policy_version_not_the_candidate
+    - portfolio_reads_never_reactivate_the_producer
+    - stale_fencing_tokens_cannot_commit
+    - unchanged_input_does_not_create_duplicate_work
+    - candidate_producer_cannot_be_sole_verifier
+    - runtime_transitions_project_through_run_history
+  persistence:
+    transactional_store: sqlite_wal
+    delivery: at_least_once_with_idempotency
+    activation_state: append_only_revisions
+    output_state: append_only_candidates_evaluations_and_portfolios
+    live_coroutine_serialization: prohibited
+  installed_execution_placements:
+    - inline
+    - async_io
+    - thread
+  unproven_placements:
+    - process
+    - local_container
+    - remote_worker
+    - kubernetes_job
+
+plugin_distribution:
+  runtime_type: Loop
+  bundle_manifest: loop_engine.core.plugin_bundles.PluginBundleManifest
+  resolved_snapshot: loop_engine.core.plugin_bundles.ResolvedPluginSnapshot
+  skill_authority: loop_engine.core.skill_registry.SkillAdmissionRecord
+  resolution_role_profile: intelligence.code.resolve
+  override_policy: exact_content_deduplication_or_refusal
+  semantic_fingerprint_includes:
+    - complete_plugin_manifest
+    - complete_skill_file_digests
+    - exact_skill_admission_digests
+  invariants:
+    - plugin_bundle_is_passive
+    - plugin_bundle_grants_no_authority
+    - plugin_skill_must_be_independently_admitted
+    - changed_project_bundle_cannot_override_installed_content_silently
+    - changed_skill_body_invalidates_resolution
+    - text_and_json_views_share_one_snapshot
+
+planning_and_execution:
+  operational_runtime_type: Loop
+  graph_authority: loop_engine.code_nodes.solution_graph.LoopGraphDefinition
+  plan_definition: loop_engine.core.development_planning.PlanDefinition
+  task_slice: loop_engine.core.development_planning.TaskSliceDefinition
+  graph_compiler: loop_engine.core.development_planning.compile_plan_to_loop_graph
+  wave_executor: loop_engine.core.development_execution.execute_development_plan
+  verification_contract: loop_engine.core.development_planning.RequirementVerificationContract
+  planning_authority: loop_engine.core.development_planning.PlanningAuthority
+  clarification_disposition: loop_engine.core.development_planning.ClarificationDisposition
+  assignment_envelope: loop_engine.core.development_planning.WorkerAssignmentEnvelope
+  retry_policy: loop_engine.core.development_planning.RetryPolicy
+  resume_reconciliation: loop_engine.core.development_governance.ResumeReconciliationResult
+  invariants:
+    - planning_is_practitioner_loop_work
+    - plans_and_task_slices_are_passive
+    - accepted_tasks_compile_to_loop_graph_definition
+    - every_executable_attempt_runs_as_a_solution_loop
+    - safe_ready_tasks_may_overlap_in_one_dependency_wave
+    - criteria_bind_expected_verification_evidence_before_action
+    - children_receive_resolved_exact_snapshots
+    - retries_require_an_executable_delta
+    - blocked_is_terminal_for_the_current_activation
+    - run_history_remains_authoritative
+
+lifecycle_extensions:
+  operational_runtime_type: Loop
+  procedure_contract: loop_engine.core.lifecycle_extensions.ProcedureLifecycleDefinition
+  extension_contract: loop_engine.core.lifecycle_extensions.LifecycleExtensionDefinition
+  resolver: loop_engine.core.lifecycle_extensions.resolve_extensions
+  resolved_snapshot: loop_engine.core.lifecycle_extensions.ResolvedExtensionSetSnapshot
+  execution_fingerprint: loop_engine.core.lifecycle_extensions.ExecutionContextFingerprint
+  invariants:
+    - procedure_declares_supported_events
+    - extension_registration_is_passive
+    - extension_execution_uses_an_exact_loop_definition
+    - resolution_order_is_deterministic
+    - empty_and_failed_are_distinct
+    - material_authority_drift_requires_replanning
+    - no_fixed_global_hook_list
+
+software_development_skill:
+  tdd_skill: loop_engine/skills/software-tdd-red-green-refactor/SKILL.md
+  admission_authority: loop_engine.core.skill_registry.SkillAdmissionRecord
+  scope: optional_software_only
+  universal_rule: evidence_first_execution
+
+development_governance:
+  publication_authorization: loop_engine.core.development_governance.PublicationAuthorization
+  contribution_isolation: loop_engine.core.development_governance.ContributionIsolationResult
+  self_hosting_profile: loop_engine.core.development_governance.SelfHostingProfile
+  legacy_authority: loop_engine.core.development_governance.LegacyAuthorityState
+  invariants:
+    - commit_push_pull_request_publish_and_deploy_are_distinct_effects
+    - requester_cannot_approve_its_own_publication
+    - projection_state_is_reconciled_against_artifact_reality
+    - repository_config_is_not_a_generated_user_template
+    - legacy_and_current_authorities_do_not_merge_silently
+
+product_solve:
+  command: loop-engine solve
+  request: loop_engine.code_nodes.solve_runtime.SolveRequest
+  outcome: loop_engine.code_nodes.solve_runtime.SolveOutcome
+  terminal_vocabulary: loop_engine.code_nodes.solve_runtime.SolveTerminalCode
+  practitioner: loop_engine.core.adaptive_practitioner.run_adaptive_practitioner
+  generated_project: loop_engine.core.generated_project.execute_generated_project
+  graph_authority: loop_engine.code_nodes.solution_graph.LoopGraphDefinition
+  default_granularity: governed_semantic
+  optional_granularity: strict_atomic
+  invariants:
+    - original_task_is_immutable
+    - task_build_does_not_claim_execution
+    - completion_requires_verified_artifact_or_state_change
+    - local_source_materialization_requires_explicit_model_authority
+    - workspace_and_command_effects_require_exact_approval
+    - generated_commands_run_in_a_confined_pinned_docker_image
+    - unsupported_work_returns_a_typed_blocker
+    - every_run_preserves_run_history
+    - external_provider_support_requires_a_separate_live_result
+
 independent_qualification:
   starter: devtools/qualification_lab
   imports_loop_engine: false

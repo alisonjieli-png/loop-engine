@@ -30,15 +30,35 @@ reported as working only when the provider answers.
 
 This check may consume tokens. Run it only when provider calls are authorized.
 
+## Preferred first setup
+
+```bash
+export OLLAMA_API_KEY="your-key"
+loop-engine doctor
+loop-engine models probe ollama_cloud \
+  --model-route cloud.default \
+  --model-id deepseek-v4-flash:0731 \
+  --authorize-model-calls \
+  --max-model-calls 1 \
+  --max-total-tokens 70000
+```
+
+`doctor` validates configuration without a provider call. `models probe`
+performs one real call. A solve should not continue when the probe fails.
+
 ## CLI setup
 
 For a local test, pass the key value directly:
 
 ```bash
-loop-engine task build \
+loop-engine solve \
   --ollama-api-key 'YOUR_OLLAMA_API_KEY' \
   --interaction-mode autonomous \
-  --file flagship-modeling-task.txt
+  --file task.txt \
+  --workspace ./workspace \
+  --runs-dir ./runs \
+  --max-model-calls 16 \
+  --max-total-tokens 1000000
 ```
 
 Use `--openrouter-api-key VALUE` or `--opencode-go-api-key VALUE` for the other
@@ -55,10 +75,14 @@ export OPENROUTER_API_KEY="your-key"   # OpenRouter
 # or
 export OPENCODE_GO_API_KEY="your-key"  # OpenCode Go task review
 
-loop-engine task build \
+loop-engine solve \
   --ollama-api-key \
   --interaction-mode autonomous \
-  --file flagship-modeling-task.txt
+  --file task.txt \
+  --workspace ./workspace \
+  --runs-dir ./runs \
+  --max-model-calls 16 \
+  --max-total-tokens 1000000
 ```
 
 If the environment variable is absent, omitting `VALUE` opens a hidden prompt.

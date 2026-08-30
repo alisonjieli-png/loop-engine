@@ -293,11 +293,11 @@ def run_checks() -> dict:
               hybrid["deterministic_attempt"]["recommended_escalation"])
         first_snapshot = hybrid["context_snapshots"][0]
         roles = {item.get("role") for item in hybrid["loop_details"]}
-        check("work_packet_selection_and_assembly_are_governed_loops",
+        check("governed_semantic_prompt_assembly_uses_one_loop",
               bool(first_snapshot.get("packet_artifact_ref"))
               and bool(first_snapshot.get("intelligence_loop_id"))
               and bool(first_snapshot.get("assembly_loop_id"))
-              and len(first_snapshot.get("primitive_loop_ids", ())) >= 4
+              and not first_snapshot.get("primitive_loop_ids")
               and first_snapshot["prompt_assembly"]["ordered_block_refs"][0]
                   == "authority_and_policy"
               and {"practitioner", "intelligence"} <= roles

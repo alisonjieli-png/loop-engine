@@ -1,0 +1,98 @@
+{
+  "record_type": "product_task_evidence/v1",
+  "original_task": "Normalize product names in the supplied CSV, mark rows with quantity five or lower as low stock, and write a cleaned CSV plus a summary.",
+  "terminal_code": "COMPLETED_VERIFIED",
+  "summary": "Cleaned inventory and low-stock summary.",
+  "run_id": "adaptive-1ca599dffcadd25ee7cd777b",
+  "providers": [
+    "fixture"
+  ],
+  "models": [
+    "fixture-model"
+  ],
+  "loop_count": 93,
+  "model_call_count": 8,
+  "tool_call_count": 5,
+  "workspace": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-b-workspace/attempt-1",
+  "artifacts": [
+    {
+      "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-b-workspace/attempt-1/cleaned.csv",
+      "media_type": "text/csv",
+      "byte_count": 104,
+      "digest": "58a572b63fe7b98708a2bc27a443687f9068cffced1b34efda5d94e5545d8956",
+      "verified": true,
+      "verification_method": "utf8_decode"
+    },
+    {
+      "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-b-workspace/attempt-1/summary.md",
+      "media_type": "text/markdown",
+      "byte_count": 43,
+      "digest": "51cbc931cc18e9863446b3299aee94e84c0fab6747febe48c4c49c96ce17e7e2",
+      "verified": true,
+      "verification_method": "utf8_decode"
+    }
+  ],
+  "verification": {
+    "record_type": "adaptive_verification/v1",
+    "verdict": "accept",
+    "deterministic_checks_passed": true,
+    "notes": "Commands met their exit contracts and artifacts passed inspection.",
+    "remaining_gaps": [],
+    "gap_assessments": [],
+    "advisory_findings": [],
+    "new_requirement_proposals": [],
+    "registered_acceptance_criteria": [
+      {
+        "criterion_ref": "criterion:0",
+        "text": "all declared commands meet their expected exit contracts"
+      },
+      {
+        "criterion_ref": "criterion:1",
+        "text": "every requested artifact exists and opens"
+      }
+    ],
+    "passed": true
+  },
+  "graph_digest": "f7c2d45c35fb7697020eb7245c0834b79b90da5db933b0f95104fb6e80319576",
+  "manifest_digest": "96f2206b55e4ab805a5b8700873ded0fcff338148880a7656495b1c89896a063",
+  "run_history": {
+    "run_id": "adaptive-1ca599dffcadd25ee7cd777b",
+    "events": 826,
+    "head_digest": "d409d34c4b61e21ed11a548f3bc1d8bc34ebd85b3c033591afc2ece947ca1df6",
+    "chain_intact": true,
+    "broken_at": [],
+    "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-b-runs/adaptive-1ca599dffcadd25ee7cd777b",
+    "raw_history_retained": false,
+    "reproduction_command": "PYTHONPATH=src python examples/22_product_quickstart/run_acceptance.py --output-root <empty-directory>"
+  },
+  "elapsed_seconds": 0.889,
+  "limitations": [],
+  "command_results": [
+    {
+      "purpose": "Create outputs.",
+      "command_kind": "execute",
+      "expected_exit_codes": [
+        0
+      ],
+      "exit_code": 0,
+      "expectation_met": true,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "purpose": "Verify outputs.",
+      "command_kind": "verify",
+      "expected_exit_codes": [
+        0
+      ],
+      "exit_code": 0,
+      "expectation_met": true,
+      "stdout": "inventory verified\n",
+      "stderr": ""
+    }
+  ],
+  "assurance": {
+    "model_semantics": "offline typed fixture, not live quality proof",
+    "effects": "real Docker execution and real file inspection"
+  }
+}

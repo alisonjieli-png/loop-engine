@@ -319,8 +319,10 @@ def self_test() -> dict:
     lg5.record(loop_id="l1", event="run_step", step="act", mode="deterministic")
     lg5.record(loop_id="l1", event="terminal", reason="done")
     ev = live_events("run-9", lg5.events)
+    from .event_vocabulary import EVENT_FAMILIES
     check("the_browser_stream_speaks_the_canonical_vocabulary",
-          ev["count"] == 3 and ev["vocabulary_size"] == 59
+          ev["count"] == 3
+          and ev["vocabulary_size"] == len(EVENT_FAMILIES)
           and ev["families_present"] == ["loop.completed", "loop.initialized",
                                          "loop.iteration.completed"]
           and not [f for f in ev["families_present"] if f.startswith("x.")],

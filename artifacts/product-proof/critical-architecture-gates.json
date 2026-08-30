@@ -1,0 +1,31 @@
+{
+  "record_type": "critical_product_architecture_gates/v1",
+  "checks": {
+    "one_canonical_loop_runtime": true,
+    "one_graph_authority": true,
+    "original_task_preserved": true,
+    "no_acceptance_task_branch_in_generic_source": true,
+    "model_outputs_typed_and_validated": true,
+    "effects_produce_tool_evidence": true,
+    "success_requires_verified_artifacts": true,
+    "run_history_chain_intact": true,
+    "one_starting_loop_terminal_event": true,
+    "bounded_model_calls": true,
+    "executable_repair_delta": true,
+    "external_provider_success_claimed": false
+  },
+  "blocking_failures": [],
+  "external_blocker": {
+    "provider": "ollama_cloud",
+    "failure_code": "rate_limited",
+    "evidence_ref": "artifacts/product-proof/live-provider-smoke.json"
+  },
+  "task_literal_findings": [],
+  "starting_loop_terminal_counts": [
+    1,
+    1,
+    1,
+    1
+  ],
+  "all_non_live_gates_passed": true
+}

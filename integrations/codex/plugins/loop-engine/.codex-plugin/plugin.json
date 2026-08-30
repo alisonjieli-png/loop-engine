@@ -1,0 +1,18 @@
+{
+  "name": "loop-engine",
+  "version": "0.1.0",
+  "description": "Run and inspect governed Loop Engine tasks from Codex",
+  "author": {
+    "name": "Loop Engine contributors"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Loop Engine",
+    "shortDescription": "Use Loop Engine in Codex.",
+    "longDescription": "A thin Codex adapter for setup, task execution, and Run History inspection through the installed Loop Engine CLI.",
+    "developerName": "Loop Engine contributors",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Use Loop Engine to run or inspect this task without bypassing its permissions, verification, or Run History."
+  }
+}

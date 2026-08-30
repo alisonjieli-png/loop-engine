@@ -1,0 +1,190 @@
+{
+  "record_type": "readme_quickstart_evidence/v1",
+  "text_task": {
+    "record_type": "product_task_evidence/v1",
+    "original_task": "Create a Python command-line program that reads a JSON file of expenses, totals spending by category, writes a Markdown report, and includes runnable verification.",
+    "terminal_code": "COMPLETED_VERIFIED",
+    "summary": "Expense report command and verified Markdown output.",
+    "run_id": "adaptive-428fbdb98f1f6691d8210e1c",
+    "providers": [
+      "acceptance"
+    ],
+    "models": [
+      "fixture-model"
+    ],
+    "loop_count": 85,
+    "model_call_count": 8,
+    "tool_call_count": 3,
+    "workspace": "/home/username/loop-engine/artifacts/product-proof/cli/workspace/attempt-1",
+    "artifacts": [
+      {
+        "path": "/home/username/loop-engine/artifacts/product-proof/cli/workspace/attempt-1/expense_report.py",
+        "media_type": "text/x-python",
+        "byte_count": 613,
+        "digest": "ae45c3d1a6a3d80c169ce7bb77c7da5d261a5a79c0001a4426f60732680c4f8e",
+        "verified": true,
+        "verification_method": "utf8_decode"
+      },
+      {
+        "path": "/home/username/loop-engine/artifacts/product-proof/cli/workspace/attempt-1/report.md",
+        "media_type": "text/markdown",
+        "byte_count": 47,
+        "digest": "14ac08b91082abb4af6e56290ec6b75c691fa8502b5f3edc2a53b6f8abb4ccb4",
+        "verified": true,
+        "verification_method": "utf8_decode"
+      }
+    ],
+    "verification": {
+      "record_type": "adaptive_verification/v1",
+      "verdict": "accept",
+      "deterministic_checks_passed": true,
+      "notes": "Commands met their exit contracts and artifacts passed inspection.",
+      "remaining_gaps": [],
+      "gap_assessments": [],
+      "advisory_findings": [],
+      "new_requirement_proposals": [],
+      "registered_acceptance_criteria": [
+        {
+          "criterion_ref": "criterion:0",
+          "text": "all declared commands meet their expected exit contracts"
+        },
+        {
+          "criterion_ref": "criterion:1",
+          "text": "every requested artifact exists and opens"
+        }
+      ],
+      "passed": true
+    },
+    "graph_digest": "f7c2d45c35fb7697020eb7245c0834b79b90da5db933b0f95104fb6e80319576",
+    "manifest_digest": "0792ee8ffdfc2fa94d3ca5ecd559f7ec5d9b90a4ab35b7c4f48a4e31596651f5",
+    "run_history": {
+      "run_id": "adaptive-428fbdb98f1f6691d8210e1c",
+      "events": 758,
+      "head_digest": "82737b9dad523e5588b0bedf1fd76074d44de1c6fb33415de854830c91eb8bf1",
+      "chain_intact": true,
+      "broken_at": [],
+      "path": "/home/username/loop-engine/artifacts/product-proof/cli/runs/adaptive-428fbdb98f1f6691d8210e1c",
+      "raw_history_retained": true
+    },
+    "elapsed_seconds": 1.076,
+    "limitations": [],
+    "command_results": [
+      {
+        "purpose": "Run end-to-end verification.",
+        "command_kind": "verify",
+        "expected_exit_codes": [
+          0
+        ],
+        "exit_code": 0,
+        "expectation_met": true,
+        "stdout": "expense report verified\n",
+        "stderr": ""
+      }
+    ],
+    "assurance": {}
+  },
+  "file_task": {
+    "record_type": "product_task_evidence/v1",
+    "original_task": "Create a Python command-line program that reads a JSON file of expenses, totals spending by category, writes a Markdown report, and includes runnable verification.\n",
+    "terminal_code": "COMPLETED_VERIFIED",
+    "summary": "Expense report command and verified Markdown output.",
+    "run_id": "adaptive-22637249950dbd3ff9a85512",
+    "providers": [
+      "acceptance"
+    ],
+    "models": [
+      "fixture-model"
+    ],
+    "loop_count": 85,
+    "model_call_count": 8,
+    "tool_call_count": 3,
+    "workspace": "/home/username/loop-engine/artifacts/product-proof/cli/workspace-from-file/attempt-1",
+    "artifacts": [
+      {
+        "path": "/home/username/loop-engine/artifacts/product-proof/cli/workspace-from-file/attempt-1/expense_report.py",
+        "media_type": "text/x-python",
+        "byte_count": 613,
+        "digest": "ae45c3d1a6a3d80c169ce7bb77c7da5d261a5a79c0001a4426f60732680c4f8e",
+        "verified": true,
+        "verification_method": "utf8_decode"
+      },
+      {
+        "path": "/home/username/loop-engine/artifacts/product-proof/cli/workspace-from-file/attempt-1/report.md",
+        "media_type": "text/markdown",
+        "byte_count": 47,
+        "digest": "14ac08b91082abb4af6e56290ec6b75c691fa8502b5f3edc2a53b6f8abb4ccb4",
+        "verified": true,
+        "verification_method": "utf8_decode"
+      }
+    ],
+    "verification": {
+      "record_type": "adaptive_verification/v1",
+      "verdict": "accept",
+      "deterministic_checks_passed": true,
+      "notes": "Commands met their exit contracts and artifacts passed inspection.",
+      "remaining_gaps": [],
+      "gap_assessments": [],
+      "advisory_findings": [],
+      "new_requirement_proposals": [],
+      "registered_acceptance_criteria": [
+        {
+          "criterion_ref": "criterion:0",
+          "text": "all declared commands meet their expected exit contracts"
+        },
+        {
+          "criterion_ref": "criterion:1",
+          "text": "every requested artifact exists and opens"
+        }
+      ],
+      "passed": true
+    },
+    "graph_digest": "f7c2d45c35fb7697020eb7245c0834b79b90da5db933b0f95104fb6e80319576",
+    "manifest_digest": "0792ee8ffdfc2fa94d3ca5ecd559f7ec5d9b90a4ab35b7c4f48a4e31596651f5",
+    "run_history": {
+      "run_id": "adaptive-22637249950dbd3ff9a85512",
+      "events": 758,
+      "head_digest": "c3f55c3501757f5e0c645829ab54033ac3e76a748fcfe17b1072fd27dddfd425",
+      "chain_intact": true,
+      "broken_at": [],
+      "path": "/home/username/loop-engine/artifacts/product-proof/cli/runs-from-file/adaptive-22637249950dbd3ff9a85512",
+      "raw_history_retained": false,
+      "reproduction_command": "PYTHONPATH=src python examples/22_product_quickstart/run_cli_acceptance.py --output-root <empty-directory>"
+    },
+    "elapsed_seconds": 0.976,
+    "limitations": [],
+    "command_results": [
+      {
+        "purpose": "Run end-to-end verification.",
+        "command_kind": "verify",
+        "expected_exit_codes": [
+          0
+        ],
+        "exit_code": 0,
+        "expectation_met": true,
+        "stdout": "expense report verified\n",
+        "stderr": ""
+      }
+    ],
+    "assurance": {}
+  },
+  "external_provider_proven": false,
+  "limitations": [
+    "CLI semantics used a local HTTP contract fixture.",
+    "The authorized Ollama Cloud smoke was rate limited."
+  ],
+  "non_secret_checks": {
+    "readme_fragments_present": true,
+    "cli_help_runs": true,
+    "doctor_runs_without_provider_calls": true,
+    "no_key_solve_returns_capability_gap": true,
+    "no_key_run_history_chain_intact": true,
+    "pinned_docker_image_present": true,
+    "markdown_lint_passed": true,
+    "local_links_resolve": true
+  },
+  "clean_install_ref": "artifacts/product-proof/clean-install.json",
+  "live_provider_attempts": [
+    "artifacts/product-proof/live-provider-smoke.json",
+    "artifacts/product-proof/live-provider-smoke-retry.json"
+  ]
+}

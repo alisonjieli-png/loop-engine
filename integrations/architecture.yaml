@@ -1,0 +1,18 @@
+record_type: loop_engine_integrations/v1
+runtime_authority: loop_engine.loop.recursive_loop.Loop
+allowed_contents:
+  - plugin manifests
+  - marketplace metadata
+  - thin skills
+  - deterministic validation scripts
+forbidden_contents:
+  - alternate runtime
+  - alternate practitioner
+  - alternate scheduler
+  - provider credentials
+  - permission grants
+  - copied Run History
+adapters:
+  - claude-code
+  - codex
+

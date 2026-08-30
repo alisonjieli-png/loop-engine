@@ -107,6 +107,8 @@ class LoopValueRef:
 
     def __post_init__(self) -> None:
         if (len(self.content_digest) != 64
+                or any(character not in "0123456789abcdef"
+                       for character in self.content_digest)
                 or any(not item.strip() for item in (
                     self.value_contract_ref, self.semantic_role,
                     self.producer_loop_id, self.producer_definition_ref))):
@@ -120,6 +122,17 @@ class LoopValueRef:
             "producer_loop_id": self.producer_loop_id,
             "producer_definition_ref": self.producer_definition_ref,
         }
+
+    @classmethod
+    def from_dict(cls, value: dict) -> "LoopValueRef":
+        """Rebuild one exact body-free value reference."""
+        expected = {
+            "content_digest", "value_contract_ref", "semantic_role",
+            "producer_loop_id", "producer_definition_ref",
+        }
+        if not isinstance(value, dict) or set(value) != expected:
+            raise AtomicPrimitiveError("LoopValueRef has an invalid shape")
+        return cls(**value)
 
 
 @dataclass(frozen=True)

@@ -89,7 +89,6 @@ AMBIGUITY_STATES = (
     "AUTHORITY_REQUIRED", "BLOCKED")
 class AdaptivePractitionerError(ValueError):
     """The adaptive Practitioner could not satisfy a typed runtime contract."""
-
 @dataclass(frozen=True)
 class DeterministicAttemptTrace:
     """Complete exact-first attempt preserved for hybrid escalation."""
@@ -139,7 +138,6 @@ class DeterministicAttemptTrace:
             "diagnostics": list(self.diagnostics),
             "recommended_escalation": self.recommended_escalation,
         }
-
 @dataclass(frozen=True)
 class AmbiguityDisposition:
     """One unknown or choice classified without silently becoming false."""
@@ -159,7 +157,6 @@ class AmbiguityDisposition:
     def to_dict(self) -> dict:
         return {"subject": self.subject, "state": self.state,
                 "reason": self.reason}
-
 @dataclass(frozen=True)
 class TaskOrientationResult:
     """Complete typed first semantic interpretation of the preserved task."""
@@ -379,6 +376,9 @@ class AdaptivePractitionerRequest:
     source_kind: str = "text"
     source_refs: tuple[str, ...] = ()
     feedback: tuple[TaskFeedback, ...] = ()
+    workspace_root: str = ""
+    allow_source_materialization_to_model: bool = False
+    granularity_profile: str = "governed_semantic"
 
     def __post_init__(self) -> None:
         if not self.task.strip():
@@ -394,13 +394,18 @@ class AdaptivePractitionerRequest:
         if any(not isinstance(item, str) or not item.strip() for item in refs):
             raise AdaptivePractitionerError("source refs must be non-empty text")
         object.__setattr__(self, "source_refs", refs)
+        if not isinstance(self.workspace_root, str):
+            raise AdaptivePractitionerError("workspace_root must be text")
+        if self.granularity_profile not in (
+                "governed_semantic", "strict_atomic"):
+            raise AdaptivePractitionerError(
+                "granularity_profile must be governed_semantic or strict_atomic")
         feedback = tuple(self.feedback)
         if (any(not isinstance(item, TaskFeedback) for item in feedback)
                 or len({item.slot_ref for item in feedback}) != len(feedback)):
             raise AdaptivePractitionerError(
                 "feedback must use unique typed TaskFeedback slots")
         object.__setattr__(self, "feedback", feedback)
-
 @dataclass(frozen=True)
 class AdaptivePractitionerDependencies:
     """Model authority and optional exact deterministic resolvers."""
@@ -426,8 +431,7 @@ class AdaptivePractitionerDependencies:
         if any(not callable(getattr(item, "supports", None))
                or not callable(getattr(item, "execute", None))
                for item in self.deterministic_resolvers):
-            raise AdaptivePractitionerError(
-                "deterministic resolvers must implement supports and execute")
+            raise AdaptivePractitionerError("deterministic resolvers must implement supports and execute")
         if self.context_portfolio is not None and not isinstance(
                 self.context_portfolio, PractitionerContextPortfolio):
             raise AdaptivePractitionerError(
@@ -439,7 +443,6 @@ class AdaptivePractitionerDependencies:
                 "adaptive capability executors must be callable")
         if self.progress is not None and not callable(self.progress):
             raise AdaptivePractitionerError("progress must be callable")
-
 @dataclass(frozen=True)
 class ModelStepRequest:
     """One question-portfolio step and exact safe problem state."""
@@ -734,7 +737,8 @@ class AdaptiveRunServices:
             assembled = assemble_work_packet(
                 AdaptivePromptAssemblyRequest(
                     packet, profile.profile_id, profile.layout_policy,
-                    format_repair=format_attempt == 2), owner)
+                    format_repair=format_attempt == 2,
+                    granularity_profile=self.request.granularity_profile), owner)
             snapshot = assembled.snapshot.to_dict()
             self.context_snapshots.append({
                 "step": request.step_id, "objective": request.objective,

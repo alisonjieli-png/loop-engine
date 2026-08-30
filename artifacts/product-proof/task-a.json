@@ -1,0 +1,87 @@
+{
+  "record_type": "product_task_evidence/v1",
+  "original_task": "Create a Python command-line program that reads a JSON file of expenses, totals spending by category, writes a Markdown report, and includes runnable verification.",
+  "terminal_code": "COMPLETED_VERIFIED",
+  "summary": "Expense report command and verified Markdown output.",
+  "run_id": "adaptive-7c0f77fa44a756a7af99d33b",
+  "providers": [
+    "fixture"
+  ],
+  "models": [
+    "fixture-model"
+  ],
+  "loop_count": 85,
+  "model_call_count": 8,
+  "tool_call_count": 3,
+  "workspace": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-a-workspace/attempt-1",
+  "artifacts": [
+    {
+      "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-a-workspace/attempt-1/expense_report.py",
+      "media_type": "text/x-python",
+      "byte_count": 613,
+      "digest": "ae45c3d1a6a3d80c169ce7bb77c7da5d261a5a79c0001a4426f60732680c4f8e",
+      "verified": true,
+      "verification_method": "utf8_decode"
+    },
+    {
+      "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-a-workspace/attempt-1/report.md",
+      "media_type": "text/markdown",
+      "byte_count": 47,
+      "digest": "14ac08b91082abb4af6e56290ec6b75c691fa8502b5f3edc2a53b6f8abb4ccb4",
+      "verified": true,
+      "verification_method": "utf8_decode"
+    }
+  ],
+  "verification": {
+    "record_type": "adaptive_verification/v1",
+    "verdict": "accept",
+    "deterministic_checks_passed": true,
+    "notes": "Commands met their exit contracts and artifacts passed inspection.",
+    "remaining_gaps": [],
+    "gap_assessments": [],
+    "advisory_findings": [],
+    "new_requirement_proposals": [],
+    "registered_acceptance_criteria": [
+      {
+        "criterion_ref": "criterion:0",
+        "text": "all declared commands meet their expected exit contracts"
+      },
+      {
+        "criterion_ref": "criterion:1",
+        "text": "every requested artifact exists and opens"
+      }
+    ],
+    "passed": true
+  },
+  "graph_digest": "f7c2d45c35fb7697020eb7245c0834b79b90da5db933b0f95104fb6e80319576",
+  "manifest_digest": "0792ee8ffdfc2fa94d3ca5ecd559f7ec5d9b90a4ab35b7c4f48a4e31596651f5",
+  "run_history": {
+    "run_id": "adaptive-7c0f77fa44a756a7af99d33b",
+    "events": 758,
+    "head_digest": "f404d4bbedc821dace92a5a2e88fdce43443a95370be6918db906390994aed2d",
+    "chain_intact": true,
+    "broken_at": [],
+    "path": "/home/username/loop-engine/artifacts/product-proof/acceptance/task-a-runs/adaptive-7c0f77fa44a756a7af99d33b",
+    "raw_history_retained": false,
+    "reproduction_command": "PYTHONPATH=src python examples/22_product_quickstart/run_acceptance.py --output-root <empty-directory>"
+  },
+  "elapsed_seconds": 0.714,
+  "limitations": [],
+  "command_results": [
+    {
+      "purpose": "Run end-to-end verification.",
+      "command_kind": "verify",
+      "expected_exit_codes": [
+        0
+      ],
+      "exit_code": 0,
+      "expectation_met": true,
+      "stdout": "expense report verified\n",
+      "stderr": ""
+    }
+  ],
+  "assurance": {
+    "model_semantics": "offline typed fixture, not live quality proof",
+    "effects": "real Docker execution and real file inspection"
+  }
+}

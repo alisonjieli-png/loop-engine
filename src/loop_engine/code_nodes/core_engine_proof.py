@@ -13,7 +13,8 @@ from pathlib import Path
 from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
 from ..loop.recursive_loop import Loop, LoopConfig, LoopLedger, StepOutcome
 from ..templates.intake import TaskIntakeRequest, intake_task
-from .solve_runtime import SolveRequest, solve_task
+from .solve_runtime import (
+    SolveRequest, StructuredNormalizationResolver, solve_task)
 from .solution_canvas import SolutionLoopSpec, SolutionSpec, run_solution
 from .solution_compiler import compile_solution, run_compiled
 from .solution_graph import LoopGraphDefinition
@@ -208,7 +209,8 @@ def solve_proof(root: str) -> CoreProofResult:
     outcome = solve_task(SolveRequest(
         intake_task(TaskIntakeRequest(
             dataset=str(data), goal="validate and normalize this record")),
-        runs_dir=root))
+        runs_dir=root,
+        deterministic_resolvers=(StructuredNormalizationResolver(data),)))
     passed = (outcome.solved and outcome.result["verified"]
               and outcome.run_history["chain_intact"])
     return CoreProofResult("deterministic_solve", passed, outcome.to_dict())

@@ -1,0 +1,32 @@
+version: 1
+models:
+  default_thinking_power: medium
+  allow_local_counted_generation: true
+  providers:
+  - id: acceptance
+    kind: custom
+    endpoint: http://127.0.0.1:41427/v1
+    model: fixture-model
+    wire: openai
+    locality: local
+    credential_env: ''
+    counts_as_evidence: false
+    maximum_output_tokens: 4096
+    maximum_output_source: local acceptance fixture contract
+    purposes:
+    - counted_generation
+    - decide_label
+  tiers:
+    medium:
+      routes:
+      - custom.acceptance
+      timeout_seconds: 30
+      max_attempts: 1
+  escalation:
+    enabled: false
+operating:
+  access_mode: offline
+  construction_and_execution_mode: sandbox_generate
+history:
+  runs_dir: /home/username/loop-engine/artifacts/product-proof/cli/runs
+  save_run_history: true

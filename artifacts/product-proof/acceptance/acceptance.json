@@ -1,0 +1,14 @@
+{
+  "record_type": "product_acceptance/v1",
+  "tasks": 4,
+  "completed_verified": 4,
+  "unique_graph_digests": 1,
+  "total_model_calls": 31,
+  "total_tool_calls": 20,
+  "repair_reproduced_failure": true,
+  "repair_verified": true,
+  "limitations": [
+    "Model semantics use a typed offline fixture in this acceptance run.",
+    "A separate authorized live-provider solve is required."
+  ]
+}

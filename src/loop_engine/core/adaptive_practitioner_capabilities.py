@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import mimetypes
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -109,6 +110,13 @@ def _project_manifest(
             "web_evidence": services.web_results[-6:],
             "available_input_artifacts": [
                 item.to_dict() for item in input_artifacts],
+            "available_input_text": ([{
+                "path": item.path,
+                "media_type": item.media_type,
+                "content": item.content.decode("utf-8", errors="replace"),
+            } for item in input_artifacts]
+                if services.request.allow_source_materialization_to_model
+                else []),
             "previous_project_attempts": [{
                 "manifest_digest": item.get("manifest_digest"),
                 "deterministic_checks_passed": item.get(
@@ -160,7 +168,8 @@ def _project_manifest(
                 "argv": ["python", "file.py"], "purpose": "string",
                 "timeout_seconds": 300,
                 "command_kind": "setup|execute|verify",
-                "network_access": False}],
+                "network_access": False,
+                "expected_exit_codes": [0]}],
             "expected_artifacts": [{
                 "path": "relative/path", "media_type": "type/subtype",
                 "minimum_bytes": 1}],
@@ -289,8 +298,9 @@ def _input_artifact_path(
 
 def _project_inputs(
         services: AdaptiveRunServices) -> tuple[GeneratedProjectInputArtifact, ...]:
-    inputs = []
+    inputs = list(_local_project_inputs(services))
     used_paths = set()
+    used_paths.update(item.path for item in inputs)
     for index, result in enumerate(services.web_results[-12:], 1):
         reference = ContextArtifactRef.from_dict(result["artifact_ref"])
         body = services.artifacts.store.get(reference)
@@ -302,6 +312,52 @@ def _project_inputs(
             str(result.get("media_type") or "application/octet-stream"),
             reference.digest))
     return tuple(inputs)
+
+
+def _local_project_inputs(
+        services: AdaptiveRunServices) -> tuple[GeneratedProjectInputArtifact, ...]:
+    if services.request.source_kind not in {"dataset", "repository", "task_pack"}:
+        return ()
+    if not services.request.allow_source_materialization_to_model:
+        raise PermissionError(
+            "local task sources require explicit source-to-model authority")
+    allowed_names = {"pyproject.toml", "requirements.txt", "setup.cfg"}
+    allowed_suffixes = {
+        ".csv", ".json", ".jsonl", ".md", ".py", ".rst", ".toml",
+        ".tsv", ".txt", ".yaml", ".yml"}
+    excluded_parts = {".git", ".venv", "__pycache__", "node_modules"}
+    selected = []
+    total_bytes = 0
+    for source_ref in services.request.source_refs:
+        source = Path(source_ref).expanduser().resolve()
+        if not source.exists() or source.is_symlink():
+            continue
+        candidates = (source,) if source.is_file() else tuple(sorted(
+            item for item in source.rglob("*")
+            if item.is_file() and not item.is_symlink()
+            and not excluded_parts.intersection(item.relative_to(source).parts)))
+        for path in candidates:
+            if path.name.startswith(".") or (
+                    path.name not in allowed_names
+                    and path.suffix.lower() not in allowed_suffixes):
+                continue
+            body = path.read_bytes()
+            if len(body) > 512_000 or total_bytes + len(body) > 2_000_000:
+                raise GeneratedProjectError(
+                    "local source material exceeds the model context budget")
+            if len(selected) >= 20:
+                raise GeneratedProjectError(
+                    "local source material exceeds the 20-file limit")
+            relative = (path.name if source.is_file()
+                        else f"{source.name}/{path.relative_to(source).as_posix()}")
+            media_type = mimetypes.guess_type(path.name)[0] or "text/plain"
+            selected.append(GeneratedProjectInputArtifact(
+                f"inputs/{relative}", body, media_type))
+            total_bytes += len(body)
+    if not selected:
+        raise GeneratedProjectError(
+            "no supported local source files were available to the task")
+    return tuple(selected)
 
 
 def execute_adaptive_capability(

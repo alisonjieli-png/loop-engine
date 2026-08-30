@@ -1,0 +1,67 @@
+{
+  "record_type": "reactive_loop_foundation_verification/v1",
+  "date": "2026-08-29",
+  "repository": "/home/username/loop-engine",
+  "branch": "main",
+  "starting_sha": "a7db02f25167a68c4d1e0b64b2fe57730fa35e80",
+  "provider_calls": 0,
+  "focused_checks": {
+    "information_access": {"passed": 9, "total": 9},
+    "reactive_contracts": {"passed": 9, "total": 9},
+    "reactive_output_store": {"passed": 11, "total": 11},
+    "reactive_scheduler": {"passed": 12, "total": 12},
+    "reactive_worker": {"passed": 4, "total": 4},
+    "all": {"passed": 45, "total": 45}
+  },
+  "source_self_test": {"passed": 1504, "total": 1504},
+  "installed_self_test": {"passed": 1503, "total": 1503},
+  "conformance": {"all_zero_tolerance_gates_pass": true},
+  "ruff": {"status": "not_run", "reason": "not installed"},
+  "parameter_boundary": {
+    "focused_new_file_findings": 0,
+    "repository_preexisting_unapproved_findings": 175
+  },
+  "clean_install": {
+    "wheel_installed": true,
+    "declared_dependencies_installed": true,
+    "pip_check": "no broken requirements",
+    "public_exports_present": true
+  },
+  "distribution": {
+    "wheel": {
+      "name": "loop_engine-0.1.0-py3-none-any.whl",
+      "sha256": "be16efd5d2ff43e92e8e71d097dce93cfc047c6af152b14f0f85c4088b532756"
+    },
+    "sdist": {
+      "name": "loop_engine-0.1.0.tar.gz",
+      "sha256": "865db031fa3145d76717222677d7639576053a2630dc7198dbce253c1a37596a"
+    }
+  },
+  "proved": [
+    "storage_neutral_exact_value_reference",
+    "scope_and_permission_before_materialization",
+    "digest_verified_materialization",
+    "append_only_candidates_evaluations_and_portfolios",
+    "trigger_deduplication",
+    "durable_activation_revisions",
+    "leases_heartbeats_and_fencing",
+    "stale_worker_commit_refusal",
+    "scheduler_restart_recovery",
+    "simultaneous_claim_exclusion",
+    "three_distinct_concurrent_canonical_loops",
+    "canonical_run_history_projection"
+  ],
+  "not_proved": [
+    "reactive_profile_on_every_loop_definition",
+    "adaptive_practitioner_reactive_compilation",
+    "process_cpu_parallelism",
+    "external_push_and_polling",
+    "subscriptions_and_transactional_outbox",
+    "durable_binding_discovery",
+    "reactive_cancellation_propagation",
+    "remote_or_distributed_workers",
+    "studio_reactive_views",
+    "topology_elasticity_across_unrelated_tasks",
+    "ci"
+  ]
+}

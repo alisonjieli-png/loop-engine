@@ -1,0 +1,40 @@
+{
+  "record_type": "clean_install_evidence/v1",
+  "wheel": {
+    "name": "loop_engine-0.1.0-py3-none-any.whl",
+    "bytes": 1425031,
+    "sha256": "63f2d2f464b1a29a7ea522500a17fac37fe4cee58ab306366fe6fc9ba9051b6c"
+  },
+  "sdist": {
+    "name": "loop_engine-0.1.0.tar.gz",
+    "bytes": 1217562,
+    "sha256": "bb74cc3c3c3cc6665b42d2066932f11e0a806caca86b580cbe0f8cd9f33369aa"
+  },
+  "default_dependencies": [
+    "PyYAML",
+    "jsonschema>=4.20"
+  ],
+  "python": "3.14.4",
+  "doctor_ok": true,
+  "doctor_provider_calls": 0,
+  "no_key_terminal": "CAPABILITY_GAP",
+  "no_key_history_chain_intact": true,
+  "text_solve": {
+    "terminal_code": "COMPLETED_VERIFIED",
+    "artifacts": 2,
+    "model_calls": 8,
+    "tool_calls": 3,
+    "loop_count": 85,
+    "history_chain_intact": true
+  },
+  "file_solve": {
+    "terminal_code": "COMPLETED_VERIFIED",
+    "artifacts": 2,
+    "model_calls": 8,
+    "tool_calls": 3,
+    "loop_count": 85,
+    "history_chain_intact": true
+  },
+  "provider_assurance": "local HTTP contract fixture; external live provider not proven",
+  "all_passed": true
+}

@@ -61,6 +61,13 @@ EVENT_FAMILIES = (
     "user_feedback_intelligence.generalized",
     "learning.candidate.staged", "learning.candidate.validated",
     "state.committed", "change.proposed",
+    "loop.activation.admitted", "loop.activation.leased",
+    "loop.activation.started", "loop.activation.heartbeat",
+    "loop.activation.recovered",
+    "loop.activation.completed", "loop.activation.failed",
+    "information.binding.published", "information.materialized",
+    "output.candidate.stored", "output.evaluation.stored",
+    "output.portfolio.stored",
 )
 
 #: The four persistent intelligence layers, in the family name each retrieval
@@ -231,6 +238,18 @@ _CANONICAL_EVENT_MAP = {
     "context_compaction_completed": "state.committed",
     "mcp_call_terminal": _mcp_terminal_family,
     "skill_load_terminal": _skill_terminal_family,
+    "reactive_trigger_admitted": "loop.activation.admitted",
+    "reactive_activation_leased": "loop.activation.leased",
+    "reactive_activation_started": "loop.activation.started",
+    "reactive_lease_heartbeat": "loop.activation.heartbeat",
+    "reactive_activation_recovered": "loop.activation.recovered",
+    "reactive_activation_completed": "loop.activation.completed",
+    "reactive_activation_failed": "loop.activation.failed",
+    "information_binding_published": "information.binding.published",
+    "information_materialized": "information.materialized",
+    "reactive_candidate_stored": "output.candidate.stored",
+    "reactive_evaluation_stored": "output.evaluation.stored",
+    "reactive_portfolio_stored": "output.portfolio.stored",
 }
 
 #: The RunHistory's stored ``event_type`` is a COARSER storage bucket than the

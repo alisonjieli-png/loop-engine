@@ -134,7 +134,11 @@ def run_parallel(branches: tuple[BranchSpec, ...], *,
                         branch.branch_id, False, error="skipped: fail_fast"))
                     return
                 try:
-                    value = branch.fn(*branch.args, **branch.kwargs)
+                    if branch.contract.thread_safe:
+                        value = await asyncio.to_thread(
+                            branch.fn, *branch.args, **branch.kwargs)
+                    else:
+                        value = branch.fn(*branch.args, **branch.kwargs)
                     results.append(BranchResult(branch.branch_id, True,
                                                 value=value))
                 except Exception as exc:                      # noqa: BLE001
@@ -191,6 +195,24 @@ def self_test() -> dict:
     check("parallel_branches_all_succeed",
           outcome.succeeded and len(outcome.results) == 3
           and all(r.ok for r in outcome.results))
+
+    import threading
+    barrier = threading.Barrier(3, timeout=1.0)
+    thread_ids = set()
+    thread_lock = threading.Lock()
+
+    def _meet(value):
+        with thread_lock:
+            thread_ids.add(threading.get_ident())
+        barrier.wait()
+        return value
+
+    overlapping = run_parallel(tuple(BranchSpec(
+        f"overlap-{index}", _meet, contract=read_only, args=(index,))
+        for index in range(3)))
+    check("thread_safe_branches_physically_overlap",
+          overlapping.succeeded and len(thread_ids) == 3,
+          f"worker_threads={len(thread_ids)}")
 
     config = SchedulingConfiguration(scheduling_pattern="bounded_fanout",
                                      maximum_concurrency=2,

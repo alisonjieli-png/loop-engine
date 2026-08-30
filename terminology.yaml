@@ -18,6 +18,90 @@ terms:
   LoopValue:
     kind: canonical
     definition: Typed value with producer Loop, source refs, digest, lineage, privacy, materialization, and verification state.
+  LoopValueRef:
+    kind: canonical
+    definition: Exact body-free identity for one value produced by a Loop; storage placement is resolved separately.
+  InformationStorageBinding:
+    kind: canonical
+    definition: Passive physical materialization binding for one LoopValueRef; it grants no access and exposes no locator publicly.
+  InformationResolver:
+    kind: internal_only
+    definition: Storage-neutral internal mechanic that checks scope, permission, size, contract, and digest before materializing a LoopValueRef.
+  ReactiveLoopProfile:
+    kind: canonical
+    definition: Passive versioned composition of activation, admission, scheduling, persistence, exploration, portfolio, emission, serving, retention, and liveness policies.
+  ReactiveSeriesDefinition:
+    kind: canonical
+    definition: Passive stable responsibility whose finite activations always execute through the canonical Loop runtime.
+  TriggerEnvelope:
+    kind: canonical
+    definition: Passive typed information delta that may request one finite reactive activation but grants no authority.
+  ActivationRecord:
+    kind: canonical
+    definition: Passive append-only lifecycle projection for one finite reactive Loop activation.
+  WorkLease:
+    kind: canonical
+    definition: Passive expiring exclusive claim with a fencing token that prevents stale workers from committing.
+  CandidateOutput:
+    kind: canonical
+    definition: Immutable output metadata from one finite Loop activation with an exact LoopValueRef payload.
+  CandidateEvaluation:
+    kind: canonical
+    definition: Independent versioned assessment of one immutable CandidateOutput.
+  OutputPortfolioSnapshot:
+    kind: canonical
+    definition: Immutable ranked view whose ranks belong to one exact policy and portfolio version.
+  PluginBundleManifest:
+    kind: canonical
+    definition: Passive distribution manifest referencing exact admitted skills, profiles, capabilities, and Run History subscriptions; grants no authority.
+  ResolvedPluginSnapshot:
+    kind: canonical
+    definition: Deterministic full-content and admission-bound plugin population selected for one run.
+  PlanDefinition:
+    kind: canonical
+    definition: Passive versioned planning contract containing an immutable original task reference, goal, scope, clarification dispositions, and typed task slices.
+  TaskSliceDefinition:
+    kind: canonical
+    definition: Passive bounded unit of planned work with exact inputs, outputs, dependencies, activation path, concurrency contract, and verification obligations.
+  TaskLoopBinding:
+    kind: canonical
+    definition: Task-conditioned exact operation, mode, and Solution Loop profile binding used to compile one task slice into LoopGraphDefinition.
+  DevelopmentExecutionRequest:
+    kind: canonical
+    definition: Passive exact plan, task Loop bindings, attempt deltas, retry policies, and concurrency ceiling for one dependency-wave execution.
+  TaskOperationOutput:
+    kind: canonical
+    definition: Typed task value, artifact references, covered criteria, verification evidence, and failure class returned by one Solution Loop attempt.
+  SolveTerminalCode:
+    kind: canonical
+    definition: User-visible terminal vocabulary distinguishing verified completion, material blockers, authority, capability, provider, verification, repair, progress, budget, deadline, abstention, and cancellation.
+  WorkerAssignmentEnvelope:
+    kind: canonical
+    definition: Exact digest-bound child handoff carrying resolved workspace, settings, capabilities, extensions, context, authority, contracts, budget, and return destination.
+  PlanningAuthority:
+    kind: canonical
+    definition: Parameterized policy stating when planning requires interaction, safe defaults, post-plan approval, low-risk autonomy, or parent Loop authority.
+  ClarificationDisposition:
+    kind: canonical
+    definition: Typed classification that keeps must-answer, defaultable, delegated, derived, researchable, authority-required, and nonmaterial questions distinct.
+  RequirementVerificationContract:
+    kind: canonical
+    definition: Evidence-first binding from one acceptance criterion to its verification operator, expected evidence, failure state, and independent-review requirement.
+  LifecycleExtensionDefinition:
+    kind: canonical
+    definition: Passive exact declaration connecting one procedure-supported lifecycle event to a registered Loop definition and typed execution contract.
+  ResolvedExtensionSetSnapshot:
+    kind: canonical
+    definition: Deterministically ordered procedure-scoped extension population with an exact semantic fingerprint and explicit empty state.
+  ExecutionContextFingerprint:
+    kind: canonical
+    definition: Bounded set of separate semantic digests for plan, extensions, capabilities, settings, context, intelligence, environment, and verification policy.
+  RetryPolicy:
+    kind: canonical
+    definition: Passive bounded retry rule whose attempts depend on failure class and require a materially executable delta.
+  PublicationAuthorization:
+    kind: canonical
+    definition: Independent approval bound to one exact verified target and one commit, push, pull-request, package-publication, or deployment effect.
   LLMWorkPacket:
     kind: canonical
     definition: Passive provider-neutral component packet for one bounded semantic model step.

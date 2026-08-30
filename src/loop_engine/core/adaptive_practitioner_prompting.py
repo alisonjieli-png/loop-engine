@@ -7,6 +7,8 @@ operations exist only in the audited intrinsic kernel.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass
 
 from ..loop.atomic_primitives import (
@@ -30,6 +32,7 @@ class AdaptivePromptAssemblyRequest:
     profile_id: str
     layout_policy: str
     format_repair: bool = False
+    granularity_profile: str = "governed_semantic"
 
     def __post_init__(self) -> None:
         if not isinstance(self.packet, LLMWorkPacket):
@@ -38,6 +41,10 @@ class AdaptivePromptAssemblyRequest:
         if not self.profile_id.strip() or not self.layout_policy.strip():
             raise AdaptivePromptAssemblyError(
                 "prompt assembly profile identity is empty")
+        if self.granularity_profile not in (
+                "governed_semantic", "strict_atomic"):
+            raise AdaptivePromptAssemblyError(
+                "prompt assembly granularity profile is invalid")
 
 
 @dataclass(frozen=True)
@@ -220,6 +227,64 @@ def _render_packet(
     return prompt.value, snapshot, primitive_ids
 
 
+def _render_packet_governed(
+        request: AdaptivePromptAssemblyRequest) -> tuple:
+    """Render inside one assembly Loop using private deterministic mechanics."""
+    packet = request.packet.to_dict()
+    field_by_block = {
+        "authority_and_policy": ("[CONSTITUTION]", "policy_context"),
+        "model_role_and_capabilities": ("[PERSONA]", "persona_context"),
+        "objective_and_success": ("[DIRECTIVE]", "work_directive"),
+        "immediate_question": ("[CURRENT OBJECTIVE]", "work_directive"),
+        "hard_constraints_and_tools": (
+            "[CAPABILITIES AND LIMITS]", "capability_context"),
+        "verified_problem_state": ("[TASK]", "task_context"),
+        "selected_evidence": (
+            "[SELECTED INTELLIGENCE]", "context_intelligence"),
+        "prior_attempts_and_failures": (
+            "[ATTEMPT HISTORY]", "attempt_history"),
+        "reasoning_perspective": ("[PERSPECTIVES]", "persona_context"),
+        "question_pattern": ("[QUESTIONS]", "question_portfolio"),
+        "candidate_alternatives": (
+            "[AVAILABLE CAPABILITIES]", "capability_context"),
+        "output_contract": ("[OUTPUT CONTRACT]", "output_contract"),
+        "final_directive": ("[FINAL DIRECTIVE]", "work_directive"),
+    }
+    blocks = {}
+    for name, (label, field_name) in field_by_block.items():
+        body = json.dumps(
+            packet[field_name], sort_keys=True, separators=(",", ":"),
+            ensure_ascii=False)
+        if request.format_repair and field_name == "attempt_history":
+            body += "\n" + json.dumps({
+                "format_repair_required": True,
+                "additional_text_allowed": False}, separators=(",", ":"))
+        blocks[name] = f"{label}\n{body}"
+    specification = PromptAssemblySpec(
+        blocks=blocks, layout_policy=request.layout_policy)
+    present = [name for name in PROMPT_BLOCKS if name in blocks]
+    order = layout_order(
+        specification.layout_policy, present, specification.seeds)
+    prompt = "\n\n".join(blocks[name] for name in order)
+    prompt_digest = hashlib.sha256(prompt.encode()).hexdigest()
+    snapshot = PromptAssemblySnapshot(
+        assembly_id=f"assembly.sha256_{prompt_digest}",
+        definition_ref=f"{request.profile_id}@{request.packet.packet_version}",
+        run_id=request.packet.loop_context["run_id"],
+        loop_id=request.packet.loop_context["loop_id"],
+        ordered_block_refs=tuple(order),
+        rendered_block_digests=tuple(hashlib.sha256(
+            blocks[name].encode()).hexdigest() for name in order),
+        selected_blocks=tuple(order),
+        rejected_blocks=tuple(name for name in blocks if name not in order),
+        selection_reasons=tuple(
+            "selected by registered layout policy" for _item in order),
+        estimated_tokens=(len(prompt.encode()) + 3) // 4,
+        prompt_digest=prompt_digest,
+        packet_digest=request.packet.content_digest)
+    return prompt, snapshot, ()
+
+
 def assemble_work_packet(
         request: AdaptivePromptAssemblyRequest,
         parent_loop) -> AdaptivePromptAssemblyResult:
@@ -247,7 +312,10 @@ def assemble_work_packet(
 
     def handler(active, _step, _state):
         try:
-            prompt, snapshot, primitive_ids = _render_packet(request, active)
+            if request.granularity_profile == "strict_atomic":
+                prompt, snapshot, primitive_ids = _render_packet(request, active)
+            else:
+                prompt, snapshot, primitive_ids = _render_packet_governed(request)
             holder["value"] = AdaptivePromptAssemblyResult(
                 prompt, 0.1, snapshot, active.loop_id, primitive_ids)
             return StepOutcome("assembly:completed", "deterministic", 1.0)

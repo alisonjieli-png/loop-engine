@@ -11,6 +11,7 @@ import json
 import os
 import re
 import sys
+from pathlib import Path
 
 
 _COMPILE_PROVIDER_ENV = {
@@ -159,6 +160,7 @@ def completed_learning_producer(goal: str):
 def run_doctor(args) -> int:
     import os
     import platform
+    import shutil
     from importlib.metadata import PackageNotFoundError, version
 
     from .architecture_contract import run_architecture_contract_checks
@@ -173,6 +175,9 @@ def run_doctor(args) -> int:
     gateway = loaded.settings.build_gateway()
     providers = [_safe_provider_description(provider)
                  for provider in gateway.providers.values()]
+    credential_ready = [item for item in providers
+                        if item.get("credential_present")]
+    docker_path = shutil.which("docker")
     report = {
         "record_type": "loop_engine_doctor/v1", "ok": architecture["passed"],
         "distribution_version": distribution_version,
@@ -183,9 +188,23 @@ def run_doctor(args) -> int:
         "providers_configured": providers,
         "provider_calls_made": 0,
         "deterministic_no_key_lane": "available",
+        "solve_readiness": {
+            "provider_credentials_present": [
+                item["provider_id"] for item in credential_ready],
+            "provider_credentials_tested": False,
+            "docker_binary": docker_path or "",
+            "generated_project_execution": (
+                "dependency_detected_not_runtime_verified" if docker_path
+                else "docker_not_found"),
+            "preferred_probe": (
+                "loop-engine models probe ollama_cloud --model-route "
+                "cloud.default --model-id deepseek-v4-flash:0731 "
+                "--authorize-model-calls --max-model-calls 1 "
+                "--max-total-tokens 70000"),
+        },
     }
     _emit_cli_result(args, report, [
-        f"Loop Engine doctor: {'READY' if report['ok'] else 'FAILED'}",
+        f"Loop Engine doctor: {'CONFIGURATION VALID' if report['ok'] else 'FAILED'}",
         f"Version: {distribution_version}",
         f"Python: {report['python']}",
         "Runtime: Loop",
@@ -194,9 +213,16 @@ def run_doctor(args) -> int:
         "Provider calls made: 0",
         "Provider definitions: "
         f"{len(providers)} configured, credentials not tested",
+        "Credential references present: " + (
+            ", ".join(item["provider_id"] for item in credential_ready)
+            if credential_ready else "none"),
+        "Generated-project sandbox: " + (
+            "Docker command found; runtime and image not tested"
+            if docker_path else "Docker command not found"),
         "",
         "This command checks configuration only. It does not prove that a "
         "provider key works.",
+        "Run the exact provider probe shown in JSON before a model-backed solve.",
         "Use --format json for the complete typed record.",
     ])
     return 0 if report["ok"] else 1
@@ -494,58 +520,6 @@ def run_task_compile(args) -> int:
         return 2
 
 
-def run_solve(args) -> int:
-    from .code_nodes.solve_runtime import SolveRequest, solve_task
-    from .code_nodes.solution_model_port import ModelExecution
-    from .core.runtime_settings import ModelPolicyRequest, ModelTask
-    from .core.settings_loader import load_runtime_settings
-    try:
-        intake = task_intake_from_args(args)
-        loaded = load_runtime_settings(args.settings_file or None)
-        settings = loaded.settings
-        model_execution = None
-        if args.authorize_model_calls:
-            if args.max_model_calls < 1:
-                raise ValueError(
-                    "authorized solve requires --max-model-calls >= 1")
-            policy = ModelPolicyRequest(
-                thinking_power=(args.thinking_power
-                                or settings.models.default_thinking_power),
-                max_total_tokens=args.max_total_tokens,
-                max_route_attempts=args.max_model_calls)
-            request = settings.model_request(ModelTask(
-                prompt="solve authorization preflight", policy=policy))
-            model_execution = ModelExecution(
-                settings.build_gateway(), request.config,
-                max_model_calls=args.max_model_calls,
-                llm_thinking_power=policy.thinking_power)
-        outcome = solve_task(SolveRequest(
-            intake=intake, model_execution=model_execution,
-            runs_dir=(args.runs_dir or settings.history.resolved_runs_dir()),
-            save_run_history=settings.history.save_run_history,
-            interaction_mode=args.interaction_mode,
-            feedback=_task_feedback_from_args(args),
-            max_passes=args.max_passes,
-            allow_network_reads=settings.operating.access_mode in (
-                "approved_external_read", "broad_external_read",
-                "approved_external_write"),
-            allow_workspace_writes=(
-                settings.operating.construction_and_execution_mode
-                in ("sandbox_generate", "promotion_authorized")),
-            allow_sandbox_commands=(
-                settings.operating.construction_and_execution_mode
-                in ("sandbox_generate", "promotion_authorized"))))
-        print(json.dumps(outcome.to_dict(), indent=1))
-        return 0 if outcome.solved else 1
-    except (OSError, ValueError) as exc:
-        print(json.dumps({
-            "record_type": "solve_failure/v2", "solved": False,
-            "failure_code": ("PERMISSION_DENIED" if isinstance(
-                exc, PermissionError) else "OUTPUT_CONTRACT_VIOLATION"),
-            "error": str(exc)}, indent=1))
-        return 2
-
-
 def run_learn(args) -> int:
     import hashlib
     import os
@@ -649,7 +623,8 @@ def run_five_step_demo(args) -> int:
     import tempfile
     from pathlib import Path
 
-    from .code_nodes.solve_runtime import SolveRequest, solve_task
+    from .code_nodes.solve_runtime import (
+        SolveRequest, StructuredNormalizationResolver, solve_task)
     from .core.settings_loader import load_runtime_settings
     from .memory.model.memory_type import (MemoryIdentity, MemoryLifecycle,
                                            MemoryScope, MemoryType)
@@ -668,7 +643,9 @@ def run_five_step_demo(args) -> int:
             intake=intake_task(TaskIntakeRequest(
                 dataset=str(source), goal=goal)),
             runs_dir=(args.runs_dir or settings.history.resolved_runs_dir()),
-            save_run_history=True))
+            save_run_history=True,
+            deterministic_resolvers=(
+                StructuredNormalizationResolver(source),)))
     if not outcome.solved:
         failure = {"record_type": "five_step_demo/v2",
                    "solved": False, "failure": outcome.to_dict()}
@@ -730,3 +707,53 @@ def run_five_step_demo(args) -> int:
         "Use --format json for the complete typed record.",
     ])
     return 0
+
+
+def run_plugin_action(args) -> int:
+    """Discover, inspect, or resolve exact plugin bundles."""
+    from .core.plugin_bundles import (
+        PluginBundleError, PluginDiscoveryRequest, PluginResolutionRequest,
+        discover_plugin_bundles, resolve_plugin_snapshot_as_loop)
+    from .core.skill_registry import (
+        SkillAdmissionRecord, SkillRegistry)
+    installed=tuple(args.plugin_root or ())
+    project=tuple(args.project_plugin_root or ())
+    try:
+        discovery=discover_plugin_bundles(PluginDiscoveryRequest(
+            installed,project,args.engine_api_version))
+        if args.plugin_action in ("discover","inspect"):
+            manifests=discovery.manifests
+            if args.plugin_id:
+                manifests=tuple(x for x in manifests if x.plugin_id==args.plugin_id)
+                if not manifests:
+                    raise PluginBundleError("requested plugin was not discovered")
+            result={**discovery.to_dict(),
+                    "manifests":[{**x.body(),"source":x.source,
+                                  "content_digest":x.content_digest}
+                                 for x in manifests]}
+            if args.format=="json": print(json.dumps(result,indent=1))
+            else:
+                print(f"Plugins: {len(manifests)} candidate bundle(s)")
+                for item in manifests:
+                    print(f"  {item.plugin_id}@{item.version} [{item.source}] "
+                          f"{item.content_digest[:12]}")
+            return 0
+        registry=SkillRegistry()
+        for root in tuple(args.skill_root or ()):
+            registry.discover((root,))
+        for path in tuple(args.skill_admission or ()):
+            value=json.loads(Path(path).read_text(encoding="utf-8"))
+            records=value if isinstance(value,list) else [value]
+            for record in records:
+                registry.admit(SkillAdmissionRecord.from_dict(record))
+        snapshot=resolve_plugin_snapshot_as_loop(PluginResolutionRequest(
+            installed,project,registry,args.engine_api_version))
+        if args.format=="json": print(json.dumps(snapshot.to_dict(),indent=1))
+        else: print(snapshot.ascii_tree())
+        return 0
+    except (PluginBundleError,ValueError,OSError,KeyError) as exc:
+        if args.format=="json":
+            print(json.dumps({"record_type":"plugin_cli_failure/v1",
+                              "status":"FAILED","reason":str(exc)},indent=1))
+        else: print(f"Plugin operation failed: {exc}")
+        return 2

@@ -104,7 +104,7 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         prog="loop-engine",
         description=__doc__.splitlines()[0],
-        epilog='Build a task: loop-engine task build --text "your request"')
+        epilog='Solve a task: loop-engine solve --text "your request"')
     test_output = parser.add_mutually_exclusive_group()
     test_output.add_argument(
         "--self-test", action="store_true",
@@ -146,6 +146,21 @@ def main(argv=None) -> int:
                         help="print the repository structure report as JSON")
     parser.add_argument("--repo-conformance", action="store_true",
                         help="run the repository conformance harness")
+    parser.add_argument("--plugin-action",
+                        choices=("discover", "resolve", "inspect"),
+                        help="discover, resolve, or inspect plugin bundles")
+    parser.add_argument("--plugin-root", action="append", default=[],
+                        help="installed plugin bundle root; repeat as needed")
+    parser.add_argument("--project-plugin-root", action="append", default=[],
+                        help="project plugin bundle root; repeat as needed")
+    parser.add_argument("--skill-root", action="append", default=[],
+                        help="skill root used during admitted plugin resolution")
+    parser.add_argument("--skill-admission", action="append", default=[],
+                        help="SkillAdmissionRecord JSON file; repeat as needed")
+    parser.add_argument("--plugin-id", default="",
+                        help="exact plugin id for plugin inspect")
+    parser.add_argument("--engine-api-version", default="1",
+                        help="required plugin engine API version")
     parser.add_argument("--architecture-contract", action="store_true",
                         help="validate the machine-readable architecture contract")
     parser.add_argument("--task-compile", action="store_true",
@@ -215,6 +230,12 @@ def main(argv=None) -> int:
                         help="versioned JSON task-pack path")
     parser.add_argument("--solve", action="store_true",
                         help="solve a task from --text or --file")
+    parser.add_argument("--workspace", default="",
+                        help="empty or new directory for generated task artifacts")
+    parser.add_argument(
+        "--allow-source-to-model", action="store_true",
+        help="allow supplied dataset or repository text to enter the selected "
+             "model context; required for model-backed local-source tasks")
     parser.add_argument("--templates", action="store_true",
                         help="list registered task templates")
     parser.add_argument("--learn", action="store_true",
@@ -351,6 +372,11 @@ def main(argv=None) -> int:
         if len(raw_argv) < 2 or raw_argv[1] not in ("init", "show", "check"):
             parser.error("settings requires init, show, or check")
         raw_argv[:2] = ["--settings-action", raw_argv[1]]
+    elif raw_argv[:1] == ["plugin"]:
+        if len(raw_argv) < 2 or raw_argv[1] not in (
+                "discover", "resolve", "inspect"):
+            parser.error("plugin requires discover, resolve, or inspect")
+        raw_argv[:2] = ["--plugin-action", raw_argv[1]]
     args = parser.parse_args(raw_argv)
     if args.doctor:
         from .cli_operations import run_doctor
@@ -358,6 +384,9 @@ def main(argv=None) -> int:
     if args.models_action:
         from .cli_operations import run_models_action
         return run_models_action(args)
+    if args.plugin_action:
+        from .cli_operations import run_plugin_action
+        return run_plugin_action(args)
     if args.verify_live_model:
         from .core.live_model_verification import (
             LiveModelVerificationError, LiveModelVerificationRequest,
@@ -595,7 +624,7 @@ def main(argv=None) -> int:
         from .cli_operations import run_task_compile
         return run_task_compile(args)
     if args.solve:
-        from .cli_operations import run_solve
+        from .solve_cli import run_solve
         return run_solve(args)
     if args.learn:
         from .cli_operations import run_learn

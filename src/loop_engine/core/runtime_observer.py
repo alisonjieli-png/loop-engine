@@ -39,6 +39,53 @@ _OBSERVATION_FIELDS = {
         "skill_id", "version", "lifecycle", "manifest_digest",
         "file_count", "status", "error_code",
     }),
+    "reactive_trigger_admitted": frozenset({
+        "series_id", "trigger_id", "activation_id", "status", "created",
+        "input_digest",
+    }),
+    "reactive_activation_leased": frozenset({
+        "series_id", "activation_id", "lease_id", "worker_id", "status",
+        "fencing_token", "attempt",
+    }),
+    "reactive_activation_started": frozenset({
+        "series_id", "activation_id", "lease_id", "worker_id", "status",
+        "fencing_token", "revision",
+    }),
+    "reactive_lease_heartbeat": frozenset({
+        "series_id", "activation_id", "lease_id", "worker_id", "status",
+        "fencing_token", "expires_at",
+    }),
+    "reactive_activation_recovered": frozenset({
+        "series_id", "activation_id", "status", "fencing_token", "attempt",
+        "failure_code",
+    }),
+    "reactive_activation_completed": frozenset({
+        "series_id", "activation_id", "status", "terminal_code",
+        "fencing_token", "candidate_count",
+    }),
+    "reactive_activation_failed": frozenset({
+        "series_id", "activation_id", "status", "failure_code",
+        "fencing_token", "candidate_count",
+    }),
+    "information_binding_published": frozenset({
+        "binding_id", "adapter_id", "value_digest", "durability", "scope",
+        "size_bytes", "status",
+    }),
+    "information_materialized": frozenset({
+        "binding_id", "adapter_id", "value_digest", "size_bytes", "status",
+    }),
+    "reactive_candidate_stored": frozenset({
+        "series_id", "candidate_id", "producer_loop_id", "payload_digest",
+        "status",
+    }),
+    "reactive_evaluation_stored": frozenset({
+        "evaluation_id", "candidate_id", "verifier_count", "verdict",
+        "status",
+    }),
+    "reactive_portfolio_stored": frozenset({
+        "series_id", "topic_ref", "portfolio_version", "view",
+        "candidate_count", "status",
+    }),
 }
 
 _OBSERVATION_REQUIRED_FIELDS = {
@@ -54,6 +101,18 @@ _OBSERVATION_LEDGER_KINDS = {
     "context_compaction_completed": "context_compaction_completed",
     "mcp_call_terminal": "mcp_call_terminal",
     "skill_load_terminal": "skill_load_terminal",
+    "reactive_trigger_admitted": "reactive_trigger_admitted",
+    "reactive_activation_leased": "reactive_activation_leased",
+    "reactive_activation_started": "reactive_activation_started",
+    "reactive_lease_heartbeat": "reactive_lease_heartbeat",
+    "reactive_activation_recovered": "reactive_activation_recovered",
+    "reactive_activation_completed": "reactive_activation_completed",
+    "reactive_activation_failed": "reactive_activation_failed",
+    "information_binding_published": "information_binding_published",
+    "information_materialized": "information_materialized",
+    "reactive_candidate_stored": "reactive_candidate_stored",
+    "reactive_evaluation_stored": "reactive_evaluation_stored",
+    "reactive_portfolio_stored": "reactive_portfolio_stored",
 }
 
 
@@ -114,6 +173,16 @@ class RuntimeObservation:
         if (self.kind == "skill_load_terminal"
                 and status not in ("completed", "failed")):
             raise RuntimeObservationError("unknown skill load status")
+        if self.kind.startswith("reactive_") \
+                and status not in {
+                    "admitted", "deduplicated", "leased", "running",
+                    "heartbeat", "completed", "failed", "recovered", "dead_letter",
+                    "stored"}:
+            raise RuntimeObservationError("unknown reactive observation status")
+        if self.kind.startswith("information_") \
+                and status not in {"published", "materialized"}:
+            raise RuntimeObservationError(
+                "unknown information observation status")
         object.__setattr__(self, "fields", values)
 
 

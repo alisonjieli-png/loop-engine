@@ -703,8 +703,10 @@ def self_test() -> dict:
           and empty.status == 400 and "error" in empty_body,
           f"advice {advice.get('advice_id')} stored scoped + attributable; "
           "empty refused with 400")
+    from .event_vocabulary import EVENT_FAMILIES
     check("the_event_stream_is_the_canonical_vocabulary",
-          stream["vocabulary_size"] == 59 and stream["count"] > 0
+          stream["vocabulary_size"] == len(EVENT_FAMILIES)
+          and stream["count"] > 0
           and stream["families_present"]
           and not [f for f in stream["families_present"]
                    if f.startswith("x.")],
