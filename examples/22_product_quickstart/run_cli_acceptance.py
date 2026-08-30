@@ -104,8 +104,7 @@ def main() -> int:
         "--workspace", str(root / "workspace"),
         "--runs-dir", str(root / "runs"),
         "--interaction-mode", "autonomous",
-        "--authorize-model-calls", "--max-model-calls", str(len(answers)),
-        "--max-total-tokens", "100000",
+        "--authorize-model-calls",
         "--model-route", "custom.acceptance",
         "--model-id", "fixture-model", "--format", "json",
     ]
