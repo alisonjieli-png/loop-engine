@@ -9,6 +9,7 @@ import hashlib
 import json
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 from ..code_nodes.solution_model_port import (
     FixtureModelExecutionRequest, fixture_model_execution)
@@ -312,6 +313,23 @@ def run_checks() -> dict:
               repaired["solved"] and repaired["model_calls"] == 8,
               repaired.get("failure", "format repair succeeded"))
 
+    with tempfile.TemporaryDirectory() as root:
+        repeated_execution = fixture_model_execution(
+            FixtureModelExecutionRequest(
+                answers=("same invalid response", "same invalid response"),
+                max_model_calls=2))
+        repeated = run_adaptive_practitioner(
+            AdaptivePractitionerRequest(
+                "Refuse a repeated invalid model response cycle.",
+                mode="non_deterministic", runs_dir=root, max_passes=1),
+            AdaptivePractitionerDependencies(repeated_execution))
+        check("repeated_invalid_json_cycle_stops_by_digest_not_retry_count",
+              not repeated["solved"]
+              and repeated["failure_code"] == "ModelResponseRepairStalled"
+              and repeated["model_calls"] == 2
+              and "repeated the same invalid JSON" in repeated["failure"],
+              repeated.get("failure", ""))
+
     leaked_orientation = _orientation(
         verification_obligations=[
             "Validate the TaskOrientationResult against the inline schema.",
@@ -574,6 +592,25 @@ def run_checks() -> dict:
               and blocked["run_history"]["chain_intact"],
               blocked.get("failure", ""))
 
+    with tempfile.TemporaryDirectory() as root:
+        execution = fixture_model_execution(FixtureModelExecutionRequest(
+            answers=(json.dumps(_orientation()),), max_model_calls=1))
+        with patch(
+                "loop_engine.core.adaptive_practitioner.run_kernel_passes",
+                side_effect=KeyboardInterrupt):
+            interrupted = run_adaptive_practitioner(
+                AdaptivePractitionerRequest(
+                    "Perform work until the operator interrupts it.",
+                    mode="non_deterministic", runs_dir=root),
+                AdaptivePractitionerDependencies(execution))
+        run_root = Path(interrupted["run_history"]["path"])
+        check("operator_interrupt_is_a_saved_cancelled_run_not_an_orphan",
+              interrupted["failure_code"] == "CANCELLED"
+              and interrupted["run_history"]["chain_intact"]
+              and (run_root / "adaptive-result.json").is_file()
+              and not interrupted["solved"],
+              interrupted["run_id"])
+
     blocking_orientation = _orientation(
         unknowns=["required destination"],
         ambiguities=[{
@@ -641,30 +678,28 @@ def run_checks() -> dict:
         blocking_questions=["Which implementation detail should be used?"],
         proposed_next_action="ASK_USER")
     with tempfile.TemporaryDirectory() as root:
-        normalized = _run(
+        repaired = _run(
             "Choose any implementation and return a verified artifact.",
-            _success_answers(orientation=conflicting_orientation), root)
-        dispositions = normalized["orientations"][0]["ambiguities"]
-        check("delegated_choice_conflict_is_normalized_without_another_model_call",
-              normalized["solved"]
+            (json.dumps(conflicting_orientation),
+             *_success_answers(orientation=delegated_orientation)), root)
+        dispositions = repaired["orientations"][0]["ambiguities"]
+        check("delegated_choice_conflict_is_rejected_then_model_repaired",
+              repaired["solved"] and repaired["model_calls"] == 8
               and dispositions[0]["state"] == "DELEGATED_CHOICE"
-              and not normalized["orientations"][0]["blocking_questions"],
+              and not repaired["orientations"][0]["blocking_questions"],
               dispositions[0]["state"])
 
     open_choice_orientation = _orientation(
         ambiguities=[
-            {"subject": "source choice", "state": "UNKNOWN",
-             "reason": "No source was named."},
-            {"subject": "derived field", "state": "UNKNOWN",
+            {"subject": "source choice", "state": "DELEGATED_CHOICE",
+             "reason": "The user delegated source selection."},
+            {"subject": "derived field", "state": "DERIVED_VALUE",
              "reason": "This depends on the selected source."},
-            {"subject": "source authorization", "state": "AMBIGUOUS",
+            {"subject": "source authorization", "state": "RESEARCH_REQUIRED",
              "reason": "The source license must be researched."}],
         delegated_choices=["source choice"],
         research_questions=["What source license applies?"],
-        blocking_questions=[
-            "Which source choice should be used?",
-            "What is the derived field?",
-            "What source authorization applies?"])
+        blocking_questions=[])
     with tempfile.TemporaryDirectory() as root:
         classified = _run(
             "Choose an acceptable source and build a verified artifact.",

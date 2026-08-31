@@ -23,7 +23,10 @@ from .model_routes import PURPOSES, ModelRoute, RoutePolicy, default_routes
 from .operating_profile import OperatingProfile
 from .component_contracts import (
     LoopComponentDraft, component_payload_digest, define_loop_component)
-
+from .parameter_resolution import (
+    LoopConfigResolutionRecord, ParameterDefinition, ParameterInput,
+    ParameterResolutionRequest, ParameterResolutionStatus, ParameterSource,
+    ParameterSourceKind, ParameterValueState, resolve_parameter)
 
 SETTINGS_VERSION = 1
 SEARCH_MODES = ("lexical", "vector", "hybrid")
@@ -31,14 +34,14 @@ LEXICAL_BACKENDS = ("store", "fts5", "lancedb")
 VECTOR_BACKENDS = ("hash", "model2vec")
 PROVIDER_KINDS = ("builtin", "custom")
 ESCALATION_ERROR_CODES = (
-    "rate_limited", "timeout", "provider_failed",
+    "rate_limited", "timeout", "network_unreachable",
+    "provider_unavailable", "provider_failed", "output_limit_reached",
+    "incomplete_response", "empty_response",
     "output_validation_failed", "verification_rejected")
 DEFAULT_SETTINGS_ENV = "LOOP_ENGINE_SETTINGS"
 
-
 class SettingsError(ValueError):
     """The settings source is invalid or unsafe to interpret."""
-
 
 @dataclass(frozen=True)
 class LoopDefaults:
@@ -86,39 +89,42 @@ class LoopDefaults:
             raise SettingsError(
                 "loop.success_confidence_min must be between 0 and 1")
 
-
 @dataclass(frozen=True)
 class LoopConfigOverride:
     """Optional changes for one loop without a long constructor call."""
 
-    framework: str = ""
-    allowable_modes: tuple[str, ...] = ()
-    preferred_modes: tuple[str, ...] = ()
-    delegated_modes: tuple[str, ...] = ()
-    effort: str = ""
-    llm_thinking_power: str = ""
-    custom_steps: tuple[str, ...] = ()
-    max_depth: "int | None" = None
-    max_iterations: "int | None" = None
-    max_model_calls: "int | None" = None
-    exit_condition: str = ""
-    success_confidence_min: "float | None" = None
+    framework: "str | ParameterInput" = ""
+    allowable_modes: "tuple[str, ...] | ParameterInput" = ()
+    preferred_modes: "tuple[str, ...] | ParameterInput" = ()
+    delegated_modes: "tuple[str, ...] | ParameterInput" = ()
+    effort: "str | ParameterInput" = ""
+    llm_thinking_power: "str | ParameterInput" = ""
+    custom_steps: "tuple[str, ...] | ParameterInput" = ()
+    max_depth: "int | None | ParameterInput" = None
+    max_iterations: "int | None | ParameterInput" = None
+    max_model_calls: "int | None | ParameterInput" = None
+    exit_condition: "str | ParameterInput" = ""
+    success_confidence_min: "float | None | ParameterInput" = None
 
     def __post_init__(self) -> None:
         for field_name in ("allowable_modes", "preferred_modes",
                            "delegated_modes"):
-            values = tuple(getattr(self, field_name))
+            raw_value = getattr(self, field_name)
+            if isinstance(raw_value, ParameterInput):
+                continue
+            values = tuple(raw_value)
             object.__setattr__(self, field_name, values)
             if any(value not in MODES for value in values):
                 raise SettingsError(f"{field_name} must use {MODES}")
-        if self.effort and self.effort not in POWER_LEVELS:
+        if (not isinstance(self.effort, ParameterInput)
+                and self.effort and self.effort not in POWER_LEVELS):
             raise SettingsError(f"effort must be one of {POWER_LEVELS}")
-        if (self.llm_thinking_power and self.llm_thinking_power
+        if (not isinstance(self.llm_thinking_power, ParameterInput)
+                and self.llm_thinking_power and self.llm_thinking_power
                 not in MODEL_THINKING_POWER_LEVELS):
             raise SettingsError(
                 "llm_thinking_power must be small, medium, high, max, or "
                 "specialized")
-
 
 @dataclass(frozen=True)
 class SearchSettings:
@@ -128,7 +134,7 @@ class SearchSettings:
     lexical_backend: str = "fts5"
     vector_backend: str = "hash"
     vector_model: str = ""
-    top_k: int = 10
+    top_k: "int | None" = None
     zero_model_first: bool = True
 
     def __post_init__(self) -> None:
@@ -140,8 +146,8 @@ class SearchSettings:
         if self.vector_backend not in VECTOR_BACKENDS:
             raise SettingsError(
                 f"search.vector_backend must be one of {VECTOR_BACKENDS}")
-        if self.top_k < 1:
-            raise SettingsError("search.top_k must be positive")
+        if self.top_k is not None and self.top_k < 1:
+            raise SettingsError("search.top_k must be positive when provided")
 
     def build_retriever(self, records):
         """Create the existing Retriever with these backend choices."""
@@ -150,7 +156,6 @@ class SearchSettings:
             records, lexical_backend=self.lexical_backend,
             vector_backend=self.vector_backend,
             vector_model=self.vector_model or None)
-
 
 @dataclass(frozen=True)
 class HistorySettings:
@@ -162,7 +167,6 @@ class HistorySettings:
     def resolved_runs_dir(self) -> str:
         return os.path.abspath(os.path.expandvars(os.path.expanduser(
             self.runs_dir)))
-
 
 @dataclass(frozen=True)
 class ProviderSettings:
@@ -282,7 +286,6 @@ class ProviderSettings:
             "auth_header": self.auth_header,
         }
 
-
 @dataclass(frozen=True)
 class ModelTier:
     """Ordered model routes and per-attempt limits for one thinking tier."""
@@ -308,7 +311,6 @@ class ModelTier:
                 or len(self.routes) != len(set(self.routes))):
             raise SettingsError(
                 "model tier routes must be unique non-empty names")
-
 
 @dataclass(frozen=True)
 class EscalationSettings:
@@ -338,21 +340,20 @@ class EscalationSettings:
             raise SettingsError(
                 f"model escalation errors must use {ESCALATION_ERROR_CODES}")
 
-
 def _default_tiers() -> tuple[ModelTier, ...]:
     """Conservative route hints. They are not a measured quality ranking."""
     return (
         ModelTier("small", ("cloud.mistral", "cloud.default"),
                   None, 120.0),
-        ModelTier("medium", ("cloud.default", "cloud.mistral.large",
-                             "cloud.openrouter"), None, 300.0),
+        ModelTier("medium", ("cloud.default", "cloud.glm",
+                             "cloud.mistral.large", "cloud.openrouter"),
+                  None, 300.0),
         ModelTier("high", ("cloud.mistral.large", "cloud.hard",
                            "cloud.openrouter.reasoning"), None, 600.0),
         ModelTier("max", ("cloud.hard", "cloud.openrouter.reasoning",
                           "cloud.mistral.large"), None, 900.0),
         ModelTier("specialized", (), None, 600.0),
     )
-
 
 @dataclass(frozen=True)
 class ModelPolicyRequest:
@@ -377,7 +378,6 @@ class ModelPolicyRequest:
         if self.max_route_attempts is not None and self.max_route_attempts < 1:
             raise SettingsError("max_route_attempts must be positive")
 
-
 @dataclass(frozen=True)
 class ModelTask:
     """Prompt, output contract, and policy for one semantic model task."""
@@ -394,7 +394,6 @@ class ModelTask:
             raise SettingsError("a ModelTask needs a prompt")
         if not 0.0 <= self.temperature <= 2.0:
             raise SettingsError("ModelTask.temperature must be between 0 and 2")
-
 
 @dataclass(frozen=True)
 class ModelSettings:
@@ -494,7 +493,6 @@ class ModelSettings:
             max_power_escalations=max(0, len(tiers) - 1),
             escalate_on=self.escalation.on_errors)
 
-
 @dataclass(frozen=True)
 class SettingsLoadResult:
     """Loaded settings plus the non-secret sources that changed them."""
@@ -511,14 +509,12 @@ class SettingsLoadResult:
         value["settings_loop_id"] = self.loop_id
         return value
 
-
 @dataclass(frozen=True)
 class SettingsWriteResult:
     """Created settings path plus the loop that performed the file write."""
 
     path: str
     loop_id: str
-
 
 @dataclass(frozen=True)
 class RuntimeSettings:
@@ -540,49 +536,140 @@ class RuntimeSettings:
     def loop_config(self,
                     override: "LoopConfigOverride | None" = None) -> LoopConfig:
         """Create one LoopConfig from defaults plus one typed override."""
+        return self.loop_config_with_record(override)[0]
+
+    def loop_config_with_record(
+            self, override: "LoopConfigOverride | None" = None) \
+            -> tuple[LoopConfig, LoopConfigResolutionRecord]:
+        """Resolve one LoopConfig and return safe source evidence for each field."""
         change = override or LoopConfigOverride()
-        allowable_modes = (change.allowable_modes
-                           or self.loop.allowable_modes)
-        preferred_modes = (change.preferred_modes
-                           or self.loop.preferred_modes)
+        profile_ref = "core.settings.runtime.loop"
+        profile_version = str(self.version)
+        records = []
+
+        def input_for(value, legacy_omitted) -> ParameterInput:
+            if isinstance(value, ParameterInput):
+                return value
+            if value == legacy_omitted:
+                return ParameterInput.omitted()
+            return ParameterInput.from_value(value)
+
+        def resolve(
+                name: str, semantic_type: str, explicit, legacy_omitted,
+                profile_value=ParameterValueState.OMITTED, *,
+                nullable: bool = False, constraints: "Mapping | None" = None,
+                profile_source: ParameterSourceKind =
+                ParameterSourceKind.LOOP_PROFILE):
+            definition = ParameterDefinition(
+                f"loop.config.{name}", name.replace("_", " "),
+                f"Resolved {name} for one Loop configuration.",
+                semantic_type, "loop_engine.core.runtime_settings:RuntimeSettings",
+                "loop_invocation", nullable=nullable,
+                constraints=dict(constraints or {}),
+                affects_semantic_identity=True,
+                affects_qualification=(name not in {"max_depth"}))
+            sources = [ParameterSource(
+                ParameterSourceKind.RUN_OVERRIDE, "LoopConfigOverride",
+                "1.0.0", input_for(explicit, legacy_omitted))]
+            if profile_value != ParameterValueState.OMITTED:
+                sources.append(ParameterSource(
+                    profile_source, profile_ref, profile_version,
+                    ParameterInput.from_value(profile_value)))
+            resolved = resolve_parameter(ParameterResolutionRequest(
+                definition, tuple(sources)))
+            records.append(resolved)
+            if resolved.status != ParameterResolutionStatus.RESOLVED:
+                reasons = "; ".join(resolved.warnings) or "unresolved"
+                raise SettingsError(
+                    f"loop config parameter {name} is invalid: {reasons}")
+            return resolved.value
+
+        framework = resolve(
+            "framework", "text", change.framework, "", self.loop.framework,
+            constraints={"allowed_values": FRAMEWORKS})
+        allowable_modes = tuple(resolve(
+            "allowable_modes", "text_sequence", change.allowable_modes, (),
+            self.loop.allowable_modes,
+            constraints={"allowed_values": MODES, "non_empty": True}))
+        preferred_modes = tuple(resolve(
+            "preferred_modes", "text_sequence", change.preferred_modes, (),
+            self.loop.preferred_modes,
+            constraints={"allowed_values": MODES, "non_empty": True}))
+        delegated_modes = tuple(resolve(
+            "delegated_modes", "text_sequence", change.delegated_modes, (),
+            self.loop.delegated_modes,
+            constraints={"allowed_values": MODES, "non_empty": True}))
         if any(mode not in allowable_modes for mode in preferred_modes):
             raise SettingsError(
                 "preferred_modes must be a subset of allowable_modes")
-        uses_model = any(mode in allowable_modes
-                         for mode in ("hybrid", "non_deterministic"))
-        if not uses_model and change.llm_thinking_power:
-            raise SettingsError(
-                "llm_thinking_power applies only to a loop that allows "
-                "hybrid or non_deterministic mode")
         operating_effort = {
             "minimal": "light", "standard": "standard",
             "deep": "deep", "exhaustive": "max",
         }[self.operating.effort_mode]
-        return LoopConfig(
-            framework=change.framework or self.loop.framework,
-            allowable_modes=allowable_modes,
+        effort = resolve(
+            "effort", "text", change.effort, "", operating_effort,
+            constraints={"allowed_values": POWER_LEVELS},
+            profile_source=ParameterSourceKind.DERIVED_VALUE)
+        custom_steps = tuple(resolve(
+            "custom_steps", "text_sequence", change.custom_steps, (), (),
+            constraints={}))
+        max_depth = resolve(
+            "max_depth", "integer", change.max_depth, None,
+            self.loop.max_depth, nullable=True, constraints={"minimum": 0})
+        max_iterations = resolve(
+            "max_iterations", "integer", change.max_iterations, None,
+            self.loop.max_iterations, nullable=True,
+            constraints={"minimum": 1})
+        max_model_calls = resolve(
+            "max_model_calls", "integer", change.max_model_calls, None,
+            self.loop.max_model_calls, nullable=True,
+            constraints={"minimum": 1})
+        exit_condition = resolve(
+            "exit_condition", "text", change.exit_condition, "",
+            self.loop.exit_condition,
+            constraints={"allowed_values": EXIT_CONDITIONS})
+        success_confidence_min = resolve(
+            "success_confidence_min", "number",
+            change.success_confidence_min, None,
+            self.loop.success_confidence_min,
+            constraints={"minimum": 0.0, "maximum": 1.0})
+        uses_model = any(mode in allowable_modes
+                         for mode in ("hybrid", "non_deterministic"))
+        if uses_model:
+            llm_thinking_power = resolve(
+                "llm_thinking_power", "text", change.llm_thinking_power, "",
+                self.models.default_thinking_power,
+                constraints={"allowed_values": MODEL_THINKING_POWER_LEVELS})
+        else:
+            explicit_thinking = input_for(change.llm_thinking_power, "")
+            if explicit_thinking.state != ParameterValueState.OMITTED:
+                raise SettingsError(
+                    "llm_thinking_power applies only to a loop that allows "
+                    "hybrid or non_deterministic mode")
+            llm_thinking_power = ""
+            records.append(resolve_parameter(ParameterResolutionRequest(
+                ParameterDefinition(
+                    "loop.config.llm_thinking_power", "LLM thinking power",
+                    "Model thinking setting for a model-authorized Loop.",
+                    "text", "loop_engine.core.runtime_settings:RuntimeSettings",
+                    "loop_invocation", constraints={
+                        "allowed_values": ("", *MODEL_THINKING_POWER_LEVELS)}),
+                (ParameterSource(
+                    ParameterSourceKind.DERIVED_VALUE,
+                    "deterministic_mode_without_model", "1.0.0",
+                    ParameterInput.from_value("")),))))
+        config = LoopConfig(
+            framework=framework, allowable_modes=allowable_modes,
             preferred_modes=preferred_modes,
-            delegated_modes=(change.delegated_modes
-                             or self.loop.delegated_modes),
-            power=change.effort or operating_effort,
-            llm_thinking_power=((change.llm_thinking_power
-                                 or self.models.default_thinking_power)
-                                if uses_model else ""),
-            custom_steps=change.custom_steps,
-            max_depth=(self.loop.max_depth if change.max_depth is None
-                       else change.max_depth),
-            max_iterations=(
-                self.loop.max_iterations if change.max_iterations is None
-                else change.max_iterations),
-            max_model_calls=(
-                self.loop.max_model_calls if change.max_model_calls is None
-                else change.max_model_calls),
-            exit_condition=(change.exit_condition
-                            or self.loop.exit_condition),
-            success_confidence_min=(
-                self.loop.success_confidence_min
-                if change.success_confidence_min is None
-                else change.success_confidence_min))
+            delegated_modes=delegated_modes, power=effort,
+            llm_thinking_power=llm_thinking_power,
+            custom_steps=custom_steps, max_depth=max_depth,
+            max_iterations=max_iterations, max_model_calls=max_model_calls,
+            exit_condition=exit_condition,
+            success_confidence_min=success_confidence_min)
+        record = LoopConfigResolutionRecord.from_parameters(
+            "core.settings.runtime.loop@1", tuple(records))
+        return config, record
 
     def model_request(self, task: ModelTask):
         """Create one gateway request from a typed model task."""

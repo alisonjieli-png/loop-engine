@@ -283,6 +283,10 @@ class HarnessRunResult:
     max_output_tokens_used: "int | None" = None
     model_output_limit_source: str = ""
     model_output_limit_reference: str = ""
+    prompt_resource_ref: str = ""
+    prompt_resource_digest: str = ""
+    prompt_slot_schema_digest: str = ""
+    prompt_render_digest: str = ""
 
     def __post_init__(self) -> None:
         if self.status not in HARNESS_STATUSES:
@@ -370,6 +374,10 @@ class HarnessRunResult:
             "max_output_tokens_used": self.max_output_tokens_used,
             "model_output_limit_source": self.model_output_limit_source,
             "model_output_limit_reference": self.model_output_limit_reference,
+            "prompt_resource_ref": self.prompt_resource_ref,
+            "prompt_resource_digest": self.prompt_resource_digest,
+            "prompt_slot_schema_digest": self.prompt_slot_schema_digest,
+            "prompt_render_digest": self.prompt_render_digest,
             "loop_id": self.loop_id,
             "error_code": self.error_code,
             "error": self.error[:200],

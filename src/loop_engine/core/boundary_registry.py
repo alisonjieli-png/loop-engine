@@ -3,12 +3,10 @@
 Every declared boundary is joined to a role profile and runtime evidence.
 """
 from __future__ import annotations
-
 import ast
 import os
 from dataclasses import dataclass, replace
 from types import MappingProxyType
-
 from ..loop.loop_profile_catalog import LoopProfileError, LoopProfileRef
 from ..loop.loop_profile_ontology import get_profile
 from ..loop.loop_role import LOOP_RELATIONSHIP_KINDS
@@ -43,7 +41,6 @@ class BoundaryOntologyBinding:
 def _exact(role: str, profile_ref: str, *relationships: str) -> BoundaryOntologyBinding:
     return BoundaryOntologyBinding(
         "Loop", (role,), tuple(relationships), profile_ref=profile_ref)
-
 def _dynamic(*roles: str, source: str,
              validator: str,
              relationships: tuple[str, ...]) -> BoundaryOntologyBinding:
@@ -162,11 +159,8 @@ BOUNDARIES = (
      "envelope": "loop.encapsulate.as_model_loop",
      "test": "encapsulate:the_model_boundary_crosses_a_loop_that_permits_one_"
              "semantic_call"},
-    {"boundary": "provider-neutral model routing",
-     "crosses": "one typed model request is attempted across configured routes",
-     "binding": "practitioner_loop",
-     "envelope": "core.model_gateway.invoke_model_gateway",
-     "test": "model_gateway.self_test"},
+    {"boundary": "provider-neutral model routing", "crosses": "one typed model request is attempted across configured routes", "binding": "practitioner_loop", "envelope": "core.model_gateway.invoke_model_gateway", "test": "model_gateway.self_test"},
+    {"boundary": "model response admission", "crosses": "untrusted provider text becomes a typed admitted candidate or rejection", "binding": "native_loop", "envelope": "core.model_response_admission.admit_model_response_as_loop", "test": "model_response_admission.self_test"},
     {"boundary": "runtime settings resolution",
      "crosses": "YAML and environment preferences become typed runtime settings",
      "binding": "practitioner_loop",
@@ -298,35 +292,30 @@ BOUNDARIES = (
     {"boundary": "spawned task state persistence", "crosses": "task lifecycle metadata enters durable state", "binding": "native_loop", "envelope": "loop.spawned_task_state_store.LocalJsonSpawnedTaskStateStore", "test": "spawned_task_state_store.self_test"},
     {"boundary": "spawned saved-state load", "crosses": "all saved tasks for one owner rejoin a manager", "binding": "native_loop", "envelope": "loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin.load_saved_checkpoints", "test": "spawned_task_state_store.self_test"},
     {"boundary": "spawned new-attempt restart", "crosses": "interrupted work starts under a new task identity", "binding": "native_loop", "envelope": "loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin.restart_as_new_attempt", "test": "spawned_task_state_store.self_test"},
-    {"boundary": "solution pipeline execution",
-     "crosses": "an ordered Solution composition runs",
-     "binding": "native_loop",
-     "envelope": "code_nodes.solution_canvas._run_solution_runtime",
-     "test": "solution_canvas_checks.self_test"},
-    {"boundary": "solution member execution",
-     "crosses": "one nested member of a Solution composition runs",
-     "binding": "native_loop",
-     "envelope": "code_nodes.solution_canvas._execute_spec",
-     "test": "solution_canvas_checks.self_test"},
-    {"boundary": "solution router execution",
-     "crosses": "a Solution route or fallback order is selected and run",
-     "binding": "native_loop",
-     "envelope": "code_nodes.solution_canvas._run_solution_node",
-     "test": "solution_canvas_checks.self_test"},
-    {"boundary": "solution validator execution",
-     "crosses": "a Solution output is checked by a validator Loop",
-     "binding": "native_loop",
-     "envelope": "code_nodes.solution_canvas._run_members",
-     "test": "solution_canvas_checks.self_test"},
+    {"boundary": "solution pipeline execution", "crosses": "an ordered Solution composition runs", "binding": "native_loop", "envelope": "code_nodes.solution_canvas._run_solution_runtime", "test": "solution_canvas_checks.self_test"},
+    {"boundary": "solution member execution", "crosses": "one nested member of a Solution composition runs", "binding": "native_loop", "envelope": "code_nodes.solution_canvas._execute_spec", "test": "solution_canvas_checks.self_test"},
+    {"boundary": "solution router execution", "crosses": "a Solution route or fallback order is selected and run", "binding": "native_loop", "envelope": "code_nodes.solution_canvas._run_solution_node", "test": "solution_canvas_checks.self_test"},
+    {"boundary": "solution validator execution", "crosses": "a Solution output is checked by a validator Loop", "binding": "native_loop", "envelope": "code_nodes.solution_canvas._run_members", "test": "solution_canvas_checks.self_test"},
     {"boundary": "development dependency-wave execution", "crosses": "an accepted task plan enters a bounded Solution Loop wave", "binding": "native_loop", "envelope": "core.development_execution.execute_development_plan", "test": "development_execution_checks.self_test"},
     {"boundary": "development task attempt", "crosses": "one task attempt executes and returns typed verification evidence", "binding": "native_loop", "envelope": "core.development_execution.execute_development_plan", "test": "development_execution_checks.self_test"},
+    {"boundary": "reusable capability observation", "crosses": "accepted verified work becomes a reference-only reuse opportunity", "binding": "practitioner_loop", "envelope": "core.reusable_capability_harvest.observe_reuse_opportunity_as_loop", "test": "reusable_capability_checks.self_test"},
+    {"boundary": "reusable capability async dispatch", "crosses": "a reuse opportunity enters reactive scheduling", "binding": "practitioner_loop", "envelope": "core.reusable_capability_harvest.dispatch_reuse_opportunity_as_loop", "test": "reusable_capability_checks.self_test"},
+    {"boundary": "reusable capability harvest", "crosses": "a reuse opportunity becomes assessment, generalization lineage, and a candidate", "binding": "practitioner_loop", "envelope": "core.reusable_capability_harvest.harvest_reuse_opportunity_as_loop", "test": "reusable_capability_checks.self_test"},
+    {"boundary": "reusable capability candidate admission", "crosses": "a verified source artifact becomes a Code Intelligence candidate", "binding": "practitioner_loop", "envelope": "core.reusable_capability_flywheel.CapabilityAuthority.register_candidate_as_loop", "test": "reusable_capability_checks.self_test"},
+    {"boundary": "reusable capability qualification", "crosses": "an independent verifier binds evidence to one candidate", "binding": "practitioner_loop", "envelope": "core.reusable_capability_flywheel.CapabilityAuthority.qualify_as_loop", "test": "reusable_capability_checks.self_test"},
+    {"boundary": "reusable capability promotion", "crosses": "a qualified artifact becomes active", "binding": "practitioner_loop", "envelope": "core.reusable_capability_flywheel.CapabilityAuthority.promote_as_loop", "test": "reusable_capability_checks.self_test"},
+    {"boundary": "reusable capability projection rebuild", "crosses": "promoted assets become a rebuildable search view", "binding": "practitioner_loop", "envelope": "core.reusable_capability_resolution.rebuild_capability_projection_as_loop", "test": "reusable_capability_checks.self_test"},
+    {"boundary": "reusable capability resolution", "crosses": "a typed need reaches hard-eligible promoted assets", "binding": "practitioner_loop", "envelope": "core.reusable_capability_resolution.CapabilityResolver.resolve_as_loop", "test": "reusable_capability_checks.self_test"},
+    {"boundary": "promoted reusable capability invocation", "crosses": "an exact promoted artifact executes and is verified", "binding": "component_loop", "envelope": "core.reusable_capability_resolution.invoke_capability_as_loop", "test": "reusable_capability_checks.self_test"},
+    {"boundary": "hybrid capability assistance", "crosses": "one bounded semantic proposal supports resolution", "binding": "native_loop", "envelope": "core.reusable_capability_hybrid.run_hybrid_assistance_as_loop", "test": "reusable_capability_checks.self_test"},
+    {"boundary": "semantic implementationless execution", "crosses": "one exact semantic contract executes through a selected realization into an untrusted candidate", "binding": "native_loop", "envelope": "core.semantic_runtime.execute_semantic_loop", "test": "semantic_runtime_checks.self_test"},
+    {"boundary": "semantic trusted state commit", "crosses": "issued verification and effect authorization admit one candidate by compare and swap", "binding": "practitioner_loop", "envelope": "core.semantic_state.CatalogTrustedSemanticState.commit", "test": "semantic_runtime_checks.self_test"},
     {"boundary": "persistence",
      "crosses": "an artifact is written to disk",
      "binding": "practitioner_loop",
      "envelope": "core.persistence.append_record_as_loop",
      "test": "persistence.self_test"},
 )
-
 #: The boundary and ontology key sets must match exactly.
 BOUNDARY_ONTOLOGY = MappingProxyType({
     "task entry": _exact(
@@ -376,8 +365,8 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
     "model invocation": _exact(
         "practitioner", "practitioner.solver@1.0.0",
         "starting", "spawned_by"),
-    "provider-neutral model routing": _exact(
-        "practitioner", "practitioner.solver@1.0.0", "spawned_by"),
+    "provider-neutral model routing": _exact("practitioner", "practitioner.solver@1.0.0", "spawned_by"),
+    "model response admission": _exact("solution", "solution.validator@1.0.0", "starting", "spawned_by"),
     "runtime settings resolution": _exact(
         "practitioner", "practitioner.code_execution@1.0.0",
         "starting", "spawned_by"),
@@ -462,6 +451,18 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
         "solution", "solution.validator@1.0.0", "connected_from"),
     "development dependency-wave execution": _exact("solution", "solution.pipeline@1.0.0", "starting"),
     "development task attempt": _exact("solution", "solution.atomic_component@1.0.0", "spawned_by"),
+    "reusable capability observation": _exact("practitioner", "practitioner.self_improvement@1.0.0", "starting", "spawned_by"),
+    "reusable capability harvest": _exact("practitioner", "practitioner.self_improvement@1.0.0", "starting", "spawned_by"),
+    "reusable capability async dispatch": _exact("practitioner", "practitioner.self_improvement@1.0.0", "starting", "spawned_by"),
+    "reusable capability candidate admission": _exact("practitioner", "practitioner.self_improvement@1.0.0", "starting", "spawned_by"),
+    "reusable capability qualification": _exact("practitioner", "practitioner.verifier@1.0.0", "starting", "spawned_by"),
+    "reusable capability promotion": _exact("practitioner", "practitioner.verifier@1.0.0", "starting", "spawned_by"),
+    "reusable capability projection rebuild": _exact("intelligence", "intelligence.code.resolve@1.0.0", "starting", "queried_by"),
+    "reusable capability resolution": _exact("intelligence", "intelligence.code.resolve@1.0.0", "starting", "queried_by"),
+    "promoted reusable capability invocation": _exact("intelligence", "intelligence.code.invoke@1.0.0", "starting", "retrieved_by"),
+    "hybrid capability assistance": _exact("practitioner", "practitioner.solver@1.0.0", "starting", "spawned_by"),
+    "semantic implementationless execution": _exact("solution", "solution.atomic_component@1.0.0", "starting"),
+    "semantic trusted state commit": _exact("practitioner", "practitioner.verifier@1.0.0", "spawned_by"),
     "persistence": _exact(
         "practitioner", "practitioner.code_execution@1.0.0", "spawned_by"),
 })
@@ -517,7 +518,6 @@ def _mapped_symbol_exists(reference: str) -> bool:
                                if isinstance(target, ast.Name)})
         current = nested.get(name)
     return current is not None
-
 
 def _validate(row: dict,
               ontology: "BoundaryOntologyBinding | None" = None) -> None:
@@ -592,7 +592,6 @@ def _validate(row: dict,
         raise BoundaryError(
             f"dynamic profile source {source.source!r} and validator "
             f"{source.validator!r} must resolve through the architecture map")
-
 
 def boundary_report(rows=BOUNDARIES, ontology=BOUNDARY_ONTOLOGY) -> dict:
     """The computed inventory. Nothing here is rounded up: a boundary is
@@ -672,13 +671,11 @@ def boundary_report(rows=BOUNDARIES, ontology=BOUNDARY_ONTOLOGY) -> dict:
                        "validated Loop role profile; invalid, unclassified, "
                        "extra, duplicate, and unbound rows stay visible"}
 
-
 def unbound_boundaries() -> list:
     """The work queue, in the register's own words."""
     return [{"boundary": r["boundary"], "crosses": r["crosses"],
              "why_open": r.get("note", "")}
             for r in BOUNDARIES if r["binding"] == "unbound"]
-
 
 def self_test() -> dict:
     results = []

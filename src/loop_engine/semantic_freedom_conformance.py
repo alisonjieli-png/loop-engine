@@ -23,29 +23,40 @@ def scan_semantic_freedom(root: str, rules: dict, py_files, source_tree) -> list
         tree = source_tree(os.path.join(root, rel))
         if tree is None:
             continue
-        if root_is_canary or normalized in policed:
-            for node in ast.walk(tree):
-                if not isinstance(node, (ast.If, ast.IfExp, ast.While)):
-                    continue
-                referenced = {
-                    part.id for part in ast.walk(node.test)
-                    if isinstance(part, ast.Name)} | {
-                    part.attr for part in ast.walk(node.test)
-                    if isinstance(part, ast.Attribute)}
-                semantic_literals = [
-                    part.value for part in ast.walk(node.test)
-                    if isinstance(part, ast.Constant)
-                    and isinstance(part.value, str)
-                    and len(part.value.strip()) > 2]
-                if referenced & task_names and semantic_literals:
-                    findings.append({
-                        "rule": "task_text_controls_solution",
-                        "file": normalized, "line": node.lineno,
-                        "detail": (
-                            "task wording controls a product branch using "
-                            f"{semantic_literals[:3]!r}; pass the open task "
-                            "to model-led orientation instead"),
-                    })
+        for node in ast.walk(tree):
+            if not isinstance(node, (ast.If, ast.IfExp, ast.While)):
+                continue
+            referenced = {
+                part.id for part in ast.walk(node.test)
+                if isinstance(part, ast.Name)} | {
+                part.attr for part in ast.walk(node.test)
+                if isinstance(part, ast.Attribute)}
+            semantic_literals = [
+                part.value for part in ast.walk(node.test)
+                if isinstance(part, ast.Constant)
+                and isinstance(part.value, str)
+                and len(part.value.strip()) > 2]
+            normalized_task_text = any(
+                isinstance(part, ast.Call)
+                and isinstance(part.func, ast.Attribute)
+                and part.func.attr in ("lower", "casefold")
+                and any(name in task_names for name in (
+                    [part.func.value.id]
+                    if isinstance(part.func.value, ast.Name) else
+                    [part.func.value.attr]
+                    if isinstance(part.func.value, ast.Attribute) else []))
+                for part in ast.walk(node.test))
+            if ((root_is_canary or normalized in policed
+                 or normalized_task_text)
+                    and referenced & task_names and semantic_literals):
+                findings.append({
+                    "rule": "task_text_controls_solution",
+                    "file": normalized, "line": node.lineno,
+                    "detail": (
+                        "task wording controls a product branch using "
+                        f"{semantic_literals[:3]!r}; pass the open task "
+                        "to model-led orientation instead"),
+                })
         ceilings = set(rules.get("unset_default_ceiling_fields", ()))
         for node in tree.body:
             if not isinstance(node, ast.ClassDef) or any(
@@ -67,6 +78,26 @@ def scan_semantic_freedom(root: str, rules: dict, py_files, source_tree) -> list
                             f"{field_node.value.value!r}; use None and require "
                             "an explicit owner limit"),
                     })
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                defaults = list(zip(
+                    node.args.args[-len(node.args.defaults):]
+                    if node.args.defaults else (), node.args.defaults))
+                defaults.extend((argument, value) for argument, value in zip(
+                    node.args.kwonlyargs, node.args.kw_defaults)
+                    if value is not None)
+                for argument, value in defaults:
+                    if (argument.arg in ceilings
+                            and isinstance(value, ast.Constant)
+                            and isinstance(value.value, (int, float))
+                            and not isinstance(value.value, bool)):
+                        findings.append({
+                            "rule": "implicit_semantic_work_ceiling",
+                            "file": normalized, "line": node.lineno,
+                            "detail": (
+                                f"{node.name}.{argument.arg} defaults to "
+                                f"{value.value!r}; use None and require an "
+                                "explicit owner limit"),
+                        })
     expected = rules.get("llm_first_defaults", {})
     for identity, fields in expected.items():
         relative, class_name = identity.split(":", 1)

@@ -23,11 +23,11 @@ class IntelligenceQuery:
     lifecycle: tuple[str, ...] = ()
     namespaces: tuple[str, ...] = ()
     attributes: dict = field(default_factory=dict)
-    limit: int = 50
+    limit: "int | None" = None
     offset: int = 0
 
     def __post_init__(self) -> None:
-        if self.limit < 0 or self.offset < 0:
+        if (self.limit is not None and self.limit < 0) or self.offset < 0:
             raise QueryError("limit and offset cannot be negative")
         for label, values in (("layers", self.layers),
                               ("source_collections", self.source_collections),

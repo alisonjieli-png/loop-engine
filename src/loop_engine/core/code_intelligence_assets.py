@@ -21,7 +21,8 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
+from typing import Mapping
 
 from ..loop.loop_capsule import ExternalPayloadRef as ExternalBodyRef
 
@@ -41,6 +42,31 @@ LOAD_STRATEGIES = (
 SOURCE_KINDS = (
     "local_path", "python_package", "pypi", "github", "gitlab", "git",
     "http_api", "container_registry", "object_store", "database", "other")
+
+CODE_ASSET_LIFECYCLE = (
+    "draft", "candidate", "validated", "registered", "deprecated",
+    "quarantined", "rejected", "superseded", "retired")
+
+
+class CodeAssetAdmissionError(ValueError):
+    """An exact Code Intelligence admission invariant failed."""
+
+
+def _canonical(value: object) -> str:
+    return json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+
+
+def _sha256(value: object) -> str:
+    return hashlib.sha256(_canonical(value).encode("utf-8")).hexdigest()
+
+
+def _require_sha256(label: str, value: str) -> None:
+    if (not isinstance(value, str) or len(value) != 64
+            or any(character not in "0123456789abcdef"
+                   for character in value)):
+        raise CodeAssetAdmissionError(
+            f"{label} must be a lowercase SHA-256 digest")
 
 CODE_INTELLIGENCE_TEMPLATES = {
     "pure_function": {
@@ -177,9 +203,7 @@ class CodeAssetSpec:
             raise ValueError(f"modes must be drawn from {MODES}")
         if any(effect not in EFFECTS for effect in self.effects):
             raise ValueError(f"effects must be drawn from {EFFECTS}")
-        if self.lifecycle not in (
-                "draft", "candidate", "validated", "registered",
-                "deprecated", "retired"):
+        if self.lifecycle not in CODE_ASSET_LIFECYCLE:
             raise ValueError("unknown Code asset lifecycle")
         if self.lifecycle == "registered" and not self.admission_ref:
             raise ValueError("registered Code assets require an admission_ref")
@@ -218,6 +242,199 @@ class CodeAssetSpec:
         return hashlib.sha256(
             json.dumps(body, sort_keys=True).encode()).hexdigest()
 
+    @property
+    def dependency_digest(self) -> str:
+        return _sha256(list(self.dependencies))
+
+    @property
+    def contract_digest(self) -> str:
+        return _sha256({
+            "input_contract": self.input_contract,
+            "output_contract": self.output_contract,
+        })
+
+    @property
+    def effect_digest(self) -> str:
+        return _sha256(list(self.effects))
+
+    @property
+    def qualification_digest(self) -> str:
+        """Stable executable identity unaffected by lifecycle transitions."""
+        return _sha256({
+            "asset_id": self.asset_id,
+            "version": self.version,
+            "body_digest": self.body_ref.digest,
+            "entrypoints": list(self.entrypoints),
+            "modes": list(self.modes),
+            "dependency_digest": self.dependency_digest,
+            "contract_digest": self.contract_digest,
+            "effect_digest": self.effect_digest,
+            "load_strategy": self.load_strategy,
+        })
+
+    def to_dict(self) -> dict:
+        return {
+            "record_type": "code_asset_spec/v1",
+            "asset_id": self.asset_id,
+            "name": self.name,
+            "description": self.description,
+            "asset_kind": self.asset_kind,
+            "source_kind": self.source_kind,
+            "body_ref": self.body_ref.to_dict(),
+            "entrypoints": list(self.entrypoints),
+            "modes": list(self.modes),
+            "input_contract": self.input_contract,
+            "output_contract": self.output_contract,
+            "effects": list(self.effects),
+            "dependencies": list(self.dependencies),
+            "data_refs": [_reference_dict(ref) for ref in self.data_refs],
+            "file_count": self.file_count,
+            "line_count": self.line_count,
+            "load_strategy": self.load_strategy,
+            "template_id": self.template_id,
+            "version": self.version,
+            "license": self.license,
+            "lifecycle": self.lifecycle,
+            "admission_ref": self.admission_ref,
+            "metadata": dict(self.metadata),
+            "card_digest": self.card_digest,
+            "qualification_digest": self.qualification_digest,
+        }
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, object]) -> "CodeAssetSpec":
+        body = dict(value)
+        if body.pop("record_type", "") != "code_asset_spec/v1":
+            raise ValueError("CodeAssetSpec record type is unsupported")
+        expected_card = str(body.pop("card_digest", ""))
+        expected_qualification = str(body.pop("qualification_digest", ""))
+        payload = body.get("body_ref")
+        if not isinstance(payload, Mapping):
+            raise ValueError("CodeAssetSpec body_ref must be an object")
+        body["body_ref"] = ExternalBodyRef(**dict(payload))
+        for name in ("entrypoints", "modes", "effects", "dependencies",
+                     "data_refs"):
+            body[name] = tuple(body.get(name) or ())
+        spec = cls(**body)
+        if (expected_card != spec.card_digest
+                or expected_qualification != spec.qualification_digest):
+            raise ValueError("CodeAssetSpec digest does not match its content")
+        return spec
+
+
+@dataclass(frozen=True)
+class CodeAssetAdmissionRecord:
+    """Independent qualification authority for one exact Code asset."""
+
+    admission_id: str
+    asset_id: str
+    asset_version: str
+    qualification_digest: str
+    body_digest: str
+    dependency_digest: str
+    contract_digest: str
+    effect_digest: str
+    producer_id: str
+    verifier_id: str
+    evidence_refs: tuple[str, ...]
+    evidence_digest: str
+    schema_version: str = "code_asset_admission/v1"
+
+    def __post_init__(self) -> None:
+        if self.schema_version != "code_asset_admission/v1":
+            raise CodeAssetAdmissionError(
+                "unsupported Code asset admission schema")
+        for label, value in (
+                ("admission_id", self.admission_id),
+                ("asset_id", self.asset_id),
+                ("asset_version", self.asset_version),
+                ("producer_id", self.producer_id),
+                ("verifier_id", self.verifier_id)):
+            if not isinstance(value, str) or not value.strip():
+                raise CodeAssetAdmissionError(f"{label} is required")
+        if self.producer_id.casefold() == self.verifier_id.casefold():
+            raise CodeAssetAdmissionError(
+                "a Code asset producer cannot be its sole verifier")
+        for label, value in (
+                ("qualification_digest", self.qualification_digest),
+                ("body_digest", self.body_digest),
+                ("dependency_digest", self.dependency_digest),
+                ("contract_digest", self.contract_digest),
+                ("effect_digest", self.effect_digest),
+                ("evidence_digest", self.evidence_digest)):
+            _require_sha256(label, value)
+        refs = tuple(self.evidence_refs)
+        if (not refs or len(refs) != len(set(refs))
+                or any(not isinstance(item, str) or not item.strip()
+                       for item in refs)):
+            raise CodeAssetAdmissionError(
+                "Code asset admission needs unique evidence references")
+        object.__setattr__(self, "evidence_refs", refs)
+
+    @property
+    def digest(self) -> str:
+        return _sha256(self._body())
+
+    def _body(self) -> dict:
+        return {
+            "schema_version": self.schema_version,
+            "admission_id": self.admission_id,
+            "asset_id": self.asset_id,
+            "asset_version": self.asset_version,
+            "qualification_digest": self.qualification_digest,
+            "body_digest": self.body_digest,
+            "dependency_digest": self.dependency_digest,
+            "contract_digest": self.contract_digest,
+            "effect_digest": self.effect_digest,
+            "producer_id": self.producer_id,
+            "verifier_id": self.verifier_id,
+            "evidence_refs": list(self.evidence_refs),
+            "evidence_digest": self.evidence_digest,
+        }
+
+    def to_dict(self) -> dict:
+        return {**self._body(), "record_digest": self.digest}
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, object]
+                  ) -> "CodeAssetAdmissionRecord":
+        body = dict(value)
+        expected = str(body.pop("record_digest", ""))
+        body["evidence_refs"] = tuple(body.get("evidence_refs") or ())
+        record = cls(**body)
+        if expected != record.digest:
+            raise CodeAssetAdmissionError(
+                "Code asset admission digest does not match")
+        return record
+
+
+def admit_code_asset(
+        spec: CodeAssetSpec,
+        admission: CodeAssetAdmissionRecord) -> CodeAssetSpec:
+    """Promote one exact validated Code asset without changing its body."""
+    if not isinstance(spec, CodeAssetSpec):
+        raise CodeAssetAdmissionError("admission requires CodeAssetSpec")
+    if not isinstance(admission, CodeAssetAdmissionRecord):
+        raise CodeAssetAdmissionError(
+            "admission requires CodeAssetAdmissionRecord")
+    expected = (
+        spec.asset_id, spec.version, spec.qualification_digest,
+        spec.body_ref.digest, spec.dependency_digest, spec.contract_digest,
+        spec.effect_digest)
+    observed = (
+        admission.asset_id, admission.asset_version,
+        admission.qualification_digest, admission.body_digest,
+        admission.dependency_digest, admission.contract_digest,
+        admission.effect_digest)
+    if expected != observed:
+        raise CodeAssetAdmissionError(
+            "admission does not bind this exact artifact and contract set")
+    if spec.lifecycle not in ("candidate", "validated"):
+        raise CodeAssetAdmissionError(
+            "only a candidate or validated Code asset can be admitted")
+    return replace(
+        spec, lifecycle="registered", admission_ref=admission.admission_id)
+
 
 def spec_from_template(template_id: str, **values) -> CodeAssetSpec:
     """Create a Code asset card from one declared template."""
@@ -251,6 +468,10 @@ def code_asset_record(spec: CodeAssetSpec):
         "version": spec.version, "license": spec.license,
         "admission_ref": spec.admission_ref,
         "maturity": maturity, "card_digest": spec.card_digest,
+        "qualification_digest": spec.qualification_digest,
+        "dependency_digest": spec.dependency_digest,
+        "contract_digest": spec.contract_digest,
+        "effect_digest": spec.effect_digest,
         "metadata": dict(spec.metadata),
         "facets": code_facets(
             execution_mode="code_only" if spec.modes == ("deterministic",)
@@ -474,6 +695,22 @@ def self_test() -> dict:
             lifecycle="registered")
     except ValueError:
         self_admission = True
+    admission = CodeAssetAdmissionRecord(
+        "admission-large-worker", spec.asset_id, spec.version,
+        spec.qualification_digest, spec.body_ref.digest,
+        spec.dependency_digest, spec.contract_digest, spec.effect_digest,
+        "producer-loop", "verifier-loop", ("suite:large-worker",),
+        _sha256({"suite": "large-worker", "passed": True}))
+    admission_candidate = replace(
+        spec, lifecycle="candidate", admission_ref="")
+    registered = admit_code_asset(admission_candidate, admission)
+    changed_proof_refused = False
+    try:
+        admit_code_asset(
+            admission_candidate,
+            replace(admission, body_digest="b" * 64))
+    except CodeAssetAdmissionError:
+        changed_proof_refused = True
     tests = [
         {"test": "large_system_search_card_contains_no_large_body",
          "passed": record.body["body_inline"] is False
@@ -503,6 +740,13 @@ def self_test() -> dict:
          >= {"preflight", "postflight", "diagnostics", "logging"}},
         {"test": "payload_digest_and_admission_fail_closed",
          "passed": bad_digest and self_admission},
+        {"test": "independent_admission_binds_exact_executable_identity",
+         "passed": registered.lifecycle == "registered"
+         and registered.admission_ref == admission.admission_id
+         and registered.body_ref.digest == spec.body_ref.digest
+         and registered.qualification_digest == spec.qualification_digest},
+        {"test": "changed_artifact_cannot_reuse_prior_admission",
+         "passed": changed_proof_refused},
         {"test": "large_datasets_remain_separate_digest_bound_references",
          "passed": record.body["data_refs"][0]["uri"].startswith("s3://")
          and record.body["data_refs"][0]["digest"] == "d" * 64

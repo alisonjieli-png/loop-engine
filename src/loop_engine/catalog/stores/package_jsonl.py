@@ -63,7 +63,8 @@ class PackageJsonlStore:
 
     def query(self, query: IntelligenceQuery) -> list[dict]:
         matched = [r for r in self._iter_records() if query.matches(r)]
-        return matched[query.offset:query.offset + query.limit]
+        stop = None if query.limit is None else query.offset + query.limit
+        return matched[query.offset:stop]
 
     def stream(self, query: IntelligenceQuery):
         count = 0
@@ -73,7 +74,8 @@ class PackageJsonlStore:
             if count < query.offset:
                 count += 1
                 continue
-            if count >= query.offset + query.limit:
+            if (query.limit is not None
+                    and count >= query.offset + query.limit):
                 return
             count += 1
             yield record

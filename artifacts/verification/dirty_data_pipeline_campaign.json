@@ -1,0 +1,98 @@
+{
+  "record_type": "dirty_data_pipeline_campaign/v2",
+  "campaign_id": "dirty-data-pipelines-2026-08-31",
+  "initial_cold_start_contract": {
+    "record_type": "reusable_capability_bootstrap_contract/v1",
+    "purpose": "Prove the production lifecycle with one small semantic behavior before increasing application complexity.",
+    "required_artifacts": [
+      "capability.py",
+      "capability_manifest.json",
+      "verify.py",
+      "verification.json"
+    ],
+    "completion_requires": [
+      "public_solve_entry_used",
+      "starting_practitioner_completed_verified",
+      "generated_code_executed_in_production_sandbox",
+      "independent_holdout_verified",
+      "exact_artifact_stored",
+      "candidate_qualified",
+      "exact_digest_promoted",
+      "differently_worded_warm_task_resolved_through_public_solve",
+      "warm_task_model_calls_zero_when_exact_resolution_is_sufficient"
+    ],
+    "prohibits": [
+      "external_datasets",
+      "web_research",
+      "kaggle_integration",
+      "graphics_or_report_generation",
+      "parallel_test_only_entrypoint",
+      "injected_test_only_resolver"
+    ]
+  },
+  "advanced_pipeline_contract": {
+    "record_type": "reusable_pipeline_manifest/v1",
+    "required_entrypoint": "run_pipeline",
+    "required_cli": ["--input", "--output", "--config"],
+    "required_artifacts": [
+      "pipeline.py",
+      "pipeline_manifest.json",
+      "verify.py",
+      "verification.json",
+      "report.html"
+    ],
+    "completion_requires": [
+      "cold_task_completed_verified",
+      "pipeline_interface_verified",
+      "independent_holdout_verified",
+      "exact_artifact_stored",
+      "candidate_qualified",
+      "exact_digest_promoted",
+      "warm_task_completed_verified",
+      "warm_task_model_calls_zero_when_exact_resolution_is_sufficient"
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "text_field_whitespace_normalization",
+      "operation_family": "data.text_field_whitespace_normalization",
+      "proof_level": "initial_cold_start",
+      "contract_ref": "initial_cold_start_contract",
+      "status": "ready",
+      "cold_task_text": "Build, execute, verify, and package a reusable Python capability that normalizes whitespace in named text fields of JSON records. Preserve every original record. For each selected field, trim leading and trailing whitespace and replace each run of Unicode whitespace with one ASCII space. Leave missing fields, explicit null values, non-string values, false, zero, and empty strings semantically distinct and unchanged except where the contract explicitly permits string whitespace normalization. Return normalized records, per-record changed-field names, and stable transformation codes. Expose normalize_records(request: dict) -> dict and a command line interface that reads JSON and writes JSON. Use only the Python standard library. Include a typed capability manifest and an independent verifier. Completion requires the code and verifier to execute successfully in the production sandbox, the exact artifact to be stored, independently qualified and promoted, and a differently worded compatible task to retrieve and run it through the public solve path with zero model calls."
+    },
+    {
+      "case_id": "address_normalization",
+      "operation_family": "data.address_normalization",
+      "proof_level": "advanced_pipeline",
+      "contract_ref": "advanced_pipeline_contract",
+      "status": "deferred_too_complex_for_initial_cold_start",
+      "reason": "The attempted task combined parsing, synthetic data generation, ambiguity policy, duplicate clustering, metrics, manifests, reporting, and qualification before the basic reuse circuit was stable."
+    },
+    {"case_id": "contact_normalization", "operation_family": "data.contact_normalization", "status": "pending"},
+    {"case_id": "datetime_normalization", "operation_family": "data.datetime_normalization", "status": "pending"},
+    {"case_id": "monetary_normalization", "operation_family": "data.monetary_normalization", "status": "pending"},
+    {"case_id": "unit_normalization", "operation_family": "data.unit_normalization", "status": "pending"},
+    {"case_id": "csv_repair", "operation_family": "data.csv_repair", "status": "pending"},
+    {"case_id": "product_catalog_normalization", "operation_family": "data.product_catalog_normalization", "status": "pending"},
+    {"case_id": "record_deduplication", "operation_family": "data.record_deduplication", "status": "pending"},
+    {"case_id": "transaction_reconciliation", "operation_family": "data.transaction_reconciliation", "status": "pending"},
+    {"case_id": "survey_normalization", "operation_family": "data.survey_normalization", "status": "pending"},
+    {"case_id": "log_normalization", "operation_family": "data.log_normalization", "status": "pending"},
+    {"case_id": "schema_drift", "operation_family": "data.schema_drift", "status": "pending"},
+    {"case_id": "time_series_cleanup", "operation_family": "data.time_series_cleanup", "status": "pending"},
+    {"case_id": "join_key_repair", "operation_family": "data.join_key_repair", "status": "pending"},
+    {"case_id": "document_metadata_normalization", "operation_family": "data.document_metadata_normalization", "status": "pending"},
+    {"case_id": "geographic_normalization", "operation_family": "data.geographic_normalization", "status": "pending"}
+  ],
+  "summary": {
+    "total_cases": 17,
+    "completed": 0,
+    "ready": 1,
+    "in_progress": 0,
+    "pending": 15,
+    "deferred": 1,
+    "failed": 0,
+    "next_case_id": "text_field_whitespace_normalization"
+  }
+}

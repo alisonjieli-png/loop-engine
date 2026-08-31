@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from enum import Enum
 from importlib.resources import files
 
 import yaml
@@ -30,6 +31,83 @@ _SEMVER = re.compile(
 
 class PractitionerContextError(ValueError):
     """Question or persona Context Intelligence has an invalid contract."""
+
+
+class ContextIntelligenceAvailability(str, Enum):
+    """Observed availability of the primary Context Intelligence source."""
+
+    AVAILABLE = "available"
+    UNAVAILABLE = "unavailable"
+
+
+class ContextFallbackPolicy(str, Enum):
+    """Whether a declared outage may use the packaged minimum portfolio."""
+
+    REFUSE = "refuse"
+    USE_PACKAGED_MINIMUM = "use_packaged_minimum"
+
+
+@dataclass(frozen=True)
+class PractitionerContextLoadRequest:
+    """Typed request for primary or explicitly degraded context loading."""
+
+    availability: ContextIntelligenceAvailability = (
+        ContextIntelligenceAvailability.AVAILABLE)
+    fallback_policy: ContextFallbackPolicy = (
+        ContextFallbackPolicy.USE_PACKAGED_MINIMUM)
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.availability, ContextIntelligenceAvailability):
+            raise PractitionerContextError(
+                "context availability must use its typed enum")
+        if not isinstance(self.fallback_policy, ContextFallbackPolicy):
+            raise PractitionerContextError(
+                "context fallback policy must use its typed enum")
+
+
+@dataclass(frozen=True)
+class PractitionerContextLoadRecord:
+    """Evidence of which immutable question portfolio entered the run."""
+
+    portfolio: "PractitionerContextPortfolio"
+    source_ref: str
+    availability: ContextIntelligenceAvailability
+    fallback_used: bool
+    degradation_reason: str = ""
+    record_type: str = "practitioner_context_load/v1"
+
+    def __post_init__(self) -> None:
+        if self.record_type != "practitioner_context_load/v1":
+            raise PractitionerContextError(
+                "unsupported practitioner context load record")
+        if not isinstance(self.portfolio, PractitionerContextPortfolio):
+            raise PractitionerContextError(
+                "context load record requires a validated portfolio")
+        if not self.source_ref.strip():
+            raise PractitionerContextError(
+                "context load record requires a source reference")
+        if not isinstance(self.availability, ContextIntelligenceAvailability):
+            raise PractitionerContextError(
+                "context load record availability is invalid")
+        if self.fallback_used and not self.degradation_reason.strip():
+            raise PractitionerContextError(
+                "fallback context requires a degradation reason")
+        if not self.fallback_used and self.degradation_reason:
+            raise PractitionerContextError(
+                "primary context cannot carry a degradation reason")
+
+    def to_dict(self) -> dict:
+        return {
+            "record_type": self.record_type,
+            "portfolio_id": self.portfolio.portfolio_id,
+            "portfolio_version": self.portfolio.version,
+            "portfolio_digest": component_payload_digest(
+                self.portfolio.to_dict()),
+            "source_ref": self.source_ref,
+            "availability": self.availability.value,
+            "fallback_used": self.fallback_used,
+            "degradation_reason": self.degradation_reason,
+        }
 
 
 @dataclass(frozen=True)
@@ -229,26 +307,32 @@ class PractitionerContextPortfolio:
             raise PractitionerContextError(
                 f"question portfolio has no step {step_id!r}") from exc
 
-    def persona_for_step(self, step_id: str) -> PractitionerPersona:
-        """Resolve the first configured perspective or use the general one."""
-        refs = self.for_step(step_id).persona_refs
-        personas = {self.persona.persona_id: self.persona,
-                    **{item.persona_id: item for item in self.perspectives}}
-        return personas.get(refs[0], self.persona) if refs else self.persona
+    def persona_candidates(self, step_id: str) -> tuple[dict, ...]:
+        """Return every perspective with affinity metadata and no selection."""
+        affinities = set(self.for_step(step_id).persona_refs)
+        return tuple({
+            **item.to_dict(),
+            "step_affinity_match": item.persona_id in affinities,
+            "selection_authority": "model",
+        } for item in (self.persona, *self.perspectives))
 
-    def supporting_personas_for_step(
-            self, step_id: str) -> tuple[PractitionerPersona, ...]:
-        """Resolve only the explicitly selected supporting perspectives."""
-        refs = self.for_step(step_id).persona_refs[1:]
-        personas = {item.persona_id: item for item in self.perspectives}
-        return tuple(personas[item] for item in refs if item in personas)
-
-    def guidance_for_step(
-            self, step_id: str) -> tuple[PractitionerGuidance, ...]:
-        """Select the small guidance set explicitly affiliated with a step."""
+    def guidance_candidates(self, step_id: str) -> tuple[dict, ...]:
+        """Return all guidance with step affinity as advisory metadata."""
         self.for_step(step_id)
-        return tuple(item for item in self.guidance
-                     if step_id in item.step_affinities)
+        return tuple({
+            **item.to_dict(),
+            "step_affinity_match": step_id in item.step_affinities,
+            "selection_authority": "model",
+        } for item in self.guidance)
+
+    def question_candidates(self, step_id: str) -> tuple[dict, ...]:
+        """Return every question set; the current step is a hint, not a gate."""
+        self.for_step(step_id)
+        return tuple({
+            **item.to_dict(),
+            "active_step_match": item.step_id == step_id,
+            "selection_authority": "model",
+        } for item in self.steps)
 
     def assembly_profile(self, has_failures: bool) -> PromptAssemblyProfile:
         activation = "active_failures" if has_failures else "default"
@@ -284,10 +368,9 @@ class PractitionerContextPortfolio:
                 item.record_id for item in self.guidance)))
 
 
-def load_practitioner_context() -> PractitionerContextPortfolio:
-    """Load and validate the installed Core question portfolio."""
-    path = files("loop_engine").joinpath(
-        "data/practitioner_context_intelligence.yaml")
+def _load_practitioner_context_resource(
+        relative_path: str) -> PractitionerContextPortfolio:
+    path = files("loop_engine").joinpath(relative_path)
     value = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
         raise PractitionerContextError("context portfolio root must be an object")
@@ -338,8 +421,56 @@ def load_practitioner_context() -> PractitionerContextPortfolio:
     )
 
 
+def load_practitioner_context_with_record(
+        request: "PractitionerContextLoadRequest | None" = None
+        ) -> PractitionerContextLoadRecord:
+    """Load primary Context Intelligence or an explicitly allowed minimum.
+
+    The fallback is a separate immutable package resource. It is used only
+    when the caller declares the Context Intelligence source unavailable. A
+    malformed primary portfolio still fails closed because corruption is not
+    equivalent to an operational outage.
+    """
+    selected = request or PractitionerContextLoadRequest()
+    if not isinstance(selected, PractitionerContextLoadRequest):
+        raise PractitionerContextError(
+            "context load request has the wrong contract")
+    primary_ref = (
+        "intelligence/context/core/practitioner_context_intelligence.yaml")
+    if selected.availability is ContextIntelligenceAvailability.AVAILABLE:
+        return PractitionerContextLoadRecord(
+            _load_practitioner_context_resource(primary_ref),
+            primary_ref, selected.availability, False)
+    if selected.fallback_policy is ContextFallbackPolicy.REFUSE:
+        raise PractitionerContextError(
+            "Context Intelligence is unavailable and fallback is refused")
+    fallback_ref = "data/practitioner_context_fallback.yaml"
+    return PractitionerContextLoadRecord(
+        _load_practitioner_context_resource(fallback_ref),
+        fallback_ref, selected.availability, True,
+        "primary Context Intelligence was declared unavailable")
+
+
+def load_practitioner_context(
+        request: "PractitionerContextLoadRequest | None" = None
+        ) -> PractitionerContextPortfolio:
+    """Load the validated portfolio while retaining a detailed record API."""
+    return load_practitioner_context_with_record(request).portfolio
+
+
 def self_test() -> dict:
     portfolio = load_practitioner_context()
+    degraded = load_practitioner_context_with_record(
+        PractitionerContextLoadRequest(
+            ContextIntelligenceAvailability.UNAVAILABLE,
+            ContextFallbackPolicy.USE_PACKAGED_MINIMUM))
+    refused = False
+    try:
+        load_practitioner_context_with_record(PractitionerContextLoadRequest(
+            ContextIntelligenceAvailability.UNAVAILABLE,
+            ContextFallbackPolicy.REFUSE))
+    except PractitionerContextError:
+        refused = True
     tests = [
         {
             "test": "one_general_portfolio_covers_every_practitioner_step",
@@ -357,6 +488,22 @@ def self_test() -> dict:
             "test": "general_portfolio_exposes_review_perspectives",
             "passed": len(portfolio.perspectives) >= 8,
             "detail": f"{len(portfolio.perspectives)} optional perspectives",
+        },
+        {
+            "test": "perspectives_guidance_and_questions_are_model_candidates",
+            "passed": (
+                len(portfolio.persona_candidates("decide_next"))
+                == 1 + len(portfolio.perspectives)
+                and len(portfolio.guidance_candidates("decide_next"))
+                == len(portfolio.guidance)
+                and len(portfolio.question_candidates("decide_next"))
+                == len(portfolio.steps)
+                and all(item["selection_authority"] == "model"
+                        for item in portfolio.persona_candidates(
+                            "decide_next")
+                        + portfolio.guidance_candidates("decide_next")
+                        + portfolio.question_candidates("decide_next"))),
+            "detail": "step affinity is metadata and selects nothing",
         },
         {
             "test": "orientation_asks_for_inputs_outputs_and_subcomponents",
@@ -393,6 +540,22 @@ def self_test() -> dict:
                 and portfolio.component_definition().component_kind
                 == "intelligence_portfolio"),
             "detail": "all remain passive and content addressed",
+        },
+        {
+            "test": "declared_intelligence_outage_uses_separate_minimum_file",
+            "passed": (
+                degraded.fallback_used
+                and degraded.source_ref
+                == "data/practitioner_context_fallback.yaml"
+                and degraded.portfolio.portfolio_id
+                == "fallback.context.practitioner.minimum"
+                and len(degraded.portfolio.steps) == len(_STEP_IDS)),
+            "detail": degraded.to_dict(),
+        },
+        {
+            "test": "fallback_policy_can_fail_closed",
+            "passed": refused,
+            "detail": "declared outage plus refuse policy raises",
         },
     ]
     passed = sum(item["passed"] for item in tests)

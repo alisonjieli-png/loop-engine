@@ -1,0 +1,253 @@
+{
+  "all_passed": true,
+  "metrics": {
+    "adapter_model_calls": 1,
+    "adaptive_warm_model_calls": 0,
+    "candidate_creation_count": 2,
+    "cold_model_calls": 1,
+    "duplicate_consolidation_count": 2,
+    "estimated_cost_avoided": null,
+    "evidence_only_count": 1,
+    "harvest_model_calls": 0,
+    "hybrid_normalization_model_calls": 1,
+    "input_tokens_avoided": null,
+    "model_calls_avoided_on_warm_path": 1,
+    "output_tokens_avoided": null,
+    "producer_verifier_separation_violations": 0,
+    "promotion_count": 1,
+    "qualification_count": 1,
+    "quarantine_count": 1,
+    "rejection_count": 1,
+    "repair_model_calls": 1,
+    "rollback_count": 1,
+    "state_corruption_incidents": 0,
+    "warm_model_calls": 0
+  },
+  "passed": 33,
+  "projection": {
+    "digest": "fc6ddc2b1a4483363c7141805fec46300d21d0d9d50cd4a45e005fb4329af671",
+    "manifest_ref": "capability_projection_manifest.39fe4a40977d0585fd570435",
+    "record_count": 1,
+    "version": "1.0.0"
+  },
+  "promoted": {
+    "admission_id": "admission-dedup-v1",
+    "artifact_digest": "6cfbda776790640fd99ddc3fa74950e1cd43061bff3ca38eed54efed554d6cbd",
+    "asset_id": "code.data.record_deduplication",
+    "asset_version": "1.0.0",
+    "qualification_digest": "290f04311909d4b0c4b6ed77bfbfc2fceb740adea639c3049320e8bda561a6ac"
+  },
+  "record_type": "reusable_capability_flywheel_self_test/v1",
+  "run_history": {
+    "events": 318,
+    "head_digest": "b7d1d24bdba804bae9c75004ffa1fd190628c0853bdfe6ace25142fa35ec2438",
+    "run_id": "run-flywheel"
+  },
+  "scope": "offline_contract_only",
+  "tests": [
+    {
+      "detail": "seven assistance presets, one canonical hybrid mode",
+      "passed": true,
+      "test": "hybrid_variations_are_profiles_not_new_run_modes"
+    },
+    {
+      "detail": "escalate_to_novel_build",
+      "passed": true,
+      "test": "cold_request_has_no_reusable_match"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "normalized_need_digest_excludes_retry_provenance"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "capability_need_round_trips_without_digest_drift"
+    },
+    {
+      "detail": "offline injected transport, not live provider quality evidence",
+      "passed": true,
+      "test": "cold_discovery_runs_as_non_deterministic_loop"
+    },
+    {
+      "detail": "observer failure remains a non-terminal status record",
+      "passed": true,
+      "test": "public_practitioner_completion_has_typed_reuse_observation_seam"
+    },
+    {
+      "detail": "activation.612b50538ec72378fb672324",
+      "passed": true,
+      "test": "async_dispatch_returns_before_candidate_construction"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "async_trigger_delivery_is_idempotent"
+    },
+    {
+      "detail": {
+        "activation": "activation.612b50538ec72378fb672324",
+        "assessment_loop": "activation.612b50538ec72378fb672324.loop2",
+        "candidate_loop": "activation.612b50538ec72378fb672324.loop4",
+        "producer_loop": "activation.612b50538ec72378fb672324.loop3",
+        "worker_loop": "activation.612b50538ec72378fb672324.loop1"
+      },
+      "passed": true,
+      "test": "async_worker_harvests_inside_canonical_loops"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "inline_and_async_harvest_use_the_same_pipeline_contract"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "harvest_records_round_trip_with_source_to_candidate_lineage"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "low_value_observation_is_retained_without_candidate_creation"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "non_code_observation_cannot_create_a_code_candidate"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "candidate_is_not_in_active_resolution_projection"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "candidate_producer_cannot_self_qualify"
+    },
+    {
+      "detail": {
+        "promoted": "capability_transition.c2d8c1f1943dca8a0084f9bb",
+        "qualified": "capability_transition.3f79742e0504b7067f37b809"
+      },
+      "passed": true,
+      "test": "independent_qualification_and_exact_promotion_are_separate"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "active_search_projection_is_rebuildable_from_authority"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "projection_metadata_cannot_understate_authoritative_effects"
+    },
+    {
+      "detail": {
+        "accepted": true,
+        "assistance_profile_ref": "",
+        "exact_artifact_digest": "6cfbda776790640fd99ddc3fa74950e1cd43061bff3ca38eed54efed554d6cbd",
+        "exact_capability_ref": "capability_projection.e3c7ab851f2d09d9c5ba6c01",
+        "exact_dependency_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "execution_status": "completed",
+        "failure_class": "",
+        "input_digest": "069db6aa085fbc350785d77cf6a36bc1ab6ab1159cf7e2fe957495d69e9cd1de",
+        "invocation_id": "invocation.b313b63dbb039383646ee7a9",
+        "mode_used": "deterministic",
+        "model_call_count": 0,
+        "need_id": "need-warm",
+        "output_digest": "a1fa30c675bd341c7dfdc497cb488225f2731326faec15c373256f9a9ecedb7d",
+        "record_type": "capability_invocation_record/v1",
+        "resolution_plan_id": "resolution.15d169770a5501a6f91d0a16",
+        "run_id": "run-warm",
+        "verification_status": "verified",
+        "verifier_id": "warm-output-verifier"
+      },
+      "passed": true,
+      "test": "warm_paraphrase_executes_promoted_artifact_with_zero_model_calls"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "invocation_record_round_trips_with_independent_verifier"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "capability_producer_cannot_be_sole_result_verifier"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "adaptive_practitioner_uses_promoted_capability_with_zero_model_calls"
+    },
+    {
+      "detail": {
+        "artifact": "sha256/6c/6cfbda776790640fd99ddc3fa74950e1cd43061bff3ca38eed54efed554d6cbd",
+        "authority": "/tmp/reusable_capability_restart_njlmr0gn/authority.sqlite",
+        "projection": "/tmp/reusable_capability_restart_njlmr0gn/projection.sqlite"
+      },
+      "passed": true,
+      "test": "authority_projection_and_artifact_survive_store_restart"
+    },
+    {
+      "detail": "model saw only the need contract and controlled vocabulary",
+      "passed": true,
+      "test": "bounded_hybrid_normalization_finds_same_promoted_capability"
+    },
+    {
+      "detail": "adapter was not promoted into Code Intelligence",
+      "passed": true,
+      "test": "hybrid_adapter_path_is_bounded_verified_and_ephemeral"
+    },
+    {
+      "detail": {
+        "active_version": "1.0.0",
+        "repair_version": "1.0.1"
+      },
+      "passed": true,
+      "test": "failed_reuse_does_not_mutate_active_artifact_and_repair_versions"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "rejected_candidate_is_terminal_and_never_active"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "hybrid_reranker_cannot_select_outside_eligible_set"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "duplicate_harvest_consolidates_instead_of_growing_library"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "rollback_reactivates_only_the_same_qualified_exact_version"
+    },
+    {
+      "detail": "fc6ddc2b1a4483363c7141805fec46300d21d0d9d50cd4a45e005fb4329af671",
+      "passed": true,
+      "test": "projection_rebuild_is_deterministic"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "quarantined_version_is_removed_from_active_resolution"
+    },
+    {
+      "detail": {
+        "events": 318,
+        "head_digest": "b7d1d24bdba804bae9c75004ffa1fd190628c0853bdfe6ace25142fa35ec2438"
+      },
+      "passed": true,
+      "test": "important_operations_leave_digest_chained_run_history"
+    }
+  ],
+  "total": 33
+}

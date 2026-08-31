@@ -96,7 +96,8 @@ def _search(value: Mapping) -> SearchSettings:
             "lexical_backend", base.lexical_backend)),
         vector_backend=str(body.get("vector_backend", base.vector_backend)),
         vector_model=str(body.get("vector_model", base.vector_model)),
-        top_k=int(body.get("top_k", base.top_k)),
+        top_k=(None if body.get("top_k", base.top_k) is None
+               else int(body.get("top_k", base.top_k))),
         zero_model_first=_boolean(body.get(
             "zero_model_first", base.zero_model_first),
             "search.zero_model_first"))
@@ -389,7 +390,7 @@ search:
   lexical_backend: fts5
   vector_backend: hash
   vector_model: ""
-  top_k: 10
+  top_k: null
   zero_model_first: true
 
 models:
@@ -405,7 +406,7 @@ models:
       timeout_seconds: 120
       max_attempts: null
     medium:
-      routes: [cloud.default, cloud.mistral.large, cloud.openrouter]
+      routes: [cloud.default, cloud.glm, cloud.mistral.large, cloud.openrouter]
       timeout_seconds: 300
       max_attempts: null
     high:

@@ -145,10 +145,10 @@ def default_routes() -> list:
         ModelRoute("cloud.default", "ollama_cloud", DEFAULT_MODEL, "cloud",
                    purposes=("counted_generation", "decide_label"),
                    capabilities=cloud_caps),
-        ModelRoute("cloud.hard", "ollama_cloud", "deepseek-v4-pro:cloud",
+        ModelRoute("cloud.hard", "ollama_cloud", "deepseek-v4-pro:0813",
                    "cloud", purposes=("counted_generation",),
                    capabilities=cloud_caps),
-        ModelRoute("cloud.glm", "ollama_cloud", "glm-5.2:cloud", "cloud",
+        ModelRoute("cloud.glm", "ollama_cloud", "glm-5.3-flash", "cloud",
                    purposes=("counted_generation",), capabilities=cloud_caps),
     ]
     # The other sanctioned hosted providers.  Added 2026-08-24 after a single

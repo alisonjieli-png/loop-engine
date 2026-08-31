@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Callable, Protocol
@@ -29,10 +30,14 @@ from .generated_project import (
 from .llm_work_packet import (
     LLMContextBlock, LLMWorkPacket, WorkDirective)
 from .adaptive_practitioner_prompting import (
-    AdaptivePromptAssemblyRequest, assemble_work_packet, parse_model_json,
+    AdaptivePromptAssemblyRequest, assemble_work_packet,
     serialize_work_packet)
+from .model_response_admission import (
+    ModelResponseAdmissionRequest, ModelResponseRepairStalled,
+    admit_model_response_as_loop)
 from .practitioner_context import (
     PractitionerContextPortfolio)
+from .reusable_capability_harvest import ReuseObservationPort
 from .adaptive_practitioner_validation import _short_strings, _short_text
 from .web_fetch import (
     fetch_web_resource)
@@ -443,6 +448,8 @@ class AdaptivePractitionerDependencies:
         default=search_web, repr=False, compare=False)
     progress: "Callable[[dict], None] | None" = field(
         default=None, repr=False, compare=False)
+    reuse_observation_port: "ReuseObservationPort | None" = field(
+        default=None, repr=False, compare=False)
     extension_snapshot: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -465,6 +472,11 @@ class AdaptivePractitionerDependencies:
                 "adaptive capability executors must be callable")
         if self.progress is not None and not callable(self.progress):
             raise AdaptivePractitionerError("progress must be callable")
+        if (self.reuse_observation_port is not None
+                and not isinstance(
+                    self.reuse_observation_port, ReuseObservationPort)):
+            raise AdaptivePractitionerError(
+                "reuse_observation_port has the wrong contract")
         if (not isinstance(self.extension_snapshot, dict)
                 or self.extension_snapshot
                 and self.extension_snapshot.get("record_type")
@@ -512,6 +524,11 @@ class AdaptiveRunServices:
     recovery_directives: list[dict] = field(default_factory=list)
     active_recovery_directive: dict | None = None
     recovery_rounds: int = 0
+    generated_file_checkpoints: dict[str, dict] = field(default_factory=dict)
+    progress_sequence: int = 0
+    active_pass_number: int = 0
+    started_monotonic: float = field(
+        default_factory=time.monotonic, repr=False, compare=False)
 
     def available_capabilities(self) -> tuple[dict, ...]:
         """Return only capabilities usable under this run's current authority."""
@@ -535,9 +552,56 @@ class AdaptiveRunServices:
         return tuple(available)
 
     def publish(self, event_type: str, **fields) -> None:
-        event = {"event_type": event_type, "run_id": self.run_id, **fields}
+        self.progress_sequence += 1
+        owner = current_kernel_owner()
+        loop_count = 0
+        if owner is not None:
+            loop_count = len({
+                str(item.get("loop_id")) for item in owner.ledger.events
+                if item.get("event") == "init" and item.get("loop_id")})
+        model_calls = (self.model_session.calls_used
+                       if self.model_session is not None else 0)
+        event = {
+            "event_type": event_type,
+            "run_id": self.run_id,
+            "progress_sequence": self.progress_sequence,
+            "pass_number": self.active_pass_number,
+            "loop_count": loop_count,
+            "model_calls_completed": model_calls,
+            "model_call_number": (
+                model_calls + 1 if event_type == "model.step.started" else 0),
+            "source_inspections_completed": len(self.source_inspections),
+            "project_attempts_completed": len(self.project_attempts),
+            "elapsed_seconds": round(
+                time.monotonic() - self.started_monotonic, 3),
+            **fields,
+        }
         if self.dependencies.progress is not None:
             self.dependencies.progress(event)
+
+    def checkpoint_generated_file(
+            self, checkpoint_key: str, path: str, content: str,
+            contract_digest: str) -> dict:
+        """Keep one exact generated file reusable within the active run."""
+        payload = self.artifacts.capture(
+            content, media_type="text/plain",
+            artifact_kind="generated_project_file_checkpoint")
+        record = {
+            "checkpoint_key": checkpoint_key, "path": path,
+            "content": content, "content_digest": payload.raw.digest,
+            "contract_digest": contract_digest,
+            "artifact_ref": payload.raw.to_dict(),
+            "byte_count": payload.raw.byte_count,
+        }
+        self.generated_file_checkpoints[checkpoint_key] = record
+        return {key: value for key, value in record.items()
+                if key != "content"}
+
+    def generated_file_checkpoint_summaries(self) -> list[dict]:
+        """Return checkpoint identity without exposing file bodies."""
+        return [{key: value for key, value in item.items()
+                 if key != "content"}
+                for item in self.generated_file_checkpoints.values()]
 
     def diagnostic(self, code: str, payload: dict) -> None:
         """Record one bounded typed diagnostic in progress and Run History."""
@@ -564,22 +628,22 @@ class AdaptiveRunServices:
             raise AdaptivePractitionerError(
                 "semantic model work needs a deterministic attempt trace")
         step_context = self.portfolio.for_step(request.step_id)
-        selected_persona = self.portfolio.persona_for_step(request.step_id)
-        supporting = self.portfolio.supporting_personas_for_step(
+        persona_candidates = self.portfolio.persona_candidates(request.step_id)
+        guidance_candidates = self.portfolio.guidance_candidates(
             request.step_id)
-        guidance = self.portfolio.guidance_for_step(request.step_id)
+        question_candidates = self.portfolio.question_candidates(
+            request.step_id)
         from ..loop.intelligence_loops import serve_context_intelligence
         selected_context = serve_context_intelligence(
             f"adaptive-context-{request.step_id}", lambda: {
-                "primary_persona": selected_persona.to_dict(),
-                "supporting_personas": [item.to_dict() for item in supporting],
-                "guidance": [item.to_dict() for item in guidance],
-                "question_portfolio": step_context.to_dict(),
+                "base_role": self.portfolio.persona.to_dict(),
+                "persona_candidates": list(persona_candidates),
+                "guidance_candidates": list(guidance_candidates),
+                "question_candidates": list(question_candidates),
+                "active_step_hint": step_context.to_dict(),
+                "selection_authority": "model",
             }, parent=owner, profile_id="intelligence.context.serve")
         context_value = selected_context["value"]
-        for item in guidance:
-            if item.record_id not in self.selected_intelligence_refs:
-                self.selected_intelligence_refs.append(item.record_id)
         prior_events = []
         for event in owner.ledger.events:
             if event.get("custom_kind") == "llm_work_packet_assembled":
@@ -618,21 +682,25 @@ class AdaptiveRunServices:
         }
         blocks = (
             LLMContextBlock.create(
-                "persona", "persona_context", selected_persona.version,
-                selected_persona.persona_id,
-                "phase-selected Practitioner perspectives", 0,
-                {"primary": selected_persona.to_dict(),
-                 "supporting": [item.to_dict() for item in supporting]}),
+                "persona", "persona_context", self.portfolio.persona.version,
+                self.portfolio.persona.persona_id,
+                "base role and optional model-selected perspectives", 0,
+                {"base_role": context_value["base_role"],
+                 "candidates": context_value["persona_candidates"],
+                 "selection_authority": "model"}),
             LLMContextBlock.create(
                 f"guidance.{request.step_id}", "context_intelligence",
                 self.portfolio.version, self.portfolio.portfolio_id,
-                "guidance selected by step affinity", 1,
-                [item.to_dict() for item in guidance]),
+                "optional guidance with step affinity metadata", 1,
+                {"selection_authority": "model",
+                 "candidates": context_value["guidance_candidates"]}),
             LLMContextBlock.create(
                 f"questions.{request.step_id}", "question_portfolio",
                 self.portfolio.version, self.portfolio.portfolio_id,
-                "questions for the active procedure step", 2,
-                step_context.to_dict()),
+                "optional question sets with an active-step hint", 2,
+                {"selection_authority": "model",
+                 "active_step_hint": context_value["active_step_hint"],
+                 "candidates": context_value["question_candidates"]}),
             LLMContextBlock.create(
                 "deterministic_attempt", "attempt_trace", "1.0.0",
                 "adaptive_practitioner",
@@ -705,8 +773,9 @@ class AdaptiveRunServices:
             packet_version="1.0.0",
             purpose="resolve_one_semantic_step", phase=request.step_id,
             persona_context={
-                "primary_persona": context_value["primary_persona"],
-                "supporting_personas": context_value["supporting_personas"],
+                "base_role": context_value["base_role"],
+                "persona_candidates": context_value["persona_candidates"],
+                "selection_authority": "model",
                 "authority_limits": [
                     "may propose typed semantic output",
                     "may not execute tools or grant permission",
@@ -769,8 +838,12 @@ class AdaptiveRunServices:
                 "return_destination": "owning Practitioner",
                 "terminal_contract": "verified task acceptance or typed blocker",
             },
-            context_intelligence=tuple(context_value["guidance"]),
-            question_portfolio=context_value["question_portfolio"],
+            context_intelligence=tuple(
+                context_value["guidance_candidates"]),
+            question_portfolio={
+                "selection_authority": "model",
+                "active_step_hint": context_value["active_step_hint"],
+                "candidates": context_value["question_candidates"]},
             capability_context={
                 "available_capabilities": list(capability_descriptors),
                 "added_file_candidates": extension_candidates,
@@ -799,13 +872,19 @@ class AdaptiveRunServices:
             media_type="application/json", encoding="utf-8",
             artifact_kind="llm_work_packet")
         value = None
-        for format_attempt in (1, 2):
+        format_attempt = 1
+        invalid_digests = set()
+        format_failure_code = ""
+        rejected_output_digest = ""
+        while value is None:
             profile = self.portfolio.assembly_profile(
-                bool(request.state.get("failures")) or format_attempt == 2)
+                bool(request.state.get("failures")) or format_attempt > 1)
             assembled = assemble_work_packet(
                 AdaptivePromptAssemblyRequest(
                     packet, profile.profile_id, profile.layout_policy,
-                    format_repair=format_attempt == 2,
+                    format_repair=format_attempt > 1,
+                    format_failure_code=format_failure_code,
+                    rejected_output_digest=rejected_output_digest,
                     granularity_profile=self.request.granularity_profile), owner)
             snapshot = assembled.snapshot.to_dict()
             self.context_snapshots.append({
@@ -855,14 +934,42 @@ class AdaptiveRunServices:
                         transport_attempt=transport_attempt,
                         error_code=exc.error_code or "model_gateway_failed")
                     raise
-            value = parse_model_json(text, owner)
+            contract_digest = hashlib.sha256(
+                request.output_contract.encode("utf-8")).hexdigest()
+            admitted = admit_model_response_as_loop(
+                ModelResponseAdmissionRequest(
+                    text, "inline:" + contract_digest, contract_digest),
+                parent=owner)
+            value = admitted.value
             if value is not None:
+                if admitted.strategy != "strict_json":
+                    self.publish(
+                        "model.step.output_repaired", step=request.step_id,
+                        format_attempt=format_attempt,
+                        parse_strategy=admitted.strategy,
+                        response_digest=admitted.raw_digest,
+                        admission_loop_id=admitted.loop_id)
                 break
             self.publish(
                 "model.step.output_invalid", step=request.step_id,
-                format_attempt=format_attempt)
-        if value is None:
-            raise AdaptivePractitionerError(
-                f"model step {request.step_id} returned invalid JSON")
+                format_attempt=format_attempt,
+                failure_code=admitted.failure_code,
+                parse_strategy=admitted.strategy,
+                response_digest=admitted.raw_digest,
+                admission_loop_id=admitted.loop_id)
+            if admitted.raw_digest in invalid_digests:
+                self.publish(
+                    "model.step.repair_stalled", step=request.step_id,
+                    format_attempt=format_attempt,
+                    failure_code="repeated_invalid_output",
+                    response_digest=admitted.raw_digest,
+                    admission_loop_id=admitted.loop_id)
+                raise ModelResponseRepairStalled(
+                    f"model step {request.step_id} repeated the same invalid "
+                    "JSON output without progress")
+            invalid_digests.add(admitted.raw_digest)
+            format_failure_code = admitted.failure_code
+            rejected_output_digest = admitted.raw_digest
+            format_attempt += 1
         self.publish("model.step.completed", step=request.step_id)
         return value

@@ -48,7 +48,8 @@ class EphemeralRecordStore:
     def query(self, query: IntelligenceQuery) -> list[dict]:
         matched = [dict(r) for r in self._records.values()
                    if query.matches(r)]
-        return matched[query.offset:query.offset + query.limit]
+        stop = None if query.limit is None else query.offset + query.limit
+        return matched[query.offset:stop]
 
     def stream(self, query: IntelligenceQuery):
         for record in self.query(query):

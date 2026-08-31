@@ -10,7 +10,6 @@ from __future__ import annotations
 import hashlib
 import json
 import mimetypes
-import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -26,7 +25,7 @@ from .adaptive_practitioner_records import (
 from .generated_project import (
     ALLOWED_PYTHON_EXECUTABLES, DEFAULT_GENERATED_PROJECT_IMAGE,
     GeneratedProjectAuthority, GeneratedProjectCandidate,
-    GeneratedProjectError, GeneratedProjectFile,
+    GeneratedProjectError, GeneratedProjectFile, GeneratedProjectFileSpec,
     GeneratedProjectExecutionContext, GeneratedProjectExecutionRequest,
     GeneratedProjectInputArtifact, GeneratedProjectManifest,
     validate_generated_project_input_use)
@@ -34,6 +33,9 @@ from .context_artifacts import ContextArtifactRef
 from .web_fetch import WebFetchAuthority, WebFetchContext, WebFetchRequest
 from .web_search import (
     WebSearchAuthority, WebSearchContext, WebSearchRequest)
+from .adaptive_practitioner_source import (
+    inspectable_source_files, source_inspection_model_view,
+    source_inspection_operation)
 
 
 @dataclass(frozen=True)
@@ -56,6 +58,30 @@ class AdaptiveCapabilityExecutionRequest:
                 or getattr(self.owner_loop, "ledger", None) is None):
             raise AdaptivePractitionerError(
                 "capability execution needs an active owner Loop")
+
+
+def _generated_file_checkpoint_identity(
+        candidate: GeneratedProjectCandidate,
+        file_spec: GeneratedProjectFileSpec,
+        task: str) -> tuple[str, str]:
+    """Bind reusable file content to its complete semantic file contract."""
+    contract = {
+        "task_digest": hashlib.sha256(task.encode("utf-8")).hexdigest(),
+        "record_type": candidate.record_type,
+        "active_file": file_spec.to_dict(),
+        "all_files": [item.to_dict() for item in candidate.files],
+        "commands": [item.to_dict() for item in candidate.commands],
+        "expected_artifacts": [
+            item.to_dict() for item in candidate.expected_artifacts],
+    }
+    contract_digest = hashlib.sha256(json.dumps(
+        contract, sort_keys=True, separators=(",", ":"),
+        ensure_ascii=False).encode("utf-8")).hexdigest()
+    checkpoint_key = "generated-file." + hashlib.sha256(json.dumps({
+        "contract_digest": contract_digest,
+        "path": file_spec.path,
+    }, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+    return checkpoint_key, contract_digest
 
 
 def build_action_canvas_candidate(
@@ -109,7 +135,8 @@ def _project_manifest(
             "execution_plan": asdict(request.plan),
             "web_search_candidates": services.web_search_results,
             "web_evidence": services.web_results,
-            "source_inspections": services.source_inspections,
+            "source_inspections": source_inspection_model_view(
+                services.source_inspections),
             "available_input_artifacts": [
                 item.to_dict() for item in input_artifacts],
             "available_input_text": ([{
@@ -132,6 +159,8 @@ def _project_manifest(
                 "files": services.plan_details.get(
                     "file_validation_failures", []),
             },
+            "available_file_checkpoints":
+                services.generated_file_checkpoint_summaries(),
             "project_contract": {
                 "record_type": "generated_project_candidate/v1",
                 "files": (
@@ -205,6 +234,33 @@ def _project_manifest(
 
     generated_files = []
     for file_spec in candidate.files:
+        checkpoint_key, contract_digest = _generated_file_checkpoint_identity(
+            candidate, file_spec, services.request.task)
+        checkpoint = services.generated_file_checkpoints.get(checkpoint_key)
+        if checkpoint is not None:
+            checkpoint_content = str(checkpoint.get("content") or "")
+            checkpoint_digest = hashlib.sha256(
+                checkpoint_content.encode("utf-8")).hexdigest()
+            if (checkpoint.get("path") == file_spec.path
+                    and checkpoint.get("contract_digest") == contract_digest
+                    and checkpoint.get("content_digest") == checkpoint_digest):
+                generated_file = GeneratedProjectFile(
+                    file_spec.path, checkpoint_content)
+                generated_files.append(generated_file)
+                services.plan_details.setdefault(
+                    "generated_files", []).append({
+                        "path": generated_file.path,
+                        "byte_count": len(
+                            generated_file.content.encode("utf-8")),
+                        "digest": checkpoint_digest,
+                        "checkpoint_key": checkpoint_key,
+                        "checkpoint_reused": True,
+                    })
+                services.publish(
+                    "practitioner.file_checkpoint.reused", step="act",
+                    artifact_path=generated_file.path,
+                    checkpoint_digest=checkpoint_digest)
+                continue
         file_schema = json.dumps({
             "path": file_spec.path, "content": "complete UTF-8 text",
         }, separators=(",", ":"))
@@ -247,12 +303,22 @@ def _project_manifest(
             raise GeneratedProjectError(
                 f"file {file_spec.path!r} remained invalid after one repair")
         generated_files.append(generated_file)
+        checkpoint_summary = services.checkpoint_generated_file(
+            checkpoint_key, generated_file.path, generated_file.content,
+            contract_digest)
         services.plan_details.setdefault("generated_files", []).append({
             "path": generated_file.path,
             "byte_count": len(generated_file.content.encode("utf-8")),
             "digest": hashlib.sha256(
                 generated_file.content.encode("utf-8")).hexdigest(),
+            "checkpoint_key": checkpoint_key,
+            "checkpoint_reused": False,
+            "artifact_ref": checkpoint_summary["artifact_ref"],
         })
+        services.publish(
+            "practitioner.file_checkpoint.stored", step="act",
+            artifact_path=generated_file.path,
+            checkpoint_digest=checkpoint_summary["content_digest"])
     return GeneratedProjectManifest(
         candidate.project_id, candidate.summary, tuple(generated_files),
         candidate.commands, candidate.expected_artifacts)
@@ -337,7 +403,7 @@ def _local_project_inputs(
         raise GeneratedProjectError(
             "local sources were supplied but the model has not selected any "
             "through core.source.inspect")
-    available = dict(_inspectable_source_files(services))
+    available = dict(inspectable_source_files(services))
     missing = sorted(set(selected_paths) - set(available))
     if missing:
         raise GeneratedProjectError(
@@ -349,95 +415,6 @@ def _local_project_inputs(
         for relative in selected_paths)
 
 
-def _inspectable_source_files(
-        services: AdaptiveRunServices) -> tuple[tuple[str, Path], ...]:
-    """Resolve confined text sources without selecting their task meaning."""
-    if not services.request.allow_source_materialization_to_model:
-        raise PermissionError(
-            "source inspection requires explicit source-to-model authority")
-    allowed_names = {"pyproject.toml", "requirements.txt", "setup.cfg"}
-    allowed_suffixes = {
-        ".bib", ".cfg", ".csv", ".eml", ".fasta", ".fa", ".geojson",
-        ".graphql", ".ics", ".ini", ".json", ".jsonl", ".md", ".po",
-        ".py", ".rst", ".sql", ".srt", ".toml", ".tsv", ".txt",
-        ".vcf", ".xml", ".yaml", ".yml"}
-    excluded_parts = {
-        ".git", ".venv", "__pycache__", "node_modules", "build", "dist"}
-    resolved = []
-    used = set()
-    for source_ref in services.request.source_refs:
-        source = Path(source_ref).expanduser().resolve()
-        if not source.exists() or source.is_symlink():
-            continue
-        candidates = (source,) if source.is_file() else tuple(sorted(
-            item for item in source.rglob("*")
-            if item.is_file() and not item.is_symlink()
-            and not excluded_parts.intersection(item.relative_to(source).parts)))
-        for path in candidates:
-            if (path.name.startswith(".") or path.name not in allowed_names
-                    and path.suffix.lower() not in allowed_suffixes):
-                continue
-            relative = (path.name if source.is_file()
-                        else f"{source.name}/{path.relative_to(source).as_posix()}")
-            if relative in used:
-                continue
-            used.add(relative)
-            resolved.append((relative, path))
-    return tuple(resolved)
-
-
-def _source_inspection_operation(
-        arguments: dict, services: AdaptiveRunServices) -> dict:
-    files = _inspectable_source_files(services)
-    requested = arguments.get("paths") or []
-    if not isinstance(requested, list) or any(
-            not isinstance(item, str) or not item.strip()
-            for item in requested):
-        raise AdaptivePractitionerError(
-            "source inspection paths must be a list of non-empty text")
-    query = str(arguments.get("query") or "").strip()
-    include_contents = arguments.get("include_contents", False)
-    if not isinstance(include_contents, bool):
-        raise AdaptivePractitionerError(
-            "source inspection include_contents must be boolean")
-    by_path = {relative: path for relative, path in files}
-    unknown_paths = sorted(set(requested) - set(by_path))
-    if unknown_paths:
-        raise AdaptivePractitionerError(
-            f"source inspection requested unknown paths {unknown_paths}")
-    selected = []
-    query_terms = tuple(re.findall(r"[a-z0-9_]{2,}", query.lower()))
-    for relative, path in files:
-        body = path.read_bytes()
-        text = body.decode("utf-8", errors="replace")
-        matches_query = (not query_terms or all(
-            term in text.lower() or term in relative.lower()
-            for term in query_terms))
-        chosen = relative in requested or bool(query and matches_query)
-        row = {
-            "path": relative, "byte_count": len(body),
-            "digest": hashlib.sha256(body).hexdigest(),
-            "media_type": mimetypes.guess_type(path.name)[0] or "text/plain",
-        }
-        if chosen and include_contents:
-            row["content"] = text
-        if chosen:
-            selected.append(row)
-    manifest = [{
-        "path": relative, "byte_count": path.stat().st_size,
-        "digest": hashlib.sha256(path.read_bytes()).hexdigest(),
-        "media_type": mimetypes.guess_type(path.name)[0] or "text/plain",
-    } for relative, path in files]
-    return {
-        "record_type": "source_inspection_result/v1",
-        "source_manifest": manifest,
-        "selected": selected,
-        "query": query,
-        "contents_included": include_contents,
-        "source_count": len(manifest),
-    }
-
-
 def execute_adaptive_capability(
         request: AdaptiveCapabilityExecutionRequest,
         services: AdaptiveRunServices) -> ResultPacket:
@@ -447,7 +424,7 @@ def execute_adaptive_capability(
     arguments = dict(plan.experiment.get("arguments") or {})
     manifest = None
     if plan.handle == "core.source.inspect":
-        operation = lambda _value, _params: _source_inspection_operation(
+        operation = lambda _value, _params: source_inspection_operation(
             arguments, services)
         input_value = arguments
         input_role = "next_action_decision/v1"
@@ -619,8 +596,8 @@ def execute_adaptive_capability(
 
 def self_test() -> dict:
     """Static contract check; execution is covered by the adaptive suite."""
-    import tempfile
-    from types import SimpleNamespace
+    from .generated_project import (
+        ExpectedProjectArtifact, GeneratedProjectCommand)
     source = Path(__file__).read_text(encoding="utf-8").split(
         "def self_test()", 1)[0].lower()
     task_words = ("openml", "iris", "boosted-tree", "target_column=", "kaggle")
@@ -634,23 +611,31 @@ def self_test() -> dict:
     paths_passed = (
         first_path == "inputs/records.data"
         and duplicate_path == "inputs/source-2.data")
-    with tempfile.TemporaryDirectory() as directory:
-        source_root = Path(directory) / "source"
-        source_root.mkdir()
-        source_file = source_root / "unexpected_format.py"
-        source_file.write_text(
-            "def convert(value):\n    return value.casefold()\n",
-            encoding="utf-8")
-        services = SimpleNamespace(request=SimpleNamespace(
-            source_refs=(str(source_root),),
-            allow_source_materialization_to_model=True))
-        inspected = _source_inspection_operation({
-            "paths": ["source/unexpected_format.py"],
-            "include_contents": True}, services)
-        source_inspection_passed = (
-            inspected["source_count"] == 1
-            and inspected["selected"][0]["content"].startswith("def convert")
-            and len(inspected["selected"][0]["digest"]) == 64)
+    file_spec = GeneratedProjectFileSpec(
+        "pipeline.py", "Reusable pipeline.", ("Pipeline runs.",))
+    command = GeneratedProjectCommand(
+        ("python", "pipeline.py"), "Run pipeline.")
+    artifact = ExpectedProjectArtifact("pipeline.py", "text/x-python")
+    candidate_a = GeneratedProjectCandidate(
+        "checkpoint_a", "First wording.", (file_spec,), (command,),
+        (artifact,))
+    candidate_b = GeneratedProjectCandidate(
+        "checkpoint_b", "Different wording.", (file_spec,), (command,),
+        (artifact,))
+    changed_file = GeneratedProjectFileSpec(
+        "pipeline.py", "Reusable pipeline.", ("Different contract.",))
+    candidate_changed = GeneratedProjectCandidate(
+        "checkpoint_c", "First wording.", (changed_file,), (command,),
+        (artifact,))
+    key_a, contract_a = _generated_file_checkpoint_identity(
+        candidate_a, file_spec, "same task")
+    key_b, contract_b = _generated_file_checkpoint_identity(
+        candidate_b, file_spec, "same task")
+    key_changed, _contract_changed = _generated_file_checkpoint_identity(
+        candidate_changed, changed_file, "same task")
+    checkpoint_identity_passed = (
+        key_a == key_b and contract_a == contract_b
+        and key_changed != key_a)
     tests = [{
         "test": "capability_graph_compiler_has_no_example_route",
         "passed": passed,
@@ -660,9 +645,9 @@ def self_test() -> dict:
         "passed": paths_passed,
         "detail": f"{first_path}; {duplicate_path}",
     }, {
-        "test": "source_inspection_returns_model_selected_exact_content",
-        "passed": source_inspection_passed,
-        "detail": "manifest plus selected UTF-8 body and digest",
+        "test": "file_checkpoint_reuses_only_an_unchanged_semantic_contract",
+        "passed": checkpoint_identity_passed,
+        "detail": f"{key_a[:32]}; changed={key_changed[:32]}",
     }]
     return {
         "record_type": "adaptive_capability_compilation_test/v1",

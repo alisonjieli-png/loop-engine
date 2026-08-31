@@ -1,0 +1,65 @@
+{
+  "record_type": "real_reusable_capability_proof/v1",
+  "repository_revision": "e197a3e61591bf760426da7d21e0ebab9e89fd50",
+  "cold_run": {
+    "run_id": "adaptive-63d5a4ce2ab24bc3f23fd9ab",
+    "terminal_code": "COMPLETED_VERIFIED",
+    "provider": "ollama_cloud",
+    "model": "deepseek-v4-flash:0731",
+    "model_calls": 10,
+    "input_tokens": 167666,
+    "output_tokens": 46982,
+    "total_tokens": 214648,
+    "loop_count": 121,
+    "tool_calls": 7,
+    "run_history_events": 1064,
+    "run_history_chain_intact": true,
+    "producer_test_result": "14/14 passed",
+    "artifact_digest": "767c1904b4476164e3670802dc4fe011a23e91bddcfa8e3775b96761f4ccfa86",
+    "manifest_digest": "2e1462b6b427677f2c981f1f531d9da6e368bbdb54d2ddc95a898e4c66b569f9"
+  },
+  "reuse": {
+    "dispatch": "inline",
+    "inline_reason": "the current proof immediately required the new capability",
+    "opportunity_id": "reuse.522f3377330da71cc955f804",
+    "assessment_id": "assessment.interval_merge.v1",
+    "assessment_score_1_to_10": 9.0,
+    "parameter_names": [
+      "intervals",
+      "merge_touching"
+    ],
+    "candidate_record_ref": "code_asset.code.data.interval_merge.1.0.0.candidate.044beac9c74d363f",
+    "candidate_producer_loop_id": "loop3",
+    "independent_verifier_loop_id": "loop5",
+    "independent_fixed_cases": 4,
+    "independent_generated_cases": 200,
+    "independent_invalid_cases": 4,
+    "independent_suite_passed": true,
+    "qualification_transition_ref": "capability_transition.2c6f3e1c1be3dff1710d94e2",
+    "promotion_transition_ref": "capability_transition.2383ab83a59a8d2e0acbbe27",
+    "projection_manifest_ref": "capability_projection_manifest.39fe4a40977d0585fd570435",
+    "projection_digest": "d61134cd99b668fa0a14d9831028abd5fad5cd577200531f437ad3e77ffbfd66",
+    "authority_store": "/home/username/.loop-engine/capabilities/authority.sqlite",
+    "projection_store": "/home/username/.loop-engine/capabilities/projection.sqlite",
+    "artifact_store": "/home/username/.loop-engine/capabilities/artifacts",
+    "proof_artifact_ref": "context-artifact://sha256/9f/9f4fa51bd857bfae5111cd95a084b1c166b889a0b42e46c05ca42f02162d057f",
+    "proof_artifact_digest": "9f4fa51bd857bfae5111cd95a084b1c166b889a0b42e46c05ca42f02162d057f"
+  },
+  "warm_run": {
+    "run_id": "adaptive-1932d28487382e7de0abe830",
+    "terminal_code": "COMPLETED_VERIFIED",
+    "model_calls": 0,
+    "loop_count": 2,
+    "run_history_events": 40,
+    "run_history_chain_intact": true,
+    "result": {
+      "merged": [[0, 2], [2, 10], [20, 25], [30, 31]],
+      "lineage": [2, 0, 1, 1, 3]
+    }
+  },
+  "limitations": [
+    "The proof used the explicit inline harvesting override, not asynchronous default dispatch.",
+    "The public CLI does not yet inject the persistent capability resolver automatically.",
+    "The warm run used the canonical solve service with an injected persistent resolver, not a resolver discovered by CLI settings."
+  ]
+}

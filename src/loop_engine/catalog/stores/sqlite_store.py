@@ -106,7 +106,12 @@ class SQLiteRecordStore:
             params.extend(query.lifecycle)
         if clauses:
             sql += " WHERE " + " AND ".join(clauses)
-        sql += f" LIMIT {int(query.limit)} OFFSET {int(query.offset)}"
+        if query.limit is not None:
+            sql += f" LIMIT {int(query.limit)}"
+        elif query.offset:
+            sql += " LIMIT -1"
+        if query.offset:
+            sql += f" OFFSET {int(query.offset)}"
         rows = self._con.execute(sql, params).fetchall()
         return [self._row_to_record(row) for row in rows]
 
@@ -137,7 +142,7 @@ class SQLiteRecordStore:
         return {"record_id": record_id, "stored": True}
 
     def export(self, selection: dict | None = None) -> dict:
-        records = self.query(IntelligenceQuery(limit=10_000_000))
+        records = self.query(IntelligenceQuery())
         return {"record_type": "catalog_export/v1", "records": records,
                 "count": len(records)}
 

@@ -78,6 +78,10 @@ GitHub and GitLab repositories, repository templates, tools, skills, notebooks,
 workflows, and large systems. Read
 [Code Intelligence templates](CODE-INTELLIGENCE-TEMPLATES.md).
 
+Accepted generated code can enter the governed candidate, qualification,
+promotion, projection, and future-use circuit. Read the
+[Reusable Capability Flywheel](REUSABLE-CAPABILITY-FLYWHEEL.md).
+
 Runtime History and Solution Intelligence has its own storage, retrieval,
 applicability, and evidence boundaries. Read
 [Runtime History and Solution Intelligence](RUNTIME-HISTORY-AND-SOLUTION-INTELLIGENCE.md).

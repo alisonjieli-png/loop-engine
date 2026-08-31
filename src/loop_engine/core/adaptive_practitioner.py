@@ -20,7 +20,7 @@ from ..loop.kernel import (
     Situation, run_kernel_passes)
 from ..loop.kernel_runtime import current_kernel_owner
 from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
-from ..loop.recursive_loop import Loop, LoopConfig, LoopLedger, StepOutcome
+from ..loop.recursive_loop import Loop, LoopConfig, LoopLedger
 from ..code_nodes.solution_model_port import SolutionModelError
 from .adaptive_practitioner_records import (
     ADAPTIVE_PRACTITIONER_RECORD_TYPE,
@@ -33,20 +33,24 @@ from .adaptive_practitioner_deterministic import run_deterministic_attempt
 from .adaptive_practitioner_capabilities import (
     AdaptiveCapabilityExecutionRequest, build_action_canvas_candidate,
     execute_adaptive_capability)
+from .adaptive_practitioner_source import source_inspection_model_view
 from .adaptive_practitioner_planning import (
     AdaptivePlanningRequest, build_execution_plan)
-from .adaptive_practitioner_orientation import (
-    normalize_orientation_choices, orientation_policy_findings)
+from .adaptive_practitioner_orientation import orientation_policy_findings
 from .adaptive_practitioner_supervision import (
     supervision_context, validate_progressing_action)
 from .adaptive_practitioner_verification import (
     AdaptiveRouteRequest, AdaptiveVerificationRequest,
     route_adaptive_result, safe_result, verify_adaptive_results)
+from .adaptive_practitioner_reuse import observe_generated_project_reuse
 from .context_artifacts import (
     ContextArtifactManager, ContextArtifactServices, ContextArtifactStore,
     ContextArtifactStoreSpec)
 from .practitioner_context import load_practitioner_context
-from .run_history import default_runs_dir, verify_saved_run
+from .run_history import default_runs_dir
+from .adaptive_practitioner_result import (
+    failed_adaptive_output, finish_deterministic_attempt, loop_details,
+    safe_model_usage, save_adaptive_result)
 def _model_state(state: PractitionerState,
                  services: AdaptiveRunServices) -> dict:
     return {
@@ -69,7 +73,10 @@ def _model_state(state: PractitionerState,
             "text": item.get("text"),
             "text_truncated": item.get("text_truncated"),
         } for item in services.web_results],
-        "source_inspections": services.source_inspections,
+        "source_inspections": source_inspection_model_view(
+            services.source_inspections),
+        "generated_file_checkpoints":
+            services.generated_file_checkpoint_summaries(),
         "project_attempts": [{
             "manifest_digest": item.get("manifest_digest"),
             "deterministic_checks_passed": item.get(
@@ -88,6 +95,7 @@ def _model_state(state: PractitionerState,
     }
 def _adaptive_impls(services: AdaptiveRunServices) -> dict:
     def orient(state: PractitionerState) -> Situation:
+        services.active_pass_number += 1
         services.publish("practitioner.step.started", step="orient",
                          state_version=state.version)
         schema = json.dumps({
@@ -144,12 +152,6 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                     services.request.task.encode("utf-8")).hexdigest())
             try:
                 candidate = TaskOrientationResult.from_mapping(value)
-                candidate, normalized_changes = normalize_orientation_choices(
-                    candidate)
-                if normalized_changes:
-                    services.diagnostic("orientation_choice_normalized", {
-                        "attempt": attempt,
-                        "changes": list(normalized_changes)})
                 findings = orientation_policy_findings(
                     candidate, services.request.interaction_mode)
             except (AdaptivePractitionerError, ValueError) as exc:
@@ -486,38 +488,12 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
         "route": route,
     }
 
-def _loop_details(events: list[dict]) -> list[dict]:
-    terminal = {
-        item.get("loop_id"): item for item in events
-        if item.get("event") == "terminal"}
-    steps: dict[str, list[dict]] = {}
-    for item in events:
-        if item.get("event") == "run_step":
-            steps.setdefault(str(item.get("loop_id")), []).append({
-                "step": item.get("step"), "mode": item.get("mode"),
-                "output": item.get("output"),
-                "accepted": item.get("accepted"),
-            })
-    return [{
-        "loop_id": item.get("loop_id"),
-        "goal": item.get("goal"),
-        "role": item.get("role"),
-        "profile_id": item.get("profile_id"),
-        "relationship": item.get("relationship_kind"),
-        "input_roles": list(item.get("input_roles") or ()),
-        "output_roles": list(item.get("output_roles") or ()),
-        "loop_condition": item.get("loop_condition"),
-        "exit_condition": item.get("exit_condition"),
-        "steps": steps.get(str(item.get("loop_id")), []),
-        "terminal_reason": (terminal.get(item.get("loop_id")) or {}).get(
-            "reason", ""),
-    } for item in events if item.get("event") == "init"]
-
 
 def _history_record(owner: Loop, services: AdaptiveRunServices,
                     runs_dir: Path) -> dict:
     """Return a verified saved or in-memory Run History summary."""
     if services.request.persist_run_history:
+        from .run_history import verify_saved_run
         return verify_saved_run(str(runs_dir), services.run_id)
     from .run_history import RunHistory
     history = RunHistory.from_ledger(
@@ -531,64 +507,6 @@ def _history_record(owner: Loop, services: AdaptiveRunServices,
         "saved": False, "product_outcome_bound": False,
         "product_outcome_digest": "", "terminal_code": "",
     }
-
-
-def _save_adaptive_result(history: dict, output: dict) -> None:
-    """Write the internal adaptive result only when persistence is enabled."""
-    if not history.get("path"):
-        return
-    result_path = Path(history["path"]) / "adaptive-result.json"
-    result_path.write_text(json.dumps(
-        output, indent=2, default=str, ensure_ascii=False), encoding="utf-8")
-    output["result_path"] = str(result_path)
-
-def _finish_deterministic_attempt(owner: Loop, services: AdaptiveRunServices,
-                                  runs_dir: Path) -> dict:
-    """Terminate, verify, and save an explicitly selected exact reuse run."""
-    trace = services.deterministic_attempt
-    if trace is None:
-        raise AdaptivePractitionerError("deterministic attempt trace is missing")
-    resolved = trace.status == "COMPLETED"
-    result_value = dict(trace.outputs).get("result") if resolved else None
-
-    def handler(_active, step, _context):
-        if step == "act":
-            return StepOutcome(
-                "deterministic:executed" if resolved
-                else "deterministic:no_verified_capability",
-                "deterministic", 1.0 if resolved else 0.0,
-                failed=not resolved)
-        if step == "verify":
-            return StepOutcome(
-                "verify:passed" if resolved else "verify:not_satisfied",
-                "deterministic", 1.0 if resolved else 0.0,
-                failed=not resolved)
-        return StepOutcome(
-            f"{step}:trace_preserved", "deterministic",
-            1.0 if resolved else 0.5)
-
-    owner.run(handler=handler, max_steps=len(owner.steps()) + 1)
-    history = _history_record(owner, services, runs_dir)
-    output = {
-        "record_type": ADAPTIVE_PRACTITIONER_RECORD_TYPE,
-        "run_id": services.run_id,
-        "status": "VERIFIED_WORKING" if resolved else "NOT_YET_PROVEN",
-        "solved": resolved,
-        "failure_code": "" if resolved else trace.status,
-        "result": result_value,
-        "original_task": services.request.task,
-        "task_feedback": [item.to_dict() for item in services.request.feedback],
-        "mode": services.request.mode,
-        "deterministic_attempt": trace.to_dict(),
-        "passes": 1,
-        "final_route": "stop_success" if resolved else "stop_unprofitable",
-        "failures": [] if resolved else list(trace.errors),
-        "model_calls": 0,
-        "loop_details": _loop_details(owner.ledger.events),
-        "run_history": history,
-    }
-    _save_adaptive_result(history, output)
-    return output
 
 def run_adaptive_practitioner(
         request: AdaptivePractitionerRequest,
@@ -654,9 +572,13 @@ def run_adaptive_practitioner(
             request.task, services, owner)
     if (request.mode == "deterministic"
             or services.deterministic_attempt.status == "COMPLETED"):
-        return _finish_deterministic_attempt(owner, services, runs_dir)
+        return finish_deterministic_attempt(
+            owner, services,
+            lambda: _history_record(owner, services, runs_dir))
     if dependencies.model_execution is None:
-        return _finish_deterministic_attempt(owner, services, runs_dir)
+        return finish_deterministic_attempt(
+            owner, services,
+            lambda: _history_record(owner, services, runs_dir))
     services.model_session = dependencies.model_execution.start_session()
     try:
         run = run_kernel_passes(KernelRunRequest(
@@ -669,41 +591,22 @@ def run_adaptive_practitioner(
                 }),
             _adaptive_impls(services), owner_loop=owner,
             max_passes=request.max_passes, selected_mode=request.mode))
+    except KeyboardInterrupt:
+        if not owner.is_terminal:
+            owner.cancel("operator_interrupt")
+        return failed_adaptive_output(
+            owner, services, "CANCELLED",
+            "The operator interrupted the active Practitioner run.",
+            lambda: _history_record(owner, services, runs_dir))
     except Exception as exc:  # noqa: BLE001 - preserve a terminal run record
         if not owner.is_terminal:
             owner.cancel("adaptive_practitioner_failed")
-        history = _history_record(owner, services, runs_dir)
         failure_code = (exc.error_code or type(exc).__name__
                         if isinstance(exc, SolutionModelError)
                         else type(exc).__name__)
-        output = {
-            "record_type": ADAPTIVE_PRACTITIONER_RECORD_TYPE,
-            "run_id": run_id, "status": "NOT_YET_PROVEN", "solved": False,
-            "failure_code": failure_code, "failure": str(exc)[:1000],
-            "original_task": request.task, "mode": request.mode,
-            "task_feedback": [item.to_dict() for item in request.feedback],
-            "deterministic_attempt": services.deterministic_attempt.to_dict(),
-            "model_calls": services.model_session.calls_used,
-            "model_usage": _safe_model_usage(services),
-            "orientations": [item.to_dict()
-                             for item in services.orientation_by_version.values()],
-            "action_decisions": services.action_history,
-            "context_snapshots": services.context_snapshots,
-            "candidate_solution_canvases": services.candidate_canvases,
-            "selected_solution_canvas": services.plan_details.get(
-                "active_canvas", {}),
-            "web_search_candidates": services.web_search_results,
-            "web_evidence": services.web_results,
-            "source_inspections": services.source_inspections,
-            "project_attempts": services.project_attempts,
-            "verification": services.verification_records,
-            "supervision": services.supervision_findings,
-            "recovery_directives": services.recovery_directives,
-            "loop_details": _loop_details(ledger.events),
-            "run_history": history,
-        }
-        _save_adaptive_result(history, output)
-        return output
+        return failed_adaptive_output(
+            owner, services, failure_code, str(exc),
+            lambda: _history_record(owner, services, runs_dir))
     history = _history_record(owner, services, runs_dir)
     final_attempt = services.project_attempts[-1] \
         if services.project_attempts else None
@@ -742,9 +645,11 @@ def run_adaptive_practitioner(
         "verification": services.verification_records,
         "supervision": services.supervision_findings,
         "recovery_directives": services.recovery_directives,
+        "generated_file_checkpoints":
+            services.generated_file_checkpoint_summaries(),
         "model_calls": services.model_session.calls_used,
-        "model_usage": _safe_model_usage(services),
-        "loop_details": _loop_details(ledger.events),
+        "model_usage": safe_model_usage(services),
+        "loop_details": loop_details(ledger.events),
         "run_history": history,
     }
     run_path = Path(history["path"]) if history.get("path") else None
@@ -758,19 +663,12 @@ def run_adaptive_practitioner(
         output["solution_attempts_path"] = str(destination)
     elif workspace.exists():
         output["solution_attempts_path"] = str(workspace)
-    _save_adaptive_result(history, output)
+    reuse_observation = observe_generated_project_reuse(
+        owner, services, history, solved)
+    if reuse_observation is not None:
+        output["reuse_observation"] = reuse_observation
+    save_adaptive_result(history, output)
     return output
-
-
-def _safe_model_usage(services: AdaptiveRunServices) -> list[dict]:
-    if services.model_session is None:
-        return []
-    rows = []
-    for result in services.model_session.results:
-        value = result.to_dict()
-        value.pop("text", None)
-        rows.append(value)
-    return rows
 
 def self_test() -> dict:
     """Run focused task-agnostic adaptive Practitioner checks."""

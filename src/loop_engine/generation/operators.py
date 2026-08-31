@@ -131,6 +131,7 @@ def self_test() -> dict:
     campaign = GenerationCampaign(
         campaign_id="camp-prove", version="1.0.0",
         target_artifact_kind="prompt_block",
+        search_strategy="exact_enumeration",
         seeds=(SeedArtifact("s1", "core_default", "prompt_block", {}),),
         dimensions=(VariationDimension(
             "reasoning", "categorical",

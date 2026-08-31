@@ -23,6 +23,39 @@ First public release.
   candidate, and provider-attempt ceilings are unset unless an owner, provider,
   or policy supplies one. Exact repeated state, action, evidence, and failure
   still triggers diagnosis instead of no-op churn.
+- **Model-selected context and portfolios.** Step affinity, retrieval scores,
+  evaluation metrics, and generation templates now produce passive candidates.
+  The consuming model selects perspectives, questions, Intelligence refs,
+  Solution candidates, recovery routes, and generation strategies. Runtime
+  code validates those selections but does not calculate a semantic winner.
+- **Reusable Capability Flywheel.** Accepted generated code can emit an
+  asynchronous reuse opportunity, remain isolated as a candidate, pass exact
+  independent qualification and promotion, enter a rebuildable search view,
+  and execute on a future exact task with zero model calls. Bounded hybrid
+  profiles support normalization, reranking, adaptation, diagnosis, repair,
+  and composition without adding run modes.
+- **Transactional semantic Loop contracts.** An exact `LoopDefinition` can bind
+  a complete implementation-independent behavior contract. Qualified direct or
+  hybrid interpretation produces an untrusted candidate. Independent
+  verification, effect authorization, and compare-and-swap commit control
+  trusted state. Stable behavior can enter the existing capability flywheel and
+  return as a promoted zero-model deterministic realization for a declared
+  input region.
+- **Self-orienting abstraction governance.** The Development Assurance Plane
+  can build a digest-bound live authority map and run a contextual
+  whole-repository hardcoding audit. Typed parameter inputs distinguish
+  omission, null, empty, false, and zero. Versioned prompt bundles carry slot,
+  trust, provenance, and render identities without adding another runtime or
+  settings authority.
+- **Optional descriptive Code Intelligence graph evaluation.** A scoped
+  `.graphifyignore` keeps generated evidence and schema-governed JSON records
+  out of Graphify's optional source graph. The evaluated graph remains passive
+  evidence and cannot replace Loop, Code Intelligence admission, or capability
+  resolution authority.
+- **Context Intelligence outage fallback.** The full Practitioner portfolio is
+  now stored under Context Intelligence. A separate minimum packaged portfolio
+  keeps basic task interpretation available only when an outage is declared
+  and the selected fallback policy permits it.
 - **Artifact-producing `loop-engine solve` command.** Text, task-file, dataset,
   and repository inputs can now run through the canonical Practitioner,
   generated-project capability, confined Docker workspace, artifact inspection,
@@ -99,6 +132,20 @@ First public release.
 
 Defects found by running against live models, each now carrying a regression
 test:
+
+- OpenRouter zero-price selection could choose a non-text or extremely wide
+  route merely because it advertised the largest completion maximum. Live
+  validation returned an invalid-request failure. Selection now requires text
+  output, honors an explicit run capacity cap without truncation, and prefers
+  native structured output before generic response formatting.
+- A bounded parameter Intelligence Loop allowed hybrid execution but did not
+  delegate the one non-deterministic model call it required. The live runtime
+  correctly refused before contacting a provider. Its delegation contract now
+  permits the one budgeted model invocation.
+- The parameter inference prompt named output fields but did not state their
+  types. A real provider returned strings where arrays were required and null
+  where a string was required. Deterministic validation rejected the proposal;
+  the versioned resource now includes the exact field-type contract.
 
 - A generic structured-data solve could report success after whitespace
   normalization even when the requested transform and output artifacts were

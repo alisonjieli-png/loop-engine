@@ -382,8 +382,7 @@ def serve_intelligence(pillar: str, records: list, *, query: str,
     Records the layer-labeled retrieval event on the ledger."""
     from ..core.retrieval import Retriever
     out = as_loop(f"retrieve {pillar} intelligence for {query!r}",
-                   lambda: Retriever(records).search(query, mode="hybrid",
-                                                      top_n=5),
+                   lambda: Retriever(records).search(query, mode="hybrid"),
                    kind="callable", ledger=ledger)
     # mark the ledger with the layer the loop served
     return out

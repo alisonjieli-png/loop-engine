@@ -112,6 +112,17 @@ curl -LO \
 loop-engine solve --file 01-expense-report.txt --quickstart
 ```
 
+If the selected hosted model is temporarily unavailable, permit another exact
+route for the same configured provider on the same solve path:
+
+```bash
+loop-engine solve --file 01-expense-report.txt --quickstart \
+  --allow-model-failover
+```
+
+An explicitly selected `--model-id` remains pinned. Failover does not bypass
+authentication, request, permission, effect, output, or verification checks.
+
 `--quickstart` is an explicit authority profile. It selects one configured
 provider, starts the LLM-first Practitioner, asks material
 questions when needed, and permits the existing confined Docker workspace. It
@@ -124,13 +135,34 @@ normal solve path. The runtime selects model-led reasoning when a model is
 available. Use `--unattended` only when a run must abstain instead of returning
 a material question.
 
+Perspectives, question sets, templates, Intelligence refs, prior solutions,
+and recovery strategies enter the prompt as candidates. The model selects
+among them. Scores and step affinity help comparison but do not choose a task
+meaning or solution.
+
+After an accepted generated implementation, Loop Engine can emit a small
+reuse opportunity and return the source result without waiting for packaging.
+The asynchronous harvest path creates a Code Intelligence candidate. A future
+task can use it only after independent qualification and explicit promotion.
+An exact promoted match executes deterministically with zero model calls.
+
+A versioned Loop contract may also execute without a dedicated conventional
+implementation body. The exact semantic specification is bound into its
+`LoopDefinition`. A qualified interpreter produces an untrusted candidate,
+then independent verification and effect control decide whether anything may
+enter trusted state. A later promoted deterministic realization can satisfy the
+same contract with zero model calls for its declared input region. Read
+[Transactional semantic runtime](docs/components/loop-object/SEMANTIC-RUNTIME.md).
+
 If several known provider keys are present, quickstart prefers the dynamic
 zero-price OpenRouter route, then the zero-cost OpenCode Zen route, before the
 fixed Ollama Cloud, Mistral, and OpenCode Go routes. This chooses a candidate
 route; it does not promise that the provider quota is currently available.
 
 Read [LLM-first universal solving](docs/guides/llm-first-universal-solver.md)
-for the model/runtime boundary and the future fingerprinting and reuse path.
+for the model/runtime boundary. Read the
+[Reusable Capability Flywheel](docs/components/intelligence-layers/REUSABLE-CAPABILITY-FLYWHEEL.md)
+for candidate harvesting, promotion, search, and deterministic reuse.
 
 A successful result has this shape:
 

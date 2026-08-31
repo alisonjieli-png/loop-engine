@@ -276,6 +276,10 @@ class GatewayAttempt:
     maximum_output_source: str = ""
     expected_model: str = ""
     reasoning_present: bool = False
+    response_received: bool = False
+    provider_done: "bool | None" = None
+    provider_stop_reason: str = ""
+    output_limit_reached: bool = False
     def to_dict(self) -> dict:
         return {
             "provider": self.provider,
@@ -295,6 +299,10 @@ class GatewayAttempt:
             "maximum_output_source": self.maximum_output_source,
             "expected_model": self.expected_model,
             "reasoning_present": self.reasoning_present,
+            "response_received": self.response_received,
+            "provider_done": self.provider_done,
+            "provider_stop_reason": self.provider_stop_reason,
+            "output_limit_reached": self.output_limit_reached,
         }
 
 
@@ -325,7 +333,8 @@ class ModelGatewayResult:
 
     @property
     def provider_responded(self) -> bool:
-        return any(attempt.provider_ok for attempt in self.attempts)
+        return any(attempt.provider_ok or attempt.response_received
+                   for attempt in self.attempts)
 
     def to_dict(self) -> dict:
         return {
@@ -351,6 +360,19 @@ class ModelGatewayResult:
 
 def _error_code(error: str) -> str:
     low = str(error).lower()
+    if ("output_limit_reached" in low or "max_tokens" in low
+            or "maximum output" in low and "reached" in low):
+        return "output_limit_reached"
+    if ("no route to host" in low
+            or "temporary failure in name resolution" in low
+            or "name or service not known" in low
+            or "network is unreachable" in low
+            or "connection refused" in low):
+        return "network_unreachable"
+    if "incomplete_response" in low:
+        return "incomplete_response"
+    if "empty_response" in low:
+        return "empty_response"
     if "unknown_model_output_limit" in low:
         return "unknown_model_output_limit"
     if "not the declared model maximum" in low:
@@ -577,7 +599,21 @@ class ModelGateway:
                     llm_thinking_power=current_power)
                 provider_result = call["value"]
                 raw_text = str(getattr(provider_result, "text", "") or "")
-                text, reasoning_present = extract_final_answer(raw_text)
+                text, embedded_reasoning = extract_final_answer(raw_text)
+                reasoning_present = bool(
+                    embedded_reasoning
+                    or getattr(provider_result, "reasoning_present", False))
+                provider_done = getattr(provider_result, "done", None)
+                provider_stop_reason = str(
+                    getattr(provider_result, "done_reason", "") or "")
+                output_limit_reached = bool(getattr(
+                    provider_result, "output_limit_reached", False))
+                response_received = bool(
+                    getattr(provider_result, "response_received", False)
+                    or raw_text.strip()
+                    or getattr(provider_result, "prompt_tokens", 0)
+                    or getattr(provider_result, "eval_tokens", 0)
+                    or provider_done is not None)
                 transport_ok = bool(getattr(provider_result, "ok", False)
                                     and raw_text.strip())
                 reported_model = str(
@@ -601,11 +637,18 @@ class ModelGateway:
                 if usage_known:
                     known_tokens += raw_in + raw_out
                 error = str(getattr(provider_result, "error", "") or "")
-                if transport_ok and not identity_ok:
+                if output_limit_reached:
+                    error = error or (
+                        "output_limit_reached: provider response reached its "
+                        "declared output ceiling")
+                elif response_received and provider_done is False:
+                    error = error or (
+                        "incomplete_response: provider response did not finish")
+                elif transport_ok and not identity_ok:
                     error = (
                         "model_identity_mismatch: requested exact model "
                         f"{route.model!r}, provider reported {reported_model!r}")
-                elif transport_ok and reasoning_present and not text:
+                elif response_received and reasoning_present and not text:
                     error = (
                         "output_validation_failed: response contained no safe "
                         "final answer outside private reasoning")
@@ -630,6 +673,10 @@ class ModelGateway:
                     maximum_output_source=output_capability.source,
                     expected_model=route.model,
                     reasoning_present=reasoning_present,
+                    response_received=response_received,
+                    provider_done=provider_done,
+                    provider_stop_reason=provider_stop_reason,
+                    output_limit_reached=output_limit_reached,
                 )
                 result.attempts.append(attempt)
                 if (not attempt.ok
@@ -798,7 +845,24 @@ def self_test() -> dict:
         def chat_maxout(self, prompt, **kwargs):
             self.calls += 1
             return ChatResult("accepted", kwargs.get("model", "second-model"),
-                              prompt_tokens=1, eval_tokens=1, ok=True)
+                              prompt_tokens=1, eval_tokens=1, ok=True,
+                              response_received=True, done=True,
+                              done_reason="stop")
+
+    class OutputLimitAdapter(ErrorAdapter):
+        """A provider returned bytes, but not a complete answer."""
+
+        def __init__(self):
+            super().__init__("output_limit_reached")
+
+        def chat_maxout(self, prompt, **kwargs):
+            self.calls += 1
+            return ChatResult(
+                "partial", kwargs.get("model", "first-model"),
+                prompt_tokens=2, eval_tokens=16, ok=False,
+                error="output_limit_reached: fixture reached its ceiling",
+                num_predict_used=16, response_received=True, done=True,
+                done_reason="length", output_limit_reached=True)
 
     auth, auth_fallback = ErrorAdapter("HTTP 401 unauthorized"), SuccessAdapter()
     auth_gateway = ModelGateway(
@@ -832,6 +896,35 @@ def self_test() -> dict:
           payment_result.ok and payment_result.provider == "second"
           and payment_result.attempts[0].error_code == "payment_required"
           and payment.calls == 1 and payment_fallback.calls == 1)
+
+    limited, limit_fallback = OutputLimitAdapter(), SuccessAdapter()
+    limit_gateway = ModelGateway(
+        providers=(ProviderSpec("first", limited, "fixture", "env:FIRST"),
+                   ProviderSpec("second", limit_fallback, "fixture",
+                                "env:SECOND")),
+        routes=(ModelRoute("first.route", "first", "first-model"),
+                ModelRoute("second.route", "second", "second-model")))
+    limit_result = limit_gateway.invoke(ModelGatewayRequest(
+        "a truncated response may use another authorized route",
+        ModelGatewayConfig(route_names=("first.route", "second.route"),
+                           max_route_attempts=2)))
+    first_limit = limit_result.attempts[0]
+    check("output_limit_is_typed_and_can_fail_over",
+          limit_result.ok and limit_result.provider == "second"
+          and first_limit.error_code == "output_limit_reached"
+          and first_limit.response_received
+          and first_limit.provider_stop_reason == "length"
+          and first_limit.output_limit_reached
+          and limited.calls == 1 and limit_fallback.calls == 1,
+          "a partial HTTP 200 is evidence, not a successful model answer")
+
+    check("network_transport_failures_have_specific_codes",
+          _error_code("URLError(OSError(113, 'No route to host'))")
+          == "network_unreachable"
+          and _error_code(
+              "URLError(gaierror(-3, 'Temporary failure in name resolution'))")
+          == "network_unreachable",
+          "routing and DNS failures remain distinct from model rejection")
 
     # A provider attempt remains below the named spawned model-led Loop even
     # when that Loop is already two levels below a full Practitioner. The

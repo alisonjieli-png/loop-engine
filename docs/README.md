@@ -119,6 +119,7 @@ pages.
 ## Coding-agent prompts
 
 - [Governing OpenCode and Codex development prompt](prompts/LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md)
+- [Self-orienting Code Intelligence master prompt](prompts/LOOP-ENGINE-SELF-ORIENTING-CODE-INTELLIGENCE-MASTER-PROMPT.md)
 - [Architecture showcase and video prompt](prompts/LOOP-ENGINE-ARCHITECTURE-VIDEO-BUILD-PROMPT.md)
 
 Public prose also follows the repository's

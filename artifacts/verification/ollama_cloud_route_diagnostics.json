@@ -1,0 +1,40 @@
+{
+  "record_type": "ollama_cloud_route_diagnostics/v1",
+  "observed_at": "2026-08-31",
+  "provider": "ollama_cloud",
+  "catalog": {
+    "reached": true,
+    "model_count": 18,
+    "default_model_present": true
+  },
+  "availability_probe": {
+    "model": "deepseek-v4-flash:0731",
+    "ok": true,
+    "prompt_tokens": 18,
+    "output_tokens": 34,
+    "done": true,
+    "done_reason": "stop",
+    "reasoning_present": true,
+    "output_limit_reached": false,
+    "response_digest": "89aab18cf5bc3c9d18086d537efe50cb29fb193c99aac895502cd0d95f630faa"
+  },
+  "output_capability_observations": [
+    {
+      "model": "deepseek-v4-pro:0813",
+      "maximum_output_tokens": 65536,
+      "source": "Ollama HTTP 400 response declared the exact model maximum",
+      "source_response_digest": "cda059d87f43213110e6bcbccbabd93ed378d1e61549fddd3791929401f65604"
+    },
+    {
+      "model": "glm-5.3-flash",
+      "maximum_output_tokens": 1048576,
+      "source": "Ollama HTTP 400 response declared the exact model maximum",
+      "source_response_digest": "d35b5ebd5395dabec95b09370df1604c42ee9fbb5e40f0bfea447fadc0a97808"
+    }
+  ],
+  "limitations": [
+    "This is live provider diagnostics, not an end-to-end task-quality proof.",
+    "Only OLLAMA_API_KEY was present in the current process.",
+    "No cross-provider failover was attempted."
+  ]
+}

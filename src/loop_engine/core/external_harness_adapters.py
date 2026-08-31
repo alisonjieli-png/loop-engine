@@ -26,9 +26,7 @@ from .external_harness import (
     HarnessRunResult, HarnessRuntimeBinding, HarnessServices, ModelOutputLimit,
     resolve_harness_output_limit)
 
-
 RunnerFn = Callable[[HarnessRunRequest, HarnessServices], object]
-
 
 _FRAMEWORKS = {
     "pydantic_ai": {
@@ -79,14 +77,18 @@ _FRAMEWORKS = {
     },
 }
 
-
 @dataclass(frozen=True)
 class _AdapterExecution:
     """Raw SDK result plus the exact limit applied by the built-in boundary."""
 
     raw: object
     applied_output_limit: "ModelOutputLimit | None" = None
+    prompt_resource: object = None
 
+def _instruction_resource(harness_id: str):
+    from ..strings.prompt_fragments import external_harness_instruction_bundle
+    return external_harness_instruction_bundle(harness_id).render(
+        {}, provenance={})
 
 class PhysicalCallCountingClient:
     """Count and stop calls at an SDK client's provider request boundary."""
@@ -117,7 +119,6 @@ class PhysicalCallCountingClient:
     def __getattr__(self, name):
         return getattr(self._client, name)
 
-
 def _package_state(harness_id: str, injected: bool) -> tuple[bool, str, str]:
     facts = _FRAMEWORKS[harness_id]
     if injected:
@@ -135,7 +136,6 @@ def _package_state(harness_id: str, injected: bool) -> tuple[bool, str, str]:
             "maximum-output binding and will not execute")
     return True, version, ""
 
-
 def _prompt(request: HarnessRunRequest) -> str:
     payload = json.dumps(dict(request.input_data), sort_keys=True, default=str)
     if len(payload) > 50_000:
@@ -150,7 +150,6 @@ def _prompt(request: HarnessRunRequest) -> str:
         "the spawning Loop performs the independent evaluation."
     )
 
-
 def _required_output_limit(request: HarnessRunRequest) -> ModelOutputLimit:
     limit = request.budget.output_limit
     if limit is None:
@@ -161,7 +160,6 @@ def _required_output_limit(request: HarnessRunRequest) -> ModelOutputLimit:
         raise HarnessError(
             "resolved model output maximum does not match provider and model")
     return limit
-
 
 def _required_runtime_binding(
         request: HarnessRunRequest, services: HarnessServices, *,
@@ -177,7 +175,6 @@ def _required_runtime_binding(
         preconfigured_output_limit=preconfigured_output_limit)
     return binding
 
-
 def _openai_model_settings_kwargs(request: HarnessRunRequest) -> dict:
     limit = _required_output_limit(request)
     return {
@@ -185,7 +182,6 @@ def _openai_model_settings_kwargs(request: HarnessRunRequest) -> dict:
         "temperature": float(request.metadata.get("temperature", 0.2)),
         "include_usage": True,
     }
-
 
 def _pydantic_model_settings_kwargs(request: HarnessRunRequest) -> dict:
     settings = {
@@ -196,19 +192,16 @@ def _pydantic_model_settings_kwargs(request: HarnessRunRequest) -> dict:
         settings["timeout"] = float(request.budget.max_seconds)
     return settings
 
-
 def _pydantic_usage_limit_kwargs(request: HarnessRunRequest) -> dict:
     values = {"request_limit": request.budget.max_model_calls}
     if request.budget.max_total_tokens is not None:
         values["total_tokens_limit"] = request.budget.max_total_tokens
     return values
 
-
 def _deep_agents_graph_config(request: HarnessRunRequest) -> dict:
     # LangGraph counts graph steps rather than physical model calls. The
     # preconfigured model binding remains responsible for the physical limit.
     return {"recursion_limit": max(4, request.budget.max_model_calls * 4 + 2)}
-
 
 def _microsoft_harness_kwargs(
         request: HarnessRunRequest, counted_client: object) -> dict:
@@ -224,12 +217,10 @@ def _microsoft_harness_kwargs(
         "max_output_tokens": limit.max_output_tokens,
     }
 
-
 def _resolve_output_request(
         request: HarnessRunRequest,
         services: HarnessServices) -> HarnessRunRequest:
     return resolve_harness_output_limit(request, services)
-
 
 def _value(source, names, default=None):
     for name in names:
@@ -243,7 +234,6 @@ def _value(source, names, default=None):
                 continue
     return default
 
-
 def _int_value(source, names) -> "int | None":
     value = _value(source, names)
     try:
@@ -251,14 +241,12 @@ def _int_value(source, names) -> "int | None":
     except (TypeError, ValueError):
         return None
 
-
 def _float_value(source, names) -> "float | None":
     value = _value(source, names)
     try:
         return float(value) if value is not None else None
     except (TypeError, ValueError):
         return None
-
 
 def _message_usage(raw, request: HarnessRunRequest
                    ) -> tuple[list[HarnessModelCall], int]:
@@ -280,10 +268,10 @@ def _message_usage(raw, request: HarnessRunRequest
             input_tokens=input_tokens, output_tokens=output_tokens))
     return calls, len(calls)
 
-
 def _normalize(raw, request: HarnessRunRequest, *,
                adapter_version: str,
-               applied_output_limit: "ModelOutputLimit | None" = None
+               applied_output_limit: "ModelOutputLimit | None" = None,
+               prompt_resource=None,
                ) -> HarnessRunResult:
     if isinstance(raw, HarnessRunResult):
         if raw.provider_id and raw.provider_id != request.provider_id:
@@ -322,6 +310,11 @@ def _normalize(raw, request: HarnessRunRequest, *,
                     or raw.model_output_limit_reference != expected.reference):
                 raise HarnessError(
                     "injected runner reported a mismatched output limit")
+        if prompt_resource is not None:
+            raw.prompt_resource_ref = prompt_resource.bundle_ref
+            raw.prompt_resource_digest = prompt_resource.bundle_digest
+            raw.prompt_slot_schema_digest = prompt_resource.slot_schema_digest
+            raw.prompt_render_digest = prompt_resource.render_digest
         return raw
     output = _value(raw, ("final_output", "output", "data", "text"), None)
     if output is None and isinstance(raw, Mapping):
@@ -359,7 +352,7 @@ def _normalize(raw, request: HarnessRunRequest, *,
         if limit != expected:
             raise HarnessError(
                 "adapter applied a different model output maximum")
-    return HarnessRunResult(
+    result = HarnessRunResult(
         request_id=request.request_id, harness_id=request.harness_id,
         status="completed", output=output, model_calls=calls,
         adapter_version=adapter_version, provider_id=request.provider_id,
@@ -372,7 +365,12 @@ def _normalize(raw, request: HarnessRunRequest, *,
         max_output_tokens_used=(limit.max_output_tokens if limit else None),
         model_output_limit_source=(limit.source if limit else ""),
         model_output_limit_reference=(limit.reference if limit else ""))
-
+    if prompt_resource is not None:
+        result.prompt_resource_ref = prompt_resource.bundle_ref
+        result.prompt_resource_digest = prompt_resource.bundle_digest
+        result.prompt_slot_schema_digest = prompt_resource.slot_schema_digest
+        result.prompt_render_digest = prompt_resource.render_digest
+    return result
 
 @dataclass
 class ConfiguredHarnessAdapter:
@@ -421,6 +419,7 @@ class ConfiguredHarnessAdapter:
             services: HarnessServices) -> HarnessRunResult:
         request = _resolve_output_request(request, services)
         applied_output_limit = None
+        prompt_resource = None
         if self.runner is not None:
             raw = self.runner(request, services)
         elif self.harness_id == "pydantic_ai":
@@ -433,10 +432,12 @@ class ConfiguredHarnessAdapter:
             raw = self._run_microsoft(request, services)
         if isinstance(raw, _AdapterExecution):
             applied_output_limit = raw.applied_output_limit
+            prompt_resource = raw.prompt_resource
             raw = raw.raw
         return _normalize(
             raw, request, adapter_version=self.adapter_version,
-            applied_output_limit=applied_output_limit)
+            applied_output_limit=applied_output_limit,
+            prompt_resource=prompt_resource)
 
     @staticmethod
     def _run_pydantic(request: HarnessRunRequest,
@@ -446,18 +447,18 @@ class ConfiguredHarnessAdapter:
             request, services, runtime_kind="model")
         from pydantic_ai import Agent, ModelSettings, UsageLimits
 
+        instruction = _instruction_resource("pydantic_ai")
+
         agent = Agent(
             binding.runtime_object,
-            instructions=(
-                "Complete one bounded task and return the requested output. "
-                "Do not claim verification or acceptance."))
+            instructions=instruction.text)
         raw = agent.run_sync(
             _prompt(request),
             model_settings=ModelSettings(
                 **_pydantic_model_settings_kwargs(request)),
             usage_limits=UsageLimits(
                 **_pydantic_usage_limit_kwargs(request)))
-        return _AdapterExecution(raw, limit)
+        return _AdapterExecution(raw, limit, instruction)
 
     @staticmethod
     def _run_deep_agents(request: HarnessRunRequest,
@@ -468,18 +469,18 @@ class ConfiguredHarnessAdapter:
             preconfigured_output_limit=True)
         from deepagents import create_deep_agent
 
+        instruction = _instruction_resource("deep_agents")
+
         agent = create_deep_agent(
             model=binding.runtime_object,
             tools=[],
-            system_prompt=(
-                "Complete one bounded task. Do not access host files, spawn "
-                "other agents, or claim verification or acceptance."),
+            system_prompt=instruction.text,
             subagents=[], skills=[], memory=[], permissions=[],
             checkpointer=False)
         raw = agent.invoke(
             {"messages": [{"role": "user", "content": _prompt(request)}]},
             config=_deep_agents_graph_config(request))
-        return _AdapterExecution(raw, limit)
+        return _AdapterExecution(raw, limit, instruction)
 
     @staticmethod
     def _run_openai_agents(request: HarnessRunRequest,
@@ -489,11 +490,11 @@ class ConfiguredHarnessAdapter:
             request, services, runtime_kind="model")
         from agents import Agent, ModelSettings, RunConfig, Runner
 
+        instruction = _instruction_resource("openai_agents")
+
         agent = Agent(
             name="Loop Engine external specialist",
-            instructions=(
-                "Complete the bounded task. Return the requested output. "
-                "The spawning Loop verifies the result."),
+            instructions=instruction.text,
             model=binding.runtime_object)
         raw = Runner.run_sync(
             agent, _prompt(request), max_turns=request.budget.max_model_calls,
@@ -501,7 +502,7 @@ class ConfiguredHarnessAdapter:
                 tracing_disabled=True,
                 model_settings=ModelSettings(
                     **_openai_model_settings_kwargs(request))))
-        return _AdapterExecution(raw, limit)
+        return _AdapterExecution(raw, limit, instruction)
 
     @staticmethod
     def _run_microsoft(request: HarnessRunRequest,
@@ -557,7 +558,6 @@ class ConfiguredHarnessAdapter:
         return {"output": getattr(response, "text", response),
                 "usage": normalized_usage}
 
-
 def builtin_harness_adapters(
         runners: "Mapping[str, RunnerFn] | None" = None
         ) -> tuple[ConfiguredHarnessAdapter, ...]:
@@ -566,8 +566,6 @@ def builtin_harness_adapters(
     return tuple(ConfiguredHarnessAdapter(
         harness_id, runner=supplied.get(harness_id))
                  for harness_id in _FRAMEWORKS)
-
-
 
 def self_test() -> dict:
     """Run pure adapter-shape checks without an SDK or model invocation."""
@@ -631,6 +629,21 @@ def self_test() -> dict:
           and normalized.model_calls[0].provider == "ollama_cloud"
           and normalized.model_calls[0].provider != request.harness_id
           and normalized.max_output_tokens_used is None)
+
+    instruction = _instruction_resource("deep_agents")
+    prompt_bound = _normalize({
+        "output": {"answer": 1},
+        "usage": {"requests": 1, "input_tokens": 9,
+                  "output_tokens": 4}},
+        request, adapter_version="contract",
+        prompt_resource=instruction)
+    check("versioned_prompt_resource_identity_reaches_safe_result",
+          prompt_bound.prompt_resource_ref == instruction.bundle_ref
+          and prompt_bound.prompt_resource_digest == instruction.bundle_digest
+          and prompt_bound.prompt_slot_schema_digest
+              == instruction.slot_schema_digest
+          and prompt_bound.prompt_render_digest == instruction.render_digest
+          and "text" not in prompt_bound.safe_summary())
 
     unknown = _normalize(
         {"output": {"answer": 1}}, request,

@@ -31,11 +31,6 @@ CONTEXT_SEED_STEPS = (
     "define_research_questions", "generate_context", "classify",
     "deduplicate", "verify", "stage", "report")
 
-DEFAULT_ROLES = (
-    "domain expert", "researcher", "safety engineer", "data engineer",
-    "software engineer", "product manager", "operations specialist",
-    "regulatory specialist", "customer or end user")
-
 CONTEXT_PATTERNS = (
     {"name": "first_principles", "context_type": "question",
      "response_shape": "decomposition",
@@ -130,13 +125,13 @@ class ContextSeedSpec:
     domain: str
     industry: str = ""
     subdomain: str = ""
-    project_types: tuple = ("general project",)
-    task_types: tuple = ("plan and review the work",)
-    job_roles: tuple = DEFAULT_ROLES
+    project_types: tuple = ()
+    task_types: tuple = ()
+    job_roles: tuple = ()
     geography: str = ""
     jurisdiction: str = ""
-    time_horizon: str = "current"
-    source_policy: str = "primary_first"
+    time_horizon: str = ""
+    source_policy: str = ""
     source_refs: tuple = ()
     max_candidates: "int | None" = None
 
@@ -356,7 +351,7 @@ def run_context_seed(spec: ContextSeedSpec, *, existing_context_records=(),
 
     template = next(item for item in TEMPLATE_LIBRARY
                     if item["template_id"] == "context_intelligence_seed")
-    base = config_from_template(template, power="deep", max_depth=2)
+    base = config_from_template(template, power="deep", max_depth=None)
     config = LoopConfig(
         framework=base.framework, logical_kind=base.logical_kind,
         replay_guarantee=base.replay_guarantee,
@@ -412,7 +407,7 @@ def run_context_seed(spec: ContextSeedSpec, *, existing_context_records=(),
                     logical_kind="search_improvement",
                     allowable_modes=("deterministic",),
                     preferred_modes=("deterministic",), power="light",
-                    max_depth=2)
+                    max_depth=None)
                 spawned = loop.spawn(f"generate Context candidates for {role}",
                                    spawned_cfg)
 
@@ -513,11 +508,14 @@ def self_test() -> dict:
         job_roles=tuple(f"role {index}" for index in range(17)),
         project_types=tuple(f"project {index}" for index in range(15)),
         task_types=tuple(f"task {index}" for index in range(13)),
-        max_candidates=30)
+        source_policy="provided_only", max_candidates=30)
     wide = build_context_candidates(wide_spec)
     duplicate_axes_refused = 0
     for operation in (
-            lambda: ContextSeedSpec(domain="x", job_roles=("same", "same")),
+            lambda: ContextSeedSpec(
+                domain="x", project_types=("project",),
+                task_types=("task",), job_roles=("same", "same"),
+                source_policy="provided_only"),
             lambda: build_context_candidates(full_spec,
                                              roles=("same", "same"))):
         try:

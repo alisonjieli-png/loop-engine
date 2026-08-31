@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 
 from .cli_operations import (
     _apply_compile_provider_shortcut, _compile_gateway,
@@ -18,6 +19,32 @@ from .cli_operations import (
 
 class ProviderSetupError(ValueError):
     """The selected onboarding profile has no usable provider reference."""
+
+
+_PROGRESS_FIELDS = (
+    "event_type", "run_id", "progress_sequence", "pass_number",
+    "step", "diagnostic_code", "error_code", "format_attempt",
+    "transport_attempt", "capability_ref", "failure_code",
+    "parse_strategy", "response_digest", "admission_loop_id", "loop_count",
+    "artifact_path", "checkpoint_digest",
+    "model_calls_completed", "model_call_number",
+    "source_inspections_completed", "project_attempts_completed",
+    "elapsed_seconds",
+)
+
+
+def _solve_progress(event: dict) -> None:
+    """Write one secret-safe typed progress event to stderr."""
+    if not isinstance(event, dict):
+        return
+    value = {"record_type": "solve_progress/v1"}
+    for field_name in _PROGRESS_FIELDS:
+        field_value = event.get(field_name)
+        if field_value not in (None, "", 0):
+            value[field_name] = field_value
+    print(json.dumps(
+        value, sort_keys=True, separators=(",", ":"),
+        ensure_ascii=False), file=sys.stderr, flush=True)
 
 
 def _apply_quickstart(args) -> None:
@@ -91,7 +118,7 @@ def run_solve(args) -> int:
             args.max_passes if args.max_passes is not None
             else settings.loop.max_iterations)
 
-        def execute_with_gateway(gateway=None, route_name=""):
+        def execute_with_gateway(gateway=None, route_names=()):
             model_execution = None
             if args.authorize_model_calls:
                 if (maximum_model_calls is not None
@@ -103,8 +130,10 @@ def run_solve(args) -> int:
                                     or settings.models.default_thinking_power),
                     max_total_tokens=args.max_total_tokens,
                     max_route_attempts=None,
-                    route_names=((route_name or args.model_route,)
-                                 if (route_name or args.model_route) else ()))
+                    route_names=(tuple(route_names)
+                                 if route_names else
+                                 (args.model_route,) if args.model_route
+                                 else ()))
                 request = settings.model_request(ModelTask(
                     prompt="solve authorization preflight", policy=policy))
                 config = request.config
@@ -135,7 +164,8 @@ def run_solve(args) -> int:
                 allow_source_materialization_to_model=
                     args.allow_source_to_model,
                 extension_snapshot=
-                    extension_application.snapshot.to_dict()))
+                    extension_application.snapshot.to_dict(),
+                progress=_solve_progress))
 
         if args.compile_provider:
             if not args.authorize_model_calls:
@@ -144,7 +174,9 @@ def run_solve(args) -> int:
             env_name, key = _compile_provider_key(args)
             with _temporary_provider_key(env_name, key):
                 gateway, route_name = _compile_gateway(args, key)
-                outcome = execute_with_gateway(gateway, route_name)
+                route_names = _solve_route_plan(
+                    args, gateway, route_name)
+                outcome = execute_with_gateway(gateway, route_names)
         else:
             if (args.provider_key_env or args.prompt_for_provider_key
                     or any(value is not None for value in (
@@ -227,6 +259,84 @@ def run_solve(args) -> int:
                 terminal, value["summary"], f"Reason: {exc}",
                 f"Next: {value['next_action']}")))
         return 2
+
+
+def self_test() -> dict:
+    """Prove progress is typed, stderr-safe, and secret-free."""
+    import contextlib
+    import io
+
+    stream = io.StringIO()
+    with contextlib.redirect_stderr(stream):
+        _solve_progress({
+            "event_type": "model.step.started",
+            "run_id": "adaptive-progress-test",
+            "progress_sequence": 4,
+            "pass_number": 2,
+            "step": "decide_next",
+            "loop_count": 17,
+            "model_calls_completed": 3,
+            "model_call_number": 4,
+            "elapsed_seconds": 1.25,
+            "prompt": "must-not-appear",
+            "content": "must-not-appear",
+            "authorization": "must-not-appear",
+            "secret": "must-not-appear",
+        })
+    raw = stream.getvalue().strip()
+    value = json.loads(raw)
+    safe = (value["record_type"] == "solve_progress/v1"
+            and value["event_type"] == "model.step.started"
+            and value["pass_number"] == 2
+            and value["model_call_number"] == 4
+            and "must-not-appear" not in raw
+            and not ({"prompt", "content", "authorization", "secret"}
+                     & set(value)))
+    tests = [{
+        "test": "solve_progress_is_typed_stderr_and_secret_safe",
+        "passed": safe,
+        "detail": raw,
+    }]
+    from types import SimpleNamespace
+    from .core.settings_loader import load_runtime_settings
+    gateway = load_runtime_settings(None).settings.build_gateway()
+    failover = _solve_route_plan(SimpleNamespace(
+        allow_model_failover=True, model_id=""), gateway, "cloud.default")
+    pinned = _solve_route_plan(SimpleNamespace(
+        allow_model_failover=True,
+        model_id="deepseek-v4-flash:0731"), gateway, "cloud.default")
+    tests.append({
+        "test": "solve_failover_is_one_ordered_policy_and_exact_pin_wins",
+        "passed": (failover[0] == "cloud.default"
+                   and set(failover) == {
+                       "cloud.default", "cloud.hard", "cloud.glm"}
+                   and pinned == ("cloud.default",)),
+        "detail": ",".join(failover),
+    })
+    return {"record_type": "solve_cli_progress_test/v1", "tests": tests,
+            "passed": sum(item["passed"] for item in tests),
+            "total": len(tests),
+            "all_passed": all(item["passed"] for item in tests)}
+
+
+def _solve_route_plan(args, gateway, selected_route: str) -> tuple[str, ...]:
+    """Return one ordered route policy without creating another solve path."""
+    if (not getattr(args, "allow_model_failover", False) or args.model_id
+            or not selected_route):
+        return (selected_route,) if selected_route else ()
+    selected = gateway.registry.get(selected_route)
+    routes = [selected]
+    for route in gateway.registry.all():
+        if (route.name == selected.name
+                or route.provider != selected.provider
+                or "counted_generation" not in route.purposes):
+            continue
+        try:
+            gateway.providers[route.provider].output_capability_for(route.model)
+        except (LookupError, ValueError):
+            continue
+        routes.append(route)
+    return tuple(route.name for route in routes)
 
 
 __all__ = ("run_solve",)

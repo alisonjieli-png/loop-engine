@@ -1,0 +1,83 @@
+record_type: practitioner_context_intelligence/v1
+portfolio_id: fallback.context.practitioner.minimum
+version: 1.0.0
+persona:
+  persona_id: fallback.persona.task_interpreter
+  version: 1.0.0
+  instruction: >-
+    Preserve the request, separate known facts from unknowns, choose one safe
+    next action, and do not claim completion without checking the result.
+guidance:
+  - record_id: fallback.guidance.safe_progress
+    version: 1.0.0
+    intelligence_functions: [ask, deliberation, verification, routing]
+    step_affinities:
+      - orient
+      - decide_next
+      - act
+      - verify
+      - route
+    content: Preserve the request, authority limits, failures, and evidence.
+prompt_assembly_profiles:
+  - profile_id: fallback.prompt.standard
+    version: 1.0.0
+    layout_policy: canonical
+    activation: default
+  - profile_id: fallback.prompt.repair
+    version: 1.0.0
+    layout_policy: failure_focused
+    activation: active_failures
+perspectives: []
+steps:
+  orient:
+    output_contract: task_orientation/v1
+    questions:
+      - What outcome, inputs, constraints, authority, and proof does this task require?
+  standardize_task:
+    output_contract: work_item_ir/v1
+    questions:
+      - What typed inputs, outputs, success conditions, and unknowns preserve the request?
+  reconcile_horizon:
+    output_contract: goal_alignment/v1
+    questions:
+      - What remains between the current state and the final requested outcome?
+  assess_prepare:
+    output_contract: decision_support_portfolio/v1
+    questions:
+      - What must be inspected or learned before choosing the next action?
+  decide_next:
+    output_contract: candidate_action_portfolio/v1
+    questions:
+      - What safe bounded action should run next, and why?
+  how:
+    output_contract: execution_plan/v1
+    questions:
+      - What method, inputs, checks, permissions, and stop conditions are required?
+  act:
+    output_contract: result_packet_portfolio/v1
+    questions:
+      - What authorized bounded operation should run now?
+  verify:
+    output_contract: evaluation_packet/v1
+    questions:
+      - What independent evidence accepts or rejects the result?
+  integrate_commit:
+    output_contract: accepted_state_delta/v1
+    questions:
+      - Which verified result may enter trusted state?
+  route:
+    output_contract: route_decision/v1
+    questions:
+      - Should the task continue, repair, ask, abstain, or finish?
+  diagnose_stall:
+    output_contract: failure_diagnosis/v1
+    questions:
+      - What evidence identifies the smallest cause of stalled progress?
+  propose_recovery:
+    output_contract: recovery_proposal_portfolio/v1
+    questions:
+      - What materially changed and authorized strategy could restore progress?
+  adjudicate_recovery:
+    output_contract: recovery_directive/v1
+    questions:
+      - Which recovery proposal best preserves the request and changes the failed method?

@@ -1,0 +1,107 @@
+{
+  "record_type": "coding_harness_provider_resilience_results/v1",
+  "repository_revision": "e197a3e61591bf760426da7d21e0ebab9e89fd50",
+  "observed_at": "2026-08-31",
+  "research": {
+    "systems": [
+      "Codex",
+      "Claude Code",
+      "OpenCode",
+      "Gemini CLI",
+      "OpenHands",
+      "Aider"
+    ],
+    "report": "docs/research/CODING-HARNESS-ARCHITECTURE-COMPARISON.md",
+    "conclusion": "The reviewed systems share a compact model, tool, observation, and continuation loop. Loop Engine should retain its typed governance and reuse lifecycle while simplifying and hardening the one public solve path."
+  },
+  "verified_run_counts": {
+    "completed_cold_task_families": 2,
+    "successful_solve_outcomes_including_warm_reuse": 3,
+    "fully_qualified_promoted_searchable_learned_capabilities": 1,
+    "verified_but_not_harvested_projects": 1,
+    "completed_address_or_dirty_data_pipelines": 0,
+    "counting_rule": "Fixtures, provider probes, cancelled runs, generated-file checkpoints, and unpromoted code are excluded."
+  },
+  "ollama_cloud_diagnosis": {
+    "calls_were_sequential": true,
+    "rate_limit_responses_observed": 0,
+    "network_route_failures_observed": 3,
+    "read_timeouts_observed": 1,
+    "responses_at_exact_65536_token_ceiling_observed": 2,
+    "prior_ceiling_failure_classification": "provider_failed",
+    "new_ceiling_failure_classification": "output_limit_reached",
+    "current_catalog_reached": true,
+    "current_default_model_available": true,
+    "live_diagnostics_ref": "artifacts/verification/ollama_cloud_route_diagnostics.json"
+  },
+  "implemented_changes": [
+    "Provider response completion, stop reason, reasoning presence, and output-limit state now survive adapter and gateway serialization.",
+    "Network-unreachable, timeout, incomplete-response, empty-response, output-limit, validation, and provider failures are distinct.",
+    "Current Ollama alternate model routes and exact provider-declared output maxima replace stale route identifiers.",
+    "The public solve command can authorize same-provider failover through one ordered gateway policy; an exact model pin still wins.",
+    "The cold-start campaign now begins with one small whitespace-normalization capability and defers address normalization.",
+    "CI compares wheel Python modules with source Python modules to reject stale or missing package files."
+  ],
+  "verification": {
+    "focused_checks": {
+      "passed": 70,
+      "total": 70,
+      "provider_calls": 0
+    },
+    "architecture_contract": {
+      "passed": true,
+      "problems": 0
+    },
+    "source_self_test": {
+      "passed": 1659,
+      "total": 1659,
+      "elapsed_seconds": 185.443,
+      "provider_calls": 0
+    },
+    "contaminated_in_place_wheel": {
+      "passed": false,
+      "reason": "Ignored build/lib state contained removed loop_engine/code_nodes/universal_solve.py.",
+      "orphaned_python_modules": [
+        "loop_engine/code_nodes/universal_solve.py"
+      ]
+    },
+    "fresh_source_distribution_install": {
+      "passed": 1630,
+      "total": 1630,
+      "elapsed_seconds": 116.246,
+      "provider_calls": 0,
+      "optional_adapters_not_installed": [
+        "duckdb",
+        "mcp",
+        "model2vec",
+        "numpy",
+        "opentelemetry-sdk",
+        "pandas",
+        "sklearn"
+      ]
+    },
+    "fresh_wheel_source_parity": {
+      "passed": true,
+      "source_python_modules": 325,
+      "wheel_python_modules": 325,
+      "orphaned_python_modules": 0,
+      "missing_python_modules": 0
+    },
+    "stale_build_cleanup": {
+      "workspace_path_removed": "build/",
+      "action": "moved_without_deletion",
+      "recovery_path": "/tmp/loop-engine-wheel-check.HCcQOR/stale-repository-build-20260831"
+    }
+  },
+  "next_production_proof": {
+    "case_id": "text_field_whitespace_normalization",
+    "status": "not_started_until_public_reuse_wiring_is_complete",
+    "required_integration_gaps": [
+      "Construct persistent deterministic capability resolution from settings instead of injecting a resolver into solve_task.",
+      "Provide the asynchronous reuse-observation port from the public CLI and durable worker configuration.",
+      "Persist and qualify candidate-specific task matching, input binding, invocation, and output verification contracts.",
+      "Rebuild the active projection after explicit independent promotion and make the next public solve discover it.",
+      "Resume generated-file checkpoints across a cancelled or restarted run without creating a second execution path."
+    ]
+  }
+}

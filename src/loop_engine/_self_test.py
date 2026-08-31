@@ -60,6 +60,7 @@ def self_test() -> dict:
         "code_nodes.context_seed", "code_nodes.self_improvement_loop",
         "code_nodes.solution_canvas", "code_nodes.solution_compiler",
         "code_nodes.solve_runtime",
+        "solve_cli",
         "code_nodes.solution_model_port",
         "code_nodes.solution_graph_checks",
         "code_nodes.ascii_views_checks",
@@ -90,6 +91,8 @@ def self_test() -> dict:
         "core.task_fingerprint",
         "core.resolution",
         "core.solution_library",
+        "core.reusable_capability_checks",
+        "core.semantic_runtime_checks",
                         "code_nodes.live_run_demo",
         "code_nodes.string_foundry",
         "core.studio_server",
@@ -124,6 +127,8 @@ def self_test() -> dict:
         "core.asset_lifecycle",
         "core.adaptive_practitioner",
         "core.adaptive_practitioner_capabilities",
+        "core.adaptive_practitioner_result",
+        "core.adaptive_practitioner_source",
         "core.adaptive_practitioner_planning",
         "core.adaptive_practitioner_prompting",
         "core.adaptive_practitioner_verification",
@@ -162,7 +167,7 @@ def self_test() -> dict:
         "strings.prompt_fragments",
         "strings.question_engine",
         "strings.solution_shaping",
-                "core.model_gateway",
+        "core.model_gateway", "core.model_response_admission",
         "core.model_capabilities",
         "core.live_model_verification",
         "core.live_text_scenarios",
@@ -182,6 +187,7 @@ def self_test() -> dict:
         "core.lifecycle_extensions_checks",
         "core.software_tdd_skill_checks",
         "core.settings_loader",
+        "core.parameter_resolution",
                                                                                                                                                                                     ]
     import importlib as _importlib
 

@@ -32,6 +32,8 @@ class AdaptivePromptAssemblyRequest:
     profile_id: str
     layout_policy: str
     format_repair: bool = False
+    format_failure_code: str = ""
+    rejected_output_digest: str = ""
     granularity_profile: str = "governed_semantic"
 
     def __post_init__(self) -> None:
@@ -45,6 +47,11 @@ class AdaptivePromptAssemblyRequest:
                 "governed_semantic", "strict_atomic"):
             raise AdaptivePromptAssemblyError(
                 "prompt assembly granularity profile is invalid")
+        if (self.format_repair
+                and (not self.format_failure_code
+                     or len(self.rejected_output_digest) != 64)):
+            raise AdaptivePromptAssemblyError(
+                "format repair requires failure code and response digest")
 
 
 @dataclass(frozen=True)
@@ -71,20 +78,6 @@ def serialize_work_packet(packet: LLMWorkPacket, parent_loop) -> bytes:
         "core.primitive.json.serialize", (source,), (), "json_text/v1",
         "serialized LLM work packet"), parent_loop)
     return serialized.value.encode("utf-8")
-
-
-def parse_model_json(text: str, parent_loop) -> "dict | None":
-    """Parse provider text through a deterministic JSON primitive Loop."""
-    source = run_atomic_primitive(AtomicPrimitiveRequest(
-        "core.primitive.text.constant", (), (("value", text),), "text/v1",
-        "model response text"), parent_loop)
-    try:
-        parsed = run_atomic_primitive(AtomicPrimitiveRequest(
-            "core.primitive.json.deserialize", (source,), (), "value/v1",
-            "typed model response"), parent_loop)
-    except Exception:  # noqa: BLE001 - caller owns typed format repair
-        return None
-    return parsed.value if isinstance(parsed.value, dict) else None
 
 
 def _project(packet_value: LoopValue, field_name: str, owner) -> LoopValue:
@@ -136,11 +129,16 @@ def _project_blocks(
         packet_value, "context_intelligence", owner)
     attempts = _project_json(packet_value, "attempt_history", owner)
     if request.format_repair:
+        repair_value = run_atomic_primitive(AtomicPrimitiveRequest(
+            "core.primitive.component.read", (), (("value", {
+                "format_repair_required": True,
+                "additional_text_allowed": False,
+                "failure_code": request.format_failure_code,
+                "rejected_output_digest": request.rejected_output_digest,
+            }),), "value/v1", "format repair record"), owner)
         repair = run_atomic_primitive(AtomicPrimitiveRequest(
-            "core.primitive.text.constant", (),
-            (("value", '{"format_repair_required":true,'
-                       '"additional_text_allowed":false}'),),
-            "text/v1", "format repair directive"), owner)
+            "core.primitive.json.serialize", (repair_value,), (),
+            "json_text/v1", "format repair directive"), owner)
         attempts = run_atomic_primitive(AtomicPrimitiveRequest(
             "core.primitive.text.combine", (attempts, repair),
             (("separator", "\n"),), "text/v1",
@@ -258,7 +256,10 @@ def _render_packet_governed(
         if request.format_repair and field_name == "attempt_history":
             body += "\n" + json.dumps({
                 "format_repair_required": True,
-                "additional_text_allowed": False}, separators=(",", ":"))
+                "additional_text_allowed": False,
+                "failure_code": request.format_failure_code,
+                "rejected_output_digest": request.rejected_output_digest,
+            }, sort_keys=True, separators=(",", ":"))
         blocks[name] = f"{label}\n{body}"
     specification = PromptAssemblySpec(
         blocks=blocks, layout_policy=request.layout_policy)

@@ -253,7 +253,8 @@ def serve_pillar(pillar: str, name: str, content, *, ledger=None,
 
 
 def search_as_loop(store, query: str, *, pillar: str = "context_intelligence",
-                   kind: "str | None" = None, top_n: int = 5, ledger=None,
+                   kind: "str | None" = None,
+                   top_n: "int | None" = None, ledger=None,
                    parent=None) -> dict:
     """EVERY SEARCH IS A LOOP (owner, 2026-08-24).
 
@@ -272,7 +273,8 @@ def search_as_loop(store, query: str, *, pillar: str = "context_intelligence",
 
 def search_as_loop_refs(store, query: str, *,
                         pillar: str = "context_intelligence",
-                        kind: "str | None" = None, top_n: int = 5,
+                        kind: "str | None" = None,
+                        top_n: "int | None" = None,
                         ledger=None, parent=None) -> list:
     """SEARCH RETURNS LOOPS (charter §20).
 

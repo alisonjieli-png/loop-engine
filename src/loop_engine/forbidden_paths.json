@@ -38,7 +38,17 @@
   "max_spawned_tasks",
   "max_total",
   "max_total_tokens",
-  "max_updates"
+  "max_updates",
+  "top_n",
+  "top_k",
+  "limit",
+  "candidate_limit",
+  "model_call_limit",
+  "cost_limit",
+  "time_limit_seconds",
+  "iteration_limit",
+  "maximum_artifacts",
+  "maximum_total_bytes"
  ],
  "network_allowed_modules": [
   "core/ollama_client.py",
@@ -305,11 +315,13 @@
   "loop/kernel.py": "the nine-step executor's default implementations; split plan: move per-step defaults into loop/steps/ facades one step at a time",
   "loop/recursive_loop.py": "the canonical Loop runtime; split plan: extract LoopSpec/pause-resume into loop/spec.py once the kernel routes through run_next_iteration",
   "core/intelligence_layers.py": "the four-layer handshake and memory-type vocabulary; split plan: move the memory-type vocabulary into core/memory_types.py once the layer handshake consumes it through an import",
+  "core/intelligence_portfolio.py": "candidate discovery, explicit model-selection validation, materialization, and consumption records share one contract; split plan: move only materialization and fold projections into intelligence_portfolio_materialization.py while preserving one candidate and selection authority",
   "cli_operations.py": "public CLI projections over existing services; split plan: move provider and extension inspection commands into cli_provider_operations.py without moving domain authority",
   "core/adaptive_practitioner_records.py": "typed Practitioner records and run-scoped service bindings; split plan: move model context assembly bindings into adaptive_practitioner_model_context.py without changing the control cycle",
   "core/extension_discovery.py": "one deterministic resolver over provider, capability, skill, plugin, and intelligence added files; split plan: move passive provider route contracts and YAML parsing into extension_provider_contracts.py while retaining one resolver",
   "core/model_gateway.py": "canonical provider-neutral route executor plus its offline contract checks; split plan: move only the offline fixtures into model_gateway_checks.py while preserving ModelGateway as the sole execution boundary",
-  "core/studio_server.py": "local read-only HTTP projection boundary and acceptance checks; split plan: move socket and browser-contract checks into studio_server_checks.py after the product-outcome projection stabilizes"
+  "core/studio_server.py": "local read-only HTTP projection boundary and acceptance checks; split plan: move socket and browser-contract checks into studio_server_checks.py after the product-outcome projection stabilizes",
+  "core/reusable_capability_checks.py": "one stateful cold-to-warm vertical-slice fixture whose later assertions depend on exact earlier lifecycle records; split plan: move hybrid-only fixtures into reusable_capability_hybrid_checks.py after the shared persisted fixture has a stable exported setup contract"
  },
  "docstring_min_lines": 3,
  "docstring_exception_modules": [],

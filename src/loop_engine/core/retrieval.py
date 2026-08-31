@@ -358,14 +358,17 @@ class Retriever:
         return self._vec.search(query, top_n)
 
     def search(self, query: str, *, mode: str = "hybrid",
-               flt=None, top_n: int = 8) -> dict:
+               flt=None, top_n: "int | None" = None) -> dict:
         if mode not in ("lexical", "vector", "hybrid"):
             raise ValueError(f"mode {mode!r} not in lexical|vector|hybrid")
+        if top_n is not None and top_n < 1:
+            raise ValueError("top_n must be positive when provided")
+        requested = top_n if top_n is not None else max(1, len(self._records))
         pools = {}
         if mode in ("lexical", "hybrid"):
-            pools["lexical"] = self._lexical(query, top_n * 2)
+            pools["lexical"] = self._lexical(query, requested * 2)
         if mode in ("vector", "hybrid"):
-            pools["vector"] = self._vector(query, top_n * 2)
+            pools["vector"] = self._vector(query, requested * 2)
         # reciprocal-rank fusion across whichever pools ran
         fused: dict = {}
         for pname, pool in pools.items():
@@ -389,7 +392,7 @@ class Retriever:
                          "lsh64": simhash64(record_search_text(rec)),
                          "modes": sorted(set(e["modes"])),
                          "rrf": round(e["rrf"] + 0.01 * score_bonus, 5)})
-            if len(hits) >= top_n:
+            if top_n is not None and len(hits) >= top_n:
                 break
         return {"record_type": "retrieval/v1", "query": query,
                 "mode": mode, "hits": hits,

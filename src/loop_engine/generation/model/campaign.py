@@ -1,9 +1,9 @@
-"""Generation campaigns and the bounded expansion engine.
+"""Generation campaigns and explicitly governed expansion.
 
 A campaign declares the target contract, seeds, variation space,
 constraints, search strategy, evaluation and verification profiles,
-budgets, writeback policy, and stop conditions. Expansion is bounded:
-the full Cartesian product is never materialized unless it is small.
+optional owner budgets, writeback policy, and stop conditions. The product does
+not invent campaign ceilings or a search strategy.
 """
 from __future__ import annotations
 
@@ -41,32 +41,37 @@ class WritebackPolicy:
     may_write_core: bool = False
     may_promote: bool = False
     append_only: bool = True
-    maximum_artifacts: int = 1000
-    maximum_total_bytes: int = 10_000_000
+    maximum_artifacts: "int | None" = None
+    maximum_total_bytes: "int | None" = None
 
     def __post_init__(self) -> None:
         if self.mode not in WRITEBACK_MODES:
             raise GenerationError(
                 f"writeback mode must be one of {WRITEBACK_MODES}")
-        if self.maximum_artifacts < 1 or self.maximum_total_bytes < 1:
-            raise GenerationError("writeback limits must be positive")
+        if any(value is not None and value < 1 for value in (
+                self.maximum_artifacts, self.maximum_total_bytes)):
+            raise GenerationError(
+                "writeback limits must be positive when provided")
 
 
 @dataclass(frozen=True)
 class GenerationBudget:
-    """Hard ceilings for one generation campaign."""
+    """Optional owner-supplied ceilings for one generation campaign."""
 
-    candidate_limit: int = 128
-    model_call_limit: int = 0
-    cost_limit: float = 0.0
-    time_limit_seconds: float = 300.0
-    iteration_limit: int = 10
+    candidate_limit: "int | None" = None
+    model_call_limit: "int | None" = None
+    cost_limit: "float | None" = None
+    time_limit_seconds: "float | None" = None
+    iteration_limit: "int | None" = None
 
     def __post_init__(self) -> None:
-        if self.candidate_limit < 1:
-            raise GenerationError("candidate_limit must be positive")
-        if self.model_call_limit < 0 or self.cost_limit < 0:
-            raise GenerationError("budgets cannot be negative")
+        if self.candidate_limit is not None and self.candidate_limit < 1:
+            raise GenerationError(
+                "candidate_limit must be positive when provided")
+        if any(value is not None and value < 0 for value in (
+                self.model_call_limit, self.cost_limit,
+                self.time_limit_seconds, self.iteration_limit)):
+            raise GenerationError("provided budgets cannot be negative")
 
 
 @dataclass(frozen=True)
@@ -79,7 +84,7 @@ class GenerationCampaign:
     seeds: tuple[SeedArtifact, ...] = ()
     dimensions: tuple[VariationDimension, ...] = ()
     conditional_rules: object = ()
-    search_strategy: str = "exact_enumeration"
+    search_strategy: str = ""
     objectives: dict = field(default_factory=dict)
     writeback: WritebackPolicy = field(default_factory=WritebackPolicy)
     budget: GenerationBudget = field(default_factory=GenerationBudget)
@@ -87,7 +92,7 @@ class GenerationCampaign:
     context: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        if self.search_strategy not in SEARCH_STRATEGIES:
+        if self.search_strategy and self.search_strategy not in SEARCH_STRATEGIES:
             raise GenerationError(
                 f"search_strategy must be one of {SEARCH_STRATEGIES}")
         if not self.campaign_id or not self.version:
@@ -101,11 +106,15 @@ class GenerationCampaign:
 def expand_variation_space(campaign: GenerationCampaign) -> tuple[dict, ...]:
     """Expand the campaign's variation space into candidate configs.
 
-    Bounded by the campaign budget. Conditional rules prune
-    incompatible combinations deterministically.
+    The campaign must explicitly select the installed exact-enumeration
+    strategy. Conditional rules prune incompatible combinations.
     """
     import itertools
 
+    if campaign.search_strategy != "exact_enumeration":
+        raise GenerationError(
+            "expansion requires an explicit model-selected installed strategy; "
+            "this executor currently installs exact_enumeration")
     axis_values = []
     for dimension in campaign.dimensions:
         axis_values.append((dimension.dimension_id, dimension.expand()))
@@ -138,7 +147,8 @@ def expand_variation_space(campaign: GenerationCampaign) -> tuple[dict, ...]:
         if pruned:
             continue
         configs.append(config)
-        if len(configs) >= campaign.budget.candidate_limit:
+        if (campaign.budget.candidate_limit is not None
+                and len(configs) >= campaign.budget.candidate_limit):
             break
     return tuple(configs)
 
@@ -150,9 +160,25 @@ def self_test() -> dict:
     def check(name, ok, note=""):
         results.append({"name": name, "passed": bool(ok), "note": note})
 
+    open_campaign = GenerationCampaign(
+        campaign_id="camp-open", version="1.0.0",
+        target_artifact_kind="prompt_block")
+    check("campaign_has_no_implicit_strategy_or_resource_ceiling",
+          not open_campaign.search_strategy
+          and open_campaign.budget.candidate_limit is None
+          and open_campaign.budget.model_call_limit is None
+          and open_campaign.budget.iteration_limit is None,
+          "model or owner must provide strategy and optional limits")
+    try:
+        expand_variation_space(open_campaign)
+        check("unselected_search_strategy_cannot_execute", False)
+    except GenerationError:
+        check("unselected_search_strategy_cannot_execute", True)
+
     campaign = GenerationCampaign(
         campaign_id="camp-1", version="1.0.0",
         target_artifact_kind="prompt_block",
+        search_strategy="exact_enumeration",
         seeds=(SeedArtifact("s1", "core_default", "prompt_block", {}),),
         dimensions=(VariationDimension(
             "reasoning", "categorical",
@@ -175,6 +201,7 @@ def self_test() -> dict:
     bounded = GenerationCampaign(
         campaign_id="camp-2", version="1.0.0",
         target_artifact_kind="string",
+        search_strategy="exact_enumeration",
         dimensions=(VariationDimension("x", "integer_range",
                                        minimum=0, maximum=100000),),
         budget=GenerationBudget(candidate_limit=5))

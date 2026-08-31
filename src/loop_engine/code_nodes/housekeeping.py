@@ -426,7 +426,7 @@ def run_housekeeping(*, runs: "Sequence[dict]" = (),
     spec = housekeeping_spec(runs, legacy, trigger_class=trigger_class,
                              min_frequency=min_frequency)
     run = run_kernel_passes(KernelRunRequest(
-        spec, housekeeping_impls(), max_passes=6))
+        spec, housekeeping_impls(), max_passes=None))
     seen, cands = set(), []
     for rec in run["records"]:
         for res in (rec.results or ()):

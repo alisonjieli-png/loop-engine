@@ -8,6 +8,11 @@ ontology_version: 2.0.0
 
 core-provenance records for context_intelligence.
 
+The full Practitioner question, persona, and guidance portfolio is stored in
+`practitioner_context_intelligence.yaml`. The smaller package fallback is not
+part of this active intelligence collection. It is stored separately under
+`loop_engine/data` and can be used only under an explicit outage policy.
+
 Path reading:
 
 ```text

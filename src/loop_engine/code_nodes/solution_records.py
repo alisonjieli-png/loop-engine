@@ -9,16 +9,16 @@ objection demanded, each with a **live reader** rather than a name:
 
 | Record | Read by |
 |---|---|
-| `SolutionCandidate` | `SolutionPortfolio.select` and the comparison report |
-| `SolutionPortfolio` | selection, and the `solution.candidate.created` lifecycle |
+| `SolutionCandidate` | `SolutionPortfolio.eligible` and the comparison report |
+| `SolutionPortfolio` | model selection validation and the candidate lifecycle |
 | `SolutionEvaluationSpec` | `evaluate_candidate`, which refuses to score without one |
 | `SolutionPackageManifest` | `package_solution`, which digests what ships |
 | `SolutionRunRecord` | `record_run`, the evidence a run actually happened |
 
 The rule that gives them teeth: **a candidate cannot select itself.**
-`SolutionPortfolio.select` requires an evaluation whose evaluator is not the
-candidate's own author — the Article 10 separation, applied where Solutions
-are chosen.
+`SolutionPortfolio.select` validates an explicit model-selected candidate and
+requires an evaluation whose evaluator is not the candidate's own author. It
+never calculates a winner from local score ordering.
 
 Owns:
     - the five records and their validation;
@@ -105,16 +105,11 @@ class SolutionPortfolio:
     def add(self, candidate: SolutionCandidate) -> None:
         self.candidates.append(candidate)
 
-    def select(self, *, ledger=None) -> "SolutionCandidate | None":
-        """Choose the winner — on evidence, never on authorship.
-
-        Refuses to select an unscored candidate, refuses a score produced by
-        the candidate's own author, and returns None on an empty or wholly
-        unscored portfolio rather than inventing a winner."""
+    def eligible(self) -> tuple[SolutionCandidate, ...]:
+        """Return independently evaluated candidates without selecting one."""
         if self.evaluation is None:
             raise SolutionRecordError(
-                "a portfolio selects against an evaluation spec; without one "
-                "'best' has no meaning")
+                "a portfolio needs an evaluation spec before eligibility")
         eligible = []
         for c in self.candidates:
             if not c.scored:
@@ -124,18 +119,28 @@ class SolutionPortfolio:
                     f"candidate {c.candidate_id!r} was scored by its own "
                     "author — no component approves its own candidate")
             eligible.append(c)
+        return tuple(eligible)
+
+    def select(self, candidate_id: str = "", *,
+               ledger=None) -> "SolutionCandidate | None":
+        """Validate one explicit model-selected candidate against hard gates."""
+        eligible = self.eligible()
         if not eligible:
             return None
-        best = eligible[0]
-        for c in eligible[1:]:
-            if self.evaluation.better(c.score, best.score):
-                best = c
+        if not candidate_id:
+            raise SolutionRecordError(
+                "eligible candidates require an explicit model selection")
+        selected = next((candidate for candidate in eligible
+                         if candidate.candidate_id == candidate_id), None)
+        if selected is None:
+            raise SolutionRecordError(
+                "the model-selected candidate is not independently eligible")
         if ledger is not None:
             ledger.record(loop_id=self.portfolio_id,
                           event="solution_finalized",
-                          solution=best.candidate_id,
+                          solution=selected.candidate_id,
                           among=len(eligible), metric=self.evaluation.metric)
-        return best
+        return selected
 
 
 @dataclass
@@ -232,8 +237,8 @@ def self_test() -> dict:
 
     lg = LoopLedger()
     port = SolutionPortfolio("port.1", [a, b], ev)
-    winner = port.select(ledger=lg)
-    check("a_portfolio_selects_on_evidence_not_authorship",
+    winner = port.select("cand.b", ledger=lg)
+    check("a_portfolio_validates_model_selection_not_local_ranking",
           winner is b and winner.evaluated_by == "independent_grader"
           and any(e.get("event") == "solution_finalized" for e in lg.events),
           f"{winner.candidate_id} won on {ev.metric}")
@@ -264,14 +269,20 @@ def self_test() -> dict:
     empty = SolutionPortfolio("port.empty", [], ev).select()
     unscored = SolutionPortfolio(
         "port.raw", [SolutionCandidate("x", "s://x")], ev).select()
+    implicit_selection_refused = False
+    try:
+        port.select()
+    except SolutionRecordError:
+        implicit_selection_refused = True
     no_spec = False
     try:
         SolutionPortfolio("port.nospec", [a]).select()
     except SolutionRecordError:
         no_spec = True
-    check("an_empty_or_unscored_portfolio_abstains",
-          empty is None and unscored is None and no_spec,
-          "abstention beats an invented winner")
+    check("empty_or_unscored_abstains_and_eligible_requires_model_choice",
+          empty is None and unscored is None and no_spec
+          and implicit_selection_refused,
+          "abstention beats an invented or locally ranked winner")
 
     # package + record: what shipped is digested and what ran is evidenced
     man = package_solution("solution://b", ["prep", "score"])

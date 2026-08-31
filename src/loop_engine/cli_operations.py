@@ -639,7 +639,9 @@ def _compile_gateway(args, key: str):
                 "the OpenRouter key shortcut materializes "
                 "cloud.openrouter.zero_cost; configure a named settings "
                 "route for an explicitly paid model")
-        return openrouter_zero_cost_gateway(key, args.model_id), route_name
+        return openrouter_zero_cost_gateway(
+            key, args.model_id,
+            maximum_output_tokens=args.max_total_tokens), route_name
 
     loaded = load_runtime_settings(args.settings_file or None)
     gateway = loaded.settings.build_gateway()

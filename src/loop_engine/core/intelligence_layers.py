@@ -442,7 +442,7 @@ class IntelligenceSearchRequest:
     need: str
     layer_records: dict
     mode: str = "lexical"
-    top_n: int = 3
+    top_n: "int | None" = None
     filter: object | None = None
     include_candidates: bool = False
 
@@ -483,8 +483,9 @@ def query_intelligence(
             wrapped = classified_record(layer, record, record_id=wrapped_id)
             combined.append(wrapped)
             identities[wrapped_id] = (record, wrapped.body["classification"])
-    requested = max(request.top_n, request.top_n * max(
-        1, len(LAYERS) - len(unqueried)))
+    requested = (max(1, len(combined)) if request.top_n is None else
+                 max(request.top_n, request.top_n * max(
+                     1, len(LAYERS) - len(unqueried))))
     from ..loop.encapsulate import as_loop
     search_run = as_loop(
         f"search four intelligence layers for {need[:80]}",

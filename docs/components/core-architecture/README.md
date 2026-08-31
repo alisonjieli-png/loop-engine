@@ -80,6 +80,7 @@ Loop execution but are not peer Core Architecture capability groups:
 These pages document the mechanics:
 
 - [Model gateway](MODEL-GATEWAY.md)
+- [Model Response Admission](MODEL-RESPONSE-ADMISSION.md)
 - [Runtime settings](../../guides/settings.md)
 - [Custom model endpoints](../../guides/custom-endpoints.md)
 - [Effect approvals](EFFECT-APPROVALS.md)

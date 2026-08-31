@@ -13,6 +13,7 @@ import time
 from dataclasses import dataclass, field, replace
 from enum import Enum
 from pathlib import Path
+from typing import Callable
 
 from ..core.adaptive_practitioner import run_adaptive_practitioner
 from ..core.adaptive_practitioner_records import (
@@ -98,6 +99,8 @@ class SolveRequest:
     deterministic_resolvers: tuple[object, ...] = field(
         default=(), repr=False, compare=False)
     extension_snapshot: dict = field(default_factory=dict)
+    progress: "Callable[[dict], None] | None" = field(
+        default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         mode = self.interaction_mode
@@ -132,6 +135,8 @@ class SolveRequest:
                 and self.extension_snapshot.get("record_type")
                 != "extension_snapshot/v1"):
             raise SolveError("extension_snapshot has an invalid contract")
+        if self.progress is not None and not callable(self.progress):
+            raise SolveError("progress must be callable when supplied")
 
 
 @dataclass(frozen=True)
@@ -317,6 +322,8 @@ def _failure_code(result: dict) -> str:
     code = str(result.get("failure_code") or "")
     if code in ("NO_VERIFIED_CAPABILITY", "EXECUTOR_UNAVAILABLE"):
         return SolveTerminalCode.CAPABILITY_GAP.value
+    if code == "CANCELLED":
+        return SolveTerminalCode.CANCELLED.value
     if code == "model_call_budget_exhausted":
         return SolveTerminalCode.BUDGET_EXHAUSTED.value
     if code in (
@@ -385,7 +392,7 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         AdaptivePractitionerRequest(
             request.intake.original_input, mode=mode,
             runs_dir=request.runs_dir,
-            max_passes=(1 if resolvers else request.max_passes),
+            max_passes=request.max_passes,
             interaction_mode=request.interaction_mode.value,
             allow_network_reads=request.allow_network_reads,
             allow_workspace_writes=request.allow_workspace_writes,
@@ -400,6 +407,7 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         AdaptivePractitionerDependencies(
             model_execution=request.model_execution,
             deterministic_resolvers=resolvers,
+            progress=request.progress,
             extension_snapshot=request.extension_snapshot))
     solved = bool(adaptive.get("solved"))
     product = _product_result(adaptive, solved)
@@ -497,6 +505,7 @@ def _next_recovery(terminal: str) -> str:
 
 def self_test() -> dict:
     import tempfile
+    from unittest.mock import patch
 
     from ..templates.intake import TaskIntakeRequest, intake_task
     from .solution_model_port import (
@@ -508,6 +517,46 @@ def self_test() -> dict:
 
     def check(name, ok, note=""):
         results.append({"name": name, "passed": bool(ok), "note": note})
+
+    class NonMatchingResolver:
+        """Registered exact resolver that correctly declines this task."""
+
+        resolver_id = "fixture.non_matching@1"
+
+        def supports(self, _task):
+            return False
+
+        def execute(self, _task):
+            raise AssertionError("a non-matching resolver must not execute")
+
+    observed_pass_limits = []
+
+    def capture_adaptive_request(adaptive_request, _dependencies):
+        observed_pass_limits.append(adaptive_request.max_passes)
+        return {
+            "run_id": "fixture-no-injected-pass-ceiling",
+            "solved": False,
+            "failure_code": "NO_VERIFIED_CAPABILITY",
+            "deterministic_attempt": {
+                "status": "NO_VERIFIED_CAPABILITY",
+                "diagnostics": ["fixture stopped before semantic work"],
+            },
+            "run_history": {},
+            "loop_details": [],
+        }
+
+    with patch(
+            "loop_engine.code_nodes.solve_runtime.run_adaptive_practitioner",
+            side_effect=capture_adaptive_request):
+        solve_task(SolveRequest(
+            intake_task(TaskIntakeRequest(
+                text="Solve work not covered by the exact resolver.")),
+            deterministic_resolvers=(NonMatchingResolver(),),
+            save_run_history=False))
+    check(
+        "registered_resolver_does_not_inject_a_practitioner_pass_ceiling",
+        observed_pass_limits == [None],
+        "resolver presence changes eligibility, not semantic stopping")
 
     with tempfile.TemporaryDirectory() as root:
         data = Path(root) / "rows.csv"

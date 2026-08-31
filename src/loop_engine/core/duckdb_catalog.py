@@ -73,7 +73,7 @@ class DuckDBCatalogBackend:
             f"FROM read_json_auto('{jsonl_path}')")
 
     def search(self, query: str, *, kind: "str | None" = None,
-               top_n: int = 8) -> dict:
+               top_n: "int | None" = None) -> dict:
         tokens = [t.lower() for t in query.split() if len(t) > 2][:12]
         if not tokens:
             return {"record_type": "duckdb_catalog_search/v1", "hits": []}
@@ -83,10 +83,13 @@ class DuckDBCatalogBackend:
             "THEN 2 ELSE 0 END)"
             for t in (t.replace("'", "") for t in tokens))
         where = f"WHERE kind = '{kind}'" if kind else ""
+        limit_sql = "" if top_n is None else " LIMIT ?"
+        parameters = [] if top_n is None else [top_n]
         rows = self._con.execute(
             f"SELECT record_id, kind, title, tier, facets, digest, "
             f"({score_sql}) AS score FROM catalog {where} "
-            "ORDER BY score DESC, record_id LIMIT ?", [top_n]).fetchall()
+            f"ORDER BY score DESC, record_id{limit_sql}",
+            parameters).fetchall()
         hits = [{"record_id": r[0], "kind": r[1], "title": r[2], "tier": r[3],
                  "source": "duckdb_catalog",
                  "facets": (json.loads(r[4]) if isinstance(r[4], str)

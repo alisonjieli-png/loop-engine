@@ -40,7 +40,9 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from .ollama_client import ChatResult, FORBIDDEN_MODELS
+from .ollama_client import (
+    ChatResult, FORBIDDEN_MODELS, response_reached_output_limit,
+)
 from .model_capabilities import (
     ModelOutputCapability, ModelOutputLimitMismatch,
     UnknownModelOutputLimit, require_declared_maximum,
@@ -159,13 +161,22 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
     choices = body.get("choices") or []
     text = (choices[0].get("message", {}).get("content", "")
             if choices else "")
+    done_reason = str(choices[0].get("finish_reason", "") or "") \
+        if choices else ""
     usage = body.get("usage") or {}
+    output_tokens = int(usage.get("completion_tokens", 0))
+    output_limit_reached = response_reached_output_limit(
+        done_reason, output_tokens, maximum)
     return ChatResult(
         text=str(text), model=str(body.get("model", model)),
         prompt_tokens=int(usage.get("prompt_tokens", 0)),
-        eval_tokens=int(usage.get("completion_tokens", 0)),
-        ok=bool(text), num_predict_used=maximum,
-        error="" if text else "provider returned no text")
+        eval_tokens=output_tokens,
+        ok=bool(text) and not output_limit_reached,
+        num_predict_used=maximum, response_received=True, done=True,
+        done_reason=done_reason, output_limit_reached=output_limit_reached,
+        error=("output_limit_reached: provider stopped at its declared "
+               "output ceiling" if output_limit_reached else ""
+               if text else "provider returned no text"))
 
 
 def chat_maxout(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",

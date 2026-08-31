@@ -482,6 +482,293 @@ semantic_terms:
   - one_term_one_meaning
   - one_source_of_truth
   - no_authority_from_alias
+- term_id: core.term.parameter_input
+  canonical_name: ParameterInput
+  primary_category: contract
+  definition: Tagged invocation value that distinguishes omission, explicit null, empty values, false, zero, and an ordinary value.
+  source_of_truth: loop_engine.core.parameter_resolution:ParameterInput
+  source_symbol: loop_engine.core.parameter_resolution:ParameterInput
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: parameter_definition/v1
+  related_terms:
+  - ParameterDefinition
+  - ResolvedParameter
+  difference_from_neighbors: ParameterInput carries one requested state; RuntimeSettings owns settings and ResolvedParameter records the selected value.
+  parameterization_decision: tagged_value_state
+  composition_decision: consumed by the existing RuntimeSettings and Loop configuration boundary
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: invocation scoped
+  legacy_aliases: []
+  migration: raw empty and null override sentinels remain compatibility input until callers adopt tagged values
+  examples:
+  - explicit null max depth
+  - explicit zero confidence threshold
+  negative_examples:
+  - raw None used simultaneously for clear, disable, inherit, and omit
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.parameter_definition
+  canonical_name: ParameterDefinition
+  primary_category: contract
+  definition: Versioned semantic owner, type, scope, constraints, default policy, sensitivity, and qualification impact for one material parameter.
+  source_of_truth: loop_engine.core.parameter_resolution:ParameterDefinition
+  source_symbol: loop_engine.core.parameter_resolution:ParameterDefinition
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: parameter_definition/v1
+  related_terms:
+  - ParameterInput
+  - ResolvedParameter
+  difference_from_neighbors: A parameter definition declares meaning and validation; it does not load deployment settings or infer a value.
+  parameterization_decision: typed_parameter_contract
+  composition_decision: resolved from exact sources by the deterministic resolver
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: []
+  migration: none
+  examples:
+  - loop.config.max_depth
+  negative_examples:
+  - an undocumented key in a generic settings dictionary
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.resolved_parameter
+  canonical_name: ResolvedParameter
+  primary_category: record
+  definition: Safe resolved value evidence containing source, version, precedence, validation, state, digest, and every source considered.
+  source_of_truth: loop_engine.core.parameter_resolution:ResolvedParameter
+  source_symbol: loop_engine.core.parameter_resolution:ResolvedParameter
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: evidence
+  versioning: resolved_parameter/v1
+  related_terms:
+  - ParameterDefinition
+  - ParameterInput
+  difference_from_neighbors: ResolvedParameter records a decision; RuntimeSettings and policies remain the authorities that supplied candidates.
+  parameterization_decision: exact_resolution_trace
+  composition_decision: grouped into LoopConfigResolutionRecord for one Loop configuration
+  inheritance_decision: none
+  storage_authority: Run History or the owning execution record
+  lifecycle: immutable per resolution
+  legacy_aliases: []
+  migration: none
+  examples:
+  - profile value selected after explicit omission
+  negative_examples:
+  - a scalar with no source or fallback explanation
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.prompt_resource_bundle
+  canonical_name: PromptResourceBundle
+  primary_category: artifact
+  definition: Versioned prompt semantics with typed slots, trust classes, composition order, policy identities, and exact content digests.
+  source_of_truth: loop_engine.strings.prompt_fragments:PromptResourceBundle
+  source_symbol: loop_engine.strings.prompt_fragments:PromptResourceBundle
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: semantic version plus exact bundle digest
+  related_terms:
+  - PromptSlotDefinition
+  difference_from_neighbors: A prompt bundle is passive semantic material; model invocation still runs through a Loop and the ModelGateway.
+  parameterization_decision: typed_slots_and_fixed_composition
+  composition_decision: rendered deterministically before the existing model invocation boundary
+  inheritance_decision: none
+  storage_authority: Context Intelligence or the owning versioned source resource
+  lifecycle: versioned and requalified after material changes
+  legacy_aliases: []
+  migration: inline campaign prompt now renders from campaign.problem.solve
+  examples:
+  - campaign.problem.solve@1.0.0
+  negative_examples:
+  - an f-string that mixes trusted contract text with untrusted task data
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.prompt_slot_definition
+  canonical_name: PromptSlotDefinition
+  primary_category: contract
+  definition: Typed prompt input slot with sensitivity, trust class, escaping, size, omission, and provenance policy.
+  source_of_truth: loop_engine.strings.prompt_fragments:PromptSlotDefinition
+  source_symbol: loop_engine.strings.prompt_fragments:PromptSlotDefinition
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: bound into the prompt bundle slot schema digest
+  related_terms:
+  - PromptResourceBundle
+  difference_from_neighbors: A prompt slot constrains one input; it does not select a model, grant authority, or validate the model output.
+  parameterization_decision: typed_prompt_input
+  composition_decision: owned by one PromptResourceBundle component
+  inheritance_decision: none
+  storage_authority: prompt resource bundle
+  lifecycle: versioned passive contract
+  legacy_aliases: []
+  migration: none
+  examples:
+  - untrusted_data goal with a character limit and provenance
+  negative_examples:
+  - opaque string interpolation
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+
+- term_id: core.term.capability_need
+  canonical_name: CapabilityNeed
+  primary_category: request
+  definition: Typed subtask goal, contracts, effects, environment, privacy scope, and search fields used to find reusable capabilities.
+  source_of_truth: loop_engine.core.reusable_capability_records:CapabilityNeed
+  source_symbol: loop_engine.core.reusable_capability_records:CapabilityNeed
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: capability_need/v1
+  related_terms:
+  - ReusableCapability
+  difference_from_neighbors: CapabilityNeed describes one subtask for resolution; it is not the original user request or an executable Loop.
+  parameterization_decision: typed_subtask_resolution_fields
+  composition_decision: consumed by CapabilityResolver inside an Intelligence Loop
+  inheritance_decision: none
+  storage_authority: Run History when persisted
+  lifecycle: invocation scoped
+  legacy_aliases: []
+  migration: none
+  examples:
+  - a record deduplication need with exact input and output contract digests
+  negative_examples:
+  - free form task text with no contract
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.reuse_opportunity_observed
+  canonical_name: ReuseOpportunityObserved
+  primary_category: event
+  definition: Reference-only observation that accepted verified work produced an artifact that may be reusable.
+  source_of_truth: loop_engine.core.reusable_capability_records:ReuseOpportunityObserved
+  source_symbol: loop_engine.core.reusable_capability_records:ReuseOpportunityObserved
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: reuse_opportunity_observed/v1
+  related_terms:
+  - ReuseAssessment
+  difference_from_neighbors: A reuse opportunity starts review; it is not a candidate, qualification, promotion, or active capability.
+  parameterization_decision: exact_source_result_and_artifact_references
+  composition_decision: admitted to the reactive harvest series or the identical inline path
+  inheritance_decision: none
+  storage_authority: Run History and reactive input materialization
+  lifecycle: observed
+  legacy_aliases: []
+  migration: none
+  examples:
+  - one verified generated Python project reference
+  negative_examples:
+  - an unverified model recommendation
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.reuse_assessment
+  canonical_name: ReuseAssessment
+  primary_category: result
+  definition: Advisory reuse evaluation across the complete registered evidence, value, risk, effort, and maintenance dimensions.
+  source_of_truth: loop_engine.core.reusable_capability_records:ReuseAssessment
+  source_symbol: loop_engine.core.reusable_capability_records:ReuseAssessment
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: reuse_assessment/v1
+  related_terms:
+  - ReuseOpportunityObserved
+  - CapabilityGeneralizationRecord
+  difference_from_neighbors: A reuse assessment may recommend work but cannot qualify, promote, or execute an artifact.
+  parameterization_decision: complete_registered_dimension_scores_plus_evidence
+  composition_decision: used by the governed harvest policy before candidate creation
+  inheritance_decision: none
+  storage_authority: unified catalog evidence record
+  lifecycle: advisory
+  legacy_aliases: []
+  migration: none
+  examples:
+  - a full assessment that recommends candidate construction
+  negative_examples:
+  - a one to ten score used as promotion authority
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.capability_generalization_record
+  canonical_name: CapabilityGeneralizationRecord
+  primary_category: record
+  definition: Exact lineage from one observed source artifact to one parameterized candidate artifact, including parameters, preserved invariants, removed assumptions, and evidence.
+  source_of_truth: loop_engine.core.reusable_capability_records:CapabilityGeneralizationRecord
+  source_symbol: loop_engine.core.reusable_capability_records:CapabilityGeneralizationRecord
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: capability_generalization/v1
+  related_terms:
+  - ReuseAssessment
+  - CodeAssetSpec
+  difference_from_neighbors: Generalization records explain a changed artifact; they do not make the candidate qualified or active.
+  parameterization_decision: source_candidate_digest_pair_and_explicit_changes
+  composition_decision: stored with candidate evidence before independent qualification
+  inheritance_decision: none
+  storage_authority: unified catalog evidence record
+  lifecycle: candidate lineage
+  legacy_aliases: []
+  migration: none
+  examples:
+  - fixed email deduplication generalized into configurable key fields and keep policy
+  negative_examples:
+  - replacing source code without a source digest
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.hybrid_assistance_profile
+  canonical_name: HybridAssistanceProfile
+  primary_category: policy
+  definition: Versioned passive selection of bounded model assistance stages under the one canonical hybrid mode.
+  source_of_truth: loop_engine.core.reusable_capability_records:HybridAssistanceProfile
+  source_symbol: loop_engine.core.reusable_capability_records:HybridAssistanceProfile
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: semantic version
+  related_terms:
+  - CapabilityNeed
+  difference_from_neighbors: A hybrid assistance profile configures stages and budgets; it is not a run mode or runtime subclass.
+  parameterization_decision: orthogonal_stage_and_budget_fields
+  composition_decision: consumed by a Practitioner Loop running in hybrid mode
+  inheritance_decision: none
+  storage_authority: packaged hybrid assistance profile resource
+  lifecycle: versioned policy
+  legacy_aliases: []
+  migration: none
+  examples:
+  - hybrid.normalize_then_resolve
+  negative_examples:
+  - hybrid_search as a fourth run mode
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
 - term_id: core.term.loop
   canonical_name: Loop
   primary_category: runtime
@@ -1008,6 +1295,35 @@ semantic_terms:
   - one_term_one_meaning
   - one_source_of_truth
   - no_authority_from_alias
+- term_id: core.term.intelligence_portfolio_candidates
+  canonical_name: IntelligencePortfolioCandidates
+  primary_category: candidate
+  definition: Eligible Intelligence references awaiting explicit selection by a model-led consuming Loop.
+  source_of_truth: loop_engine.core.intelligence_portfolio:IntelligencePortfolioCandidates
+  source_symbol: loop_engine.core.intelligence_portfolio:IntelligencePortfolioCandidates
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: intelligence_portfolio_candidates/v1
+  related_terms:
+  - IntelligencePortfolioSnapshot
+  difference_from_neighbors: IntelligencePortfolioCandidates contains eligible options and grants no selection authority; IntelligencePortfolioSnapshot records an accepted selection.
+  parameterization_decision: candidate_search_results
+  composition_decision: selected refs compose only after explicit model choice and runtime validation
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: candidate_only_until_model_selection
+  legacy_aliases: []
+  migration: none
+  examples:
+  - discover_intelligence_candidates
+  negative_examples:
+  - deterministic top-score winner
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+
 - term_id: core.term.working_memory_state
   canonical_name: WorkingMemoryState
   primary_category: memory
@@ -2078,6 +2394,209 @@ semantic_terms:
   - one selected preparation action
   negative_examples:
   - an unvalidated model response
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.semantic_loop_contract
+  canonical_name: SemanticLoopContract
+  primary_category: contract
+  definition: Complete versioned behavioral specification bound to one exact LoopDefinition and valid without a dedicated conventional implementation body.
+  source_of_truth: loop_engine.core.semantic_runtime_records:SemanticLoopContract
+  source_symbol: loop_engine.core.semantic_runtime_records:SemanticLoopContract
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: semantic_loop_contract/v1
+  related_terms:
+  - LoopDefinition
+  - SemanticRealizationBinding
+  difference_from_neighbors: SemanticLoopContract defines behavior; LoopDefinition remains the executable Loop identity and a realization only supplies one eligible way to satisfy it.
+  parameterization_decision: complete_semantic_abi_fields
+  composition_decision: specification digest is bound into one exact LoopDefinition
+  inheritance_decision: none
+  storage_authority: exact Loop definition and governed semantic contract record
+  lifecycle: versioned
+  legacy_aliases: []
+  migration: none
+  examples:
+  - semantic.route_claim version 1.0.0
+  negative_examples:
+  - an empty Python function whose docstring bypasses Loop
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.semantic_interpreter_profile
+  canonical_name: SemanticInterpreterProfile
+  primary_category: profile
+  definition: Versioned provider, model, runtime instruction, context, tool, output, decoding, and budget identity for direct semantic interpretation.
+  source_of_truth: loop_engine.core.semantic_runtime_records:SemanticInterpreterProfile
+  source_symbol: loop_engine.core.semantic_runtime_records:SemanticInterpreterProfile
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: semantic version
+  related_terms:
+  - SemanticLoopContract
+  - SemanticProgramIdentity
+  difference_from_neighbors: The profile constrains one interpreter realization; it is not a model call, run mode, or qualification result.
+  parameterization_decision: exact_interpreter_runtime_policy_fields
+  composition_decision: bound to a semantic realization and independent qualification
+  inheritance_decision: none
+  storage_authority: governed profile record
+  lifecycle: candidate until qualified and selected
+  legacy_aliases: []
+  migration: none
+  examples:
+  - one routing interpreter profile with a one-call budget
+  negative_examples:
+  - a mutable model name with no policy digest
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.semantic_realization_binding
+  canonical_name: SemanticRealizationBinding
+  primary_category: record
+  definition: Exact link from one semantic contract to a qualified deterministic, hybrid, semantic, cached, composite, generated, or human-authority realization.
+  source_of_truth: loop_engine.core.semantic_runtime_records:SemanticRealizationBinding
+  source_symbol: loop_engine.core.semantic_runtime_records:SemanticRealizationBinding
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: semantic version
+  related_terms:
+  - SemanticLoopContract
+  - SemanticInterpreterProfile
+  difference_from_neighbors: A realization binding does not replace or mutate the canonical contract and grants no authority when its linked lifecycle or qualification is inactive.
+  parameterization_decision: realization_kind_coverage_identity_and_qualification
+  composition_decision: selected by hard eligibility before one canonical Loop execution
+  inheritance_decision: none
+  storage_authority: governed realization binding record
+  lifecycle: candidate validated registered deprecated quarantined superseded or retired
+  legacy_aliases: []
+  migration: none
+  examples:
+  - promoted deterministic California routing bound to semantic.route_claim
+  negative_examples:
+  - a search score that makes code active
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.proposed_state_delta
+  canonical_name: ProposedStateDelta
+  primary_category: candidate
+  definition: Untrusted model or realization proposal for changes against one exact trusted-state version, with effects, evidence, and idempotency identity.
+  source_of_truth: loop_engine.core.semantic_runtime_records:ProposedStateDelta
+  source_symbol: loop_engine.core.semantic_runtime_records:ProposedStateDelta
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: semantic_abi/v1
+  related_terms:
+  - TrustedStateSnapshot
+  - SemanticExecutionRecord
+  difference_from_neighbors: A proposed delta has no effect until issued verification, issued effect authorization, and compare-and-swap commit succeed.
+  parameterization_decision: base_version_writes_effects_evidence_and_idempotency
+  composition_decision: consumed only by the trusted semantic state controller
+  inheritance_decision: none
+  storage_authority: candidate execution record
+  lifecycle: speculative
+  legacy_aliases: []
+  migration: none
+  examples:
+  - an empty routing delta for a pure decision
+  negative_examples:
+  - a model directly changing trusted state
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.semantic_program_identity
+  canonical_name: SemanticProgramIdentity
+  primary_category: record
+  definition: Digest components for the contract, Loop definition, realization, interpreter, context, tools, verification, and effect policy that determine one semantic program.
+  source_of_truth: loop_engine.core.semantic_runtime_records:SemanticProgramIdentity
+  source_symbol: loop_engine.core.semantic_runtime_records:SemanticProgramIdentity
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: semantic_abi/v1
+  related_terms:
+  - SemanticLoopContract
+  - SemanticInterpreterProfile
+  difference_from_neighbors: Program identity describes effective semantics; an invocation execution record adds input, candidate, verification, effect, and result evidence.
+  parameterization_decision: exact_digest_per_program_component
+  composition_decision: hashed into one ProgramID for execution records and requalification
+  inheritance_decision: none
+  storage_authority: SemanticExecutionRecord
+  lifecycle: invocation pinned
+  legacy_aliases: []
+  migration: none
+  examples:
+  - a ProgramID change after interpreter profile version changes
+  negative_examples:
+  - treating an unchanged prompt as unchanged behavior after a model upgrade
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.semantic_execution_record
+  canonical_name: SemanticExecutionRecord
+  primary_category: record
+  definition: Exact ProgramID, realization, trust transitions, disposition, model usage, latency, and candidate-to-commit evidence for one semantic invocation.
+  source_of_truth: loop_engine.core.semantic_runtime_records:SemanticExecutionRecord
+  source_symbol: loop_engine.core.semantic_runtime_records:SemanticExecutionRecord
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: semantic_abi/v1
+  related_terms:
+  - SemanticProgramIdentity
+  - ProposedStateDelta
+  difference_from_neighbors: The execution record records what happened; it does not qualify a model profile or authorize a future effect.
+  parameterization_decision: exact_invocation_evidence_fields
+  composition_decision: stored with Run History and reliability evidence
+  inheritance_decision: none
+  storage_authority: Run History and governed execution records
+  lifecycle: immutable execution evidence
+  legacy_aliases: []
+  migration: none
+  examples:
+  - accepted routing with candidate structurally valid contract valid verified effect authorized committed
+  negative_examples:
+  - model confidence presented as verification
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.semantic_reliability_envelope
+  canonical_name: SemanticReliabilityEnvelope
+  primary_category: report
+  definition: Fixture-scoped counts for accepted, rejected, abstained, false-accepted, unsafe-committed, and model-call outcomes under exact contract, realization, interpreter, and verifier identities.
+  source_of_truth: loop_engine.core.semantic_runtime_evidence:SemanticReliabilityEnvelope
+  source_symbol: loop_engine.core.semantic_runtime_evidence:SemanticReliabilityEnvelope
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: evidence population and exact identity digests
+  related_terms:
+  - SemanticInterpreterProfile
+  - SemanticExecutionRecord
+  difference_from_neighbors: A reliability envelope reports a measured population and does not claim universal correctness or convert model confidence into evidence.
+  parameterization_decision: exact_population_counts_and_identity_digests
+  composition_decision: used by independent interpreter profile qualification and rollback policy
+  inheritance_decision: none
+  storage_authority: evaluation evidence record
+  lifecycle: expires when program components or fixture policy change
+  legacy_aliases: []
+  migration: none
+  examples:
+  - four offline routing fixtures with three accepted and one safe abstention
+  negative_examples:
+  - zero observed failures described as a statistical upper bound
   conformance_rules:
   - one_term_one_meaning
   - one_source_of_truth

@@ -1,0 +1,181 @@
+{
+  "conformance": {
+    "guard_enforced_rails": 8,
+    "installed_python310": "all_gates_pass",
+    "source": "all_gates_pass"
+  },
+  "created_on": "2026-08-31",
+  "distributions": {
+    "clean_wheel": {
+      "path": "/tmp/loop-engine-self-orienting-build.OWWCiA/clean-dist/loop_engine-0.1.0-py3-none-any.whl",
+      "sha256": "f3eef34372828ee59cde655a4e2fb542d6b9f1ad2718cc928627cc4a9071f20d"
+    },
+    "devtools_wheel": {
+      "path": "/tmp/loop-engine-self-orienting-build.OWWCiA/devtools-dist/loop_engine_devtools-0.1.0-py3-none-any.whl",
+      "sha256": "095a51862bd34a4c880db4a6d140ef037ca064bf7c58f066536e5723dd7e9d0b"
+    },
+    "rejected_stale_build_wheel": {
+      "reason": "existing build directory leaked retired universal_solve.py",
+      "sha256": "333175440ad442df652a1bca87ace73947e2ad8a4534e6e3441fbb1081312692"
+    },
+    "source_distribution": {
+      "path": "/tmp/loop-engine-self-orienting-build.OWWCiA/dist/loop_engine-0.1.0.tar.gz",
+      "sha256": "5c8e17252e0e97dbc27552d4bd1c05c150a93c04845e9806f4a5812f3a47890d"
+    }
+  },
+  "focused_checks": {
+    "passed": 108,
+    "total": 108
+  },
+  "graphify": {
+    "code_only": true,
+    "cold_filtered": {
+      "edges": 24164,
+      "elapsed_seconds": 10.42,
+      "files": 401,
+      "graph_sha256": "005a36f9a7b3ca2a62a50ed6e51f02cb95111f25412ce71a2a9e61c4f548f413",
+      "implicit_endpoints": 104,
+      "nodes": 7985,
+      "peak_rss_kb": 404012,
+      "source_files": 401
+    },
+    "cold_unfiltered": {
+      "edges": 24973,
+      "elapsed_seconds": 10.89,
+      "files": 575,
+      "graph_bytes": 12240965,
+      "nodes": 8736,
+      "peak_rss_kb": 406296
+    },
+    "decision": "optional descriptive Code Intelligence evidence producer",
+    "free_form_capability_query_nodes": 827,
+    "free_form_parameter_call_query_nodes": 537,
+    "provider_variables_removed": true,
+    "query_logging": "disabled",
+    "source_commit": "33362d969292b57eda82f3fbd9eb5f3f5bc9bbc2",
+    "unchanged_filtered": {
+      "changed_files": 0,
+      "elapsed_seconds": 1.17,
+      "peak_rss_kb": 78116
+    },
+    "version": "0.9.53"
+  },
+  "hardcoding_audit": {
+    "baseline_audit_id": "hardcoding_audit.sha256_0c0b028f247b76c3089e9dab0f0104a59142b3d0d4d08ca2116b264d38154f15",
+    "baseline_findings": 9374,
+    "baseline_prompt_findings": 106,
+    "ci_gate": "pass",
+    "files_scanned": 773,
+    "final_audit_id": "hardcoding_audit.sha256_c0c00a27d07e17a8c93003a1bd37933604c6ade48430dbe238626e8465e02793",
+    "final_findings": 9379,
+    "final_prompt_findings": 105,
+    "high_findings": 770,
+    "literal_candidates_scanned": 179388,
+    "medium_findings": 8609,
+    "new_high_findings": 0,
+    "new_medium_typed_fields": 6,
+    "planted_high_gate": "pass",
+    "resolved_inline_prompt_finding": "hardcoding.0bd0e5528c6a3c68e9090e8a"
+  },
+  "installed_python310_suite": {
+    "elapsed_seconds": 162.258,
+    "optional_adapters_not_tested": [
+      "duckdb",
+      "mcp",
+      "model2vec",
+      "numpy",
+      "opentelemetry-sdk",
+      "pandas",
+      "sklearn"
+    ],
+    "passed": 1617,
+    "provider_calls": 0,
+    "total": 1617
+  },
+  "live_providers": {
+    "mistral": {
+      "reason": "key not present in current process or recoverable local user-authorized source",
+      "status": "not_run"
+    },
+    "ollama_cloud_probe": {
+      "accounting_complete": true,
+      "declared_maximum_output_tokens": 65536,
+      "elapsed_seconds": 9.605751,
+      "input_tokens": 66,
+      "model": "deepseek-v4-flash:0731",
+      "output_sha256": "803ac3690d2db65339f45f9da1527eac86adbccd6bcf77bf1126cbcc635ca68b",
+      "output_tokens": 119,
+      "physical_model_calls": 1,
+      "prompt_sha256": "8a7d8ea8ef34e0ee3642e0612030517c27578dea774a0b1acb4f4708e0ece381",
+      "provider": "ollama_cloud",
+      "route": "cloud.default",
+      "status": "accepted",
+      "total_tokens": 185
+    },
+    "opencode": {
+      "reason": "key not present in current process or recoverable local user-authorized source",
+      "status": "not_run"
+    },
+    "openrouter_accepted": {
+      "accounting_complete": true,
+      "declared_maximum_output_tokens": 8192,
+      "input_tokens": 38,
+      "model": "liquid/lfm-2.5-2.6b:free",
+      "output_sha256": "11bec2db0e99977c840a5df4b17be528421aadd5f4aa79d3622c126c481397fb",
+      "output_tokens": 63,
+      "physical_model_calls": 1,
+      "provider": "openrouter_zero_cost",
+      "status": "accepted"
+    },
+    "openrouter_follow_up": {
+      "capacity_filtered_gemma": "rate_limited",
+      "native_structured_liquid_repeat": "rate_limited",
+      "selector_policy_tests": "pass"
+    }
+  },
+  "master_prompt": {
+    "bytes": 29255,
+    "lines": 783,
+    "path": "docs/prompts/LOOP-ENGINE-SELF-ORIENTING-CODE-INTELLIGENCE-MASTER-PROMPT.md",
+    "sha256": "1ef6e295ab982dbd845588279217dd5c39050f5ebcfc14dbce339d203933add8",
+    "words": 3952
+  },
+  "orientation": {
+    "authority_bindings": 18,
+    "contradictions": 0,
+    "freshness": "fresh",
+    "snapshot_id": "orientation.sha256_c2856f69b832f1a4147cf990b0353b6f886cb46febba610fac180d32051e257e",
+    "unresolved": 0,
+    "working_tree_digest": "f01734540da835e04c5cd5cfdbfccb61f7b1a681921efafc3a200b8b2894e96a"
+  },
+  "real_parameter_inference": {
+    "accounting_complete": true,
+    "alternative_count": 1,
+    "assumption_count": 1,
+    "evidence_count": 2,
+    "input_tokens": 234,
+    "model": "deepseek-v4-flash:0731",
+    "output_sha256": "7c65bbc1f6061dd30b796d1c2a2b9e75b1bdc8bc357faa82074947bc55d84060",
+    "output_tokens": 184,
+    "physical_model_calls": 1,
+    "precedence_rank": 9,
+    "prompt_bundle_digest": "7395b91f43ba42093cb2e6931ab57f95d49f73d13489799422acf5ab411a2ce2",
+    "prompt_bundle_ref": "intelligence.parameter.inference@1.0.0",
+    "prompt_render_digest": "d1788ca4aad40c2ffd2223eeff897d279009364c90d41d72f492df3d3987ac5f",
+    "proposal_confidence": 0.9,
+    "provider": "ollama_cloud",
+    "resolved_value_digest": "fc5955c8599edf7d5badc9a7243a3930592b567d700cd6b9c27d750b386f5046",
+    "selected_value": "stable",
+    "slot_schema_digest": "604847d1a0c35230af55eb98d382e49f9c382e97869ed4cddf5e53319b2adb36",
+    "status": "resolved",
+    "unknown_count": 1
+  },
+  "record_type": "self_orienting_abstraction_verification/v1",
+  "repository_commit": "e197a3e61591bf760426da7d21e0ebab9e89fd50",
+  "source_suite": {
+    "elapsed_seconds": 106.6,
+    "passed": 1646,
+    "provider_calls": 0,
+    "total": 1646
+  }
+}\n

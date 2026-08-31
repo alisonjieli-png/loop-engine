@@ -204,6 +204,15 @@ jobs:
       - name: Conformance gates
         run: python -m loop_engine --conformance
 
+      - name: Self-orientation and hardcoding delta gates
+        run: |
+          PYTHONPATH=devtools/src python -m loop_engine_devtools.cli --self-test
+          PYTHONPATH=devtools/src python -m loop_engine_devtools.cli \
+            --hardcoding-audit \
+            --allowlist devtools/hardcoding-allowlist.yaml \
+            --baseline devtools/hardcoding-ci-baseline.json \
+            --fail-on-new high
+
       - name: Independent component qualification lab
         run: |
           cd devtools/qualification_lab
@@ -267,11 +276,23 @@ jobs:
               (Path(os.environ["RUNNER_TEMP"]) / "default-dist").glob("*.whl"))
           assert len(wheels) == 1, wheels
           with ZipFile(wheels[0]) as archive:
-              local_runs = [name for name in archive.namelist()
+              names = archive.namelist()
+              local_runs = [name for name in names
                             if "/evidence/runs/" in name
                             or "/evidence/studio/" in name]
+              wheel_python = {name for name in names
+                              if name.startswith("loop_engine/")
+                              and name.endswith(".py")}
+          source_python = {
+              "loop_engine/" + path.relative_to("src/loop_engine").as_posix()
+              for path in Path("src/loop_engine").rglob("*.py")}
+          orphaned_python = sorted(wheel_python - source_python)
+          missing_python = sorted(source_python - wheel_python)
           assert local_runs == [], local_runs
+          assert orphaned_python == [], orphaned_python
+          assert missing_python == [], missing_python
           print("wheel contains no local Run History or Studio state")
+          print("wheel Python modules exactly match the source package")
           PY
           python -m venv "$RUNNER_TEMP/default-install"
           "$RUNNER_TEMP/default-install/bin/python" -m pip install --upgrade pip

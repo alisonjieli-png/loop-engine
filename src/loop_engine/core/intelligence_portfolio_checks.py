@@ -9,6 +9,7 @@ import hashlib
 import inspect
 import os
 import tempfile
+from dataclasses import replace
 
 from ..loop.loop_capsule import ExternalPayloadRef
 from .code_intelligence_assets import CodeAssetSpec, execute_code_ref
@@ -22,10 +23,32 @@ from .intelligence_portfolio import (
     PortfolioRequest,
     PortfolioSelectionServices,
     REQUIRED_LENS_FAMILIES,
+    discover_intelligence_candidates,
     export_intelligence_portfolios,
     materialize_portfolio_for_loop,
     select_intelligence_portfolio,
 )
+
+
+def _model_selected_request(request, services, *, offsets=None, overrides=None):
+    """Fixture model choice over passive candidates; product code never calls it."""
+    candidates = discover_intelligence_candidates(request, services)
+    offsets = dict(offsets or {})
+    overrides = dict(overrides or {})
+    selected = []
+    used = set()
+    for family in request.lens_families:
+        options = [item for item in candidates.for_family(family)
+                   if item.ref.item_ref not in used]
+        requested_ref = overrides.get(family)
+        if requested_ref:
+            item = next(value for value in options
+                        if value.ref.item_ref == requested_ref)
+        else:
+            item = options[offsets.get(family, 0) % len(options)]
+        used.add(item.ref.item_ref)
+        selected.append((family, item.ref.item_ref))
+    return replace(request, selected_refs=tuple(selected)), candidates
 
 
 def _normalize_scores(values):
@@ -58,17 +81,21 @@ def run_checks() -> dict:
         request = PortfolioRequest(
             "compare a reusable machine-learning benchmark solution",
             "consumer.portfolio.1")
-        portfolio = select_intelligence_portfolio(
-            request, PortfolioSelectionServices(layer_records=catalog))
+        services = PortfolioSelectionServices(layer_records=catalog)
+        selected_request, candidates = _model_selected_request(
+            request, services)
+        portfolio = select_intelligence_portfolio(selected_request, services)
         selected_ids = {item.record_id for item in portfolio.items}
         layers = {row.layer: row for row in portfolio.layer_coverage}
-        check("real_active_catalog_maps_all_required_lenses",
+        check("real_active_catalog_exposes_and_validates_model_selected_lenses",
               active_count >= 396 and len(portfolio.items) == 7
               and len({item.family for item in portfolio.items}) == 7
               and len({item.ref.item_ref for item in portfolio.items}) == 7,
               f"{active_count} active Context records; 7 unique lens refs")
         check("candidate_only_records_are_refused",
-              packaged_candidate.record_id not in selected_ids
+              packaged_candidate.record_id not in {
+                  item.record_id for item in candidates.items}
+              and packaged_candidate.record_id not in selected_ids
               and layers["context_intelligence"].excluded_candidate_records >= 1,
               f"packaged candidate {packaged_candidate.record_id} stayed out")
         check("empty_history_and_user_layers_remain_visible",
@@ -78,7 +105,7 @@ def run_checks() -> dict:
                   "runtime_history_solution_intelligence", "user_feedback_intelligence"}
                   for trace in portfolio.query_traces),
               "both empty layers appear in coverage and every query trace")
-        check("selection_uses_loop_native_zero_model_retrieval",
+        check("discovery_and_selection_validation_use_loop_native_retrieval",
               portfolio.selection_model_calls == 0
               and all(trace.query_loop_id and trace.model_calls == 0
                       for trace in portfolio.query_traces),
@@ -125,9 +152,17 @@ def run_checks() -> dict:
         code_request = PortfolioRequest(
             "evaluate normalized benchmark scores", "consumer.code.1",
             benchmark_id="portfolio-self-test")
+        code_services = PortfolioSelectionServices(
+            layer_records=catalog, code_pack=code_pack)
+        code_candidates = discover_intelligence_candidates(
+            code_request, code_services)
+        code_ref = next(item.ref.item_ref for item in code_candidates.items
+                        if item.record_id == code_spec.asset_id)
+        code_selected, _candidate_set = _model_selected_request(
+            code_request, code_services,
+            overrides={LensFamily.VERIFICATION_EVALUATION: code_ref})
         code_portfolio = select_intelligence_portfolio(
-            code_request, PortfolioSelectionServices(
-                layer_records=catalog, code_pack=code_pack))
+            code_selected, code_services)
         verify_item = next(item for item in code_portfolio.items
                            if item.family ==
                            LensFamily.VERIFICATION_EVALUATION)
@@ -163,16 +198,20 @@ def run_checks() -> dict:
 
         variants, variant_materializations = [], []
         for index in range(3):
+            variant_request = PortfolioRequest(
+                request.task, f"consumer.variant.{index}")
+            variant_selected, _variant_candidates = _model_selected_request(
+                variant_request, services,
+                offsets={LensFamily.FIRST_PRINCIPLES: index})
             variant = select_intelligence_portfolio(
-                PortfolioRequest(request.task, f"consumer.variant.{index}"),
-                PortfolioSelectionServices(layer_records=catalog))
+                variant_selected, services)
             variants.append(tuple(ref.item_ref for ref in variant.refs))
             if index < 2:
                 variant_materializations.append(
                     materialize_portfolio_for_loop(
                         variant, PortfolioMaterializationServices(
                             layer_records=catalog)))
-        check("consuming_identity_varies_comparable_lens_choices",
+        check("fixture_model_can_choose_different_eligible_lens_refs",
               len(set(variants)) > 1,
               f"{len(set(variants))} complete portfolios across 3 consuming Loops")
         consumptions = [item.consumption for item in variant_materializations]

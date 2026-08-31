@@ -180,10 +180,10 @@ class AskVariant:
 def multiply(forms: dict, *, personas: Sequence[str] = ("",),
              policies: Sequence[str] = ("fully_informed",),
              seeds: Sequence[int] = (0,), slot_values: dict,
-             limit: int = 100, mode: str = "stride") -> list:
+             limit: "int | None" = None, mode: str = "stride") -> list:
     """Deterministically multiply forms x personas x policies x seeds.
 
-    ``mode='full'`` walks the whole product (bounded by ``limit``);
+    ``mode='full'`` walks the whole product unless a caller sets ``limit``;
     ``mode='stride'`` interleaves so EVERY form appears before any repeats and
     the persona/policy/seed dimensions rotate at co-prime strides — broad
     coverage early, identical output for identical inputs, no randomness
@@ -199,7 +199,7 @@ def multiply(forms: dict, *, personas: Sequence[str] = ("",),
             for p in personas:
                 for pol in policies:
                     for sd in seeds:
-                        if len(out) >= limit:
+                        if limit is not None and len(out) >= limit:
                             return out
                         out.append(AskVariant(
                             f.name, p, pol, sd,
@@ -208,7 +208,7 @@ def multiply(forms: dict, *, personas: Sequence[str] = ("",),
     nf, np_, npol, nsd = (len(usable), len(personas), len(policies),
                           len(seeds))
     total = nf * np_ * npol * nsd
-    for i in range(min(limit, total)):
+    for i in range(total if limit is None else min(limit, total)):
         f = usable[i % nf]
         combo = i // nf
         # Change the cheap framing salt first, then the persona, then the

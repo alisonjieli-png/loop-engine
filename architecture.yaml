@@ -234,7 +234,8 @@ product_solve:
   saved_run_bundle: loop_engine.core.product_outcome_store.SavedRunBundle
   terminal_vocabulary: loop_engine.code_nodes.solve_runtime.SolveTerminalCode
   practitioner: loop_engine.core.adaptive_practitioner.run_adaptive_practitioner
-  source_inspection: loop_engine.core.adaptive_practitioner_capabilities._source_inspection_operation
+  source_inspection: loop_engine.core.adaptive_practitioner_source.source_inspection_operation
+  model_response_admission: loop_engine.core.model_response_admission.admit_model_response_as_loop
   generated_project: loop_engine.core.generated_project.execute_generated_project
   graph_authority: loop_engine.code_nodes.solution_graph.LoopGraphDefinition
   default_granularity: governed_semantic
@@ -262,6 +263,35 @@ product_solve:
     - reports_playback_and_studio_project_the_bound_product_outcome
     - one_corrupt_run_cannot_break_verified_sibling_runs
     - external_provider_support_requires_a_separate_live_result
+
+semantic_selection:
+  authority: model_proposes_runtime_validates
+  conformance: loop_engine.semantic_freedom_conformance.scan_semantic_freedom
+  candidate_surfaces:
+    - practitioner_personas
+    - practitioner_guidance
+    - practitioner_questions
+    - templates
+    - capabilities
+    - intelligence_refs
+    - solution_candidates
+    - generation_strategies
+    - recovery_routes
+  hard_runtime_boundaries:
+    - explicit_user_instruction
+    - permissions_and_effect_approval
+    - secrets_and_workspace_confinement
+    - typed_contract_validation
+    - availability_and_compatibility
+    - independent_verification
+    - terminal_success_authority
+  invariants:
+    - step_affinity_is_advisory_metadata_not_selection_authority
+    - deterministic_scores_may_rank_candidates_but_cannot_select_task_semantics
+    - semantic_conflicts_return_for_model_repair_and_are_never_rewritten
+    - search_and_generation_have_no_implicit_result_or_work_ceiling
+    - fingerprints_templates_and_prior_results_remain_candidates
+    - model_selected_values_cannot_broaden_runtime_authority
 
 independent_qualification:
   starter: devtools/qualification_lab
@@ -382,3 +412,107 @@ development_import_boundaries:
     - tests
     - examples
     - benchmarks
+
+reusable_capability_flywheel:
+  operational_runtime_type: Loop
+  authority_store_contract: loop_engine.catalog.protocol.CatalogStore
+  code_asset_contract: loop_engine.core.code_intelligence_assets.CodeAssetSpec
+  exact_admission_record: loop_engine.core.code_intelligence_assets.CodeAssetAdmissionRecord
+  lifecycle_authority: loop_engine.core.reusable_capability_flywheel.CapabilityAuthority
+  need_contract: loop_engine.core.reusable_capability_records.CapabilityNeed
+  opportunity_contract: loop_engine.core.reusable_capability_records.ReuseOpportunityObserved
+  assessment_contract: loop_engine.core.reusable_capability_records.ReuseAssessment
+  generalization_contract: loop_engine.core.reusable_capability_records.CapabilityGeneralizationRecord
+  search_projection_builder: loop_engine.core.reusable_capability_resolution.rebuild_capability_projection_as_loop
+  resolver: loop_engine.core.reusable_capability_resolution.CapabilityResolver
+  practitioner_resolver_adapter: loop_engine.core.reusable_capability_resolution.ReusableCapabilityTaskResolver
+  deterministic_invoker: loop_engine.core.reusable_capability_resolution.invoke_capability_as_loop
+  hybrid_profile_resource: loop_engine/data/reusable_capability_hybrid_profiles.yaml
+  hybrid_executor: loop_engine.core.reusable_capability_hybrid.run_hybrid_assistance_as_loop
+  asynchronous_dispatch: loop_engine.core.reusable_capability_harvest.dispatch_reuse_opportunity_as_loop
+  harvester: loop_engine.core.reusable_capability_harvest.harvest_reuse_opportunity_as_loop
+  primary_practitioner_context: loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml
+  offline_practitioner_fallback: loop_engine/data/practitioner_context_fallback.yaml
+  lifecycle:
+    - candidate
+    - validated
+    - registered
+    - deprecated
+    - quarantined
+    - rejected
+    - superseded
+    - retired
+  invariants:
+    - successful_generation_creates_an_opportunity_not_automatic_authority
+    - harvesting_is_async_by_default_and_inline_by_explicit_policy
+    - candidate_and_qualified_artifacts_are_not_active
+    - producer_cannot_be_sole_verifier_or_promoter
+    - qualification_binds_artifact_dependency_contract_and_effect_digests
+    - active_resolution_rechecks_current_registered_state
+    - search_projection_is_rebuildable_and_never_the_authority
+    - deterministic_exact_reuse_makes_zero_model_calls
+    - hybrid_variations_are_profiles_under_the_existing_hybrid_mode
+    - model_assessment_and_ranking_cannot_bypass_hard_eligibility
+    - failed_outputs_do_not_mutate_trusted_state
+    - repair_creates_a_new_candidate_version
+    - fallback_context_use_is_explicit_and_recorded
+  verified_scope: offline_contract_vertical_slice
+
+semantic_runtime:
+  operational_runtime_type: Loop
+  canonical_definition: loop_engine.loop.loop_definition.LoopDefinition
+  semantic_contract: loop_engine.core.semantic_runtime_records.SemanticLoopContract
+  contract_binder: loop_engine.core.semantic_runtime.bind_semantic_loop_contract
+  realization_binding: loop_engine.core.semantic_runtime_records.SemanticRealizationBinding
+  interpreter_profile: loop_engine.core.semantic_runtime_records.SemanticInterpreterProfile
+  executor: loop_engine.core.semantic_runtime.execute_semantic_loop
+  verifier: loop_engine.core.semantic_state.SemanticVerifier
+  effect_controller: loop_engine.core.semantic_state.SemanticEffectController
+  trusted_state: loop_engine.core.semantic_state.CatalogTrustedSemanticState
+  reliability_evidence: loop_engine.core.semantic_runtime_evidence.SemanticReliabilityEnvelope
+  canonical_modes:
+    - deterministic
+    - hybrid
+    - non_deterministic
+  invariants:
+    - an_implementation_may_be_absent_but_the_semantic_contract_may_not
+    - the_semantic_specification_digest_is_bound_into_the_exact_loop_definition
+    - semantic_interpretation_is_a_realization_not_a_fourth_mode
+    - one_coherent_semantic_body_is_the_default_model_transaction
+    - model_output_begins_as_an_untrusted_candidate
+    - only_an_issued_verifier_record_can_support_commit
+    - only_an_issued_effect_authorization_can_support_commit
+    - stale_state_deltas_fail_compare_and_swap
+    - idempotent_replay_does_not_duplicate_commit
+    - program_identity_includes_contract_definition_realization_interpreter_context_tools_verification_and_effect_policy
+    - interpreter_profile_changes_require_independent_regression_qualification
+    - failed_qualification_rolls_back_to_the_prior_profile
+    - materialized_code_uses_existing_code_intelligence_admission_and_promotion
+    - unsupported_deterministic_regions_fall_back_to_an_eligible_semantic_realization
+  verified_scope: offline_injected_interpreter_routing_vertical_slice
+parameter_and_prompt_governance:
+  operational_runtime_type: Loop
+  settings_authority: loop_engine.core.runtime_settings.RuntimeSettings
+  parameter_definition: loop_engine.core.parameter_resolution.ParameterDefinition
+  tagged_parameter_input: loop_engine.core.parameter_resolution.ParameterInput
+  resolved_parameter_record: loop_engine.core.parameter_resolution.ResolvedParameter
+  loop_config_resolution: loop_engine.core.runtime_settings.RuntimeSettings.loop_config_with_record
+  bounded_inference_loop: loop_engine.core.parameter_resolution.run_parameter_inference_as_loop
+  inference_role_profile: intelligence.context.frame
+  prompt_resource_authority: loop_engine.strings.prompt_fragments.PromptResourceBundle
+  prompt_slot_contract: loop_engine.strings.prompt_fragments.PromptSlotDefinition
+  campaign_prompt_bundle: campaign.problem.solve@1.0.0
+  source_audit_boundary: loop_engine_devtools.assurance.hardcoding
+  orientation_boundary: loop_engine_devtools.assurance.orientation
+  invariants:
+    - omitted_null_empty_false_and_zero_remain_distinct
+    - invalid_explicit_values_do_not_fall_back
+    - explicit_values_precede_profiles_policies_configuration_defaults_derivation_and_intelligence
+    - intelligence_proposals_cannot_override_explicit_values_or_invariants
+    - sensitive_resolved_values_are_redacted_and_digest_bound
+    - prompt_slots_have_types_trust_classes_size_policy_and_provenance
+    - unexpected_prompt_slots_fail_closed
+    - untrusted_prompt_values_are_delimited_as_data
+    - development_orientation_and_audit_do_not_run_on_product_hot_paths
+    - no_parallel_settings_prompt_intelligence_or_runtime_authority_is_created
+  verified_scope: deterministic_parameter_and_prompt_resource_vertical_slice

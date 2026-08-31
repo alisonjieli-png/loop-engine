@@ -1,0 +1,20 @@
+# Graphify is an optional descriptive Code Intelligence producer.
+# Typed records, saved runs, and generated evidence keep their existing
+# authorities and do not enter the structural source graph.
+artifacts/
+checkpoints/
+example-output/
+docs/evidence/
+src/loop_engine/evidence/
+benchmarks/**/artifacts/
+benchmarks/**/results/
+benchmarks/**/.cache/
+showcase/assets/
+showcase/node_modules/
+*.egg-info/
+
+# JSON records are governed through their schemas, catalogs, or generators.
+# Graphify 0.9.53 classifies them as code but produces no structural nodes,
+# causing unchanged files to be retried on every incremental extraction.
+*.json
+*.jsonl

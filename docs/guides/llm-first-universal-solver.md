@@ -43,7 +43,7 @@ Loop resolution mode
 ├── non_deterministic
 │   └── LLM-first path for new and unbounded tasks
 ├── hybrid
-│   └── try an exact reusable path, then use model reasoning
+│   └── use a model-selected reviewed capability with model reasoning where needed
 └── deterministic
     └── run a verified exact capability without semantic model work
 ```
@@ -64,6 +64,36 @@ replaces semantic orientation by itself.
 Interaction is a separate policy. The default returns material questions. The
 advanced `--unattended` option means the current activation must abstain rather
 than wait for an answer. It does not change how intelligently the Loop reasons.
+
+## Candidates and hard gates
+
+Loop Engine gives the model candidates instead of preselecting task semantics:
+
+```text
+Model candidate context
+├── perspectives, guidance, and question sets
+├── templates, skills, capabilities, and prior solutions
+├── Intelligence references and source files
+├── Solution and recovery candidates
+└── generation strategies
+        ↓ explicit model selection
+Runtime validation
+├── user instructions and authority
+├── capability availability and typed contracts
+├── permissions, secrets, and workspace confinement
+├── independent verification
+└── terminal success rules
+```
+
+Step affinity, lexical score, retrieval score, fingerprint similarity, and
+evaluation metrics help the model compare candidates. None of them may choose
+the task meaning, method, or winner. If a model response conflicts with itself,
+the runtime returns validation findings for model repair. Python does not
+rewrite the semantic answer.
+
+Search, generation, and spawned work have no implicit numeric ceiling. A user,
+provider, or authorized policy may set one. Safety boundaries remain enforced
+even when no work ceiling is configured.
 
 ## Questions and feedback
 
@@ -99,7 +129,7 @@ Future task
 ```
 
 Fingerprints are context and search evidence, not proof that two tasks are
-equivalent and not permission to skip orientation.
+equivalent or permission to skip orientation.
 New learned records remain candidates until independent review. No producer
 may promote its own lesson or capability.
 

@@ -1,0 +1,11 @@
+schema: hardcoding_allowlist/v1
+entries:
+  - finding_id: hardcoding.aca044db7f593149180cfdfa
+    owner: loop_engine_devtools.assurance.orientation
+    rationale: >-
+      The 65536-byte streaming hash chunk is a private local I/O detail. It has
+      one owner, no semantic effect on the digest, no caller override need, and
+      no policy, deployment, or intelligence lifecycle.
+    classification: INTENTIONAL_LOCAL_LITERAL
+    created_on: 2026-08-31
+    expires_on: 2027-08-31

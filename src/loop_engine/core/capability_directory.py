@@ -222,7 +222,8 @@ class CapabilityDirectory:
                 if h.supports(operation)
                 and (surface_kind is None or h.surface_kind == surface_kind)]
 
-    def search_core(self, need: str, *, top_n: int = 8) -> list:
+    def search_core(self, need: str, *,
+                    top_n: "int | None" = None) -> list:
         """Search local handshake cards without invoking any capability."""
         from ..loop.loop_capsule import IntelligenceItemPackage, IntelligenceItemHandshake
         terms = set(str(need).lower().replace("_", " ").split())
@@ -256,8 +257,9 @@ class CapabilityDirectory:
             ranked.append((score, handshake.surface,
                            package.to_ref(score=float(score),
                                           source="core")))
-        return [item[2] for item in sorted(
-            ranked, key=lambda item: (-item[0], item[1]))[:top_n]]
+        ordered = sorted(ranked, key=lambda item: (-item[0], item[1]))
+        return [item[2] for item in (
+            ordered if top_n is None else ordered[:top_n])]
 
     # --- negotiation: does a surface support what a task needs? -------------
 
@@ -763,14 +765,12 @@ def self_test() -> dict:
           and _fams == ["capability.snapshot.created"]
           and _lg.events[0]["snapshot_id"] == _loud.snapshot_id,
           f"snapshot {_loud.snapshot_id} recorded; identical without a ledger")
-
     static_refs = d.search_core(
         "provider neutral model routes")
     check("core_search_returns_local_loop_refs_without_calls",
           static_refs and static_refs[0].item_ref.endswith("model_gateway")
           and static_refs[0].source == "core"
           and static_refs[0].handshake.layer == "code_intelligence")
-
     unsafe_calls = []
     d.register(CapabilityHandshake(
         "remote_fixture_search", "static_component",

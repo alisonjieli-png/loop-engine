@@ -254,6 +254,10 @@ def main(argv=None) -> int:
         help="use the LLM-first onboarding profile: one detected provider, "
              "LLM-first reasoning, and material clarification questions")
     parser.add_argument(
+        "--allow-model-failover", action="store_true",
+        help="permit the same solve to try other exact authorized routes "
+             "after a retryable provider or response failure")
+    parser.add_argument(
         "--practitioner-mode",
         choices=("deterministic", "hybrid", "non_deterministic"),
         default="non_deterministic",

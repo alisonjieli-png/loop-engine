@@ -83,6 +83,11 @@ non-deterministic research Practitioner, and that research Practitioner can
 spawn a deterministic verifier, if the explicit definitions and runtime
 contexts permit those choices.
 
+A Loop may also bind an implementation-independent semantic contract to its
+exact definition. Direct interpretation is then one realization under
+`hybrid` or `non_deterministic`, not a fourth mode. Read
+[Transactional semantic runtime](SEMANTIC-RUNTIME.md).
+
 ## Step profiles and role profiles
 
 A role profile answers, "What is this Loop for?" A step profile answers,

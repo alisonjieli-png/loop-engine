@@ -98,7 +98,10 @@ class DuckDBFileQueryEngine:
             params.extend(query.lifecycle)
         if clauses:
             sql += " WHERE " + " AND ".join(clauses)
-        sql += f" LIMIT {int(query.limit)} OFFSET {int(query.offset)}"
+        if query.limit is not None:
+            sql += f" LIMIT {int(query.limit)}"
+        if query.offset:
+            sql += f" OFFSET {int(query.offset)}"
         cursor = con.execute(sql, params)
         return self._rows_to_records(cursor)
 
@@ -107,7 +110,7 @@ class DuckDBFileQueryEngine:
             yield record
 
     def export(self, selection: dict | None = None) -> dict:
-        records = self.query(IntelligenceQuery(limit=10_000_000))
+        records = self.query(IntelligenceQuery())
         return {"record_type": "catalog_export/v1", "records": records,
                 "count": len(records)}
 

@@ -22,12 +22,6 @@ RECOVERY_ROUTES = (
 RECOVERY_CHANGE_KINDS = (
     "configure", "modify", "mutate", "compose", "repair", "research",
     "reframe", "delegate")
-_ROUTE_BY_CHANGE_KIND = {
-    "configure": "repair", "modify": "repair", "mutate": "repair",
-    "compose": "repair", "repair": "repair", "research": "continue",
-    "reframe": "reframe", "delegate": "explore_branch"}
-
-
 @dataclass(frozen=True)
 class RecoveryPanelRequest:
     """One stall signal plus the safe state visible to the panel."""
@@ -56,6 +50,7 @@ def _proposal_schema() -> str:
         "proposal_id": "unique string",
         "change_kind": (
             "configure|modify|mutate|compose|repair|research|reframe|delegate"),
+        "route": "|".join(RECOVERY_ROUTES),
         "directive": "string",
         "required_capabilities": ["registered capability ref"],
         "expected_progress": "string",
@@ -111,7 +106,9 @@ def _validate_proposal(value: dict, services: AdaptiveRunServices) -> dict:
     change_kind = str(value.get("change_kind") or "")
     if change_kind not in RECOVERY_CHANGE_KINDS:
         raise AdaptivePractitionerError("recovery proposal is not registered")
-    route = _ROUTE_BY_CHANGE_KIND[change_kind]
+    if route not in RECOVERY_ROUTES:
+        raise AdaptivePractitionerError(
+            "recovery proposal route is not registered")
     capabilities = tuple(value.get("required_capabilities") or ())
     registered = {item["capability_ref"]
                   for item in services.available_capabilities()}

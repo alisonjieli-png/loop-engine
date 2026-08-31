@@ -140,7 +140,7 @@ class SolverStore:
         return loops_for_records(self.records(), query_hint=query_hint)
 
     def search_as_loops(self, query: str, *, kind: "str | None" = None,
-                        top_n: int = 5) -> list:
+                        top_n: "int | None" = None) -> list:
         """The search hits, returned as named intelligence loops (one accepted
         success each).  Delegates the ranking to ``search``; the wrapping is
         the loop envelope."""
@@ -152,7 +152,7 @@ class SolverStore:
                                  query_hint=query)
 
     def search(self, query: str, *, kind: str | None = None,
-               top_n: int = 5) -> dict:
+               top_n: "int | None" = None) -> dict:
         """parse -> filter (kind + tier gates) -> score -> rank.  Returns the
         ranked hits AND the stage trace, including how many records the tier
         gates excluded — an off tier is a visible exclusion, not a silent one."""
@@ -199,6 +199,7 @@ class SolverStore:
         scored.sort(key=lambda t: (-t[0], t[1].record_id))
         # facets are search keys, so they belong on the body-free card: the
         # directory filters (require/prefer/exclude) without serving the body.
+        selected_scores = scored if top_n is None else scored[:top_n]
         hits = [{"record_id": r.record_id, "kind": r.kind, "title": r.title,
                  "tier": r.tier, "source": r.source, "score": s,
                  "facets": dict((r.body or {}).get("facets") or {}),
@@ -207,7 +208,7 @@ class SolverStore:
                                        or (r.body or {}).get("body_digest") or ""),
                  "maturity": str((r.body or {}).get("maturity") or r.tier),
                  "version": str((r.body or {}).get("version") or "1.0.0")}
-                for s, r in scored[:top_n]]
+                for s, r in selected_scores]
         stages.append({"stage": "rank", "returned": len(hits)})
         return {"record_type": "store_search/v1", "query": query,
                 "hits": hits, "stages": stages,

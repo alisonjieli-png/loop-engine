@@ -376,7 +376,7 @@ class SkillRegistry:
                      if include_candidates or manifest.lifecycle == "registered")
 
     def search(self, query: str, *, include_candidates: bool = False,
-               top_n: int = 8) -> tuple[SkillManifest, ...]:
+               top_n: "int | None" = None) -> tuple[SkillManifest, ...]:
         terms = set(re.findall(r"[a-z0-9]+", query.lower()))
         ranked = []
         for manifest in self.inventory(include_candidates=include_candidates):
@@ -385,8 +385,9 @@ class SkillRegistry:
             score = len(terms & set(re.findall(r"[a-z0-9]+", text)))
             if score:
                 ranked.append((score, manifest.skill_id, manifest))
-        return tuple(item[2] for item in sorted(
-            ranked, key=lambda item: (-item[0], item[1]))[:top_n])
+        ordered = sorted(ranked, key=lambda item: (-item[0], item[1]))
+        return tuple(item[2] for item in (
+            ordered if top_n is None else ordered[:top_n]))
 
     def load(self, skill_id: str, version: str = "1.0.0", *,
              purpose: SkillLoadPurpose = SkillLoadPurpose.TASK_USE,

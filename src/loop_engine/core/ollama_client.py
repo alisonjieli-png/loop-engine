@@ -29,6 +29,10 @@ ENDPOINT = "https://ollama.com/api/chat"
 DEFAULT_MODEL = "deepseek-v4-flash:0731"
 CATALOG_ENDPOINT = "https://ollama.com/api/tags"
 FORBIDDEN_MODELS = ("kimi-k3",)
+OUTPUT_LIMIT_STOP_REASONS = frozenset((
+    "length", "max_tokens", "max_output_tokens", "output_limit",
+    "token_limit",
+))
 
 # Each model's MAXIMUM output-token limit (from the served registry).  We never
 # cap output below this — a call asks for the model's full ceiling and the model
@@ -44,6 +48,14 @@ MODEL_OUTPUT_CAPABILITIES = {
         65536,
         "Ollama HTTP 400 response declared the exact model maximum",
         observed_at="2026-08-25"),
+    "deepseek-v4-pro:0813": ModelOutputCapability(
+        65536,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-08-31"),
+    "glm-5.3-flash": ModelOutputCapability(
+        1048576,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-08-31"),
 }
 # Compatibility projection for read-only catalog consumers.  It has no default.
 MODEL_MAX_OUTPUT = {
@@ -111,6 +123,11 @@ class ChatResult:
     error: str = ""
     num_predict_used: int = 0      # the output ceiling this call actually ran at
     attempts: int = 1             # physical calls represented by this result
+    response_received: bool = False
+    done: "bool | None" = None
+    done_reason: str = ""
+    reasoning_present: bool = False
+    output_limit_reached: bool = False
 
     @property
     def total_tokens(self) -> int:
@@ -121,7 +138,28 @@ class ChatResult:
                 "prompt_tokens": self.prompt_tokens,
                 "eval_tokens": self.eval_tokens,
                 "total_tokens": self.total_tokens, "ok": self.ok,
-                "error": self.error}
+                "error": self.error,
+                "response_received": self.response_received,
+                "done": self.done, "done_reason": self.done_reason,
+                "reasoning_present": self.reasoning_present,
+                "output_limit_reached": self.output_limit_reached}
+
+
+def response_reached_output_limit(
+        done_reason: str, output_tokens: int, maximum_output_tokens: int
+        ) -> bool:
+    """Classify a provider stop without guessing when it declared ``stop``.
+
+    Some compatible endpoints omit a stop reason. In that case, an output
+    count equal to the exact requested maximum is the only available evidence
+    that generation reached the ceiling. An explicit ordinary ``stop`` wins
+    over that inference.
+    """
+    normalized = str(done_reason or "").strip().lower()
+    if normalized:
+        return normalized in OUTPUT_LIMIT_STOP_REASONS
+    return bool(maximum_output_tokens > 0
+                and output_tokens >= maximum_output_tokens)
 
 
 def chat_maxout(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
@@ -187,11 +225,36 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
                           error=f"HTTP {exc.code}: {exc.read().decode()[:200]}")
     except Exception as exc:                                    # noqa: BLE001
         return ChatResult("", model, ok=False, error=repr(exc))
-    text = (data.get("message", {}) or {}).get("content", "")
+    message = data.get("message", {}) or {}
+    text = message.get("content", "")
+    reasoning_present = bool(str(message.get("thinking", "") or "").strip())
+    done = data.get("done") if isinstance(data.get("done"), bool) else None
+    done_reason = str(data.get("done_reason", "") or "")
+    prompt_tokens = int(data.get("prompt_eval_count", 0) or 0)
+    eval_tokens = int(data.get("eval_count", 0) or 0)
+    output_limit_reached = response_reached_output_limit(
+        done_reason, eval_tokens, maximum)
+    error = ""
+    if output_limit_reached:
+        error = (
+            "output_limit_reached: Ollama response reached the exact "
+            f"{maximum}-token output ceiling; done_reason={done_reason!r}")
+    elif done is False:
+        error = "incomplete_response: non-streaming Ollama response was not done"
+    elif not text and reasoning_present:
+        error = (
+            "output_validation_failed: Ollama returned reasoning but no "
+            "final response content")
+    elif not text:
+        error = "empty_response: Ollama returned no final response content"
     return ChatResult(
         text=text, model=data.get("model", model),
-        prompt_tokens=int(data.get("prompt_eval_count", 0) or 0),
-        eval_tokens=int(data.get("eval_count", 0) or 0), ok=bool(text))
+        prompt_tokens=prompt_tokens, eval_tokens=eval_tokens,
+        ok=bool(text) and not output_limit_reached and done is not False,
+        error=error, num_predict_used=maximum, response_received=True,
+        done=done, done_reason=done_reason,
+        reasoning_present=reasoning_present,
+        output_limit_reached=output_limit_reached)
 
 
 def verify(model: str = DEFAULT_MODEL) -> dict:
@@ -231,9 +294,27 @@ def self_test() -> dict:
           max_output_for(DEFAULT_MODEL) == 65536,
           "exact deepseek-v4-flash:0731 maximum is 65536")
 
+    check("alternate_cloud_models_have_exact_observed_output_contracts",
+          max_output_for("deepseek-v4-pro:0813") == 65536
+          and max_output_for("glm-5.3-flash") == 1048576,
+          "alternate routes remain unavailable until Ollama declares maxima")
+
     check("chat_result_reports_total_tokens",
           ChatResult("x", "m", prompt_tokens=3, eval_tokens=5).total_tokens == 8,
           "the result exposes provider-reported prompt + eval token totals")
+
+    truncated = ChatResult(
+        "partial", DEFAULT_MODEL, prompt_tokens=10, eval_tokens=65536,
+        ok=False, error="output_limit_reached", num_predict_used=65536,
+        response_received=True, done=True, done_reason="length",
+        output_limit_reached=True)
+    check("provider_completion_metadata_distinguishes_truncation",
+          truncated.response_received and truncated.done
+          and truncated.done_reason == "length"
+          and truncated.output_limit_reached
+          and response_reached_output_limit("length", 12, 65536)
+          and not response_reached_output_limit("stop", 65536, 65536),
+          "an explicit stop is complete; length is a typed output limit")
 
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "ollama_client_contract_test/v2",

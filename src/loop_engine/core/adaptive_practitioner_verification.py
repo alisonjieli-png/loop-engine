@@ -21,6 +21,7 @@ from .adaptive_practitioner_validation import (
 from .adaptive_practitioner_recovery import (
     RecoveryPanelRequest, resolve_stall_with_panel)
 from .adaptive_practitioner_supervision import detect_stall
+from .adaptive_practitioner_source import source_inspection_model_view
 
 
 @dataclass(frozen=True)
@@ -46,8 +47,12 @@ def safe_result(result: ResultPacket) -> dict:
     """Project one result without embedding source manifests or write bodies."""
     value = result.result
     if isinstance(value, dict):
-        value = {key: item for key, item in value.items()
-                 if key not in ("manifest", "writes")}
+        if value.get("record_type") == "source_inspection_result/v1":
+            value = source_inspection_model_view(
+                [value], include_selected_content=False)[0]
+        else:
+            value = {key: item for key, item in value.items()
+                     if key not in ("manifest", "writes")}
     return {
         "objective": result.objective, "result": value,
         "evidence_refs": list(result.evidence_refs),
@@ -196,12 +201,6 @@ def route_adaptive_result(
     if selected == "stop_success" and (
             evaluation.verdict != "accept" or not deterministic_pass):
         selected = "repair"
-    if evaluation.verdict == "accept" and deterministic_pass:
-        selected = "stop_success"
-    elif evaluation.verdict in ("repair", "try_another", "tune"):
-        selected = "repair"
-    elif evaluation.verdict in ("research_more", "accept_provisional"):
-        selected = "continue"
     stall = (None if selected in ("stop_success", "stop_unprofitable")
              else detect_stall(services, request.state))
     if stall is not None:
@@ -230,11 +229,50 @@ def route_adaptive_result(
 
 
 def self_test() -> dict:
-    """Static contract check; adaptive acceptance owns runtime scenarios."""
+    """Prove hard success gates do not replace model route selection."""
+    from types import SimpleNamespace
+    from ..loop.kernel import EvaluationPacket, ProblemSpec
+
     tests = [{
         "test": "semantic_failure_cannot_become_deterministic_acceptance",
         "passed": True,
         "detail": "fallback verdict is repair and success still needs accept",
     }]
+
+    def services_for(route, verdict):
+        return SimpleNamespace(
+            model=lambda _request: {
+                "route": route, "reason": "model-selected route"},
+            project_attempts=[{"manifest_digest": "m",
+                               "deterministic_checks_passed": True}],
+            progress_snapshots=[], unchanged_progress_snapshots=0,
+            source_inspections=[], web_results=[], action_history=[],
+            verification_records=[{"verdict": verdict}],
+            active_recovery_directive=None, recovery_rounds=0,
+            supervision_findings=[], diagnostic=lambda *_args, **_kw: None)
+
+    state = PractitionerState(ProblemSpec("route selection proof"))
+    accepted_record = SimpleNamespace(
+        evaluation=EvaluationPacket("accept"), pass_number=1)
+    continued, _state = route_adaptive_result(
+        AdaptiveRouteRequest(state, accepted_record, {}),
+        services_for("continue", "accept"))
+    tests.append({
+        "test": "accepted_result_can_follow_model_selected_continue_route",
+        "passed": continued.route == "continue",
+        "detail": "runtime validates success but does not force termination",
+    })
+    repair_record = SimpleNamespace(
+        evaluation=EvaluationPacket("repair"), pass_number=1)
+    reframed, _state = route_adaptive_result(
+        AdaptiveRouteRequest(state, repair_record, {}),
+        services_for("reframe", "repair"))
+    tests.append({
+        "test": "repair_verdict_preserves_model_selected_reframe_route",
+        "passed": reframed.route == "reframe",
+        "detail": "verification blocks false success but does not choose repair",
+    })
+    passed = sum(item["passed"] for item in tests)
     return {"record_type": "adaptive_verification_test/v1", "tests": tests,
-            "passed": 1, "total": 1, "all_passed": True}
+            "passed": passed, "total": len(tests),
+            "all_passed": passed == len(tests)}

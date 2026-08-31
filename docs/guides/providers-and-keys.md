@@ -204,6 +204,30 @@ config = ModelGatewayConfig(
 
 This keeps a Mistral arm from becoming an OpenRouter arm after failure.
 
+## Permit failover on one solve path
+
+Quickstart selects one configured provider. Add the failover policy when that
+provider has more than one exact route with a source-backed output contract:
+
+```bash
+loop-engine solve --file task.txt --quickstart --allow-model-failover
+```
+
+The selected route runs first. A retryable network, availability, timeout,
+incomplete-response, empty-response, output-limit, or validation failure may
+continue to the next authorized route. Authentication, invalid-request, and
+model-identity failures remain refusals. An explicit `--model-id` remains
+pinned and disables alternate model selection.
+
+This is one `ModelGateway` policy inside the same solve. It does not create a
+second solve runtime or silently substitute deterministic output for a failed
+model call. Every physical attempt retains provider, exact model, route,
+completion reason, usage, elapsed time, and failure code.
+
+Cross-provider failover uses an authorized settings route plan with each
+provider credential available to the current process. A key supplied in an
+older shell or process is not automatically available in a later process.
+
 ## Use configured advice
 
 ```python

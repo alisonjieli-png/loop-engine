@@ -145,21 +145,17 @@ def impl_options(need: str, *, string_handle: str = "",
     return opts
 
 
-def choose_impl(options: Sequence, *, prefer: str = "code") -> "CapabilityImpl | None":
-    """Pick the rail.  Default prefers CODE when an exact code impl exists
-    (zero-token, exact — the zero-model-first / reuse-before-rewriting doctrine),
-    falling back to the STRING rail only when no code answers the need."""
+def choose_impl(options: Sequence, *,
+                selected_handle: str) -> "CapabilityImpl | None":
+    """Validate an explicit model-selected implementation candidate."""
     if not options:
         return None
-    if prefer == "code":
-        code = [o for o in options if o.impl_class == "code"]
-        if code:
-            return code[0]
-    if prefer == "string":
-        s = [o for o in options if o.impl_class == "string"]
-        if s:
-            return s[0]
-    return options[0]
+    selected = next((item for item in options
+                     if item.handle == selected_handle), None)
+    if selected is None:
+        raise ValueError(
+            "selected_handle must name an available implementation candidate")
+    return selected
 
 
 # ---------------------------------------------------------------------------
@@ -290,14 +286,14 @@ def self_test() -> dict:
           classes == {"string", "code"} and len(opts) == 2,
           "the collinearity question has a model ask and a VIF capability")
 
-    # 4. the rail choice prefers exact zero-token CODE when it exists.
-    chosen = choose_impl(opts, prefer="code")
-    only_string = choose_impl(impl_options(
-        "explain the business context", string_handle="Ask for context"))
-    check("choose_prefers_code_then_falls_to_string",
+    # 4. both rails remain candidates until a model explicitly chooses one.
+    chosen = choose_impl(opts, selected_handle="node.stats.vif_check")
+    asked = choose_impl(opts, selected_handle=(
+        "Ask: based on this data, are these variables collinear?"))
+    check("model_selected_rail_is_validated_without_a_default_preference",
           chosen.impl_class == "code" and chosen.token_cost == "zero_model"
-          and only_string.impl_class == "string",
-          "code wins when present (zero-token, exact); else the string rail")
+          and asked.impl_class == "string",
+          "both candidates remain selectable; local ordering grants no authority")
 
     # 5. distillation is one-way: STRING → CODE only.
     check("distillation_is_string_to_code_only",

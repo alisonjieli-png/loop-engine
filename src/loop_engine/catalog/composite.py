@@ -67,21 +67,23 @@ class CompositeCatalog:
                     lifecycle=query.lifecycle,
                     namespaces=query.namespaces,
                     attributes=query.attributes,
-                    limit=query.limit + query.offset,
+                    limit=(None if query.limit is None
+                           else query.limit + query.offset),
                     offset=0)):
                 key = (record.get("record_id"), record.get("record_version"))
                 if key in seen:
                     continue
                 seen.add(key)
                 matched.append(record)
-        return matched[query.offset:query.offset + query.limit]
+        stop = None if query.limit is None else query.offset + query.limit
+        return matched[query.offset:stop]
 
     def stream(self, query: IntelligenceQuery):
         for record in self.query(query):
             yield record
 
     def export(self, selection: dict | None = None) -> dict:
-        records = self.query(IntelligenceQuery(limit=10_000_000))
+        records = self.query(IntelligenceQuery())
         return {"record_type": "catalog_export/v1", "records": records,
                 "count": len(records)}
 

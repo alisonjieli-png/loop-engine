@@ -1,27 +1,29 @@
 """Typed intelligence portfolios for non-deterministic consuming Loops.
 
-Architectural role: internal selection service for Intelligence Search and Retrieval.
+Architectural role: candidate discovery and model-selection validation for
+Intelligence Search and Retrieval.
 
 The four-layer catalog already owns retrieval and :class:`LoopRef`
 materialization.  This module composes those contracts into one small map/fold
 boundary for model-led consuming Loops:
 
-* map one task across seven orthogonal, ontology-backed lens families;
-* select exactly one active, unique LoopRef per family;
+* map one task across model-requested, ontology-backed lens families;
+* expose every eligible LoopRef as a passive candidate;
+* validate explicit model-selected, unique LoopRefs;
 * materialize those refs through the existing intelligence access loops;
 * record the exact refs made visible to each non-deterministic consuming Loop; and
 * fold/export consuming Loop consumption without copying retrieved bodies into evidence.
 
-It creates no prompt bank, performs no model call, and never enables the
-candidate Context tier. Empty Runtime History and Solution and User Feedback
-layers remain explicit in the portfolio rather than disappearing.
+It creates no prompt bank and never enables the candidate Context tier. The
+model call that selects refs occurs outside this deterministic discovery and
+validation boundary.
 """
 from __future__ import annotations
 
 import hashlib
 import json
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from enum import Enum
 from typing import Any, Callable, Mapping, Sequence
 
@@ -62,7 +64,7 @@ class LensFamily(str, Enum):
 
 
 REQUIRED_LENS_FAMILIES = tuple(LensFamily)
-SELECTOR_VERSION = "intelligence_portfolio/v2"
+SELECTOR_VERSION = "intelligence_portfolio/v3"
 
 @dataclass(frozen=True)
 class LensDefinition:
@@ -274,13 +276,14 @@ class BenchmarkCodePack:
 
 @dataclass(frozen=True)
 class PortfolioRequest:
-    """One complete portfolio request for one consuming model-led Loop."""
+    """Candidate scope plus optional selections from a model-led Loop."""
 
     task: str
     consuming_loop_id: str
     benchmark_id: str = ""
     mode: str = "non_deterministic"
     lens_families: tuple[LensFamily | str, ...] = REQUIRED_LENS_FAMILIES
+    selected_refs: tuple[tuple[LensFamily | str, str], ...] = ()
 
     def __post_init__(self) -> None:
         if not self.task.strip():
@@ -296,12 +299,19 @@ class PortfolioRequest:
         if len(families) != len(set(families)):
             raise IntelligencePortfolioError(
                 "duplicate lens families are refused")
-        if set(families) != set(REQUIRED_LENS_FAMILIES):
-            missing = sorted(value.value for value in
-                             set(REQUIRED_LENS_FAMILIES) - set(families))
+        if not families:
             raise PortfolioCoverageError(
-                f"every required lens family must be requested; missing {missing}")
+                "a model-led portfolio request needs at least one lens family")
         object.__setattr__(self, "lens_families", families)
+        selections = tuple((_as_family(family), str(ref).strip())
+                           for family, ref in self.selected_refs)
+        if (any(not ref for _family, ref in selections)
+                or len({family for family, _ref in selections})
+                != len(selections)
+                or any(family not in families for family, _ref in selections)):
+            raise IntelligencePortfolioError(
+                "selected_refs must name one non-empty ref per requested family")
+        object.__setattr__(self, "selected_refs", selections)
 
 
 @dataclass
@@ -373,6 +383,43 @@ class PortfolioItem:
 
 
 @dataclass(frozen=True)
+class IntelligencePortfolioCandidates:
+    """Passive eligible refs awaiting a model's explicit selection."""
+
+    candidate_set_id: str
+    task: str
+    consuming_loop_id: str
+    benchmark_id: str
+    mode: str
+    items: tuple[PortfolioItem, ...]
+    query_traces: tuple[LensQueryTrace, ...]
+    layer_coverage: tuple["LayerCoverage", ...]
+
+    def __post_init__(self) -> None:
+        if not self.items:
+            raise PortfolioCoverageError(
+                "intelligence discovery produced no eligible candidates")
+
+    def for_family(self, family: LensFamily) -> tuple[PortfolioItem, ...]:
+        return tuple(item for item in self.items if item.family is family)
+
+    def to_dict(self) -> dict:
+        return {
+            "record_type": "intelligence_portfolio_candidates/v1",
+            "candidate_set_id": self.candidate_set_id,
+            "task": self.task,
+            "consuming_loop_id": self.consuming_loop_id,
+            "benchmark_id": self.benchmark_id,
+            "mode": self.mode,
+            "selection_authority": "model",
+            "items": [item.to_dict() for item in self.items],
+            "query_traces": [item.to_dict() for item in self.query_traces],
+            "layer_coverage": [item.to_dict()
+                               for item in self.layer_coverage],
+        }
+
+
+@dataclass(frozen=True)
 class LayerCoverage:
     layer: str
     public_key: str
@@ -404,11 +451,9 @@ class IntelligencePortfolio:
     def __post_init__(self) -> None:
         families = [item.family for item in self.items]
         refs = [item.ref.item_ref for item in self.items]
-        if (len(self.items) != len(REQUIRED_LENS_FAMILIES)
-                or set(families) != set(REQUIRED_LENS_FAMILIES)
-                or len(families) != len(set(families))):
+        if (not self.items or len(families) != len(set(families))):
             raise PortfolioCoverageError(
-                "a portfolio must contain one item per required lens family")
+                "a portfolio must contain one item per selected lens family")
         if len(refs) != len(set(refs)):
             raise IntelligencePortfolioError(
                 "one LoopRef cannot occupy two lens families")
@@ -426,7 +471,8 @@ class IntelligencePortfolio:
                 "portfolio_id": self.portfolio_id, "task": self.task,
                 "consuming_loop_id": self.consuming_loop_id,
                 "benchmark_id": self.benchmark_id, "mode": self.mode,
-                "bound": "one_unique_ref_per_required_lens_family",
+                "selection_authority": "model",
+                "bound": "one_unique_model_selected_ref_per_lens_family",
                 "items": [item.to_dict() for item in self.items],
                 "query_traces": [trace.to_dict()
                                  for trace in self.query_traces],
@@ -542,17 +588,16 @@ def _portfolio_id(request: PortfolioRequest,
         json.dumps(body, sort_keys=True).encode()).hexdigest()
     return f"intelligence-portfolio:{digest[:24]}"
 
-def select_intelligence_portfolio(
+def discover_intelligence_candidates(
         request: PortfolioRequest,
         services: PortfolioSelectionServices | None = None
-) -> IntelligencePortfolio:
-    """Map all four layers and choose one active ref per required family."""
+) -> IntelligencePortfolioCandidates:
+    """Return every hard-eligible ref without selecting task context."""
     services = services or PortfolioSelectionServices()
     catalog = _catalog(request, services)
     index = {(layer, record.record_id): record
              for layer in LAYERS for record in catalog[layer]}
     population = sum(len(records) for records in catalog.values())
-    used_refs = set()
     items, traces = [], []
     hit_ids = {layer: set() for layer in LAYERS}
 
@@ -581,8 +626,7 @@ def select_intelligence_portfolio(
                 continue
             ref = IntelligenceItemRef.from_dict(
                 hit["intelligence_item_ref"])
-            if (ref.item_ref in used_refs
-                    or ref.handshake.maturity == "candidate"):
+            if ref.handshake.maturity == "candidate":
                 continue
             affinity, reasons = _affinity(
                 definition, hit, record, request.benchmark_id)
@@ -596,20 +640,15 @@ def select_intelligence_portfolio(
                                          row[4].item_ref))
         best_affinity = candidates[0][0]
         cohort = [row for row in candidates if row[0] == best_affinity]
-        lane_digest = hashlib.sha256(
-            f"{request.consuming_loop_id}|{request.benchmark_id}|{family.value}"
-            .encode()).digest()
-        chosen = cohort[int.from_bytes(lane_digest[:8], "big") % len(cohort)]
-        affinity, retrieval_score, rank, hit, ref, reasons = chosen
-        used_refs.add(ref.item_ref)
-        item = PortfolioItem(
-            family, ref, hit["record_id"], hit["layer"],
-            hit["public_label"], rank, retrieval_score, affinity, reasons)
-        items.append(item)
+        for affinity, retrieval_score, rank, hit, ref, reasons in candidates:
+            items.append(PortfolioItem(
+                family, ref, hit["record_id"], hit["layer"],
+                hit["public_label"], rank, retrieval_score, affinity,
+                reasons))
         traces.append(LensQueryTrace(
             family, definition.retrieval_labels,
             str(query_loop.get("loop_id", "")), len(result["hits"]),
-            len(candidates), len(cohort), rank, ref.item_ref,
+            len(candidates), len(cohort), 0, "",
             tuple(result["unqueried"]), model_calls=0))
 
     coverage = []
@@ -619,16 +658,67 @@ def select_intelligence_portfolio(
                     if record.tier == "core" and _lifecycle(record) not in
                     {"draft", "candidate", "quarantined", "deprecated",
                      "retired"}]
-        selected = sum(item.layer == layer for item in items)
         coverage.append(LayerCoverage(
             layer, LAYER_PUBLIC_KEY[layer], LAYER_PUBLIC_LABEL[layer],
             len(records), len(eligible), len(records) - len(eligible),
-            len(request.lens_families), len(hit_ids[layer]), selected,
+            len(request.lens_families), len(hit_ids[layer]), 0,
             "empty_visible" if not records else "queried"))
-    return IntelligencePortfolio(
-        _portfolio_id(request, items), request.task, request.consuming_loop_id,
+    candidate_id = "intelligence-candidates:" + hashlib.sha256(json.dumps({
+        "task": request.task,
+        "consumer": request.consuming_loop_id,
+        "benchmark": request.benchmark_id,
+        "items": [(item.family.value, item.ref.item_ref, item.ref.digest)
+                  for item in items],
+    }, sort_keys=True).encode()).hexdigest()[:24]
+    return IntelligencePortfolioCandidates(
+        candidate_id, request.task, request.consuming_loop_id,
         request.benchmark_id, request.mode, tuple(items), tuple(traces),
-        tuple(coverage), selection_model_calls=0)
+        tuple(coverage))
+
+
+def select_intelligence_portfolio(
+        request: PortfolioRequest,
+        services: PortfolioSelectionServices | None = None
+) -> IntelligencePortfolio:
+    """Validate refs explicitly selected by the consuming model-led Loop."""
+    discovered = discover_intelligence_candidates(request, services)
+    if not request.selected_refs:
+        raise IntelligencePortfolioError(
+            "eligible intelligence candidates require explicit model selection")
+    selected_by_family = dict(request.selected_refs)
+    requested = set(request.lens_families)
+    if set(selected_by_family) != requested:
+        missing = sorted(family.value for family in
+                         requested - set(selected_by_family))
+        raise PortfolioCoverageError(
+            f"model selection must cover every requested lens family: {missing}")
+    selected = []
+    for family in request.lens_families:
+        ref = selected_by_family[family]
+        item = next((candidate for candidate in discovered.for_family(family)
+                     if candidate.ref.item_ref == ref), None)
+        if item is None:
+            raise IntelligencePortfolioError(
+                f"model-selected ref {ref!r} is not eligible for {family.value}")
+        selected.append(item)
+    refs = [item.ref.item_ref for item in selected]
+    if len(refs) != len(set(refs)):
+        raise IntelligencePortfolioError(
+            "one model-selected ref cannot occupy two lens families")
+    traces = tuple(replace(
+        trace,
+        selected_rank=next(item.retrieval_rank for item in selected
+                           if item.family is trace.family),
+        selected_ref=next(item.ref.item_ref for item in selected
+                          if item.family is trace.family))
+        for trace in discovered.query_traces)
+    coverage = tuple(replace(
+        row, selected_refs=sum(item.layer == row.layer for item in selected))
+        for row in discovered.layer_coverage)
+    return IntelligencePortfolio(
+        _portfolio_id(request, selected), request.task,
+        request.consuming_loop_id, request.benchmark_id, request.mode,
+        tuple(selected), traces, coverage, selection_model_calls=0)
 @dataclass(frozen=True)
 class MaterializedLensValue:
     family: LensFamily
@@ -790,7 +880,7 @@ def export_intelligence_portfolios(
     if unknown:
         raise IntelligencePortfolioError(
             f"consumption refers to portfolios absent from the export: {unknown}")
-    return {"record_type": "intelligence_portfolio_export/v2",
+    return {"record_type": "intelligence_portfolio_export/v3",
             "portfolios": [portfolio.to_dict() for portfolio in portfolios],
             "consumption": fold_loop_intelligence_consumption(consumptions),
             "payload_bodies_exported": False}

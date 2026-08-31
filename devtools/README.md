@@ -48,3 +48,36 @@ portability violations. The staged three-parameter API migration is reported
 as warnings by default because it is not a product-path release gate. Use
 `loop-dev --assurance --strict` when working that migration; strict mode makes
 every unapproved call-boundary finding blocking.
+
+## Self-orientation and abstraction audit
+
+Repository orientation and hardcoding review are Development Assurance Plane
+operations. They run through deterministic Practitioner Loops. Their scanners
+remain outside the product package and never run on a normal Loop invocation.
+
+```bash
+PYTHONPATH=src:devtools/src python3 -m loop_engine_devtools.cli \
+  --orientation \
+  --output artifacts/verification/repository_orientation_snapshot.json
+
+PYTHONPATH=src:devtools/src python3 -m loop_engine_devtools.cli \
+  --validate-orientation \
+  artifacts/verification/repository_orientation_snapshot.json
+
+PYTHONPATH=src:devtools/src python3 -m loop_engine_devtools.cli \
+  --hardcoding-audit \
+  --allowlist devtools/hardcoding-allowlist.yaml \
+  --baseline devtools/hardcoding-ci-baseline.json \
+  --fail-on-new high
+```
+
+The material audit omits low-risk findings from its output but still counts
+every parsed literal candidate. Use `--include-low-risk` for intentional-local
+sampling and exact allowlist review. A finding is grouped by text only for
+review. Matching text does not prove matching semantics.
+
+Run planted canaries without writing repository evidence:
+
+```bash
+PYTHONPATH=src:devtools/src python3 -m loop_engine_devtools.cli --self-test
+```

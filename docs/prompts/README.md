@@ -17,6 +17,11 @@ repository and `AGENTS.md`. They are not parallel architecture authorities.
 - [Governing development prompt](LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md)
   continues implementation, cleanup, testing, falsification, documentation,
   and completion auditing in OpenCode or Codex.
+- [Self-orienting Code Intelligence master prompt](LOOP-ENGINE-SELF-ORIENTING-CODE-INTELLIGENCE-MASTER-PROMPT.md)
+  is the current paste-ready mandate for repository orientation, contextual
+  hardcoding review, parameter and prompt governance, optional descriptive
+  code graphs, reusable capability compounding, and bounded real-provider
+  verification.
 - [Cleanup and intelligence access prompt](LOOP-ENGINE-CLEANUP-AND-INTELLIGENCE-ACCESS-PROMPT.md)
   deletes the legacy decision-spine cluster, renames `static_architecture` to
   `core`, fixes every conformance gate, and builds the file and database

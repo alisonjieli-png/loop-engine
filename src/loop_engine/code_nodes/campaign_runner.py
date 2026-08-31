@@ -28,6 +28,37 @@ CAMPAIGN_MODES = ("deterministic", "hybrid", "non_deterministic")
 DEFAULT_PROVIDERS = ("ollama_cloud", "mistral", "openrouter")
 
 
+def render_campaign_problem_prompt(case, arm, baseline):
+    """Render one model prompt through the versioned prompt resource owner."""
+    from ..strings.prompt_fragments import campaign_problem_prompt_bundle
+
+    values = {
+        "goal": case.goal,
+        "inputs": case.inputs,
+        "output_contract": case.output_contract,
+    }
+    provenance = {
+        "goal": f"campaign.case.{case.case_id}.goal",
+        "inputs": f"campaign.case.{case.case_id}.inputs",
+        "output_contract": f"campaign.case.{case.case_id}.output_contract",
+    }
+    if arm.mode == "hybrid":
+        values["baseline"] = baseline
+        provenance["baseline"] = (
+            f"campaign.case.{case.case_id}.deterministic_baseline")
+    return campaign_problem_prompt_bundle().render(
+        values, provenance=provenance)
+
+
+def record_campaign_prompt_resource(rendered, *, ledger, parent) -> str:
+    """Record safe prompt identity before returning model-ready text."""
+    ledger.record(
+        loop_id=parent.loop_id, event="custom",
+        custom_kind="prompt_resource_rendered",
+        prompt_resource=rendered.to_dict(include_text=False))
+    return rendered.text
+
+
 @dataclass(frozen=True)
 class ProblemCase:
     case_id: str
@@ -394,12 +425,10 @@ class CampaignRunner:
         from ..core.provider_failover import PROVIDERS
         adapter = PROVIDERS.get(arm.provider)
         model = getattr(adapter, "DEFAULT_MODEL", "") if adapter else ""
-        prompt = (
-            f"Goal: {case.goal}\n"
-            f"Inputs: {json.dumps(case.inputs, sort_keys=True)}\n"
-            + (f"Code-first candidate: {json.dumps(baseline, sort_keys=True)}\n"
-               if arm.mode == "hybrid" else "")
-            + f"Return only this JSON shape: {case.output_contract}")
+        rendered_prompt = render_campaign_problem_prompt(
+            case, arm, baseline)
+        prompt = record_campaign_prompt_resource(
+            rendered_prompt, ledger=ledger, parent=parent)
         if self.runtime_settings is not None:
             from ..core.runtime_settings import (
                 ModelPolicyRequest, ModelTask)
@@ -594,6 +623,30 @@ def self_test() -> dict:
     check("default_matrix_is_five_deterministic_and_thirty_model_arms",
           len(default_problem_cases()) == 5 and len(arms) == 7
           and sum(arm.mode == "deterministic" for arm in arms) == 1)
+
+    prompt_case = default_problem_cases()[0]
+    prompt_arm = ArmSpec("hybrid", "ollama_cloud")
+    prompt_render = render_campaign_problem_prompt(
+        prompt_case, prompt_arm, prompt_case.solve_deterministically())
+    check("campaign_prompt_uses_versioned_typed_resource",
+          prompt_render.bundle_ref == "campaign.problem.solve@1.0.0"
+          and len(prompt_render.bundle_digest) == 64
+          and len(prompt_render.render_digest) == 64
+          and "trust=\"untrusted_data\"" in prompt_render.text
+          and "trust=\"trusted_contract\"" in prompt_render.text
+          and "Code-first candidate" in prompt_render.text)
+    prompt_ledger = WatchingLedger()
+    prompt_text = record_campaign_prompt_resource(
+        prompt_render, ledger=prompt_ledger,
+        parent=type("PromptOwner", (), {"loop_id": "loop.prompt.test"})())
+    prompt_events = [event for event in prompt_ledger.events
+                     if event.get("custom_kind")
+                     == "prompt_resource_rendered"]
+    check("campaign_run_history_records_safe_prompt_identity",
+          prompt_text == prompt_render.text and len(prompt_events) == 1
+          and prompt_events[0]["prompt_resource"]["bundle_ref"]
+          == prompt_render.bundle_ref
+          and "text" not in prompt_events[0]["prompt_resource"])
 
     no_auth = False
     try:

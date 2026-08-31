@@ -74,7 +74,7 @@ perform external effects unless the current request authorizes that action.
    measured full-system runs
 
 For broad continued development rather than one narrow task, use the
-[governing OpenCode and Codex prompt](../prompts/LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md).
+[self-orienting Code Intelligence master prompt](../prompts/LOOP-ENGINE-SELF-ORIENTING-CODE-INTELLIGENCE-MASTER-PROMPT.md).
 
 ## Working-directory check
 

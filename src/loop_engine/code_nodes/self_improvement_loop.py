@@ -61,7 +61,7 @@ def audit_intelligence_summary(summary: dict) -> list:
     return candidates
 
 
-def load_run_history(runs_dir: str, *, limit: int = 100,
+def load_run_history(runs_dir: str, *, limit: "int | None" = None,
                            ledger=None, parent=None) -> dict:
     """Load an exact verified run population for improvement review."""
     from ..core.run_history import (RunHistory, default_runs_dir,
@@ -73,7 +73,8 @@ def load_run_history(runs_dir: str, *, limit: int = 100,
     if os.path.isdir(root):
         present = [name for name in sorted(os.listdir(root))
                    if os.path.isdir(os.path.join(root, name))]
-    selected = present[-max(0, int(limit)):]
+    selected = (present if limit is None
+                else present[-max(0, int(limit)):])
     runs, excluded = [], []
     for run_id in selected:
         path = os.path.join(root, run_id)
@@ -132,7 +133,7 @@ def run_self_improvement(*, runs_dir: str = "", layer_records=None,
     summary = catalog_summary(catalog)
     template = next(item for item in TEMPLATE_LIBRARY
                     if item["template_id"] == "continuous_improvement")
-    base = config_from_template(template, power="deep", max_depth=2)
+    base = config_from_template(template, power="deep", max_depth=None)
     config = LoopConfig(
         framework=base.framework, logical_kind=base.logical_kind,
         replay_guarantee=base.replay_guarantee,
@@ -157,7 +158,7 @@ def run_self_improvement(*, runs_dir: str = "", layer_records=None,
                 IntelligenceSearchContext, IntelligenceSearchRequest)
             retrieved = query_intelligence(IntelligenceSearchRequest(
                 "review context method failure and repeated model work",
-                catalog, top_n=5,
+                catalog, top_n=None,
                 include_candidates=include_candidates),
                 IntelligenceSearchContext(
                     ledger=log, parent=active_loop))

@@ -1,0 +1,236 @@
+{
+  "all_passed": true,
+  "contract": {
+    "contract_digest": "24d4578dfc61fb2535bb0bbe1258c8b7d215c340118fe085f4c9ba79c5a5de50",
+    "contract_id": "semantic.route_claim",
+    "loop_definition_digest": "05abc160ab7133576eda84cae26957dfc813c334169011d54119d3cc302c4184",
+    "version": "1.0.0"
+  },
+  "example_execution_record": {
+    "execution_record_digest": "626358b8b3422ab1d8a90277415bedbefbbb761eb0eb909afa03f6fd056a9f9a",
+    "execution_record_id": "semantic-execution-record.5c67d0c4c9364fe6d8b322b9",
+    "program_id": "a8cedba6b9a7c39771009db773bc0f9cad1200ef69d6550933ced1bf1ed716be",
+    "trust_transitions": [
+      "candidate",
+      "structurally_valid",
+      "contract_valid",
+      "verified",
+      "effect_authorized",
+      "committed"
+    ]
+  },
+  "materialization": {
+    "artifact_digest": "a77d01be2c3af3d6d500e1232eefbf6bd0351ce0d32ac349ca938ff3ce51583e",
+    "asset_id": "code.semantic.route_claim",
+    "asset_version": "1.0.0",
+    "promoted_transition": "capability_transition.42fbe9fce094176f500d027a",
+    "qualification_digest": "8ec1b14633cd675763282743715a576b8edc21a9694fcc14f1cf3f05fc447e23",
+    "unsupported_region_fallback_model_calls": 1,
+    "warm_model_calls": 0
+  },
+  "passed": 16,
+  "profile_a": {
+    "context_policy_digest": "7901348cb7a916d4a4b7b2a92bb609bb4d2e8cde93e7abdfb9d751daac96ea28",
+    "decoding_policy_digest": "14b50f30bf938749153c518bf67fa0eda06d365e754f9b455fc2381a57e0955f",
+    "maximum_model_calls": 1,
+    "maximum_total_tokens": 2048,
+    "model_id": "router-a",
+    "profile_id": "semantic.routing.fixture_a",
+    "provider_id": "fixture-provider",
+    "runtime_instruction_digest": "fab9a4443f003cf091d493a9a1d2ccb24bf373d9d41f8c8a76d80e45211c3852",
+    "structured_output_policy_digest": "555c8ec693837d98288c7fc9cb9af2404af4fdeea0c2e8a9859a6d006206ed55",
+    "tool_catalog_digest": "296de785faae1f6c75bce9f9e7540e71f6a15c93098ad656da98f47ceb8905f7",
+    "version": "1.0.0"
+  },
+  "profile_b": {
+    "context_policy_digest": "7901348cb7a916d4a4b7b2a92bb609bb4d2e8cde93e7abdfb9d751daac96ea28",
+    "decoding_policy_digest": "14b50f30bf938749153c518bf67fa0eda06d365e754f9b455fc2381a57e0955f",
+    "maximum_model_calls": 1,
+    "maximum_total_tokens": 2048,
+    "model_id": "router-b",
+    "profile_id": "semantic.routing.fixture_b",
+    "provider_id": "fixture-provider",
+    "runtime_instruction_digest": "5164de0a61928a9e2427f4186fb37964fc1695bbd9487467204089dea4639930",
+    "structured_output_policy_digest": "555c8ec693837d98288c7fc9cb9af2404af4fdeea0c2e8a9859a6d006206ed55",
+    "tool_catalog_digest": "296de785faae1f6c75bce9f9e7540e71f6a15c93098ad656da98f47ceb8905f7",
+    "version": "2.0.0"
+  },
+  "record_type": "semantic_runtime_self_test/v1",
+  "reliability": {
+    "profile_a": {
+      "abstained": 1,
+      "accepted": 3,
+      "false_accepts": 0,
+      "fixture_count": 4,
+      "qualified": true,
+      "unsafe_commits": 0
+    },
+    "profile_b": {
+      "abstained": 1,
+      "accepted": 2,
+      "fixture_count": 4,
+      "qualified": false,
+      "rejected": 1,
+      "rollback_profile_digest": "850744d3fb4851f263a34b60b7070cfd85abc231686f1b30107b514e5403970b"
+    }
+  },
+  "run_history": {
+    "events": 327,
+    "head_digest": "b3d80a678975d69ffbf3644f3082102525a10df18cf1f5a0d450e567b898e954"
+  },
+  "scope": "offline_injected_interpreter",
+  "strategy_benchmark": {
+    "direct_single_invocation": {
+      "cost": null,
+      "false_accepts": 0,
+      "latency_ms": 2.423505997285247,
+      "model_calls": 1,
+      "success": true,
+      "tokens_known": true,
+      "unsafe_commits": 0
+    },
+    "hybrid_deterministic_shell": {
+      "cost": null,
+      "false_accepts": 0,
+      "latency_ms": 1.9336461555212736,
+      "model_calls": 1,
+      "success": true,
+      "tokens_known": true,
+      "unsafe_commits": 0
+    },
+    "promoted_deterministic_reuse": {
+      "cost": 0.0,
+      "false_accepts": 0,
+      "latency_ms": 1.967214047908783,
+      "model_calls": 0,
+      "success": true,
+      "tokens_known": true,
+      "unsafe_commits": 0
+    },
+    "specification_to_plan": {
+      "cost": null,
+      "false_accepts": 0,
+      "latency_ms": 0.420405063778162,
+      "model_calls": 1,
+      "success": true,
+      "tokens_known": false,
+      "unsafe_commits": 0
+    },
+    "step_by_step_interpretation": {
+      "cost": null,
+      "false_accepts": 0,
+      "latency_ms": 1.3256340753287077,
+      "model_calls": 3,
+      "success": true,
+      "tokens_known": false,
+      "unsafe_commits": 0
+    }
+  },
+  "tests": [
+    {
+      "detail": "",
+      "passed": true,
+      "test": "implementationless_contract_is_bound_to_canonical_loop_definition"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "semantic_contract_round_trips_with_exact_definition_binding"
+    },
+    {
+      "detail": {
+        "execution_record": "semantic-execution-record.5c67d0c4c9364fe6d8b322b9",
+        "loop_id": "semantic-runtime.loop1",
+        "program_id": "a8cedba6b9a7c39771009db773bc0f9cad1200ef69d6550933ced1bf1ed716be"
+      },
+      "passed": true,
+      "test": "direct_semantic_transaction_commits_only_after_verification"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "semantic_program_identity_exposes_every_effective_component"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "semantic_execution_record_round_trips_without_identity_drift"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "semantic_commit_is_idempotent_and_does_not_duplicate_state"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "missing_facts_produce_verified_abstention_without_state_change"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "prompt_injection_inside_evidence_remains_untrusted_data"
+    },
+    {
+      "detail": {
+        "profile_a_program": "a8cedba6b9a7c39771009db773bc0f9cad1200ef69d6550933ced1bf1ed716be",
+        "profile_b_program": "6c39bfc45021deff518dac0d4245f378ec66ee195535cf28863cb6ce51cee5c7"
+      },
+      "passed": true,
+      "test": "runtime_profile_change_requalifies_and_rolls_back"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "undeclared_effect_is_rejected_before_trusted_commit"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "stale_base_state_version_cannot_commit"
+    },
+    {
+      "detail": {
+        "fixture_count": 4,
+        "observed_unsafe_commit_rate_ppm": 0,
+        "production_risk_budget_proven": false
+      },
+      "passed": true,
+      "test": "reliability_envelope_measures_boundary_outcomes_not_confidence"
+    },
+    {
+      "detail": {
+        "artifact_digest": "a77d01be2c3af3d6d500e1232eefbf6bd0351ce0d32ac349ca938ff3ce51583e",
+        "asset_id": "code.semantic.route_claim",
+        "qualification_digest": "8ec1b14633cd675763282743715a576b8edc21a9694fcc14f1cf3f05fc447e23"
+      },
+      "passed": true,
+      "test": "semantic_materialization_uses_existing_candidate_authority"
+    },
+    {
+      "detail": "",
+      "passed": true,
+      "test": "unsupported_deterministic_region_falls_back_to_semantic_contract"
+    },
+    {
+      "detail": {
+        "direct_single_invocation": 1,
+        "hybrid_deterministic_shell": 1,
+        "promoted_deterministic_reuse": 0,
+        "specification_to_plan": 1,
+        "step_by_step_interpretation": 3
+      },
+      "passed": true,
+      "test": "semantic_strategy_benchmark_records_all_five_realizations"
+    },
+    {
+      "detail": {
+        "events": 327,
+        "head_digest": "b3d80a678975d69ffbf3644f3082102525a10df18cf1f5a0d450e567b898e954"
+      },
+      "passed": true,
+      "test": "semantic_execution_leaves_digest_chained_run_history"
+    }
+  ],
+  "total": 16
+}

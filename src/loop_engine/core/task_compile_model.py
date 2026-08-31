@@ -186,8 +186,9 @@ def opencode_go_gateway(api_key: str):
     return ModelGateway(providers=(provider,), routes=(route,))
 
 
-def openrouter_zero_cost_gateway(api_key: str, model: str = "", *,
-                                 selection=None):
+def openrouter_zero_cost_gateway(
+        api_key: str, model: str = "", *, selection=None,
+        maximum_output_tokens: "int | None" = None):
     """Bind one current zero-price OpenRouter model to an exact route.
 
     Selection uses the live provider catalog after model-call authority exists.
@@ -203,10 +204,16 @@ def openrouter_zero_cost_gateway(api_key: str, model: str = "", *,
     from .model_gateway import ModelGateway, provider_spec_from_endpoint
     from .model_routes import ModelRoute
 
-    rows = (openrouter_client.zero_cost_models()
+    rows = (openrouter_client.zero_cost_models(
+                maximum_output_tokens=maximum_output_tokens)
             if selection is None else [selection])
     if model:
         rows = [item for item in rows if str(item.get("id")) == model]
+    if maximum_output_tokens is not None:
+        rows = [item for item in rows if isinstance(
+            (item.get("top_provider") or {}).get("max_completion_tokens"), int)
+            and (item.get("top_provider") or {}).get("max_completion_tokens")
+            <= maximum_output_tokens]
     if not rows:
         raise ModelAssistedCompileError(
             "OpenRouter has no current zero-price structured model with a "
@@ -598,6 +605,7 @@ def self_test() -> dict:
         "test-key-not-saved", selection={
             "id": "fixture/free", "pricing": {"prompt": "0",
                                                   "completion": "0"},
+            "architecture": {"output_modalities": ["text"]},
             "supported_parameters": ["response_format"],
             "top_provider": {"max_completion_tokens": 12_345}})
     free_description = openrouter_free.providers[
@@ -608,6 +616,20 @@ def self_test() -> dict:
           and free_description["model_output_capability"][
               "maximum_output_tokens"] == 12_345
           and "test-key-not-saved" not in json.dumps(free_description))
+    capped_openrouter = False
+    try:
+        openrouter_zero_cost_gateway(
+            "test-key-not-saved", maximum_output_tokens=10_000,
+            selection={
+                "id": "fixture/too-wide", "pricing": {
+                    "prompt": "0", "completion": "0"},
+                "architecture": {"output_modalities": ["text"]},
+                "supported_parameters": ["response_format"],
+                "top_provider": {"max_completion_tokens": 12_345}})
+    except ModelAssistedCompileError:
+        capped_openrouter = True
+    check("openrouter_selection_honors_an_explicit_run_capacity_cap",
+          capped_openrouter)
 
     import os
     from ..cli_operations import (

@@ -49,7 +49,9 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .ollama_client import ChatResult, FORBIDDEN_MODELS
+from .ollama_client import (
+    ChatResult, FORBIDDEN_MODELS, response_reached_output_limit,
+)
 from .model_capabilities import (
     ModelOutputCapability, ModelOutputLimitMismatch,
     UnknownModelOutputLimit, require_declared_maximum,
@@ -146,8 +148,12 @@ def live_models(api_key: "str | None" = None) -> list:
     return sorted(m.get("id", "") for m in catalog(api_key))
 
 
-def zero_cost_models(rows: "list | None" = None) -> list[dict]:
-    """Return current free, structured models with declared output limits."""
+def zero_cost_models(
+        rows: "list | None" = None, *,
+        maximum_output_tokens: "int | None" = None) -> list[dict]:
+    """Return free text-output models inside an optional exact capacity cap."""
+    if maximum_output_tokens is not None and maximum_output_tokens < 1:
+        raise ValueError("maximum_output_tokens must be positive when provided")
     choices = []
     for row in catalog() if rows is None else rows:
         if not isinstance(row, dict) or _forbidden(str(row.get("id", ""))):
@@ -156,6 +162,8 @@ def zero_cost_models(rows: "list | None" = None) -> list[dict]:
         maximum = (row.get("top_provider") or {}).get(
             "max_completion_tokens")
         parameters = row.get("supported_parameters") or ()
+        architecture = row.get("architecture") or {}
+        output_modalities = tuple(architecture.get("output_modalities") or ())
         try:
             zero_cost = (float(pricing.get("prompt") or 0) == 0
                          and float(pricing.get("completion") or 0) == 0)
@@ -163,21 +171,30 @@ def zero_cost_models(rows: "list | None" = None) -> list[dict]:
             zero_cost = False
         if (not row.get("id") or not zero_cost
                 or not isinstance(maximum, int) or maximum < 1
+                or output_modalities != ("text",)
+                or (maximum_output_tokens is not None
+                    and maximum > maximum_output_tokens)
                 or not ({"structured_outputs", "response_format"}
                         & set(parameters))):
             continue
         choices.append(row)
     return sorted(
         choices,
-        key=lambda row: (-int((row.get("top_provider") or {}).get(
+        key=lambda row: (
+                         -("structured_outputs" in set(
+                             row.get("supported_parameters") or ())),
+                         -int((row.get("top_provider") or {}).get(
                                   "max_completion_tokens") or 0),
                          -int(row.get("context_length") or 0),
                          str(row.get("id"))))
 
 
-def select_zero_cost_model(rows: "list | None" = None) -> str:
+def select_zero_cost_model(
+        rows: "list | None" = None, *,
+        maximum_output_tokens: "int | None" = None) -> str:
     """Select a free model from live declared facts, not a frozen name."""
-    choices = zero_cost_models(rows)
+    choices = zero_cost_models(
+        rows, maximum_output_tokens=maximum_output_tokens)
     if not choices:
         raise UnknownModelOutputLimit(
             "OpenRouter has no current zero-cost structured model with a "
@@ -235,14 +252,23 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
     choices = body.get("choices") or []
     text = (choices[0].get("message", {}).get("content", "")
             if choices else "")
+    done_reason = str(choices[0].get("finish_reason", "") or "") \
+        if choices else ""
     usage = body.get("usage") or {}
+    output_tokens = int(usage.get("completion_tokens", 0))
+    output_limit_reached = response_reached_output_limit(
+        done_reason, output_tokens, maximum)
     return ChatResult(
         text=str(text), model=str(body.get("model", model)),
         # provider-reported ONLY; a missing count stays 0 rather than estimated
         prompt_tokens=int(usage.get("prompt_tokens", 0)),
-        eval_tokens=int(usage.get("completion_tokens", 0)),
-        ok=bool(text), num_predict_used=maximum,
-        error="" if text else "provider returned no text")
+        eval_tokens=output_tokens,
+        ok=bool(text) and not output_limit_reached,
+        num_predict_used=maximum, response_received=True, done=True,
+        done_reason=done_reason, output_limit_reached=output_limit_reached,
+        error=("output_limit_reached: provider stopped at its declared "
+               "output ceiling" if output_limit_reached else ""
+               if text else "provider returned no text"))
 
 
 def chat_maxout(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
@@ -314,21 +340,34 @@ def self_test() -> dict:
         {"id": "vendor/free-small", "pricing": {"prompt": "0",
          "completion": "0"}, "context_length": 100,
          "top_provider": {"max_completion_tokens": 40},
+         "architecture": {"output_modalities": ["text"]},
          "supported_parameters": ["structured_outputs"]},
         {"id": "vendor/free-wide", "pricing": {"prompt": "0",
          "completion": "0"}, "context_length": 200,
          "top_provider": {"max_completion_tokens": 80},
+         "architecture": {"output_modalities": ["text"]},
          "supported_parameters": ["response_format"]},
         {"id": "vendor/paid", "pricing": {"prompt": "1",
          "completion": "2"}, "context_length": 300,
          "top_provider": {"max_completion_tokens": 120},
+         "architecture": {"output_modalities": ["text"]},
          "supported_parameters": ["structured_outputs"]},
+        {"id": "vendor/audio", "pricing": {"prompt": "0",
+         "completion": "0"}, "context_length": 500,
+         "top_provider": {"max_completion_tokens": 400},
+         "architecture": {"output_modalities": ["text", "audio"]},
+         "supported_parameters": ["response_format"]},
     ]
     check("zero_cost_selection_uses_live_price_contract_and_capacity",
-          select_zero_cost_model(free_rows) == "vendor/free-wide"
+          select_zero_cost_model(free_rows) == "vendor/free-small"
           and [row["id"] for row in zero_cost_models(free_rows)]
-              == ["vendor/free-wide", "vendor/free-small"],
-          "paid rows and rows without a declared structured output are absent")
+              == ["vendor/free-small", "vendor/free-wide"],
+          "native structured output leads generic response formatting; paid and audio rows are absent")
+    check("an_explicit_capacity_cap_filters_without_truncating_a_model",
+          select_zero_cost_model(
+              free_rows, maximum_output_tokens=50) == "vendor/free-small"
+          and not zero_cost_models(free_rows, maximum_output_tokens=20),
+          "the selected model still uses its own exact declared maximum")
 
     passed = sum(1 for t in results if t["passed"])
     return {"record_type": "openrouter_client_contract_test/v2",

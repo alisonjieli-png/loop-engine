@@ -1,0 +1,43 @@
+record_type: hybrid_assistance_profiles/v1
+profiles:
+  - profile_id: hybrid.normalize_then_resolve
+    version: 1.0.0
+    stages: [need_normalization, query_expansion]
+    maximum_model_calls: 1
+  - profile_id: hybrid.retrieve_then_rerank
+    version: 1.0.0
+    stages: [candidate_reranking]
+    maximum_model_calls: 1
+    candidate_limit_before_model: 8
+  - profile_id: hybrid.adapt_then_execute
+    version: 1.0.0
+    stages: [input_adapter_synthesis, output_adapter_synthesis]
+    maximum_model_calls: 1
+  - profile_id: hybrid.execute_then_diagnose
+    version: 1.0.0
+    stages: [failure_diagnosis]
+    maximum_model_calls: 1
+  - profile_id: hybrid.execute_then_repair
+    version: 1.0.0
+    stages: [failure_diagnosis, bounded_repair]
+    maximum_model_calls: 1
+    maximum_repair_attempts: 1
+  - profile_id: hybrid.compose_promoted_capabilities
+    version: 1.0.0
+    stages: [capability_composition]
+    maximum_model_calls: 1
+  - profile_id: hybrid.full_assisted_resolution
+    version: 1.0.0
+    stages:
+      - need_normalization
+      - query_expansion
+      - candidate_reranking
+      - parameter_binding
+      - input_adapter_synthesis
+      - output_adapter_synthesis
+      - capability_composition
+      - failure_diagnosis
+      - bounded_repair
+    maximum_model_calls: 1
+    maximum_repair_attempts: 1
+    candidate_limit_before_model: 8

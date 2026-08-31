@@ -1,0 +1,82 @@
+{
+  "record_type": "real_ml_ensemble_solve/v1",
+  "run_id": "adaptive-182576446a479e2b3f8b1516",
+  "terminal_code": "COMPLETED_VERIFIED",
+  "provider": "ollama_cloud",
+  "model": "deepseek-v4-flash:0731",
+  "passes": 2,
+  "model_calls": 27,
+  "input_tokens": 639642,
+  "output_tokens": 162430,
+  "total_tokens": 802072,
+  "loop_count": 307,
+  "tool_calls": 8,
+  "elapsed_seconds": 1392.993,
+  "run_history_events": 2629,
+  "run_history_chain_intact": true,
+  "project_attempts": [
+    {
+      "attempt": 1,
+      "manifest_digest": "1b4ff176bae8995b93c5b7777dad226497ffa1d74163c4e8e3e8b8913f6724bb",
+      "deterministic_checks_passed": false,
+      "failure": "deterministic replay found target dtype int8 instead of int64"
+    },
+    {
+      "attempt": 2,
+      "manifest_digest": "774163176e7e1bdc21e3c6b3acea8c10c101ef1be796b3cd1955fd7b16270df0",
+      "deterministic_checks_passed": true
+    }
+  ],
+  "response_admission_observations": {
+    "json_markdown_fence_repairs": 3,
+    "model_assisted_invalid_json_repairs": 1,
+    "extra_model_calls_avoided_by_deterministic_admission": 3
+  },
+  "dataset": {
+    "rows": 5000,
+    "features": 10,
+    "positive_rate": 0.3026,
+    "label_noise": 0.08,
+    "missing_rate": 0.05,
+    "seed": 42
+  },
+  "holdout_roc_auc": {
+    "logistic_regression": 0.7168392592487369,
+    "decision_tree": 0.6839259248736926,
+    "hist_gradient_boosting": 0.7021085178819173,
+    "mlp": 0.6890113688556805,
+    "ensemble": 0.729988493827862
+  },
+  "ensemble_holdout": {
+    "average_precision": 0.5790258451266465,
+    "log_loss": 0.5365668159395309,
+    "accuracy": 0.742,
+    "balanced_accuracy": 0.6302257198460162
+  },
+  "verification": {
+    "all_checks_passed": true,
+    "groups": [
+      "data_schema",
+      "split_isolation",
+      "metric_ranges",
+      "prediction_probabilities",
+      "artifacts",
+      "html_graphics",
+      "deterministic_replay",
+      "end_to_end"
+    ],
+    "embedded_graphics": 10
+  },
+  "artifacts": {
+    "dataset": "f2b6cbb37ea16c46903965933ad8f30967612bedf9bca9a2af41109d65e8d588",
+    "metrics": "8e1bb1beaf16e902c17e45b3e98b2d723bfe197282e49559cdddca3d938264fd",
+    "predictions": "917665efbd28d8bf72ec20f23ca4da3a809d364eeb6329e20e1353d0cca9be73",
+    "html_report": "5509b632fcd9f2d86ffba8e7e50e4b0a7e98be9f638b0b3be9940143fceb2fd8",
+    "verification": "2555f5d1d77a4d2192c61dc1b2c8d31fc902a503c0be48ae96198b3e68f1da69"
+  },
+  "limitations": [
+    "No connected browser was available for visual inspection of the HTML report.",
+    "Structural verification confirmed 10 embedded PNG images and required report sections.",
+    "The first provider-backed attempt ended on a temporary network route failure and is retained separately as failure history."
+  ]
+}

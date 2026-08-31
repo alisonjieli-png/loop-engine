@@ -58,6 +58,25 @@
    "physical_root": "package_core"
   },
   {
+   "manifest_path": "intelligence/context/core/manifest.yaml",
+   "node": {
+    "artifact_kind": "intelligence_record",
+    "identity": {
+     "content_digest": "d064992d0db0298220ce12f1c25cb2aa00aade8f71aab1afc10ea33700b6565d",
+     "object_id": "core.context.practitioner_portfolio",
+     "version": "1.0.0"
+    },
+    "input_roles": [],
+    "kind": "catalog_record",
+    "layer": "context_intelligence",
+    "lifecycle": "registered",
+    "output_roles": [],
+    "parent_collection": "intelligence.context.core",
+    "source_class": "core"
+   },
+   "physical_root": "package_core"
+  },
+  {
    "manifest_path": "intelligence/runtime_history_solution/core/manifest.yaml",
    "node": {
     "artifact_kind": "contract",

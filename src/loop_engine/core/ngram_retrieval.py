@@ -258,7 +258,7 @@ class NgramQueryRequest:
 
     query: str
     allowed_scopes: tuple[str, ...] | None = None
-    top_k: int = 10
+    top_k: "int | None" = None
     lexical_scores: Mapping[str, float] | None = None
     semantic_scores: Mapping[str, float] | None = None
     fusion_policy: FusionPolicy | None = None
@@ -599,8 +599,11 @@ class NgramIndex:
         query = request.query
         if not isinstance(query, str) or not query.strip():
             raise NgramRetrievalError("query must be a non-empty string")
-        if not isinstance(request.top_k, int) or request.top_k < 1:
-            raise NgramRetrievalError("top_k must be a positive integer")
+        if (request.top_k is not None
+                and (not isinstance(request.top_k, int)
+                     or request.top_k < 1)):
+            raise NgramRetrievalError(
+                "top_k must be a positive integer when provided")
         policy = request.fusion_policy or FusionPolicy()
         eligible_tuple = self._eligible_ids(request.allowed_scopes)
         eligible = set(eligible_tuple)
@@ -653,7 +656,8 @@ class NgramIndex:
             fusion_policy_digest=policy.content_digest,
             eligible_document_count=len(eligible),
             excluded_by_scope_count=self.document_count - len(eligible),
-            candidate_count=len(candidates), hits=tuple(hits[:request.top_k]))
+            candidate_count=len(candidates), hits=tuple(
+                hits if request.top_k is None else hits[:request.top_k]))
 
     def document_similarity(self, request: DocumentSimilarityRequest) -> float:
         """Return exact lexical similarity for a judged document pair."""

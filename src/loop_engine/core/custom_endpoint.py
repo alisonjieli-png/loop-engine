@@ -60,7 +60,9 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
 
-from .ollama_client import ChatResult, FORBIDDEN_MODELS
+from .ollama_client import (
+    ChatResult, FORBIDDEN_MODELS, response_reached_output_limit,
+)
 from .model_capabilities import (
     ModelOutputCapability, ModelOutputLimitMismatch,
     UnknownModelOutputLimit, require_declared_maximum,
@@ -230,9 +232,14 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                           error=f"{type(e).__name__}: {str(e)[:250]}")
 
     if ep.wire == "ollama":
-        text = (body.get("message") or {}).get("content", "")
+        message = body.get("message") or {}
+        text = message.get("content", "")
         p_tok = int(body.get("prompt_eval_count", 0) or 0)
         e_tok = int(body.get("eval_count", 0) or 0)
+        done = body.get("done") if isinstance(body.get("done"), bool) else None
+        done_reason = str(body.get("done_reason", "") or "")
+        reasoning_present = bool(
+            str(message.get("thinking", "") or "").strip())
     else:
         choices = body.get("choices") or []
         text = (choices[0].get("message", {}).get("content", "")
@@ -240,10 +247,34 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
         usage = body.get("usage") or {}
         p_tok = int(usage.get("prompt_tokens", 0) or 0)
         e_tok = int(usage.get("completion_tokens", 0) or 0)
+        done = True
+        done_reason = str(choices[0].get("finish_reason", "") or "") \
+            if choices else ""
+        reasoning_present = False
+    output_limit_reached = response_reached_output_limit(
+        done_reason, e_tok, int(max_tokens))
+    error = ""
+    if output_limit_reached:
+        error = (
+            "output_limit_reached: endpoint stopped at its declared output "
+            "ceiling")
+    elif done is False:
+        error = "incomplete_response: endpoint response did not finish"
+    elif not text and reasoning_present:
+        error = (
+            "output_validation_failed: endpoint returned reasoning but no "
+            "final response content")
+    elif not text:
+        error = "empty_response: endpoint returned no final response content"
     return ChatResult(text=str(text), model=str(body.get("model", ep.model)),
-                      prompt_tokens=p_tok, eval_tokens=e_tok, ok=bool(text),
-                      num_predict_used=int(max_tokens),
-                      error="" if text else "endpoint returned no text")
+                      prompt_tokens=p_tok, eval_tokens=e_tok,
+                      ok=bool(text) and not output_limit_reached
+                      and done is not False,
+                      num_predict_used=int(max_tokens), error=error,
+                      response_received=True, done=done,
+                      done_reason=done_reason,
+                      reasoning_present=reasoning_present,
+                      output_limit_reached=output_limit_reached)
 
 
 def make_adapter(ep: CustomEndpoint):
