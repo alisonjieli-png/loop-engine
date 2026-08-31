@@ -1,13 +1,142 @@
 # Building with Loops
 
-Loop Engine takes a task, performs real work in a confined workspace, verifies
-the result, and saves an inspectable Run History.
+Loop Engine works like a careful, curious colleague. Give it a task, and it
+performs real work in a confined workspace, verifies the result, and saves an
+inspectable Run History.
+
+It takes small steps and selects the next concrete action itself. When an
+answer would change the goal, it asks you instead of guessing. It keeps notes on
+every decision, checks its own work before claiming success, and saves what it
+learned for reuse. Because the structure carries the discipline, a smaller
+hosted model can reach verified results that a plain chat session cannot
+promise.
+
+## Solve with human-like loops
+
+Download the first example task and run the LLM-first quickstart profile. The
+Practitioner reads the task, asks a material question when an answer would
+change the goal, selects the next concrete action, runs Solution Loops in a
+confined workspace, and verifies the real artifacts:
+
+```bash
+curl -LO \
+  https://raw.githubusercontent.com/alisonjieli-png/loop-engine/main/examples/tasks/01-expense-report.txt
+
+loop-engine solve --file 01-expense-report.txt --quickstart
+```
+
+If the selected hosted model is temporarily unavailable, permit another exact
+route for the same configured provider on the same solve path:
+
+```bash
+loop-engine solve --file 01-expense-report.txt --quickstart \
+  --allow-model-failover
+```
+
+An explicitly selected `--model-id` remains pinned. Failover does not bypass
+authentication, request, permission, effect, output, or verification checks.
+
+`--quickstart` is an explicit authority profile. It selects one configured
+provider, starts the LLM-first Practitioner, asks material
+questions when needed, and permits the existing confined Docker workspace. It
+does not impose a numeric pass, model-call, or token ceiling unless the user or
+settings provide one. It does not authorize deployment, publication, or network
+access from generated code.
+
+The Practitioner reads the task, asks a material question when an answer would
+change the goal, selects the next concrete action, runs Solution Loops in a
+confined workspace, and verifies the real artifacts. Users do not choose
+deterministic, hybrid, or model-led execution during the normal solve path.
+The runtime selects model-led reasoning when a model is available. Use
+`--unattended` only when a run must abstain instead of returning a material
+question.
+
+Perspectives, question sets, templates, Intelligence refs, prior solutions,
+and recovery strategies enter the prompt as candidates. The model selects
+among them. Scores and step affinity help comparison but do not choose a task
+meaning or solution.
 
 Task interpretation is not limited to a fixed list or template. The current
 effect capabilities can build small Python utilities, transform supplied local
 files, summarize documents, analyze repositories, and repair small Python
 packages. A task that needs another physical capability returns an honest
 `CAPABILITY_GAP`.
+
+A successful result has this shape:
+
+```text
+COMPLETED_VERIFIED
+Expense report command and verified Markdown output.
+
+Artifacts:
+  .../workspace/attempt-1/expense_report.py (verified)
+  .../workspace/attempt-1/report.md (verified)
+
+Workspace: .../<run-id>-workspace/attempt-1
+Verification: passed
+Run ID: <run-id>
+Run History: ~/.loop-engine/runs/<run-id>
+```
+
+A generated-project solve writes only inside the selected workspace. Commands
+run in the pinned Docker image with bounded resources and no network during
+execute or verify steps. Dependency setup requires separate authority.
+
+If an answer can materially change the goal, authority, inputs, or acceptance,
+the solve returns `BLOCKED_MATERIAL_INPUT` with a named answer slot instead of
+guessing. Supply the answer separately and rerun the unchanged task:
+
+```bash
+loop-engine solve --file task.txt --quickstart \
+  --task-feedback 'required_destination=./results/final-report.md'
+```
+
+Read [LLM-first universal solving](docs/guides/llm-first-universal-solver.md)
+for the model/runtime boundary.
+
+## It gets smarter over time
+
+A careful colleague takes notes and remembers. After an accepted generated
+implementation, Loop Engine can emit a small reuse opportunity and return the
+source result without waiting for packaging. The asynchronous harvest path
+creates a Code Intelligence candidate. A future task can use it only after
+independent qualification and explicit promotion. An exact promoted match
+executes deterministically with zero model calls.
+
+A versioned Loop contract may also execute without a dedicated conventional
+implementation body. The exact semantic specification is bound into its
+`LoopDefinition`. A qualified interpreter produces an untrusted candidate,
+then independent verification and effect control decide whether anything may
+enter trusted state. A later promoted deterministic realization can satisfy the
+same contract with zero model calls for its declared input region. Read
+[Transactional semantic runtime](docs/components/loop-object/SEMANTIC-RUNTIME.md).
+
+Read the
+[Reusable Capability Flywheel](docs/components/intelligence-layers/REUSABLE-CAPABILITY-FLYWHEEL.md)
+for candidate harvesting, promotion, search, and deterministic reuse.
+
+## How it works
+
+```text
+Original task
+└─ Starting Practitioner Loop
+   ├─ orient and standardize
+   ├─ select the next concrete action
+   ├─ propose a registered capability or a new local implementation
+   ├─ validate permissions and capability availability
+   ├─ run Solution Loops in a confined workspace
+   ├─ inspect commands and artifacts
+   └─ return one terminal result with Run History
+```
+
+Every executable graph position uses the same runtime type, `Loop`.
+Practitioner, Intelligence, and Solution are roles. Deterministic, hybrid, and
+non-deterministic are per-Loop modes. `LoopGraphDefinition` remains the one
+executable graph authority.
+
+Read [how Loop Engine works](docs/guides/how-it-works.md) after the quickstart.
+The [Architecture Constitution](docs/architecture/CONSTITUTION.md) defines the
+hard runtime, permission, evidence, and governance rules.
 
 ## Install
 
@@ -72,6 +201,11 @@ live catalog, selects an exact zero-price structured model with a declared
 output maximum, and freezes that route for the run. `--opencode-zen-api-key`
 does the same for current compatible OpenCode Zen zero-cost models.
 
+If several known provider keys are present, quickstart prefers the dynamic
+zero-price OpenRouter route, then the zero-cost OpenCode Zen route, before the
+fixed Ollama Cloud, Mistral, and OpenCode Go routes. This chooses a candidate
+route; it does not promise that the provider quota is currently available.
+
 ## Add providers and capabilities with files
 
 Loop Engine automatically checks these optional folders:
@@ -100,98 +234,6 @@ See [added-file extensions](docs/architecture/ADDED-FILE-EXTENSIONS.md) and the
 [provider endpoint landscape](docs/guides/provider-endpoint-landscape.md)
 lists the protocol and authentication families, including native cloud APIs
 that still need a reviewed adapter.
-
-## Solve a real task
-
-Download the first example task and run the LLM-first quickstart profile:
-
-```bash
-curl -LO \
-  https://raw.githubusercontent.com/alisonjieli-png/loop-engine/main/examples/tasks/01-expense-report.txt
-
-loop-engine solve --file 01-expense-report.txt --quickstart
-```
-
-If the selected hosted model is temporarily unavailable, permit another exact
-route for the same configured provider on the same solve path:
-
-```bash
-loop-engine solve --file 01-expense-report.txt --quickstart \
-  --allow-model-failover
-```
-
-An explicitly selected `--model-id` remains pinned. Failover does not bypass
-authentication, request, permission, effect, output, or verification checks.
-
-`--quickstart` is an explicit authority profile. It selects one configured
-provider, starts the LLM-first Practitioner, asks material
-questions when needed, and permits the existing confined Docker workspace. It
-does not impose a numeric pass, model-call, or token ceiling unless the user or
-settings provide one. It does not authorize deployment, publication, or network
-access from generated code.
-
-Users do not choose deterministic, hybrid, or model-led execution during the
-normal solve path. The runtime selects model-led reasoning when a model is
-available. Use `--unattended` only when a run must abstain instead of returning
-a material question.
-
-Perspectives, question sets, templates, Intelligence refs, prior solutions,
-and recovery strategies enter the prompt as candidates. The model selects
-among them. Scores and step affinity help comparison but do not choose a task
-meaning or solution.
-
-After an accepted generated implementation, Loop Engine can emit a small
-reuse opportunity and return the source result without waiting for packaging.
-The asynchronous harvest path creates a Code Intelligence candidate. A future
-task can use it only after independent qualification and explicit promotion.
-An exact promoted match executes deterministically with zero model calls.
-
-A versioned Loop contract may also execute without a dedicated conventional
-implementation body. The exact semantic specification is bound into its
-`LoopDefinition`. A qualified interpreter produces an untrusted candidate,
-then independent verification and effect control decide whether anything may
-enter trusted state. A later promoted deterministic realization can satisfy the
-same contract with zero model calls for its declared input region. Read
-[Transactional semantic runtime](docs/components/loop-object/SEMANTIC-RUNTIME.md).
-
-If several known provider keys are present, quickstart prefers the dynamic
-zero-price OpenRouter route, then the zero-cost OpenCode Zen route, before the
-fixed Ollama Cloud, Mistral, and OpenCode Go routes. This chooses a candidate
-route; it does not promise that the provider quota is currently available.
-
-Read [LLM-first universal solving](docs/guides/llm-first-universal-solver.md)
-for the model/runtime boundary. Read the
-[Reusable Capability Flywheel](docs/components/intelligence-layers/REUSABLE-CAPABILITY-FLYWHEEL.md)
-for candidate harvesting, promotion, search, and deterministic reuse.
-
-A successful result has this shape:
-
-```text
-COMPLETED_VERIFIED
-Expense report command and verified Markdown output.
-
-Artifacts:
-  .../workspace/attempt-1/expense_report.py (verified)
-  .../workspace/attempt-1/report.md (verified)
-
-Workspace: .../<run-id>-workspace/attempt-1
-Verification: passed
-Run ID: <run-id>
-Run History: ~/.loop-engine/runs/<run-id>
-```
-
-A generated-project solve writes only inside the selected workspace. Commands
-run in the pinned Docker image with bounded resources and no network during
-execute or verify steps. Dependency setup requires separate authority.
-
-If an answer can materially change the goal, authority, inputs, or acceptance,
-the solve returns `BLOCKED_MATERIAL_INPUT` with a named answer slot instead of
-guessing. Supply the answer separately and rerun the unchanged task:
-
-```bash
-loop-engine solve --file task.txt --quickstart \
-  --task-feedback 'required_destination=./results/final-report.md'
-```
 
 ## Inspect the result
 
@@ -275,29 +317,6 @@ loop-engine solve
   -> performs permitted work
   -> verifies real artifacts or returns an honest blocker
 ```
-
-## How it works
-
-```text
-Original task
-└─ Starting Practitioner Loop
-   ├─ orient and standardize
-   ├─ select the next concrete action
-   ├─ propose a registered capability or a new local implementation
-   ├─ validate permissions and capability availability
-   ├─ run Solution Loops in a confined workspace
-   ├─ inspect commands and artifacts
-   └─ return one terminal result with Run History
-```
-
-Every executable graph position uses the same runtime type, `Loop`.
-Practitioner, Intelligence, and Solution are roles. Deterministic, hybrid, and
-non-deterministic are per-Loop modes. `LoopGraphDefinition` remains the one
-executable graph authority.
-
-Read [how Loop Engine works](docs/guides/how-it-works.md) after the quickstart.
-The [Architecture Constitution](docs/architecture/CONSTITUTION.md) defines the
-hard runtime, permission, evidence, and governance rules.
 
 ## Development
 

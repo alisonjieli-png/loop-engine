@@ -71,15 +71,15 @@ Sources: [Claude Code agent loop](https://code.claude.com/docs/en/agent-sdk/agen
 and [Claude Code hooks](https://code.claude.com/docs/en/agent-sdk/hooks).
 
 Relevant Loop Engine lesson: provider stop reasons, tool decisions, context
-compaction, and child work must remain visible. A transport or output-limit
+compaction, and spawned work must remain visible. A transport or output-limit
 stop must not be reported as a generic provider failure.
 
 ## OpenCode
 
 OpenCode defines reusable agent profiles from a system prompt, model
 preference, tool permissions, and display metadata. Primary agents run the
-main session. Subagents run child sessions with fresh context. Permissions can
-allow, ask, or deny each built-in, custom, or MCP tool, including command
+main session. Subagents run spawned sessions with fresh context. Permissions
+can allow, ask, or deny each built-in, custom, or MCP tool, including command
 patterns and access outside the workspace. OpenCode also exposes an explicit
 stuck-loop recovery permission.
 
@@ -87,7 +87,7 @@ Sources: [OpenCode agents](https://opencode.ai/docs/agents/) and
 [OpenCode permissions](https://opencode.ai/docs/permissions/).
 
 Relevant Loop Engine lesson: keep role profiles passive and versioned, and
-keep permissions separate from model choice. Child sessions must not become
+keep permissions separate from model choice. Spawned sessions must not become
 orphaned alternate product paths.
 
 ## Gemini CLI
