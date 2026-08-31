@@ -4,19 +4,17 @@ Loop Engine works like a careful, curious colleague. Give it a task, and it
 performs real work in a confined workspace, verifies the result, and saves an
 inspectable Run History.
 
-It takes small steps and selects the next concrete action itself. When an
-answer would change the goal, it asks you instead of guessing. It keeps notes on
-every decision, checks its own work before claiming success, and saves what it
-learned for reuse. Because the structure carries the discipline, a smaller
-hosted model can reach verified results that a plain chat session cannot
-promise.
+It takes small steps and selects the next concrete action itself. It keeps
+notes on every decision and checks its own work before claiming success. It
+saves what it learns for reuse: verified code, context, and solutions.
+Because the structure carries the discipline, a smaller hosted model can
+reach verified results that a plain chat session cannot promise.
 
 ## Solve with human-like loops
 
 Download the first example task and run the LLM-first quickstart profile. The
-Practitioner reads the task, asks a material question when an answer would
-change the goal, selects the next concrete action, runs Solution Loops in a
-confined workspace, and verifies the real artifacts:
+Practitioner reads the task, selects the next concrete action, runs Solution
+Loops in a confined workspace, and verifies the real artifacts:
 
 ```bash
 curl -LO \
@@ -96,12 +94,14 @@ for the model/runtime boundary.
 
 ## It gets smarter over time
 
-A careful colleague takes notes and remembers. After an accepted generated
-implementation, Loop Engine can emit a small reuse opportunity and return the
-source result without waiting for packaging. The asynchronous harvest path
-creates a Code Intelligence candidate. A future task can use it only after
-independent qualification and explicit promotion. An exact promoted match
-executes deterministically with zero model calls.
+A careful colleague takes notes and remembers. Loop Engine saves more than the
+final answer: verified code, reusable context, and complete solutions all
+become candidates for the next run. After an accepted generated implementation,
+it can emit a small reuse opportunity and return the source result without
+waiting for packaging. The asynchronous harvest path creates a Code
+Intelligence candidate. A future task can use it only after independent
+qualification and explicit promotion. An exact promoted match executes
+deterministically with zero model calls.
 
 A versioned Loop contract may also execute without a dedicated conventional
 implementation body. The exact semantic specification is bound into its
