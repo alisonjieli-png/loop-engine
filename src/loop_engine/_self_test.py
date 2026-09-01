@@ -90,6 +90,7 @@ def self_test() -> dict:
         "core.runtime_memory",
         "core.task_fingerprint",
         "core.task_fingerprint_facets",
+        "core.task_similarity_engine",
         "core.resolution",
         "core.solution_library",
         "core.reusable_capability_checks",

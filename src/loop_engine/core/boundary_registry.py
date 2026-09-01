@@ -161,6 +161,7 @@ BOUNDARIES = (
              "semantic_call"},
     {"boundary": "provider-neutral model routing", "crosses": "one typed model request is attempted across configured routes", "binding": "practitioner_loop", "envelope": "core.model_gateway.invoke_model_gateway", "test": "model_gateway.self_test"},
     {"boundary": "model response admission", "crosses": "untrusted provider text becomes a typed admitted candidate or rejection", "binding": "native_loop", "envelope": "core.model_response_admission.admit_model_response_as_loop", "test": "model_response_admission.self_test"},
+    {"boundary": "task similarity resolution", "crosses": "a task fingerprint and its facet observations become ranked prior-work evidence", "binding": "native_loop", "envelope": "core.task_similarity_engine.find_similar_as_loop", "test": "task_similarity_engine.self_test"},
     {"boundary": "runtime settings resolution",
      "crosses": "YAML and environment preferences become typed runtime settings",
      "binding": "practitioner_loop",
@@ -367,6 +368,7 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
         "starting", "spawned_by"),
     "provider-neutral model routing": _exact("practitioner", "practitioner.solver@1.0.0", "spawned_by"),
     "model response admission": _exact("solution", "solution.validator@1.0.0", "starting", "spawned_by"),
+    "task similarity resolution": _exact("intelligence", "intelligence.search@1.0.0", "starting", "queried_by"),
     "runtime settings resolution": _exact(
         "practitioner", "practitioner.code_execution@1.0.0",
         "starting", "spawned_by"),

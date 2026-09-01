@@ -208,7 +208,7 @@ MODULE_MAP = {
         "semantic_runtime_evidence", "semantic_runtime_fixture",
         "semantic_runtime_records", "semantic_state",
         "solution_library", "task_compile_model", "task_fingerprint",
-        "task_fingerprint_facets",
+        "task_fingerprint_facets", "task_similarity_engine",
         "store_serve",
         "boundary_registry", "boundary_runtime_checks", "saas_routes",
         "studio_operational_views", "studio_server", "workspace_backends",
