@@ -280,6 +280,7 @@ class GatewayAttempt:
     provider_done: "bool | None" = None
     provider_stop_reason: str = ""
     output_limit_reached: bool = False
+    usage_diagnostic: "dict | None" = None
     def to_dict(self) -> dict:
         return {
             "provider": self.provider,
@@ -295,6 +296,7 @@ class GatewayAttempt:
             "error_code": self.error_code,
             "error": self.error[:200],
             "elapsed_seconds": self.elapsed_seconds,
+            "usage_diagnostic": self.usage_diagnostic,
             "maximum_output_tokens": self.maximum_output_tokens,
             "maximum_output_source": self.maximum_output_source,
             "expected_model": self.expected_model,
@@ -398,9 +400,15 @@ def _error_code(error: str) -> str:
         return "model_not_found"
     if "429" in low or "rate" in low and "limit" in low:
         return "rate_limited"
-    if (any(code in low for code in ("500", "502", "503", "504"))
+    if (any(code in low for code in ("500", "502", "503"))
             or "service unavailable" in low or "high demand" in low):
         return "provider_unavailable"
+    if "gateway_timeout" in low or " 524" in low or low.startswith("524") \
+            or "504" in low:
+        # A proxy cut the connection mid-generation: transport-level and
+        # retryable, but a same-request retry may hit the same wall, so the
+        # run should also consider a shorter output ceiling or failover.
+        return "gateway_timeout"
     if "400" in low or "bad request" in low:
         return "invalid_request"
     if "timeout" in low or "timed out" in low:
@@ -649,6 +657,23 @@ class ModelGateway:
                 output_tokens = raw_out if usage_known else None
                 if usage_known:
                     known_tokens += raw_in + raw_out
+                # A real response with no provider-reported usage is an
+                # accounting anomaly worth a typed record: the diagnostic
+                # carries a clearly-labeled rough estimate, while the
+                # accounting fields stay None (unknown, never fabricated).
+                usage_diagnostic = None
+                if not usage_known and response_received and raw_text.strip():
+                    usage_diagnostic = {
+                        "record_type": "usage_accounting_unavailable/v1",
+                        "reason": (
+                            "provider returned a response without token "
+                            "usage; accounting remains unknown"),
+                        "estimated_output_tokens": max(1, len(raw_text) // 4),
+                        "estimate_basis": (
+                            "rough characters-over-four diagnostic estimate; "
+                            "not provider accounting and never reported as "
+                            "usage"),
+                    }
                 error = str(getattr(provider_result, "error", "") or "")
                 if output_limit_reached:
                     error = error or (
@@ -690,6 +715,7 @@ class ModelGateway:
                     provider_done=provider_done,
                     provider_stop_reason=provider_stop_reason,
                     output_limit_reached=output_limit_reached,
+                    usage_diagnostic=usage_diagnostic,
                 )
                 result.attempts.append(attempt)
                 if (not attempt.ok
@@ -988,6 +1014,63 @@ def self_test() -> dict:
     check("starting_gateway_has_no_implicit_depth_ceiling",
           starting_config.max_depth is None,
           "starting gateway uses no product-imposed recursion ceiling")
+
+    # Usage accounting: a real response with no provider-reported usage
+    # leaves accounting unknown (never zero) and attaches a typed
+    # diagnostic with a clearly-labeled estimate.
+    class SilentUsageAdapter:
+        DEFAULT_MODEL = "silent-usage-model"
+
+        @staticmethod
+        def output_capability_for(model=""):
+            return ModelOutputCapability(
+                4096, "self-test declaration", observed_at="2026-09-01")
+
+        @staticmethod
+        def verify(text):
+            return bool(text and text.strip())
+
+        @staticmethod
+        def live_models():
+            return [SilentUsageAdapter.DEFAULT_MODEL]
+
+        @staticmethod
+        def chat_maxout(prompt, *, model="", system="", temperature=0.7,
+                        timeout=None, api_key=None, backoff=0.9,
+                        floor_frac=0.3, max_attempts=1,
+                        max_output_tokens=None, output_capability=None):
+            del backoff, floor_frac, max_attempts
+            return ChatResult(
+                text="a real answer with no usage fields",
+                model=SilentUsageAdapter.DEFAULT_MODEL, ok=True,
+                prompt_tokens=0, eval_tokens=0, response_received=True,
+                done=True, done_reason="stop")
+
+    silent_route = ModelRoute(
+        "test.silent", "silent_usage", SilentUsageAdapter.DEFAULT_MODEL,
+        "cloud", purposes=("counted_generation",))
+    silent_gateway = ModelGateway(
+        providers=builtin_provider_specs(
+            {"silent_usage": SilentUsageAdapter}),
+        routes=(silent_route,))
+    silent_result = invoke_model_gateway(
+        silent_gateway,
+        ModelGatewayRequest(prompt="usage diagnostic probe"))
+    silent_attempt = silent_result.attempts[0] if silent_result.attempts else None
+    check("a_response_without_usage_reports_unknown_not_zero",
+          silent_attempt is not None
+          and silent_attempt.input_tokens is None
+          and silent_attempt.output_tokens is None
+          and silent_result.accounting_complete is False)
+    check("a_response_without_usage_carries_a_typed_diagnostic",
+          silent_attempt is not None
+          and silent_attempt.usage_diagnostic is not None
+          and silent_attempt.usage_diagnostic.get("record_type")
+          == "usage_accounting_unavailable/v1"
+          and "estimate" in str(
+              silent_attempt.usage_diagnostic.get("estimate_basis"))
+          and silent_attempt.usage_diagnostic.get(
+              "estimated_output_tokens", 0) >= 1)
 
     passed = sum(1 for test in results if test["passed"])
 

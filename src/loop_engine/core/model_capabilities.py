@@ -21,15 +21,31 @@ class ModelOutputLimitMismatch(ValueError):
 
 @dataclass(frozen=True)
 class ModelOutputCapability:
-    """One source-backed maximum output declaration for one model route."""
+    """One source-backed maximum output declaration for one model route.
 
-    maximum_output_tokens: int
+    ``maximum_output_tokens`` is the declared maximum. The string
+    ``"unknown"`` declares an explicit unknown state: the server publishes
+    no output maximum (many self-hosted gateways do not), so nothing is
+    invented and the caller must supply an explicit working ceiling per
+    invocation. The declaration is still source-backed: ``source`` names
+    where the unknown was established (for example a model catalog that
+    publishes no limit field).
+    """
+
+    maximum_output_tokens: "int | str"
     source: str
     endpoint: str = ""
     observed_at: str = ""
 
     def __post_init__(self) -> None:
-        if self.maximum_output_tokens < 1:
+        if isinstance(self.maximum_output_tokens, str):
+            if self.maximum_output_tokens != "unknown":
+                raise ValueError(
+                    "maximum_output_tokens must be a positive integer or the "
+                    "exact string 'unknown'")
+        elif (not isinstance(self.maximum_output_tokens, int)
+                or isinstance(self.maximum_output_tokens, bool)
+                or self.maximum_output_tokens < 1):
             raise ValueError("maximum_output_tokens must be positive")
         source = self.source.strip()
         if not source:
@@ -43,6 +59,17 @@ class ModelOutputCapability:
             raise ValueError("capability source must not contain credentials")
         if self.endpoint and not self.endpoint.startswith(("http://", "https://")):
             raise ValueError("capability endpoint must be an HTTP or HTTPS URL")
+
+    @property
+    def declared_maximum(self) -> "int | None":
+        """The integer maximum, or None when explicitly unknown."""
+        if isinstance(self.maximum_output_tokens, str):
+            return None
+        return int(self.maximum_output_tokens)
+
+    @property
+    def maximum_is_unknown(self) -> bool:
+        return isinstance(self.maximum_output_tokens, str)
 
     def summary(self) -> dict:
         return {
@@ -89,8 +116,29 @@ def resolve_output_capability(
 
 def require_declared_maximum(
         requested: "int | None", capability: ModelOutputCapability) -> int:
-    """Return the declared maximum and reject any lower or higher substitute."""
-    declared = capability.maximum_output_tokens
+    """Return the exact declared maximum or an explicit caller ceiling.
+
+    When the capability declares the maximum ``"unknown"`` (the server
+    publishes no limit and no source-backed record exists), nothing is
+    invented: the caller must supply an explicit working ceiling per
+    invocation, exactly like a per-conversation output setting. A caller
+    ceiling below any future declared maximum is still honest — it is an
+    owner choice, not a fabricated model limit.
+    """
+    declared = capability.declared_maximum
+    if declared is None:
+        if requested is None:
+            raise UnknownModelOutputLimit(
+                "explicit working ceiling required: this model's maximum "
+                "output is declared unknown (the server publishes no limit "
+                "and no source-backed record exists); pass an explicit "
+                "owner-chosen output ceiling")
+        if (not isinstance(requested, int) or isinstance(requested, bool)
+                or requested < 1):
+            raise UnknownModelOutputLimit(
+                "an unknown-maximum model needs a positive integer working "
+                "ceiling")
+        return int(requested)
     if requested is not None and int(requested) != declared:
         raise ModelOutputLimitMismatch(
             f"requested output limit {requested} is not the declared model "

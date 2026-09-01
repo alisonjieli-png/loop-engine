@@ -181,14 +181,21 @@ class ProviderSettings:
     wire: str = "openai"
     locality: str = "cloud"
     counts_as_evidence: bool = False
-    maximum_output_tokens: "int | None" = None
+    maximum_output_tokens: "int | str | None" = None
     maximum_output_source: str = ""
     purposes: tuple[str, ...] = ("counted_generation", "decide_label")
     headers: tuple[tuple[str, str], ...] = ()
     auth_scheme: str = "bearer"
     auth_header: str = ""
+    stream: "str | bool | None" = None
 
     def __post_init__(self) -> None:
+        if isinstance(self.maximum_output_tokens, str):
+            if self.maximum_output_tokens != "unknown":
+                raise SettingsError(
+                    "provider.maximum_output_tokens must be a positive "
+                    "integer, the exact string 'unknown' for a server that "
+                    "publishes no limit, or omitted")
         if not self.provider_id or not re.fullmatch(
                 r"[A-Za-z][A-Za-z0-9_]*", self.provider_id):
             raise SettingsError(
@@ -232,7 +239,7 @@ class ProviderSettings:
             raise SettingsError(
                 "provider.maximum_output_tokens and "
                 "provider.maximum_output_source must be declared together")
-        if (self.maximum_output_tokens is not None
+        if (isinstance(self.maximum_output_tokens, int)
                 and self.maximum_output_tokens < 1):
             raise SettingsError(
                 "provider.maximum_output_tokens must be positive")
@@ -739,7 +746,9 @@ class RuntimeSettings:
                 counts_as_evidence=configured.counts_as_evidence,
                 headers=configured.headers,
                 auth_scheme=configured.auth_scheme,
-                auth_header=configured.auth_header)
+                auth_header=configured.auth_header,
+                stream=(configured.stream if configured.stream is not None
+                        else "auto"))
             spec = provider_spec_from_endpoint(endpoint)
             providers.append(replace(
                 spec, credential_ref=(

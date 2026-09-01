@@ -172,6 +172,7 @@ def self_test() -> dict:
         "strings.solution_shaping",
         "core.model_gateway", "core.model_response_admission",
         "core.model_capabilities",
+        "core.route_health",
         "core.live_model_verification",
         "core.live_text_scenarios",
         "core.llm_work_packet",

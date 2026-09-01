@@ -108,11 +108,16 @@ def _provider(value: Mapping) -> ProviderSettings:
     _known(body, ("id", "kind", "enabled", "credential_env", "endpoint",
                   "model", "wire", "locality", "counts_as_evidence",
                   "maximum_output_tokens", "maximum_output_source",
-                  "purposes", "headers", "auth_scheme", "auth_header"),
+                  "purposes", "headers", "auth_scheme", "auth_header",
+                  "stream"),
            "provider")
     if not body.get("id"):
         raise SettingsError("each models.providers item needs id")
     raw_headers = _mapping(body.get("headers", {}), "provider.headers")
+    raw_stream = body.get("stream")
+    if raw_stream is not None and not isinstance(raw_stream, (str, bool)):
+        raise SettingsError(
+            "provider.stream must be auto, stream, buffer, or a boolean")
     return ProviderSettings(
         provider_id=str(body["id"]),
         kind=str(body.get("kind", "builtin")),
@@ -125,8 +130,10 @@ def _provider(value: Mapping) -> ProviderSettings:
         counts_as_evidence=_boolean(body.get(
             "counts_as_evidence", False), "provider.counts_as_evidence"),
         maximum_output_tokens=(
-            int(body["maximum_output_tokens"])
-            if body.get("maximum_output_tokens") is not None else None),
+            raw_maximum if isinstance(
+                raw_maximum := body.get("maximum_output_tokens"), str)
+            else int(raw_maximum)
+            if raw_maximum is not None else None),
         maximum_output_source=str(body.get("maximum_output_source", "")),
         purposes=_tuple(body.get(
             "purposes", ("counted_generation", "decide_label")),
@@ -134,7 +141,8 @@ def _provider(value: Mapping) -> ProviderSettings:
         headers=tuple(sorted((str(key), str(item))
                              for key, item in raw_headers.items())),
         auth_scheme=str(body.get("auth_scheme", "bearer")),
-        auth_header=str(body.get("auth_header", "")))
+        auth_header=str(body.get("auth_header", "")),
+        stream=raw_stream)
 
 
 def _tiers(value: Mapping, base: ModelSettings) -> tuple[ModelTier, ...]:

@@ -147,8 +147,12 @@ AMBIGUITY_STATES = (
 # Transport failure classes that may be retried at the governed model-step
 # boundary. Permanent classes (authentication, payment, invalid request,
 # rate limit policy, model not found) are never retried on the same route.
+# gateway_timeout means a proxy cut a long generation; a retry may hit the
+# same wall, so the step boundary also lowers its requested ceiling once
+# before the final attempt.
 _RETRYABLE_TRANSPORT_ERRORS = frozenset({
-    "network_unreachable", "provider_unavailable", "timeout"})
+    "network_unreachable", "provider_unavailable", "timeout",
+    "gateway_timeout"})
 _MAXIMUM_TRANSPORT_ATTEMPTS = 3
 class AdaptivePractitionerError(ValueError):
     """The adaptive Practitioner could not satisfy a typed runtime contract."""
@@ -571,6 +575,9 @@ class AdaptiveRunServices:
     active_recovery_directive: dict | None = None
     recovery_rounds: int = 0
     generated_file_checkpoints: dict[str, dict] = field(default_factory=dict)
+    route_health: dict = field(default_factory=lambda: {})
+    route_health_ledger: "object | None" = field(
+        default=None, repr=False, compare=False)
     progress_sequence: int = 0
     active_pass_number: int = 0
     started_monotonic: float = field(
@@ -661,6 +668,44 @@ class AdaptiveRunServices:
             custom_kind="adaptive_diagnostic", diagnostic_code=code,
             diagnostic=safe)
         self.publish("practitioner.diagnostic", diagnostic_code=code, **safe)
+
+    def _record_generation_outcome(
+            self, request: ModelStepRequest, *, error_code: str) -> None:
+        """Fold one observed model-step outcome into route health.
+
+        Route identity comes from the session's last gateway result; without
+        it (fixture sessions, deterministic ports) nothing is recorded and
+        the ledger stays empty, which is honest.
+        """
+        if self.route_health_ledger is None:
+            return
+        results = getattr(self.model_session, "results", None) \
+            if self.model_session is not None else None
+        if not results:
+            return
+        last = results[-1]
+        route_name = str(getattr(last, "route", "") or "")
+        provider = str(getattr(last, "provider", "") or "")
+        model = str(getattr(last, "model", "") or "")
+        output_tokens = getattr(last, "output_tokens", None)
+        if not route_name or not model:
+            return
+        from .route_health import GenerationOutcome
+        try:
+            self.route_health_ledger.record_outcome(GenerationOutcome(
+                route_name=route_name, provider=provider, model=model,
+                error_code=error_code,
+                output_tokens=(
+                    int(output_tokens)
+                    if isinstance(output_tokens, int) else None),
+                elapsed_seconds=(
+                    float(getattr(last, "elapsed_seconds", 0) or 0) or None),
+                requested_output_ceiling=getattr(
+                    last, "maximum_output_tokens", None)))
+        except Exception:  # noqa: BLE001 - health learning never kills work
+            self.publish(
+                "practitioner.diagnostic",
+                diagnostic_code="route_health_record_skipped")
 
     def model(self, request: ModelStepRequest) -> dict:
         if self.model_session is None:
@@ -975,14 +1020,20 @@ class AdaptiveRunServices:
                 if not self.request.quiet_model_io:
                     trace_event["prompt_text"] = assembled.prompt
                 self.publish("model.step.started", **trace_event)
+                if self.route_health_ledger is None:
+                    from .route_health import RouteHealthLedger
+                    self.route_health_ledger = RouteHealthLedger()
                 try:
                     text = self.model_session.invoke(
                         ModelInvocationRequest(
                             assembled.prompt,
                             temperature=assembled.temperature), owner)
+                    self._record_generation_outcome(request, error_code="")
                     break
                 except SolutionModelError as exc:
                     error_code = exc.error_code or "model_gateway_failed"
+                    self._record_generation_outcome(
+                        request, error_code=error_code)
                     self.publish(
                         "model.step.transport_failed", step=request.step_id,
                         format_attempt=format_attempt,
@@ -994,6 +1045,22 @@ class AdaptiveRunServices:
                         transport_attempt >= _MAXIMUM_TRANSPORT_ATTEMPTS)
                     if not retryable or final_attempt:
                         raise
+                    if error_code == "gateway_timeout" \
+                            and self.route_health_ledger is not None:
+                        for preference in (
+                                self.route_health_ledger
+                                .advise_route_preferences()):
+                            if (preference.get("prefer_failover")
+                                    and preference.get(
+                                        "gateway_timeout_walls")):
+                                self.publish(
+                                    "practitioner.diagnostic",
+                                    diagnostic_code=(
+                                        "route_ceiling_wall_detected"),
+                                    route_name=preference.get("route_name"),
+                                    prefer_failover=True,
+                                    reason=preference.get("reason"))
+                                break
                     # Governed backoff: 1s, then 2s. Every retry passes
                     # through model_session.invoke again, so every physical
                     # request stays visible and counted in the run record.

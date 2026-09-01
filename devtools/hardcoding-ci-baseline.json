@@ -1,6 +1,6 @@
 {
   "blocking_threshold": "high",
-  "finding_count": 9607,
+  "finding_count": 9681,
   "findings": [
     {
       "finding_id": "hardcoding.25cc39aa91e6b8f174700730",
@@ -10639,6 +10639,22 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.faed05aa49cfb88f0128d217",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.4ac21e0fc3ac8c3c2bbe8a3a",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.8b764fed0d3b0552ea39ff70",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.9569251685ea50562fe5e09c",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.6329b3170098765f4bb51820",
       "severity": "medium"
     },
@@ -10720,6 +10736,46 @@
     },
     {
       "finding_id": "hardcoding.d126170fd8d0a951c2dc8553",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.dec49d6ae0ec02ad9c0f75e6",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.16dd56b89f6aa3d1f4bcf41c",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.bc383b2c6ccaaacd92fbde15",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.eb5cdb1f3ad1d90691ee889e",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.62a0ee5184a2b19ae0f58aab",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.cc9c01b06660f940120d310a",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.d853a3cac6cf2d7b045a2366",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.0f759b4d9222e1a8ae086c48",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.2ceb09c02ed31d25d50c3fcb",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.4040339515b8d68617b33bc6",
       "severity": "medium"
     },
     {
@@ -10828,6 +10884,22 @@
     },
     {
       "finding_id": "hardcoding.cb58c1ac9235f760b644a916",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.8ccf3c40c27df9acf2e5d1bd",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.8eed68978fe92f6e95d81ff9",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.e5f52f9b3d6921fe24295b08",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.ff3177db6cb952453ff78a0c",
       "severity": "medium"
     },
     {
@@ -14047,6 +14119,10 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.5d07b827828361fd204b73b9",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.1c6c991b83c4ae52a3f375f0",
       "severity": "medium"
     },
@@ -14127,7 +14203,39 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.193a71fa7f2ba78931b0650b",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.03de9d8dfe22eb01647b1083",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.dccb910f97012f71978a2d8d",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.dd308bc160bcdc5cbd7dd543",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.3d296ab10f6c7f935e328994",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.b29acf44fff803c3232c44f5",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.2350cd16897d3a9873fa7257",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.8bc85a04fd0d741df39eab32",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.bdeccd20d671406ed17e9572",
       "severity": "medium"
     },
     {
@@ -14304,6 +14412,10 @@
     },
     {
       "finding_id": "hardcoding.1eca8040aa902190d70fd395",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.59898124ab6b3fd804e9799c",
       "severity": "medium"
     },
     {
@@ -18251,6 +18363,10 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.f2f340056610ba8c37085134",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.dab5a643841c610c333e01e6",
       "severity": "medium"
     },
@@ -18799,6 +18915,10 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.fb3e82c0a6ace7b61de51046",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.a67d40a0b0ca8039580be17e",
       "severity": "medium"
     },
@@ -18952,6 +19072,18 @@
     },
     {
       "finding_id": "hardcoding.a478de8055d93abcbeefdff6",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.42e46ad918980502ee34cdd9",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.c5b022a00af876a62ee76b27",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.c07e39da3b3fd48de1863e5a",
       "severity": "medium"
     },
     {
@@ -19143,6 +19275,14 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.3c1a6a3790e27927e3721624",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.c9e35d4dc966abdb37d8849a",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.81a87b0a327133f9dce1483f",
       "severity": "medium"
     },
@@ -19216,6 +19356,66 @@
     },
     {
       "finding_id": "hardcoding.69594359c2a0726a06f29290",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.1f60943e4e17a4d9ae81c5d9",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.7b2b3952dd6d6241f77fdd19",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.5cb4a121aebd4d0bab7ac7c3",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.80b8e440e07ac3992647d61c",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.b1168870e0ad57a8ba18c00b",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.65fd939f512bfbbdd2966d48",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.79acd4f87207c057948a7b8b",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.ff4f05a462a3c43fdfecd507",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.2a133788c4100764fdf0292f",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.db8de9138eb86102433bb0a7",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.ef3e40335eb2b5bcc6dbe8db",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.2fe785c145c6f87ba1ea0fbf",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.d88550b498644984911a76dc",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.51bafa76ff0b863bc56d1ef9",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.8db01913d30bc355d5f22dcc",
       "severity": "medium"
     },
     {
@@ -24503,6 +24703,94 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.9dcbab9b1f4d0aa219c5b693",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.6cd6ac8ec6c2a9736adc9c14",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.db6a49bec3fdb558ae04dc28",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.2d48b861ae00e90c3012ef5d",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.384f97614ba28cab73741ba2",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.19e9068707ec765cabf25000",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.5d032dbf8ec2c49344898366",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.4245e24c0c843885e0e6fc99",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.5dd93a2fb643014c9f1d0ce3",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.821c115418f266d634b533a1",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.79f4be6857a73921c36a1a5f",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.08d771571a15dafd2fdea24b",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.a9306004387024e1bf426ba2",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.3e8e2ce3e4cca8ac9f0f97f0",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.0e327c1bc5d73e9804374b5f",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.12f3557934e026dfa3d2b9cd",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.b796f97db55e9855f9639ec9",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.d6dd28f98ee62f4a7e389582",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.fff2db00a1c3d77f544b9804",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.48b4d907e76adda01617e50c",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.232b4935cbf99c6a952b55e0",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.c2f42dc6739ea4cd6dd3a7a1",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.52bae55487982ec1eadfcc2d",
       "severity": "medium"
     },
@@ -25139,6 +25427,14 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.fada3dc5fbc2dcd11dd01c98",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.8553d5a304f312b583cd6a82",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.94a241a19be7992f76c929a0",
       "severity": "medium"
     },
@@ -25197,10 +25493,6 @@
     {
       "finding_id": "hardcoding.e938c58dbb06fab9f8eff6b2",
       "severity": "high"
-    },
-    {
-      "finding_id": "hardcoding.1e02c85cbd29bc000c8a58d8",
-      "severity": "medium"
     },
     {
       "finding_id": "hardcoding.f917541c7d724a428e92c9ef",
@@ -25652,6 +25944,14 @@
     },
     {
       "finding_id": "hardcoding.9bd1e48a0baaff39ca7045aa",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.797639530c847040f444458b",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.0e662acb96dcfa0d095f4f63",
       "severity": "medium"
     },
     {
@@ -26371,7 +26671,7 @@
       "severity": "medium"
     },
     {
-      "finding_id": "hardcoding.471e1a4b8e460d1d97460c6f",
+      "finding_id": "hardcoding.5b7ad6dd7accce5e4d8a3fec",
       "severity": "medium"
     },
     {
@@ -26380,10 +26680,6 @@
     },
     {
       "finding_id": "hardcoding.6c6fea0794256a423e290477",
-      "severity": "medium"
-    },
-    {
-      "finding_id": "hardcoding.c65828b3789d7cdaa3dad900",
       "severity": "medium"
     },
     {
@@ -38431,7 +38727,7 @@
       "severity": "medium"
     }
   ],
-  "repository_snapshot_id": "hardcoding_source.sha256_68095c6628f42dc3799030d3b83cf54ba40d08c2c7bf48206aaf64a8805e35ee",
+  "repository_snapshot_id": "hardcoding_source.sha256_95d172b4be52aebbf58c79630bda799a23faa5e565aff47f34769657a9f5dc02",
   "schema": "hardcoding_ci_baseline/v1",
-  "source_audit_id": "hardcoding_audit.sha256_edadc99416636d1671e5a4ae8e33152a9ca05f778f632b776bea1a025a965685"
+  "source_audit_id": "hardcoding_audit.sha256_3aaa7908ae5c78f8e6d2f9c262fb7c1abb9883a807855f4e11749d7d846ef686"
 }

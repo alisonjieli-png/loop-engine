@@ -171,6 +171,7 @@ MODULE_MAP = {
         "mcp_adapter", "mcp_adapter_checks",
         "mcp_sdk_transport",
         "model_call", "model_capabilities", "model_gateway",
+        "route_health",
         "model_response_admission", "model_response_text",
         "model_routing_intelligence", "model_routing_intelligence_checks",
         "model_routing_records", "model_routing_selector",

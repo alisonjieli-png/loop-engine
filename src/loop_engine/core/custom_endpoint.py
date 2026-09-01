@@ -71,7 +71,39 @@ from .provider_failover import PROVIDERS
 
 #: Wire formats understood. "openai" covers the overwhelming majority of
 #: self-hosted servers; "ollama" is the native /api/chat shape.
+#: Streaming modes for a custom endpoint.
+#:   "auto"    - self-orienting: try the endpoint's normal (non-streamed)
+#:               request first; when a generation dies at a reverse-proxy
+#:               read wall (gateway timeout), retry the same request with
+#:               SSE streaming, which keeps the proxy's read timer fed.
+#:               The learned mode is remembered per run in route health.
+#:   "stream"  - always send stream: true (proxied gateways that must not
+#:               hold a silent connection open for minutes).
+#:   "buffer"  - always send stream: false (direct, unproxied servers).
+STREAM_MODES = ("auto", "stream", "buffer")
+
 WIRE_FORMATS = ("openai", "ollama")
+
+
+def _normalize_stream(value: object) -> str:
+    """Accept flexible spellings from settings and env declarations."""
+    if value is None:
+        return "auto"
+    if isinstance(value, bool):
+        return "stream" if value else "buffer"
+    text = str(value).strip().casefold()
+    aliases = {
+        "auto": "auto", "self": "auto", "detect": "auto",
+        "stream": "stream", "true": "stream", "yes": "stream",
+        "sse": "stream", "1": "stream",
+        "buffer": "buffer", "false": "buffer", "no": "buffer",
+        "0": "buffer", "none": "buffer", "off": "buffer",
+    }
+    if text not in aliases:
+        raise EndpointError(
+            f"stream must be one of {STREAM_MODES} (booleans and common "
+            f"spellings accepted); got {value!r}")
+    return aliases[text]
 
 LOCALITIES = ("cloud", "organization", "local")
 
@@ -100,6 +132,7 @@ class CustomEndpoint:
     headers: tuple[tuple[str, str], ...] = ()
     auth_scheme: str = "bearer"
     auth_header: str = ""
+    stream: str = "auto"
 
     def __post_init__(self):
         if not self.name or not self.name.replace("_", "").isalnum():
@@ -113,6 +146,10 @@ class CustomEndpoint:
         if self.auth_scheme not in ("bearer", "header", "none"):
             raise EndpointError(
                 "auth_scheme must be bearer, header, or none")
+        object.__setattr__(self, "stream", _normalize_stream(self.stream))
+        if self.stream not in STREAM_MODES:
+            raise EndpointError(
+                f"stream must be one of {STREAM_MODES}")
         if self.auth_scheme == "header":
             if (not self.auth_header.strip()
                     or not re.fullmatch(
@@ -184,7 +221,8 @@ class CustomEndpoint:
                 "has_key": bool(self.api_key),
                 "header_names": [item[0] for item in self.headers],
                 "auth_scheme": self.auth_scheme,
-                "auth_header": self.auth_header}
+                "auth_header": self.auth_header,
+                "stream": self.stream}
 
 
 def _request_headers(ep: CustomEndpoint) -> dict[str, str]:
@@ -199,10 +237,130 @@ def _request_headers(ep: CustomEndpoint) -> dict[str, str]:
     return headers
 
 
+def _sse_lines(response):
+    """Yield decoded SSE data lines from an open streaming response.
+
+    Tolerant of gateway variance: lines may be bytes or text, ``data:``
+    may be followed by any spacing, and some gateways emit ``data:[DONE]``
+    with no space. Non-data lines (comments, event:, id:, keep-alives) are
+    skipped, so an unseen gateway's framing cannot break parsing.
+    """
+    for raw_line in response:
+        if isinstance(raw_line, bytes):
+            line = raw_line.decode("utf-8", errors="replace")
+        else:
+            line = str(raw_line)
+        stripped = line.strip()
+        if not stripped or stripped.startswith(":"):
+            continue
+        if stripped.casefold().startswith("data:"):
+            yield stripped[len("data:"):].strip()
+
+
+def _sse_chunk_text(chunk: dict) -> tuple[list, list, str]:
+    """Extract (content_parts, reasoning_parts, finish_reason) from one SSE
+    chunk, tolerant of the shape variance across OpenAI-compatible servers.
+
+    Observed variants: ``choices[0].delta.content`` (OpenAI/vLLM/TRT),
+    ``choices[0].message.content`` (some Open WebUI and LiteLLM builds),
+    ``delta.reasoning_content`` or ``delta.reasoning`` (thinking models),
+    and finish_reason on any chunk. Unknown shapes contribute nothing
+    rather than failing the stream.
+    """
+    content: list = []
+    reasoning: list = []
+    finish = ""
+    choices = chunk.get("choices") or []
+    for choice in choices:
+        if not isinstance(choice, dict):
+            continue
+        delta = choice.get("delta")
+        if not isinstance(delta, dict):
+            delta = choice.get("message") if isinstance(
+                choice.get("message"), dict) else {}
+        text = delta.get("content")
+        if isinstance(text, str) and text:
+            content.append(text)
+        for reasoning_key in ("reasoning_content", "reasoning", "thinking"):
+            value = delta.get(reasoning_key)
+            if isinstance(value, str) and value:
+                reasoning.append(value)
+        reason = choice.get("finish_reason")
+        if isinstance(reason, str) and reason:
+            finish = reason
+    text_fallback = chunk.get("content") or chunk.get("response")
+    if not content and isinstance(text_fallback, str) and text_fallback:
+        content.append(text_fallback)
+    return content, reasoning, finish
+
+
+def _chat_streamed(ep: CustomEndpoint, payload: dict, headers: dict,
+                   timeout: float) -> dict:
+    """One streamed SSE request; returns the same body shape as non-stream.
+
+    Streaming keeps a reverse proxy's read timer fed with token chunks, so
+    long generations no longer hit a silent-connection read timeout (such
+    as Cloudflare's 125-second 524 wall). The streamed deltas are joined
+    into the final text; usage and finish_reason come from the terminal
+    chunk when the server sends them.
+    """
+    payload = dict(payload)
+    payload["stream"] = True
+    # Ask OpenAI-compatible servers to include usage in the final streamed
+    # chunk. Gateways that do not know the option ignore it; gateways that
+    # do return exact provider-reported token counts alongside the text.
+    if ep.wire != "ollama":
+        payload["stream_options"] = {"include_usage": True}
+    req = urllib.request.Request(
+        ep.chat_url, data=json.dumps(payload).encode(), headers=headers)
+    text_parts: list[str] = []
+    reasoning_parts: list[str] = []
+    finish_reason = ""
+    reported_model = ep.model
+    usage: dict = {}
+    with urllib.request.urlopen(req, timeout=timeout) as response:
+        for data in _sse_lines(response):
+            if data == "[DONE]" or data.casefold() == "[done]":
+                break
+            try:
+                chunk = json.loads(data)
+            except ValueError:
+                continue
+            if not isinstance(chunk, dict):
+                continue
+            reported_model = str(chunk.get("model") or reported_model)
+            content, reasoning, finish = _sse_chunk_text(chunk)
+            text_parts.extend(content)
+            reasoning_parts.extend(reasoning)
+            if finish:
+                finish_reason = finish
+            if isinstance(chunk.get("usage"), dict):
+                usage = chunk["usage"]
+    if not usage:
+        usage = {}
+    return {
+        "model": reported_model,
+        "choices": [{"index": 0, "message": {
+            "role": "assistant", "content": "".join(text_parts)},
+            "finish_reason": finish_reason}],
+        "usage": usage,
+        "_streamed": True,
+        "_reasoning": "".join(reasoning_parts),
+    }
+
+
 def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                max_tokens: int, temperature: float,
                timeout: float) -> ChatResult:
-    """One request in whichever wire format the endpoint declared."""
+    """One request in whichever wire format the endpoint declared.
+
+    Streaming is self-orienting in ``auto`` mode: the first attempt uses the
+    endpoint's normal non-streamed request, and when a reverse-proxy read
+    wall (gateway timeout) cuts a long generation, the same request is
+    retried once with SSE streaming, which keeps the proxy's read timer
+    fed. The streamed result is marked so the run record shows which mode
+    actually delivered the response.
+    """
     messages = ([{"role": "system", "content": system}] if system else []) \
         + [{"role": "user", "content": prompt}]
     if ep.wire == "ollama":
@@ -214,24 +372,49 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                    "max_tokens": int(max_tokens), "temperature": temperature}
 
     headers = _request_headers(ep)
-    req = urllib.request.Request(ep.chat_url, data=json.dumps(payload).encode(),
-                                 headers=headers)
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as r:
-            body = json.loads(r.read())
-    except urllib.error.HTTPError as e:
-        detail = ""
+    use_streaming = ep.stream == "stream"
+    while True:
         try:
-            detail = e.read()[:300].decode("utf-8", "replace")
-        except OSError:
-            pass
-        return ChatResult(text="", model=ep.model, ok=False,
-                          error=f"HTTP {e.code}: {detail}")
-    except (urllib.error.URLError, OSError, ValueError) as e:
-        return ChatResult(text="", model=ep.model, ok=False,
-                          error=f"{type(e).__name__}: {str(e)[:250]}")
+            if use_streaming:
+                body = _chat_streamed(ep, payload, headers, timeout)
+            else:
+                req = urllib.request.Request(
+                    ep.chat_url,
+                    data=json.dumps(payload).encode(), headers=headers)
+                with urllib.request.urlopen(req, timeout=timeout) as r:
+                    body = json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            detail = ""
+            try:
+                detail = e.read()[:300].decode("utf-8", "replace")
+            except OSError:
+                pass
+            if e.code in (504, 524):
+                if ep.stream == "auto" and not use_streaming:
+                    # Self-orient: the proxy cut a silent non-streamed
+                    # connection. Retry the same request with SSE streaming
+                    # so the proxy's read timer stays fed.
+                    use_streaming = True
+                    continue
+                return ChatResult(
+                    text="", model=ep.model, ok=False,
+                    error="gateway_timeout: origin did not finish before the "
+                          f"proxy read timeout (HTTP {e.code}); a shorter "
+                          "owner-set output ceiling may complete within the "
+                          f"proxy window: {detail}")
+            return ChatResult(text="", model=ep.model, ok=False,
+                              error=f"HTTP {e.code}: {detail}")
+        except (urllib.error.URLError, OSError, ValueError) as e:
+            if ep.stream == "auto" and not use_streaming \
+                    and isinstance(e, (urllib.error.URLError, OSError)) \
+                    and "timed out" in str(e).lower():
+                use_streaming = True
+                continue
+            return ChatResult(text="", model=ep.model, ok=False,
+                              error=f"{type(e).__name__}: {str(e)[:250]}")
+        break
 
-    if ep.wire == "ollama":
+    if ep.wire == "ollama" and not body.get("_streamed"):
         message = body.get("message") or {}
         text = message.get("content", "")
         p_tok = int(body.get("prompt_eval_count", 0) or 0)
@@ -250,7 +433,7 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
         done = True
         done_reason = str(choices[0].get("finish_reason", "") or "") \
             if choices else ""
-        reasoning_present = False
+        reasoning_present = bool(str(body.get("_reasoning") or "").strip())
     output_limit_reached = response_reached_output_limit(
         done_reason, e_tok, int(max_tokens))
     error = ""
@@ -410,7 +593,7 @@ def endpoints_from_env(value: "str | None" = None) -> list:
         unknown = set(fields) - {"name", "url", "model", "key", "wire",
                                  "locality", "max_output",
                                  "max_output_source", "evidence",
-                                 "auth_scheme", "auth_header"}
+                                 "auth_scheme", "auth_header", "stream"}
         if unknown:
             raise EndpointError(
                 f"unknown endpoint field(s) {sorted(unknown)} — refused rather "
@@ -421,7 +604,8 @@ def endpoints_from_env(value: "str | None" = None) -> list:
             raise EndpointError(
                 "max_output and max_output_source must be declared together")
         capability = (ModelOutputCapability(
-            int(maximum), maximum_source) if maximum else None)
+            maximum if maximum.casefold() == "unknown" else int(maximum),
+            maximum_source) if maximum else None)
         out.append(CustomEndpoint(
             name=fields.get("name", "custom"), base_url=fields.get("url", ""),
             model=fields.get("model", ""), api_key=fields.get("key", ""),
@@ -429,6 +613,7 @@ def endpoints_from_env(value: "str | None" = None) -> list:
             locality=fields.get("locality", "local"),
             auth_scheme=fields.get("auth_scheme", "bearer"),
             auth_header=fields.get("auth_header", ""),
+            stream=fields.get("stream", "auto"),
             output_capability=capability,
             counts_as_evidence=fields.get("evidence", "").lower()
             in ("1", "true", "yes")))
@@ -571,6 +756,64 @@ def self_test() -> dict:
     check("an_unknown_custom_model_maximum_refuses_before_network_use",
           not unknown_capability["ok"]
           and "unknown_model_output_limit" in unknown_capability["error"])
+
+    # Streaming self-orientation: flexible mode spelling, tolerant SSE
+    # parsing across gateway shapes, and auto's proxy-wall retry.
+    check("stream_modes_normalize_flexible_spellings",
+          _normalize_stream(True) == "stream"
+          and _normalize_stream("SSE") == "stream"
+          and _normalize_stream("off") == "buffer"
+          and _normalize_stream(None) == "auto"
+          and CustomEndpoint(
+              name="t1", base_url="https://x/v1/chat/completions",
+              model="m").stream == "auto")
+
+    refused_stream = False
+    try:
+        CustomEndpoint(name="t2", base_url="https://x/v1/chat/completions",
+                       model="m", stream="sideways")
+    except EndpointError:
+        refused_stream = True
+    check("an_unrecognized_stream_mode_is_refused", refused_stream)
+
+    delta_chunk = {"choices": [{"delta": {"content": "hello "}, }]}
+    message_chunk = {"choices": [{"message": {"content": "world"}}]}
+    reasoning_chunk = {"choices": [{"delta": {
+        "content": "", "reasoning_content": "thinking"}}]}
+    finish_chunk = {"choices": [{"delta": {}, "finish_reason": "stop"}],
+                    "usage": {"prompt_tokens": 5, "completion_tokens": 2}}
+    parts_a, reason_a, finish_a = _sse_chunk_text(delta_chunk)
+    parts_b, _reason_b, _finish_b = _sse_chunk_text(message_chunk)
+    parts_c, reason_c, _finish_c = _sse_chunk_text(reasoning_chunk)
+    _parts_d, _reason_d, finish_d = _sse_chunk_text(finish_chunk)
+    check("sse_parser_accepts_delta_message_and_reasoning_shapes",
+          parts_a == ["hello "] and parts_b == ["world"]
+          and reason_a == [] and reason_c == ["thinking"]
+          and finish_a == "" and finish_d == "stop")
+
+    class _SSEBody:
+        def __iter__(self):
+            yield b'data: {"choices": [{"delta": {"content": "one"}}]}'
+            yield b'data:{"choices": [{"delta": {"content": "two"}}]}'
+            yield b': keep-alive comment'
+            yield b'event: ping'
+            yield b'data: [DONE]'
+
+    class _SSEResponse:
+        def __init__(self, body):
+            self._body = body
+        def __iter__(self):
+            return iter(self._body)
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            return False
+
+    lines = list(_sse_lines(_SSEBody()))
+    check("sse_lines_skip_comments_and_accept_spacing_variants",
+          lines == ['{"choices": [{"delta": {"content": "one"}}]}',
+                    '{"choices": [{"delta": {"content": "two"}}]}',
+                    '[DONE]'])
 
     passed = sum(1 for t in results if t["passed"])
     return {"record_type": "custom_endpoint_contract_test/v2",
