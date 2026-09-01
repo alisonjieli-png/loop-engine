@@ -21,6 +21,7 @@ from ..core.adaptive_practitioner_records import (
 from ..templates.compiler import TaskCompileRequest, compile_task_value
 from ..templates.intake import TaskIntake
 from ..templates.model import InteractionMode, TaskFeedback
+from ..core.generated_project import execute_generated_project
 from .solution_model_port import ModelExecution
 
 
@@ -101,6 +102,10 @@ class SolveRequest:
     extension_snapshot: dict = field(default_factory=dict)
     progress: "Callable[[dict], None] | None" = field(
         default=None, repr=False, compare=False)
+    reuse_observation_port: "object | None" = field(
+        default=None, repr=False, compare=False)
+    project_executor: "Callable | None" = field(
+        default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         mode = self.interaction_mode
@@ -137,6 +142,15 @@ class SolveRequest:
             raise SolveError("extension_snapshot has an invalid contract")
         if self.progress is not None and not callable(self.progress):
             raise SolveError("progress must be callable when supplied")
+        from ..core.reusable_capability_harvest import ReuseObservationPort
+        if (self.reuse_observation_port is not None
+                and not isinstance(
+                    self.reuse_observation_port, ReuseObservationPort)):
+            raise SolveError(
+                "reuse_observation_port must be a ReuseObservationPort")
+        if (self.project_executor is not None
+                and not callable(self.project_executor)):
+            raise SolveError("project_executor must be callable when supplied")
 
 
 @dataclass(frozen=True)
@@ -165,6 +179,7 @@ class SolveOutcome:
     loop_count: int = 0
     elapsed_seconds: float = 0.0
     model_usage: tuple[dict, ...] = ()
+    reuse_observation: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         valid_codes = {item.value for item in SolveTerminalCode}
@@ -408,6 +423,9 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             model_execution=request.model_execution,
             deterministic_resolvers=resolvers,
             progress=request.progress,
+            reuse_observation_port=request.reuse_observation_port,
+            project_executor=(request.project_executor
+                              or execute_generated_project),
             extension_snapshot=request.extension_snapshot))
     solved = bool(adaptive.get("solved"))
     product = _product_result(adaptive, solved)
@@ -473,7 +491,9 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         tool_calls=int(product["tool_calls"]),
         loop_count=len(adaptive.get("loop_details") or ()),
         elapsed_seconds=round(time.monotonic() - started, 3),
-        model_usage=_model_usage(adaptive))
+        model_usage=_model_usage(adaptive),
+        reuse_observation=dict(
+            adaptive.get("reuse_observation") or {}))
     if request.save_run_history and outcome.run_id and history.get("path"):
         from ..core.run_history import bind_product_outcome
         run_root = str(Path(str(history["path"])).parent)

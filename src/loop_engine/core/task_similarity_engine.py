@@ -47,6 +47,7 @@ from .task_fingerprint import (
 from .task_fingerprint_facets import (
     FacetLevel,
     TaskFacetObservation,
+    facet_hierarchy,
     facet_overlap,
 )
 
@@ -329,45 +330,58 @@ class SimilarityEngine:
             request: TaskSimilarityRequest,
             candidates: Sequence[ResolutionCandidate],
     ) -> tuple[SimilarityHit, ...]:
-        """Compare facet observations at the layer's exactness level."""
-        prior_by_digest: dict[str, TaskFacetObservation] = {}
+        """Compare facet observations at the layer's exactness level.
+
+        Every observation of one prior fingerprint is preserved and grouped
+        by (fingerprint_digest, facet_kind, level) so input ordering can
+        never decide which facet survives. A more precise prior facet
+        therefore cannot be discarded because a coarser one arrived first.
+        """
+        prior_by_key: dict[tuple[str, str, str], TaskFacetObservation] = {}
         for observation in self.facet_source.observations:
-            prior_by_digest.setdefault(
-                observation.fingerprint_digest, observation)
+            prior_by_key.setdefault((
+                observation.fingerprint_digest,
+                observation.facet_kind.value,
+                observation.level.value), observation)
         hits: list[SimilarityHit] = []
         for candidate in candidates:
             candidate_fingerprint_digest = candidate.fingerprint.digest
-            prior = prior_by_digest.get(candidate_fingerprint_digest)
-            if prior is None:
+            priors = [
+                value for (digest, _kind, _level), value
+                in prior_by_key.items()
+                if digest == candidate_fingerprint_digest]
+            if not priors:
                 continue
             for required_facet in request.facets:
-                if required_facet.facet_kind != prior.facet_kind:
-                    continue
-                overlap = facet_overlap(required_facet, prior)
-                ratio = float(overlap["role_overlap_ratio"])
-                same_shape = bool(
-                    required_facet.shape_digest == prior.shape_digest)
-                family_ok = bool(overlap["same_family"])
-                modality_ok = bool(overlap["same_modality"])
-                if layer == SimilarityLayer.FACET_SHAPE and not same_shape:
-                    continue
-                if layer == SimilarityLayer.FACET_FAMILY:
-                    if not family_ok or ratio < self.policy.min_role_overlap:
+                for prior in priors:
+                    if required_facet.facet_kind != prior.facet_kind:
                         continue
-                if layer == SimilarityLayer.FACET_MODALITY and not modality_ok:
-                    continue
-                hits.append(SimilarityHit(
-                    candidate_ref=candidate.candidate_ref,
-                    layer=layer,
-                    origin=ResolutionOrigin.PARAMETERIZED_REUSE,
-                    compatibility=candidate.compatibility,
-                    role_overlap=ratio,
-                    shared_roles=tuple(overlap["shared_roles"]),
-                    missing_roles=tuple(overlap["missing_roles"]),
-                    evidence_refs=(
-                        f"facet:{required_facet.shape_digest}",
-                        f"facet:{prior.shape_digest}"),
-                ))
+                    overlap = facet_overlap(required_facet, prior)
+                    ratio = float(overlap["role_overlap_ratio"])
+                    same_shape = bool(
+                        required_facet.shape_digest == prior.shape_digest)
+                    family_ok = bool(overlap["same_family"])
+                    modality_ok = bool(overlap["same_modality"])
+                    if layer == SimilarityLayer.FACET_SHAPE and not same_shape:
+                        continue
+                    if layer == SimilarityLayer.FACET_FAMILY:
+                        if not family_ok or ratio < self.policy.min_role_overlap:
+                            continue
+                    if layer == SimilarityLayer.FACET_MODALITY \
+                            and not modality_ok:
+                        continue
+                    hits.append(SimilarityHit(
+                        candidate_ref=candidate.candidate_ref,
+                        layer=layer,
+                        origin=ResolutionOrigin.PARAMETERIZED_REUSE,
+                        compatibility=candidate.compatibility,
+                        role_overlap=ratio,
+                        shared_roles=tuple(overlap["shared_roles"]),
+                        missing_roles=tuple(overlap["missing_roles"]),
+                        evidence_refs=(
+                            f"facet:{required_facet.shape_digest}",
+                            f"facet:{prior.shape_digest}"),
+                    ))
         return tuple(hits)
 
 
@@ -540,6 +554,63 @@ def self_test() -> dict[str, object]:
     check("boundary_crosses_through_a_component_loop",
           looped.hits == result.hits
           and looped.request_digest == result.request_digest)
+
+    full_prior_hierarchy = facet_hierarchy(prior_facet)
+    reordered_sources = (
+        FacetCandidateSource(observations=tuple(reversed(full_prior_hierarchy))),
+        FacetCandidateSource(observations=full_prior_hierarchy),
+        FacetCandidateSource(observations=(
+            full_prior_hierarchy[1], full_prior_hierarchy[0],
+            full_prior_hierarchy[3], full_prior_hierarchy[2])),
+    )
+    reordered_hits = [
+        [hit.candidate_ref for hit in
+         SimilarityEngine(
+             candidate_source=LibraryCandidateSource(library=library),
+             facet_source=source,
+             policy=SimilarityPolicy(widen_levels=(
+                 SimilarityLayer.FACET_SHAPE, SimilarityLayer.FACET_FAMILY,
+                 SimilarityLayer.FACET_MODALITY))).
+         find_similar(TaskSimilarityRequest(
+             fingerprint=fingerprint, facets=(current_facet,))).hits]
+        for source in reordered_sources]
+    check("facet_order_cannot_change_similarity_results",
+          all(item == reordered_hits[0] for item in reordered_hits)
+          and reordered_hits[0])
+    exact_prior_facet = column_shape_facet(
+        ColumnShapeRequest(
+            row_count=8_000, columns=(
+                ColumnShape("account_id", "identifier"),
+                ColumnShape("tenure", "numeric"),
+                ColumnShape("plan", "categorical"),
+                ColumnShape("renewed", "boolean")),
+            target_column="renewed"),
+        fingerprint.digest, "tabular")
+    check("a_precise_prior_facet_is_never_discarded",
+          SimilarityLayer.FACET_SHAPE in {
+              hit.layer for hit in
+              SimilarityEngine(
+                  candidate_source=LibraryCandidateSource(library=library),
+                  facet_source=FacetCandidateSource(
+                      observations=full_prior_hierarchy),
+                  policy=SimilarityPolicy(widen_levels=(
+                      SimilarityLayer.FACET_SHAPE,))).
+              find_similar(TaskSimilarityRequest(
+                  fingerprint=fingerprint,
+                  facets=(exact_prior_facet,))).hits})
+    duplicate_source = FacetCandidateSource(
+        observations=full_prior_hierarchy + full_prior_hierarchy)
+    duplicate_hits = [hit.candidate_ref for hit in SimilarityEngine(
+        candidate_source=LibraryCandidateSource(library=library),
+        facet_source=duplicate_source,
+        policy=SimilarityPolicy(widen_levels=(
+            SimilarityLayer.FACET_SHAPE, SimilarityLayer.FACET_FAMILY,
+            SimilarityLayer.FACET_MODALITY))).
+        find_similar(TaskSimilarityRequest(
+            fingerprint=fingerprint, facets=(current_facet,))).hits]
+    check("duplicate_facets_are_idempotent",
+          len(duplicate_hits) == len(set(duplicate_hits))
+          and duplicate_hits == reordered_hits[0])
 
     return {"tests": tests}
 
