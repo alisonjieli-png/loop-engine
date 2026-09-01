@@ -4,12 +4,20 @@ The model may choose a URL, but it cannot perform the request directly. This
 module validates the URL, binds one exact network-read effect, executes GET in
 an Intelligence Loop, stores the complete body as an immutable artifact, and
 returns the selected text plus metadata to active context.
+
+Redirect handling is explicit. The HTTP client refuses automatic redirects:
+every hop target is resolved, then validated against the same public HTTPS
+policy as the requested URL, before any connection is made to it. The result
+records the full hop chain. Known limit: the hostname is re-resolved by the
+transport at connect time, so a validated address is not pinned to the actual
+connection.
 """
 from __future__ import annotations
 
 import hashlib
 import ipaddress
 import socket
+import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
@@ -26,6 +34,17 @@ from .runtime_observer import RuntimeObservationServices
 
 class WebFetchError(ValueError):
     """A web-read request or response violated the capability contract."""
+
+
+_MAXIMUM_REDIRECT_HOPS = 5
+_REDIRECT_STATUS_CODES = (301, 302, 303, 307, 308)
+
+
+class _RefusedRedirect(urllib.request.HTTPRedirectHandler):
+    """Stop urllib from following redirects; each hop is validated instead."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
 
 
 @dataclass(frozen=True)
@@ -110,6 +129,51 @@ def _effect(request: WebFetchRequest) -> EffectSpec:
     )
 
 
+def _open_without_redirects(url: str, timeout_seconds: float):
+    """Open one exact URL. Redirects surface as HTTPError, never followed."""
+    handler = urllib.request.build_opener(_RefusedRedirect)
+    return handler.open(
+        urllib.request.Request(
+            url,
+            headers={"User-Agent": "loop-engine/0.1 adaptive-practitioner"},
+            method="GET"),
+        timeout=timeout_seconds)
+
+
+def _fetch_with_validated_hops(
+        request: WebFetchRequest) -> tuple[object, str, list[str]]:
+    """GET the requested URL, validating and following each redirect hop.
+
+    Automatic redirects stay disabled. When the server answers with a
+    redirect status, the hop target is resolved and checked against the
+    public HTTPS policy before any connection is made to it. A redirect to
+    a private or non-HTTPS destination is refused before contact.
+    """
+    visited: list[str] = [request.url]
+    url = request.url
+    timeout_budget = request.timeout_seconds
+    for _hop in range(_MAXIMUM_REDIRECT_HOPS + 1):
+        try:
+            response = _open_without_redirects(url, timeout_budget)
+        except urllib.error.HTTPError as exc:
+            if exc.code not in _REDIRECT_STATUS_CODES:
+                raise
+            if _hop >= _MAXIMUM_REDIRECT_HOPS:
+                raise WebFetchError(
+                    "web fetch exceeded the maximum redirect hops") from exc
+            location = exc.headers.get("Location")
+            if not location:
+                raise WebFetchError(
+                    "web fetch redirect has no Location header") from exc
+            target = urllib.parse.urljoin(url, location)
+            _validate_public_https(target)
+            visited.append(target)
+            url = target
+            continue
+        return response, url, visited
+    raise WebFetchError("web fetch exceeded the maximum redirect hops")
+
+
 def _approve(request, authority, parent) -> EffectApprovalService:
     if not authority.allow_network_reads:
         raise PermissionError("task-build authority does not permit network reads")
@@ -154,14 +218,9 @@ def fetch_web_resource(
 
     def handler(active, _step, _state):
         try:
-            source = urllib.request.Request(
-                request.url,
-                headers={"User-Agent": "loop-engine/0.1 adaptive-practitioner"},
-                method="GET")
-            with urllib.request.urlopen(
-                    source, timeout=request.timeout_seconds) as response:
-                final_url = str(response.geturl())
-                _validate_public_https(final_url)
+            response, final_url, hop_chain = _fetch_with_validated_hops(
+                request)
+            with response:
                 declared = response.headers.get("Content-Length")
                 if (request.maximum_bytes is not None and declared
                         and int(declared) > request.maximum_bytes):
@@ -184,6 +243,7 @@ def fetch_web_resource(
                 "record_type": "web_fetch_result/v1",
                 "requested_url": request.url,
                 "final_url": final_url,
+                "redirect_hops": hop_chain,
                 "media_type": media_type,
                 "byte_count": len(body),
                 "sha256": artifact.digest,
@@ -230,6 +290,82 @@ def self_test() -> dict:
             "passed": refused,
             "detail": url,
         })
+    redirect_refused = False
+    try:
+        _validate_public_https("http://redirect.target/data")
+    except WebFetchError:
+        redirect_refused = True
+    tests.append({
+        "test": "web_fetch_refuses_http_redirect_target",
+        "passed": redirect_refused,
+        "detail": "a redirect Location downgrading to http is refused",
+    })
+    private_redirect_refused = False
+    try:
+        _validate_public_https("https://192.168.1.10/data")
+    except WebFetchError:
+        private_redirect_refused = True
+    tests.append({
+        "test": "web_fetch_refuses_private_redirect_target",
+        "passed": private_redirect_refused,
+        "detail": "a redirect Location naming a private network address is"
+                  " refused before any connection",
+    })
+    relative = urllib.parse.urljoin(
+        "https://example.com/a/b", "next/page")
+    tests.append({
+        "test": "web_fetch_resolves_relative_redirect_targets",
+        "passed": relative == "https://example.com/a/next/page",
+        "detail": relative,
+    })
+    import email.message
+    import sys
+    import unittest.mock
+
+    _self = sys.modules[__name__]
+
+    def _raise_redirect(url, target):
+        headers = email.message.Message()
+        headers["Location"] = target
+        raise urllib.error.HTTPError(url, 302, "Found", headers, None)
+
+    hop_exhaustion_refused = False
+    hop_exhaustion_detail = ""
+    with unittest.mock.patch.object(
+            _self, "_open_without_redirects",
+            side_effect=lambda url, timeout: _raise_redirect(
+                url, "https://example.com/next")):
+        try:
+            _fetch_with_validated_hops(WebFetchRequest(
+                "https://example.com/start", "test hop bound"))
+        except WebFetchError as exc:
+            hop_exhaustion_refused = "exceeded the maximum redirect" in str(
+                exc)
+            hop_exhaustion_detail = str(exc)
+    tests.append({
+        "test": "web_fetch_bounds_redirect_hops",
+        "passed": hop_exhaustion_refused,
+        "detail": hop_exhaustion_detail or "an endless redirect chain is"
+                  " refused without contacting any network",
+    })
+    private_hop_refused = False
+    private_hop_detail = ""
+    with unittest.mock.patch.object(
+            _self, "_open_without_redirects",
+            side_effect=lambda url, timeout: _raise_redirect(
+                url, "https://192.168.1.10/data")):
+        try:
+            _fetch_with_validated_hops(WebFetchRequest(
+                "https://example.com/start", "test private hop"))
+        except WebFetchError as exc:
+            private_hop_refused = "non-public network" in str(exc)
+            private_hop_detail = str(exc)
+    tests.append({
+        "test": "web_fetch_refuses_private_redirect_before_contact",
+        "passed": private_hop_refused,
+        "detail": private_hop_detail or "the hop target is validated before"
+                  " any connection",
+    })
     passed = sum(item["passed"] for item in tests)
     return {
         "record_type": "web_fetch_test/v1",
