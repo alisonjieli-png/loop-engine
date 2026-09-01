@@ -258,6 +258,12 @@ def main(argv=None) -> int:
         help="permit the same solve to try other exact authorized routes "
              "after a retryable provider or response failure")
     parser.add_argument(
+        "--trace-model-io", action="store_true",
+        help="print the exact prompt text before and the exact admitted "
+             "model output after every model call to stderr; the user's "
+             "own terminal is explicit opt-in, and Run History storage "
+             "policy is unchanged")
+    parser.add_argument(
         "--practitioner-mode",
         choices=("deterministic", "hybrid", "non_deterministic"),
         default="non_deterministic",

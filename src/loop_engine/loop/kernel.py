@@ -516,19 +516,18 @@ _MAX_NON_PROGRESS_PASSES = 3
 def _pass_progress_key(rec, state) -> tuple:
     """Measure one pass's meaningful progress, independent of pass count.
 
-    Facts, artifacts, project attempts, failure signatures, and the routing
-    decision form the key. Two passes with identical keys made no measurable
-    progress; the guard counts them.
+    Facts, artifacts, capability results, and the routing decision form the
+    key. Failure text is deliberately excluded: documenting a failure is not
+    progress, and the guard itself appends failure notes when it escalates,
+    so counting them would let escalation reset its own detector. Two passes
+    with identical keys made no measurable progress.
     """
-    failure_key = tuple(sorted(
-        str(item) for item in getattr(state, "failures", ()) or ()))
     return (
         len(getattr(state, "facts", {}) or {}),
         tuple(sorted((getattr(state, "artifacts", {}) or {}).keys())),
         len(getattr(rec, "results", ()) or ()),
         tuple(sorted(set(
             str(item) for item in _result_objective_keys(rec)))),
-        failure_key,
         rec.route.route if rec.route else "stop_unprofitable",
     )
 
@@ -551,17 +550,33 @@ def _result_objective_keys(rec) -> list:
     return keys
 
 
-def _non_progress_record(pass_number: int, consecutive: int,
-                         last_route: str) -> "PassRecord":
-    """The honest terminal record for a run that stopped making progress."""
+def _non_progress_record(pass_number: int, escalation: str,
+                         last_route: str,
+                         consecutive: "int | None" = None) -> "PassRecord":
+    """The escalation or terminal record for a non-progressing run."""
     record = PassRecord(pass_number=pass_number, state_version_in=0)
+    if escalation == "stop_unprofitable":
+        reason = (
+            f"{consecutive} consecutive passes with no new facts, artifacts, "
+            f"verified work, or recovery directive while routing "
+            f"{last_route!r}; soft reset and cold restart both failed to "
+            "restore progress, so stopping honestly instead of repeating "
+            "identical passes")
+    else:
+        reason = (
+            f"no measurable progress while routing {last_route!r}; "
+            f"escalating with {escalation} before any stop, keeping the "
+            "documented failures")
     record.route = RouteDecision(
-        "stop_unprofitable",
-        f"{consecutive} consecutive passes produced no new facts, artifacts, "
-        f"verified work, or recovery directive while routing {last_route!r}; "
-        "stopping honestly instead of repeating identical passes")
+        "stop_unprofitable" if escalation == "stop_unprofitable"
+        else escalation, reason)
     record.state_version_out = 0
     return record
+
+
+def _append_event(events_path: str, record) -> None:
+    with open(events_path, "a") as fh:
+        fh.write(json.dumps(record.to_event(), default=str) + "\n")
 
 
 def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
@@ -592,6 +607,7 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
         events_path = os.path.join(request.event_dir, "events.jsonl")
     non_progress_passes = 0
     previous_progress_key = None
+    guard_escalations = 0
     n = 1
     while limit is None or n <= limit:
         rec, state = _calculate_kernel_pass(state, impls, pass_number=n)
@@ -605,18 +621,49 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
         else:
             non_progress_passes = 0
             previous_progress_key = progress_key
+            guard_escalations = 0
         route = rec.route.route if rec.route else "stop_unprofitable"
         if route in ("stop_success", "stop_unprofitable"):
             break
         if (non_progress_passes >= _MAX_NON_PROGRESS_PASSES
                 and route in ("continue", "retry", "repair")):
-            records.append(_non_progress_record(
-                n, non_progress_passes, route))
-            if events_path:
-                with open(events_path, "a") as fh:
-                    fh.write(json.dumps(records[-1].to_event(),
-                                        default=str) + "\n")
-            break
+            # Escalation ladder before any honest stop, like a second set of
+            # eyes: first reframe in place with failure memory, then restart
+            # the practitioner fresh while keeping the documented failures,
+            # and only then stop with the exact reason. Genuine progress
+            # anywhere resets the ladder; escalation alone does not.
+            guard_escalations += 1
+            non_progress_passes = 0
+            if guard_escalations == 1:
+                records.append(_non_progress_record(
+                    n, "soft_reset", route))
+                state = state.derive(
+                    failures=state.failures + (
+                        f"pass {n}: no measurable progress while routing "
+                        f"{route!r}; soft reset reframed the approach",),
+                    last_route="soft_reset")
+                if events_path:
+                    _append_event(events_path, records[-1])
+            elif guard_escalations == 2:
+                records.append(_non_progress_record(
+                    n, "cold_restart", route))
+                state = PractitionerState(
+                    spec=spec, version=state.version,
+                    facts=dict(spec.seed_facts),
+                    failures=state.failures + (
+                        f"pass {n}: reframing did not restore progress; "
+                        "cold restart with documented failures",),
+                    resets_used=state.resets_used + 1,
+                    last_route="cold_restart")
+                if events_path:
+                    _append_event(events_path, records[-1])
+            else:
+                records.append(_non_progress_record(
+                    n, "stop_unprofitable", route,
+                    consecutive=_MAX_NON_PROGRESS_PASSES))
+                if events_path:
+                    _append_event(events_path, records[-1])
+                break
         if route == "cold_restart":
             # a whole new person: only the objective, constraints, criteria —
             # plus the documented failures (never silently erased).
@@ -1100,9 +1147,10 @@ def self_test() -> dict:
           "grounding+prepare skipped this pass and recorded; skipping verify "
           "(required) is refused; plan_skip_next_pass sets it for the route node")
 
-    # Non-progress guard: a run that always routes continue while producing
-    # no new facts, artifacts, or results must terminate honestly, and a run
-    # that produces fresh evidence every pass must never be cut by the guard.
+    # Non-progress guard escalation ladder: a run that always routes
+    # continue while producing no new facts or results must first soft-reset,
+    # then cold-restart with documented failures, and only then stop
+    # honestly; a run with fresh evidence every pass must never be cut.
     def _stuck_route(_state, _rec):
         return (RouteDecision("continue", "model claims progress"),
                 _state)
@@ -1116,11 +1164,21 @@ def self_test() -> dict:
     validate_impls(stuck_impls)
     stuck_run = _calculate_kernel_passes(KernelRunRequest(
         spec=ProblemSpec(objective="stuck"), impls=stuck_impls))
-    check("a_non_progressing_run_stops_honestly",
+    escalation_present = any(
+        "escalating with soft_reset"
+        in str(getattr(item.route, "reason", ""))
+        for item in stuck_run.get("records", ())
+        if isinstance(item, PassRecord))
+    restart_present = any(
+        "escalating with cold_restart"
+        in str(getattr(item.route, "reason", ""))
+        for item in stuck_run.get("records", ())
+        if isinstance(item, PassRecord))
+    check("a_non_progressing_run_escalates_then_stops_honestly",
           stuck_run["final_route"] == "stop_unprofitable"
-          and stuck_run["passes"] <= _MAX_NON_PROGRESS_PASSES + 2,
-          f"terminated after {stuck_run['passes']} passes with "
-          f"{stuck_run['final_route']} instead of churning forever")
+          and escalation_present and restart_present,
+          f"terminated after {stuck_run['passes']} passes; soft reset and "
+          "cold restart both attempted and recorded before the honest stop")
 
     def _growing_act(state, _plan):
         state.facts[f"grown:{len(state.facts)}"] = True

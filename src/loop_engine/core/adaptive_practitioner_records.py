@@ -443,6 +443,7 @@ class AdaptivePractitionerRequest:
     allow_source_materialization_to_model: bool = False
     granularity_profile: str = "governed_semantic"
     persist_run_history: bool = True
+    trace_model_io: bool = False
 
     def __post_init__(self) -> None:
         if not self.task.strip():
@@ -961,15 +962,19 @@ class AdaptiveRunServices:
                 output_schema_digest=hashlib.sha256(
                     request.output_contract.encode("utf-8")).hexdigest())
             for transport_attempt in range(1, _MAXIMUM_TRANSPORT_ATTEMPTS + 1):
-                self.publish(
-                    "model.step.started", step=request.step_id,
-                    objective=request.objective[:160],
-                    format_attempt=format_attempt,
-                    transport_attempt=transport_attempt,
-                    prompt_digest=snapshot["prompt_digest"],
-                    prompt_bytes=len(assembled.prompt),
-                    output_schema_digest=hashlib.sha256(
-                        request.output_contract.encode("utf-8")).hexdigest())
+                trace_event = {
+                    "step": request.step_id,
+                    "objective": request.objective[:160],
+                    "format_attempt": format_attempt,
+                    "transport_attempt": transport_attempt,
+                    "prompt_digest": snapshot["prompt_digest"],
+                    "prompt_bytes": len(assembled.prompt),
+                    "output_schema_digest": hashlib.sha256(
+                        request.output_contract.encode("utf-8")).hexdigest(),
+                }
+                if self.request.trace_model_io:
+                    trace_event["prompt_text"] = assembled.prompt
+                self.publish("model.step.started", **trace_event)
                 try:
                     text = self.model_session.invoke(
                         ModelInvocationRequest(
@@ -995,6 +1000,13 @@ class AdaptiveRunServices:
                     time.sleep(2 ** (transport_attempt - 1))
             contract_digest = hashlib.sha256(
                 request.output_contract.encode("utf-8")).hexdigest()
+            if self.request.trace_model_io:
+                self.publish(
+                    "model.step.raw_output", step=request.step_id,
+                    format_attempt=format_attempt,
+                    output_digest=hashlib.sha256(
+                        text.encode("utf-8")).hexdigest(),
+                    output_text=text)
             admitted = admit_model_response_as_loop(
                 ModelResponseAdmissionRequest(
                     text, "inline:" + contract_digest, contract_digest),
@@ -1002,15 +1014,20 @@ class AdaptiveRunServices:
             value = admitted.value
             if value is not None:
                 _preview = json.dumps(
-                    value, default=str, sort_keys=True)[:480]
+                    value, default=str, sort_keys=True)
+                completed_event = {
+                    "step": request.step_id,
+                    "format_attempt": format_attempt,
+                    "transport_attempt": transport_attempt,
+                    "output_digest": admitted.raw_digest,
+                    "admitted_strategy": admitted.strategy,
+                    "output_bytes": len(_preview),
+                }
+                completed_event["output_preview"] = (
+                    _preview if self.request.trace_model_io
+                    else _preview[:480])
                 self.publish(
-                    "model.step.completed", step=request.step_id,
-                    format_attempt=format_attempt,
-                    transport_attempt=transport_attempt,
-                    output_digest=admitted.raw_digest,
-                    admitted_strategy=admitted.strategy,
-                    output_bytes=len(_preview),
-                    output_preview=_preview)
+                    "model.step.completed", **completed_event)
                 if admitted.strategy != "strict_json":
                     self.publish(
                         "model.step.output_repaired", step=request.step_id,
