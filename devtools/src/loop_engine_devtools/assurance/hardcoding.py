@@ -304,7 +304,8 @@ def _is_sql(value: Any) -> bool:
 def _is_test_or_example(path: str) -> bool:
     parts = Path(path).parts
     name = Path(path).name
-    return (any(part in {"tests", "examples", "benchmarks", "fixtures"}
+    return (any(part in {"tests", "examples", "benchmarks", "fixtures",
+                         "kaggle"}
                 for part in parts)
             or name.startswith(("test_", "_self_test", "_checks"))
             or name.endswith(("_test.py", "_checks.py")))

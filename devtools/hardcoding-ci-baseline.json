@@ -1,6 +1,6 @@
 {
   "blocking_threshold": "high",
-  "finding_count": 9688,
+  "finding_count": 9689,
   "findings": [
     {
       "finding_id": "hardcoding.25cc39aa91e6b8f174700730",
@@ -500,6 +500,10 @@
     },
     {
       "finding_id": "hardcoding.d0731e7aeffbd170f0b945ae",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.2866f1d1d6d5008c9c8c492b",
       "severity": "medium"
     },
     {
@@ -38755,7 +38759,7 @@
       "severity": "medium"
     }
   ],
-  "repository_snapshot_id": "hardcoding_source.sha256_f937c45a33a1bf8c00f611393801317b6beb33294e6ef4204c959585929f6eb3",
+  "repository_snapshot_id": "hardcoding_source.sha256_e4333ad3fb28b8480879f792d8f8e1bfb3b88cea7a579fd0f2df8c7658877cae",
   "schema": "hardcoding_ci_baseline/v1",
-  "source_audit_id": "hardcoding_audit.sha256_83b2c055f60011e5bbcc48dc99cf1c2ef2dc7d2583801e1e9f064a06787d2ef7"
+  "source_audit_id": "hardcoding_audit.sha256_764716b6171286d4c9ce27a81e0ae13ec81cd554ac75281e833e406f91c59bd4"
 }
