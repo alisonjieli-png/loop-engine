@@ -12,7 +12,7 @@ import ast
 import hashlib
 import json
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path, PurePosixPath
 
 from ..loop.effect_approval import (
@@ -496,7 +496,15 @@ def _approve_exact(operations, plan, authority) -> str:
 def execute_generated_project(
         request: GeneratedProjectExecutionRequest,
         context: GeneratedProjectExecutionContext) -> dict:
-    """Validate, write, run, and inspect one generated project attempt."""
+    """Validate, write, run, and inspect one generated project attempt.
+
+    Backend selection prefers the full Docker OS sandbox. When the Docker
+    command is absent, execution falls back to the restricted local backend
+    with the same file boundary, command allowlist, and exact per-effect
+    approvals. The local fallback refuses dependency-network commands
+    because a host process is not an operating-system sandbox, so the
+    network-policy rule stays stronger, not weaker.
+    """
     root = Path(request.workspace_root).expanduser().resolve()
     root.mkdir(parents=True, exist_ok=True)
     parent = context.parent_loop
@@ -508,16 +516,57 @@ def execute_generated_project(
                 memory="4g", cpus=2.0, pids=256,
                 temporary_bytes=1024 * 1024 * 1024))
 
-    def operation_service(network_access: bool):
-        spec = WorkspaceSpec(
-            workspace_id=f"generated-{request.manifest.project_id}",
-            root=str(root), backend_kind="docker", execution_enabled=True,
-            allowed_commands=ALLOWED_PYTHON_EXECUTABLES,
-            max_file_bytes=16 * 1024 * 1024,
-            network_access=network_access)
-        backend_value = DockerWorkspace(spec, declaration)
-        return backend_value, WorkspaceOperationService(
-            backend_value, approvals=approvals, runtime=runtime)
+    docker_spec = WorkspaceSpec(
+        workspace_id=f"generated-{request.manifest.project_id}",
+        root=str(root), backend_kind="docker", execution_enabled=True,
+        allowed_commands=ALLOWED_PYTHON_EXECUTABLES,
+        max_file_bytes=16 * 1024 * 1024)
+    docker_backend = DockerWorkspace(docker_spec, declaration)
+    docker_availability = docker_backend.availability()
+    using_docker = docker_availability.available
+    if using_docker:
+        def operation_service(network_access: bool):
+            spec = WorkspaceSpec(
+                workspace_id=docker_spec.workspace_id,
+                root=str(root), backend_kind="docker", execution_enabled=True,
+                allowed_commands=ALLOWED_PYTHON_EXECUTABLES,
+                max_file_bytes=16 * 1024 * 1024,
+                network_access=network_access)
+            backend_value = DockerWorkspace(spec, declaration)
+            return backend_value, WorkspaceOperationService(
+                backend_value, approvals=approvals, runtime=runtime)
+        sandbox_record = {
+            "backend_kind": "docker",
+            "image": request.image,
+            "network_policy": "dependency_setup_only",
+        }
+        fallback_note = None
+    else:
+        from .workspace_local import RestrictedLocalWorkspace
+
+        def operation_service(network_access: bool):
+            spec = WorkspaceSpec(
+                workspace_id=docker_spec.workspace_id,
+                root=str(root), backend_kind="restricted_local",
+                execution_enabled=True,
+                allowed_commands=ALLOWED_PYTHON_EXECUTABLES,
+                max_file_bytes=16 * 1024 * 1024,
+                network_access=False)
+            backend_value = RestrictedLocalWorkspace(spec)
+            return backend_value, WorkspaceOperationService(
+                backend_value, approvals=approvals, runtime=runtime)
+        sandbox_record = {
+            "backend_kind": "restricted_local",
+            "image": "",
+            "network_policy": "no_network_host_execution",
+            "fallback_reason_code": docker_availability.reason_code,
+        }
+        fallback_note = (
+            "Docker was unavailable so generated code ran in the restricted "
+            "local backend with the same file boundary and command allowlist. "
+            "Host commands are not an operating-system sandbox: dependency "
+            "network commands were refused and verification evidence carries "
+            "this limitation.")
 
     backend, operations = operation_service(False)
     availability = backend.availability()
@@ -562,6 +611,31 @@ def execute_generated_project(
         if command.network_access and not request.authority.allow_network_reads:
             raise PermissionError(
                 "task-build authority does not permit dependency network reads")
+        if command.network_access and not using_docker:
+            commands.append({
+                "purpose": command.purpose,
+                "command_kind": command.command_kind,
+                "network_access": True,
+                "expected_exit_codes": list(command.expected_exit_codes),
+                "expectation_met": False,
+                "ok": False,
+                "argv": list(command.argv),
+                "exit_code": -1,
+                "stdout": "",
+                "stderr": "",
+                "error_code": "network_requires_docker_sandbox",
+                "error": (
+                    "the restricted local fallback has no operating-system "
+                    "sandbox, so dependency network commands are refused"),
+                "output_truncated": False,
+            })
+            break
+        if not using_docker and command.argv[0] == "python":
+            import shutil as _shutil
+            if _shutil.which("python") is None:
+                command = replace(
+                    command,
+                    argv=("python3", *command.argv[1:]))
         _command_backend, command_operations = operation_service(
             command.network_access)
         command_request = CommandRequest(
@@ -610,21 +684,20 @@ def execute_generated_project(
     deterministic_pass = bool(
         commands and all(item["expectation_met"] for item in commands)
         and all(item["verified"] for item in artifacts))
-    return {
+    record = {
         "record_type": "generated_project_execution/v1",
         "manifest_digest": request.manifest.digest,
         "workspace": backend.reference().to_dict(),
-        "sandbox": {
-            "backend_kind": "docker",
-            "image": request.image,
-            "network_policy": "dependency_setup_only",
-        },
+        "sandbox": sandbox_record,
         "writes": writes,
         "commands": commands,
         "artifacts": artifacts,
         "snapshot": snapshot.to_dict(),
         "deterministic_checks_passed": deterministic_pass,
     }
+    if fallback_note is not None:
+        record["limitations"] = (fallback_note,)
+    return record
 
 
 def self_test() -> dict:
@@ -749,6 +822,104 @@ def self_test() -> dict:
             "passed": refused,
             "detail": "refused before any effect",
         })
+
+    # Backend fallback: Docker unavailable means the restricted local backend
+    # executes the same manifest with the same allowlist and approvals, and
+    # dependency network commands become typed refusals instead of run
+    # termination.
+    import tempfile
+    import unittest.mock
+    from ..loop.recursive_loop import Loop, LoopConfig
+    from ..loop.loop_role import LoopRole, LoopRoleIdentity, LoopRelationship
+    from .runtime_observer import RuntimeObservationServices
+
+    run_manifest = GeneratedProjectManifest.from_mapping({
+        "record_type": GENERATED_PROJECT_RECORD_TYPE,
+        "project_id": "fallback_test",
+        "summary": "Run one bounded local project.",
+        "files": [{"path": "main.py", "content": "print('local ok')\n"}],
+        "commands": [{
+            "argv": ["python", "main.py"],
+            "purpose": "Run the generated project.",
+            "timeout_seconds": 30,
+        }],
+        "expected_artifacts": [{
+            "path": "main.py", "media_type": "text/x-python",
+            "minimum_bytes": 1,
+        }],
+    })
+    config = LoopConfig(
+        framework="custom", custom_steps=("execute",), power="light",
+        allowable_modes=("deterministic",),
+        preferred_modes=("deterministic",),
+        delegated_modes=("deterministic",),
+        logical_kind="execution", replay_guarantee="event_equivalent",
+        exit_condition="steps_complete")
+    parent = Loop(
+        "generated project fallback self-test", config,
+        identity=LoopRoleIdentity(LoopRole.PRACTITIONER, "practitioner.solver"),
+        relationship=LoopRelationship.starting())
+    context = GeneratedProjectExecutionContext(parent_loop=parent)
+    authority = GeneratedProjectAuthority(
+        "self-test", allow_workspace_writes=True,
+        allow_sandbox_commands=True, allow_network_reads=True)
+
+    def _docker_unavailable(spec=None, declaration=None):
+        from .workspace_contracts import BackendAvailability
+        return BackendAvailability(
+            False, "docker", "dependency_unavailable",
+            "Docker command was not found; no process was started")
+
+    with tempfile.TemporaryDirectory() as workspace_root:
+        with unittest.mock.patch.object(
+                DockerWorkspace, "availability", _docker_unavailable):
+            executed = execute_generated_project(
+                GeneratedProjectExecutionRequest(
+                    run_manifest, workspace_root, authority),
+                context)
+        local_run_ok = (
+            executed["sandbox"]["backend_kind"] == "restricted_local"
+            and executed["sandbox"]["fallback_reason_code"]
+            == "dependency_unavailable"
+            and executed["deterministic_checks_passed"] is True
+            and any(item["ok"] for item in executed["commands"])
+            and executed["limitations"]
+            and "operating-system sandbox" in executed["limitations"][0])
+        tests.append({
+            "test": "local_fallback_runs_when_docker_is_unavailable",
+            "passed": local_run_ok,
+            "detail": "same manifest, allowlist, and approvals run on the "
+                      "restricted local backend with a declared limitation",
+        })
+
+    network_manifest = GeneratedProjectManifest.from_mapping({
+        **run_manifest.to_dict(),
+        "commands": [{
+            "argv": ["python", "-m", "pip", "install", "numpy"],
+            "purpose": "Install dependencies.",
+            "timeout_seconds": 30,
+            "network_access": True,
+            "command_kind": "setup",
+        }],
+    })
+    with tempfile.TemporaryDirectory() as workspace_root:
+        with unittest.mock.patch.object(
+                DockerWorkspace, "availability", _docker_unavailable):
+            network_executed = execute_generated_project(
+                GeneratedProjectExecutionRequest(
+                    network_manifest, workspace_root, authority),
+                context)
+        network_refused = (
+            not network_executed["deterministic_checks_passed"]
+            and any(item["error_code"] == "network_requires_docker_sandbox"
+                    for item in network_executed["commands"]))
+        tests.append({
+            "test": "local_fallback_refuses_network_commands",
+            "passed": network_refused,
+            "detail": "a dependency network command becomes a typed refusal "
+                      "instead of an uncaught run failure",
+        })
+
     passed = sum(item["passed"] for item in tests)
     return {
         "record_type": "generated_project_test/v1",
