@@ -1,6 +1,6 @@
 {
   "blocking_threshold": "high",
-  "finding_count": 9681,
+  "finding_count": 9688,
   "findings": [
     {
       "finding_id": "hardcoding.25cc39aa91e6b8f174700730",
@@ -14123,6 +14123,18 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.b2299ab7e591b4321cbe8ff3",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.091b47de3546be4b912fcaec",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.833c7b1b171a8c8dc2a887a5",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.1c6c991b83c4ae52a3f375f0",
       "severity": "medium"
     },
@@ -14200,6 +14212,10 @@
     },
     {
       "finding_id": "hardcoding.cc9d1b1811ef227f69de084c",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.2f52302737f9c58a8c265187",
       "severity": "medium"
     },
     {
@@ -14343,7 +14359,7 @@
       "severity": "medium"
     },
     {
-      "finding_id": "hardcoding.a31a41d13e5a4a9dc0bbc0c2",
+      "finding_id": "hardcoding.664656cf8570dfcde37f525b",
       "severity": "medium"
     },
     {
@@ -25431,6 +25447,10 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.8836976d3f9a3d92cd948189",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.8553d5a304f312b583cd6a82",
       "severity": "medium"
     },
@@ -25496,6 +25516,14 @@
     },
     {
       "finding_id": "hardcoding.f917541c7d724a428e92c9ef",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.4c5039a5eb3d5a85d7670da7",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.dc6fdfcb45c69467a923e46c",
       "severity": "medium"
     },
     {
@@ -38727,7 +38755,7 @@
       "severity": "medium"
     }
   ],
-  "repository_snapshot_id": "hardcoding_source.sha256_95d172b4be52aebbf58c79630bda799a23faa5e565aff47f34769657a9f5dc02",
+  "repository_snapshot_id": "hardcoding_source.sha256_f937c45a33a1bf8c00f611393801317b6beb33294e6ef4204c959585929f6eb3",
   "schema": "hardcoding_ci_baseline/v1",
-  "source_audit_id": "hardcoding_audit.sha256_3aaa7908ae5c78f8e6d2f9c262fb7c1abb9883a807855f4e11749d7d846ef686"
+  "source_audit_id": "hardcoding_audit.sha256_83b2c055f60011e5bbcc48dc99cf1c2ef2dc7d2583801e1e9f064a06787d2ef7"
 }

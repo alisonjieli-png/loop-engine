@@ -133,6 +133,7 @@ class CustomEndpoint:
     auth_scheme: str = "bearer"
     auth_header: str = ""
     stream: str = "auto"
+    tls_verification: str = "default"
 
     def __post_init__(self):
         if not self.name or not self.name.replace("_", "").isalnum():
@@ -143,6 +144,12 @@ class CustomEndpoint:
             raise EndpointError(f"wire {self.wire!r} not in {WIRE_FORMATS}")
         if self.locality not in LOCALITIES:
             raise EndpointError(f"locality must be one of {LOCALITIES}")
+        if self.tls_verification not in ("default", "skip"):
+            raise EndpointError(
+                "tls_verification must be default or skip; skip is the "
+                "explicit operator choice for an origin behind a private "
+                "certificate authority (such as a Cloudflare Origin CA on "
+                "a DNS-only hostname) and is recorded in every run")
         if self.auth_scheme not in ("bearer", "header", "none"):
             raise EndpointError(
                 "auth_scheme must be bearer, header, or none")
@@ -222,7 +229,8 @@ class CustomEndpoint:
                 "header_names": [item[0] for item in self.headers],
                 "auth_scheme": self.auth_scheme,
                 "auth_header": self.auth_header,
-                "stream": self.stream}
+                "stream": self.stream,
+                "tls_verification": self.tls_verification}
 
 
 def _request_headers(ep: CustomEndpoint) -> dict[str, str]:
@@ -235,6 +243,25 @@ def _request_headers(ep: CustomEndpoint) -> dict[str, str]:
     else:
         headers[ep.auth_header] = ep.api_key
     return headers
+
+
+def _endpoint_opener(ep: CustomEndpoint):
+    """Return an opener honoring the endpoint's TLS verification policy.
+
+    ``tls_verification: skip`` is the explicit operator choice for an
+    origin serving a private certificate authority (for example a
+    Cloudflare Origin CA on a DNS-only hostname). The choice is declared
+    on the endpoint, appears in its describe() record, and never applies
+    to any other provider.
+    """
+    if ep.tls_verification != "skip":
+        return urllib.request.build_opener()
+    import ssl
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    handler = urllib.request.HTTPSHandler(context=context)
+    return urllib.request.build_opener(handler)
 
 
 def _sse_lines(response):
@@ -318,7 +345,8 @@ def _chat_streamed(ep: CustomEndpoint, payload: dict, headers: dict,
     finish_reason = ""
     reported_model = ep.model
     usage: dict = {}
-    with urllib.request.urlopen(req, timeout=timeout) as response:
+    with _endpoint_opener(ep).open(
+            req, timeout=timeout) as response:
         for data in _sse_lines(response):
             if data == "[DONE]" or data.casefold() == "[done]":
                 break
@@ -381,7 +409,8 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                 req = urllib.request.Request(
                     ep.chat_url,
                     data=json.dumps(payload).encode(), headers=headers)
-                with urllib.request.urlopen(req, timeout=timeout) as r:
+                with _endpoint_opener(ep).open(
+                        req, timeout=timeout) as r:
                     body = json.loads(r.read())
         except urllib.error.HTTPError as e:
             detail = ""
@@ -523,7 +552,7 @@ def make_adapter(ep: CustomEndpoint):
                 "/api/tags" if ep.wire == "ollama" else "/models")
             headers = _request_headers(ep)
             try:
-                with urllib.request.urlopen(
+                with _endpoint_opener(ep).open(
                         urllib.request.Request(url, headers=headers),
                         timeout=30) as r:
                     body = json.loads(r.read())
@@ -593,7 +622,8 @@ def endpoints_from_env(value: "str | None" = None) -> list:
         unknown = set(fields) - {"name", "url", "model", "key", "wire",
                                  "locality", "max_output",
                                  "max_output_source", "evidence",
-                                 "auth_scheme", "auth_header", "stream"}
+                                 "auth_scheme", "auth_header", "stream",
+                                 "tls_verification"}
         if unknown:
             raise EndpointError(
                 f"unknown endpoint field(s) {sorted(unknown)} — refused rather "
@@ -614,6 +644,7 @@ def endpoints_from_env(value: "str | None" = None) -> list:
             auth_scheme=fields.get("auth_scheme", "bearer"),
             auth_header=fields.get("auth_header", ""),
             stream=fields.get("stream", "auto"),
+            tls_verification=fields.get("tls_verification", "default"),
             output_capability=capability,
             counts_as_evidence=fields.get("evidence", "").lower()
             in ("1", "true", "yes")))

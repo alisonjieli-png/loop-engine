@@ -188,6 +188,7 @@ class ProviderSettings:
     auth_scheme: str = "bearer"
     auth_header: str = ""
     stream: "str | bool | None" = None
+    tls_verification: str = "default"
 
     def __post_init__(self) -> None:
         if isinstance(self.maximum_output_tokens, str):
@@ -243,6 +244,9 @@ class ProviderSettings:
                 and self.maximum_output_tokens < 1):
             raise SettingsError(
                 "provider.maximum_output_tokens must be positive")
+        if self.tls_verification not in ("default", "skip"):
+            raise SettingsError(
+                "provider.tls_verification must be default or skip")
         if self.kind == "builtin" and self.provider_id not in (
                 "ollama_cloud", "mistral", "openrouter"):
             raise SettingsError(
@@ -748,7 +752,9 @@ class RuntimeSettings:
                 auth_scheme=configured.auth_scheme,
                 auth_header=configured.auth_header,
                 stream=(configured.stream if configured.stream is not None
-                        else "auto"))
+                        else "auto"),
+                tls_verification=str(
+                    configured.tls_verification or "default"))
             spec = provider_spec_from_endpoint(endpoint)
             providers.append(replace(
                 spec, credential_ref=(

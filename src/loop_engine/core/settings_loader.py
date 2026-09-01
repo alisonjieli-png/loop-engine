@@ -109,7 +109,7 @@ def _provider(value: Mapping) -> ProviderSettings:
                   "model", "wire", "locality", "counts_as_evidence",
                   "maximum_output_tokens", "maximum_output_source",
                   "purposes", "headers", "auth_scheme", "auth_header",
-                  "stream"),
+                  "stream", "tls_verification"),
            "provider")
     if not body.get("id"):
         raise SettingsError("each models.providers item needs id")
@@ -142,7 +142,8 @@ def _provider(value: Mapping) -> ProviderSettings:
                              for key, item in raw_headers.items())),
         auth_scheme=str(body.get("auth_scheme", "bearer")),
         auth_header=str(body.get("auth_header", "")),
-        stream=raw_stream)
+        stream=raw_stream,
+        tls_verification=str(body.get("tls_verification", "default")))
 
 
 def _tiers(value: Mapping, base: ModelSettings) -> tuple[ModelTier, ...]:
