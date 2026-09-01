@@ -60,6 +60,14 @@ FORM_TO_QUESTION_FAMILY = {
     "outline_to_detail": "outline_to_detail",
     "top_improvements": "top_improvements", "top_avoid": "top_avoid",
     "best_practices": "best_practices", "invert_assumptions": "inversion",
+    # General-purpose forms for unseen task shapes.
+    "state_the_unknowns": "missing_items", "cheapest_check": "evidence_needed",
+    "assumption_audit": "prerequisites", "failure_mode_map": "top_avoid",
+    "definition_check": "calibration", "smallest_first_step": "best_way",
+    "acceptance_inversion": "inversion", "resource_horizon": "calibration",
+    "reversibility": "best_practices", "stakeholder_view": "best_practices",
+    "second_order": "best_practices", "analogy_probe": "analogy",
+    "constraint_inversion": "inversion", "done_definition": "best_practices",
 }
 
 
@@ -154,6 +162,42 @@ def core_forms() -> dict:
         F("invert_assumptions", "For {task}, reverse the main assumptions one "
           "at a time. Which reversed assumption changes the plan most?",
           "comparison"),
+        # --- general-purpose forms for unseen task shapes -------------------
+        F("state_the_unknowns", "For {task}, list every fact we are missing "
+          "before we could act safely, and rank which unknown blocks the most.",
+          "list"),
+        F("cheapest_check", "For {task}, name the cheapest single check that "
+          "would most reduce the risk of a wrong result.", "proposals"),
+        F("assumption_audit", "For {task}, list every assumption the current "
+          "plan silently makes. Which one is least examined?", "list"),
+        F("failure_mode_map", "For {task}, list the distinct ways this could "
+          "fail that would each need a different fix.", "list"),
+        F("definition_check", "For {task}, which words in the goal are ambiguous, "
+          "and what exact meaning does success require for each?", "list"),
+        F("smallest_first_step", "For {task}, name the smallest action that "
+          "produces real evidence about feasibility before committing to the "
+          "full approach.", "proposals"),
+        F("acceptance_inversion", "For {task}, what would a result have to show "
+          "for us to REJECT it as wrong or incomplete? State the rejection test "
+          "first.", "list"),
+        F("resource_horizon", "For {task}, what time, access, data, or budget "
+          "does each candidate approach actually require? Where is the "
+          "estimate least certain?", "comparison"),
+        F("reversibility", "For {task}, which candidate actions are hard to "
+          "undo if they turn out wrong, and what smaller reversible step "
+          "replaces each?", "comparison"),
+        F("stakeholder_view", "For {task}, who or what consumes the result, and "
+          "what would make it useless to them even if technically correct?",
+          "list"),
+        F("second_order", "For {task}, if this succeeds, what new problem does "
+          "it create next? Name the follow-on work it forces.", "list"),
+        F("analogy_probe", "For {task}, name a solved problem elsewhere with the "
+          "same structure and say which part of its solution transfers.", "proposals"),
+        F("constraint_inversion", "For {task}, which stated constraint is "
+          "actually optional, and which unstated constraint binds hardest?",
+          "comparison"),
+        F("done_definition", "For {task}, state the exact observable condition "
+          "that proves the work is complete — before starting.", "list"),
     ]
     return {f.name: f for f in forms}
 

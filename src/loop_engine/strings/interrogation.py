@@ -109,16 +109,28 @@ def interrogation_bank() -> list:
            "This dataset looks noisy — how do we address it so the solution is "
            "stable?", "estimate label/measurement noise; robust losses; "
            "denoising; repeated CV variance", "code"),
-        _q("noise_and_stability", "plateau_vs_spike",
-           "Is this a thick stable plateau or a fragile spike (would it survive a "
-           "seed/fold/feature perturbation)?", "sensitivity sweep over seeds, "
-           "folds, feature subsets; report the spread", "code"),
-        # --- data quality (errors in the splits) --------------------------
-        _q("data_quality", "split_errors",
-           "Are there errors in the training, test, and CV data — should we "
-           "streamline it?", "schema + range + duplicate + type audit across "
-           "splits; label spot-checks", "code"),
-        _q("data_quality", "cross_split_leakage",
+         _q("noise_and_stability", "plateau_vs_spike",
+            "Is this a thick stable plateau or a fragile spike (would it survive a "
+            "seed/fold/feature perturbation)?", "sensitivity sweep over seeds, "
+            "folds, feature subsets; report the spread", "code"),
+        _q("noise_and_stability", "sensitivity",
+           "Which single input change moves the result most, and is that "
+           "dependence acceptable?", "one-at-a-time input perturbation; rank "
+           "inputs by result change", "code"),
+         # --- data quality (errors in the splits) --------------------------
+         _q("data_quality", "split_errors",
+            "Are there errors in the training, test, and CV data — should we "
+            "streamline it?", "schema + range + duplicate + type audit across "
+            "splits; label spot-checks", "code"),
+        _q("data_quality", "label_errors",
+           "Are any labels themselves wrong, and would fixing them change the "
+           "conclusion?", "manual spot-check a labeled sample against the source; "
+           "estimate the label error rate", "code"),
+        _q("data_quality", "streamlining",
+           "Could the data be simplified without losing the signal we rely on?",
+           "measure result change when dropping redundant columns, constants, and "
+           "duplicate rows", "code"),
+         _q("data_quality", "cross_split_leakage",
            "Is anything leaking across train/test/CV (identity, time, target "
            "proxy)?", "group/time-aware split audit; near-duplicate detection "
            "across splits", "code"),
@@ -126,29 +138,73 @@ def interrogation_bank() -> list:
         _q("error_patterns", "systematic_bias",
            "Are the errors systematic (a segment the model consistently gets "
            "wrong)?", "error rate by segment/feature bin; slice analysis", "code"),
-        _q("error_patterns", "errors_of_errors",
-           "Are there patterns within the errors — and within the errors OF the "
-           "errors (meta-structure)?", "model the residual, then model the "
-           "residual of that; look for repeated structure", "either"),
-        # --- adversarial review (for solving AND improvement) -------------
-        _q("adversarial_review", "best_vs_worst",
-           "Is this the BEST way to solve it? What would the WORST way look like, "
-           "and are we accidentally near it?", "compare against strong and naive "
-           "baselines; rank approaches", "either"),
-        _q("adversarial_review", "preventable_failures",
-           "Were there errors, and what would have PREVENTED them? What string or "
-           "code intelligence would have helped?", "trace the failure to its "
-           "earliest cause; name the missing reusable asset", "llm"),
-        # --- cross-domain --------------------------------------------------
-        _q("cross_domain", "unrelated_domain_lessons",
-           "What can we learn from a completely different domain that faced an "
-           "analogous problem?", "research analogous problems in other fields; map "
-           "the transferable structure", "llm"),
-        _q("cross_domain", "transfer",
-           "Is there a theory or method from an unrelated project that applies "
-           "here?", "retrieve prior runs across domains; test the analogy", "llm"),
-        # --- integration (distillation back into the library) -------------
-        _q("integration", "as_node",
+         _q("error_patterns", "errors_of_errors",
+            "Are there patterns within the errors — and within the errors OF the "
+            "errors (meta-structure)?", "model the residual, then model the "
+            "residual of that; look for repeated structure", "either"),
+        _q("error_patterns", "error_clusters",
+           "Do the errors cluster into a small number of repeating types that one "
+           "targeted fix would remove?", "cluster failures by message, failing "
+           "input shape, and step; count the share each cluster covers", "code"),
+         # --- generalization (does it hold beyond the sample?) ---------------
+        _q("generalization", "train_cv_gap",
+           "Is the gap between training and cross-validation performance a real "
+           "signal or a measurement artifact?", "repeat CV with several seeds and "
+           "folds; report the spread of the gap", "code"),
+        _q("generalization", "distribution_shift",
+           "How would this result behave on inputs from a different time, source, "
+           "or population than the ones we tested?", "profile feature drift between "
+           "the development sample and any newer sample; test on the shifted "
+           "slice", "code"),
+        _q("generalization", "overfit",
+           "Which parts of the result depend on details of THIS sample rather than "
+           "on the underlying problem?", "ablate features and parameters; check "
+           "which removals barely change the outcome", "either"),
+         # --- adversarial review (for solving AND improvement) -------------
+         _q("adversarial_review", "best_vs_worst",
+            "Is this the BEST way to solve it? What would the WORST way look like, "
+            "and are we accidentally near it?", "compare against strong and naive "
+            "baselines; rank approaches", "either"),
+         _q("adversarial_review", "preventable_failures",
+            "Were there errors, and what would have PREVENTED them? What string or "
+            "code intelligence would have helped?", "trace the failure to its "
+            "earliest cause; name the missing reusable asset", "llm"),
+        _q("adversarial_review", "missing_intelligence",
+           "What did we NOT know when this result was accepted, and which missing "
+           "fact could flip the conclusion?", "list the assumptions the acceptance "
+           "rested on; name the single most load-bearing unknown", "llm"),
+         # --- cross-domain --------------------------------------------------
+        _q("cross_domain", "analogies",
+           "Which solved problem in another field has the same structure as this "
+           "one, and what part of its solution transfers?", "state this problem's "
+           "structure abstractly; search for structural matches in other domains", "llm"),
+         _q("cross_domain", "unrelated_domain_lessons",
+            "What can we learn from a completely different domain that faced an "
+            "analogous problem?", "research analogous problems in other fields; map "
+            "the transferable structure", "llm"),
+         _q("cross_domain", "transfer",
+            "Is there a theory or method from an unrelated project that applies "
+            "here?", "retrieve prior runs across domains; test the analogy", "llm"),
+         # --- decomposition (splitting the problem well) ---------------------
+        _q("decomposition", "sub_models",
+           "Would the problem become easier if split into independently solvable "
+           "sub-problems, each with its own verifiable output?", "draft a split "
+           "where each part has a checkable contract; test the parts separately", "either"),
+        _q("decomposition", "ensembles",
+           "Would several diverse weaker approaches, combined, beat one strong "
+           "approach here?", "run diverse simple approaches; test a vote or stack "
+           "against the single best", "code"),
+        _q("decomposition", "staging",
+           "Is there a natural order of stages where an early cheap stage filters "
+           "or narrows the work of a later expensive stage?", "measure per-stage "
+           "cost; check whether a cheap first stage removes most inputs", "code"),
+         # --- integration (distillation back into the library) -------------
+        _q("integration", "as_string",
+           "Should this finding become a stored question, note template, or "
+           "guidance string instead of being answered from scratch every time?",
+           "check whether the finding generalizes beyond this task; if yes, name "
+           "the exact string kind", "either"),
+         _q("integration", "as_node",
            "Could answering this repeatedly become a deterministic/semi-"
            "deterministic code node instead of an LLM call?", "check if the answer "
            "is a computed measure; if so, author a node", "either"),

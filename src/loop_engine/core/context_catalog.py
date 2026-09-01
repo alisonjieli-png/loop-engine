@@ -50,9 +50,16 @@ def build_context_records(*, include_candidates: bool = False) -> list:
                             source=category))
 
     from ..strings.interrogation import interrogation_bank
-    for index, item in enumerate(interrogation_bank()):
+    seen_interrogation_ids: dict[str, int] = {}
+    for item in interrogation_bank():
+        slug = f"{item.category}.{item.subcategory}" if item.subcategory \
+            else item.category
+        occurrence = seen_interrogation_ids.get(slug, 0)
+        seen_interrogation_ids[slug] = occurrence + 1
+        record_id = f"interrogation.{slug}" if not occurrence \
+            else f"interrogation.{slug}.{occurrence}"
         add(StoreRecord(
-            f"interrogation.{index}", "question", str(item.question),
+            record_id, "question", str(item.question),
             body={"role": "question", "maturity": "registered",
                   "how_to_answer": item.how_to_answer,
                   "answerable_by": item.answerable_by,

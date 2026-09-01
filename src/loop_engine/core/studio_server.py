@@ -317,7 +317,7 @@ def _strings_inventory() -> dict:
     from ..loop.loop_templates import template_records
     from ..strings.solution_shaping import solution_shaping_pack
     from ..code_nodes.measurement import measurement_pack
-    from ..strings.interrogation import interrogation_bank
+    from ..strings.interrogation import interrogation_bank as _interrogation_bank
     from ..code_nodes.guidance_ledger import BOOTSTRAP_GUIDANCE
     from ..code_nodes.string_foundry import (improvement_seed_records,
                                              load_candidate_bank)
@@ -337,10 +337,18 @@ def _strings_inventory() -> dict:
         for s in getattr(bank, "_by_id", {}).values():
             add(f"{src}.{getattr(s, 'string_id', id(s))}", s.kind, s.text,
                 src, "", getattr(s, "maturity", "registered"), src)
-    for i, q in enumerate(interrogation_bank()):
-        add(f"interrogation.{i}", getattr(q, "kind", "question"),
-            getattr(q, "text", q), "interrogation", "",
-            getattr(q, "maturity", "registered"), "interrogation")
+    from ..strings.interrogation import interrogation_bank as _interrogation_bank
+    seen_interrogation_ids: dict[str, int] = {}
+    for q in _interrogation_bank():
+        slug = f"{q.category}.{q.subcategory}" if q.subcategory \
+            else q.category
+        occurrence = seen_interrogation_ids.get(slug, 0)
+        seen_interrogation_ids[slug] = occurrence + 1
+        record_id = f"interrogation.{slug}" if not occurrence \
+            else f"interrogation.{slug}.{occurrence}"
+        add(record_id, "question",
+            q.question, "interrogation", q.subcategory or q.category,
+            "registered", "interrogation_bank")
     for g in BOOTSTRAP_GUIDANCE:
         add(f"guidance.{g['key']}", "guidance", g["text"], "guidance", "",
             "registered", "guidance_ledger")
