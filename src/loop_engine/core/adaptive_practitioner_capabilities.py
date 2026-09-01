@@ -34,8 +34,8 @@ from .web_fetch import WebFetchAuthority, WebFetchContext, WebFetchRequest
 from .web_search import (
     WebSearchAuthority, WebSearchContext, WebSearchRequest)
 from .adaptive_practitioner_source import (
-    inspectable_source_files, source_inspection_model_view,
-    source_inspection_operation)
+    _resolve_requested_paths, inspectable_source_files,
+    source_inspection_model_view, source_inspection_operation)
 
 
 @dataclass(frozen=True)
@@ -392,18 +392,23 @@ def _local_project_inputs(
     if not services.request.allow_source_materialization_to_model:
         raise PermissionError(
             "local task sources require explicit source-to-model authority")
+    available = dict(inspectable_source_files(services))
     selected_records = {}
     for inspection in services.source_inspections:
         for item in inspection.get("selected", ()):
-            relative = str(item.get("path") or "")
+            raw = str(item.get("path") or "")
+            if not raw:
+                continue
+            relative = raw if raw in available else (
+                _resolve_requested_paths([raw], available).get(raw, ""))
             if relative:
                 selected_records[relative] = str(item.get("digest") or "")
     selected_paths = tuple(selected_records)
     if not selected_paths:
         raise GeneratedProjectError(
             "local sources were supplied but the model has not selected any "
-            "through core.source.inspect")
-    available = dict(inspectable_source_files(services))
+            "through core.source.inspect; request manifest_paths from "
+            "core.source.inspect first, then select exact paths")
     missing = sorted(set(selected_paths) - set(available))
     if missing:
         raise GeneratedProjectError(
@@ -452,18 +457,20 @@ def execute_adaptive_capability(
                 limitations=(
                     "Search candidates are not evidence. Fetch a selected "
                     "source before constructing a source-dependent project.",))
-        input_artifacts = _project_inputs(services)
         try:
+            input_artifacts = _project_inputs(services)
             manifest = _project_manifest(request, services, input_artifacts)
         except (AdaptivePractitionerError, GeneratedProjectError,
-                SolutionModelError) as exc:
+                SolutionModelError, PermissionError) as exc:
             return ResultPacket(
-                objective="construct a valid executable project",
+                objective="prepare and construct a valid executable project",
                 errors=(f"{type(exc).__name__}: {str(exc)[:500]}",),
                 confidence=0.0,
                 limitations=(
-                    "The passive project candidate did not pass its contract; "
-                    "no workspace or command effect was performed.",))
+                    "The project could not be prepared from the current run "
+                    "state. Select the required local sources through "
+                    "core.source.inspect first; no workspace or command "
+                    "effect was performed.",))
         try:
             input_validation = as_practitioner_loop(
                 "validate generated project input use",

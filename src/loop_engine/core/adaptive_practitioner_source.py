@@ -68,6 +68,9 @@ def source_inspection_model_view(
             "source_count": int(inspection.get("source_count") or 0),
             "source_surface_counts": dict(sorted(surface_counts.items())),
             "source_manifest_digest": manifest_digest,
+            "manifest_paths": [
+                str(item.get("path") or "") for item in manifest
+                if str(item.get("path") or "")],
             "candidates": list(inspection.get("candidates") or ()),
             "selected": selected,
             "contents_included": bool(inspection.get("contents_included")),
@@ -113,6 +116,46 @@ def inspectable_source_files(
     return tuple(resolved)
 
 
+def _resolve_requested_paths(
+        requested: list[str], by_path: dict[str, Path]) -> dict[str, str]:
+    """Resolve one admitted path for each requested path.
+
+    A requested path may be the exact admitted relative path, one of its
+    suffixes such as the basename, or an absolute path inside one admitted
+    source root. Every form resolves to the same admitted file so a caller
+    never needs to guess one exact spelling. Ambiguous basenames resolve to
+    no file and are reported as unknown.
+    """
+    resolved: dict[str, str] = {}
+    exact = set(by_path)
+    basenames: dict[str, list[str]] = {}
+    for relative in by_path:
+        basenames.setdefault(Path(relative).name, []).append(relative)
+    for raw in requested:
+        requested_path = Path(raw)
+        if raw in exact and raw not in resolved:
+            resolved[raw] = raw
+            continue
+        absolute = str(requested_path.expanduser().resolve())
+        matches = [relative for relative, path in by_path.items()
+                   if str(path) == absolute]
+        if len(matches) == 1 and matches[0] not in resolved:
+            resolved[raw] = matches[0]
+            continue
+        name = requested_path.name
+        same_name = [relative for relative in basenames.get(name, ())
+                     if relative not in resolved]
+        if len(same_name) == 1:
+            resolved[raw] = same_name[0]
+            continue
+        suffix_matches = [relative for relative in by_path
+                          if relative.endswith(f"/{raw}") and raw not in exact
+                          and relative not in resolved]
+        if len(suffix_matches) == 1:
+            resolved[raw] = suffix_matches[0]
+    return resolved
+
+
 def source_inspection_operation(
         arguments: dict, services: AdaptiveRunServices) -> dict:
     """Return an exact manifest and deterministic relevance band."""
@@ -129,10 +172,12 @@ def source_inspection_operation(
         raise AdaptivePractitionerError(
             "source inspection include_contents must be boolean")
     by_path = {relative: path for relative, path in files}
-    unknown_paths = sorted(set(requested) - set(by_path))
+    resolved_requested = _resolve_requested_paths(requested, by_path)
+    unknown_paths = sorted(set(requested) - set(resolved_requested))
     if unknown_paths:
         raise AdaptivePractitionerError(
-            f"source inspection requested unknown paths {unknown_paths}")
+            f"source inspection requested unknown paths {unknown_paths}"
+            "; inspect manifest_paths for the exact admitted paths")
     query_terms = tuple(dict.fromkeys(
         re.findall(r"[a-z0-9_]{2,}", query.lower())))
     text_by_path = {}
@@ -171,9 +216,16 @@ def source_inspection_operation(
         } for item in sorted(
             relevance_band,
             key=lambda item: (-item[0], -item[1], item[2]["path"]))]
-    selected_paths = list(requested)
+    selected_paths = [resolved_requested[item] for item in requested]
     if not selected_paths and include_contents:
         selected_paths = [item["path"] for item in candidates]
+    seen_selected: set[str] = set()
+    deduplicated = []
+    for relative in selected_paths:
+        if relative not in seen_selected:
+            seen_selected.add(relative)
+            deduplicated.append(relative)
+    selected_paths = deduplicated
     selected = []
     for relative in selected_paths:
         path = by_path[relative]
@@ -242,6 +294,38 @@ def self_test() -> dict:
             and not queried["selected"]
             and "source_manifest" not in model_view[0]
             and len(model_view[0]["source_manifest_digest"]) == 64)
+        manifest_paths_visible = (
+            "source/solve_cli.py" in model_view[0]["manifest_paths"]
+            and "source/unexpected_format.py"
+            in model_view[0]["manifest_paths"]
+            and all("content" not in item for item in queried["selected"]))
+        alias_selected = source_inspection_operation({
+            "paths": ["unexpected_format.py"], "include_contents": False},
+            services)
+        exact_alias = (
+            len(alias_selected["selected"]) == 1
+            and alias_selected["selected"][0]["path"]
+            == "source/unexpected_format.py")
+        resolved = _resolve_requested_paths(
+            ["unexpected_format.py",
+             "source/unexpected_format.py",
+             str(source_root / "unexpected_format.py")],
+            {"source/unexpected_format.py": source_file})
+        alias_forms_agree = (
+            len(set(resolved.values())) == 1
+            and set(resolved.values()) == {"source/unexpected_format.py"})
+        ambiguous_root = Path(directory) / "second"
+        ambiguous_root.mkdir()
+        (ambiguous_root / "unexpected_format.py").write_text("x = 1\n",
+                                                             encoding="utf-8")
+        ambiguous_services = SimpleNamespace(request=SimpleNamespace(
+            source_refs=(str(source_root), str(ambiguous_root)),
+            allow_source_materialization_to_model=True))
+        ambiguous_files = dict(inspectable_source_files(ambiguous_services))
+        ambiguous_resolved = _resolve_requested_paths(
+            ["unexpected_format.py"], ambiguous_files)
+        ambiguous_basename_refused = (
+            list(ambiguous_resolved.values()) == [])
     tests = [{
         "test": "source_inspection_returns_exact_selected_content",
         "passed": exact,
@@ -250,6 +334,21 @@ def self_test() -> dict:
         "test": "source_query_model_view_omits_complete_manifest",
         "passed": bounded,
         "detail": "generated evidence is excluded from query candidates",
+    }, {
+        "test": "model_view_exposes_manifest_paths_without_bodies",
+        "passed": manifest_paths_visible,
+        "detail": "exact admitted paths are visible; file bodies stay hidden "
+                  "until selection",
+    }, {
+        "test": "basename_and_absolute_paths_resolve_to_admitted_files",
+        "passed": exact_alias and alias_forms_agree,
+        "detail": "basename, exact, and absolute forms select the same "
+                  "admitted source",
+    }, {
+        "test": "ambiguous_basename_is_refused_not_guessed",
+        "passed": ambiguous_basename_refused,
+        "detail": "a basename matching several admitted files resolves to "
+                  "nothing and is reported as unknown",
     }]
     return {"record_type": "adaptive_source_inspection_test/v1",
             "tests": tests, "passed": sum(item["passed"] for item in tests),

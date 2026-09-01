@@ -14,6 +14,7 @@ runtime.
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import time
 from dataclasses import asdict, dataclass, field
@@ -920,7 +921,11 @@ class AdaptiveRunServices:
                     "model.step.started", step=request.step_id,
                     objective=request.objective[:160],
                     format_attempt=format_attempt,
-                    transport_attempt=transport_attempt)
+                    transport_attempt=transport_attempt,
+                    prompt_digest=snapshot["prompt_digest"],
+                    prompt_bytes=len(assembled.prompt),
+                    output_schema_digest=hashlib.sha256(
+                        request.output_contract.encode("utf-8")).hexdigest())
                 try:
                     text = self.model_session.invoke(
                         ModelInvocationRequest(
@@ -932,7 +937,8 @@ class AdaptiveRunServices:
                         "model.step.transport_failed", step=request.step_id,
                         format_attempt=format_attempt,
                         transport_attempt=transport_attempt,
-                        error_code=exc.error_code or "model_gateway_failed")
+                        error_code=exc.error_code or "model_gateway_failed",
+                        prompt_digest=snapshot["prompt_digest"])
                     raise
             contract_digest = hashlib.sha256(
                 request.output_contract.encode("utf-8")).hexdigest()
@@ -942,6 +948,16 @@ class AdaptiveRunServices:
                 parent=owner)
             value = admitted.value
             if value is not None:
+                _preview = json.dumps(
+                    value, default=str, sort_keys=True)[:480]
+                self.publish(
+                    "model.step.completed", step=request.step_id,
+                    format_attempt=format_attempt,
+                    transport_attempt=transport_attempt,
+                    output_digest=admitted.raw_digest,
+                    admitted_strategy=admitted.strategy,
+                    output_bytes=len(_preview),
+                    output_preview=_preview)
                 if admitted.strategy != "strict_json":
                     self.publish(
                         "model.step.output_repaired", step=request.step_id,
@@ -971,5 +987,4 @@ class AdaptiveRunServices:
             format_failure_code = admitted.failure_code
             rejected_output_digest = admitted.raw_digest
             format_attempt += 1
-        self.publish("model.step.completed", step=request.step_id)
         return value
