@@ -93,6 +93,44 @@ ADAPTIVE_CAPABILITIES = (
         "required_permissions": ["workspace_write", "sandbox_command"],
         "effects": ["writes_fs", "spawns_process"],
     },
+    {
+        "capability_ref": "core.source.profile",
+        "purpose": (
+            "Profile selected text sources deterministically: line counts, "
+            "column structure for CSV and JSON shapes, key fields, and "
+            "sample rows, without sending any content to a model."),
+        "arguments": {
+            "paths": "optional exact relative source paths; omit to profile "
+                     "every supplied source",
+            "maximum_sample_bytes": "optional positive integer owner limit",
+        },
+        "required_permissions": ["source_read"],
+        "effects": ["reads_fs"],
+    },
+    {
+        "capability_ref": "core.environment.describe",
+        "purpose": (
+            "Describe the current runtime environment deterministically: "
+            "available execution capabilities, sandbox availability, "
+            "configured providers without secrets, and task authority "
+            "grants. Effect-free discovery for orientation."),
+        "arguments": {},
+        "required_permissions": [],
+        "effects": [],
+    },
+    {
+        "capability_ref": "core.intelligence.search",
+        "purpose": (
+            "Search the four persistent intelligence layers and prior Run "
+            "History summaries through the existing retrieval projections. "
+            "Results are references and candidates, never authority."),
+        "arguments": {
+            "query": "one retrieval query",
+            "kinds": "optional list of record kinds to filter",
+        },
+        "required_permissions": [],
+        "effects": [],
+    },
 )
 NEXT_ACTION_KINDS = (
     "ASK_USER", "REQUEST_AUTHORITY", "RETRIEVE_INTELLIGENCE",
@@ -106,6 +144,12 @@ AMBIGUITY_STATES = (
     "UNKNOWN", "AMBIGUOUS", "DELEGATED_CHOICE", "DEFAULTABLE_CHOICE",
     "DERIVED_VALUE", "RESEARCH_REQUIRED", "USER_CLARIFICATION_REQUIRED",
     "AUTHORITY_REQUIRED", "BLOCKED")
+# Transport failure classes that may be retried at the governed model-step
+# boundary. Permanent classes (authentication, payment, invalid request,
+# rate limit policy, model not found) are never retried on the same route.
+_RETRYABLE_TRANSPORT_ERRORS = frozenset({
+    "network_unreachable", "provider_unavailable", "timeout"})
+_MAXIMUM_TRANSPORT_ATTEMPTS = 3
 class AdaptivePractitionerError(ValueError):
     """The adaptive Practitioner could not satisfy a typed runtime contract."""
 @dataclass(frozen=True)
@@ -916,7 +960,7 @@ class AdaptiveRunServices:
                 deterministic_attempt_status=self.deterministic_attempt.status,
                 output_schema_digest=hashlib.sha256(
                     request.output_contract.encode("utf-8")).hexdigest())
-            for transport_attempt in (1,):
+            for transport_attempt in range(1, _MAXIMUM_TRANSPORT_ATTEMPTS + 1):
                 self.publish(
                     "model.step.started", step=request.step_id,
                     objective=request.objective[:160],
@@ -933,13 +977,22 @@ class AdaptiveRunServices:
                             temperature=assembled.temperature), owner)
                     break
                 except SolutionModelError as exc:
+                    error_code = exc.error_code or "model_gateway_failed"
                     self.publish(
                         "model.step.transport_failed", step=request.step_id,
                         format_attempt=format_attempt,
                         transport_attempt=transport_attempt,
-                        error_code=exc.error_code or "model_gateway_failed",
+                        error_code=error_code,
                         prompt_digest=snapshot["prompt_digest"])
-                    raise
+                    retryable = error_code in _RETRYABLE_TRANSPORT_ERRORS
+                    final_attempt = (
+                        transport_attempt >= _MAXIMUM_TRANSPORT_ATTEMPTS)
+                    if not retryable or final_attempt:
+                        raise
+                    # Governed backoff: 1s, then 2s. Every retry passes
+                    # through model_session.invoke again, so every physical
+                    # request stays visible and counted in the run record.
+                    time.sleep(2 ** (transport_attempt - 1))
             contract_digest = hashlib.sha256(
                 request.output_contract.encode("utf-8")).hexdigest()
             admitted = admit_model_response_as_loop(

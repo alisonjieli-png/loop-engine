@@ -129,6 +129,7 @@ def self_test() -> dict:
         "core.asset_lifecycle",
         "core.adaptive_practitioner",
         "core.adaptive_practitioner_capabilities",
+        "core.adaptive_practitioner_orientation_capabilities",
         "core.adaptive_practitioner_result",
         "core.adaptive_practitioner_source",
         "core.adaptive_practitioner_planning",

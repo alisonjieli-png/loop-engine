@@ -43,10 +43,22 @@ def _source_surface(relative: str) -> str:
     return "other"
 
 
+_SELECTED_CONTENT_BYTE_LIMIT = 12_000
+_SELECTED_CONTENT_PER_FILE_BYTE_LIMIT = 6_000
+
+
 def source_inspection_model_view(
-        inspections: list[dict], *, include_selected_content: bool = True
+        inspections: list[dict], *, include_selected_content: bool = True,
+        selected_content_byte_limit: "int | None" = _SELECTED_CONTENT_BYTE_LIMIT,
         ) -> list[dict]:
-    """Project source evidence without replaying a repository manifest."""
+    """Project source evidence without replaying a repository manifest.
+
+    Selected bodies are bounded: each selected body contributes at most
+    ``selected_content_byte_limit // len(selected)`` bytes to the model view
+    so one selection cannot grow prompts without bound. Truncated rows are
+    marked; the full body stays available in the source inspection record
+    for deterministic project inputs.
+    """
     output = []
     for inspection in inspections:
         manifest = inspection.get("source_manifest") or ()
@@ -56,10 +68,24 @@ def source_inspection_model_view(
         surface_counts = Counter(
             str(item.get("surface") or "other") for item in manifest)
         selected = []
-        for item in inspection.get("selected") or ():
-            row = dict(item)
+        rows = [dict(item) for item in inspection.get("selected") or ()]
+        per_file_limit = selected_content_byte_limit
+        if selected_content_byte_limit is not None and rows:
+            per_file_limit = max(
+                512, selected_content_byte_limit // len(rows))
+        for row in rows:
             if not include_selected_content:
                 row.pop("content", None)
+            elif selected_content_byte_limit is not None:
+                body = row.get("content")
+                if isinstance(body, str) and len(body.encode(
+                        "utf-8")) > per_file_limit:
+                    encoded = body.encode("utf-8")[:per_file_limit]
+                    row["content"] = encoded.decode(
+                        "utf-8", errors="replace")
+                    row["content_truncated"] = True
+                    row["content_truncated_from_bytes"] = len(body.encode(
+                        "utf-8"))
             selected.append(row)
         output.append({
             "record_type": str(inspection.get("record_type") or
@@ -254,6 +280,88 @@ def source_inspection_operation(
     }
 
 
+def source_profile_operation(
+        arguments: dict, services: AdaptiveRunServices) -> dict:
+    """Profile source structure deterministically without model exposure.
+
+    Discovery stays effect-free toward the model: only counts, field names,
+    and bounded samples leave the operation, and nothing is sent to a
+    provider. A profile never selects a source or grants authority.
+    """
+    files = dict(inspectable_source_files(services))
+    requested = arguments.get("paths") or []
+    if not isinstance(requested, list) or any(
+            not isinstance(item, str) or not item.strip()
+            for item in requested):
+        raise AdaptivePractitionerError(
+            "source profile paths must be a list of non-empty text")
+    maximum_sample_bytes = arguments.get("maximum_sample_bytes") or 512
+    if (not isinstance(maximum_sample_bytes, int)
+            or isinstance(maximum_sample_bytes, bool)
+            or maximum_sample_bytes < 1):
+        raise AdaptivePractitionerError(
+            "source profile maximum_sample_bytes must be a positive integer")
+    resolved = _resolve_requested_paths(requested, files) \
+        if requested else {name: name for name in files}
+    unknown = sorted(set(requested) - set(resolved))
+    if unknown:
+        raise AdaptivePractitionerError(
+            f"source profile requested unknown paths {unknown}"
+            "; inspect manifest_paths from core.source.inspect first")
+    profiles = []
+    for raw, relative in sorted(resolved.items()):
+        path = files[relative]
+        body = path.read_bytes()
+        text = body.decode("utf-8", errors="replace")
+        lines = text.splitlines()
+        profile: dict = {
+            "path": relative,
+            "byte_count": len(body),
+            "line_count": len(lines),
+            "media_type": mimetypes.guess_type(path.name)[0] or "text/plain",
+            "structure_kind": "text",
+            "fields": [],
+            "sample": text[:maximum_sample_bytes],
+        }
+        if path.suffix.lower() == ".csv" or path.suffix.lower() == ".tsv":
+            delimiter = "\t" if path.suffix.lower() == ".tsv" else ","
+            header = lines[0] if lines else ""
+            fields = [field.strip() for field in header.split(delimiter)]
+            profile["structure_kind"] = "delimited_table"
+            profile["fields"] = fields
+            profile["data_row_count"] = max(0, len(lines) - 1)
+        elif path.suffix.lower() == ".json":
+            try:
+                parsed = json.loads(text) if text.strip() else None
+            except ValueError:
+                parsed = None
+            if isinstance(parsed, dict):
+                profile["structure_kind"] = "json_object"
+                profile["fields"] = sorted(str(key) for key in parsed)
+            elif isinstance(parsed, list):
+                profile["structure_kind"] = "json_array"
+                if parsed and isinstance(parsed[0], dict):
+                    profile["fields"] = sorted(
+                        str(key) for key in parsed[0])
+                profile["data_row_count"] = len(parsed)
+        elif path.suffix.lower() in {".jsonl", ".ndjson"}:
+            profile["structure_kind"] = "json_lines"
+            if lines:
+                try:
+                    first = json.loads(lines[0])
+                    if isinstance(first, dict):
+                        profile["fields"] = sorted(str(key) for key in first)
+                except ValueError:
+                    pass
+                profile["data_row_count"] = len(lines)
+        profiles.append(profile)
+    return {
+        "record_type": "source_profile_result/v1",
+        "profiles": profiles,
+        "profiled_count": len(profiles),
+    }
+
+
 def self_test() -> dict:
     """Prove exact selection and bounded model projection."""
     import tempfile
@@ -326,6 +434,28 @@ def self_test() -> dict:
             ["unexpected_format.py"], ambiguous_files)
         ambiguous_basename_refused = (
             list(ambiguous_resolved.values()) == [])
+        big_body = "z" * 100_000
+        big_view = source_inspection_model_view([{
+            "record_type": "source_inspection_result/v1",
+            "source_count": 1, "source_manifest": [], "candidates": [],
+            "selected": [{"path": "source/big.csv", "digest": "c" * 64,
+                          "content": big_body}],
+            "contents_included": True}])
+        big_row = big_view[0]["selected"][0]
+        bounded_selection = (
+            len(big_row["content"].encode("utf-8")) <= 12_000
+            and big_row.get("content_truncated") is True
+            and big_row.get("content_truncated_from_bytes") == 100_000)
+        unbounded_view = source_inspection_model_view([{
+            "record_type": "source_inspection_result/v1",
+            "source_count": 1, "source_manifest": [], "candidates": [],
+            "selected": [{"path": "source/tiny.csv", "digest": "d" * 64,
+                          "content": "a,b\n1,2\n"}],
+            "contents_included": True}])
+        tiny_row = unbounded_view[0]["selected"][0]
+        small_selection_untouched = (
+            tiny_row["content"] == "a,b\n1,2\n"
+            and "content_truncated" not in tiny_row)
     tests = [{
         "test": "source_inspection_returns_exact_selected_content",
         "passed": exact,
@@ -349,6 +479,12 @@ def self_test() -> dict:
         "passed": ambiguous_basename_refused,
         "detail": "a basename matching several admitted files resolves to "
                   "nothing and is reported as unknown",
+    }, {
+        "test": "selected_content_is_bounded_in_the_model_view",
+        "passed": bounded_selection and small_selection_untouched,
+        "detail": "large selections truncate to a fixed byte budget with "
+                  "explicit truncation flags; small bodies pass through "
+                  "unchanged",
     }]
     return {"record_type": "adaptive_source_inspection_test/v1",
             "tests": tests, "passed": sum(item["passed"] for item in tests),

@@ -143,6 +143,7 @@ MODULE_MAP = {
     "core": (
         "adaptive_practitioner", "adaptive_practitioner_acceptance_checks",
         "adaptive_practitioner_capabilities", "adaptive_practitioner_checks",
+        "adaptive_practitioner_orientation_capabilities",
         "adaptive_practitioner_deterministic", "adaptive_practitioner_planning",
         "adaptive_practitioner_orientation",
         "adaptive_practitioner_prompting", "adaptive_practitioner_records",

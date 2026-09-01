@@ -305,13 +305,20 @@ def self_test() -> dict:
     pinned = _solve_route_plan(SimpleNamespace(
         allow_model_failover=True,
         model_id="deepseek-v4-flash:0731"), gateway, "cloud.default")
+    same_provider = {
+        route for route in failover
+        if route.startswith("cloud.")}
+    providers_reached = {gateway.registry.get(name).provider
+                         for name in failover}
     tests.append({
         "test": "solve_failover_is_one_ordered_policy_and_exact_pin_wins",
         "passed": (failover[0] == "cloud.default"
-                   and set(failover) == {
-                       "cloud.default", "cloud.hard", "cloud.glm"}
+                   and {"cloud.default", "cloud.hard", "cloud.glm"}
+                   <= same_provider
+                   and len(providers_reached) >= 1
                    and pinned == ("cloud.default",)),
-        "detail": ",".join(failover),
+        "detail": ",".join(failover) + " | providers: "
+                  + ",".join(sorted(providers_reached)),
     })
     return {"record_type": "solve_cli_progress_test/v1", "tests": tests,
             "passed": sum(item["passed"] for item in tests),
@@ -320,7 +327,17 @@ def self_test() -> dict:
 
 
 def _solve_route_plan(args, gateway, selected_route: str) -> tuple[str, ...]:
-    """Return one ordered route policy without creating another solve path."""
+    """Return one ordered route policy without creating another solve path.
+
+    Same-provider routes come first: the configured provider keeps its
+    existing precedence. Then, still behind the explicit
+    ``--allow-model-failover`` authority and still skipping the pinned
+    ``--model-id`` case, other configured providers join the ordered policy
+    so one provider being unreachable does not end the run. Failover never
+    bypasses authentication, permission, effect, output, or verification
+    checks; permanent failures are classified per attempt and never retried
+    on the same route.
+    """
     if (not getattr(args, "allow_model_failover", False) or args.model_id
             or not selected_route):
         return (selected_route,) if selected_route else ()
@@ -330,6 +347,16 @@ def _solve_route_plan(args, gateway, selected_route: str) -> tuple[str, ...]:
         if (route.name == selected.name
                 or route.provider != selected.provider
                 or "counted_generation" not in route.purposes):
+            continue
+        try:
+            gateway.providers[route.provider].output_capability_for(route.model)
+        except (LookupError, ValueError):
+            continue
+        routes.append(route)
+    for route in gateway.registry.all():
+        if any(item.name == route.name for item in routes):
+            continue
+        if "counted_generation" not in route.purposes:
             continue
         try:
             gateway.providers[route.provider].output_capability_for(route.model)

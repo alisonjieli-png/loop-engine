@@ -360,6 +360,19 @@ class ModelGatewayResult:
 
 def _error_code(error: str) -> str:
     low = str(error).lower()
+    # Abrupt TLS termination: the endpoint, a reverse proxy, or an
+    # intervening network closed the connection before a complete
+    # HTTP/model response arrived. Transport-level, so retryable.
+    if any(marker in low for marker in (
+            "ssleoferror",
+            "eof occurred in violation of protocol",
+            "connectionreseterror",
+            "connection reset by peer",
+            "remotedisconnected",
+            "remote end closed connection",
+            "connectionaborted",
+            "brokenpipeerror")):
+        return "provider_unavailable"
     if ("output_limit_reached" in low or "max_tokens" in low
             or "maximum output" in low and "reached" in low):
         return "output_limit_reached"

@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import mimetypes
+import os
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -33,9 +34,12 @@ from .context_artifacts import ContextArtifactRef
 from .web_fetch import WebFetchAuthority, WebFetchContext, WebFetchRequest
 from .web_search import (
     WebSearchAuthority, WebSearchContext, WebSearchRequest)
+from .adaptive_practitioner_orientation_capabilities import (
+    environment_describe_operation, intelligence_search_operation)
 from .adaptive_practitioner_source import (
     _resolve_requested_paths, inspectable_source_files,
-    source_inspection_model_view, source_inspection_operation)
+    source_inspection_model_view, source_inspection_operation,
+    source_profile_operation)
 
 
 @dataclass(frozen=True)
@@ -446,6 +450,24 @@ def execute_adaptive_capability(
         input_value = arguments
         input_role = "next_action_decision/v1"
         output_role = "web_fetch_result/v1"
+    elif plan.handle == "core.source.profile":
+        operation = lambda _value, _params: source_profile_operation(
+            arguments, services)
+        input_value = arguments
+        input_role = "next_action_decision/v1"
+        output_role = "source_profile_result/v1"
+    elif plan.handle == "core.environment.describe":
+        operation = lambda _value, _params: environment_describe_operation(
+            services)
+        input_value = arguments
+        input_role = "next_action_decision/v1"
+        output_role = "environment_description/v1"
+    elif plan.handle == "core.intelligence.search":
+        operation = lambda _value, _params: intelligence_search_operation(
+            arguments, services, owner)
+        input_value = arguments
+        input_role = "next_action_decision/v1"
+        output_role = "intelligence_search_result/v1"
     elif plan.handle == "core.generated_project":
         if services.web_search_results and not services.web_results:
             return ResultPacket(
@@ -568,6 +590,35 @@ def execute_adaptive_capability(
                 f"source:{item['digest']}" for item in output["selected"]),
             confidence=1.0,
             lineage=(compiled["digest"],))
+    if plan.handle == "core.source.profile":
+        return ResultPacket(
+            objective="profile supplied source structure",
+            result=output,
+            confidence=1.0,
+            lineage=(compiled["digest"],),
+            limitations=(
+                "A structural profile is discovery evidence; it never "
+                "selects a source or grants authority.",))
+    if plan.handle == "core.environment.describe":
+        return ResultPacket(
+            objective="describe the runtime environment",
+            result=output,
+            confidence=1.0,
+            lineage=(compiled["digest"],),
+            limitations=(
+                "The environment description is effect-free discovery; "
+                "provider names appear without secrets or availability "
+                "proof.",))
+    if plan.handle == "core.intelligence.search":
+        return ResultPacket(
+            objective=str(arguments.get("query") or "intelligence search"),
+            result=output,
+            confidence=1.0,
+            lineage=(compiled["digest"],),
+            limitations=(
+                "Intelligence references are advisory candidates; they "
+                "never become active without the existing admission and "
+                "promotion paths.",))
     if plan.handle == "core.web.search":
         services.web_search_results.append(output)
         return ResultPacket(

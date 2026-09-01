@@ -1,7 +1,7 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 327,
+ "files_scanned": 328,
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "reachable_legacy_flat_paths": 0,
@@ -37,21 +37,21 @@
   "stale_current_architecture_documents": [],
   "operational_boundary_ontology": {
    "record_type": "operational_boundary_report/v2",
-   "total": 68,
-   "bound": 68,
+   "total": 69,
+   "bound": 69,
    "unbound": 0,
-   "ontology_conforming": 68,
+   "ontology_conforming": 69,
    "coverage": 1.0,
    "by_binding_kind": {
     "native_loop": 28,
     "stage_loop_tree": 1,
-    "practitioner_loop": 29,
+    "practitioner_loop": 30,
     "api_dispatch": 1,
     "template_governed": 5,
     "component_loop": 4
    },
    "by_role": {
-    "practitioner": 36,
+    "practitioner": 37,
     "intelligence": 15,
     "solution": 10
    },
@@ -67,7 +67,7 @@
     "practitioner.code_execution@1.0.0": 15,
     "practitioner.reference_nine_step@1.0.0": 2,
     "practitioner.self_improvement@1.0.0": 5,
-    "practitioner.solver@1.0.0": 6,
+    "practitioner.solver@1.0.0": 7,
     "practitioner.verifier@1.0.0": 8,
     "solution.atomic_component@1.0.0": 4,
     "solution.ensemble@1.0.0": 1,
@@ -76,8 +76,8 @@
     "solution.validator@1.0.0": 2
    },
    "by_relationship_kind": {
-    "starting": 33,
-    "spawned_by": 44,
+    "starting": 34,
+    "spawned_by": 45,
     "queried_by": 7,
     "retrieved_by": 9,
     "connected_from": 5
@@ -87,7 +87,7 @@
     "practitioner|intelligence|solution:loop.spawned_task_checkpoint.SpawnedTaskCheckpoint.spec": 2,
     "practitioner|intelligence|solution:loop.delegation_runtime.DelegationSpec.profile": 4
    },
-   "exact_profile_boundaries": 61,
+   "exact_profile_boundaries": 62,
    "dynamic_profile_boundaries": 7,
    "invalid_rows": [],
    "invalid_relationship_rows": [],
