@@ -106,7 +106,7 @@ class SolveRequest:
         default=None, repr=False, compare=False)
     project_executor: "Callable | None" = field(
         default=None, repr=False, compare=False)
-    trace_model_io: bool = False
+    quiet_model_io: bool = False
 
     def __post_init__(self) -> None:
         mode = self.interaction_mode
@@ -420,7 +420,7 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             allow_source_materialization_to_model=
                 request.allow_source_materialization_to_model,
             persist_run_history=request.save_run_history,
-            trace_model_io=request.trace_model_io),
+            quiet_model_io=request.quiet_model_io),
         AdaptivePractitionerDependencies(
             model_execution=request.model_execution,
             deterministic_resolvers=resolvers,

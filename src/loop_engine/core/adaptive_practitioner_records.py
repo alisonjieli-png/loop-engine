@@ -443,7 +443,7 @@ class AdaptivePractitionerRequest:
     allow_source_materialization_to_model: bool = False
     granularity_profile: str = "governed_semantic"
     persist_run_history: bool = True
-    trace_model_io: bool = False
+    quiet_model_io: bool = False
 
     def __post_init__(self) -> None:
         if not self.task.strip():
@@ -972,7 +972,7 @@ class AdaptiveRunServices:
                     "output_schema_digest": hashlib.sha256(
                         request.output_contract.encode("utf-8")).hexdigest(),
                 }
-                if self.request.trace_model_io:
+                if not self.request.quiet_model_io:
                     trace_event["prompt_text"] = assembled.prompt
                 self.publish("model.step.started", **trace_event)
                 try:
@@ -1000,7 +1000,7 @@ class AdaptiveRunServices:
                     time.sleep(2 ** (transport_attempt - 1))
             contract_digest = hashlib.sha256(
                 request.output_contract.encode("utf-8")).hexdigest()
-            if self.request.trace_model_io:
+            if not self.request.quiet_model_io:
                 self.publish(
                     "model.step.raw_output", step=request.step_id,
                     format_attempt=format_attempt,
@@ -1024,7 +1024,7 @@ class AdaptiveRunServices:
                     "output_bytes": len(_preview),
                 }
                 completed_event["output_preview"] = (
-                    _preview if self.request.trace_model_io
+                    _preview if not self.request.quiet_model_io
                     else _preview[:480])
                 self.publish(
                     "model.step.completed", **completed_event)

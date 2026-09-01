@@ -35,7 +35,7 @@ Check installation, settings, Docker, extensions, and provider references withou
 Run the first-use walkthrough and one deterministic Loop. Provider steps are optional.""",
     "solve": """usage: loop-engine solve (--text TASK | --file PATH) [--quickstart] [--allow-model-failover] [--unattended] [options]
 
-Perform and verify work. Quickstart uses LLM-first reasoning, asks material questions, and applies only explicitly configured numeric limits.""",
+Perform and verify work. Quickstart uses LLM-first reasoning, asks material questions, and applies only explicitly configured numeric limits. Progress traces the exact prompt and model output to stderr by default; --quiet-model-io reduces it to event summaries.""",
     "studio": """usage: loop-engine studio [--runs-dir PATH] [--port PORT]
 
 Open the local read-only interface for results, Loop activity, playback, and model calls.""",

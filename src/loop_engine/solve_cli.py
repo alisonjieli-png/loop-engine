@@ -30,9 +30,9 @@ _PROGRESS_FIELDS = (
     "model_calls_completed", "model_call_number",
     "source_inspections_completed", "project_attempts_completed",
     "elapsed_seconds",
-    # Exact-text tracing is carried only on the stderr stream, only when
-    # the user passes --trace-model-io, and never into Run History. The
-    # emitter is the sole printer; these fields flow from the flag.
+    # Exact-text tracing is carried only on the stderr stream, by default,
+    # and never into Run History. --quiet-model-io reduces the stream to
+    # event summaries; the emitter is the sole printer.
     "prompt_text", "output_text",
 )
 
@@ -169,7 +169,7 @@ def run_solve(args) -> int:
                     args.allow_source_to_model,
                 extension_snapshot=
                     extension_application.snapshot.to_dict(),
-                trace_model_io=bool(getattr(args, "trace_model_io", False)),
+                quiet_model_io=bool(getattr(args, "quiet_model_io", False)),
                 progress=_solve_progress))
 
         if args.compile_provider:
