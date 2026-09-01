@@ -506,6 +506,64 @@ def _calculate_kernel_pass(state: PractitionerState, impls: KernelImpls,
     return rec, new_state
 
 
+#: Consecutive passes with zero measurable progress before the run routes
+#: stop_unprofitable. This is a non-progress guard, not a numeric work
+#: ceiling: passes that produce new facts, artifacts, verified work, or
+#: recovery directives never count toward it.
+_MAX_NON_PROGRESS_PASSES = 3
+
+
+def _pass_progress_key(rec, state) -> tuple:
+    """Measure one pass's meaningful progress, independent of pass count.
+
+    Facts, artifacts, project attempts, failure signatures, and the routing
+    decision form the key. Two passes with identical keys made no measurable
+    progress; the guard counts them.
+    """
+    failure_key = tuple(sorted(
+        str(item) for item in getattr(state, "failures", ()) or ()))
+    return (
+        len(getattr(state, "facts", {}) or {}),
+        tuple(sorted((getattr(state, "artifacts", {}) or {}).keys())),
+        len(getattr(rec, "results", ()) or ()),
+        tuple(sorted(set(
+            str(item) for item in _result_objective_keys(rec)))),
+        failure_key,
+        rec.route.route if rec.route else "stop_unprofitable",
+    )
+
+
+def _result_objective_keys(rec) -> list:
+    """Objectives and error codes of one pass's capability results."""
+    keys = []
+    for item in getattr(rec, "results", ()) or ():
+        if isinstance(item, dict):
+            keys.append(str(item.get("objective", "")))
+            errors = item.get("errors") or ()
+            if errors:
+                keys.append(str(tuple(errors)))
+        else:
+            objective = str(getattr(item, "objective", ""))
+            errors = getattr(item, "errors", ()) or ()
+            keys.append(objective)
+            if errors:
+                keys.append(str(tuple(errors)))
+    return keys
+
+
+def _non_progress_record(pass_number: int, consecutive: int,
+                         last_route: str) -> "PassRecord":
+    """The honest terminal record for a run that stopped making progress."""
+    record = PassRecord(pass_number=pass_number, state_version_in=0)
+    record.route = RouteDecision(
+        "stop_unprofitable",
+        f"{consecutive} consecutive passes produced no new facts, artifacts, "
+        f"verified work, or recovery directive while routing {last_route!r}; "
+        "stopping honestly instead of repeating identical passes")
+    record.state_version_out = 0
+    return record
+
+
 def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
     """Pure pass calculation owned by an already established Loop boundary.
 
@@ -513,7 +571,14 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
     derived state; soft_reset documents the stuck branch and re-enters with a
     reframed state; cold_restart re-enters with ONLY the spec (the failed
     practitioner's conclusions are left behind, but its failure record is kept).
-    Every pass appends one event to events.jsonl when ``event_dir`` is given."""
+    Every pass appends one event to events.jsonl when ``event_dir`` is given.
+
+    Non-progress guard: this is not a numeric work ceiling. It measures
+    progress directly — when consecutive passes produce no new facts, no new
+    artifacts, no new verified work, and no recovery directive, the run routes
+    ``stop_unprofitable`` honestly instead of churning identical passes
+    forever. Semantics and budget authority are unchanged.
+    """
     spec = request.spec
     impls = request.impls
     validate_impls(impls)          # handshake: fail loudly on a missing node
@@ -525,6 +590,8 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
     if request.event_dir:
         os.makedirs(request.event_dir, exist_ok=True)
         events_path = os.path.join(request.event_dir, "events.jsonl")
+    non_progress_passes = 0
+    previous_progress_key = None
     n = 1
     while limit is None or n <= limit:
         rec, state = _calculate_kernel_pass(state, impls, pass_number=n)
@@ -532,8 +599,23 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
         if events_path:
             with open(events_path, "a") as fh:
                 fh.write(json.dumps(rec.to_event(), default=str) + "\n")
+        progress_key = _pass_progress_key(rec, state)
+        if progress_key == previous_progress_key:
+            non_progress_passes += 1
+        else:
+            non_progress_passes = 0
+            previous_progress_key = progress_key
         route = rec.route.route if rec.route else "stop_unprofitable"
         if route in ("stop_success", "stop_unprofitable"):
+            break
+        if (non_progress_passes >= _MAX_NON_PROGRESS_PASSES
+                and route in ("continue", "retry", "repair")):
+            records.append(_non_progress_record(
+                n, non_progress_passes, route))
+            if events_path:
+                with open(events_path, "a") as fh:
+                    fh.write(json.dumps(records[-1].to_event(),
+                                        default=str) + "\n")
             break
         if route == "cold_restart":
             # a whole new person: only the objective, constraints, criteria —
@@ -1017,6 +1099,48 @@ def self_test() -> dict:
           and planned.facts["_skip_nodes"] == ("integrate_commit",),
           "grounding+prepare skipped this pass and recorded; skipping verify "
           "(required) is refused; plan_skip_next_pass sets it for the route node")
+
+    # Non-progress guard: a run that always routes continue while producing
+    # no new facts, artifacts, or results must terminate honestly, and a run
+    # that produces fresh evidence every pass must never be cut by the guard.
+    def _stuck_route(_state, _rec):
+        return (RouteDecision("continue", "model claims progress"),
+                _state)
+
+    def _no_op_act(_state, _plan):
+        return []
+
+    stuck_impls = dict(impls)
+    stuck_impls["act"] = _no_op_act
+    stuck_impls["route"] = _stuck_route
+    validate_impls(stuck_impls)
+    stuck_run = _calculate_kernel_passes(KernelRunRequest(
+        spec=ProblemSpec(objective="stuck"), impls=stuck_impls))
+    check("a_non_progressing_run_stops_honestly",
+          stuck_run["final_route"] == "stop_unprofitable"
+          and stuck_run["passes"] <= _MAX_NON_PROGRESS_PASSES + 2,
+          f"terminated after {stuck_run['passes']} passes with "
+          f"{stuck_run['final_route']} instead of churning forever")
+
+    def _growing_act(state, _plan):
+        state.facts[f"grown:{len(state.facts)}"] = True
+        return []
+
+    def _progressing_route(_state, _rec):
+        return (RouteDecision("continue", "real progress each pass"),
+                _state)
+
+    growing_impls = dict(impls)
+    growing_impls["act"] = _growing_act
+    growing_impls["route"] = _progressing_route
+    validate_impls(growing_impls)
+    growing_run = _calculate_kernel_passes(KernelRunRequest(
+        spec=ProblemSpec(objective="progressing"), impls=growing_impls,
+        max_passes=12))
+    check("a_progressing_run_is_never_cut_by_the_guard",
+          growing_run["passes"] == 12
+          and growing_run["final_route"] == "continue",
+          "twelve passes of fresh evidence ran the full declared budget")
 
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "kernel_self_test", "tests": results,

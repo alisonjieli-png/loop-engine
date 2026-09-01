@@ -1,6 +1,6 @@
 {
   "blocking_threshold": "high",
-  "finding_count": 9581,
+  "finding_count": 9592,
   "findings": [
     {
       "finding_id": "hardcoding.25cc39aa91e6b8f174700730",
@@ -31887,6 +31887,22 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.0ee0583be944a9695e6d774c",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.2beefade685579c8283db342",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.2f2aa1d97be2390e15a19335",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.fe6e098344f4cbdaef47a469",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.d7a374f743d651a9cbd5d58b",
       "severity": "medium"
     },
@@ -31904,6 +31920,18 @@
     },
     {
       "finding_id": "hardcoding.94629d06743987798579e61b",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.9042715026529574c7caf18f",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.b670f02f5befc8d97db8f56f",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.f69744dc23a5a161e90fddd4",
       "severity": "medium"
     },
     {
@@ -32168,6 +32196,22 @@
     },
     {
       "finding_id": "hardcoding.d0fb884a81ae170ea93f79d2",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.7893c9ca5a876cb27711a8a2",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.e28e433ad74f36ece641486f",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.0ce101b28f586a92c4a7fb20",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.e5fa9b6f184f0f8c47834739",
       "severity": "medium"
     },
     {
@@ -38327,7 +38371,7 @@
       "severity": "medium"
     }
   ],
-  "repository_snapshot_id": "hardcoding_source.sha256_3349f641cf53a33f2435c095b5cc33ec86df8dbbcc8929881a5c5203b00bab53",
+  "repository_snapshot_id": "hardcoding_source.sha256_b53b3a0c56d61a9e4f13dc9482ce62ba847c308deabb4488c2810a1c93fac813",
   "schema": "hardcoding_ci_baseline/v1",
-  "source_audit_id": "hardcoding_audit.sha256_e372a50917e2869204c5ba3eb2be30c351a2208ed472230fe563219e94bc479f"
+  "source_audit_id": "hardcoding_audit.sha256_35a9ee0c2fdb7dd30ef541e431a1a58eba2341302122877bb4d0d286459884ba"
 }
