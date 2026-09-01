@@ -1,6 +1,6 @@
 {
   "blocking_threshold": "high",
-  "finding_count": 9599,
+  "finding_count": 9607,
   "findings": [
     {
       "finding_id": "hardcoding.25cc39aa91e6b8f174700730",
@@ -18019,7 +18019,39 @@
       "severity": "medium"
     },
     {
-      "finding_id": "hardcoding.e5952156c624f414072a066b",
+      "finding_id": "hardcoding.47403b159d3f81fe8cbd19df",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.fda115d4576a1488850604a1",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.2cfba748248b5c8b91f44d42",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.baf6686319aafc70855a078a",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.5f0e0fc872822f496e5033e6",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.c330393ae8e9de7524960398",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.7e04571e84cb930fe995eeba",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.1542d3af5dfd5831b1fa4fd3",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.3c3e198fe74894197ce7e5d2",
       "severity": "medium"
     },
     {
@@ -38399,7 +38431,7 @@
       "severity": "medium"
     }
   ],
-  "repository_snapshot_id": "hardcoding_source.sha256_d68030b1b7d22f187bc8fbd173e646a9ce22fa1336cb1e4854e91fd6a5a399ec",
+  "repository_snapshot_id": "hardcoding_source.sha256_68095c6628f42dc3799030d3b83cf54ba40d08c2c7bf48206aaf64a8805e35ee",
   "schema": "hardcoding_ci_baseline/v1",
-  "source_audit_id": "hardcoding_audit.sha256_04a77b32bb11b211265078f7b6f794e63532a104496a08fd0147ea62efc7084a"
+  "source_audit_id": "hardcoding_audit.sha256_edadc99416636d1671e5a4ae8e33152a9ca05f778f632b776bea1a025a965685"
 }

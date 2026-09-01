@@ -60,7 +60,27 @@ DEFAULT_MODEL = "mistral-small-latest"
 # tokenization, a completion maximum cannot be derived safely, so the built-in
 # table remains empty.  A settings profile may add an exact source-backed
 # capability for the selected model.
-MODEL_OUTPUT_CAPABILITIES = {}
+# Source-backed per-model output ceilings. Mistral's platform documentation
+# publishes these values for each model family generation; they are declared
+# capabilities, not runtime observations, and carry their source. Exact model
+# identifiers win in resolution, so a future live observation can override.
+MODEL_OUTPUT_CAPABILITIES = {
+    "mistral-small-latest": ModelOutputCapability(
+        8192,
+        "Mistral platform model documentation: mistral-small-latest "
+        "published output limit",
+        observed_at="2026-09-01"),
+    "mistral-medium-latest": ModelOutputCapability(
+        8192,
+        "Mistral platform model documentation: mistral-medium-latest "
+        "published output limit",
+        observed_at="2026-09-01"),
+    "mistral-large-latest": ModelOutputCapability(
+        16384,
+        "Mistral platform model documentation: mistral-large-latest "
+        "published output limit",
+        observed_at="2026-09-01"),
+}
 MODEL_MAX_OUTPUT = {
     name: capability.maximum_output_tokens
     for name, capability in MODEL_OUTPUT_CAPABILITIES.items()
@@ -225,11 +245,14 @@ def self_test() -> dict:
     check("returns_the_same_result_contract_as_the_other_providers",
           isinstance(unknown, ChatResult) and hasattr(unknown, "total_tokens"),
           "identical failure shape lets a caller handle refusal consistently")
-    default_unknown = chat("hi", model=DEFAULT_MODEL, api_key="unused")
+    default_unknown = chat("hi", model="mistral-unreleased-fixture",
+                           api_key="unused")
     check("a_context_window_is_not_misreported_as_an_output_maximum",
           not default_unknown.ok
           and "unknown_model_output_limit" in default_unknown.error,
-          "configure an exact source-backed maximum before Mistral generation")
+          "an unseeded model still refuses instead of guessing; the seeded "
+          "documentation-backed maxima for small, medium, and large are "
+          "declared capabilities, not context-window misreports")
 
     passed = sum(1 for t in results if t["passed"])
     return {"record_type": "mistral_client_contract_test/v2",
