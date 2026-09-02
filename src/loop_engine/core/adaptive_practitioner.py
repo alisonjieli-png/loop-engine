@@ -707,6 +707,42 @@ def run_adaptive_practitioner(
     save_adaptive_result(history, output)
     return output
 
+def _schema_matches_record() -> dict:
+    """Check the schema shown to the model against the record enforced on it.
+
+    These are two hand-written copies of one field list: the example in
+    ``orient`` documents a type per field, the record validates on exact set
+    equality. When they drift the model is asked for one shape and refused
+    for returning it, and the refusal names the record, never the example.
+    That failure is silent in every gate that does not compare them here.
+    """
+    import ast
+    import pathlib
+    from dataclasses import fields as _fields
+    from .adaptive_practitioner_records import TaskOrientationResult
+    source = ast.parse(pathlib.Path(__file__).read_text())
+    shown = set()
+    for node in ast.walk(source):
+        if not isinstance(node, ast.Call):
+            continue
+        if getattr(node.func, "attr", "") != "dumps" or not node.args:
+            continue
+        argument = node.args[0]
+        if not isinstance(argument, ast.Dict):
+            continue
+        keys = {key.value for key in argument.keys
+                if isinstance(key, ast.Constant)}
+        if "original_task_ref" in keys:
+            shown = keys
+            break
+    enforced = {item.name for item in _fields(TaskOrientationResult)}
+    return {"test": "the orient schema shown matches the record enforced",
+            "passed": shown == enforced,
+            "detail": "" if shown == enforced else
+                      f"shown-only {sorted(shown - enforced)}; "
+                      f"enforced-only {sorted(enforced - shown)}"}
+
+
 def self_test() -> dict:
     """Run focused task-agnostic adaptive Practitioner checks."""
     from .adaptive_practitioner_checks import run_checks
@@ -714,7 +750,7 @@ def self_test() -> dict:
         run_checks as run_acceptance_checks)
     focused = run_checks()
     acceptance = run_acceptance_checks()
-    tests = [*focused["tests"], *acceptance["tests"]]
+    tests = [*focused["tests"], *acceptance["tests"], _schema_matches_record()]
     passed = sum(item["passed"] for item in tests)
     return {
         "record_type": "adaptive_practitioner_complete_test/v1",

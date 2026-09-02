@@ -215,6 +215,34 @@ First public release.
 
 ### Fixed
 
+- **An optional record no longer kills the run it was attached to.** Packets
+  ask every call to report what it drew on, presented as
+  `selection_report: {keys: {...}}`. Models answered in both shapes the
+  contract invites — the five keys flat, or one object under the container
+  name — but only the flat keys were stripped before typed validation, so a
+  nested answer reached `TaskOrientationResult.from_mapping`, failed its
+  exact-set field check, and ended the run at orientation with nothing
+  produced. Four of the first competition runs in a twelve-competition
+  campaign died this way. The record is documented as optional and
+  `affects_validation: False`; it was neither. `SELECTION_KEYS` is now derived
+  from the contract rather than restated beside it, covers the container name,
+  and `admitted_selection()` reads either shape.
+
+- **A refusal now names the fields it refused.** `TaskOrientationResult fields
+  do not match version 1` told a reader that something was wrong and nothing
+  about what, and it was fed verbatim to the repair attempt as the whole of
+  its guidance — so the second attempt was as blind as the first. The message
+  now names the unexpected and missing fields, which is how the cause above
+  was found rather than guessed.
+
+- **Three copies of one field list became one.** The 30-field orientation
+  schema shown to the model, the `required` set enforced against it, and the
+  selection keys stripped before it were each hand-maintained. `required` is
+  now derived from the record's own dataclass fields (as is
+  `NextActionDecision`'s), and a self-test parses the schema literal shown to
+  the model and fails if it drifts from the record enforced on it — the one
+  copy that must stay hand-written because it documents a type per field.
+
 - **A diagnostic now arrives saying what it found.** The solve progress writer
   copies a fixed field allowlist, so every typed diagnostic's payload was
   silently discarded: a campaign produced `orientation_invalid` on four

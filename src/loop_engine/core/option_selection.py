@@ -69,10 +69,18 @@ SELECTION_REPORT_CONTRACT = {
     "affects_validation": False,
 }
 
-#: The keys stripped from a model response before typed validation.
-SELECTION_KEYS = ("used_perspectives", "used_question_refs",
-                  "used_guidance_refs", "wanted_but_absent",
-                  "operator_gap")
+#: The name the contract is presented under. A model shown a contract as
+#: ``selection_report: {keys: {...}}`` may answer with the keys flat or with
+#: one object under this name. Both are the same answer honestly given, and
+#: an optional record that changes no verdict must never be the reason a
+#: step's typed validator rejects the work it came attached to.
+SELECTION_REPORT_KEY = "selection_report"
+
+#: The keys stripped from a model response before typed validation, derived
+#: from the contract rather than restated beside it. A key added to the
+#: contract is stripped by construction; a second hand-kept copy of this list
+#: is exactly how the container name came to be asked for and never removed.
+SELECTION_KEYS = (SELECTION_REPORT_KEY,) + tuple(SELECTION_REPORT_CONTRACT["keys"])
 
 
 class OptionSelectionError(ValueError):
@@ -101,6 +109,12 @@ def admitted_selection(value, offered: dict) -> dict:
     """
     if not isinstance(value, dict):
         return {}
+    # Accept the nested shape as well as the flat one. Read the container
+    # first so that a caller answering in both shapes has its flat keys win.
+    inner = value.get(SELECTION_REPORT_KEY)
+    if isinstance(inner, dict):
+        value = {**inner, **{key: item for key, item in value.items()
+                             if key != SELECTION_REPORT_KEY}}
     admitted: dict = {}
     unoffered: dict = {}
     for key in ("used_perspectives", "used_question_refs",
@@ -276,7 +290,15 @@ def self_test() -> dict:
           str(value["operator_gaps"])[:160])
 
     check("every_reported_key_has_a_contract_entry",
-          set(SELECTION_KEYS) == set(SELECTION_REPORT_CONTRACT["keys"]))
+          set(SELECTION_KEYS) ==
+          set(SELECTION_REPORT_CONTRACT["keys"]) | {SELECTION_REPORT_KEY})
+    nested = admitted_selection(
+        {SELECTION_REPORT_KEY: {"used_perspectives": ["p.one"]}},
+        {"used_perspectives": ["p.one"]})
+    check("a selection reported under its container name is read",
+          nested.get("used_perspectives") == ["p.one"])
+    check("the container name is stripped before typed validation",
+          SELECTION_REPORT_KEY in SELECTION_KEYS)
 
     passed = sum(1 for item in tests if item["passed"])
     return {"record_type": "option_selection_test/v1",

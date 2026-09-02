@@ -17,7 +17,7 @@ import hashlib
 import json
 import os
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 from typing import Callable, Protocol, TYPE_CHECKING
 
@@ -292,21 +292,12 @@ class TaskOrientationResult:
         if not isinstance(value, dict):
             raise AdaptivePractitionerError(
                 "TaskOrientationResult must be one object")
-        required = {
-            "original_task_ref", "task_summary", "ultimate_goal",
-            "immediate_goal", "current_state", "desired_state", "inputs",
-            "outputs", "operator_bundle", "response_contract",
-            "decision_consumer", "explicit_constraints",
-            "inferred_constraints", "non_goals", "knowns", "unknowns",
-            "assumptions", "ambiguities", "delegated_choices",
-            "safe_defaults", "blocking_questions", "research_questions",
-            "subproblems", "dependencies", "parallel_candidates",
-            "candidate_profiles", "candidate_capabilities",
-            "verification_obligations", "confidence_profile",
-            "proposed_next_action"}
+        # Derived from the record's own fields: a restated copy of
+        # this list drifts the moment a field is added.
+        required = {item.name for item in fields(cls)}
         if set(value) != required:
             raise AdaptivePractitionerError(
-                "TaskOrientationResult fields do not match version 1")
+                _field_mismatch(value, required, "TaskOrientationResult"))
         ambiguities = value.get("ambiguities")
         confidence = value.get("confidence_profile")
         if not isinstance(ambiguities, list) or not isinstance(confidence, dict):
@@ -410,14 +401,12 @@ class NextActionDecision:
         if not isinstance(value, dict):
             raise AdaptivePractitionerError(
                 "NextActionDecision must be one object")
-        required = {
-            "action_kind", "goal", "reason", "inputs", "expected_output",
-            "required_capabilities", "permissions", "budget", "dependencies",
-            "scheduling", "verification", "return_destination", "confidence",
-            "fallback"}
+        # Derived from the record's own fields: a restated copy of
+        # this list drifts the moment a field is added.
+        required = {item.name for item in fields(cls)}
         if set(value) != required:
             raise AdaptivePractitionerError(
-                "NextActionDecision fields do not match version 1")
+                _field_mismatch(value, required, "NextActionDecision"))
         inputs = value.get("inputs")
         budget = value.get("budget")
         fallback = value.get("fallback")
@@ -619,6 +608,26 @@ def _bounded_detail(payload: dict) -> str:
     if len(text) <= _DIAGNOSTIC_DETAIL_BYTES:
         return text
     return text[:_DIAGNOSTIC_DETAIL_BYTES] + "...[detail truncated]"
+
+
+def _field_mismatch(value: dict, required: set, record_name: str) -> str:
+    """Say which fields made a record inadmissible, not merely that some did.
+
+    A refusal reading "fields do not match version 1" tells a reader that
+    something is wrong and nothing about what. The unexpected and missing
+    names are the whole content of the finding, and the model reading it on
+    the repair attempt needs them more than anyone.
+    """
+    unexpected = sorted(set(value) - required)
+    missing = sorted(required - set(value))
+    parts = []
+    if unexpected:
+        parts.append(f"unexpected {unexpected}")
+    if missing:
+        parts.append(f"missing {missing}")
+    return (f"{record_name} fields do not match version 1: "
+            + "; ".join(parts) if parts else
+            f"{record_name} fields do not match version 1")
 
 
 def _new_action_fence():
