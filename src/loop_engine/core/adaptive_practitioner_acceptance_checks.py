@@ -14,6 +14,7 @@ from unittest.mock import patch
 from ..code_nodes.solution_model_port import (
     FixtureModelExecutionRequest, fixture_model_execution)
 from .adaptive_practitioner import run_adaptive_practitioner
+from .source_role_orientation import manifest_digest
 from .adaptive_practitioner_records import (
     AdaptivePractitionerDependencies, AdaptivePractitionerRequest,
     NextActionDecision)
@@ -95,12 +96,15 @@ def _success_answers(orientation=None, decision=None) -> tuple[str, ...]:
         "record_type": "generated_project_candidate/v1",
         "project_id": "acceptance_test",
         "summary": "A bounded acceptance-test project.",
+        # main.py is authored, output.txt is produced. Declaring the
+        # authored file as its own expected artifact would make the artifact
+        # check vacuous, and the framework now refuses it.
         "files": [{"path": "main.py", "purpose": "Create the output.",
                    "acceptance": ["The file runs."]}],
         "commands": [{"argv": ["python", "main.py"],
                       "purpose": "Run the project.", "timeout_seconds": 30}],
-        "expected_artifacts": [{"path": "main.py",
-                                "media_type": "text/x-python",
+        "expected_artifacts": [{"path": "output.txt",
+                                "media_type": "text/plain",
                                 "minimum_bytes": 1}],
     }
     verification = {
@@ -143,6 +147,7 @@ def _project_fixture(request, context):
     path = Path(request.workspace_root)
     path.mkdir(parents=True, exist_ok=True)
     (path / "main.py").write_text("print('done')\n", encoding="utf-8")
+    (path / "output.txt").write_text("done\n", encoding="utf-8")
     return {
         "record_type": "generated_project_execution/v1",
         "manifest_digest": request.manifest.digest,
@@ -153,11 +158,11 @@ def _project_fixture(request, context):
             "purpose": "run", "ok": True, "exit_code": 0,
             "stdout": "done\n", "stderr": "", "error_code": ""}],
         "artifacts": [{
-            "path": "main.py", "media_type": "text/x-python",
-            "minimum_bytes": 1, "present": True, "byte_count": 14,
+            "path": "output.txt", "media_type": "text/plain",
+            "minimum_bytes": 1, "present": True, "byte_count": 5,
             "digest": "a" * 64, "error_code": "", "verified": True}],
-        "snapshot": {"digest": "b" * 64, "file_count": 1,
-                     "total_bytes": 14},
+        "snapshot": {"digest": "b" * 64, "file_count": 2,
+                     "total_bytes": 19},
         "deterministic_checks_passed": True,
     }
 
@@ -482,8 +487,8 @@ def run_checks() -> dict:
             "commands": [{"argv": ["python", "repair.py"],
                           "purpose": "Run the repair.",
                           "timeout_seconds": 30}],
-            "expected_artifacts": [{"path": "repair.py",
-                                    "media_type": "text/x-python",
+            "expected_artifacts": [{"path": "output.txt",
+                                    "media_type": "text/plain",
                                     "minimum_bytes": 1}],
         }
         repair_content = (
@@ -504,6 +509,20 @@ def run_checks() -> dict:
             "remaining_gaps": [], "advisory_findings": [],
             "new_requirement_proposals": [],
         }
+        # Inspecting a source is also the moment the run reads what that
+        # source is. The reading is one model call, so it takes one scripted
+        # answer, here, between the inspection and its verification.
+        source_roles = {
+            "manifest_digest": manifest_digest(("source/unseen_module.py",)),
+            "files": [{
+                "path": "source/unseen_module.py",
+                "role": "the supplied implementation under repair",
+                "observed_fields": [],
+                "evidence": "defines normalize and returns value.upper()",
+                "confidence": 0.9,
+            }],
+            "unresolved": [],
+        }
         answers = tuple(json.dumps(item) for item in (
             _orientation(
                 current_state="A supplied implementation must be inspected.",
@@ -511,6 +530,7 @@ def run_checks() -> dict:
                 candidate_capabilities=["core.source.inspect",
                                         "core.generated_project"]),
             {"actions": [inspect_decision]}, inspect_how,
+            source_roles,
             inspect_verification,
             {"route": "continue", "reason": "Inspect before editing."},
             _orientation(
@@ -557,6 +577,13 @@ def run_checks() -> dict:
               f"{source_led['passes']} passes; "
               f"{len(selected)} selected source; "
               f"{len(observed_inputs)} executed input")
+        roles = source_led.get("source_roles") or {}
+        check("inspecting_a_source_states_what_that_source_is",
+              [item.get("path") for item in roles.get("files") or ()]
+              == ["source/unseen_module.py"]
+              and (roles.get("files") or [{}])[0].get("role")
+              == "the supplied implementation under repair",
+              f"stated roles: {[item.get('role') for item in roles.get('files') or ()]}")
 
     incomplete_decision = _decision(
         "RETURN_RESULT", goal="Return without building.",

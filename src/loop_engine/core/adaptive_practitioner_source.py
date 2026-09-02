@@ -6,6 +6,7 @@ selected bodies. Retrieval ranking is advisory and never grants authority.
 """
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
 import mimetypes
@@ -43,6 +44,20 @@ def _source_surface(relative: str) -> str:
             or path.suffix.casefold() in {".toml", ".yaml", ".yml"}:
         return "configuration"
     return "other"
+
+
+#: Where core.generated_project materializes an admitted source inside the
+#: sandbox. Stated once, here, so the path the runtime tells the model and the
+#: path the runtime actually writes cannot drift apart. A live run drifted
+#: exactly this way: runtime facts stated the bare admitted path, the sandbox
+#: held it under this prefix, and the generated solution opened the path it had
+#: been told about and found nothing.
+PROJECT_INPUT_PREFIX = "inputs/"
+
+
+def project_input_path(relative: str) -> str:
+    """The exact sandbox path one admitted source is materialized at."""
+    return PROJECT_INPUT_PREFIX + relative
 
 
 _SELECTED_CONTENT_BYTE_LIMIT = 12_000
@@ -292,6 +307,57 @@ def source_inspection_operation(
     }
 
 
+#: Bounds on the value shape a profile states. They hold the profile to a
+#: constant size for a file of any size, so profiling a 44 MB table costs the
+#: same as profiling a 44 KB one.
+PROFILE_SAMPLED_ROW_LIMIT = 200
+PROFILE_FIELD_LIMIT = 64
+PROFILE_EXAMPLE_VALUE_LIMIT = 8
+PROFILE_VALUE_TEXT_LIMIT = 40
+
+
+def _is_number(value: str) -> bool:
+    try:
+        float(value)
+    except (TypeError, ValueError):
+        return False
+    return True
+
+
+def _scalar_text(value: object) -> str:
+    """One field value as text; a missing or null value reads as empty."""
+    return "" if value is None else str(value).strip()
+
+
+def _field_value_profiles(sampled: "list[tuple[str, list[str]]]") -> list[dict]:
+    """State what each field's sampled values look like, never what they mean.
+
+    A field name is not its type. A live run read a column holding Yes and No
+    as a continuous target, chose a regressor, and reported a root mean
+    squared error it could not have computed. The header alone allowed that;
+    the values would not have. Whatever the runtime can settle exactly over
+    the rows it sampled, it settles here: how many distinct values appeared,
+    what some of them are, whether every one parses as a number, how many were
+    empty. What the field is *for* stays a reading, and stays the model's.
+    """
+    profiles = []
+    for field, values in sampled[:PROFILE_FIELD_LIMIT]:
+        present = [value for value in values if value != ""]
+        distinct = sorted(set(present))
+        profiles.append({
+            "field": field,
+            "sampled_values": len(values),
+            "empty_sampled_values": len(values) - len(present),
+            "distinct_sampled_values": len(distinct),
+            "example_values": [item[:PROFILE_VALUE_TEXT_LIMIT]
+                               for item in distinct[
+                                   :PROFILE_EXAMPLE_VALUE_LIMIT]],
+            "every_sampled_value_is_a_number": bool(present) and all(
+                _is_number(item) for item in present),
+        })
+    return profiles
+
+
 def source_profile_operation(
         arguments: dict, services: AdaptiveRunServices) -> dict:
     """Profile source structure deterministically without model exposure.
@@ -339,15 +405,24 @@ def source_profile_operation(
             "media_type": mimetypes.guess_type(path.name)[0] or "text/plain",
             "structure_kind": "text",
             "fields": [],
+            "field_profiles": [],
             "sample": text[:maximum_sample_bytes],
         }
-        if path.suffix.lower() == ".csv" or path.suffix.lower() == ".tsv":
+        if path.suffix.lower() in {".csv", ".tsv"}:
             delimiter = "\t" if path.suffix.lower() == ".tsv" else ","
-            header = lines[0] if lines else ""
-            fields = [field.strip() for field in header.split(delimiter)]
+            # csv.reader, not split: a quoted value containing the delimiter
+            # would otherwise shift every field after it and make the whole
+            # profile a confident description of the wrong columns.
+            rows = list(csv.reader(
+                lines[:PROFILE_SAMPLED_ROW_LIMIT + 1], delimiter=delimiter))
+            fields = [str(name).strip() for name in (rows[0] if rows else ())]
             profile["structure_kind"] = "delimited_table"
             profile["fields"] = fields
             profile["data_row_count"] = max(0, len(lines) - 1)
+            profile["field_profiles"] = _field_value_profiles([
+                (name, [_scalar_text(row[index]) if index < len(row) else ""
+                        for row in rows[1:]])
+                for index, name in enumerate(fields)])
         elif path.suffix.lower() == ".json":
             try:
                 parsed = json.loads(text) if text.strip() else None
@@ -359,18 +434,34 @@ def source_profile_operation(
             elif isinstance(parsed, list):
                 profile["structure_kind"] = "json_array"
                 if parsed and isinstance(parsed[0], dict):
-                    profile["fields"] = sorted(
-                        str(key) for key in parsed[0])
+                    fields = sorted(str(key) for key in parsed[0])
+                    sampled_rows = [item for item
+                                    in parsed[:PROFILE_SAMPLED_ROW_LIMIT]
+                                    if isinstance(item, dict)]
+                    profile["fields"] = fields
+                    profile["field_profiles"] = _field_value_profiles([
+                        (name, [_scalar_text(row.get(name))
+                                for row in sampled_rows])
+                        for name in fields])
                 profile["data_row_count"] = len(parsed)
         elif path.suffix.lower() in {".jsonl", ".ndjson"}:
             profile["structure_kind"] = "json_lines"
             if lines:
-                try:
-                    first = json.loads(lines[0])
-                    if isinstance(first, dict):
-                        profile["fields"] = sorted(str(key) for key in first)
-                except ValueError:
-                    pass
+                sampled_rows = []
+                for line in lines[:PROFILE_SAMPLED_ROW_LIMIT]:
+                    try:
+                        entry = json.loads(line)
+                    except ValueError:
+                        continue
+                    if isinstance(entry, dict):
+                        sampled_rows.append(entry)
+                if sampled_rows:
+                    fields = sorted(str(key) for key in sampled_rows[0])
+                    profile["fields"] = fields
+                    profile["field_profiles"] = _field_value_profiles([
+                        (name, [_scalar_text(row.get(name))
+                                for row in sampled_rows])
+                        for name in fields])
                 profile["data_row_count"] = len(lines)
         profiles.append(profile)
     return {
@@ -534,5 +625,6 @@ def self_test() -> dict:
 
 __all__ = (
     "inspectable_source_files", "source_inspection_model_view",
+    "project_input_path",
     "source_inspection_operation",
 )

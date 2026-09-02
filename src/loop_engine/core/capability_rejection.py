@@ -128,6 +128,27 @@ def find_rejection(exc: BaseException) -> CapabilityRejection | None:
     return None
 
 
+def root_cause(exc: BaseException) -> tuple[BaseException, tuple[str, ...]]:
+    """The deepest cause of a chain, and the wrapper types above it.
+
+    A failure raised inside a governed Loop arrives wrapped: the envelope
+    reports that a named check raised, and the reason lives in ``__cause__``.
+    Describing the wrapper tells the model a check failed and nothing about
+    why, which is the same as telling it nothing.
+    """
+    wrappers: list[str] = []
+    current = exc
+    seen = 0
+    while seen < 16:
+        following = current.__cause__ or current.__context__
+        if following is None:
+            break
+        wrappers.append(type(current).__name__)
+        current = following
+        seen += 1
+    return current, tuple(wrappers)
+
+
 def rejection_from_exception(capability_ref: str, exc: BaseException,
                              *, pass_number: int = 0) -> CapabilityRejection:
     """Typed view of any executor failure; exact when the chain carries one."""
@@ -135,9 +156,17 @@ def rejection_from_exception(capability_ref: str, exc: BaseException,
     if typed is not None:
         return typed if typed.pass_number == pass_number else \
             CapabilityRejection(**{**typed.__dict__, "pass_number": pass_number})
+    # No typed rejection anywhere in the chain, so report the deepest cause
+    # rather than whatever wrapped it. A live run read
+    # "deterministic check validate generated project input use raised inside
+    # loop 1470 (evidence on the ledger)" twenty times; the sentence naming
+    # the wrong path was two links down, and the run never saw it.
+    cause, wrappers = root_cause(exc)
+    message = f"{type(cause).__name__}: {str(cause)[:500]}"
+    if wrappers:
+        message += f" (raised through {', '.join(wrappers)})"
     return CapabilityRejection(
-        capability_ref, "executor_error",
-        f"{type(exc).__name__}: {str(exc)[:500]}",
+        capability_ref, "executor_error", message,
         repair_hint=("the executor failed; change the inputs or the "
                      "capability rather than repeating the identical call"),
         pass_number=pass_number)
@@ -159,6 +188,15 @@ def self_test() -> dict:
     except ValueError:
         closed = True
     try:
+        try:
+            raise ValueError("the file is supplied at inputs/data.csv")
+        except ValueError as inner:
+            raise RuntimeError(
+                "deterministic check raised inside loop 7 "
+                "(evidence on the ledger)") from inner
+    except RuntimeError as wrapped:
+        through_wrapper = rejection_from_exception("core.x", wrapped)
+    try:
         raise RuntimeError("solution loop wrapper") from CapabilityRejected(
             rejection)
     except RuntimeError as exc:
@@ -167,6 +205,14 @@ def self_test() -> dict:
     fallback = rejection_from_exception("core.web.get", KeyError("boom"))
     record = rejection.to_dict()
     tests = [{
+        "test": "an_untyped_failure_reports_its_cause_not_its_wrapper",
+        "passed": ("the file is supplied at inputs/data.csv"
+                   in through_wrapper.message
+                   and "ValueError" in through_wrapper.message
+                   and "RuntimeError" in through_wrapper.message
+                   and through_wrapper.reason_code == "executor_error"),
+        "detail": through_wrapper.message[:160],
+    }, {
         "test": "reason_codes_are_a_closed_vocabulary",
         "passed": closed and rejection.reason_code in REJECTION_REASON_CODES,
         "detail": str(REJECTION_REASON_CODES),

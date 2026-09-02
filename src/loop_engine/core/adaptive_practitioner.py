@@ -674,6 +674,7 @@ def run_adaptive_practitioner(
         "web_search_candidates": services.web_search_results,
         "web_evidence": services.web_results,
         "source_inspections": services.source_inspections,
+        "source_roles": services.source_roles,
         "project_attempts": services.project_attempts,
         "verification": services.verification_records,
         "supervision": services.supervision_findings,

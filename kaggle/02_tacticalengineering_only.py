@@ -90,13 +90,15 @@ DATASET_DIR_OVERRIDE = os.environ.get(
 
 
 def resolve_dataset_dir(input_root, override=""):
-    """Return (directory handed to the solve, what it contains).
+    """Return the directory handed to the solve.
 
-    No layout patterns and no file names are assumed. The directory is the
-    operator's override when given, otherwise the attached input root. The
-    listing is enumeration of what is actually there, reported so a person can
-    see it and recorded so the run can be read later. Choosing which files
-    matter is the Practitioner's orientation work, not this cell's.
+    This cell does not walk the input, does not describe it, and does not
+    decide what any of it is. The runtime already enumerates the exact
+    admitted manifest, states where each file is materialized, and asks a
+    model what each one is; a listing written here would be a second, shallower
+    answer to a question the run answers properly. So the cell checks only what
+    an operator must fix before starting: that the directory exists and is not
+    empty.
     """
     directory = Path(override) if override else input_root
     if not directory.is_dir():
@@ -104,18 +106,11 @@ def resolve_dataset_dir(input_root, override=""):
             f"No input directory at {directory}. Attach the competition or "
             "dataset to this notebook, or set "
             "LOOP_ENGINE_KAGGLE_DATASET_DIR to an existing directory.")
-    entries = []
-    for item in sorted(directory.iterdir()):
-        entries.append(item.name + ("/" if item.is_dir() else ""))
-        if item.is_dir():
-            entries.extend(
-                f"{item.name}/{child.name}" + ("/" if child.is_dir() else "")
-                for child in sorted(item.iterdir()))
-    if not entries:
+    if not any(directory.iterdir()):
         raise RuntimeError(
             f"The input directory {directory} is empty. Attach the "
             "competition or dataset to this notebook before the solve stage.")
-    return directory, entries
+    return directory
 
 
 LOGS_DIR = KAGGLE_WORKING / "loop-engine-logs"
@@ -412,23 +407,20 @@ log_line(f"Log hierarchy root: {LOGS_DIR}")
 log_line(f"Stage requested: {STAGE}")
 
 # Hand the attached input root to the solve and report what is in it. The
-# Practitioner reads the exact admitted manifest and decides which files the
-# task needs; nothing here selects a file. Only the solve stage needs data, so
-# earlier stages report a miss and continue.
+# runtime states the exact admitted manifest and a model call states what each
+# file is; nothing here selects or describes a file. Only the solve stage needs
+# data, so earlier stages report a miss and continue.
 try:
-    DATASET_DIR, DATASET_ENTRIES = resolve_dataset_dir(
-        KAGGLE_INPUT, DATASET_DIR_OVERRIDE)
-    log_line(f"Attached input root: {DATASET_DIR}")
+    DATASET_DIR = resolve_dataset_dir(KAGGLE_INPUT, DATASET_DIR_OVERRIDE)
+    log_line(f"Attached input root handed to the solve: {DATASET_DIR}")
     log_line(
-        f"  {len(DATASET_ENTRIES)} entries visible to the Practitioner: "
-        + ", ".join(DATASET_ENTRIES[:20])
-        + (" ..." if len(DATASET_ENTRIES) > 20 else ""))
+        "  The run states the exact manifest and its own reading of each "
+        "file; watch the source_manifest and source_roles runtime facts.")
 except RuntimeError as dataset_error:
     if STAGE == "solve":
         raise
     DATASET_DIR = Path(DATASET_DIR_OVERRIDE) if DATASET_DIR_OVERRIDE \
         else KAGGLE_INPUT
-    DATASET_ENTRIES = []
     log_line(
         f"No attached input yet ({dataset_error}); the {STAGE} stage does "
         "not read it, so the run continues.")
@@ -682,22 +674,27 @@ competition dataset ({COMPETITION}).
 This is an execution task, not merely a high-level modeling plan.
 
 Do not assume any file name, directory layout, or column name. The attached
-input root is supplied as a source; discover its contents.
+input root is supplied as a source; the runtime states the admitted manifest
+and its own reading of each file under runtime_facts, and core.source.inspect
+admits exactly those paths.
 
-When using core.source.inspect:
-1. Request the source manifest first, with no paths argument.
-2. Read the exact relative paths the manifest returns. The runtime states
-   these paths in its runtime facts; they are the only admitted paths.
-3. Inspect contents using only those returned paths.
+Read source_roles in the runtime facts before deciding anything about the
+data. It records what each supplied file was read to be and the evidence for
+that reading. Where a path is listed as unresolved, inspect it and settle it
+from the observed bytes rather than from its name. If what you observe
+contradicts a recorded role, say so and act on the observation.
 
-From the manifest and the actual schemas, work out which files hold training
-rows, which hold the rows to predict, and which defines the submission
-contract. Some competitions name them differently, nest them, or add extra
-files, so decide from what you observe rather than from convention. Then infer
-the target, identifier, and prediction fields, the task type, and the
-submission contract. Check missing values, duplicates, leakage, suspicious
-unique fields, and schema differences between the training and prediction
-files. Record what you concluded and the evidence for it.
+Decide the target, the identifier, the prediction field, the task type, and
+the submission contract from the observed schemas: the values a field actually
+holds, not the word in its header. A field whose values are labels is not a
+continuous target, and the file that defines the submission contract fixes the
+column order, the identifier order, and the value type. Check missing values,
+duplicates, leakage, suspicious unique fields, and schema differences between
+the training and prediction files.
+
+Generated code runs in the workspace, not beside the source. Open each input
+at the sandbox_paths value the runtime states for it, never at its admitted
+manifest path.
 
 Build a CPU-compatible preprocessing pipeline. Compare at least two reasonable
 baseline models with reproducible three-fold cross-validation and an
@@ -705,13 +702,12 @@ appropriate local validation metric. Fit the selected model on all training
 rows and create submission.csv matching the discovered submission contract
 exactly, in its column order and identifier order.
 
-Write these files inside the assigned workspace:
-
-- solution.py
-- submission.csv
-- metrics.json
-- report.md
-- verification.json
+Write solution.py and verification.py yourself, inside the assigned
+workspace. Running them must produce submission.csv, metrics.json, report.md
+and verification.json: declare those four as expected artifacts, never as
+files you author. An output you typed is not an output you produced, and the
+run refuses any path that appears as both. Every number in metrics.json and
+report.md must come from the run, not from you.
 
 Verify schema, row count, column order, identifier order, missing predictions,
 infinite predictions, prediction type, and prediction range against the

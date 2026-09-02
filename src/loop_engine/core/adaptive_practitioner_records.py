@@ -597,6 +597,10 @@ class AdaptiveRunServices:
     web_search_results: list[dict] = field(default_factory=list)
     web_results: list[dict] = field(default_factory=list)
     source_inspections: list[dict] = field(default_factory=list)
+    #: The saved model-led reading of what each supplied file is, keyed to the
+    #: manifest it was read from. Written once per distinct manifest by
+    #: core.source_role_orientation and stated on every later call.
+    source_roles: dict | None = None
     project_attempts: list[dict] = field(default_factory=list)
     verification_records: list[dict] = field(default_factory=list)
     context_snapshots: list[dict] = field(default_factory=list)

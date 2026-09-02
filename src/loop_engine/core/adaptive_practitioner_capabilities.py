@@ -9,9 +9,8 @@ from __future__ import annotations
 
 import hashlib
 import json
-import mimetypes
 import os
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from pathlib import Path
 
 from ..code_nodes.solution_canvas import SolutionLoopSpec, SolutionSpec
@@ -21,26 +20,24 @@ from ..code_nodes.solution_model_port import SolutionModelError
 from ..loop.kernel import ExecutionPlan, PractitionerState, ResultPacket
 from ..loop.encapsulate import as_practitioner_loop
 from .adaptive_practitioner_records import (
-    AdaptivePractitionerError, AdaptiveRunServices, ModelStepRequest,
-    NextActionDecision)
+    AdaptivePractitionerError, AdaptiveRunServices, NextActionDecision)
 from .generated_project import (
-    ALLOWED_PYTHON_EXECUTABLES, DEFAULT_GENERATED_PROJECT_IMAGE,
+    DEFAULT_GENERATED_PROJECT_IMAGE,
     GeneratedProjectAuthority, GeneratedProjectCandidate,
-    GeneratedProjectError, GeneratedProjectFile, GeneratedProjectFileSpec,
+    GeneratedProjectError, GeneratedProjectFileSpec,
     GeneratedProjectExecutionContext, GeneratedProjectExecutionRequest,
-    GeneratedProjectInputArtifact, GeneratedProjectManifest,
     validate_generated_project_input_use)
-from .context_artifacts import ContextArtifactRef
 from .web_fetch import WebFetchAuthority, WebFetchContext, WebFetchRequest
 from .web_search import (
     WebSearchAuthority, WebSearchContext, WebSearchRequest)
 from .adaptive_practitioner_orientation_capabilities import (
     environment_describe_operation, intelligence_search_operation)
 from .adaptive_practitioner_source import (
-    _resolve_requested_paths, inspectable_source_files,
-    source_inspection_model_view, source_inspection_operation,
-    source_profile_operation)
+    source_inspection_operation, source_profile_operation)
+from .adaptive_practitioner_project import (
+    generated_file_checkpoint_identity, project_inputs, project_manifest)
 from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
+from .source_role_orientation import orient_source_roles
 from .action_fence import ActionFenceLedger
 from .capability_rejection import (CapabilityRejection,
                                    rejection_from_exception)
@@ -66,30 +63,6 @@ class AdaptiveCapabilityExecutionRequest:
                 or getattr(self.owner_loop, "ledger", None) is None):
             raise AdaptivePractitionerError(
                 "capability execution needs an active owner Loop")
-
-
-def _generated_file_checkpoint_identity(
-        candidate: GeneratedProjectCandidate,
-        file_spec: GeneratedProjectFileSpec,
-        task: str) -> tuple[str, str]:
-    """Bind reusable file content to its complete semantic file contract."""
-    contract = {
-        "task_digest": hashlib.sha256(task.encode("utf-8")).hexdigest(),
-        "record_type": candidate.record_type,
-        "active_file": file_spec.to_dict(),
-        "all_files": [item.to_dict() for item in candidate.files],
-        "commands": [item.to_dict() for item in candidate.commands],
-        "expected_artifacts": [
-            item.to_dict() for item in candidate.expected_artifacts],
-    }
-    contract_digest = hashlib.sha256(json.dumps(
-        contract, sort_keys=True, separators=(",", ":"),
-        ensure_ascii=False).encode("utf-8")).hexdigest()
-    checkpoint_key = "generated-file." + hashlib.sha256(json.dumps({
-        "contract_digest": contract_digest,
-        "path": file_spec.path,
-    }, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
-    return checkpoint_key, contract_digest
 
 
 def build_action_canvas_candidate(
@@ -128,210 +101,6 @@ def build_action_canvas_candidate(
     }
 
 
-def _project_manifest(
-        request: AdaptiveCapabilityExecutionRequest,
-        services: AdaptiveRunServices,
-        input_artifacts: tuple[GeneratedProjectInputArtifact, ...]
-        ) -> GeneratedProjectManifest:
-    state = {
-            "state": {
-                "state_version": request.state.version,
-                "facts": request.state.facts,
-                "artifact_refs": request.state.artifacts,
-                "failures": list(request.state.failures),
-            },
-            "execution_plan": asdict(request.plan),
-            "web_search_candidates": services.web_search_results,
-            "web_evidence": services.web_results,
-            "source_inspections": source_inspection_model_view(
-                services.source_inspections),
-            "available_input_artifacts": [
-                item.to_dict() for item in input_artifacts],
-            "available_input_text": ([{
-                "path": item.path,
-                "media_type": item.media_type,
-                "content": item.content.decode("utf-8", errors="replace"),
-            } for item in input_artifacts]
-                if services.request.allow_source_materialization_to_model
-                else []),
-            "previous_project_attempts": [{
-                "manifest_digest": item.get("manifest_digest"),
-                "deterministic_checks_passed": item.get(
-                    "deterministic_checks_passed"),
-                "commands": item.get("commands"),
-                "artifacts": item.get("artifacts"),
-            } for item in services.project_attempts],
-            "previous_construction_failures": {
-                "candidate": services.plan_details.get(
-                    "candidate_validation_failures", []),
-                "files": services.plan_details.get(
-                    "file_validation_failures", []),
-            },
-            "available_file_checkpoints":
-                services.generated_file_checkpoint_summaries(),
-            "project_contract": {
-                "record_type": "generated_project_candidate/v1",
-                "files": (
-                    "ordered UTF-8 implementation, test, configuration, and "
-                    "documentation file specifications. Never synthesize or "
-                    "recreate supplied dataset, source, or evidence bodies"),
-                "commands": (
-                    "argv-only Python commands; create .venv, install declared "
-                    "requirements, run the solution, then run its tests"),
-                "expected_artifacts": (
-                    "every output required by the original task, with media "
-                    "type; minimum_bytes must equal the framework nonempty "
-                    "value 1"),
-                "runtime": "immutable Python Docker image",
-                "network_inside_sandbox": "dependency_setup_only",
-                "allowed_command_executables": list(ALLOWED_PYTHON_EXECUTABLES),
-                "command_rule": (
-                    "Use python -m MODULE instead of pip, pytest, or a shell "
-                    "executable. Execute reviewed files rather than -c code. "
-                    "Declare command_kind setup, execute, or verify. Only a "
-                    "setup command whose argv begins python -m pip install may "
-                    "set network_access true. Execute and verify commands must "
-                    "use network_access false and read researched inputs from "
-                    "the exact paths in available_input_artifacts. A README "
-                    "mention or comment does not count as input use."),
-            },
-        }
-    candidate_schema = json.dumps({
-            "record_type": "generated_project_candidate/v1",
-            "project_id": "lowercase_identifier",
-            "summary": "string",
-            "files": [{
-                "path": "relative/path", "purpose": "string",
-                "acceptance": ["string"]}],
-            "commands": [{
-                "argv": ["python", "file.py"], "purpose": "string",
-                "timeout_seconds": 300,
-                "command_kind": "setup|execute|verify",
-                "network_access": False,
-                "expected_exit_codes": [0]}],
-            "expected_artifacts": [{
-                "path": "relative/path", "media_type": "type/subtype",
-                "minimum_bytes": 1}],
-        }, separators=(",", ":"))
-    failures: list[dict] = []
-    candidate = None
-    for attempt in range(1, 3):
-        value = services.model(ModelStepRequest(
-            "act",
-            ("Design the complete project structure needed to execute and "
-             "verify the task. Do not generate file contents yet."
-             if attempt == 1 else
-             "Repair the rejected project candidate without changing the task."),
-            {**state, "candidate_validation_failures": failures},
-            candidate_schema))
-        try:
-            candidate = GeneratedProjectCandidate.from_mapping(value)
-            break
-        except GeneratedProjectError as exc:
-            failure = {
-                "attempt": attempt, "error_type": type(exc).__name__,
-                "error": str(exc)[:500]}
-            failures.append(failure)
-            services.plan_details.setdefault(
-                "candidate_validation_failures", []).append(failure)
-            services.diagnostic("project_candidate_invalid", failure)
-    if candidate is None:
-        raise GeneratedProjectError(
-            "project candidate remained invalid after one model repair")
-    services.plan_details["project_candidate"] = candidate.to_dict()
-
-    generated_files = []
-    for file_spec in candidate.files:
-        checkpoint_key, contract_digest = _generated_file_checkpoint_identity(
-            candidate, file_spec, services.request.task)
-        checkpoint = services.generated_file_checkpoints.get(checkpoint_key)
-        if checkpoint is not None:
-            checkpoint_content = str(checkpoint.get("content") or "")
-            checkpoint_digest = hashlib.sha256(
-                checkpoint_content.encode("utf-8")).hexdigest()
-            if (checkpoint.get("path") == file_spec.path
-                    and checkpoint.get("contract_digest") == contract_digest
-                    and checkpoint.get("content_digest") == checkpoint_digest):
-                generated_file = GeneratedProjectFile(
-                    file_spec.path, checkpoint_content)
-                generated_files.append(generated_file)
-                services.plan_details.setdefault(
-                    "generated_files", []).append({
-                        "path": generated_file.path,
-                        "byte_count": len(
-                            generated_file.content.encode("utf-8")),
-                        "digest": checkpoint_digest,
-                        "checkpoint_key": checkpoint_key,
-                        "checkpoint_reused": True,
-                    })
-                services.publish(
-                    "practitioner.file_checkpoint.reused", step="act",
-                    artifact_path=generated_file.path,
-                    checkpoint_digest=checkpoint_digest)
-                continue
-        file_schema = json.dumps({
-            "path": file_spec.path, "content": "complete UTF-8 text",
-        }, separators=(",", ":"))
-        file_failures: list[dict] = []
-        generated_file = None
-        for attempt in range(1, 3):
-            value = services.model(ModelStepRequest(
-                "act",
-                (f"Generate the complete content for {file_spec.path}."
-                 if attempt == 1 else
-                 f"Repair the rejected content for {file_spec.path}."),
-                {
-                    **state,
-                    "project_candidate": candidate.to_dict(),
-                    "active_file": file_spec.to_dict(),
-                    "files_already_generated": [
-                        item.to_dict() for item in generated_files],
-                    "file_validation_failures": file_failures,
-                }, file_schema))
-            try:
-                if set(value) != {"path", "content"}:
-                    raise GeneratedProjectError(
-                        "generated file fields do not match version 1")
-                if str(value.get("path")) != file_spec.path:
-                    raise GeneratedProjectError(
-                        "generated file path differs from its specification")
-                generated_file = GeneratedProjectFile(
-                    file_spec.path, value.get("content"))
-                break
-            except GeneratedProjectError as exc:
-                failure = {
-                    "attempt": attempt, "path": file_spec.path,
-                    "error_type": type(exc).__name__,
-                    "error": str(exc)[:500]}
-                file_failures.append(failure)
-                services.plan_details.setdefault(
-                    "file_validation_failures", []).append(failure)
-                services.diagnostic("project_file_invalid", failure)
-        if generated_file is None:
-            raise GeneratedProjectError(
-                f"file {file_spec.path!r} remained invalid after one repair")
-        generated_files.append(generated_file)
-        checkpoint_summary = services.checkpoint_generated_file(
-            checkpoint_key, generated_file.path, generated_file.content,
-            contract_digest)
-        services.plan_details.setdefault("generated_files", []).append({
-            "path": generated_file.path,
-            "byte_count": len(generated_file.content.encode("utf-8")),
-            "digest": hashlib.sha256(
-                generated_file.content.encode("utf-8")).hexdigest(),
-            "checkpoint_key": checkpoint_key,
-            "checkpoint_reused": False,
-            "artifact_ref": checkpoint_summary["artifact_ref"],
-        })
-        services.publish(
-            "practitioner.file_checkpoint.stored", step="act",
-            artifact_path=generated_file.path,
-            checkpoint_digest=checkpoint_summary["content_digest"])
-    return GeneratedProjectManifest(
-        candidate.project_id, candidate.summary, tuple(generated_files),
-        candidate.commands, candidate.expected_artifacts)
-
-
 def _web_operation(arguments, services, owner):
     maximum_bytes = arguments.get("maximum_bytes")
     return services.dependencies.web_fetcher(
@@ -356,76 +125,6 @@ def _search_operation(arguments, services, owner):
         WebSearchAuthority(
             services.run_id, services.request.allow_network_reads),
         WebSearchContext(owner))
-
-
-def _input_artifact_path(
-        final_url: str, index: int, used_paths: set[str]) -> str:
-    url_path = final_url.split("?", 1)[0]
-    suffix = Path(url_path).suffix[:12]
-    if not suffix or not suffix.replace(".", "").isalnum():
-        suffix = ".bin"
-    basename = Path(url_path).name
-    safe_basename = (
-        basename if basename and len(basename) <= 120
-        and all(character.isalnum() or character in ".-_"
-                for character in basename)
-        else "")
-    named_path = f"inputs/{safe_basename}" if safe_basename else ""
-    return (named_path if named_path and named_path not in used_paths
-            else f"inputs/source-{index}{suffix}")
-
-
-def _project_inputs(
-        services: AdaptiveRunServices) -> tuple[GeneratedProjectInputArtifact, ...]:
-    inputs = list(_local_project_inputs(services))
-    used_paths = set()
-    used_paths.update(item.path for item in inputs)
-    for index, result in enumerate(services.web_results, 1):
-        reference = ContextArtifactRef.from_dict(result["artifact_ref"])
-        body = services.artifacts.store.get(reference)
-        relative_path = _input_artifact_path(
-            str(result.get("final_url") or ""), index, used_paths)
-        used_paths.add(relative_path)
-        inputs.append(GeneratedProjectInputArtifact(
-            relative_path, body,
-            str(result.get("media_type") or "application/octet-stream"),
-            reference.digest))
-    return tuple(inputs)
-
-
-def _local_project_inputs(
-        services: AdaptiveRunServices) -> tuple[GeneratedProjectInputArtifact, ...]:
-    if services.request.source_kind not in {"dataset", "repository", "task_pack"}:
-        return ()
-    if not services.request.allow_source_materialization_to_model:
-        raise PermissionError(
-            "local task sources require explicit source-to-model authority")
-    available = dict(inspectable_source_files(services))
-    selected_records = {}
-    for inspection in services.source_inspections:
-        for item in inspection.get("selected", ()):
-            raw = str(item.get("path") or "")
-            if not raw:
-                continue
-            relative = raw if raw in available else (
-                _resolve_requested_paths([raw], available).get(raw, ""))
-            if relative:
-                selected_records[relative] = str(item.get("digest") or "")
-    selected_paths = tuple(selected_records)
-    if not selected_paths:
-        raise GeneratedProjectError(
-            "local sources were supplied but the model has not selected any "
-            "through core.source.inspect; request manifest_paths from "
-            "core.source.inspect first, then select exact paths")
-    missing = sorted(set(selected_paths) - set(available))
-    if missing:
-        raise GeneratedProjectError(
-            f"selected local source paths are no longer available: {missing}")
-    return tuple(GeneratedProjectInputArtifact(
-        f"inputs/{relative}", available[relative].read_bytes(),
-        mimetypes.guess_type(available[relative].name)[0] or "text/plain",
-        selected_records[relative])
-        for relative in selected_paths)
 
 
 def execute_adaptive_capability(
@@ -500,35 +199,75 @@ def execute_adaptive_capability(
                 limitations=(
                     "Search candidates are not evidence. Fetch a selected "
                     "source before constructing a source-dependent project.",))
+        # These refusals used to return without telling the fence, so the
+        # fence view stated "recent_failures: []" while a live run refused
+        # the same construction on twenty consecutive passes. A refusal the
+        # runtime does not remember is a refusal the model cannot learn from.
+        def refuse_project(objective: str, exc: BaseException,
+                           limitation: str,
+                           fence_arguments: dict) -> ResultPacket:
+            rejection = rejection_from_exception(
+                plan.handle, exc, pass_number=services.active_pass_number)
+            services.action_fence.note_failure(
+                plan.handle, fence_arguments, error=rejection.message,
+                rejection=rejection.to_dict(),
+                pass_number=services.active_pass_number)
+            services.diagnostic("generated_project_refused", {
+                "objective": objective, "error": rejection.message[:500]})
+            return ResultPacket(
+                objective=objective,
+                result={"rejection": rejection.to_dict()},
+                errors=(rejection.message,),
+                confidence=0.0,
+                limitations=(limitation,))
+
+        # A construction that never reached a manifest is remembered under
+        # its stage, not under the capability, because the model repairs it
+        # by changing run state rather than by changing this call.
+        prepare_arguments = {**arguments, "construction_stage": "prepare"}
         try:
-            input_artifacts = _project_inputs(services)
-            manifest = _project_manifest(request, services, input_artifacts)
+            input_artifacts = project_inputs(services)
+            manifest = project_manifest(
+                request.state, plan, services, input_artifacts)
         except (AdaptivePractitionerError, GeneratedProjectError,
                 SolutionModelError, PermissionError) as exc:
+            return refuse_project(
+                "prepare and construct a valid executable project", exc,
+                "The project could not be prepared from the current run "
+                "state. Select the required local sources through "
+                "core.source.inspect first; no workspace or command "
+                "effect was performed.", prepare_arguments)
+        services.action_fence.note_success(plan.handle, prepare_arguments)
+        # An attempt is identified by its manifest, not by the empty argument
+        # set every generated-project call shares. A corrected project is a
+        # different action and stays admissible; the identical one cannot
+        # behave differently and is refused before it costs anything.
+        attempt_arguments = {**arguments, "manifest_digest": manifest.digest}
+        if services.action_fence.is_fenced(
+                plan.handle, attempt_arguments, fence_policy):
+            refusal = services.action_fence.refusal(
+                plan.handle, attempt_arguments, fence_policy,
+                pass_number=services.active_pass_number)
             return ResultPacket(
-                objective="prepare and construct a valid executable project",
-                errors=(f"{type(exc).__name__}: {str(exc)[:500]}",),
+                objective="execute a generated project",
+                result={"rejection": refusal.to_dict()},
+                errors=(refusal.message,),
                 confidence=0.0,
                 limitations=(
-                    "The project could not be prepared from the current run "
-                    "state. Select the required local sources through "
-                    "core.source.inspect first; no workspace or command "
-                    "effect was performed.",))
+                    "This exact project already failed and cannot behave "
+                    "differently; change the files or the commands. "
+                    + refusal.repair_hint,))
         try:
             input_validation = as_practitioner_loop(
                 "validate generated project input use",
                 lambda: validate_generated_project_input_use(
                     manifest, input_artifacts), parent=owner)["value"]
         except Exception as exc:  # noqa: BLE001
-            services.diagnostic("project_input_use_invalid", {
-                "error_type": type(exc).__name__, "error": str(exc)[:500]})
-            return ResultPacket(
-                objective="validate generated project input use",
-                errors=(f"{type(exc).__name__}: {str(exc)[:500]}",),
-                confidence=0.0,
-                limitations=(
-                    "The generated project ignored supplied inputs or violated "
-                    "offline execution policy; no effect was performed.",))
+            return refuse_project(
+                "validate generated project input use", exc,
+                "The generated project ignored supplied inputs or violated "
+                "offline execution policy; no effect was performed.",
+                attempt_arguments)
         attempt = len(services.project_attempts) + 1
         workspace = services.workspace_base / f"attempt-{attempt}"
 
@@ -594,7 +333,7 @@ def execute_adaptive_capability(
             plan.handle, exc, pass_number=services.active_pass_number)
         services.action_fence.note_failure(
             plan.handle, arguments,
-            error=f"{type(exc).__name__}: {str(exc)[:500]}",
+            error=rejection.message,
             rejection=rejection.to_dict(),
             pass_number=services.active_pass_number)
         admitted = rejection.admitted_values
@@ -609,11 +348,29 @@ def execute_adaptive_capability(
         return ResultPacket(
             objective=plan.handle,
             result={"rejection": rejection.to_dict()},
-            errors=(f"{type(exc).__name__}: {str(exc)[:500]}",),
+            # The rejection already names the deepest cause; repeating the
+            # wrapper here would put the uninformative sentence back in front
+            # of the model beside the informative one.
+            errors=(rejection.message,),
             confidence=0.0,
             limitations=limitations,
             lineage=(compiled["digest"],))
     services.action_fence.note_success(plan.handle, arguments)
+    if manifest is not None:
+        # Executing is not passing. A project that ran and failed its own
+        # checks has told the run everything an identical rerun would, so the
+        # identical manifest is remembered as failed and a changed one is not.
+        if output.get("deterministic_checks_passed"):
+            services.action_fence.note_success(
+                plan.handle, {**arguments,
+                              "manifest_digest": manifest.digest})
+        else:
+            services.action_fence.note_failure(
+                plan.handle,
+                {**arguments, "manifest_digest": manifest.digest},
+                error="the project executed and its deterministic checks "
+                      "did not pass",
+                pass_number=services.active_pass_number)
     services.plan_details["active_canvas"] = {
         "candidate_id": f"canvas:{identity}",
         "selected": True,
@@ -628,6 +385,11 @@ def execute_adaptive_capability(
             f"source:{item['digest']}" for item in output["selected"]
             if f"source:{item['digest']}"
             not in services.selected_intelligence_refs)
+        # What each supplied file *is* is a reading, not a rule this runtime
+        # could hold, so one model call states it and the answer is saved.
+        # It runs once per distinct manifest, here, because this is the first
+        # moment the run holds bytes to read it from.
+        orient_source_roles(services)
         return ResultPacket(
             objective=(str(arguments.get("query") or "")
                        or "inspect supplied source"),
@@ -700,46 +462,10 @@ def execute_adaptive_capability(
 
 def self_test() -> dict:
     """Static contract check; execution is covered by the adaptive suite."""
-    from .generated_project import (
-        ExpectedProjectArtifact, GeneratedProjectCommand)
     source = Path(__file__).read_text(encoding="utf-8").split(
         "def self_test()", 1)[0].lower()
     task_words = ("openml", "iris", "boosted-tree", "target_column=", "kaggle")
     passed = not any(word in source for word in task_words)
-    used = set()
-    first_path = _input_artifact_path(
-        "https://example.test/files/records.data", 1, used)
-    used.add(first_path)
-    duplicate_path = _input_artifact_path(
-        "https://mirror.test/records.data", 2, used)
-    paths_passed = (
-        first_path == "inputs/records.data"
-        and duplicate_path == "inputs/source-2.data")
-    file_spec = GeneratedProjectFileSpec(
-        "pipeline.py", "Reusable pipeline.", ("Pipeline runs.",))
-    command = GeneratedProjectCommand(
-        ("python", "pipeline.py"), "Run pipeline.")
-    artifact = ExpectedProjectArtifact("pipeline.py", "text/x-python")
-    candidate_a = GeneratedProjectCandidate(
-        "checkpoint_a", "First wording.", (file_spec,), (command,),
-        (artifact,))
-    candidate_b = GeneratedProjectCandidate(
-        "checkpoint_b", "Different wording.", (file_spec,), (command,),
-        (artifact,))
-    changed_file = GeneratedProjectFileSpec(
-        "pipeline.py", "Reusable pipeline.", ("Different contract.",))
-    candidate_changed = GeneratedProjectCandidate(
-        "checkpoint_c", "First wording.", (changed_file,), (command,),
-        (artifact,))
-    key_a, contract_a = _generated_file_checkpoint_identity(
-        candidate_a, file_spec, "same task")
-    key_b, contract_b = _generated_file_checkpoint_identity(
-        candidate_b, file_spec, "same task")
-    key_changed, _contract_changed = _generated_file_checkpoint_identity(
-        candidate_changed, changed_file, "same task")
-    checkpoint_identity_passed = (
-        key_a == key_b and contract_a == contract_b
-        and key_changed != key_a)
     fence_policy = DEFAULT_SUPERVISION_POLICY.action_fence
     fence = ActionFenceLedger()
     repeated_call = {"paths": ["/never/admitted"], "include_contents": False}
@@ -773,14 +499,6 @@ def self_test() -> dict:
         "detail": (f"fenced after "
                    f"{fence_policy.identical_failures_before_fence} identical "
                    "failures; a different argument set stays admissible"),
-    }, {
-        "test": "fetched_inputs_preserve_safe_authoritative_basenames",
-        "passed": paths_passed,
-        "detail": f"{first_path}; {duplicate_path}",
-    }, {
-        "test": "file_checkpoint_reuses_only_an_unchanged_semantic_contract",
-        "passed": checkpoint_identity_passed,
-        "detail": f"{key_a[:32]}; changed={key_changed[:32]}",
     }]
     return {
         "record_type": "adaptive_capability_compilation_test/v1",

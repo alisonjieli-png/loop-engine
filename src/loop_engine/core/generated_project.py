@@ -197,6 +197,33 @@ class GeneratedProjectFileSpec:
         }
 
 
+def _refuse_pre_authored_artifacts(file_paths, artifacts) -> None:
+    """An expected artifact is evidence of a run, so it may not be typed.
+
+    A file written from the candidate proves only that a model typed it. When
+    the same path is also declared an expected artifact, the artifact check
+    becomes vacuous: the bytes were there before any command ran, so a crashed
+    or never-executed solution still "produces" its outputs.
+
+    A live run failed exactly this way. It declared submission.csv,
+    metrics.json, report.md and verification.json as both authored files and
+    expected artifacts, then typed cross-validation scores it had never
+    computed and a submission it had never predicted, and the artifact check
+    passed on all four. Authored files remain fully evidenced by the write
+    record; they simply do not count as the output of an execution.
+    """
+    authored = sorted({item.path for item in artifacts}
+                      & {path for path in file_paths})
+    if authored:
+        raise GeneratedProjectError(
+            f"{authored} are declared as expected artifacts and also authored "
+            "as project files; an expected artifact is evidence that a "
+            "command produced it, and a typed file proves only that it was "
+            "typed. Author the code that produces each of these and remove "
+            "the output itself from files, or drop it from expected_artifacts "
+            "if it is an input rather than a result")
+
+
 @dataclass(frozen=True)
 class GeneratedProjectCandidate:
     """Passive project structure compiled into files before any effect."""
@@ -222,6 +249,7 @@ class GeneratedProjectCandidate:
         paths = tuple(item.path for item in files)
         if len(paths) != len(set(paths)):
             raise GeneratedProjectError("project candidate file paths repeat")
+        _refuse_pre_authored_artifacts(paths, artifacts)
         object.__setattr__(self, "files", files)
         object.__setattr__(self, "commands", commands)
         object.__setattr__(self, "expected_artifacts", artifacts)
@@ -331,6 +359,7 @@ class GeneratedProjectManifest:
         paths = tuple(item.path for item in files)
         if len(paths) != len(set(paths)):
             raise GeneratedProjectError("generated project file paths repeat")
+        _refuse_pre_authored_artifacts(paths, artifacts)
         object.__setattr__(self, "files", files)
         object.__setattr__(self, "commands", commands)
         object.__setattr__(self, "expected_artifacts", artifacts)
@@ -459,9 +488,23 @@ def validate_generated_project_input_use(
     supplied = tuple(inputs)
     referenced = set()
     forbidden_imports = set()
+    near_misses: set[tuple[str, str]] = set()
     network_roots = {
         "aiohttp", "ftplib", "http.client", "httpx", "requests", "socket",
         "urllib", "urllib3"}
+
+    def note(value: str) -> None:
+        """Record whether one literal reaches a supplied input, or nearly."""
+        for supplied_item in supplied:
+            if supplied_item.path in value:
+                referenced.add(supplied_item.path)
+            elif value and (
+                    supplied_item.path.endswith("/" + value)
+                    or (PurePosixPath(value).name
+                        and PurePosixPath(supplied_item.path).name
+                        == PurePosixPath(value).name)):
+                near_misses.add((value, supplied_item.path))
+
     for item in manifest.files:
         if not item.path.endswith(".py"):
             continue
@@ -472,9 +515,7 @@ def validate_generated_project_input_use(
                 f"generated Python file {item.path!r} does not parse") from exc
         for node in ast.walk(tree):
             if isinstance(node, ast.Constant) and isinstance(node.value, str):
-                for supplied_item in supplied:
-                    if supplied_item.path in node.value:
-                        referenced.add(supplied_item.path)
+                note(node.value)
             names = []
             if isinstance(node, ast.Import):
                 names = [entry.name for entry in node.names]
@@ -485,17 +526,28 @@ def validate_generated_project_input_use(
                        for root in network_roots):
                     forbidden_imports.add(name)
     for command in manifest.commands:
-        for supplied_item in supplied:
-            if supplied_item.path in command.argv:
-                referenced.add(supplied_item.path)
+        for argument in command.argv:
+            note(argument)
     if forbidden_imports:
         raise GeneratedProjectError(
             "offline execute or verify source imports network clients: "
             + ", ".join(sorted(forbidden_imports)))
     if supplied and not referenced:
+        # Saying only "you ignored the inputs" leaves the model nothing to
+        # act on, and it re-reads the manifest, which states a different path
+        # space and fails again. A live run spent 226 model calls and 32
+        # passes in exactly that circle. So name the literal it used, the
+        # path that literal should have been, and the whole admitted set.
+        detail = ""
+        if near_misses:
+            detail = "; it opens " + ", ".join(
+                f"{value!r}, which is supplied at {path!r}"
+                for value, path in sorted(near_misses)[:6])
         raise GeneratedProjectError(
-            "project ignores every supplied researched input artifact; use one "
-            "of the exact available input paths")
+            "project ignores every supplied researched input artifact"
+            + detail
+            + ". Read each input at its exact supplied path. Supplied paths: "
+            + str([item.path for item in supplied][:16]))
     return {
         "record_type": "generated_project_input_use_validation/v1",
         "supplied_paths": [item.path for item in supplied],
@@ -755,8 +807,11 @@ def self_test() -> dict:
             "purpose": "Run the generated project.",
             "timeout_seconds": 30,
         }],
+        # main.py is authored; output.txt is what running it produces. The
+        # two sets are disjoint because an artifact the model typed is not
+        # evidence that a command ran.
         "expected_artifacts": [{
-            "path": "main.py", "media_type": "text/x-python",
+            "path": "output.txt", "media_type": "text/plain",
             "minimum_bytes": 1,
         }],
     })
@@ -771,10 +826,18 @@ def self_test() -> dict:
             "timeout_seconds": 30,
         }],
         "expected_artifacts": [{
-            "path": "main.py", "media_type": "text/x-python",
+            "path": "output.txt", "media_type": "text/plain",
             "minimum_bytes": 1,
         }],
     })
+    try:
+        GeneratedProjectManifest.from_mapping({
+            **valid.to_dict(), "expected_artifacts": [{
+                "path": "main.py", "media_type": "text/x-python",
+                "minimum_bytes": 1}]})
+        typed_output_refused = ""
+    except GeneratedProjectError as exc:
+        typed_output_refused = str(exc)[:80]
     tests = [{
         "test": "generic_project_candidate_round_trips",
         "passed": GeneratedProjectCandidate.from_mapping(
@@ -785,6 +848,10 @@ def self_test() -> dict:
         "passed": GeneratedProjectManifest.from_mapping(
             valid.to_dict()).digest == valid.digest,
         "detail": valid.digest,
+    }, {
+        "test": "an_expected_artifact_may_not_be_a_file_the_model_typed",
+        "passed": bool(typed_output_refused),
+        "detail": typed_output_refused or "a typed output was accepted",
     }]
     for label, media_type, body, expected in (
             ("pdf", "application/pdf", b"%PDF-1.4\n%%EOF", True),
@@ -878,14 +945,17 @@ def self_test() -> dict:
         "record_type": GENERATED_PROJECT_RECORD_TYPE,
         "project_id": "fallback_test",
         "summary": "Run one bounded local project.",
-        "files": [{"path": "main.py", "content": "print('local ok')\n"}],
+        "files": [{
+            "path": "main.py",
+            "content": "from pathlib import Path\n"
+                       "Path('output.txt').write_text('local ok\\n')\n"}],
         "commands": [{
             "argv": ["python", "main.py"],
             "purpose": "Run the generated project.",
             "timeout_seconds": 30,
         }],
         "expected_artifacts": [{
-            "path": "main.py", "media_type": "text/x-python",
+            "path": "output.txt", "media_type": "text/plain",
             "minimum_bytes": 1,
         }],
     })

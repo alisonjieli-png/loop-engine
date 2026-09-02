@@ -26,7 +26,8 @@ from __future__ import annotations
 import hashlib
 
 from .adaptive_practitioner_records import AdaptivePractitionerError
-from .adaptive_practitioner_source import inspectable_source_files
+from .adaptive_practitioner_source import (
+    inspectable_source_files, project_input_path)
 from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
 
 RUNTIME_FACTS_RECORD_TYPE = "practitioner_runtime_facts/v1"
@@ -47,15 +48,34 @@ def _source_manifest(services) -> dict | None:
         return None
     paths = sorted(relative for relative, _path in files)
     digest = hashlib.sha256("\n".join(paths).encode("utf-8")).hexdigest()
+    carried = paths[:MANIFEST_PATH_LIMIT]
     return {
-        "paths": paths[:MANIFEST_PATH_LIMIT],
+        "paths": carried,
+        "sandbox_paths": {relative: project_input_path(relative)
+                          for relative in carried},
         "total": len(paths),
         "truncated": len(paths) > MANIFEST_PATH_LIMIT,
         "digest": digest,
         "usage": ("core.source.inspect admits exactly these relative paths; "
                   "call it with paths omitted to receive the manifest with "
                   "sizes, or with a subset of these paths for contents"),
+        "sandbox_paths_usage": (
+            "generated code runs in the workspace, not beside the source: "
+            "open a file at its sandbox_paths value, never at its admitted "
+            "path. These are the exact paths the runtime materializes"),
     }
+
+
+def _source_roles(services) -> dict | None:
+    """The saved reading of the supplied files, marked as a reading."""
+    record = getattr(services, "source_roles", None)
+    if not isinstance(record, dict):
+        return None
+    return {**record, "usage": (
+        "what this run read each supplied file to be, and the fields that "
+        "reading rests on. It is a recorded reading, not authority: where "
+        "what you observe contradicts a role, the observation wins and the "
+        "contradiction is worth stating")}
 
 
 def granted_permissions(request) -> tuple[str, ...]:
@@ -82,6 +102,7 @@ def runtime_facts(services) -> dict:
         "granted_permissions": list(granted_permissions(request)),
         "interaction_mode": str(request.interaction_mode),
         "source_manifest": _source_manifest(services),
+        "source_roles": _source_roles(services),
         "action_fence": services.action_fence.model_view(policy),
     }
 
@@ -135,6 +156,22 @@ def self_test() -> dict:
                    == ["source_read", "workspace_write", "sandbox_command"]
                    and facts.get("authority") == "runtime"),
         "detail": str(facts.get("granted_permissions")),
+    }, {
+        "test": "both_path_spaces_are_stated_so_generated_code_cannot_drift",
+        "passed": (
+            bool(paths)
+            and set(manifest.get("sandbox_paths") or {}) == set(paths)
+            and all((manifest["sandbox_paths"][path]
+                     == project_input_path(path))
+                    and manifest["sandbox_paths"][path] != path
+                    for path in paths)),
+        "detail": str(manifest.get("sandbox_paths"))[:160],
+    }, {
+        "test": "the_saved_file_reading_is_stated_or_explicitly_absent",
+        "passed": ("source_roles" in facts
+                   and facts["source_roles"] is None
+                   and closed_facts["source_roles"] is None),
+        "detail": str(facts.get("source_roles")),
     }, {
         "test": "no_source_authority_means_no_manifest_and_no_error",
         "passed": (closed_facts["source_manifest"] is None

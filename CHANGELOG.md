@@ -9,6 +9,82 @@ First public release.
 
 ### Added
 
+- **What a supplied file is, is a model call, not a rule.**
+  `core.source_role_orientation` asks one bounded model call to state what
+  each supplied file is, in its own words, citing the bytes it read. The
+  runtime admits the reading only against facts it holds exactly (the manifest
+  digest and the admitted path set), refuses a claim about a path it never
+  admitted, and refuses a manifest entry left silently unaccounted for: an
+  unknown role is a state to record, not a file to omit. The reading is saved
+  per manifest digest and stated on every later call as `runtime_facts`
+  `source_roles`, so a run pays for it once. No file name, layout, or role
+  vocabulary is written into the runtime, and a self-test scans this module's
+  own executable code to keep it that way.
+
+- **The runtime states what a field holds, not just what it is called.**
+  `core.source.profile` now reports, per field and over a bounded row sample,
+  how many distinct values appeared, some of them, how many were empty, and
+  whether every one parses as a number. A live run read a column of `Yes` and
+  `No` as a continuous target, chose a regressor, and reported a root mean
+  squared error it could not have computed; the header allowed that and the
+  values would not have. The same profile is the evidence one orientation
+  call reads, and a reading must name the fields it rests on: a field name
+  the runtime never profiled is refused, because it was not observed.
+  Delimited files are parsed with `csv.reader`, so a quoted value containing
+  the delimiter no longer shifts every field after it.
+
+### Changed
+
+- **Generated-project assembly is its own module.**
+  `core.adaptive_practitioner_project` now owns input placement, the project
+  candidate, the authored-file repair loop, and checkpoint reuse, leaving
+  `core.adaptive_practitioner_capabilities` to dispatch. It takes the
+  Practitioner state and the selected plan rather than the capability
+  request, so nothing below dispatch depends on a name defined above it.
+
+### Fixed
+
+- **A model could type the results it claimed to have produced.** A generated
+  project could declare the same path as both an authored file and an
+  expected artifact, which made the artifact check vacuous: the bytes existed
+  before any command ran. A live run declared `submission.csv`,
+  `metrics.json`, `report.md` and `verification.json` that way, typed
+  cross-validation scores it never computed and a submission it never
+  predicted, and passed the artifact check on all four. The two sets must now
+  be disjoint. Authored files stay fully evidenced by the write record; they
+  simply are not evidence of an execution. The repository's own fixtures
+  carried the same shape and were corrected, which is why the gap survived.
+
+- **A refused call reported the wrapper instead of the reason.** A failure
+  inside a governed Loop arrives wrapped, and the untyped fallback described
+  the wrapper: the model read "deterministic check validate generated project
+  input use raised inside loop 1470 (evidence on the ledger)" twenty times
+  while the sentence naming the wrong path sat two links down `__cause__`.
+  `rejection_from_exception` now reports the deepest cause and names the
+  wrappers it travelled through, for every capability. The input-use refusal
+  also names the literal the code opened, the path that literal should have
+  been, and the whole admitted set, so the repair is a substitution rather
+  than a diagnosis.
+
+- **The action fence never saw the most expensive capability fail.** Three
+  `core.generated_project` refusal paths returned a result packet without
+  telling the fence, so the model-visible fence view stated
+  `recent_failures: []` while a run refused the same construction on twenty
+  consecutive passes. All three now record. An attempt is identified by its
+  manifest digest rather than by the empty argument set every
+  generated-project call shares, so an identical failed project is refused
+  before it costs anything while a corrected one stays admissible, and a
+  project that executed but failed its own deterministic checks is remembered
+  as failed rather than cleared.
+
+- **Two path spaces for one file, never reconciled.** Runtime facts stated a
+  supplied file at its admitted manifest path while `core.generated_project`
+  materialized it under an `inputs/` prefix, so generated code opened the path
+  the runtime had told it about and found nothing. The prefix is now one rule
+  (`project_input_path`) that both the materializer and the facts projection
+  call, and runtime facts state `sandbox_paths` beside `paths` with which is
+  which.
+
 - **OpenCode as a Loop realization.** `OpenCodeProcessAdapter` runs one
   bounded headless `opencode run --format json` inside the canonical external
   harness Loop: version and model-listing handshake, default starting

@@ -81,8 +81,8 @@ def run_checks() -> dict:
                    "acceptance": ["The file runs."]}],
         "commands": [{"argv": ["python", "main.py"],
                       "purpose": "Run the project.", "timeout_seconds": 30}],
-        "expected_artifacts": [{"path": "main.py",
-                                "media_type": "text/x-python",
+        "expected_artifacts": [{"path": "output.txt",
+                                "media_type": "text/plain",
                                 "minimum_bytes": 1}]})
     generated_file = json.dumps({
         "path": "main.py", "content": "print('done')\n"})
@@ -97,6 +97,7 @@ def run_checks() -> dict:
         path = Path(request.workspace_root)
         path.mkdir(parents=True, exist_ok=True)
         (path / "main.py").write_text("print('done')\n", encoding="utf-8")
+        (path / "output.txt").write_text("done\n", encoding="utf-8")
         return {
             "record_type": "generated_project_execution/v1",
             "manifest_digest": request.manifest.digest,
@@ -106,12 +107,12 @@ def run_checks() -> dict:
             "writes": [], "commands": [{"purpose": "run", "ok": True,
                                            "exit_code": 0, "stdout": "done\n",
                                            "stderr": "", "error_code": ""}],
-            "artifacts": [{"path": "main.py", "media_type": "text/x-python",
+            "artifacts": [{"path": "output.txt", "media_type": "text/plain",
                            "minimum_bytes": 1, "present": True,
-                           "byte_count": 14, "digest": "a" * 64,
+                           "byte_count": 5, "digest": "a" * 64,
                            "error_code": "", "verified": True}],
-            "snapshot": {"digest": "b" * 64, "file_count": 1,
-                         "total_bytes": 14},
+            "snapshot": {"digest": "b" * 64, "file_count": 2,
+                         "total_bytes": 19},
             "deterministic_checks_passed": True,
         }
 

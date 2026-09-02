@@ -157,9 +157,9 @@ def _task_a() -> tuple[TaskIntakeRequest, tuple[str, ...]]:
                       "purpose": "Run end-to-end verification.",
                       "timeout_seconds": 30, "command_kind": "verify",
                       "network_access": False, "expected_exit_codes": [0]}],
+        # expense_report.py is authored, so the write record already proves
+        # it exists; report.md is what running the project produces.
         "expected_artifacts": [
-            {"path": "expense_report.py", "media_type": "text/x-python",
-             "minimum_bytes": 1},
             {"path": "report.md", "media_type": "text/markdown",
              "minimum_bytes": 1}],
     }

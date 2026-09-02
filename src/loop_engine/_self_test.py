@@ -38,6 +38,8 @@ def self_test() -> dict:
         "core.facets", "core.api_quality", "core.model_response_text",
         "core.action_fence", "core.capability_rejection",
         "core.practitioner_runtime_facts",
+        "core.source_role_orientation",
+        "core.adaptive_practitioner_project",
         "core.context_budget", "core.context_pack_manifest",
         "core.task_frontier", "core.prompt_experiment",
         "core.task_region_statistics", "core.self_tuning",
