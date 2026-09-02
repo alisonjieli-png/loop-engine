@@ -7,6 +7,13 @@ repository and `AGENTS.md`. They are not parallel architecture authorities.
   is the current implementation, adversarial review, ideation, and continuous
   conformance set for passive component encapsulation, typed context handoff,
   deterministic prompt assembly, and recursive Practitioner work.
+- [Everything-is-a-Loop adversarial audit](LOOP-ENGINE-EVERYTHING-IS-A-LOOP-ADVERSARIAL-AUDIT.md)
+  is a read-first audit mandate with several hundred evidence-scored
+  questions and twenty-five required probes on the one-runtime invariant,
+  the abstraction lineage behind it, passive data, modes and distillation,
+  shortcuts, supervisors, the distribution fabric, and the harness
+  comparison. It grades claims PROVEN, IMPLEMENTED_UNPROVEN, PARTIAL,
+  ABSENT, or CONTRADICTED and forbids repairs before the report is durable.
 - [Strict everything-is-a-Loop primitives](STRICT-EVERYTHING-IS-A-LOOP-PRIMITIVES.md)
   moves semantic values and transformations into deterministic atomic Loops
   over one finite audited intrinsic kernel.

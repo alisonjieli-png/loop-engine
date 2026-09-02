@@ -1,0 +1,2197 @@
+{
+ "audited_commit": "517e321e52e0c3d0dc7e1c53448499203f37dc59",
+ "auditors": {
+  "context (8,9,13)": "probes on disk; scorecard authored by coordinator",
+  "fabric (10,11,14,16)": "scorecard written before session limit",
+  "invariant (3,17)": "probes on disk; scorecard authored by coordinator",
+  "learning (6,7,12)": "scorecard written before session limit",
+  "structures (4,5,15)": "completed"
+ },
+ "counts": {
+  "by_severity": {
+   "critical": 1,
+   "high": 48,
+   "low": 26,
+   "medium": 105
+  },
+  "by_verdict": {
+   "ABSENT": 20,
+   "CONTRADICTED": 7,
+   "EXISTS": 4,
+   "IMPLEMENTED_UNPROVEN": 16,
+   "NEEDED": 15,
+   "NOT_APPLICABLE": 1,
+   "NOT_NEEDED": 1,
+   "PARTIAL": 83,
+   "PROVEN": 33
+  },
+  "questions": 180
+ },
+ "date": "2026-09-01",
+ "questions": [
+  {
+   "evidence": [
+    "src/loop_engine/loop/recursive_loop.py:Loop._terminate (lines 960-992)",
+    "src/loop_engine/loop/recursive_loop.py:Loop.enable_run_history (946-958)",
+    "src/loop_engine/core/adaptive_practitioner.py:596",
+    "src/loop_engine/core/context_artifacts.py:ContextArtifactStore.put (101-133)",
+    "callers: src/loop_engine/core/information_access.py:443, core/web_fetch.py:235, core/adaptive_practitioner_records.py:652,994, core/mcp_adapter.py:547, core/external_harness.py:647",
+    "src/loop_engine/core/studio_server.py:661-664 (RunHistory.from_ledger+save outside any Loop)"
+   ],
+   "id": "4.1",
+   "note": "Run History is written by the starting Loop's own terminal transition (Loop-owned) but the `run_history_saved` ledger event is recorded after the projection so the saved file never contains its own write receipt; context artifacts are stored by digest through a plain service (`ContextArtifactStore.put`) that records no ledger event and has no Loop identity at 6 runtime call sites.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/loop_role.py:LoopRelationshipKind.RETRIEVED_BY (line 24)",
+    "runtime producers: src/loop_engine/loop/intelligence_loops.py:139, core/skill_registry.py:432, core/mcp_adapter.py:514, core/reusable_capability_flywheel.py:62",
+    "saved runs census (probe saved_runs_census.py): 191 loop_init events with relationship_kind=retrieved_by and 191 `intelligence.context.retrieved` ledger events across 18 runs; 0 `context_retrieval` RunHistory events",
+    "src/loop_engine/core/run_history.py:_LEDGER_MAP (maps legacy `intelligence_pull`, emitted only by core/intelligence_layers.py:749)"
+   ],
+   "id": "4.2",
+   "note": "Retrieval is performed by Intelligence Loops whose init carries a Retrieved-by relationship in the ledger (191/191 in saved runs), but the canonical RunHistory bucket `context_retrieval` is dead: every retrieval lands in `custom` because the projection maps a legacy event name no retrieval path emits.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "probe graph_port_mismatch_probe.py CASE 3: 28 ledger events, edge ids e0/e1 appear in 0 events; port binding only in the non-ledger `trace` (8 entries)",
+    "src/loop_engine/code_nodes/solution_graph.py:LoopGraphEdge (278-329) and LoopGraphEndpoint(vertex_id, port_role)",
+    "src/loop_engine/code_nodes/solution_canvas.py:_run_atomic_operation (379-467): value passed as Python object `value`, role checked only when wrapped in LoopPortValue",
+    "src/loop_engine/loop/delegation_runtime.py:LoopPortValue (79)"
+   ],
+   "id": "4.3",
+   "note": "The edge is typed and digest-bound in LoopGraphDefinition, and the runtime records `connected_from_loop_ids`/`input_roles`/`output_roles` on loop init, but the actual move is a Python object passed through the `invoke` closure and no ledger event records the port-to-port binding, the edge id, or the value digest.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "probe pr16/process_a.py + pr16/process_b.py + pr16/merge.py (all exit 0): token `loop_pause/v2` 3170 bytes; B resumed at steps_run=2 and finished ACCEPTED",
+    "merge output: LoopLedger public methods = [id_namespace, loops, next_id, record, register_definition, tree] (no merge); RunHistory methods = [append, commit, from_ledger, load, save, to_otel_spans, verify_chain] (no merge)",
+    "tamper test: forged process-B `run_step` before merge -> verify_chain intact=True (chain is computed only at projection); post-projection edit -> broken_at [3]",
+    "src/loop_engine/loop/recursive_loop.py:Loop.pause (1013-1058), Loop.resume (1060-1140); LoopLedger.record (275-286) appends dicts with no digest",
+    "default namespace collision: A=procA.loop1 vs B=loop1 unless id_namespace is set by the caller"
+   ],
+   "id": "4.4",
+   "note": "A paused activation serializes and resumes in a second process, but there is no ledger merge (only list concatenation), the LoopLedger carries no hash chain so transport tampering is undetectable until projection, the resumed Loop gets a new loop_id linked only by `resume.resumed_from`, and the same token can be resumed twice (B and B2 both ran the remaining steps).",
+   "severity": "high",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "docs/architecture/CONSTITUTION.md:85-95 (LE-NODE-008: qualitative list, no size threshold)",
+    "src/loop_engine/loop/atomic_primitives.py:ATOMIC_PRIMITIVES (161; 11 primitives run as canonical Loops: core.primitive.text.normalize, core.primitive.json.serialize, core.primitive.record.merge, ...)",
+    "Loop-identity transforms: core/context_artifacts.py:compact_context_as_loop (420), core/model_response_admission.py:admit_model_response_as_loop (169), core/model_gateway.py:662 as_model_loop",
+    "helpers: core/context_artifacts.py:_sha256 (27) and _valid_utf8_prefix (445), core/run_history.py:_digest (119), loop/loop_definition.py:_strict_json_value (42)"
+   ],
+   "id": "4.5",
+   "note": "The rule is qualitative (LE-NODE-008: a transform earns a Loop when it needs its own goal/contract/budget/permission/retry/verification/scheduling/RunHistory identity) and the code has all three classes, but the boundary is inconsistent in kind: UTF-8 sizing is an atomic Loop (`core.primitive.text.utf8_size`) while UTF-8 prefix trimming next to the compactor is a private helper, and the cited enforcement test body was not read so it is not credited.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/encapsulate.py:as_model_loop (148-224) records model_boundary_deferred then model_led/model_invocation_failed",
+    "src/loop_engine/core/model_gateway.py:662 wraps each provider attempt in as_model_loop",
+    "saved run adaptive-1ebab8b7892a13ef5c8b8a0f: 72 model_invocation events, 72 distinct loops each with exactly 1 invocation and 8 events (e.g. event index 64 loop7); 702 loops total",
+    "census over 18 runs: 189 model_invocation events, each on its own spawned Loop"
+   ],
+   "id": "4.6",
+   "note": "The physical call is one Loop per attempt (1:1 in saved runs, 72/72), but the semantic use of the answer is not a separate Loop: the wrapper returns the value into the parent's step and no ledger event separates use from call.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/code_nodes/solve_runtime.py:_next_recovery (521-524): 'Answer ... with --task-feedback answer_slot=value, then run the same task again'",
+    "src/loop_engine/__main__.py:288 (--task-feedback SLOT=VALUE); src/loop_engine/cli_operations.py:_task_feedback_from_args (520)",
+    "src/loop_engine/core/adaptive_practitioner.py:655 stores task_feedback as a request field",
+    "queried_by runtime producers are web_fetch.py:216, plugin_bundles.py:304, mcp_adapter.py:379, ngram_retrieval.py:701, web_search.py:207 (none for human answers)",
+    "saved runs census: 0 material_question records in 18 runs"
+   ],
+   "id": "4.7",
+   "note": "A material question ends the run as BLOCKED_MATERIAL_INPUT (typed material_question/v1) and the answer arrives as a CLI flag on a fresh run that becomes a request field; no Loop activation with a Queried-by or Connected-from relationship represents the human answer.",
+   "severity": "high",
+   "source": "auditor:structures",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "probe forged_approval_probe.py F2: a forged DECIDED PendingApprovalState (attacker-chosen resume_token_digest + forged ApprovalDecision) passes PendingApprovalState.__post_init__ and a fresh EffectApprovalService restore()+consume() returns status=consumed",
+    "probe F1/F3/F4: wrong token, conflicting restore, mismatched effect and double consume are refused (PermissionError/RuntimeError)",
+    "probe ledger_forgery_probe.py: LoopLedger.record accepted forged tool_invocation_completed, effect_approval_decided, model_led and spawn events; RunHistory.from_ledger bucketed them as model_invocation/loop_spawn with verify_chain intact=True; only definition fields are refused",
+    "src/loop_engine/loop/effect_approval.py:PendingApprovalState.__post_init__ (247-278) validates request_digest only; EffectApprovalService._restore_core (441-453) creates unknown states",
+    "src/loop_engine/loop/recursive_loop.py:LoopLedger.record (275-286)"
+   ],
+   "id": "4.8",
+   "note": "The approval path is fail-closed for token, effect-digest and single-consume checks, but the decision inside a serialized approval state is unauthenticated (a forged decided state is accepted by any service that has not seen the request) and any code holding the ledger can record an effect, approval or model call that never happened, so the ledger's claim to be 'everything that happened' is contradicted.",
+   "severity": "high",
+   "source": "auditor:structures",
+   "verdict": "CONTRADICTED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/semantic_runtime_records.py:494 (SemanticStateDelta.idempotency_key) checked by core/semantic_state.py:218-231 (returns replay instead of re-applying)",
+    "src/loop_engine/loop/effect_approval.py:PendingApprovalState.consume (343-368) one-use authority (probe F4 double consume refused)",
+    "src/loop_engine/loop/recursive_loop.py:52 REPLAY_GUARANTEES and LoopConfig.replay_guarantee (155): read for behavior nowhere (only copied at loop_definition.py:404)",
+    "probe pr16: the same loop_pause/v2 token resumed twice (b.json, b2.json) and both executions re-ran steps 3-4"
+   ],
+   "id": "4.9",
+   "note": "An idempotency key exists only for semantic-state deltas (CAS commit) and approvals consume once; a general Loop activation has no idempotency key (the pause token carries none), `replay_guarantee` is a declared label nothing enforces, and replaying a token repeats the handler's effects.",
+   "severity": "high",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/context_artifacts.py:ContextArtifactStore.put (101-133) records no ledger event and constructs no Loop",
+    "6 runtime callers listed under 4.1",
+    "probe pr16/merge.py: no ledger merge path; probe graph_port_mismatch_probe.py CASE 3: no port-binding event"
+   ],
+   "id": "4.10",
+   "note": "Store has no Loop-owned path today: digest-addressed artifact storage is a bare service call with no Loop identity and no receipt in the ledger; cross-process Transfer (ledger merge) is the second gap.",
+   "severity": "high",
+   "source": "auditor:structures",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/loop_contract.py:LoopContract.input_roles/output_roles (99-101) plain strings",
+    "src/loop_engine/code_nodes/solution_graph.py:LoopGraphEndpoint(vertex_id, port_role)",
+    "src/loop_engine/code_nodes/solution_graph_validation.py:116-118 (role change requires Adapter vertex); src/loop_engine/loop/loop_contract.py:validate_loop_connection 245-250",
+    "probe graph_port_mismatch_probe.py CASE 1: text/v1 -> integer/v1 refused: \"edge 'e1' changes port roles; insert an explicit Adapter Loop vertex\"",
+    "src/loop_engine/core/capability_directory.py:CapabilityHandshake.input_schema/output_schema default 'any'"
+   ],
+   "id": "5.1",
+   "note": "A port type is a semantic role string (convention `name/vN`) compared by exact equality: no JSON Schema, no Python type; two ports with different role names cannot connect without an Adapter Loop and 'compatible schema' is undefined because no schema exists to compare, so the adapter rule is right but has nothing structural to relax.",
+   "severity": "low",
+   "source": "auditor:structures",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "probe graph_port_mismatch_probe.py CASE 1 (static refusal via validate()/assert_executable()/run_solution preflight), CASE 2 (runtime LoopPortValue role mismatch refused after tool_invocation_completed; 18 events; 0 failure events, only cancel/terminal), CASE 3 (raw str passes; type appears only in trace as input_type=str)",
+    "src/loop_engine/code_nodes/solution_canvas.py:409-413, 443-447 (role check only when value is a LoopPortValue)",
+    "src/loop_engine/code_nodes/solution_canvas.py:694 spec.validate() preflight"
+   ],
+   "id": "5.2",
+   "note": "Role names are validated before execution (graph validation and run_solution preflight) and, only for values wrapped in LoopPortValue, at execution; raw Python values are never checked and a runtime mismatch is recorded as a generic cancel/terminal rather than a typed port violation event.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "grep over dataclass fields: purpose x22, description x14, summary x6, semantic_summary x1 (36 files)",
+    "src/loop_engine/loop/loop_definition.py:LoopDefinition fields (133-148): no description field; src/loop_engine/loop/loop_profile_catalog.py:LoopProfileSpec.title/purpose (106-108)",
+    "search authority: src/loop_engine/core/reusable_capability_resolution.py:308 (need.semantic_summary + search_terms); src/loop_engine/core/task_fingerprint.py:search_text (230)",
+    "model-facing: src/loop_engine/core/llm_work_packet.py:LLMWorkPacket.loop_context (130-147)"
+   ],
+   "id": "5.3",
+   "note": "Descriptions are machine-readable but live in four differently named fields across 36 records; a LoopDefinition has no description at all (only the profile's title/purpose), search uses `semantic_summary`+`search_terms` on CapabilityNeed and `search_text` on TaskFingerprint, and the model reads `loop_context` in the work packet, so no single field is authoritative.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/loop_definition.py:_SEMVER (22), LoopDefinition.content_digest (294), LoopDefinitionRef(definition_id, version, content_digest)",
+    "src/loop_engine/code_nodes/solution_graph.py:LoopDefinitionRegistry.__post_init__ (166-180) rule: one digest per (definition_id, version)",
+    "src/loop_engine/loop/loop_definition.py:from_runtime version defaults to identity.profile_version",
+    "probe definition_digest_census.py: 18 saved runs, 15332 definition-bearing events all version '1.0.0'; 8/18 runs carry >1 digest for the same id@version inside one run; practitioner.reference_nine_step@1.0.0 has 16 distinct digests across runs, practitioner.code_execution@1.0.0 has 12",
+    "grep requalif -> 0 hits"
+   ],
+   "id": "5.4",
+   "note": "Definitions have a semver field and a content digest, and the graph registry encodes 'one digest per id@version', but at runtime every definition is version 1.0.0 while digests vary freely (16 digests for one id@version), no rule says when a change needs a new version versus a new digest, and no requalification concept exists.",
+   "severity": "high",
+   "source": "auditor:structures",
+   "verdict": "CONTRADICTED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/capability_directory.py:CapabilityHandshake (32-87) produced at runtime by directory bootstraps (capability_directory.py:513-775, loop/capability_loops.py:201-208, core/brave_search.py:381) for surfaces, not Loops",
+    "src/loop_engine/loop/loop_profile_ontology.py:LoopProfileHandshakeResult (154) produced at 426/442 and consumed only in its self_test (599-605)",
+    "src/loop_engine/loop/loop_contract.py:validate_loop_connection called only from its own self_test (385, 398, 411); 0 runtime callers",
+    "grep loop_definition_version compatibility checks outside recursive_loop/run_history -> 0"
+   ],
+   "id": "5.5",
+   "note": "A CapabilityHandshake exists and is produced at runtime for resource surfaces, but Loop-to-Loop handshakes (LoopConnectionResult, LoopProfileHandshakeResult) are produced only in tests and no consumer checks a producer's definition version or schema at runtime.",
+   "severity": "high",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "probe pr22_version_alias_scan.py (exit 0): 738 '/vN' literals in 190/330 files; 436 distinct record-type literals over 414 bases; 21 literals spelled in >=3 files ('answer/v1' in 10 files, 'tabular_dataset/v1' in 4, 'solve_outcome/v4' in 4); 4 bases with multiple versions spelled (effect_approval v1/v2/v99, feature_matrix, solve_outcome v3/v4, spawned_task_checkpoint v0/v2); 208 schema_version/record_version lines",
+    "41 module-level *_VERSION/*_RECORD_TYPE/*_SCHEMA constants across ~30 modules (grep)",
+    "src/loop_engine/data/semantic_data_dictionary.yaml: 264 entries, `versioning:` on 4; src/loop_engine/semantic_conformance.py does not scan code literals",
+    "src/loop_engine/core/event_vocabulary.py owns event names only"
+   ],
+   "id": "5.6",
+   "note": "There is no central schema-version registry: version strings are hand-spelled 738 times in 190 files with 41 scattered constants, and the data dictionary names a version for 4 of 264 entries.",
+   "severity": "high",
+   "source": "auditor:structures",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "alias tables (7): loop/loop_profile_catalog.py:ROLE_PROFILE_ALIASES (31, 14 pairs, resolved at 97), loop/recursive_loop.py:_POWER_ALIASES (92), core/intelligence_layers.py:LAYER_ALIASES (71), core/saas_routes.py:LAYER_ROUTE_ALIASES (76), core/user_feedback_intelligence.py:_SCOPE_ALIASES (53), core/context_ontology.py:ONTOLOGY_ALIASES (208), core/custom_endpoint.py:95 stream aliases; ontology/records.py:_LEGACY_KIND_MIGRATIONS (23) reader-only",
+    "provider-name literal branches: 14 `provider == \"...\"` sites in 6 files (task_compile_model.py x5, cli_operations.py x3, model_gateway.py x2, external_harness_adapters.py x2, provider_failover.py, extension_discovery.py) plus custom_endpoint.py wire==\"ollama\" at 216,347,402,454,560 and cli_operations.py:282,286,654,661 on provider_id"
+   ],
+   "id": "5.7",
+   "note": "Named aliases are normalized to canonical ids before use (7 tables, none is authority), but provider nicknames are authority in at least 11 non-test branches (`provider_id == \"opencode_zen\"`, `wire == \"ollama\"`) that select routes and wire protocols.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "probe param_scan.py (exit 0): 424 public callables/constructors with >5 params = 367 dataclass constructors (52 with >=15 fields, 16 with >=25; max ModelSelectionRequest 44 at core/model_routing_records.py:490) + 44 functions + 11 methods + 2 __init__",
+    "top non-dataclass: code_nodes/smoke_ladder.py:run_smoke_loop 13; core/mistral_client.py:202, ollama_client.py:165, openrouter_client.py:274, model_gateway.py:1131 chat_maxout 11 each; code_nodes/solution_graph_builder.py:add_vertex 10; core/reasoning_call.py:run_reasoning 9; loop/recursive_loop.py:Loop.__init__ 9; loop/encapsulate.py:as_loop 9",
+    "src/loop_engine/core/api_quality.py:MAX_PUBLIC_PARAMETERS = 9 (the repo's own gate, with exceptions in forbidden_paths.json)",
+    "typed request objects that exist: loop/loop_definition.py:LoopStartRequest, code_nodes/solution_graph.py:SolutionLoopDefinitionRequest/AdapterLoopRunRequest"
+   ],
+   "id": "5.8",
+   "note": "57 non-dataclass public callables exceed five parameters (the repo's own gate allows nine), the four provider `chat_maxout` signatures duplicate the same 11 parameters and should share one ModelCallRequest, and Loop.__init__ still accepts a 9-argument compatibility form beside LoopStartRequest.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/atomic_primitives.py:LoopValueRef (99-137) body-free reference; LoopValue.to_ref (61); materialization_state used in 9 files (loop_capsule.py x9)",
+    "src/loop_engine/core/context_artifacts.py:ContextArtifactRef (32) + ContextArtifactStore.get (143) hydration",
+    "src/loop_engine/loop/reactive_activation.py:TriggerEnvelope.input_ref is a LoopValueRef (151)",
+    "src/loop_engine/loop/delegation_runtime.py:LoopPortValue.value: Any (79); solution_canvas.py:_run_atomic_operation passes bodies",
+    "src/loop_engine/core/run_history.py:RunHistoryEvent.consumed_refs/produced_refs (135-136): 0 runtime producers; all [] in saved run samples"
+   ],
+   "id": "5.9",
+   "note": "Reference records exist (LoopValueRef, ContextArtifactRef) and capsules hydrate lazily, but the graph port path moves bodies (LoopPortValue.value: Any) and the RunHistory consumed_refs/produced_refs fields are never populated at runtime.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/reactive_contracts.py:OutputCardinality (66-70: single/list/stream/portfolio), OutputUpdateSemantics (73-77), OutputPortDefinition (290-315)",
+    "OutputPortDefinition constructed only in *_checks.py (reactive_scheduler_checks, reactive_worker_checks, reusable_capability_checks, reactive_contract_checks); 0 runtime producers",
+    "src/loop_engine/code_nodes/solution_graph_validation.py:133-136 every declared input must be bound (no optional inputs)",
+    "src/loop_engine/loop/loop_contract.py:LoopContract.input_roles tuple[str] (no cardinality/optional flag)"
+   ],
+   "id": "5.10",
+   "note": "A typed cardinality vocabulary (single/list/stream/portfolio) exists on the reactive OutputPortDefinition but is exercised only by check modules; the executing graph/contract ports are plain role strings where every input is mandatory and one value.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "probe param_scan.py: 57 non-dataclass public callables >5 params; 4x chat_maxout(11) in core/mistral_client.py:202, ollama_client.py:165, openrouter_client.py:274, model_gateway.py:1131; code_nodes/smoke_ladder.py:run_smoke_loop(13); code_nodes/solution_graph_builder.py:add_vertex(10); loop/recursive_loop.py:Loop.__init__(9)",
+    "EXISTS for: loop/loop_definition.py:LoopStartRequest, code_nodes/solution_graph.py:SolutionLoopDefinitionRequest, AdapterLoopRunRequest, core/model_routing_records.py:ModelSelectionRequest",
+    "src/loop_engine/core/api_quality.py:MAX_PUBLIC_PARAMETERS = 9"
+   ],
+   "id": "15.1",
+   "note": "NEEDED for 57 callables: smallest records are a `ModelCallRequest` (prompt, model, system, temperature, timeout, api_key, backoff, floor_frac, max_attempts, max_output_tokens, output_capability) owned by core/model_gateway.py and consumed by the three provider clients, a `GraphVertexRequest` for solution_graph_builder.add_vertex, and removal of Loop.__init__'s 9-arg compatibility form in favour of LoopStartRequest; owner of the gate is core/api_quality.py (lower MAX_PUBLIC_PARAMETERS to 5). 15.20: passive request objects, no second runtime.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "probe pr22: 436 distinct record-type literals, 41 scattered constants",
+    "ad hoc migration readers: ontology/loop_node.py:read_legacy_loop_node_record (13), ontology/records.py:_LEGACY_KIND_MIGRATIONS (23), loop/effect_approval.py:SUPPORTED_EFFECT_APPROVAL_SCHEMAS (68), loop/spawned_task_checkpoint.py:_SUPPORTED_SPAWNED_TASK_CHECKPOINT_VERSIONS (30), core/product_outcome_store.py:PRODUCT_OUTCOME_RECORD_TYPES (20)",
+    "src/loop_engine/data/semantic_data_dictionary.yaml `versioning:` on 4/264 entries"
+   ],
+   "id": "15.2",
+   "note": "NEEDED: one passive `RecordSchemaEntry {record_type, current_version, readable_versions, owner_module, reader_ref}` table in core (beside event_vocabulary.py) plus a conformance scan asserting every `*/vN` literal resolves to an entry; the semantic data dictionary becomes a projection of it. 15.20: this is the registry that does not yet exist, so it is not a second one, provided semantic_data_dictionary.yaml is generated from it rather than maintained beside it.",
+   "severity": "high",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "probe definition_digest_census.py: all 15332 events version 1.0.0; 16 digests for practitioner.reference_nine_step@1.0.0; 8/18 runs violate one-digest-per-id@version",
+    "src/loop_engine/loop/loop_definition.py:from_runtime (359-436) version = version or identity.profile_version",
+    "src/loop_engine/code_nodes/solution_graph.py:LoopDefinitionRegistry (161-190)",
+    "grep requalif -> 0"
+   ],
+   "id": "15.3",
+   "note": "NEEDED: a `DefinitionVersionPolicy` record naming which canonical-body fields are interface (contract roles, modes, effects, permissions: change => new MINOR/MAJOR and requalification) versus configuration facts (change => new digest under the same version), owned by loop/loop_definition.py and enforced in LoopLedger.register_definition. 15.20: a policy record read by the existing runtime, no second runtime or registry.",
+   "severity": "high",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "EXISTS for surfaces: core/capability_directory.py:CapabilityHandshake (32) with protocol_version; EXISTS for harness identity: core/external_harness.py:HarnessAdapterInfo (388-399: harness_id, adapter_version, features, limitations; no protocol negotiation)",
+    "Loop-to-Loop: loop/loop_contract.py:LoopConnectionResult (209) never produced at runtime; loop/loop_profile_ontology.py:LoopProfileHandshakeResult (154) test-only"
+   ],
+   "id": "15.4",
+   "note": "NEEDED at the Loop-to-Loop boundary only: the existing LoopConnectionResult (producer ref, consumer ref, bindings, violations) must be emitted as a ledger event by code_nodes/solution_canvas.py when an edge is executed, and HarnessAdapterInfo needs a `protocol_version`/`supported_record_types` pair for the external harness; owner loop/loop_contract.py. 15.20: reuses existing records, no second runtime.",
+   "severity": "high",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/reactive_activation.py:TriggerEnvelope (144-206: trigger_id, series_id, input_ref LoopValueRef, source_loop_id, deduplication_key, correlation_id, causation_id; record_type trigger_envelope/v1)",
+    "src/loop_engine/loop/recursive_loop.py:Loop.pause token loop_pause/v2 (1013-1058): no activation id, no causation, no idempotency key, no digest",
+    "probe pr16: same token resumed twice, both executed",
+    "src/loop_engine/loop/intelligence_loops.py:IntelligenceItemEnvelope (88): no version/identity"
+   ],
+   "id": "15.5",
+   "note": "NEEDED: one `LoopMessageEnvelope {schema_version, message_id, activation_id, source_loop_id, causation (loop_id, event_index), idempotency_key, payload_digest, payload}` wrapping pause tokens and spawned checkpoints, owned by loop/recursive_loop.py and shaped on TriggerEnvelope; resume must refuse a repeated activation_id. 15.20: replaces the ad hoc token dict, no second runtime.",
+   "severity": "high",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "grep: 0 classes named *Experiment*; frontier only as string tuples code_nodes/blueprint.py:216-217 and a Pareto function loop/reactive_outputs.py:404",
+    "lifecycle vocabulary exists: ontology/records.py:20 (draft..retired)"
+   ],
+   "id": "15.6",
+   "note": "NEEDED: `ExperimentRecord {experiment_id, hypothesis, task_region_ref, variant_refs, status, horizon, outcome_ref}` and `FrontierItem {item_id, kind, status, horizon, evidence_refs}` as passive catalog records owned by core/intelligence_portfolio.py, reusing the ontology lifecycle states. 15.20: stored in the existing catalog store, no second runtime.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/context_pack_manifest.py:ContextPackManifest (108-126) with ContextItemDecision {item_ref, kind, digest, decision, reason, original_bytes, kept_bytes}",
+    "build_context_pack_manifest callers: only its own self_test (lines 315-326); 0 runtime callers",
+    "git status: ?? src/loop_engine/core/context_pack_manifest.py (untracked at audit time)"
+   ],
+   "id": "15.7",
+   "note": "EXISTS as a passive record with per-item decisions and reasons, but it is not produced by any model-call path (0 runtime callers), so it needs wiring in core/adaptive_practitioner_records.py where packets are built, not a new record. NOTE: core/context_pack_manifest.py is an untracked worktree file (git status '??'), not part of commit 517e321; at HEAD this record is ABSENT.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "EXISTS"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/strings/prompt_fragments.py:PromptResourceBundle (140); src/loop_engine/core/external_harness.py:HarnessRunResult.prompt_resource_ref/prompt_resource_digest (286-287); src/loop_engine/core/model_routing_records.py:ModelOutcomeEvidence (610)",
+    "grep prompt_experiment -> 0"
+   ],
+   "id": "15.8",
+   "note": "NEEDED: `PromptExperimentRecord {prompt_bundle_ref, context_policy_ref, model_route_ref, task_region_ref, run_id, outcome_ref}` owned by core/model_routing_records.py beside ModelOutcomeEvidence, linking pieces that already exist separately. 15.20: passive record, no second runtime.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/reusable_capability_records.py:32 `cost_savings` is only a vocabulary string; grep estimated_sav/realized_sav -> 0",
+    "saved-run model_invocation detail carries `accounting_complete` (e.g. adaptive-1ebab8b7892a13ef5c8b8a0f event 64)"
+   ],
+   "id": "15.9",
+   "note": "NEEDED: `ReuseReceipt {capability_ref, run_id, estimated_tokens_saved, realized_tokens_saved | unknown, baseline_run_ref, accounting_complete}` owned by core/reusable_capability_records.py. 15.20: passive record, no second runtime.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/adaptive_practitioner_supervision.py:PractitionerSupervisionPolicy (15-19: two booleans)",
+    "src/loop_engine/scheduling.py:ParentClosePolicy (45), ConcurrencyContract (69: timeout/heartbeat/lease, no restart strategy); grep restart -> 53 mentions, no record",
+    "src/loop_engine/loop/loop_profile_catalog.py:LoopProfileSpec (102-118) has no supervision field"
+   ],
+   "id": "15.10",
+   "note": "NEEDED: `SupervisionPolicy {restart_strategy, max_restarts, intensity_window_seconds, escalation, stall_detection_ref}` as an optional LoopProfileSpec field owned by loop/loop_profile_catalog.py. 15.20: profile data, no second runtime.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/reactive_contracts.py:ExplorationPolicy (256-285: strategy, maximum_variants, random_seed, settings_axes)",
+    "budget lives separately: loop/delegation_runtime.py:DelegationBudget (117), core/external_harness.py:HarnessBudget (66)"
+   ],
+   "id": "15.11",
+   "note": "EXISTS with rate (maximum_variants), seed and axes; the budget is carried by the separate DelegationBudget/HarnessBudget records, which is acceptable composition.",
+   "severity": "low",
+   "source": "auditor:structures",
+   "verdict": "EXISTS"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/facets.py:LOCALITY (31: local_machine/api_calling/external_resources) on loop/loop_contract.py:LoopContract.locality (104)",
+    "src/loop_engine/scheduling.py:PLACEMENTS (61-65: 10 values) not referenced by any Loop profile or ConcurrencyContract field",
+    "LoopProfileSpec has no placement field"
+   ],
+   "id": "15.12",
+   "note": "NEEDED: a `placement` field (from scheduling.PLACEMENTS) beside `locality` on LoopProfileSpec/LoopDefinition configuration facts, owned by loop/loop_profile_catalog.py with the vocabulary staying in scheduling.py. 15.20: a field on existing profile data, no second runtime.",
+   "severity": "low",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/strings/prompt_fragments.py:PROMPT_SLOT_TRUST_CLASSES (30: trusted_policy, trusted_contract, untrusted_data, untrusted_evidence) on PromptSlotDefinition only",
+    "src/loop_engine/loop/atomic_primitives.py:LoopValue.verification_state/privacy_class (27-40); memory/model/memory_type.py:TRUST_LEVELS (45); core/model_response_admission.py:ModelResponseAdmissionResult (82)",
+    "src/loop_engine/core/mcp_adapter.py:McpToolSpec (100-106) no trust field; loop/delegation_runtime.py:LoopPortValue (79) no trust field; grep trust in external_harness.py/workspace_operations.py -> 0"
+   ],
+   "id": "15.13",
+   "note": "NEEDED: a `trust_class` enum {model_output, remote_loop_output, tool_output, user_input, retrieved_document, trusted_policy} on LoopValue/LoopPortValue owned by loop/atomic_primitives.py, so tool and remote outputs carry the class prompt slots already have. 15.20: a field on the canonical value record, no second runtime.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/capability_directory.py:CapabilityHandshake (32) for surfaces; src/loop_engine/core/mcp_adapter.py:McpToolSpec (100-106: server_id, name, description, input_schema, effect, requires_approval); src/loop_engine/core/extension_discovery.py:CAPABILITY_SCHEMA capability_candidate/v1 (34)",
+    "hooks: src/loop_engine/core/lifecycle_extensions.py:5 'No global hook list or extension runtime is introduced'; grep class *Hook -> 0"
+   ],
+   "id": "15.14",
+   "note": "NEEDED as a merge, not a new registry: McpToolSpec and extension capability candidates should project into CapabilityHandshake (adding effect_class and requires_approval) so deterministic and model-led modes read one manifest; owner core/capability_directory.py. 15.20: adding a separate ToolManifest would create a second registry, so the right shape is extending CapabilityHandshake.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/lifecycle_extensions.py:ExecutionContextFingerprint (179-197: plan/extension/capability/settings/context/intelligence/environment/verification digests) and compare_fingerprints (207)",
+    "grep ExecutionContextFingerprint( outside checks -> 0 runtime constructors",
+    "src/loop_engine/core/task_fingerprint.py:TaskFingerprint.environment_ref (120)"
+   ],
+   "id": "15.15",
+   "note": "EXISTS with an environment_digest and a drift comparison, but nothing at runtime constructs it (0 callers outside check modules), so the record needs producing in the solve path rather than redesign.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "EXISTS"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/model_routing_records.py:ModelSuitabilityRecord.success_rate (287) is per model, not per task region; grep class *Region*/histogram -> 0 records",
+    "src/loop_engine/core/task_fingerprint.py:TaskFingerprint (108) defines regions by digest"
+   ],
+   "id": "15.16",
+   "note": "NEEDED: `TaskRegionStatistics {region_id, attempts, successes, token_histogram_bins, call_histogram_bins, best_known_settings_ref, updated_at, accounting_complete}` owned by core/task_similarity_engine.py where regions are already keyed. 15.20: derived passive record, no second runtime.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "grep checklist: only a context-type string in core/intelligence_portfolio.py:123-159 and core/asset_class.py:194"
+   ],
+   "id": "15.17",
+   "note": "NEEDED: `ChecklistProfile {checklist_id, items: (check_ref, action in {gate, escalate, record}), applies_to_profile_ids}` as optional LoopProfileSpec data owned by loop/loop_profile_catalog.py. 15.20: profile data, no second runtime. NOTE: an untracked src/loop_engine/loop/checklist_loop.py appeared in the worktree during the audit (another agent); not read, not credited.",
+   "severity": "low",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/code_nodes/loop_report.py:670-674 check body read: absent timestamps -> seconds is None, stamped single-event loop -> 0.0",
+    "src/loop_engine/code_nodes/loop_report.py:172 loop_report/v1 and code_nodes/run_playback.py:189 run_report/v1 are per-report projections",
+    "model_invocation detail `accounting_complete` flag (saved run adaptive-1ebab8b7892a13ef5c8b8a0f event 64)"
+   ],
+   "id": "15.18",
+   "note": "NEEDED: a canonical `RunCensus {run_id, loops, model_calls, prompt_tokens|unknown, eval_tokens|unknown, effects, unknown_fields}` projected once from RunHistory (owner core/run_history.py) and consumed by loop_report, run_playback and Studio, which today each recompute their own counts. 15.20: a projection of RunHistory, not a new source of truth.",
+   "severity": "medium",
+   "source": "auditor:structures",
+   "verdict": "NEEDED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/loop_profile_catalog.py:LoopProfileSpec.parent (110); src/loop_engine/loop/loop_profile_ontology.py:resolve_profile (185-227: lineage walk, ordered union of required_fields/capabilities, leaf wins for modes, nearest-defined wins for step_template/exit_condition)",
+    "src/loop_engine/loop/recursive_loop.py:_LoopMeta (396-413) refuses Loop subclasses; self_test check loop_cannot_be_subclassed (1398) body read",
+    "AST scan: 14 classes with non-trivial bases; records affected: ontology/loop_definition_record.py:38 LoopDefinitionRecord(CatalogRecord), loop/delegation_runtime.py:424 SpawnedTaskManager(SpawnedTaskLifecycleMixin), code_nodes/live_run_demo.py:51 TappedLedger(LoopLedger)"
+   ],
+   "id": "15.19",
+   "note": "EXISTS as data-level composition with explicit parent refs and field-wise override rules; class-level inheritance does not touch Loop or profiles, but one passive record (LoopDefinitionRecord extends CatalogRecord) and a ledger subclass in a demo module are the only leaks.",
+   "severity": "low",
+   "source": "auditor:structures",
+   "verdict": "EXISTS"
+  },
+  {
+   "evidence": [
+    "answers embedded in notes of 15.1-15.18",
+    "src/loop_engine/core/event_vocabulary.py (existing vocabulary authority), core/capability_directory.py (existing capability registry), core/run_history.py (existing projection authority)"
+   ],
+   "id": "15.20",
+   "note": "No NEEDED item requires a second runtime: 15.1/15.3/15.5/15.6/15.8/15.9/15.10/15.12/15.13/15.16/15.17 are passive records owned by existing modules; 15.2 is the first registry (correct only if semantic_data_dictionary.yaml becomes its projection); 15.4 reuses LoopConnectionResult; 15.14 must extend CapabilityHandshake rather than add a ToolManifest, otherwise it becomes a second registry; 15.18 must stay a projection of RunHistory.",
+   "severity": "low",
+   "source": "auditor:structures",
+   "verdict": "NOT_NEEDED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/code_nodes/core_engine_proof.py:62-100",
+    "src/loop_engine/core/semantic_runtime_checks.py:534 semantic_strategy_benchmark_records_all_five_realizations",
+    "audit/learning/pr11_elbow.py + pr11_elbow.out (outputs equal: True)"
+   ],
+   "id": "6.1",
+   "note": "core_engine_proof runs the same handler in all three modes but only checks acceptance and physical attempts (fixture constants, no output comparison); PR-11 proves deterministic and direct-semantic realizations of one contract return equal k=3, hybrid not compared.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "audit/learning/pr10_warm_reuse.out (33/33; warm_model_calls=0, adaptive_warm_model_calls=0, cold_model_calls=1)",
+    "src/loop_engine/core/reusable_capability_records.py:668 CapabilityInvocationRecord.model_call_count",
+    "src/loop_engine/core/reusable_capability_resolution.py:583,617",
+    "src/loop_engine/loop/recursive_loop.py:1267",
+    "src/loop_engine/code_nodes/solution_model_port.py:123 calls_used",
+    "src/loop_engine/solve_cli.py (SolveRequest kwargs: no deterministic_resolvers, no reuse_observation_port)",
+    "audit/learning/pr12_summer_shortcut.out (production wiring counts = 0)"
+   ],
+   "id": "6.2",
+   "note": "The whole ladder runs end to end offline with zero warm model calls, but the warm counter is the handler-declared StepOutcome.model_calls and the production solve CLI wires neither the reuse observation port nor any deterministic resolver, so no real run ever enters the ladder (0/18 saved runs carry a reuse observation).",
+   "severity": "high",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "audit/learning/pr11_elbow.py + pr11_elbow.out",
+    "src/loop_engine/core/semantic_runtime_records.py:405 SemanticRealizationBinding",
+    "src/loop_engine/core/semantic_runtime.py:235 select_semantic_realization",
+    "src/loop_engine/core/semantic_runtime_checks.py:452 semantic_materialization_uses_existing_candidate_authority"
+   ],
+   "id": "6.3",
+   "note": "Two SemanticRealizationBinding records share contract_digest 02b5b36e...; the deterministic elbow realization is skipped while lifecycle=candidate, selected once registered, returns k=3 with model_calls=0 versus k=3 with model_calls=1 for the model-led realization (code authority stubbed; the real authority path is proven in semantic_runtime_checks).",
+   "severity": "low",
+   "source": "auditor:learning",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/adaptive_practitioner.py:597-604 (mode==non_deterministic -> SKIPPED_LLM_LED)",
+    "src/loop_engine/core/adaptive_practitioner_deterministic.py:19-25 resolver.supports(task)",
+    "src/loop_engine/loop/recursive_loop.py:573-588 choose_mode; :793 hard-coded needs_judgement steps",
+    "src/loop_engine/core/semantic_runtime.py:235-296",
+    "audit/learning/pr19_token_curve.out (deterministic_attempt_status SKIPPED_LLM_LED in 9/18 runs)"
+   ],
+   "id": "6.4",
+   "note": "The decision is the user's --mode flag plus a registry lookup (resolver.supports) plus a hard-coded step-name list; no fingerprint threshold or historical success rate exists, and the receipt is DeterministicAttemptTrace in adaptive-result.json.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/loop_profile_catalog.py:215-260 (profile list)",
+    "grep -rni anomaly src/loop_engine -> 2 unrelated hits (model_gateway.py:707, measurement.py:313)",
+    "src/loop_engine/core/adaptive_practitioner_deterministic.py:56 recommended_escalation=NEEDS_SEMANTIC_ORIENTATION"
+   ],
+   "id": "6.4b",
+   "note": "No Loop profile encodes gate-on-anomaly/escalate-only-when-fired; the only escalation is the deterministic-attempt failure code and the mode waterfall, and the 8 zero-call deterministic saved runs are capability gaps (NO_VERIFIED_CAPABILITY), not a fired or unfired anomaly gate.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "audit/learning/p65_mode_vocab.out",
+    "src/loop_engine/loop/recursive_loop.py:26",
+    "src/loop_engine/loop/loop_definition.py:25",
+    "src/loop_engine/core/semantic_runtime_records.py:23",
+    "src/loop_engine/core/model_routing_records.py:24",
+    "src/loop_engine/ontology/loop_definition_record.py:17",
+    "src/loop_engine/code_nodes/campaign_runner.py:27",
+    "src/loop_engine/core/facets.py:23 EXECUTION_MODES",
+    "src/loop_engine/loop/loop_contract.py:76-78 _EXECUTION_TO_RUNTIME_MODE",
+    "src/loop_engine/core/runtime_settings.py:32 SEARCH_MODES",
+    "src/loop_engine/__main__.py:280 choices"
+   ],
+   "id": "6.5",
+   "note": "No fourth run-mode word appears in records, CLI or Studio (semantic/assisted/interpreted all 0 as mode values), but the canonical triple is spelled in 6 places, a parallel synonym vocabulary code_only/hybrid/model_led lives in 15 and 8 runtime files, and 'hybrid' is overloaded as a search mode.",
+   "severity": "low",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/semantic_runtime.py:357-410 (pre-checks), :413-422 Loop(LoopStartRequest), :489-535 as_loop verify/authorize/commit",
+    "src/loop_engine/core/semantic_runtime.py:53 bind_semantic_loop_contract, :235 select_semantic_realization, :297 _program_identity, :316 _parse_candidate",
+    "audit/learning/pr11_elbow.out (58 ledger events, init 8 for 2 executions)"
+   ],
+   "id": "6.6",
+   "note": "A semantic invocation runs inside Loop (transaction Loop plus spawned verifier, authorizer and commit Loops = 4 Loops per execution); the functions that are not Loop steps are bind_semantic_loop_contract, select_semantic_realization, _program_identity, _parse_candidate, the identity pre-checks at the top of execute_semantic_loop, and SemanticInterpreterPort.call.",
+   "severity": "low",
+   "source": "auditor:learning",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "audit/learning/pr11_elbow.out (6.7 lines)",
+    "src/loop_engine/core/semantic_state.py:86-91 SemanticVerifier.issued",
+    "src/loop_engine/core/semantic_state.py:207-214 commit guard",
+    "src/loop_engine/core/semantic_runtime.py:499-535 trust_transitions"
+   ],
+   "id": "6.7",
+   "note": "Trust states are recorded as trust_transitions (candidate, structurally_valid, contract_valid, verified, effect_authorized, committed) and a foreign-token forgery is refused, but code outside the verifier can construct an accepted SemanticVerificationRecord by reading verifier._token (issued() -> True, commit accepted).",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/reusable_capability_checks.py:954,993 repair_model_calls == 1",
+    "src/loop_engine/core/model_response_admission.py:210-212",
+    "src/loop_engine/core/semantic_runtime.py:594 accounting consistency",
+    "audit/learning/p611_deterministic_gateway.out (a)",
+    "src/loop_engine/loop/recursive_loop.py:1267"
+   ],
+   "id": "6.8",
+   "note": "Repair is accounted as one model call and yields a new candidate version in the flywheel fixture, but every counter in the runtime is the handler-declared StepOutcome.model_calls, so a repair executed inside a handler that declares 0 would be counted as zero-model (probe a).",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "grep -rn success_rate src/loop_engine -> only src/loop_engine/core/model_routing_records.py:287 (per model route)",
+    "audit/learning/pr19_token_curve.out (runs with any fingerprint field in result: 0/18)",
+    "src/loop_engine/core/solution_library.py:118-213 (add/find_candidates/find_similar only)"
+   ],
+   "id": "6.9",
+   "note": "No record says a task region was solved deterministically N times with success rate p; the only success_rate is a model-route observation, and no saved run carries a TaskFingerprint to aggregate over.",
+   "severity": "high",
+   "source": "auditor:learning",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/atomic_primitives.py:149 fusion_allowed",
+    "src/loop_engine/loop/atomic_primitives.py:269 fused=False",
+    "src/loop_engine/core/component_inventory.py:103 (only reader)",
+    "grep -rn fusion_allowed|fused= src/loop_engine -> 3 hits, no consumer"
+   ],
+   "id": "6.10",
+   "note": "Physical fusion is a flag and a constant fused=False event field with no consumer; the measured cost of not fusing (PR-07) was NOT_EXECUTED in this section because PR-07 belongs to another auditor.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "audit/learning/p611_deterministic_gateway.py + .out ((a) body called fake gateway once, LoopResult.model_calls=0; (b) deterministic-only Loop accepted StepOutcome(mode=deterministic, model_calls=1) twice, model_calls=2, no refusal)",
+    "src/loop_engine/loop/recursive_loop.py:1267-1278 (no mode check on model_calls)",
+    "src/loop_engine/loop/recursive_loop.py:29-32 (comment: the real distinction is whether a semantic LLM call happens)",
+    "architecture.yaml:453 deterministic_exact_reuse_makes_zero_model_calls",
+    "src/loop_engine/loop/encapsulate.py:94 (raise marked unreachable)"
+   ],
+   "id": "6.11",
+   "note": "No deterministic handler was caught calling a model, but the runtime cannot catch one: a deterministic-only Loop accepts a step that declares a model call, and a handler body that calls a gateway directly is reported as deterministic with 0 calls, so the invariant is asserted by comments, not enforced.",
+   "severity": "high",
+   "source": "auditor:learning",
+   "verdict": "CONTRADICTED"
+  },
+  {
+   "evidence": [
+    "audit/learning/pr11_elbow.out (6.12: after artifact drift selection -> direct; execution refused 'deterministic realization differs from active authority')",
+    "src/loop_engine/core/reusable_capability_resolution.py:218-326 _authoritative_match",
+    "src/loop_engine/core/semantic_runtime.py:275-289, :389-404",
+    "src/loop_engine/core/lifecycle_extensions.py:203-224 compare_fingerprints",
+    "src/loop_engine/core/reusable_capability_checks.py:706 projection_metadata_cannot_understate_authoritative_effects"
+   ],
+   "id": "6.12",
+   "note": "Artifact, dependency, environment and qualification drift are rechecked against the authority and fall back to the semantic realization; schema drift is a caller-supplied input_validator; data drift has no record or check at all.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/task_fingerprint.py:45-58 CompatibilityDimension (7 hard, 4 soft)",
+    "src/loop_engine/core/task_fingerprint.py:230-236 search_text projection",
+    "src/loop_engine/core/task_fingerprint.py:324-379 assess_compatibility",
+    "src/loop_engine/core/resolution.py:435-469 select_resolution",
+    "audit/learning/pr12_summer_shortcut.out (operator change -> hard failure, selecting it raises)",
+    "grep TaskFingerprintRequest( outside self_tests -> 0"
+   ],
+   "id": "7.1",
+   "note": "TaskFingerprint has 11 typed fields and text similarity can only nominate, never select (every hard gate must pass), but no production code ever constructs a TaskFingerprintRequest, so the typed front end has no entry point from a task string.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "audit/learning/pr12_summer_shortcut.out (Stage 0: digest equal, matched_stage=stage0_exact_digest, model_calls=0, rationale 'eligible candidates await model-led semantic selection')",
+    "src/loop_engine/core/resolution.py:447-452",
+    "src/loop_engine/core/adaptive_practitioner_deterministic.py:44 original_input_digest (0 consumers)",
+    "audit/learning/pr19_token_curve.out region 77ea9c8b6502: 9 calls then 27 calls"
+   ],
+   "id": "7.2",
+   "note": "Offline a byte-identical typed task matches by digest with zero declared model calls, yet select_resolution still waits for a model-led semantic_selection_ref, and in production the sha256 task digest is computed but never looked up, so the repeated saved task paid 9 then 27 model calls.",
+   "severity": "high",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "audit/learning/pr12_summer_shortcut.out (paraphrase with same facets -> stage0; facet change -> lexical_hit_but_hard_incompatible)",
+    "src/loop_engine/core/solution_library.py:131-164 (_assessed_records uses search_as_loop lexical then assess_compatibility)",
+    "src/loop_engine/loop/intelligence_loops.py:255-271 search_as_loop receipt",
+    "grep -i minhash src -> 0"
+   ],
+   "id": "7.3",
+   "note": "Only two stages exist on the library path (lexical store search, then typed facet assessment); a paraphrase matches only if some absent extractor yields identical facets, and n-gram, MinHash and embedding stages are not used by SolutionLibrary.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "audit/learning/pr12_summer_shortcut.out (negative_evidence=0, invalidation_rule=0, precondition_fact=0)",
+    "src/loop_engine/core/semantic_runtime_records.py:119 preconditions: tuple[str,...]",
+    "src/loop_engine/core/semantic_runtime.py:169,437 precondition_checker callable",
+    "audit/learning/pr12_summer_shortcut.out (environment_ref winter -> hard failure)"
+   ],
+   "id": "7.4",
+   "note": "There is no record binding a prior answer to a context fact with an invalidation rule; the closest are free-string preconditions checked by a caller-supplied callable and the environment_ref hard dimension, which refuses the shortcut but records nothing about why.",
+   "severity": "high",
+   "source": "auditor:learning",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/reusable_capability_records.py:657-700 CapabilityInvocationRecord (failure_class, verification_status)",
+    "src/loop_engine/core/reusable_capability_checks.py:1093 quarantine via manual transition_as_loop",
+    "src/loop_engine/core/solution_library.py:118 (no negative-evidence API)",
+    "audit/learning/pr12_summer_shortcut.out failure_class consumers=7 (none write to fingerprint/authority)"
+   ],
+   "id": "7.5",
+   "note": "A wrong shortcut produces an invocation record with failure_class, but nothing writes negative evidence against the fingerprint region or the capability, and quarantine is a manual transition.",
+   "severity": "high",
+   "source": "auditor:learning",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "grep -rni histogram src/loop_engine -> store_serve.py:246, kaggle_executor.py:21,177 (gradient boosting, unrelated)",
+    "audit/learning/pr19_token_curve.out (0/18 runs carry a fingerprint)"
+   ],
+   "id": "7.6",
+   "note": "No statistical profile of tasks, inputs or outcomes informs a starting point; the smallest enabling record is a RegionStatistics row keyed by fingerprint digest (see findings.md).",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/retrieval.py:352-390 (RRF over lexical and vector pools run together)",
+    "src/loop_engine/core/retrieval.py:103 simhash64, :116 hash_vector",
+    "src/loop_engine/core/ngram_retrieval.py:408 NgramIndex",
+    "audit/learning/pr12_summer_shortcut.out timings: store lexical 11.58 ms/q, fts5 1.97 ms/q, hash vector 38.8 ms/q, hybrid 39.4-50.6 ms/q at 500 records; ngram self_test 12/12 in 7.6 ms; provider tokens 0"
+   ],
+   "id": "7.7",
+   "note": "Lexical (idf/BM25) and hashed-vector channels exist and cost 0 provider tokens, but hybrid runs both pools and fuses ranks rather than blocking lexically before vectors, MinHash is absent, and SolutionLibrary uses only the lexical store channel.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/reusable_capability_records.py:615-625 CapabilityResolutionPlan (execution_mode, model_call_budget, assistance_profile_ref for one capability)",
+    "src/loop_engine/core/resolution.py:97 ResolutionCandidate (expected_quality/cost/latency)",
+    "src/loop_engine/loop/reactive_contracts.py:256-287 ExplorationPolicy.settings_axes"
+   ],
+   "id": "7.8",
+   "note": "No record inherits a region's best-known mode, budget, context policy or model tier; plans carry per-capability mode and budget only, and settings_axes are names without values.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/reactive_contracts.py:56-64 ExplorationStrategy, :256-287 ExplorationPolicy (seed required for stochastic strategies)",
+    "src/loop_engine/loop/reactive_contract_checks.py:150-166 unsafe_or_ambiguous_reactive_contracts_fail_closed",
+    "grep exploration src/loop_engine/core/reactive_scheduler.py reactive_worker.py -> 0 consumers"
+   ],
+   "id": "7.9",
+   "note": "An exploration record with strategy, maximum_variants, recorded seed and axes exists and fails closed without a seed, but no executor reads it and no sprout is recorded as an experiment with an outcome.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/task_fingerprint.py:52,118,344 environment_ref hard dimension",
+    "audit/learning/pr12_summer_shortcut.out (provider change -> hard failure)",
+    "src/loop_engine/core/lifecycle_extensions.py:179-190 ExecutionContextFingerprint.environment_digest",
+    "src/loop_engine/core/reusable_capability_resolution.py:288-300 environment/dependency constraints",
+    "grep environment_ref= / environment_digest= outside records -> 0 producers"
+   ],
+   "id": "7.10",
+   "note": "Environment is a hard compatibility dimension and a digest slot, so a solved region on another runtime is refused when the field is set, but nothing in production populates environment_ref or environment_digest.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/studio_server.py:169,209,253 (model_invocation counts only)",
+    "grep -i reuse|shortcut|deterministic_attempt studio_server.py studio_operational_views.py studio_shell.html -> 0",
+    "src/loop_engine/core/reusable_capability_checks.py:1116 model_calls_avoided_on_warm_path (self_test metric; estimated_cost_avoided=null, input_tokens_avoided=null)"
+   ],
+   "id": "7.11",
+   "note": "Neither Studio nor the solve report shows why a shortcut was taken or what reasoning from scratch would have cost; the only savings number is a self_test metric and its estimated fields are null.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/loop_templates.py:63-66 hypothesis_experiment template",
+    "src/loop_engine/strings/notes.py:35,238-241 experiment_sheet (hypothesis, result required)",
+    "src/loop_engine/core/retrieval.py:403-414 tournament_as_loop",
+    "src/loop_engine/loop/reactive_outputs.py:153 CandidateEvaluation"
+   ],
+   "id": "12.1",
+   "note": "An experiment exists as a step template and a note sheet with hypothesis and result, not as a typed record with procedure, inputs, metric and decision; the structured outcome record is CandidateEvaluation under another name.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/kernel.py:241 open_questions",
+    "src/loop_engine/core/adaptive_practitioner.py:90",
+    "src/loop_engine/code_nodes/solve_runtime.py:225 questions",
+    "audit/learning/pr19_token_curve.out and manifest scan: parent_run_id '' in 18/18 saved runs"
+   ],
+   "id": "12.2",
+   "note": "Open questions live in per-run state and the solve outcome; no record carries them to a later run and no saved run has a parent, so the frontier is rebuilt from prompt text every pass.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/code_nodes/solution_graph.py:460-548 LoopGraphDefinition (frozen, version, content_digest)",
+    "audit/learning/p611_deterministic_gateway.out (c): frozen=True, public methods without mutate/fork/checkpoint",
+    "src/loop_engine/core/run_history.py:169 (fork is a NEW run)"
+   ],
+   "id": "12.3",
+   "note": "The graph is an immutable versioned record, but there is no propose-mutation, admit, fork-from-checkpoint or executed-vertex tracking API, so the remove-executed-vertex refusal could not be probed (NOT_EXECUTED, no mutation surface).",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/reactive_contracts.py:35 INFORMATION_CHANGED, :183 minimum_information_delta",
+    "src/loop_engine/core/adaptive_practitioner_recovery.py:42,98 invalid_assumptions",
+    "src/loop_engine/core/adaptive_practitioner_records.py:252 assumptions"
+   ],
+   "id": "12.4",
+   "note": "Records exist for information-changed triggers and model-reported invalid assumptions, but no test or saved run shows a mid-run document, dataset profile or answer being integrated by a named Loop and invalidating a prior assumption record.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/reusable_capability_harvest.py:142 harvest_reuse_opportunity_as_loop, :36 GeneralizedCapabilityCandidate",
+    "src/loop_engine/core/reusable_capability_records.py:513-551 ReuseHarvestPolicy (no threshold, no count)",
+    "src/loop_engine/code_nodes/run_analytics.py:466-480 'distill a rule' proposal",
+    "src/loop_engine/solve_cli.py (no reuse_observation_port)"
+   ],
+   "id": "12.5",
+   "note": "A deterministic template is proposed per observed reuse opportunity and run_analytics proposes distilling rules from repeated steps, but nothing counts N accepted runs in a region and the production solve path never emits an observation.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/cli_operations.py:885-892 (demo stages a SemanticMemoryRecord lesson)",
+    "src/loop_engine/core/adaptive_practitioner_reuse.py:15-40 observe_generated_project_reuse (port None in production)",
+    "saved runs adaptive-1ebab8b7892a13ef5c8b8a0f and adaptive-a7e001398e592db82d7d4256: reuse_observation null",
+    "audit/learning/pr19_token_curve.out"
+   ],
+   "id": "12.6",
+   "note": "Lessons can be written offline (capability authority records, staged memory records) but no saved run read one: 18/18 manifests have no parent and both runs mentioning reuse have reuse_observation null.",
+   "severity": "high",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/reusable_capability_checks.py:1093-1103 quarantined_version_is_removed_from_active_resolution",
+    "src/loop_engine/core/reusable_capability_resolution.py:596-604 (independent verifier per invocation)",
+    "src/loop_engine/core/semantic_runtime_checks.py:227 runtime_profile_change_requalifies_and_rolls_back",
+    "src/loop_engine/core/ngram_benchmark.py:83 (holdout for retrieval only)"
+   ],
+   "id": "12.7",
+   "note": "Every promoted invocation is re-verified and quarantine removes a version from resolution, but there is no held-out task re-test of promoted shortcuts and quarantine is manual rather than triggered by a failed invocation.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "audit/learning/pr18_portfolio.out (P2: 2 candidates, 0 declared model calls; P8: 3 branches, verified_top_k/pareto/all_attempted views)",
+    "src/loop_engine/loop/reactive_outputs.py:18-116 CandidateOutput (no graph/definition/context field)",
+    "src/loop_engine/loop/reactive_activation.py:240-262 ActivationRecord.loop_definition_ref, candidate_refs",
+    "src/loop_engine/code_nodes/solution_graph.py:461 LoopGraphDefinition (no candidate ref)",
+    "src/loop_engine/core/semantic_runtime_records.py:282 SemanticContextPack (no candidate ref)"
+   ],
+   "id": "12.8",
+   "note": "Candidate, evaluation and policy-versioned portfolio are joined, but graph version and context pack are separate stores with no lineage field in either direction, and producer_loop_id collides across ledgers (both P2 producers were 'loop1').",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "audit/learning/pr18_portfolio.out (ensemble join succeeded selecting int and str)",
+    "src/loop_engine/parallel_runner.py:86-100 _apply_join ENSEMBLE returns all ok results",
+    "src/loop_engine/parallel_runner.py:70-83 _check_pairwise_safety (concurrency overlap only)",
+    "src/loop_engine/code_nodes/solution_records.py:110-121 (independent evaluation enforced only in SolutionPortfolio)"
+   ],
+   "id": "12.9",
+   "note": "run_parallel with join_policy=ensemble blended a numeric and a textual branch with no output-contract compatibility check and no independent verification, which the mandate says must not happen.",
+   "severity": "high",
+   "source": "auditor:learning",
+   "verdict": "CONTRADICTED"
+  },
+  {
+   "evidence": [
+    "grep user_result_ready|exploration_complete src -> 0",
+    "src/loop_engine/loop/reactive_contracts.py:384 EmissionPolicy, :406-430 ServingPolicy",
+    "src/loop_engine/loop/reactive_activation.py:332 WorkLease",
+    "src/loop_engine/core/reactive_output_store_checks.py:76 current_portfolio_is_served_without_running_producer",
+    "src/loop_engine/core/reactive_worker.py:183-207 (activations run to COMPLETED)"
+   ],
+   "id": "12.10",
+   "note": "The two terminal questions do not exist as records; leases, emission triggers and read-only serving exist and are tested, but no executor returns a verified incumbent and keeps exploring challengers under a finite lease.",
+   "severity": "medium",
+   "source": "auditor:learning",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "audit/learning/pr19_token_curve.py + .out: 18 runs, 15 distinct tasks, 3 regions with 2 repeats, 0 with 3; region 77ea9c8b6502: 9 calls/104,249 prompt tokens -> 27 calls/639,642; region 8c25d01b0605: 72/8,855,194 -> 17/1,866,717 (both runs failed); region abe9db5ce4c8: 0 -> 0 (NO_VERIFIED_CAPABILITY)",
+    "runs with any fingerprint field: 0/18"
+   ],
+   "id": "12.11",
+   "note": "The measured curve does not fall from learning (the only completed repeat rose 6.1x in prompt tokens); falling would require a persisted TaskFingerprint per run, a region statistics record and the reuse observation port wired into the solve CLI, none of which exist in the production path.",
+   "severity": "high",
+   "source": "auditor:learning",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/adaptive_practitioner_deterministic.py:46-48 rejected_matches (within one run only)",
+    "audit/learning/pr12_summer_shortcut.out failure_class consumers=7, none writing to fingerprint or authority",
+    "src/loop_engine/core/reusable_capability_checks.py:1093 (quarantine is manual)"
+   ],
+   "id": "12.12",
+   "note": "No record closes the loop on a failure the system caused (bad shortcut or wrong fingerprint match); rejected matches are kept only inside the current run's trace.",
+   "severity": "high",
+   "source": "auditor:learning",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/kernel.py:_calculate_kernel_passes",
+    "src/loop_engine/loop/kernel.py:514 _MAX_NON_PROGRESS_PASSES=3",
+    "src/loop_engine/loop/kernel_runtime.py:_calculate_inside",
+    "src/loop_engine/core/adaptive_practitioner_supervision.py:detect_stall",
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr15_supervisor.py -> pr15_supervisor.out (A,B)"
+   ],
+   "id": "10.1",
+   "note": "Detection, context injection (2 failure notes), soft_reset, cold_restart and stop are implemented and recorded as kernel PassRecords (13 records, escalations at indices 4/8/12) but the supervisor is a while-loop inside the owner's act step, not a Loop, and the owner Loop ledger (26 events) carries no escalation event of its own unless event_dir is set.",
+   "severity": "high",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/kernel.py:629-666",
+    "src/loop_engine/core/reactive_scheduler.py:243-250",
+    "src/loop_engine/core/reactive_scheduler.py:387-399",
+    "src/loop_engine/scheduling.py:FailurePolicy",
+    "src/loop_engine/scheduling.py:ParentClosePolicy",
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr17_crash_mid_lease.out (trigger-B dead_letter)"
+   ],
+   "id": "10.2",
+   "note": "One-for-one maps to the kernel cold_restart of the single practitioner and to reactive maximum_attempts_per_trigger (probe: 2 expired leases -> DEAD_LETTER LEASE_EXPIRED_ATTEMPTS_EXHAUSTED); rest-for-one and one-for-all are ABSENT; restart intensity is the fixed 1-soft/1-cold/stop ladder with no time window; no code names a let-it-crash zone (external_harness.py:709 catches every exception).",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/kernel_runtime.py:182-192 handler StepOutcome(confidence=1.0) never failed",
+    "src/loop_engine/loop/recursive_loop.py:55-58 comment 'branch on WHY a loop stopped'",
+    "src/loop_engine/loop/kernel.py:684 passes=len(records)",
+    "src/loop_engine/loop/kernel.py:645-657 cold_restart resets facts",
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr15_supervisor.out (B, E)"
+   ],
+   "id": "10.3",
+   "note": "Ladder and threshold exist and the receipt is in kernel events.jsonl, but the owner Practitioner Loop terminates ACCEPTED/done for a kernel run that routed stop_unprofitable (probe B), a fixture progressing one fact per 4 passes triggered 9 escalations in 40 budgeted passes because cold_restart itself changes the progress key (probe E), and escalation pseudo-records are counted as passes (49 reported for max_passes=40).",
+   "severity": "high",
+   "source": "auditor:fabric",
+   "verdict": "CONTRADICTED"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/recursive_loop.py:163-165 max_depth/max_iterations/max_model_calls=None",
+    "src/loop_engine/loop/recursive_loop.py:122-131 POWER_SETTINGS all None",
+    "src/loop_engine/core/operating_profile.py:44-50 Limits all None",
+    "src/loop_engine/core/runtime_settings.py:52-57",
+    "src/loop_engine/core/external_harness.py:66-73 HarnessBudget",
+    "src/loop_engine/__main__.py:403-407",
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr15_supervisor.out (C,D)"
+   ],
+   "id": "10.4",
+   "note": "Budgets exist per Loop (depth/iterations/model calls), per run (wall time, model cost, parallel practitioners, recursion depth, memory) and per harness call (calls/tokens/cost/seconds/spawned tasks) but every one defaults to None and there is no per-tenant budget; identical failures are caught after 3 (probe C) while an accepted_success Loop with distinct failing outputs ran 301 iterations (903 events) with no guard until my safety valve (probe D).",
+   "severity": "high",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/recursive_loop.py:168",
+    "src/loop_engine/core/runtime_settings.py:58",
+    "src/loop_engine/core/settings_loader.py:396",
+    "loop-engine.settings.example.yaml:11",
+    "src/loop_engine/loop/loop_definition.py:464",
+    "src/loop_engine/loop/recursive_loop.py:1107",
+    "src/loop_engine/code_nodes/solution_graph.py:662",
+    "src/loop_engine/loop/kernel.py:514",
+    "src/loop_engine/loop/recursive_loop.py:74"
+   ],
+   "id": "10.5",
+   "note": "No single home: success_confidence_min=0.5 is spelled 7 times (2 dataclasses, 1 embedded YAML docstring, 1 example YAML, 3 literals), temperature=0.7 16 times in 9 files, timeout 900 s 12 times in 10 files, thinking power 'medium' 14 declared-default sites plus YAML, max_context 131072 6 times in 3 files, and the threshold 3 lives in two module constants (kernel and Loop) that the in-flight supervision_policy.py duplicates again.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/model_routes.py:139-190 max_context 131072/8192",
+    "src/loop_engine/core/model_gateway.py:613-636 preflight",
+    "test:context_window_preflight_refuses_before_provider_use (model_gateway.py:896-906, body read)",
+    "grep max_context runtime_settings.py/custom_endpoint.py/settings_loader.py/provider_pinned.py = 0"
+   ],
+   "id": "10.6",
+   "note": "The 9 built-in routes declare max_context and the gateway refuses over-window requests before the network with error_code context_window_exceeded and a ledger event, but every settings-declared or custom-endpoint route carries max_context=0 so the preflight is skipped for them, and no two routes for the same model on different endpoints declare different limits (capabilities objects are shared per provider).",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/reactive_contracts.py:256-285 ExplorationPolicy",
+    "grep '.exploration' consumers outside contracts/checks = 0",
+    "src/loop_engine/core/model_gateway.py:256 temperature=0.7 (not recorded on events)",
+    "src/loop_engine/core/reactive_scheduler.py:526-528 random_seed used only for input ordering"
+   ],
+   "id": "10.7",
+   "note": "A typed ExplorationPolicy (strategy, maximum_variants, random_seed required for stochastic strategies, settings_axes) exists as a record but nothing in the runtime reads it, temperature is a 0.7 default spelled 16 times and not written to any ledger event, so exploration in practice is an accident of temperature.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/route_health.py:1-20 (run-local, advisory, never persisted)",
+    "src/loop_engine/core/route_health.py:RouteHealthEntry",
+    "grep tuning/calibration record types = 0"
+   ],
+   "id": "10.8",
+   "note": "The only outcome learner (route_health) is run-local and links outcomes to routes, not to default settings; no record ties a default value to measured outcomes, so defaults can only be guessed.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/kernel.py:629",
+    "src/loop_engine/loop/recursive_loop.py:74",
+    "src/loop_engine/core/adaptive_practitioner_supervision.py:106-135",
+    "src/loop_engine/core/adaptive_practitioner_recovery.py:228-238",
+    "src/loop_engine/core/adaptive_practitioner.py:627-636 owner.cancel"
+   ],
+   "id": "10.9",
+   "note": "Three independent detectors (kernel ladder, Loop identical-failure guard, adaptive detect_stall with forbidden_action_kinds directives) coexist with no arbitration record; a parent stop wins only by exception (owner.cancel on KeyboardInterrupt); missing proof is a fixture where a recovery directive forbids the action the kernel routes.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "run:adaptive-624d3e47457d81f9f68ff4f1 event[943] cancel operator_interrupt",
+    "run:adaptive-624d3e47457d81f9f68ff4f1 event[944] terminal cancelled; manifest committed, product_outcome CANCELLED",
+    "kaggle-agent/sigint/runs/adaptive-70f55aa2f586ddfd8b5a7bf0 (63 events, CANCELLED, chain intact)",
+    "test:operator_interrupt_is_a_saved_cancelled_run_not_an_orphan (adaptive_practitioner_acceptance_checks.py:596-611, body read)",
+    "src/loop_engine/core/adaptive_practitioner.py:605-615 outside the try at 617-632"
+   ],
+   "id": "10.10",
+   "note": "A SIGINT landing inside run_kernel_passes is bound as a committed cancelled run with product outcome (live receipt and mock receipt), but 2 spawned Loops (loop108, loop109) were left non-terminal and the KeyboardInterrupt handler does not cover the deterministic attempt or history persistence, so an interrupt there is unhandled and unproven.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/reactive_activation.py:ActivationRecord (activation_record/v1)",
+    "src/loop_engine/loop/reactive_activation.py:WorkLease (work_lease/v1)",
+    "src/loop_engine/core/reactive_scheduler.py:_append_activation canonical JSON + sha256 record_digest",
+    "src/loop_engine/loop/recursive_loop.py:1018 loop_pause/v2",
+    "src/loop_engine/core/run_history.py:save run_history_manifest/v1",
+    "src/loop_engine/loop/recursive_loop.py:275-286 ledger events unversioned"
+   ],
+   "id": "11.1",
+   "note": "The reactive activation (record + lease + trigger, canonical JSON with digest in SQLite) and the loop_pause/v2 token are the serialized, versioned units; a run serializes as events.jsonl plus a v1 manifest; the raw LoopLedger event is an unversioned dict with a wall-clock ts (388 versioned record kinds exist elsewhere in src).",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/recursive_loop.py:253-257 next_id -> '{namespace}.loop{counter}'",
+    "src/loop_engine/core/adaptive_practitioner.py:554 run_id 'adaptive-'+sha256[:24]",
+    "src/loop_engine/loop/reactive_activation.py:44-46 _content_id 'activation.'+sha256[:24]",
+    "src/loop_engine/core/reactive_scheduler.py:253 lease.{activation_id}.{fence}",
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr17_crash_mid_lease.out (B: same Loop id for two executions)"
+   ],
+   "id": "11.2",
+   "note": "Loop ids are process-local counters (loop1..loop109 in a saved run) unique only within a run_id; run and activation ids are content digests; two physical executions of one reclaimed activation both produced Loop id activation.38dbb587....loop1, so identity does not distinguish attempts across workers.",
+   "severity": "high",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/code_nodes/solution_graph.py:161 LoopDefinitionRegistry (in-process)",
+    "src/loop_engine/core/external_harness.py:549 HarnessRegistry",
+    "src/loop_engine/core/mcp_adapter.py:30 MCP_TRANSPORTS (tool transport only)",
+    "grep capability_manifest/handshake across machines = 0"
+   ],
+   "id": "11.3",
+   "note": "Every registry is an in-process object; MCP transports (stdio, streamable_http, sse) address tools, not Loops; there is no registry, handshake or capability manifest by which one Loop finds another on a different machine.",
+   "severity": "high",
+   "source": "auditor:fabric",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/reactive_activation.py:144-200 TriggerEnvelope (trigger_envelope/v1, source_loop_id, source_event_time, deduplication_key, correlation_id, causation_id)",
+    "src/loop_engine/core/reactive_scheduler.py:41 UNIQUE(series_id, deduplication_key, input_digest)",
+    "src/loop_engine/loop/recursive_loop.py:Loop.spawn (Python call)",
+    "src/loop_engine/loop/recursive_loop.py:record(**kw) unversioned"
+   ],
+   "id": "11.4",
+   "note": "Only the reactive trigger is a typed message with version, sender, causal reference and idempotency key (dedup enforced by a UNIQUE constraint); spawn, kernel impls and harness calls are Python calls and ledger events have no schema version.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr17_crash_child.py + pr17_crash_mid_lease.py -> pr17_crash_mid_lease.out",
+    "src/loop_engine/core/reactive_scheduler.py:recover_expired",
+    "src/loop_engine/core/reactive_scheduler.py:_require_fence",
+    "src/loop_engine/core/reactive_worker.py:173-213 (0 heartbeat calls)",
+    "test:expired_worker_cannot_commit_with_stale_fencing_token (reactive_scheduler_checks.py:137, body read)"
+   ],
+   "id": "11.5",
+   "note": "A child that claimed, started and died with os._exit(9) left a durable running/fence-1 record; recovery did nothing at +29 s, returned the work at +61 s, a second worker took fence 2, the zombie commit was refused, completion landed under fence 2 (7 revisions), and the duplicate-effect check showed 2 effects executed for 1 committed terminal because the worker never heartbeats during execution.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/run_history.py:130-133 sequence_number + ts",
+    "src/loop_engine/core/run_history.py:172-176",
+    "src/loop_engine/loop/recursive_loop.py:286 ts=time.time() only",
+    "src/loop_engine/core/reactive_scheduler.py:_instant caller-supplied ISO",
+    "src/loop_engine/loop/reactive_activation.py:revision counters"
+   ],
+   "id": "11.6",
+   "note": "Run History has a per-run sequence_number beside the wall clock and reactive records have per-activation revisions, but LoopLedger events carry only time.time() and no logical or vector clock exists across machines.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/run_history.py:165-168 append refused after commit",
+    "src/loop_engine/core/run_history.py:save refuses existing dir",
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr_14_6_feedback.out (append and re-save refused)",
+    "grep 'def merge' run_history.py = 0",
+    "grep single-writer in docs/architecture = 0"
+   ],
+   "id": "11.7",
+   "note": "A run is single-writer by construction (immutable after commit, fork via parent_run_id) and no merge exists; the limit is not stated anywhere in docs/architecture or AGENTS.md.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/model_gateway.py:365-400 _error_code provider_unavailable/network_unreachable/context_window_exceeded",
+    "src/loop_engine/core/external_harness.py:754-757 retry refused inside the Loop",
+    "architecture.yaml:reactive_execution.persistence delivery at_least_once_with_idempotency (claim)",
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr17_crash_mid_lease.out (duplicate trigger not created)"
+   ],
+   "id": "11.8",
+   "note": "Transport failures are typed and the gateway falls through to the next route, the harness Loop refuses to retry in place because a retry could repeat committed effects, and reactive re-delivery is deduplicated by key; no remote Loop exists to be unreachable mid-graph.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/reusable_capability_resolution.py:297-299 tenant_scope check",
+    "src/loop_engine/loop/spawned_workspace_executor.py:51-55 WorkspaceTrustMode",
+    "src/loop_engine/loop/reactive_contracts.py:297 access_policy_ref default owner_only",
+    "grep access_policy_ref consumers outside reactive_contracts.py = 0"
+   ],
+   "id": "11.9",
+   "note": "Tenant scope is enforced only for capability reuse and workspace trust is a typed mode, while the output port access_policy_ref is declared and never read; no policy says which Loops may accept messages from another machine or organization.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/model_response_admission.py:1-10",
+    "run:adaptive-624d3e47457d81f9f68ff4f1 loop8 'admit one untrusted model response'",
+    "src/loop_engine/core/external_harness.py:733-750 StepOutcome confidence 0.8/0.1 hard-coded",
+    "src/loop_engine/core/external_harness.py:306 acceptance 'not_evaluated'"
+   ],
+   "id": "11.10",
+   "note": "Model output passes through a typed admission Loop, but external harness output is captured as an artifact with a hard-coded confidence and acceptance not_evaluated, bypassing admission, and no remote Loop output path exists.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr_fabric_cost.py -> pr_fabric_cost.out",
+    "~/.loop-engine/runs (18 runs, 15350 events, 14239991 bytes, 1752 Loops)",
+    "grep gzip=0 zlib=1 compaction=10 files otel=6 files"
+   ],
+   "id": "11.11",
+   "note": "Measured 928 bytes/event, 8.8 events/Loop and 8128 bytes per Loop activation, so one million machines at one Loop per second is 8.13 GB/s, 702 TB/day, 256 PB/year of uncompressed JSONL with no ledger compression path (digest-only artifact refs and an OTel projection exist, the ledger itself has none).",
+   "severity": "high",
+   "source": "auditor:fabric",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/reactive_scheduler.py:204-207 maximum_pending_inputs",
+    "src/loop_engine/core/reactive_scheduler.py:240-243 maximum_active_activations",
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric inline probe: admitted=10, 11th admit raised 'pending-input limit is reached'"
+   ],
+   "id": "11.12",
+   "note": "The reactive path bounds pending inputs and active activations and refuses the 11th trigger with an exception (refusal, not signalling); outside the reactive path producers and consumers have no back-pressure at all.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/scheduling.py:61-65 PLACEMENTS (10 values)",
+    "src/loop_engine/scheduling.py:ConcurrencyContract.resources",
+    "src/loop_engine/parallel_runner.py (ConcurrencyContract consumer)",
+    "architecture.yaml:reactive_execution.installed_execution_placements/unproven_placements (claim)",
+    "src/loop_engine/core/facets.py:132 jurisdiction/time_horizon as context facets"
+   ],
+   "id": "11.13",
+   "note": "A placement vocabulary (inline through kubernetes_job) and a resources map (gpu) exist as typed data, but no LoopDefinition or LoopConfig field declares placement, only inline/async/thread are installed per architecture.yaml, and jurisdiction is a classification facet, not a placement constraint.",
+   "severity": "low",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/external_harness.py:25-27 HARNESS_IDS (pydantic_ai, deep_agents, openai_agents, microsoft_agent_framework)",
+    "src/loop_engine/core/external_harness.py:684-760 one custom Loop, one step",
+    "src/loop_engine/core/external_harness.py:719-735 model_led/model_invocation_failed per call",
+    "src/loop_engine/core/external_harness.py:300-340 safe_summary counts only",
+    "src/loop_engine/core/opencode_client.py (0 callers outside self-test/architecture map)"
+   ],
+   "id": "11.14",
+   "note": "An external harness run is one custom Loop with one step whose model calls map to ledger events while tool events, artifacts and spawned tasks are unmapped (3 of 4 detail kinds carried as counts in one custom event), and no adapter exists for Codex, Claude Code, OpenCode, Hermes or Aider.",
+   "severity": "high",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "architecture.yaml:reactive_execution.installed_execution_placements",
+    "architecture.yaml:reactive_execution.unproven_placements",
+    "docs/verification/REACTIVE-LOOP-FOUNDATION-REPORT.md:24,135 (claim)",
+    "/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/findings.md fabric readiness table"
+   ],
+   "id": "11.15",
+   "note": "Only placements are stated machine-readably; no single statement covers 11.1 to 11.14, so the readiness table is written in findings.md.",
+   "severity": "low",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/code_nodes/blueprint.py:208-222 LongHorizonAnchorPacket fields",
+    "src/loop_engine/loop/kernel.py:881-896 default_reconcile_horizon",
+    "src/loop_engine/core/facets.py:132 time_horizon"
+   ],
+   "id": "14.1",
+   "note": "Horizon is a typed anchor packet (ultimate_goal, active_checkpoint, frontiers, progress, assumptions) rebuilt each pass plus a time_horizon facet string, not micro/short/medium/long fields.",
+   "severity": "low",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/kernel.py:198-200 ROUTES explore_branch/expand_swarm",
+    "src/loop_engine/loop/reactive_outputs.py:281-292 OutputPortfolioSnapshot",
+    "~/.loop-engine/runs adaptive-result.json candidate_solution_canvases per run [1,0,3,0,13,0,0,2,1,0,0,0,3,0,0,3,2,0]",
+    "action_decisions kinds across 18 runs: COMPOSE_SOLUTION 4, RESEARCH_SOURCE 6, REPAIR 3, GENERATE_CODE 4, BUILD_CAPABILITY 3, RUN_TOOL 3, VERIFY 2, REUSE_CAPABILITY 2, PARAMETERIZE_CAPABILITY 1"
+   ],
+   "id": "14.2",
+   "note": "Several candidates can coexist (up to 13 canvases in one run) and widening routes exist in the vocabulary, but no saved run records an explore_branch/expand_swarm decision and no field names the widen-versus-deepen choice.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/kernel.py:203-205 RESET_MODES",
+    "src/loop_engine/loop/kernel.py:554-575 _non_progress_record route+reason",
+    "src/loop_engine/core/adaptive_practitioner_recovery.py:228-238 practitioner_recovery_directive/v1",
+    "recovery_directives across 18 saved runs = 0"
+   ],
+   "id": "14.3",
+   "note": "Step-back distance is implied by the route or reset name (retry, reframe, soft_reset, branch_reset, cold_restart) and a reason string; no field states node/stage/branch/graph-version/full re-orientation, and no saved run contains a recovery directive.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/code_nodes/solve_runtime.py:54-80 MaterialQuestion material_question/v1 answer_slot",
+    "test:material_question_is_a_typed_answerable_terminal_result (solve_runtime.py:674-685, body read)",
+    "src/loop_engine/cli_operations.py:520-531 --task-feedback slot=value",
+    "src/loop_engine/code_nodes/solve_runtime.py:524 'run the same task again'",
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr_14_6_feedback.out (original run immutable)"
+   ],
+   "id": "14.4",
+   "note": "Questions are typed records with a validated answer_slot and a BLOCKED_MATERIAL_INPUT terminal bound to the run, and the answer arrives as a feedback slot on a new run while the original saved run refuses any append.",
+   "severity": "low",
+   "source": "auditor:fabric",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/code_nodes/follow_up.py:3-8 (checklist as prompt bias)",
+    "src/loop_engine/code_nodes/capture.py:238 capture_gate (plain function)",
+    "untracked src/loop_engine/loop/checklist_loop.py created 2026-09-01 18:31 (in-flight, not at commit, not evaluated)"
+   ],
+   "id": "14.5",
+   "note": "At the audited commit no deterministic checklist Loop with an escalating gate exists (the checklist is prompt text and the only gate is a function); an untracked checklist_loop.py appeared during the audit and is outside this verdict.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr_14_6_feedback.py -> pr_14_6_feedback.out",
+    "src/loop_engine/core/run_history.py:165-168",
+    "src/loop_engine/core/user_feedback_intelligence.py:196 leave_advice",
+    "src/loop_engine/core/studio_server.py:597-603 POST refused",
+    "src/loop_engine/templates/model.py:72 TaskFeedback"
+   ],
+   "id": "14.6",
+   "note": "Appending to or re-saving a committed run is refused, advice becomes an appended user_advice record whose consultation and retirement are further records (3 rows, ledger event user_guidance), Studio refuses feedback writes, and task feedback is an input to a new run.",
+   "severity": "low",
+   "source": "auditor:fabric",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/cli_report_text.out (0.115 s, 556 lines, 2711 words)",
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr_14_7_8_digest_playback.out (Studio run detail 0.037 s, 189110 bytes, 15 calls with tokens)",
+    "src/loop_engine/code_nodes/run_playback.py:render_run_report analysis tokens 0 vs CLI 488857",
+    "~/.loop-engine/runs/adaptive-624d3e47457d81f9f68ff4f1/events.jsonl 15 model_invocation events = 488857 tokens"
+   ],
+   "id": "14.7",
+   "note": "The 9-line report header (loops, events, calls, tokens, chain, terminal, verification) is readable in under 30 s and per-Loop lines show mode, seconds, calls and tokens, but neither report nor Studio shows what context a Loop saw (0 mentions), the full text is ~11 min at 250 wpm, and the html/markdown renderer reports 0+0 provider tokens for a run whose events carry 488857.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/code_nodes/run_playback.py:142-147 playback_saved_run",
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr_14_7_8_digest_playback.out (552 lines, 0.051 s, 110 Loop ids, 0 token mentions, 0 model-call mentions)",
+    "/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/cli_report_text.out per-Loop '1 model call(s), 16830 tokens'"
+   ],
+   "id": "14.8",
+   "note": "The terminal transcript renders without a browser and shows init, relationship, steps, spawns and terminal state per Loop, but tokens and call counts per Loop appear only in the separate text report, and there is no playback CLI verb.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "codex-cli 0.151.0",
+    "opencode 1.18.25",
+    "claude 2.1.257 (Claude Code)",
+    "Hermes Agent v0.20.1 (2026.8.13)",
+    "aider 0.86.2",
+    "/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/probes.md PR-20"
+   ],
+   "id": "16.1",
+   "note": "NOT_EXECUTED: all five harnesses are installed and versioned but the benchmark run is withheld pending coordinator authorization (no provider calls allowed in this phase).",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "NOT_APPLICABLE"
+  },
+  {
+   "evidence": [
+    "codex --help / codex exec --help",
+    "opencode --help / opencode run --help",
+    "claude --help",
+    "hermes --help",
+    "aider --help",
+    "/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/findings.md harness inventory table"
+   ],
+   "id": "16.2",
+   "note": "Every installed harness loops to a goal through a core-binary flag or subcommand (codex exec, opencode run, claude -p with --max-budget-usd, hermes -z/--oneshot with cron/kanban, aider --message with --auto-test) rather than a supervisor layer, and none exposes a typed contract file.",
+   "severity": "low",
+   "source": "auditor:fabric",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/loop/reactive_contracts.py:289-297 OutputPortDefinition",
+    "src/loop_engine/loop/recursive_loop.py:1292-1296 accepted via success_confidence_min",
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr_14_7_8_digest_playback.out (109 RELATIONSHIP lines)",
+    "probe:/tmp/claude-1000/-home-username-loop-engine/ca2ae589-e2c1-4782-8375-2fb2ae350fd4/scratchpad/audit/fabric/pr_14_6_feedback.out (verify_chain intact on 945 events)",
+    "src/loop_engine/core/reusable_capability_harvest.py"
+   ],
+   "id": "16.3",
+   "note": "Recorded relationships and hash-chained history are proven on a saved run and mode per step is on every run_step event, while typed ports, verified acceptance and reuse harvesting are cited from source only (their probes belong to other sections).",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "harness --help outputs (resume/fork, --continue/--session, --resume, checkpoints, --restore-chat-history)",
+    "codex exec --help -s read-only|workspace-write|danger-full-access",
+    "src/loop_engine/loop/spawned_workspace_executor.py:37 _SANDBOX_BACKENDS docker/e2b/modal",
+    "grep resume src/loop_engine/__main__.py = 0"
+   ],
+   "id": "16.4",
+   "note": "Plainly: all five harnesses resume sessions from the CLI and Codex ships sandbox modes in core, while Loop Engine has loop_pause/v2 tokens but no resume verb and declares sandbox backends whose availability was not probed; speed numbers are absent because 16.1 was not executed.",
+   "severity": "low",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "src/loop_engine/core/external_harness.py:719-750 event mapping",
+    "src/loop_engine/core/external_harness.py:300-340 safe_summary",
+    "src/loop_engine/core/external_harness.py:25-27 HARNESS_IDS",
+    "src/loop_engine/core/studio_operational_views.py:315 _harness_inventory"
+   ],
+   "id": "16.5",
+   "note": "A harness can be supervised as a one-step Loop with model calls normalized to ledger events, but tool events, artifacts and spawned tasks are unmapped (counts only), confidence is hard-coded 0.8, acceptance is not_evaluated, and no adapter exists for any of the five installed CLI harnesses.",
+   "severity": "high",
+   "source": "auditor:fabric",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "integrations/claude-code/.claude-plugin/plugin.json",
+    "integrations/claude-code/skills/loop-engine-run/SKILL.md",
+    "integrations/codex/plugins/loop-engine/.codex-plugin/plugin.json",
+    "integrations/architecture.yaml (claim)",
+    "src/loop_engine/core/adaptive_practitioner.py:590-600 owner Practitioner Loop",
+    "src/loop_engine/core/saas_routes.py:serve_api"
+   ],
+   "id": "16.6",
+   "note": "Claude Code and Codex plugin packages exist that shell to the installed loop-engine command, and the solve path runs inside an owner Practitioner Loop so the invariant holds by construction on the Loop Engine side, but no invocation from a harness was run here and the integration test script was not read.",
+   "severity": "medium",
+   "source": "auditor:fabric",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "grep 'Human Harness' src/ yaml json html non-prompt docs = 0",
+    "grep 'Loop Engine' src/loop_engine --include=*.py = 75",
+    "grep PRODUCT_NAME/product_name/BRAND src = 0"
+   ],
+   "id": "16.7",
+   "note": "'Human Harness' appears only in docs/prompts; the shipped brand is the hardcoded string 'Loop Engine' in 75 source locations with no configurable brand symbol.",
+   "severity": "low",
+   "source": "auditor:fabric",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "audit/invariant/pr_3_01_executor_scan.out"
+   ],
+   "id": "3.1",
+   "note": "Eleven classes execute external work; gateway, MCP registry and delegation spawn Loops, while stores, workspaces and approval stores are bare services called from Loop steps with no Loop identity on the write.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "_conformance_test:test_loop_cannot_be_subclassed",
+    "audit/invariant/pr_3_02_subclass_guard.out"
+   ],
+   "id": "3.2",
+   "note": "The metaclass refuses subclassing at class creation; a wrapper that re-exports run is not prevented and is the remaining loophole.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "audit/invariant/pr21_passive_data_scan.out"
+   ],
+   "id": "3.3",
+   "note": "Eleven record classes carry executing methods; three (ModelExecutionSession.invoke, ModelInvocationPort.__call__, SemanticInterpreterPort.call) invoke a provider port from a dataclass.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "code_nodes/solution_graph.py",
+    "code_nodes/solution_canvas.py:379-467"
+   ],
+   "id": "3.4",
+   "note": "LoopGraphDefinition is the declared authority; the structures auditor found graph transfer performed through a closure argument with no edge event, so a private scheduler shape remains.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "audit/invariant/pr_3_05_edge_coercion.out"
+   ],
+   "id": "3.5",
+   "note": "An edge that declares a coercion is refused by LoopGraphDefinition validation.",
+   "severity": "low",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "audit/invariant/pr06_kernel_structure.out",
+    "loop/kernel_runtime.py:_run_owner"
+   ],
+   "id": "3.6",
+   "note": "Ten kernel nodes run inside the owner's act step; the other owner steps are labelled structural_boundary (fixed this session), but the pass loop itself is a private loop inside one step.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "architecture.yaml:34",
+    "docs/architecture/CONSTITUTION.md:LE-NODE-008",
+    "audit/invariant/pr07_atomic_overhead.out"
+   ],
+   "id": "3.7",
+   "note": "architecture.yaml says every semantic value is a logical Loop while LE-NODE-008 keeps primitives inside a Loop; atomic primitives exist, cost 5333x wall, and no decision record says which rule wins.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "CONTRADICTED"
+  },
+  {
+   "evidence": [
+    "audit/invariant/pr07_atomic_overhead.out",
+    "audit/coordinator/probes-PR02-05.txt"
+   ],
+   "id": "3.8",
+   "note": "Measured 9 events and 3534 ledger bytes per string join, 5333x to 6433x wall over native; physical_fusion_requires_logical_history has no Python consumer, so the strict reading is a cost without its optimization.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "audit/invariant/pr01_function_equivalence.out"
+   ],
+   "id": "3.9",
+   "note": "Over 1000 inputs a one-shot Loop matched the function on every accepted run at 657x wall and 2.2 KB ledger, but the 12 runs whose handler raised left the Loop with no terminal event.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "CONTRADICTED"
+  },
+  {
+   "evidence": [
+    "loop/recursive_loop.py:self_test identical_failures_stop_an_unbounded_accepted_success_loop",
+    "loop/supervision_policy.py"
+   ],
+   "id": "3.10",
+   "note": "Loop and exit conditions are typed fields; a non-terminating condition stops through the supervision policy's identical-failure guard, now declared per Loop.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "_conformance_test:test_no_role_specific_node_classes"
+   ],
+   "id": "3.11",
+   "note": "Roles are fields; the conformance suite refuses role-specific classes.",
+   "severity": "low",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "_conformance_test:test_no_mode_specific_node_classes"
+   ],
+   "id": "3.12",
+   "note": "Modes are fields on one Loop.run; the conformance suite refuses mode-specific classes.",
+   "severity": "low",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "AGENTS.md:103-110"
+   ],
+   "id": "3.13",
+   "note": "The rule exists; no probe in this audit exercised a Canvas that tries to declare a mode.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "loop/loop_role.py"
+   ],
+   "id": "3.14",
+   "note": "Five operational relationships are typed; semantic relationships live in graph metadata and were not audited for accidental runtime use.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "run adaptive-e3f757ca96f805bc9a837708 init events"
+   ],
+   "id": "3.15",
+   "note": "Init events carry role, profile, mode, conditions and relationship; typed ports appear only on graph Loops.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "AGENTS.md:50-53"
+   ],
+   "id": "3.16",
+   "note": "The migration reader rule is stated; no second reader was searched for.",
+   "severity": "low",
+   "source": "coordinator",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "conformance gate operational_graph_vertex_types_outside_canonical_loop = 0"
+   ],
+   "id": "3.17",
+   "note": "No first-party *Node class is active.",
+   "severity": "low",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "loop/recursive_loop.py:self_test contract_coercion_is_recorded_on_the_init_event",
+    "audit/coordinator/probes-PR02-05.txt"
+   ],
+   "id": "3.18",
+   "note": "Coercion is recorded on init and spawn events.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "loop/recursive_loop.py:self_test failed_step_is_never_fabricated_into_a_recovered_outcome"
+   ],
+   "id": "3.19",
+   "note": "No fabricated recovery; since this session a sequence ending on a failed step stops as done_failed with VERIFICATION_REJECTED instead of ACCEPTED.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "audit/coordinator/probes-PR02-05.txt"
+   ],
+   "id": "3.20",
+   "note": "Identical failures stop as BLOCKED after the policy's threshold (3 by default).",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "audit/coordinator/probes-PR02-05.txt"
+   ],
+   "id": "3.21",
+   "note": "Unbounded spawn is a typed depth refusal naming the guard.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "loop/effect_approval.py:_run_operation",
+    "loop/recursive_loop.py:LoopLedger"
+   ],
+   "id": "3.22",
+   "note": "Approval, MCP and gateway operations run inside service Loops; the ledger writer and the scheduler are not Loops and the exception is not written down.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "loop/recursive_loop.py:Loop.run"
+   ],
+   "id": "3.23",
+   "note": "One run method with handler-policy dispatch; the call graph was read, not drawn.",
+   "severity": "low",
+   "source": "coordinator",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [],
+   "id": "3.24",
+   "note": "Lines of orchestration outside Loop.run were not counted in this audit.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "audit/invariant/pr24_second_loop_scan.out"
+   ],
+   "id": "3.25",
+   "note": "Sleeps exist only in the live demo and one asyncio yield; no second loop outside a Loop step.",
+   "severity": "low",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "core/adaptive_practitioner_records.py attempt_history block"
+   ],
+   "id": "8.1",
+   "note": "Packets carry attempt history and prior attempts; whether the model edits rather than restarts was not measured.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "audit/structures/probes.md graph_port_mismatch"
+   ],
+   "id": "8.2",
+   "note": "No Canvas code path executes; graph transfer still happens through a closure argument without an edge event.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "core/generated_project.py verification",
+    "core/adaptive_practitioner_verification.py"
+   ],
+   "id": "8.3",
+   "note": "Schema, artifact and command checks are deterministic; edit compatibility is delegated to the verification model call.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "core/adaptive_practitioner_records.py generated_file_checkpoints"
+   ],
+   "id": "8.4",
+   "note": "File checkpoints by digest exist; rejection leaving the incumbent untouched was not probed.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "core/ollama_client.py stream=false"
+   ],
+   "id": "8.5",
+   "note": "Streaming is not consumed mid-response; a Loop acts only on complete output.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "ABSENT"
+  },
+  {
+   "evidence": [
+    "run adaptive-e3f757ca96f805bc9a837708 context_snapshots",
+    "core/context_budget.py"
+   ],
+   "id": "8.6",
+   "note": "Within a packet duplicates are replaced by digest markers (70 trims in the live run); across calls the static instruction text is re-sent.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "core/model_gateway.py self_test ContextBoundary",
+    "audit/context/pr08_output.json"
+   ],
+   "id": "8.7",
+   "note": "Requests at the declared window pass and requests over it are refused before the network with context_window_exceeded.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "core/context_pack_manifest.py",
+    "run adaptive-e3f757ca96f805bc9a837708 context_budget_applied"
+   ],
+   "id": "8.8",
+   "note": "Trims carry sha256 and byte counts; since this session every packet has a context pack manifest artifact.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "core/prompt_experiment.py summary on the live run"
+   ],
+   "id": "8.9",
+   "note": "Mean estimated input 27.7k tokens per call across 111 calls; the unchanging instruction share was not separated.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "core/adaptive_practitioner_records.py deterministic_attempt"
+   ],
+   "id": "8.10",
+   "note": "A deterministic attempt precedes the first model call; the order was read, not traced on a live pass.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "audit/context/pr14_output.json"
+   ],
+   "id": "9.1",
+   "note": "Solution registry tools emit tool_invocation receipts inside Loops; model-led RUN_TOOL actions travel a second interface through the Practitioner.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "audit/context/pr14_output.json"
+   ],
+   "id": "9.2",
+   "note": "Receipt shapes were compared for one deterministic tool path; the model-led path was not diffed.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "loop/effect_approval.py EffectSpec"
+   ],
+   "id": "9.3",
+   "note": "Effect classes are a closed enum; running a tool with no declared class was not attempted.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "docs/architecture/LIFECYCLE-EXTENSION-CONTRACT.md"
+   ],
+   "id": "9.4",
+   "note": "No fixed hook list; whether a hook can bypass effect approval was not probed.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "core/generated_project.py",
+    "loop/checklist_loop.py"
+   ],
+   "id": "9.5",
+   "note": "Schema validation, test execution and command checks exist; leakage checks and the elbow method are absent; the checklist gate was added this session.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "core/adaptive_practitioner_records.py capability_context"
+   ],
+   "id": "9.6",
+   "note": "Capabilities enter the packet as a bounded manifest; its versioning was not verified.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "docs/architecture/ADDED-FILE-EXTENSIONS.md"
+   ],
+   "id": "9.7",
+   "note": "Skills and plugins are documented as candidates until admitted; no import probe ran.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "audit/learning/scorecard.json 6.2"
+   ],
+   "id": "9.8",
+   "note": "Promotion binds an exact digest; the warm zero-call counter is handler-declared rather than gateway-observed.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "audit/context/census_output.json"
+   ],
+   "id": "13.1",
+   "note": "936 bytes per event and 62.6 events per model call on a saved run; useful outcome text is a small fraction of ledger bytes.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "run adaptive-e3f757ca96f805bc9a837708 events.jsonl"
+   ],
+   "id": "13.2",
+   "note": "8918 events: custom 3654, loop_init 2042, iteration 1071, terminal 1021, spawn 903, model 113.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "core/prompt_experiment.py summary on the live run"
+   ],
+   "id": "13.3",
+   "note": "Provider-reported input over estimate averaged 1.21 (1.10 to 1.45 by stage); the calibration is now measurable per call but not yet stored or applied.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "run adaptive-e3f757ca96f805bc9a837708 context_budget_applied"
+   ],
+   "id": "13.4",
+   "note": "Duplicate text within a packet becomes a digest marker; static text across packets is re-sent.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "core/task_region_statistics.py"
+   ],
+   "id": "13.5",
+   "note": "A rebuildable region statistics record now exists; no run has enough repeats for it to shorten reasoning.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [
+    "core/context_artifacts.py",
+    "core/context_budget.py"
+   ],
+   "id": "13.6",
+   "note": "Raw text is stored by digest and every trim keeps the raw digest.",
+   "severity": "low",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "audit/context/pr_noop_output.json"
+   ],
+   "id": "13.7",
+   "note": "An empty ten-step Loop costs 558 microseconds median, 23 events and 8.6 KB of ledger.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "audit/context/pr_noop_output.json"
+   ],
+   "id": "13.8",
+   "note": "One content-digest computation per Loop.",
+   "severity": "low",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "core/run_history.py"
+   ],
+   "id": "13.9",
+   "note": "Run History is immutable after commit; the in-process ledger is a mutable list until projection.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  },
+  {
+   "evidence": [],
+   "id": "13.10",
+   "note": "Packet ordering for provider prefix caching was not measured.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "loop/recursive_loop.py:_REASON_TO_CODE done_failed"
+   ],
+   "id": "17.1",
+   "note": "Fixed this session: a failed final step is VERIFICATION_REJECTED, not ACCEPTED.",
+   "severity": "critical",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "loop/kernel_runtime.py self_test owner_steps_outside_act_are_labelled_structural_not_complete"
+   ],
+   "id": "17.2",
+   "note": "Structural boundaries are never labelled complete.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "core/semantic_runtime.py trust states"
+   ],
+   "id": "17.3",
+   "note": "Candidate to Verified transitions exist in the semantic runtime; forging a Verified value was not attempted here.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "AGENTS.md:290"
+   ],
+   "id": "17.4",
+   "note": "The rule exists; silent replay was not probed.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [
+    "core/generated_project.py self_test allow_local_execution"
+   ],
+   "id": "17.5",
+   "note": "Host execution requires the flag and is labelled host_process_network_unenforced.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "core/adaptive_practitioner.py _copy_workspace_confined"
+   ],
+   "id": "17.6",
+   "note": "Symlinks are preserved and entries resolving outside the workspace are skipped.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "core/model_gateway.py tls_verification_policy event"
+   ],
+   "id": "17.7",
+   "note": "A non-default TLS policy is recorded on the run.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "core/model_gateway.py _error_code missing_credential"
+   ],
+   "id": "17.8",
+   "note": "A missing credential classifies as missing_credential and does not stop failover.",
+   "severity": "high",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "core/generated_project.py self_test timeouts and pip options"
+   ],
+   "id": "17.9",
+   "note": "Timeouts must be finite and pip options are reviewed.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PROVEN"
+  },
+  {
+   "evidence": [
+    "CHANGELOG Fixed: saved run ids"
+   ],
+   "id": "17.10",
+   "note": "The traversal check is recorded as fixed; its test body was not read in this audit.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "IMPLEMENTED_UNPROVEN"
+  },
+  {
+   "evidence": [],
+   "id": "17.11",
+   "note": "Regression checks exist for 17.1, 17.2, 17.5, 17.6, 17.8 and 17.9; 17.7 and 17.10 were not verified.",
+   "severity": "medium",
+   "source": "coordinator",
+   "verdict": "PARTIAL"
+  }
+ ],
+ "record_type": "everything_is_a_loop_audit/v1",
+ "worktree": "dirty (uncommitted Phase B edits present at audit time; see report)"
+}
