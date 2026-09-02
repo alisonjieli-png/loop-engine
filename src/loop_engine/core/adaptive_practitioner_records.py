@@ -173,9 +173,31 @@ AMBIGUITY_STATES = (
 # gateway_timeout means a proxy cut a long generation; a retry may hit the
 # same wall, so the step boundary also lowers its requested ceiling once
 # before the final attempt.
+#: Codes worth another physical attempt. Each names a property of THIS
+#: attempt rather than of the request: a connection that dropped, a limit
+#: that clears with time, a sampled response that carried no answer outside
+#: its private reasoning. A deterministic refusal — a bad request, an unknown
+#: model, an identity mismatch — is deliberately absent, because an identical
+#: second call earns an identical refusal and spends a call to learn nothing.
+#:
+#: ``output_validation_failed`` belongs here for a reason worth stating: the
+#: provider finished normally, declared `stop`, and stayed under its output
+#: ceiling, yet returned only reasoning. Nothing about the request was wrong
+#: and nothing in the run's state had changed, so the next sample is likely
+#: to answer — but the code was fatal, and one unlucky sample ended entire
+#: runs at their first step. Format repair does not cover this: repair feeds
+#: a malformed answer back, and here no answer arrived to repair.
 _RETRYABLE_TRANSPORT_ERRORS = frozenset({
     "network_unreachable", "provider_unavailable", "timeout",
-    "gateway_timeout"})
+    "gateway_timeout", "rate_limited", "output_validation_failed"})
+
+#: Codes whose wait is governed by a limit clearing rather than a connection
+#: settling. The transport backoff of one and two seconds returns straight
+#: into the same refusal for these. Fifteen seconds a step is a starting
+#: point chosen to be longer than the transport wait, not a measured
+#: constant, and the retry events record what it actually cost.
+_SLOW_BACKOFF_ERRORS = frozenset({"rate_limited"})
+_SLOW_BACKOFF_SECONDS = 15
 _MAXIMUM_TRANSPORT_ATTEMPTS = 3
 #: Format-repair calls per model step before the step fails honestly. Each
 #: attempt is a real model call whose output already failed admission;
@@ -1302,10 +1324,15 @@ class AdaptiveRunServices:
                                     prefer_failover=True,
                                     reason=preference.get("reason"))
                                 break
-                    # Governed backoff: 1s, then 2s. Every retry passes
-                    # through model_session.invoke again, so every physical
-                    # request stays visible and counted in the run record.
-                    time.sleep(2 ** (transport_attempt - 1))
+                    # Governed backoff: 1s, then 2s, or a longer wait when
+                    # the thing being waited on is a limit rather than a
+                    # connection. Every retry passes through
+                    # model_session.invoke again, so every physical request
+                    # stays visible and counted in the run record.
+                    if error_code in _SLOW_BACKOFF_ERRORS:
+                        time.sleep(_SLOW_BACKOFF_SECONDS * transport_attempt)
+                    else:
+                        time.sleep(2 ** (transport_attempt - 1))
             contract_digest = hashlib.sha256(
                 request.output_contract.encode("utf-8")).hexdigest()
             if not self.request.quiet_model_io:

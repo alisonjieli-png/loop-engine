@@ -743,6 +743,38 @@ def _schema_matches_record() -> dict:
                       f"enforced-only {sorted(enforced - shown)}"}
 
 
+def _retry_classification() -> list:
+    """Hold the line between an unlucky attempt and a refused request.
+
+    A retryable code says the next identical call may well succeed; a
+    deterministic one says it cannot. Getting this wrong is expensive in
+    both directions — a fatal code discards a whole run over one bad sample,
+    and a retryable one spends three calls to earn the same refusal — and
+    neither shows up in any other gate, because both produce a run that
+    merely ends.
+    """
+    from .adaptive_practitioner_records import _RETRYABLE_TRANSPORT_ERRORS
+    #: Outcomes of one attempt: the same request may fare better next time.
+    transient = ("network_unreachable", "provider_unavailable", "timeout",
+                 "gateway_timeout", "rate_limited",
+                 "output_validation_failed")
+    #: Properties of the request itself: a second identical call is refused
+    #: identically, so retrying only spends calls to learn nothing.
+    settled = ("invalid_request", "model_not_found",
+               "model_identity_mismatch")
+    missing = [code for code in transient
+               if code not in _RETRYABLE_TRANSPORT_ERRORS]
+    wrong = [code for code in settled if code in _RETRYABLE_TRANSPORT_ERRORS]
+    return [
+        {"test": "an attempt-level failure is tried again",
+         "passed": not missing,
+         "detail": "" if not missing else f"not retried: {missing}"},
+        {"test": "a settled refusal is not tried again",
+         "passed": not wrong,
+         "detail": "" if not wrong else f"retried pointlessly: {wrong}"},
+    ]
+
+
 def self_test() -> dict:
     """Run focused task-agnostic adaptive Practitioner checks."""
     from .adaptive_practitioner_checks import run_checks
@@ -750,7 +782,8 @@ def self_test() -> dict:
         run_checks as run_acceptance_checks)
     focused = run_checks()
     acceptance = run_acceptance_checks()
-    tests = [*focused["tests"], *acceptance["tests"], _schema_matches_record()]
+    tests = [*focused["tests"], *acceptance["tests"], _schema_matches_record(),
+             *_retry_classification()]
     passed = sum(item["passed"] for item in tests)
     return {
         "record_type": "adaptive_practitioner_complete_test/v1",

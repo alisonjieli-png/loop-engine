@@ -215,6 +215,22 @@ First public release.
 
 ### Fixed
 
+- **A response that arrived carrying no answer is now tried again.** The
+  provider finished normally — `stop`, under its output ceiling, no transport
+  error — and returned only private reasoning with no final answer. The
+  gateway rightly refused it, but `output_validation_failed` was outside the
+  retryable set, so the refusal escaped as fatal and ended whole runs at their
+  first step over a single unlucky sample. Nothing about the request was
+  wrong and nothing in the run's state had changed, which is exactly the
+  condition under which another attempt is worth making. Format repair does
+  not cover this: repair feeds a malformed answer back, and here no answer
+  arrived to repair. `rate_limited` was fatal for the same reason and is now
+  retried too, on a longer wait, because what is being waited for is a limit
+  clearing rather than a connection settling. Two self-tests hold the line in
+  both directions, since a fatal code discards a run and a retryable one
+  spends three calls to earn the same refusal, and neither shows up in any
+  other gate — both merely produce a run that ends.
+
 - **An optional record no longer kills the run it was attached to.** Packets
   ask every call to report what it drew on, presented as
   `selection_report: {keys: {...}}`. Models answered in both shapes the
