@@ -13,7 +13,7 @@ the current system and the mesh architecture the product definition describes.
 | `compileall` over `src`, `devtools`, `kaggle` | clean |
 | Bare `except:` or `except Exception: pass` in `src` | none |
 | Stubs (`TODO`, `FIXME`, `NotImplementedError` outside refusals) | none; four `NotImplementedError` sites are explicit unsupported-operation refusals in intelligence layers and n-gram retrieval |
-| Clean install of the pushed `main` archive into a fresh venv (the Kaggle install path) | `pip install` ok, `loop-engine doctor` exit 0, base self-test 1739 of 1739 with optional adapters reported as not tested |
+| Clean install of the pushed `main` archive into a fresh environment, which is the Kaggle install path | install ok, doctor exit 0, base self-test 1774 of 1774 with optional adapters reported as not tested, and the new runtime modules import from the installed package |
 | `python -m build` | sdist and wheel built |
 | Full self-test, conformance, hardcoding audit | see section 7 |
 
@@ -46,6 +46,7 @@ header, and accept that the cell installs from `main` (there is no pinned releas
 | Binary classification, 200 rows (2026-09-01) | Practitioner VERIFIED_WORKING; public terminal mis-typed, fixed the same night; ROC-AUC 0.936 on 3 folds | 113 / 13 | 3.80M | 1612 s |
 | Regression, 200 rows | COMPLETED_VERIFIED; ridge RMSE 1.74 ± 0.07, R² 0.77 on 3 folds | 27 / 4 | 0.69M | 471 s |
 | Multiclass, 200 rows | BLOCKED_MATERIAL_INPUT with no artifacts; the run stopped to ask a question that was not a question. Cause found and fixed in this pass | 73 / 9 | not reported per call | 1468 s |
+| Binary, 200 rows, after the fixes | cut off by the harness time cap before a terminal, having written a solution, a test, and a verification script across two project attempts; no repeated-call refusals and no rejected capability calls occurred | 67 / 9 | not reported per call | 1418 s |
 
 Three observations. Cost varied fourfold between tasks of the same size, so cost is not yet
 predictable per task region. Provider-reported input tokens exceeded the estimator by 10 to 45
@@ -196,6 +197,13 @@ Live evidence produced in this pass:
   terminal.
 - A regression competition solved end to end by cell 01 against Ollama Cloud.
 - A multiclass competition run that exposed the blocking-question defect fixed in section 4.
+- A binary competition run after the fixes, which reached real generated-project attempts with a
+  solution, a test, and a verification script, and recorded no refused or repeated capability
+  calls. It was stopped by the local time cap rather than by a stall, so it is evidence that the
+  stall class is gone, not evidence of a verified competition result.
+- A clean install of the pushed archive into a fresh environment, which is what a Kaggle cell
+  does: install ok, doctor exit 0, base self-test 1774 of 1774, and the new runtime modules
+  import from the installed package.
 
 Not proved here: a live Tactical Engineering run, which needs its API key in the environment. Its
 cell is verified against a loopback mock at both the preflight and solve stages, which exercises
