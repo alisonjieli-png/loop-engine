@@ -765,7 +765,14 @@ def _retry_classification() -> list:
     missing = [code for code in transient
                if code not in _RETRYABLE_TRANSPORT_ERRORS]
     wrong = [code for code in settled if code in _RETRYABLE_TRANSPORT_ERRORS]
+    from .adaptive_practitioner_records import (
+        _ATTEMPTS_FOR_ERROR, _MAXIMUM_TRANSPORT_ATTEMPTS)
+    empty = _ATTEMPTS_FOR_ERROR.get("output_validation_failed", 0)
     return [
+        {"test": "a response that arrived empty is tried more than a dark socket",
+         "passed": empty > _MAXIMUM_TRANSPORT_ATTEMPTS,
+         "detail": f"empty-answer attempts {empty}, "
+                   f"transport attempts {_MAXIMUM_TRANSPORT_ATTEMPTS}"},
         {"test": "an attempt-level failure is tried again",
          "passed": not missing,
          "detail": "" if not missing else f"not retried: {missing}"},

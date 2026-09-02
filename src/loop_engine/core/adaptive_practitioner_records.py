@@ -199,6 +199,24 @@ _RETRYABLE_TRANSPORT_ERRORS = frozenset({
 _SLOW_BACKOFF_ERRORS = frozenset({"rate_limited"})
 _SLOW_BACKOFF_SECONDS = 15
 _MAXIMUM_TRANSPORT_ATTEMPTS = 3
+
+#: Attempts for a response that arrived carrying no answer. Kept apart from
+#: the transport count because the two say opposite things about the
+#: provider. A network error says it could not be reached, and a fourth call
+#: into a dark socket is waste. An empty answer says it was reached, answered
+#: on time and under its ceiling, and spent the whole budget on private
+#: reasoning — so the next sample is likely to answer, and one more call
+#: costs a fraction of the run that ends without it. Measured on a
+#: twelve-competition campaign: one run saw five empty answers in ten calls
+#: and three attempts did not get it past orientation.
+_MAXIMUM_EMPTY_ANSWER_ATTEMPTS = 6
+
+#: How many attempts each retryable code earns; anything absent gets the
+#: transport count.
+_ATTEMPTS_FOR_ERROR = {
+    "output_validation_failed": _MAXIMUM_EMPTY_ANSWER_ATTEMPTS}
+_MAXIMUM_ATTEMPTS_ANY_ERROR = max(
+    _MAXIMUM_TRANSPORT_ATTEMPTS, _MAXIMUM_EMPTY_ANSWER_ATTEMPTS)
 #: Format-repair calls per model step before the step fails honestly. Each
 #: attempt is a real model call whose output already failed admission;
 #: unbounded repair against novel invalid output is churn, not progress.
@@ -1269,7 +1287,8 @@ class AdaptiveRunServices:
                 deterministic_attempt_status=self.deterministic_attempt.status,
                 output_schema_digest=hashlib.sha256(
                     request.output_contract.encode("utf-8")).hexdigest())
-            for transport_attempt in range(1, _MAXIMUM_TRANSPORT_ATTEMPTS + 1):
+            for transport_attempt in range(
+                    1, _MAXIMUM_ATTEMPTS_ANY_ERROR + 1):
                 trace_event = {
                     "step": request.step_id,
                     "objective": request.objective[:160],
@@ -1304,8 +1323,8 @@ class AdaptiveRunServices:
                         error_code=error_code,
                         prompt_digest=snapshot["prompt_digest"])
                     retryable = error_code in _RETRYABLE_TRANSPORT_ERRORS
-                    final_attempt = (
-                        transport_attempt >= _MAXIMUM_TRANSPORT_ATTEMPTS)
+                    final_attempt = transport_attempt >= _ATTEMPTS_FOR_ERROR.get(
+                        error_code, _MAXIMUM_TRANSPORT_ATTEMPTS)
                     if not retryable or final_attempt:
                         raise
                     if error_code == "gateway_timeout" \

@@ -224,6 +224,17 @@ First public release.
 
 ### Fixed
 
+- **An empty answer and an unreachable provider no longer share a retry
+  budget.** They say opposite things. A network error says the provider could
+  not be reached, and a fourth call into a dark socket is waste. A response
+  that arrived carrying no answer says it was reached, answered on time and
+  under its ceiling, and spent the whole budget on private reasoning — so the
+  next sample is likely to answer. One shared count of three served the first
+  case and starved the second: on a twelve-competition campaign one run saw
+  five empty answers in ten calls and never got past orientation. Empty
+  answers now get their own budget of six; every other retryable code keeps
+  three, and each attempt is still a published, counted model call.
+
 - **A run is told the machine its code will actually run on.** The runtime
   facts reported `execution_isolation: host_process` whenever local execution
   was authorised, but execution prefers Docker whenever Docker is available
