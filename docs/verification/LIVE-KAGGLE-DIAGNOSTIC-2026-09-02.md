@@ -87,11 +87,52 @@ On a solve against those real files through the Tactical route:
 - The command ran and the four expected artifacts were reported
   `present: false`, `verified: false`. Nothing was fabricated.
 
-## 5. What is not proven
+## 5. The verified run
 
-- **No green end-to-end submission on real data.** Every wall the failing run
-  hit is gone and failures are now reported honestly. That is a different and
-  weaker claim than "it solves the competition".
+Kaggle run `adaptive-7b7fd04e0e75bc3785e30abb`, on the same competition and
+the same three files, reached `COMPLETED_VERIFIED` in 2729 seconds over 77
+model calls, 11 tool calls and 692 loops. The failing run spent 226 calls and
+2268 seconds to reach `BLOCKED_MATERIAL_INPUT` with nothing.
+
+What the artifacts show, read from the downloaded run rather than from the
+terminal code:
+
+- `submission.csv` is 7,894,696 bytes and holds 286,571 rows, matching
+  `test_rows` exactly. The failing run's was 6,009 bytes.
+- Every one of those 286,571 predictions is distinct, ranging 0.000000 to
+  0.969723 with a mean of 0.174871 and a standard deviation of 0.266983. The
+  failing run reported a standard deviation of exactly zero.
+- `id` runs 668,665 to 955,235, continuing from the 668,665 training rows.
+- The task was read as binary classification on `Will_Buy_EV`, scored with
+  ROC AUC over three folds. The failing run called the same column continuous
+  and chose a regressor with a root mean squared error.
+- Two models were fitted and compared on per-fold scores: logistic regression
+  at a mean AUC of 0.93810, random forest at 0.93344. The better one was
+  selected.
+- The source role reading named all three files from their profiles:
+  `train.csv` as the labeled training data, `test.csv` as the prediction
+  input, `sample_submission.csv` as the output contract. No name was inferred
+  from a filename.
+
+The run also repaired itself on a real defect rather than by retrying. The
+first attempt produced every artifact and read every source at its sandbox
+path, but `verify.py` exited 1 because it could not independently confirm the
+input directory had not been written to. The loop diagnosed that specific
+check and changed the design: a `snapshot_input.py` step now records the input
+tree — paths, sizes, mtimes, and content hashes — before `solution.py` runs,
+so `verify.py` can compare against it and prove the read-only guarantee. The
+next attempt exited 0 with "Verification passed: all checks succeeded", and
+`deterministic_checks_passed` is true.
+
+## 6. What is not proven
+
+- **No competition score.** The submission was produced and independently
+  verified for schema, row count, column order, identifier coverage and value
+  range. It has not been submitted, so nothing here says how it ranks. The
+  0.938 is a local three-fold cross-validated figure, not a leaderboard
+  result.
+- **One run on one competition.** A single verified solve is not a claim about
+  unseen tasks.
 - The local run's command failed with `ModuleNotFoundError: pandas`, which is
   an artifact of this machine: Docker is present here, so the project ran in a
   plain Python image, while Kaggle has no Docker and a preinstalled data stack.
@@ -101,8 +142,11 @@ On a solve against those real files through the Tactical route:
   ingest path reads whole files into memory. Streaming the digest and the
   write would remove the memory constraint entirely. Not done.
 
-## 6. Items from the previous review that no longer stand
+## 7. Items from the previous review that no longer stand
 
+- "No green end-to-end submission on real data" (section 5 of the earlier
+  draft of this document): closed by the run above, with the narrower
+  limitations now recorded in its place.
 - "Tactical Engineering and Mistral routes are live-untested in this
   environment" (item 11): Tactical Engineering is live-tested, including a
   full solve against the real competition data. Mistral remains untested.
@@ -113,7 +157,7 @@ On a solve against those real files through the Tactical route:
 
 Everything else in that list stands unchanged.
 
-## 7. Gates
+## 8. Gates
 
 Self-test 1826 of 1826; conformance all gates pass; Kaggle offline harness 3
 cells across binary, regression and multiclass; adaptive acceptance checks 26
