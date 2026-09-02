@@ -21,7 +21,7 @@ from ..loop.encapsulate import as_practitioner_loop
 from .adaptive_practitioner_records import (
     AdaptivePractitionerError, AdaptiveRunServices, NextActionDecision)
 from .generated_project import (
-    DEFAULT_GENERATED_PROJECT_IMAGE,
+    sandbox_image,
     GeneratedProjectAuthority, GeneratedProjectError, GeneratedProjectExecutionContext, GeneratedProjectExecutionRequest,
     validate_generated_project_input_use)
 from .web_fetch import WebFetchAuthority, WebFetchContext, WebFetchRequest
@@ -285,7 +285,7 @@ def execute_adaptive_capability(
                         services.request.allow_network_reads,
                         allow_local_execution=
                             services.request.allow_local_execution),
-                    DEFAULT_GENERATED_PROJECT_IMAGE,
+                    sandbox_image(),
                     input_artifacts=input_artifacts),
                 GeneratedProjectExecutionContext(owner))
             result["manifest"] = manifest.to_dict()

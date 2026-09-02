@@ -11,8 +11,10 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import os
 import re
 from dataclasses import dataclass, field, replace
+from functools import lru_cache
 from pathlib import Path, PurePosixPath
 
 from ..loop.effect_approval import (
@@ -28,6 +30,55 @@ from .workspace_backends import (
 
 DEFAULT_GENERATED_PROJECT_IMAGE = (
     "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3")
+#: Operators name the sandbox image through the environment. The default is
+#: a bare interpreter, which is the right floor for a runtime that must not
+#: assume what a task needs — and the wrong ceiling for a machine asked to
+#: do data work, where every attempt refuses honestly for want of a library
+#: it is not allowed to install. Naming the image is how a deployment says
+#: what its sandbox can do, rather than each task discovering it cannot.
+SANDBOX_IMAGE_VARIABLE = "LOOP_ENGINE_SANDBOX_IMAGE"
+
+
+def sandbox_image(environ=None) -> str:
+    """The container image generated projects run in."""
+    source = os.environ if environ is None else environ
+    named = str(source.get(SANDBOX_IMAGE_VARIABLE, "") or "").strip()
+    return named or DEFAULT_GENERATED_PROJECT_IMAGE
+
+
+def selected_execution_backend(
+        allow_local_execution: bool,
+        image: "str | None" = None) -> str:
+    """Name the backend a generated project would actually run in.
+
+    Reported to the model as a runtime fact, so it must be decided the same
+    way execution decides it: by asking whether Docker is available, not by
+    reading the flag that only authorises the fallback. A run told it was a
+    host process while its code ran in a container writes code for the wrong
+    machine, and learns otherwise only from an import error.
+    """
+    if _docker_available(image or sandbox_image()):
+        return "container"
+    return "host_process" if allow_local_execution else "unavailable"
+
+
+@lru_cache(maxsize=4)
+def _docker_available(image: str) -> bool:
+    """Whether Docker can run this image, asked once per process.
+
+    The answer is a property of the machine rather than of a run, and every
+    packet would otherwise pay for the same subprocess. Execution asks again
+    for itself, so a stale yes costs a fallback rather than a wrong run.
+    """
+    declaration = DockerWorkspaceDeclaration(
+        image=image,
+        limits=DockerResourceLimits(memory="4g", cpus=2.0, pids=256,
+                                    temporary_bytes=1024 * 1024 * 1024))
+    spec = WorkspaceSpec(
+        workspace_id="generated-availability-probe", root="/",
+        backend_kind="docker", execution_enabled=True,
+        allowed_commands=ALLOWED_PYTHON_EXECUTABLES)
+    return bool(DockerWorkspace(spec, declaration).availability().available)
 GENERATED_PROJECT_RECORD_TYPE = "generated_project_manifest/v1"
 GENERATED_PROJECT_CANDIDATE_TYPE = "generated_project_candidate/v1"
 ALLOWED_PYTHON_EXECUTABLES = (

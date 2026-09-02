@@ -9,6 +9,15 @@ First public release.
 
 ### Added
 
+- **A deployment can name the sandbox image.** `LOOP_ENGINE_SANDBOX_IMAGE`
+  selects the image generated projects run in; the default is unchanged. The
+  bare interpreter that was hardcoded is the right floor for a runtime that
+  must not assume what a task needs, and the wrong ceiling for a machine
+  asked to do data work: every attempt at a modelling task refused honestly
+  for want of a library it was forbidden to install, having burned its passes
+  to discover that. Naming the image is how a deployment states what its
+  sandbox can do, instead of each task finding out that it cannot.
+
 - **A run now states which questions it is eligible to answer.** Six live runs
   were used to reason about behaviour; every one had transport failures and
   three had zero completed model calls, yet all six were read as evidence
@@ -214,6 +223,17 @@ First public release.
   request, so nothing below dispatch depends on a name defined above it.
 
 ### Fixed
+
+- **A run is told the machine its code will actually run on.** The runtime
+  facts reported `execution_isolation: host_process` whenever local execution
+  was authorised, but execution prefers Docker whenever Docker is available
+  and treats the local backend only as a fallback for when it is not. On a
+  machine with Docker the model was therefore told it was running as a host
+  process while its code ran in a container, and learned otherwise from an
+  import error several minutes later. The fact is now decided the way
+  execution decides it, and the self-test compares the two rather than
+  asserting a written-down answer — the old check asserted `host_process`,
+  which is to say it pinned the defect in place.
 
 - **A finished record no longer archives whole datasets.** One competition run
   wrote a 113 MB `adaptive-result.json`, of which 80 MB was the verbatim

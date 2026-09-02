@@ -28,6 +28,7 @@ import hashlib
 from .adaptive_practitioner_records import AdaptivePractitionerError
 from .adaptive_practitioner_source import (
     inspectable_source_files, project_input_path)
+from .generated_project import selected_execution_backend
 from .runtime_capacity import (
     model_evidence_bytes, paths_within_allowance, supplied_input_ceiling)
 from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
@@ -115,9 +116,12 @@ def runtime_facts(services) -> dict:
         "record_type": RUNTIME_FACTS_RECORD_TYPE,
         "authority": "runtime",
         "workspace_root": str(services.workspace_base),
-        "execution_isolation": (
-            "host_process" if request.allow_local_execution
-            else "container"),
+        # Decided the way execution decides it. Reading the flag alone said
+        # "host_process" whenever local execution was authorised, while
+        # Docker — being available — took priority and ran the code in a
+        # container. A run told the wrong machine writes code for it.
+        "execution_isolation": selected_execution_backend(
+            bool(request.allow_local_execution)),
         "granted_permissions": list(granted_permissions(request)),
         "interaction_mode": str(request.interaction_mode),
         "source_manifest": _source_manifest(services),
@@ -169,7 +173,14 @@ def self_test() -> dict:
         "detail": str(paths)[:120],
     }, {
         "test": "isolation_and_permissions_are_exact_not_guessed",
-        "passed": (facts.get("execution_isolation") == "host_process"
+        # Compared against the executor's own decision rather than a
+        # written-down answer: this check previously asserted "host_process"
+        # whenever local execution was authorised, which is what the fact
+        # wrongly reported while Docker, being available, took priority.
+        "passed": (facts.get("execution_isolation")
+                   == selected_execution_backend(True)
+                   and facts.get("execution_isolation") in (
+                       "container", "host_process")
                    and facts.get("granted_permissions")
                    == ["source_read", "workspace_write", "sandbox_command"]
                    and facts.get("authority") == "runtime"),
