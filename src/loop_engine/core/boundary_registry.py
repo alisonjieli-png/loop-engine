@@ -72,7 +72,7 @@ BOUNDARIES = (
      "crosses": "each of the nine stages executes",
      "binding": "stage_loop_tree",
      "envelope": "loop.encapsulate.as_loop_of_stage_loops",
-     "test": "encapsulate:reference_nine_step_runs_as_nine_stage_loops"},
+     "test": "encapsulate:reference_practitioner_runs_one_stage_loop_per_canonical_node"},
     {"boundary": "Practitioner kernel execution",
      "crosses": "typed kernel passes calculate an operational task result",
      "binding": "native_loop",

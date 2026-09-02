@@ -17,5 +17,5 @@ objects:
     version: 1.0.0
     artifact_kind: intelligence_record
     lifecycle: registered
-    content_digest: d064992d0db0298220ce12f1c25cb2aa00aade8f71aab1afc10ea33700b6565d
+    content_digest: 03a4c5df659e650a0a1cc41508bbe4eee6e1f58a6263e0346c72717114622c04
     payload: file:practitioner_context_intelligence.yaml

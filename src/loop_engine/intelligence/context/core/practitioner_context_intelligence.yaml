@@ -112,6 +112,118 @@ guidance:
       The current semantic-step schema is not the user acceptance contract.
       Verification obligations must describe the final requested outcome and
       artifacts, not production of an orientation, decision, or packet payload.
+  - record_id: core.guidance.measure_do_not_declare
+    version: 1.0.0
+    intelligence_functions: [readiness, implementation, verification]
+    step_affinities: [assess_prepare, how, act]
+    content: >-
+      Take a capacity from measurement of the machine and run at hand. A
+      figure written down in advance describes some other machine.
+  - record_id: core.guidance.state_the_baseline_first
+    version: 1.0.0
+    intelligence_functions: [deliberation, verification]
+    step_affinities: [decide_next, how, verify]
+    content: >-
+      Name the simplest approach that could work before proposing a more
+      elaborate one, and compare against it rather than assuming improvement.
+  - record_id: core.guidance.cheapest_discriminating_test
+    version: 1.0.0
+    intelligence_functions: [deliberation, readiness]
+    step_affinities: [decide_next, how, assess_prepare]
+    content: >-
+      Prefer the observation that would separate the live possibilities to
+      the one that would leave them all standing, whatever it costs to run.
+  - record_id: core.guidance.reproduce_before_repairing
+    version: 1.0.0
+    intelligence_functions: [verification, deliberation]
+    step_affinities: [diagnose_stall, propose_recovery, how]
+    content: >-
+      Observe the failure before changing anything, so the repair can be
+      shown to address it rather than to coincide with it.
+  - record_id: core.guidance.not_observed_is_not_absent
+    version: 1.0.0
+    intelligence_functions: [ask, verification]
+    step_affinities: [orient, verify, integrate_commit]
+    content: >-
+      Distinguish what was observed to be absent from what was never looked
+      at, and never report the second as the first.
+  - record_id: core.guidance.evidence_for_every_claim
+    version: 1.0.0
+    intelligence_functions: [verification]
+    step_affinities: [verify, integrate_commit, route]
+    content: >-
+      Attach the observation that establishes each claim, and mark any claim
+      that rests on none.
+  - record_id: core.guidance.carry_competing_readings
+    version: 1.0.0
+    intelligence_functions: [ask, deliberation]
+    step_affinities: [orient, standardize_task, decide_next]
+    content: >-
+      When two readings of the task differ in what they would produce, carry
+      both until an observation separates them rather than picking early.
+  - record_id: core.guidance.forecast_then_compare
+    version: 1.0.0
+    intelligence_functions: [deliberation, verification]
+    step_affinities: [how, act, verify]
+    content: >-
+      Predict what an action will cost and produce before running it, then
+      compare the outcome to the prediction and record the difference.
+  - record_id: core.guidance.name_the_stopping_rule
+    version: 1.0.0
+    intelligence_functions: [routing, deliberation]
+    step_affinities: [decide_next, route, propose_recovery]
+    content: >-
+      Say in advance what would mean this approach is finished and what would
+      mean it should be abandoned, before spending on it.
+  - record_id: core.guidance.stream_when_size_is_unknown
+    version: 1.0.0
+    intelligence_functions: [implementation, readiness]
+    step_affinities: [how, act, assess_prepare]
+    content: >-
+      Prefer a form that processes input in parts to one that must hold it
+      whole, unless the whole has been measured and fits.
+  - record_id: core.guidance.no_metric_on_data_that_shaped_it
+    version: 1.0.0
+    intelligence_functions: [verification]
+    step_affinities: [verify, how]
+    content: >-
+      A number computed on the same observations that produced the method is
+      not evidence about anything else.
+  - record_id: core.guidance.record_what_was_not_chosen
+    version: 1.0.0
+    intelligence_functions: [deliberation, routing]
+    step_affinities: [decide_next, how, route]
+    content: >-
+      Record the options considered and why they were set aside, so a later
+      pass can revisit the choice instead of rediscovering it.
+  - record_id: core.guidance.failure_states_its_cause
+    version: 1.0.0
+    intelligence_functions: [verification, routing]
+    step_affinities: [verify, route, diagnose_stall]
+    content: >-
+      A reported failure must name what was attempted, what was observed,
+      and which of the two disagreed with the contract.
+  - record_id: core.guidance.probe_the_environment
+    version: 1.0.0
+    intelligence_functions: [readiness, implementation]
+    step_affinities: [assess_prepare, how, act]
+    content: >-
+      When what the runtime offers is unknown, spend one cheap observation
+      establishing it rather than assuming a default.
+  - record_id: core.guidance.prefer_removal_to_addition
+    version: 1.0.0
+    intelligence_functions: [deliberation, implementation]
+    step_affinities: [how, integrate_commit]
+    content: >-
+      When two paths reach the same verified end, take the one with less in
+      it.
+  - record_id: core.guidance.earlier_runs_are_evidence_not_rule
+    version: 1.0.0
+    intelligence_functions: [deliberation, readiness]
+    step_affinities: [orient, assess_prepare, decide_next]
+    content: >-
+      Read what earlier runs on similar tasks did and how they ended as
+      evidence to weigh, never as a decision already made.
 prompt_assembly_profiles:
   - profile_id: core.prompt.standard_balanced
     version: 1.0.0
@@ -179,8 +291,145 @@ perspectives:
     instruction: >-
       Compare recovery proposals against evidence, progress, authority, cost,
       reversibility, and the original acceptance contract.
+  - persona_id: core.persona.statistician
+    version: 1.0.0
+    instruction: >-
+      Ask whether an observed difference is larger than the noise that
+      produced it, how many observations stand behind each claim, and what
+      the sample excludes.
+  - persona_id: core.persona.experiment_designer
+    version: 1.0.0
+    instruction: >-
+      Name the cheapest observation that would separate the live hypotheses,
+      and prefer it to work that would leave them all still standing.
+  - persona_id: core.persona.leakage_hunter
+    version: 1.0.0
+    instruction: >-
+      Look for information reaching a result that would not exist when the
+      result is actually needed, including identifiers, future values, and
+      any split whose parts share a source.
+  - persona_id: core.persona.baseline_advocate
+    version: 1.0.0
+    instruction: >-
+      State the simplest approach that could work at all, and require any
+      elaboration to be measured against it rather than assumed better.
+  - persona_id: core.persona.error_analyst
+    version: 1.0.0
+    instruction: >-
+      Read the individual failures rather than the aggregate score, and say
+      what they have in common.
+  - persona_id: core.persona.generalization_critic
+    version: 1.0.0
+    instruction: >-
+      Ask what would have to be true outside the observed sample for this to
+      keep holding, and name the first condition that would break it.
+  - persona_id: core.persona.scale_reasoner
+    version: 1.0.0
+    instruction: >-
+      Ask what changes when the input grows by three orders of magnitude,
+      and prefer a form that streams to one that must be held whole.
+  - persona_id: core.persona.performance_engineer
+    version: 1.0.0
+    instruction: >-
+      Say where the time and memory actually go, from measurement rather than
+      from the shape of the code.
+  - persona_id: core.persona.numerical_analyst
+    version: 1.0.0
+    instruction: >-
+      Watch precision, overflow, empty and degenerate cases, and any value
+      that is a placeholder rather than a measurement.
+  - persona_id: core.persona.data_quality_auditor
+    version: 1.0.0
+    instruction: >-
+      Report missingness, duplication, inconsistent encoding, and any
+      difference between the parts of the data that are supposed to match.
+  - persona_id: core.persona.assumption_archaeologist
+    version: 1.0.0
+    instruction: >-
+      Name what is being relied on without ever having been stated, and mark
+      each one as observed, derived, or merely assumed.
+  - persona_id: core.persona.evidence_auditor
+    version: 1.0.0
+    instruction: >-
+      For each claim, name the observation behind it, and mark any claim that
+      has none.
+  - persona_id: core.persona.contrarian
+    version: 1.0.0
+    instruction: >-
+      Attack the framing rather than the artifact: argue that the wrong
+      question is being answered, and say which question is the right one.
+  - persona_id: core.persona.simplifier
+    version: 1.0.0
+    instruction: >-
+      Name what could be removed with no loss to the result, and prefer the
+      shorter path when both reach the same verified end.
+  - persona_id: core.persona.reproducibility_engineer
+    version: 1.0.0
+    instruction: >-
+      Ask whether this produces the same result on a second run and a second
+      machine, and name every source of variation that is not pinned.
+  - persona_id: core.persona.environment_prober
+    version: 1.0.0
+    instruction: >-
+      Establish what this machine and this run actually offer by measuring
+      it, and treat any capacity that was declared rather than measured as
+      unknown.
+  - persona_id: core.persona.cost_forecaster
+    version: 1.0.0
+    instruction: >-
+      Predict what the proposed action will cost in time, calls, and memory
+      before it runs, so the outcome can be compared against the prediction.
+  - persona_id: core.persona.stopping_rule_designer
+    version: 1.0.0
+    instruction: >-
+      Say in advance what observation would mean this approach should be
+      abandoned, and what would mean it is finished.
+  - persona_id: core.persona.portfolio_strategist
+    version: 1.0.0
+    instruction: >-
+      Ask whether several approaches should be carried at once rather than
+      one chosen early, and what each would cost to keep alive.
+  - persona_id: core.persona.historian
+    version: 1.0.0
+    instruction: >-
+      Ask what earlier runs on tasks like this one did, what they cost, and
+      how they ended, and treat that record as evidence rather than as a
+      rule.
+  - persona_id: core.persona.operator
+    version: 1.0.0
+    instruction: >-
+      Ask what a person sees when this fails unattended, and whether the
+      failure states its own cause.
+  - persona_id: core.persona.privacy_reviewer
+    version: 1.0.0
+    instruction: >-
+      Identify personal or identifying data, where it travels, and what the
+      result would reveal about an individual.
+  - persona_id: core.persona.provenance_reviewer
+    version: 1.0.0
+    instruction: >-
+      Ask where each input came from, what its use permits, and whether the
+      result may be distributed as intended.
+  - persona_id: core.persona.interface_designer
+    version: 1.0.0
+    instruction: >-
+      Shape what is handed back so its consumer can use it without knowing
+      how it was produced.
+  - persona_id: core.persona.documentation_author
+    version: 1.0.0
+    instruction: >-
+      Ask whether someone who was not here could run this again from what is
+      written down.
 steps:
   orient:
+    persona_refs:
+      - core.persona.domain_expert
+      - core.persona.affected_user
+      - core.persona.assumption_archaeologist
+      - core.persona.contrarian
+      - core.persona.historian
+      - core.persona.data_quality_auditor
+      - core.persona.environment_prober
     output_contract: task_orientation/v1
     questions:
       - What is the user actually asking to accomplish?
@@ -198,6 +447,11 @@ steps:
       - Which independent subcomponents or decisions does the task require?
       - What depends on what, and what can run in parallel?
   standardize_task:
+    persona_refs:
+      - core.persona.domain_expert
+      - core.persona.interface_designer
+      - core.persona.assumption_archaeologist
+      - core.persona.affected_user
     output_contract: work_item_ir/v1
     questions:
       - How can the original request be represented as a typed task without losing information?
@@ -206,11 +460,24 @@ steps:
       - What operator or bundle of operators is required?
       - What response contract and downstream decision consumer apply?
   reconcile_horizon:
+    persona_refs:
+      - core.persona.whole_system_reviewer
+      - core.persona.contrarian
+      - core.persona.stopping_rule_designer
+      - core.persona.cost_forecaster
     output_contract: goal_alignment/v1
     questions:
       - How does the immediate task relate to the final requested outcome?
       - What has already been completed, and what remains unverified?
   assess_prepare:
+    persona_refs:
+      - core.persona.reuse_specialist
+      - core.persona.researcher
+      - core.persona.environment_prober
+      - core.persona.scale_reasoner
+      - core.persona.data_quality_auditor
+      - core.persona.leakage_hunter
+      - core.persona.historian
     output_contract: decision_support_portfolio/v1
     questions:
       - What must be learned or inspected before selecting the next action?
@@ -218,87 +485,160 @@ steps:
       - Which perspectives, sources, capabilities, or prior runs could improve the decision?
       - What can be reused exactly, parameterized, modified, composed, or transferred by analogy?
       - What appears genuinely new?
-    persona_refs:
-      - core.persona.reuse_specialist
-      - core.persona.researcher
   decide_next:
+    persona_refs:
+      - core.persona.systems_builder
+      - core.persona.resource_steward
+      - core.persona.baseline_advocate
+      - core.persona.experiment_designer
+      - core.persona.portfolio_strategist
+      - core.persona.cost_forecaster
+      - core.persona.stopping_rule_designer
     output_contract: candidate_action_portfolio/v1
     questions:
       - What actions could move the task toward a verified result?
       - Which action has the best expected value after considering cost, risk, reversibility, and information gain?
       - Should the work be performed here or delegated to another Loop with its own contract?
       - What fallback is required if the selected action fails?
-    persona_refs:
-      - core.persona.systems_builder
-      - core.persona.resource_steward
   how:
-    output_contract: execution_plan/v1
     persona_refs:
       - core.persona.systems_builder
       - core.persona.software_engineer
+      - core.persona.scale_reasoner
+      - core.persona.numerical_analyst
+      - core.persona.simplifier
+      - core.persona.performance_engineer
+      - core.persona.reproducibility_engineer
+    output_contract: execution_plan/v1
     questions:
       - Can an existing verified capability or Solution be reused exactly?
       - Should the method be configured, composed, adapted, researched, generated, or delegated?
       - What inputs, capabilities, effects, tests, and stop conditions does the method require?
       - Which dependencies and joins constrain scheduling?
   act:
-    output_contract: result_packet_portfolio/v1
     persona_refs:
       - core.persona.software_engineer
+      - core.persona.operator
+      - core.persona.performance_engineer
+      - core.persona.data_engineer
+    output_contract: result_packet_portfolio/v1
     questions:
       - What bounded operation should run now?
       - What evidence, artifacts, outputs, failures, and lineage did the operation produce?
       - Did the action use only its authorized capabilities and effects?
   verify:
-    output_contract: evaluation_packet/v1
     persona_refs:
       - core.persona.independent_verifier
+      - core.persona.adversary
+      - core.persona.statistician
+      - core.persona.error_analyst
+      - core.persona.generalization_critic
+      - core.persona.leakage_hunter
+      - core.persona.evidence_auditor
+    output_contract: evaluation_packet/v1
     questions:
       - Did the operation produce the requested output rather than merely return successfully?
       - Do deterministic tests, source evidence, and artifact checks support the result?
       - What failed, remains uncertain, or needs repair?
       - Is the current result the requested artifact or only an intermediate state?
   integrate_commit:
+    persona_refs:
+      - core.persona.future_maintainer
+      - core.persona.documentation_author
+      - core.persona.interface_designer
+      - core.persona.provenance_reviewer
+      - core.persona.privacy_reviewer
+      - core.persona.reproducibility_engineer
     output_contract: accepted_state_delta/v1
     questions:
       - Which results are verified and safe to add to the current state?
       - Which observations may become learning candidates, and which must remain run-local?
       - Which state and artifact references should the next pass receive?
-    persona_refs:
-      - core.persona.future_maintainer
   route:
-    output_contract: route_decision/v1
     persona_refs:
       - core.persona.whole_system_reviewer
+      - core.persona.resource_steward
+      - core.persona.stopping_rule_designer
+      - core.persona.evidence_auditor
+    output_contract: route_decision/v1
     questions:
       - Is the final requested outcome now verified?
       - Should the Practitioner continue, branch, retry, repair, reset, escalate, ask, abstain, or finish?
       - What reusable lesson may be proposed only after verification?
+  frame_alternatives:
+    output_contract: task_framings/v1
+    persona_refs:
+      - core.persona.contrarian
+      - core.persona.domain_expert
+      - core.persona.assumption_archaeologist
+      - core.persona.affected_user
+      - core.persona.portfolio_strategist
+    questions:
+      - Which materially different readings of this request are still open?
+      - What would each reading actually build, and how would the results differ?
+      - Which reading does the literal wording support, and which one does the evident purpose support?
+      - Is there a reading under which the work is already done, or not worth doing?
+      - Which of these can be separated by one cheap observation rather than by argument?
+      - Which readings can be carried together at little extra cost, and which are exclusive?
+  forecast_outcome:
+    output_contract: outcome_forecast/v1
+    persona_refs:
+      - core.persona.cost_forecaster
+      - core.persona.experiment_designer
+      - core.persona.scale_reasoner
+      - core.persona.stopping_rule_designer
+    questions:
+      - What should be observable if this method works, stated before it runs?
+      - What would be observable if it fails, and how would that differ from a partial success?
+      - What will this cost in time, calls, memory, and irreversible change?
+      - Which part of the forecast rests on measurement and which on assumption?
+      - What observation during execution would mean the forecast was already wrong?
+  calibrate:
+    output_contract: forecast_calibration/v1
+    persona_refs:
+      - core.persona.statistician
+      - core.persona.evidence_auditor
+      - core.persona.error_analyst
+      - core.persona.historian
+    questions:
+      - What was forecast, and what was actually observed?
+      - Where the two differ, is the difference larger than the noise in the measurement?
+      - Was the forecast wrong about the cost, the outcome, or both?
+      - What would have had to be known beforehand to have forecast correctly?
+      - Does this run's record change how much the next forecast should be trusted?
   diagnose_stall:
-    output_contract: failure_diagnosis/v1
     persona_refs:
       - core.persona.failure_diagnostician
       - core.persona.independent_verifier
+      - core.persona.error_analyst
+      - core.persona.assumption_archaeologist
+      - core.persona.contrarian
+    output_contract: failure_diagnosis/v1
     questions:
       - What exact evidence shows progress stopped?
       - Is the cause task understanding, missing context, method choice, capability behavior, verification drift, integration, or routing?
       - Which assumptions or repeated strategies should be rejected?
       - What materially different change types could restore progress?
   propose_recovery:
-    output_contract: recovery_proposal_portfolio/v1
     persona_refs:
       - core.persona.strategy_mutator
       - core.persona.systems_builder
+      - core.persona.baseline_advocate
+      - core.persona.simplifier
+      - core.persona.portfolio_strategist
+    output_contract: recovery_proposal_portfolio/v1
     questions:
       - Which executable changed strategies address the diagnosed cause?
       - Which registered capabilities and existing evidence does it need?
       - What measurable state change should occur on the next pass?
       - What repeated action must be forbidden?
   adjudicate_recovery:
-    output_contract: recovery_directive/v1
     persona_refs:
       - core.persona.recovery_adjudicator
       - core.persona.independent_verifier
+      - core.persona.resource_steward
+      - core.persona.cost_forecaster
+    output_contract: recovery_directive/v1
     questions:
       - Which proposal best changes the failed strategy while preserving the user contract?
       - Does it name only available capabilities and permitted effects?

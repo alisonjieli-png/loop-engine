@@ -69,6 +69,18 @@ steps:
     output_contract: route_decision/v1
     questions:
       - Should the task continue, repair, ask, abstain, or finish?
+  frame_alternatives:
+    output_contract: task_framings/v1
+    questions:
+      - Which materially different readings of this request are still open, and what would each build?
+  forecast_outcome:
+    output_contract: outcome_forecast/v1
+    questions:
+      - What will this cost, and what should be observable if it works?
+  calibrate:
+    output_contract: forecast_calibration/v1
+    questions:
+      - What was forecast, what was observed, and how far apart were they?
   diagnose_stall:
     output_contract: failure_diagnosis/v1
     questions:

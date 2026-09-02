@@ -14,17 +14,23 @@ from importlib.resources import files
 
 import yaml
 
+from ..loop.kernel import KERNEL_NODES
 from .reasoning_call import PROMPT_LAYOUT_POLICIES
 from .component_contracts import (
     LoopComponentDraft, component_payload_digest, define_loop_component)
 
 
-_CORE_STEP_IDS = (
-    "orient", "standardize_task", "reconcile_horizon", "assess_prepare",
-    "decide_next", "how", "act", "verify", "integrate_commit", "route")
+# The canonical nodes, taken from the kernel rather than restated here. Two
+# copies of one list drift, and the way this one drifts is silent: a node
+# added to the kernel would simply have no questions, no persona affinity and
+# no output contract, and every call on it would carry an empty portfolio
+# while looking exactly like a call that had one.
+_CORE_STEP_IDS = KERNEL_NODES
 _RECOVERY_STEP_IDS = (
     "diagnose_stall", "propose_recovery", "adjudicate_recovery")
 _STEP_IDS = _CORE_STEP_IDS + _RECOVERY_STEP_IDS
+#: Recovery steps are not kernel nodes: they run inside the recovery
+#: ladder rather than in a pass, so they are named here and nowhere else.
 _SEMVER = re.compile(
     r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
 
@@ -476,6 +482,27 @@ def self_test() -> dict:
             "test": "one_general_portfolio_covers_every_practitioner_step",
             "passed": tuple(item.step_id for item in portfolio.steps) == _STEP_IDS,
             "detail": f"{len(portfolio.steps)} universal step question sets",
+        },
+        {
+            "test": "every_kernel_node_has_questions_a_contract_and_affinity",
+            "passed": all(
+                item.questions and item.output_contract and item.persona_refs
+                for item in portfolio.steps),
+            "detail": str([item.step_id for item in portfolio.steps
+                           if not (item.questions and item.output_contract
+                                   and item.persona_refs)]),
+        },
+        {
+            "test": "every_persona_affinity_names_a_perspective_that_exists",
+            "passed": all(
+                ref in ({portfolio.persona.persona_id}
+                        | {item.persona_id for item in portfolio.perspectives})
+                for item in portfolio.steps for ref in item.persona_refs),
+            "detail": str(sorted({
+                ref for item in portfolio.steps for ref in item.persona_refs
+                if ref not in ({portfolio.persona.persona_id}
+                               | {p.persona_id
+                                  for p in portfolio.perspectives})})),
         },
         {
             "test": "persona_has_no_task_specific_dataset_or_solution",

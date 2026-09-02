@@ -62,8 +62,20 @@ from .supervision_policy import DEFAULT_SUPERVISION_POLICY, SupervisionPolicy
 # (assess sufficiency + prepare reasoning resources) and #7 (integrate + commit),
 # separating three things that must never collapse into one vague "context":
 # PROBLEM STATE/EVIDENCE vs REASONING RESOURCES vs the MODEL-READY PROMPT.
-KERNEL_NODES = ("orient", "standardize_task", "reconcile_horizon",
-                "assess_prepare", "decide_next", "how", "act", "verify",
+# Three further optional nodes (2026-09-02). Each answers a question the ten
+# could only answer implicitly, and each is skippable, so a pass that does not
+# need one costs nothing for its presence:
+#   frame_alternatives  — hold more than one reading of the task before
+#                         committing to the one that gets built
+#   forecast_outcome    — say what the chosen action will cost and produce
+#                         BEFORE it runs, so the outcome has something to be
+#                         compared against
+#   calibrate           — compare that forecast to what actually happened and
+#                         record the difference, which is the only way a run
+#                         teaches the next one anything about its own judgement
+KERNEL_NODES = ("orient", "standardize_task", "frame_alternatives",
+                "reconcile_horizon", "assess_prepare", "decide_next", "how",
+                "forecast_outcome", "act", "verify", "calibrate",
                 "integrate_commit", "route")
 
 # No backward-compatibility aliases (they are technical debt).  Instead an impls
@@ -73,8 +85,9 @@ KERNEL_NODES = ("orient", "standardize_task", "reconcile_horizon",
 # fails loudly at run start rather than being papered over.
 KERNEL_REQUIRED_NODES = ("orient", "decide_next", "how", "act", "verify",
                          "route")
-KERNEL_OPTIONAL_NODES = ("standardize_task", "reconcile_horizon",
-                         "assess_prepare", "integrate_commit")
+KERNEL_OPTIONAL_NODES = ("standardize_task", "frame_alternatives",
+                         "reconcile_horizon", "assess_prepare",
+                         "forecast_outcome", "calibrate", "integrate_commit")
 
 
 class KernelHandshakeError(RuntimeError):
@@ -132,6 +145,9 @@ KERNEL_NODE_NAMES = {
     "standardize_task": "Standardize the raw request as an open typed task "
                          "without selecting a template or losing the original "
                          "input",
+    "frame_alternatives": "State the materially different readings of what "
+                          "is being asked, and carry every one of them that "
+                          "would lead to different work",
     "reconcile_horizon": "Reconcile the ultimate goal, active checkpoint, and "
                          "working blueprint with the latest accepted state",
     "assess_prepare": "Assess whether the current decision is sufficiently "
@@ -142,11 +158,17 @@ KERNEL_NODE_NAMES = {
                    "violating the broader blueprint",
     "how": "Find, adapt, compose, or design the most appropriate method for "
            "carrying out the selected action",
+    "forecast_outcome": "State what the selected method will cost and what it "
+                        "will produce, before it runs, so the result has "
+                        "something to be measured against",
     "act": "Execute the method, build or run the required task graph, or "
            "delegate bounded subproblems to spawned Practitioner Loops",
     "verify": "Independently interrogate the inputs, outputs, and process; test "
               "the results, compare alternatives, and identify remaining gaps "
               "or failures",
+    "calibrate": "Compare what was forecast against what was observed, and "
+                 "record the difference as evidence about this run's own "
+                 "judgement",
     "integrate_commit": "Integrate accepted results, update the blueprint and "
                         "checkpoint state, and commit validated evidence, "
                         "artifacts, and reusable learning",
@@ -155,13 +177,16 @@ KERNEL_NODE_NAMES = {
              "finish",
 }
 
-# The same nine nodes, each written as the complete question it answers.
+# The same nodes, each written as the complete question it answers.
 KERNEL_NODE_QUESTIONS = {
     "orient": "What problem are we solving, and what verified context do we "
               "already have?",
     "standardize_task": "What open typed task does this raw request represent "
                          "without preselecting its solution or losing the "
                          "original input?",
+    "frame_alternatives": "Which materially different readings of this "
+                          "request are still open, and what would each one "
+                          "build?",
     "reconcile_horizon": "Where does this stand against the ultimate goal, the "
                          "active checkpoint, and the working blueprint?",
     "assess_prepare": "Is the current decision sufficiently supported, and if "
@@ -170,10 +195,13 @@ KERNEL_NODE_QUESTIONS = {
     "decide_next": "What is the most valuable next action that advances the "
                    "checkpoint without violating the blueprint?",
     "how": "What is the best available method to carry out that action?",
+    "forecast_outcome": "What will this cost, and what should we see if it "
+                        "works?",
     "act": "How do we execute it, build the task graph, or delegate to a "
            "spawned Practitioner Loop?",
     "verify": "Did it work, is it better than the alternatives, and what gaps "
               "remain?",
+    "calibrate": "How far was the forecast from what actually happened?",
     "integrate_commit": "What accepted results and reusable learning do we "
                         "commit to memory?",
     "route": ("Should we continue, branch, retry, reset, distill, escalate, or "
@@ -371,13 +399,16 @@ class PassRecord:
     state_version_in: int
     situation: Situation = None
     compiled_task: Any = None
+    framings: Any = None
     anchor: Any = None
     portfolio: "DecisionSupportPortfolio | None" = None
     candidates: list = field(default_factory=list)
     chosen: "CandidateAction | None" = None
     plan: "ExecutionPlan | None" = None
+    forecast: Any = None
     results: list = field(default_factory=list)
     evaluation: "EvaluationPacket | None" = None
+    calibration: Any = None
     route: "RouteDecision | None" = None
     skipped_nodes: tuple = ()          # optional nodes skipped THIS pass
     state_version_out: int = 0
@@ -392,6 +423,9 @@ class PassRecord:
                 "skipped_nodes": list(self.skipped_nodes),
                 "situation": d(self.situation),
                 "compiled_task": d(self.compiled_task),
+                "framings": d(self.framings),
+                "forecast": d(self.forecast),
+                "calibration": d(self.calibration),
                 "plan_health": (getattr(self.anchor, "plan_health", None)
                                 if self.anchor is not None else None),
                 "sufficiency": (self.portfolio.sufficiency
@@ -466,6 +500,14 @@ def _calculate_kernel_pass(state: PractitionerState, impls: KernelImpls,
             "standardize_task", default_standardize_task)(state, situation)
         rec.compiled_task = situation.compiled_task
 
+    # Hold the competing readings of the request before anything commits to
+    # one. A task with a single obvious reading costs one cheap default here;
+    # a task with two costs one call and saves the pass that would have built
+    # the wrong thing.
+    if "frame_alternatives" not in skip:
+        rec.framings = impls.get(
+            "frame_alternatives", default_frame_alternatives)(state, situation)
+
     # Node 3 — reconcile the ultimate goal / active checkpoint / working
     # blueprint with the latest state (skippable per pass for a trivial task).
     if "reconcile_horizon" not in skip:
@@ -492,10 +534,24 @@ def _calculate_kernel_pass(state: PractitionerState, impls: KernelImpls,
         return rec, new_state
     plan: ExecutionPlan = impls["how"](state, situation, chosen)
     rec.plan = plan
+
+    # Say what this will cost and what should be seen if it works, while it is
+    # still a prediction. Recorded before act runs, so the comparison after it
+    # cannot be written to fit the outcome.
+    if "forecast_outcome" not in skip:
+        rec.forecast = impls.get(
+            "forecast_outcome", default_forecast_outcome)(
+                state, situation, plan)
+
     results: list = impls["act"](state, plan)
     rec.results = results
     evaluation: EvaluationPacket = impls["verify"](state, plan, results)
     rec.evaluation = evaluation
+
+    # Compare the forecast to what happened. Over many runs this is the only
+    # record of whether this system's own predictions are worth anything.
+    if "calibrate" not in skip:
+        rec.calibration = impls.get("calibrate", default_calibrate)(state, rec)
 
     # Node 7 — integrate + commit accepted results (skippable per pass).
     if "integrate_commit" not in skip:
@@ -886,6 +942,61 @@ def default_standardize_task(state: PractitionerState,
     }
 
 
+def default_frame_alternatives(state: PractitionerState,
+                               situation: Situation) -> dict:
+    """Optional node default: one framing, stated as one framing.
+
+    The deterministic default cannot invent a second reading of the task, and
+    it must not pretend the single reading it has is the only one available.
+    It returns the framing it holds and says the alternatives were not
+    explored, so a later reader can tell an unexamined task from one where
+    the competing readings were considered and closed.
+    """
+    return {"record_type": "task_framings/v1",
+            "framings": [{"reading": situation.summary,
+                          "would_build": "the task as literally stated",
+                          "selected": True}],
+            "alternatives_explored": False,
+            "authority": "deterministic default; no model reading was made"}
+
+
+def default_forecast_outcome(state: PractitionerState, situation: Situation,
+                             plan) -> dict:
+    """Optional node default: no forecast, said plainly.
+
+    A forecast the runtime cannot make is left unstated rather than filled
+    with a plausible number. ``calibrate`` reads this and reports that there
+    was nothing to compare against, which is a different and honest finding
+    from a forecast that turned out to be right.
+    """
+    return {"record_type": "outcome_forecast/v1",
+            "forecast_made": False,
+            "expected_observations": [],
+            "reason": "the deterministic default does not predict outcomes"}
+
+
+def default_calibrate(state: PractitionerState, rec) -> dict:
+    """Optional node default: compare a forecast to what happened, if one exists.
+
+    With no forecast there is nothing to calibrate, and that is reported as
+    an absence rather than as agreement. A run that never predicted anything
+    has not shown good judgement; it has shown none.
+    """
+    forecast = getattr(rec, "forecast", None) or {}
+    if not forecast.get("forecast_made"):
+        return {"record_type": "forecast_calibration/v1",
+                "compared": False,
+                "reason": "no forecast was made, so nothing can be compared"}
+    expected = list(forecast.get("expected_observations") or ())
+    evaluation = getattr(rec, "evaluation", None)
+    observed_pass = bool(getattr(evaluation, "passed", False))
+    return {"record_type": "forecast_calibration/v1",
+            "compared": True,
+            "expected_observations": expected,
+            "observed_acceptance": observed_pass,
+            "authority": "deterministic comparison of recorded values only"}
+
+
 def default_reconcile_horizon(state: PractitionerState, situation: Situation):
     """Node 2 default: build the LongHorizonAnchorPacket from any goal stack /
     blueprint / progress the state carries (reserved facts keys), computed not
@@ -985,18 +1096,45 @@ def self_test() -> dict:
     # 1. one pass is acyclic and typed end to end (all EIGHT nodes).
     st0 = PractitionerState(spec=spec)
     rec, st1 = _calculate_kernel_pass(st0, default_impls())
-    check("one_pass_runs_the_nine_nodes_acyclically_with_typed_outputs",
-          len(KERNEL_NODES) == 10
+    check("one_pass_runs_every_node_acyclically_with_typed_outputs",
+          len(KERNEL_NODES) == 13
           and isinstance(rec.situation, Situation)
+          and rec.framings is not None
+          and rec.forecast is not None
+          and rec.calibration is not None
           and rec.anchor is not None
           and isinstance(rec.portfolio, DecisionSupportPortfolio)
           and rec.portfolio.sufficiency in SUFFICIENCY_OUTCOMES
           and rec.candidates and isinstance(rec.plan, ExecutionPlan)
           and rec.results and isinstance(rec.evaluation, EvaluationPacket)
           and isinstance(rec.route, RouteDecision),
-          "Situation -> DecisionSupportPortfolio -> CandidateAction[] -> "
-          "ExecutionPlan -> ResultPacket[] -> EvaluationPacket -> "
-          "RouteDecision")
+          "Situation -> framings -> DecisionSupportPortfolio -> "
+          "CandidateAction[] -> ExecutionPlan -> forecast -> ResultPacket[] "
+          "-> EvaluationPacket -> calibration -> RouteDecision")
+
+    # The three additive nodes must be honest when they have nothing to say:
+    # a default framing states that alternatives were not explored, a default
+    # forecast states that none was made, and calibration with no forecast
+    # reports an absence rather than agreement. Silence that reads as success
+    # is the failure mode these nodes exist to remove.
+    check("the_additive_nodes_report_absence_rather_than_agreement",
+          rec.framings["alternatives_explored"] is False
+          and rec.forecast["forecast_made"] is False
+          and rec.calibration["compared"] is False
+          and "no forecast" in rec.calibration["reason"],
+          str(rec.calibration))
+
+    # Every additive node is skippable, and skipping leaves no trace of a
+    # value that was never computed.
+    skipped, _ = _calculate_kernel_pass(
+        plan_skip_next_pass(st0, ("frame_alternatives", "forecast_outcome",
+                                  "calibrate")), default_impls())
+    check("the_additive_nodes_are_all_skippable_per_pass",
+          skipped.framings is None and skipped.forecast is None
+          and skipped.calibration is None
+          and set(skipped.skipped_nodes) == {"frame_alternatives",
+                                             "forecast_outcome", "calibrate"},
+          str(skipped.skipped_nodes))
 
     # 1b. the HANDSHAKE — no aliases.  A required-node key is mandatory; the two
     # additive nodes are optional (kernel default).  An OLD name is an unknown

@@ -9,6 +9,24 @@ First public release.
 
 ### Added
 
+- **A much larger universe of options, and three more steps to reason in.**
+  The portfolio grew from 17 perspectives to 42 and from 14 guidance records
+  to 30, and every step now carries persona affinities — `orient` previously
+  had none, so all 42 perspectives read as unmatched on the first call of
+  every run. Nothing was removed and nothing was gated: affinity is advisory
+  metadata, and every perspective, question set and guidance record still
+  ships on every call for the model to select from.
+  The canonical kernel gains three optional nodes: `frame_alternatives` holds
+  the competing readings of a request before anything commits to one,
+  `forecast_outcome` states what the chosen method will cost and produce
+  before it runs, and `calibrate` compares that forecast against what
+  happened. Each is skippable per pass, and each default reports absence
+  rather than agreement — a run that never predicted anything has not shown
+  good judgement, it has shown none. `_CORE_STEP_IDS` is now derived from
+  `KERNEL_NODES` instead of restating it, so a node can no longer be added to
+  the kernel and silently arrive with no questions, no contract, and an empty
+  portfolio that looks exactly like a full one.
+
 - **The portfolio is now judged on use, not on intent.** Every packet offers
   the model a portfolio it may draw on, with selection authority its own and
   the active step only a hint. Nothing recorded which options it actually

@@ -1649,14 +1649,18 @@ def self_test() -> dict:
           hit["hits"] and any("looptmpl." in h["record_id"] for h in hit["hits"]),
           "starting-point loop configs flow through the one search DAG")
 
-    # 10. a loop actually RUNS: nine steps execute deterministically end-to-end,
-    # everything on the ledger.
+    # 10. a loop actually RUNS: every canonical node executes deterministically
+    # end-to-end, everything on the ledger. The count comes from KERNEL_NODES
+    # rather than a number written here, so adding a node does not silently
+    # leave this check measuring the old shape. No power level caps iterations
+    # (POWER_SETTINGS max_iterations is None throughout); the lever sets how
+    # much intelligence each step pulls, not how many steps may run.
     r1 = Loop("run it", LoopConfig(power="large")).run()
     check("a_loop_actually_runs_end_to_end",
-          r1.steps_run == 10 and r1.stopped == "done"
+          r1.steps_run == len(KERNEL_NODES) and r1.stopped == "done"
           and r1.mode_counts.get("deterministic", 0) >= 6 and r1.output,
-          f"{r1.steps_run} steps, modes {r1.mode_counts} (medium power caps at 6 "
-          "iterations — the lever binds, so ten steps need 'large')")
+          f"{r1.steps_run} steps of {len(KERNEL_NODES)} canonical nodes, "
+          f"modes {r1.mode_counts}")
 
     # 11. RECURSIVE EXECUTION: a research step spawns and runs another Loop,
     # then uses the returned answer.
