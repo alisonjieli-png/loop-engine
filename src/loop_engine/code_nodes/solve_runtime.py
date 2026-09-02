@@ -144,9 +144,9 @@ class SolveRequest:
             raise SolveError(
                 "deterministic_resolvers must implement supports and execute")
         if (not isinstance(self.extension_snapshot, dict)
-                or self.extension_snapshot
+                or (self.extension_snapshot
                 and self.extension_snapshot.get("record_type")
-                != "extension_snapshot/v1"):
+                != "extension_snapshot/v1")):
             raise SolveError("extension_snapshot has an invalid contract")
         if self.progress is not None and not callable(self.progress):
             raise SolveError("progress must be callable when supplied")

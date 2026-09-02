@@ -9,5 +9,10 @@ from __future__ import annotations
 from .memory_type import (MemoryIdentity, MemoryRef, MemoryProvenance,
                           MemoryValidity, MemoryEvidenceRef)
 
-__all__ = ("MemoryIdentity", "MemoryRef", "MemoryProvenance",
-           "MemoryValidity", "MemoryEvidenceRef")
+__all__ = (
+                          "MemoryEvidenceRef",
+                          "MemoryIdentity",
+                          "MemoryProvenance",
+                          "MemoryRef",
+                          "MemoryValidity",
+)

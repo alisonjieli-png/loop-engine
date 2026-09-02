@@ -89,7 +89,7 @@ class SolverStore:
                             d["source"] = source
                             r = StoreRecord(**d)
                             self._records[r.record_id] = r
-                        except Exception:                       # noqa: BLE001
+                        except Exception:
                             continue
         self.org_path = org_path
 

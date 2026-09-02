@@ -161,7 +161,6 @@ class KnowledgeDelta:
     def apply_to(self, state: EpistemicState) -> EpistemicState:
         """Return a NEW state with the delta applied (the prior state is left
         intact; supersession marks, never deletes)."""
-        import copy
         new = EpistemicState(
             claims=dict(state.claims), unknowns=dict(state.unknowns),
             contradictions=dict(state.contradictions))

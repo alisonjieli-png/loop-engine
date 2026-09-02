@@ -128,7 +128,6 @@ def runtime_facts(services) -> dict:
 
 def self_test() -> dict:
     """Prove the projection states the manifest and the fence exactly."""
-    import os
     import tempfile
     from pathlib import Path
     from types import SimpleNamespace

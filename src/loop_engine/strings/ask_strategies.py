@@ -20,8 +20,8 @@ honest form.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Callable, Sequence
+from dataclasses import dataclass
+from typing import Callable
 
 from ..strings.knowledge import Knowledge
 from ..core.model_call import AskSpec, execute_ask, AskResult

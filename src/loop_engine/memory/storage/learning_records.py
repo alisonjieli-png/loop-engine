@@ -27,6 +27,8 @@ from ..semantic.record import SemanticMemoryRecord
 
 if TYPE_CHECKING:
     from ...loop.recursive_loop import Loop, LoopLedger
+    from ..query.query import MemoryQuery
+    from ..working.state import WorkingMemoryState
 
 
 JOURNAL_SCHEMA = "learning_journal/v1"
@@ -635,7 +637,7 @@ def run_loop_action(
         try:
             holder["value"] = action(runtime)
             record_operation_event(runtime, event_kind, holder["value"])
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             holder["error"] = exc
             runtime.ledger.record(
                 loop_id=runtime.loop_id, event="failure.detected",

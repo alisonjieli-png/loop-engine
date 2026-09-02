@@ -406,7 +406,7 @@ def review_compiled_task(request: ModelAssistedCompileRequest, gateway) -> dict:
     invocation, ordered_blocks = _prompt(request)
     try:
         capability = provider.output_capability_for(route.model)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         raise ModelAssistedCompileError(str(exc)) from exc
     minimum_total = (
         capability.maximum_output_tokens

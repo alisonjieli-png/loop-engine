@@ -7,7 +7,6 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ..code_nodes.solution_graph import LoopDefinitionRegistry
 from ..loop.loop_definition import LoopDefinitionRef
 from .development_planning import ResolutionDisposition
 from .lifecycle_extensions import (

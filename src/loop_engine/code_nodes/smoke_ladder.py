@@ -103,7 +103,7 @@ def _consult_pillars(loop, step: str, advice_store=None,
                      lambda: f"considerations for {step}",
                      ledger=loop.ledger, parent=loop)
         got["string"] = 1
-    except Exception:                                       # noqa: BLE001
+    except Exception:
         pass
     # CODE intelligence: does a capability already serve this step?  This is
     # also the capability search the solve path never performed.
@@ -113,7 +113,7 @@ def _consult_pillars(loop, step: str, advice_store=None,
                                        pillar="code_intelligence",
                                        ledger=loop.ledger, parent=loop)
             got["code"], got["refs"] = 1, len(refs)
-        except Exception:                                   # noqa: BLE001
+        except Exception:
             pass
     # HISTORY: has a prior run solved something like this step before?
     if history_store is not None:
@@ -122,14 +122,14 @@ def _consult_pillars(loop, step: str, advice_store=None,
                          lambda: f"prior runs touching {step}",
                          ledger=loop.ledger, parent=loop)
             got["history"] = 1
-        except Exception:                                   # noqa: BLE001
+        except Exception:
             pass
     if advice_store is not None:
         try:
             guidance_for_as_loop(advice_store, "task", "smoke",
                                  ledger=loop.ledger, parent=loop)
             got["guidance"] = 1
-        except Exception:                                   # noqa: BLE001
+        except Exception:
             pass
     return got
 

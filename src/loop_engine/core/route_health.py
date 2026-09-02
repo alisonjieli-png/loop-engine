@@ -289,5 +289,9 @@ def self_test() -> dict:
 
 
 __all__ = (
-    "GenerationOutcome", "RouteHealthEntry", "RouteHealthError",
-    "RouteHealthLedger", "ROUTE_HEALTH_SCHEMA_VERSION")
+    "ROUTE_HEALTH_SCHEMA_VERSION",
+    "GenerationOutcome",
+    "RouteHealthEntry",
+    "RouteHealthError",
+    "RouteHealthLedger",
+)

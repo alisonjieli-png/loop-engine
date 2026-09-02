@@ -31,7 +31,6 @@ Code Nodes and the practitioner loop.  It composes with [[intelligence_strings.p
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Sequence
 
 # Drill-down taxonomy: category → subcategories.  The review practitioner can
 # focus generally, on a category, or on a subcategory (and the same for code).

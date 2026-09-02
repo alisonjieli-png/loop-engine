@@ -545,7 +545,7 @@ class CampaignRunner:
                             mode="non_deterministic",
                             confidence=0.9 if case.accepts(candidate) else 0.2,
                             failed=not case.accepts(candidate))
-                    except Exception as exc:  # noqa: BLE001
+                    except Exception as exc:
                         state["error"] = f"{type(exc).__name__}: {exc}"[:200]
                         if arm.mode == "hybrid":
                             state["value"] = state["baseline"]

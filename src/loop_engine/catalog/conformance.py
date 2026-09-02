@@ -104,7 +104,7 @@ def run_store_conformance(store: CatalogStore) -> dict:
         try:
             store.put(dict(_GOLDEN_RECORDS[0]))
             check("undeclared_write_is_refused", False)
-        except (UnsupportedOperationError, Exception):            # noqa: BLE001
+        except (UnsupportedOperationError, Exception):
             check("undeclared_write_is_refused", True)
 
     store.close()

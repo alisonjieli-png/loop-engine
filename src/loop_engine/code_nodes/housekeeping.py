@@ -44,7 +44,7 @@ is a searchable runtime record.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Sequence
 
 from ..core.asset_class import classify

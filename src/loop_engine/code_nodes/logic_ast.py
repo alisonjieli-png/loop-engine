@@ -20,8 +20,7 @@ Hard rules (owner, 2026-08-23 — clean boundaries):
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
-from typing import Sequence
+from dataclasses import dataclass
 
 from ..loop.kernel import CandidateAction
 

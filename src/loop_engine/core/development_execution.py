@@ -7,7 +7,6 @@ canonical parallel runner for safe overlap. It creates no task runtime.
 """
 from __future__ import annotations
 
-import hashlib
 import re
 import threading
 import time
@@ -18,7 +17,7 @@ from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
 from ..loop.recursive_loop import Loop, LoopConfig, LoopLedger, StepOutcome
 from ..parallel_runner import BranchSpec, SchedulingConfiguration, run_parallel
 from .development_planning import (
-    DevelopmentPlanError, PlanDefinition, RetryPolicy, TaskLoopBinding,
+    PlanDefinition, RetryPolicy, TaskLoopBinding,
     TerminalPlanCode, compile_execution_waves, compile_plan_to_loop_graph,
 )
 

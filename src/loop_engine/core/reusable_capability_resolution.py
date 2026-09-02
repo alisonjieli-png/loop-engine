@@ -229,7 +229,7 @@ def _authoritative_match(
         asset_version = str(attributes.get("asset_version") or "")
         state = authority.state(asset_id, asset_version)
         spec = authority.active_spec(asset_id, asset_version)
-    except Exception as exc:  # noqa: BLE001 - an ineligible row stays visible
+    except Exception as exc:
         reasons.append(f"active authority unavailable: {type(exc).__name__}")
 
     if spec is None or state is None:
@@ -483,7 +483,7 @@ class ReusableCapabilityTaskResolver:
                 or any(not callable(value) for value in (
                     self.need_builder, self.input_builder,
                     self.materializer, self.verifier))
-                or self.binder is not None and not callable(self.binder)):
+                or (self.binder is not None and not callable(self.binder))):
             raise ReusableCapabilityError(
                 "reusable task resolver configuration is invalid")
 
@@ -586,11 +586,11 @@ def invoke_capability_as_loop(
                 verified = bool(request.verifier(value))
                 verification_status = "verified" if verified else "rejected"
                 failure_class = "" if verified else "POSTCONDITION_FAILED"
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 verified = False
                 verification_status = "failed"
                 failure_class = type(exc).__name__
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             verified = False
             failure_class = type(exc).__name__
         record = CapabilityInvocationRecord(

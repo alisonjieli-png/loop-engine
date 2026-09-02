@@ -4,5 +4,9 @@ from __future__ import annotations
 from .lifecycle import (TRANSITIONS, MemoryReviewReceipt,
                         MemoryConsolidationReceipt, transition)
 
-__all__ = ("TRANSITIONS", "MemoryReviewReceipt",
-           "MemoryConsolidationReceipt", "transition")
+__all__ = (
+                        "TRANSITIONS",
+                        "MemoryConsolidationReceipt",
+                        "MemoryReviewReceipt",
+                        "transition",
+)

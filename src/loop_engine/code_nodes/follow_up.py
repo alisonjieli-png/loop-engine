@@ -19,7 +19,7 @@ model call.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass
 from typing import Sequence
 
 OBLIGATION_KINDS = ("justify_action", "review_result", "structure_learning",

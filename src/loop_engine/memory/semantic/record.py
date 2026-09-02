@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 
 from ..model.memory_type import (MemoryIdentity, MemoryProvenance,
                                  MemoryScope, MemoryType, MemoryLifecycle,
-                                 MemoryValidity, MemoryEvidenceRef)
+                                 MemoryEvidenceRef)
 
 #: Claim types a semantic record may carry.
 CLAIM_TYPES = (

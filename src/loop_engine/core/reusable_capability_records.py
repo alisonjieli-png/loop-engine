@@ -715,12 +715,21 @@ class CapabilityInvocationRecord:
 
 
 __all__ = (
-    "CapabilityCandidateMatch", "CapabilityGeneralizationRecord",
-    "CapabilityInvocationRecord", "CapabilityNeed",
-    "CapabilityResolutionPlan", "HarvestDispatch",
-    "HybridAssistanceProfile", "HybridAssistanceStage",
     "REUSE_ASSESSMENT_DIMENSIONS",
-    "ResolutionDisposition", "ReusableCapabilityContractError",
-    "ReuseAssessment", "ReuseHarvestPolicy", "ReuseOpportunityObserved",
-    "ReuseRecommendation", "canonical_json", "content_digest",
+    "CapabilityCandidateMatch",
+    "CapabilityGeneralizationRecord",
+    "CapabilityInvocationRecord",
+    "CapabilityNeed",
+    "CapabilityResolutionPlan",
+    "HarvestDispatch",
+    "HybridAssistanceProfile",
+    "HybridAssistanceStage",
+    "ResolutionDisposition",
+    "ReusableCapabilityContractError",
+    "ReuseAssessment",
+    "ReuseHarvestPolicy",
+    "ReuseOpportunityObserved",
+    "ReuseRecommendation",
+    "canonical_json",
+    "content_digest",
 )

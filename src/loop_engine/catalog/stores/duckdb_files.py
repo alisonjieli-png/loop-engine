@@ -119,7 +119,7 @@ class DuckDBFileQueryEngine:
             self._connect()
             return {"adapter_id": "core.duckdb-files", "healthy": True,
                     "shards": len(self._shards)}
-        except Exception as exc:                                 # noqa: BLE001
+        except Exception as exc:
             return {"adapter_id": "core.duckdb-files", "healthy": False,
                     "error": str(exc)}
 

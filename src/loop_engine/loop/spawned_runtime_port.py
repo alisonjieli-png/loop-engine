@@ -119,7 +119,7 @@ class RuntimeMemoryService(Protocol):
 class SpawnedLoopRuntimeMemoryPort:
     """Bind an explicit Runtime Memory service to one Spawned Loop identity."""
 
-    __slots__ = ("__service", "__loop_id")
+    __slots__ = ("__loop_id", "__service")
 
     def __init__(self, service: RuntimeMemoryService, loop_id: str) -> None:
         required = ("write", "read", "search")

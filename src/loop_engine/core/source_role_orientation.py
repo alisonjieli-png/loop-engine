@@ -307,7 +307,7 @@ def orient_source_roles(services) -> dict | None:
         try:
             value = _read_once(services, attempt, digest, admitted, all_paths,
                                evidence, failures, schema)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             # A reading is an improvement on a source inspection that has
             # already succeeded. It never turns that success into a failure,
             # and a transport or budget error is not repaired by asking again.

@@ -7,7 +7,7 @@ the work that consumes them.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from .intelligence_layers import LAYERS
 
@@ -215,8 +215,13 @@ def self_test() -> dict:
 
 
 __all__ = (
-    "FUNCTIONAL_DOMAINS", "IntelligenceAccessPolicy",
-    "IntelligencePortfolioDefinition", "IntelligencePortfolioSnapshot",
-    "IntelligenceQueryContractError", "IntelligenceQueryProfile",
-    "IntelligenceSeekingStrategy", "SEARCH_CHANNELS", "SOURCE_COLLECTIONS",
+    "FUNCTIONAL_DOMAINS",
+    "SEARCH_CHANNELS",
+    "SOURCE_COLLECTIONS",
+    "IntelligenceAccessPolicy",
+    "IntelligencePortfolioDefinition",
+    "IntelligencePortfolioSnapshot",
+    "IntelligenceQueryContractError",
+    "IntelligenceQueryProfile",
+    "IntelligenceSeekingStrategy",
 )

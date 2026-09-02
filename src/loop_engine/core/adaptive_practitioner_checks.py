@@ -9,8 +9,6 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
-from ..code_nodes.solution_model_port import (
-    FixtureModelExecutionRequest, fixture_model_execution)
 from .adaptive_practitioner import run_adaptive_practitioner
 from .adaptive_practitioner_records import (
     AdaptivePractitionerDependencies, AdaptivePractitionerRequest,

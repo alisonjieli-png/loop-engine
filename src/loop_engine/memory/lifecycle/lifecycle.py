@@ -6,7 +6,7 @@ is non-destructive: source records remain immutable.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from ..model.memory_type import MemoryLifecycle, MemoryRef
 

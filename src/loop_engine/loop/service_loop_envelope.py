@@ -73,7 +73,7 @@ def run_service_operation(runtime, spec: ServiceLoopSpec,
     def handler(active: Loop, _step: str, _context: dict) -> StepOutcome:
         try:
             holder["value"] = action(active)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             holder["error"] = exc
             active.ledger.record(
                 loop_id=active.loop_id, event="failure.detected",

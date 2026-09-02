@@ -27,8 +27,7 @@ before/after cadence; formalizes capture output into the standardized
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
-from typing import Sequence
+from dataclasses import dataclass, asdict
 
 from ..code_nodes.capture import CaptureReport, CaptureCandidate
 

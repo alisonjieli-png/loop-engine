@@ -85,7 +85,7 @@ def live_models(api_key: str | None = None) -> list[str]:
     try:
         with urllib.request.urlopen(req, timeout=30) as resp:
             data = json.loads(resp.read().decode())
-    except Exception:                                           # noqa: BLE001
+    except Exception:
         return []
     names = [m.get("name") or m.get("model") for m in data.get("models", ())]
     return [n for n in names if n and not any(
@@ -108,7 +108,7 @@ def load_api_key(env_path: str | Path | None = None) -> str | None:
                     line = line.strip()
                     if line.startswith("OLLAMA_API_KEY="):
                         return line.split("=", 1)[1].strip().strip('"').strip("'")
-        except Exception:                                       # noqa: BLE001
+        except Exception:
             continue
     return None
 
@@ -223,7 +223,7 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
     except urllib.error.HTTPError as exc:
         return ChatResult("", model, ok=False,
                           error=f"HTTP {exc.code}: {exc.read().decode()[:200]}")
-    except Exception as exc:                                    # noqa: BLE001
+    except Exception as exc:
         return ChatResult("", model, ok=False, error=repr(exc))
     message = data.get("message", {}) or {}
     text = message.get("content", "")

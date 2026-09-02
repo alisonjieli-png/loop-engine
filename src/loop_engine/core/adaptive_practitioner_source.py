@@ -151,8 +151,8 @@ def inspectable_source_files(
             and not excluded_parts.intersection(
                 item.relative_to(source).parts)))
         for path in candidates:
-            if (path.name.startswith(".") or path.name not in allowed_names
-                    and path.suffix.lower() not in allowed_suffixes):
+            if (path.name.startswith(".") or (path.name not in allowed_names
+                    and path.suffix.lower() not in allowed_suffixes)):
                 continue
             relative = (path.name if source.is_file()
                         else f"{source.name}/{path.relative_to(source).as_posix()}")
@@ -677,7 +677,8 @@ def self_test() -> dict:
 
 
 __all__ = (
-    "inspectable_source_files", "source_inspection_model_view",
+    "inspectable_source_files",
     "project_input_path",
+    "source_inspection_model_view",
     "source_inspection_operation",
 )

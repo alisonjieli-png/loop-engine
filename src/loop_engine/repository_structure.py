@@ -11,10 +11,8 @@ architecture.yaml, terminology.yaml, and the folder ontology.
 """
 from __future__ import annotations
 
-import json
 import os
 
-import yaml
 
 _PACKAGE_ROOT = os.path.dirname(os.path.abspath(__file__))
 _REPO_ROOT = os.path.dirname(os.path.dirname(_PACKAGE_ROOT))

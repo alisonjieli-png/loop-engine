@@ -192,8 +192,11 @@ def project_manifest(
                 "candidate_validation_failures", []).append(failure)
             services.diagnostic("project_candidate_invalid", failure)
     if candidate is None:
+        # Carry why it stayed invalid. An exhausted repair that reports only
+        # that it was exhausted tells the run nothing it can act on.
         raise GeneratedProjectError(
-            "project candidate remained invalid after one model repair")
+            "project candidate remained invalid after one model repair; "
+            f"the attempts failed with {[item['error'] for item in failures]}")
     services.plan_details["project_candidate"] = candidate.to_dict()
 
     generated_files = []
@@ -265,7 +268,9 @@ def project_manifest(
                 services.diagnostic("project_file_invalid", failure)
         if generated_file is None:
             raise GeneratedProjectError(
-                f"file {file_spec.path!r} remained invalid after one repair")
+                f"file {file_spec.path!r} remained invalid after one repair; "
+                f"the attempts failed with "
+                f"{[item['error'] for item in file_failures]}")
         generated_files.append(generated_file)
         checkpoint_summary = services.checkpoint_generated_file(
             checkpoint_key, generated_file.path, generated_file.content,

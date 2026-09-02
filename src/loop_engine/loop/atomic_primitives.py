@@ -268,7 +268,7 @@ def run_atomic_primitive(
                 output_digest=holder["value"].content_digest,
                 fused=False, cache_hit=False)
             return StepOutcome("atomic:completed", "deterministic", 1.0)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             holder["error"] = exc
             return StepOutcome(
                 "atomic:failed", "deterministic", 0.0, failed=True)

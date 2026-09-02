@@ -75,7 +75,7 @@ def as_practitioner_loop(objective: str, fn, *, inputs=None,
             try:
                 holder["value"] = fn(inputs) if inputs is not None else fn()
                 out = f"act:done:{type(holder['value']).__name__}"
-            except Exception as e:                          # noqa: BLE001
+            except Exception as e:
                 holder["error"] = e
                 out = f"act:error:{type(e).__name__}"
             return StepOutcome(output=out, mode="deterministic",
@@ -127,7 +127,7 @@ def as_component_loop(objective: str, fn, *, fallbacks=(),
         for i, candidate in enumerate(chain):
             try:
                 value = candidate(x) if inputs is not None else candidate()
-            except Exception as e:                          # noqa: BLE001
+            except Exception as e:
                 state["attempts"].append(
                     {"index": i, "failed": f"{type(e).__name__}: {e}"[:160]})
                 last = e
@@ -186,7 +186,7 @@ def as_model_loop(objective: str, fn, *, inputs=None,
         try:
             holder["value"] = fn(inputs) if inputs is not None else fn()
             out = "invoke:answered"
-        except Exception as e:                                  # noqa: BLE001
+        except Exception as e:
             holder["error"] = e
             out = f"invoke:error:{type(e).__name__}"
         return StepOutcome(output=out, mode="non_deterministic",
@@ -350,7 +350,7 @@ def as_loop(objective: str, thing, *, kind: str | None = None, inputs=None,
         if kind == "callable":
             try:
                 holder["value"] = thing(inputs) if inputs is not None else thing()
-            except Exception as e:                          # noqa: BLE001
+            except Exception as e:
                 holder["error"] = e
                 return StepOutcome(output=f"serve:raised:{type(e).__name__}",
                                    mode="deterministic", confidence=0.2,

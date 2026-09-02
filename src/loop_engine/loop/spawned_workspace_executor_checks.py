@@ -35,7 +35,7 @@ from .loop_contract import LoopContract
 from .loop_profile_catalog import resolve_profile_alias
 from .recursive_loop import Loop, LoopConfig, LoopLedger
 from .spawned_workspace_executor import (
-    WORKSPACE_COMMAND_OUTPUT_ROLE, SpawnedWorkspaceExecutorError,
+    SpawnedWorkspaceExecutorError,
     WorkspaceExecutionPolicy, WorkspaceSpawnedCommandOutput,
     WorkspaceSpawnedExecutionPlan, WorkspaceSpawnedExecutor,
     WorkspaceTrustMode)

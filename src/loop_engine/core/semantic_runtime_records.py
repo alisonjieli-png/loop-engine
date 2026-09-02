@@ -349,9 +349,9 @@ class SemanticInterpreterProfile:
             _digest(label, getattr(self, label))
         if (not isinstance(self.maximum_model_calls, int)
                 or not 1 <= self.maximum_model_calls <= 16
-                or self.maximum_total_tokens is not None
+                or (self.maximum_total_tokens is not None
                 and (not isinstance(self.maximum_total_tokens, int)
-                     or self.maximum_total_tokens < 1)):
+                     or self.maximum_total_tokens < 1))):
             raise SemanticRuntimeContractError(
                 "semantic interpreter budgets are invalid")
 

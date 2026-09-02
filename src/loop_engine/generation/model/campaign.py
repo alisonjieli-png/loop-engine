@@ -11,7 +11,6 @@ from dataclasses import dataclass, field
 
 from .dimensions import ConditionalRule, VariationDimension
 from .fragments import GenerationError, SeedArtifact
-from .seeds import SEED_SOURCES
 
 #: Search strategies a campaign may bind.
 SEARCH_STRATEGIES = (

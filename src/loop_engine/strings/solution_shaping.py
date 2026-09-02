@@ -32,8 +32,7 @@ records, so shaping flows through the practitioner like any other capability.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Sequence
+from dataclasses import dataclass
 
 from ..loop.kernel import CandidateAction
 from ..strings.intelligence_strings import (IntelligenceString, StringBank, compose,

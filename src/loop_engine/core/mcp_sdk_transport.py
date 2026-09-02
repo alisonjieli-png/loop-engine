@@ -196,7 +196,7 @@ def self_test() -> dict:
         tests.append({"test": name, "passed": bool(passed), "detail": detail})
 
     try:
-        import mcp  # noqa: F401
+        import mcp
         from mcp.shared.version import LATEST_PROTOCOL_VERSION
     except ImportError:
         return {"tests": [{

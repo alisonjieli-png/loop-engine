@@ -14,7 +14,7 @@ from typing import Any, Iterable
 
 from ..loop.loop_contract import LoopContract
 from ..loop.loop_definition import (ConfigurationFacts, LoopDefinition,
-                                    LoopDefinitionError, LoopDefinitionRef)
+                                    LoopDefinitionRef)
 from ..loop.loop_profile_catalog import LoopProfileRef
 from ..loop.loop_profile_ontology import resolve_profile
 

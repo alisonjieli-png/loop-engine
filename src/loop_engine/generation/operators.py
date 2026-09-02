@@ -6,11 +6,11 @@ The operators themselves are typed data bound to Loop presets.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from .model.campaign import (GenerationCampaign, GenerationBudget,
-                             WritebackPolicy, expand_variation_space)
-from .model.fragments import (CandidateFragment, GenerationError,
+                             expand_variation_space)
+from .model.fragments import (GenerationError,
                               SeedArtifact)
 
 #: Generation operator families.

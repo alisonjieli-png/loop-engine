@@ -750,9 +750,19 @@ if __name__ == "__main__":
 
 
 __all__ = (
-    "FusionPolicy", "NGRAM_SCHEMA_VERSION", "NgramDocument", "NgramHit",
-    "NgramIndex", "NgramQueryResult", "NgramRetrievalError",
-    "NgramSpaceDefinition", "RESULT_PRECISIONS", "build_index_as_loop",
-    "ngram_counts", "normalize_text", "query_as_loop", "self_test",
+    "NGRAM_SCHEMA_VERSION",
+    "RESULT_PRECISIONS",
+    "FusionPolicy",
+    "NgramDocument",
+    "NgramHit",
+    "NgramIndex",
+    "NgramQueryResult",
+    "NgramRetrievalError",
+    "NgramSpaceDefinition",
+    "build_index_as_loop",
+    "ngram_counts",
+    "normalize_text",
+    "query_as_loop",
+    "self_test",
     "tokenize",
 )

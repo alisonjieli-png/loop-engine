@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Mapping
 
 from ..strings.notes import Note, NoteStore
 
@@ -57,7 +57,7 @@ def read_records(path: str | Path, kind: str | None = None) -> list[dict]:
             continue
         try:
             rec = json.loads(line)
-        except Exception:                                       # noqa: BLE001
+        except Exception:
             continue
         if kind is None or rec.get("_rk") == kind:
             out.append(rec)

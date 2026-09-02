@@ -30,7 +30,7 @@ def run_deterministic_attempt(
                 f"try exact deterministic resolver {resolver_id}",
                 run_exact, parent=owner_loop)
             supported = bool(attempt["value"]["supported"])
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             cause = exc.__cause__ or exc
             considered.append({
                 "resolver_id": resolver_id, "supported": False,

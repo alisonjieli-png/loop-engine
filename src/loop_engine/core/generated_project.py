@@ -984,7 +984,6 @@ def self_test() -> dict:
     import unittest.mock
     from ..loop.recursive_loop import Loop, LoopConfig
     from ..loop.loop_role import LoopRole, LoopRoleIdentity, LoopRelationship
-    from .runtime_observer import RuntimeObservationServices
 
     run_manifest = GeneratedProjectManifest.from_mapping({
         "record_type": GENERATED_PROJECT_RECORD_TYPE,

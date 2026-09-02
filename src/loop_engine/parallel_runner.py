@@ -14,8 +14,7 @@ import asyncio
 import time
 from dataclasses import dataclass, field
 
-from .scheduling import (ConcurrencyContract, ConcurrencyDecision,
-                         FailurePolicy, JoinPolicy,
+from .scheduling import (ConcurrencyContract, FailurePolicy, JoinPolicy,
                          SchedulingConfiguration, decide_overlap)
 
 
@@ -141,7 +140,7 @@ def run_parallel(branches: tuple[BranchSpec, ...], *,
                         value = branch.fn(*branch.args, **branch.kwargs)
                     results.append(BranchResult(branch.branch_id, True,
                                                 value=value))
-                except Exception as exc:                      # noqa: BLE001
+                except Exception as exc:
                     results.append(BranchResult(
                         branch.branch_id, False,
                         error=f"{type(exc).__name__}: {exc}"))

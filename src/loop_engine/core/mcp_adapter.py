@@ -533,7 +533,7 @@ class McpRegistry:
             try:
                 value = self._transports[request.server_id].call_tool(
                     server, request)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 holder["result"] = McpCallResult(
                     request.server_id, request.tool_name, "failed",
                     error_code="transport_failed",
@@ -552,7 +552,7 @@ class McpRegistry:
                         output=None if payload.offloaded else value,
                         output_ref=payload.raw.object_key,
                         approval_id=request.approval_id)
-                except Exception as exc:  # noqa: BLE001
+                except Exception as exc:
                     holder["result"] = McpCallResult(
                         request.server_id, request.tool_name, "failed",
                         error_code="output_capture_failed",

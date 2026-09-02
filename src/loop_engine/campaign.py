@@ -142,7 +142,7 @@ def run_task_through_loop(task: CapabilityTaskDefinition,
         metrics = value if isinstance(value, dict) else {
             "value": str(value)}
         failures = ()
-    except Exception as exc:                                  # noqa: BLE001
+    except Exception as exc:
         elapsed = time.monotonic() - started
         status = "failed"
         metrics = {}

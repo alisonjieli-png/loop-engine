@@ -13,8 +13,8 @@ import json
 from dataclasses import dataclass, field
 
 from ..model.memory_type import (MemoryIdentity, MemoryProvenance,
-                                 MemoryRef, MemoryScope, MemoryType,
-                                 MemoryLifecycle, MemoryEvidenceRef)
+                                 MemoryScope, MemoryType,
+                                 MemoryLifecycle)
 
 
 @dataclass(frozen=True)

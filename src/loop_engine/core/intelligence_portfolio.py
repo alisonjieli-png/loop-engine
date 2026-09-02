@@ -23,7 +23,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 from enum import Enum
 from typing import Any, Callable, Mapping, Sequence
 

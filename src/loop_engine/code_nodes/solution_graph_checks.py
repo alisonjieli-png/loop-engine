@@ -13,7 +13,7 @@ from .solution_canvas import (SolutionError, SolutionLoopSpec, SolutionSpec,
                               run_solution)
 from .solution_graph import (
     AdapterLoopRunRequest, LoopGraphEdge, LoopGraphEndpoint, LoopGraphError,
-    LoopGraphVertexRecord, SolutionLoopDefinitionRequest,
+    SolutionLoopDefinitionRequest,
     make_solution_loop_definition, run_adapter_loop, vertex_from_definition,
 )
 

@@ -25,7 +25,7 @@ reorder; the loop itself manages the ordering.
 from __future__ import annotations
 
 import hashlib
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Sequence
 
 # The kinds of intelligence-string, each with a default PRECEDENCE (lower =

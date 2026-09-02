@@ -8,4 +8,4 @@ from __future__ import annotations
 
 from .fragments import SeedArtifact, SEED_SOURCES
 
-__all__ = ("SeedArtifact", "SEED_SOURCES")
+__all__ = ("SEED_SOURCES", "SeedArtifact")

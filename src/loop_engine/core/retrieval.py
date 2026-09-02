@@ -218,7 +218,7 @@ class SqliteFtsBackend:
             rows = self._con.execute(
                 "SELECT rid, bm25(recs) FROM recs WHERE recs MATCH ? "
                 "ORDER BY bm25(recs) LIMIT ?", (match, top_n)).fetchall()
-        except Exception:                                   # noqa: BLE001
+        except Exception:
             return []
         return [(rid, -score) for rid, score in rows]       # bm25: lower=better
 
@@ -250,7 +250,7 @@ class LanceDbBackend:
         try:
             rows = (self._tbl.search(query, query_type="fts")
                     .limit(top_n).to_list())
-        except Exception:                                   # noqa: BLE001
+        except Exception:
             return []
         return [(r["rid"], float(r.get("_score", 0.0))) for r in rows]
 
@@ -263,7 +263,7 @@ class Model2VecBackend:
 
     MODEL = "minishlab/potion-base-8M"
 
-    def __init__(self, records, model: str = None):
+    def __init__(self, records, model: "str | None" = None):
         import os as _os
         _os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
         try:
@@ -318,7 +318,8 @@ class Retriever:
     ("model2vec").  Records are ``store_serve.StoreRecord``-shaped."""
 
     def __init__(self, records, *, lexical_backend: str = "fts5",
-                 vector_backend: str = "hash", vector_model: str = None):
+                 vector_backend: str = "hash",
+                 vector_model: "str | None" = None):
         from .store_serve import SolverStore
         self._records = list(records)
         self._by_id = {r.record_id: r for r in self._records}

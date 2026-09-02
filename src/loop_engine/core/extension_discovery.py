@@ -12,7 +12,7 @@ import json
 import os
 import re
 import string
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 from datetime import date
 from pathlib import Path
 from typing import Mapping
@@ -23,7 +23,7 @@ from .plugin_bundles import (
     PLUGIN_MANIFEST_NAME, PluginDiscoveryRequest, PluginBundleManifest,
     discover_plugin_bundles)
 from .runtime_settings import (
-    MODEL_THINKING_POWER_LEVELS, ModelSettings, ProviderSettings,
+    MODEL_THINKING_POWER_LEVELS, ProviderSettings,
     RuntimeSettings)
 from .skill_registry import SkillManifest, SkillRegistry
 

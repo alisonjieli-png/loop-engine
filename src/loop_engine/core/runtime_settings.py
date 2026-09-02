@@ -100,11 +100,11 @@ class LoopConfigOverride:
     effort: "str | ParameterInput" = ""
     llm_thinking_power: "str | ParameterInput" = ""
     custom_steps: "tuple[str, ...] | ParameterInput" = ()
-    max_depth: "int | None | ParameterInput" = None
-    max_iterations: "int | None | ParameterInput" = None
-    max_model_calls: "int | None | ParameterInput" = None
+    max_depth: "int | ParameterInput | None" = None
+    max_iterations: "int | ParameterInput | None" = None
+    max_model_calls: "int | ParameterInput | None" = None
     exit_condition: "str | ParameterInput" = ""
-    success_confidence_min: "float | None | ParameterInput" = None
+    success_confidence_min: "float | ParameterInput | None" = None
 
     def __post_init__(self) -> None:
         for field_name in ("allowable_modes", "preferred_modes",

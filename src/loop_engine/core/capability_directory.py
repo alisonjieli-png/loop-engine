@@ -346,7 +346,7 @@ class CapabilityDirectory:
                 ledger.record(loop_id="", event="tool_invocation_completed",
                               surface=surface, operation=operation)
             return CallResult(surface, operation, True, value)
-        except Exception as e:                                  # noqa: BLE001
+        except Exception as e:
             fb = ep.fallback or self._default_fallback.get(surface)
             if fb:
                 r = self.call(fb[0], fb[1], ledger=ledger, **kwargs)
@@ -425,7 +425,7 @@ class CapabilityDirectory:
                 continue
             try:
                 res = ep.fn(query=text)
-            except Exception:                                   # noqa: BLE001
+            except Exception:
                 continue
             for hit in (res.get("hits", []) if isinstance(res, dict) else []):
                 # facets ride on the hit itself or inside its body record.

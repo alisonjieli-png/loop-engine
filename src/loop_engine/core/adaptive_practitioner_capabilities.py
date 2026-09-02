@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -23,9 +22,7 @@ from .adaptive_practitioner_records import (
     AdaptivePractitionerError, AdaptiveRunServices, NextActionDecision)
 from .generated_project import (
     DEFAULT_GENERATED_PROJECT_IMAGE,
-    GeneratedProjectAuthority, GeneratedProjectCandidate,
-    GeneratedProjectError, GeneratedProjectFileSpec,
-    GeneratedProjectExecutionContext, GeneratedProjectExecutionRequest,
+    GeneratedProjectAuthority, GeneratedProjectError, GeneratedProjectExecutionContext, GeneratedProjectExecutionRequest,
     validate_generated_project_input_use)
 from .web_fetch import WebFetchAuthority, WebFetchContext, WebFetchRequest
 from .web_search import (
@@ -35,7 +32,7 @@ from .adaptive_practitioner_orientation_capabilities import (
 from .adaptive_practitioner_source import (
     source_inspection_operation, source_profile_operation)
 from .adaptive_practitioner_project import (
-    generated_file_checkpoint_identity, project_inputs, project_manifest)
+    project_inputs, project_manifest)
 from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
 from .source_role_orientation import orient_source_roles
 from .action_fence import ActionFenceLedger
@@ -262,7 +259,7 @@ def execute_adaptive_capability(
                 "validate generated project input use",
                 lambda: validate_generated_project_input_use(
                     manifest, input_artifacts), parent=owner)["value"]
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return refuse_project(
                 "validate generated project input use", exc,
                 "The generated project ignored supplied inputs or violated "
@@ -324,7 +321,7 @@ def execute_adaptive_capability(
         output = run_compiled(
             compiled["plan"], registry, input_value,
             trace=trace, ledger=owner.ledger, parent=owner)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         # Every refused call is described by the runtime in its own typed
         # vocabulary, not left as prose for the model to re-diagnose. The
         # admitted values and the repair travel back on the packet the model

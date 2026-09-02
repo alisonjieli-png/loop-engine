@@ -7,14 +7,12 @@ not claim live provider quality or production effect safety.
 """
 from __future__ import annotations
 
-import hashlib
 import inspect
 import json
 import tempfile
 import time
 from dataclasses import replace
 
-from ..catalog.query import IntelligenceQuery
 from ..catalog.stores.in_memory import EphemeralRecordStore
 from ..loop.encapsulate import as_model_loop
 from ..loop.loop_capsule import ExternalPayloadRef

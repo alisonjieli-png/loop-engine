@@ -7,7 +7,7 @@ and the default store for tests and read-only demos.
 from __future__ import annotations
 
 from ..capabilities import StoreCapabilities
-from ..protocol import StoreError, UnsupportedOperationError
+from ..protocol import StoreError
 from ..query import IntelligenceQuery
 
 

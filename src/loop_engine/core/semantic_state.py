@@ -103,8 +103,8 @@ class SemanticEffectController:
 
     def __post_init__(self) -> None:
         if (not self.controller_id.strip() or len(self.policy_digest) != 64
-                or self.external_effect_consumer is not None
-                and not callable(self.external_effect_consumer)):
+                or (self.external_effect_consumer is not None
+                and not callable(self.external_effect_consumer))):
             raise SemanticRuntimeContractError(
                 "semantic effect controller configuration is invalid")
 

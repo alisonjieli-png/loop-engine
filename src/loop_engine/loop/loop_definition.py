@@ -250,7 +250,7 @@ class LoopDefinition:
 
     @property
     def identity(self) -> LoopRoleIdentity:
-        from .loop_profile_catalog import LoopProfileError, LoopProfileRef
+        from .loop_profile_catalog import LoopProfileRef
         from .loop_profile_ontology import identity_for_profile
         return identity_for_profile(LoopProfileRef(
             self.role_profile_id, self.role_profile_version))

@@ -26,7 +26,7 @@ from ..core.workspace_contracts import (
 from ..core.workspace_operations import (
     WorkspaceApprovalPlan, WorkspaceOperationService)
 from .delegation_runtime import (
-    DelegationError, LoopPortValue, SpawnedExecutionRequest,
+    LoopPortValue, SpawnedExecutionRequest,
     SpawnedLoopResult, SpawnedTaskStatus)
 from .loop_role import LoopRelationshipKind, LoopRole
 from .recursive_loop import StepOutcome
@@ -236,7 +236,7 @@ def _require_digest(value: str, label: str) -> None:
 class WorkspaceSpawnedExecutor:
     """Asynchronous adapter from SpawnedTaskManager to workspace command."""
 
-    __slots__ = ("__operations", "__artifacts", "__plan")
+    __slots__ = ("__artifacts", "__operations", "__plan")
 
     def __init__(self, plan: WorkspaceSpawnedExecutionPlan,
                  operations: WorkspaceOperationService,

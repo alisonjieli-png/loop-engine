@@ -27,7 +27,7 @@ from ..loop.effect_approval import (
     EffectSpec)
 from ..loop.loop_contract import contract_for_code_loop
 from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
-from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome
+from ..loop.recursive_loop import LoopConfig, StepOutcome
 from .context_artifacts import ContextArtifactManager
 from .runtime_observer import RuntimeObservationServices
 
@@ -252,7 +252,7 @@ def fetch_web_resource(
                 "text_truncated": False,
             }
             return StepOutcome("fetch:completed", "deterministic", 1.0)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             holder["error"] = exc
             active.ledger.record(
                 loop_id=active.loop_id, event="failure.detected",

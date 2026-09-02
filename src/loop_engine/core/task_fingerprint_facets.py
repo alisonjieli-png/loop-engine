@@ -22,7 +22,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 
 TASK_FACET_SCHEMA_VERSION = "task_fingerprint_facets/v1"
@@ -406,8 +406,14 @@ def self_test() -> dict[str, object]:
 
 
 __all__ = (
-    "ColumnShape", "ColumnShapeRequest", "FacetKind", "FacetLevel",
-    "TaskFacetError", "TaskFacetObservation", "column_shape_facet",
-    "facet_hierarchy", "facet_overlap",
     "TASK_FACET_SCHEMA_VERSION",
+    "ColumnShape",
+    "ColumnShapeRequest",
+    "FacetKind",
+    "FacetLevel",
+    "TaskFacetError",
+    "TaskFacetObservation",
+    "column_shape_facet",
+    "facet_hierarchy",
+    "facet_overlap",
 )

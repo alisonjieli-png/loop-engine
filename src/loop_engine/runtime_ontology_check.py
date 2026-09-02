@@ -112,8 +112,6 @@ def run_runtime_ontology_check() -> dict:
     """Prove every live operational instance uses canonical Loop."""
     # The ontology package uses lazy public-name resolution, so import the
     # record modules explicitly before walking sys.modules.
-    import loop_engine.ontology.node as _node_module          # noqa: F401
-    import loop_engine.ontology.loop_node as _loop_node_module  # noqa: F401
     problems: list[dict] = []
     problems.extend(node_class_violations())
     problems.extend(subclass_violations())
@@ -142,8 +140,6 @@ def self_test() -> dict:
     # Canary 1: the loaded-class walker must see no active Node class.
     # The ontology package uses lazy public-name resolution, so import the
     # record modules explicitly before walking sys.modules.
-    import loop_engine.ontology.node as _node_module          # noqa: F401
-    import loop_engine.ontology.loop_node as _loop_node_module  # noqa: F401
     loaded = {r["class"] for r in loaded_node_classes()}
     check("loaded_class_walker_sees_no_active_node_class",
           not loaded,
@@ -152,7 +148,7 @@ def self_test() -> dict:
     # Canary 2: the canonical Loop class refuses subclassing live.
     from .loop.recursive_loop import Loop
     try:
-        class _Probe(Loop):                                   # noqa: F841
+        class _Probe(Loop):
             pass
         check("canonical_loop_refuses_subclassing", False)
     except TypeError:
@@ -172,7 +168,7 @@ def self_test() -> dict:
     class _PlainBase:
         pass
 
-    class _HiddenSub(_PlainBase):                             # noqa: F841
+    class _HiddenSub(_PlainBase):
         pass
     check("subclass_tree_walker_detects_hidden_subclasses",
           _subclass_tree(_PlainBase) == ["_HiddenSub"])

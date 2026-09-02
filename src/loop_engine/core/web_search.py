@@ -224,7 +224,7 @@ def search_web(
                 "evidence_state": "candidate_only",
             }
             return StepOutcome("search:completed", "deterministic", 1.0)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             holder["error"] = exc
             active.ledger.record(
                 loop_id=active.loop_id, event="failure.detected",

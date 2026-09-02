@@ -5,6 +5,8 @@ explicit Loop vertices, typed edges, groups, and external ports.
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from ..loop.loop_definition import ConfigurationFacts, LoopDefinition
 from .solution_graph import (
     LoopGraphDefinition, LoopGraphEdge, LoopGraphEndpoint, LoopGraphGroup,
@@ -12,6 +14,9 @@ from .solution_graph import (
     SolutionLoopDefinitionRequest, make_solution_loop_definition,
     vertex_from_definition,
 )
+
+if TYPE_CHECKING:
+    from .solution_canvas import SolutionSpec
 
 def _safe_id(value: str) -> str:
     import re

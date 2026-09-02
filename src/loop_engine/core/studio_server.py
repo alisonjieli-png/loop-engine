@@ -270,9 +270,9 @@ def _run_detail(rid: str) -> dict:
     starting_loop_ids = set(starting_ids)
     playback_events = [event for event in events if (
         event["type"] == "model_invocation"
-        or event["loop"] in starting_loop_ids
+        or (event["loop"] in starting_loop_ids
         and event["type"] in {"loop_init", "iteration", "terminal",
-                              "fallback", "budget_stop", "cancel"})]
+                              "fallback", "budget_stop", "cancel"}))]
     product_events = []
     if product["available"]:
         product_events.extend((

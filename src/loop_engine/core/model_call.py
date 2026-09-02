@@ -154,7 +154,7 @@ def execute_ask(spec: AskSpec, *,
         tried.append(model)
         try:
             res = _call(prompt, model=model, temperature=spec.temperature)
-        except Exception as exc:                                # noqa: BLE001
+        except Exception as exc:
             last_err = repr(exc)
             stages.append({"stage": "call", "model": model, "ok": False,
                            "error": last_err[:120]})

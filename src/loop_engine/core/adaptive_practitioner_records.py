@@ -19,7 +19,7 @@ import os
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Callable, Protocol
+from typing import Callable, Protocol, TYPE_CHECKING
 
 from ..code_nodes.solution_model_port import (
     ModelExecution, ModelInvocationRequest, SolutionModelError)
@@ -46,6 +46,9 @@ from .web_fetch import (
     fetch_web_resource)
 from .web_search import (
     search_web)
+
+if TYPE_CHECKING:
+    from .action_fence import ActionFenceLedger
 
 ADAPTIVE_PRACTITIONER_RECORD_TYPE = "adaptive_practitioner_run/v1"
 ADAPTIVE_CAPABILITIES = (
@@ -465,7 +468,8 @@ class AdaptivePractitionerRequest:
     persist_run_history: bool = True
     quiet_model_io: bool = False
     allow_local_execution: bool = False
-    context_budget: ContextBudgetPolicy = ContextBudgetPolicy()
+    context_budget: ContextBudgetPolicy = field(
+        default_factory=ContextBudgetPolicy)
     prior_region_evidence: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -561,9 +565,9 @@ class AdaptivePractitionerDependencies:
             raise AdaptivePractitionerError(
                 "reuse_observation_port has the wrong contract")
         if (not isinstance(self.extension_snapshot, dict)
-                or self.extension_snapshot
+                or (self.extension_snapshot
                 and self.extension_snapshot.get("record_type")
-                != "extension_snapshot/v1"):
+                != "extension_snapshot/v1")):
             raise AdaptivePractitionerError(
                 "extension_snapshot has an invalid contract")
 @dataclass(frozen=True)
@@ -641,7 +645,7 @@ class AdaptiveRunServices:
         try:
             from .practitioner_runtime_facts import runtime_facts
             return runtime_facts(self)
-        except Exception:  # noqa: BLE001 - facts never block a model call
+        except Exception:
             return {
                 "record_type": "practitioner_runtime_facts/v1",
                 "authority": "runtime", "unavailable": True,
@@ -768,7 +772,7 @@ class AdaptiveRunServices:
                     float(getattr(last, "elapsed_seconds", 0) or 0) or None),
                 requested_output_ceiling=getattr(
                     last, "maximum_output_tokens", None)))
-        except Exception:  # noqa: BLE001 - health learning never kills work
+        except Exception:
             self.publish(
                 "practitioner.diagnostic",
                 diagnostic_code="route_health_record_skipped")

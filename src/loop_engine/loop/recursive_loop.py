@@ -1454,7 +1454,7 @@ def self_test() -> dict:
     # 0. the one-runtime invariant is mechanically enforced: subclassing
     #    the canonical Loop class is refused at class-creation time.
     try:
-        class _SneakyRuntimeSubclass(Loop):                     # noqa: F841
+        class _SneakyRuntimeSubclass(Loop):
             pass
         check("loop_cannot_be_subclassed", False)
     except TypeError:

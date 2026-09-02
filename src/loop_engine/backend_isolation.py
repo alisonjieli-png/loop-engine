@@ -98,7 +98,7 @@ def base_import_report() -> dict:
             importlib.import_module(module_name)
             results.append({"module": module_name, "imported": True,
                             "error": ""})
-        except Exception as exc:                             # noqa: BLE001
+        except Exception as exc:
             results.append({"module": module_name, "imported": False,
                             "error": str(exc)})
     for provider, module in blocked.items():

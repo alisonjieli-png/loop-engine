@@ -326,8 +326,8 @@ def self_test() -> dict:
     # network hang, which is the least diagnosable failure shape there is.
     # Declare the dependency up front and fail fast with the remedy instead.
     try:
-        import numpy                                       # noqa: F401
-        import pandas                                      # noqa: F401
+        import numpy
+        import pandas
     except ImportError as exc:
         return {"tests": [{
             "test": "live_run_demo_self_test", "passed": False,
@@ -426,8 +426,8 @@ def self_test() -> dict:
           "POST /advice -> /restart -> user_guidance event in the stream")
 
     check("live_page_carries_the_step_rail",
-          all(s in page for s in STEP_LABELS) and "demo\npacing" in page
-          or all(s in page for s in STEP_LABELS) and "demo" in page,
+          (all(s in page for s in STEP_LABELS) and "demo\npacing" in page)
+          or (all(s in page for s in STEP_LABELS) and "demo" in page),
           "rail + pacing declaration present")
 
     import shutil

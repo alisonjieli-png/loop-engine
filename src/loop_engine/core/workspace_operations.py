@@ -212,7 +212,7 @@ class WorkspaceOperationService:
     def _call_file_once(self, request: FileRequest) -> FileResult:
         try:
             return self.backend.file(request)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return _file_error(
                 request, "backend_failed",
                 f"{type(exc).__name__}: {str(exc)[:160]}")
@@ -220,7 +220,7 @@ class WorkspaceOperationService:
     def _call_command_once(self, request: CommandRequest) -> CommandResult:
         try:
             return self.backend.command(request)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return _command_error(
                 request, "backend_failed",
                 f"{type(exc).__name__}: {str(exc)[:160]}")

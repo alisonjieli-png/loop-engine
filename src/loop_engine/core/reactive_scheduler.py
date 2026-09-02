@@ -20,7 +20,7 @@ from ..loop.reactive_activation import (
     ActivationStatus, ActivationTerminalRequest, LeaseHeartbeatRequest,
     ReactiveSeriesDefinition, TriggerEnvelope, WorkLease)
 from ..loop.reactive_contracts import (
-    InputOrdering, ReactiveLoopProfile, ReactiveContractError)
+    InputOrdering, ReactiveLoopProfile)
 
 
 _SCHEMA = """

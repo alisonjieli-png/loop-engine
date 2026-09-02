@@ -99,7 +99,7 @@ class SetupReport:
 
 def _has_pandas() -> bool:
     try:
-        import pandas                                      # noqa: F401
+        import pandas
         return True
     except ImportError:
         return False
@@ -107,7 +107,7 @@ def _has_pandas() -> bool:
 
 def _has_duckdb() -> bool:
     try:
-        import duckdb                                      # noqa: F401
+        import duckdb
         return True
     except ImportError:
         return False
@@ -115,7 +115,7 @@ def _has_duckdb() -> bool:
 
 def _has_model2vec() -> bool:
     try:
-        import model2vec                                   # noqa: F401
+        import model2vec
         return True
     except ImportError:
         return False
@@ -178,7 +178,7 @@ def run_setup(*, interactive: bool = True, knowledge_path: str = "",
     step = report.add(SetupStep("install"))
     try:
         # Relative imports keep the package self-contained.
-        from ..loop.encapsulate import as_practitioner_loop  # noqa: F401
+        from ..loop.encapsulate import as_practitioner_loop
         step.ran, step.ok = True, True
         step.detail = f"python {sys.version.split()[0]}, package importable"
         _say(f"      OK   package imports, Python "

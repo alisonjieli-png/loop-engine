@@ -219,7 +219,8 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                     "target_state_version": state.version})
             else:
                 raise AdaptivePractitionerError(
-                    "orientation remained invalid after one model repair")
+                    "orientation remained invalid after one model repair; "
+                    f"the findings were {findings}")
         services.orientation_by_version[state.version] = parsed
         services.publish("practitioner.step.completed", step="orient",
                          task_summary=parsed.task_summary[:160])
@@ -459,7 +460,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                         lineage=(spawned.loop_id,),
                         errors=(() if spawned.terminal_code == "ACCEPTED"
                                 else (spawned.terminal_code,))))
-                except Exception as exc:  # noqa: BLE001
+                except Exception as exc:
                     results.append(ResultPacket(
                         objective=spec.objective,
                         errors=(f"{type(exc).__name__}: {str(exc)[:300]}",),
@@ -633,7 +634,7 @@ def run_adaptive_practitioner(
             owner, services, "CANCELLED",
             "The operator interrupted the active Practitioner run.",
             lambda: _history_record(owner, services, runs_dir))
-    except Exception as exc:  # noqa: BLE001 - preserve a terminal run record
+    except Exception as exc:
         if not owner.is_terminal:
             owner.cancel("adaptive_practitioner_failed")
         failure_code = (exc.error_code or type(exc).__name__

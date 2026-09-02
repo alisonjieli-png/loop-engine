@@ -28,13 +28,12 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Protocol, runtime_checkable
 
 from .resolution import (
-    CompatibilityRequirement,
     ResolutionCandidate,
     ResolutionOrigin,
 )
@@ -42,10 +41,8 @@ from .solution_library import SolutionLibrary
 from .task_fingerprint import (
     CompatibilityAssessment,
     TaskFingerprint,
-    assess_compatibility,
 )
 from .task_fingerprint_facets import (
-    FacetLevel,
     TaskFacetObservation,
     facet_hierarchy,
     facet_overlap,
@@ -442,8 +439,6 @@ def self_test() -> dict[str, object]:
     def check(name: str, passed: bool) -> None:
         tests.append({"test": name, "passed": bool(passed)})
 
-    from .resolution import (
-        ResolutionRequest, select_resolution_as_loop)
     from .store_serve import SolverStore
     from .solution_library import SolutionAsset, SolutionLibrary
     from .task_fingerprint import (
@@ -616,9 +611,17 @@ def self_test() -> dict[str, object]:
 
 
 __all__ = (
-    "FacetCandidateSource", "LibraryCandidateSource", "LAYER_ORDER",
-    "SimilarityCandidateSource", "SimilarityEngine", "SimilarityHit",
-    "SimilarityLayer", "SimilarityPolicy", "TaskSimilarityError",
-    "TaskSimilarityRequest", "TaskSimilarityResult",
-    "TASK_SIMILARITY_SCHEMA_VERSION", "find_similar_as_loop",
+    "LAYER_ORDER",
+    "TASK_SIMILARITY_SCHEMA_VERSION",
+    "FacetCandidateSource",
+    "LibraryCandidateSource",
+    "SimilarityCandidateSource",
+    "SimilarityEngine",
+    "SimilarityHit",
+    "SimilarityLayer",
+    "SimilarityPolicy",
+    "TaskSimilarityError",
+    "TaskSimilarityRequest",
+    "TaskSimilarityResult",
+    "find_similar_as_loop",
 )

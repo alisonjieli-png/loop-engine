@@ -165,7 +165,7 @@ class DuckDBRecordStore:
             count = con.execute("SELECT COUNT(*) FROM records").fetchone()[0]
             return {"adapter_id": "local.duckdb", "healthy": True,
                     "record_count": count}
-        except Exception as exc:                                 # noqa: BLE001
+        except Exception as exc:
             return {"adapter_id": "local.duckdb", "healthy": False,
                     "error": str(exc)}
 

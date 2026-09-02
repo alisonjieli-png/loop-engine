@@ -20,7 +20,7 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass, field
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping
 
 # Fragment purposes (namespaces) — a small stable set.
 FRAGMENT_PURPOSES = ("system", "authority", "purpose", "role", "method",

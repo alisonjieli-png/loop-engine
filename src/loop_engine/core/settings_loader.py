@@ -374,7 +374,7 @@ def load_runtime_settings(path=None, *, environ=None, cwd=None
             lambda: _load_runtime_settings(path, environ=environ, cwd=cwd))
     except LoopError as exc:
         if isinstance(exc.__cause__, SettingsError):
-            raise exc.__cause__
+            raise exc.__cause__ from exc
         raise
     return replace(wrapped["value"], loop_id=wrapped["loop_id"])
 
@@ -475,7 +475,7 @@ def write_default_settings(path=None) -> SettingsWriteResult:
             lambda: _write_default_settings(path))
     except LoopError as exc:
         if isinstance(exc.__cause__, SettingsError):
-            raise exc.__cause__
+            raise exc.__cause__ from exc
         raise
     return SettingsWriteResult(str(wrapped["value"]), wrapped["loop_id"])
 

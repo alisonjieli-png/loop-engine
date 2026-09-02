@@ -96,7 +96,7 @@ def _p_json_list(t: str) -> dict:
             if isinstance(arr, list):
                 return {"ok": True, "items": arr, "form": "json_list",
                         "source": "json"}
-    except Exception:                                       # noqa: BLE001
+    except Exception:
         pass
     # fall back to bullet lines
     items = [m.group(1).strip() for m in

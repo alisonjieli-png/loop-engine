@@ -32,7 +32,6 @@ store record, so measurement flows through the practitioner like any capability.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Sequence
 
 from ..strings.intelligence_strings import IntelligenceString, StringBank, compose
 

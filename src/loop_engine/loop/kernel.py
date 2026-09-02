@@ -873,7 +873,6 @@ def default_standardize_task(state: PractitionerState,
     records the task as open. A model may inspect optional template candidates
     later while deciding how to act. This operation never chooses one.
     """
-    from dataclasses import asdict
     original = state.spec.objective
     return {
         "compiled_task_id": f"task:{state.version}",

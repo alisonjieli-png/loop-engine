@@ -15,7 +15,6 @@ solving method, or approve spend. Those inputs must be resolved before invoke.
 """
 from __future__ import annotations
 
-import json
 import time
 from dataclasses import dataclass, field
 from typing import Callable, Protocol, Sequence
@@ -382,7 +381,7 @@ def _error_code(error: str) -> str:
     if "context_window_exceeded" in low:
         return "context_window_exceeded"
     if ("output_limit_reached" in low or "max_tokens" in low
-            or "maximum output" in low and "reached" in low):
+            or ("maximum output" in low and "reached" in low)):
         return "output_limit_reached"
     if ("no route to host" in low
             or "temporary failure in name resolution" in low
@@ -410,7 +409,7 @@ def _error_code(error: str) -> str:
         return "payment_required"
     if "404" in low or "model not found" in low:
         return "model_not_found"
-    if "429" in low or "rate" in low and "limit" in low:
+    if "429" in low or ("rate" in low and "limit" in low):
         return "rate_limited"
     if (any(code in low for code in ("500", "502", "503"))
             or "service unavailable" in low or "high demand" in low):
@@ -516,7 +515,7 @@ class ModelGateway:
         from ..loop.encapsulate import as_model_loop
         from ..loop.loop_role import (LoopRelationship, LoopRole,
                                      LoopRoleIdentity)
-        from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome
+        from ..loop.recursive_loop import Loop, StepOutcome
 
         routes = self._routes(request.config)
         if not routes:
@@ -692,7 +691,7 @@ class ModelGateway:
                     validation_ok = (
                         validate(text) if provider_ok and validate is not None
                         else provider_ok)
-                except Exception as exc:  # noqa: BLE001
+                except Exception as exc:
                     validation_ok = False
                     validation_error = (
                         f"output validation raised {type(exc).__name__}")

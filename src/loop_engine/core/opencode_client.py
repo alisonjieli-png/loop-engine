@@ -212,7 +212,7 @@ def self_test() -> dict:
           "continue_session threads --session so a worker can resume its context")
 
     # Change detection over a temp dir (no network, no worker).
-    import tempfile, time
+    import tempfile
     with tempfile.TemporaryDirectory() as d:
         before = _snapshot(d)
         p = os.path.join(d, "new.py")

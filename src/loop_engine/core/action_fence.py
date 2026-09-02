@@ -26,7 +26,7 @@ or the packet projection (core.practitioner_runtime_facts).
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import hashlib
 import json
 from typing import Mapping

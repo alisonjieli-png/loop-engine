@@ -96,10 +96,9 @@ solution node and a practitioner share the same baseline shape).
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
-from ..loop.loop_contract import (LoopContract, LoopContractError,
-                                  contract_for_code_loop)
+from ..loop.loop_contract import (LoopContract, LoopContractError)
 
 #: Successful exits for a Loop baseline. Budgets and iteration limits are
 #: safety bounds, not successful outcomes.
@@ -217,7 +216,7 @@ def loop_baseline_for(baseline: LoopBaseline, **facet_kw) -> LoopContract:
         return LoopContract(name=baseline.goal, execution_mode=contract_mode,
                             input_roles=baseline.input_roles,
                             output_roles=baseline.output_roles, **facet_kw)
-    except LoopContractError as e:                        # noqa: BLE001
+    except LoopContractError as e:
         raise DoctrineError(f"baseline did not compose into a contract: {e}") from e
 
 

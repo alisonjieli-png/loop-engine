@@ -12,7 +12,7 @@ from typing import Callable, Mapping
 import yaml
 
 from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
-from ..loop.recursive_loop import Loop, LoopConfig, LoopError, StepOutcome
+from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome
 from .reusable_capability_records import (
     CapabilityNeed,
     HybridAssistanceProfile,
@@ -186,7 +186,7 @@ def run_hybrid_assistance_as_loop(
             return StepOutcome(
                 "assist:structured-proposal", "hybrid", 0.6,
                 model_calls=1)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             holder["error"] = exc
             return StepOutcome(
                 f"assist:rejected:{type(exc).__name__}", "hybrid", 0.0,

@@ -6,7 +6,7 @@ and never runtimes.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 
 #: The four memory types. Working memory is runtime state; episodic,

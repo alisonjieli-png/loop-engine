@@ -359,6 +359,10 @@ from .product_outcome_store import (                         # noqa: E402
     bind_product_outcome, load_saved_run_bundle)
 
 
+from .product_outcome_store import (
+    PRODUCT_OUTCOME_FILENAME, bind_product_outcome, load_saved_run_bundle)
+
+
 def verify_saved_run(root: str, run_id: str) -> dict:
     """Read back one saved run at the owning storage boundary and verify it."""
     bundle = load_saved_run_bundle(root, run_id)
@@ -410,7 +414,7 @@ def recorded_output_handler(run_history: RunHistory, base_handler,
 # The canonical vocabulary lives in `event_vocabulary` (split out when this
 # module crossed the size cap).  Re-exported here so every existing import
 # site keeps working and the vocabulary keeps one home.
-from .event_vocabulary import (                                # noqa: E402
+from .event_vocabulary import (
     EVENT_FAMILIES, _CANONICAL_EVENT_MAP, _EVENT_TYPE_FAMILY,
     family_of, to_canonical_events, canonical_event_coverage)
 

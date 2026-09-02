@@ -124,7 +124,7 @@ def self_test() -> dict:
         results.append({"name": name, "passed": bool(ok), "note": note})
 
     try:
-        import duckdb                                     # noqa: F401
+        import duckdb
     except ImportError:
         results.append({
             "test": "duckdb_dependency_installed", "passed": False,

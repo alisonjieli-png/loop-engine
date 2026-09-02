@@ -36,14 +36,13 @@ from .semantic_runtime_records import (
     SemanticProgramIdentity,
     SemanticRealizationBinding,
     SemanticRealizationKind,
-    SemanticRuntimeContractError,
     SemanticVerificationRecord,
     canonical_json,
     semantic_digest,
 )
 from .semantic_state import (
     CatalogTrustedSemanticState, SemanticEffectController,
-    SemanticStateError, SemanticVerifier)
+    SemanticVerifier)
 
 
 class SemanticExecutionError(RuntimeError):
@@ -195,8 +194,8 @@ class SemanticExecutionServices:
                 or any(not isinstance(
                     item, SemanticInterpreterQualification)
                     for item in qualifications)
-                or self.code_authority is not None
-                and not isinstance(self.code_authority, CapabilityAuthority)):
+                or (self.code_authority is not None
+                and not isinstance(self.code_authority, CapabilityAuthority))):
             raise SemanticExecutionError(
                 "semantic execution services are invalid")
         object.__setattr__(self, "interpreter_ports", ports)
@@ -258,8 +257,8 @@ def select_semantic_realization(
                 or binding.lifecycle != "registered"
                 or binding.run_mode not in contract.draft.supported_modes
                 or requested & set(binding.unsupported_regions)
-                or binding.coverage_regions
-                and not requested <= set(binding.coverage_regions)):
+                or (binding.coverage_regions
+                and not requested <= set(binding.coverage_regions))):
             continue
         if binding.realization_kind in (
                 SemanticRealizationKind.DIRECT_SEMANTIC,
@@ -281,7 +280,7 @@ def select_semantic_realization(
             try:
                 asset_id, version = identity.rsplit("@", 1)
                 spec = code_authority.active_spec(asset_id, version)
-            except Exception:  # noqa: BLE001 - ineligible realization
+            except Exception:
                 continue
             if (spec.body_ref.digest != binding.artifact_digest
                     or spec.qualification_digest
@@ -565,7 +564,7 @@ def execute_semantic_loop(
             return StepOutcome(
                 f"semantic:{disposition.value}", request.binding.run_mode,
                 0.95, model_calls=model_calls)
-        except Exception as exc:  # noqa: BLE001 - safe terminal evidence
+        except Exception as exc:
             holder["error"] = exc
             return StepOutcome(
                 f"semantic:rejected:{type(exc).__name__}",

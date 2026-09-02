@@ -705,7 +705,7 @@ def run_external_harness(
     def handler(active_loop, step, context):
         try:
             result = adapter.run(request, active_services)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             result = HarnessRunResult(
                 request.request_id, request.harness_id, "failed",
                 error_code="adapter_exception",
@@ -728,7 +728,7 @@ def run_external_harness(
                 "adapter model-call provider does not match provider_id")
         try:
             _capture_harness_output(result, active_services.artifact_store)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             result.status = "failed"
             result.error_code = "output_capture_failed"
             result.error = f"{type(exc).__name__}: {str(exc)[:160]}"

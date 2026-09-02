@@ -340,7 +340,7 @@ def _run_envelope(loop: Loop, *, solution_id: str, logical_loop_id: str,
             holder["value"] = body(active)
             return StepOutcome(output=f"{step}:done", mode=act_mode,
                                confidence=0.95)
-        except Exception as exc:  # noqa: BLE001 - terminate before surfacing
+        except Exception as exc:
             holder["error"] = exc
             active.cancel(f"{logical_loop_id}: {type(exc).__name__}")
             return StepOutcome(output=f"{step}:failed:{type(exc).__name__}",
@@ -349,7 +349,7 @@ def _run_envelope(loop: Loop, *, solution_id: str, logical_loop_id: str,
 
     try:
         loop.run(handler=handler, max_steps=len(loop.steps()) + 1)
-    except Exception as exc:  # noqa: BLE001 - closure is mandatory
+    except Exception as exc:
         if not loop.is_terminal:
             loop.cancel(f"{logical_loop_id}: runtime failure")
         _complete_solution_loop(
@@ -429,7 +429,7 @@ def _run_atomic_operation(*, owner: Loop, solution_id: str,
         try:
             output = (callable_(actual_input, dict(call_params))
                       if pass_params else callable_(actual_input))
-        except Exception as exc:  # noqa: BLE001 - evidence before propagation
+        except Exception as exc:
             active.ledger.record(
                 loop_id=active.loop_id, event="tool_invocation_failed",
                 surface="solution_registry", operation=operation,

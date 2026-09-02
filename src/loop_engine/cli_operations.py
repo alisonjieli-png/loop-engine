@@ -315,7 +315,6 @@ def run_configure(args) -> int:
 
 
 def run_doctor(args) -> int:
-    import os
     import platform
     import shutil
     from importlib.metadata import PackageNotFoundError, version

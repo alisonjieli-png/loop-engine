@@ -60,7 +60,7 @@ def observe_generated_project_reuse(
         True, True, port.dispatch)
     try:
         opportunity = port.submit(request)
-    except Exception as exc:  # noqa: BLE001 - source result remains accepted
+    except Exception as exc:
         return {
             "record_type": "reuse_observation_status/v1",
             "status": "failed",

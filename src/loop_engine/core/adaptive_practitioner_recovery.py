@@ -207,7 +207,9 @@ def resolve_stall_with_panel(
             "selected_proposal_id", 120)
         if selected not in proposals:
             raise AdaptivePractitionerError(
-                "recovery adjudication selected an unknown proposal")
+                f"recovery adjudication selected proposal {selected!r}, "
+                f"which was not offered; the offered proposals are "
+                f"{list(proposals)[:24]}")
         reason = _short_text(
             raw_value.get("reason"), "recovery reason")
         confidence = float(raw_value.get("confidence", 0.0))

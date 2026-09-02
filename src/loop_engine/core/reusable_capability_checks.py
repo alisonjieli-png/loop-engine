@@ -19,7 +19,6 @@ from ..catalog.stores.in_memory import EphemeralRecordStore
 from ..catalog.stores.sqlite_store import SQLiteRecordStore
 from ..catalog.query import IntelligenceQuery
 from ..code_nodes.solution_graph import LoopDefinitionRegistry
-from ..loop.atomic_primitives import LoopValueRef
 from ..loop.encapsulate import as_model_loop
 from ..loop.loop_capsule import ExternalPayloadRef, MaterializedPayload
 from ..loop.loop_contract import LoopContract

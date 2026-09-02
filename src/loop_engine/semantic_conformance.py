@@ -282,7 +282,7 @@ def semantic_source_violations(
             continue
         for node in ast.walk(tree):
             if isinstance(node, ast.Dict):
-                pairs = zip(node.keys, node.values)
+                pairs = zip(node.keys, node.values, strict=True)
                 if any(isinstance(key, ast.Constant) and key.value == "kind"
                        and isinstance(value, ast.Constant)
                        and value.value == "loop_node" for key, value in pairs):

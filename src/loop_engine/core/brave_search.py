@@ -244,7 +244,7 @@ class BraveSearchPlugin:
                             attempt_count=0)
         try:
             token = self.secret_provider.get(self.config.secret_ref)
-        except Exception as exc:  # noqa: BLE001 - secret boundary, type only
+        except Exception as exc:
             return _failure(self.config, "secret_lookup_failed",
                             attempt_count=0, error=type(exc).__name__,
                             secret_ref=self.config.secret_ref)

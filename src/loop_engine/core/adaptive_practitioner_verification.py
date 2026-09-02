@@ -105,10 +105,15 @@ def verify_adaptive_results(
                 "new_requirement_proposals": ["string"],
             }, separators=(",", ":"))))
         verdict = str(value.get("verdict"))
-        if verdict not in (
-                "accept", "accept_provisional", "repair", "research_more",
-                "try_another", "expand_swarm", "tune", "reset", "stop"):
-            raise AdaptivePractitionerError("verification verdict is invalid")
+        admitted_verdicts = (
+            "accept", "accept_provisional", "repair", "research_more",
+            "try_another", "expand_swarm", "tune", "reset", "stop")
+        if verdict not in admitted_verdicts:
+            # Name the value and the set. A closed vocabulary refused without
+            # stating itself leaves the next attempt to guess again.
+            raise AdaptivePractitionerError(
+                f"verification verdict {verdict!r} is not admitted; the "
+                f"admitted verdicts are {list(admitted_verdicts)}")
         if verdict == "accept" and not deterministic_pass:
             verdict = "repair"
         notes = _short_text(value.get("notes"), "verification notes")
@@ -123,7 +128,9 @@ def verify_adaptive_results(
             criterion_ref = str(item.get("criterion_ref") or "")
             if criterion_ref not in criterion_refs:
                 raise AdaptivePractitionerError(
-                    "verification gap references an unknown criterion")
+                    f"verification gap references criterion "
+                    f"{criterion_ref!r}, which is not registered; the "
+                    f"registered criteria are {list(criterion_refs)[:24]}")
             gap_assessments.append({
                 "criterion_ref": criterion_ref,
                 "gap": _short_text(item.get("gap"), "verification gap"),
@@ -186,7 +193,9 @@ def route_adaptive_result(
                         "reason": "string"}, separators=(",", ":"))))
         selected = str(value.get("route"))
         if selected not in MODEL_ROUTE_VALUES:
-            raise AdaptivePractitionerError("route response is invalid")
+            raise AdaptivePractitionerError(
+                f"route {selected!r} is not admitted; the admitted routes "
+                f"are {list(MODEL_ROUTE_VALUES)}")
         reason = _short_text(value.get("reason"), "route reason")
     except (AdaptivePractitionerError, SolutionModelError,
             TypeError, ValueError) as exc:

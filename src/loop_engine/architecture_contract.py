@@ -118,7 +118,7 @@ def canonical_runtime_violations() -> list[dict]:
                            "detail": f"cannot resolve {module_name}: {exc}"})
         return violations
     try:
-        class _Probe(cls):                                    # noqa: F841
+        class _Probe(cls):
             pass
         violations.append({"rule": "canonical_runtime",
                            "detail": f"{module_name} can be subclassed"})
@@ -172,10 +172,9 @@ def self_test() -> dict:
           "Loop is the runtime; LoopNode is legacy serialized vocabulary")
 
     # Canary: the canonical runtime must refuse subclassing.
-    import importlib
     from .loop.recursive_loop import Loop
     try:
-        class _Probe(Loop):                                   # noqa: F841
+        class _Probe(Loop):
             pass
         check("canonical_runtime_refuses_subclassing", False)
     except TypeError:

@@ -16,7 +16,6 @@ from enum import Enum
 
 from .task_fingerprint import (
     CompatibilityAssessment,
-    CompatibilityDimension,
     TaskFingerprint,
     TaskFingerprintRequest,
     assess_compatibility,

@@ -26,7 +26,7 @@ route), so an open-source consumer swaps the registry without touching the loop.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass
 from typing import Sequence
 
 from ..core.ollama_client import FORBIDDEN_MODELS, DEFAULT_MODEL

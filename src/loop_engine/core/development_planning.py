@@ -508,11 +508,24 @@ def compile_plan_to_loop_graph(
     return graph
 
 
-__all__ = ("AssuranceVerdict", "ClarificationDisposition",
-           "ClarificationItem", "ConcurrencyDecisionRecord",
-           "DevelopmentPlanError", "PlanAssuranceResult", "PlanDefinition",
-           "PlanningAuthority", "RequirementVerificationContract",
-           "ResolutionDisposition", "RetryPolicy", "TaskExecutionPlan", "TaskSliceDefinition",
-           "TaskLoopBinding", "TerminalPlanCode", "WorkerAssignmentEnvelope",
-           "assure_plan", "compile_execution_waves",
-           "compile_plan_to_loop_graph")
+__all__ = (
+    "AssuranceVerdict",
+    "ClarificationDisposition",
+    "ClarificationItem",
+    "ConcurrencyDecisionRecord",
+    "DevelopmentPlanError",
+    "PlanAssuranceResult",
+    "PlanDefinition",
+    "PlanningAuthority",
+    "RequirementVerificationContract",
+    "ResolutionDisposition",
+    "RetryPolicy",
+    "TaskExecutionPlan",
+    "TaskLoopBinding",
+    "TaskSliceDefinition",
+    "TerminalPlanCode",
+    "WorkerAssignmentEnvelope",
+    "assure_plan",
+    "compile_execution_waves",
+    "compile_plan_to_loop_graph",
+)

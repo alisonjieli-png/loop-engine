@@ -81,9 +81,10 @@ def scan_semantic_freedom(root: str, rules: dict, py_files, source_tree) -> list
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 defaults = list(zip(
                     node.args.args[-len(node.args.defaults):]
-                    if node.args.defaults else (), node.args.defaults))
+                    if node.args.defaults else (), node.args.defaults,
+                    strict=True))
                 defaults.extend((argument, value) for argument, value in zip(
-                    node.args.kwonlyargs, node.args.kw_defaults)
+                    node.args.kwonlyargs, node.args.kw_defaults, strict=True)
                     if value is not None)
                 for argument, value in defaults:
                     if (argument.arg in ceilings

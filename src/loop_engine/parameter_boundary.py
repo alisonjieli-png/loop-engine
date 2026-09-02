@@ -261,17 +261,16 @@ def _parameters(node: ast.FunctionDef | ast.AsyncFunctionDef) -> list[ParameterI
     positional = [*node.args.posonlyargs, *node.args.args]
     missing = len(positional) - len(node.args.defaults)
     defaults: list[ast.expr | None] = [None] * missing + list(node.args.defaults)
-    result = [
+    # strict: each pair is equal length by construction above, so a silent
+    # truncation here would quietly under-report a boundary rather than fail.
+    paired = list(zip(positional, defaults, strict=True))
+    paired += list(zip(node.args.kwonlyargs, node.args.kw_defaults,
+                       strict=True))
+    return [
         ParameterInfo(arg.arg, _annotation_text(arg.annotation), default)
-        for arg, default in zip(positional, defaults)
+        for arg, default in paired
         if arg.arg not in {"self", "cls"}
     ]
-    result.extend(
-        ParameterInfo(arg.arg, _annotation_text(arg.annotation), default)
-        for arg, default in zip(node.args.kwonlyargs, node.args.kw_defaults)
-        if arg.arg not in {"self", "cls"}
-    )
-    return result
 
 
 def _is_mutable_default(default: ast.expr | None) -> bool:
