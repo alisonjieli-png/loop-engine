@@ -21,6 +21,16 @@ text to solve a different competition.
 
 ## What every notebook does
 
+Competition data: the cells make no assumption about where the data sits or
+what the files are called. Each hands the whole attached input root to the
+solve, prints what is in it, and stops at the solve stage when nothing is
+attached. The Practitioner requests the source manifest, reads the exact
+admitted paths the runtime states, and works out from the observed schemas
+which files hold training rows, which hold rows to predict, and which defines
+the submission contract. That means a cell runs against any competition or
+dataset you attach, whatever its slug, layout, or file names. Set
+`LOOP_ENGINE_KAGGLE_DATASET_DIR` if you want to narrow the root yourself.
+
 Notebook settings on Kaggle: Internet must be on (each cell downloads the
 Loop Engine `main` archive from GitHub and calls the provider API), no
 accelerator is required, and the provider key is read from a Kaggle secret

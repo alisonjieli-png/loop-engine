@@ -73,7 +73,44 @@ STAGE = os.environ.get("LOOP_ENGINE_KAGGLE_STAGE", "solve").strip() or "solve"
 
 REPOSITORY_DIR = (Path(SOURCE_DIR) if SOURCE_DIR
                   else KAGGLE_WORKING / "loop-engine-src")
-DATASET_DIR = KAGGLE_INPUT / "competitions" / COMPETITION
+# The cell does not guess where the data lives. It hands the whole attached
+# input root to the solve and lets the Practitioner orient over the exact
+# manifest the runtime admits, exactly as it would for any other source. An
+# explicit LOOP_ENGINE_KAGGLE_DATASET_DIR narrows the root when the operator
+# wants that; it is authority, not a guess. COMPETITION only names the run and
+# is carried into the task text as a hint, never as a path.
+DATASET_DIR_OVERRIDE = os.environ.get(
+    "LOOP_ENGINE_KAGGLE_DATASET_DIR", "").strip()
+
+
+def resolve_dataset_dir(input_root, override=""):
+    """Return (directory handed to the solve, what it contains).
+
+    No layout patterns and no file names are assumed. The directory is the
+    operator's override when given, otherwise the attached input root. The
+    listing is enumeration of what is actually there, reported so a person can
+    see it and recorded so the run can be read later. Choosing which files
+    matter is the Practitioner's orientation work, not this cell's.
+    """
+    directory = Path(override) if override else input_root
+    if not directory.is_dir():
+        raise RuntimeError(
+            f"No input directory at {directory}. Attach the competition or "
+            "dataset to this notebook, or set "
+            "LOOP_ENGINE_KAGGLE_DATASET_DIR to an existing directory.")
+    entries = []
+    for item in sorted(directory.iterdir()):
+        entries.append(item.name + ("/" if item.is_dir() else ""))
+        if item.is_dir():
+            entries.extend(
+                f"{item.name}/{child.name}" + ("/" if child.is_dir() else "")
+                for child in sorted(item.iterdir()))
+    if not entries:
+        raise RuntimeError(
+            f"The input directory {directory} is empty. Attach the "
+            "competition or dataset to this notebook before the solve stage.")
+    return directory, entries
+
 LOGS_DIR = KAGGLE_WORKING / "loop-engine-logs"
 PREFLIGHT_DIR = LOGS_DIR / "preflight"
 SOLVE_LOG_DIR = LOGS_DIR / "solve"
@@ -375,6 +412,28 @@ print("Provider credentials configured:", {
 })
 print("Stage requested:", STAGE)
 
+# Hand the attached input root to the solve and report what is in it. The
+# Practitioner reads the exact admitted manifest and decides which files the
+# task needs; nothing here selects a file. Only the solve stage needs data, so
+# earlier stages report a miss and continue.
+try:
+    DATASET_DIR, DATASET_ENTRIES = resolve_dataset_dir(
+        KAGGLE_INPUT, DATASET_DIR_OVERRIDE)
+    print(f"Attached input root: {DATASET_DIR}")
+    print(
+        f"  {len(DATASET_ENTRIES)} entries visible to the Practitioner: "
+        + ", ".join(DATASET_ENTRIES[:20])
+        + (" ..." if len(DATASET_ENTRIES) > 20 else ""))
+except RuntimeError as dataset_error:
+    if STAGE == "solve":
+        raise
+    DATASET_DIR = Path(DATASET_DIR_OVERRIDE) if DATASET_DIR_OVERRIDE \
+        else KAGGLE_INPUT
+    DATASET_ENTRIES = []
+    print(
+        f"No attached input yet ({dataset_error}); the {STAGE} stage does "
+        "not read it, so the run continues.")
+
 
 # ------------------------------------------------------------
 # 2. Clean old run debris so the disk never fills again
@@ -650,20 +709,29 @@ competition dataset ({COMPETITION}).
 
 This is an execution task, not merely a high-level modeling plan.
 
-When using core.source.inspect:
-1. Request the source manifest first without guessing paths.
-2. Read the exact relative paths returned by the manifest.
-3. Inspect file contents using only those returned paths.
+Do not assume any file name, directory layout, or column name. The attached
+input root is supplied as a source; discover its contents.
 
-Inspect train.csv, test.csv, and sample_submission.csv. Infer the target,
-identifier, prediction fields, task type, and submission contract from the
-actual schemas. Check missing values, duplicates, leakage, suspicious unique
-fields, and train/test schema differences.
+When using core.source.inspect:
+1. Request the source manifest first, with no paths argument.
+2. Read the exact relative paths the manifest returns. The runtime states
+   these paths in its runtime facts; they are the only admitted paths.
+3. Inspect contents using only those returned paths.
+
+From the manifest and the actual schemas, work out which files hold training
+rows, which hold the rows to predict, and which defines the submission
+contract. Some competitions name them differently, nest them, or add extra
+files, so decide from what you observe rather than from convention. Then infer
+the target, identifier, and prediction fields, the task type, and the
+submission contract. Check missing values, duplicates, leakage, suspicious
+unique fields, and schema differences between the training and prediction
+files. Record what you concluded and the evidence for it.
 
 Build a CPU-compatible preprocessing pipeline. Compare at least two reasonable
 baseline models with reproducible three-fold cross-validation and an
 appropriate local validation metric. Fit the selected model on all training
-rows and create submission.csv matching sample_submission.csv exactly.
+rows and create submission.csv matching the discovered submission contract
+exactly, in its column order and identifier order.
 
 Write these files inside the assigned workspace:
 
@@ -674,8 +742,8 @@ Write these files inside the assigned workspace:
 - verification.json
 
 Verify schema, row count, column order, identifier order, missing predictions,
-infinite predictions, prediction type, and prediction range. Treat the
-dataset directory {DATASET_DIR} as read-only. Do not submit anything to
+infinite predictions, prediction type, and prediction range against the
+discovered contract. Treat everything under {DATASET_DIR} as read-only. Do not submit anything to
 Kaggle. Use fixed seeds and do not run a large hyperparameter search. The
 environment has no Docker: generated code must run with the preinstalled
 Python packages directly and must not use dependency-install network

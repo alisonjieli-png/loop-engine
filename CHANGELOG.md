@@ -206,6 +206,17 @@ test:
   `code_nodes.material_questions` screens blocking entries: only text
   phrased as a question a person can answer may pause the run; everything
   else is kept as a recorded limitation.
+- Every Kaggle cell assumed a competition data layout and named the input file
+  names in its task text, so a differently mounted dataset, a different slug,
+  or a competition using other file names sent an unreadable path into the
+  solve and spent the time budget on nothing. The cells no longer guess. Each
+  hands the attached input root to the solve, enumerates and reports what is
+  actually there, and stops at the solve stage when the root is missing or
+  empty. The task text now instructs the Practitioner to request the manifest,
+  read the admitted paths the runtime states, and decide from the observed
+  schemas which files hold training rows, which hold rows to predict, and
+  which defines the submission contract. An explicit
+  LOOP_ENGINE_KAGGLE_DATASET_DIR narrows the root when an operator wants that.
 - The Kaggle cell headers named a commit that had moved on. Each cell now
   states that it installs the current `main` archive, which is what it does.
 - The canonical Loop could fabricate a `recovered` step outcome when a failed
