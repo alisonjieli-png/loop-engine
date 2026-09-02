@@ -68,6 +68,22 @@ ADAPTIVE_CAPABILITIES = (
         "effects": ["reads_fs"],
     },
     {
+        "capability_ref": "core.workspace.read",
+        "purpose": (
+            "Read back a file this run produced, with interpreter line "
+            "numbers, so generated code can be repaired from what it "
+            "actually says rather than from memory of what was intended. "
+            "Reads only inside this run's workspace; supplied input files "
+            "stay with core.source.inspect."),
+        "arguments": {
+            "path": ("optional workspace-relative path; omit it to list "
+                     "every file this run has produced"),
+            "first_line": "optional 1-based line to start from",
+        },
+        "required_permissions": ["workspace_write"],
+        "effects": ["reads_fs"],
+    },
+    {
         "capability_ref": "core.web.search",
         "purpose": (
             "Search public web sources and return ranked candidates. Search "
@@ -675,7 +691,13 @@ class AdaptiveRunServices:
                 if ref == "core.web.search" else
                 self.request.allow_workspace_writes
                 and self.request.allow_sandbox_commands
-                if ref == "core.generated_project" else False)
+                if ref == "core.generated_project" else
+                # Available whenever the run may write a workspace, because
+                # a run that can produce a file must be able to read it back.
+                # Withholding this is what left a live run repairing code it
+                # could not see for twenty passes.
+                self.request.allow_workspace_writes
+                if ref == "core.workspace.read" else False)
             if usable:
                 available.append(item)
         return tuple(available)

@@ -87,12 +87,29 @@ On a solve against those real files through the Tactical route:
 - The command ran and the four expected artifacts were reported
   `present: false`, `verified: false`. Nothing was fabricated.
 
-## 5. The verified run
+## 5. Two runs, one verified and one not
 
-Kaggle run `adaptive-7b7fd04e0e75bc3785e30abb`, on the same competition and
-the same three files, reached `COMPLETED_VERIFIED` in 2729 seconds over 77
-model calls, 11 tool calls and 692 loops. The failing run spent 226 calls and
-2268 seconds to reach `BLOCKED_MATERIAL_INPUT` with nothing.
+The notebook ran twice on 2026-09-02, against the same competition and the
+same three files, with different providers. Read them together; either one
+alone misdescribes the state.
+
+| | 14:22 run | 15:08 run |
+|---|---|---|
+| Route | `ollama_cloud` | `tacticalengineering` |
+| Model | `deepseek-v4-flash:0731` | `gemma-4-coding-abliterated` |
+| Run id | `adaptive-7b7fd04e0e75bc3785e30abb` | `adaptive-c143ca11dc3e0c5625aa7590` |
+| Outcome | `COMPLETED_VERIFIED`, `solved: true` | exit 1, no submission |
+
+The engine, the task, and the data were identical. What differed was the
+model, and one specific gap in the capability set that only the second run's
+failure mode reaches. Section 5.2 is that gap; it is the open item.
+
+### 5.1 The verified run
+
+Kaggle run `adaptive-7b7fd04e0e75bc3785e30abb` reached `COMPLETED_VERIFIED`
+in 2729 seconds over 77 model calls, 11 tool calls and 692 loops. The run this
+document opens with spent 226 calls and 2268 seconds to reach
+`BLOCKED_MATERIAL_INPUT` with nothing.
 
 What the artifacts show, read from the downloaded run rather than from the
 terminal code:
@@ -124,6 +141,43 @@ so `verify.py` can compare against it and prove the read-only guarantee. The
 next attempt exited 0 with "Verification passed: all checks succeeded", and
 `deterministic_checks_passed` is true.
 
+### 5.2 The run that did not solve it, and why
+
+`adaptive-c143ca11dc3e0c5625aa7590` failed for one reason, and it is a gap in
+this repository rather than in the model's reasoning.
+
+`gemma-4-coding-abliterated` wrote `src/pipeline.py` with an unterminated
+string literal at line 131. The runtime reported the SyntaxError exactly, and
+the model reached the correct conclusion immediately: read the file, find the
+bad line, fix it. It then could not read the file.
+
+- `core.source.inspect` refused: "source inspection requested unknown paths
+  ['src/pipeline.py']; inspect manifest_paths for the exact admitted paths".
+  That capability admits the supplied source manifest, and a generated
+  workspace file is not in it.
+- `core.generated_project` refused a `cat` command: "generated commands must
+  execute reviewed files, not inline code" and "generated commands must use
+  the registered Python executable".
+
+Neither refusal is wrong. `core.source.inspect` guards the input boundary and
+`core.generated_project` guards the execution boundary, and both should. But
+between them there is no admitted way for a run to read back a file it wrote
+itself, so a model that must repair its own code has to do it blind.
+
+The record shows the loop working correctly against that wall rather than
+failing to notice it. The action fence recorded every refusal with its exact
+cause, fenced `core.generated_project` after five failures, and the model
+worked out the right workaround by pass 11 — "use `core.generated_project`
+with a `cat` command" — which was then refused for a different and also
+correct reason. Soft reset fired at pass 16, cold restart at pass 19, and
+twenty passes carried the same sentence because the missing observation was
+never obtainable. More steps, more perspectives, and more recovery machinery
+would each have produced another pass of the same correct conclusion.
+
+The 14:22 run never hit this because its generated code parsed the first
+time. The gap was always there; only a syntactically invalid generation
+reaches it.
+
 ## 6. What is not proven
 
 - **No competition score.** The submission was produced and independently
@@ -131,8 +185,13 @@ next attempt exited 0 with "Verification passed: all checks succeeded", and
   range. It has not been submitted, so nothing here says how it ranks. The
   0.938 is a local three-fold cross-validated figure, not a leaderboard
   result.
-- **One run on one competition.** A single verified solve is not a claim about
-  unseen tasks.
+- **One run on one competition, on one model.** A single verified solve is not
+  a claim about unseen tasks, and the same engine on the same task with a
+  different model produced nothing. Section 5.2 names one reason; it is not
+  established that it is the only one.
+- **The read-back gap is open.** No capability lets a run inspect a file it
+  generated. Until that exists, any run whose model emits invalid code has no
+  route to repair it.
 - The local run's command failed with `ModuleNotFoundError: pandas`, which is
   an artifact of this machine: Docker is present here, so the project ran in a
   plain Python image, while Kaggle has no Docker and a preinstalled data stack.

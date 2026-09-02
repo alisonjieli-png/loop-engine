@@ -29,6 +29,7 @@ from .web_search import (
     WebSearchAuthority, WebSearchContext, WebSearchRequest)
 from .adaptive_practitioner_orientation_capabilities import (
     environment_describe_operation, intelligence_search_operation)
+from .workspace_read import workspace_read_operation
 from .adaptive_practitioner_source import (
     source_inspection_operation, source_profile_operation)
 from .adaptive_practitioner_project import (
@@ -167,6 +168,12 @@ def execute_adaptive_capability(
         input_value = arguments
         input_role = "next_action_decision/v1"
         output_role = "web_fetch_result/v1"
+    elif plan.handle == "core.workspace.read":
+        operation = lambda _value, _params: workspace_read_operation(
+            arguments, services)
+        input_value = arguments
+        input_role = "next_action_decision/v1"
+        output_role = "workspace_read_result/v1"
     elif plan.handle == "core.source.profile":
         operation = lambda _value, _params: source_profile_operation(
             arguments, services)
@@ -395,6 +402,20 @@ def execute_adaptive_capability(
                 f"source:{item['digest']}" for item in output["selected"]),
             confidence=1.0,
             lineage=(compiled["digest"],))
+    if plan.handle == "core.workspace.read":
+        read = output.get("read") or {}
+        return ResultPacket(
+            objective=(f"read {read['path']} from this run's workspace"
+                       if read else "list what this run has produced"),
+            result=output,
+            confidence=1.0,
+            lineage=(compiled["digest"],),
+            limitations=(
+                "This is what the file says now, which is evidence about "
+                "the run's own output and about nothing else.",)
+            + (("The file was longer than the measured evidence allowance; "
+                "ask for a later first_line to continue reading.",)
+               if read.get("truncated") else ()))
     if plan.handle == "core.source.profile":
         return ResultPacket(
             objective="profile supplied source structure",

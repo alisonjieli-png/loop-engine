@@ -43,6 +43,7 @@ def self_test() -> dict:
         "core.context_budget", "core.context_pack_manifest",
         "core.task_frontier", "core.prompt_experiment",
         "core.task_region_statistics", "core.option_selection",
+        "core.workspace_read",
         "core.self_tuning",
         "core.opencode_harness_adapter", "code_nodes.solve_region_evidence",
         "code_nodes.material_questions",

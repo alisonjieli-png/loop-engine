@@ -1,6 +1,6 @@
 {
   "blocking_threshold": "high",
-  "finding_count": 10010,
+  "finding_count": 10021,
   "findings": [
     {
       "finding_id": "hardcoding.0000d2e9cb7e45dab6b9a6d6",
@@ -12379,6 +12379,10 @@
       "severity": "high"
     },
     {
+      "finding_id": "hardcoding.4e38dd14e4a6696034a9f574",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.4e3910f0c4f388a9ab4aebfe",
       "severity": "medium"
     },
@@ -12684,6 +12688,10 @@
     },
     {
       "finding_id": "hardcoding.501df575691b72e2c5ef305f",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.501f886ee181c406cc2e06ee",
       "severity": "medium"
     },
     {
@@ -15595,6 +15603,10 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.6322f77bb6f5636c4d925522",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.6329b3170098765f4bb51820",
       "severity": "medium"
     },
@@ -16176,6 +16188,10 @@
     },
     {
       "finding_id": "hardcoding.675dc2f169b8080046006b05",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.6761b2aae532bebb265dfd2e",
       "severity": "medium"
     },
     {
@@ -17497,6 +17513,10 @@
     {
       "finding_id": "hardcoding.6f0d8784cccd032e30ca65d6",
       "severity": "high"
+    },
+    {
+      "finding_id": "hardcoding.6f0e1547cefbf1088eb3db5b",
+      "severity": "medium"
     },
     {
       "finding_id": "hardcoding.6f0e7c922a415f41f8681e86",
@@ -19336,6 +19356,10 @@
     },
     {
       "finding_id": "hardcoding.7a6eac8bab652ff9bb65e383",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.7a71766b5b0c0d31692db491",
       "severity": "medium"
     },
     {
@@ -21571,6 +21595,10 @@
       "severity": "high"
     },
     {
+      "finding_id": "hardcoding.88c9808e4ca7a5a57eb69d46",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.88caaac4947dfcbcad619140",
       "severity": "medium"
     },
@@ -23156,6 +23184,10 @@
     },
     {
       "finding_id": "hardcoding.92b99dfeaf8e52ed8023ccae",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.92bae634daf10f444153fbb1",
       "severity": "medium"
     },
     {
@@ -29983,6 +30015,10 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.bee1fb54ad742890eacbe398",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.bee2f48c7571c580502712dc",
       "severity": "medium"
     },
@@ -31148,6 +31184,10 @@
     },
     {
       "finding_id": "hardcoding.c6caf9e1bcfc459819decd9c",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.c6d586e7ae081e8d074895ab",
       "severity": "medium"
     },
     {
@@ -39947,6 +39987,10 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.ff86adf0f23039f8c4e7af59",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.ff9173ab575032cd66990838",
       "severity": "medium"
     },
@@ -40043,7 +40087,7 @@
       "severity": "high"
     }
   ],
-  "repository_snapshot_id": "hardcoding_source.sha256_4fdc5c035cfc5ef146143a3de743df7afc538ba67e01f518ef29a2359deae7d2",
+  "repository_snapshot_id": "hardcoding_source.sha256_6f23e73ec6a11c434405d84f2f842a0fe30837551b2902b9f13cfcbf901e5206",
   "schema": "hardcoding_ci_baseline/v1",
-  "source_audit_id": "hardcoding_audit.sha256_cbf631912ec7df9e7cfecec4619193a1b109de058e0f81f3a0cee233834bfb19"
+  "source_audit_id": "hardcoding_audit.sha256_277647bcd0e044c328145c348d40aeb69cb478842be55a2ab5b4ec5aa65d7890"
 }

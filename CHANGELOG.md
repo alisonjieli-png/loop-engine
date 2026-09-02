@@ -9,6 +9,21 @@ First public release.
 
 ### Added
 
+- **A run can read back a file it produced.** A live Kaggle run generated a
+  Python file with an unterminated string literal at line 131, was told so
+  exactly, reached the right conclusion immediately, and then could not read
+  the file. `core.source.inspect` refused because a generated file is not in
+  the supplied source manifest; `core.generated_project` refused a `cat`
+  because commands must run the registered Python executable over reviewed
+  authored files. Neither refusal was wrong, and between the input boundary
+  and the execution boundary there was no way to observe the run's own
+  output, so the model spent twenty passes correctly restating a repair it
+  had no means to perform. `core.workspace.read` is that missing observation:
+  it lists what the run has produced, returns any of it with interpreter line
+  numbers so a reported line can be looked up directly, and refuses by name
+  any path resolving outside the workspace. It reads and never executes;
+  supplied inputs stay with `core.source.inspect`.
+
 - **A much larger universe of options, and three more steps to reason in.**
   The portfolio grew from 17 perspectives to 42 and from 14 guidance records
   to 30, and every step now carries persona affinities — `orient` previously
