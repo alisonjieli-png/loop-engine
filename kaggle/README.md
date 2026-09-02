@@ -101,6 +101,14 @@ standard variable (`OLLAMA_API_KEY`, `MISTRAL_API_KEY`, `TACTICAL_API_KEY`).
 Key values only ever enter the environment of the child processes; they are
 never printed and never written to a file.
 
+A notebook pushed through the Kaggle API (`kaggle kernels push`) does not
+inherit secret access. Kaggle grants a secret to a notebook in the editor,
+under *Add-ons -> Secrets*, and a version created by the API starts without
+that grant, so the cell reports the secret as unavailable and stops. Open the
+notebook once in the editor and attach the secrets it names, or set the
+matching environment variable in the first cell. This is a Kaggle behaviour,
+not something the cell can work around.
+
 With `LOOP_ENGINE_SOURCE_DIR` set the cell runs `pip install --editable` on
 that checkout when pip is available in the interpreter. In a pip-less
 virtual environment (for example one created by `uv`) it runs the CLI from

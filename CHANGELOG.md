@@ -303,8 +303,6 @@ First public release.
 - **Zero-tolerance conformance gates** and a built-in behavior suite.
 - Seventeen documented example folders.
 
-### Fixed
-
 Defects found by running against live models, each now carrying a regression
 test:
 

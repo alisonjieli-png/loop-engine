@@ -1,5 +1,10 @@
 # Code review, 2026-09-02: full pass, Kaggle cells, and the gap list
 
+> **Point-in-time record.** This report describes the tree as it stood on its
+> own date. Several findings below were closed afterwards; see
+> `docs/verification/LIVE-KAGGLE-DIAGNOSTIC-2026-09-02.md` for what changed and
+> which items no longer stand. Nothing here has been edited after the fact.
+
 This review follows the audit of 2026-09-01 (`EVERYTHING-IS-A-LOOP-AUDIT-2026-09-01.md`).
 It covers the whole tree as pushed in `d396728` plus the changes made in this pass, and
 answers four questions: does the code run without errors, can the Kaggle cells be pasted
@@ -104,78 +109,78 @@ Ordered by what blocks the product definition most. Audit ids in brackets.
 
 ### Must fix next
 
-1. Storage and transfer carry no Loop identity [4.1, 4.3, 4.10]: artifact writes and graph
+- **1.** Storage and transfer carry no Loop identity [4.1, 4.3, 4.10]: artifact writes and graph
    edge transfers happen through service calls and closure arguments with no owner Loop and no
    port event. The manifest records what a model saw; nothing yet records which Loop moved data.
-2. Definition versions are inert [5.4, 15.3]: 16 digests behind one `1.0.0`. A version policy
+- **2.** Definition versions are inert [5.4, 15.3]: 16 digests behind one `1.0.0`. A version policy
    (which body fields are interface, when a bump is required, when requalification follows) is
    the smallest change that makes handshakes meaningful.
-3. No schema-version registry [5.6, 15.2]: 738 hand-spelled `/vN` strings in 190 files. One
+- **3.** No schema-version registry [5.6, 15.2]: 738 hand-spelled `/vN` strings in 190 files. One
    passive registry with a migration reader at the boundaries removes a whole class of drift.
-4. The in-process ledger accepts forged events [PR-21 and the structures probe]: `record()` is
+- **4.** The in-process ledger accepts forged events [PR-21 and the structures probe]: `record()` is
    the only writer, but any code can append. A per-ledger sealing key, like the approval
    authority added yesterday, is the consistent fix.
-5. Portfolio lineage [12.8, 5.2]: candidates, evaluations, graph versions, and context packs are
+- **5.** Portfolio lineage [12.8, 5.2]: candidates, evaluations, graph versions, and context packs are
    separate stores with no cross-references. The Kaggle path produces one solution per run, not a
    portfolio; the multi-solution promise is unproven on a real task.
 
 ### Capability issues
 
-6. Cost per task is unpredictable (fourfold between two runs of equal size); nothing yet caps a
+- **6.** Cost per task is unpredictable (fourfold between two runs of equal size); nothing yet caps a
    run by expected cost or chooses a cheaper realization for a known region.
-7. The estimator undercounts tokens by 10 to 45 percent by stage; the calibration is recorded
+- **7.** The estimator undercounts tokens by 10 to 45 percent by stage; the calibration is recorded
    but not applied to the budget.
-8. No run resumes or forks another; a cancelled Kaggle run restarts from nothing.
-9. Verification of ML quality is model-written: the generated `verification.json` differs per
+- **8.** No run resumes or forks another; a cancelled Kaggle run restarts from nothing.
+- **9.** Verification of ML quality is model-written: the generated `verification.json` differs per
    run and the Practitioner's verdict trusts the artifacts it produced. An independent
    evaluator Loop with a held-out split is missing [P8].
-10. Only one external harness has a process adapter (OpenCode). Codex, Claude Code, Hermes, and
+- **10.** Only one external harness has a process adapter (OpenCode). Codex, Claude Code, Hermes, and
     Aider are installed and unproven; the same-task benchmark [PR-20] has never run.
-11. Tactical Engineering and Mistral routes are live-untested in this environment; the Kaggle
+- **11.** Tactical Engineering and Mistral routes are live-untested in this environment; the Kaggle
     cells for them are mock-verified only.
-12. The user feedback lane (Studio click to typed record to new proposal or fork) is not
+- **12.** The user feedback lane (Studio click to typed record to new proposal or fork) is not
     exercised end to end [14.6].
 
 ### Architecture issues
 
-13. Declared context blocks are not what the model reads. Every packet declares typed
+- **13.** Declared context blocks are not what the model reads. Every packet declares typed
     `LLMContextBlock` values with trust classes and manifests, but the renderer builds prompt text
     from a fixed map of packet fields. A block declared and never mapped is invisible to every
     model, silently. That is how the runtime facts block was added, manifested, and read by
     nothing until a live probe caught it. The blocks should be the rendering source of truth, with
     the layout policy ordering them; until then a self-test guards the facts path.
-14. The Practitioner kernel is a private ten-node loop inside one owner step [3.6]; either give
+- **14.** The Practitioner kernel is a private ten-node loop inside one owner step [3.6]; either give
     each pass Loop identity or record why the fusion is intentional and reconstructable.
-15. Strict atomic primitives cost 5000 to 6500 times a native operation with no physical fusion
+- **15.** Strict atomic primitives cost 5000 to 6500 times a native operation with no physical fusion
     [3.8, 6.10]; `physical_fusion_requires_logical_history` has no consumer.
-16. Loop ids are process-local counters [11.2]; the handoff namespaces them, but there is no
+- **16.** Loop ids are process-local counters [11.2]; the handoff namespaces them, but there is no
     global identity, addressing, or transport [11.3, 11.4]. The fabric today is one process plus
     a verified merge.
-17. Two tool interfaces exist [9.1]: solution-registry tools emit receipts inside Loops, while
+- **17.** Two tool interfaces exist [9.1]: solution-registry tools emit receipts inside Loops, while
     model-led tool actions travel a separate path through the Practitioner.
-18. Region statistics, frontier snapshots, and prompt experiments are projections rebuilt from
+- **18.** Region statistics, frontier snapshots, and prompt experiments are projections rebuilt from
     saved results; nothing writes them at run time, so a live run cannot consult its own
     frontier yet.
-19. The static instruction text is re-sent on every call [8.9, 13.10]; packets are not ordered
+- **19.** The static instruction text is re-sent on every call [8.9, 13.10]; packets are not ordered
     for provider prefix caching.
-20. Studio has no views for the frontier, context flow, portfolio, or reuse [11.x of the mandate].
-21. The handler-exception terminal, the failed-final-step terminal, and the supervision policy are
+- **20.** Studio has no views for the frontier, context flow, portfolio, or reuse [11.x of the mandate].
+- **21.** The handler-exception terminal, the failed-final-step terminal, and the supervision policy are
     new semantics; consumers that read `LoopResult.accepted` were checked once and should be
     covered by a conformance rule.
 
 ## 7. Toward the mesh: the next increments in order
 
-1. Ledger sealing key and Loop-owned artifact writes (issues 1 and 4), because every later
+- **1.** Ledger sealing key and Loop-owned artifact writes (issues 1 and 4), because every later
    claim rests on the history being trustworthy and complete.
-2. Definition version policy and the schema registry (issues 2 and 3), so handshakes between
+- **2.** Definition version policy and the schema registry (issues 2 and 3), so handshakes between
    Loops and harnesses can check something real.
-3. Run-time frontier and experiment records written by the Practitioner itself, then a solve
+- **3.** Run-time frontier and experiment records written by the Practitioner itself, then a solve
    pre-check that can skip reasoning for a region with enough verified evidence (issues 17, 6).
-4. A second process adapter (Codex or Claude Code) plus the same-task benchmark across the five
+- **4.** A second process adapter (Codex or Claude Code) plus the same-task benchmark across the five
    installed harnesses (issue 10), then a portfolio run where two harness Loops and one native
    Loop compete on the clamp fixture and the Kaggle micro-competition (issue 5).
-5. Independent evaluator Loop with a held-out split for ML tasks (issue 9).
-6. Global Loop identity and a transport for the handoff envelope (issue 15).
+- **5.** Independent evaluator Loop with a held-out split for ML tasks (issue 9).
+- **6.** Global Loop identity and a transport for the handoff envelope (issue 15).
 
 ## 8. Gates and live evidence for this pass
 

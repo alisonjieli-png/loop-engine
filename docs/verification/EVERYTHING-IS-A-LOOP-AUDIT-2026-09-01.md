@@ -1,5 +1,10 @@
 # Everything Is a Loop: audit report, 2026-09-01
 
+> **Point-in-time record.** This report describes the tree as it stood on its
+> own date. Several findings below were closed afterwards; see
+> `docs/verification/LIVE-KAGGLE-DIAGNOSTIC-2026-09-02.md` for what changed and
+> which items no longer stand. Nothing here has been edited after the fact.
+
 This report answers the mandate in `docs/prompts/LOOP-ENGINE-EVERYTHING-IS-A-LOOP-ADVERSARIAL-AUDIT.md`
 against the working tree on 2026-09-01. The machine-readable scorecard is
 `docs/evidence/everything-is-a-loop-audit-2026-09-01.json` (one row per question,
@@ -104,7 +109,7 @@ disk and from changes made and tested in this session; the other sections are th
 | Guard constants were not policy (10.x, 15.10) | `SupervisionPolicy` on `LoopConfig` and `KernelRunRequest`, recorded on init | `declared_supervision_policy_governs_stops_and_is_recorded_on_init` |
 | No per-call context manifest (8.8, 15.7) | `ContextPackManifest` per packet with trust classes, stored and recorded | `core.context_pack_manifest` self-test, offline solve emits 4 manifests for 4 calls |
 | No checklist gate (6.4b, 14.5, 15.17) | `practitioner.checklist` profile, `gated_checklist` template | `clean_checklist_completes_with_zero_model_calls_and_no_spawn` |
-| No cross-process merge (4.4, 11.7, PR-16) | `LoopHandoffRequest` and `LoopHandoffEnvelope` with digest and idempotency | two-process self-test in `core.loop_handoff` |
+| No cross-process merge (4.4, 11.7, PR-16) | `LoopHandoffRequest` and `LoopHandoffEnvelope` with digest and idempotency | two-process self-test in `loop.loop_handoff` |
 | Forged approval decisions accepted (4.8) | service-key HMAC `decision_authority` verified on restore, load, consume | `a_hand_built_or_tampered_decision_is_not_authority_in_any_service` |
 | Solved runs refused over stale questions (live defect) | solved runs carry `open_questions`; contract refusals labelled | `solved_run_reports_stale_questions_as_open_not_as_a_refusal` |
 | No frontier, experiment, or region records (12.x, 7.x, 15.6, 15.8, 15.16) | `task_frontier`, `prompt_experiment`, `task_region_statistics` projections | each module's self-test; live-run projections below |
@@ -115,7 +120,7 @@ disk and from changes made and tested in this session; the other sections are th
 - **15.2**. NEEDED: one passive `RecordSchemaEntry {record_type, current_version, readable_versions, owner_module, reader_ref}` table in core (beside event_vocabulary.py) plus a conformance scan asserting every `*/vN` literal resolves to an entry; the semantic data dictio
 - **15.3**. NEEDED: a `DefinitionVersionPolicy` record naming which canonical-body fields are interface (contract roles, modes, effects, permissions: change => new MINOR/MAJOR and requalification) versus configuration facts (change => new digest under the same version), o
 - **15.4**. NEEDED at the Loop-to-Loop boundary only: the existing LoopConnectionResult (producer ref, consumer ref, bindings, violations) must be emitted as a ledger event by code_nodes/solution_canvas.py when an edge is executed, and HarnessAdapterInfo needs a `protocol
-- **15.5**. NEEDED: one `LoopMessageEnvelope {schema_version, message_id, activation_id, source_loop_id, causation (loop_id, event_index), idempotency_key, payload_digest, payload}` wrapping pause tokens and spawned checkpoints, owned by loop/recursive_loop.py and shaped 
+- **15.5**. NEEDED: one `LoopMessageEnvelope {schema_version, message_id, activation_id, source_loop_id, causation (loop_id, event_index), idempotency_key, payload_digest, payload}` wrapping pause tokens and spawned checkpoints, owned by loop/recursive_loop.py and shaped
 - **15.6**. NEEDED: `ExperimentRecord {experiment_id, hypothesis, task_region_ref, variant_refs, status, horizon, outcome_ref}` and `FrontierItem {item_id, kind, status, horizon, evidence_refs}` as passive catalog records owned by core/intelligence_portfolio.py, reusing t
 - **15.8**. NEEDED: `PromptExperimentRecord {prompt_bundle_ref, context_policy_ref, model_route_ref, task_region_ref, run_id, outcome_ref}` owned by core/model_routing_records.py beside ModelOutcomeEvidence, linking pieces that already exist separately. 15.20: passive rec
 - **15.9**. NEEDED: `ReuseReceipt {capability_ref, run_id, estimated_tokens_saved, realized_tokens_saved | unknown, baseline_run_ref, accounting_complete}` owned by core/reusable_capability_records.py. 15.20: passive record, no second runtime.
@@ -125,7 +130,7 @@ disk and from changes made and tested in this session; the other sections are th
 - **15.14**. NEEDED as a merge, not a new registry: McpToolSpec and extension capability candidates should project into CapabilityHandshake (adding effect_class and requires_approval) so deterministic and model-led modes read one manifest; owner core/capability_directory.p
 - **15.16**. NEEDED: `TaskRegionStatistics {region_id, attempts, successes, token_histogram_bins, call_histogram_bins, best_known_settings_ref, updated_at, accounting_complete}` owned by core/task_similarity_engine.py where regions are already keyed. 15.20: derived passive
 - **15.17**. NEEDED: `ChecklistProfile {checklist_id, items: (check_ref, action in {gate, escalate, record}), applies_to_profile_ids}` as optional LoopProfileSpec data owned by loop/loop_profile_catalog.py. 15.20: profile data, no second runtime. NOTE: an untracked src/loo
-- **15.18**. NEEDED: a canonical `RunCensus {run_id, loops, model_calls, prompt_tokens|unknown, eval_tokens|unknown, effects, unknown_fields}` projected once from RunHistory (owner core/run_history.py) and consumed by loop_report, run_playback and Studio, which today each 
+- **15.18**. NEEDED: a canonical `RunCensus {run_id, loops, model_calls, prompt_tokens|unknown, eval_tokens|unknown, effects, unknown_fields}` projected once from RunHistory (owner core/run_history.py) and consumed by loop_report, run_playback and Studio, which today each
 
 Of these, 15.5 (message envelope) and 15.7 (context pack manifest) now have first implementations;
 15.6, 15.8, and 15.16 have projection records but no consumer yet.

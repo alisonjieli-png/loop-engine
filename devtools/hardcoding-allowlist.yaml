@@ -160,3 +160,42 @@ entries:
     classification: CLOSED_CONTROLLED_VOCABULARY
     created_on: 2026-09-02
     expires_on: 2027-09-02
+  - finding_id: hardcoding.1ca1afde4163aa722e7dd6b3
+    owner: loop_engine.core.adaptive_practitioner_project
+    rationale: >-
+      One member of the closed source_kind vocabulary a task intake may carry.
+      The same three values gate local materialization in solve_cli and are
+      produced by the intake CLI, so the set is the request contract itself
+      rather than a routing choice made here. This literal moved from
+      loop_engine.core.adaptive_practitioner_capabilities when generated
+      project assembly became its own module; the code and the vocabulary are
+      unchanged, only the owning module.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02
+  - finding_id: hardcoding.0edd1edbd7a5fb3433b3c2ba
+    owner: loop_engine.core.adaptive_practitioner_project
+    rationale: >-
+      One member of the closed source_kind vocabulary a task intake may carry.
+      The same three values gate local materialization in solve_cli and are
+      produced by the intake CLI, so the set is the request contract itself
+      rather than a routing choice made here. This literal moved from
+      loop_engine.core.adaptive_practitioner_capabilities when generated
+      project assembly became its own module; the code and the vocabulary are
+      unchanged, only the owning module.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02
+  - finding_id: hardcoding.8a18ccb1d2ea33355b79d268
+    owner: loop_engine.core.adaptive_practitioner_project
+    rationale: >-
+      One member of the closed source_kind vocabulary a task intake may carry.
+      The same three values gate local materialization in solve_cli and are
+      produced by the intake CLI, so the set is the request contract itself
+      rather than a routing choice made here. This literal moved from
+      loop_engine.core.adaptive_practitioner_capabilities when generated
+      project assembly became its own module; the code and the vocabulary are
+      unchanged, only the owning module.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02
