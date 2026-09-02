@@ -188,6 +188,9 @@ ATOMIC_PRIMITIVES = {
             "core.primitive.record.project", ("record/v1",), "value/v1",
             "core.primitive.record.project"),
         AtomicPrimitiveDefinition(
+            "core.primitive.record.select", ("record/v1",), "record/v1",
+            "core.primitive.record.select"),
+        AtomicPrimitiveDefinition(
             "core.primitive.record.merge", ("record/v1",), "record/v1",
             "core.primitive.record.merge"),
         AtomicPrimitiveDefinition(

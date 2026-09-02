@@ -22,6 +22,7 @@ INTRINSIC_PRIMITIVES = (
     "core.primitive.json.serialize",
     "core.primitive.json.deserialize",
     "core.primitive.record.project",
+    "core.primitive.record.select",
     "core.primitive.record.merge",
     "core.primitive.sequence.order",
 )
@@ -117,6 +118,19 @@ def execute_intrinsic(
         if not hasattr(source, field_name):
             raise IntrinsicKernelError("record.project attribute is absent")
         return getattr(source, field_name)
+    if primitive_id == "core.primitive.record.select":
+        if len(values) != 1 or not isinstance(values[0], dict):
+            raise IntrinsicKernelError("record.select needs one record")
+        names = params.get("fields")
+        if not isinstance(names, (list, tuple)) or not names:
+            raise IntrinsicKernelError("record.select needs fields")
+        present = {name: values[0][name]
+                   for name in names if name in values[0]}
+        absent = [name for name in names if name not in values[0]]
+        # An absent field is reported in the result rather than dropped, so a
+        # reader can tell "the record holds nothing here" from "this field was
+        # never asked for". Selecting is not a place to fail a run.
+        return {**present, "absent_from_packet": absent} if absent else present
     if primitive_id == "core.primitive.record.merge":
         if any(not isinstance(value, dict) for value in values):
             raise IntrinsicKernelError("record.merge inputs must be mappings")

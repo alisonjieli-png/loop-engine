@@ -9,6 +9,23 @@ First public release.
 
 ### Added
 
+- **A prompt block carries its own slice of the packet, and no other block's.**
+  The practitioner renderer mapped thirteen canonical blocks onto ten packet
+  fields, so `[PERSONA]` and `[PERSPECTIVES]` rendered the same 5,120 bytes,
+  `[CAPABILITIES AND LIMITS]` and `[AVAILABLE CAPABILITIES]` the same runtime
+  facts, and `[DIRECTIVE]`, `[CURRENT OBJECTIVE]` and `[FINAL DIRECTIVE]` the
+  same directive three times. Measured on a real rendered packet, 7,423 of
+  39,075 bytes were byte-identical repeats: 19.0% of every model call, on
+  every step, for the life of a run. `BLOCK_SOURCES` now assigns each block a
+  disjoint set of keys, so the same prompt carries the same information in
+  31,656 bytes with nothing dropped, and a label predicts its contents. Three
+  self-tests hold the line: no key backs two blocks, no two rendered blocks are
+  byte-identical, and the thirteen canonical blocks appear once each in order.
+  `core.primitive.record.select` is the new intrinsic that takes a named subset
+  of a record; a key the record does not hold is reported as
+  `absent_from_packet` rather than dropped, because a thin packet is a reason
+  to reason with less, not to stop rendering.
+
 - **What a supplied file is, is a model call, not a rule.**
   `core.source_role_orientation` asks one bounded model call to state what
   each supplied file is, in its own words, citing the bytes it read. The

@@ -100,6 +100,38 @@ def _combine(
         "text/v1", semantic_role), owner)
 
 
+# Each canonical block carries its own disjoint slice of the packet. A block
+# that repeats another block's bytes spends the model's context twice and
+# teaches it that a label does not predict its content, so the same packet
+# field is never rendered under two labels: the field is split by key, and
+# every key appears exactly once across the thirteen blocks.
+BLOCK_SOURCES = (
+    ("authority_and_policy", "[CONSTITUTION]", "policy_context", ()),
+    ("model_role_and_capabilities", "[PERSONA]", "persona_context",
+     ("base_role", "authority_limits")),
+    ("objective_and_success", "[DIRECTIVE]", "work_directive",
+     ("goal", "one_step_only", "completion_condition", "failure_condition")),
+    ("immediate_question", "[CURRENT OBJECTIVE]", "work_directive",
+     ("operation", "allowed_action_kinds")),
+    ("hard_constraints_and_tools", "[CAPABILITIES AND LIMITS]",
+     "capability_context",
+     ("runtime_facts", "selected_intelligence_refs", "selected_memory_refs")),
+    ("verified_problem_state", "[TASK]", "task_context", ()),
+    ("selected_evidence", "[SELECTED INTELLIGENCE]", "context_intelligence",
+     ()),
+    ("prior_attempts_and_failures", "[ATTEMPT HISTORY]", "attempt_history",
+     ()),
+    ("reasoning_perspective", "[PERSPECTIVES]", "persona_context",
+     ("persona_candidates", "selection_authority")),
+    ("question_pattern", "[QUESTIONS]", "question_portfolio", ()),
+    ("candidate_alternatives", "[AVAILABLE CAPABILITIES]",
+     "capability_context", ("available_capabilities", "added_file_candidates")),
+    ("output_contract", "[OUTPUT CONTRACT]", "output_contract", ()),
+    ("final_directive", "[FINAL DIRECTIVE]", "work_directive",
+     ("prohibited_outputs", "return_schema_ref", "route_after_return")),
+)
+
+
 def _label(label: str, value: LoopValue, owner) -> LoopValue:
     heading = _constant(label, "prompt section label", owner)
     return _combine((heading, value), "\n", "labeled prompt section", owner)
@@ -117,17 +149,21 @@ def _project_json(
                       owner)
 
 
+def _select(value: LoopValue, keys: tuple, semantic_role: str,
+            owner) -> LoopValue:
+    return run_atomic_primitive(AtomicPrimitiveRequest(
+        "core.primitive.record.select", (value,),
+        (("fields", list(keys)),), "record/v1", semantic_role), owner)
+
+
 def _project_blocks(
         request: AdaptivePromptAssemblyRequest, owner) -> dict[str, LoopValue]:
     packet_value = _source_packet(request.packet, owner)
-    policy = _project_json(packet_value, "policy_context", owner)
-    persona = _project_json(packet_value, "persona_context", owner)
-    directive = _project_json(packet_value, "work_directive", owner)
-    capabilities = _project_json(packet_value, "capability_context", owner)
-    task = _project_json(packet_value, "task_context", owner)
-    intelligence = _project_json(
-        packet_value, "context_intelligence", owner)
-    attempts = _project_json(packet_value, "attempt_history", owner)
+    fields = {}
+    for _name, _label, field_name, _keys in BLOCK_SOURCES:
+        if field_name not in fields:
+            fields[field_name] = _project(packet_value, field_name, owner)
+    repair = None
     if request.format_repair:
         repair_value = run_atomic_primitive(AtomicPrimitiveRequest(
             "core.primitive.component.read", (), (("value", {
@@ -139,33 +175,19 @@ def _project_blocks(
         repair = run_atomic_primitive(AtomicPrimitiveRequest(
             "core.primitive.json.serialize", (repair_value,), (),
             "json_text/v1", "format repair directive"), owner)
-        attempts = run_atomic_primitive(AtomicPrimitiveRequest(
-            "core.primitive.text.combine", (attempts, repair),
-            (("separator", "\n"),), "text/v1",
-            "attempt history with format repair"), owner)
-    questions = _project_json(packet_value, "question_portfolio", owner)
-    output = _project_json(packet_value, "output_contract", owner)
-    return {
-        "authority_and_policy": _label("[CONSTITUTION]", policy, owner),
-        "model_role_and_capabilities": _label("[PERSONA]", persona, owner),
-        "objective_and_success": _label("[DIRECTIVE]", directive, owner),
-        "immediate_question": _label(
-            "[CURRENT OBJECTIVE]", directive, owner),
-        "hard_constraints_and_tools": _label(
-            "[CAPABILITIES AND LIMITS]", capabilities, owner),
-        "verified_problem_state": _label("[TASK]", task, owner),
-        "selected_evidence": _label(
-            "[SELECTED INTELLIGENCE]", intelligence, owner),
-        "prior_attempts_and_failures": _label(
-            "[ATTEMPT HISTORY]", attempts, owner),
-        "reasoning_perspective": _label(
-            "[PERSPECTIVES]", persona, owner),
-        "question_pattern": _label("[QUESTIONS]", questions, owner),
-        "candidate_alternatives": _label(
-            "[AVAILABLE CAPABILITIES]", capabilities, owner),
-        "output_contract": _label("[OUTPUT CONTRACT]", output, owner),
-        "final_directive": _label("[FINAL DIRECTIVE]", directive, owner),
-    }
+    blocks = {}
+    for name, label, field_name, keys in BLOCK_SOURCES:
+        value = fields[field_name]
+        if keys:
+            value = _select(value, keys, name, owner)
+        text = _serialize(value, name, owner)
+        if repair is not None and field_name == "attempt_history":
+            text = run_atomic_primitive(AtomicPrimitiveRequest(
+                "core.primitive.text.combine", (text, repair),
+                (("separator", "\n"),), "text/v1",
+                "attempt history with format repair"), owner)
+        blocks[name] = _label(label, text, owner)
+    return blocks
 
 
 def _render_packet(
@@ -225,33 +247,30 @@ def _render_packet(
     return prompt.value, snapshot, primitive_ids
 
 
+def _slice(source: dict, keys: tuple) -> dict:
+    """Take the block's keys, and say which of them the packet does not hold.
+
+    A key the packet lacks is stated rather than dropped: the model then knows
+    the runtime holds nothing there, instead of inferring it from a silence
+    that looks identical to the key never having existed. Rendering continues,
+    because a thin packet is a reason to reason with less, not to stop.
+    """
+    present = {key: source[key] for key in keys if key in source}
+    absent = [key for key in keys if key not in source]
+    return {**present, "absent_from_packet": absent} if absent else present
+
+
 def _render_packet_governed(
         request: AdaptivePromptAssemblyRequest) -> tuple:
     """Render inside one assembly Loop using private deterministic mechanics."""
     packet = request.packet.to_dict()
-    field_by_block = {
-        "authority_and_policy": ("[CONSTITUTION]", "policy_context"),
-        "model_role_and_capabilities": ("[PERSONA]", "persona_context"),
-        "objective_and_success": ("[DIRECTIVE]", "work_directive"),
-        "immediate_question": ("[CURRENT OBJECTIVE]", "work_directive"),
-        "hard_constraints_and_tools": (
-            "[CAPABILITIES AND LIMITS]", "capability_context"),
-        "verified_problem_state": ("[TASK]", "task_context"),
-        "selected_evidence": (
-            "[SELECTED INTELLIGENCE]", "context_intelligence"),
-        "prior_attempts_and_failures": (
-            "[ATTEMPT HISTORY]", "attempt_history"),
-        "reasoning_perspective": ("[PERSPECTIVES]", "persona_context"),
-        "question_pattern": ("[QUESTIONS]", "question_portfolio"),
-        "candidate_alternatives": (
-            "[AVAILABLE CAPABILITIES]", "capability_context"),
-        "output_contract": ("[OUTPUT CONTRACT]", "output_contract"),
-        "final_directive": ("[FINAL DIRECTIVE]", "work_directive"),
-    }
     blocks = {}
-    for name, (label, field_name) in field_by_block.items():
+    for name, label, field_name, keys in BLOCK_SOURCES:
+        source = packet[field_name]
+        if keys:
+            source = _slice(source, keys)
         body = json.dumps(
-            packet[field_name], sort_keys=True, separators=(",", ":"),
+            source, sort_keys=True, separators=(",", ":"),
             ensure_ascii=False)
         if request.format_repair and field_name == "attempt_history":
             body += "\n" + json.dumps({
@@ -370,19 +389,28 @@ def self_test() -> dict:
     packet = LLMWorkPacket(
         packet_id="guard", packet_version="1.0.0",
         purpose="prove runtime facts reach the model", phase="orient",
-        persona_context={"base_role": {}}, task_context={"task": "guard"},
+        persona_context={"base_role": {"persona_id": "guard.role"},
+                         "persona_candidates": [{"persona_id": "guard.alt"}],
+                         "selection_authority": "model",
+                         "authority_limits": ["may not grant permission"]},
+        task_context={"task": "guard"},
         loop_context={"run_id": "guard", "loop_id": "loop1"},
-        context_intelligence=[], question_portfolio={},
-        capability_context={"available_capabilities": [],
-                            "runtime_facts": facts},
-        attempt_history={}, work_directive=WorkDirective(
+        context_intelligence=[{"guidance_id": "guard.guidance"}],
+        question_portfolio={"candidates": [{"step_id": "orient"}]},
+        capability_context={"available_capabilities": [{"ref": "guard.cap"}],
+                            "added_file_candidates": [],
+                            "runtime_facts": facts,
+                            "selected_intelligence_refs": [],
+                            "selected_memory_refs": []},
+        attempt_history={"events": []}, work_directive=WorkDirective(
             operation="ORIENT", goal="guard", one_step_only=True,
             allowed_action_kinds=("ABSTAIN",),
             prohibited_outputs=("unrequested final solution",),
             completion_condition="rendered", failure_condition="absent",
             return_schema_ref="inline:sha256:0",
             route_after_return="return_to_owning_practitioner"),
-        output_contract={"format": "json"}, policy_context={},
+        output_contract={"format": "json", "schema": "{}"},
+        policy_context={"interaction_mode": "autonomous"},
         token_budget={}, source_refs=(),
         context_blocks=(LLMContextBlock.create(
             "runtime_facts", "runtime_facts", "1.0.0", "practitioner runtime",
@@ -391,6 +419,13 @@ def self_test() -> dict:
         AdaptivePromptAssemblyRequest(
             packet=packet, profile_id="guard",
             layout_policy="canonical"))
+    # A field key may back exactly one block. Whole-field blocks claim the
+    # field itself; sliced blocks claim each key they take from it.
+    claimed = []
+    for _name, _label, field_name, keys in BLOCK_SOURCES:
+        claimed.extend([(field_name, key) for key in keys]
+                       if keys else [(field_name, None)])
+    bodies = [chunk.partition("\n")[2] for chunk in prompt.split("\n\n")]
     facts_rendered = ('"runtime_facts"' in prompt
                       and "only/admitted/path.txt" in prompt
                       and "[CAPABILITIES AND LIMITS]" in prompt)
@@ -417,6 +452,23 @@ def self_test() -> dict:
         "passed": all(hasattr(packet, name)
                       for name in rendered_packet_fields()),
         "detail": str(rendered_packet_fields()),
+    }, {
+        "test": "no_two_blocks_carry_the_same_packet_slice",
+        "passed": len(claimed) == len(set(claimed)),
+        "detail": str({
+            "why": ("a field key rendered under two labels spends the "
+                    "model's context twice"),
+            "repeated_slices": sorted(
+                {item for item in claimed if claimed.count(item) > 1})}),
+    }, {
+        "test": "no_two_rendered_blocks_are_byte_identical",
+        "passed": len(bodies) == len(set(bodies)),
+        "detail": str({"rendered": len(bodies),
+                       "distinct": len(set(bodies))}),
+    }, {
+        "test": "every_block_is_a_canonical_block_exactly_once",
+        "passed": (tuple(item[0] for item in BLOCK_SOURCES) == PROMPT_BLOCKS),
+        "detail": "BLOCK_SOURCES covers the 13 canonical blocks in order",
     }]
     passed = sum(1 for item in tests if item["passed"])
     return {"record_type": "adaptive_prompt_assembly_test/v1",
