@@ -31,6 +31,8 @@ from dataclasses import asdict
 from pathlib import Path
 
 from ..loop.kernel import ExecutionPlan, PractitionerState
+from .runtime_capacity import (
+    model_evidence_bytes, supplied_input_ceiling)
 from .adaptive_practitioner_records import (
     AdaptiveRunServices, ModelStepRequest)
 from .adaptive_practitioner_source import (
@@ -38,8 +40,7 @@ from .adaptive_practitioner_source import (
     source_inspection_model_view)
 from .context_artifacts import ContextArtifactRef
 from .generated_project import (
-    ALLOWED_PYTHON_EXECUTABLES, SUPPLIED_INPUT_BYTE_CEILING,
-    GeneratedProjectCandidate,
+    ALLOWED_PYTHON_EXECUTABLES, GeneratedProjectCandidate,
     GeneratedProjectError, GeneratedProjectFile, GeneratedProjectFileSpec,
     GeneratedProjectInputArtifact, GeneratedProjectManifest)
 
@@ -90,7 +91,8 @@ def project_manifest(
             "web_search_candidates": services.web_search_results,
             "web_evidence": services.web_results,
             "source_inspections": source_inspection_model_view(
-                services.source_inspections),
+                services.source_inspections,
+                selected_content_byte_limit=model_evidence_bytes(services)),
             "available_input_artifacts": [
                 item.to_dict() for item in input_artifacts],
             "available_input_text": ([{
@@ -349,19 +351,25 @@ def _local_project_inputs(
     if missing:
         raise GeneratedProjectError(
             f"selected local source paths are no longer available: {missing}")
-    # Checked by size, before any body is read: an input above the ceiling
-    # cannot be digested in one read, and discovering that halfway through a
-    # copy leaves the run diagnosing an executor error instead of a limit.
-    oversize = sorted(
-        (relative, available[relative].stat().st_size)
-        for relative in selected_paths
-        if available[relative].stat().st_size > SUPPLIED_INPUT_BYTE_CEILING)
-    if oversize:
-        raise GeneratedProjectError(
-            "selected sources exceed the "
-            f"{SUPPLIED_INPUT_BYTE_CEILING} byte limit for one supplied "
-            f"input: {oversize}. Select smaller sources, or read them with "
-            "code that streams rather than materializing them whole")
+    # Checked by size, before any body is read, against what this machine
+    # measures right now rather than a number written here. Discovering the
+    # limit halfway through a copy leaves the run diagnosing an executor error
+    # instead of a capacity, and a limit nobody measured refuses work the
+    # machine could have done.
+    capacity = supplied_input_ceiling()
+    ceiling = capacity["bytes"]
+    if ceiling is not None:
+        oversize = sorted(
+            (relative, available[relative].stat().st_size)
+            for relative in selected_paths
+            if available[relative].stat().st_size > ceiling)
+        if oversize:
+            raise GeneratedProjectError(
+                f"selected sources exceed what this machine can materialize, "
+                f"{ceiling} bytes, bound by {capacity['binding_constraint']} "
+                f"({capacity['basis']}): {oversize}. Free space or memory, "
+                "select smaller sources, or read them with code that streams "
+                "rather than materializing them whole")
     return tuple(GeneratedProjectInputArtifact(
         project_input_path(relative), available[relative].read_bytes(),
         mimetypes.guess_type(available[relative].name)[0] or "text/plain",

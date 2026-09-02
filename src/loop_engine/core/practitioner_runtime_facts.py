@@ -28,14 +28,18 @@ import hashlib
 from .adaptive_practitioner_records import AdaptivePractitionerError
 from .adaptive_practitioner_source import (
     inspectable_source_files, project_input_path)
-from .generated_project import SUPPLIED_INPUT_BYTE_CEILING
+from .runtime_capacity import (
+    model_evidence_bytes, paths_within_allowance, supplied_input_ceiling)
 from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
 
 RUNTIME_FACTS_RECORD_TYPE = "practitioner_runtime_facts/v1"
 
-#: Manifest paths carried inline; the total and a digest are always present
-#: so a truncated list is never mistaken for the whole manifest.
-MANIFEST_PATH_LIMIT = 64
+#: How many manifest paths travel inline is measured, not written down: the
+#: run's own context budget states the bytes a heavy list may spend, and the
+#: paths themselves state how long they are. Sixty short paths and six very
+#: long ones cost the same, and a fixed count would be wrong for both. The
+#: total and a digest are always present, so a trimmed list is never mistaken
+#: for the whole manifest.
 
 
 def _source_manifest(services) -> dict | None:
@@ -49,7 +53,8 @@ def _source_manifest(services) -> dict | None:
         return None
     paths = sorted(relative for relative, _path in files)
     digest = hashlib.sha256("\n".join(paths).encode("utf-8")).hexdigest()
-    carried = paths[:MANIFEST_PATH_LIMIT]
+    carried = paths[:paths_within_allowance(
+        paths, model_evidence_bytes(services))]
     by_path = dict(files)
     sizes = {}
     for relative in carried:
@@ -62,9 +67,9 @@ def _source_manifest(services) -> dict | None:
         "sandbox_paths": {relative: project_input_path(relative)
                           for relative in carried},
         "byte_counts": sizes,
-        "placement_limit_bytes": SUPPLIED_INPUT_BYTE_CEILING,
+        "placement_capacity": supplied_input_ceiling(),
         "total": len(paths),
-        "truncated": len(paths) > MANIFEST_PATH_LIMIT,
+        "truncated": len(carried) < len(paths),
         "digest": digest,
         "usage": ("core.source.inspect admits exactly these relative paths; "
                   "call it with paths omitted to receive the manifest with "
@@ -73,9 +78,10 @@ def _source_manifest(services) -> dict | None:
             "generated code runs in the workspace, not beside the source: "
             "open a file at its sandbox_paths value, never at its admitted "
             "path. These are the exact paths the runtime materializes, and "
-            "byte_counts is what each one weighs; a source above "
-            "placement_limit_bytes cannot be materialized at all and must be "
-            "read some other way"),
+            "byte_counts is what each one weighs. placement_capacity is "
+            "what this machine measured it can materialize right now, with "
+            "the memory and disk figures behind it; a source above it must "
+            "be read some other way"),
     }
 
 

@@ -39,7 +39,7 @@ def self_test() -> dict:
         "core.action_fence", "core.capability_rejection",
         "core.practitioner_runtime_facts",
         "core.source_role_orientation",
-        "core.adaptive_practitioner_project",
+        "core.adaptive_practitioner_project", "core.runtime_capacity",
         "core.context_budget", "core.context_pack_manifest",
         "core.task_frontier", "core.prompt_experiment",
         "core.task_region_statistics", "core.self_tuning",

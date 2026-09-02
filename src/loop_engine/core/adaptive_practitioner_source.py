@@ -18,6 +18,7 @@ from .adaptive_practitioner_records import (
     AdaptivePractitionerError, AdaptiveRunServices)
 from .capability_rejection import (CapabilityRejected, CapabilityRejection,
                                    bounded_admitted_values)
+from .runtime_capacity import converged, model_evidence_bytes
 
 
 _GENERATED_SOURCE_PARTS = frozenset({
@@ -60,8 +61,11 @@ def project_input_path(relative: str) -> str:
     return PROJECT_INPUT_PREFIX + relative
 
 
+#: Only the fallback for a caller with no measured budget to offer. Every
+#: production caller passes the allowance the run itself declares, so raising
+#: a run's context raises what its source bodies may carry, with nothing to
+#: edit here.
 _SELECTED_CONTENT_BYTE_LIMIT = 12_000
-_SELECTED_CONTENT_PER_FILE_BYTE_LIMIT = 6_000
 
 
 def source_inspection_model_view(
@@ -307,13 +311,48 @@ def source_inspection_operation(
     }
 
 
-#: Bounds on the value shape a profile states. They hold the profile to a
-#: constant size for a file of any size, so profiling a 44 MB table costs the
-#: same as profiling a 44 KB one.
-PROFILE_SAMPLED_ROW_LIMIT = 200
-PROFILE_FIELD_LIMIT = 64
+#: How much a profile keeps of what it saw. These shape the report, not how
+#: much is read: a field with three labels and a field with three million
+#: identifiers both describe themselves in a few values, and the sample stops
+#: when the description stops changing rather than at a row number chosen
+#: here. Profiling a 44 MB table therefore costs what that table needs.
 PROFILE_EXAMPLE_VALUE_LIMIT = 8
 PROFILE_VALUE_TEXT_LIMIT = 40
+
+
+def _sampled_rows(rows, fields, byte_allowance: int):
+    """Read rows until they stop teaching, or until the allowance is spent.
+
+    Two guesses are avoided here. A fixed row count guesses how varied the
+    data is: too few rows for one dataset, wasted work on the next. And
+    stopping only when every field settles never terminates, because a unique
+    identifier gains a value on every row and always will — that it does so is
+    the finding, not a reason to keep reading. So the bound is the same
+    measured byte allowance the rest of the run uses, applied to the rows
+    themselves, and convergence only lets a narrow file stop sooner.
+    """
+    seen: list[set] = [set() for _ in fields]
+    taken = 0
+    batch = 32
+    unchanged = 0
+    spent = 0
+    while taken < len(rows):
+        before = [len(values) for values in seen]
+        for row in rows[taken:taken + batch]:
+            spent += sum(len(str(cell)) for cell in row) + len(row)
+            for index in range(len(fields)):
+                value = _scalar_text(row[index]) if index < len(row) else ""
+                if value:
+                    seen[index].add(value)
+        taken = min(len(rows), taken + batch)
+        after = [len(values) for values in seen]
+        if converged(before, after, unchanged):
+            break
+        if byte_allowance > 0 and spent >= byte_allowance:
+            break
+        unchanged = unchanged + 1 if before == after else 0
+        batch *= 2
+    return rows[:taken]
 
 
 def _is_number(value: str) -> bool:
@@ -341,7 +380,7 @@ def _field_value_profiles(sampled: "list[tuple[str, list[str]]]") -> list[dict]:
     empty. What the field is *for* stays a reading, and stays the model's.
     """
     profiles = []
-    for field, values in sampled[:PROFILE_FIELD_LIMIT]:
+    for field, values in sampled:
         present = [value for value in values if value != ""]
         distinct = sorted(set(present))
         profiles.append({
@@ -392,6 +431,9 @@ def source_profile_operation(
             admitted_values=admitted, admitted_values_total=total,
             repair_hint=("omit paths to profile every admitted source, or "
                          "request only paths listed in admitted_values")))
+    # The rows a profile reads are bounded by the same measured allowance the
+    # rest of the run spends, not by a row count written here.
+    row_allowance = model_evidence_bytes(services)
     profiles = []
     for raw, relative in sorted(resolved.items()):
         path = files[relative]
@@ -413,15 +455,16 @@ def source_profile_operation(
             # csv.reader, not split: a quoted value containing the delimiter
             # would otherwise shift every field after it and make the whole
             # profile a confident description of the wrong columns.
-            rows = list(csv.reader(
-                lines[:PROFILE_SAMPLED_ROW_LIMIT + 1], delimiter=delimiter))
+            rows = list(csv.reader(lines, delimiter=delimiter))
             fields = [str(name).strip() for name in (rows[0] if rows else ())]
+            sampled = _sampled_rows(rows[1:], fields, row_allowance)
             profile["structure_kind"] = "delimited_table"
             profile["fields"] = fields
             profile["data_row_count"] = max(0, len(lines) - 1)
+            profile["sampled_row_count"] = len(sampled)
             profile["field_profiles"] = _field_value_profiles([
                 (name, [_scalar_text(row[index]) if index < len(row) else ""
-                        for row in rows[1:]])
+                        for row in sampled])
                 for index, name in enumerate(fields)])
         elif path.suffix.lower() == ".json":
             try:
@@ -435,20 +478,21 @@ def source_profile_operation(
                 profile["structure_kind"] = "json_array"
                 if parsed and isinstance(parsed[0], dict):
                     fields = sorted(str(key) for key in parsed[0])
-                    sampled_rows = [item for item
-                                    in parsed[:PROFILE_SAMPLED_ROW_LIMIT]
-                                    if isinstance(item, dict)]
+                    sampled_rows = _sampled_rows(
+                        [[_scalar_text(row.get(name)) for name in fields]
+                         for row in parsed if isinstance(row, dict)],
+                        fields, row_allowance)
                     profile["fields"] = fields
+                    profile["sampled_row_count"] = len(sampled_rows)
                     profile["field_profiles"] = _field_value_profiles([
-                        (name, [_scalar_text(row.get(name))
-                                for row in sampled_rows])
-                        for name in fields])
+                        (name, [row[index] for row in sampled_rows])
+                        for index, name in enumerate(fields)])
                 profile["data_row_count"] = len(parsed)
         elif path.suffix.lower() in {".jsonl", ".ndjson"}:
             profile["structure_kind"] = "json_lines"
             if lines:
                 sampled_rows = []
-                for line in lines[:PROFILE_SAMPLED_ROW_LIMIT]:
+                for line in lines:
                     try:
                         entry = json.loads(line)
                     except ValueError:
@@ -457,11 +501,14 @@ def source_profile_operation(
                         sampled_rows.append(entry)
                 if sampled_rows:
                     fields = sorted(str(key) for key in sampled_rows[0])
+                    kept = _sampled_rows(
+                        [[_scalar_text(row.get(name)) for name in fields]
+                         for row in sampled_rows], fields, row_allowance)
                     profile["fields"] = fields
+                    profile["sampled_row_count"] = len(kept)
                     profile["field_profiles"] = _field_value_profiles([
-                        (name, [_scalar_text(row.get(name))
-                                for row in sampled_rows])
-                        for name in fields])
+                        (name, [row[index] for row in kept])
+                        for index, name in enumerate(fields)])
                 profile["data_row_count"] = len(lines)
         profiles.append(profile)
     return {

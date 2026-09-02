@@ -34,6 +34,7 @@ from .adaptive_practitioner_capabilities import (
     AdaptiveCapabilityExecutionRequest, build_action_canvas_candidate,
     execute_adaptive_capability)
 from .adaptive_practitioner_source import source_inspection_model_view
+from .runtime_capacity import model_evidence_bytes
 from .adaptive_practitioner_planning import (
     AdaptivePlanningRequest, build_execution_plan)
 from .adaptive_practitioner_orientation import orientation_policy_findings
@@ -104,7 +105,8 @@ def _model_state(state: PractitionerState,
             "text_truncated": item.get("text_truncated"),
         } for item in services.web_results],
         "source_inspections": source_inspection_model_view(
-            services.source_inspections),
+            services.source_inspections,
+            selected_content_byte_limit=model_evidence_bytes(services)),
         "generated_file_checkpoints":
             services.generated_file_checkpoint_summaries(),
         "project_attempts": [{

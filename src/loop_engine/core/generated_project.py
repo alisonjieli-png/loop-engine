@@ -19,6 +19,7 @@ from ..loop.effect_approval import (
     ApprovalDecision, EffectApprovalService)
 from .runtime_observer import RuntimeObservationServices
 from .generated_project_artifact_validation import verify_artifact_content
+from .runtime_capacity import supplied_input_ceiling
 from .workspace_backends import (
     CommandRequest, DockerResourceLimits, DockerWorkspace,
     DockerWorkspaceDeclaration, FileOperation, FileRequest,
@@ -489,11 +490,16 @@ class GeneratedProjectExecutionContext:
 #: 16 MB cap, so no amount of model reasoning could have produced a result.
 GENERATED_FILE_BYTE_FLOOR = 16 * 1024 * 1024
 
-#: The ceiling on one supplied input. The workspace file path reads a whole
-#: file into memory to digest it, so this bounds a single read rather than
-#: disk. An input above it is refused while it is being selected, by size,
-#: without ever being read.
-SUPPLIED_INPUT_BYTE_CEILING = 512 * 1024 * 1024
+def supplied_input_ceiling_bytes(workspace_root=None) -> "int | None":
+    """The largest single input this machine can materialize, or None.
+
+    Measured, never declared. The first repair of the flat sixteen-megabyte
+    cap replaced it with a larger flat number, which is the same defect one
+    order of magnitude out: it would refuse the next bigger dataset for no
+    reason the machine could point at. None means neither memory nor disk
+    could be read, and nothing is refused on a guess.
+    """
+    return supplied_input_ceiling(workspace_root)["bytes"]
 
 
 def workspace_file_byte_limit(

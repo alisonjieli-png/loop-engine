@@ -178,6 +178,7 @@ MODULE_MAP = {
         "mcp_adapter", "mcp_adapter_checks",
         "mcp_sdk_transport",
         "practitioner_runtime_facts", "source_role_orientation",
+        "runtime_capacity",
         "model_call", "model_capabilities", "model_gateway",
         "route_health",
         "model_response_admission", "model_response_text",

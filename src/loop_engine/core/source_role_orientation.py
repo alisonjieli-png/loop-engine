@@ -38,24 +38,16 @@ from .adaptive_practitioner_records import (
     AdaptivePractitionerError, ModelStepRequest)
 from .adaptive_practitioner_source import (
     inspectable_source_files, project_input_path, source_profile_operation)
+from .runtime_capacity import model_evidence_bytes, paths_within_allowance
 
 SOURCE_ROLE_ORIENTATION_RECORD_TYPE = "source_role_orientation/v1"
 
-#: Paths carried into one orientation call. The digest always covers the whole
-#: manifest, so a truncated call can never be mistaken for a whole reading.
-ORIENTED_PATH_LIMIT = 64
-
-#: Bounds on model-authored text. They cap prompt growth; they do not
-#: constrain what a role may be called.
-ROLE_TEXT_LIMIT = 120
-EVIDENCE_TEXT_LIMIT = 400
-
-#: Bytes of file evidence carried into one orientation call. The total is the
-#: real bound: a wide manifest trims its evidence rather than growing the
-#: prompt, so this call costs about the same whether the run was handed three
-#: files or sixty.
-EVIDENCE_TOTAL_BYTES = 24_000
-EVIDENCE_SAMPLE_BYTES = 600
+#: How much of a role and its evidence is kept is a share of the byte
+#: allowance this run already declares, not a second set of numbers written
+#: here. A run given a larger context keeps longer roles without anyone
+#: editing this file, and the two can never disagree about the same budget.
+ROLE_TEXT_SHARE = 200
+EVIDENCE_TEXT_SHARE = 60
 
 
 def manifest_digest(paths) -> str:
@@ -83,12 +75,21 @@ def source_role_schema() -> str:
 def _text(value, limit: int) -> str:
     if not isinstance(value, str) or not value.strip():
         return ""
-    return value.strip()[:limit]
+    return value.strip()[:limit] if limit > 0 else value.strip()
+
+
+def _role_limits(allowance: int) -> tuple[int, int]:
+    """How long one role and one evidence sentence may be, from the budget."""
+    if allowance <= 0:
+        return 0, 0
+    return max(40, allowance // ROLE_TEXT_SHARE), \
+        max(80, allowance // EVIDENCE_TEXT_SHARE)
 
 
 def validated_source_roles(
         value: object, admitted: tuple[str, ...], digest: str,
-        fields_by_path: "dict[str, tuple[str, ...]] | None" = None) -> dict:
+        fields_by_path: "dict[str, tuple[str, ...]] | None" = None,
+        allowance: int = 0) -> dict:
     """Admit one proposed reading, or say exactly why it is not admissible.
 
     Every check compares the proposal against something the runtime holds
@@ -113,6 +114,7 @@ def validated_source_roles(
     if not isinstance(rows, list) or not isinstance(unresolved_value, list):
         raise AdaptivePractitionerError(
             "source role orientation files and unresolved must be arrays")
+    role_limit, evidence_limit = _role_limits(allowance)
     admitted_set = set(admitted)
     files = []
     claimed: set[str] = set()
@@ -130,12 +132,12 @@ def validated_source_roles(
         if path in claimed:
             raise AdaptivePractitionerError(
                 f"source role orientation gives {path!r} more than one role")
-        role = _text(row.get("role"), ROLE_TEXT_LIMIT)
+        role = _text(row.get("role"), role_limit)
         if not role:
             raise AdaptivePractitionerError(
                 f"the role for {path!r} is empty; name it or list the path "
                 "under unresolved")
-        evidence = _text(row.get("evidence"), EVIDENCE_TEXT_LIMIT)
+        evidence = _text(row.get("evidence"), evidence_limit)
         if not evidence:
             raise AdaptivePractitionerError(
                 f"the role for {path!r} cites no observed evidence")
@@ -201,7 +203,8 @@ def validated_source_roles(
     }
 
 
-def _evidence_rows(services, admitted) -> tuple[list[dict], dict]:
+def _evidence_rows(services, admitted, allowance: int
+                   ) -> tuple[list[dict], dict]:
     """What the runtime holds exactly about each admitted path.
 
     The evidence is the deterministic profile, not a byte prefix. A prefix
@@ -211,9 +214,13 @@ def _evidence_rows(services, admitted) -> tuple[list[dict], dict]:
     parse as numbers. That is the difference between a header that reads like
     a number and a column that is one.
     """
+    # Each file's raw sample is a share of the whole allowance, so three
+    # files each show more than sixty would, and neither count is written
+    # down anywhere.
+    per_file = max(120, allowance // max(1, len(admitted) * 4)) \
+        if allowance > 0 else 512
     profiles = source_profile_operation(
-        {"paths": list(admitted),
-         "maximum_sample_bytes": EVIDENCE_SAMPLE_BYTES},
+        {"paths": list(admitted), "maximum_sample_bytes": per_file},
         services)["profiles"]
     rows = []
     for profile in profiles:
@@ -230,10 +237,11 @@ def _evidence_rows(services, admitted) -> tuple[list[dict], dict]:
             "sample": profile.get("sample"),
         })
     fields_by_path = {row["path"]: tuple(row["fields"]) for row in rows}
-    return _within_evidence_budget(rows), fields_by_path
+    return _within_evidence_budget(rows, allowance), fields_by_path
 
 
-def _within_evidence_budget(rows: list[dict]) -> list[dict]:
+def _within_evidence_budget(rows: list[dict],
+                            allowance: int) -> list[dict]:
     """Trim evidence to the budget in a stated order, never silently.
 
     Field names survive everything, because they are what the reading is
@@ -243,18 +251,18 @@ def _within_evidence_budget(rows: list[dict]) -> list[dict]:
     def size(value) -> int:
         return len(json.dumps(value, default=str).encode("utf-8"))
 
-    if size(rows) <= EVIDENCE_TOTAL_BYTES:
+    if allowance <= 0 or size(rows) <= allowance:
         return rows
     for row in rows:
         row["sample"] = ""
         row["evidence_trimmed"] = "sample"
-    if size(rows) <= EVIDENCE_TOTAL_BYTES:
+    if size(rows) <= allowance:
         return rows
     for row in rows:
         for profile in row["field_profiles"]:
             profile["example_values"] = profile["example_values"][:2]
         row["evidence_trimmed"] = "sample and most example values"
-    if size(rows) <= EVIDENCE_TOTAL_BYTES:
+    if size(rows) <= allowance:
         return rows
     for row in rows:
         for profile in row["field_profiles"]:
@@ -285,9 +293,11 @@ def orient_source_roles(services) -> dict | None:
     saved = getattr(services, "source_roles", None)
     if isinstance(saved, dict) and saved.get("manifest_digest") == digest:
         return saved
-    admitted = tuple(all_paths[:ORIENTED_PATH_LIMIT])
+    allowance = model_evidence_bytes(services)
+    admitted = tuple(all_paths[:paths_within_allowance(all_paths, allowance)])
     try:
-        evidence, fields_by_path = _evidence_rows(services, admitted)
+        evidence, fields_by_path = _evidence_rows(
+            services, admitted, allowance)
     except (AdaptivePractitionerError, OSError, ValueError):
         return None
     schema = source_role_schema()
@@ -309,7 +319,7 @@ def orient_source_roles(services) -> dict | None:
             return None
         try:
             record = validated_source_roles(value, admitted, digest,
-                                            fields_by_path)
+                                            fields_by_path, allowance)
             break
         except AdaptivePractitionerError as exc:
             failures.append({"attempt": attempt, "error": str(exc)[:500]})
@@ -450,7 +460,8 @@ def self_test() -> dict:
         services = SimpleNamespace(
             request=SimpleNamespace(
                 allow_source_materialization_to_model=True,
-                source_refs=(str(source),)),
+                source_refs=(str(source),),
+                context_budget=SimpleNamespace(list_total_bytes=24_000)),
             model=model, source_roles=None,
             publish=lambda *args, **kwargs: None,
             diagnostic=lambda *args, **kwargs: None)
@@ -461,7 +472,8 @@ def self_test() -> dict:
         digest = manifest_digest(paths)
         # Read while the sources still exist, so an empty list cannot make
         # the sandbox-path assertion pass by saying nothing.
-        evidence, fields_by_path = _evidence_rows(services, tuple(paths))
+        evidence, fields_by_path = _evidence_rows(
+            services, tuple(paths), model_evidence_bytes(services))
         label_profile = next(
             item for row in evidence for item in row["field_profiles"]
             if item["field"] == "Outcome_Score")
@@ -469,7 +481,8 @@ def self_test() -> dict:
         def refuse(payload) -> str:
             try:
                 validated_source_roles(payload, tuple(paths), digest,
-                                       fields_by_path)
+                                       fields_by_path,
+                                       model_evidence_bytes(services))
             except AdaptivePractitionerError as exc:
                 return str(exc)[:70]
             return ""
@@ -492,7 +505,8 @@ def self_test() -> dict:
             refuse(reading(paths[0], observed_fields=[])),
         ]
         accepted = validated_source_roles(
-            reading(paths[0]), tuple(paths), digest, fields_by_path)
+            reading(paths[0]), tuple(paths), digest, fields_by_path,
+            model_evidence_bytes(services))
 
     tests = [{
         "test": "the_reading_is_authored_by_a_model_call_not_a_rule",

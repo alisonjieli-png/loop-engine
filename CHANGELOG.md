@@ -75,6 +75,24 @@ First public release.
   been, and the whole admitted set, so the repair is a substitution rather
   than a diagnosis.
 
+- **Every capacity on the path from task to data to model call is now
+  measured.** `core.runtime_capacity` is the one place a limit comes from, and
+  it derives each from something real: memory and disk this machine reports,
+  the byte allowance this run's own context budget already declares, or the
+  length of the paths actually present. The declared figures it replaced are
+  gone — the supplied-input ceiling, the sixty-four-path manifest cut, the
+  orientation's evidence and role budgets, the two-hundred-row profile sample,
+  the selected-content byte caps. Each answer carries its measurement, so a
+  refusal quotes the number that caused it instead of asserting a rule, and a
+  self-test refuses any capacity-shaped integer reintroduced into those
+  modules, proving itself by planting one and catching it.
+
+  This is the same defect as the sixteen-megabyte cap below, stated generally.
+  Raising a number moves a wall; measuring removes it. On this machine the
+  input ceiling is now about twenty gigabytes rather than five hundred
+  megabytes, it moves with the hardware, and the row sample grows with the
+  run's context instead of stopping at a number nobody chose for this data.
+
 - **A real competition could not be placed in the workspace at all.** The
   generated-project workspace capped every file at a flat 16 MB. Against the
   real playground-series-s6e9 files a live run placed only the 7.7 MB
