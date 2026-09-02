@@ -142,6 +142,11 @@ STAGE_RECORD = {
 }
 
 
+#: Why a Kaggle secret lookup failed, by secret name. Recorded rather than
+#: discarded, so a refusal can state the cause instead of guessing at one.
+SECRET_LOOKUP_FAILURES: "dict[str, str]" = {}
+
+
 def read_secret(secret_name, standard_env):
     """Return one key without ever displaying it.
 
@@ -154,7 +159,13 @@ def read_secret(secret_name, standard_env):
     if UserSecretsClient is not None:
         try:
             value = UserSecretsClient().get_secret(secret_name)
-        except Exception:  # secret not attached to this notebook
+        except Exception as exc:
+            # Why the lookup failed is the whole diagnosis, and this line
+            # used to assert a cause it never checked. A secret that is not
+            # attached and a secrets service that refuses the request need
+            # opposite answers; only the exception separates them.
+            SECRET_LOOKUP_FAILURES[secret_name] = (
+                f"{type(exc).__name__}: {str(exc)[:200]}")
             value = ""
     if not isinstance(value, str) or not value.strip():
         value = os.environ.get(secret_name.upper(), "")
@@ -166,11 +177,22 @@ def read_secret(secret_name, standard_env):
 def require_key(value, secret_name, standard_env):
     """Stop with a clear message when a stage needs a key that is missing."""
     if not value:
+        failure = SECRET_LOOKUP_FAILURES.get(secret_name)
+        if failure:
+            detail = (f" The Kaggle secret lookup failed with {failure}. A "
+                      "batch run started through the Kaggle API cannot reach "
+                      "the secrets service even when the secret is attached; "
+                      "run the notebook from the Kaggle editor instead.")
+        elif UserSecretsClient is None:
+            detail = (" The kaggle_secrets module is unavailable here, so no "
+                      "secret was looked up.")
+        else:
+            detail = (f" The lookup returned an empty value, so "
+                      f"{secret_name!r} is attached but holds nothing.")
         raise RuntimeError(
-            f"Stage {STAGE!r} needs a provider key, but Kaggle secret "
-            f"{secret_name!r} is unavailable and neither "
-            f"{secret_name.upper()} nor {standard_env} is set. Create the "
-            "secret and enable notebook access, or set the variable.")
+            f"Stage {STAGE!r} needs a provider key, but secret "
+            f"{secret_name!r} did not resolve and neither "
+            f"{secret_name.upper()} nor {standard_env} is set.{detail}")
 
 
 def run_command(command, *, cwd=None, env=None, check=True, capture=False):

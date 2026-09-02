@@ -186,6 +186,11 @@ STAGE_RECORD = {
 }
 
 
+#: Why a Kaggle secret lookup failed, by secret name. Recorded rather than
+#: discarded, so a refusal can state the cause instead of guessing at one.
+SECRET_LOOKUP_FAILURES: "dict[str, str]" = {}
+
+
 def read_secret(secret_name, standard_env):
     """Return one key without ever displaying it.
 
@@ -198,7 +203,11 @@ def read_secret(secret_name, standard_env):
     if UserSecretsClient is not None:
         try:
             value = UserSecretsClient().get_secret(secret_name)
-        except Exception:  # secret not attached to this notebook
+        except Exception as exc:
+            # Why the lookup failed is the whole diagnosis, and this line
+            # used to assert a cause it never checked.
+            SECRET_LOOKUP_FAILURES[secret_name] = (
+                f"{type(exc).__name__}: {str(exc)[:200]}")
             value = ""
     if not isinstance(value, str) or not value.strip():
         value = os.environ.get(secret_name.upper(), "")
@@ -388,12 +397,23 @@ for name in (
 
 missing = [
     f"{secret_name!r} (or {secret_name.upper()} / {key_env})"
+    + (f" [lookup failed with {SECRET_LOOKUP_FAILURES[secret_name]}]"
+       if secret_name in SECRET_LOOKUP_FAILURES else "")
     for provider, secret_name, key_env in SECRETS if not keys[provider]]
 if missing and STAGE != "offline":
+    # Each name carries why its own lookup failed. A secret that is not
+    # attached and a secrets service that refuses the request need opposite
+    # answers, and a shared sentence about creating secrets fits only one.
+    service_refused = bool(SECRET_LOOKUP_FAILURES)
     raise RuntimeError(
-        f"Stage {STAGE!r} needs all three provider keys. Missing Kaggle "
-        "secrets: " + ", ".join(missing) + ". Create each secret and "
-        "enable notebook access, or set the variables.")
+        f"Stage {STAGE!r} needs all three provider keys. Unresolved: "
+        + ", ".join(missing)
+        + (". A batch run started through the Kaggle API cannot reach the "
+           "secrets service even when the secrets are attached; run the "
+           "notebook from the Kaggle editor instead."
+           if service_refused else
+           ". Create each secret and enable notebook access, or set the "
+           "variables."))
 
 for provider, secret_name, key_env in SECRETS:
     if keys[provider]:
