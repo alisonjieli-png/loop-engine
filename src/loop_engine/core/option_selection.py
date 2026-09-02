@@ -57,6 +57,13 @@ SELECTION_REPORT_CONTRACT = {
                                "returned"),
         "wanted_but_absent": ("in your own words, anything you needed and "
                               "the portfolio did not offer"),
+        "operator_gap": ("when you needed an operation this runtime has no "
+                         "way to perform, an object with `needed` (the "
+                         "operation), `tried` (the capability refs you "
+                         "attempted) and `runtime_said` (what it refused "
+                         "with). A run once restated the same correct repair "
+                         "for twenty passes because it had no way to say "
+                         "this"),
     },
     "optional": True,
     "affects_validation": False,
@@ -64,7 +71,8 @@ SELECTION_REPORT_CONTRACT = {
 
 #: The keys stripped from a model response before typed validation.
 SELECTION_KEYS = ("used_perspectives", "used_question_refs",
-                  "used_guidance_refs", "wanted_but_absent")
+                  "used_guidance_refs", "wanted_but_absent",
+                  "operator_gap")
 
 
 class OptionSelectionError(ValueError):
@@ -106,6 +114,13 @@ def admitted_selection(value, offered: dict) -> dict:
     wanted = _named(value.get("wanted_but_absent"))
     if wanted:
         admitted["wanted_but_absent"] = wanted
+    # A missing operator is a different finding from a missing perspective:
+    # one says the portfolio is thin, the other says the runtime cannot do
+    # the thing at all. They are counted apart for that reason.
+    from .cognitive_grammar import admitted_gap_report
+    gap = admitted_gap_report(value.get("operator_gap"))
+    if gap:
+        admitted["operator_gap"] = gap
     if unoffered:
         admitted["named_but_not_offered"] = unoffered
     return {key: item for key, item in admitted.items() if item}
@@ -127,6 +142,9 @@ class SelectionTally:
     steps_reported: dict = field(default_factory=dict)
     steps_offered: dict = field(default_factory=dict)
     wanted_but_absent: list = field(default_factory=list)
+    #: Operations a caller needed and this runtime could not perform. The
+    #: highest-value entry in the whole tally: it names what to build next.
+    operator_gaps: list = field(default_factory=list)
     named_but_not_offered: list = field(default_factory=list)
     reports: int = 0
     calls: int = 0
@@ -152,6 +170,10 @@ class SelectionTally:
         for item in selection.get("wanted_but_absent") or ():
             self.wanted_but_absent.append({"step": step, "text": item[:280]})
             counted = True
+        gap = selection.get("operator_gap")
+        if isinstance(gap, dict):
+            self.operator_gaps.append({**gap, "step": step})
+            counted = True
         outside = selection.get("named_but_not_offered") or {}
         if isinstance(outside, dict):
             for key, items in outside.items():
@@ -172,6 +194,7 @@ class SelectionTally:
             "steps_reported": dict(sorted(self.steps_reported.items())),
             "steps_offered": dict(sorted(self.steps_offered.items())),
             "wanted_but_absent": list(self.wanted_but_absent),
+            "operator_gaps": list(self.operator_gaps),
             "named_but_not_offered": list(self.named_but_not_offered),
             "reports": self.reports,
             "calls": self.calls,
@@ -233,6 +256,25 @@ def self_test() -> dict:
     quiet.note("orient", None)
     check("tallying_nothing_records_nothing",
           quiet.to_dict()["reports"] == 0)
+    # A missing operator and a missing perspective are different findings and
+    # must not collapse into one list: one says build something, the other
+    # says offer something.
+    gapped = admitted_selection({"operator_gap": {
+        "needed": "read back a file this run generated",
+        "tried": ["core.source.inspect"],
+        "runtime_said": "source inspection requested unknown paths"}},
+        offered)
+    gap_tally = SelectionTally()
+    gap_tally.note_offered("how")
+    gap_tally.note("how", gapped)
+    value = gap_tally.to_dict()
+    check("a_missing_operator_is_recorded_apart_from_a_missing_option",
+          len(value["operator_gaps"]) == 1
+          and value["operator_gaps"][0]["step"] == "how"
+          and value["operator_gaps"][0]["tried"] == ["core.source.inspect"]
+          and not value["wanted_but_absent"],
+          str(value["operator_gaps"])[:160])
+
     check("every_reported_key_has_a_contract_entry",
           set(SELECTION_KEYS) == set(SELECTION_REPORT_CONTRACT["keys"]))
 

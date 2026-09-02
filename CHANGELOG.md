@@ -9,6 +9,23 @@ First public release.
 
 ### Added
 
+- **The cognitive vocabulary is now explicit, and so is what it lacks.**
+  `core.cognitive_grammar` derives an operator catalog of 45 entries from the
+  live kernel nodes, action kinds and capabilities rather than restating them,
+  names five versioned cycle profiles as skip sets over optional nodes only,
+  and maps all 28 transitions a Loop network would need: 18 realized, each
+  naming its mechanism, and 13 not, each with the reason. Naming a transition
+  realizes nothing, and the map says so. A caller may now report an
+  `operator_gap` — what it needed, what it tried, what the runtime refused
+  with — which is admitted, marked with whether it names an operator that
+  already exists, counted apart from a missing portfolio option, and carried
+  into saved history. That is the record a live run could not make while it
+  restated the same correct repair for twenty passes. Measured: skipping four
+  of thirteen nodes changed model calls not at all and packet bytes by 0.1%,
+  because every optional node is served by a deterministic default that makes
+  no model call. The profile lever is close to inert; the cost lives in the
+  six model-calling nodes and in what each packet carries.
+
 - **The Kaggle working root holds the submission and nothing to search.**
   A submission that verified was reachable only at
   `loop-engine-solutions/attempt-<stamp>/submission.csv`, beside five other

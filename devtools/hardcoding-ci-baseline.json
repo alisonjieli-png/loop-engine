@@ -1,6 +1,6 @@
 {
   "blocking_threshold": "high",
-  "finding_count": 10044,
+  "finding_count": 10051,
   "findings": [
     {
       "finding_id": "hardcoding.0000d2e9cb7e45dab6b9a6d6",
@@ -1835,6 +1835,10 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.0ba133210ae92f254b741055",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.0badf458294335508edb67e2",
       "severity": "medium"
     },
@@ -2216,6 +2220,10 @@
     },
     {
       "finding_id": "hardcoding.0e3646db62410fdf80db856e",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.0e3ca9aa77f871502e18a652",
       "severity": "medium"
     },
     {
@@ -12127,6 +12135,10 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.4c78cfa741d39f86d5799444",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.4c9303b0becf44ad31db0855",
       "severity": "medium"
     },
@@ -13196,6 +13208,10 @@
     },
     {
       "finding_id": "hardcoding.53310e1f1f335d6393853948",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.53392a1566bb227f5e35a544",
       "severity": "medium"
     },
     {
@@ -19131,6 +19147,10 @@
       "severity": "high"
     },
     {
+      "finding_id": "hardcoding.7923c85be233a9ee5dbd18ea",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.7924c7b068d048c7990fd204",
       "severity": "medium"
     },
@@ -21276,6 +21296,10 @@
     },
     {
       "finding_id": "hardcoding.8672a193e1444fbb4c732de8",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.8675272105fc1a89fc4336b9",
       "severity": "medium"
     },
     {
@@ -29184,6 +29208,10 @@
     },
     {
       "finding_id": "hardcoding.b9261cd3abb02f1304b40763",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.b936a7650fc940af3df7fee0",
       "severity": "medium"
     },
     {
@@ -40179,7 +40207,7 @@
       "severity": "high"
     }
   ],
-  "repository_snapshot_id": "hardcoding_source.sha256_6cb479bbdcd25e23b37400866c502e9c5d63957044244773b7588baee8de284a",
+  "repository_snapshot_id": "hardcoding_source.sha256_60bdd3bab39b04085f5ae85cb376868c67dbbff97cd6018debbdfd4471a29b94",
   "schema": "hardcoding_ci_baseline/v1",
-  "source_audit_id": "hardcoding_audit.sha256_80c3b7e0be68c99913a6fbbebc78c1862be51363d646e86617810491613a8fa6"
+  "source_audit_id": "hardcoding_audit.sha256_5474944455aa428b49dfd6c1be438afa5969cdd0d96ff49ac36a2bc2ba70780a"
 }

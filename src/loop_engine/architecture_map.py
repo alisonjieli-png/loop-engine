@@ -164,6 +164,7 @@ MODULE_MAP = {
         "action_fence",
         "context_budget", "context_pack_manifest", "task_frontier",
         "prompt_experiment", "task_region_statistics", "option_selection",
+        "cognitive_grammar",
         "workspace_read",
         "self_tuning",
         "context_catalog",
