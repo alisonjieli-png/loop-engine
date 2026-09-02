@@ -34,6 +34,14 @@ TEMPLATE_LIBRARY = (
      "description": "The thinnest loop (live-runtime directive): one "
                     "deterministic act, one iteration, zero model calls — "
                     "full loop identity, telemetry, and fallback seams."},
+    {"template_id": "gated_checklist", "framework": "custom",
+     "steps": ("inspect", "gate"), "allowed_modes": ("code_only",),
+     "maturity": "registered",
+     "description": "The colleague's checklist: inspect typed facts against "
+                    "ordered deterministic checks, then gate. A clean gate "
+                    "completes with zero model calls; a failed blocking item "
+                    "records the gate firing and escalates to a spawned Loop "
+                    "whose mode the parent's delegation authority decides."},
     {"template_id": "guarded_irreversible_effect", "framework": "custom",
      "steps": ("authorize", "act", "verify"),
      "allowed_modes": ("code_only",), "maturity": "registered",

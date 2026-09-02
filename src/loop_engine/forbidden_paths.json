@@ -103,6 +103,7 @@
   "core/runtime_settings.py": "the typed settings authority owns provider declarations, tiers, and escalation policy in one validated schema; split plan: move provider declaration parsing into runtime_settings_providers.py while keeping one RuntimeSettings authority",
   "core/studio_server.py": "local read-only HTTP projection boundary and acceptance checks; split plan: move socket and browser-contract checks into studio_server_checks.py after the product-outcome projection stabilizes",
   "loop/delegation_runtime.py": "the canonical Spawned Loop task manager and its passive contracts; split plan: move passive delegation request and result records into delegation_contracts.py while keeping one manager",
+  "loop/effect_approval.py": "the fail-closed effect approval authority owns the passive request, decision, and state records together with the one service that issues and verifies decision authority; split plan: move EffectSpec, ApprovalRequest, ApprovalDecision, and PendingApprovalState into effect_approval_records.py while keeping one EffectApprovalService",
   "loop/kernel.py": "the nine-step executor's default implementations; split plan: move per-step defaults into loop/steps/ facades one step at a time",
   "loop/recursive_loop.py": "the canonical Loop runtime; split plan: extract LoopSpec/pause-resume into loop/spec.py once the kernel routes through run_next_iteration"
  },
@@ -383,6 +384,7 @@
   "core/workspace_local.py",
   "core/workspace_optional.py",
   "code_nodes/smoke_ladder.py",
+  "loop/loop_handoff.py",
   "_conformance_scan.py"
  ],
  "suite_collection_exceptions": {

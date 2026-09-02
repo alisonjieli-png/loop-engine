@@ -156,7 +156,8 @@ def _calculate_inside(owner: Loop, request: KernelRunRequest) -> dict:
         loop_id=owner.loop_id, event="custom",
         custom_kind="kernel_input_bound",
         input_role="problem_spec", objective=request.spec.objective,
-        budget_passes=request.spec.budget_passes)
+        budget_passes=request.spec.budget_passes,
+        pass_loop_placement="inside_owner_act_step")
     token = _ACTIVE_KERNEL_OWNER.set(owner)
     try:
         run = _calculate_kernel_passes(request)
@@ -184,7 +185,10 @@ def _run_owner(owner: Loop, request: KernelRunRequest) -> tuple[dict, Any]:
             output = state["run"]["final_route"] or "kernel:no_route"
             mode = request.selected_mode
         else:
-            output = f"kernel:{step}:complete"
+            # The kernel pass loop runs entirely inside ``act``. Every other
+            # step of the owner Loop is a structural boundary marker, never a
+            # claim that the named kernel work happened at this position.
+            output = f"kernel:{step}:structural_boundary"
             mode = "deterministic"
         return StepOutcome(
             output=output, mode=mode, confidence=1.0)
@@ -352,6 +356,20 @@ def self_test() -> dict:
                  and event.get("relationship_kind") == "starting"]) == 1
         and active_owner.is_terminal,
         f"kernel run remained owned by {active_owner.loop_id}")
+
+    honest_owner = _starting_loop(active_request)
+    _run_owner(honest_owner, active_request)
+    owner_outputs = [
+        str(event.get("output", "")) for event in honest_owner.ledger.events
+        if event.get("event") == "run_step"
+        and event.get("loop_id") == honest_owner.loop_id]
+    check(
+        "owner_steps_outside_act_are_labelled_structural_not_complete",
+        owner_outputs
+        and not any(item.endswith(":complete") for item in owner_outputs)
+        and sum(item.endswith(":structural_boundary")
+                for item in owner_outputs) == len(KERNEL_NODES) - 1,
+        f"{len(owner_outputs)} owner step outputs recorded")
 
     passed = sum(1 for test in tests if test["passed"])
     return {"record_type": "kernel_runtime_self_test", "tests": tests,

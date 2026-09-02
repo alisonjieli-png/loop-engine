@@ -15,6 +15,7 @@ from typing import Any
 from .loop_contract import LoopContract
 from .loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
 from .runtime_context import LoopRuntimeContext, LoopRuntimeContextError
+from .supervision_policy import DEFAULT_SUPERVISION_POLICY, SupervisionPolicy
 
 
 _DEFINITION_ID = re.compile(
@@ -193,12 +194,14 @@ class LoopDefinition:
         object.__setattr__(self, "permissions", permissions)
         object.__setattr__(self, "required_capabilities", capabilities)
 
-        from .loop_profile_catalog import LoopProfileRef
+        from .loop_profile_catalog import LoopProfileError, LoopProfileRef
         from .loop_profile_ontology import resolve_profile
         try:
             resolved = resolve_profile(LoopProfileRef(
                 self.role_profile_id, self.role_profile_version))
-        except Exception as exc:  # normalized to this boundary's error
+        except (LoopProfileError, KeyError, ValueError) as exc:
+            # Only a profile lookup failure is "not registered"; anything
+            # else (a RecursionError, a bug) must surface with its own type.
             raise LoopDefinitionError(
                 "role profile is not registered") from exc
         if resolved.spec.state != "registered":
@@ -247,7 +250,7 @@ class LoopDefinition:
 
     @property
     def identity(self) -> LoopRoleIdentity:
-        from .loop_profile_catalog import LoopProfileRef
+        from .loop_profile_catalog import LoopProfileError, LoopProfileRef
         from .loop_profile_ontology import identity_for_profile
         return identity_for_profile(LoopProfileRef(
             self.role_profile_id, self.role_profile_version))
@@ -384,12 +387,12 @@ class LoopDefinition:
                 current_contract, execution_mode=terminal_execution_mode,
                 role=identity.role.value)
 
-        from .loop_profile_catalog import LoopProfileRef
+        from .loop_profile_catalog import LoopProfileError, LoopProfileRef
         from .loop_profile_ontology import resolve_profile
         try:
             resolved = resolve_profile(LoopProfileRef(
                 identity.profile_id, identity.profile_version))
-        except Exception as exc:
+        except (LoopProfileError, KeyError, ValueError) as exc:
             raise LoopDefinitionError(
                 "role profile is not registered") from exc
         preferred_modes = tuple(
@@ -412,6 +415,8 @@ class LoopDefinition:
             "loop_condition": config.loop_condition,
             "exit_condition": config.exit_condition,
             "success_confidence_min": config.success_confidence_min,
+            **({"supervision": config.supervision.to_dict()}
+               if config.supervision != DEFAULT_SUPERVISION_POLICY else {}),
         })
         return cls(
             definition_id=definition_id or identity.profile_id,
@@ -460,6 +465,13 @@ class LoopDefinition:
             exit_condition=self.exit_condition,
             success_confidence_min=float(
                 facts.get("success_confidence_min", 0.5)),
+            supervision=(
+                SupervisionPolicy(**{
+                    key: (tuple(value) if key == "escalation_ladder"
+                          else value)
+                    for key, value in facts["supervision"].items()})
+                if isinstance(facts.get("supervision"), dict)
+                else DEFAULT_SUPERVISION_POLICY),
         )
 
 

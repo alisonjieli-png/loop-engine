@@ -9,3 +9,77 @@ entries:
     classification: INTENTIONAL_LOCAL_LITERAL
     created_on: 2026-08-31
     expires_on: 2027-08-31
+  - finding_id: hardcoding.abd6ee2888f04bc50d2b2dd1
+    owner: loop_engine.loop.checklist_loop
+    rationale: >-
+      Self-test helper reads the passive ledger event mapping by its recorded
+      key to count the checklist kinds one Loop emitted. The key is the ledger
+      record's own field name, read in a test fixture; it selects no runtime
+      behavior and has no caller override, policy, or deployment lifecycle.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-01
+    expires_on: 2027-09-01
+  - finding_id: hardcoding.1c1220a0f344d7a1e7c55dc2
+    owner: loop_engine.loop.checklist_loop
+    rationale: >-
+      Same self-test helper filtering the shared ledger by the emitting Loop's
+      recorded id field. Test-only read of a passive record field name.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-01
+    expires_on: 2027-09-01
+  - finding_id: hardcoding.2e80d6e95723ffbc4fd1e873
+    owner: loop_engine.core.prompt_experiment
+    rationale: >-
+      Numeric guard `< 0` on a pass count while projecting saved records; zero is the arithmetic boundary, not a vocabulary token. The audit classifies it as a closed vocabulary token; the
+      classification field mirrors that so the entry stays exact.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-01
+    expires_on: 2027-09-01
+  - finding_id: hardcoding.013ddd992bc84f08d35c9858
+    owner: loop_engine.core.task_frontier
+    rationale: >-
+      Index arithmetic (`pass_number - 1`) mapping a one-based pass to a zero-based verdict list; a constant offset, not a behavior token. The audit classifies it as a closed vocabulary token; the
+      classification field mirrors that so the entry stays exact.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-01
+    expires_on: 2027-09-01
+  - finding_id: hardcoding.a979a1c74d674c95ea7cbca2
+    owner: loop_engine.core.task_frontier
+    rationale: >-
+      Index arithmetic (`pass_number - 1`) selecting the orientation of the current pass; a constant offset, not a behavior token. The audit classifies it as a closed vocabulary token; the
+      classification field mirrors that so the entry stays exact.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-01
+    expires_on: 2027-09-01
+  - finding_id: hardcoding.3fb5feae7bdc3a57d5f1ad5e
+    owner: loop_engine.loop.effect_approval
+    rationale: >-
+      `state.decision is None` guard before computing a decision HMAC; the absence check is the contract, not a vocabulary value. The audit classifies it as a closed vocabulary token; the
+      classification field mirrors that so the entry stays exact.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-01
+    expires_on: 2027-09-01
+  - finding_id: hardcoding.382d284d4d7353ef2bd9329b
+    owner: loop_engine.loop.loop_handoff
+    rationale: >-
+      Numeric guard `< 0` on the parent event index carried by a handoff request; zero is the arithmetic boundary. The audit classifies it as a closed vocabulary token; the
+      classification field mirrors that so the entry stays exact.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-01
+    expires_on: 2027-09-01
+  - finding_id: hardcoding.c5db98423d9a79f4c4ed805a
+    owner: loop_engine.loop.loop_handoff
+    rationale: >-
+      Reads the ledger event's own `event` field to find previously merged handoffs; the key is the passive record's field name, the same read the runtime's closure audit performs. The audit classifies it as a closed vocabulary token; the
+      classification field mirrors that so the entry stays exact.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-01
+    expires_on: 2027-09-01
+  - finding_id: hardcoding.9b6175e11949453f29e735a9
+    owner: loop_engine.loop.loop_handoff
+    rationale: >-
+      Reads the ledger event's `custom_kind` field to find previously merged handoffs; a passive record field name, not a dispatch token. The audit classifies it as a closed vocabulary token; the
+      classification field mirrors that so the entry stays exact.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-01
+    expires_on: 2027-09-01

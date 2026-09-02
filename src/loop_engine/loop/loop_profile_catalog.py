@@ -258,6 +258,14 @@ LOOP_PROFILE_ONTOLOGY = (
         exit_condition="accepted_success", kinds=("execution",),
         modes=("deterministic",), fields=("operation_ref",),
         capabilities=("code_execution",), thinking="forbidden"),
+    _spec(
+        "practitioner.checklist", "Checklist Practitioner", "practitioner",
+        "Inspects typed facts against ordered deterministic checks and "
+        "escalates only when a blocking item fails.",
+        parent="practitioner", template="gated_checklist",
+        exit_condition="steps_complete", kinds=("execution",),
+        modes=("deterministic",), fields=("checklist_items", "state_ref"),
+        capabilities=("loop_spawn",), thinking="forbidden"),
 
     # Cross-layer Intelligence operations. Layer-specific profiles remain
     # below the four Intelligence branches.

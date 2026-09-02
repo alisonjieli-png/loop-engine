@@ -518,7 +518,9 @@ def execute_adaptive_capability(
                         services.run_id,
                         services.request.allow_workspace_writes,
                         services.request.allow_sandbox_commands,
-                        services.request.allow_network_reads),
+                        services.request.allow_network_reads,
+                        allow_local_execution=
+                            services.request.allow_local_execution),
                     DEFAULT_GENERATED_PROJECT_IMAGE,
                     input_artifacts=input_artifacts),
                 GeneratedProjectExecutionContext(owner))

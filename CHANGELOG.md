@@ -9,6 +9,39 @@ First public release.
 
 ### Added
 
+- **Context pack manifests.** Every assembled work packet now records a
+  `ContextPackManifest`: each context block and trimmed state item with its
+  digest, decision (included, compacted, excluded, deduplicated), trust class,
+  byte counts, the estimated input tokens, and the operator ceiling verdict.
+  The manifest is stored as an artifact and summarized on the owner Loop's
+  ledger as `context_pack_compiled`.
+- **Supervision policy.** The runtime's non-progress guards are one typed,
+  versioned `SupervisionPolicy` (identical failures before stop, non-progress
+  passes before escalation, the escalation ladder, the spawn depth guard)
+  carried by `LoopConfig` and `KernelRunRequest`, round-tripped through Loop
+  definitions when declared, and recorded on every Loop's init event.
+- **Checklist Practitioner.** A `practitioner.checklist` profile and
+  `gated_checklist` template run ordered deterministic checks against typed
+  facts; a clean gate completes with zero model calls and a failed blocking
+  item records the gate firing and escalates to a spawned Loop.
+- **Cross-process Loop handoff.** `LoopHandoffRequest` ships one Loop's exact
+  definition to another process; `LoopHandoffEnvelope` returns its namespaced
+  events with a digest and idempotency key; the parent verifies, refuses
+  duplicates and tampering, merges the events into one hash-chained history,
+  and records the spawned return.
+- **Task frontier, prompt experiments, and region statistics.** Saved
+  adaptive results project into digest-chained per-pass `FrontierSnapshot`
+  records (questions, hypotheses, experiments, recovery actions with typed
+  statuses), one `PromptExperimentRecord` per model call (task region, stage,
+  prompt and context identities, provider, tokens, estimate calibration, pass
+  verdict), and rebuildable `TaskRegionStatistics` with an advisory
+  `ShortcutDecision` that states its thresholds and negative evidence.
+- **Bounded model context.** A typed `ContextBudgetPolicy` bounds command
+  output, fetched text, and older attempt history before the Practitioner
+  state enters a model packet, records every trim with its digest, and the
+  model gateway refuses a request whose estimated input plus requested output
+  exceeds the route context window before contacting the provider. New solve
+  flags: `--context-budget-tokens` and `--allow-local-execution`.
 - **LLM-first open-task solving.** Public solve preserves an unbound typed task,
   gives templates and prior solutions to the model as optional candidates, and
   requires the model to select the next action. Task words and fingerprint
@@ -132,6 +165,59 @@ First public release.
 
 Defects found by running against live models, each now carrying a regression
 test:
+
+- The canonical Loop could fabricate a `recovered` step outcome when a failed
+  step's fallback mode was deterministic. The fallback now re-runs the handler
+  under the requested mode and keeps the failure visible.
+- A Loop with `accepted_success` and no ceiling iterated forever on an
+  identical failure. The runtime now stops with a typed `BLOCKED` terminal
+  after repeated identical failed outcomes and records the stop.
+- Unbounded spawn recursion surfaced as a misleading "role profile is not
+  registered" error. Profile lookup now catches only profile errors, and a
+  typed depth guard refuses runaway nesting when no `max_depth` is declared.
+- A compatibility rewrite of a contract's role or execution mode was silent.
+  Init and spawn events now carry `contract_coerced_from` and
+  `contract_coerced_to`.
+- Owner-Loop steps around the Practitioner pass loop were labelled
+  `complete`; they are now labelled `structural_boundary`, and the kernel
+  records that its passes run inside the owner's `act` step.
+- Command stdout and stderr from every prior attempt entered every later model
+  packet without bound; one run averaged 122k input tokens per call.
+- Format repair retried without bound on novel invalid output; it is bounded
+  and fails with a typed repair-exhausted result.
+- A missing provider key classified as `authentication_failed`, which stopped
+  failover. It now classifies as `missing_credential`.
+- The post-run workspace copy into Run History followed symlinks created by
+  generated code. It now preserves symlinks and skips entries that resolve
+  outside the workspace.
+- Host execution when Docker is absent was automatic and labelled
+  `no_network_host_execution`. It now requires `--allow-local-execution` and
+  is labelled `host_process_network_unenforced`.
+- Custom endpoints gain `tls_verification: ca_file` with `tls_ca_file`
+  pinning; the TLS policy appears in provider descriptions, settings
+  summaries, and the run's model-routing events.
+- `--compile-provider` accepts a settings-declared provider id and resolves
+  its key variable from that provider's `credential_env` instead of raising
+  `KeyError`.
+- Generated command timeouts must be finite and bounded, and pip setup
+  arguments are limited to requirement specifiers and reviewed options.
+- A Loop spawned directly with `spawn()` was not counted in its parent's
+  result; spawn counts now include direct spawns and fold descendants in
+  transitively when each spawned Loop returns.
+- A `steps_complete` Loop whose final step failed still stopped as ACCEPTED.
+  It now stops as `done_failed` with terminal code VERIFICATION_REJECTED, and
+  `accepted` is false.
+- A solved Practitioner run whose last orientation still listed blocking
+  questions was refused by the typed outcome contract and reported as
+  VERIFICATION_FAILED. Solved runs now carry those as `open_questions` on the
+  result; only unsolved runs return BLOCKED_MATERIAL_INPUT. A contract
+  refusal is labelled as such in the CLI failure record.
+- A hand-built or copied DECIDED approval state passed `restore()` and
+  `consume()` in any fresh `EffectApprovalService`. Decisions now carry a
+  service-key HMAC (`decision_authority`) that restore, store load, and
+  consume verify; the key never enters serialized state or the ledger.
+- The hardcoding audit Loop treated a failed verify step as accepted; it now
+  returns the report with the rejected terminal recorded.
 
 - OpenRouter zero-price selection could choose a non-text or extremely wide
   route merely because it advertised the largest completion maximum. Live

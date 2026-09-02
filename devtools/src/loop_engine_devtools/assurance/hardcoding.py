@@ -1259,11 +1259,16 @@ def run_hardcoding_audit_as_loop(
         return StepOutcome(output, "deterministic", 1.0)
 
     result = loop.run(handler=handler, max_steps=3)
-    if not result.accepted or "report" not in holder:
-        raise ValueError("hardcoding audit did not reach acceptance")
+    if "report" not in holder:
+        raise ValueError("hardcoding audit did not produce a report")
+    # A failed verify step (allowlist problems) now ends the Loop as a
+    # rejected terminal rather than ACCEPTED; the report still carries the
+    # problems, and the caller decides the exit status from them.
     return holder["report"], {
         "record_type": "hardcoding_audit_run/v1",
         "loop_id": result.loop_id, "runtime_type": "Loop",
+        "terminal_code": result.terminal_code,
+        "verify_step_rejected": not result.accepted,
         "profile_id": "practitioner.verifier",
         "selected_mode": "deterministic",
         "audit_id": holder["report"]["audit_id"],

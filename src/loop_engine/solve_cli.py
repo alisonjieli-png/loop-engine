@@ -80,6 +80,15 @@ def _apply_quickstart(args) -> None:
         args.max_model_calls = None
 
 
+def _context_budget_from_args(args):
+    """Return an operator context budget, or None for the canonical default."""
+    tokens = getattr(args, "context_budget_tokens", None)
+    if tokens is None:
+        return None
+    from .core.context_budget import ContextBudgetPolicy
+    return ContextBudgetPolicy(packet_estimated_tokens_max=int(tokens))
+
+
 def run_solve(args) -> int:
     """Perform and verify real work through the canonical Practitioner."""
     from dataclasses import replace
@@ -170,6 +179,9 @@ def run_solve(args) -> int:
                 extension_snapshot=
                     extension_application.snapshot.to_dict(),
                 quiet_model_io=bool(getattr(args, "quiet_model_io", False)),
+                allow_local_execution=bool(
+                    getattr(args, "allow_local_execution", False)),
+                context_budget=_context_budget_from_args(args),
                 progress=_solve_progress))
 
         if args.compile_provider:
@@ -241,10 +253,17 @@ def run_solve(args) -> int:
                     else "PROVIDER_UNAVAILABLE"
                     if isinstance(exc, ProviderSetupError)
                     else "VERIFICATION_FAILED")
+        from .code_nodes.solve_runtime import SolveError
+        refused_by_contract = isinstance(exc, SolveError)
         value = {
             "record_type": "solve_failure/v3", "solved": False,
             "terminal_code": terminal, "status": terminal,
-            "summary": "Solve was refused before completion.",
+            "error_class": type(exc).__name__,
+            "summary": (
+                "Solve produced a result its typed outcome contract refused; "
+                "inspect Run History for the Practitioner's own terminal."
+                if refused_by_contract
+                else "Solve was refused before completion."),
             "artifacts": [], "workspace": args.workspace or "",
             "verification": {"passed": False},
             "limitations": [str(exc)],
@@ -324,6 +343,45 @@ def self_test() -> dict:
                    and pinned == ("cloud.default",)),
         "detail": ",".join(failover) + " | providers: "
                   + ",".join(sorted(providers_reached)),
+    })
+    # A settings-declared provider id resolves its key variable from the
+    # provider's credential_env instead of failing on the builtin map.
+    import tempfile
+    from pathlib import Path as _Path
+    from .cli_operations import _compile_provider_key
+    with tempfile.TemporaryDirectory() as folder:
+        settings_path = _Path(folder) / "settings.yaml"
+        settings_path.write_text(
+            "models:\n  providers:\n"
+            "    - id: test_custom\n      kind: custom\n"
+            "      credential_env: LOOP_ENGINE_TEST_CUSTOM_KEY\n"
+            "      endpoint: https://gateway.example.test/v1/chat/completions\n"
+            "      model: test-model\n", encoding="utf-8")
+        previous = os.environ.get("LOOP_ENGINE_TEST_CUSTOM_KEY")
+        os.environ["LOOP_ENGINE_TEST_CUSTOM_KEY"] = "test-value"
+        try:
+            custom_env, custom_key = _compile_provider_key(SimpleNamespace(
+                compile_provider="test_custom", provider_key_env="",
+                prompt_for_provider_key=False,
+                settings_file=str(settings_path)))
+            unknown_refused = False
+            try:
+                _compile_provider_key(SimpleNamespace(
+                    compile_provider="never_declared", provider_key_env="",
+                    prompt_for_provider_key=False,
+                    settings_file=str(settings_path)))
+            except ValueError:
+                unknown_refused = True
+        finally:
+            if previous is None:
+                os.environ.pop("LOOP_ENGINE_TEST_CUSTOM_KEY", None)
+            else:
+                os.environ["LOOP_ENGINE_TEST_CUSTOM_KEY"] = previous
+    tests.append({
+        "test": "settings_declared_compile_provider_resolves_its_credential_env",
+        "passed": (custom_env == "LOOP_ENGINE_TEST_CUSTOM_KEY"
+                   and custom_key == "test-value" and unknown_refused),
+        "detail": f"{custom_env} resolved; undeclared provider refused",
     })
     return {"record_type": "solve_cli_progress_test/v1", "tests": tests,
             "passed": sum(item["passed"] for item in tests),

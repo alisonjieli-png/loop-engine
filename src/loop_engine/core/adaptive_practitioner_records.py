@@ -26,6 +26,8 @@ from ..code_nodes.solution_model_port import (
 from ..loop.kernel_runtime import current_kernel_owner
 from ..templates.model import TaskFeedback
 from .context_artifacts import ContextArtifactManager
+from .context_budget import ContextBudgetPolicy, bound_state_view
+from .context_pack_manifest import build_context_pack_manifest
 from .generated_project import (
     execute_generated_project)
 from .llm_work_packet import (
@@ -154,6 +156,10 @@ _RETRYABLE_TRANSPORT_ERRORS = frozenset({
     "network_unreachable", "provider_unavailable", "timeout",
     "gateway_timeout"})
 _MAXIMUM_TRANSPORT_ATTEMPTS = 3
+#: Format-repair calls per model step before the step fails honestly. Each
+#: attempt is a real model call whose output already failed admission;
+#: unbounded repair against novel invalid output is churn, not progress.
+_MAXIMUM_FORMAT_ATTEMPTS = 4
 class AdaptivePractitionerError(ValueError):
     """The adaptive Practitioner could not satisfy a typed runtime contract."""
 @dataclass(frozen=True)
@@ -448,6 +454,8 @@ class AdaptivePractitionerRequest:
     granularity_profile: str = "governed_semantic"
     persist_run_history: bool = True
     quiet_model_io: bool = False
+    allow_local_execution: bool = False
+    context_budget: ContextBudgetPolicy = ContextBudgetPolicy()
 
     def __post_init__(self) -> None:
         if not self.task.strip():
@@ -476,6 +484,12 @@ class AdaptivePractitionerRequest:
         if not isinstance(self.persist_run_history, bool):
             raise AdaptivePractitionerError(
                 "persist_run_history must be a boolean")
+        if not isinstance(self.allow_local_execution, bool):
+            raise AdaptivePractitionerError(
+                "allow_local_execution must be a boolean")
+        if not isinstance(self.context_budget, ContextBudgetPolicy):
+            raise AdaptivePractitionerError(
+                "context_budget must be a ContextBudgetPolicy")
         feedback = tuple(self.feedback)
         if (any(not isinstance(item, TaskFeedback) for item in feedback)
                 or len({item.slot_ref for item in feedback}) != len(feedback)):
@@ -771,6 +785,25 @@ class AdaptiveRunServices:
                 self.dependencies.extension_snapshot.get(
                     "content_digest", "")),
         }
+        # The typed state view is bounded exactly once, here, where it enters
+        # the model channel. Trimmed or deduplicated text stays in Run History
+        # artifacts; every change is recorded against the owner Loop.
+        bounded_state, state_trims = bound_state_view(
+            request.state, self.request.context_budget)
+        if state_trims:
+            budget_policy = self.request.context_budget
+            removed_bytes = sum(item.removed_bytes for item in state_trims)
+            owner.ledger.record(
+                loop_id=owner.loop_id, event="custom",
+                custom_kind="context_budget_applied",
+                procedure_step=request.step_id,
+                policy_id=budget_policy.policy_id,
+                policy_version=budget_policy.version,
+                trim_count=len(state_trims), bytes_removed=removed_bytes,
+                trims=tuple(item.to_dict() for item in state_trims[:40]))
+            self.publish(
+                "practitioner.context_budget_applied", step=request.step_id,
+                trim_count=len(state_trims), bytes_removed=removed_bytes)
         blocks = (
             LLMContextBlock.create(
                 "persona", "persona_context", self.portfolio.persona.version,
@@ -800,7 +833,7 @@ class AdaptiveRunServices:
             LLMContextBlock.create(
                 "current_state", "task_context", "1.0.0",
                 "active Practitioner run", "latest accepted state", 4,
-                {"task_state": request.state,
+                {"task_state": bounded_state,
                  "source_kind": self.request.source_kind,
                  "source_refs": list(self.request.source_refs),
                  "task_feedback": [
@@ -835,7 +868,8 @@ class AdaptiveRunServices:
                  and bool(self.request.source_refs)),
                 ("network_read", self.request.allow_network_reads),
                 ("workspace_write", self.request.allow_workspace_writes),
-                ("sandbox_command", self.request.allow_sandbox_commands))
+                ("sandbox_command", self.request.allow_sandbox_commands),
+                ("local_host_execution", self.request.allow_local_execution))
                 if allowed)
         maximum_calls = self.model_session.authority.max_model_calls
         remaining_calls = (None if maximum_calls is None else max(
@@ -884,7 +918,7 @@ class AdaptiveRunServices:
                 "immediate_goal": (
                     orientation.immediate_goal if orientation
                     else request.objective),
-                "current_state": request.state,
+                "current_state": bounded_state,
                 "desired_state": (
                     orientation.desired_state if orientation else "unknown"),
                 "expected_inputs": (
@@ -968,6 +1002,16 @@ class AdaptiveRunServices:
         format_failure_code = ""
         rejected_output_digest = ""
         while value is None:
+            if format_attempt > _MAXIMUM_FORMAT_ATTEMPTS:
+                self.publish(
+                    "model.step.repair_exhausted", step=request.step_id,
+                    format_attempt=format_attempt - 1,
+                    failure_code=format_failure_code,
+                    response_digest=rejected_output_digest)
+                raise ModelResponseRepairStalled(
+                    f"model step {request.step_id} produced "
+                    f"{format_attempt - 1} invalid outputs; format repair is "
+                    f"bounded at {_MAXIMUM_FORMAT_ATTEMPTS} attempts")
             profile = self.portfolio.assembly_profile(
                 bool(request.state.get("failures")) or format_attempt > 1)
             assembled = assemble_work_packet(
@@ -978,11 +1022,50 @@ class AdaptiveRunServices:
                     rejected_output_digest=rejected_output_digest,
                     granularity_profile=self.request.granularity_profile), owner)
             snapshot = assembled.snapshot.to_dict()
+            budget = self.request.context_budget
+            if (budget.packet_estimated_tokens_max is not None
+                    and snapshot["estimated_tokens"]
+                    > budget.packet_estimated_tokens_max):
+                self.publish(
+                    "model.step.context_budget_exceeded",
+                    step=request.step_id,
+                    estimated_tokens=snapshot["estimated_tokens"],
+                    packet_estimated_tokens_max=
+                        budget.packet_estimated_tokens_max,
+                    prompt_digest=snapshot["prompt_digest"])
+                raise SolutionModelError(
+                    f"context_budget_exceeded: the assembled packet for step "
+                    f"{request.step_id} is estimated at "
+                    f"{snapshot['estimated_tokens']} tokens, above the "
+                    f"operator ceiling of {budget.packet_estimated_tokens_max}",
+                    error_code="context_budget_exceeded")
+            # One manifest per assembled packet: what the model could see,
+            # what was compacted or excluded and why, and whether the
+            # estimate fits the operator ceiling. The exact route window is
+            # decided by the gateway, whose preflight refusal is separate.
+            manifest = build_context_pack_manifest(
+                run_id=self.run_id, loop_id=owner.loop_id,
+                step_id=request.step_id, packet=packet, snapshot=snapshot,
+                trims=state_trims, policy=budget)
+            manifest_artifact = self.artifacts.store.put(
+                json.dumps(manifest.to_dict(), sort_keys=True,
+                           separators=(",", ":")).encode("utf-8"),
+                media_type="application/json", encoding="utf-8",
+                artifact_kind="context_pack_manifest")
+            owner.ledger.record(
+                loop_id=owner.loop_id, event="custom",
+                custom_kind="context_pack_compiled",
+                procedure_step=request.step_id,
+                format_attempt=format_attempt,
+                context_pack_artifact_ref=manifest_artifact.object_key,
+                **manifest.summary())
             self.context_snapshots.append({
                 "step": request.step_id, "objective": request.objective,
                 "packet_id": packet.packet_id,
                 "packet_digest": packet.content_digest,
                 "packet_artifact_ref": packet_artifact.to_dict(),
+                "context_pack": manifest.summary(),
+                "context_pack_artifact_ref": manifest_artifact.to_dict(),
                 "intelligence_loop_id": selected_context["loop_id"],
                 "assembly_loop_id": assembled.assembly_loop_id,
                 "primitive_loop_ids": list(assembled.primitive_loop_ids),

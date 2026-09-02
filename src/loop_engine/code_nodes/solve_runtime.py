@@ -107,6 +107,11 @@ class SolveRequest:
     project_executor: "Callable | None" = field(
         default=None, repr=False, compare=False)
     quiet_model_io: bool = False
+    #: Host execution when Docker is absent; off by default (no OS sandbox).
+    allow_local_execution: bool = False
+    #: Operator context budget; None selects the canonical policy default.
+    context_budget: "object | None" = field(
+        default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         mode = self.interaction_mode
@@ -334,6 +339,21 @@ def _material_questions(result: dict) -> tuple[MaterialQuestion, ...]:
     return tuple(output)
 
 
+def _terminal_questions(result: dict, solved: bool) -> tuple:
+    """Split the latest orientation's questions into blocking and open.
+
+    A question blocks only when the run stopped without solving. A solved run
+    that still lists questions in its last orientation did not need them
+    answered; they are reported as open questions on the result, never as a
+    blocking terminal, so a verified result is not refused by its own typed
+    contract.
+    """
+    projected = _material_questions(result)
+    if solved:
+        return (), tuple(projected)
+    return tuple(projected), ()
+
+
 def _failure_code(result: dict) -> str:
     code = str(result.get("failure_code") or "")
     if code in ("NO_VERIFIED_CAPABILITY", "EXECUTOR_UNAVAILABLE"):
@@ -420,7 +440,10 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             allow_source_materialization_to_model=
                 request.allow_source_materialization_to_model,
             persist_run_history=request.save_run_history,
-            quiet_model_io=request.quiet_model_io),
+            quiet_model_io=request.quiet_model_io,
+            allow_local_execution=request.allow_local_execution,
+            **({"context_budget": request.context_budget}
+               if request.context_budget is not None else {})),
         AdaptivePractitionerDependencies(
             model_execution=request.model_execution,
             deterministic_resolvers=resolvers,
@@ -441,7 +464,7 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
     if "passed" not in verification:
         verification = {**verification, "passed": bool(
             solved or verification.get("verdict") == "accept")}
-    questions = _material_questions(adaptive)
+    questions, open_questions = _terminal_questions(adaptive, solved)
     terminal = (SolveTerminalCode.COMPLETED_VERIFIED.value if solved
                 else SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value
                 if questions
@@ -468,7 +491,10 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         status=terminal,
         solved=solved,
         failure_code="" if solved else terminal,
-        result=(product["result"] if solved else {
+        result=({**product["result"],
+                 **({"open_questions": [
+                     item.to_dict() for item in open_questions]}
+                    if open_questions else {})} if solved else {
             "error": adaptive.get("failure") or adaptive.get("failures")
                      or "solve did not complete"}),
         compiled_task=compiled,
@@ -694,6 +720,26 @@ def self_test() -> dict:
                 text="Train and compare several supervised prediction models.")),
             runs_dir=root,
             interaction_mode=InteractionMode.AUTONOMOUS))
+        stale = {"solved": True, "orientations": [{
+            "blocking_questions": ["Which metric should the report lead with?"],
+            "ambiguities": [{"subject": "lead metric",
+                             "state": "USER_CLARIFICATION_REQUIRED",
+                             "reason": "presentation only"}]}]}
+        blocking, open_items = _terminal_questions(stale, True)
+        still_blocking, _ = _terminal_questions(dict(stale, solved=False), False)
+        check("solved_run_reports_stale_questions_as_open_not_as_a_refusal",
+              blocking == () and len(open_items) == 1
+              and open_items[0].answer_slot == "lead_metric"
+              and len(still_blocking) == 1
+              and SolveOutcome(
+                  run_id="r", status="COMPLETED_VERIFIED", solved=True,
+                  failure_code="", result={"open_questions": [
+                      open_items[0].to_dict()]},
+                  compiled_task={}, intelligence={}, selected_mode="model_led",
+                  selected_canvas={}, graph_digest="",
+                  verification={"passed": True}).status
+              == "COMPLETED_VERIFIED",
+              f"open={len(open_items)} blocking={len(blocking)}")
         check("autonomous_interaction_terminates_without_a_question",
               not autonomous.solved
               and autonomous.failure_code == "CAPABILITY_GAP"

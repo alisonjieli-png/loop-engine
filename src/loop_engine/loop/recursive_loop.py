@@ -18,6 +18,9 @@ from .loop_definition import (LoopDefinition, LoopDefinitionError,
                               LoopDefinitionRef, LoopStartRequest)
 from .loop_control import (EXIT_CONDITIONS, FRAMEWORKS, LOOP_CONDITIONS,
                            default_loop_condition, normalize_exit_condition)
+from .loop_contract import LoopContract
+from .supervision_policy import (DEFAULT_SUPERVISION_POLICY,
+                                 SupervisionPolicy)
 from .loop_role import (LoopRelationship, LoopRelationshipKind, LoopRole,
                         LoopRoleIdentity)
 from .runtime_context import LoopRuntimeContext
@@ -61,7 +64,17 @@ TERMINAL_CODES = ("ACCEPTED", "INVALID_SPEC", "POLICY_DENIED", "BLOCKED",
 #: the runtime's own stop reasons -> their typed code.  Kept as a closed map
 #: so a new reason cannot appear without a code.
 _REASON_TO_CODE = {"done": "ACCEPTED", "success_once": "ACCEPTED",
-                   "budget": "BUDGET_EXHAUSTED", "cancelled": "CANCELED"}
+                   "done_failed": "VERIFICATION_REJECTED",
+                   "budget": "BUDGET_EXHAUSTED", "cancelled": "CANCELED",
+                   "no_progress": "BLOCKED"}
+
+#: The historical guard values, derived from the one default supervision
+#: policy so there is a single owner. A Loop reads its own
+#: ``config.supervision`` at run time; these names remain for callers and
+#: checks that refer to the defaults.
+_MAX_IDENTICAL_FAILED_ITERATIONS = (
+    DEFAULT_SUPERVISION_POLICY.identical_failures_before_stop)
+_DEFAULT_MAX_SPAWN_DEPTH = DEFAULT_SUPERVISION_POLICY.spawn_depth_guard
 
 
 def terminal_code(reason: str) -> str:
@@ -151,7 +164,10 @@ class LoopConfig:
     loop_condition: str = ""
     exit_condition: str = ""
     success_confidence_min: float = 0.5
+    supervision: SupervisionPolicy = DEFAULT_SUPERVISION_POLICY
     def __post_init__(self):
+        if not isinstance(self.supervision, SupervisionPolicy):
+            raise ValueError("supervision must be a SupervisionPolicy")
         if self.framework not in FRAMEWORKS:
             raise ValueError(f"framework must be one of {FRAMEWORKS}")
         self.power = _POWER_ALIASES.get(self.power, self.power)
@@ -326,7 +342,8 @@ class LoopResult:
     @property
     def accepted(self) -> bool:
         """Did the loop REACH ITS OBJECTIVE?  Not "did it return" — the
-        distinction Article 5 insists on."""
+        distinction Article 5 insists on. A sequence whose final step
+        failed stops as ``done_failed`` and is not accepted."""
         return self.terminal_code == "ACCEPTED"
 
 
@@ -353,6 +370,29 @@ def _default_registered_identity(config: LoopConfig) -> LoopRoleIdentity:
         if config.framework == "five_step"
         else "practitioner.reference_nine_step")
     return LoopRoleIdentity(LoopRole.PRACTITIONER, profile_id)
+
+
+def _contract_coercion_fields(requested, definition: LoopDefinition) -> dict:
+    """Name a compatibility rewrite of a contract's role or execution mode.
+
+    The established constructor may compose a definition whose contract role
+    or mode differs from the contract the caller supplied. That rewrite is
+    recorded on the Loop's init or spawn event so it is visible in Run
+    History instead of silent.
+    """
+    if not isinstance(requested, LoopContract):
+        return {}
+    bound = definition.contract
+    if (requested.role == bound.role
+            and requested.execution_mode == bound.execution_mode):
+        return {}
+    return {
+        "contract_coerced_from": {
+            "role": requested.role,
+            "execution_mode": requested.execution_mode},
+        "contract_coerced_to": {
+            "role": bound.role, "execution_mode": bound.execution_mode},
+    }
 
 
 class _LoopMeta(type):
@@ -428,6 +468,7 @@ class Loop(metaclass=_LoopMeta):
                  relationship: "LoopRelationship | None" = None,
                  runtime_context: "LoopRuntimeContext | None" = None):
         compatibility_composition = not isinstance(goal, LoopStartRequest)
+        coercion_fields: dict = {}
         if isinstance(goal, LoopStartRequest):
             if any(value is not None for value in (
                     config, ledger, contract, identity, relationship,
@@ -464,6 +505,7 @@ class Loop(metaclass=_LoopMeta):
                 raise LoopError(
                     f"established Loop constructor could not compose a "
                     f"registered definition: {exc}") from exc
+            coercion_fields = _contract_coercion_fields(contract, definition)
             selected_context = runtime_context or LoopRuntimeContext.compatibility(
                 capabilities=definition.required_capabilities,
                 permissions=definition.permissions,
@@ -507,8 +549,10 @@ class Loop(metaclass=_LoopMeta):
                             output_roles=self.contract.output_roles,
                             compatibility_composition=
                                 compatibility_composition,
+                            supervision=self.config.supervision.to_dict(),
                             **identity_fields,
-                            **relationship_fields)
+                            **relationship_fields,
+                            **coercion_fields)
         # the first honest emitter for loop.started — the loop is live.
         self.ledger.record(loop_id=self.loop_id, depth=depth,
                            event="loop.started", goal=self.goal,
@@ -601,6 +645,13 @@ class Loop(metaclass=_LoopMeta):
         if (self.config.max_depth is not None
                 and self.depth + 1 > self.config.max_depth):
             raise LoopError(f"max recursion depth {self.config.max_depth} reached")
+        depth_guard = self.config.supervision.spawn_depth_guard
+        if (self.config.max_depth is None
+                and self.depth + 1 > depth_guard):
+            raise LoopError(
+                f"spawn depth {self.depth + 1} exceeds the runtime safety "
+                f"guard of {depth_guard} nested Loops; declare "
+                "max_depth explicitly when deeper recursion is intended")
         if definition is not None and any(
                 value is not None for value in (config, contract, identity)):
             raise LoopError(
@@ -658,6 +709,7 @@ class Loop(metaclass=_LoopMeta):
             self.ledger.record(
                 loop_id=self.loop_id, event="spawned_requested",
                 goal=str(goal)[:120], depth=self.depth + 1)
+        coercion_fields: dict = {}
         if definition is None:
             selected_identity = identity or self.identity
             selected_config = config or self.config
@@ -675,6 +727,7 @@ class Loop(metaclass=_LoopMeta):
                 raise LoopError(
                     f"spawned Loop could not compose a registered "
                     f"definition: {exc}") from exc
+            coercion_fields = _contract_coercion_fields(contract, definition)
         elif not set(definition.supported_modes) <= set(
                 self.config.delegated_modes):
             raise LoopError(
@@ -704,6 +757,10 @@ class Loop(metaclass=_LoopMeta):
         except LoopDefinitionError as exc:
             raise LoopError(str(exc)) from exc
         spawned = Loop(start_request, parent=self, depth=self.depth + 1)
+        # Every direct spawn counts on this Loop's result, whether a step
+        # outcome requested it or the handler called spawn() itself; the
+        # spawned Loop's own descendants fold in when it returns (see _terminate).
+        self._note_spawned(1)
         if semantic_spawn:
             self.ledger.record(
                 loop_id=spawned.loop_id,
@@ -720,7 +777,8 @@ class Loop(metaclass=_LoopMeta):
                 **({"delegated_modes_clamped_from": delegated_clamped_from,
                     "delegated_modes_clamped_to":
                         tuple(spawned.config.delegated_modes)}
-                   if delegated_clamped_from else {}))
+                   if delegated_clamped_from else {}),
+                **coercion_fields)
         return spawned
 
     # --- the structural plan ----------------------------------------------
@@ -855,6 +913,18 @@ class Loop(metaclass=_LoopMeta):
     # semantic model call — a semantic→semantic fallback is DEFERRED to the
     # next iteration (recorded as a model boundary), never hidden in-iteration.
 
+    def _note_spawned(self, count: int) -> None:
+        """Add ``count`` descendants to this Loop's spawned total, before or
+        after its own execution state exists."""
+        if count <= 0:
+            return
+        it = getattr(self, "_it", None)
+        if it is not None:
+            it["spawned"] += count
+        else:
+            self._spawned_before_run = getattr(
+                self, "_spawned_before_run", 0) + count
+
     def _ensure_execution(self, max_steps: "int | None") -> dict:
         if getattr(self, "_it", None) is None:
             st = self.config.settings
@@ -862,7 +932,8 @@ class Loop(metaclass=_LoopMeta):
                      else getattr(self, "_max_steps_override", None)
                      or st["max_iterations"])
             self._it = {"context": {}, "mode_counts": {}, "model_calls": 0,
-                        "spawned": 0, "steps_run": 0, "conf_sum": 0.0,
+                        "spawned": getattr(self, "_spawned_before_run", 0),
+                        "steps_run": 0, "conf_sum": 0.0,
                         "last": "", "stopped": "", "seq": list(self.steps()),
                         "i": 0, "limit": limit, "pending": None,
                         "attempts": 0, "accepted_successes": 0}
@@ -929,6 +1000,11 @@ class Loop(metaclass=_LoopMeta):
                                spawned_loop_id=self.loop_id,
                                depth=self.depth, reason=reason,
                                steps_run=it.get("steps_run", 0))
+            if not it.get("_descendants_folded"):
+                # The parent's spawned count is transitive: this Loop's own
+                # descendants are added exactly once, at its return.
+                it["_descendants_folded"] = True
+                self.parent._note_spawned(it.get("spawned", 0))
         cfg = getattr(self, "_run_history", None)
         if cfg is not None:
             from ..core.run_history import RunHistory
@@ -1160,6 +1236,15 @@ class Loop(metaclass=_LoopMeta):
                             iteration=it["attempts"] + 1,
                             note="no accepted success yet; accepted_success "
                                  "requires another attempt")
+                    elif it.get("last_failure_signature") is not None:
+                        # The sequence finished on a failed outcome that no
+                        # later iteration recovered. Completing the steps is
+                        # not the same as reaching the objective, so the stop
+                        # is typed as a rejected outcome, never ACCEPTED.
+                        self._terminate(it, "done_failed")
+                        rec.update(terminal=True,
+                                   note="sequence complete; final step failed")
+                        return rec
                     else:
                         self._terminate(it, "done")
                         rec.update(terminal=True, note="sequence complete")
@@ -1192,8 +1277,15 @@ class Loop(metaclass=_LoopMeta):
                 self.ledger.record(loop_id=self.loop_id, event="fallback",
                                    step=step, from_mode=outcome.mode,
                                    to_mode=fb)
-                outcome = StepOutcome(output=f"{step}:recovered:{fb}", mode=fb,
-                                      confidence=0.6)
+                # A deterministic fallback is REAL work: the handler runs
+                # again under the requested mode. The runtime never
+                # fabricates a recovered outcome; a handler that cannot
+                # recover keeps its failure visible on the ledger.
+                it["context"]["requested_mode"] = fb
+                try:
+                    outcome = handler(self, step, it["context"])
+                finally:
+                    it["context"].pop("requested_mode", None)
                 self._require_allowed_outcome_mode(outcome, step)
                 attempts += 1
         if outcome.spawn_goal and (
@@ -1202,7 +1294,6 @@ class Loop(metaclass=_LoopMeta):
             spawned = self.spawn(outcome.spawn_goal)   # loops initialize loops
             cres = spawned.run(handler=handler, chooser=chooser)
             it["context"][f"{step}:spawned"] = cres.output
-            it["spawned"] += 1 + cres.spawned
             outcome = StepOutcome(output=f"{step}:used({cres.output})",
                                   mode=outcome.mode,
                                   confidence=min(outcome.confidence,
@@ -1236,6 +1327,18 @@ class Loop(metaclass=_LoopMeta):
                     and outcome.confidence >= self.config.success_confidence_min)
         if accepted:
             it["accepted_successes"] += 1
+        # Identical-state detection: the same step failing with the same
+        # output, over and over, is churn. Any new output, any accepted
+        # work, or any different step resets the count.
+        failure_signature = (step, hashlib.sha256(
+            str(outcome.output).encode("utf-8")).hexdigest())
+        if outcome.failed and it.get(
+                "last_failure_signature") == failure_signature:
+            it["identical_failures"] = it.get("identical_failures", 0) + 1
+        else:
+            it["identical_failures"] = 1 if outcome.failed else 0
+        it["last_failure_signature"] = (
+            failure_signature if outcome.failed else None)
         self.ledger.record(loop_id=self.loop_id, depth=self.depth,
                             event="run_step", step=step, mode=outcome.mode,
                             output=outcome.output,
@@ -1245,6 +1348,18 @@ class Loop(metaclass=_LoopMeta):
                             accepted_successes=it["accepted_successes"])
         rec.update(step=step, mode=outcome.mode, output=outcome.output,
                    confidence=outcome.confidence, accepted=accepted)
+        if (it["identical_failures"]
+                >= self.config.supervision.identical_failures_before_stop):
+            self.ledger.record(
+                loop_id=self.loop_id, event="custom",
+                custom_kind="non_progress_stop", step=step,
+                identical_failures=it["identical_failures"],
+                supervision_policy_id=self.config.supervision.policy_id,
+                output_digest=failure_signature[1])
+            self._terminate(it, "no_progress")
+            rec.update(terminal=True,
+                       note="identical failed outcome repeated without progress")
+            return rec
         if (self.config.exit_condition == "accepted_success" and
                 it["accepted_successes"] >= 1):
             self._terminate(it, "success_once")
@@ -1760,13 +1875,17 @@ def self_test() -> dict:
     # terminated "done" with ZERO accepted successes, and reported success —
     # the exact opposite of the stop condition's name. Found by writing the
     # example for it.
-    def _succeeds_on_nth(n, max_iterations=None):
+    def _succeeds_on_nth(n, max_iterations=None, distinct_failures=False):
         state = {"tries": 0}
 
         def handler(loop, step, context):
             state["tries"] += 1
             ok = state["tries"] >= n
-            return StepOutcome(output="found" if ok else "timed out",
+            # Distinct failure text models real progress-looking retries;
+            # identical text models pure churn (caught by the runtime).
+            failure = (f"timed out (attempt {state['tries']})"
+                       if distinct_failures else "timed out")
+            return StepOutcome(output="found" if ok else failure,
                                mode="deterministic",
                                confidence=1.0 if ok else 0.0, failed=not ok)
         lp = Loop("retry until it works",
@@ -1780,18 +1899,27 @@ def self_test() -> dict:
         return state["tries"], lp.result()
 
     third_tries, third = _succeeds_on_nth(3)
-    never_tries, never = _succeeds_on_nth(10 ** 6, max_iterations=8)
+    never_tries, never = _succeeds_on_nth(
+        10 ** 6, max_iterations=8, distinct_failures=True)
+    churn_tries, churn_never = _succeeds_on_nth(10 ** 6)
     first_tries, first = _succeeds_on_nth(1)
     check("success_once_retries_and_honors_an_explicit_limit",
           third_tries == 3 and third.stopped == "success_once"
           and third.accepted_successes == 1
           and first_tries == 1 and first.stopped == "success_once"
-          # and it cannot spin forever: with no success ever, the budget stops
-          # it and names the real reason rather than claiming completion
+          # and it cannot spin forever: with no success ever and failures
+          # that keep changing, the explicit budget stops it and names the
+          # real reason rather than claiming completion ...
           and never.stopped == "budget" and never.accepted_successes == 0
-          and never_tries < 100,
-          f"3rd-attempt success took {third_tries} attempts; a never-succeeding "
-          f"loop stopped on budget after {never_tries}")
+          and never_tries == 8
+          # ... while identical failures stop even sooner, with no budget at
+          # all, as an honest non-progress terminal.
+          and churn_never.stopped == "no_progress"
+          and churn_never.terminal_code == "BLOCKED"
+          and churn_tries == _MAX_IDENTICAL_FAILED_ITERATIONS,
+          f"3rd-attempt success took {third_tries} attempts; changing failures "
+          f"stopped on budget after {never_tries}; identical failures stopped "
+          f"as no_progress after {churn_tries}")
 
     # adversarial: an unknown current condition is refused fail-closed.
     bad = False
@@ -1824,6 +1952,131 @@ def self_test() -> dict:
           prose_a.contract.output_roles == ("result",)
           and prose_b.contract.output_roles == ("result",),
           "compatibility Loops use the fixed result port")
+
+    # Runtime honesty guards (2026-09-01).
+    # (a) a failed step never becomes a fabricated recovered outcome.
+    def _always_fails(loop, step, context):
+        return StepOutcome(output="attempt failed", mode=context.get(
+            "requested_mode") or "hybrid", confidence=0.0, failed=True)
+    fab = Loop("no fabricated recovery", LoopConfig(
+        framework="custom", custom_steps=("act",),
+        allowable_modes=("hybrid", "deterministic"),
+        preferred_modes=("hybrid", "deterministic")))
+    fab_result = fab.run(handler=_always_fails)
+    check("failed_step_is_never_fabricated_into_a_recovered_outcome",
+          fab_result.accepted_successes == 0
+          and fab_result.output == "attempt failed"
+          and fab_result.terminal_code == "VERIFICATION_REJECTED"
+          and fab_result.stopped == "done_failed"
+          and not fab_result.accepted
+          and not any("recovered:" in str(e.get("output", ""))
+                      for e in fab.ledger.events
+                      if e.get("event") == "run_step")
+          and any(e.get("event") == "fallback"
+                  and e.get("to_mode") == "deterministic"
+                  for e in fab.ledger.events),
+          "the deterministic fallback ran the handler and kept its failure")
+    # (b) an accepted_success loop whose handler never succeeds stops on an
+    # identical-failure signature instead of iterating forever.
+    churn = Loop("never succeeds", LoopConfig(
+        framework="custom", custom_steps=("act",),
+        allowable_modes=("deterministic",), preferred_modes=("deterministic",),
+        exit_condition="accepted_success"))
+    churn_result = churn.run(handler=lambda loop, step, context: StepOutcome(
+        output="nope", mode="deterministic", confidence=0.0, failed=True))
+    check("identical_failures_stop_an_unbounded_accepted_success_loop",
+          churn_result.stopped == "no_progress"
+          and churn_result.terminal_code == "BLOCKED"
+          and churn_result.steps_run == _MAX_IDENTICAL_FAILED_ITERATIONS
+          and any(e.get("custom_kind") == "non_progress_stop"
+                  for e in churn.ledger.events),
+          f"stopped after {churn_result.steps_run} identical failures")
+    # (c) unbounded spawn recursion is a typed refusal, not a masked
+    # RecursionError relabelled as an unregistered profile.
+    deep = Loop("recurse", LoopConfig(framework="custom", custom_steps=("act",)))
+    depth_error = ""
+    try:
+        deep.run(handler=lambda loop, step, context: StepOutcome(
+            output="spawn", mode="deterministic", spawn_goal="deeper"))
+    except LoopError as exc:
+        depth_error = str(exc)
+    check("unbounded_spawn_recursion_is_a_typed_depth_refusal",
+          "safety guard" in depth_error and "role profile" not in depth_error,
+          depth_error[:90])
+    # (c2) a Loop spawned directly with spawn() counts on its parent's result
+    # exactly like one requested through a step outcome, and descendants fold
+    # in transitively when each spawned Loop returns.
+    counted = Loop("count spawns", LoopConfig(
+        framework="custom", custom_steps=("act",),
+        allowable_modes=("deterministic",),
+        preferred_modes=("deterministic",)))
+
+    def _spawn_by_hand(loop, step, context):
+        spawned_loop = loop.spawn("direct spawned Loop", LoopConfig(
+            framework="custom", custom_steps=("act",),
+            allowable_modes=("deterministic",),
+            preferred_modes=("deterministic",)))
+        spawned_loop.run(handler=lambda l, s, c: StepOutcome(
+            output="descendant", mode="deterministic",
+            spawn_goal="requested descendant") if l is spawned_loop
+            else StepOutcome(output="leaf", mode="deterministic"))
+        return StepOutcome(output="done", mode="deterministic")
+
+    counted_result = counted.run(handler=_spawn_by_hand)
+    spawn_events = [e for e in counted.ledger.events
+                    if e.get("event") == "spawn"]
+    check("direct_spawn_calls_are_counted_transitively_on_the_parent_result",
+          counted_result.spawned == 2 and len(spawn_events) == 2,
+          f"result.spawned={counted_result.spawned} "
+          f"spawn_events={len(spawn_events)}")
+    # (c3) the supervision policy is data the Loop reads, not a constant:
+    # a strict policy stops after one identical failure and the init event
+    # records which policy governed.
+    strict = Loop("strict supervision", LoopConfig(
+        framework="custom", custom_steps=("act",),
+        allowable_modes=("deterministic",),
+        preferred_modes=("deterministic",),
+        exit_condition="accepted_success",
+        supervision=SupervisionPolicy(
+            policy_id="loop.supervision.strict",
+            identical_failures_before_stop=1, spawn_depth_guard=2)))
+    strict_result = strict.run(handler=lambda loop, step, context: StepOutcome(
+        output="nope", mode="deterministic", confidence=0.0, failed=True))
+    strict_init = next(e for e in strict.ledger.events
+                       if e.get("event") == "init")
+    shallow = Loop("shallow", LoopConfig(
+        framework="custom", custom_steps=("act",),
+        supervision=SupervisionPolicy(spawn_depth_guard=2)))
+    shallow_error = ""
+    try:
+        shallow.run(handler=lambda loop, step, context: StepOutcome(
+            output="spawn", mode="deterministic", spawn_goal="deeper"))
+    except LoopError as exc:
+        shallow_error = str(exc)
+    check("declared_supervision_policy_governs_stops_and_is_recorded_on_init",
+          strict_result.steps_run == 1
+          and strict_result.terminal_code == "BLOCKED"
+          and strict_init.get("supervision", {}).get("policy_id")
+          == "loop.supervision.strict"
+          and "guard of 2" in shallow_error,
+          f"steps={strict_result.steps_run} policy="
+          f"{strict_init.get('supervision', {}).get('policy_id')}")
+    # (d) a compatibility rewrite of a contract's role or mode is recorded.
+    coerced = Loop("coerced", LoopConfig(
+        allowable_modes=("deterministic",), preferred_modes=("deterministic",)),
+        contract=_C(name="solution work", execution_mode="model_led",
+                    input_roles=("x",), output_roles=("y",),
+                    effects=("pure",), role="solution"),
+        identity=LoopRoleIdentity(LoopRole.PRACTITIONER,
+                                  "practitioner.reference_nine_step"))
+    init_coerced = next(e for e in coerced.ledger.events
+                        if e.get("event") == "init")
+    check("contract_coercion_is_recorded_on_the_init_event",
+          init_coerced.get("contract_coerced_from", {}).get("role")
+          == "solution"
+          and init_coerced.get("contract_coerced_to", {}).get(
+              "execution_mode") == "code_only",
+          "the compatibility rewrite is visible in Run History, not silent")
 
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "recursive_loop_self_test", "tests": results,

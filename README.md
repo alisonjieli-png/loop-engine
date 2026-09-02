@@ -78,7 +78,11 @@ Run History: ~/.loop-engine/runs/<run-id>
 
 A generated-project solve writes only inside the selected workspace. Commands
 run in the pinned Docker image with bounded resources and no network during
-execute or verify steps. Dependency setup requires separate authority.
+execute or verify steps. Dependency setup requires separate authority. If
+Docker is absent, the solve stops with a typed sandbox-unavailable result
+unless you pass `--allow-local-execution`, which runs generated code as a host
+process without an operating-system sandbox and records that weaker isolation
+in Run History.
 
 If an answer can materially change the goal, authority, inputs, or acceptance,
 the solve returns `BLOCKED_MATERIAL_INPUT` with a named answer slot instead of

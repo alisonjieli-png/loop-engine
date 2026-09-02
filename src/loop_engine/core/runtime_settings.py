@@ -189,6 +189,7 @@ class ProviderSettings:
     auth_header: str = ""
     stream: "str | bool | None" = None
     tls_verification: str = "default"
+    tls_ca_file: str = ""
 
     def __post_init__(self) -> None:
         if isinstance(self.maximum_output_tokens, str):
@@ -244,9 +245,14 @@ class ProviderSettings:
                 and self.maximum_output_tokens < 1):
             raise SettingsError(
                 "provider.maximum_output_tokens must be positive")
-        if self.tls_verification not in ("default", "skip"):
+        if self.tls_verification not in ("default", "skip", "ca_file"):
             raise SettingsError(
-                "provider.tls_verification must be default or skip")
+                "provider.tls_verification must be default, skip, or ca_file")
+        if (self.tls_verification == "ca_file") != bool(
+                self.tls_ca_file.strip()):
+            raise SettingsError(
+                "provider.tls_ca_file must be declared exactly when "
+                "tls_verification is ca_file")
         if self.kind == "builtin" and self.provider_id not in (
                 "ollama_cloud", "mistral", "openrouter"):
             raise SettingsError(
@@ -295,6 +301,8 @@ class ProviderSettings:
             "header_names": [item[0] for item in self.headers],
             "auth_scheme": self.auth_scheme,
             "auth_header": self.auth_header,
+            "tls_verification": self.tls_verification,
+            "tls_ca_file": self.tls_ca_file,
         }
 
 @dataclass(frozen=True)
@@ -754,7 +762,8 @@ class RuntimeSettings:
                 stream=(configured.stream if configured.stream is not None
                         else "auto"),
                 tls_verification=str(
-                    configured.tls_verification or "default"))
+                    configured.tls_verification or "default"),
+                tls_ca_file=configured.tls_ca_file)
             spec = provider_spec_from_endpoint(endpoint)
             providers.append(replace(
                 spec, credential_ref=(

@@ -202,11 +202,12 @@ def main(argv=None) -> int:
                         help=argparse.SUPPRESS)
     parser.add_argument(
         "--compile-provider",
-        choices=("ollama_cloud", "mistral", "openrouter", "opencode_zen",
-                 "opencode_go"),
         default="",
-        help="optionally add one authorized model-assisted Orientation review; "
-             "the deterministic compilation remains authoritative")
+        help="optionally add one authorized model-assisted Orientation "
+             "review; the deterministic compilation remains authoritative. "
+             "Builtin providers: ollama_cloud, mistral, openrouter, "
+             "opencode_zen, opencode_go. A custom provider id from the "
+             "settings file is resolved through its configured routes.")
     parser.add_argument(
         "--provider-key-env", default="", metavar="ENV_NAME",
         help="read the selected provider key from this environment variable; "
@@ -261,8 +262,19 @@ def main(argv=None) -> int:
         "--quiet-model-io", action="store_true",
         help="reduce solve progress to event summaries without the exact "
              "prompt and output text; full model IO traces stderr by "
-             "default. Run History storage policy is unchanged in both "
-             "modes: raw prompts and outputs are never saved")
+             "default. Run History events store digests in both modes; "
+             "the assembled work packets remain in the run's artifact store")
+    parser.add_argument(
+        "--allow-local-execution", action="store_true",
+        help="when Docker is unavailable, permit generated code to run as a "
+             "host process without an operating-system sandbox; the run "
+             "record labels the weaker isolation. Off by default")
+    parser.add_argument(
+        "--context-budget-tokens", type=int, metavar="TOKENS",
+        help="optional ceiling for the estimated model input of one call; "
+             "omitted means the route context window minus the requested "
+             "output maximum is the only ceiling. Command output and fetched "
+             "text in the Practitioner state are always bounded and recorded")
     parser.add_argument(
         "--practitioner-mode",
         choices=("deterministic", "hybrid", "non_deterministic"),

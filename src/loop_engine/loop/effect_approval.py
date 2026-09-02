@@ -232,9 +232,22 @@ class ApprovalDecision:
         )
 
 
+#: Authority for decided approval states issued in this interpreter. A service
+#: may declare its own key so a decision made in one process can be restored in
+#: another; without the issuing key a serialized decision is inert. The key
+#: never enters serialized state, run records, or ledger events.
+_PROCESS_AUTHORITY_KEY = secrets.token_bytes(32)
+
+
 @dataclass(frozen=True)
 class PendingApprovalState:
-    """Serializable approval state. The plain resume token is not stored."""
+    """Serializable approval state. The plain resume token is not stored.
+
+    ``decision_authority`` is the HMAC an ``EffectApprovalService`` attaches
+    when it issues a decision. A decided or consumed state without a valid
+    authority for the restoring service's key is refused: authority does not
+    travel in a hand-built or copied record.
+    """
 
     request: ApprovalRequest
     request_digest: str
@@ -243,6 +256,7 @@ class PendingApprovalState:
     decision: "ApprovalDecision | None" = None
     schema_version: str = EFFECT_APPROVAL_SCHEMA_VERSION
     state_revision: int = 0
+    decision_authority: str = ""
 
     def __post_init__(self):
         for name, digest in (
@@ -275,6 +289,18 @@ class PendingApprovalState:
                 f"{expected_revision}")
         if self.decision and self.decision.request_id != self.request.request_id:
             raise ValueError("approval decision does not match its request")
+        if self.decision_authority and (
+                len(self.decision_authority) != 64 or any(
+                    char not in "0123456789abcdef"
+                    for char in self.decision_authority)):
+            raise ValueError("decision_authority must be a SHA-256 HMAC value")
+        if self.status is ApprovalStatus.PENDING and self.decision_authority:
+            raise ValueError("pending approval cannot carry decision authority")
+
+    def with_decision_authority(self, value: str) -> "PendingApprovalState":
+        """Return this decided state carrying a service-issued authority."""
+        from dataclasses import replace
+        return replace(self, decision_authority=value)
 
     def to_dict(self) -> dict:
         return {
@@ -285,6 +311,7 @@ class PendingApprovalState:
             "decision": self.decision.to_dict() if self.decision else None,
             "schema_version": self.schema_version,
             "state_revision": self.state_revision,
+            "decision_authority": self.decision_authority,
         }
 
     def to_json(self) -> str:
@@ -301,6 +328,7 @@ class PendingApprovalState:
             decision=ApprovalDecision.from_dict(decision) if decision else None,
             schema_version=str(value.get("schema_version", "")),
             state_revision=int(value.get("state_revision", -1)),
+            decision_authority=str(value.get("decision_authority", "")),
         )
 
     @classmethod
@@ -363,6 +391,7 @@ class PendingApprovalState:
             decision=self.decision,
             schema_version=EFFECT_APPROVAL_SCHEMA_VERSION,
             state_revision=2,
+            decision_authority=self.decision_authority,
         )
 
 
@@ -397,6 +426,8 @@ class EffectApprovalService:
     runtime: "RuntimeObservationServices" = field(
         default_factory=lambda: _runtime_services())
     store: "ApprovalStateStore | None" = None
+    authority_key: "bytes | None" = field(
+        default=None, repr=False, compare=False)
     _states: dict[str, PendingApprovalState] = field(
         default_factory=dict, init=False, repr=False)
     _lock: threading.RLock = field(
@@ -412,6 +443,25 @@ class EffectApprovalService:
             from .approval_state_store import ApprovalStateStore
             if not isinstance(self.store, ApprovalStateStore):
                 raise TypeError("store must implement ApprovalStateStore")
+        if self.authority_key is not None and (
+                not isinstance(self.authority_key, bytes)
+                or len(self.authority_key) < 16):
+            raise ValueError("authority_key must be at least 16 bytes")
+
+    def _effective_authority_key(self) -> bytes:
+        return self.authority_key or _PROCESS_AUTHORITY_KEY
+
+    def _verify_authority(self, state: PendingApprovalState) -> None:
+        """Refuse decided or consumed state this service key did not issue."""
+        if state.status is ApprovalStatus.PENDING:
+            return
+        expected = _decision_authority(self._effective_authority_key(), state)
+        if not state.decision_authority or not hmac.compare_digest(
+                state.decision_authority, expected):
+            raise PermissionError(
+                "decided approval state failed authority validation; a "
+                "decision is authority only under the service key that "
+                "issued it")
 
     def create(self, request: ApprovalRequest) -> ApprovalCheckpoint:
         return self._run_operation(
@@ -442,6 +492,7 @@ class EffectApprovalService:
             self, state: PendingApprovalState) -> PendingApprovalState:
         if not isinstance(state, PendingApprovalState):
             raise TypeError("restore needs a PendingApprovalState")
+        self._verify_authority(state)
         with self._lock:
             request_id = state.request.request_id
             existing = self._canonical_or_none(request_id)
@@ -498,6 +549,8 @@ class EffectApprovalService:
             if current != pending:
                 raise RuntimeError("cannot decide a stale approval state")
             resolved = current.resume(resume_token, decision)
+            resolved = resolved.with_decision_authority(
+                _decision_authority(self._effective_authority_key(), resolved))
             if self.store is not None:
                 self.store.compare_and_swap(current, resolved)
             self._states[pending.request.request_id] = resolved
@@ -518,6 +571,7 @@ class EffectApprovalService:
             expected_effect: EffectSpec) -> PendingApprovalState:
         with self._lock:
             current = self._state_core(request_id)
+            self._verify_authority(current)
             consumed = current.consume(request_id, expected_effect)
             if self.store is not None:
                 self.store.compare_and_swap(current, consumed)
@@ -545,15 +599,29 @@ class EffectApprovalService:
             return self._states.get(request_id)
         from .approval_state_store import ApprovalStateNotFound
         try:
-            return self.store.load(request_id)
+            state = self.store.load(request_id)
         except ApprovalStateNotFound:
             return None
+        self._verify_authority(state)
+        return state
 
 
 def _token_digest(token: str) -> str:
     if not token:
         raise ValueError("resume token cannot be empty")
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def _decision_authority(key: bytes, state: PendingApprovalState) -> str:
+    """HMAC binding a decision to its request, token digest, and issuing key."""
+    if state.decision is None:
+        raise ValueError("decision authority needs a decision")
+    canonical = json.dumps({
+        "request_digest": state.request_digest,
+        "resume_token_digest": state.resume_token_digest,
+        "decision": state.decision.to_dict(),
+    }, sort_keys=True, separators=(",", ":"))
+    return hmac.new(key, canonical.encode("utf-8"), hashlib.sha256).hexdigest()
 
 
 def _request_digest(request: ApprovalRequest) -> str:
@@ -783,6 +851,46 @@ def self_test() -> dict:
         "unknown_effect_classes_fail_closed_during_deserialization",
         unknown_failed,
         "an unrecognized effect never falls into a permissive default class",
+    )
+    forged = PendingApprovalState(
+        request=restored.request, request_digest=restored.request_digest,
+        resume_token_digest=restored.resume_token_digest,
+        status=ApprovalStatus.DECIDED,
+        decision=ApprovalDecision.approve(request.request_id, "attacker"),
+        state_revision=1)
+    fresh = EffectApprovalService(service.runtime)
+    forged_refused = False
+    try:
+        fresh.restore(forged)
+    except PermissionError:
+        forged_refused = True
+    tampered = approved.with_decision_authority(
+        ("0" if approved.decision_authority[0] != "0" else "1")
+        + approved.decision_authority[1:])
+    tampered_refused = False
+    try:
+        fresh.restore(tampered)
+    except PermissionError:
+        tampered_refused = True
+    same_key_restored = fresh.restore(approved)
+    other_key = EffectApprovalService(
+        service.runtime, authority_key=secrets.token_bytes(32))
+    other_key_refused = False
+    try:
+        other_key.restore(approved)
+    except PermissionError:
+        other_key_refused = True
+    check(
+        "a_hand_built_or_tampered_decision_is_not_authority_in_any_service",
+        forged_refused and tampered_refused
+        and same_key_restored.decision_authority == approved.decision_authority
+        and len(approved.decision_authority) == 64
+        and other_key_refused
+        and "decision_authority" not in json.dumps(
+            [event for event in ledger.events
+             if event["event"].startswith("effect_approval_")]),
+        "decisions carry a service-key HMAC; restore, load, and consume "
+        "verify it, and the authority never enters the ledger",
     )
     passed = sum(1 for item in results if item["passed"])
     return {

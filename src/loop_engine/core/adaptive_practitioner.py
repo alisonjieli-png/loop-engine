@@ -51,9 +51,39 @@ from .run_history import default_runs_dir
 from .adaptive_practitioner_result import (
     failed_adaptive_output, finish_deterministic_attempt, loop_details,
     safe_model_usage, save_adaptive_result)
+def _copy_workspace_confined(workspace: Path, destination: Path) -> dict:
+    """Copy a workspace into Run History without following links out of it.
+
+    Generated code runs as the host user with the workspace mounted
+    read-write, so a symlink it creates could point anywhere on the host.
+    Symlinks are copied as symlinks, never dereferenced, and any entry whose
+    resolved path leaves the workspace is skipped and counted.
+    """
+    root = workspace.resolve()
+    skipped: list[str] = []
+    base_ignore = shutil.ignore_patterns(".venv", "__pycache__", "*.pyc")
+
+    def ignore(directory, names):
+        ignored = set(base_ignore(directory, names))
+        for name in names:
+            path = Path(directory) / name
+            try:
+                inside = path.resolve().is_relative_to(root)
+            except (OSError, RuntimeError):
+                inside = False
+            if not inside:
+                ignored.add(name)
+                skipped.append(str(path))
+        return ignored
+
+    shutil.copytree(workspace, destination, symlinks=True, ignore=ignore)
+    return {"symlinks_preserved": True,
+            "skipped_outside_workspace": skipped}
+
+
 def _model_state(state: PractitionerState,
                  services: AdaptiveRunServices) -> dict:
-    return {
+    view = {
         "state_version": state.version,
         "facts": state.facts,
         "artifact_refs": state.artifacts,
@@ -93,6 +123,9 @@ def _model_state(state: PractitionerState,
         } for item in services.project_attempts],
         "supervision": supervision_context(services, state),
     }
+    # Bounding happens once, at the packet boundary in
+    # adaptive_practitioner_records, where every step's state converges.
+    return view
 def _adaptive_impls(services: AdaptiveRunServices) -> dict:
     def orient(state: PractitionerState) -> Situation:
         services.active_pass_number += 1
@@ -657,10 +690,9 @@ def run_adaptive_practitioner(
         destination = run_path / "solution-attempts"
         if destination.exists():
             shutil.rmtree(destination)
-        shutil.copytree(
-            workspace, destination,
-            ignore=shutil.ignore_patterns(".venv", "__pycache__", "*.pyc"))
+        copy_record = _copy_workspace_confined(workspace, destination)
         output["solution_attempts_path"] = str(destination)
+        output["solution_attempts_copy"] = copy_record
     elif workspace.exists():
         output["solution_attempts_path"] = str(workspace)
     reuse_observation = observe_generated_project_reuse(

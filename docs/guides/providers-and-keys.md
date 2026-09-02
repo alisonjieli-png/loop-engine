@@ -65,6 +65,23 @@ Only exact zero-price routes activate automatically when their credential is
 present. Free-plan quotas, trial credits, paid routes, and unknown prices need
 `--allow-paid-extension-routes` because charges may begin after the allowance.
 
+### Custom endpoint TLS policy
+
+A `kind: custom` provider in the settings file declares how its certificate is
+verified. `tls_verification: default` uses the system trust store.
+`tls_verification: ca_file` with `tls_ca_file: /path/to/root.pem` trusts one
+declared private authority and keeps hostname checking on; use it for an
+origin that serves a private or Cloudflare Origin CA certificate.
+`tls_verification: skip` disables verification for exactly that endpoint and
+exposes the bearer key to anyone on the network path, so prefer `ca_file`. The
+selected policy appears in `loop-engine configure`, in the provider
+description, and as a `tls_verification_policy` event in the run's model
+routing history.
+
+Select a settings-declared provider for a solve with
+`--compile-provider <provider_id>`; the key is read from that provider's
+`credential_env` variable.
+
 ## Preferred first setup
 
 ```bash

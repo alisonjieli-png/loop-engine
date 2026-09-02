@@ -1,4 +1,4 @@
-"""The Practitioner Kernel — the nine-node universal solver, canonical form.
+"""The Practitioner Kernel — the ten-step universal solver, canonical form.
 
 Owner spec (2026-08-23).  The universal DAG contains NO domain workflow — no
 research, coding, ML, or scraping logic.  It is a small meta-DAG whose only job
@@ -17,9 +17,9 @@ the practitioner is doing (see KERNEL_NODE_NAMES):
     8. Integrate accepted results, update the blueprint/checkpoint, commit
     9. Continue / revise blueprint / branch / retry / reset / distill / close / finish
 
-SIX nodes are REQUIRED (orient, decide_next, how, act, verify, route); THREE are
-OPTIONAL (reconcile_horizon, assess_prepare, integrate_commit) with kernel
-defaults.  A pass may explicitly SKIP optional nodes (state.facts['_skip_nodes'],
+SIX steps are REQUIRED (orient, decide_next, how, act, verify, route); FOUR are
+OPTIONAL (standardize_task, reconcile_horizon, assess_prepare, integrate_commit)
+with kernel defaults.  A pass may explicitly SKIP optional nodes (state.facts['_skip_nodes'],
 set via plan_skip_next_pass) for a trivial or mid-WorkPacket pass — but a REQUIRED
 node can never be skipped: you always orient, decide, execute, verify, and route.
 Flexibility lives in the route vocabulary (continue/branch/retry/reset/distill/
@@ -28,7 +28,7 @@ practitioners), and in WorkPackets that run many ops per pass to a decision
 boundary — never in weakening the required spine.
 
 **Each pass is acyclic.**  Node 9 never creates a backward edge: it commits what
-was learned, then either stops or launches ANOTHER nine-node pass over a NEW
+was learned, then either stops or launches ANOTHER ten-step pass over a NEW
 VERSIONED STATE.  So every iteration is independently reproducible, versioned,
 inspectable, and restartable — the run is a chain of passes, not a tangle:
 
@@ -52,12 +52,13 @@ import json
 import os
 from dataclasses import dataclass, field, asdict
 from typing import Any, Callable, Sequence
+from .supervision_policy import DEFAULT_SUPERVISION_POLICY, SupervisionPolicy
 
 # ===========================================================================
 # TAXONOMIES (closed).
 # ===========================================================================
 
-# The canonical EIGHT nodes (owner spec 2026-08-23).  The new nodes are #2
+# The canonical TEN steps (owner spec 2026-08-23; standardize_task added 2026-08-30).  The new nodes are #2
 # (assess sufficiency + prepare reasoning resources) and #7 (integrate + commit),
 # separating three things that must never collapse into one vague "context":
 # PROBLEM STATE/EVIDENCE vs REASONING RESOURCES vs the MODEL-READY PROMPT.
@@ -67,7 +68,7 @@ KERNEL_NODES = ("orient", "standardize_task", "reconcile_horizon",
 
 # No backward-compatibility aliases (they are technical debt).  Instead an impls
 # set declares its capability via a HANDSHAKE: six nodes are REQUIRED, and the
-# two additive nodes are OPTIONAL (the kernel supplies safe defaults for them,
+# four additive steps are OPTIONAL (the kernel supplies safe defaults for them,
 # which is a declared contract, not a silent alias).  A missing required node
 # fails loudly at run start rather than being papered over.
 KERNEL_REQUIRED_NODES = ("orient", "decide_next", "how", "act", "verify",
@@ -426,16 +427,18 @@ class KernelRunRequest:
     event_dir: str | None = None
     max_passes: int | None = None
     selected_mode: str = "deterministic"
+    supervision: SupervisionPolicy = DEFAULT_SUPERVISION_POLICY
 
 
 def _calculate_kernel_pass(state: PractitionerState, impls: KernelImpls,
                            pass_number: int = 1) -> tuple:
-    """Run ONE acyclic EIGHT-node pass.  Never mutates ``state`` — returns
+    """Run ONE acyclic TEN-step pass.  Never mutates ``state`` — returns
     (PassRecord, new_state).  Node order is fixed; there are no backward edges
     inside a pass; everything a later pass needs travels in the new state.
 
-    Impls are addressed by their CANONICAL keys — no aliases.  The three OPTIONAL
-    nodes (reconcile_horizon, assess_prepare, integrate_commit) fall back to the
+    Impls are addressed by their CANONICAL keys — no aliases.  The four OPTIONAL
+    steps (standardize_task, reconcile_horizon, assess_prepare, integrate_commit)
+    fall back to the
     kernel default when absent; every required node must be present (checked by
     ``validate_impls`` before the run).
 
@@ -506,11 +509,10 @@ def _calculate_kernel_pass(state: PractitionerState, impls: KernelImpls,
     return rec, new_state
 
 
-#: Consecutive passes with zero measurable progress before the run routes
-#: stop_unprofitable. This is a non-progress guard, not a numeric work
-#: ceiling: passes that produce new facts, artifacts, verified work, or
-#: recovery directives never count toward it.
-_MAX_NON_PROGRESS_PASSES = 3
+#: The historical non-progress window, derived from the one default
+#: supervision policy; a KernelRunRequest may declare another policy.
+_MAX_NON_PROGRESS_PASSES = (
+    DEFAULT_SUPERVISION_POLICY.non_progress_passes_before_escalation)
 
 
 def _pass_progress_key(rec, state) -> tuple:
@@ -608,6 +610,10 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
     non_progress_passes = 0
     previous_progress_key = None
     guard_escalations = 0
+    supervision = request.supervision
+    if not isinstance(supervision, SupervisionPolicy):
+        raise ValueError(
+            "KernelRunRequest.supervision must be a SupervisionPolicy")
     n = 1
     while limit is None or n <= limit:
         rec, state = _calculate_kernel_pass(state, impls, pass_number=n)
@@ -625,16 +631,18 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
         route = rec.route.route if rec.route else "stop_unprofitable"
         if route in ("stop_success", "stop_unprofitable"):
             break
-        if (non_progress_passes >= _MAX_NON_PROGRESS_PASSES
+        if (non_progress_passes
+                >= supervision.non_progress_passes_before_escalation
                 and route in ("continue", "retry", "repair")):
             # Escalation ladder before any honest stop, like a second set of
-            # eyes: first reframe in place with failure memory, then restart
-            # the practitioner fresh while keeping the documented failures,
-            # and only then stop with the exact reason. Genuine progress
-            # anywhere resets the ladder; escalation alone does not.
+            # eyes: the declared supervision policy names the rungs (soft
+            # reset with failure memory, cold restart keeping the documented
+            # failures, then the honest stop). Genuine progress anywhere
+            # resets the ladder; escalation alone does not.
             guard_escalations += 1
             non_progress_passes = 0
-            if guard_escalations == 1:
+            rung = supervision.rung_for(guard_escalations)
+            if rung == "soft_reset":
                 records.append(_non_progress_record(
                     n, "soft_reset", route))
                 state = state.derive(
@@ -644,7 +652,7 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
                     last_route="soft_reset")
                 if events_path:
                     _append_event(events_path, records[-1])
-            elif guard_escalations == 2:
+            elif rung == "cold_restart":
                 records.append(_non_progress_record(
                     n, "cold_restart", route))
                 state = PractitionerState(
@@ -660,7 +668,8 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
             else:
                 records.append(_non_progress_record(
                     n, "stop_unprofitable", route,
-                    consecutive=_MAX_NON_PROGRESS_PASSES))
+                    consecutive=
+                        supervision.non_progress_passes_before_escalation))
                 if events_path:
                     _append_event(events_path, records[-1])
                 break
@@ -675,6 +684,7 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
         n += 1
     structural_fixture = impls.get("act") is default_act
     return {"record_type": "practitioner_run/v1",
+            "supervision": supervision.to_dict(),
             "execution_evidence_state": (
                 "STRUCTURAL_FIXTURE" if structural_fixture
                 else "CALLER_SUPPLIED_EXECUTOR"),

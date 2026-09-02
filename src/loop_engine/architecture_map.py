@@ -109,7 +109,8 @@ MODULE_MAP = {
         "loop_role", "loop_control",
         "reactive_activation", "reactive_contract_checks",
         "reactive_contracts", "reactive_outputs",
-        "recursive_loop", "service_loop_envelope",
+        "recursive_loop", "service_loop_envelope", "supervision_policy",
+        "checklist_loop", "loop_handoff",
         "spawned_practitioner",
     ),
     "strings": (
@@ -157,6 +158,8 @@ MODULE_MAP = {
         "asset_lifecycle", "brave_search",
         "capability_directory",
         "run_history", "run_history_paths", "config", "context_artifacts",
+        "context_budget", "context_pack_manifest", "task_frontier",
+        "prompt_experiment", "task_region_statistics",
         "context_catalog",
         "context_classification", "context_ontology",
         "code_intelligence_assets", "event_vocabulary", "duckdb_catalog",

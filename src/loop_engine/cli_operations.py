@@ -530,9 +530,35 @@ def _task_feedback_from_args(args) -> tuple:
     return tuple(feedback)
 
 
+def _custom_provider_credential_env(args, provider: str) -> str:
+    """Resolve the credential variable for a settings-declared provider.
+
+    Builtin providers use the fixed map above. Any other provider id must be
+    declared in the settings file; its ``credential_env`` is the variable the
+    provider adapter reads, so the key can only reach the endpoint through it.
+    """
+    from .core.settings_loader import load_runtime_settings
+
+    loaded = load_runtime_settings(getattr(args, "settings_file", "") or None)
+    for configured in loaded.settings.models.providers:
+        if configured.provider_id != provider:
+            continue
+        if not configured.credential_env:
+            raise ValueError(
+                f"provider {provider!r} declares no credential_env in the "
+                "settings file, so a key cannot reach its endpoint")
+        return configured.credential_env
+    known = ", ".join(sorted(_COMPILE_PROVIDER_ENV))
+    raise ValueError(
+        f"--compile-provider {provider!r} is neither a builtin provider "
+        f"({known}) nor a provider declared in the settings file")
+
+
 def _compile_provider_key(args) -> tuple[str, str]:
     provider = args.compile_provider
-    standard_env = _COMPILE_PROVIDER_ENV[provider]
+    standard_env = _COMPILE_PROVIDER_ENV.get(provider)
+    if standard_env is None:
+        standard_env = _custom_provider_credential_env(args, provider)
     explicit_key = getattr(args, "_provider_key_value", "")
     if explicit_key:
         return standard_env, explicit_key
@@ -656,7 +682,7 @@ def _compile_gateway(args, key: str):
         raise ValueError(
             "no configured counted-generation route matches the selected "
             "compile provider, route, and model")
-    preferred = _COMPILE_PROVIDER_ROUTE[provider]
+    preferred = _COMPILE_PROVIDER_ROUTE.get(provider, "")
     route = next(
         (item for item in candidates if item.name == preferred), candidates[0])
     return gateway, route.name

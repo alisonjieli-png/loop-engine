@@ -219,9 +219,9 @@ class RouteHealthLedger:
 def self_test() -> dict:
     tests: list[dict] = []
     ledger = RouteHealthLedger()
-    route = "custom.tacticalengineering"
-    provider = "tacticalengineering"
-    model = "gemma-4-coding-abliterated"
+    route = "custom.private_gateway"
+    provider = "private_gateway"
+    model = "private-gateway-model"
 
     def check(name: str, passed: bool, detail: str = "") -> None:
         tests.append({"test": name, "passed": bool(passed),

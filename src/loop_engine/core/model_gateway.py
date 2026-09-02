@@ -27,6 +27,7 @@ from .model_capabilities import (
 from .model_routes import (LOCALITIES, PURPOSES, ModelRoute, RoutePolicy,
                            RouteRegistry, screen_route)
 from .model_response_text import extract_final_answer
+from .context_budget import estimate_tokens
 
 
 class ProviderAdapter(Protocol):
@@ -94,6 +95,9 @@ class ProviderSpec:
                 if self.model_output_capability else None),
             "model_output_capability_model":
                 self.model_output_capability_model,
+            "tls_verification": str(getattr(
+                getattr(self.adapter, "endpoint", None),
+                "tls_verification", "default") or "default"),
         }
 
 
@@ -375,6 +379,8 @@ def _error_code(error: str) -> str:
             "connectionaborted",
             "brokenpipeerror")):
         return "provider_unavailable"
+    if "context_window_exceeded" in low:
+        return "context_window_exceeded"
     if ("output_limit_reached" in low or "max_tokens" in low
             or "maximum output" in low and "reached" in low):
         return "output_limit_reached"
@@ -392,6 +398,12 @@ def _error_code(error: str) -> str:
         return "unknown_model_output_limit"
     if "not the declared model maximum" in low:
         return "model_output_limit_mismatch"
+    if (("not found" in low or "missing" in low or "in environment" in low)
+            and ("key" in low or "credential" in low)):
+        # A missing credential is a configuration state, not a rejected
+        # credential. It is classified first so a failover plan can skip
+        # the provider instead of treating it as an authentication failure.
+        return "missing_credential"
     if "401" in low or "403" in low or "unauthor" in low or "api_key" in low:
         return "authentication_failed"
     if "402" in low or "payment required" in low or "insufficient credit" in low:
@@ -413,9 +425,6 @@ def _error_code(error: str) -> str:
         return "invalid_request"
     if "timeout" in low or "timed out" in low:
         return "timeout"
-    if (("not found" in low or "missing" in low)
-            and ("key" in low or "credential" in low)):
-        return "missing_credential"
     if "validation" in low:
         return "output_validation_failed"
     if "model identity" in low or "model_identity" in low:
@@ -595,6 +604,43 @@ class ModelGateway:
                         error_code=_error_code(str(exc)), error=str(exc),
                         thinking_power=current_power))
                     continue
+
+                # Context-window preflight: a request whose estimated input
+                # plus requested output cannot fit the route's declared
+                # context is refused BEFORE the provider is contacted, so it
+                # can never be silently truncated upstream. A route with a
+                # larger window is still tried.
+                declared_context = int(getattr(
+                    route.capabilities, "max_context", 0) or 0)
+                estimated_input = estimate_tokens(
+                    request.prompt, request.system)
+                if (declared_context
+                        and estimated_input + attempt_output > declared_context):
+                    error = (
+                        f"context_window_exceeded: estimated {estimated_input} "
+                        f"input tokens plus the requested {attempt_output} "
+                        f"output tokens exceed the route context window of "
+                        f"{declared_context}")
+                    result.attempts.append(GatewayAttempt(
+                        route.provider, route.model, route.name, "", False,
+                        error_code="context_window_exceeded", error=error,
+                        thinking_power=current_power,
+                        maximum_output_tokens=attempt_output))
+                    loop.ledger.record(
+                        loop_id=loop.loop_id, event="custom",
+                        action="context_window_preflight_refused",
+                        route=route.name,
+                        estimated_input_tokens=estimated_input,
+                        requested_output_tokens=attempt_output,
+                        max_context=declared_context)
+                    continue
+                tls_policy = str(
+                    spec.describe().get("tls_verification") or "default")
+                if tls_policy != "default":
+                    loop.ledger.record(
+                        loop_id=loop.loop_id, event="custom",
+                        action="tls_verification_policy", route=route.name,
+                        provider=route.provider, tls_verification=tls_policy)
 
                 def invoke_provider(spec=spec, route=route,
                                     attempt_timeout=attempt_timeout,
@@ -818,6 +864,53 @@ def self_test() -> dict:
           and not boundary.chat_attempted
           and refused.attempts[0].loop_id == "",
           "this is a contract refusal, not a provider integration test")
+
+    class ContextBoundary:
+        DEFAULT_MODEL = "small-model"
+
+        def __init__(self):
+            self.chat_attempted = False
+
+        def output_capability_for(self, model):
+            from .model_capabilities import ModelOutputCapability
+            return ModelOutputCapability(64, "fixture declaration")
+
+        def chat_maxout(self, prompt, **kwargs):
+            self.chat_attempted = True
+            raise AssertionError("an oversized request must never be sent")
+
+        def verify(self, model=""):
+            raise AssertionError("offline tests never verify a provider")
+
+        def live_models(self):
+            raise AssertionError("offline tests never query a provider catalog")
+
+    from .model_routes import ModelProviderCapabilities
+    context_boundary = ContextBoundary()
+    context_gateway = ModelGateway(
+        providers=(ProviderSpec(
+            "ctx_only", context_boundary, "fixture", "env:CTX_ONLY_KEY"),),
+        routes=(ModelRoute(
+            "ctx.small", "ctx_only", "small-model",
+            capabilities=ModelProviderCapabilities(
+                "ctx_only", "cloud", True, max_context=100)),))
+    oversized = context_gateway.invoke(ModelGatewayRequest(
+        "x" * 2000,
+        ModelGatewayConfig(route_names=("ctx.small",), allow_failover=False,
+                           max_route_attempts=1)))
+    check("context_window_preflight_refuses_before_provider_use",
+          not oversized.ok
+          and oversized.attempts[0].error_code == "context_window_exceeded"
+          and not context_boundary.chat_attempted
+          and "exceed the route context window" in oversized.attempts[0].error,
+          "estimated input plus requested output exceeded max_context=100")
+    check("missing_credential_is_not_an_authentication_failure",
+          _error_code("no MISTRAL_API_KEY in environment or .env")
+          == "missing_credential"
+          and _error_code("OLLAMA_API_KEY not found") == "missing_credential"
+          and _error_code("HTTP 401: invalid api_key") == "authentication_failed"
+          and "missing_credential" not in _FAILOVER_FORBIDDEN_ERRORS,
+          "a keyless provider is skipped by failover, not fatal to it")
 
     mismatch_config = False
     try:

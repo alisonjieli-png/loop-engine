@@ -97,7 +97,7 @@ A role profile answers, "What is this Loop for?" A step profile answers,
 |---|---|
 | `atomic_code_only` | One bounded action. |
 | `compact_five_beat` | Load, choose, act, check, commit. |
-| `reference_nine_step` | Orient, reconcile, assess, decide, determine how, act, verify, integrate, route. |
+| `reference_nine_step` | Orient, standardize the task, reconcile, assess, decide, determine how, act, verify, integrate, route. Ten steps; the profile id is historical. |
 | Validated custom template | A bounded caller-defined sequence. |
 
 Registered role profiles bind one of these templates or another registered
