@@ -1,13 +1,15 @@
 # ============================================================
-# Loop Engine — Kaggle single-provider solve (tacticalengineering)
+# Loop Engine - Kaggle single-provider solve (tacticalengineering)
 #
 # ONE cell. Requires Kaggle secret: tacticalhat_kaggle_key
 #
 # Time budget: targets 4-6 hours max (wall clock), enforced by a
 # subprocess deadline so the notebook stops honestly instead of
-# hitting the Kaggle session limit.
+# hitting the Kaggle session limit. At the deadline the solve gets
+# SIGINT first, so the CLI records an honest CANCELLED outcome with
+# its Run History; terminate and kill follow only if it ignores that.
 #
-# Output layout (all under /kaggle/working):
+# Output layout (under the Kaggle working directory):
 #   loop-engine-solutions/       best verified artifacts, versioned
 #   loop-engine-logs/
 #     preflight/                provider API check records
@@ -15,30 +17,45 @@
 #     run-history/              Loop Engine Run History dirs
 #     summary/                  one-page human report per attempt
 #     master/                   chronological master log + artifact index
+#     stage-<stamp>.json        what this cell did and where it stopped
+#
+# Runs outside Kaggle too: kaggle/check_cells.py sets the
+# LOOP_ENGINE_* variables read in the configuration block below.
 #
 # Based on loop-engine main @ a2f7102.
 # ============================================================
 
-from kaggle_secrets import UserSecretsClient
 from pathlib import Path, PurePosixPath
 from datetime import datetime, timezone
 from types import SimpleNamespace
 
+import importlib.util
 import json
 import os
 import shlex
 import shutil
+import signal
 import subprocess
 import sys
+import threading
 import time
 import urllib.request
 import zipfile
 
 import yaml
 
+try:
+    from kaggle_secrets import UserSecretsClient
+except ImportError:  # outside Kaggle: keys come from the environment
+    UserSecretsClient = None
+
 
 # ------------------------------------------------------------
 # Configuration
+#
+# Every path, name, and switch lives in this block. On Kaggle the
+# defaults apply unchanged. Outside Kaggle the LOOP_ENGINE_* variables
+# point the cell at another root (kaggle/check_cells.py sets them).
 # ------------------------------------------------------------
 
 REPOSITORY_ARCHIVE_URL = (
@@ -46,35 +63,74 @@ REPOSITORY_ARCHIVE_URL = (
     "loop-engine/archive/refs/heads/main.zip"
 )
 
-REPOSITORY_DIR = Path("/kaggle/working/loop-engine-src")
-DATASET_DIR = Path("/kaggle/input/competitions/playground-series-s6e9")
+KAGGLE_WORKING = Path(os.environ.get(
+    "LOOP_ENGINE_KAGGLE_WORKING", "/kaggle/working"))
+KAGGLE_INPUT = Path(os.environ.get(
+    "LOOP_ENGINE_KAGGLE_INPUT", "/kaggle/input"))
+KAGGLE_TEMP = Path(os.environ.get(
+    "LOOP_ENGINE_KAGGLE_TEMP", "/kaggle/temp"))
+COMPETITION = os.environ.get(
+    "LOOP_ENGINE_KAGGLE_COMPETITION", "playground-series-s6e9").strip()
+# When set, this checkout is installed instead of downloading main.zip.
+SOURCE_DIR = os.environ.get("LOOP_ENGINE_SOURCE_DIR", "").strip()
+# offline: stop after doctor and configure (no key, no network).
+# preflight: stop after the provider probe. solve: the full run.
+STAGE = os.environ.get("LOOP_ENGINE_KAGGLE_STAGE", "solve").strip() or "solve"
 
-WORKING = Path("/kaggle/working")
-LOGS_DIR = WORKING / "loop-engine-logs"
+REPOSITORY_DIR = (Path(SOURCE_DIR) if SOURCE_DIR
+                  else KAGGLE_WORKING / "loop-engine-src")
+DATASET_DIR = KAGGLE_INPUT / "competitions" / COMPETITION
+
+LOGS_DIR = KAGGLE_WORKING / "loop-engine-logs"
 PREFLIGHT_DIR = LOGS_DIR / "preflight"
 SOLVE_LOG_DIR = LOGS_DIR / "solve"
 RUN_HISTORY_LOG_DIR = LOGS_DIR / "run-history"
 SUMMARY_DIR = LOGS_DIR / "summary"
 MASTER_DIR = LOGS_DIR / "master"
-SOLUTIONS_DIR = WORKING / "loop-engine-solutions"
+SOLUTIONS_DIR = KAGGLE_WORKING / "loop-engine-solutions"
+SETUP_TEMP_DIR = KAGGLE_TEMP / "loop-engine-setup"
 
-# tacticalengineering: direct-origin OpenAI-compatible API.
-# DNS-only hostname serves a Cloudflare Origin CA certificate, so the
-# endpoint declares tls_verification: skip (typed curl -k, scoped to
-# exactly this endpoint). stream: auto self-orients to SSE if a proxy
-# wall ever cuts a long generation.
+# tacticalengineering: the owner's PRIVATE direct-origin OpenAI-compatible
+# API. The DNS-only hostname serves a Cloudflare Origin CA certificate, so
+# the endpoint declares tls_verification: skip (typed curl -k, scoped to
+# exactly this endpoint). tls_verification: ca_file with tls_ca_file
+# pointing at the Origin CA root is the preferred alternative when that
+# root is available. stream: auto self-orients to SSE if a proxy wall
+# ever cuts a long generation. The URL may be the /v1 base or the full
+# /chat/completions URL; both forms resolve to the same request.
+TACTICAL_BASE_URL = os.environ.get(
+    "LOOP_ENGINE_TACTICAL_BASE_URL",
+    "https://ai.tacticalengineering.net:6969/v1/chat/completions").strip()
+TACTICAL_MODEL = os.environ.get(
+    "LOOP_ENGINE_TACTICAL_MODEL", "gemma-4-coding-abliterated").strip()
+TACTICAL_SECRET_NAME = "tacticalhat_kaggle_key"
+TACTICAL_KEY_ENV = "TACTICAL_API_KEY"
 TACTICAL_ENDPOINT = (
-    "https://ai.tacticalengineering.net:6969/v1/chat/completions"
-)
-TACTICAL_MODEL = "gemma-4-coding-abliterated"
-# gemma-4 published model output ceiling; verified live with a full
-# 32768-token streamed generation against this origin.
+    TACTICAL_BASE_URL.rstrip("/")
+    if TACTICAL_BASE_URL.rstrip("/").endswith("/chat/completions")
+    else TACTICAL_BASE_URL.rstrip("/") + "/chat/completions")
+# gemma-4 published model output ceiling. Declared by this notebook, not
+# measured by it.
 TACTICAL_MAX_OUTPUT = 32768
+TACTICAL_MAX_OUTPUT_SOURCE = (
+    "gemma-4 published model output ceiling; declared by the notebook, "
+    "not measured")
+# Honest identification on every request; no browser spoofing.
+TACTICAL_USER_AGENT = "Loop-Engine-Kaggle"
+PREFLIGHT_USER_AGENT = "Loop-Engine-Kaggle-Preflight"
 
 # Wall-clock budget for the whole solve phase (seconds). 5 hours is the
-# middle of the 4-6 hour target; the subprocess is killed honestly at the
-# deadline and the run record is still saved.
-SOLVE_DEADLINE_SECONDS = 5 * 60 * 60
+# middle of the 4-6 hour target. At the deadline the solve is asked to
+# stop with SIGINT and gets STOP_GRACE_SECONDS to write its CANCELLED
+# record before terminate() and kill() follow. The local harness can
+# shorten the budget through LOOP_ENGINE_KAGGLE_DEADLINE_SECONDS to
+# exercise that path; Kaggle runs keep the 5-hour default.
+SOLVE_DEADLINE_SECONDS = int(os.environ.get(
+    "LOOP_ENGINE_KAGGLE_DEADLINE_SECONDS", str(5 * 60 * 60)))
+STOP_GRACE_SECONDS = 180
+DEADLINE_LABEL = (f"{SOLVE_DEADLINE_SECONDS // 3600}h"
+                  if SOLVE_DEADLINE_SECONDS >= 3600
+                  else f"{SOLVE_DEADLINE_SECONDS}s")
 
 # The Practitioner's own pass ceiling. This is an explicit owner-set
 # work ceiling (allowed: the product sets none by default), sized so
@@ -82,36 +138,111 @@ SOLVE_DEADLINE_SECONDS = 5 * 60 * 60
 # the wall-clock budget.
 MAX_PASSES = 60
 
-TASK_FILE = WORKING / "loop-engine-s6e9-task.md"
-SETTINGS_FILE = WORKING / "loop-engine-providers.yaml"
+TASK_FILE = KAGGLE_WORKING / f"loop-engine-{COMPETITION}-task.md"
+SETTINGS_FILE = KAGGLE_WORKING / "loop-engine-providers.yaml"
 
 RUN_STAMP = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+WORKSPACE_PREFIX = f"loop-engine-{COMPETITION}-solve-"
+STAGE_FILE = LOGS_DIR / f"stage-{RUN_STAMP}.json"
+
+if STAGE not in ("offline", "preflight", "solve"):
+    raise ValueError(
+        "LOOP_ENGINE_KAGGLE_STAGE must be offline, preflight, or solve, "
+        f"not {STAGE!r}")
+
+STAGE_RECORD = {
+    "record_type": "loop_engine_kaggle_stage/v1",
+    "cell": "02_tacticalengineering_only",
+    "attempt": RUN_STAMP,
+    "stage_requested": STAGE,
+    "stage_reached": "",
+    "repository_dir": str(REPOSITORY_DIR),
+    "install_mode": "",
+    "commands": {},
+}
 
 
-def get_secret(client, name):
-    """Read one required Kaggle secret without displaying its value."""
-    value = client.get_secret(name)
+def read_secret(secret_name, standard_env):
+    """Return one key without ever displaying it.
+
+    Order: the Kaggle secret, then an environment variable named like the
+    secret in upper case, then the provider's standard variable. Returns
+    an empty string when none is available; the caller decides whether
+    that is fatal for the requested stage.
+    """
+    value = ""
+    if UserSecretsClient is not None:
+        try:
+            value = UserSecretsClient().get_secret(secret_name)
+        except Exception:  # secret not attached to this notebook
+            value = ""
     if not isinstance(value, str) or not value.strip():
-        raise RuntimeError(
-            f"Kaggle secret {name!r} is empty or unavailable. "
-            "Create the secret and enable notebook access.")
+        value = os.environ.get(secret_name.upper(), "")
+    if not value.strip():
+        value = os.environ.get(standard_env, "")
     return value.strip()
 
 
+def require_key(value, secret_name, standard_env):
+    """Stop with a clear message when a stage needs a key that is missing."""
+    if not value:
+        raise RuntimeError(
+            f"Stage {STAGE!r} needs a provider key, but Kaggle secret "
+            f"{secret_name!r} is unavailable and neither "
+            f"{secret_name.upper()} nor {standard_env} is set. Create the "
+            "secret and enable notebook access, or set the variable.")
+
+
 def run_command(command, *, cwd=None, env=None, check=True,
-                timeout=None):
-    """Run one command without shell interpolation."""
+                timeout=None, capture=False):
+    """Run one command without shell interpolation.
+
+    With capture=True the command's stdout is kept on the result and
+    echoed afterwards, so the notebook still shows it.
+    """
     command = [str(part) for part in command]
     working_directory = Path(cwd or Path.cwd()).resolve()
     print(f"\n[{working_directory}]$ {shlex.join(command)}\n", flush=True)
     result = subprocess.run(
-        command, cwd=str(working_directory), env=env,
-        text=True, check=False, timeout=timeout)
+        command, cwd=str(working_directory), env=env, text=True,
+        stdout=subprocess.PIPE if capture else None,
+        check=False, timeout=timeout)
+    if capture and result.stdout:
+        print(result.stdout.rstrip("\n"), flush=True)
     if check and result.returncode != 0:
         raise RuntimeError(
             f"Command exited with status {result.returncode}: "
             f"{shlex.join(command)}")
     return result
+
+
+def install_loop_engine(repository_dir, env):
+    """Install the checkout and return the install mode that was used.
+
+    The Kaggle path installs with pip exactly as before. A local checkout
+    (LOOP_ENGINE_SOURCE_DIR) also installs with pip when pip is present;
+    when pip is missing or that install fails, the CLI runs from the
+    checkout's src tree through PYTHONPATH so the cell stays testable in
+    a pip-less virtual environment.
+    """
+    pip_present = importlib.util.find_spec("pip") is not None
+    if pip_present:
+        result = run_command(
+            [sys.executable, "-m", "pip", "install",
+             *([] if SOURCE_DIR else ["--upgrade"]),
+             "--editable", str(repository_dir)],
+            cwd=repository_dir, env=env, check=not SOURCE_DIR)
+        if result.returncode == 0:
+            return "pip_editable"
+    if not SOURCE_DIR:
+        raise RuntimeError("pip is not available in this interpreter")
+    source_tree = repository_dir / "src"
+    env["PYTHONPATH"] = os.pathsep.join(
+        part for part in (str(source_tree), env.get("PYTHONPATH", ""))
+        if part)
+    log_line(f"pip {'failed' if pip_present else 'is not available here'}; "
+             f"the CLI runs from {source_tree} through PYTHONPATH.")
+    return "pythonpath"
 
 
 def probe_endpoint_raw(name, url, key, model, max_tokens=32, timeout=90):
@@ -130,8 +261,7 @@ def probe_endpoint_raw(name, url, key, model, max_tokens=32, timeout=90):
     req = urllib.request.Request(url, data=payload, headers={
         "Authorization": f"Bearer {key}",
         "Content-Type": "application/json",
-        "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                       "(KHTML, like Gecko) Chrome/126.0 Safari/537.36"),
+        "User-Agent": PREFLIGHT_USER_AGENT,
     })
     started = time.monotonic()
     try:
@@ -146,24 +276,57 @@ def probe_endpoint_raw(name, url, key, model, max_tokens=32, timeout=90):
             body = json.loads(r.read())
         elapsed = time.monotonic() - started
         usage = body.get("usage") or {}
+        preview = str(
+            (body.get("choices") or [{}])[0]
+            .get("message", {}).get("content", ""))[:80]
         return {
-            "endpoint": name, "ok": True,
+            "endpoint": name, "ok": True, "exit_code": None,
             "elapsed_seconds": round(elapsed, 2),
             "prompt_tokens": usage.get("prompt_tokens"),
             "completion_tokens": usage.get("completion_tokens"),
             "usage_accounting_complete": bool(
                 usage.get("prompt_tokens")
                 or usage.get("completion_tokens")),
-            "content_preview": str(
-                (body.get("choices") or [{}])[0]
-                .get("message", {}).get("content", ""))[:80],
+            "content_preview": preview,
+            "note": f"replied in {round(elapsed, 2)}s: {preview}",
         }
     except Exception as exc:
+        error = f"{type(exc).__name__}: {str(exc)[:200]}"
         return {
-            "endpoint": name, "ok": False,
+            "endpoint": name, "ok": False, "exit_code": None,
             "elapsed_seconds": round(time.monotonic() - started, 2),
-            "error": f"{type(exc).__name__}: {str(exc)[:200]}",
+            "error": error,
+            "note": error,
         }
+
+
+def stop_solve_process(process, grace_seconds=STOP_GRACE_SECONDS):
+    """Stop the solve at the deadline, gently first.
+
+    SIGINT lets the CLI turn KeyboardInterrupt into an honest CANCELLED
+    outcome with its Run History written. terminate() and kill() follow
+    only while the process is still alive. Returns the level that was
+    needed, so the summary can say how the run ended.
+    """
+    ladder = (
+        ("SIGINT", lambda: process.send_signal(signal.SIGINT), grace_seconds),
+        ("SIGTERM", process.terminate, 30),
+        ("SIGKILL", process.kill, None),
+    )
+    used = "already_exited"
+    for level, send, wait_seconds in ladder:
+        if process.poll() is not None:
+            return used
+        send()
+        used = level
+        try:
+            process.wait(timeout=wait_seconds)
+            return used
+        except subprocess.TimeoutExpired:
+            log_line(f"  {level} did not stop the solve within "
+                     f"{wait_seconds}s; escalating.")
+    process.wait()
+    return used
 
 
 def log_line(message):
@@ -172,6 +335,23 @@ def log_line(message):
         MASTER_LOG.read_text(encoding="utf-8") + message + "\n",
         encoding="utf-8")
     print(message, flush=True)
+
+
+def write_stage_record(stage_reached):
+    """Save what the cell did so far; readable by people and by the harness."""
+    STAGE_RECORD["stage_reached"] = stage_reached
+    STAGE_FILE.write_text(
+        json.dumps(STAGE_RECORD, indent=2) + "\n", encoding="utf-8")
+    log_line(f"Stage record: {STAGE_FILE}")
+
+
+def finish_stage(stage_reached):
+    """Write the stage record; end the cell here when the stage asks for it."""
+    write_stage_record(stage_reached)
+    if STAGE == stage_reached and stage_reached != "solve":
+        log_line(f"LOOP_ENGINE_KAGGLE_STAGE={STAGE}: stopping after the "
+                 f"{stage_reached} stage.")
+        sys.exit(0)
 
 
 # ------------------------------------------------------------
@@ -187,83 +367,90 @@ MASTER_LOG = MASTER_DIR / f"master-{RUN_STAMP}.log"
 MASTER_LOG.write_text(
     f"Loop Engine Kaggle run {RUN_STAMP}\n"
     f"Provider: tacticalengineering only\n"
-    f"Wall-clock budget: {SOLVE_DEADLINE_SECONDS // 3600}h\n\n",
+    f"Stage requested: {STAGE}\n"
+    f"Wall-clock budget: {DEADLINE_LABEL}\n\n",
     encoding="utf-8")
 
 log_line(f"Log hierarchy root: {LOGS_DIR}")
+log_line(f"Stage requested: {STAGE}")
 
 
 # ------------------------------------------------------------
 # 1. Load the Kaggle secret
 # ------------------------------------------------------------
 
-tactical_key = get_secret(
-    UserSecretsClient(), "tacticalhat_kaggle_key")
+tactical_key = read_secret(TACTICAL_SECRET_NAME, TACTICAL_KEY_ENV)
 
 # Strip every other provider variable so this run is single-provider.
 for name in (
         "OLLAMA_API_KEY", "MISTRAL_API_KEY", "LOOP_ENGINE_ENDPOINTS",
         "TACTICALHAT_API_KEY", "OPENWEBUI_API_KEY",
         "PRIVATE_OPENWEBUI_API_KEY", "OPENROUTER_API_KEY",
-        "OPENCODE_ZEN_API_KEY", "OPENCODE_GO_API_KEY"):
+        "OPENCODE_ZEN_API_KEY", "OPENCODE_GO_API_KEY", TACTICAL_KEY_ENV):
     os.environ.pop(name, None)
 
-os.environ["TACTICAL_API_KEY"] = tactical_key
+if tactical_key:
+    os.environ[TACTICAL_KEY_ENV] = tactical_key
+elif STAGE != "offline":
+    require_key(tactical_key, TACTICAL_SECRET_NAME, TACTICAL_KEY_ENV)
 command_environment = os.environ.copy()
-log_line("TACTICAL_API_KEY configured: True")
+log_line(f"{TACTICAL_KEY_ENV} configured: {bool(tactical_key)}")
 
 
 # ------------------------------------------------------------
 # 2. Clean old run debris so the disk never fills again
 # ------------------------------------------------------------
 
-if REPOSITORY_DIR.exists():
+if not SOURCE_DIR and REPOSITORY_DIR.exists():
     log_line(f"Removing previous checkout: {REPOSITORY_DIR}")
     shutil.rmtree(REPOSITORY_DIR, ignore_errors=True)
-for stale in WORKING.glob("loop-engine-s6e9-solve-*"):
+for stale in KAGGLE_WORKING.glob(f"{WORKSPACE_PREFIX}*"):
     shutil.rmtree(stale, ignore_errors=True)
-for stale in WORKING.glob("loop-engine-s6e9-result-*.json"):
-    stale.unlink(missing_ok=True)
-# Keep solution versions and old logs; they are the troubleshooting record.
+# Keep solution versions, Run History, and old logs; they are the
+# troubleshooting record.
 
 
 # ------------------------------------------------------------
 # 3. Download and install current main
+#    (or install the local checkout named by LOOP_ENGINE_SOURCE_DIR)
 # ------------------------------------------------------------
 
-temp_dir = Path("/kaggle/temp/loop-engine-setup")
-if temp_dir.exists():
-    shutil.rmtree(temp_dir)
-temp_dir.mkdir(parents=True, exist_ok=True)
-archive_path = temp_dir / "loop-engine-main.zip"
+if SOURCE_DIR:
+    log_line(f"Using local checkout: {REPOSITORY_DIR}")
+else:
+    if SETUP_TEMP_DIR.exists():
+        shutil.rmtree(SETUP_TEMP_DIR)
+    SETUP_TEMP_DIR.mkdir(parents=True, exist_ok=True)
+    archive_path = SETUP_TEMP_DIR / "loop-engine-main.zip"
 
-log_line("Downloading Loop Engine main...")
-download_request = urllib.request.Request(
-    REPOSITORY_ARCHIVE_URL,
-    headers={"User-Agent": "Kaggle-Loop-Engine-Setup",
-             "Accept": "application/zip"})
-with urllib.request.urlopen(download_request, timeout=300) as response:
-    with archive_path.open("wb") as output_file:
-        shutil.copyfileobj(response, output_file)
+    log_line("Downloading Loop Engine main...")
+    download_request = urllib.request.Request(
+        REPOSITORY_ARCHIVE_URL,
+        headers={"User-Agent": "Kaggle-Loop-Engine-Setup",
+                 "Accept": "application/zip"})
+    with urllib.request.urlopen(download_request, timeout=300) as response:
+        with archive_path.open("wb") as output_file:
+            shutil.copyfileobj(response, output_file)
 
-if not zipfile.is_zipfile(archive_path):
-    raise RuntimeError(f"Downloaded file is not a ZIP archive: {archive_path}")
-log_line(
-    f"Repository archive downloaded: "
-    f"{archive_path.stat().st_size / (1024 ** 2):.1f} MB")
+    if not zipfile.is_zipfile(archive_path):
+        raise RuntimeError(
+            f"Downloaded file is not a ZIP archive: {archive_path}")
+    log_line(
+        f"Repository archive downloaded: "
+        f"{archive_path.stat().st_size / (1024 ** 2):.1f} MB")
 
-with zipfile.ZipFile(archive_path, "r") as archive:
-    roots = {
-        PurePosixPath(name).parts[0]
-        for name in archive.namelist()
-        if name and PurePosixPath(name).parts
-    }
-    if len(roots) != 1:
-        raise RuntimeError(f"Archive had multiple roots: {sorted(roots)}")
-    archive.extractall(temp_dir)
+    with zipfile.ZipFile(archive_path, "r") as archive:
+        roots = {
+            PurePosixPath(name).parts[0]
+            for name in archive.namelist()
+            if name and PurePosixPath(name).parts
+        }
+        if len(roots) != 1:
+            raise RuntimeError(f"Archive had multiple roots: {sorted(roots)}")
+        archive.extractall(SETUP_TEMP_DIR)
 
-shutil.move(str(temp_dir / next(iter(roots))), str(REPOSITORY_DIR))
-shutil.rmtree(temp_dir, ignore_errors=True)
+    shutil.move(str(SETUP_TEMP_DIR / next(iter(roots))), str(REPOSITORY_DIR))
+    shutil.rmtree(SETUP_TEMP_DIR, ignore_errors=True)
 
 for required in (
         REPOSITORY_DIR / "pyproject.toml",
@@ -271,10 +458,8 @@ for required in (
     if not required.exists():
         raise RuntimeError(f"Repository input missing: {required}")
 
-run_command(
-    [sys.executable, "-m", "pip", "install",
-     "--upgrade", "--editable", str(REPOSITORY_DIR)],
-    cwd=REPOSITORY_DIR, env=command_environment)
+STAGE_RECORD["install_mode"] = install_loop_engine(
+    REPOSITORY_DIR, command_environment)
 
 os.chdir(REPOSITORY_DIR)
 log_line(f"Repository root: {REPOSITORY_DIR}")
@@ -284,13 +469,17 @@ log_line(f"Repository root: {REPOSITORY_DIR}")
 # 4. Offline diagnostics
 # ------------------------------------------------------------
 
-run_command(
+doctor = run_command(
     [sys.executable, "-m", "loop_engine", "doctor"],
     cwd=REPOSITORY_DIR, env=command_environment)
+STAGE_RECORD["commands"]["doctor"] = {"exit_code": doctor.returncode}
 
-run_command(
+configure = run_command(
     [sys.executable, "-m", "loop_engine", "configure"],
     cwd=REPOSITORY_DIR, env=command_environment)
+STAGE_RECORD["commands"]["configure"] = {"exit_code": configure.returncode}
+
+finish_stage("offline")
 
 
 # ------------------------------------------------------------
@@ -308,19 +497,23 @@ preflight = {
 
 tactical_result = probe_endpoint_raw(
     "tacticalengineering", TACTICAL_ENDPOINT, tactical_key, TACTICAL_MODEL)
+# The probe result comes first so the explicit fields below (the real
+# endpoint URL among them) are never overwritten by it.
 preflight["providers"].append({
+    **tactical_result,
     "provider": "tacticalengineering",
     "probe_kind": "direct_openai_chat",
     "endpoint": TACTICAL_ENDPOINT,
     "model": TACTICAL_MODEL,
     "tls_verification": "skip",
     "stream": "auto",
-    **tactical_result,
 })
 
 PREFLIGHT_FILE = PREFLIGHT_DIR / f"preflight-{RUN_STAMP}.json"
 PREFLIGHT_FILE.write_text(
     json.dumps(preflight, indent=2) + "\n", encoding="utf-8")
+STAGE_RECORD["preflight_file"] = str(PREFLIGHT_FILE)
+STAGE_RECORD["preflight_ok"] = bool(tactical_result.get("ok"))
 
 status = "OK" if tactical_result.get("ok") else "FAIL"
 detail = (
@@ -333,16 +526,21 @@ log_line(f"  [{status}] tacticalengineering: {detail}")
 log_line(f"  Preflight record: {PREFLIGHT_FILE}")
 
 if not tactical_result.get("ok"):
+    write_stage_record("preflight")
     raise RuntimeError(
         "The single provider failed preflight; not spending the time "
         "budget on a solve that cannot reach a model. Fix the endpoint "
         "and rerun. Detail is in the preflight record.")
+
+finish_stage("preflight")
 
 
 # ------------------------------------------------------------
 # 6. Runtime settings: tacticalengineering only
 # ------------------------------------------------------------
 
+# credential_env is the variable the solve reads for this provider id;
+# --compile-provider tacticalengineering resolves its key through it.
 settings = {
     "version": 1,
     "models": {
@@ -352,7 +550,7 @@ settings = {
                 "id": "tacticalengineering",
                 "kind": "custom",
                 "enabled": True,
-                "credential_env": "TACTICAL_API_KEY",
+                "credential_env": TACTICAL_KEY_ENV,
                 "endpoint": TACTICAL_ENDPOINT,
                 "model": TACTICAL_MODEL,
                 "wire": "openai",
@@ -360,17 +558,10 @@ settings = {
                 "stream": "auto",
                 "tls_verification": "skip",
                 "maximum_output_tokens": TACTICAL_MAX_OUTPUT,
-                "maximum_output_source": (
-                    "gemma-4 published model output ceiling; verified live "
-                    "with a full 32768-token streamed generation against "
-                    "this origin"),
+                "maximum_output_source": TACTICAL_MAX_OUTPUT_SOURCE,
                 "counts_as_evidence": True,
                 "auth_scheme": "bearer",
-                "headers": {
-                    "User-Agent": (
-                        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                        "(KHTML, like Gecko) Chrome/126.0 Safari/537.36"),
-                },
+                "headers": {"User-Agent": TACTICAL_USER_AGENT},
             },
         ],
     },
@@ -425,9 +616,9 @@ if not route_plan:
 # 8. Task
 # ------------------------------------------------------------
 
-TASK = """
+TASK = f"""
 Build and verify a reproducible baseline solution for the supplied Kaggle
-Playground Series S6E9 competition dataset.
+competition dataset ({COMPETITION}).
 
 This is an execution task, not merely a high-level modeling plan.
 
@@ -455,11 +646,12 @@ Write these files inside the assigned workspace:
 - verification.json
 
 Verify schema, row count, column order, identifier order, missing predictions,
-infinite predictions, prediction type, and prediction range. Treat
-/kaggle/input as read-only. Do not submit anything to Kaggle. Use fixed seeds
-and do not run a large hyperparameter search. The environment has no Docker:
-generated code must run with the preinstalled Python packages directly and
-must not use dependency-install network commands.
+infinite predictions, prediction type, and prediction range. Treat the
+dataset directory {DATASET_DIR} as read-only. Do not submit anything to
+Kaggle. Use fixed seeds and do not run a large hyperparameter search. The
+environment has no Docker: generated code must run with the preinstalled
+Python packages directly and must not use dependency-install network
+commands.
 
 Return COMPLETED_VERIFIED only after all required artifacts exist and all
 verification checks pass.
@@ -473,7 +665,7 @@ log_line(f"Task file: {TASK_FILE}")
 # 9. Solve: tacticalengineering only, with a hard wall-clock deadline
 # ------------------------------------------------------------
 
-WORKSPACE = WORKING / f"loop-engine-s6e9-solve-{RUN_STAMP}"
+WORKSPACE = KAGGLE_WORKING / f"{WORKSPACE_PREFIX}{RUN_STAMP}"
 RUNS_DIR = RUN_HISTORY_LOG_DIR  # Run History lives under logs/run-history
 
 solve_command = [
@@ -483,11 +675,16 @@ solve_command = [
     "--workspace", str(WORKSPACE),
     "--runs-dir", str(RUNS_DIR),
     "--settings-file", str(SETTINGS_FILE),
+    # A settings-declared provider id; its credential_env names the key
+    # variable, and --provider-key-env repeats it explicitly.
     "--compile-provider", "tacticalengineering",
-    "--provider-key-env", "TACTICAL_API_KEY",
+    "--provider-key-env", TACTICAL_KEY_ENV,
     "--model-route", "custom.tacticalengineering",
     "--authorize-model-calls",
     "--allow-source-to-model",
+    # Kaggle has no Docker: generated code runs as a host process and the
+    # run record labels the weaker isolation.
+    "--allow-local-execution",
     "--no-default-extensions",
     # Owner-set pass ceiling sized with the wall-clock budget. The
     # non-progress escalation ladder (soft reset -> cold restart ->
@@ -498,14 +695,11 @@ solve_command = [
     "--format", "json",
 ]
 
-log_line(f"\nRunning solve with a "
-         f"{SOLVE_DEADLINE_SECONDS // 3600}-hour deadline:")
+log_line(f"\nRunning solve with a {DEADLINE_LABEL} wall-clock deadline:")
 log_line(shlex.join(solve_command) + "\n")
 
 SOLVE_STDOUT_LOG = SOLVE_LOG_DIR / f"solve-stdout-{RUN_STAMP}.jsonl"
 SOLVE_STDERR_LOG = SOLVE_LOG_DIR / f"solve-stderr-{RUN_STAMP}.log"
-
-import threading
 
 process = subprocess.Popen(
     solve_command,
@@ -517,6 +711,16 @@ process = subprocess.Popen(
     bufsize=1,
 )
 
+# Both pipes are drained by their own reader threads so neither can
+# block the child, and so the deadline wait below stays a plain wait().
+stdout_lines = []
+
+
+def collect_stdout():
+    for line in process.stdout:
+        stdout_lines.append(line)
+
+
 # Stream stderr (progress + exact model IO) into the notebook AND the
 # solve log, so live troubleshooting and post-hoc debugging use the
 # same record.
@@ -527,29 +731,34 @@ def tee_stderr():
             stderr_file.flush()
             print(line, end="", flush=True)
 
+
+stdout_thread = threading.Thread(target=collect_stdout, daemon=True)
 stderr_thread = threading.Thread(target=tee_stderr, daemon=True)
+stdout_thread.start()
 stderr_thread.start()
 
 deadline_hit = False
+stop_level = ""
 try:
-    stdout_text = process.communicate(
-        timeout=SOLVE_DEADLINE_SECONDS)[0]
+    process.wait(timeout=SOLVE_DEADLINE_SECONDS)
 except subprocess.TimeoutExpired:
     deadline_hit = True
-    process.kill()
-    stdout_text, _ = process.communicate()
     log_line(
-        f"\nDEADLINE: the solve did not finish within "
-        f"{SOLVE_DEADLINE_SECONDS // 3600} hours and was stopped. "
+        f"\nDEADLINE: the solve did not finish within {DEADLINE_LABEL}. "
+        "Sending SIGINT so it can record an honest CANCELLED outcome...")
+    stop_level = stop_solve_process(process)
+    log_line(
+        f"DEADLINE: the solve stopped after {stop_level}. "
         "Everything completed so far is saved below.")
+stdout_thread.join(timeout=30)
 stderr_thread.join(timeout=30)
 
-raw_output = (stdout_text or "").strip()
+raw_output = "".join(stdout_lines).strip()
 SOLVE_STDOUT_LOG.write_text(
     raw_output + ("\n" if raw_output else ""), encoding="utf-8")
 
-exit_note = "deadline-stopped" if deadline_hit else (
-    f"exit {process.returncode}")
+exit_note = (f"deadline-stopped by {stop_level}" if deadline_hit
+             else f"exit {process.returncode}")
 log_line(f"Solve finished ({exit_note}).")
 log_line(f"  Solve stdout record: {SOLVE_STDOUT_LOG}")
 log_line(f"  Solve stderr trace:  {SOLVE_STDERR_LOG}")
@@ -561,6 +770,16 @@ except json.JSONDecodeError:
     log_line(
         "  NOTE: final output was not one JSON object; saved raw output "
         "for inspection.")
+
+STAGE_RECORD["commands"]["solve"] = {
+    "exit_code": process.returncode,
+    "deadline_hit": deadline_hit,
+    "stop_level": stop_level,
+}
+STAGE_RECORD["solve_stdout_record"] = str(SOLVE_STDOUT_LOG)
+STAGE_RECORD["terminal_code"] = final_record.get("terminal_code")
+STAGE_RECORD["solved"] = final_record.get("solved")
+STAGE_RECORD["run_id"] = final_record.get("run_id")
 
 
 # ------------------------------------------------------------
@@ -650,6 +869,7 @@ index_rows.append({
     "solved": solved,
     "terminal_code": final_record.get("terminal_code", ""),
     "deadline_hit": deadline_hit,
+    "stop_level": stop_level,
     "best_reason": best_reason,
     "artifacts": artifacts_copied,
 })
@@ -674,6 +894,7 @@ summary_lines = [
     f"- Terminal code: **{final_record.get('terminal_code', 'UNKNOWN')}**",
     f"- Solved: **{solved}**",
     f"- Deadline hit: {deadline_hit}",
+    f"- Stop level needed: {stop_level or 'none (finished on its own)'}",
     f"- Model calls: {final_record.get('model_calls')}",
     f"- Loops: {final_record.get('loop_count')}",
     f"- Elapsed: {final_record.get('elapsed_seconds')}s",
@@ -704,6 +925,7 @@ summary_lines += [
     f"- Preflight: `{PREFLIGHT_FILE}`",
     f"- Run History: `{RUNS_DIR}`",
     f"- Master log: `{MASTER_LOG}`",
+    f"- Stage record: `{STAGE_FILE}`",
 ]
 run_id = final_record.get("run_id")
 if run_id:
@@ -721,4 +943,5 @@ log_line(f"\nSummary saved: {SUMMARY_FILE}")
 
 print("\n" + "=" * 72)
 print(SUMMARY_FILE.read_text(encoding="utf-8"))
-print("=" * 72)
+
+finish_stage("solve")
