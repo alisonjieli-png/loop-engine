@@ -9,6 +9,25 @@ First public release.
 
 ### Added
 
+- **The portfolio is now judged on use, not on intent.** Every packet offers
+  the model a portfolio it may draw on, with selection authority its own and
+  the active step only a hint. Nothing recorded which options it actually
+  used, so a perspective carried by every solved run and one nobody has ever
+  picked were indistinguishable, and any addition to the portfolio was a
+  guess. `core.option_selection` adds one uniform ask to every packet's
+  output contract, captured and removed at the single point every model
+  response passes through, so no step's typed schema knows it exists. A
+  reference to an option the packet never offered is recorded as exactly
+  that rather than counted as use, and a step that called without reporting
+  stays visible beside one that did. `core.task_region_statistics` folds the
+  per-run tally into each task region, keeping solved and unsolved use apart
+  because summing them away destroys the only signal worth having, and
+  `option_evidence()` reads the result back with its counts, its thin-evidence
+  warning, and its own statement that it never narrows what a later call is
+  offered. What a caller says it needed and was not offered is kept verbatim,
+  because a portfolio can only learn what is missing if something records the
+  asking.
+
 - **A prompt block carries its own slice of the packet, and no other block's.**
   The practitioner renderer mapped thirteen canonical blocks onto ten packet
   fields, so `[PERSONA]` and `[PERSPECTIVES]` rendered the same 5,120 bytes,

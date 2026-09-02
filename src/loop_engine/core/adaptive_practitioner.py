@@ -686,6 +686,7 @@ def run_adaptive_practitioner(
             services.generated_file_checkpoint_summaries(),
         "model_calls": services.model_session.calls_used,
         "model_usage": safe_model_usage(services),
+        "option_selection": services.selection_tally.to_dict(),
         "loop_details": loop_details(ledger.events),
         "run_history": history,
     }

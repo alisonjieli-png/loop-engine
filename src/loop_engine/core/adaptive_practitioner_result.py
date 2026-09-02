@@ -129,6 +129,7 @@ def failed_adaptive_output(
         "deterministic_attempt": services.deterministic_attempt.to_dict(),
         "model_calls": services.model_session.calls_used,
         "model_usage": safe_model_usage(services),
+        "option_selection": services.selection_tally.to_dict(),
         "orientations": [item.to_dict()
                          for item in services.orientation_by_version.values()],
         "action_decisions": services.action_history,

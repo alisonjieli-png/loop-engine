@@ -1,6 +1,6 @@
 {
   "blocking_threshold": "high",
-  "finding_count": 9943,
+  "finding_count": 9948,
   "findings": [
     {
       "finding_id": "hardcoding.0000d2e9cb7e45dab6b9a6d6",
@@ -24183,6 +24183,10 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.99d9d54234b79a1a006e55b0",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.99e05ec643201c0615557c3b",
       "severity": "medium"
     },
@@ -30271,6 +30275,10 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.c1f05c552fd10245efc36e32",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.c1f0b2f60c68f18fca48d55b",
       "severity": "medium"
     },
@@ -33447,6 +33455,10 @@
       "severity": "medium"
     },
     {
+      "finding_id": "hardcoding.d7c0e1764c5950f459092570",
+      "severity": "medium"
+    },
+    {
       "finding_id": "hardcoding.d7c28004148a53a4095d1ae6",
       "severity": "medium"
     },
@@ -33592,6 +33604,10 @@
     },
     {
       "finding_id": "hardcoding.d9197aeac162adca9269bb57",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.d91d79743763261f9b6d1fd1",
       "severity": "medium"
     },
     {
@@ -34544,6 +34560,10 @@
     },
     {
       "finding_id": "hardcoding.de827609bde026c3a2c2f5bf",
+      "severity": "medium"
+    },
+    {
+      "finding_id": "hardcoding.de8689501c7ef9cd8827e2b1",
       "severity": "medium"
     },
     {
@@ -39775,7 +39795,7 @@
       "severity": "high"
     }
   ],
-  "repository_snapshot_id": "hardcoding_source.sha256_56fd8c2607d9725c10c5af7786dc2c68ad504724113a144bdf56bc8d6db720c6",
+  "repository_snapshot_id": "hardcoding_source.sha256_10bef6960572c1131db594a8a9ba84d69e8cccb3234a3510c49f482d1cca9d9c",
   "schema": "hardcoding_ci_baseline/v1",
-  "source_audit_id": "hardcoding_audit.sha256_400244ce35f3d7cc6e8d48538f5e1fcf640688b6d5a2a0bd7a0b6504e51dfbb8"
+  "source_audit_id": "hardcoding_audit.sha256_ffd363dd375dd4e197f89d195200ace688415db8546c9f7a2cf25d40d577f056"
 }

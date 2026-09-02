@@ -30,6 +30,8 @@ from .context_budget import ContextBudgetPolicy, bound_state_view
 from .context_pack_manifest import build_context_pack_manifest
 from .generated_project import (
     execute_generated_project)
+from .option_selection import (SELECTION_KEYS, SELECTION_REPORT_CONTRACT,
+                              SelectionTally, admitted_selection)
 from .llm_work_packet import (
     LLMContextBlock, LLMWorkPacket, WorkDirective)
 from .adaptive_practitioner_prompting import (
@@ -618,6 +620,10 @@ class AdaptiveRunServices:
     project_attempts: list[dict] = field(default_factory=list)
     verification_records: list[dict] = field(default_factory=list)
     context_snapshots: list[dict] = field(default_factory=list)
+    #: What this run drew on from the portfolio it was offered, counted
+    #: per option and saved with the result. Evidence for judging the
+    #: portfolio, never a gate on what a later call may be offered.
+    selection_tally: SelectionTally = field(default_factory=SelectionTally)
     selected_intelligence_refs: list[str] = field(default_factory=list)
     selected_memory_refs: list[str] = field(default_factory=list)
     progress_snapshots: list[tuple] = field(default_factory=list)
@@ -1061,13 +1067,30 @@ class AdaptiveRunServices:
             output_contract={
                 "schema_ref": directive.return_schema_ref,
                 "schema": request.output_contract,
-                "format": "json", "additional_text_allowed": False},
+                "format": "json", "additional_text_allowed": False,
+                # Asked of every step, answered beside the step's own schema,
+                # and removed before that schema is validated. The portfolio
+                # can only be judged on use, and use is only visible if the
+                # caller says what it used.
+                "selection_report": SELECTION_REPORT_CONTRACT},
             policy_context={
                 "interaction_mode": self.request.interaction_mode,
                 "permissions": list(permissions),
                 "model_cannot_grant_authority": True},
             token_budget={"model_calls_remaining": remaining_calls},
             source_refs=tuple(self.request.source_refs), context_blocks=blocks)
+        offered_options = {
+            "used_perspectives": [
+                str(item.get("persona_id") or "")
+                for item in packet.persona_context["persona_candidates"]],
+            "used_question_refs": [
+                str(item.get("step_id") or "")
+                for item in packet.question_portfolio["candidates"]],
+            "used_guidance_refs": [
+                str(item.get("record_id") or "")
+                for item in packet.context_intelligence],
+        }
+        self.selection_tally.note_offered(request.step_id)
         packet_artifact = self.artifacts.store.put(
             serialize_work_packet(packet, owner),
             media_type="application/json", encoding="utf-8",
@@ -1238,6 +1261,24 @@ class AdaptiveRunServices:
                     text, "inline:" + contract_digest, contract_digest),
                 parent=owner)
             value = admitted.value
+            if isinstance(value, dict):
+                # Read before the step's typed validator does, and removed so
+                # that validator never has to know these keys exist.
+                reported = {key: value.pop(key) for key in SELECTION_KEYS
+                            if key in value}
+                if reported:
+                    selection = admitted_selection(reported, offered_options)
+                    self.selection_tally.note(request.step_id, selection)
+                    if selection:
+                        self.publish(
+                            "practitioner.options.selected",
+                            step=request.step_id, **{
+                                key: item for key, item in selection.items()
+                                if key != "named_but_not_offered"})
+                    outside = selection.get("named_but_not_offered")
+                    if outside:
+                        self.diagnostic("option_named_but_not_offered", {
+                            "step": request.step_id, "named": outside})
             if value is not None:
                 _preview = json.dumps(
                     value, default=str, sort_keys=True)
