@@ -68,6 +68,43 @@ def project_input_path(relative: str) -> str:
 _SELECTED_CONTENT_BYTE_LIMIT = 12_000
 
 
+
+#: Bytes of one selected body kept in the SAVED record. The run holds the
+#: full body in memory for deterministic project inputs and that is
+#: unchanged; this bounds only what is written to disk afterwards. The row
+#: already carries the file's path, byte count and digest, and the file it
+#: came from is read-only and still there, so copying its bytes into the
+#: record identifies nothing further. One competition run wrote an 80 MB
+#: train.csv into a 113 MB result and, with two other runs doing the same
+#: into a RAM-backed temporary filesystem, exhausted the machine.
+_SAVED_CONTENT_BYTE_LIMIT = 64_000
+
+
+def saved_source_inspections(inspections: list) -> list:
+    """Bound the source bodies a finished record carries to disk.
+
+    A record that elides a body says so, and says where the body is, so a
+    later reader can tell an elision from a file that was empty at the time.
+    """
+    saved = []
+    for inspection in inspections:
+        row_out = []
+        for row in inspection.get("selected") or ():
+            row = dict(row)
+            body = row.get("content")
+            if isinstance(body, str) and len(body.encode("utf-8", "replace")) \
+                    > _SAVED_CONTENT_BYTE_LIMIT:
+                kept = body.encode("utf-8", "replace")[
+                    :_SAVED_CONTENT_BYTE_LIMIT].decode("utf-8", "ignore")
+                row["content"] = kept
+                row["content_elided"] = True
+                row["content_kept_bytes"] = len(kept.encode("utf-8", "replace"))
+                row["content_available_at"] = row.get("path", "")
+            row_out.append(row)
+        saved.append({**inspection, "selected": row_out})
+    return saved
+
+
 def source_inspection_model_view(
         inspections: list[dict], *, include_selected_content: bool = True,
         selected_content_byte_limit: "int | None" = _SELECTED_CONTENT_BYTE_LIMIT,
@@ -524,6 +561,21 @@ def source_profile_operation(
     }
 
 
+def _saved_record_is_bounded() -> bool:
+    """A saved body is bounded, marked as elided, and small bodies are not."""
+    large = saved_source_inspections([{"selected": [
+        {"path": "data/train.csv", "digest": "d",
+         "content": "x" * (_SAVED_CONTENT_BYTE_LIMIT * 3)}]}])
+    row = large[0]["selected"][0]
+    small = saved_source_inspections([{"selected": [
+        {"path": "tiny.csv", "content": "a,b\n1,2\n"}]}])[0]["selected"][0]
+    return (len(row["content"]) <= _SAVED_CONTENT_BYTE_LIMIT
+            and row.get("content_elided") is True
+            and row.get("content_available_at") == "data/train.csv"
+            and "content_elided" not in small
+            and small["content"] == "a,b\n1,2\n")
+
+
 def self_test() -> dict:
     """Prove exact selection and bounded model projection."""
     import tempfile
@@ -669,6 +721,12 @@ def self_test() -> dict:
         "detail": "large selections truncate to a fixed byte budget with "
                   "explicit truncation flags; small bodies pass through "
                   "unchanged",
+    }, {
+        "test": "a_saved_record_does_not_carry_a_whole_dataset",
+        "passed": _saved_record_is_bounded(),
+        "detail": "the record keeps a bounded head of a large body and says "
+                  "it elided the rest and where the file is; the row already "
+                  "carries the path, byte count and digest that identify it",
     }]
     return {"record_type": "adaptive_source_inspection_test/v1",
             "tests": tests, "passed": sum(item["passed"] for item in tests),

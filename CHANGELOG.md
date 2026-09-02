@@ -215,6 +215,18 @@ First public release.
 
 ### Fixed
 
+- **A finished record no longer archives whole datasets.** One competition run
+  wrote a 113 MB `adaptive-result.json`, of which 80 MB was the verbatim
+  content of the `train.csv` it had inspected — beside the `path`,
+  `byte_count` and `digest` that already identify that file, which is
+  read-only and still on disk. Three such runs writing into a RAM-backed
+  temporary filesystem exhausted the machine, and every reader of run history,
+  playback and analytics had been parsing those bytes back. The model view was
+  already bounded and the run still holds the full body in memory for
+  deterministic project inputs; only what is written to disk afterwards is
+  bounded now, and an elided body says that it was elided and where the file
+  is, so a later reader can tell that apart from a file that was empty.
+
 - **A response that arrived carrying no answer is now tried again.** The
   provider finished normally — `stop`, under its output ceiling, no transport
   error — and returned only private reasoning with no final answer. The

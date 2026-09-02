@@ -13,6 +13,7 @@ from ..loop.recursive_loop import Loop, StepOutcome
 from .adaptive_practitioner_records import (
     ADAPTIVE_PRACTITIONER_RECORD_TYPE, AdaptivePractitionerError,
     AdaptiveRunServices)
+from .adaptive_practitioner_source import saved_source_inspections
 
 
 def loop_details(events: list[dict]) -> list[dict]:
@@ -139,7 +140,8 @@ def failed_adaptive_output(
             "active_canvas", {}),
         "web_search_candidates": services.web_search_results,
         "web_evidence": services.web_results,
-        "source_inspections": services.source_inspections,
+        "source_inspections": saved_source_inspections(
+            services.source_inspections),
         "project_attempts": services.project_attempts,
         "verification": services.verification_records,
         "supervision": services.supervision_findings,

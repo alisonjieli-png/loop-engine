@@ -184,6 +184,12 @@ NOT_A_CAPACITY = {
     "PROFILE_VALUE_TEXT_LIMIT": "shapes one report row, not how much is read",
     "_SELECTED_CONTENT_BYTE_LIMIT": "fallback only; every production caller "
                                     "passes the run's measured allowance",
+    "_SAVED_CONTENT_BYTE_LIMIT": "bounds what a finished record archives, not "
+                                 "what a run may read: the body is a copy of "
+                                 "a read-only file the same row names by path "
+                                 "and digest, the run already holds the whole "
+                                 "of it in memory, and nothing reads the "
+                                 "record back as an input",
 }
 
 _CAPACITY_WORDS = ("LIMIT", "BYTES", "CEILING", "MAX", "ROWS", "SIZE", "COUNT")
