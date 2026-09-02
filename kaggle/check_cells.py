@@ -22,6 +22,7 @@ Exit codes: 0 every check passed, 1 a check failed, 2 the run was refused.
 from __future__ import annotations
 
 import argparse
+import builtins
 import csv
 import json
 import os
@@ -198,6 +199,51 @@ def load_single_json(paths: list) -> dict | None:
         return None
 
 
+def check_cell_names(cell_id: str) -> list:
+    """Every name a cell loads must be one the cell itself defines.
+
+    The offline stage stops before the solve, so the code that runs at the
+    very end of a live run is never executed here. A cell that referred to a
+    variable it does not define would raise NameError after four hours of
+    real work, having already produced the submission it was about to
+    publish. This reads the whole cell statically instead, so that class of
+    mistake costs a second rather than a run.
+    """
+    import ast
+
+    source = (Path(__file__).resolve().parent / CELLS[cell_id][0]).read_text(
+        encoding="utf-8")
+    tree = ast.parse(source)
+    defined = set(dir(builtins))
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+            defined.add(node.id)
+        elif isinstance(node, (ast.Import, ast.ImportFrom)):
+            for alias in node.names:
+                defined.add((alias.asname or alias.name).split(".")[0])
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef,
+                               ast.ClassDef)):
+            defined.add(node.name)
+            defined.update(item.arg for item in getattr(
+                node, "args", ast.arguments(
+                    posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[],
+                    defaults=[])).args)
+        elif isinstance(node, ast.ExceptHandler) and node.name:
+            defined.add(node.name)
+        elif isinstance(node, (ast.comprehension,)):
+            for name in ast.walk(node.target):
+                if isinstance(name, ast.Name):
+                    defined.add(name.id)
+        elif isinstance(node, ast.arg):
+            defined.add(node.arg)
+    loaded = {node.id for node in ast.walk(tree)
+              if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load)}
+    missing = sorted(loaded - defined)
+    return [("cell names resolve", not missing,
+             f"undefined: {missing}" if missing
+             else f"{len(loaded)} loaded names all defined in the cell")]
+
+
 def check_stage(stage: str, working: Path, run: dict) -> list:
     """Return (name, passed, detail) triples for the stage's contract."""
     checks = []
@@ -355,7 +401,8 @@ def main(argv: list | None = None) -> int:
               flush=True)
         run = run_cell(cell_id, args.stage, root, working, args.competition,
                        log_path, args.verbose, args.timeout or None)
-        checks = check_stage(args.stage, working, run)
+        checks = check_cell_names(cell_id) + check_stage(
+            args.stage, working, run)
         results.append((cell_id, run, checks))
 
     all_passed = all(passed for _, _, checks in results

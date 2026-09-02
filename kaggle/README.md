@@ -51,11 +51,31 @@ one cell
 
 ## Output locations
 
-All three notebooks write under the Kaggle working directory using the same
-two roots, `loop-engine-logs/` and `loop-engine-solutions/`.
+All three notebooks write under the Kaggle working directory. Start with the
+first four rows: they are what a person or Kaggle actually opens.
+
+`submission.csv` at the working root is the file Kaggle's own submit flow
+looks for. Only one run can hold that name, so promotion is explicit: a run
+that verified always takes it, and an unverified run takes it only while no
+verified run has, so a later failure cannot quietly replace a submission that
+passed. `submissions/root-submission.json` records which attempt holds it and
+why. Every attempt also keeps its own dated copy, whether or not it won the
+root slot.
+
+The reports describe a submission by its row count, its distinct-value count
+and its range rather than calling it good. A submission whose predictions
+never vary is published with that said plainly, because this repository has
+shipped exactly that failure before and a reader needs to see it.
 
 | Path | Contents | 01 | 02 | 03 |
 |---|---|---|---|---|
+| `submission.csv` | the competition file, at the working root, ready to submit | yes | yes | yes |
+| `submissions/submission-<stamp>.csv` | one dated copy per attempt, kept regardless of promotion | yes | yes | yes |
+| `submissions/root-submission.json` | which attempt holds the root file, and the reason | yes | yes | yes |
+| `loop-engine-logs/reports/report-<stamp>.html` | self-contained visual report: outcome, submission reading, source roles, failures | yes | yes | yes |
+| `loop-engine-logs/reports/report-<stamp>.md` | the same report as Markdown | yes | yes | yes |
+| `loop-engine-logs/records/run-<stamp>.json` | one JSON record per attempt, naming every file it wrote | yes | yes | yes |
+| `loop-engine-logs/LATEST.json` | the most recent attempt's record | yes | yes | yes |
 | `loop-engine-solutions/attempt-<stamp>/` | solution.py, submission.csv, metrics.json, report.md, verification.json | yes | yes | yes |
 | `loop-engine-solutions/BEST.txt`, `index.json` | pointer to the best attempt and an artifact index | | yes | |
 | `loop-engine-logs/stage-<stamp>.json` | what the cell did: install mode, doctor/configure exit codes, preflight result, terminal code | yes | yes | yes |

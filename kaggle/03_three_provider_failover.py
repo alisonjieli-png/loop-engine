@@ -7,12 +7,20 @@
 #   ollama_kaggle_key, mistral_kaggle_key, tacticalhat_kaggle_key
 #
 # Output layout (under the Kaggle working directory):
-#   loop-engine-solutions/attempt-<stamp>/   verified artifacts
+#   submission.csv               the competition file, at the working root
+#   submissions/
+#     submission-<stamp>.csv     one dated copy per attempt
+#     root-submission.json       which attempt holds the root file, and why
+#   loop-engine-solutions/       best verified artifacts, versioned
 #   loop-engine-logs/
-#     preflight/                provider API check record
-#     solve/                    final solve stdout record
-#     run-history/              Loop Engine Run History dirs (kept)
-#     summary/                  final one-page report per attempt
+#     LATEST.json               this run's record, for machines
+#     reports/                  report-<stamp>.html and .md, for people
+#     records/                  run-<stamp>.json, one per attempt
+#     preflight/                provider API check records
+#     solve/                    full solve stdout records (per attempt)
+#     run-history/              Loop Engine Run History dirs
+#     summary/                  one-page human report per attempt
+#     master/                   chronological master log + artifact index
 #     stage-<stamp>.json        what this cell did and where it stopped
 #
 # Runs outside Kaggle too: kaggle/check_cells.py sets the
@@ -990,5 +998,53 @@ REPORT_FILE.write_text("\n".join(report_lines) + "\n", encoding="utf-8")
 print("\n" + "=" * 72)
 print(f"FINAL REPORT SAVED: {REPORT_FILE}")
 print("=" * 72)
+
+# ------------------------------------------------------------
+# Publish this run's outputs where their readers are
+# ------------------------------------------------------------
+# The competition file at the working root, a dated copy in submissions/,
+# reports in HTML and Markdown, one JSON record, and a console block that
+# says what happened without scrolling. Every figure is measured from the
+# run's own output; a submission that never varies is published and named
+# as one rather than withheld or dressed up.
+
+PUBLISHED_PROVIDER_LABEL = str(final_record.get("provider") or "three-provider failover")
+PUBLISHED_MODEL_LABEL = str(final_record.get("model") or "")
+# This cell has no wall-clock deadline and no escalation ladder of its own;
+# it fails over between providers instead, so both stay unset rather than
+# being reported as a stop that never happened.
+PUBLISHED_DEADLINE_HIT = False
+PUBLISHED_STOP_LEVEL = ""
+PUBLISHED_LOG_PATHS = {"run history": str(RUNS_DIR),
+     "solve record": str(RESULT_FILE),
+     "final report": str(REPORT_FILE)}
+
+from loop_engine.kaggle_report import (
+    KaggleReportRequest, publish_run_outputs, render_terminal_block)
+
+published_record = publish_run_outputs(
+    KaggleReportRequest(
+        working_root=str(KAGGLE_WORKING),
+        run_stamp=RUN_STAMP,
+        solved=bool(final_record.get("solved")),
+        terminal_code=str(final_record.get("terminal_code") or ""),
+        run_id=str(final_record.get("run_id") or ""),
+        provider_label=PUBLISHED_PROVIDER_LABEL,
+        model_label=PUBLISHED_MODEL_LABEL,
+        model_calls=final_record.get("model_calls"),
+        loop_count=final_record.get("loop_count"),
+        elapsed_seconds=final_record.get("elapsed_seconds"),
+        deadline_hit=bool(PUBLISHED_DEADLINE_HIT),
+        stop_level=str(PUBLISHED_STOP_LEVEL or ""),
+        artifacts=tuple(final_record.get("artifacts") or ()),
+        verification=dict(final_record.get("verification") or {}),
+        limitations=tuple(final_record.get("limitations") or ()),
+        failures=tuple(final_record.get("failures") or ()),
+        source_roles=dict(final_record.get("source_roles") or {}),
+        option_selection=dict(final_record.get("option_selection") or {}),
+        log_paths=PUBLISHED_LOG_PATHS),
+    workspace=str(final_record.get("workspace") or WORKSPACE))
+
+print(render_terminal_block(published_record))
 
 finish_stage("solve")

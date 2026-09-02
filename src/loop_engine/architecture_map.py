@@ -36,7 +36,7 @@ ROOT_MODULES = ("__init__", "__main__", "_self_test", "_conformance_test",
                 "backend_isolation", "structure_review",
                 "runtime_ontology_check", "scheduling", "campaign",
                 "parallel_runner", "cli_operations", "parameter_boundary",
-                "solve_cli", "cli_help", "run_history_cli",
+                "solve_cli", "cli_help", "run_history_cli", "kaggle_report",
                 "parameter_boundary_checks", "semantic_conformance",
                 "semantic_freedom_conformance")
 

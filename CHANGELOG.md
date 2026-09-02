@@ -9,6 +9,28 @@ First public release.
 
 ### Added
 
+- **Each Kaggle output now sits where its reader is.** A run that produced a
+  submission and a run that produced nothing looked nearly the same in the
+  notebook: the same wall of log lines, the file buried under a timestamped
+  attempt directory, and nothing at `/kaggle/working/submission.csv` where
+  Kaggle's own submit flow looks. `loop_engine.kaggle_report` ends every run
+  by writing the competition file to the working root, a dated copy under
+  `submissions/`, a self-contained HTML report and the same report as
+  Markdown, one JSON record per attempt plus `LATEST.json`, and a console
+  block that says the outcome, the submission's shape and the file to submit
+  without scrolling. Only one run can hold the root filename, so promotion is
+  explicit and recorded in `submissions/root-submission.json`: a verified run
+  always takes it, an unverified run takes it only while no verified run has.
+  The reports state a submission's rows, distinct values and range rather
+  than calling it good, and a submission whose predictions never vary is
+  published with that named — this repository has shipped that exact failure,
+  and a reader needs to see it rather than be reassured. The offline harness
+  gained a static name check across each whole cell, because the publishing
+  code runs only at the end of a live run: a cell referring to a name it does
+  not define now fails in under two seconds instead of raising `NameError`
+  after four hours, which is precisely what one of these three cells would
+  have done.
+
 - **A run can read back a file it produced.** A live Kaggle run generated a
   Python file with an unterminated string literal at line 131, was told so
   exactly, reached the right conclusion immediately, and then could not read
