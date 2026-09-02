@@ -27,12 +27,23 @@ LAYER_EVIDENCE = (("semantic", ("orientations", "action_decisions")),
 #: The runtime's own words for "verification never ran".
 NOT_VERIFIED = ("", "not completed", "none")
 
+#: Typed fields on a recorded model transaction meaning the provider answered.
+#: A provider that answered proves transport succeeded, even when nothing the
+#: model said was admitted. Without this a run whose two orientations were
+#: both rejected looks identical to one the provider never reached, and the
+#: two need entirely different repairs.
+RESPONDED_FIELDS = ("provider_responded", "ok")
+
 
 def deepest_layer_reached(result) -> str:
     """Return the deepest layer this run has evidence of having reached."""
     if not isinstance(result, dict):
         return "transport"
     reached = "transport"
+    if any(isinstance(item, dict) and any(item.get(field)
+                                          for field in RESPONDED_FIELDS)
+           for item in result.get("model_usage") or ()):
+        reached = "semantic"
     for layer, fields in LAYER_EVIDENCE:
         if any(result.get(field) for field in fields):
             reached = layer
@@ -58,6 +69,17 @@ def self_test() -> dict:
     check("a_run_whose_provider_never_answered_reached_only_transport",
           deepest_layer_reached(none) == "transport",
           "verification method 'not completed' is not verification")
+    # A live run made two calls, the provider answered both, and both
+    # orientations were rejected. Nothing was admitted, so no orientation was
+    # recorded, and the run looked exactly like one the provider never
+    # reached. A recorded provider response says otherwise.
+    check("a_provider_that_answered_proves_the_semantic_layer_was_reached",
+          deepest_layer_reached(
+              {"model_usage": [{"ok": True, "provider_responded": True}],
+               "verification": {"method": "not completed"}}) == "semantic"
+          and deepest_layer_reached(
+              {"model_usage": [{"ok": False}]}) == "transport",
+          "an admitted answer is not required; a delivered one is enough")
     check("orientation_alone_is_semantic_work_not_verification",
           deepest_layer_reached(some) == "semantic")
     check("a_verdict_or_a_method_means_verification_ran",

@@ -7,6 +7,24 @@ All notable changes to this project are documented here. This project follows
 
 First public release.
 
+### Fixed
+
+- **A Python exception class name is not a failure layer.** The terminal-code
+  mapping sent `AdaptivePractitionerError` straight to `VERIFICATION_FAILED`,
+  so a live run that produced two invalid orientations and verified nothing
+  still reported a verification failure — the same defect the layer inference
+  was built to remove, surviving one level up. A class name says which module
+  raised, not which layer failed, so generic names now defer to the evidence.
+
+- **A provider that answered proves transport succeeded.** The layer inference
+  read only admitted orientations and decisions, so a run whose every
+  orientation was rejected left no record and looked identical to one the
+  provider never reached — two failures needing entirely different repairs.
+  `model_usage` carries typed `provider_responded` and `ok` fields; a recorded
+  response now establishes the semantic layer whether or not anything the
+  model said was admitted. The live run this was found on now reports
+  `NO_PROGRESS`, which is what it did.
+
 ### Added
 
 - **A run now states which questions it is eligible to answer.** Six live runs

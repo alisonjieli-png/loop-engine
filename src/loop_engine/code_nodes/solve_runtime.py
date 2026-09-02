@@ -379,8 +379,13 @@ def _failure_code(result: dict) -> str:
         return SolveTerminalCode.PROVIDER_UNAVAILABLE.value
     if code in ("PermissionError", "PERMISSION_DENIED"):
         return SolveTerminalCode.AUTHORITY_REQUIRED.value
-    if code in ("AdaptivePractitionerError", "OUTPUT_CONTRACT_VIOLATION"):
+    if code == "OUTPUT_CONTRACT_VIOLATION":
         return SolveTerminalCode.VERIFICATION_FAILED.value
+    # A Python exception class name says which module raised, not which layer
+    # failed. AdaptivePractitionerError was mapped straight to
+    # VERIFICATION_FAILED, so a live run that produced two invalid
+    # orientations and never verified anything still reported a verification
+    # failure. Generic class names defer to the evidence below.
     if code in ("NO_PROGRESS", "stop_unprofitable"):
         return SolveTerminalCode.NO_PROGRESS.value
     # Only claim verification failed if the run reached verification. A run
