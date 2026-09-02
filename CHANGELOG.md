@@ -9,6 +9,22 @@ First public release.
 
 ### Added
 
+- **A run now states which questions it is eligible to answer.** Six live runs
+  were used to reason about behaviour; every one had transport failures and
+  three had zero completed model calls, yet all six were read as evidence
+  about task difficulty. Nothing recorded said they were ineligible, so
+  nothing stopped it. `core.run_validity` classifies a finished run as
+  `INFRASTRUCTURE_INVALID`, `INFRASTRUCTURE_UNCERTAIN`,
+  `SEMANTICALLY_ANALYZABLE`, or `MIXED_OR_MULTI_CAUSAL` from its own record
+  and event stream, matching on typed event kinds rather than provider error
+  text. An invalid run stays first-class evidence about infrastructure and is
+  excluded only from the questions it cannot answer; comparison is the
+  strictest gate, because comparing a contaminated run against a clean one
+  measures the contamination. Every exclusion carries its reason, since a
+  filter nobody can see is how a corpus quietly becomes the runs that happened
+  to agree. Applied to the six: 6 of 6 eligible for infrastructure analysis,
+  3 of 6 for semantic analysis, 0 of 6 for comparison.
+
 - **A terminal code may only name a layer the run actually reached.** Three
   live runs terminated `VERIFICATION_FAILED` having verified nothing: their
   own records said `verification.method` was "not completed", every recorded

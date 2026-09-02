@@ -5,6 +5,12 @@ written. The order matters: it forces the cheap, local explanations to be
 considered and *ruled out* rather than skipped, and it forces the honest
 answer when the cheap explanation is not available.
 
+0. **Preserve and validate the evidence.** Before asking why the system
+   failed, prove what actually happened. Classify the run with
+   `core.run_validity`: did the intended experiment execute at all? A run that
+   never reached the model cannot support a claim about prompts, context,
+   cycles, or task difficulty, and using it that way attributes an
+   infrastructure fault to a strategy.
 1. **What was the error?** The observed behaviour, the layer it occurred in,
    and the exact message. Not a paraphrase.
 2. **Can better prompts, intelligence, context, tool calling, skills, plugins,
@@ -18,6 +24,23 @@ answer when the cheap explanation is not available.
    unseen task that could reasonably be imagined?
 6. **What should we avoid doing?**
 7. **How does this align with the AGI fabric?**
+
+## Why step 0 comes first
+
+On 2026-09-02, six live runs were used to reason about behaviour before this
+gate existed. Every one had transport failures. Three had **zero completed
+model calls** and were still read as evidence about task difficulty. Under
+`core.run_validity` the verdict is: 6 of 6 eligible for infrastructure
+analysis, 3 of 6 for semantic analysis, and **0 of 6 for comparison**.
+
+That is the honest answer to "why are we having issues": some of the issues
+were real defects, and some were conclusions drawn from runs that were never
+eligible to support them. Nothing recorded said so, so nothing stopped it.
+
+An invalid run is not worthless — it is first-class evidence about
+infrastructure. It is excluded only from the questions it cannot answer, and
+every exclusion is recorded with its reason, because a filter nobody can see
+is how a corpus quietly becomes the runs that happened to agree.
 
 ## Answering 2, 3 and 4 honestly
 
