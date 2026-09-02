@@ -268,6 +268,7 @@ class SkillRegistry:
         self._skills: dict[tuple[str, str], SkillManifest] = {}
         self._admissions: dict[
             tuple[str, str], SkillAdmissionRecord] = {}
+        self.discovery_conflicts: list[dict] = []
         for manifest in manifests:
             self.register(manifest)
 
@@ -291,6 +292,12 @@ class SkillRegistry:
                 "skill discovery always produces candidates; use admit() "
                 "with an independent SkillAdmissionRecord")
         found = []
+        # The same skill commonly appears under several standard roots
+        # because different harnesses read different directories. An
+        # identical manifest digest is one skill seen twice and is skipped;
+        # a different body under a taken identity is a real conflict and is
+        # recorded, so one shadowed skill never ends discovery of the rest.
+        self.discovery_conflicts: list[dict] = []
         for root_text in roots:
             root = Path(root_text).expanduser()
             if not root.is_dir():
@@ -300,6 +307,19 @@ class SkillRegistry:
                                       for path in root.glob("*/SKILL.md")))
             for directory in candidates:
                 manifest = _manifest(directory, lifecycle="candidate")
+                key = (manifest.skill_id, manifest.version)
+                existing = self._skills.get(key)
+                if existing is not None:
+                    self.discovery_conflicts.append({
+                        "record_type": "skill_discovery_conflict/v1",
+                        "skill_id": manifest.skill_id,
+                        "version": manifest.version,
+                        "kept_root": str(existing.root_path),
+                        "shadowed_root": str(manifest.root_path),
+                        "same_body": (existing.manifest_digest
+                                      == manifest.manifest_digest),
+                    })
+                    continue
                 self.register(manifest)
                 found.append(manifest)
         return tuple(found)
@@ -610,6 +630,30 @@ def self_test() -> dict:
         except Exception:
             drift_refused = True
         check("changed_skill_files_fail_closed", drift_refused)
+        # Several harnesses read several standard skill roots, so the same
+        # skill id commonly appears more than once. Discovery resolves that
+        # instead of ending.
+        import shutil
+        mirror = Path(root) / "roots" / "mirror"
+        mirror.mkdir(parents=True)
+        shutil.copytree(skill, mirror / "release-review")
+        conflicting = Path(root) / "roots" / "other"
+        (conflicting / "release-review").mkdir(parents=True)
+        (conflicting / "release-review" / "SKILL.md").write_text(
+            "---\nname: release-review\nversion: 2.0.0\n"
+            "description: A different body under a taken identity.\n---\n"
+            "Different instructions.\n", encoding="utf-8")
+        multi = SkillRegistry()
+        multi_found = multi.discover((root, str(mirror), str(conflicting)))
+        conflicts = multi.discovery_conflicts
+        check("one_skill_under_several_standard_roots_resolves_not_fails",
+              len(multi_found) == 1 and len(conflicts) == 2
+              and conflicts[0]["same_body"] is True
+              and conflicts[1]["same_body"] is False
+              and all(item["skill_id"] == "release-review"
+                      for item in conflicts),
+              "duplicate bodies are skipped and a shadowed different body "
+              "is recorded, so the remaining roots still load")
         skill_events = [event for event in ledger.events
                         if event.get("event") == "skill_load_terminal"]
         check("skill_load_identity_and_digest_enter_the_existing_loop_ledger",

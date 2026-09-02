@@ -364,6 +364,22 @@ def external_harness_instruction_bundle(harness_id: str) -> PromptResourceBundle
             "The spawning Loop verifies the result.", ()),
     }
     components = {
+        "opencode": (
+            PromptResourceComponent(
+                "external_harness.opencode_task",
+                "Complete exactly one bounded coding task inside the working "
+                "directory you were started in.", ()),
+            PromptResourceComponent(
+                "external_harness.opencode_boundary",
+                "Do not read or write outside that directory, do not commit, "
+                "push, install packages, or contact any service other than "
+                "your model provider.", ()),
+            PromptResourceComponent(
+                "external_harness.opencode_return",
+                "When finished, print one final line that is a JSON object "
+                "with the keys status, summary, and files (the relative paths "
+                "you changed).", ()),
+            shared["no_claim"], shared["verification_owner"]),
         "pydantic_ai": (
             shared["bounded_output"], shared["no_claim"]),
         "deep_agents": (

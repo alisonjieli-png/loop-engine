@@ -385,6 +385,7 @@
   "core/workspace_optional.py",
   "code_nodes/smoke_ladder.py",
   "loop/loop_handoff.py",
+  "core/opencode_harness_adapter.py",
   "_conformance_scan.py"
  ],
  "suite_collection_exceptions": {

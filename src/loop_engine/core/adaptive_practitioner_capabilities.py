@@ -40,6 +40,10 @@ from .adaptive_practitioner_source import (
     _resolve_requested_paths, inspectable_source_files,
     source_inspection_model_view, source_inspection_operation,
     source_profile_operation)
+from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
+from .action_fence import ActionFenceLedger
+from .capability_rejection import (CapabilityRejection,
+                                   rejection_from_exception)
 
 
 @dataclass(frozen=True)
@@ -432,6 +436,23 @@ def execute_adaptive_capability(
     owner = request.owner_loop
     arguments = dict(plan.experiment.get("arguments") or {})
     manifest = None
+    fence_policy = DEFAULT_SUPERVISION_POLICY.action_fence
+    if services.action_fence.is_fenced(plan.handle, arguments, fence_policy):
+        refusal = services.action_fence.refusal(
+            plan.handle, arguments, fence_policy,
+            pass_number=services.active_pass_number)
+        services.action_history.append({
+            "capability_ref": plan.handle, "fenced": True,
+            "refusal": refusal.to_dict(),
+        })
+        return ResultPacket(
+            objective=plan.handle,
+            errors=(refusal.message,),
+            confidence=0.0,
+            limitations=(
+                "The runtime refused to repeat an identical failed call; "
+                + refusal.repair_hint,),
+        )
     if plan.handle == "core.source.inspect":
         operation = lambda _value, _params: source_inspection_operation(
             arguments, services)
@@ -565,11 +586,34 @@ def execute_adaptive_capability(
             compiled["plan"], registry, input_value,
             trace=trace, ledger=owner.ledger, parent=owner)
     except Exception as exc:  # noqa: BLE001
+        # Every refused call is described by the runtime in its own typed
+        # vocabulary, not left as prose for the model to re-diagnose. The
+        # admitted values and the repair travel back on the packet the model
+        # reads next, and the fence remembers the identity.
+        rejection = rejection_from_exception(
+            plan.handle, exc, pass_number=services.active_pass_number)
+        services.action_fence.note_failure(
+            plan.handle, arguments,
+            error=f"{type(exc).__name__}: {str(exc)[:500]}",
+            rejection=rejection.to_dict(),
+            pass_number=services.active_pass_number)
+        admitted = rejection.admitted_values
+        limitations = (rejection.repair_hint,) if rejection.repair_hint else ()
+        if admitted:
+            limitations = limitations + (
+                f"admitted values for {rejection.capability_ref}: "
+                f"{list(admitted)}"
+                + ("" if len(admitted) == rejection.admitted_values_total
+                   else f" (first {len(admitted)} of "
+                        f"{rejection.admitted_values_total})"),)
         return ResultPacket(
             objective=plan.handle,
+            result={"rejection": rejection.to_dict()},
             errors=(f"{type(exc).__name__}: {str(exc)[:500]}",),
             confidence=0.0,
+            limitations=limitations,
             lineage=(compiled["digest"],))
+    services.action_fence.note_success(plan.handle, arguments)
     services.plan_details["active_canvas"] = {
         "candidate_id": f"canvas:{identity}",
         "selected": True,
@@ -696,10 +740,39 @@ def self_test() -> dict:
     checkpoint_identity_passed = (
         key_a == key_b and contract_a == contract_b
         and key_changed != key_a)
+    fence_policy = DEFAULT_SUPERVISION_POLICY.action_fence
+    fence = ActionFenceLedger()
+    repeated_call = {"paths": ["/never/admitted"], "include_contents": False}
+    unadmitted = CapabilityRejection(
+        "core.source.inspect", "argument_not_admitted",
+        "source inspection requested unknown paths ['/never/admitted']",
+        rejected_arguments=(("paths", ("/never/admitted",)),),
+        admitted_values=("a.csv", "b.csv"), admitted_values_total=2,
+        repair_hint="omit paths to receive the manifest").to_dict()
+    for attempt in range(fence_policy.identical_failures_before_fence):
+        fence.note_failure("core.source.inspect", repeated_call,
+                           error="unknown paths", rejection=unadmitted,
+                           pass_number=attempt + 1)
+    repeat_refused = fence.is_fenced(
+        "core.source.inspect", repeated_call, fence_policy)
+    manifest_call_open = not fence.is_fenced(
+        "core.source.inspect", {"include_contents": False}, fence_policy)
+    refusal = fence.refusal("core.source.inspect", repeated_call,
+                            fence_policy, pass_number=9)
+    fence_passed = (
+        repeat_refused and manifest_call_open
+        and refusal.reason_code == "repeated_identical_failure"
+        and "a.csv" in refusal.repair_hint)
     tests = [{
         "test": "capability_graph_compiler_has_no_example_route",
         "passed": passed,
         "detail": "one generic Solution graph path",
+    }, {
+        "test": "an_identical_failed_call_is_refused_while_a_new_one_is_not",
+        "passed": fence_passed,
+        "detail": (f"fenced after "
+                   f"{fence_policy.identical_failures_before_fence} identical "
+                   "failures; a different argument set stays admissible"),
     }, {
         "test": "fetched_inputs_preserve_safe_authoritative_basenames",
         "passed": paths_passed,

@@ -65,6 +65,7 @@ TERMINAL_CODES = ("ACCEPTED", "INVALID_SPEC", "POLICY_DENIED", "BLOCKED",
 #: so a new reason cannot appear without a code.
 _REASON_TO_CODE = {"done": "ACCEPTED", "success_once": "ACCEPTED",
                    "done_failed": "VERIFICATION_REJECTED",
+                   "handler_exception": "INTERNAL_PROTOCOL_ERROR",
                    "budget": "BUDGET_EXHAUSTED", "cancelled": "CANCELED",
                    "no_progress": "BLOCKED"}
 
@@ -913,6 +914,28 @@ class Loop(metaclass=_LoopMeta):
     # semantic model call — a semantic→semantic fallback is DEFERRED to the
     # next iteration (recorded as a model boundary), never hidden in-iteration.
 
+    def _run_handler(self, handler, step: str, it: dict):
+        """Invoke the step handler; an escaping exception still terminates.
+
+        A handler that raises used to leave the Loop with no terminal event,
+        so its closure could never be audited. The exception is recorded
+        with its type and a digest of its text, the Loop stops as
+        ``handler_exception`` (INTERNAL_PROTOCOL_ERROR), and the exception
+        propagates unchanged to the caller.
+        """
+        try:
+            return handler(self, step, it["context"])
+        except Exception as exc:
+            if not it.get("stopped"):
+                self.ledger.record(
+                    loop_id=self.loop_id, event="custom",
+                    custom_kind="handler_exception", step=step,
+                    exception_type=type(exc).__name__,
+                    message_digest=hashlib.sha256(
+                        str(exc).encode("utf-8")).hexdigest())
+                self._terminate(it, "handler_exception")
+            raise
+
     def _note_spawned(self, count: int) -> None:
         """Add ``count`` descendants to this Loop's spawned total, before or
         after its own execution state exists."""
@@ -1201,7 +1224,7 @@ class Loop(metaclass=_LoopMeta):
                     f"to retry step {step!r}")
             it["context"]["requested_mode"] = forced_mode
             try:
-                outcome = handler(self, step, it["context"])
+                outcome = self._run_handler(handler, step, it)
             finally:
                 it["context"].pop("requested_mode", None)
             self._require_allowed_outcome_mode(outcome, step)
@@ -1255,7 +1278,7 @@ class Loop(metaclass=_LoopMeta):
             # questions, and a completion-only event answers one of them.
             self.ledger.record(loop_id=self.loop_id, event="iteration_started",
                                step=step, iteration=it["steps_run"] + 1)
-            outcome = handler(self, step, it["context"])
+            outcome = self._run_handler(handler, step, it)
             self._require_allowed_outcome_mode(outcome, step)
             attempts = 0
             while outcome.failed and attempts < 3:  # the mode fallback, live
@@ -1283,7 +1306,7 @@ class Loop(metaclass=_LoopMeta):
                 # recover keeps its failure visible on the ledger.
                 it["context"]["requested_mode"] = fb
                 try:
-                    outcome = handler(self, step, it["context"])
+                    outcome = self._run_handler(handler, step, it)
                 finally:
                     it["context"].pop("requested_mode", None)
                 self._require_allowed_outcome_mode(outcome, step)
@@ -2053,6 +2076,31 @@ def self_test() -> dict:
             output="spawn", mode="deterministic", spawn_goal="deeper"))
     except LoopError as exc:
         shallow_error = str(exc)
+    # (c4) a handler that raises leaves an honest terminal, then propagates.
+    raising = Loop("raising handler", LoopConfig(
+        framework="custom", custom_steps=("act",),
+        allowable_modes=("deterministic",),
+        preferred_modes=("deterministic",)))
+    propagated = ""
+    try:
+        raising.run(handler=lambda loop, step, context: (_ for _ in ()).throw(
+            KeyError("missing column")))
+    except KeyError as exc:
+        propagated = str(exc)
+    raising_result = raising.result()
+    check("a_raising_handler_terminates_the_loop_honestly_and_propagates",
+          "missing column" in propagated
+          and raising_result.stopped == "handler_exception"
+          and raising_result.terminal_code == "INTERNAL_PROTOCOL_ERROR"
+          and raising.is_terminal
+          and any(e.get("event") == "terminal"
+                  and e.get("reason") == "handler_exception"
+                  for e in raising.ledger.events)
+          and any(e.get("custom_kind") == "handler_exception"
+                  and e.get("exception_type") == "KeyError"
+                  for e in raising.ledger.events)
+          and raising.audit_closure()["closed"],
+          f"stopped={raising_result.stopped} code={raising_result.terminal_code}")
     check("declared_supervision_policy_governs_stops_and_is_recorded_on_init",
           strict_result.steps_run == 1
           and strict_result.terminal_code == "BLOCKED"

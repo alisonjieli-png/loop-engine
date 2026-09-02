@@ -1,0 +1,89 @@
+{
+ "adapter": "core.opencode_harness_adapter@1.0.0",
+ "cancellation_run": {
+  "elapsed_seconds": 26.9,
+  "error_code": "time_budget_exhausted",
+  "model_calls": 0,
+  "status": "budget_exhausted"
+ },
+ "date": "2026-09-02",
+ "handshake": {
+  "available": true,
+  "features": [
+   "headless_json_events",
+   "isolated_directory",
+   "model_listing_handshake",
+   "wall_clock_cancellation",
+   "changed_file_artifacts"
+  ],
+  "opencode_version": "1.18.25"
+ },
+ "record_type": "opencode_harness_smoke/v1",
+ "task_run": {
+  "aggregate_cost": 0.0,
+  "aggregate_input_tokens": 728577,
+  "aggregate_output_tokens": 500,
+  "artifacts": [
+   "tiny_math.py",
+   "context-output:59cc5e016eb6ddb850c3a95c477d8f2395b527fbdb37efb59aceac561d5d4a97"
+  ],
+  "elapsed_seconds": 41.4,
+  "error": "",
+  "error_code": "",
+  "final_json": {
+   "files": [
+    "tiny_math.py"
+   ],
+   "status": "complete",
+   "summary": "Implemented clamp(value, lower, upper) in tiny_math.py: returns lower below the range, upper above it, the value itself inside it, and raises ValueError when lower > upper. All 4 unit tests pass."
+  },
+  "implementation_after": "\"\"\"Tiny math helpers.\"\"\"\n\n\ndef clamp(value, lower, upper):\n    if lower > upper:\n        raise ValueError(\"lower must not exceed upper\")\n    return max(lower, min(upper, value))\n",
+  "independent_verification": {
+   "command": "python -m unittest -q",
+   "exit_code": 0,
+   "stderr_tail": "OK"
+  },
+  "ledger_event_kinds": {
+   "custom": 1,
+   "init": 1,
+   "iteration_started": 1,
+   "loop.started": 1,
+   "model_led": 5,
+   "run_step": 1,
+   "terminal": 1
+  },
+  "loop_id": "loop1",
+  "model_calls": 5,
+  "raw_events_ref": "sha256/90/90f012654a3b64c23e49dec3203ecd7735334e588d96dc053020316a272705da",
+  "reported_model_call_count": 5,
+  "status": "completed",
+  "tool_events": [
+   [
+    "read",
+    "completed",
+    "reads_fs"
+   ],
+   [
+    "read",
+    "completed",
+    "reads_fs"
+   ],
+   [
+    "edit",
+    "completed",
+    "writes_fs"
+   ],
+   [
+    "bash",
+    "completed",
+    "spawns_process"
+   ],
+   [
+    "bash",
+    "completed",
+    "spawns_process"
+   ]
+  ],
+  "unmapped_event_types": []
+ }
+}

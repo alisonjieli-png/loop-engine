@@ -456,8 +456,17 @@ class AdaptivePractitionerRequest:
     quiet_model_io: bool = False
     allow_local_execution: bool = False
     context_budget: ContextBudgetPolicy = ContextBudgetPolicy()
+    prior_region_evidence: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
+        if not isinstance(self.prior_region_evidence, dict):
+            raise AdaptivePractitionerError(
+                "prior_region_evidence must be a mapping")
+        try:
+            json.dumps(self.prior_region_evidence, sort_keys=True)
+        except (TypeError, ValueError) as exc:
+            raise AdaptivePractitionerError(
+                "prior_region_evidence must be JSON serializable") from exc
         if not self.task.strip():
             raise AdaptivePractitionerError("adaptive Practitioner needs a task")
         if self.mode not in ("deterministic", "hybrid", "non_deterministic"):
@@ -556,6 +565,17 @@ class ModelStepRequest:
     state: dict
     output_contract: str
 
+
+
+def _new_action_fence():
+    """One repeated-action fence per run.
+
+    Imported when a run starts, so this record module keeps no
+    import-time dependency on the supervision runtime.
+    """
+    from .action_fence import ActionFenceLedger
+    return ActionFenceLedger()
+
 @dataclass
 class AdaptiveRunServices:
     """Mutable run-local services and evidence never persisted as authority."""
@@ -589,6 +609,11 @@ class AdaptiveRunServices:
     active_recovery_directive: dict | None = None
     recovery_rounds: int = 0
     generated_file_checkpoints: dict[str, dict] = field(default_factory=dict)
+    #: Repeated-action fence. A supervision law, not an optional feature:
+    #: every run has one, so no call site guards for its absence.
+    action_fence: "ActionFenceLedger" = field(
+        default_factory=lambda: _new_action_fence(), repr=False,
+        compare=False)
     route_health: dict = field(default_factory=lambda: {})
     route_health_ledger: "object | None" = field(
         default=None, repr=False, compare=False)
@@ -596,6 +621,19 @@ class AdaptiveRunServices:
     active_pass_number: int = 0
     started_monotonic: float = field(
         default_factory=time.monotonic, repr=False, compare=False)
+
+    def _runtime_facts_view(self) -> dict:
+        """Exact runtime-owned facts, or an explicit absence record."""
+        try:
+            from .practitioner_runtime_facts import runtime_facts
+            return runtime_facts(self)
+        except Exception:  # noqa: BLE001 - facts never block a model call
+            return {
+                "record_type": "practitioner_runtime_facts/v1",
+                "authority": "runtime", "unavailable": True,
+                "reason": "facts projection failed; ask the runtime "
+                          "before guessing paths or permissions",
+            }
 
     def available_capabilities(self) -> tuple[dict, ...]:
         """Return only capabilities usable under this run's current authority."""
@@ -804,6 +842,7 @@ class AdaptiveRunServices:
             self.publish(
                 "practitioner.context_budget_applied", step=request.step_id,
                 trim_count=len(state_trims), bytes_removed=removed_bytes)
+        runtime_facts_view = self._runtime_facts_view()
         blocks = (
             LLMContextBlock.create(
                 "persona", "persona_context", self.portfolio.persona.version,
@@ -841,20 +880,34 @@ class AdaptiveRunServices:
                  "interaction_mode": self.request.interaction_mode,
                  "run_mode": self.request.mode}),
             LLMContextBlock.create(
+                "runtime_facts", "runtime_facts", "1.0.0",
+                "practitioner runtime", "exact facts the runtime states", 5,
+                runtime_facts_view),
+            LLMContextBlock.create(
                 "template_candidates", "procedure_candidates", "1.0.0",
-                "core template library", "optional reusable patterns", 5,
+                "core template library", "optional reusable patterns", 6,
                 {"binding_authority": "none",
                  "candidates": template_candidates}),
             LLMContextBlock.create(
                 "capability_descriptors", "capability_snapshot", "1.0.0",
-                "core capability registry", "available execution paths", 6,
+                "core capability registry", "available execution paths", 7,
                 {"active": list(capability_descriptors),
                  "added_file_candidates": extension_candidates}),
             LLMContextBlock.create(
                 "deterministic_event_history", "attempt_event_history", "1.0.0",
-                "canonical Loop event log", "complete prior event history", 7,
+                "canonical Loop event log", "complete prior event history", 8,
                 prior_events),
         )
+        if self.request.prior_region_evidence:
+            # Advisory evidence from earlier runs in this task region: the
+            # region statistics, the shortcut decision, and the tuning
+            # decision. The model may use it; it selects nothing by itself.
+            blocks = blocks + (LLMContextBlock.create(
+                "prior_region_evidence", "region_evidence", "1.0.0",
+                "saved Run History projections",
+                "advisory evidence from earlier runs in this task region", 9,
+                {"selection_authority": "model", "advisory": True,
+                 **self.request.prior_region_evidence}),)
         requested_state_version = int(request.state.get("state_version", -1))
         eligible_orientation_versions = [
             version for version in self.orientation_by_version
@@ -972,6 +1025,11 @@ class AdaptiveRunServices:
             capability_context={
                 "available_capabilities": list(capability_descriptors),
                 "added_file_candidates": extension_candidates,
+                # Facts the runtime holds exactly: the admitted source
+                # manifest, the workspace, the isolation, the permissions in
+                # force, and every refused call so far. They render with the
+                # capability limits because that is what they bound.
+                "runtime_facts": runtime_facts_view,
                 "selected_intelligence_refs": list(
                     self.selected_intelligence_refs),
                 "selected_memory_refs": list(self.selected_memory_refs),

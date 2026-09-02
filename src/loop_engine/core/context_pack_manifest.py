@@ -54,6 +54,11 @@ _BLOCK_KIND_TRUST = {
     "task_context": "user_input",
     "attempt_trace": "run_history",
     "loop_context": "run_history",
+    "procedure_candidates": "curated_intelligence",
+    "capability_snapshot": "curated_intelligence",
+    "runtime_facts": "run_history",
+    "attempt_event_history": "run_history",
+    "region_evidence": "run_history",
     "web_evidence": "untrusted_external",
     "source_inspection": "untrusted_external",
 }

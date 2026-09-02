@@ -21,6 +21,12 @@ text to solve a different competition.
 
 ## What every notebook does
 
+Notebook settings on Kaggle: Internet must be on (each cell downloads the
+Loop Engine `main` archive from GitHub and calls the provider API), no
+accelerator is required, and the provider key is read from a Kaggle secret
+named in the cell header. Generated code runs as a host process with
+`--allow-local-execution` because Kaggle notebooks have no Docker.
+
 ```text
 one cell
 ├── reads Kaggle secrets (never printed, never written to files)
@@ -92,6 +98,11 @@ the checkout's `src` tree through `PYTHONPATH` instead and records
 `install_mode: pythonpath` in the stage record.
 
 ### Local test harness
+
+The harness writes a tiny synthetic competition. `--competition-kind binary`
+(the default) has a 0/1 target, `regression` a continuous target, and
+`multiclass` a three-label string target, so the same cell can be exercised
+against three submission contracts without a Kaggle download.
 
 `check_cells.py` builds a temporary Kaggle-shaped root
 (`<tmp>/working-<cell>`, `<tmp>/input/competitions/<competition>/` with a

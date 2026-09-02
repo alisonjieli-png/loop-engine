@@ -19,7 +19,7 @@
 # Runs outside Kaggle too: kaggle/check_cells.py sets the
 # LOOP_ENGINE_* variables read in the configuration block below.
 #
-# Based on loop-engine main.
+# Based on loop-engine main (the cell installs the current main archive).
 # ============================================================
 
 from pathlib import Path, PurePosixPath

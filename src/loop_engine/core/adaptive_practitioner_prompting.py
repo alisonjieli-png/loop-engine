@@ -335,8 +335,65 @@ def assemble_work_packet(
     return holder["value"]
 
 
+def rendered_packet_fields() -> tuple[str, ...]:
+    """Packet fields the renderer turns into prompt text.
+
+    A packet field outside this set never reaches the model, however it is
+    declared. Callers adding a fact the runtime states must place it inside
+    one of these fields, and the guard below proves it arrived.
+    """
+    return tuple(dict.fromkeys(
+        field_name for _label, field_name in (
+            ("[CONSTITUTION]", "policy_context"),
+            ("[PERSONA]", "persona_context"),
+            ("[DIRECTIVE]", "work_directive"),
+            ("[CAPABILITIES AND LIMITS]", "capability_context"),
+            ("[TASK]", "task_context"),
+            ("[SELECTED INTELLIGENCE]", "context_intelligence"),
+            ("[ATTEMPT HISTORY]", "attempt_history"),
+            ("[QUESTIONS]", "question_portfolio"),
+            ("[OUTPUT CONTRACT]", "output_contract"))))
+
+
 def self_test() -> dict:
     """Static contract check; adaptive tests prove the nested execution graph."""
+    from .llm_work_packet import (LLMContextBlock, LLMWorkPacket,
+                                  WorkDirective)
+    # A fact the runtime states must arrive in the rendered prompt. The
+    # renderer builds text from packet fields, so a fact placed only in a
+    # context block is declared but never read by any model. This guard
+    # proves the runtime facts survive the render.
+    facts = {"record_type": "practitioner_runtime_facts/v1",
+             "authority": "runtime",
+             "source_manifest": {"paths": ["only/admitted/path.txt"],
+                                 "total": 1}}
+    packet = LLMWorkPacket(
+        packet_id="guard", packet_version="1.0.0",
+        purpose="prove runtime facts reach the model", phase="orient",
+        persona_context={"base_role": {}}, task_context={"task": "guard"},
+        loop_context={"run_id": "guard", "loop_id": "loop1"},
+        context_intelligence=[], question_portfolio={},
+        capability_context={"available_capabilities": [],
+                            "runtime_facts": facts},
+        attempt_history={}, work_directive=WorkDirective(
+            operation="ORIENT", goal="guard", one_step_only=True,
+            allowed_action_kinds=("ABSTAIN",),
+            prohibited_outputs=("unrequested final solution",),
+            completion_condition="rendered", failure_condition="absent",
+            return_schema_ref="inline:sha256:0",
+            route_after_return="return_to_owning_practitioner"),
+        output_contract={"format": "json"}, policy_context={},
+        token_budget={}, source_refs=(),
+        context_blocks=(LLMContextBlock.create(
+            "runtime_facts", "runtime_facts", "1.0.0", "practitioner runtime",
+            "exact facts the runtime states", 0, facts),))
+    prompt, _snapshot, _extra = _render_packet_governed(
+        AdaptivePromptAssemblyRequest(
+            packet=packet, profile_id="guard",
+            layout_policy="canonical"))
+    facts_rendered = ('"runtime_facts"' in prompt
+                      and "only/admitted/path.txt" in prompt
+                      and "[CAPABILITIES AND LIMITS]" in prompt)
     tests = [{
         "test": "prompt_assembly_uses_registered_atomic_primitives",
         "passed": all(item in (
@@ -349,7 +406,19 @@ def self_test() -> dict:
                 "core.primitive.sequence.order",
                 "core.primitive.text.combine")),
         "detail": "no native string combination in the assembly module",
+    }, {
+        "test": "facts_the_runtime_states_reach_the_rendered_prompt",
+        "passed": facts_rendered,
+        "detail": ("the admitted manifest and the runtime facts appear under "
+                   "the capability limits; a fact placed only in a context "
+                   "block would never be read"),
+    }, {
+        "test": "every_rendered_field_is_a_declared_packet_field",
+        "passed": all(hasattr(packet, name)
+                      for name in rendered_packet_fields()),
+        "detail": str(rendered_packet_fields()),
     }]
+    passed = sum(1 for item in tests if item["passed"])
     return {"record_type": "adaptive_prompt_assembly_test/v1",
-            "tests": tests, "passed": 1, "total": 1,
-            "all_passed": True}
+            "tests": tests, "passed": passed, "total": len(tests),
+            "all_passed": passed == len(tests)}

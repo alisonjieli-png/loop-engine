@@ -15,6 +15,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Callable
 
+from .material_questions import screen_material_questions
+from .solve_region_evidence import region_evidence_for_solve
 from ..core.adaptive_practitioner import run_adaptive_practitioner
 from ..core.adaptive_practitioner_records import (
     AdaptivePractitionerDependencies, AdaptivePractitionerRequest)
@@ -303,9 +305,13 @@ def _material_questions(result: dict) -> tuple[MaterialQuestion, ...]:
     if not orientations:
         return ()
     latest = orientations[-1]
-    raw_questions = tuple(str(value).strip() for value in
-                          latest.get("blocking_questions", ())
-                          if str(value).strip())
+    # A run pauses for a person only on text a person can answer. The screen
+    # is deterministic and keeps every rejected entry as a recorded reason,
+    # so a model writing "None for this step" never blocks the run.
+    raw_questions, screened_out = screen_material_questions(
+        latest.get("blocking_questions", ()))
+    if screened_out:
+        result.setdefault("screened_material_questions", list(screened_out))
     if not raw_questions:
         return ()
     ambiguities = [
@@ -424,6 +430,7 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
     resolvers = tuple(request.deterministic_resolvers)
     mode = (request.practitioner_mode
             if request.model_execution is not None else "deterministic")
+    region_evidence, tuned_budget = region_evidence_for_solve(request)
     adaptive = run_adaptive_practitioner(
         AdaptivePractitionerRequest(
             request.intake.original_input, mode=mode,
@@ -442,8 +449,11 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             persist_run_history=request.save_run_history,
             quiet_model_io=request.quiet_model_io,
             allow_local_execution=request.allow_local_execution,
+            prior_region_evidence=region_evidence,
             **({"context_budget": request.context_budget}
-               if request.context_budget is not None else {})),
+               if request.context_budget is not None
+               else {"context_budget": tuned_budget}
+               if tuned_budget is not None else {})),
         AdaptivePractitionerDependencies(
             model_execution=request.model_execution,
             deterministic_resolvers=resolvers,
@@ -503,6 +513,7 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             "search_candidates": adaptive.get("web_search_candidates", []),
             "fetched_sources": adaptive.get("web_evidence", []),
             "extensions": dict(request.extension_snapshot),
+            "region_evidence": region_evidence,
         },
         selected_mode=mode,
         selected_canvas=selected,
@@ -727,6 +738,17 @@ def self_test() -> dict:
                              "reason": "presentation only"}]}]}
         blocking, open_items = _terminal_questions(stale, True)
         still_blocking, _ = _terminal_questions(dict(stale, solved=False), False)
+        region_evidence = asked.intelligence.get("region_evidence") or {}
+        tuning = region_evidence.get("tuning_decision") or {}
+        check("solve_records_region_evidence_and_a_tuned_context_budget_decision",
+              region_evidence.get("advisory") is True
+              and str(region_evidence.get("region_ref", "")).startswith(
+                  "region.")
+              and tuning.get("setting") == "context_budget"
+              and bool(tuning.get("chosen_variant_key"))
+              and asked_bundle.outcome["intelligence"]["region_evidence"]
+              ["tuning_decision"]["setting"] == "context_budget",
+              str(tuning.get("reason", ""))[:100])
         check("solved_run_reports_stale_questions_as_open_not_as_a_refusal",
               blocking == () and len(open_items) == 1
               and open_items[0].answer_slot == "lead_metric"

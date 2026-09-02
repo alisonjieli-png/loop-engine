@@ -9,6 +9,25 @@ First public release.
 
 ### Added
 
+- **OpenCode as a Loop realization.** `OpenCodeProcessAdapter` runs one
+  bounded headless `opencode run --format json` inside the canonical external
+  harness Loop: version and model-listing handshake, default starting
+  instructions from a versioned prompt resource, isolated working directory,
+  raw events stored by digest, model turns with tokens and cost, tool events
+  with effect classes and no bodies, changed files as artifact references,
+  and wall-clock cancellation. Completion is not acceptance; the spawning
+  Loop verifies.
+- **Region evidence and self-tuning in solve.** Before the first model call,
+  `solve_task` projects saved runs in the task's region into region
+  statistics and an advisory shortcut decision, chooses the context budget
+  variant from recorded prompt experiments with a seeded exploration rate
+  (`core.self_tuning`), records the decision on the outcome, and hands the
+  evidence to the Practitioner as one advisory context block.
+- **Kaggle harness competition kinds.** `kaggle/check_cells.py` builds a
+  synthetic binary, regression, or multiclass competition
+  (`--competition-kind`), so each cell is proved against three target shapes
+  offline before any live run. The notebook settings a Kaggle user must set
+  are documented in `kaggle/README.md`.
 - **Context pack manifests.** Every assembled work packet now records a
   `ContextPackManifest`: each context block and trimmed state item with its
   digest, decision (included, compacted, excluded, deduplicated), trust class,
@@ -166,6 +185,29 @@ First public release.
 Defects found by running against live models, each now carrying a regression
 test:
 
+- A live run could propose the same rejected capability call for twenty
+  passes. The runtime now keeps a per-run repeated-action fence
+  (`core.action_fence`): once one exact (capability, arguments) identity has
+  failed the policy count, the identical call is refused with the last typed
+  rejection attached, for every capability without naming any task.
+- Capability refusals reached the model as prose. Every refusal is now a typed
+  `CapabilityRejection` (closed reason codes, rejected arguments, bounded
+  admitted values with a total, runtime-authored repair hint) recovered
+  through exception chains, so the next decision reads the runtime's exact
+  facts instead of re-diagnosing an error string.
+- Facts the runtime knew exactly (the admitted source manifest, workspace
+  root, execution isolation, granted permissions, the fence view) were left
+  for the model to guess. Every model packet now carries a `runtime_facts`
+  context block projected by `core.practitioner_runtime_facts`; the manifest
+  block states the exact admitted relative paths before any reasoning is
+  spent on them.
+- A run could end `BLOCKED_MATERIAL_INPUT` on model text that was not a
+  question ("None for this orientation step...") after dozens of calls.
+  `code_nodes.material_questions` screens blocking entries: only text
+  phrased as a question a person can answer may pause the run; everything
+  else is kept as a recorded limitation.
+- The Kaggle cell headers named a commit that had moved on. Each cell now
+  states that it installs the current `main` archive, which is what it does.
 - The canonical Loop could fabricate a `recovered` step outcome when a failed
   step's fallback mode was deterministic. The fallback now re-runs the handler
   under the requested mode and keeps the failure visible.
@@ -218,6 +260,12 @@ test:
   consume verify; the key never enters serialized state or the ledger.
 - The hardcoding audit Loop treated a failed verify step as accepted; it now
   returns the report with the rejected terminal recorded.
+- A step handler that raised left its Loop with no terminal event. The Loop
+  now records the exception type and message digest, stops as
+  `handler_exception` (INTERNAL_PROTOCOL_ERROR), and re-raises.
+- The Kaggle check harness can write binary, regression, or multiclass
+  synthetic competitions (`--competition-kind`), and the cells no longer
+  carry stale commit references in their headers.
 
 - OpenRouter zero-price selection could choose a non-text or extremely wide
   route merely because it advertised the largest completion maximum. Live

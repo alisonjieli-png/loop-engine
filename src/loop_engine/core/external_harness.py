@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 HARNESS_IDS = (
     "pydantic_ai", "deep_agents", "openai_agents",
-    "microsoft_agent_framework")
+    "microsoft_agent_framework", "opencode")
 HARNESS_MODES = ("hybrid", "non_deterministic")
 HARNESS_STATUSES = (
     "completed", "failed", "unavailable", "refused", "cancelled",

@@ -64,6 +64,7 @@ DATASET_ROWS = 200
 DATASET_TEST_ROWS = 100
 DATASET_SEED = 20260901
 FEATURES = tuple(f"feature_{index}" for index in range(1, 7))
+COMPETITION_KINDS = ("binary", "regression", "multiclass")
 
 
 def key_available(secret_name: str, standard_env: str) -> bool:
@@ -72,8 +73,26 @@ def key_available(secret_name: str, standard_env: str) -> bool:
                 or os.environ.get(standard_env, "").strip())
 
 
-def write_dataset(dataset_dir: Path) -> dict:
-    """Write a tiny deterministic binary-classification competition."""
+def _target(kind: str, values: list, rng: random.Random):
+    """One synthetic target for the requested competition kind."""
+    score = (0.8 * values[0] - 0.6 * values[1] + 0.3 * values[2]
+             + rng.gauss(0.0, 0.5))
+    if kind == "regression":
+        return round(10.0 + 3.0 * score + 0.5 * values[3] ** 2, 4)
+    if kind == "multiclass":
+        return "low" if score < -0.5 else "high" if score > 0.5 else "mid"
+    return int(score > 0.0)
+
+
+def write_dataset(dataset_dir: Path, kind: str = "binary") -> dict:
+    """Write a tiny deterministic competition of the requested kind.
+
+    ``binary`` has a 0/1 target, ``regression`` a continuous target, and
+    ``multiclass`` a three-label string target. The sample submission uses
+    the kind's neutral prediction so the cells must infer the contract.
+    """
+    if kind not in COMPETITION_KINDS:
+        raise ValueError(f"kind must be one of {COMPETITION_KINDS}")
     dataset_dir.mkdir(parents=True, exist_ok=True)
     rng = random.Random(DATASET_SEED)
 
@@ -84,9 +103,7 @@ def write_dataset(dataset_dir: Path) -> dict:
             row = {"id": first_id + offset}
             row.update(zip(FEATURES, values))
             if with_target:
-                score = (0.8 * values[0] - 0.6 * values[1]
-                         + 0.3 * values[2] + rng.gauss(0.0, 0.5))
-                row["target"] = int(score > 0.0)
+                row["target"] = _target(kind, values, rng)
             rows.append(row)
         return rows
 
@@ -101,11 +118,21 @@ def write_dataset(dataset_dir: Path) -> dict:
 
     write_csv(dataset_dir / "train.csv", ["id", *FEATURES, "target"], train)
     write_csv(dataset_dir / "test.csv", ["id", *FEATURES], test)
+    neutral = {"binary": 0, "regression": 0.0, "multiclass": "mid"}[kind]
     write_csv(dataset_dir / "sample_submission.csv", ["id", "target"],
-              [{"id": row["id"], "target": 0} for row in test])
-    return {"train_rows": len(train), "test_rows": len(test),
-            "feature_columns": len(FEATURES),
-            "positives": sum(row["target"] for row in train)}
+              [{"id": row["id"], "target": neutral} for row in test])
+    summary = {"kind": kind, "train_rows": len(train), "test_rows": len(test),
+               "feature_columns": len(FEATURES)}
+    if kind == "binary":
+        summary["positives"] = sum(row["target"] for row in train)
+    elif kind == "multiclass":
+        labels = [row["target"] for row in train]
+        summary["label_counts"] = {label: labels.count(label)
+                                   for label in sorted(set(labels))}
+    else:
+        targets = [row["target"] for row in train]
+        summary["target_range"] = [min(targets), max(targets)]
+    return summary
 
 
 def child_environment(stage: str, root: Path, working: Path,
@@ -256,6 +283,9 @@ def main(argv: list | None = None) -> int:
                         help="where the cell stops (default offline)")
     parser.add_argument("--competition", default="playground-series-s6e9",
                         help="competition slug for the synthetic dataset")
+    parser.add_argument("--competition-kind", default="binary",
+                        choices=COMPETITION_KINDS,
+                        help="target shape of the synthetic dataset")
     parser.add_argument("--root", metavar="DIR",
                         help="parent directory for the temporary root "
                              "(default: the system temp directory)")
@@ -298,17 +328,17 @@ def main(argv: list | None = None) -> int:
                                  dir=str(parent) if parent else None))
     (root / "temp").mkdir()
     dataset_dir = root / "input" / "competitions" / args.competition
-    dataset = write_dataset(dataset_dir)
+    dataset = write_dataset(dataset_dir, args.competition_kind)
 
     print("Loop Engine Kaggle cell check")
     print(f"  interpreter : {sys.executable}")
     print(f"  repository  : {REPOSITORY_ROOT} (LOOP_ENGINE_SOURCE_DIR)")
     print(f"  root        : {root}")
-    print(f"  dataset     : {dataset_dir.relative_to(root)} "
-          f"(train {dataset['train_rows']} rows, "
+    print(f"  dataset     : input/competitions/{args.competition} "
+          f"({dataset['kind']}: train {dataset['train_rows']} rows, "
           f"test {dataset['test_rows']} rows, "
           f"{dataset['feature_columns']} numeric columns + id, "
-          f"{dataset['positives']} positives, seed {DATASET_SEED})")
+          f"seed {DATASET_SEED})")
     print(f"  stage       : {args.stage}"
           + (" (no provider key, no network)" if args.stage == "offline"
              else " (live provider calls; may take a long time)"))

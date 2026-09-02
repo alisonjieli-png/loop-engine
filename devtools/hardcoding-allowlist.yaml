@@ -83,3 +83,80 @@ entries:
     classification: CLOSED_CONTROLLED_VOCABULARY
     created_on: 2026-09-01
     expires_on: 2027-09-01
+  - finding_id: hardcoding.2df2528cfa81bac39a3ea988
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      OpenCode's headless JSON event stream names this event or part kind 'message'. The literal is the external protocol's own vocabulary, read once at the adapter boundary and mapped to Loop Engine typed records; the protocol version is captured by the handshake. It selects no Loop Engine policy and has no caller override or deployment lifecycle.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02
+  - finding_id: hardcoding.316f3f5368d11530dd13c0e7
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      OpenCode's headless JSON event stream names this event or part kind 'tool_result'. The literal is the external protocol's own vocabulary, read once at the adapter boundary and mapped to Loop Engine typed records; the protocol version is captured by the handshake. It selects no Loop Engine policy and has no caller override or deployment lifecycle.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02
+  - finding_id: hardcoding.619043538ca7503b3b46814d
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      OpenCode's headless JSON event stream names this event or part kind 'tool_use'. The literal is the external protocol's own vocabulary, read once at the adapter boundary and mapped to Loop Engine typed records; the protocol version is captured by the handshake. It selects no Loop Engine policy and has no caller override or deployment lifecycle.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02
+  - finding_id: hardcoding.65a17367bdb61c7c1206c682
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      OpenCode's headless JSON event stream names this event or part kind 'tool'. The literal is the external protocol's own vocabulary, read once at the adapter boundary and mapped to Loop Engine typed records; the protocol version is captured by the handshake. It selects no Loop Engine policy and has no caller override or deployment lifecycle.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02
+  - finding_id: hardcoding.660921a272a3eb9973ad9d61
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      The OpenCode command line's own option or JSON field 'completed', spelled once where the adapter builds the headless invocation or reads its result. External protocol vocabulary at one boundary; not a Loop Engine policy value.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02
+  - finding_id: hardcoding.709d8519f46fd9beced8dca0
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      OpenCode's headless JSON event stream names this event or part kind 'reasoning'. The literal is the external protocol's own vocabulary, read once at the adapter boundary and mapped to Loop Engine typed records; the protocol version is captured by the handshake. It selects no Loop Engine policy and has no caller override or deployment lifecycle.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02
+  - finding_id: hardcoding.87cecdf60ace293443aec9e3
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      OpenCode's headless JSON event stream names this event or part kind 'text'. The literal is the external protocol's own vocabulary, read once at the adapter boundary and mapped to Loop Engine typed records; the protocol version is captured by the handshake. It selects no Loop Engine policy and has no caller override or deployment lifecycle.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02
+  - finding_id: hardcoding.890a451e4a1da1b8e02a0360
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      OpenCode's headless JSON event stream names this event or part kind 'session'. The literal is the external protocol's own vocabulary, read once at the adapter boundary and mapped to Loop Engine typed records; the protocol version is captured by the handshake. It selects no Loop Engine policy and has no caller override or deployment lifecycle.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02
+  - finding_id: hardcoding.8ce26cd051be3466df03bb5e
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      OpenCode's headless JSON event stream names this event or part kind 'step_finish'. The literal is the external protocol's own vocabulary, read once at the adapter boundary and mapped to Loop Engine typed records; the protocol version is captured by the handshake. It selects no Loop Engine policy and has no caller override or deployment lifecycle.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02
+  - finding_id: hardcoding.9bd1698dcbce6e1dab327f71
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      The OpenCode command line's own option or JSON field 'completed', spelled once where the adapter builds the headless invocation or reads its result. External protocol vocabulary at one boundary; not a Loop Engine policy value.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02
+  - finding_id: hardcoding.9f2ac2de8b1a95a4220f6221
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      OpenCode's headless JSON event stream names this event or part kind 'step_start'. The literal is the external protocol's own vocabulary, read once at the adapter boundary and mapped to Loop Engine typed records; the protocol version is captured by the handshake. It selects no Loop Engine policy and has no caller override or deployment lifecycle.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-02
+    expires_on: 2027-09-02

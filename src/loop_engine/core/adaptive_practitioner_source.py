@@ -15,6 +15,8 @@ from pathlib import Path
 
 from .adaptive_practitioner_records import (
     AdaptivePractitionerError, AdaptiveRunServices)
+from .capability_rejection import (CapabilityRejected, CapabilityRejection,
+                                   bounded_admitted_values)
 
 
 _GENERATED_SOURCE_PARTS = frozenset({
@@ -190,8 +192,12 @@ def source_inspection_operation(
     if not isinstance(requested, list) or any(
             not isinstance(item, str) or not item.strip()
             for item in requested):
-        raise AdaptivePractitionerError(
-            "source inspection paths must be a list of non-empty text")
+        raise CapabilityRejected(CapabilityRejection(
+            "core.source.inspect", "argument_type_invalid",
+            "source inspection paths must be a list of non-empty text",
+            rejected_arguments=(("paths", str(requested)[:200]),),
+            repair_hint=("pass paths as a list of admitted relative paths, "
+                         "or omit paths to receive the manifest")))
     query = str(arguments.get("query") or "").strip()
     include_contents = arguments.get("include_contents", False)
     if not isinstance(include_contents, bool):
@@ -201,9 +207,15 @@ def source_inspection_operation(
     resolved_requested = _resolve_requested_paths(requested, by_path)
     unknown_paths = sorted(set(requested) - set(resolved_requested))
     if unknown_paths:
-        raise AdaptivePractitionerError(
+        admitted, total = bounded_admitted_values(by_path)
+        raise CapabilityRejected(CapabilityRejection(
+            "core.source.inspect", "argument_not_admitted",
             f"source inspection requested unknown paths {unknown_paths}"
-            "; inspect manifest_paths for the exact admitted paths")
+            "; inspect manifest_paths for the exact admitted paths",
+            rejected_arguments=(("paths", tuple(unknown_paths)),),
+            admitted_values=admitted, admitted_values_total=total,
+            repair_hint=("omit paths to receive the manifest, then request "
+                         "only paths listed in admitted_values")))
     query_terms = tuple(dict.fromkeys(
         re.findall(r"[a-z0-9_]{2,}", query.lower())))
     text_by_path = {}
@@ -305,9 +317,15 @@ def source_profile_operation(
         if requested else {name: name for name in files}
     unknown = sorted(set(requested) - set(resolved))
     if unknown:
-        raise AdaptivePractitionerError(
+        admitted, total = bounded_admitted_values(files)
+        raise CapabilityRejected(CapabilityRejection(
+            "core.source.profile", "argument_not_admitted",
             f"source profile requested unknown paths {unknown}"
-            "; inspect manifest_paths from core.source.inspect first")
+            "; inspect manifest_paths from core.source.inspect first",
+            rejected_arguments=(("paths", tuple(unknown)),),
+            admitted_values=admitted, admitted_values_total=total,
+            repair_hint=("omit paths to profile every admitted source, or "
+                         "request only paths listed in admitted_values")))
     profiles = []
     for raw, relative in sorted(resolved.items()):
         path = files[relative]
@@ -434,6 +452,23 @@ def self_test() -> dict:
             ["unexpected_format.py"], ambiguous_files)
         ambiguous_basename_refused = (
             list(ambiguous_resolved.values()) == [])
+        # A path the run never admitted is refused with the admitted set
+        # attached, so the next decision is a lookup rather than a guess.
+        try:
+            source_inspection_operation(
+                {"paths": ["/elsewhere/on/disk"],
+                 "include_contents": False}, services)
+            rejection = None
+        except CapabilityRejected as refused:
+            rejection = refused.rejection
+        unadmitted_carries_admitted = bool(
+            rejection is not None
+            and rejection.reason_code == "argument_not_admitted"
+            and rejection.admitted_values
+            and "source/unexpected_format.py" in rejection.admitted_values
+            and rejection.admitted_values_total
+            == len(dict(inspectable_source_files(services)))
+            and rejection.repair_hint)
         big_body = "z" * 100_000
         big_view = source_inspection_model_view([{
             "record_type": "source_inspection_result/v1",
@@ -479,6 +514,11 @@ def self_test() -> dict:
         "passed": ambiguous_basename_refused,
         "detail": "a basename matching several admitted files resolves to "
                   "nothing and is reported as unknown",
+    }, {
+        "test": "an_unadmitted_path_is_refused_with_the_admitted_set_attached",
+        "passed": unadmitted_carries_admitted,
+        "detail": "the typed rejection names the admitted relative paths and "
+                  "the repair, so a repeat is never the only next move",
     }, {
         "test": "selected_content_is_bounded_in_the_model_view",
         "passed": bounded_selection and small_selection_untouched,

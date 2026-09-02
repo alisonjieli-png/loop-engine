@@ -6,9 +6,11 @@ whether repeated passes have changed the governed task state.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import json
+
+from .action_fence import ActionFencePolicy
 
 
 @dataclass(frozen=True)
@@ -17,6 +19,7 @@ class PractitionerSupervisionPolicy:
 
     require_executable_repair_delta: bool = True
     diagnose_identical_state_action_failure: bool = True
+    action_fence: ActionFencePolicy = field(default_factory=ActionFencePolicy)
 
 
 DEFAULT_SUPERVISION_POLICY = PractitionerSupervisionPolicy()
