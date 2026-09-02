@@ -156,7 +156,7 @@ Ordered by what blocks the product definition most. Audit ids in brackets.
 - **16.** Loop ids are process-local counters [11.2]; the handoff namespaces them, but there is no
     global identity, addressing, or transport [11.3, 11.4]. The fabric today is one process plus
     a verified merge.
-- **17.** Two tool interfaces exist [9.1]: solution-registry tools emit receipts inside Loops, while
+- **17.** Two tool interfaces exist [9.1]: solution-registry tools emit records inside Loops, while
     model-led tool actions travel a separate path through the Practitioner.
 - **18.** Region statistics, frontier snapshots, and prompt experiments are projections rebuilt from
     saved results; nothing writes them at run time, so a live run cannot consult its own

@@ -12,6 +12,7 @@ from loop_engine.code_nodes.solution_model_port import (
 from loop_engine.code_nodes.solve_runtime import SolveRequest, solve_task
 from loop_engine.core.adaptive_practitioner_records import NextActionDecision
 from loop_engine.core.run_history import load_saved_run_bundle
+from loop_engine.core.source_role_orientation import manifest_digest
 from loop_engine.code_nodes.loop_report import report_from_run
 from loop_engine.templates.intake import TaskIntakeRequest, intake_task
 
@@ -69,8 +70,8 @@ def _action_id(decision: dict) -> str:
 
 
 def _answers(summary: str, outputs: list[str], candidate: dict,
-             files: dict[str, str], *, source_query: str = ""
-             ) -> tuple[str, ...]:
+             files: dict[str, str], *, source_query: str = "",
+             source_roles: tuple[dict, ...] = ()) -> tuple[str, ...]:
     decision = _decision()
     how = {
         "action_id": _action_id(decision), "how_mode": "generate",
@@ -127,9 +128,19 @@ def _answers(summary: str, outputs: list[str], candidate: dict,
                                  "gap": "the requested work is not built yet"}],
             "advisory_findings": [], "new_requirement_proposals": [],
         }
+        # core.source_role_orientation asks, once per manifest digest and
+        # directly after the inspection, what each admitted file is. The
+        # reading names only paths the runtime admitted and only fields it
+        # profiled; a scripted answer has to satisfy the same contract a live
+        # model does, so this fixture states one per task.
+        role_reading = {
+            "manifest_digest": manifest_digest(
+                [item["path"] for item in source_roles]),
+            "files": list(source_roles),
+            "unresolved": []}
         sequence.extend((
             source_orientation, {"actions": [inspect_decision]}, inspect_how,
-            inspect_verification,
+            role_reading, inspect_verification,
             {"route": "continue", "reason": "Build from selected source."}))
     sequence.extend((
         _orientation(summary, outputs), {"actions": [decision]}, how, candidate))
@@ -203,7 +214,15 @@ def _task_b(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
     return TaskIntakeRequest(dataset=str(fixtures / "inventory.csv"), goal=goal), _answers(
         "Transform and verify a supplied inventory table.",
         ["cleaned CSV", "summary"], candidate, files,
-        source_query="inventory")
+        source_query="inventory",
+        source_roles=({
+            "path": "inventory.csv",
+            "role": "the inventory rows to clean, one product per row",
+            "observed_fields": ["sku", "product_name", "quantity"],
+            "evidence": ("each row carries a sku, a product name with "
+                         "irregular spacing and case, and a quantity that "
+                         "parses as a number"),
+            "confidence": 0.9},))
 
 
 def _task_c(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
@@ -235,7 +254,18 @@ def _task_c(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
     }
     return TaskIntakeRequest(repository=str(fixtures / "docs"), goal=goal), _answers(
         "Index and verify supplied Markdown documents.",
-        ["Markdown document index"], candidate, files, source_query="docs")
+        ["Markdown document index"], candidate, files, source_query="docs",
+        source_roles=(
+            {"path": "docs/alpha.md",
+             "role": "one of the Markdown documents to index",
+             "observed_fields": [],
+             "evidence": "Markdown prose, which the profile reports fieldless",
+             "confidence": 0.8},
+            {"path": "docs/beta.md",
+             "role": "one of the Markdown documents to index",
+             "observed_fields": [],
+             "evidence": "Markdown prose, which the profile reports fieldless",
+             "confidence": 0.8}))
 
 
 def _task_d(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
@@ -270,7 +300,18 @@ def _task_d(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
     return TaskIntakeRequest(repository=str(fixtures / "failing_package"), goal=goal), _answers(
         "Repair and verify the supplied failing package.",
         ["repaired Python package"], candidate, files,
-        source_query="failing_package")
+        source_query="failing_package",
+        source_roles=(
+            {"path": "failing_package/calc.py",
+             "role": "the module under repair",
+             "observed_fields": [],
+             "evidence": "Python source, which the profile reports fieldless",
+             "confidence": 0.8},
+            {"path": "failing_package/test_calc.py",
+             "role": "the test that states the failure to reproduce",
+             "observed_fields": [],
+             "evidence": "Python source, which the profile reports fieldless",
+             "confidence": 0.8}))
 
 
 def main() -> int:
@@ -328,6 +369,17 @@ def main() -> int:
         if index > 1 and not adaptive_result.get("source_inspections"):
             raise SystemExit(
                 f"task {task_id} built without a model-selected source")
+        # A scripted fixture answers model calls positionally, so an engine
+        # that gains a call silently feeds every later step the previous
+        # step's answer, and the run fails somewhere unrelated. The stated
+        # reading is the first thing the extra call produces, so its absence
+        # names the desync here instead of leaving it to be traced back from
+        # a verification failure four steps later.
+        if index > 1 and not adaptive_result.get("source_roles"):
+            raise SystemExit(
+                f"task {task_id} reached the build with no stated source "
+                "roles; the scripted answers no longer match the calls the "
+                "engine makes")
         path = output / f"task-{task_id}.json"
         path.write_text(json.dumps(value, indent=2, default=str) + "\n")
         records.append(value)

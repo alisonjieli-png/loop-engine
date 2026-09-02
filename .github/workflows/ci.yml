@@ -50,11 +50,14 @@ jobs:
           # (python -m loop_engine --conformance), which applies the
           # machine-readable allowed_fragments contract in
           # forbidden_paths.json. This check owns public prose only.
-          # docs/prompts and docs/evidence are historical evidence, not
-          # current public language.
+          # docs/prompts, docs/evidence and docs/verification are dated,
+          # point-in-time evidence, not current public language. A report
+          # whose finding is that a retired term was used has to quote the
+          # term, so these paths cannot be held to the live vocabulary.
           if rg --hidden -n -i \
             --glob '!src/loop_engine/forbidden_paths.json' \
             --glob '!docs/prompts/**' --glob '!docs/evidence/**' \
+            --glob '!docs/verification/**' \
             --glob '!showcase/node_modules/**' --glob '!**/.cache/**' \
             '\bchronicles?\b|\breceipts?\b' \
             README.md CHANGELOG.md humanizer-context.md docs examples \
@@ -65,6 +68,7 @@ jobs:
 
           if rg --hidden -n -i \
             --glob '!docs/prompts/**' --glob '!docs/evidence/**' \
+            --glob '!docs/verification/**' \
             --glob '!showcase/assets/**' \
             --glob '!showcase/node_modules/**' --glob '!**/.cache/**' \
             '\bchild(?:ren)?\b|\broot[[:space:]_-]+loop\b|what[[:space:]_-]*is[[:space:]_-]*next|what[[:space:]_-]+next|whats[[:space:]_-]*next|whatnext' \
