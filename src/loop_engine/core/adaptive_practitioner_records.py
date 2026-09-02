@@ -222,7 +222,8 @@ class AmbiguityDisposition:
     def __post_init__(self) -> None:
         if self.state not in AMBIGUITY_STATES:
             raise AdaptivePractitionerError(
-                "ambiguity disposition uses an unknown state")
+                f"ambiguity state {self.state!r} is not admitted; the "
+                f"admitted states are {list(AMBIGUITY_STATES)}")
         if not self.subject.strip() or not self.reason.strip():
             raise AdaptivePractitionerError(
                 "ambiguity disposition needs subject and reason")
@@ -369,7 +370,16 @@ class NextActionDecision:
 
     def __post_init__(self) -> None:
         if self.action_kind not in NEXT_ACTION_KINDS:
-            raise AdaptivePractitionerError("NextActionDecision kind is invalid")
+            # Name the rejected value and the admitted set. A closed
+            # vocabulary refused without stating itself leaves the model to
+            # guess again, and a live run spent seven passes proposing
+            # semantic step ids here because the packet's question portfolio
+            # names those far more prominently than this schema does.
+            raise AdaptivePractitionerError(
+                f"next action kind {self.action_kind!r} is not admitted; the "
+                f"admitted kinds are {list(NEXT_ACTION_KINDS)}. Semantic step "
+                "ids such as those in the question portfolio are not action "
+                "kinds")
         if not 0 <= self.confidence <= 1:
             raise AdaptivePractitionerError(
                 "NextActionDecision confidence must be from zero through one")

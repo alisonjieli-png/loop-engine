@@ -673,28 +673,10 @@ competition dataset ({COMPETITION}).
 
 This is an execution task, not merely a high-level modeling plan.
 
-Do not assume any file name, directory layout, or column name. The attached
-input root is supplied as a source; the runtime states the admitted manifest
-and its own reading of each file under runtime_facts, and core.source.inspect
-admits exactly those paths.
-
-Read source_roles in the runtime facts before deciding anything about the
-data. It records what each supplied file was read to be and the evidence for
-that reading. Where a path is listed as unresolved, inspect it and settle it
-from the observed bytes rather than from its name. If what you observe
-contradicts a recorded role, say so and act on the observation.
-
 Decide the target, the identifier, the prediction field, the task type, and
-the submission contract from the observed schemas: the values a field actually
-holds, not the word in its header. A field whose values are labels is not a
-continuous target, and the file that defines the submission contract fixes the
-column order, the identifier order, and the value type. Check missing values,
+the submission contract from the supplied data itself. Check missing values,
 duplicates, leakage, suspicious unique fields, and schema differences between
-the training and prediction files.
-
-Generated code runs in the workspace, not beside the source. Open each input
-at the sandbox_paths value the runtime states for it, never at its admitted
-manifest path.
+the files you train on and the files you predict for.
 
 Build a CPU-compatible preprocessing pipeline. Compare at least two reasonable
 baseline models with reproducible three-fold cross-validation and an
@@ -702,12 +684,8 @@ appropriate local validation metric. Fit the selected model on all training
 rows and create submission.csv matching the discovered submission contract
 exactly, in its column order and identifier order.
 
-Write solution.py and verification.py yourself, inside the assigned
-workspace. Running them must produce submission.csv, metrics.json, report.md
-and verification.json: declare those four as expected artifacts, never as
-files you author. An output you typed is not an output you produced, and the
-run refuses any path that appears as both. Every number in metrics.json and
-report.md must come from the run, not from you.
+The run must produce submission.csv, metrics.json, report.md and
+verification.json, alongside the code that produces them.
 
 Verify schema, row count, column order, identifier order, missing predictions,
 infinite predictions, prediction type, and prediction range against the

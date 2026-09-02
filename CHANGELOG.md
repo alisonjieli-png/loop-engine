@@ -35,6 +35,15 @@ First public release.
 
 ### Changed
 
+- **Durable rules moved out of the Kaggle task text and into the runtime.**
+  The cells no longer explain the manifest, the sandbox paths, the difference
+  between a header and a value, or which files may be authored. Every one of
+  those is now stated by the runtime that enforces it — `sandbox_paths_usage`
+  and `byte_counts` in runtime facts, `usage` on the source profile, the
+  project contract on authored files against expected artifacts — so an
+  unfamiliar task inherits them instead of needing them written down again.
+  What a task text explains, the next task will not.
+
 - **Generated-project assembly is its own module.**
   `core.adaptive_practitioner_project` now owns input placement, the project
   candidate, the authored-file repair loop, and checkpoint reuse, leaving
@@ -65,6 +74,26 @@ First public release.
   also names the literal the code opened, the path that literal should have
   been, and the whole admitted set, so the repair is a substitution rather
   than a diagnosis.
+
+- **A real competition could not be placed in the workspace at all.** The
+  generated-project workspace capped every file at a flat 16 MB. Against the
+  real playground-series-s6e9 files a live run placed only the 7.7 MB
+  submission template and refused the 18.3 MB prediction rows and the 44.7 MB
+  training rows, so no amount of model reasoning could reach a result. The
+  limit now grows to the largest input the runtime itself admitted — refusing
+  to place a file the runtime chose to supply is the runtime contradicting its
+  own decision — with a stated ceiling that bounds one read, checked by size
+  during selection rather than discovered halfway through a copy. Runtime
+  facts state `byte_counts` and `placement_limit_bytes` beside the paths, so
+  a size refusal is foreseeable rather than surprising.
+
+- **Closed vocabularies were enforced without stating themselves.** A refused
+  next-action kind said only "NextActionDecision kind is invalid", naming
+  neither the rejected value nor the admitted set, and a live run spent seven
+  passes proposing semantic step ids as action kinds because the packet's
+  question portfolio names those far more prominently than the schema string
+  does. Both that refusal and the ambiguity-state refusal now name the
+  rejected value and the admitted vocabulary.
 
 - **The action fence never saw the most expensive capability fail.** Three
   `core.generated_project` refusal paths returned a result packet without

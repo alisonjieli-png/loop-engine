@@ -468,6 +468,12 @@ def source_profile_operation(
         "record_type": "source_profile_result/v1",
         "profiles": profiles,
         "profiled_count": len(profiles),
+        "usage": (
+            "field_profiles states what each field's sampled values are, not "
+            "what the field is for. A field name is not its type: read "
+            "every_sampled_value_is_a_number and example_values before "
+            "deciding whether a field holds quantities or labels, and prefer "
+            "what the values show over what the header suggests"),
     }
 
 

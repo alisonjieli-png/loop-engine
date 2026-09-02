@@ -479,6 +479,30 @@ class GeneratedProjectExecutionContext:
                 "generated project execution needs an active parent Loop")
 
 
+#: A workspace must be able to hold what the runtime already admitted as an
+#: input. The floor is what a model-authored file may reach; a file the model
+#: typed that is larger than this is pathological, not a deliverable. The
+#: limit then grows to the largest supplied input, because refusing to place a
+#: file the runtime itself chose to supply is the runtime contradicting its own
+#: decision. A live run against a real competition placed only its 7.7 MB
+#: submission template and refused its 44.7 MB training rows against a flat
+#: 16 MB cap, so no amount of model reasoning could have produced a result.
+GENERATED_FILE_BYTE_FLOOR = 16 * 1024 * 1024
+
+#: The ceiling on one supplied input. The workspace file path reads a whole
+#: file into memory to digest it, so this bounds a single read rather than
+#: disk. An input above it is refused while it is being selected, by size,
+#: without ever being read.
+SUPPLIED_INPUT_BYTE_CEILING = 512 * 1024 * 1024
+
+
+def workspace_file_byte_limit(
+        inputs: "tuple[GeneratedProjectInputArtifact, ...]" = ()) -> int:
+    """The file size this workspace must admit for these inputs."""
+    return max(GENERATED_FILE_BYTE_FLOOR,
+               max((len(item.content) for item in inputs), default=0))
+
+
 def validate_generated_project_input_use(
         manifest: GeneratedProjectManifest,
         inputs: tuple[GeneratedProjectInputArtifact, ...]) -> dict:
@@ -600,11 +624,12 @@ def execute_generated_project(
                 memory="4g", cpus=2.0, pids=256,
                 temporary_bytes=1024 * 1024 * 1024))
 
+    file_byte_limit = workspace_file_byte_limit(request.input_artifacts)
     docker_spec = WorkspaceSpec(
         workspace_id=f"generated-{request.manifest.project_id}",
         root=str(root), backend_kind="docker", execution_enabled=True,
         allowed_commands=ALLOWED_PYTHON_EXECUTABLES,
-        max_file_bytes=16 * 1024 * 1024)
+        max_file_bytes=file_byte_limit)
     docker_backend = DockerWorkspace(docker_spec, declaration)
     docker_availability = docker_backend.availability()
     using_docker = docker_availability.available
@@ -614,7 +639,7 @@ def execute_generated_project(
                 workspace_id=docker_spec.workspace_id,
                 root=str(root), backend_kind="docker", execution_enabled=True,
                 allowed_commands=ALLOWED_PYTHON_EXECUTABLES,
-                max_file_bytes=16 * 1024 * 1024,
+                max_file_bytes=file_byte_limit,
                 network_access=network_access)
             backend_value = DockerWorkspace(spec, declaration)
             return backend_value, WorkspaceOperationService(
@@ -641,7 +666,7 @@ def execute_generated_project(
                 root=str(root), backend_kind="restricted_local",
                 execution_enabled=True,
                 allowed_commands=ALLOWED_PYTHON_EXECUTABLES,
-                max_file_bytes=16 * 1024 * 1024,
+                max_file_bytes=file_byte_limit,
                 network_access=False)
             backend_value = RestrictedLocalWorkspace(spec)
             return backend_value, WorkspaceOperationService(
@@ -848,6 +873,20 @@ def self_test() -> dict:
         "passed": GeneratedProjectManifest.from_mapping(
             valid.to_dict()).digest == valid.digest,
         "detail": valid.digest,
+    }, {
+        "test": "the_workspace_admits_the_inputs_the_runtime_supplied",
+        # The real playground-series-s6e9 sizes. Against a flat 16 MB cap a
+        # live run placed only the 7.7 MB submission template and refused the
+        # 44.7 MB training rows, so no result was reachable.
+        "passed": (workspace_file_byte_limit(()) == GENERATED_FILE_BYTE_FLOOR
+                   and workspace_file_byte_limit(tuple(
+                       GeneratedProjectInputArtifact(
+                           f"inputs/f{index}.csv", b"x" * size, "text/csv")
+                       for index, size in enumerate(
+                           (7_737_432, 18_298_347, 44_707_646))))
+                   == 44_707_646),
+        "detail": f"floor {GENERATED_FILE_BYTE_FLOOR}, grows to the largest "
+                  "supplied input",
     }, {
         "test": "an_expected_artifact_may_not_be_a_file_the_model_typed",
         "passed": bool(typed_output_refused),

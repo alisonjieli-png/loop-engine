@@ -28,6 +28,7 @@ import hashlib
 from .adaptive_practitioner_records import AdaptivePractitionerError
 from .adaptive_practitioner_source import (
     inspectable_source_files, project_input_path)
+from .generated_project import SUPPLIED_INPUT_BYTE_CEILING
 from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
 
 RUNTIME_FACTS_RECORD_TYPE = "practitioner_runtime_facts/v1"
@@ -49,10 +50,19 @@ def _source_manifest(services) -> dict | None:
     paths = sorted(relative for relative, _path in files)
     digest = hashlib.sha256("\n".join(paths).encode("utf-8")).hexdigest()
     carried = paths[:MANIFEST_PATH_LIMIT]
+    by_path = dict(files)
+    sizes = {}
+    for relative in carried:
+        try:
+            sizes[relative] = by_path[relative].stat().st_size
+        except (KeyError, OSError):
+            sizes[relative] = None
     return {
         "paths": carried,
         "sandbox_paths": {relative: project_input_path(relative)
                           for relative in carried},
+        "byte_counts": sizes,
+        "placement_limit_bytes": SUPPLIED_INPUT_BYTE_CEILING,
         "total": len(paths),
         "truncated": len(paths) > MANIFEST_PATH_LIMIT,
         "digest": digest,
@@ -62,7 +72,10 @@ def _source_manifest(services) -> dict | None:
         "sandbox_paths_usage": (
             "generated code runs in the workspace, not beside the source: "
             "open a file at its sandbox_paths value, never at its admitted "
-            "path. These are the exact paths the runtime materializes"),
+            "path. These are the exact paths the runtime materializes, and "
+            "byte_counts is what each one weighs; a source above "
+            "placement_limit_bytes cannot be materialized at all and must be "
+            "read some other way"),
     }
 
 
