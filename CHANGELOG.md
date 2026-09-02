@@ -215,6 +215,16 @@ First public release.
 
 ### Fixed
 
+- **A diagnostic now arrives saying what it found.** The solve progress writer
+  copies a fixed field allowlist, so every typed diagnostic's payload was
+  silently discarded: a campaign produced `orientation_invalid` on four
+  competitions and the published event carried neither the attempt nor the
+  findings, leaving nothing to diagnose but the name of the problem. The
+  screened payload now travels as one named field, bounded and marked when
+  truncated, so any writer that carries that field delivers the whole detail.
+  This is the "refusals carried no reason" defect, fixed once for capabilities
+  and surviving in the diagnostic path.
+
 - **A Python exception class name is not a failure layer.** The terminal-code
   mapping sent `AdaptivePractitionerError` straight to `VERIFICATION_FAILED`,
   so a live run that produced two invalid orientations and verified nothing

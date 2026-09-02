@@ -23,7 +23,8 @@ class ProviderSetupError(ValueError):
 
 _PROGRESS_FIELDS = (
     "event_type", "run_id", "progress_sequence", "pass_number",
-    "step", "diagnostic_code", "error_code", "format_attempt",
+    "step", "diagnostic_code", "diagnostic_detail", "error_code",
+    "format_attempt",
     "transport_attempt", "capability_ref", "failure_code",
     "parse_strategy", "response_digest", "admission_loop_id", "loop_count",
     "artifact_path", "checkpoint_digest",
@@ -307,6 +308,27 @@ def self_test() -> dict:
             "authorization": "must-not-appear",
             "secret": "must-not-appear",
         })
+    # A diagnostic must arrive saying what it found. A live campaign
+    # produced orientation_invalid on four competitions and the published
+    # event carried neither the attempt nor the findings, because the writer
+    # keeps only the fields it recognizes. The detail travels as one named
+    # field so any allowlist that carries it delivers the whole payload.
+    detail_stream = io.StringIO()
+    with contextlib.redirect_stderr(detail_stream):
+        _solve_progress({
+            "event_type": "practitioner.diagnostic",
+            "run_id": "adaptive-progress-test",
+            "diagnostic_code": "orientation_invalid",
+            "diagnostic_detail": '{"attempt": 2, "findings": ["target absent"]}',
+            "secret": "must-not-appear",
+        })
+    detail_raw = detail_stream.getvalue().strip()
+    detail_value = json.loads(detail_raw)
+    detail_survived = (
+        "target absent" in detail_value.get("diagnostic_detail", "")
+        and detail_value.get("diagnostic_code") == "orientation_invalid"
+        and "must-not-appear" not in detail_raw)
+
     raw = stream.getvalue().strip()
     value = json.loads(raw)
     safe = (value["record_type"] == "solve_progress/v1"
@@ -317,6 +339,11 @@ def self_test() -> dict:
             and not ({"prompt", "content", "authorization", "secret"}
                      & set(value)))
     tests = [{
+        "test": "a_diagnostic_arrives_saying_what_it_found",
+        "passed": detail_survived,
+        "detail": ("a code with no payload names a problem and says nothing "
+                   "about it"),
+    }, {
         "test": "solve_progress_is_typed_stderr_and_secret_safe",
         "passed": safe,
         "detail": raw,

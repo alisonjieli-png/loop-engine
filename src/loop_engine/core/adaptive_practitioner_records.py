@@ -599,6 +599,28 @@ class ModelStepRequest:
 
 
 
+#: How much of one diagnostic's payload travels on the progress stream. A
+#: diagnostic that says nothing is the defect this bounds against; a
+#: diagnostic that prints a whole artifact is the one it bounds.
+_DIAGNOSTIC_DETAIL_BYTES = 1200
+
+
+def _bounded_detail(payload: dict) -> str:
+    """Render one screened diagnostic payload as bounded text.
+
+    Serialized rather than nested so a writer that carries only scalar fields
+    still delivers it, and truncated with its own marker so a reader can tell
+    a short detail from a cut one.
+    """
+    try:
+        text = json.dumps(payload, sort_keys=True, default=str)
+    except (TypeError, ValueError):
+        text = str(payload)
+    if len(text) <= _DIAGNOSTIC_DETAIL_BYTES:
+        return text
+    return text[:_DIAGNOSTIC_DETAIL_BYTES] + "...[detail truncated]"
+
+
 def _new_action_fence():
     """One repeated-action fence per run.
 
@@ -754,7 +776,7 @@ class AdaptiveRunServices:
                  if key != "content"}
                 for item in self.generated_file_checkpoints.values()]
 
-    def diagnostic(self, code: str, payload: dict) -> None:
+    def diagnostic(self, code: str, payload: dict) -> None:  # noqa: D401
         """Record one bounded typed diagnostic in progress and Run History."""
         owner = current_kernel_owner()
         if owner is None or not code.strip() or not isinstance(payload, dict):
@@ -765,7 +787,13 @@ class AdaptiveRunServices:
             loop_id=owner.loop_id, event="custom",
             custom_kind="adaptive_diagnostic", diagnostic_code=code,
             diagnostic=safe)
-        self.publish("practitioner.diagnostic", diagnostic_code=code, **safe)
+        # The payload travels as one named field as well as spread. A
+        # progress writer with a field allowlist keeps what it recognizes and
+        # silently drops the rest, so a diagnostic whose detail is spread
+        # across ad-hoc keys arrives naming a problem and saying nothing about
+        # it. One field survives any allowlist that carries it.
+        self.publish("practitioner.diagnostic", diagnostic_code=code,
+                     diagnostic_detail=_bounded_detail(safe), **safe)
 
     def _record_generation_outcome(
             self, request: ModelStepRequest, *, error_code: str) -> None:

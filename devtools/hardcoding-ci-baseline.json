@@ -40295,7 +40295,7 @@
       "severity": "high"
     }
   ],
-  "repository_snapshot_id": "hardcoding_source.sha256_2569e05c5c2d781176dc9fc6fc3e2d2b0e9bc3c32c7e9256b9722f9dba616e32",
+  "repository_snapshot_id": "hardcoding_source.sha256_256f232b1fa6bcaf7093eeec9de13ccb5ba620177f69fc2d38c17dcb88a3ef9d",
   "schema": "hardcoding_ci_baseline/v1",
-  "source_audit_id": "hardcoding_audit.sha256_73f9579fa19558c584b64e023c5105ee557a3962c9bb241603f0acef183ff290"
+  "source_audit_id": "hardcoding_audit.sha256_59ddaaa56368cd258f1928c646cffb898d42746335adf53e5110818e5cc6e960"
 }
