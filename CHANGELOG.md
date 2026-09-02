@@ -9,6 +9,32 @@ First public release.
 
 ### Added
 
+- **A terminal code may only name a layer the run actually reached.** Three
+  live runs terminated `VERIFICATION_FAILED` having verified nothing: their
+  own records said `verification.method` was "not completed", every recorded
+  failure was transport, and zero model calls completed. The two states are
+  different work for whoever reads the code next, and the runtime already held
+  the evidence to tell them apart. `core.terminal_layer` derives the deepest
+  layer a run reached from its own record — orientations and decisions mean
+  semantic work, project attempts mean execution, a verdict or a completed
+  method means verification — and absent all of it the run reached transport
+  and the code says `PROVIDER_UNAVAILABLE`. An explicit failure code still
+  wins; this is the fallback that decides what to say when nothing else did.
+
+- **`docs/TROUBLESHOOTING-LADDER.md`**: seven questions every error gets, in
+  order, before a fix is written, with three worked examples from live runs.
+  It records why infrastructure defects are fixed before any claim that a
+  prompt, context policy or cycle is better: such a claim is about a
+  distribution of tasks and needs evidence across many thousands of runs on
+  novel work, while a boundary that admits nothing or a code that names the
+  wrong layer is wrong on every task and needs none.
+
+- **Multi-domain and multi-competition benchmarks.** `benchmarks/
+  kaggle_competitions` reads each competition's contract independently of any
+  run and grades discovery apart from execution; `benchmarks/task_families`
+  adds Jira, email and to-do cases, each built around a trap that produces a
+  well-formed wrong answer, with graders that never reach the run.
+
 - **The cognitive vocabulary is now explicit, and so is what it lacks.**
   `core.cognitive_grammar` derives an operator catalog of 45 entries from the
   live kernel nodes, action kinds and capabilities rather than restating them,

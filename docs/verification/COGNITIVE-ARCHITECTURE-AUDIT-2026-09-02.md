@@ -140,19 +140,31 @@ on a small task; every arm ends `NOT_YET_PROVEN`, so the experiment measures
 cost and structure, not quality; and a single task cannot separate profiles
 that would differ on harder work.
 
-## E. What the comparison showed
+## E. What the comparison showed, and what it cannot show
 
-**Removing four of thirteen nodes changed model calls not at all and packet
-bytes by 0.1%.** The profile lever is close to inert in the current runtime,
-and the reason is structural: all seven optional nodes are served by
-deterministic defaults that make no model calls. Cost lives entirely in the
-six model-calling nodes and in what each packet carries.
+**In this one measurement, removing four of thirteen nodes changed model calls
+not at all and packet bytes by 0.1%.** There is a structural reason to expect
+that: all seven optional nodes are served by deterministic defaults that make
+no model calls, so on this path cost sits in the six model-calling nodes and
+in packet content.
 
-This is worth stating plainly because it contradicts the intuition the
-steering prompt warns about. Adding or removing named steps is not where the
-cost is. The 19% duplication finding and its removal changed every call on
-every step; the profile change altered nothing measurable. Profiles remain
-worth having as safe named vocabulary, and they are not a cost lever today.
+**This does not establish that cycle profiles do not matter.** One task, one
+fixture model, one arm each, and every arm ended `NOT_YET_PROVEN`, so nothing
+here measures quality at all. A claim that one cycle, prompt or context policy
+is better than another is a claim about a distribution of tasks and needs
+evidence across many thousands of runs on genuinely novel work. What this
+measurement supports is narrower and still useful: **on this path the profile
+lever does not change model-call count**, which is a mechanical fact about
+where the calls are, not a finding about cognition.
+
+The contrast with the duplication result is worth keeping for the same reason.
+Removing 19% byte-identical repetition changed every call on every step and
+required no distributional claim, because sending the same bytes twice is
+wrong on every task. That is the shape of finding this repository can act on
+now. Judgements about which cycle reasons better wait for volume.
+
+See `docs/TROUBLESHOOTING-LADDER.md` for the order these questions are asked
+in, and why infrastructure defects are fixed before any of them.
 
 ## F. Simplest successful proof
 

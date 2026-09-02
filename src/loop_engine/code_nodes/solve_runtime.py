@@ -24,6 +24,7 @@ from ..templates.compiler import TaskCompileRequest, compile_task_value
 from ..templates.intake import TaskIntake
 from ..templates.model import InteractionMode, TaskFeedback
 from ..core.generated_project import execute_generated_project
+from ..core.terminal_layer import deepest_layer_reached
 from .solution_model_port import ModelExecution
 
 
@@ -382,6 +383,15 @@ def _failure_code(result: dict) -> str:
         return SolveTerminalCode.VERIFICATION_FAILED.value
     if code in ("NO_PROGRESS", "stop_unprofitable"):
         return SolveTerminalCode.NO_PROGRESS.value
+    # Only claim verification failed if the run reached verification. A run
+    # whose provider never answered has a transport failure, and saying so
+    # is the difference between one fix and a week of looking in the wrong
+    # subsystem.
+    reached = deepest_layer_reached(result)
+    if reached == "transport":
+        return SolveTerminalCode.PROVIDER_UNAVAILABLE.value
+    if reached == "semantic":
+        return SolveTerminalCode.NO_PROGRESS.value
     return SolveTerminalCode.VERIFICATION_FAILED.value
 
 
@@ -576,6 +586,13 @@ def self_test() -> dict:
 
     def check(name, ok, note=""):
         results.append({"name": name, "passed": bool(ok), "note": note})
+
+    check("an_explicit_failure_code_still_wins_over_layer_inference",
+          _failure_code({"failure_code": "timeout"})
+          == SolveTerminalCode.PROVIDER_UNAVAILABLE.value
+          and _failure_code({"failure_code": "CANCELLED"})
+          == SolveTerminalCode.CANCELLED.value,
+          "layer inference is the fallback, not an override")
 
     class NonMatchingResolver:
         """Registered exact resolver that correctly declines this task."""
