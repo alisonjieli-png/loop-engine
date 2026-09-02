@@ -7,21 +7,26 @@
 #   ollama_kaggle_key, mistral_kaggle_key, tacticalhat_kaggle_key
 #
 # Output layout (under the Kaggle working directory):
-#   submission.csv               the competition file, at the working root
-#   submissions/
-#     submission-<stamp>.csv     one dated copy per attempt
-#     root-submission.json       which attempt holds the root file, and why
-#   loop-engine-solutions/       best verified artifacts, versioned
-#   loop-engine-logs/
-#     LATEST.json               this run's record, for machines
-#     reports/                  report-<stamp>.html and .md, for people
-#     records/                  run-<stamp>.json, one per attempt
-#     preflight/                provider API check records
-#     solve/                    full solve stdout records (per attempt)
-#     run-history/              Loop Engine Run History dirs
-#     summary/                  one-page human report per attempt
-#     master/                   chronological master log + artifact index
-#     stage-<stamp>.json        what this cell did and where it stopped
+#   submission.csv               the competition file, ready to submit
+#   loop-engine/                 everything else, so the root stays readable
+#     submissions/
+#       submission-<stamp>.csv   one dated copy per attempt
+#       root-submission.json     which attempt holds the root file, and why
+#     logs/
+#       LATEST.json              this run's record, for machines
+#       reports/                 report-<stamp>.html and .md, for people
+#       records/                 run-<stamp>.json, one per attempt
+#       preflight/               provider API check records
+#       solve/                   full solve stdout records (per attempt)
+#       run-history/             Loop Engine Run History dirs
+#       summary/                 one-page human report per attempt
+#       master/                  chronological master log + artifact index
+#       stage-<stamp>.json       what this cell did and where it stopped
+#     solutions/                 best verified artifacts, versioned
+#     src/                       the engine checkout this run used
+#     workspace-<stamp>/         the solve's own working directory
+#     providers.yaml             the settings the solve reads (no key values)
+#     task.md                    the task text given to the solve
 #
 # Runs outside Kaggle too: kaggle/check_cells.py sets the
 # LOOP_ENGINE_* variables read in the configuration block below.
@@ -67,6 +72,12 @@ REPOSITORY_ARCHIVE_URL = (
 
 KAGGLE_WORKING = Path(os.environ.get(
     "LOOP_ENGINE_KAGGLE_WORKING", "/kaggle/working"))
+
+# Everything this cell writes lives under one directory, so the Kaggle
+# working root holds the competition file and nothing to search through.
+# The submit dialog lists that root; a reader should find one file there.
+ENGINE_ROOT = KAGGLE_WORKING / "loop-engine"
+ENGINE_ROOT.mkdir(parents=True, exist_ok=True)
 KAGGLE_INPUT = Path(os.environ.get(
     "LOOP_ENGINE_KAGGLE_INPUT", "/kaggle/input"))
 KAGGLE_TEMP = Path(os.environ.get(
@@ -80,7 +91,7 @@ SOURCE_DIR = os.environ.get("LOOP_ENGINE_SOURCE_DIR", "").strip()
 STAGE = os.environ.get("LOOP_ENGINE_KAGGLE_STAGE", "solve").strip() or "solve"
 
 REPOSITORY_DIR = (Path(SOURCE_DIR) if SOURCE_DIR
-                  else KAGGLE_WORKING / "loop-engine-src")
+                  else ENGINE_ROOT / "src")
 # The cell does not guess where the data lives. It hands the whole attached
 # input root to the solve and lets the Practitioner orient over the exact
 # manifest the runtime admits, exactly as it would for any other source. An
@@ -114,14 +125,14 @@ def resolve_dataset_dir(input_root, override=""):
             "competition or dataset to this notebook before the solve stage.")
     return directory
 
-LOGS_DIR = KAGGLE_WORKING / "loop-engine-logs"
+LOGS_DIR = ENGINE_ROOT / "logs"
 PREFLIGHT_DIR = LOGS_DIR / "preflight"
 SOLVE_LOG_DIR = LOGS_DIR / "solve"
 RUNS_DIR = LOGS_DIR / "run-history"
 SUMMARY_DIR = LOGS_DIR / "summary"
-SOLUTIONS_DIR = KAGGLE_WORKING / "loop-engine-solutions"
-TASK_FILE = KAGGLE_WORKING / f"loop-engine-{COMPETITION}-task.md"
-SETTINGS_FILE = KAGGLE_WORKING / "loop-engine-providers.yaml"
+SOLUTIONS_DIR = ENGINE_ROOT / "solutions"
+TASK_FILE = ENGINE_ROOT / "task.md"
+SETTINGS_FILE = ENGINE_ROOT / "providers.yaml"
 SETUP_TEMP_DIR = KAGGLE_TEMP / "loop-engine-setup"
 
 # Kaggle secret names and the standard variables the providers read.
@@ -170,8 +181,11 @@ MISTRAL_PROBE_ROUTE = "cloud.mistral"
 MISTRAL_PROBE_MODEL = "mistral-small-latest"
 
 RUN_STAMP = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-WORKSPACE_PREFIX = f"loop-engine-{COMPETITION}-solve-"
-WORKSPACE = KAGGLE_WORKING / f"{WORKSPACE_PREFIX}{RUN_STAMP}"
+#: Stale workspaces are removed; nothing else this cell ever wrote is
+#: touched. A previous run's solutions directory can hold the only
+#: copy of a verified submission, so cleanup stays narrow by design.
+WORKSPACE_PREFIX = "workspace-"
+WORKSPACE = ENGINE_ROOT / f"workspace-{RUN_STAMP}"
 PREFLIGHT_FILE = PREFLIGHT_DIR / f"preflight-{RUN_STAMP}.json"
 RESULT_FILE = SOLVE_LOG_DIR / f"solve-stdout-{RUN_STAMP}.json"
 REPORT_FILE = SUMMARY_DIR / f"final-report-{RUN_STAMP}.md"
@@ -463,7 +477,7 @@ except RuntimeError as dataset_error:
 if not SOURCE_DIR and REPOSITORY_DIR.exists():
     print(f"Removing previous checkout: {REPOSITORY_DIR}")
     shutil.rmtree(REPOSITORY_DIR, ignore_errors=True)
-for stale in KAGGLE_WORKING.glob(f"{WORKSPACE_PREFIX}*"):
+for stale in ENGINE_ROOT.glob(f"{WORKSPACE_PREFIX}*"):
     shutil.rmtree(stale, ignore_errors=True)
 for directory in (RUNS_DIR, PREFLIGHT_DIR, SOLVE_LOG_DIR, SUMMARY_DIR,
                   SOLUTIONS_DIR):
@@ -1025,6 +1039,7 @@ from loop_engine.kaggle_report import (
 published_record = publish_run_outputs(
     KaggleReportRequest(
         working_root=str(KAGGLE_WORKING),
+        engine_root=str(ENGINE_ROOT),
         run_stamp=RUN_STAMP,
         solved=bool(final_record.get("solved")),
         terminal_code=str(final_record.get("terminal_code") or ""),

@@ -9,6 +9,18 @@ First public release.
 
 ### Added
 
+- **The Kaggle working root holds the submission and nothing to search.**
+  A submission that verified was reachable only at
+  `loop-engine-solutions/attempt-<stamp>/submission.csv`, beside five other
+  root entries — a source checkout, a logs tree, a solutions tree, a settings
+  file and a task file — none of which a person submitting a competition
+  entry needs. Everything a cell writes now lives under one `loop-engine/`
+  directory, leaving the root with `submission.csv` and that directory. A
+  self-test asserts the root holds nothing else, because this is the
+  directory Kaggle's own submit dialog lists. Stale workspaces are still
+  cleaned at the start of a run and nothing else is ever removed: a previous
+  run's solutions directory can hold the only copy of a verified submission.
+
 - **Each Kaggle output now sits where its reader is.** A run that produced a
   submission and a run that produced nothing looked nearly the same in the
   notebook: the same wall of log lines, the file buried under a timestamped

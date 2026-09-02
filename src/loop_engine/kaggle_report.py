@@ -57,6 +57,10 @@ class KaggleReportRequest:
     working_root: str
     run_stamp: str
     solved: bool
+    #: Where everything except the competition file lives. The working root
+    #: holds the one file a person needs and this holds the rest, so the
+    #: directory a reader opens is not a haystack with the needle in it.
+    engine_root: str = ""
     terminal_code: str = ""
     run_id: str = ""
     provider_label: str = ""
@@ -80,6 +84,8 @@ class KaggleReportRequest:
             raise KaggleReportError("working_root is required")
         if not str(self.run_stamp or "").strip():
             raise KaggleReportError("run_stamp is required")
+        if not str(self.engine_root or "").strip():
+            self.engine_root = os.path.join(self.working_root, "loop-engine")
 
 
 def _float(value) -> "float | None":
@@ -466,9 +472,10 @@ def publish_run_outputs(request: KaggleReportRequest,
     if not isinstance(request, KaggleReportRequest):
         raise KaggleReportError("publish_run_outputs needs its typed request")
     root = os.path.abspath(request.working_root)
-    submissions = os.path.join(root, "submissions")
-    reports = os.path.join(root, "loop-engine-logs", "reports")
-    records = os.path.join(root, "loop-engine-logs", "records")
+    engine = os.path.abspath(request.engine_root)
+    submissions = os.path.join(engine, "submissions")
+    reports = os.path.join(engine, "logs", "reports")
+    records = os.path.join(engine, "logs", "records")
     for directory in (submissions, reports, records):
         os.makedirs(directory, exist_ok=True)
 
@@ -544,7 +551,7 @@ def publish_run_outputs(request: KaggleReportRequest,
         json.dump(record, handle, indent=2, default=str)
     outputs["json_record"] = json_path
 
-    latest = os.path.join(root, "loop-engine-logs", "LATEST.json")
+    latest = os.path.join(engine, "logs", "LATEST.json")
     with open(latest, "w", encoding="utf-8") as handle:
         json.dump(record, handle, indent=2, default=str)
     outputs["latest_record"] = latest
@@ -610,7 +617,7 @@ def self_test() -> dict:
               first["published"]["promoted"] is True
               and os.path.isfile(root_file)
               and os.path.isfile(os.path.join(
-                  root, "submissions", "submission-A.csv")),
+                  root, "loop-engine", "submissions", "submission-A.csv")),
               str(first["published"]))
 
         # A verified run always takes the root slot.
@@ -633,7 +640,7 @@ def self_test() -> dict:
               third["published"]["promoted"] is False
               and describe_submission(root_file)["rows"] == 3
               and os.path.isfile(os.path.join(
-                  root, "submissions", "submission-C.csv")),
+                  root, "loop-engine", "submissions", "submission-C.csv")),
               third["published"]["promotion_reason"])
 
         outputs = third["outputs"]
@@ -674,6 +681,17 @@ def self_test() -> dict:
               in none["published"]["promotion_reason"]
               and os.path.isfile(none["outputs"]["html_report"]),
               none["published"]["promotion_reason"])
+
+        # The working root is what a person opens and what Kaggle's submit
+        # dialog lists. It holds the competition file and the one directory
+        # everything else lives under, and nothing else this module writes.
+        entries = sorted(os.listdir(root))
+        check("the_working_root_holds_the_submission_and_one_directory",
+              "submission.csv" in entries
+              and "loop-engine" in entries
+              and not [name for name in entries
+                       if name.endswith((".json", ".md", ".html", ".log"))],
+              str(entries))
 
         refused = False
         try:

@@ -51,16 +51,17 @@ one cell
 
 ## Output locations
 
-All three notebooks write under the Kaggle working directory. Start with the
-first four rows: they are what a person or Kaggle actually opens.
+All three notebooks write under the Kaggle working directory, which holds
+exactly two things: the competition file, and one directory for everything
+else. Kaggle's submit dialog lists that root, so a person opening it should
+find the file they came for rather than a haystack.
 
-`submission.csv` at the working root is the file Kaggle's own submit flow
-looks for. Only one run can hold that name, so promotion is explicit: a run
-that verified always takes it, and an unverified run takes it only while no
-verified run has, so a later failure cannot quietly replace a submission that
-passed. `submissions/root-submission.json` records which attempt holds it and
-why. Every attempt also keeps its own dated copy, whether or not it won the
-root slot.
+`submission.csv` at the root is what Kaggle's submit flow looks for. Only one
+run can hold that name, so promotion is explicit: a run that verified always
+takes it, and an unverified run takes it only while no verified run has, so a
+later failure cannot quietly replace a submission that passed.
+`loop-engine/submissions/root-submission.json` records which attempt holds it
+and why, and every attempt keeps its own dated copy regardless.
 
 The reports describe a submission by its row count, its distinct-value count
 and its range rather than calling it good. A submission whose predictions
@@ -70,23 +71,31 @@ shipped exactly that failure before and a reader needs to see it.
 | Path | Contents | 01 | 02 | 03 |
 |---|---|---|---|---|
 | `submission.csv` | the competition file, at the working root, ready to submit | yes | yes | yes |
-| `submissions/submission-<stamp>.csv` | one dated copy per attempt, kept regardless of promotion | yes | yes | yes |
-| `submissions/root-submission.json` | which attempt holds the root file, and the reason | yes | yes | yes |
-| `loop-engine-logs/reports/report-<stamp>.html` | self-contained visual report: outcome, submission reading, source roles, failures | yes | yes | yes |
-| `loop-engine-logs/reports/report-<stamp>.md` | the same report as Markdown | yes | yes | yes |
-| `loop-engine-logs/records/run-<stamp>.json` | one JSON record per attempt, naming every file it wrote | yes | yes | yes |
-| `loop-engine-logs/LATEST.json` | the most recent attempt's record | yes | yes | yes |
-| `loop-engine-solutions/attempt-<stamp>/` | solution.py, submission.csv, metrics.json, report.md, verification.json | yes | yes | yes |
-| `loop-engine-solutions/BEST.txt`, `index.json` | pointer to the best attempt and an artifact index | | yes | |
-| `loop-engine-logs/stage-<stamp>.json` | what the cell did: install mode, doctor/configure exit codes, preflight result, terminal code | yes | yes | yes |
-| `loop-engine-logs/preflight/preflight-<stamp>.json` | provider API check record with one `ok` flag and exit code per provider | yes | yes | yes |
-| `loop-engine-logs/solve/solve-stdout-<stamp>.json` | the final solve record (`.jsonl` in 02) | yes | yes | yes |
-| `loop-engine-logs/solve/solve-stderr-<stamp>.log` | the full stderr trace with exact model IO | | yes | |
-| `loop-engine-logs/run-history/` | Loop Engine Run History (replay, reports, studio); never deleted by the cells | yes | yes | yes |
-| `loop-engine-logs/summary/` | `summary-<stamp>.md` (02) or `final-report-<stamp>.md` (03), one page per attempt | | yes | yes |
-| `loop-engine-logs/master/master-<stamp>.log` | chronological master log | | yes | |
-| `loop-engine-providers.yaml` | the settings file the solve reads (no key values) | | yes | yes |
-| `loop-engine-<competition>-task.md` | the task text given to the solve | yes | yes | yes |
+| `loop-engine/submissions/submission-<stamp>.csv` | one dated copy per attempt, kept regardless of promotion | yes | yes | yes |
+| `loop-engine/submissions/root-submission.json` | which attempt holds the root file, and the reason | yes | yes | yes |
+| `loop-engine/logs/reports/report-<stamp>.html` | self-contained visual report: outcome, submission reading, source roles, failures | yes | yes | yes |
+| `loop-engine/logs/reports/report-<stamp>.md` | the same report as Markdown | yes | yes | yes |
+| `loop-engine/logs/records/run-<stamp>.json` | one JSON record per attempt, naming every file it wrote | yes | yes | yes |
+| `loop-engine/logs/LATEST.json` | the most recent attempt's record | yes | yes | yes |
+| `loop-engine/solutions/attempt-<stamp>/` | solution.py, submission.csv, metrics.json, report.md, verification.json | yes | yes | yes |
+| `loop-engine/solutions/BEST.txt`, `index.json` | pointer to the best attempt and an artifact index | | yes | |
+| `loop-engine/logs/stage-<stamp>.json` | what the cell did: install mode, doctor/configure exit codes, preflight result, terminal code | yes | yes | yes |
+| `loop-engine/logs/preflight/preflight-<stamp>.json` | provider API check record with one `ok` flag and exit code per provider | yes | yes | yes |
+| `loop-engine/logs/solve/solve-stdout-<stamp>.json` | the final solve record (`.jsonl` in 02) | yes | yes | yes |
+| `loop-engine/logs/solve/solve-stderr-<stamp>.log` | the full stderr trace with exact model IO | | yes | |
+| `loop-engine/logs/run-history/` | Loop Engine Run History (replay, reports, studio); never deleted by the cells | yes | yes | yes |
+| `loop-engine/logs/summary/` | `summary-<stamp>.md` (02) or `final-report-<stamp>.md` (03), one page per attempt | | yes | yes |
+| `loop-engine/logs/master/master-<stamp>.log` | chronological master log | | yes | |
+| `loop-engine/providers.yaml` | the settings file the solve reads (no key values) | | yes | yes |
+| `loop-engine/task.md` | the task text given to the solve | yes | yes | yes |
+
+A cell removes stale `loop-engine/workspace-*` directories at the start of a
+run and touches nothing else it has ever written. A previous run's solutions
+directory can hold the only copy of a verified submission, so the cleanup
+stays narrow on purpose. Output written by a cell from before this layout
+(`loop-engine-logs/`, `loop-engine-solutions/`, `loop-engine-src/` at the
+root) is left where it is for the same reason; delete it yourself once you
+have what you need from it.
 
 Inspect any run after the cell finishes:
 

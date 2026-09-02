@@ -248,7 +248,7 @@ def check_stage(stage: str, working: Path, run: dict) -> list:
     """Return (name, passed, detail) triples for the stage's contract."""
     checks = []
     log_text = run["log"].read_text(encoding="utf-8", errors="replace")
-    logs = working / "loop-engine-logs"
+    logs = working / "loop-engine" / "logs"
     stage_record = load_single_json(list(logs.glob("stage-*.json")))
 
     if run["timed_out"]:
