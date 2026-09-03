@@ -9,6 +9,34 @@ First public release.
 
 ### Added
 
+- **The cognitive situation, as a unit smaller than the task.** A task
+  fingerprint identifies the problem and is too coarse to learn what a
+  response should contain: one competition holds inferring an output
+  contract, testing for leakage, comparing candidates and diagnosing a failed
+  command, which share a task and almost nothing else.
+  `core.stage_fingerprint` names the smaller unit — what this call is
+  responsible for, where it sits between the ultimate goal and the immediate
+  step, what it knows and does not, what its answer is for — with a digest
+  that deliberately excludes run, loop and branch references so the same
+  situation in another run is the same situation. Its coarser `motif` is the
+  cross-domain shape: a provider failing over and a test refusing to
+  reproduce both come out as `failure_diagnosis/choose_among_causes`, which is
+  where a response shape learned in one place could be worth anything in
+  another.
+
+- **A control arm, before there is data to contaminate.** The obvious way to
+  be fooled by convergence is to offer a template, watch calls adopt it, and
+  read the resulting agreement as discovery. A shortcut fitted to that record
+  would encode the suggestion rather than the finding. `core.convergence`
+  answers a deterministic share of stages with no template offered at all, so
+  agreement in that arm is agreement the offer cannot explain. Assignment is
+  computed from the stage identity, so a retry cannot walk a stage into the
+  other arm and the split is reproducible from the record alone. It reports
+  concentration, entropy, novel-field and departure rates per arm, says when
+  an arm is too thin to compare, and says plainly when there is no control arm
+  that nothing can separate convergence from suggestion. Building it later
+  cannot rescue a record already collected without it.
+
 - **Decisions are joined forward to what became of them.** A decision record
   says what was chosen and who chose it, which supports one finding — how
   often something was picked — and not the one that matters. A corpus of
