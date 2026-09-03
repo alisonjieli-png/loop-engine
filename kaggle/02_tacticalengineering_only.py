@@ -315,6 +315,15 @@ def install_loop_engine(repository_dir, env):
     env["PYTHONPATH"] = os.pathsep.join(
         part for part in (str(source_tree), env.get("PYTHONPATH", ""))
         if part)
+    # The cell imports loop_engine in its OWN process later, to publish its
+    # outputs — not only in the subprocesses it launches. Installing with pip
+    # makes that work as a side effect; this mode has to make it work too. It
+    # did not, so a solve that reached COMPLETED_VERIFIED ended with the cell
+    # raising ModuleNotFoundError at the publish step and no submission.csv
+    # at the working root. That also meant the solve-stage harness could
+    # never reach the publishing path it exists to check.
+    if str(source_tree) not in sys.path:
+        sys.path.insert(0, str(source_tree))
     log_line(f"pip {'failed' if pip_present else 'is not available here'}; "
              f"the CLI runs from {source_tree} through PYTHONPATH.")
     return "pythonpath"

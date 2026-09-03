@@ -262,6 +262,18 @@ First public release.
 
 ### Fixed
 
+- **A verified Kaggle solve no longer ends with its results unpublished.** The
+  notebook cells run the solve as a subprocess and put the engine on that
+  subprocess's `PYTHONPATH`, then import `loop_engine` in their own process to
+  publish the run's outputs. Installing with pip makes that second import work
+  as a side effect; the `pythonpath` fallback did not, so a solve that reached
+  `COMPLETED_VERIFIED` ended with `ModuleNotFoundError` at the publish step and
+  no `submission.csv` at the working root — the one file the submit dialog
+  looks for. That fallback exists so the cell stays testable outside Kaggle,
+  which means the solve-stage harness could never reach the publishing path it
+  is there to check. All three cells now put the source tree on `sys.path` as
+  well, so both install modes behave the same from the cell's point of view.
+
 - **Every record parsed from a model now treats surplus as information.** The
   same exact-set validation that ended runs on `selection_report` also guarded
   the model's statement of which supplied file plays which role, every file it
