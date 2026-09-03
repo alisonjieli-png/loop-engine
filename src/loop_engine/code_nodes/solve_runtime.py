@@ -525,6 +525,11 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         compiled_task=compiled,
         intelligence={
             "context": adaptive.get("context_intelligence", {}),
+            # What the run drew on from the portfolio it was offered. Carried
+            # out to the caller because a tally that only exists inside run
+            # history cannot answer the question it was built for — which
+            # options earn their place across many runs.
+            "option_selection": adaptive.get("option_selection", {}),
             "search_candidates": adaptive.get("web_search_candidates", []),
             "fetched_sources": adaptive.get("web_evidence", []),
             "extensions": dict(request.extension_snapshot),

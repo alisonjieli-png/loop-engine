@@ -10,6 +10,7 @@ import json
 import os
 import sys
 
+from .core.option_selection import SELECTION_REPORT_CONTRACT
 from .cli_operations import (
     _apply_compile_provider_shortcut, _compile_gateway,
     _compile_provider_key, _task_feedback_from_args,
@@ -21,21 +22,59 @@ class ProviderSetupError(ValueError):
     """The selected onboarding profile has no usable provider reference."""
 
 
-_PROGRESS_FIELDS = (
-    "event_type", "run_id", "progress_sequence", "pass_number",
-    "step", "diagnostic_code", "diagnostic_detail", "error_code",
-    "format_attempt",
-    "transport_attempt", "capability_ref", "failure_code",
-    "parse_strategy", "response_digest", "admission_loop_id", "loop_count",
-    "artifact_path", "checkpoint_digest",
-    "model_calls_completed", "model_call_number",
-    "source_inspections_completed", "project_attempts_completed",
-    "elapsed_seconds",
-    # Exact-text tracing is carried only on the stderr stream, by default,
-    # and never into Run History. --quiet-model-io reduces the stream to
-    # event summaries; the emitter is the sole printer.
-    "prompt_text", "output_text",
-)
+#: Names whose values never reach the progress stream, whatever an event
+#: chooses to call them. This is a denial rather than a permission, and the
+#: difference is the point: a permission list can only ever carry what was
+#: already imagined, so a run that finds something worth saying is dropped in
+#: silence for want of a name nobody wrote down in advance. That cost was
+#: paid — the selection report published across whole campaigns with every
+#: field of its content removed, the events saying a choice had been made and
+#: never what it was.
+_CREDENTIAL_MARKERS = (
+    "secret", "password", "credential", "authorization", "bearer",
+    "api_key", "apikey", "access_token", "refresh_token", "auth_token",
+    "private_key", "cookie", "session_key", "passphrase")
+
+#: Raw payload carriers. The exact prompt and output travel only as the two
+#: tracing fields below, which the emitter governs and --quiet-model-io
+#: suppresses; a bare "prompt" or "content" on some other event is not that
+#: and does not travel.
+_RAW_PAYLOAD_FIELDS = ("prompt", "content", "messages", "body", "raw")
+
+#: The two fields that carry exact text on purpose, exempt from the value
+#: bound because truncating a trace is the same as not having one.
+_EXACT_TEXT_FIELDS = ("prompt_text", "output_text")
+
+#: Bytes of any one other value. An event may report something long; the
+#: stream should carry the shape of it without becoming the transport for a
+#: whole artifact.
+_PROGRESS_VALUE_BYTES = 4000
+
+
+def _withheld(field_name: str) -> bool:
+    """Whether a field must not reach the progress stream."""
+    lowered = str(field_name).lower()
+    return (lowered in _RAW_PAYLOAD_FIELDS
+            or any(marker in lowered for marker in _CREDENTIAL_MARKERS))
+
+
+def _progress_value(field_name: str, value):
+    """Bound one reported value without changing what it says."""
+    if field_name in _EXACT_TEXT_FIELDS:
+        return value
+    rendered = value if isinstance(value, str) else None
+    if rendered is None:
+        try:
+            rendered = json.dumps(value, default=str, ensure_ascii=False)
+        except (TypeError, ValueError):
+            rendered = str(value)
+        if len(rendered.encode("utf-8", "replace")) <= _PROGRESS_VALUE_BYTES:
+            return value
+    encoded = rendered.encode("utf-8", "replace")
+    if len(encoded) <= _PROGRESS_VALUE_BYTES:
+        return rendered
+    kept = encoded[:_PROGRESS_VALUE_BYTES].decode("utf-8", "ignore")
+    return kept + f"... [{len(encoded)} bytes, bounded for the stream]"
 
 
 def _solve_progress(event: dict) -> None:
@@ -43,10 +82,10 @@ def _solve_progress(event: dict) -> None:
     if not isinstance(event, dict):
         return
     value = {"record_type": "solve_progress/v1"}
-    for field_name in _PROGRESS_FIELDS:
-        field_value = event.get(field_name)
-        if field_value not in (None, "", 0):
-            value[field_name] = field_value
+    for field_name, field_value in event.items():
+        if field_value in (None, "", 0) or _withheld(field_name):
+            continue
+        value[field_name] = _progress_value(field_name, field_value)
     print(json.dumps(
         value, sort_keys=True, separators=(",", ":"),
         ensure_ascii=False), file=sys.stderr, flush=True)
@@ -338,7 +377,46 @@ def self_test() -> dict:
             and "must-not-appear" not in raw
             and not ({"prompt", "content", "authorization", "secret"}
                      & set(value)))
+    # A field nobody named in advance must still arrive. The writer used to
+    # keep only what it recognised, so the selection report travelled across
+    # whole campaigns with all of its content removed: the events said a
+    # choice had been made and never what it was.
+    from .core.option_selection import admitted_selection
+    publishable = set(admitted_selection(
+        {"used_perspectives": ["p"], "used_question_refs": ["q"],
+         "used_guidance_refs": ["g"], "wanted_but_absent": ["w"],
+         "operator_gap": {"needed": "n", "tried": ["t"],
+                          "runtime_said": "r"}},
+        {"used_perspectives": ["p"], "used_question_refs": ["q"],
+         "used_guidance_refs": ["g"]}))
+    publishable.discard("named_but_not_offered")
+    novel_stream = io.StringIO()
+    with contextlib.redirect_stderr(novel_stream):
+        _solve_progress({
+            "event_type": "practitioner.options.selected",
+            "run_id": "adaptive-progress-test",
+            **{name: ["kept"] for name in publishable},
+            "a_channel_no_one_predefined": "the run had something to say",
+            "authorization": "must-not-appear",
+            "api_key": "must-not-appear",
+            "prompt": "must-not-appear",
+        })
+    novel_raw = novel_stream.getvalue().strip()
+    novel_value = json.loads(novel_raw)
+    heard = (not (publishable - set(novel_value))
+             and novel_value.get("a_channel_no_one_predefined")
+             == "the run had something to say"
+             and "must-not-appear" not in novel_raw)
     tests = [{
+        "test": "what_a_run_reports_is_heard_even_when_unnamed_in_advance",
+        "passed": heard,
+        "detail": "" if heard else novel_raw[:300],
+    }, {
+        "test": "a_credential_shaped_field_never_reaches_the_stream",
+        "passed": not ({"authorization", "api_key", "prompt", "secret"}
+                       & set(novel_value)),
+        "detail": str(sorted(novel_value))[:200],
+    }, {
         "test": "a_diagnostic_arrives_saying_what_it_found",
         "passed": detail_survived,
         "detail": ("a code with no payload names a problem and says nothing "

@@ -31,6 +31,8 @@ that reads the saved tally (core.task_region_statistics).
 """
 from __future__ import annotations
 
+import json
+
 from dataclasses import dataclass, field
 
 SELECTION_RECORD_TYPE = "option_selection_tally/v1"
@@ -65,6 +67,14 @@ SELECTION_REPORT_CONTRACT = {
                          "for twenty passes because it had no way to say "
                          "this"),
     },
+    "anything_else": ("These five are the channels we thought of. If what "
+                      "you have to say does not fit one, say it under a key "
+                      "of your own choosing rather than discarding it or "
+                      "forcing it into a field that does not mean it: the "
+                      "keys are read as reported and none of them changes "
+                      "whether your answer is accepted. A channel we did "
+                      "not think to offer is the most useful thing this "
+                      "report can carry."),
     "optional": True,
     "affects_validation": False,
 }
@@ -137,7 +147,39 @@ def admitted_selection(value, offered: dict) -> dict:
         admitted["operator_gap"] = gap
     if unoffered:
         admitted["named_but_not_offered"] = unoffered
+    # Whatever else the report chose to say. The contract names five
+    # channels; a caller reasoning about its own work may have a sixth, and
+    # a reader that keeps only the channels it invented will never learn
+    # that one was missing. Kept as reported, bounded, and never counted as
+    # use of an option — an observation is evidence, not a tally.
+    spoken = set(SELECTION_REPORT_CONTRACT["keys"]) | {SELECTION_REPORT_KEY}
+    other = {key: _bounded(item) for key, item in value.items()
+             if key not in spoken and item not in (None, "", [], {})}
+    if other:
+        admitted["other_observations"] = other
     return {key: item for key, item in admitted.items() if item}
+
+
+#: Bytes kept of one unrecognised observation. Long enough to carry a
+#: thought, short enough that a stray artifact cannot ride in on it.
+_OBSERVATION_BYTES = 2000
+
+
+def _bounded(item):
+    """Keep an unrecognised observation without letting it become a payload."""
+    text = item if isinstance(item, str) else None
+    if text is None:
+        try:
+            text = json.dumps(item, default=str, ensure_ascii=False)
+        except (TypeError, ValueError):
+            text = str(item)
+        if len(text.encode("utf-8", "replace")) <= _OBSERVATION_BYTES:
+            return item
+    encoded = text.encode("utf-8", "replace")
+    if len(encoded) <= _OBSERVATION_BYTES:
+        return text
+    return (encoded[:_OBSERVATION_BYTES].decode("utf-8", "ignore")
+            + f"... [{len(encoded)} bytes, bounded]")
 
 
 @dataclass
@@ -160,6 +202,9 @@ class SelectionTally:
     #: highest-value entry in the whole tally: it names what to build next.
     operator_gaps: list = field(default_factory=list)
     named_but_not_offered: list = field(default_factory=list)
+    #: What callers said through channels this contract never offered. The
+    #: entry most likely to name the next thing worth building.
+    other_observations: list = field(default_factory=list)
     reports: int = 0
     calls: int = 0
 
@@ -195,6 +240,13 @@ class SelectionTally:
                     self.named_but_not_offered.append(
                         {"step": step, "key": key, "ref": item[:120]})
                     counted = True
+        # Channels the contract never named. Kept whole and apart from every
+        # count, because the value of an unexpected report is what it says,
+        # not how often it was said.
+        other = selection.get("other_observations")
+        if isinstance(other, dict) and other:
+            self.other_observations.append({"step": step, **other})
+            counted = True
         if counted:
             self.steps_reported[step] = self.steps_reported.get(step, 0) + 1
             self.reports += 1
@@ -210,6 +262,7 @@ class SelectionTally:
             "wanted_but_absent": list(self.wanted_but_absent),
             "operator_gaps": list(self.operator_gaps),
             "named_but_not_offered": list(self.named_but_not_offered),
+            "other_observations": list(self.other_observations),
             "reports": self.reports,
             "calls": self.calls,
         }

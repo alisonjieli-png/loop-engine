@@ -143,6 +143,7 @@ def self_test() -> dict:
         "core.asset_class",
         "core.asset_lifecycle",
         "core.adaptive_practitioner",
+        "core.practitioner_contract_guards",
         "core.adaptive_practitioner_capabilities",
         "core.adaptive_practitioner_orientation_capabilities",
         "core.adaptive_practitioner_result",

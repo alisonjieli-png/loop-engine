@@ -224,6 +224,24 @@ First public release.
 
 ### Fixed
 
+- **What a run reports is heard, whether or not anyone named it first.** Four
+  layers each kept only what they already knew about, and the loss compounded
+  in silence. The progress writer was a permission list, so
+  `practitioner.options.selected` travelled across whole campaigns with every
+  field of its content stripped — 219 events over twelve competitions saying a
+  choice had been made and never what it was. It is now a denial: credential-
+  shaped names and raw payload carriers are withheld, values are bounded, and
+  everything else travels, so a field nobody wrote down in advance still
+  arrives. `admitted_selection()` kept five channels and dropped the rest;
+  unrecognised keys are now carried as bounded observations, counted nowhere,
+  and the contract invites them outright, because a channel nobody thought to
+  offer is the most useful thing the report can carry. The typed records
+  rejected any answer with an extra field: absence is now the defect, extras
+  are information, and the caller reports them rather than refusing the work
+  that came with them. The tally reaches the caller too — `option_selection`
+  was built every run and left inside run history, where the cross-run
+  question it exists to answer could not reach it.
+
 - **An empty answer and an unreachable provider no longer share a retry
   budget.** They say opposite things. A network error says the provider could
   not be reached, and a fourth call into a dark socket is waste. A response

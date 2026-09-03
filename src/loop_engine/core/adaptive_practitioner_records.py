@@ -335,7 +335,10 @@ class TaskOrientationResult:
         # Derived from the record's own fields: a restated copy of
         # this list drifts the moment a field is added.
         required = {item.name for item in fields(cls)}
-        if set(value) != required:
+        # Absence is the defect. A record carrying more than the schema
+        # names is answering with extra, not answering wrongly, and the
+        # caller reports those fields rather than refusing the work.
+        if required - set(value):
             raise AdaptivePractitionerError(
                 _field_mismatch(value, required, "TaskOrientationResult"))
         ambiguities = value.get("ambiguities")
@@ -444,7 +447,10 @@ class NextActionDecision:
         # Derived from the record's own fields: a restated copy of
         # this list drifts the moment a field is added.
         required = {item.name for item in fields(cls)}
-        if set(value) != required:
+        # Absence is the defect. A record carrying more than the schema
+        # names is answering with extra, not answering wrongly, and the
+        # caller reports those fields rather than refusing the work.
+        if required - set(value):
             raise AdaptivePractitionerError(
                 _field_mismatch(value, required, "NextActionDecision"))
         inputs = value.get("inputs")
@@ -651,23 +657,28 @@ def _bounded_detail(payload: dict) -> str:
 
 
 def _field_mismatch(value: dict, required: set, record_name: str) -> str:
-    """Say which fields made a record inadmissible, not merely that some did.
+    """Say which fields a record was missing, not merely that it was wrong.
 
-    A refusal reading "fields do not match version 1" tells a reader that
-    something is wrong and nothing about what. The unexpected and missing
-    names are the whole content of the finding, and the model reading it on
-    the repair attempt needs them more than anyone.
+    Only absence is a defect. A record that carries more than the schema
+    names has told us something extra, which is what a reasoning caller does
+    when it has more to say than the form allows, and refusing the whole
+    answer for it throws away the work that came with it. Extras are named
+    here so a repair attempt can see them, and carried by the caller rather
+    than made fatal.
     """
-    unexpected = sorted(set(value) - required)
     missing = sorted(required - set(value))
-    parts = []
-    if unexpected:
-        parts.append(f"unexpected {unexpected}")
-    if missing:
-        parts.append(f"missing {missing}")
-    return (f"{record_name} fields do not match version 1: "
-            + "; ".join(parts) if parts else
-            f"{record_name} fields do not match version 1")
+    extra = sorted(set(value) - required)
+    said = f"{record_name} is missing {missing}"
+    if extra:
+        said += f" (it also carried {extra}, which is not an error)"
+    return said
+
+
+def _unnamed_fields(value: dict, record_type) -> list:
+    """Fields a record carried that its schema does not define."""
+    if not isinstance(value, dict):
+        return []
+    return sorted(set(value) - {item.name for item in fields(record_type)})
 
 
 def _new_action_fence():
