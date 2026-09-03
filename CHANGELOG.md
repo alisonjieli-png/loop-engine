@@ -9,6 +9,37 @@ First public release.
 
 ### Added
 
+- **Fingerprints at more than one scale, and a segment that matches across
+  pipelines.** A stage now carries the scale it names — operation, loop,
+  segment or run — and a `shape`: the unit of work with its subject removed.
+  A cleaning step in a billing pipeline and a normalising step over telemetry
+  differ in every noun and come out identical there. `compose_segment()` names
+  a run of consecutive stages by its ordered motifs, so
+  clean-then-validate-then-load matches the same three moves in an unrelated
+  domain, and `sliding_segments()` lets a middle sequence match without the
+  ends having to agree. Order is kept separable from set membership, because
+  doing the same work in a different sequence is a weaker match and a caller
+  should be told which one it has.
+
+- **Somewhere to keep them.** `core.stage_store` indexes observations three
+  ways — exact situation, motif, and shape — and returns every level rather
+  than only the strongest, because one exact match against four hundred by
+  shape is a different thing from the reverse and a single blended score
+  hides which you hold. Matches carry counts and outcomes, never a rate: two
+  of three and two hundred of three hundred are not the same claim. Storage
+  is append-only newline JSON, and a store that cannot write degrades to
+  in-memory rather than failing the run.
+
+- **A model ladder fitted to what worked.** `core.model_demand` reads prior
+  stages of the same shape and recommends an order to try routes in, cheapest
+  first where the evidence supports it, escalating on failure — so being
+  wrong costs a retry rather than a wrong answer. Below twelve observations
+  of a shape it recommends nothing and says so: a ladder fitted to four rows
+  is a guess with provenance, which is worse than an honest guess because it
+  looks like data. Routes with no known outcome never lead, and where the
+  evidence ties the cheaper route wins, which is where the saving actually
+  comes from.
+
 - **The cognitive situation, as a unit smaller than the task.** A task
   fingerprint identifies the problem and is too coarse to learn what a
   response should contain: one competition holds inferring an output

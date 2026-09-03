@@ -37,6 +37,15 @@ import json
 from dataclasses import dataclass, field
 
 STAGE_FINGERPRINT_RECORD_TYPE = "semantic_stage_fingerprint/v1"
+SEGMENT_FINGERPRINT_RECORD_TYPE = "semantic_segment_fingerprint/v1"
+
+#: The scales a situation can be named at. One model call sits at OPERATION,
+#: one bounded responsibility at LOOP, a run of consecutive responsibilities
+#: at SEGMENT, the whole attempt at RUN. They are separate because they match
+#: different things: two runs can be unalike while containing the same loop,
+#: and two loops can be alike while sitting in unrelated runs.
+OPERATION, LOOP, SEGMENT, RUN = "operation", "loop", "segment", "run"
+FINGERPRINT_SCOPES = (OPERATION, LOOP, SEGMENT, RUN)
 
 #: Phases seen so far. Open on purpose: a stage whose phase nobody named is
 #: recorded under the name it gives itself, because the unnamed ones are
@@ -96,9 +105,15 @@ class SemanticStageFingerprint:
     loop_ref: str = ""
     branch_ref: str = ""
 
+    #: The scale this names. A finer scope matches more situations and says
+    #: less about each; a coarser one says more and matches less.
+    scope: str = LOOP
+
     def __post_init__(self):
         if not str(self.semantic_responsibility or "").strip():
             raise ValueError("a stage fingerprint needs a responsibility")
+        if self.scope not in FINGERPRINT_SCOPES:
+            raise ValueError(f"unknown fingerprint scope {self.scope!r}")
 
     @property
     def digest(self) -> str:
@@ -110,6 +125,7 @@ class SemanticStageFingerprint:
         whole record useless for matching.
         """
         material = {
+            "scope": self.scope,
             "responsibility": self.semantic_responsibility.strip().lower(),
             "phase": self.cognitive_phase.strip().lower(),
             "near": self.near_horizon.strip().lower(),
@@ -121,6 +137,21 @@ class SemanticStageFingerprint:
         return "stage:sha256:" + hashlib.sha256(json.dumps(
             material, sort_keys=True, separators=(",", ":")
         ).encode("utf-8")).hexdigest()[:32]
+
+    @property
+    def shape(self) -> tuple:
+        """What this stage looks like as a unit of work, without its subject.
+
+        Inputs and outputs by kind, the phase, and what remains open — the
+        things two loops can share when their domains do not. A cleaning step
+        in a billing pipeline and a cleaning step in a telemetry pipeline
+        differ in every noun and can be identical here.
+        """
+        return (self.cognitive_phase or "unnamed",
+                tuple(sorted(self.candidate_topologies)),
+                self.consumer or "unnamed",
+                bool(self.incoming_observation),
+                len(self.unknowns) > 0)
 
     @property
     def facets(self) -> dict:
@@ -161,6 +192,8 @@ class SemanticStageFingerprint:
             "reversibility": self.reversibility,
             "task_ref": self.task_ref, "loop_ref": self.loop_ref,
             "branch_ref": self.branch_ref,
+            "scope": self.scope,
+            "shape": list(self.shape),
             "facets": {name: (list(value) if isinstance(value, tuple)
                               else value)
                        for name, value in self.facets.items()},
@@ -199,6 +232,82 @@ def stage_motif(stage: SemanticStageFingerprint) -> str:
         base = "unclassified"
     phase = stage.cognitive_phase or "unnamed"
     return f"{phase}/{base}"
+
+
+@dataclass(frozen=True)
+class SegmentFingerprint:
+    """A run of consecutive stages, identified by the shape of the work.
+
+    Composed from its members' motifs rather than their subjects, so that a
+    cleaning-then-validating-then-loading segment in a billing pipeline and
+    the same three moves over telemetry come out identical. That is the
+    match worth having: the domains share no nouns and the work is the same
+    work, and whatever was learned about doing it once applies to the other.
+
+    The member digests are kept so a match can be opened and inspected. A
+    segment that matches and turns out to be nothing alike is a finding
+    about the motif vocabulary, and there is no way to see that without the
+    members.
+    """
+
+    motifs: tuple[str, ...]
+    member_digests: tuple[str, ...] = ()
+    scope: str = SEGMENT
+
+    def __post_init__(self):
+        if not self.motifs:
+            raise ValueError("a segment fingerprint needs at least one motif")
+
+    @property
+    def digest(self) -> str:
+        """Identity from the ordered motifs alone."""
+        return "segment:sha256:" + hashlib.sha256(
+            "|".join(self.motifs).encode("utf-8")).hexdigest()[:32]
+
+    @property
+    def unordered_digest(self) -> str:
+        """Identity ignoring order.
+
+        Two pipelines may do the same work in a different sequence. That is a
+        weaker match than the ordered one and is kept separately so a caller
+        can tell which kind it got rather than being handed one number.
+        """
+        return "segment-set:sha256:" + hashlib.sha256(
+            "|".join(sorted(set(self.motifs))).encode("utf-8")
+        ).hexdigest()[:32]
+
+    def to_dict(self) -> dict:
+        return {"record_type": SEGMENT_FINGERPRINT_RECORD_TYPE,
+                "scope": self.scope, "digest": self.digest,
+                "unordered_digest": self.unordered_digest,
+                "motifs": list(self.motifs), "length": len(self.motifs),
+                "member_digests": list(self.member_digests)}
+
+
+def compose_segment(stages) -> SegmentFingerprint:
+    """Name the shape of a run of stages, in the order they happened."""
+    members = tuple(stages)
+    if not members:
+        raise ValueError("a segment needs at least one stage")
+    return SegmentFingerprint(
+        motifs=tuple(stage_motif(item) for item in members),
+        member_digests=tuple(item.digest for item in members))
+
+
+def sliding_segments(stages, length: int = 3) -> tuple:
+    """Every run of `length` consecutive stages.
+
+    The unit that transfers between pipelines is rarely a whole run and
+    rarely one stage. Overlapping windows let a middle-of-the-pipeline
+    sequence match without the ends having to agree.
+    """
+    members = tuple(stages)
+    if length < 1:
+        raise ValueError("a segment length must be positive")
+    if len(members) < length:
+        return ()
+    return tuple(compose_segment(members[index:index + length])
+                 for index in range(len(members) - length + 1))
 
 
 def self_test() -> dict:
@@ -295,6 +404,53 @@ def self_test() -> dict:
           value["digest"].startswith("stage:sha256:")
           and value["motif"] == "experiment_design/choose_among_causes"
           and value["horizons"]["ultimate"].startswith("produce the strongest"))
+
+    def pipeline(rows):
+        return [SemanticStageFingerprint(
+            semantic_responsibility=f"{verb} the {noun}",
+            cognitive_phase=phase, knowns=("schema",)) for verb, noun, phase
+            in rows]
+
+    billing = pipeline([("clean", "billing extract", "execution"),
+                        ("validate", "billing rows", "verification"),
+                        ("load", "billing warehouse", "execution")])
+    telemetry = pipeline([("normalise", "telemetry stream", "execution"),
+                          ("check", "telemetry rows", "verification"),
+                          ("write", "telemetry store", "execution")])
+    check("two loops from unrelated domains can share a shape",
+          billing[0].shape == telemetry[0].shape
+          and billing[0].digest != telemetry[0].digest,
+          "the subjects differ and the unit of work does not")
+
+    left, right = compose_segment(billing), compose_segment(telemetry)
+    check("unrelated pipelines doing the same work match as a segment",
+          left.digest == right.digest,
+          "a segment is identified by its motifs, not its nouns")
+    check("a segment keeps its members so a match can be inspected",
+          left.member_digests == tuple(item.digest for item in billing))
+
+    reordered = compose_segment([billing[1], billing[0], billing[2]])
+    check("order matters to a segment and is separable from set membership",
+          reordered.digest != left.digest
+          and reordered.unordered_digest == left.unordered_digest)
+
+    check("overlapping windows let a middle sequence match on its own",
+          len(sliding_segments(billing, 2)) == 2
+          and sliding_segments(billing, 9) == ())
+
+    thin = False
+    try:
+        compose_segment([])
+    except ValueError:
+        thin = True
+    check("an empty segment is refused", thin)
+
+    bad_scope = False
+    try:
+        SemanticStageFingerprint(semantic_responsibility="x", scope="galaxy")
+    except ValueError:
+        bad_scope = True
+    check("an unknown scope is refused", bad_scope)
 
     passed = sum(1 for item in tests if item["passed"])
     return {"record_type": "stage_fingerprint_test/v1", "tests": tests,
