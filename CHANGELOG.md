@@ -9,6 +9,31 @@ First public release.
 
 ### Added
 
+- **A response shape a caller may argue with.** A schema handed to a model is
+  a hypothesis about how an answer should look, and it is sometimes wrong: a
+  template asking for one root cause forces a single answer from evidence
+  supporting three, and one asking for a single next action discards the
+  topology of a task needing two experiments and a join. A caller that fills
+  such a template obediently has produced a well-formed misrepresentation
+  that nothing downstream can detect. `core.template_negotiation` offers the
+  shape instead of imposing it: a reply may accept, extend, modify, simplify,
+  compose, replace or ignore it, and says which and why. Departure is
+  reported, never treated as noncompliance, because a template that is
+  regularly abandoned is evidence about the template.
+
+  What stays fixed is narrow and load-bearing. Fields are classed by how
+  negotiable they are, and two classes are not: identity and provenance,
+  because a reply nobody can attribute or replay is not an answer; and
+  authority, because the escape hatch must never become the route by which a
+  reply grants itself a permission, widens an effect, or rewrites what counts
+  as success. Those are refused whatever disposition is claimed, and the
+  attempt is recorded rather than dropped. Adversarially checked: widening
+  permissions, redefining acceptance, rewinding state revision, and all three
+  at once are each refused with authority intact. A consumer field dropped by
+  a departure is reported as unreconciled rather than silently lost, and a
+  natural result and its lossy consumer projection are kept together so a
+  graph need not be destroyed to satisfy a consumer wanting one scalar.
+
 - **Recovery is chosen by reasoning, with the table demoted to continuity
   behaviour.** The retry policy added earlier the same day decided which
   failures were worth another attempt, how many, and how long to wait —

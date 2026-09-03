@@ -44,7 +44,7 @@ def self_test() -> dict:
         "core.task_frontier", "core.prompt_experiment",
         "core.task_region_statistics", "core.option_selection",
         "core.semantic_decision", "core.choice",
-        "core.recovery",
+        "core.recovery", "core.template_negotiation",
         "core.workspace_read",
         "core.cognitive_grammar",
         "core.terminal_layer", "core.run_validity",
