@@ -26,27 +26,8 @@ from ..templates.model import InteractionMode, TaskFeedback
 from ..core.generated_project import execute_generated_project
 from ..core.terminal_layer import deepest_layer_reached
 from .solution_model_port import ModelExecution
-
-
-class SolveTerminalCode(str, Enum):
-    COMPLETED_VERIFIED = "COMPLETED_VERIFIED"
-    COMPLETED_PARTIAL = "COMPLETED_PARTIAL"
-    BLOCKED_MATERIAL_INPUT = "BLOCKED_MATERIAL_INPUT"
-    AUTHORITY_REQUIRED = "AUTHORITY_REQUIRED"
-    CAPABILITY_GAP = "CAPABILITY_GAP"
-    PROVIDER_UNAVAILABLE = "PROVIDER_UNAVAILABLE"
-    VERIFICATION_FAILED = "VERIFICATION_FAILED"
-    REPAIR_UNAVAILABLE = "REPAIR_UNAVAILABLE"
-    NO_PROGRESS = "NO_PROGRESS"
-    BUDGET_EXHAUSTED = "BUDGET_EXHAUSTED"
-    DEADLINE_EXHAUSTED = "DEADLINE_EXHAUSTED"
-    ABSTAINED = "ABSTAINED"
-    CANCELLED = "CANCELLED"
-
-
-SOLVE_FAILURE_CODES = tuple(
-    item.value for item in SolveTerminalCode
-    if item is not SolveTerminalCode.COMPLETED_VERIFIED)
+from .solve_terminal import (
+    SOLVE_FAILURE_CODES, SolveTerminalCode, failure_code_for)
 
 
 class SolveError(ValueError):
@@ -172,6 +153,10 @@ class SolveOutcome:
     compiled_task: dict = field(default_factory=dict)
     intelligence: dict = field(default_factory=dict)
     selected_mode: str = "deterministic"
+    #: What was asked for, beside what was got: a run asked to reason and
+    #: unable to is a different event from one nobody asked.
+    requested_mode: str = ""
+    mode_demoted_because: str = ""
     selected_canvas: dict = field(default_factory=dict)
     graph_digest: str = ""
     verification: dict = field(default_factory=dict)
@@ -219,6 +204,9 @@ class SolveOutcome:
             "compiled_task": self.compiled_task,
             "intelligence": self.intelligence,
             "selected_mode": self.selected_mode,
+            "requested_mode": self.requested_mode or self.selected_mode,
+            **({"mode_demoted_because": self.mode_demoted_because}
+               if self.mode_demoted_because else {}),
             "selected_canvas": self.selected_canvas,
             "graph_digest": self.graph_digest,
             "verification": self.verification,
@@ -361,45 +349,6 @@ def _terminal_questions(result: dict, solved: bool) -> tuple:
     return tuple(projected), ()
 
 
-def _failure_code(result: dict) -> str:
-    code = str(result.get("failure_code") or "")
-    if code in ("NO_VERIFIED_CAPABILITY", "EXECUTOR_UNAVAILABLE"):
-        return SolveTerminalCode.CAPABILITY_GAP.value
-    if code == "CANCELLED":
-        return SolveTerminalCode.CANCELLED.value
-    if code == "model_call_budget_exhausted":
-        return SolveTerminalCode.BUDGET_EXHAUSTED.value
-    if code in (
-            "SolutionModelError", "MODEL_PROVIDER_UNAVAILABLE",
-            "model_gateway_failed", "no_eligible_route",
-            "provider_not_configured", "missing_credential",
-            "authentication_failed", "payment_required", "model_not_found",
-            "rate_limited", "provider_unavailable", "timeout",
-            "provider_failed"):
-        return SolveTerminalCode.PROVIDER_UNAVAILABLE.value
-    if code in ("PermissionError", "PERMISSION_DENIED"):
-        return SolveTerminalCode.AUTHORITY_REQUIRED.value
-    if code == "OUTPUT_CONTRACT_VIOLATION":
-        return SolveTerminalCode.VERIFICATION_FAILED.value
-    # A Python exception class name says which module raised, not which layer
-    # failed. AdaptivePractitionerError was mapped straight to
-    # VERIFICATION_FAILED, so a live run that produced two invalid
-    # orientations and never verified anything still reported a verification
-    # failure. Generic class names defer to the evidence below.
-    if code in ("NO_PROGRESS", "stop_unprofitable"):
-        return SolveTerminalCode.NO_PROGRESS.value
-    # Only claim verification failed if the run reached verification. A run
-    # whose provider never answered has a transport failure, and saying so
-    # is the difference between one fix and a week of looking in the wrong
-    # subsystem.
-    reached = deepest_layer_reached(result)
-    if reached == "transport":
-        return SolveTerminalCode.PROVIDER_UNAVAILABLE.value
-    if reached == "semantic":
-        return SolveTerminalCode.NO_PROGRESS.value
-    return SolveTerminalCode.VERIFICATION_FAILED.value
-
-
 def _model_usage(adaptive: dict) -> tuple[dict, ...]:
     return tuple(adaptive.get("model_usage") or ())
 
@@ -443,8 +392,15 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         interaction_mode=request.interaction_mode,
         feedback=request.feedback))
     resolvers = tuple(request.deterministic_resolvers)
-    mode = (request.practitioner_mode
-            if request.model_execution is not None else "deterministic")
+    # Becoming deterministic in silence leaves a record indistinguishable
+    # from a run that never asked to reason at all.
+    mode, mode_demoted_because = request.practitioner_mode, ""
+    if request.model_execution is None:
+        if request.practitioner_mode != "deterministic":
+            mode_demoted_because = (
+                f"asked for {request.practitioner_mode!r} but no model "
+                "execution was configured, so no model was ever called")
+        mode = "deterministic"
     region_evidence, tuned_budget = region_evidence_for_solve(request)
     adaptive = run_adaptive_practitioner(
         AdaptivePractitionerRequest(
@@ -493,7 +449,7 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
     terminal = (SolveTerminalCode.COMPLETED_VERIFIED.value if solved
                 else SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value
                 if questions
-                else _failure_code(adaptive))
+                else failure_code_for(adaptive))
     history = adaptive.get("run_history") or {}
     inspect = tuple(filter(None, (
         (f"loop-engine report {adaptive.get('run_id')} --runs-dir "
@@ -536,6 +492,8 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             "region_evidence": region_evidence,
         },
         selected_mode=mode,
+        requested_mode=request.practitioner_mode,
+        mode_demoted_because=mode_demoted_because,
         selected_canvas=selected,
         graph_digest=str(selected.get("graph_digest") or ""),
         verification=verification,
@@ -598,9 +556,9 @@ def self_test() -> dict:
         results.append({"name": name, "passed": bool(ok), "note": note})
 
     check("an_explicit_failure_code_still_wins_over_layer_inference",
-          _failure_code({"failure_code": "timeout"})
+          failure_code_for({"failure_code": "timeout"})
           == SolveTerminalCode.PROVIDER_UNAVAILABLE.value
-          and _failure_code({"failure_code": "CANCELLED"})
+          and failure_code_for({"failure_code": "CANCELLED"})
           == SolveTerminalCode.CANCELLED.value,
           "layer inference is the fallback, not an override")
 
@@ -796,4 +754,5 @@ def self_test() -> dict:
               and autonomous.compiled_task["template_selection_authority"]
                   == "model_only"
               and autonomous.compiled_task["template_candidates"])
-    return {"tests": results}
+    from .solve_mode_checks import mode_checks
+    return {"tests": [*results, *mode_checks()]}

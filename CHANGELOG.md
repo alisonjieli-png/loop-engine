@@ -262,6 +262,17 @@ First public release.
 
 ### Fixed
 
+- **A run that was asked to reason and could not now says so.** When no model
+  execution is configured the solve silently became a deterministic run, and
+  the outcome recorded only the mode it used — so a demoted run and a run
+  nobody ever asked to reason produced identical records. The outcome now
+  carries `requested_mode` beside `selected_mode`, and a demotion carries the
+  reason it happened. This does not prevent the demotion, which is correct
+  behaviour when there is no model to call; it stops the demotion from being
+  invisible to whoever reads the result afterwards. Provider failover is a
+  different thing entirely and is untouched: failing over between providers
+  keeps the reasoning alive, and is the behaviour you want.
+
 - **A verified Kaggle solve no longer ends with its results unpublished.** The
   notebook cells run the solve as a subprocess and put the engine on that
   subprocess's `PYTHONPATH`, then import `loop_engine` in their own process to

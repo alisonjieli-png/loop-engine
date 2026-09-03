@@ -75,6 +75,8 @@ def self_test() -> dict:
         "code_nodes.context_seed", "code_nodes.self_improvement_loop",
         "code_nodes.solution_canvas", "code_nodes.solution_compiler",
         "code_nodes.solve_runtime",
+        "code_nodes.solve_mode_checks",
+        "code_nodes.solve_terminal",
         "solve_cli",
         "code_nodes.solution_model_port",
         "code_nodes.solution_graph_checks",
