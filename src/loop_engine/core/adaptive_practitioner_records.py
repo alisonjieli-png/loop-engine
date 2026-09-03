@@ -30,6 +30,7 @@ from .context_budget import ContextBudgetPolicy, bound_state_view
 from .context_pack_manifest import build_context_pack_manifest
 from .generated_project import (
     execute_generated_project)
+from .choice import ParameterSpec
 from .recovery import choose_recovery, recovery_options
 from .semantic_decision import (SemanticAutonomyTally,
                                 SemanticDecisionRecord)
@@ -962,8 +963,10 @@ class AdaptiveRunServices:
         try:
             return choose_recovery(
                 facts, ask,
-                adjustable={"max_output_tokens": "a positive integer the "
-                                                 "route window can hold"},
+                parameters=(ParameterSpec(
+                    "p.out", "max_output_tokens", "integer",
+                    minimum=256, maximum=131072, unit="tokens",
+                    semantic_effect="how much room the answer may take"),),
                 authority=())
         except Exception as exc:                        # noqa: BLE001
             # Interpreting a failure must never replace it. An earlier

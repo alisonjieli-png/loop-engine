@@ -38,7 +38,8 @@ import json
 from dataclasses import dataclass, field
 
 from .choice import (CHOICE_RESPONSE_CONTRACT, ChoiceOption, ChoiceRequest,
-                     ChoiceResponse, admitted_choice, render_choice)
+                     ChoiceResponse, ParameterSpec,
+                     admitted_choice, render_choice)
 
 RECOVERY_RECORD_TYPE = "recovery_decision/v1"
 
@@ -146,7 +147,7 @@ def _recovery_question(facts: dict) -> str:
         + ". What should happen next?")
 
 
-def choose_recovery(facts: dict, ask, *, adjustable=None,
+def choose_recovery(facts: dict, ask, *, parameters=(),
                     authority=()) -> RecoveryOutcome:
     """Put the recovery decision to a reasoning route.
 
@@ -163,7 +164,7 @@ def choose_recovery(facts: dict, ask, *, adjustable=None,
             "error_code", "attempts_so_far", "provider_responded",
             "provider_stop_reason", "output_limit_reached", "step",
             "completed_work") if key in facts},
-        adjustable=dict(adjustable or {}),
+        parameters=tuple(parameters),
         authority=tuple(authority))
     try:
         text = ask(render_choice(request))
@@ -242,7 +243,9 @@ def self_test() -> dict:
             "adjustments": {"max_output_tokens": 4096},
             "reason": "the route answered but produced no answer twice",
             "exit_condition": "stop after one changed attempt"}),
-        adjustable={"max_output_tokens": "between 512 and 65536"})
+        parameters=(ParameterSpec("p.out", "max_output_tokens", "integer",
+                                  8192, minimum=512, maximum=65536,
+                                  unit="tokens"),))
     check("a reasoned recovery is attributed to reasoning",
           reasoned.reasoned and reasoned.selected == ("route:cloud.hard",)
           and reasoned.adjustments == {"max_output_tokens": 4096})

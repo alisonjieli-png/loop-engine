@@ -320,6 +320,20 @@ First public release.
 
 ### Fixed
 
+- **A bound the model is shown is now a bound admission enforces.** The choice
+  interface rendered "SETTINGS YOU MAY ADJUST (bounds are enforced)" above
+  ranges written as prose — `"between 512 and 65536"` — while admission checked
+  only that the setting's name had been offered. Any value at all was
+  admitted, and the sentence promising otherwise was false. `ParameterSpec`
+  carries the bound as a value: type, minimum, maximum, enum members, unit,
+  and whether the setting may change for this call at all. A proposal outside
+  it is refused with the reason, never clamped, and the refusal is counted
+  rather than dropped. Nine cases are held by test — above maximum, below
+  minimum, wrong type, a float where an integer was asked for, a boolean
+  where a number was, outside the enum, an immutable setting — and removing
+  the enforcement fails them. Settings still described in prose are rendered
+  as explicitly unenforced instead of borrowing the language of a bound.
+
 - **A route no longer refuses every request because of a ceiling nobody
   asked for.** When a caller names no output ceiling the gateway defaults to
   the model's declared maximum. One configured route declares 1,048,576

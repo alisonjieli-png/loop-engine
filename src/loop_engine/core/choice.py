@@ -80,6 +80,97 @@ class ChoiceOption:
         return value
 
 
+#: The value types a parameter may declare, named once so that the checks
+#: below refer to this table rather than restating its keys inline.
+NUMBER, INTEGER, BOOLEAN, STRING, ENUM = (
+    "number", "integer", "boolean", "string", "enum")
+VALUE_TYPES = {NUMBER: (int, float), INTEGER: (int,), BOOLEAN: (bool,),
+               STRING: (str,), ENUM: (str, int, float, bool)}
+
+
+@dataclass(frozen=True)
+class ParameterSpec:
+    """A setting a caller may change, and the bound that will be enforced.
+
+    A bound written as prose — "between 512 and 65536" — reads like a
+    constraint and is not one. The first version of this module rendered
+    exactly that under a heading promising enforcement, while admission
+    checked only that the setting's name had been offered. A model could
+    return any value at all and it would be admitted.
+
+    So a bound is a value here, not a sentence. ``validate`` returns the
+    reason a proposal fails, or an empty string when it holds, and admission
+    refuses on that reason rather than on the name alone.
+    """
+
+    parameter_id: str
+    name: str
+    value_type: str = "string"
+    current_value: object = None
+    minimum: "float | int | None" = None
+    maximum: "float | int | None" = None
+    enum_values: tuple = ()
+    unit: str = ""
+    mutable_for_this_call: bool = True
+    semantic_effect: str = ""
+    authority_ref: str = ""
+
+    def __post_init__(self):
+        if self.value_type not in VALUE_TYPES:
+            raise ChoiceError(
+                f"parameter {self.name!r} has unknown value_type "
+                f"{self.value_type!r}")
+        if self.value_type == ENUM and not self.enum_values:
+            raise ChoiceError(
+                f"enum parameter {self.name!r} offers no values")
+
+    def validate(self, value) -> str:
+        """Why this proposed value cannot be used, or "" when it can."""
+        if not self.mutable_for_this_call:
+            return "this setting cannot be changed for this call"
+        allowed = VALUE_TYPES[self.value_type]
+        # A boolean is an int in Python and almost never what a numeric
+        # setting meant, so it is refused rather than silently coerced.
+        if isinstance(value, bool) and self.value_type in (NUMBER, INTEGER):
+            return f"expected {self.value_type}, got boolean"
+        if not isinstance(value, allowed):
+            return f"expected {self.value_type}, got {type(value).__name__}"
+        if self.value_type == INTEGER and isinstance(value, float):
+            return "expected integer, got number"
+        if self.enum_values and value not in self.enum_values:
+            return f"{value!r} is not one of {list(self.enum_values)}"
+        if self.minimum is not None and value < self.minimum:
+            return f"{value} is below the minimum of {self.minimum}"
+        if self.maximum is not None and value > self.maximum:
+            return f"{value} is above the maximum of {self.maximum}"
+        return ""
+
+    def rendered(self) -> str:
+        """The bound as the model sees it, matching what is enforced."""
+        parts = [self.value_type]
+        if self.enum_values:
+            parts.append("one of " + ", ".join(
+                repr(item) for item in self.enum_values))
+        if self.minimum is not None or self.maximum is not None:
+            parts.append(f"from {self.minimum} to {self.maximum}")
+        if self.unit:
+            parts.append(f"in {self.unit}")
+        if self.current_value is not None:
+            parts.append(f"currently {self.current_value!r}")
+        if not self.mutable_for_this_call:
+            parts.append("NOT changeable for this call")
+        return "; ".join(parts)
+
+    def to_dict(self) -> dict:
+        return {"parameter_id": self.parameter_id, "name": self.name,
+                "value_type": self.value_type,
+                "current_value": self.current_value,
+                "minimum": self.minimum, "maximum": self.maximum,
+                "enum_values": list(self.enum_values), "unit": self.unit,
+                "mutable_for_this_call": self.mutable_for_this_call,
+                "semantic_effect": self.semantic_effect}
+
+
 @dataclass(frozen=True)
 class ChoiceRequest:
     """What is being decided, from which options, under what limits."""
@@ -88,6 +179,10 @@ class ChoiceRequest:
     question: str
     options: tuple[ChoiceOption, ...] = ()
     evidence: dict = field(default_factory=dict)
+    #: Settings whose bounds are enforced on admission.
+    parameters: tuple = ()
+    #: Compatibility: names described in prose. Nothing about these can be
+    #: checked, so they are rendered as unenforced and say so.
     adjustable: dict = field(default_factory=dict)
     authority: tuple[str, ...] = ()
     allow_multiple: bool = True
@@ -99,6 +194,9 @@ class ChoiceRequest:
         seen = [item.option_id for item in self.options]
         if len(set(seen)) != len(seen):
             raise ChoiceError("choice options repeat an option_id")
+        named = [item.name for item in self.parameters]
+        if len(set(named)) != len(named):
+            raise ChoiceError("choice parameters repeat a name")
 
     @property
     def eligible_ids(self) -> tuple[str, ...]:
@@ -111,6 +209,7 @@ class ChoiceRequest:
             "question": self.question,
             "options": [item.to_dict() for item in self.options],
             "evidence": dict(self.evidence),
+            "parameters": [item.to_dict() for item in self.parameters],
             "adjustable": dict(self.adjustable),
             "authority": list(self.authority),
             "allow_multiple": self.allow_multiple,
@@ -140,8 +239,19 @@ def render_choice(request: ChoiceRequest) -> str:
         lines.append(f"  {item.option_id}: {item.summary}{mark}{tail}")
         for name, fact in (item.facts or {}).items():
             lines.append(f"      {name}: {fact}")
+    if request.parameters:
+        lines += ["", "SETTINGS YOU MAY ADJUST. These bounds are checked on "
+                      "admission; a value outside them is refused, not "
+                      "clamped:"]
+        for item in request.parameters:
+            lines.append(f"  {item.name}: {item.rendered()}")
+            if item.semantic_effect:
+                lines.append(f"      effect: {item.semantic_effect}")
     if request.adjustable:
-        lines += ["", "SETTINGS YOU MAY ADJUST (bounds are enforced):"]
+        # Described in prose, so nothing about the value can be checked. Say
+        # so rather than implying a bound that admission cannot enforce.
+        lines += ["", "SETTINGS YOU MAY ADJUST (described only; the value "
+                      "you give is not range-checked):"]
         for name, bound in request.adjustable.items():
             lines.append(f"  {name}: {bound}")
     if request.evidence:
@@ -217,9 +327,17 @@ def admitted_choice(value, request: ChoiceRequest) -> ChoiceResponse:
 
     adjustments = {}
     proposed = value.get("adjustments")
+    specs = {item.name: item for item in request.parameters}
     if isinstance(proposed, dict):
         for name, item in proposed.items():
-            if name in request.adjustable:
+            spec = specs.get(name)
+            if spec is not None:
+                problem = spec.validate(item)
+                if problem:
+                    refused = refused + (f"adjustment:{name}: {problem}",)
+                else:
+                    adjustments[str(name)] = item
+            elif name in request.adjustable:
                 adjustments[str(name)] = item
             else:
                 refused = refused + (f"adjustment:{name}",)
@@ -320,6 +438,57 @@ def self_test() -> dict:
     except ChoiceError:
         duplicate = True
     check("a repeated option_id is refused", duplicate)
+
+    # A bound the model is shown must be a bound admission enforces. The
+    # first version of this module rendered "bounds are enforced" over prose
+    # ranges and checked only that a setting's name had been offered.
+    bounded = ChoiceRequest(
+        decision_kind="configure", question="adjust for the next attempt",
+        options=(ChoiceOption("go", "proceed"),),
+        parameters=(
+            ParameterSpec("p.out", "max_output_tokens", "integer", 8192,
+                          minimum=512, maximum=65536, unit="tokens"),
+            ParameterSpec("p.t", "temperature", "number", 0.7,
+                          minimum=0.0, maximum=1.5),
+            ParameterSpec("p.route", "route", "enum", "a",
+                          enum_values=("a", "b")),
+            ParameterSpec("p.fixed", "seed", "integer", 42,
+                          mutable_for_this_call=False)))
+    checks = {
+        "above maximum": ({"max_output_tokens": 999999}, False),
+        "below minimum": ({"max_output_tokens": 8}, False),
+        "wrong type": ({"max_output_tokens": "large"}, False),
+        "float for integer": ({"max_output_tokens": 1.5}, False),
+        "boolean for number": ({"temperature": True}, False),
+        "outside enum": ({"route": "z"}, False),
+        "immutable setting": ({"seed": 7}, False),
+        "within bounds": ({"max_output_tokens": 4096}, True),
+        "valid enum": ({"route": "b"}, True),
+    }
+    outcomes = {}
+    for label, (patch, should_pass) in checks.items():
+        answer = admitted_choice({"adjustments": patch}, bounded)
+        outcomes[label] = (bool(answer.adjustments) == should_pass)
+    wrong = [label for label, ok in outcomes.items() if not ok]
+    check("every advertised bound is enforced on admission",
+          not wrong, f"not enforced: {wrong}")
+    check("a refused adjustment says why it was refused",
+          any("above the maximum" in item for item in admitted_choice(
+              {"adjustments": {"max_output_tokens": 999999}},
+              bounded).refused))
+    check("the rendered bound matches what admission checks",
+          "from 512 to 65536" in render_choice(bounded)
+          and "not clamped" in render_choice(bounded))
+    check("a prose bound is rendered as unenforced rather than as a bound",
+          "not range-checked" in render_choice(ChoiceRequest(
+              decision_kind="k", question="q",
+              adjustable={"x": "between 1 and 2"})))
+    unknown_type = False
+    try:
+        ParameterSpec("p", "n", "quantity")
+    except ChoiceError:
+        unknown_type = True
+    check("a parameter with an unknown type is refused", unknown_type)
 
     passed = sum(1 for item in tests if item["passed"])
     return {"record_type": "choice_test/v1", "tests": tests,
