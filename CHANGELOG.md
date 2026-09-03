@@ -224,6 +224,18 @@ First public release.
 
 ### Fixed
 
+- **Every record parsed from a model now treats surplus as information.** The
+  same exact-set validation that ended runs on `selection_report` also guarded
+  the model's statement of which supplied file plays which role, every file it
+  generates for a project, and its review of a compiled task — all three on the
+  path a competition run takes. A caller with more to say than the schema names
+  had its whole reply discarded, orientation and work together. Absence is now
+  the defect in each, the refusal names the missing fields, and a guard holds
+  the rule in both directions. Records parsed from storage keep exact-set
+  validation, because both sides of those are code; so does the web search
+  response, where a closed contract against untrusted external input is the
+  guard rather than rigidity.
+
 - **What a run reports is heard, whether or not anyone named it first.** Four
   layers each kept only what they already knew about, and the loss compounded
   in silence. The progress writer was a permission list, so

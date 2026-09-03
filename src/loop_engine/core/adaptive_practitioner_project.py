@@ -248,9 +248,10 @@ def project_manifest(
                     "file_validation_failures": file_failures,
                 }, file_schema))
             try:
-                if set(value) != {"path", "content"}:
+                if {"path", "content"} - set(value):
                     raise GeneratedProjectError(
-                        "generated file fields do not match version 1")
+                        "generated file is missing "
+                        + str(sorted({"path", "content"} - set(value))))
                 if str(value.get("path")) != file_spec.path:
                     raise GeneratedProjectError(
                         "generated file path differs from its specification")

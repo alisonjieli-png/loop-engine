@@ -101,10 +101,13 @@ def validated_source_roles(
     if not isinstance(value, dict):
         raise AdaptivePractitionerError(
             "source role orientation must be one JSON object")
-    if set(value) != {"manifest_digest", "files", "unresolved"}:
+    # Absence is the defect. A caller that says more than the schema asks
+    # for has told us more, not answered wrongly, and refusing the whole
+    # orientation for it throws away the reading that came with it.
+    missing = {"manifest_digest", "files", "unresolved"} - set(value)
+    if missing:
         raise AdaptivePractitionerError(
-            "source role orientation fields do not match version 1; expected "
-            "manifest_digest, files, unresolved")
+            "source role orientation is missing " + str(sorted(missing)))
     if str(value.get("manifest_digest") or "") != digest:
         raise AdaptivePractitionerError(
             "source role orientation states a different manifest_digest than "

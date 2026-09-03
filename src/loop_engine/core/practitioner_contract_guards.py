@@ -88,9 +88,59 @@ def retry_classification() -> list:
     ]
 
 
+def extra_fields_are_information() -> list:
+    """Hold the rule that absence is a defect and surplus is not.
+
+    Every record here is parsed from something a model wrote. A model with
+    more to say than the schema names will occasionally say it, and a
+    validator built on exact-set equality answers that by discarding the
+    whole reply — the orientation, the file, the review — along with the
+    work that produced it. One such key ended runs across a twelve
+    competition campaign before anything said which field was at fault.
+
+    Records parsed from storage or from an untrusted external service are
+    deliberately absent from this list. Both sides of those are code, or the
+    strictness is itself the guard.
+    """
+    from dataclasses import fields as _fields
+    from .adaptive_practitioner_records import (
+        NextActionDecision, TaskOrientationResult)
+
+    def outcome(record, mapping) -> str:
+        """What the record makes of one mapping, success or refusal alike."""
+        try:
+            record.from_mapping(mapping)
+            return "accepted"
+        except Exception as exc:                       # noqa: BLE001
+            return str(exc)
+
+    checks = []
+    for record in (TaskOrientationResult, NextActionDecision):
+        complete = {item.name: "" for item in _fields(record)}
+        surplus = {**complete, "a_field_no_schema_names": "still information"}
+        # Compared against the same mapping without the surplus field, so the
+        # check isolates the surplus itself and does not depend on the values
+        # being valid for every other reason a record may refuse them.
+        unchanged = outcome(record, complete) == outcome(record, surplus)
+        short = {key: item for key, item in complete.items()
+                 if key != sorted(complete)[0]}
+        named = "missing" in outcome(record, short).lower()
+        checks.append({
+            "test": f"{record.__name__} keeps an answer that says more",
+            "passed": unchanged,
+            "detail": "" if unchanged else
+                      "a surplus field changed the verdict on the whole reply"})
+        checks.append({
+            "test": f"{record.__name__} still refuses an answer that says less",
+            "passed": named,
+            "detail": "" if named else "absence was not named as the defect"})
+    return checks
+
+
 def contract_guard_checks() -> list:
     """Every contract guard, as one list of test records."""
-    return [schema_matches_record(), *retry_classification()]
+    return [schema_matches_record(), *retry_classification(),
+            *extra_fields_are_information()]
 
 
 def self_test() -> dict:

@@ -52,9 +52,12 @@ class ModelAssistedCompileReview:
             "status", "task_summary", "task_family", "delegated_choices",
             "unresolved_facts", "material_questions", "next_action",
             "confidence"}
-        if not isinstance(value, dict) or set(value) != required:
+        if not isinstance(value, dict):
+            raise ModelAssistedCompileError("model review must be one object")
+        if required - set(value):
             raise ModelAssistedCompileError(
-                "model review must contain the exact registered fields")
+                "model review is missing "
+                + str(sorted(required - set(value))))
         status = value.get("status")
         if status not in COMPILE_REVIEW_STATUSES:
             raise ModelAssistedCompileError(
