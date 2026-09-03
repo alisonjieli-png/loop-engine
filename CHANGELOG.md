@@ -431,6 +431,17 @@ First public release.
 
 ### Fixed
 
+- **A run that fails hard no longer loses its stages.** Stage persistence was
+  wired into the normal completion path only, and three failure exits return
+  before it. Those are the runs most worth learning from — where recovery,
+  model demand and response shape are actually tested — and an email run that
+  died with nine transport failures and zero completed model steps wrote
+  nothing at all. Every exit now closes the stage record with the outcome it
+  actually had: a cancelled run leaves them unknown rather than failed,
+  because cancellation says nothing about whether the work was going well.
+  The defensive wrapper around the close had hidden this: it swallowed the
+  absence as readily as it would have swallowed an error.
+
 - **A bound the model is shown is now a bound admission enforces.** The choice
   interface rendered "SETTINGS YOU MAY ADJUST (bounds are enforced)" above
   ranges written as prose — `"between 512 and 65536"` — while admission checked

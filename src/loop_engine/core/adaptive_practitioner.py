@@ -130,6 +130,23 @@ def _model_state(state: PractitionerState,
     # Bounding happens once, at the packet boundary in
     # adaptive_practitioner_records, where every step's state converges.
     return view
+def _close_stages(services, runs_dir, *, helped) -> None:
+    """Persist this run's stages, however the run ended.
+
+    A run that fails hard is the one most worth learning from — its stages
+    are where recovery, model demand and response shape are actually tested
+    — and the three failure exits below return before the normal close. An
+    earlier version wired the close only into the success path and lost
+    exactly the evidence it was built to collect.
+    """
+    try:
+        services.stage_store.close_run(
+            helped=helped,
+            path=str(Path(runs_dir) / "stages.jsonl") if runs_dir else "")
+    except Exception:                                   # noqa: BLE001
+        pass
+
+
 def _adaptive_impls(services: AdaptiveRunServices) -> dict:
     def orient(state: PractitionerState) -> Situation:
         services.active_pass_number += 1
@@ -668,6 +685,7 @@ def run_adaptive_practitioner(
     except KeyboardInterrupt:
         if not owner.is_terminal:
             owner.cancel("operator_interrupt")
+        _close_stages(services, runs_dir, helped=None)
         return failed_adaptive_output(
             owner, services, "CANCELLED",
             "The operator interrupted the active Practitioner run.",
@@ -678,6 +696,7 @@ def run_adaptive_practitioner(
         failure_code = (exc.error_code or type(exc).__name__
                         if isinstance(exc, SolutionModelError)
                         else type(exc).__name__)
+        _close_stages(services, runs_dir, helped=False)
         return failed_adaptive_output(
             owner, services, failure_code, str(exc),
             lambda: _history_record(owner, services, runs_dir))
@@ -688,14 +707,7 @@ def run_adaptive_practitioner(
         run.get("final_route") == "stop_success" and final_attempt
         and final_attempt.get("deterministic_checks_passed"))
     # A run that failed casts its result over every choice that led there.
-    # Close the stage record the same way, and persist it beside the run so
-    # a later run can ask whether it has done anything like this before.
-    try:
-        services.stage_store.close_run(
-            helped=solved,
-            path=str(Path(runs_dir) / "stages.jsonl") if runs_dir else "")
-    except Exception:                                   # noqa: BLE001
-        pass
+    _close_stages(services, runs_dir, helped=solved)
     services.decision_outcomes.close_run(
         task_succeeded=solved,
         verification_passed=(
