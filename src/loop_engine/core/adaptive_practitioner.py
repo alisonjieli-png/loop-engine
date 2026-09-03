@@ -688,6 +688,14 @@ def run_adaptive_practitioner(
         run.get("final_route") == "stop_success" and final_attempt
         and final_attempt.get("deterministic_checks_passed"))
     # A run that failed casts its result over every choice that led there.
+    # Close the stage record the same way, and persist it beside the run so
+    # a later run can ask whether it has done anything like this before.
+    try:
+        services.stage_store.close_run(
+            helped=solved,
+            path=str(Path(runs_dir) / "stages.jsonl") if runs_dir else "")
+    except Exception:                                   # noqa: BLE001
+        pass
     services.decision_outcomes.close_run(
         task_succeeded=solved,
         verification_passed=(
@@ -734,6 +742,8 @@ def run_adaptive_practitioner(
         # Who decided what this run did, saved beside what it chose from.
         "semantic_autonomy": services.semantic_decisions.to_dict(),
         "decision_outcomes": services.decision_outcomes.to_dict(),
+        "stages": services.stage_store.to_dict(),
+        "stage_arms": dict(services.stage_arms),
         "decision_outcome_rows": [
             item.to_dict()
             for item in services.decision_outcomes.outcomes.values()],

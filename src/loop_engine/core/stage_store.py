@@ -141,9 +141,38 @@ class StageStore:
         self._by_digest.setdefault(observation.digest, []).append(observation)
         self._by_motif.setdefault(observation.motif, []).append(observation)
         self._by_shape.setdefault(observation.shape, []).append(observation)
-        if self.path:
-            self._append(observation)
         return observation
+
+    def close_run(self, helped: "bool | None", *, path: str = "") -> int:
+        """Tell this run's observations how it ended, then persist them.
+
+        Rows are written at the end rather than as they happen. A stage
+        recorded mid-run has no outcome yet, and writing it then would fill
+        the file with unresolved rows that a later reader cannot distinguish
+        from stages that genuinely finished unknown.
+        """
+        from dataclasses import replace as _replace
+        resolved = [_replace(item, helped=helped)
+                    if item.helped is None else item
+                    for item in self.observations]
+        self.observations = resolved
+        for index, key in ((self._by_digest, "digest"),
+                           (self._by_motif, "motif"),
+                           (self._by_shape, "shape")):
+            index.clear()
+        for item in resolved:
+            self._by_digest.setdefault(item.digest, []).append(item)
+            self._by_motif.setdefault(item.motif, []).append(item)
+            self._by_shape.setdefault(item.shape, []).append(item)
+        target = path or self.path
+        if not target:
+            return 0
+        self.path = target
+        written = 0
+        for item in resolved:
+            self._append(item)
+            written += 1
+        return written
 
     def _append(self, observation: StageObservation) -> None:
         """Write one row through, never failing the caller if it cannot."""
@@ -296,8 +325,12 @@ def self_test() -> dict:
     with tempfile.TemporaryDirectory() as root:
         path = os.path.join(root, "nested", "stages.jsonl")
         writing = StageStore(path=path)
-        writing.add(billing, run_id="r1", helped=True)
-        writing.add(telemetry, run_id="r2", helped=False)
+        writing.add(billing, run_id="r1")
+        writing.add(telemetry, run_id="r2")
+        wrote = writing.close_run(helped=True)
+        check("nothing is written until the run's outcome is known",
+              wrote == 2,
+              "an unresolved row cannot be told from one that finished unknown")
         reading = StageStore(path=path)
         rows = reading.load()
         check("a shape survives serialisation as an indexable key",
@@ -310,12 +343,23 @@ def self_test() -> dict:
                     for item in reading.lookup(billing)}
         check("outcomes survive the round trip",
               restored[BY_SHAPE].known_outcomes == 2
-              and restored[BY_SHAPE].helped == 1)
+              and restored[BY_SHAPE].helped == 2,
+              "both rows closed with the run that contained them")
 
     unwritable = StageStore(path="/proc/definitely/not/writable/x.jsonl")
     unwritable.add(billing, run_id="r9")
+    unwritable.close_run(helped=True)
     check("a store that cannot persist does not fail the run",
-          len(unwritable.observations) == 1)
+          len(unwritable.observations) == 1
+          and unwritable.observations[0].helped is True)
+
+    closing = StageStore()
+    closing.add(billing, run_id="r1")
+    closing.add(telemetry, run_id="r2", helped=False)
+    closing.close_run(helped=True)
+    check("closing does not overwrite an outcome already known",
+          [item.helped for item in closing.observations] == [True, False],
+          "a stage that already failed is not relabelled by the run")
 
     passed = sum(1 for item in tests if item["passed"])
     return {"record_type": "stage_store_test/v1", "tests": tests,

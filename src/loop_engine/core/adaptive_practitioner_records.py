@@ -32,7 +32,10 @@ from .generated_project import (
     execute_generated_project)
 from .choice import ParameterSpec
 from .recovery import choose_recovery, recovery_options
+from .convergence import control_arm
 from .decision_outcome import OutcomeLedger
+from .stage_fingerprint import SemanticStageFingerprint
+from .stage_store import StageStore
 from .semantic_decision import (SemanticAutonomyTally,
                                 SemanticDecisionRecord)
 from .option_selection import (SELECTION_KEYS, SELECTION_REPORT_CONTRACT,
@@ -250,6 +253,36 @@ def _note_recovery(services, owner, request, error_code: str,
             blocker=recovery.blocker, reason=recovery.reason[:300])
     except Exception:                                   # noqa: BLE001
         pass
+
+
+def _stage_for(services, request) -> "SemanticStageFingerprint | None":
+    """Name the cognitive situation of one model step.
+
+    Built from what the step already carries — its responsibility, the
+    orientation in force, and what remains open — so that naming a stage
+    costs nothing and cannot fail a run. A step whose situation cannot be
+    described is simply not named.
+    """
+    try:
+        orientation = None
+        if services.orientation_by_version:
+            orientation = services.orientation_by_version[
+                max(services.orientation_by_version)]
+        return SemanticStageFingerprint(
+            semantic_responsibility=request.objective[:200]
+            or request.step_id,
+            cognitive_phase=request.step_id,
+            ultimate_horizon=getattr(orientation, "ultimate_goal", "")[:200],
+            medium_horizon=getattr(orientation, "desired_state", "")[:200],
+            near_horizon=getattr(orientation, "immediate_goal", "")[:200],
+            micro_horizon=request.objective[:200],
+            unknowns=tuple(getattr(orientation, "unknowns", ()) or ())[:8],
+            knowns=tuple(getattr(orientation, "knowns", ()) or ())[:8],
+            consumer="practitioner",
+            task_ref=services.run_id,
+            branch_depth=len(services.project_attempts))
+    except Exception:                                   # noqa: BLE001
+        return None
 
 
 class AdaptivePractitionerError(ValueError):
@@ -761,6 +794,10 @@ class AdaptiveRunServices:
     #: because who decided and whether it helped are different questions,
     #: and only the second can become policy.
     decision_outcomes: OutcomeLedger = field(default_factory=OutcomeLedger)
+    #: Every bounded piece of reasoning this run performed, named so a later
+    #: run can ask whether it has done anything like it before.
+    stage_store: StageStore = field(default_factory=StageStore)
+    stage_arms: dict = field(default_factory=dict)
     selected_intelligence_refs: list[str] = field(default_factory=list)
     selected_memory_refs: list[str] = field(default_factory=list)
     progress_snapshots: list[tuple] = field(default_factory=list)
@@ -1312,6 +1349,19 @@ class AdaptiveRunServices:
                 for item in packet.context_intelligence],
         }
         self.selection_tally.note_offered(request.step_id)
+        # Name this step's situation and record it. The arm is decided from
+        # the situation's own identity, before anything is offered to the
+        # call, so the split cannot be influenced by what happens next.
+        stage = _stage_for(self, request)
+        if stage is not None:
+            try:
+                self.stage_arms[stage.digest] = control_arm(stage.digest)
+                self.stage_store.add(
+                    stage, run_id=self.run_id,
+                    model_route=str(getattr(
+                        self.request, "model_route", "") or ""))
+            except Exception:                           # noqa: BLE001
+                pass
         packet_artifact = self.artifacts.store.put(
             serialize_work_packet(packet, owner),
             media_type="application/json", encoding="utf-8",

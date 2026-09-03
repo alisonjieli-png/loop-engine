@@ -9,6 +9,18 @@ First public release.
 
 ### Added
 
+- **The fingerprint stack is live, and runs now accumulate stages.** Every
+  model step names its cognitive situation, is assigned a control arm from
+  that situation's own identity before anything is offered to the call, and is
+  recorded. At the end of a run each stage is closed with what became of it
+  and written beside the run history. Nothing is written before the outcome is
+  known, because an unresolved row cannot later be told apart from a stage
+  that genuinely finished unknown, and a stage that already failed is not
+  relabelled by a run that went on to succeed. Naming a stage cannot fail a
+  run: a situation that cannot be described is simply not named. First live
+  reading on a verified run: 19 observations collapsing to 7 motifs and 7
+  shapes, with the arms splitting 17 offered to 2 control.
+
 - **Fingerprints at more than one scale, and a segment that matches across
   pipelines.** A stage now carries the scale it names — operation, loop,
   segment or run — and a `shape`: the unit of work with its subject removed.
