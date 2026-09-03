@@ -30,6 +30,7 @@ from .context_budget import ContextBudgetPolicy, bound_state_view
 from .context_pack_manifest import build_context_pack_manifest
 from .generated_project import (
     execute_generated_project)
+from .recovery import choose_recovery, recovery_options
 from .semantic_decision import (SemanticAutonomyTally,
                                 SemanticDecisionRecord)
 from .option_selection import (SELECTION_KEYS, SELECTION_REPORT_CONTRACT,
@@ -223,6 +224,32 @@ _MAXIMUM_ATTEMPTS_ANY_ERROR = max(
 #: attempt is a real model call whose output already failed admission;
 #: unbounded repair against novel invalid output is churn, not progress.
 _MAXIMUM_FORMAT_ATTEMPTS = 4
+def _note_recovery(services, owner, request, error_code: str,
+                   attempt: int, recovery) -> None:
+    """Record who chose the recovery, and never fail the run doing it."""
+    try:
+        services.semantic_decisions.note(SemanticDecisionRecord(
+            decision_id=(f"{services.run_id}.recover."
+                         f"{request.step_id}.{attempt}"),
+            run_id=services.run_id,
+            loop_id=getattr(owner, "loop_id", ""),
+            decision_kind="choose_repair",
+            owner="llm" if recovery.reasoned else "deterministic",
+            selected=(",".join(recovery.selected)
+                      or recovery.blocker or "give_up"),
+            alternatives=tuple(item.option_id for item in recovery_options(
+                {"error_code": error_code})),
+            reason_summary=recovery.reason[:300],
+            expected_observation=recovery.expected_observation[:200]))
+        services.publish(
+            "model.step.recovery_decided", step=request.step_id,
+            chosen_by=recovery.chosen_by,
+            selected=list(recovery.selected),
+            blocker=recovery.blocker, reason=recovery.reason[:300])
+    except Exception:                                   # noqa: BLE001
+        pass
+
+
 class AdaptivePractitionerError(ValueError):
     """The adaptive Practitioner could not satisfy a typed runtime contract."""
 @dataclass(frozen=True)
@@ -899,6 +926,76 @@ class AdaptiveRunServices:
                 "practitioner.diagnostic",
                 diagnostic_code="route_health_record_skipped")
 
+    def _reasoned_recovery(self, request, error_code: str, attempt: int,
+                           *, provider_responded: bool):
+        """Ask a reasoning route what to do, with the run otherwise lost.
+
+        The ask goes straight to the gateway rather than back through this
+        method, so a recovery decision can never recurse into another one. It
+        is bounded to a single small call: the run is already failing and the
+        decision is worth one call, not a second budget.
+
+        When nothing answers, the outcome carries NO_REASONING_ROUTE_AVAILABLE
+        and the caller raises as before. That is the honest end of a run whose
+        reasoning could not be reached — not a licence to finish the task some
+        other way.
+        """
+        facts = {
+            "error_code": error_code,
+            "attempts_so_far": attempt,
+            "provider_responded": provider_responded,
+            "step": request.step_id,
+            "packet_can_be_rebuilt": False,
+            "completed_work": [
+                f"{len(self.project_attempts)} project attempt(s)",
+                f"{len(self.source_inspections)} source inspection(s)"],
+            "alternate_routes": self._alternate_routes(),
+        }
+
+        def ask(prompt: str) -> str:
+            session = self.model_session
+            invoke = getattr(session, "invoke_raw", None)
+            if invoke is None:
+                return ""
+            return invoke(prompt) or ""
+
+        try:
+            return choose_recovery(
+                facts, ask,
+                adjustable={"max_output_tokens": "a positive integer the "
+                                                 "route window can hold"},
+                authority=())
+        except Exception as exc:                        # noqa: BLE001
+            # Interpreting a failure must never replace it. An earlier
+            # version raised NameError from here and turned a clean
+            # BUDGET_EXHAUSTED into NO_PROGRESS, hiding the real cause
+            # behind the machinery meant to explain it.
+            from .recovery import (NO_REASONING_ROUTE_AVAILABLE,
+                                   RecoveryOutcome)
+            return RecoveryOutcome(
+                blocker=NO_REASONING_ROUTE_AVAILABLE,
+                reason=f"recovery reasoning was unavailable "
+                       f"({type(exc).__name__})")
+
+    def _alternate_routes(self) -> tuple:
+        """Every other configured route, and what is mechanically true of it."""
+        gateway = getattr(self.model_session, "gateway", None)
+        registry = getattr(gateway, "registry", None)
+        if registry is None:
+            return ()
+        rows = []
+        for route in registry.all():
+            spec = (gateway.providers or {}).get(route.provider)
+            row = {"name": route.name, "provider": route.provider,
+                   "model": route.model,
+                   "max_context": int(getattr(
+                       route.capabilities, "max_context", 0) or 0)}
+            if spec is None:
+                row["eligible"] = False
+                row["ineligible_reason"] = "provider is not configured"
+            rows.append(row)
+        return tuple(rows[:8])
+
     def model(self, request: ModelStepRequest) -> dict:
         if self.model_session is None:
             raise AdaptivePractitionerError(
@@ -1339,11 +1436,24 @@ class AdaptiveRunServices:
                         transport_attempt=transport_attempt,
                         error_code=error_code,
                         prompt_digest=snapshot["prompt_digest"])
+                    # The table below is continuity behaviour, not the
+                    # decision. It says what is cheap to try while a route is
+                    # merely busy. At the point where it would give up — the
+                    # moment the run is otherwise lost — the choice of what
+                    # to do next is task-conditioned, and goes to reasoning.
                     retryable = error_code in _RETRYABLE_TRANSPORT_ERRORS
                     final_attempt = transport_attempt >= _ATTEMPTS_FOR_ERROR.get(
                         error_code, _MAXIMUM_TRANSPORT_ATTEMPTS)
                     if not retryable or final_attempt:
-                        raise
+                        recovery = self._reasoned_recovery(
+                            request, error_code, transport_attempt,
+                            provider_responded=bool(
+                                getattr(exc, "provider_responded", False)))
+                        _note_recovery(self, owner, request, error_code,
+                                       transport_attempt, recovery)
+                        if "retry_same_route" not in recovery.selected:
+                            raise
+                        continue
                     if error_code == "gateway_timeout" \
                             and self.route_health_ledger is not None:
                         for preference in (

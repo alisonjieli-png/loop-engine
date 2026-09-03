@@ -9,6 +9,28 @@ First public release.
 
 ### Added
 
+- **Recovery is chosen by reasoning, with the table demoted to continuity
+  behaviour.** The retry policy added earlier the same day decided which
+  failures were worth another attempt, how many, and how long to wait —
+  task-conditioned choices frozen from a handful of runs. It now says only
+  what is cheap to try while a route is merely busy. At the point where it
+  would give up, which is the moment the run is otherwise lost,
+  `core.recovery` puts the decision to a reasoning route through the standard
+  choice contract: the runtime supplies the mechanical facts (which routes
+  have credentials, what each window holds, what work is already verified)
+  and reasoning selects among them, adjusts named settings within bounds, or
+  proposes something nobody enumerated.
+
+  The bootstrapping problem is handled narrowly rather than ignored. Something
+  must decide what to do when the thing that decides is what failed, so the
+  ask goes straight to the gateway and can never recurse into another recovery
+  decision. When nothing answers, the result is
+  `NO_REASONING_ROUTE_AVAILABLE` and the caller raises as before — the honest
+  end of a run whose reasoning could not be reached, not a licence to finish
+  the task another way. Every recovery is recorded with its true owner, so a
+  choice made by the table when no reasoner could be reached is never counted
+  as a reasoned one.
+
 - **One shape for every task-conditioned choice, and a count of who made
   them.** `core.choice` is a single typed interface — standardised input,
   standardised output — for any decision the runtime puts to a model: choose
