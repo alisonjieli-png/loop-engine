@@ -9,6 +9,30 @@ First public release.
 
 ### Added
 
+- **A judge that reads the work, in the same Loop runtime the work ran in.**
+  The task-family graders decided a semantic question with a keyword list:
+  `grade_jira` accepted a root cause only if it contained "exclusive",
+  "inclusive", "off-by-one", "end" or "last", so a run writing "the upper
+  limit is one too small" was marked wrong for saying the right thing in
+  unenumerated words — and it read the run's own `answer.json`, never the
+  code, grading a claim rather than a change. `benchmarks/task_families/judge.py`
+  reads the artifacts and reasons about them through a Loop, never seeing the
+  run's case for itself, with deterministic facts handed to it as findings it
+  may not contradict.
+
+  Building it surfaced something worth recording. Asked outright whether a
+  criterion was met, the judge described a patch that *concealed* a defect —
+  accurately, in its own evidence — and then answered that the criterion was
+  met. Asked whether that evidence supported that conclusion, it explained
+  that it did not and answered that it did. The prose was right both times
+  and the boolean wrong both times: a judgement field invites agreement. So
+  it is no longer asked for one. It reports which of several neutrally worded
+  options matches what it read, and the verdict is derived from the letter.
+  On two adversarial cases — a correct fix described in unusual words, and a
+  wrong fix described in the right vocabulary — the keyword grader scores
+  0 of 2 and the observation judge 2 of 2, with an independent second reading
+  agreeing on both.
+
 - **A deployment can name the sandbox image.** `LOOP_ENGINE_SANDBOX_IMAGE`
   selects the image generated projects run in; the default is unchanged. The
   bare interpreter that was hardcoded is the right floor for a runtime that
