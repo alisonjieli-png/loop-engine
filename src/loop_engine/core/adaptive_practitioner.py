@@ -750,6 +750,11 @@ def run_adaptive_practitioner(
         "model_calls": services.model_session.calls_used,
         "model_usage": safe_model_usage(services),
         "option_selection": services.selection_tally.to_dict(),
+        # Who decided what this run did, saved beside what it chose from.
+        "semantic_autonomy": services.semantic_decisions.to_dict(),
+        "semantic_decisions": [item.to_dict()
+                               for item in
+                               services.semantic_decisions.decisions],
         "loop_details": loop_details(ledger.events),
         "run_history": history,
     }
