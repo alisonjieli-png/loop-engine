@@ -30,6 +30,13 @@ from .solve_terminal import (
     SOLVE_FAILURE_CODES, SolveTerminalCode, failure_code_for)
 
 
+#: The modes a solve may run in, named once. The first is also what a run
+#: becomes when there is no model execution to call, which is why it is
+#: referred to rather than written out at that decision.
+PRACTITIONER_MODES = ("deterministic", "hybrid", "non_deterministic")
+NO_REASONING_MODE = PRACTITIONER_MODES[0]
+
+
 class SolveError(ValueError):
     """A solve request or result violated its typed contract."""
 
@@ -105,8 +112,7 @@ class SolveRequest:
             except (TypeError, ValueError) as exc:
                 raise SolveError("interaction_mode is not recognized") from exc
             object.__setattr__(self, "interaction_mode", mode)
-        if self.practitioner_mode not in (
-                "deterministic", "hybrid", "non_deterministic"):
+        if self.practitioner_mode not in PRACTITIONER_MODES:
             raise SolveError("practitioner_mode is not recognized")
         feedback = tuple(self.feedback)
         if any(not isinstance(item, TaskFeedback) for item in feedback):
@@ -396,11 +402,11 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
     # from a run that never asked to reason at all.
     mode, mode_demoted_because = request.practitioner_mode, ""
     if request.model_execution is None:
-        if request.practitioner_mode != "deterministic":
+        if request.practitioner_mode != NO_REASONING_MODE:
             mode_demoted_because = (
                 f"asked for {request.practitioner_mode!r} but no model "
                 "execution was configured, so no model was ever called")
-        mode = "deterministic"
+        mode = NO_REASONING_MODE
     region_evidence, tuned_budget = region_evidence_for_solve(request)
     adaptive = run_adaptive_practitioner(
         AdaptivePractitionerRequest(

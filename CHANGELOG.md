@@ -9,6 +9,14 @@ First public release.
 
 ### Added
 
+- **A budget that can be asked for less.** `compacted_policy()` returns a
+  context budget tightened for another attempt at a packet that did not fit:
+  text budgets halve per level, retained history shortens by one attempt, and
+  both stop at a floor rather than shrinking to a packet that fits and says
+  nothing. Refusing an oversized packet is honest but final, and throws away
+  the work that produced it. This is the primitive for putting the same call
+  again in less space; the gateway now uses the same idea for output ceilings.
+
 - **Cases written under guidance, instead of three frozen fixtures.** Three
   fixed cases can only measure three things, and they measure them
   repeatedly: the same trap, in the same words, in the same file, so a run
@@ -261,6 +269,18 @@ First public release.
   request, so nothing below dispatch depends on a name defined above it.
 
 ### Fixed
+
+- **A route no longer refuses every request because of a ceiling nobody
+  asked for.** When a caller names no output ceiling the gateway defaults to
+  the model's declared maximum. One configured route declares 1,048,576
+  output tokens against a 131,072 context window, so every request through it
+  was refused by the context preflight before the provider was contacted —
+  the route could never succeed. A ceiling the gateway chose for itself now
+  fits the window it is aimed at. A ceiling the *caller* named is still
+  refused when it does not fit, because that number is the caller's and
+  shrinking it silently is the truncation the preflight exists to prevent.
+  Found by turning provider failover on: the fallback route was reached
+  correctly and then refused itself.
 
 - **A run that was asked to reason and could not now says so.** When no model
   execution is configured the solve silently became a deterministic run, and

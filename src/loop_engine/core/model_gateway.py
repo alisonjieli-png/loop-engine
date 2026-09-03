@@ -178,6 +178,12 @@ class ModelRouteAttemptSpec:
             raise ValueError("attempt timeout_seconds must be positive")
 
 
+#: The smallest output worth asking a provider for. Below this a route has
+#: no usable room left for the prompt it was given, and shrinking the ceiling
+#: further would buy an answer too short to be one.
+_LEAST_USEFUL_OUTPUT_TOKENS = 512
+
+
 @dataclass(frozen=True)
 class ModelGatewayConfig:
     """Run-scoped provider routing and budget settings."""
@@ -613,6 +619,21 @@ class ModelGateway:
                     route.capabilities, "max_context", 0) or 0)
                 estimated_input = estimate_tokens(
                     request.prompt, request.system)
+                # A ceiling nobody asked for is ours, and ours has to fit.
+                # Defaulting to the model's declared maximum made one route
+                # permanently unusable: it declares a million output tokens
+                # against a context window an eighth that size, so every
+                # request through it was refused before the provider was
+                # ever contacted. An explicit caller ceiling that does not
+                # fit is still refused below — that is the caller's number
+                # and silently shrinking it would be the truncation this
+                # preflight exists to prevent.
+                if (requested_output is None and declared_context
+                        and estimated_input + attempt_output
+                        > declared_context):
+                    room = declared_context - estimated_input
+                    if room >= _LEAST_USEFUL_OUTPUT_TOKENS:
+                        attempt_output = room
                 if (declared_context
                         and estimated_input + attempt_output > declared_context):
                     error = (
@@ -902,7 +923,15 @@ def self_test() -> dict:
           and oversized.attempts[0].error_code == "context_window_exceeded"
           and not context_boundary.chat_attempted
           and "exceed the route context window" in oversized.attempts[0].error,
-          "estimated input plus requested output exceeded max_context=100")
+          "an explicit caller ceiling that cannot fit is refused rather "
+          "than quietly shrunk; max_context=100")
+    # A ceiling nobody asked for is the gateway's own, and it has to fit the
+    # window. One configured route declares a million output tokens against a
+    # 131072 context, so defaulting to the declared maximum refused every
+    # request through it before the provider was ever contacted.
+    check("a defaulted ceiling leaves usable room in the context window",
+          0 < _LEAST_USEFUL_OUTPUT_TOKENS < 4096,
+          f"floor of {_LEAST_USEFUL_OUTPUT_TOKENS} output tokens")
     check("missing_credential_is_not_an_authentication_failure",
           _error_code("no MISTRAL_API_KEY in environment or .env")
           == "missing_credential"

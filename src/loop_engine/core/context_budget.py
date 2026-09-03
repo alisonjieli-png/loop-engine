@@ -26,7 +26,7 @@ or the gateway preflight that refuses an oversized request (core.model_gateway).
 from __future__ import annotations
 
 import hashlib
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 
 class ContextBudgetError(ValueError):
@@ -270,6 +270,47 @@ class _Bounder:
         return value
 
 
+#: How much of its text budget one compaction attempt gives up. A packet
+#: that did not fit is rarely one byte over, so halving moves it by enough to
+#: matter; the attempt count bounds how far it can go before the run should
+#: say plainly that the work does not fit rather than keep shaving it.
+COMPACTION_FACTOR = 0.5
+MAXIMUM_COMPACTION_ATTEMPTS = 3
+
+#: Below this a bounded field carries no usable content, so compaction stops
+#: rather than producing a packet that fits and says nothing.
+_LEAST_USEFUL_FIELD_BYTES = 256
+
+
+def compacted_policy(policy: ContextBudgetPolicy,
+                     level: int) -> ContextBudgetPolicy:
+    """A budget tightened for another attempt at a packet that did not fit.
+
+    Refusing a packet that overflows is honest but final, and the work that
+    produced it is thrown away with it. Text budgets shrink geometrically and
+    the retained history shortens by one attempt per level, so the same call
+    can be put again in less space instead of not at all. Nothing here decides
+    to retry; it only says what a smaller attempt would look like.
+    """
+    if level <= 0:
+        return policy
+    scale = COMPACTION_FACTOR ** level
+
+    def shrink(value: int) -> int:
+        return max(_LEAST_USEFUL_FIELD_BYTES, int(value * scale))
+
+    return replace(
+        policy,
+        text_head_bytes=shrink(policy.text_head_bytes),
+        text_tail_bytes=shrink(policy.text_tail_bytes),
+        command_output_head_bytes=shrink(policy.command_output_head_bytes),
+        command_output_tail_bytes=shrink(policy.command_output_tail_bytes),
+        list_total_bytes=shrink(policy.list_total_bytes),
+        keep_latest_attempts=max(1, policy.keep_latest_attempts - level),
+        keep_latest_inspections=max(1, policy.keep_latest_inspections),
+    )
+
+
 def bound_state_view(view: dict, policy: ContextBudgetPolicy
                      ) -> tuple[dict, tuple[ContextTrim, ...]]:
     """Return a bounded copy of a Practitioner state view plus trim records.
@@ -406,6 +447,22 @@ def self_test() -> dict:
     except ContextBudgetError:
         invalid = True
     check("invalid_policy_fails_closed", invalid)
+    base = ContextBudgetPolicy()
+    tighter = [compacted_policy(base, level) for level in range(4)]
+    check("compaction_leaves_the_budget_alone_at_level_zero",
+          tighter[0] == base)
+    check("each_compaction_level_asks_for_strictly_less",
+          all(tighter[n + 1].text_head_bytes < tighter[n].text_head_bytes
+              and tighter[n + 1].list_total_bytes
+              < tighter[n].list_total_bytes for n in range(2)))
+    check("compaction_never_shrinks_a_field_below_usefulness",
+          all(item.text_head_bytes >= _LEAST_USEFUL_FIELD_BYTES
+              and item.keep_latest_attempts >= 1 for item in tighter))
+    deep = compacted_policy(base, 40)
+    check("compaction_has_a_floor_however_far_it_is_pushed",
+          deep.text_head_bytes == _LEAST_USEFUL_FIELD_BYTES
+          and deep.keep_latest_attempts == 1
+          and deep.keep_latest_inspections >= 1)
     passed = sum(1 for test in tests if test["passed"])
     return {"record_type": "context_budget_self_test/v1", "tests": tests,
             "passed": passed, "total": len(tests),
