@@ -496,6 +496,9 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             # claim about LLM-led reasoning that cannot be checked from the
             # result is only a claim.
             "semantic_autonomy": adaptive.get("semantic_autonomy", {}),
+            # What became of those decisions. Carried out because the join
+            # is the part a future policy could be fitted from.
+            "decision_outcomes": adaptive.get("decision_outcomes", {}),
             "search_candidates": adaptive.get("web_search_candidates", []),
             "fetched_sources": adaptive.get("web_evidence", []),
             "extensions": dict(request.extension_snapshot),

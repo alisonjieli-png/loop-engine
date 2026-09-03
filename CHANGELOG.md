@@ -9,6 +9,21 @@ First public release.
 
 ### Added
 
+- **Decisions are joined forward to what became of them.** A decision record
+  says what was chosen and who chose it, which supports one finding — how
+  often something was picked — and not the one that matters. A corpus of
+  choices without outcomes teaches that models compacted context 63% of the
+  time; a corpus with outcomes teaches that compaction succeeded 72% of the
+  time here and cost rework 31% of the time there. Only the second can become
+  policy. `core.decision_outcome` follows each decision through proposed,
+  admitted, executed, observed, verified and contributed, and refuses to
+  flatter itself: a decision whose outcome never arrived is unresolved rather
+  than successful, a decision that passed its check inside a run that then
+  failed is not counted as having helped, and a later invalidation overrides
+  an earlier success rather than being edited away. Verification is currently
+  joined at run level, and the record says so — a rate computed from run-level
+  joins describes chains of decisions, not individual ones.
+
 - **A response shape a caller may argue with.** A schema handed to a model is
   a hypothesis about how an answer should look, and it is sometimes wrong: a
   template asking for one root cause forces a single answer from evidence

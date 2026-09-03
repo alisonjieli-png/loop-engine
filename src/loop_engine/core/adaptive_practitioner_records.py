@@ -32,6 +32,7 @@ from .generated_project import (
     execute_generated_project)
 from .choice import ParameterSpec
 from .recovery import choose_recovery, recovery_options
+from .decision_outcome import OutcomeLedger
 from .semantic_decision import (SemanticAutonomyTally,
                                 SemanticDecisionRecord)
 from .option_selection import (SELECTION_KEYS, SELECTION_REPORT_CONTRACT,
@@ -756,6 +757,10 @@ class AdaptiveRunServices:
     #: leading" is a number a reader can check rather than a claim.
     semantic_decisions: SemanticAutonomyTally = field(
         default_factory=SemanticAutonomyTally)
+    #: What became of each of those decisions. Separate from the tally
+    #: because who decided and whether it helped are different questions,
+    #: and only the second can become policy.
+    decision_outcomes: OutcomeLedger = field(default_factory=OutcomeLedger)
     selected_intelligence_refs: list[str] = field(default_factory=list)
     selected_memory_refs: list[str] = field(default_factory=list)
     progress_snapshots: list[tuple] = field(default_factory=list)

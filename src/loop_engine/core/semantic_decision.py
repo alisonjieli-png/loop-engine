@@ -219,6 +219,35 @@ def _reading(tally: SemanticAutonomyTally) -> str:
             f"{tally.total - tally.uncontested} of them with alternatives")
 
 
+def note_decision(services, **fields) -> None:
+    """Record who made one task-conditioned decision, and never fail on it.
+
+    Instrumentation that can end a run is worse than no instrumentation: an
+    early version of this raised NameError from inside orientation and turned
+    two passing fixture solves into unsolved runs. Observation must not be
+    able to change the outcome it observes, so every error here becomes a
+    diagnostic and the run continues uninstrumented for that decision.
+    """
+    from ..loop.kernel_runtime import current_kernel_owner
+    try:
+        active = current_kernel_owner()
+        record = SemanticDecisionRecord(
+            run_id=services.run_id,
+            loop_id=getattr(active, "loop_id", ""),
+            **fields)
+        services.semantic_decisions.note(record)
+        # Followed from here: a decision never joined to what came of it
+        # says what was chosen and nothing about whether it was right.
+        services.decision_outcomes.open(record)
+    except Exception as exc:                            # noqa: BLE001
+        try:
+            services.diagnostic("semantic_decision_not_recorded", {
+                "error_type": type(exc).__name__,
+                "decision_kind": str(fields.get("decision_kind", ""))})
+        except Exception:                               # noqa: BLE001
+            pass
+
+
 def self_test() -> dict:
     """Offline checks. No provider is contacted."""
     tests = []

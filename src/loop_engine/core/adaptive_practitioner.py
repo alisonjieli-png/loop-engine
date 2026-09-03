@@ -22,7 +22,7 @@ from ..loop.kernel_runtime import current_kernel_owner
 from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
 from ..loop.recursive_loop import Loop, LoopConfig, LoopLedger
 from ..code_nodes.solution_model_port import SolutionModelError
-from .semantic_decision import SemanticDecisionRecord
+from .semantic_decision import SemanticDecisionRecord, note_decision
 from .adaptive_practitioner_records import (
     _unnamed_fields,
     ADAPTIVE_PRACTITIONER_RECORD_TYPE,
@@ -130,31 +130,6 @@ def _model_state(state: PractitionerState,
     # Bounding happens once, at the packet boundary in
     # adaptive_practitioner_records, where every step's state converges.
     return view
-def _note_decision(services, **fields) -> None:
-    """Record who made one task-conditioned decision, and never fail on it.
-
-    Instrumentation that can end a run is worse than no instrumentation: an
-    early version of this raised NameError from inside orientation and turned
-    two passing fixture solves into unsolved runs. Observation must not be
-    able to change the outcome it observes, so every error here becomes a
-    diagnostic and the run continues uninstrumented for that decision.
-    """
-    from ..loop.kernel_runtime import current_kernel_owner
-    try:
-        active = current_kernel_owner()
-        services.semantic_decisions.note(SemanticDecisionRecord(
-            run_id=services.run_id,
-            loop_id=getattr(active, "loop_id", ""),
-            **fields))
-    except Exception as exc:                            # noqa: BLE001
-        try:
-            services.diagnostic("semantic_decision_not_recorded", {
-                "error_type": type(exc).__name__,
-                "decision_kind": str(fields.get("decision_kind", ""))})
-        except Exception:                               # noqa: BLE001
-            pass
-
-
 def _adaptive_impls(services: AdaptiveRunServices) -> dict:
     def orient(state: PractitionerState) -> Situation:
         services.active_pass_number += 1
@@ -218,7 +193,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                 # so a caller with more to say than the form allows is not
                 # answered with a rejection of all of it. They are reported
                 # because tolerated-and-invisible is its own kind of loss.
-                _note_decision(
+                note_decision(
                     services,
                     decision_id=f"{services.run_id}.orient.{attempt}",
                     decision_kind="interpret_task", owner="llm",
@@ -484,7 +459,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
         # response could not be admitted the runtime synthesised a REPAIR
         # above; that is still a choice about what happens next, so it is
         # recorded as the runtime's own rather than counted as reasoning.
-        _note_decision(
+        note_decision(
             services,
             decision_id=f"{services.run_id}.decide.{state.version}",
             decision_kind="select_next_operation",
@@ -712,6 +687,12 @@ def run_adaptive_practitioner(
     solved = bool(
         run.get("final_route") == "stop_success" and final_attempt
         and final_attempt.get("deterministic_checks_passed"))
+    # A run that failed casts its result over every choice that led there.
+    services.decision_outcomes.close_run(
+        task_succeeded=solved,
+        verification_passed=(
+            bool(final_attempt.get("deterministic_checks_passed"))
+            if final_attempt else None))
     output = {
         "record_type": ADAPTIVE_PRACTITIONER_RECORD_TYPE,
         "run_id": run_id,
@@ -752,6 +733,10 @@ def run_adaptive_practitioner(
         "option_selection": services.selection_tally.to_dict(),
         # Who decided what this run did, saved beside what it chose from.
         "semantic_autonomy": services.semantic_decisions.to_dict(),
+        "decision_outcomes": services.decision_outcomes.to_dict(),
+        "decision_outcome_rows": [
+            item.to_dict()
+            for item in services.decision_outcomes.outcomes.values()],
         "semantic_decisions": [item.to_dict()
                                for item in
                                services.semantic_decisions.decisions],
