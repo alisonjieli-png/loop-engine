@@ -1,0 +1,34 @@
+{
+  "checks": {
+    "identifier_order": {
+      "detail": "submission id order matches sample_submission: True",
+      "passed": true
+    },
+    "infinite_predictions": {
+      "detail": "infinite values: 0",
+      "passed": true
+    },
+    "missing_predictions": {
+      "detail": "missing values: 0",
+      "passed": true
+    },
+    "prediction_range": {
+      "detail": "valid labels ['at-risk', 'fit', 'unhealthy'], submission labels ['at-risk', 'fit', 'unhealthy'], out-of-range []",
+      "passed": true
+    },
+    "prediction_type": {
+      "detail": "non-string predictions: 0",
+      "passed": true
+    },
+    "row_count": {
+      "detail": "submission has 295753 rows, test has 295753 rows",
+      "passed": true
+    },
+    "schema_column_order": {
+      "detail": "expected ['id', 'health_condition'], got ['id', 'health_condition']",
+      "passed": true
+    }
+  },
+  "overall_pass": true,
+  "submission_path": "submission.csv"
+}

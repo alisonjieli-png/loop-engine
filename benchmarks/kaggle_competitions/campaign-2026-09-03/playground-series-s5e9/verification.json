@@ -1,0 +1,59 @@
+{
+  "checks": {
+    "schema": {
+      "expected": [
+        "id",
+        "BeatsPerMinute"
+      ],
+      "actual": [
+        "id",
+        "BeatsPerMinute"
+      ],
+      "pass": true
+    },
+    "row_count": {
+      "expected": 174722,
+      "actual": 174722,
+      "pass": true
+    },
+    "identifier_order": {
+      "expected_first": [
+        524164,
+        524165,
+        524166,
+        524167,
+        524168
+      ],
+      "actual_first": [
+        524164,
+        524165,
+        524166,
+        524167,
+        524168
+      ],
+      "pass": true
+    },
+    "missing_predictions": {
+      "count": 0,
+      "pass": true
+    },
+    "infinite_predictions": {
+      "count": 0,
+      "pass": true
+    },
+    "prediction_type": {
+      "dtype": "float64",
+      "pass": true
+    },
+    "prediction_range": {
+      "min": 117.56766607806355,
+      "max": 120.41915378999153,
+      "allowed": [
+        0.0,
+        300.0
+      ],
+      "pass": true
+    }
+  },
+  "overall_pass": true
+}

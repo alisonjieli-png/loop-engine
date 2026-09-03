@@ -1,0 +1,27 @@
+{
+  "fixed_seed": 42,
+  "metric": "rmse",
+  "models": {
+    "random_forest": {
+      "fold_rmse": [
+        9.108470517371698,
+        9.12024971386597,
+        9.14258216679274
+      ],
+      "mean_rmse": 9.123767466010136,
+      "std_rmse": 0.01414642691440412
+    },
+    "ridge": {
+      "fold_rmse": [
+        8.884465144758368,
+        8.893181980030796,
+        8.906666720929953
+      ],
+      "mean_rmse": 8.894771281906372,
+      "std_rmse": 0.009133159601673647
+    }
+  },
+  "n_folds": 3,
+  "selected_model": "ridge",
+  "task_type": "regression"
+}

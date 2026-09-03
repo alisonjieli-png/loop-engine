@@ -1,0 +1,121 @@
+{
+  "task_type": "binary_classification",
+  "target": "Heart Disease",
+  "metric": "roc_auc",
+  "cv_folds": 3,
+  "cv_results": {
+    "LogisticRegression": {
+      "fold_aucs": [
+        0.95049,
+        0.950366,
+        0.95062
+      ],
+      "mean_auc": 0.9504920651380879,
+      "std_auc": 0.00010356056903399957
+    },
+    "RandomForestClassifier": {
+      "fold_aucs": [
+        0.948139,
+        0.947863,
+        0.948123
+      ],
+      "mean_auc": 0.9480414586063745,
+      "std_auc": 0.00012663061677712202
+    }
+  },
+  "selected_model": "LogisticRegression",
+  "selected_model_mean_roc_auc": 0.950492,
+  "seed": 42,
+  "data_quality_checks": {
+    "train_missing_values": 0,
+    "test_missing_values": 0,
+    "train_duplicate_rows": 0,
+    "test_duplicate_rows": 0,
+    "train_feature_columns": [
+      "id",
+      "Age",
+      "Sex",
+      "Chest pain type",
+      "BP",
+      "Cholesterol",
+      "FBS over 120",
+      "EKG results",
+      "Max HR",
+      "Exercise angina",
+      "ST depression",
+      "Slope of ST",
+      "Number of vessels fluro",
+      "Thallium"
+    ],
+    "test_columns": [
+      "id",
+      "Age",
+      "Sex",
+      "Chest pain type",
+      "BP",
+      "Cholesterol",
+      "FBS over 120",
+      "EKG results",
+      "Max HR",
+      "Exercise angina",
+      "ST depression",
+      "Slope of ST",
+      "Number of vessels fluro",
+      "Thallium"
+    ],
+    "schema_aligned": true,
+    "train_nunique": {
+      "id": 630000,
+      "Age": 42,
+      "Sex": 2,
+      "Chest pain type": 4,
+      "BP": 66,
+      "Cholesterol": 150,
+      "FBS over 120": 2,
+      "EKG results": 3,
+      "Max HR": 93,
+      "Exercise angina": 2,
+      "ST depression": 66,
+      "Slope of ST": 3,
+      "Number of vessels fluro": 4,
+      "Thallium": 3,
+      "Heart Disease": 2
+    },
+    "test_nunique": {
+      "id": 270000,
+      "Age": 43,
+      "Sex": 2,
+      "Chest pain type": 4,
+      "BP": 64,
+      "Cholesterol": 145,
+      "FBS over 120": 2,
+      "EKG results": 3,
+      "Max HR": 92,
+      "Exercise angina": 2,
+      "ST depression": 64,
+      "Slope of ST": 3,
+      "Number of vessels fluro": 4,
+      "Thallium": 3
+    },
+    "train_id_min": 0,
+    "train_id_max": 629999,
+    "test_id_min": 630000,
+    "test_id_max": 899999,
+    "id_ranges_disjoint": true,
+    "target_unique_before": [
+      "Absence",
+      "Presence"
+    ],
+    "target_class_counts": {
+      "Absence": 347546,
+      "Presence": 282454
+    },
+    "sample_columns": [
+      "id",
+      "Heart Disease"
+    ],
+    "sample_row_count": 270000,
+    "test_row_count": 270000,
+    "sample_ids_match_test": true
+  }
+}

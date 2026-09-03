@@ -1,0 +1,33 @@
+{
+  "checks": {
+    "schema_columns": {
+      "pass": true,
+      "detail": "submission header ['id', 'Churn'] != expected ['id', 'Churn']"
+    },
+    "row_count": {
+      "pass": true,
+      "detail": "submission rows 254655 != test rows 254655"
+    },
+    "identifier_order": {
+      "pass": true,
+      "detail": "submission id order does not match test.csv id order"
+    },
+    "no_missing_predictions": {
+      "pass": true,
+      "detail": "0 missing prediction(s)"
+    },
+    "no_infinite_predictions": {
+      "pass": true,
+      "detail": "0 infinite/NaN prediction(s)"
+    },
+    "prediction_type_numeric": {
+      "pass": true,
+      "detail": "0 non-numeric prediction(s)"
+    },
+    "prediction_range": {
+      "pass": true,
+      "detail": "0 prediction(s) outside {0,1}"
+    }
+  },
+  "overall": "PASS"
+}

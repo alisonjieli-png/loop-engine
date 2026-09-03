@@ -1,0 +1,53 @@
+{
+  "task_type": "binary_classification",
+  "target": "diagnosed_diabetes",
+  "identifier": "id",
+  "cv": {
+    "n_splits": 3,
+    "shuffle": true,
+    "random_state": 42,
+    "metric": "log_loss",
+    "secondary_metric": "roc_auc"
+  },
+  "models": {
+    "LogisticRegression": {
+      "fold_log_loss": [
+        0.6034287990564619,
+        0.6042127863029363,
+        0.6034059160114887
+      ],
+      "mean_log_loss": 0.6036825004569623,
+      "std_log_loss": 0.0003750850723654366,
+      "fold_roc_auc": [
+        0.6948426875514822,
+        0.6931886608797797,
+        0.6952800906933572
+      ],
+      "mean_roc_auc": 0.694437146374873,
+      "std_roc_auc": 0.0009006913643508561
+    },
+    "HistGradientBoostingClassifier": {
+      "fold_log_loss": [
+        0.5872882400501805,
+        0.5878689895753055,
+        0.5872595777363093
+      ],
+      "mean_log_loss": 0.5874722691205986,
+      "std_log_loss": 0.0002807676636727118,
+      "fold_roc_auc": [
+        0.7210728254288973,
+        0.7201641870484488,
+        0.7212718776197432
+      ],
+      "mean_roc_auc": 0.7208362966990297,
+      "std_roc_auc": 0.0004821507236492323
+    }
+  },
+  "selected_model": "HistGradientBoostingClassifier",
+  "test_predictions": {
+    "count": 300000,
+    "mean": 0.6029861469747307,
+    "min": 0.09539956751735693,
+    "max": 0.9765494608501223
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "task_type": "classification",
+  "metric": "accuracy",
+  "n_folds": 3,
+  "seed": 42,
+  "models": {
+    "LogisticRegression": {
+      "fold_scores": [
+        0.8761714285714286,
+        0.8756952380952381,
+        0.8768761904761905
+      ],
+      "mean_score": 0.876247619047619,
+      "std_score": 0.0004851225776480811
+    },
+    "HistGradientBoostingClassifier": {
+      "fold_scores": [
+        0.9831857142857143,
+        0.983652380952381,
+        0.9832666666666666
+      ],
+      "mean_score": 0.983368253968254,
+      "std_score": 0.0002036081683483922
+    }
+  },
+  "selected_model": "HistGradientBoostingClassifier",
+  "selected_model_mean_cv_accuracy": 0.983368253968254,
+  "contract": {
+    "target": "Irrigation_Need",
+    "identifier": "id",
+    "task_type": "classification",
+    "submission_columns": [
+      "id",
+      "Irrigation_Need"
+    ],
+    "submission_rows": 270000,
+    "test_rows": 270000,
+    "id_order_matches_test": true
+  },
+  "data_quality": {
+    "missing_values": {
+      "train_total": 0,
+      "test_total": 0,
+      "train_by_column": {},
+      "test_by_column": {}
+    },
+    "duplicates": {
+      "train_duplicate_rows": 0,
+      "test_duplicate_rows": 0
+    },
+    "leakage": {
+      "train_test_id_overlap": 0,
+      "sample_test_id_overlap": 270000,
+      "sample_ids_not_in_test": 0,
+      "test_ids_not_in_sample": 0
+    },
+    "suspicious_unique_fields": {},
+    "schema_differences": {
+      "columns_in_train_not_test": [
+        "Irrigation_Need"
+      ],
+      "columns_in_test_not_train": [],
+      "dtype_differences_on_common": {}
+    }
+  },
+  "runtime_seconds": 120.23
+}

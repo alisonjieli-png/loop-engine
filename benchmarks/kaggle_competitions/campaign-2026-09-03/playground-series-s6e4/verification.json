@@ -1,0 +1,85 @@
+{
+  "contract": {
+    "target": "Irrigation_Need",
+    "identifier": "id",
+    "submission_columns": [
+      "id",
+      "Irrigation_Need"
+    ],
+    "submission_rows": 270000,
+    "test_rows": 270000,
+    "label_set": [
+      "High",
+      "Low",
+      "Medium"
+    ]
+  },
+  "checks": {
+    "submission_exists": {
+      "pass": true,
+      "detail": "submission.csv exists"
+    },
+    "schema": {
+      "pass": true,
+      "expected": [
+        "id",
+        "Irrigation_Need"
+      ],
+      "actual": [
+        "id",
+        "Irrigation_Need"
+      ]
+    },
+    "row_count": {
+      "pass": true,
+      "expected": 270000,
+      "actual": 270000
+    },
+    "column_order": {
+      "pass": true,
+      "expected": [
+        "id",
+        "Irrigation_Need"
+      ],
+      "actual": [
+        "id",
+        "Irrigation_Need"
+      ]
+    },
+    "identifier_order": {
+      "pass": true,
+      "expected_first": [
+        "630000",
+        "630001",
+        "630002"
+      ],
+      "actual_first": [
+        "630000",
+        "630001",
+        "630002"
+      ]
+    },
+    "missing_predictions": {
+      "pass": true,
+      "missing_count": 0
+    },
+    "infinite_predictions": {
+      "pass": true,
+      "detail": "non-numeric predictions; infinite check not applicable"
+    },
+    "prediction_type": {
+      "pass": true,
+      "dtype": "object"
+    },
+    "prediction_range": {
+      "pass": true,
+      "label_set": [
+        "High",
+        "Low",
+        "Medium"
+      ],
+      "out_of_range_values": []
+    }
+  },
+  "overall_verdict": "PASS"
+}

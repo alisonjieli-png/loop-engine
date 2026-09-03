@@ -1,0 +1,79 @@
+{
+  "all_passed": true,
+  "checks": {
+    "column_order": {
+      "detail": "column order matches sample_submission.csv",
+      "passed": true,
+      "sample_columns": [
+        "id",
+        "loan_paid_back"
+      ],
+      "submission_columns": [
+        "id",
+        "loan_paid_back"
+      ]
+    },
+    "identifier_order": {
+      "detail": "identifier order matches sample_submission.csv",
+      "passed": true
+    },
+    "infinite_predictions": {
+      "detail": "no infinite predictions",
+      "infinite_count": 0,
+      "passed": true
+    },
+    "missing_predictions": {
+      "detail": "no missing predictions",
+      "missing_count": 0,
+      "passed": true
+    },
+    "prediction_range": {
+      "detail": "all predictions are 0 or 1",
+      "expected_values": [
+        0,
+        1
+      ],
+      "observed_values": [
+        0,
+        1
+      ],
+      "passed": true
+    },
+    "prediction_type": {
+      "detail": "predictions are numeric and integer-valued",
+      "dtype": "int64",
+      "integer_valued": true,
+      "non_numeric_count": 0,
+      "passed": true
+    },
+    "row_count": {
+      "detail": "submission has 254569 rows, sample has 254569",
+      "passed": true,
+      "sample_rows": 254569,
+      "submission_rows": 254569
+    },
+    "sample_submission_readable": {
+      "detail": "read 254569 rows from inputs/playground-series-s5e11/sample_submission.csv",
+      "passed": true
+    },
+    "schema": {
+      "actual": [
+        "id",
+        "loan_paid_back"
+      ],
+      "detail": "columns match expected [id, loan_paid_back]",
+      "expected": [
+        "id",
+        "loan_paid_back"
+      ],
+      "passed": true
+    },
+    "submission_readable": {
+      "detail": "read 254569 rows from submission.csv",
+      "passed": true
+    }
+  },
+  "failed_checks": [],
+  "finished_at": "2026-09-03T00:57:04.407576+00:00",
+  "started_at": "2026-09-03T00:57:04.141300+00:00"
+}

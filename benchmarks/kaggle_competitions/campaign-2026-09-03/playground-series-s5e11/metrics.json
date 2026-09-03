@@ -1,0 +1,31 @@
+{
+  "cv_folds": 3,
+  "elapsed_seconds": 71.043,
+  "finished_at": "2026-09-03T00:57:02.938423+00:00",
+  "metric": "roc_auc",
+  "models": {
+    "logistic_regression": {
+      "fold_scores": [
+        0.9115501757186489,
+        0.9094300948104719,
+        0.9106218157659489
+      ],
+      "mean": 0.9105340287650233,
+      "std": 0.0008677425434051499
+    },
+    "random_forest": {
+      "fold_scores": [
+        0.9088124809455539,
+        0.9069798597841336,
+        0.9084648778108572
+      ],
+      "mean": 0.908085739513515,
+      "std": 0.0007947471156307162
+    }
+  },
+  "seed": 42,
+  "selected_model": "logistic_regression",
+  "selected_model_mean_cv_auc": 0.9105340287650233,
+  "submission_rows": 254569,
+  "test_rows": 254569
+}

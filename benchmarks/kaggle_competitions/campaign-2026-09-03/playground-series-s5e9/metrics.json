@@ -1,0 +1,166 @@
+{
+  "task": "regression",
+  "target": "BeatsPerMinute",
+  "identifier": "id",
+  "validation": {
+    "method": "KFold",
+    "n_splits": 3,
+    "shuffle": true,
+    "seed": 42,
+    "metric": "RMSE"
+  },
+  "models": {
+    "mean_baseline": {
+      "fold_rmse": [
+        26.478745,
+        26.486521,
+        26.439049
+      ],
+      "mean_rmse": 26.468105,
+      "std_rmse": 0.020789
+    },
+    "ridge": {
+      "fold_rmse": [
+        26.477178,
+        26.484779,
+        26.437529
+      ],
+      "mean_rmse": 26.466495,
+      "std_rmse": 0.020716
+    }
+  },
+  "selected_model": "ridge",
+  "final_fit": {
+    "rows": 524164,
+    "features": [
+      "RhythmScore",
+      "AudioLoudness",
+      "VocalContent",
+      "AcousticQuality",
+      "InstrumentalScore",
+      "LivePerformanceLikelihood",
+      "MoodScore",
+      "TrackDurationMs",
+      "Energy"
+    ],
+    "fit_seconds": 0.285
+  },
+  "submission": {
+    "rows": 174722,
+    "columns": [
+      "id",
+      "BeatsPerMinute"
+    ],
+    "id_order_matches_sample": true,
+    "missing_predictions": 0,
+    "infinite_predictions": 0,
+    "prediction_min": 117.56766607806355,
+    "prediction_max": 120.41915378999153
+  },
+  "data_quality": {
+    "shapes": {
+      "train": [
+        524164,
+        11
+      ],
+      "test": [
+        174722,
+        10
+      ],
+      "sample_submission": [
+        174722,
+        2
+      ]
+    },
+    "missing": {
+      "train": {
+        "id": 0,
+        "RhythmScore": 0,
+        "AudioLoudness": 0,
+        "VocalContent": 0,
+        "AcousticQuality": 0,
+        "InstrumentalScore": 0,
+        "LivePerformanceLikelihood": 0,
+        "MoodScore": 0,
+        "TrackDurationMs": 0,
+        "Energy": 0,
+        "BeatsPerMinute": 0
+      },
+      "test": {
+        "id": 0,
+        "RhythmScore": 0,
+        "AudioLoudness": 0,
+        "VocalContent": 0,
+        "AcousticQuality": 0,
+        "InstrumentalScore": 0,
+        "LivePerformanceLikelihood": 0,
+        "MoodScore": 0,
+        "TrackDurationMs": 0,
+        "Energy": 0
+      }
+    },
+    "duplicates": {
+      "train": 0,
+      "test": 0
+    },
+    "schema": {
+      "train_columns": [
+        "id",
+        "RhythmScore",
+        "AudioLoudness",
+        "VocalContent",
+        "AcousticQuality",
+        "InstrumentalScore",
+        "LivePerformanceLikelihood",
+        "MoodScore",
+        "TrackDurationMs",
+        "Energy",
+        "BeatsPerMinute"
+      ],
+      "test_columns": [
+        "id",
+        "RhythmScore",
+        "AudioLoudness",
+        "VocalContent",
+        "AcousticQuality",
+        "InstrumentalScore",
+        "LivePerformanceLikelihood",
+        "MoodScore",
+        "TrackDurationMs",
+        "Energy"
+      ],
+      "sample_columns": [
+        "id",
+        "BeatsPerMinute"
+      ],
+      "feature_order_matches_test": false,
+      "columns_in_train_not_in_test": [
+        "BeatsPerMinute"
+      ],
+      "columns_in_test_not_in_train": []
+    },
+    "id_overlap_train_test": 0,
+    "target": {
+      "mean": 119.03489938795875,
+      "std": 26.468077212186284,
+      "min": 46.718,
+      "max": 206.037,
+      "nunique": 14622
+    },
+    "suspicious": {
+      "train": {
+        "id": {
+          "nunique": 524164,
+          "flag": "all_distinct_like_id"
+        }
+      },
+      "test": {
+        "id": {
+          "nunique": 174722,
+          "flag": "all_distinct_like_id"
+        }
+      }
+    }
+  },
+  "runtime_seconds": 3.211
+}

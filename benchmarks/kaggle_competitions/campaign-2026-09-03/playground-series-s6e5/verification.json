@@ -1,0 +1,106 @@
+{
+  "verdict": "PASS",
+  "all_checks_passed": true,
+  "contract": {
+    "columns": [
+      "id",
+      "PitNextLap"
+    ],
+    "row_count": 188165,
+    "identifier_order": "must equal test.csv id order",
+    "prediction_values": [
+      0,
+      1
+    ]
+  },
+  "checks": [
+    {
+      "check": "schema",
+      "passed": true,
+      "details": {
+        "expected": [
+          "id",
+          "PitNextLap"
+        ],
+        "actual": [
+          "id",
+          "PitNextLap"
+        ],
+        "id_dtype": "int64",
+        "target_dtype": "int64",
+        "id_numeric": true,
+        "target_numeric": true
+      }
+    },
+    {
+      "check": "row_count",
+      "passed": true,
+      "details": {
+        "expected": 188165,
+        "actual": 188165
+      }
+    },
+    {
+      "check": "column_order",
+      "passed": true,
+      "details": {
+        "expected_order": [
+          "id",
+          "PitNextLap"
+        ],
+        "actual_order": [
+          "id",
+          "PitNextLap"
+        ]
+      }
+    },
+    {
+      "check": "identifier_order",
+      "passed": true,
+      "details": {
+        "expected_first": 439140,
+        "expected_last": 627304,
+        "actual_first": 439140,
+        "actual_last": 627304,
+        "expected_count": 188165,
+        "actual_count": 188165
+      }
+    },
+    {
+      "check": "missing_predictions",
+      "passed": true,
+      "details": {
+        "missing_count": 0
+      }
+    },
+    {
+      "check": "infinite_predictions",
+      "passed": true,
+      "details": {
+        "infinite_count": 0
+      }
+    },
+    {
+      "check": "prediction_type",
+      "passed": true,
+      "details": {
+        "bad_type_count": 0,
+        "expected": "integer-valued 0 or 1"
+      }
+    },
+    {
+      "check": "prediction_range",
+      "passed": true,
+      "details": {
+        "allowed_values": [
+          0,
+          1
+        ],
+        "observed_values": [
+          "0",
+          "1"
+        ]
+      }
+    }
+  ]
+}

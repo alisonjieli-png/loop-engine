@@ -1,0 +1,41 @@
+{
+  "verification": {
+    "submission_path": "submission.csv",
+    "test_path": "inputs/playground-series-s6e8/test.csv",
+    "checks": {
+      "schema_columns": {
+        "passed": true,
+        "details": "expected ['id', 'addicted_label'], got ['id', 'addicted_label']"
+      },
+      "row_count": {
+        "passed": true,
+        "details": "submission rows=296302, test rows=296302"
+      },
+      "column_order": {
+        "passed": true,
+        "details": "expected order ['id', 'addicted_label'], got ['id', 'addicted_label']"
+      },
+      "identifier_order": {
+        "passed": true,
+        "details": "submission id order matches test id order: True"
+      },
+      "missing_predictions": {
+        "passed": true,
+        "details": "missing count=0"
+      },
+      "infinite_predictions": {
+        "passed": true,
+        "details": "infinite count=0"
+      },
+      "prediction_type": {
+        "passed": true,
+        "details": "dtype=float64"
+      },
+      "prediction_range": {
+        "passed": true,
+        "details": "min=0.0, max=1.0"
+      }
+    },
+    "overall_verdict": "PASS"
+  }
+}

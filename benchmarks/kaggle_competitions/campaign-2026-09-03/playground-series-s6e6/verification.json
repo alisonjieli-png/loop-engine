@@ -1,0 +1,40 @@
+{
+  "overall_verdict": "PASS",
+  "checks": [
+    {
+      "check": "submission_schema",
+      "pass": true,
+      "detail": "expected columns ['id', 'class'], got ['id', 'class']"
+    },
+    {
+      "check": "row_count",
+      "pass": true,
+      "detail": "expected 247435 rows, got 247435"
+    },
+    {
+      "check": "identifier_order",
+      "pass": true,
+      "detail": "all 247435 identifiers match in order"
+    },
+    {
+      "check": "no_missing_predictions",
+      "pass": true,
+      "detail": "missing prediction count: 0"
+    },
+    {
+      "check": "no_infinite_predictions",
+      "pass": true,
+      "detail": "infinite/nan prediction count: 0"
+    },
+    {
+      "check": "prediction_type",
+      "pass": true,
+      "detail": "non-string prediction count: 0"
+    },
+    {
+      "check": "prediction_range",
+      "pass": true,
+      "detail": "expected classes ['GALAXY', 'QSO', 'STAR'], got ['GALAXY', 'QSO', 'STAR']"
+    }
+  ]
+}

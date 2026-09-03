@@ -1,0 +1,62 @@
+{
+  "task_type": "multiclass_classification",
+  "target": "class",
+  "classes": [
+    "GALAXY",
+    "QSO",
+    "STAR"
+  ],
+  "metric": "accuracy",
+  "n_folds": 3,
+  "seed": 42,
+  "cv_scores": {
+    "LogisticRegression": {
+      "scores": [
+        0.9277522876190575,
+        0.926250591065685,
+        0.9267494245228606
+      ],
+      "mean": 0.9269174344025344,
+      "std": 0.0006244697080209815
+    },
+    "RandomForestClassifier": {
+      "scores": [
+        0.9602284241539317,
+        0.9593294846946464,
+        0.9592567381488083
+      ],
+      "mean": 0.9596048823324622,
+      "std": 0.0004419097323542051
+    }
+  },
+  "selected_model": "RandomForestClassifier",
+  "train_shape": [
+    577347,
+    12
+  ],
+  "test_shape": [
+    247435,
+    11
+  ],
+  "submission_shape": [
+    247435,
+    2
+  ],
+  "data_quality": {
+    "train_missing_total": 0,
+    "test_missing_total": 0,
+    "train_duplicate_rows": 0,
+    "test_duplicate_rows": 0,
+    "target_in_test": false,
+    "id_in_test": true,
+    "train_id_unique": true,
+    "test_id_unique": true,
+    "columns_only_in_train": [
+      "class"
+    ],
+    "columns_only_in_test": [],
+    "submission_row_count_matches_test": true,
+    "submission_id_order_matches_test": true
+  },
+  "elapsed_seconds": 805.43
+}

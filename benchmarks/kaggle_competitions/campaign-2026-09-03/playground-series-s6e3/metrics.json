@@ -1,0 +1,24 @@
+{
+  "metric": "roc_auc",
+  "n_folds": 3,
+  "seed": 42,
+  "cv_scores": {
+    "LogisticRegression": {
+      "scores": [
+        0.9078366703509781,
+        0.9087784468351098,
+        0.907171830969467
+      ],
+      "mean": 0.9079289827185183
+    },
+    "HistGradientBoostingClassifier": {
+      "scores": [
+        0.9147024521205281,
+        0.9154805819202719,
+        0.9142307931102207
+      ],
+      "mean": 0.9148046090503402
+    }
+  },
+  "chosen_model": "HistGradientBoostingClassifier"
+}

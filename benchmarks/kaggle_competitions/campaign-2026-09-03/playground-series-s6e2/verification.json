@@ -1,0 +1,23 @@
+{
+  "columns": [
+    "id",
+    "Heart Disease"
+  ],
+  "expected_columns": [
+    "id",
+    "Heart Disease"
+  ],
+  "columns_exact_order": true,
+  "row_count": 270000,
+  "expected_row_count": 270000,
+  "row_count_match": true,
+  "id_order_match": true,
+  "missing_predictions": 0,
+  "nonfinite_predictions": 0,
+  "unique_prediction_values": [
+    0,
+    1
+  ],
+  "binary_01": true,
+  "all_pass": true
+}

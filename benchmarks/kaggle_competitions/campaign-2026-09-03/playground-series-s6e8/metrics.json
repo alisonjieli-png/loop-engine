@@ -1,0 +1,37 @@
+{
+  "task_type": "binary_classification",
+  "target": "addicted_label",
+  "identifier": "id",
+  "prediction_field": "addicted_label",
+  "validation_metric": "roc_auc",
+  "n_folds": 3,
+  "random_state": 42,
+  "cv_results": {
+    "LogisticRegression": {
+      "scores": [
+        0.9103955142101363,
+        0.9118640333840888,
+        0.9121035484671332
+      ],
+      "mean": 0.911454365353786,
+      "std": 0.0007550788819974491
+    },
+    "RandomForestClassifier": {
+      "scores": [
+        0.9402145985946614,
+        0.9414534296509587,
+        0.9417326210277543
+      ],
+      "mean": 0.9411335497577914,
+      "std": 0.0006597173063178228
+    }
+  },
+  "selected_model": "RandomForestClassifier",
+  "final_metrics": {
+    "n_train_rows": 691369,
+    "n_test_rows": 296302,
+    "test_prediction_mean": 0.707646303433659,
+    "test_prediction_min": 0.0,
+    "test_prediction_max": 1.0
+  }
+}

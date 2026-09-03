@@ -1,0 +1,56 @@
+{
+  "artifact": "submission.csv",
+  "checks": {
+    "column_order": {
+      "matches": true,
+      "sample_submission_columns": [
+        "id",
+        "exam_score"
+      ],
+      "submission_columns": [
+        "id",
+        "exam_score"
+      ]
+    },
+    "identifier_order": {
+      "matches": true,
+      "sample_submission_id_count": 270000,
+      "submission_id_count": 270000
+    },
+    "infinite_predictions": {
+      "count": 0,
+      "passes": true
+    },
+    "missing_predictions": {
+      "count": 0,
+      "passes": true
+    },
+    "prediction_range": {
+      "max": 110.70690984657249,
+      "min": 15.13458757543146,
+      "passes": false
+    },
+    "prediction_type": {
+      "dtype": "float64",
+      "is_numeric": true
+    },
+    "row_count": {
+      "matches": true,
+      "submission": 270000,
+      "test": 270000
+    },
+    "schema": {
+      "columns_only_in_sample": [],
+      "columns_only_in_submission": [],
+      "passes": true,
+      "sample_submission_columns": [
+        "id",
+        "exam_score"
+      ],
+      "submission_columns": [
+        "id",
+        "exam_score"
+      ]
+    }
+  }
+}

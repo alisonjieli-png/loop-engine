@@ -1,0 +1,70 @@
+{
+  "chosen_model": "HistGradientBoostingRegressor",
+  "cv_metrics": {
+    "HistGradientBoostingRegressor": {
+      "mean_mae": 0.04369815141253808,
+      "mean_rmse": 0.05621428470927184,
+      "per_fold": [
+        {
+          "fold": 0,
+          "mae": 0.0437788423762481,
+          "rmse": 0.05636163623613361
+        },
+        {
+          "fold": 1,
+          "mae": 0.043670612962833665,
+          "rmse": 0.056216349183565335
+        },
+        {
+          "fold": 2,
+          "mae": 0.04364499889853247,
+          "rmse": 0.05606486870811656
+        }
+      ],
+      "std_mae": 5.8007435103014296e-05,
+      "std_rmse": 0.00012116363030194344
+    },
+    "Ridge": {
+      "mean_mae": 0.05835473345161895,
+      "mean_rmse": 0.07349641137248816,
+      "per_fold": [
+        {
+          "fold": 0,
+          "mae": 0.05838581082659332,
+          "rmse": 0.0736099730594865
+        },
+        {
+          "fold": 1,
+          "mae": 0.058355363147967736,
+          "rmse": 0.07346596913989145
+        },
+        {
+          "fold": 2,
+          "mae": 0.058323026380295795,
+          "rmse": 0.07341329191808654
+        }
+      ],
+      "std_mae": 2.5635510037711275e-05,
+      "std_rmse": 8.313007875091953e-05
+    }
+  },
+  "final_fit": {
+    "model": "HistGradientBoostingRegressor",
+    "prediction_clip": [
+      0.0,
+      1.0
+    ],
+    "submission_columns": [
+      "id",
+      "accident_risk"
+    ],
+    "test_rows": 172585,
+    "training_rows": 517754
+  },
+  "id_column": "id",
+  "n_splits": 3,
+  "seed": 42,
+  "selection_metric": "mean_cv_rmse",
+  "target_column": "accident_risk",
+  "task_type": "regression"
+}

@@ -1,0 +1,56 @@
+{
+  "all_checks_passed": true,
+  "checks": [
+    {
+      "check": "schema",
+      "detail": "columns=['id', 'accident_risk'] expected=['id', 'accident_risk']",
+      "passed": true
+    },
+    {
+      "check": "row_count",
+      "detail": "submission_rows=172585 test_rows=172585",
+      "passed": true
+    },
+    {
+      "check": "column_order",
+      "detail": "columns=['id', 'accident_risk'] expected_order=['id', 'accident_risk']",
+      "passed": true
+    },
+    {
+      "check": "identifier_order",
+      "detail": "first_id=517754 last_id=690338",
+      "passed": true
+    },
+    {
+      "check": "missing_predictions",
+      "detail": "missing=0",
+      "passed": true
+    },
+    {
+      "check": "infinite_predictions",
+      "detail": "infinite=0",
+      "passed": true
+    },
+    {
+      "check": "prediction_type",
+      "detail": "dtype=float64",
+      "passed": true
+    },
+    {
+      "check": "prediction_range",
+      "detail": "min=0.0006569334216714 max=0.87355954974688 expected=[0.0, 1.0]",
+      "passed": true
+    }
+  ],
+  "expected_columns": [
+    "id",
+    "accident_risk"
+  ],
+  "expected_target_range": [
+    0.0,
+    1.0
+  ],
+  "sample_submission_path": "inputs/playground-series-s5e10/sample_submission.csv",
+  "submission_path": "submission.csv",
+  "test_path": "inputs/playground-series-s5e10/test.csv"
+}

@@ -1,0 +1,70 @@
+{
+  "chosen_model": "random_forest",
+  "identifier_column": "id",
+  "models": {
+    "dummy": {
+      "accuracy_mean": 0.8586745458607274,
+      "accuracy_per_fold": [
+        0.8586706081815415,
+        0.8586786883392964,
+        0.8586743410613444
+      ],
+      "accuracy_std": 3.301887785941241e-06,
+      "f1_macro_mean": 0.3079881297741059,
+      "f1_macro_per_fold": [
+        0.30798736989825753,
+        0.3079889291700776,
+        0.3079880902539826
+      ],
+      "f1_macro_std": 6.371831407638677e-07
+    },
+    "logistic_regression": {
+      "accuracy_mean": 0.9481413967302461,
+      "accuracy_per_fold": [
+        0.9479546146154849,
+        0.9483369488194967,
+        0.9481326267557569
+      ],
+      "accuracy_std": 0.00015621042480948392,
+      "f1_macro_mean": 0.8550171971388588,
+      "f1_macro_per_fold": [
+        0.8539668871318716,
+        0.8560520855472383,
+        0.8550326187374665
+      ],
+      "f1_macro_std": 0.0008513485291542499
+    },
+    "random_forest": {
+      "accuracy_mean": 0.9647595665029943,
+      "accuracy_per_fold": [
+        0.9650306481763248,
+        0.9648609523147081,
+        0.96438709901795
+      ],
+      "accuracy_std": 0.00027233336424793437,
+      "f1_macro_mean": 0.900653544222294,
+      "f1_macro_per_fold": [
+        0.9014869946418135,
+        0.9009859778123165,
+        0.8994876602127523
+      ],
+      "f1_macro_std": 0.0008493992420680832
+    }
+  },
+  "n_splits": 3,
+  "random_state": 42,
+  "scoring": [
+    "accuracy",
+    "f1_macro"
+  ],
+  "submission_contract": {
+    "columns": [
+      "id",
+      "health_condition"
+    ],
+    "identifier_order_source": "sample_submission.csv",
+    "row_count": 295753
+  },
+  "target_column": "health_condition",
+  "task_type": "multiclass_classification"
+}

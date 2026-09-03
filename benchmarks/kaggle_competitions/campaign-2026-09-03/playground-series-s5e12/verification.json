@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "schema": true,
+    "row_count": true,
+    "column_order": true,
+    "identifier_order": true,
+    "no_missing_predictions": true,
+    "no_infinite_predictions": true,
+    "prediction_type": true,
+    "prediction_range": true
+  },
+  "failures": [],
+  "all_checks_passed": true
+}
