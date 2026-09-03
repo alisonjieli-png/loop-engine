@@ -9,6 +9,20 @@ First public release.
 
 ### Added
 
+- **Cases written under guidance, instead of three frozen fixtures.** Three
+  fixed cases can only measure three things, and they measure them
+  repeatedly: the same trap, in the same words, in the same file, so a run
+  that does well on them has been shown to do well on them.
+  `benchmarks/task_families/generator.py` describes the *shape* of each trap —
+  a misattribution, a quietly superseded instruction, a list whose structure
+  is not what it looks like — and asks a model to invent the particulars,
+  through a Loop. Each case carries its own judging criterion, so a generated
+  trap is gradeable by the same observation judge as a written one.
+  Generation is not trusted: structural checks reject a case with no real
+  choice of options, an empty file, a path escaping its directory, or a right
+  and wrong reading that are the same text. Live, those rejected a third to
+  two thirds of candidates per round, which is the point of having them.
+
 - **A judge that reads the work, in the same Loop runtime the work ran in.**
   The task-family graders decided a semantic question with a keyword list:
   `grade_jira` accepted a root cause only if it contained "exclusive",
