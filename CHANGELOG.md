@@ -9,6 +9,34 @@ First public release.
 
 ### Added
 
+- **One shape for every task-conditioned choice, and a count of who made
+  them.** `core.choice` is a single typed interface — standardised input,
+  standardised output — for any decision the runtime puts to a model: choose
+  among options, adjust named settings within stated bounds, or propose
+  something nobody enumerated. The runtime supplies only mechanical facts
+  (this route has no credential, that window cannot hold the request) and the
+  model chooses among them. `core.semantic_decision` records each such
+  decision with its owner and computes `semantic_autonomy_coverage`, the share
+  attributable to reasoning rather than to a table. An empty run reports no
+  coverage rather than perfect coverage, and a decision taken with no second
+  alternative open is counted but flagged, because both are ways the figure
+  can flatter itself.
+
+  The uniform shape is the point. Recovery policy written as a table freezes
+  task-conditioned decisions from a handful of runs and never says why, so
+  nothing accumulates that could justify a better table later. Decisions
+  recorded identically everywhere can be counted and compared, and a narrow
+  region may eventually be distilled into deterministic policy that reproduces
+  what reasoning actually did rather than what someone guessed it would do.
+
+  Measured against the retry tables added earlier the same day: given the real
+  failure those tables were written for — a provider finishing normally and
+  returning only private reasoning — the table says retry the same route six
+  times. Asked the same question through this interface with the same
+  mechanical facts, the model selected a different model on the same provider,
+  lowered temperature, named an exit condition, and kept compaction in
+  reserve. It never reached for either provider lacking a credential.
+
 - **A budget that can be asked for less.** `compacted_policy()` returns a
   context budget tightened for another attempt at a packet that did not fit:
   text budgets halve per level, retained history shortens by one attempt, and

@@ -30,6 +30,8 @@ from .context_budget import ContextBudgetPolicy, bound_state_view
 from .context_pack_manifest import build_context_pack_manifest
 from .generated_project import (
     execute_generated_project)
+from .semantic_decision import (SemanticAutonomyTally,
+                                SemanticDecisionRecord)
 from .option_selection import (SELECTION_KEYS, SELECTION_REPORT_CONTRACT,
                               SelectionTally, admitted_selection)
 from .llm_work_packet import (
@@ -722,6 +724,10 @@ class AdaptiveRunServices:
     #: per option and saved with the result. Evidence for judging the
     #: portfolio, never a gate on what a later call may be offered.
     selection_tally: SelectionTally = field(default_factory=SelectionTally)
+    #: Who decided what this run should do. Counted so that "the LLM is
+    #: leading" is a number a reader can check rather than a claim.
+    semantic_decisions: SemanticAutonomyTally = field(
+        default_factory=SemanticAutonomyTally)
     selected_intelligence_refs: list[str] = field(default_factory=list)
     selected_memory_refs: list[str] = field(default_factory=list)
     progress_snapshots: list[tuple] = field(default_factory=list)

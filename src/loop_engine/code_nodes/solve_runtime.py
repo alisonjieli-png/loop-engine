@@ -492,6 +492,10 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             # history cannot answer the question it was built for — which
             # options earn their place across many runs.
             "option_selection": adaptive.get("option_selection", {}),
+            # Who decided what this run did. Carried to the caller because a
+            # claim about LLM-led reasoning that cannot be checked from the
+            # result is only a claim.
+            "semantic_autonomy": adaptive.get("semantic_autonomy", {}),
             "search_candidates": adaptive.get("web_search_candidates", []),
             "fetched_sources": adaptive.get("web_evidence", []),
             "extensions": dict(request.extension_snapshot),

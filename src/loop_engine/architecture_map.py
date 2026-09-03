@@ -163,7 +163,7 @@ MODULE_MAP = {
         "run_history", "run_history_paths", "config", "context_artifacts",
         "action_fence",
         "context_budget", "context_pack_manifest", "task_frontier",
-        "prompt_experiment", "task_region_statistics", "option_selection",
+        "prompt_experiment", "task_region_statistics", "option_selection", "semantic_decision", "choice",
         "cognitive_grammar", "terminal_layer", "run_validity",
         "practitioner_contract_guards",
         "workspace_read",

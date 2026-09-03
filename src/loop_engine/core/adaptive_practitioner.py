@@ -22,6 +22,7 @@ from ..loop.kernel_runtime import current_kernel_owner
 from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
 from ..loop.recursive_loop import Loop, LoopConfig, LoopLedger
 from ..code_nodes.solution_model_port import SolutionModelError
+from .semantic_decision import SemanticDecisionRecord
 from .adaptive_practitioner_records import (
     _unnamed_fields,
     ADAPTIVE_PRACTITIONER_RECORD_TYPE,
@@ -129,6 +130,31 @@ def _model_state(state: PractitionerState,
     # Bounding happens once, at the packet boundary in
     # adaptive_practitioner_records, where every step's state converges.
     return view
+def _note_decision(services, **fields) -> None:
+    """Record who made one task-conditioned decision, and never fail on it.
+
+    Instrumentation that can end a run is worse than no instrumentation: an
+    early version of this raised NameError from inside orientation and turned
+    two passing fixture solves into unsolved runs. Observation must not be
+    able to change the outcome it observes, so every error here becomes a
+    diagnostic and the run continues uninstrumented for that decision.
+    """
+    from ..loop.kernel_runtime import current_kernel_owner
+    try:
+        active = current_kernel_owner()
+        services.semantic_decisions.note(SemanticDecisionRecord(
+            run_id=services.run_id,
+            loop_id=getattr(active, "loop_id", ""),
+            **fields))
+    except Exception as exc:                            # noqa: BLE001
+        try:
+            services.diagnostic("semantic_decision_not_recorded", {
+                "error_type": type(exc).__name__,
+                "decision_kind": str(fields.get("decision_kind", ""))})
+        except Exception:                               # noqa: BLE001
+            pass
+
+
 def _adaptive_impls(services: AdaptiveRunServices) -> dict:
     def orient(state: PractitionerState) -> Situation:
         services.active_pass_number += 1
@@ -192,6 +218,18 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                 # so a caller with more to say than the form allows is not
                 # answered with a rejection of all of it. They are reported
                 # because tolerated-and-invisible is its own kind of loss.
+                _note_decision(
+                    services,
+                    decision_id=f"{services.run_id}.orient.{attempt}",
+                    decision_kind="interpret_task", owner="llm",
+                    selected=candidate.immediate_goal[:200],
+                    # What the task might have meant, in the run's own words.
+                    alternatives=tuple(
+                        item.subject for item in candidate.ambiguities)[:8],
+                    reason_summary=candidate.task_summary[:300],
+                    assumptions=tuple(candidate.assumptions)[:8],
+                    uncertainties=tuple(candidate.unknowns)[:8],
+                    expected_observation=candidate.desired_state[:200])
                 unnamed = _unnamed_fields(value, TaskOrientationResult)
                 if unnamed:
                     services.diagnostic("orientation_carried_unnamed_fields", {
@@ -397,6 +435,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                 failure = str(exc)[:500]
                 services.diagnostic("next_action_invalid", {
                     "attempt": attempt, "error": failure})
+        model_choice_failed = decisions is None
         if decisions is None:
             decisions = [NextActionDecision.from_mapping({
                 "action_kind": "REPAIR",
@@ -441,6 +480,21 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
         selected_action = candidates[selected_index]
         services.plan_details["model_selected_action_id"] = (
             selected_action.action)
+        # The decision this pass turns on, and who made it. When the model's
+        # response could not be admitted the runtime synthesised a REPAIR
+        # above; that is still a choice about what happens next, so it is
+        # recorded as the runtime's own rather than counted as reasoning.
+        _note_decision(
+            services,
+            decision_id=f"{services.run_id}.decide.{state.version}",
+            decision_kind="select_next_operation",
+            owner="deterministic" if model_choice_failed else "llm",
+            selected=decisions[selected_index].action_kind,
+            alternatives=tuple(item.action_kind for item in decisions),
+            reason_summary=decisions[selected_index].reason[:300],
+            expected_observation=(
+                decisions[selected_index].expected_output[:200]),
+            state_snapshot_ref=str(state.version))
         return [selected_action]
 
     def determine_how(state: PractitionerState, situation: Situation,

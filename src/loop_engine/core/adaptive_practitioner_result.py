@@ -131,6 +131,10 @@ def failed_adaptive_output(
         "model_calls": services.model_session.calls_used,
         "model_usage": safe_model_usage(services),
         "option_selection": services.selection_tally.to_dict(),
+        "semantic_autonomy": services.semantic_decisions.to_dict(),
+        "semantic_decisions": [item.to_dict()
+                               for item in services.semantic_decisions
+                               .decisions],
         "orientations": [item.to_dict()
                          for item in services.orientation_by_version.values()],
         "action_decisions": services.action_history,
