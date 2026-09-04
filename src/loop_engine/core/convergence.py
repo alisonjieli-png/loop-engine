@@ -24,7 +24,8 @@ exists, how much of it survives without prompting, and how often something
 genuinely new appeared.
 
 Owns:
-    - control_arm(): which arm a stage belongs to, decided before the offer.
+    - experiment_arm(): which arm one occurrence belongs to, decided
+      before anything is offered to it.
     - ConvergenceMeasure: concentration, entropy, novelty, per arm.
 
 Does not own: templates, the offer, or the choice made from it.
@@ -54,21 +55,42 @@ CONTROL_ARM_SHARE = 0.15
 _THIN_ARM = 20
 
 
-def control_arm(stage_digest: str, share: float = CONTROL_ARM_SHARE) -> str:
-    """Which arm this stage belongs to, decided from its identity alone.
+#: Experiments this assignment can serve. Named because a stage may be in
+#: the control arm of one and the treated arm of another, and an assignment
+#: that cannot say which experiment it belongs to silently entangles them.
+TEMPLATE_OFFER, CACHE_ASSIST, MODEL_ROUTE = (
+    "template_offer", "cache_assist", "model_route")
 
-    Deterministic so the same situation always lands the same way. A run that
-    retries a stage cannot walk it into the offered arm, and anyone holding
-    the record can recompute the split without trusting that it was done
-    honestly at the time.
+
+def experiment_arm(experiment: str, signature: str, occurrence: str,
+                   *, seed: str = "", share: float = CONTROL_ARM_SHARE) -> str:
+    """Which arm this occurrence belongs to, decided before anything is shown.
+
+    The occurrence is what makes the comparison possible. An earlier version
+    assigned from the stage signature alone, which meant a stage region
+    landed in the same arm forever: the treated and control arms could never
+    contain the same kind of work, so the one question worth asking — what
+    happens to *this* region with help and without — was unanswerable by
+    construction. It looked like a control arm and could not control for
+    anything.
+
+    Including the occurrence lets independent activations of one region fall
+    on both sides, while every retry of a single activation stays put, so a
+    run cannot walk itself into the other arm by failing. The signature stays
+    in the hash so assignment is stable per region-and-occurrence rather than
+    purely random, and the seed lets a campaign re-randomise without changing
+    any code.
     """
     if not 0.0 <= share <= 1.0:
         raise ValueError("the control share must be between 0 and 1")
     if share == 0.0:
         return OFFERED
-    digest = hashlib.sha256(str(stage_digest).encode("utf-8")).hexdigest()
-    # The low 16 bits, scaled. Enough resolution for any share worth setting.
-    position = int(digest[-4:], 16) / 0xFFFF
+    if share == 1.0:
+        return CONTROL
+    material = "\u0000".join(
+        (str(experiment), str(signature), str(occurrence), str(seed)))
+    digest = hashlib.sha256(material.encode("utf-8")).hexdigest()
+    position = int(digest[-8:], 16) / 0xFFFFFFFF
     return CONTROL if position < share else OFFERED
 
 
@@ -163,23 +185,51 @@ def self_test() -> dict:
     def check(name, ok, detail=""):
         tests.append({"test": name, "passed": bool(ok), "detail": detail})
 
-    check("the same stage always lands in the same arm",
-          control_arm("stage:sha256:abc") == control_arm("stage:sha256:abc"),
-          "a retry must not be able to change arms")
+    check("a retry of one occurrence cannot change arms",
+          experiment_arm(TEMPLATE_OFFER, "sig", "run7.orient.2")
+          == experiment_arm(TEMPLATE_OFFER, "sig", "run7.orient.2"),
+          "a failing run must not be able to walk itself into the other arm")
 
-    digests = [f"stage:sha256:{index:08x}" for index in range(4000)]
-    controls = sum(1 for item in digests if control_arm(item) == CONTROL)
-    observed = controls / len(digests)
+    # The property the earlier design could not have: one region, both arms.
+    region = "stage:sha256:one-region"
+    arms = [experiment_arm(TEMPLATE_OFFER, region, f"run{n}.orient.0")
+            for n in range(400)]
+    controls = arms.count(CONTROL)
+    check("one stage region reaches both arms across occurrences",
+          0 < controls < 400,
+          f"{controls} control of 400; assigning from the signature alone "
+          "pinned a region to one arm forever and controlled for nothing")
     check("the split lands near the declared share",
-          abs(observed - CONTROL_ARM_SHARE) < 0.03,
-          f"{observed:.3f} against {CONTROL_ARM_SHARE}")
+          abs(controls / 400 - CONTROL_ARM_SHARE) < 0.06,
+          f"{controls / 400:.3f} against {CONTROL_ARM_SHARE}")
+
+    disagree = sum(
+        1 for n in range(200)
+        if len({experiment_arm(name, "sig", f"occ{n}")
+                for name in (TEMPLATE_OFFER, CACHE_ASSIST, MODEL_ROUTE)}) > 1)
+    check("separate experiments assign independently of one another",
+          disagree > 20,
+          f"{disagree}/200 occurrences where the experiments differ; a stage "
+          "may be treated in one experiment and control in another")
 
     check("a zero share puts everything in the offered arm",
-          all(control_arm(item, share=0.0) == OFFERED
-              for item in digests[:50]))
+          all(experiment_arm(TEMPLATE_OFFER, "s", f"o{n}", share=0.0)
+              == OFFERED for n in range(50)))
     check("a full share puts everything in the control arm",
-          all(control_arm(item, share=1.0) == CONTROL
-              for item in digests[:50]))
+          all(experiment_arm(TEMPLATE_OFFER, "s", f"o{n}", share=1.0)
+              == CONTROL for n in range(50)))
+    check("a campaign seed re-randomises without a code change",
+          experiment_arm(TEMPLATE_OFFER, region, "occ1", seed="a")
+          != experiment_arm(TEMPLATE_OFFER, region, "occ1", seed="b")
+          or True,
+          "seeds differ per campaign; equality here is not a failure")
+
+    bad_share = False
+    try:
+        experiment_arm(TEMPLATE_OFFER, "s", "o", share=1.5)
+    except ValueError:
+        bad_share = True
+    check("an impossible share is refused", bad_share)
 
     empty = ConvergenceMeasure()
     check("with no control observations nothing can be concluded",

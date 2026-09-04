@@ -34,7 +34,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 
 STAGE_FINGERPRINT_RECORD_TYPE = "semantic_stage_fingerprint/v1"
 SEGMENT_FINGERPRINT_RECORD_TYPE = "semantic_segment_fingerprint/v1"
@@ -140,18 +140,14 @@ class SemanticStageFingerprint:
 
     @property
     def shape(self) -> tuple:
-        """What this stage looks like as a unit of work, without its subject.
+        """This stage as a unit of work, with its subject removed.
 
-        Inputs and outputs by kind, the phase, and what remains open — the
-        things two loops can share when their domains do not. A cleaning step
-        in a billing pipeline and a cleaning step in a telemetry pipeline
-        differ in every noun and can be identical here.
+        The phase and the aspects of the situation that are engaged, both
+        derived rather than chosen. A cleaning step in a billing pipeline and
+        one over telemetry differ in every noun and are identical here.
         """
         return (self.cognitive_phase or "unnamed",
-                tuple(sorted(self.candidate_topologies)),
-                self.consumer or "unnamed",
-                bool(self.incoming_observation),
-                len(self.unknowns) > 0)
+                situation_dimensions(self))
 
     @property
     def facets(self) -> dict:
@@ -200,38 +196,54 @@ class SemanticStageFingerprint:
         }
 
 
-#: The shapes a stage can take, coarser than any of them. Two stages with the
-#: same motif are worth comparing across domains; the motif is what a
-#: recovery stage and a repair stage have in common when their tasks have
-#: nothing in common at all.
-_MOTIFS = (
-    ("choose_among_causes",
-     lambda item: bool(item.incoming_observation) and len(item.unknowns) > 1),
-    ("interpret_an_observation",
-     lambda item: bool(item.incoming_observation)),
-    ("decide_with_open_questions",
-     lambda item: len(item.unknowns) > 0),
-    ("produce_from_what_is_known",
-     lambda item: bool(item.knowns) and not item.unknowns),
-)
+#: Fields that identify where a situation occurred rather than what it was.
+#: Everything else on the fingerprint describes the situation and therefore
+#: participates in its shape. Keeping the exclusions explicit and short is
+#: the whole trick: add a situational field and it joins the vocabulary by
+#: itself, with no list to remember to update.
+_PROVENANCE_FIELDS = frozenset({
+    "task_ref", "loop_ref", "branch_ref", "scope", "semantic_responsibility",
+    "cognitive_phase", "branch_depth",
+})
 
 
-def stage_motif(stage: SemanticStageFingerprint) -> str:
+def situation_dimensions(stage) -> tuple[str, ...]:
+    """Which aspects of the situation are engaged, in a stable order.
+
+    Derived from the record's own fields rather than matched against written
+    rules. An earlier version asked four hand-written predicates in order and
+    took the first that fired, which meant the vocabulary was whatever its
+    author had thought of on the day, every unanticipated situation collapsed
+    into "unclassified", and the ordering silently decided which of two true
+    descriptions won. Nothing here decides anything: a dimension is engaged
+    when the field holding it has content.
+    """
+    engaged = []
+    for item in fields(type(stage)):
+        if item.name in _PROVENANCE_FIELDS:
+            continue
+        value = getattr(stage, item.name, None)
+        if value in (None, "", (), [], {}):
+            continue
+        engaged.append(item.name)
+    return tuple(sorted(engaged))
+
+
+def stage_motif(stage) -> str:
     """The cross-domain shape of this stage.
 
-    Coarse on purpose. A motif that separated every situation would match
-    nothing, and the value here is in matching a stage from one domain to a
-    stage from another. The phase qualifies it so that diagnosing and
-    comparing do not collapse into the same bucket.
+    The phase, then the aspects of the situation that are engaged. Two stages
+    match when they are the same kind of work with the same things open,
+    whatever their subjects — which is the match worth having, because a
+    recovery stage and a repair stage share this and share no nouns at all.
+
+    Every combination is named, including combinations nobody anticipated.
+    There is no unclassified bucket, because a situation the vocabulary
+    cannot describe is precisely the one worth being able to find again.
     """
-    for name, holds in _MOTIFS:
-        if holds(stage):
-            base = name
-            break
-    else:
-        base = "unclassified"
-    phase = stage.cognitive_phase or "unnamed"
-    return f"{phase}/{base}"
+    phase = getattr(stage, "cognitive_phase", "") or "unnamed"
+    engaged = situation_dimensions(stage)
+    return f"{phase}/{'+'.join(engaged) if engaged else 'bare'}"
 
 
 @dataclass(frozen=True)
@@ -370,14 +382,14 @@ def self_test() -> dict:
                   "whether a fixture leaks state"))
     check("unrelated domains sharing a shape share a motif",
           stage_motif(recovery) == stage_motif(repair)
-          == "failure_diagnosis/choose_among_causes",
+          == "failure_diagnosis/incoming_observation+unknowns",
           "a recovery stage and a repair stage are the same kind of problem")
 
     check("a stage with nothing open is a different motif",
           stage_motif(SemanticStageFingerprint(
               semantic_responsibility="write the submission file",
               cognitive_phase="execution", knowns=("the contract",)))
-          == "execution/produce_from_what_is_known")
+          == "execution/knowns")
 
     check("the phase keeps different work from collapsing together",
           stage_motif(recovery) != stage_motif(
@@ -391,6 +403,28 @@ def self_test() -> dict:
           stage_motif(SemanticStageFingerprint(
               semantic_responsibility="something new under the sun"))
           .startswith("unnamed/"))
+    # The property the derived vocabulary exists for.
+    unforeseen = SemanticStageFingerprint(
+        semantic_responsibility="a situation nobody modelled",
+        cognitive_phase="orient", reversibility=0.4, context_pressure=0.9)
+    check("a combination nobody anticipated still gets a name",
+          stage_motif(unforeseen) == "orient/context_pressure+reversibility"
+          and "unclassified" not in stage_motif(unforeseen),
+          "the situations the vocabulary cannot describe are the ones "
+          "most worth finding again")
+    check("the vocabulary widens by itself when the record does",
+          set(situation_dimensions(recovery))
+          <= {item.name for item in fields(SemanticStageFingerprint)},
+          "dimensions are read off the record rather than listed by hand")
+    check("where a situation happened does not change what it is",
+          stage_motif(SemanticStageFingerprint(
+              semantic_responsibility="x", cognitive_phase="orient",
+              knowns=("a",), task_ref="run-1", loop_ref="loop-9",
+              branch_depth=7))
+          == stage_motif(SemanticStageFingerprint(
+              semantic_responsibility="y", cognitive_phase="orient",
+              knowns=("b",), task_ref="run-2")),
+          "provenance is excluded so the same situation matches itself")
 
     empty = False
     try:
@@ -402,7 +436,7 @@ def self_test() -> dict:
     value = leakage.to_dict()
     check("the record carries both the exact identity and the coarse shape",
           value["digest"].startswith("stage:sha256:")
-          and value["motif"] == "experiment_design/choose_among_causes"
+          and value["motif"].startswith("experiment_design/")
           and value["horizons"]["ultimate"].startswith("produce the strongest"))
 
     def pipeline(rows):

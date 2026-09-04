@@ -7,7 +7,7 @@ later stage will have in hand.
 
 Three indexes, because there are three different questions:
 
-    exact       this situation, seen before
+    signature   this situation, met before (in any run)
     motif       this kind of situation, in any domain
     shape       this unit of work, whatever it was about
 
@@ -27,7 +27,7 @@ Storage is append-only and keyed by digest, so the same situation recorded
 twice is one row with two observations rather than two rows that disagree.
 
 Owns:
-    - StageStore: append, lookup by exact digest, motif, or shape.
+    - StageStore: append, lookup by signature, motif, or shape.
     - StageObservation: one occurrence and what became of it.
 
 Does not own: computing fingerprints (core.stage_fingerprint), deciding what
@@ -42,8 +42,13 @@ from dataclasses import dataclass, field
 STAGE_OBSERVATION_RECORD_TYPE = "stage_observation/v1"
 
 #: How a candidate was found. Carried on every result so a caller can weigh
-#: an exact repeat differently from a distant shape match.
-BY_EXACT, BY_MOTIF, BY_SHAPE = "exact", "motif", "shape"
+#: a same-signature repeat differently from a distant shape match.
+#:
+#: BY_SIGNATURE means the same normalised situation, not the same activation.
+#: Two different runs meeting the same situation share a signature and are
+#: separate occurrences; calling that "exact" invited reading it as identity
+#: and would have corrupted any later deduplication or credit assignment.
+BY_SIGNATURE, BY_MOTIF, BY_SHAPE = "signature", "motif", "shape"
 
 
 @dataclass(frozen=True)
@@ -129,6 +134,14 @@ class StageStore:
     _by_digest: dict = field(default_factory=dict)
     _by_motif: dict = field(default_factory=dict)
     _by_shape: dict = field(default_factory=dict)
+    #: Evidence that did not survive. Counted because a store reporting zero
+    #: prior stages may mean "nothing has been done before" or "the record
+    #: failed", and those call for opposite responses. Suppressing the write
+    #: error keeps the run alive; suppressing the count would make the
+    #: failure indistinguishable from an empty history.
+    write_failures: int = 0
+    unreadable_rows: int = 0
+    last_storage_error: str = ""
 
     def add(self, stage, **fields) -> StageObservation:
         """Record one occurrence of a stage."""
@@ -184,10 +197,13 @@ class StageStore:
                 handle.write(json.dumps(observation.to_dict(),
                                         sort_keys=True,
                                         separators=(",", ":")) + "\n")
-        except OSError:
+        except OSError as exc:
             # A store that cannot persist is a degraded store, not a failed
-            # run. The in-memory index still works for this run.
-            pass
+            # run: the in-memory index still serves this run. The failure is
+            # counted rather than swallowed, so a later reader can tell a
+            # short history from a broken one.
+            self.write_failures += 1
+            self.last_storage_error = f"{type(exc).__name__}: {exc}"[:200]
 
     def load(self) -> int:
         """Read a stored file back into the indexes. Returns rows read."""
@@ -202,6 +218,7 @@ class StageStore:
                 try:
                     value = json.loads(line)
                 except ValueError:
+                    self.unreadable_rows += 1
                     continue
                 observation = StageObservation(
                     digest=value.get("digest", ""),
@@ -239,7 +256,7 @@ class StageStore:
 
         found = []
         for label, index, key in (
-                (BY_EXACT, self._by_digest, stage.digest),
+                (BY_SIGNATURE, self._by_digest, stage.digest),
                 (BY_MOTIF, self._by_motif, stage_motif(stage)),
                 (BY_SHAPE, self._by_shape, tuple(stage.shape))):
             matched = rows(index, key)
@@ -249,6 +266,10 @@ class StageStore:
 
     def to_dict(self) -> dict:
         return {"record_type": "stage_store/v1",
+                "degraded": bool(self.write_failures or self.unreadable_rows),
+                "write_failures": self.write_failures,
+                "unreadable_rows": self.unreadable_rows,
+                "last_storage_error": self.last_storage_error,
                 "observations": len(self.observations),
                 "distinct_situations": len(self._by_digest),
                 "distinct_motifs": len(self._by_motif),
@@ -295,13 +316,14 @@ def self_test() -> dict:
           BY_SHAPE in found and found[BY_SHAPE].occurrences == 2,
           "billing and telemetry both match a third domain by shape alone")
     check("a stage nobody has seen exactly is not offered as exact",
-          BY_EXACT not in found)
+          BY_SIGNATURE not in found)
 
     repeat = {item.found_by: item for item in store.lookup(billing)}
-    check("the same situation again is found exactly",
-          BY_EXACT in repeat and repeat[BY_EXACT].occurrences == 1)
+    check("the same situation again is found by signature",
+          BY_SIGNATURE in repeat and repeat[BY_SIGNATURE].occurrences == 1,
+          "a signature match is the same situation, not the same activation")
     check("every level is returned, not only the strongest",
-          set(repeat) == {BY_EXACT, BY_MOTIF, BY_SHAPE},
+          set(repeat) == {BY_SIGNATURE, BY_MOTIF, BY_SHAPE},
           "a caller needs to see one exact against two by shape")
 
     check("outcomes travel with the candidate",
@@ -314,7 +336,7 @@ def self_test() -> dict:
 
     own_run = store.lookup(billing, exclude_run="r1")
     check("a run can exclude its own earlier stages",
-          all(item.found_by != BY_EXACT for item in own_run))
+          all(item.found_by != BY_SIGNATURE for item in own_run))
 
     unknown = StageStore()
     unknown.add(stage("do a new thing"), run_id="r3")
@@ -352,6 +374,13 @@ def self_test() -> dict:
     check("a store that cannot persist does not fail the run",
           len(unwritable.observations) == 1
           and unwritable.observations[0].helped is True)
+    broken = unwritable.to_dict()
+    check("a store that lost evidence says so",
+          broken["degraded"] and broken["write_failures"] == 1
+          and broken["last_storage_error"],
+          "an empty history and a broken recorder need opposite responses")
+    check("a healthy store is not marked degraded",
+          not StageStore().to_dict()["degraded"])
 
     closing = StageStore()
     closing.add(billing, run_id="r1")

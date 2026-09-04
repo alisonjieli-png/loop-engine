@@ -464,6 +464,42 @@ First public release.
 
 ### Fixed
 
+- **A control arm that controlled for nothing.** Arms were assigned from the
+  stage signature alone, so a region landed in the same arm forever: the
+  treated and control arms could never contain the same kind of work, and the
+  one question worth asking — what happens to *this* region with help and
+  without — was unanswerable by construction. `experiment_arm()` now hashes
+  the experiment, the signature, the occurrence and a campaign seed together.
+  Independent occurrences of one region fall on both sides (measured: 51
+  control of 400), while every retry of a single occurrence stays put, so a
+  failing run cannot walk itself into the other arm. Separate experiments
+  assign independently, so a stage may be treated in one and control in
+  another.
+
+- **Evidence could vanish without saying so.** Write failures were suppressed
+  and unreadable rows skipped, which kept a degraded store from failing a run
+  and also made "no prior stages" indistinguishable from "the recorder
+  broke". Those call for opposite responses. The store now counts write
+  failures and unreadable rows, keeps the last error, and reports itself
+  degraded.
+
+- **`BY_EXACT` did not mean exact.** It matched the same normalised
+  situation, not the same activation; two runs meeting the same situation are
+  separate occurrences. Calling that "exact" invited reading it as identity
+  and would have corrupted later deduplication and credit assignment. It is
+  `BY_SIGNATURE`.
+
+- **Motifs were four rules I wrote from no data.** The vocabulary was
+  whatever their author had thought of, asked in order so the first match
+  won, with everything unanticipated collapsing into `unclassified` — a
+  closed taxonomy presented as an open one, deciding cross-domain retrieval.
+  Motifs are now derived from which of the record's own fields are engaged:
+  every combination is named, including ones nobody anticipated, and adding a
+  situational field widens the vocabulary with no list to update. The
+  cross-domain matches this was built for survive the change — a provider
+  failover and a non-reproducing test still meet at
+  `failure_diagnosis/incoming_observation+unknowns`.
+
 - **A run that fails hard no longer loses its stages.** Stage persistence was
   wired into the normal completion path only, and three failure exits return
   before it. Those are the runs most worth learning from — where recovery,

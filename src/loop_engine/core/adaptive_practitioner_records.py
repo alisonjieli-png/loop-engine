@@ -32,7 +32,8 @@ from .generated_project import (
     execute_generated_project)
 from .choice import ParameterSpec
 from .recovery import choose_recovery, recovery_options
-from .convergence import ConvergenceMeasure, control_arm
+from .convergence import (TEMPLATE_OFFER, ConvergenceMeasure,
+                          experiment_arm)
 from .decision_outcome import OutcomeLedger
 from .stage_fingerprint import SemanticStageFingerprint
 from .model_demand import ladder_from_observations
@@ -300,7 +301,13 @@ def _observe_stage(services, stage) -> None:
         # A situation that could not be described is simply not observed.
         return
     try:
-        services.stage_arms[stage.digest] = control_arm(stage.digest)
+        # One occurrence of this region, identified so that independent
+        # occurrences can fall on both sides while retries of this one
+        # cannot drift between them.
+        occurrence = (f"{services.run_id}.{stage.cognitive_phase}."
+                      f"{len(services.stage_store.observations)}")
+        services.stage_arms[stage.digest] = experiment_arm(
+            TEMPLATE_OFFER, stage.digest, occurrence)
         route = str(getattr(services.request, "model_route", "") or "")
         # What earlier runs did with stages of this shape.
         priors = []
