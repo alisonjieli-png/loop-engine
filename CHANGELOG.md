@@ -9,6 +9,25 @@ First public release.
 
 ### Added
 
+- **The learning loop is closed: runs now read what earlier runs recorded.**
+  Prior stages are loaded once at the start of a run, every step consults the
+  model ladder for its shape, and the convergence measure accumulates per arm.
+  All three are surfaced on the result. The ladder's recommendation is written
+  down and not followed: below its evidence floor it declines to advise, and
+  even above it a recommendation about a stage shape is a hypothesis rather
+  than a fact about this stage. Recording it now is what makes checking it
+  possible later; acting on it now would make the check impossible, because
+  the record would only ever confirm what it already said.
+
+  Demonstrated across two consecutive runs of the same task. The first loaded
+  0 priors, wrote 14 stages over 7 motifs, and its convergence measure
+  reported 12 offered against 2 control — "too few to compare; the split
+  exists and the comparison does not yet". The second loaded those 14 priors
+  and consulted the ladder 15 times, every consultation correctly declining:
+  "2 observations of this shape is too few to fit a ladder to; the caller's
+  default stands". The machinery works and says, accurately, that it does not
+  yet know anything.
+
 - **The fingerprint stack is live, and runs now accumulate stages.** Every
   model step names its cognitive situation, is assigned a control arm from
   that situation's own identity before anything is offered to the call, and is

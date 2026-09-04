@@ -165,7 +165,7 @@ MODULE_MAP = {
         "context_budget", "context_pack_manifest", "task_frontier",
         "prompt_experiment", "task_region_statistics", "option_selection", "semantic_decision", "decision_outcome",
         "stage_fingerprint", "convergence",
-        "stage_store", "model_demand", "choice", "recovery", "template_negotiation",
+        "stage_store", "model_demand", "run_stages", "choice", "recovery", "template_negotiation",
         "cognitive_grammar", "terminal_layer", "run_validity",
         "practitioner_contract_guards",
         "workspace_read",

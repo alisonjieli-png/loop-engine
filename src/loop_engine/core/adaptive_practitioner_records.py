@@ -32,9 +32,10 @@ from .generated_project import (
     execute_generated_project)
 from .choice import ParameterSpec
 from .recovery import choose_recovery, recovery_options
-from .convergence import control_arm
+from .convergence import ConvergenceMeasure, control_arm
 from .decision_outcome import OutcomeLedger
 from .stage_fingerprint import SemanticStageFingerprint
+from .model_demand import ladder_from_observations
 from .stage_store import StageStore
 from .semantic_decision import (SemanticAutonomyTally,
                                 SemanticDecisionRecord)
@@ -283,6 +284,41 @@ def _stage_for(services, request) -> "SemanticStageFingerprint | None":
             branch_depth=len(services.project_attempts))
     except Exception:                                   # noqa: BLE001
         return None
+
+
+def _observe_stage(services, stage) -> None:
+    """Record this stage, if there is one, and ask what the record advises.
+
+    The advice is written down and not followed. Below the evidence floor
+    the ladder declines to advise at all, and even above it the
+    recommendation is a hypothesis about a stage shape rather than a fact
+    about this stage. Recording it now is what makes checking it possible
+    later; acting on it now would make the check impossible, because the
+    record would only ever confirm what it already said.
+    """
+    if not hasattr(stage, "digest"):
+        # A situation that could not be described is simply not observed.
+        return
+    try:
+        services.stage_arms[stage.digest] = control_arm(stage.digest)
+        route = str(getattr(services.request, "model_route", "") or "")
+        # What earlier runs did with stages of this shape.
+        priors = []
+        for match in services.prior_stages.lookup(
+                stage, exclude_run=services.run_id):
+            if match.found_by == "shape":
+                priors = list(match.observations)
+                break
+        ladder = ladder_from_observations(priors)
+        if ladder.observations:
+            services.stage_ladders[stage.digest] = ladder.to_dict()
+        services.convergence.note(
+            services.stage_arms[stage.digest],
+            "|".join(str(item) for item in stage.shape))
+        services.stage_store.add(stage, run_id=services.run_id,
+                                 model_route=route)
+    except Exception:                                   # noqa: BLE001
+        pass
 
 
 class AdaptivePractitionerError(ValueError):
@@ -798,6 +834,16 @@ class AdaptiveRunServices:
     #: run can ask whether it has done anything like it before.
     stage_store: StageStore = field(default_factory=StageStore)
     stage_arms: dict = field(default_factory=dict)
+    #: Stages from earlier runs, loaded once. What makes a lookup possible
+    #: at all: without it every run starts as though nothing has been done.
+    prior_stages: StageStore = field(default_factory=StageStore)
+    #: What the record would recommend for each stage, recorded rather than
+    #: obeyed. A ladder fitted to this much evidence is a hypothesis, and
+    #: acting on it before it is checked is the premature determinism this
+    #: whole layer exists to avoid.
+    stage_ladders: dict = field(default_factory=dict)
+    convergence: ConvergenceMeasure = field(
+        default_factory=ConvergenceMeasure)
     selected_intelligence_refs: list[str] = field(default_factory=list)
     selected_memory_refs: list[str] = field(default_factory=list)
     progress_snapshots: list[tuple] = field(default_factory=list)
@@ -1352,16 +1398,7 @@ class AdaptiveRunServices:
         # Name this step's situation and record it. The arm is decided from
         # the situation's own identity, before anything is offered to the
         # call, so the split cannot be influenced by what happens next.
-        stage = _stage_for(self, request)
-        if stage is not None:
-            try:
-                self.stage_arms[stage.digest] = control_arm(stage.digest)
-                self.stage_store.add(
-                    stage, run_id=self.run_id,
-                    model_route=str(getattr(
-                        self.request, "model_route", "") or ""))
-            except Exception:                           # noqa: BLE001
-                pass
+        _observe_stage(self, _stage_for(self, request))
         packet_artifact = self.artifacts.store.put(
             serialize_work_packet(packet, owner),
             media_type="application/json", encoding="utf-8",
