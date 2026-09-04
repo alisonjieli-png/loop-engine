@@ -136,6 +136,7 @@ MODULE_MAP = {
         "runtime_contracts", "self_improvement_loop",
         "smoke_ladder",
         "solve_region_evidence", "solve_runtime", "solve_mode_checks", "solve_terminal",
+        "architecture_diagram",
         "solution_canvas", "solution_canvas_checks", "solution_compiler",
         "solution_model_port",
         "solution_graph", "solution_graph_builder", "solution_graph_checks",

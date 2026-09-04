@@ -9,6 +9,20 @@ First public release.
 
 ### Added
 
+- **The architecture as a typed model, rendered rather than drawn.** A diagram
+  drawn by hand starts accurate and drifts, because nothing makes it wrong
+  when the code moves. `code_nodes.architecture_diagram` holds C4-style
+  context and component models in which every element names a module that
+  must exist; a self-test fails if one stops existing, so a rename breaks the
+  diagram loudly instead of leaving it quietly wrong. Mermaid and Structurizr
+  DSL are two renderings and neither is the record — a diagram language can
+  express things the system does not do, and once the picture is
+  authoritative those inventions become requirements nobody agreed to. Edges
+  must say what travels along them, since an unlabelled arrow only claims
+  that two things are somehow related, and the advice edge from the model
+  ladder records in the drawing that it is not obeyed.
+  `docs/ARCHITECTURE-DIAGRAMS.md` is generated from the models.
+
 - **The learning loop is closed: runs now read what earlier runs recorded.**
   Prior stages are loaded once at the start of a run, every step consults the
   model ladder for its shape, and the convergence measure accumulates per arm.

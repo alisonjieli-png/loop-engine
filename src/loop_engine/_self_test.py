@@ -81,6 +81,7 @@ def self_test() -> dict:
         "code_nodes.solve_runtime",
         "code_nodes.solve_mode_checks",
         "code_nodes.solve_terminal",
+        "code_nodes.architecture_diagram",
         "solve_cli",
         "code_nodes.solution_model_port",
         "code_nodes.solution_graph_checks",
