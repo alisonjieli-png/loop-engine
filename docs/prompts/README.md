@@ -3,6 +3,12 @@
 These prompts help start a new coding-agent session. They defer to the current
 repository and `AGENTS.md`. They are not parallel architecture authorities.
 
+- [Generalized self-tuning Loop-node guidance](GENERALIZED-LOOP-NODE-SELF-TUNING-GUIDANCE.md)
+  is written from building the solver rather than designing it: fourteen
+  failure modes that each looked like correct engineering and each would have
+  destroyed the evidence the system exists to collect, the invariants they
+  imply, the order in which cheap-model work is safe to start, and the
+  questions that separate a working mechanism from a plausible one.
 - [Universal component prompt suite](UNIVERSAL-COMPONENT-PROMPT-SUITE.md)
   is the current implementation, adversarial review, ideation, and continuous
   conformance set for passive component encapsulation, typed context handoff,

@@ -121,6 +121,7 @@ pages.
 - [Governing OpenCode and Codex development prompt](prompts/LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md)
 - [Self-orienting Code Intelligence master prompt](prompts/LOOP-ENGINE-SELF-ORIENTING-CODE-INTELLIGENCE-MASTER-PROMPT.md)
 - [Architecture showcase and video prompt](prompts/LOOP-ENGINE-ARCHITECTURE-VIDEO-BUILD-PROMPT.md)
+- [Generalized self-tuning Loop-node guidance](prompts/GENERALIZED-LOOP-NODE-SELF-TUNING-GUIDANCE.md)
 
 Public prose also follows the repository's
 [`humanizer-context.md`](../humanizer-context.md) file. It defines the reader,
