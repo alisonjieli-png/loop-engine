@@ -46,6 +46,7 @@ def self_test() -> dict:
         "core.semantic_decision", "core.decision_outcome",
         "core.stage_fingerprint", "core.convergence",
         "core.stage_store", "core.model_demand", "core.run_stages", "core.choice",
+        "core.outcome_vector",
         "core.recovery", "core.template_negotiation",
         "core.workspace_read",
         "core.cognitive_grammar",

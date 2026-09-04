@@ -31,6 +31,7 @@ or any claim that the drawing is complete.
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass, field
 
 DIAGRAM_RECORD_TYPE = "architecture_diagram/v1"
@@ -186,6 +187,9 @@ LEARNING_FABRIC = DiagramModel(
         Element("convergence", "Convergence measure", COMPONENT_KIND,
                 "Splits an arm off so agreement can be told from suggestion.",
                 "core.convergence"),
+        Element("credit", "Outcome vector", COMPONENT_KIND,
+                "What a stage contributed, kept apart from how its run ended.",
+                "core.outcome_vector"),
         Element("store", "Stage store", STORE,
                 "Append-only; indexed by exact identity, motif, and shape.",
                 "core.stage_store"),
@@ -194,6 +198,11 @@ LEARNING_FABRIC = DiagramModel(
                 "core.run_stages"),
     ),
     relationships=(
+        Relationship("store", "credit", "grades each stage through",
+                     carries="verification, contribution, run fate, "
+                             "and which of those nobody observed"),
+        Relationship("credit", "ladder", "supplies evidence to",
+                     carries="credit and the granularity it was earned at"),
         Relationship("practitioner", "stage", "names each step",
                      carries="responsibility, horizons, what is open"),
         Relationship("practitioner", "decision", "records every choice",
@@ -221,7 +230,88 @@ LEARNING_FABRIC = DiagramModel(
     ))
 
 
-DIAGRAMS = (RUNTIME_CONTEXT, LEARNING_FABRIC)
+SOLVER_CONTAINERS = DiagramModel(
+    key="containers", level=CONTAINER,
+    title="What a task passes through",
+    note=("The middle level, between the setting and the components. Each "
+          "box is a responsibility with a module behind it, not a plane "
+          "this repository intends to build."),
+    elements=(
+        Element("frontier", "Task and frontier", CONTAINER_KIND,
+                "The task as given, and what is still open about it.",
+                "core.task_frontier"),
+        Element("practitioner", "Practitioner runtime", CONTAINER_KIND,
+                "Runs the task as Loops and owns what happens next.",
+                "core.adaptive_practitioner"),
+        Element("orientation", "Orientation", CONTAINER_KIND,
+                "Reads the situation before committing to an approach.",
+                "core.adaptive_practitioner_orientation"),
+        Element("planning", "Planning", CONTAINER_KIND,
+                "Turns an approach into bounded steps.",
+                "core.adaptive_practitioner_planning"),
+        Element("context", "Context compiler", CONTAINER_KIND,
+                "Fits the chosen evidence into the window that exists.",
+                "core.context_budget"),
+        Element("interface", "Semantic interface", CONTAINER_KIND,
+                "Offers a response shape the answer may negotiate.",
+                "core.template_negotiation"),
+        Element("calls", "Model calls and recording", CONTAINER_KIND,
+                "Asks providers, and writes down what was decided.",
+                "core.adaptive_practitioner_records"),
+        Element("allocation", "Model allocation", CONTAINER_KIND,
+                "Which route to try first, where evidence supports one.",
+                "core.model_demand"),
+        Element("capabilities", "Capability fabric", CONTAINER_KIND,
+                "Tools and skills the run may reach for.",
+                "core.capability_directory"),
+        Element("harness", "External harnesses", CONTAINER_KIND,
+                "Other coding agents driven as subordinate workers.",
+                "core.external_harness"),
+        Element("verification", "Verification", CONTAINER_KIND,
+                "Decides whether the work actually satisfies the task.",
+                "core.adaptive_practitioner_verification"),
+        Element("recovery", "Recovery", CONTAINER_KIND,
+                "Chooses what to do after a failure, by reasoning.",
+                "core.adaptive_practitioner_recovery"),
+        Element("history", "Run history", STORE,
+                "Every stage seen, and what became of it.",
+                "core.stage_store"),
+    ),
+    relationships=(
+        Relationship("frontier", "practitioner", "hands the open work to",
+                     carries="task, authority, what is unresolved"),
+        Relationship("practitioner", "orientation", "starts by",
+                     carries="the task as given, and the situation"),
+        Relationship("orientation", "planning", "settles enough to",
+                     carries="approach, knowns, what is still unknown"),
+        Relationship("planning", "calls", "issues steps through",
+                     carries="one bounded responsibility at a time"),
+        Relationship("context", "calls", "supplies the evidence to",
+                     carries="selected evidence, within the window"),
+        Relationship("interface", "calls", "shapes the answer for",
+                     carries="offered contract, and room to refuse it"),
+        Relationship("allocation", "calls", "orders the routes for",
+                     carries="a ladder, or a refusal to advise"),
+        Relationship("calls", "capabilities", "may reach for",
+                     carries="a tool, with its contract and effects"),
+        Relationship("calls", "harness", "may delegate to",
+                     carries="bounded work, returned as events"),
+        Relationship("calls", "verification", "submits the result to",
+                     carries="artifacts, claims, evidence"),
+        Relationship("verification", "recovery", "escalates a failure to",
+                     carries="what failed, and what survived it"),
+        Relationship("recovery", "practitioner", "returns a plan to",
+                     carries="the smallest change worth trying"),
+        Relationship("calls", "history", "records every stage in",
+                     carries="situation, route, and what it contributed"),
+        Relationship("history", "allocation", "is the only evidence for",
+                     carries="prior outcomes, or too few to advise on"),
+        Relationship("verification", "frontier", "closes or reopens",
+                     carries="what is now settled, what is still open"),
+    ))
+
+
+DIAGRAMS = (RUNTIME_CONTEXT, SOLVER_CONTAINERS, LEARNING_FABRIC)
 
 _MERMAID_SHAPES = {
     PERSON: ("([", "])"), SYSTEM: ("[", "]"), EXTERNAL: ("[/", "/]"),
@@ -273,6 +363,43 @@ def render_c4_dsl(model: DiagramModel) -> str:
         lines.append(f"        {edge.source} -> {edge.target} \"{label}\"")
     lines += ["    }", "}"]
     return "\n".join(lines)
+
+
+#: Where the rendered document lives, relative to the repository root. The
+#: file is a projection; this module is the record.
+DOCUMENT_PATH = "docs/ARCHITECTURE-DIAGRAMS.md"
+
+_PREAMBLE = """\
+Generated from the typed model in
+`src/loop_engine/code_nodes/architecture_diagram.py`. Every element
+names a module that must exist; a self-test fails if one stops
+existing, so a rename breaks the diagram loudly rather than leaving
+it quietly wrong.
+
+These are renderings. The typed model is the record — a diagram
+language can express things the system does not do, and once the
+picture is authoritative those inventions become requirements
+nobody agreed to."""
+
+
+def render_document(models=DIAGRAMS) -> str:
+    """The whole page, so the committed file cannot drift from the model.
+
+    Written out rather than maintained: a diagram kept by hand beside a
+    typed model is a second copy of the same list, and the copy is wrong
+    from the first edit that forgets it.
+    """
+    lines = ["# Architecture diagrams", "", _PREAMBLE, ""]
+    for model in models:
+        lines += [f"## {model.title}", "",
+                  f"*{model.level} level.* {model.note}", "",
+                  "```mermaid", render_mermaid(model), "```", ""]
+    lines += ["## The same models as C4 DSL", "",
+              "Rendered for a Structurizr-style tool.", ""]
+    for model in models:
+        lines += [f"### {model.title} (DSL)", "",
+                  "```text", render_c4_dsl(model), "```", ""]
+    return "\n".join(lines).rstrip("\n") + "\n"
 
 
 def self_test() -> dict:
@@ -350,6 +477,25 @@ def self_test() -> dict:
     check("the model survives serialisation as the record",
           round_trip["record_type"] == DIAGRAM_RECORD_TYPE
           and len(round_trip["elements"]) == len(LEARNING_FABRIC.elements))
+
+    check("the container level exists between context and component",
+          {model.level for model in DIAGRAMS}
+          >= {CONTEXT, CONTAINER, COMPONENT},
+          "skipping the middle level hides what a task passes through")
+
+    page = render_document()
+    check("the rendered page carries every model",
+          all(model.title in page for model in DIAGRAMS))
+
+    root = os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__)))))
+    committed = os.path.join(root, DOCUMENT_PATH)
+    if os.path.isfile(committed):
+        with open(committed, encoding="utf-8") as handle:
+            check("the committed page matches the typed model",
+                  handle.read() == page,
+                  "regenerate with render_document(); a hand-kept copy "
+                  "drifts from the model the first time one is forgotten")
 
     passed = sum(1 for item in tests if item["passed"])
     return {"record_type": "architecture_diagram_test/v1", "tests": tests,

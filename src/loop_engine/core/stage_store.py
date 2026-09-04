@@ -39,6 +39,9 @@ import json
 import os
 from dataclasses import dataclass, field
 
+from .outcome_vector import (HELPED, SIGNAL_SCOPES, UNKNOWN, OutcomeVector,
+                             observe as observe_outcome)
+
 STAGE_OBSERVATION_RECORD_TYPE = "stage_observation/v1"
 
 #: How a candidate was found. Carried on every result so a caller can weigh
@@ -64,10 +67,27 @@ class StageObservation:
     #: label so this module never has to understand response shapes.
     response_shape: str = ""
     model_route: str = ""
-    #: None until the run that contained it finished.
-    helped: "bool | None" = None
+    #: What this stage actually contributed. Separate signals rather than one
+    #: boolean, because a successful run contains wasted loops and a failed
+    #: one contains work that was right. Empty until somebody observes.
+    outcome: OutcomeVector = field(default_factory=OutcomeVector)
     model_calls: int = 0
     elapsed_seconds: "float | None" = None
+
+    @property
+    def helped(self) -> "bool | None":
+        """The outcome as one boolean, for callers that can only hold one.
+
+        A projection, not a second record: it is computed from the vector so
+        the two cannot drift. It necessarily loses the distinction the vector
+        exists to draw — work that was locally correct and reached nothing
+        reads here as not having helped, because that is what this question
+        asks. Callers weighing evidence should read ``outcome`` instead.
+        """
+        credit = self.outcome.credit
+        if credit == HELPED:
+            return True
+        return None if credit == UNKNOWN else False
 
     def to_dict(self) -> dict:
         return {"record_type": STAGE_OBSERVATION_RECORD_TYPE,
@@ -76,7 +96,12 @@ class StageObservation:
                 "responsibility": self.responsibility,
                 "run_id": self.run_id,
                 "response_shape": self.response_shape,
-                "model_route": self.model_route, "helped": self.helped,
+                "model_route": self.model_route,
+                "outcome": self.outcome.to_dict(),
+                # Kept alongside the vector so files written before the
+                # vector existed, and readers that never learned about it,
+                # both still work.
+                "helped": self.helped,
                 "model_calls": self.model_calls,
                 "elapsed_seconds": self.elapsed_seconds}
 
@@ -144,8 +169,21 @@ class StageStore:
     last_storage_error: str = ""
 
     def add(self, stage, **fields) -> StageObservation:
-        """Record one occurrence of a stage."""
+        """Record one occurrence of a stage.
+
+        Outcome signals may be passed directly and are folded into the
+        vector, so a caller that already knows how a stage went need not
+        construct one. ``helped`` is accepted as the name it has always had
+        and is understood as the run's fate, which is what it meant.
+        """
         from .stage_fingerprint import stage_motif
+        signals = {name: fields.pop(name) for name in list(fields)
+                   if name in SIGNAL_SCOPES}
+        if "helped" in fields:
+            signals.setdefault("task_outcome", fields.pop("helped"))
+        if signals:
+            fields["outcome"] = observe_outcome(
+                fields.get("outcome") or OutcomeVector(), **signals)
         observation = StageObservation(
             digest=stage.digest, motif=stage_motif(stage),
             shape=tuple(stage.shape),
@@ -156,8 +194,39 @@ class StageStore:
         self._by_shape.setdefault(observation.shape, []).append(observation)
         return observation
 
+    def observe(self, observation: StageObservation,
+                **signals) -> StageObservation:
+        """Record something newly known about one stage's fate.
+
+        Called as evidence arrives rather than at the end: whether a stage's
+        own output passed its checks is known when it is checked, and waiting
+        until the run closes to ask would mean never asking.
+
+        Returns the updated observation. Unknown signal names raise, because
+        a silently ignored signal is evidence that looks recorded and is not.
+        """
+        from dataclasses import replace as _replace
+        updated = _replace(
+            observation, outcome=observe_outcome(observation.outcome,
+                                                 **signals))
+        for holder in (self.observations,
+                       self._by_digest.get(observation.digest),
+                       self._by_motif.get(observation.motif),
+                       self._by_shape.get(observation.shape)):
+            if not holder:
+                continue
+            for position, item in enumerate(holder):
+                if item is observation:
+                    holder[position] = updated
+        return updated
+
     def close_run(self, helped: "bool | None", *, path: str = "") -> int:
         """Tell this run's observations how it ended, then persist them.
+
+        ``helped`` is the run's fate, which is true of every stage in it
+        equally. It is folded in as one signal beside whatever stage-local
+        evidence was observed along the way, rather than overwriting it: a
+        run that failed does not make the work inside it wrong.
 
         Rows are written at the end rather than as they happen. A stage
         recorded mid-run has no outcome yet, and writing it then would fill
@@ -165,9 +234,9 @@ class StageStore:
         from stages that genuinely finished unknown.
         """
         from dataclasses import replace as _replace
-        resolved = [_replace(item, helped=helped)
-                    if item.helped is None else item
-                    for item in self.observations]
+        resolved = [_replace(item, outcome=observe_outcome(
+            item.outcome, task_outcome=helped))
+            for item in self.observations]
         self.observations = resolved
         for index, key in ((self._by_digest, "digest"),
                            (self._by_motif, "motif"),
@@ -228,7 +297,7 @@ class StageStore:
                     run_id=value.get("run_id", ""),
                     response_shape=value.get("response_shape", ""),
                     model_route=value.get("model_route", ""),
-                    helped=value.get("helped"),
+                    outcome=_outcome_from(value),
                     model_calls=int(value.get("model_calls") or 0),
                     elapsed_seconds=value.get("elapsed_seconds"))
                 self.observations.append(observation)
@@ -275,6 +344,30 @@ class StageStore:
                 "distinct_motifs": len(self._by_motif),
                 "distinct_shapes": len(self._by_shape),
                 "path": self.path}
+
+
+def _refused(store, observation) -> bool:
+    """Whether the store rejects a signal name it does not know."""
+    try:
+        store.observe(observation, invented_signal=True)
+    except ValueError:
+        return True
+    return False
+
+
+def _outcome_from(value: dict) -> OutcomeVector:
+    """Rebuild a stored outcome, from either the vector or the old boolean.
+
+    Rows written before the vector existed carry only ``helped``. That is
+    run-level evidence and is restored as exactly that, so an old corpus does
+    not silently claim stage-level credit it never had.
+    """
+    stored = value.get("outcome")
+    if isinstance(stored, dict):
+        return observe_outcome(
+            OutcomeVector(),
+            **{name: stored.get(name) for name in SIGNAL_SCOPES})
+    return observe_outcome(OutcomeVector(), task_outcome=value.get("helped"))
 
 
 def _hashable(value):
@@ -389,6 +482,75 @@ def self_test() -> dict:
     check("closing does not overwrite an outcome already known",
           [item.helped for item in closing.observations] == [True, False],
           "a stage that already failed is not relabelled by the run")
+
+    # --- credit is per stage, not per run -------------------------------
+    from .outcome_vector import NEUTRAL, RUN, STAGE
+
+    graded = StageStore()
+    carried = graded.add(stage("build the submission"), run_id="r9")
+    wasted = graded.add(stage("try a second encoder"), run_id="r9")
+    graded.observe(carried, local_verification=True, branch_contribution=True)
+    graded.observe(wasted, local_verification=True, branch_contribution=False)
+    graded.close_run(True)
+
+    kept, spent = graded.observations
+    check("a run's fate does not erase what was seen inside it",
+          kept.outcome.local_verification is True
+          and kept.outcome.task_outcome is True,
+          "close_run used to overwrite every stage with one boolean")
+    check("work that carried the run reads as helped",
+          kept.outcome.credit == HELPED and kept.helped is True)
+    check("a wasted loop inside a winning run is neutral, not helped",
+          spent.outcome.credit == NEUTRAL,
+          "this is the row that used to be labelled helped and trained on")
+    check("both stages of one run can now disagree",
+          kept.outcome.credit != spent.outcome.credit,
+          "a run-level boolean made this impossible by construction")
+
+    losing = StageStore()
+    sound = losing.add(stage("diagnose the failing join"), run_id="r10")
+    losing.observe(sound, local_verification=True, branch_contribution=True)
+    losing.close_run(False)
+    check("good work inside a failed run is not marked harmful",
+          losing.observations[0].outcome.credit == HELPED,
+          "the losing run used to poison every decision it contained")
+
+    check("observing a stage updates the copy the indexes hold",
+          graded._by_digest[spent.digest][0].outcome.credit == NEUTRAL,
+          "a second copy left behind is the drift this store must not have")
+
+    # --- migration: an old corpus must not claim credit it never had -----
+    with tempfile.TemporaryDirectory() as folder:
+        legacy = os.path.join(folder, "old.jsonl")
+        with open(legacy, "w", encoding="utf-8") as handle:
+            handle.write(json.dumps({
+                "digest": "d1", "motif": "m1", "shape": ["a"],
+                "responsibility": "clean the extract", "run_id": "old",
+                "helped": True}) + "\n")
+        old = StageStore(path=legacy)
+        check("a row written before the vector existed still loads",
+              old.load() == 1)
+        restored = old.observations[0]
+        check("an old boolean is restored as run-level evidence only",
+              restored.outcome.granularity == RUN
+              and restored.outcome.local_verification is None,
+              "an old corpus must not claim stage credit it never had")
+        check("the old boolean still reads the same through the projection",
+              restored.helped is True)
+
+        fresh = os.path.join(folder, "new.jsonl")
+        writing = StageStore(path=fresh)
+        one = writing.add(stage("write the report"), run_id="r11")
+        writing.observe(one, local_verification=True, downstream_use=True)
+        writing.close_run(True)
+        back = StageStore(path=fresh)
+        back.load()
+        check("a vector round-trips through the file",
+              back.observations[0].outcome.granularity == STAGE
+              and back.observations[0].outcome.downstream_use is True)
+
+    check("an unknown signal name is refused rather than dropped",
+          _refused(graded, kept))
 
     passed = sum(1 for item in tests if item["passed"])
     return {"record_type": "stage_store_test/v1", "tests": tests,
