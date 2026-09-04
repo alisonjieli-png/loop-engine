@@ -21,13 +21,25 @@ Does not own: naming a stage (core.stage_fingerprint), storing one
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 #: The file a run's stages are written to, beside its history.
 STAGE_FILE_NAME = "stages.jsonl"
 
+#: An operator may point every run at one shared store. Without this a
+#: campaign writes one file per run directory and accumulates nothing: each
+#: run reads only what it wrote, which is the same as reading nothing. The
+#: sharing is deliberate rather than automatic, because pooling stages
+#: across unrelated deployments is a decision with privacy in it.
+STAGE_STORE_VARIABLE = "LOOP_ENGINE_STAGE_STORE"
 
-def _stage_path(runs_dir) -> str:
+
+def _stage_path(runs_dir, environ=None) -> str:
+    source = os.environ if environ is None else environ
+    shared = str(source.get(STAGE_STORE_VARIABLE, "") or "").strip()
+    if shared:
+        return shared
     return str(Path(runs_dir) / STAGE_FILE_NAME) if runs_dir else ""
 
 
@@ -104,6 +116,15 @@ def self_test() -> dict:
     check("neither operation can raise into the run",
           close_stages(broken, "/nowhere", helped=True) == 0
           and load_prior_stages(broken, "/nowhere") == 0)
+
+    check("one shared store can serve every run",
+          _stage_path("/runs/a", {"LOOP_ENGINE_STAGE_STORE": "/shared/s.jsonl"})
+          == "/shared/s.jsonl"
+          and _stage_path("/runs/b", {"LOOP_ENGINE_STAGE_STORE": "/shared/s.jsonl"})
+          == "/shared/s.jsonl",
+          "without this a campaign accumulates nothing across its runs")
+    check("with no override each run keeps its own file",
+          _stage_path("/runs/a", {}) != _stage_path("/runs/b", {}))
 
     check("no runs directory means no file and no error",
           close_stages(SimpleNamespace(stage_store=StageStore(),
