@@ -17,7 +17,36 @@ if TYPE_CHECKING:
 
 
 PRODUCT_OUTCOME_FILENAME = "outcome.json"
-PRODUCT_OUTCOME_RECORD_TYPES = ("solve_outcome/v3", "solve_outcome/v4")
+PRODUCT_OUTCOME_RECORD_TYPES = ("solve_outcome/v3", "solve_outcome/v4", "solve_outcome/v5")
+
+
+@dataclass(frozen=True)
+class ProductModelCallAccounting:
+    """Validated public call totals, distinct from an incomplete known subtotal."""
+
+    model_calls: int | None
+    model_call_accounting_complete: bool
+    model_calls_known_subtotal: int | None
+
+    def __post_init__(self) -> None:
+        if type(self.model_call_accounting_complete) is not bool:
+            raise ValueError("model call completeness must be a Boolean")
+        for value in (self.model_calls, self.model_calls_known_subtotal):
+            if value is not None and (type(value) is not int or value < 0):
+                raise ValueError("model call counts must be nonnegative integers or unknown")
+        if self.model_call_accounting_complete:
+            if (self.model_calls is None
+                    or self.model_calls_known_subtotal != self.model_calls):
+                raise ValueError("complete model call accounting needs an equal total and subtotal")
+        elif self.model_calls is not None:
+            raise ValueError("incomplete model call accounting cannot claim an exact total")
+
+    def to_dict(self) -> dict:
+        return {
+            "model_calls": self.model_calls,
+            "model_call_accounting_complete": self.model_call_accounting_complete,
+            "model_calls_known_subtotal": self.model_calls_known_subtotal,
+        }
 
 
 def _error(message: str):
@@ -95,16 +124,23 @@ def _validate_product_outcome(value: Mapping, run_id: str) -> dict:
             or not isinstance(body.get("artifacts"), list)
             or not isinstance(body.get("verification"), dict)):
         raise _error("saved product outcome violates its solve outcome contract")
-    if (body.get("record_type") == "solve_outcome/v4"
+    if (body.get("record_type") in ("solve_outcome/v4", "solve_outcome/v5")
             and not isinstance(body.get("questions"), list)):
-        raise _error("solve_outcome/v4 questions must be a list")
+        raise _error("solve_outcome/v4 and v5 questions must be a list")
+    if body.get("record_type") == "solve_outcome/v5":
+        try:
+            ProductModelCallAccounting(
+                body["model_calls"], body["model_call_accounting_complete"],
+                body["model_calls_known_subtotal"])
+        except (KeyError, ValueError) as exc:
+            raise _error("solve_outcome/v5 model call accounting is invalid") from exc
     return body
 
 
 def _load_history(root: str, run_id: str):
     """Read Run History through its governed Intelligence Loop."""
-    from .run_history import RunHistory, RunHistoryIntegrityError
     from ..loop.intelligence_loops import serve_historical_intelligence
+    from .run_history import RunHistory, RunHistoryIntegrityError
 
     def handler():
         return RunHistory.load(root, run_id)
@@ -189,5 +225,5 @@ def load_saved_run_bundle(root: str, run_id: str) -> SavedRunBundle:
 
 __all__ = (
     "PRODUCT_OUTCOME_FILENAME", "PRODUCT_OUTCOME_RECORD_TYPES",
-    "ProductOutcomeRef", "SavedRunBundle",
+    "ProductModelCallAccounting", "ProductOutcomeRef", "SavedRunBundle",
     "bind_product_outcome", "load_saved_run_bundle")

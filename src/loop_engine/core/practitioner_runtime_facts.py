@@ -25,13 +25,16 @@ from __future__ import annotations
 
 import hashlib
 
+from ..templates.intake import CapturedInstructionProvenance
 from .adaptive_practitioner_records import AdaptivePractitionerError
-from .adaptive_practitioner_source import (
-    inspectable_source_files, project_input_path)
+from .adaptive_practitioner_source import inspectable_source_files, project_input_path
+from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
 from .generated_project import selected_execution_backend
 from .runtime_capacity import (
-    model_evidence_bytes, paths_within_allowance, supplied_input_ceiling)
-from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
+    model_evidence_bytes,
+    paths_within_allowance,
+    supplied_input_ceiling,
+)
 
 RUNTIME_FACTS_RECORD_TYPE = "practitioner_runtime_facts/v1"
 
@@ -108,10 +111,27 @@ def granted_permissions(request) -> tuple[str, ...]:
         ("sandbox_command", request.allow_sandbox_commands)) if allowed)
 
 
+def _captured_instruction(services) -> dict | None:
+    """Project the validated text snapshot, never imply an external file read."""
+    provenance = getattr(services.request, "instruction_provenance", None)
+    if provenance is None:
+        return None
+    if type(provenance) is not CapturedInstructionProvenance:
+        raise ValueError("instruction provenance must use its exact passive contract")
+    provenance.validate_text(services.request.task)
+    return {
+        **provenance.to_dict(),
+        "text_in_original_input": True,
+        "inspection_required_for_instruction_text": False,
+        "external_data_authority_unchanged": True,
+    }
+
+
 def runtime_facts(services) -> dict:
     """Exact, model-visible facts about this run. Never advisory."""
     request = services.request
     policy = DEFAULT_SUPERVISION_POLICY.action_fence
+    captured_instruction = _captured_instruction(services)
     return {
         "record_type": RUNTIME_FACTS_RECORD_TYPE,
         "authority": "runtime",
@@ -124,6 +144,8 @@ def runtime_facts(services) -> dict:
             bool(request.allow_local_execution)),
         "granted_permissions": list(granted_permissions(request)),
         "interaction_mode": str(request.interaction_mode),
+        **({"captured_instruction": captured_instruction}
+           if captured_instruction is not None else {}),
         "source_manifest": _source_manifest(services),
         "source_roles": _source_roles(services),
         "action_fence": services.action_fence.model_view(policy),
@@ -135,6 +157,7 @@ def self_test() -> dict:
     import tempfile
     from pathlib import Path
     from types import SimpleNamespace
+
     from .action_fence import ActionFenceLedger
 
     with tempfile.TemporaryDirectory(prefix="loop-engine-facts-") as root:
@@ -162,6 +185,18 @@ def self_test() -> dict:
                 interaction_mode="ask_when_material"),
             workspace_base=Path(root), action_fence=ActionFenceLedger())
         closed_facts = runtime_facts(closed)
+        instruction_text = "supplied instruction"
+        closed.request.task = instruction_text
+        closed.request.instruction_provenance = CapturedInstructionProvenance(
+            hashlib.sha256(instruction_text.encode()).hexdigest(),
+            len(instruction_text.encode()), ("instruction-origin.txt",))
+        instruction_facts = runtime_facts(closed)
+        closed.request.task = "different instruction"
+        invalid_capture_refused = False
+        try:
+            runtime_facts(closed)
+        except ValueError:
+            invalid_capture_refused = True
     manifest = facts.get("source_manifest") or {}
     paths = manifest.get("paths") or []
     tests = [{
@@ -201,6 +236,22 @@ def self_test() -> dict:
                    and facts["source_roles"] is None
                    and closed_facts["source_roles"] is None),
         "detail": str(facts.get("source_roles")),
+    }, {
+        "test": "captured_instruction_is_available_without_external_source_authority",
+        "passed": (instruction_facts["captured_instruction"]["text_in_original_input"]
+                   and instruction_facts["captured_instruction"]["capture_method"]
+                   == "provided_text"
+                   and not instruction_facts["captured_instruction"][
+                       "inspection_required_for_instruction_text"]
+                   and instruction_facts["source_manifest"] is None
+                   and instruction_facts["granted_permissions"] == []),
+        "detail": "captured instruction text is not an unread dataset",
+    }, {
+        "test": "absent_or_rebound_instruction_provenance_is_not_a_capture_claim",
+        "passed": ("captured_instruction" not in closed_facts
+                   and "captured_instruction" not in facts
+                   and invalid_capture_refused),
+        "detail": "unknown provenance stays absent; changed text is refused",
     }, {
         "test": "no_source_authority_means_no_manifest_and_no_error",
         "passed": (closed_facts["source_manifest"] is None

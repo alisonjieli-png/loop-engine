@@ -28,6 +28,7 @@ from ..code_nodes.solution_model_port import (
     SolutionModelError,
 )
 from ..loop.kernel_runtime import current_kernel_owner
+from ..templates.intake import CapturedInstructionProvenance
 from ..templates.model import TaskFeedback
 from .adaptive_practitioner_prompting import (
     AdaptivePromptAssemblyRequest,
@@ -1233,6 +1234,7 @@ class AdaptivePractitionerRequest:
     prior_region_evidence: dict = field(default_factory=dict)
     stage_assistance: StageAssistanceRuntimeBinding = field(
         default_factory=StageAssistanceRuntimeBinding)
+    instruction_provenance: CapturedInstructionProvenance | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.prior_region_evidence, dict):
@@ -1259,6 +1261,15 @@ class AdaptivePractitionerRequest:
                 "evidence")
         if not self.task.strip():
             raise AdaptivePractitionerError("adaptive Practitioner needs a task")
+        if self.instruction_provenance is not None:
+            if type(self.instruction_provenance) is not CapturedInstructionProvenance:
+                raise AdaptivePractitionerError(
+                    "instruction provenance must use the captured instruction contract")
+            try:
+                self.instruction_provenance.validate_text(self.task)
+            except ValueError as exc:
+                raise AdaptivePractitionerError(
+                    "captured instruction provenance does not match task text") from exc
         if self.mode not in ("deterministic", "hybrid", "non_deterministic"):
             raise AdaptivePractitionerError(
                 "adaptive Practitioner mode is not registered")
@@ -1332,6 +1343,8 @@ class AdaptivePractitionerRequest:
             "context_budget": asdict(self.context_budget),
             "prior_region_evidence": self.prior_region_evidence,
         }
+        if self.instruction_provenance is not None:
+            value["instruction_provenance"] = self.instruction_provenance.to_dict()
         return hashlib.sha256(json.dumps(
             value, sort_keys=True, separators=(",", ":"), default=str
         ).encode("utf-8")).hexdigest()
@@ -2067,6 +2080,9 @@ class AdaptiveRunServices:
             },
             task_context={
                 "original_input": self.request.task,
+                **({"instruction_provenance":
+                    self.request.instruction_provenance.to_dict()}
+                   if self.request.instruction_provenance is not None else {}),
                 "source_type": self.request.source_kind,
                 "source_refs": list(self.request.source_refs),
                 "normalized_interpretation": (

@@ -9,6 +9,15 @@ First public release.
 
 ### Added
 
+- [External-caller and code-only delivery repairs](docs/verification/BRAIN-INTEGRATION-CODE-ONLY-2026-09-05.md).
+  Code-only tasks can return verified modules and tests without inventing an
+  extra command-produced file. Task-file text carries captured provenance,
+  malformed project fields receive precise diagnostics, failed execution
+  attempts retain their workspaces, and retries use fresh directories.
+  Public `solve_outcome/v5` preserves unknown call totals and known subtotals.
+  Real task and repair runs, independent checks, and remaining limits are
+  recorded separately from offline runtime tests.
+
 - A [live Kaggle pilot checkpoint](docs/verification/KAGGLE-LIVE-PILOT-2026-09-05.md)
   with an authorized Ollama probe, filtered population selection, and exact
   source/wheel verification. Source inspection derives content and digests from

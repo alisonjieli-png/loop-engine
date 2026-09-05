@@ -11,6 +11,8 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import math
+import mimetypes
 import os
 import re
 from dataclasses import dataclass, field, replace
@@ -264,16 +266,140 @@ def _refuse_pre_authored_artifacts(file_paths, artifacts) -> None:
     passed on all four. Authored files remain fully evidenced by the write
     record; they simply do not count as the output of an execution.
     """
-    authored = sorted({item.path for item in artifacts}
-                      & {path for path in file_paths})
-    if authored:
+    positions = {path: index for index, path in enumerate(file_paths)}
+    overlaps = [(index, positions[item.path]) for index, item in enumerate(artifacts)
+                if item.path in positions]
+    if overlaps:
+        fields = ", ".join(f"expected_artifacts[{output}].path=files[{source}].path"
+                           for output, source in overlaps[:8])
         raise GeneratedProjectError(
-            f"{authored} are declared as expected artifacts and also authored "
+            f"{fields}: authored_artifact_overlap; declared as expected artifacts and also authored "
             "as project files; an expected artifact is evidence that a "
             "command produced it, and a typed file proves only that it was "
             "typed. Author the code that produces each of these and remove "
             "the output itself from files, or drop it from expected_artifacts "
             "if it is an input rather than a result")
+
+
+def _require_project_work(files, commands, artifacts, *, prefix: str) -> None:
+    if not files:
+        raise GeneratedProjectError(f"{prefix}.files: empty_array")
+    if not commands:
+        raise GeneratedProjectError(f"{prefix}.commands: empty_array")
+    if not artifacts and not any(
+            item.command_kind == "verify" and item.expected_exit_codes == (0,)
+            for item in commands):
+        raise GeneratedProjectError(
+            f"{prefix}.commands: code_only_requires_zero_exit_verify_command")
+
+
+def _project_mapping_parts(value: object, *, candidate: bool) -> dict:
+    """Validate schema positions before constructing objects, without coercion."""
+    prefix = "candidate" if candidate else "manifest"
+
+    def fields(item, required, optional, location):
+        if type(item) is not dict:
+            raise GeneratedProjectError(f"{location}: expected_object")
+        missing = required - set(item)
+        if missing:
+            raise GeneratedProjectError(
+                f"{location}: missing_fields=" + ",".join(sorted(missing)))
+        extra = set(item) - required - optional
+        if extra:
+            raise GeneratedProjectError(f"{location}: unexpected_fields_count={len(extra)}")
+
+    def text(item, location, *, empty=False):
+        if type(item) is not str:
+            raise GeneratedProjectError(f"{location}: expected_text")
+        if not empty and not item.strip():
+            raise GeneratedProjectError(f"{location}: empty_text")
+        try:
+            item.encode("utf-8")
+        except UnicodeError:
+            raise GeneratedProjectError(f"{location}: invalid_utf8_text") from None
+        return item
+
+    def array(item, location, *, nonempty=False):
+        if type(item) is not list:
+            raise GeneratedProjectError(f"{location}: expected_array")
+        if nonempty and not item:
+            raise GeneratedProjectError(f"{location}: empty_array")
+        return item
+
+    def construct(factory, location, **parts):
+        try:
+            return factory(**parts)
+        except (ValueError, TypeError, OverflowError):
+            raise GeneratedProjectError(f"{location}: invalid_value") from None
+
+    required = {"record_type", "project_id", "summary", "files", "commands", "expected_artifacts"}
+    fields(value, required, set(), prefix)
+    result = {name: text(value[name], f"{prefix}.{name}")
+              for name in ("record_type", "project_id", "summary")}
+    expected_type = GENERATED_PROJECT_CANDIDATE_TYPE if candidate else GENERATED_PROJECT_RECORD_TYPE
+    if result["record_type"] != expected_type:
+        raise GeneratedProjectError(f"{prefix}.record_type: unsupported_value")
+    if not _PROJECT_ID.fullmatch(result["project_id"]):
+        raise GeneratedProjectError(f"{prefix}.project_id: invalid_value")
+    files = []
+    for index, item in enumerate(array(value["files"], f"{prefix}.files", nonempty=True)):
+        location = f"{prefix}.files[{index}]"
+        fields(item, {"path", "purpose"} if candidate else {"path", "content"},
+               {"acceptance"} if candidate else set(), location)
+        path = text(item["path"], location + ".path")
+        if candidate:
+            acceptance = array(item.get("acceptance", []), location + ".acceptance")
+            files.append(construct(GeneratedProjectFileSpec, location, path=path,
+                purpose=text(item["purpose"], location + ".purpose"),
+                acceptance=tuple(text(entry, f"{location}.acceptance[{i}]")
+                                 for i, entry in enumerate(acceptance))))
+        else:
+            files.append(construct(GeneratedProjectFile, location, path=path,
+                content=text(item["content"], location + ".content", empty=True)))
+    commands = []
+    for index, item in enumerate(array(value["commands"], f"{prefix}.commands", nonempty=True)):
+        location = f"{prefix}.commands[{index}]"
+        fields(item, {"argv", "purpose"}, {"timeout_seconds", "command_kind",
+               "network_access", "expected_exit_codes"}, location)
+        argv = array(item["argv"], location + ".argv", nonempty=True)
+        arguments = tuple(text(arg, f"{location}.argv[{i}]", empty=True)
+                          for i, arg in enumerate(argv))
+        for i, arg in enumerate(arguments):
+            if not arg:
+                raise GeneratedProjectError(f"{location}.argv[{i}]: empty_text")
+        timeout = item.get("timeout_seconds", 300.0)
+        if type(timeout) not in (int, float):
+            raise GeneratedProjectError(f"{location}.timeout_seconds: expected_finite_number")
+        try:
+            finite = math.isfinite(timeout)
+        except OverflowError:
+            finite = False
+        if not finite or not 0 < timeout <= MAXIMUM_COMMAND_TIMEOUT_SECONDS:
+            raise GeneratedProjectError(f"{location}.timeout_seconds: invalid_value")
+        network = item.get("network_access", False)
+        if type(network) is not bool:
+            raise GeneratedProjectError(f"{location}.network_access: expected_boolean")
+        codes = array(item.get("expected_exit_codes", [0]),
+                      location + ".expected_exit_codes", nonempty=True)
+        for i, code in enumerate(codes):
+            if type(code) is not int:
+                raise GeneratedProjectError(f"{location}.expected_exit_codes[{i}]: expected_integer")
+        commands.append(construct(GeneratedProjectCommand, location, argv=arguments,
+            purpose=text(item["purpose"], location + ".purpose"), timeout_seconds=timeout,
+            command_kind=text(item.get("command_kind", "execute"), location + ".command_kind"),
+            network_access=network, expected_exit_codes=tuple(codes)))
+    artifacts = []
+    for index, item in enumerate(array(value["expected_artifacts"], f"{prefix}.expected_artifacts")):
+        location = f"{prefix}.expected_artifacts[{index}]"
+        fields(item, {"path", "media_type"}, {"minimum_bytes"}, location)
+        minimum = item.get("minimum_bytes", 1)
+        if type(minimum) is not int or minimum != 1:
+            raise GeneratedProjectError(f"{location}.minimum_bytes: expected_framework_value_1")
+        artifacts.append(construct(ExpectedProjectArtifact, location,
+            path=text(item["path"], location + ".path"),
+            media_type=text(item["media_type"], location + ".media_type"), minimum_bytes=minimum))
+    return {**result, "files": tuple(files), "commands": tuple(commands),
+            "expected_artifacts": tuple(artifacts)}
 
 
 @dataclass(frozen=True)
@@ -295,9 +421,9 @@ class GeneratedProjectCandidate:
         files = tuple(self.files)
         commands = tuple(self.commands)
         artifacts = tuple(self.expected_artifacts)
-        if (not self.summary.strip() or not files
-                or not commands or not artifacts):
-            raise GeneratedProjectError("project candidate is incomplete")
+        if not self.summary.strip():
+            raise GeneratedProjectError("candidate.summary: empty_text")
+        _require_project_work(files, commands, artifacts, prefix="candidate")
         paths = tuple(item.path for item in files)
         if len(paths) != len(set(paths)):
             raise GeneratedProjectError("project candidate file paths repeat")
@@ -308,43 +434,7 @@ class GeneratedProjectCandidate:
 
     @classmethod
     def from_mapping(cls, value: object) -> "GeneratedProjectCandidate":
-        if not isinstance(value, dict):
-            raise GeneratedProjectError("project candidate must be one object")
-        required = {
-            "record_type", "project_id", "summary", "files", "commands",
-            "expected_artifacts"}
-        if set(value) != required:
-            raise GeneratedProjectError(
-                "project candidate fields do not match version 1")
-        files = value.get("files")
-        commands = value.get("commands")
-        artifacts = value.get("expected_artifacts")
-        if not all(isinstance(items, list)
-                   for items in (files, commands, artifacts)):
-            raise GeneratedProjectError(
-                "candidate files, commands, and artifacts must be arrays")
-        return cls(
-            project_id=str(value["project_id"]),
-            summary=str(value["summary"]),
-            files=tuple(GeneratedProjectFileSpec(
-                str(item.get("path", "")), str(item.get("purpose", "")),
-                tuple(str(entry) for entry in item.get("acceptance", ())))
-                for item in files if isinstance(item, dict)),
-            commands=tuple(GeneratedProjectCommand(
-                tuple(str(arg) for arg in item.get("argv", ())),
-                str(item.get("purpose", "")),
-                float(item.get("timeout_seconds", 300.0)),
-                str(item.get("command_kind", "execute")),
-                bool(item.get("network_access", False)),
-                tuple(int(code) for code in item.get(
-                    "expected_exit_codes", (0,))))
-                for item in commands if isinstance(item, dict)),
-            expected_artifacts=tuple(ExpectedProjectArtifact(
-                str(item.get("path", "")), str(item.get("media_type", "")),
-                int(item.get("minimum_bytes", 1)))
-                for item in artifacts if isinstance(item, dict)),
-            record_type=str(value["record_type"]),
-        )
+        return cls(**_project_mapping_parts(value, candidate=True))
 
     def to_dict(self) -> dict:
         return {
@@ -406,8 +496,7 @@ class GeneratedProjectManifest:
         files = tuple(self.files)
         commands = tuple(self.commands)
         artifacts = tuple(self.expected_artifacts)
-        if not files or not commands or not artifacts:
-            raise GeneratedProjectError("generated project is incomplete")
+        _require_project_work(files, commands, artifacts, prefix="manifest")
         paths = tuple(item.path for item in files)
         if len(paths) != len(set(paths)):
             raise GeneratedProjectError("generated project file paths repeat")
@@ -418,42 +507,7 @@ class GeneratedProjectManifest:
 
     @classmethod
     def from_mapping(cls, value: object) -> "GeneratedProjectManifest":
-        if not isinstance(value, dict):
-            raise GeneratedProjectError("generated project must be one object")
-        required = {
-            "record_type", "project_id", "summary", "files", "commands",
-            "expected_artifacts"}
-        if set(value) != required:
-            raise GeneratedProjectError(
-                "generated project has fields outside the registered contract")
-        files = value.get("files")
-        commands = value.get("commands")
-        artifacts = value.get("expected_artifacts")
-        if not all(isinstance(items, list)
-                   for items in (files, commands, artifacts)):
-            raise GeneratedProjectError(
-                "files, commands, and expected_artifacts must be arrays")
-        return cls(
-            project_id=str(value["project_id"]),
-            summary=str(value["summary"]),
-            files=tuple(GeneratedProjectFile(
-                str(item.get("path", "")), str(item.get("content", "")))
-                for item in files if isinstance(item, dict)),
-            commands=tuple(GeneratedProjectCommand(
-                tuple(str(arg) for arg in item.get("argv", ())),
-                str(item.get("purpose", "")),
-                float(item.get("timeout_seconds", 300.0)),
-                str(item.get("command_kind", "execute")),
-                bool(item.get("network_access", False)),
-                tuple(int(code) for code in item.get(
-                    "expected_exit_codes", (0,))))
-                for item in commands if isinstance(item, dict)),
-            expected_artifacts=tuple(ExpectedProjectArtifact(
-                str(item.get("path", "")), str(item.get("media_type", "")),
-                int(item.get("minimum_bytes", 1)))
-                for item in artifacts if isinstance(item, dict)),
-            record_type=str(value["record_type"]),
-        )
+        return cls(**_project_mapping_parts(value, candidate=False))
 
     @property
     def digest(self) -> str:
@@ -515,6 +569,7 @@ class GeneratedProjectExecutionRequest:
             raise GeneratedProjectError(
                 "project input artifacts must be unique")
         object.__setattr__(self, "input_artifacts", inputs)
+        validate_generated_project_input_paths(self.manifest, inputs)
 
 
 @dataclass(frozen=True)
@@ -558,6 +613,27 @@ def workspace_file_byte_limit(
     """The file size this workspace must admit for these inputs."""
     return max(GENERATED_FILE_BYTE_FLOOR,
                max((len(item.content) for item in inputs), default=0))
+
+
+def validate_generated_project_input_paths(project, inputs) -> None:
+    """Refuse authored paths that overwrite or structurally block an input.
+
+    This effect-free check accepts candidate specifications or a complete
+    manifest. Supplied inputs keep their admitted names; generated outputs
+    must use distinct paths rather than an overwrite permission.
+    """
+    for file_index, authored in enumerate(project.files):
+        authored_path = PurePosixPath(authored.path)
+        for input_index, supplied in enumerate(inputs):
+            input_path = PurePosixPath(supplied.path)
+            if (authored_path == input_path
+                    or authored_path in input_path.parents
+                    or input_path in authored_path.parents):
+                raise GeneratedProjectError(
+                    f"files[{file_index}].path collides with "
+                    f"input_artifacts[{input_index}].path; supplied inputs "
+                    "are read-only source material. Choose distinct authored "
+                    "and output paths; do not recreate or overwrite inputs")
 
 
 def validate_generated_project_input_use(
@@ -736,6 +812,52 @@ def _approve_exact(operations, plan, authority) -> str:
     return plan.approval.request_id
 
 
+def _authored_source_artifacts(manifest, operations, commands) -> list[dict]:
+    """Expose authored deliverables without pretending commands produced them."""
+    verified_run = bool(
+        len(commands) == len(manifest.commands)
+        and all(item.get("ok") is True and item.get("exit_code") == 0
+                and item.get("expectation_met") is True for item in commands)
+        and any(item.get("command_kind") == "verify" for item in commands))
+    records = []
+    for file in manifest.files:
+        result = operations.file(FileRequest(FileOperation.READ, file.path))
+        expected_digest = hashlib.sha256(file.content.encode("utf-8")).hexdigest()
+        observed_digest = hashlib.sha256(result.content).hexdigest() if result.ok else ""
+        digest_matches = (result.ok and observed_digest == expected_digest
+                          and result.digest == observed_digest)
+        media_type = mimetypes.guess_type(file.path)[0] or "text/plain"
+        format_valid, method, error = False, "source_read", "source_unavailable"
+        if result.ok:
+            if file.path.endswith(".py"):
+                method = "python_syntax"
+                try:
+                    ast.parse(result.content.decode("utf-8"))
+                    format_valid, error = True, ""
+                except (SyntaxError, UnicodeError, ValueError, RecursionError):
+                    error = "python_source_syntax_invalid"
+            elif not result.content and media_type.startswith("text/") and media_type != "text/html":
+                format_valid, method, error = True, "utf8_decode", ""
+            else:
+                format_valid, method, error = verify_artifact_content(media_type, result.content)
+        records.append({
+            "path": file.path, "media_type": media_type,
+            "artifact_origin": "authored_source", "command_produced": False,
+            "present": result.ok, "byte_count": len(result.content) if result.ok else result.byte_count,
+            "digest": observed_digest, "expected_source_digest": expected_digest,
+            "source_digest_matches": bool(digest_matches),
+            "format_valid": format_valid, "format_error": error,
+            "error_code": result.error_code,
+            "verification_method": "post_run_authored_digest_" + method + "_and_verify_command",
+            "verification_command_passed": verified_run,
+            "verified": bool(verified_run and digest_matches and format_valid),
+        })
+    if any(not item["source_digest_matches"] or not item["format_valid"] for item in records):
+        for item in records:
+            item["verified"] = False
+    return records
+
+
 def execute_generated_project(
         request: GeneratedProjectExecutionRequest,
         context: GeneratedProjectExecutionContext) -> dict:
@@ -749,6 +871,8 @@ def execute_generated_project(
     because a host process is not an operating-system sandbox, so the
     network-policy rule stays stronger, not weaker.
     """
+    # Repeat at the effect boundary, even if a caller bypassed construction.
+    validate_generated_project_input_paths(request.manifest, request.input_artifacts)
     root = Path(request.workspace_root).expanduser().resolve()
     root.mkdir(parents=True, exist_ok=True)
     parent = context.parent_loop
@@ -934,6 +1058,8 @@ def execute_generated_project(
                          and result.byte_count >= expected.minimum_bytes
                          and format_valid),
         })
+    if not request.manifest.expected_artifacts:
+        artifacts = _authored_source_artifacts(request.manifest, operations, commands)
     snapshot = operations.snapshot(SnapshotRequest(include_hidden=False))
     deterministic_pass = bool(
         commands and all(item["expectation_met"] for item in commands)
@@ -1324,6 +1450,8 @@ def self_test() -> dict:
         "passed": GeneratedProjectAuthority(
             "actor", True, True, False).allow_local_execution is False,
         "detail": "allow_local_execution defaults to False"})
+    tests.extend(_code_only_project_checks())
+    tests.extend(_input_path_collision_checks())
     passed = sum(item["passed"] for item in tests)
     return {
         "record_type": "generated_project_test/v1",
@@ -1332,3 +1460,208 @@ def self_test() -> dict:
         "total": len(tests),
         "all_passed": passed == len(tests),
     }
+
+
+def _input_path_collision_checks() -> list[dict]:
+    """Inputs cannot collide with authored files before any workspace effect."""
+    import tempfile
+    from types import SimpleNamespace
+    from unittest.mock import patch
+
+    tests = []
+    supplied = (GeneratedProjectInputArtifact("inputs/data.txt", b"original fixture"),)
+
+    def manifest(path):
+        return GeneratedProjectManifest.from_mapping({
+            "record_type": GENERATED_PROJECT_RECORD_TYPE, "project_id": "collision_fixture",
+            "summary": "Validate source and authored path separation.",
+            "files": [{"path": path, "content": "pass\n"}],
+            "commands": [{"argv": ["python", "-m", "unittest"], "purpose": "Verify.",
+                          "command_kind": "verify"}], "expected_artifacts": []})
+
+    authority = GeneratedProjectAuthority("fixture", True, True, False)
+    with tempfile.TemporaryDirectory(prefix="loop-engine-collision-") as directory:
+        root = Path(directory) / "must-not-exist"
+        for label, path in (("same_path", "inputs/data.txt"),
+                            ("authored_parent", "inputs"),
+                            ("authored_nested", "inputs/data.txt/main.py"),
+                            ("normalized_backslash", "inputs\\data.txt")):
+            try:
+                GeneratedProjectExecutionRequest(manifest(path), str(root), authority,
+                                                 input_artifacts=supplied)
+                refused = False
+            except GeneratedProjectError as exc:
+                refused = "distinct authored and output paths" in str(exc)
+            tests.append({"test": "authored_input_collision_refuses_" + label,
+                          "passed": refused and not root.exists(),
+                          "detail": "execution request rejected before root creation"})
+        good = GeneratedProjectExecutionRequest(manifest("inputs/data.txt.py"), str(root),
+                                                authority, input_artifacts=supplied)
+        tests.append({"test": "similar_prefix_is_not_a_path_collision",
+                      "passed": good.manifest.files[0].path == "inputs/data.txt.py"
+                      and not root.exists(), "detail": "path components, not string prefixes"})
+        # A forged frozen object must still meet the same effect preflight.
+        object.__setattr__(good, "manifest", manifest("inputs/data.txt"))
+        context = GeneratedProjectExecutionContext(SimpleNamespace(loop_id="fixture", ledger=object()))
+        with patch.object(Path, "mkdir") as mkdir, patch.object(DockerWorkspace, "availability") as availability:
+            try:
+                execute_generated_project(good, context)
+                refused = False
+            except GeneratedProjectError:
+                refused = True
+        tests.append({"test": "executor_collision_preflight_has_zero_workspace_or_backend_effects",
+                      "passed": refused and not mkdir.called and not availability.called
+                      and supplied[0].content == b"original fixture",
+                      "detail": "defensive effect-boundary validation; original input unchanged"})
+    return tests
+
+
+def _code_only_project_checks() -> list[dict]:
+    """Generic authored-code delivery and strict admission, without models."""
+    import tempfile
+    from unittest.mock import patch
+
+    from ..code_nodes.solve_runtime import _product_result
+    from ..loop.loop_role import LoopRole, LoopRoleIdentity
+    from ..loop.recursive_loop import Loop, LoopConfig
+    from .workspace_contracts import BackendAvailability
+
+    tests = []
+
+    def check(name, passed):
+        tests.append({"test": name, "passed": bool(passed), "detail": ""})
+
+    candidate_body = {
+        "record_type": GENERATED_PROJECT_CANDIDATE_TYPE,
+        "project_id": "code_only", "summary": "Library with runnable tests.",
+        "files": [{"path": "library.py", "purpose": "Reusable library"},
+                  {"path": "test_library.py", "purpose": "Verify library"}],
+        "commands": [{"argv": ["python", "-m", "unittest", "-q"],
+                      "purpose": "Run unit tests", "command_kind": "verify"}],
+        "expected_artifacts": [],
+    }
+    candidate = GeneratedProjectCandidate.from_mapping(candidate_body)
+    manifest_body = {
+        **candidate.to_dict(), "record_type": GENERATED_PROJECT_RECORD_TYPE,
+        "files": [{"path": "library.py", "content": "def combine(a, b):\n    return a + b\n"},
+                  {"path": "test_library.py", "content":
+                   "import unittest\nfrom library import combine\n"
+                   "class LibraryTests(unittest.TestCase):\n"
+                   "    def test_combine(self):\n        self.assertEqual(combine(2, 3), 5)\n"}],
+    }
+    manifest = GeneratedProjectManifest.from_mapping(manifest_body)
+    check("code_only_candidate_and_manifest_need_no_fabricated_data_outputs",
+          not candidate.expected_artifacts and not manifest.expected_artifacts
+          and candidate.commands[0].command_kind == "verify")
+
+    def invalid(change):
+        body = json.loads(json.dumps(candidate_body))
+        change(body)
+        try:
+            GeneratedProjectCandidate.from_mapping(body)
+        except GeneratedProjectError as exc:
+            return str(exc)
+        return ""
+
+    check("code_only_without_a_zero_exit_verify_command_is_refused",
+          "code_only_requires_zero_exit_verify_command" in invalid(
+              lambda body: body["commands"][0].update(command_kind="execute"))
+          and "code_only_requires_zero_exit_verify_command" in invalid(
+              lambda body: body["commands"][0].update(expected_exit_codes=[1])))
+    check("candidate_empty_required_arrays_name_the_field",
+          invalid(lambda body: body.update(files=[])) == "candidate.files: empty_array"
+          and invalid(lambda body: body.update(commands=[])) == "candidate.commands: empty_array")
+    check("candidate_missing_fields_are_named_without_echoing_values",
+          invalid(lambda body: body.pop("summary")) == "candidate: missing_fields=summary")
+    discarded = invalid(lambda body: body["files"].append("PRIVATE_ITEM_VALUE"))
+    check("candidate_does_not_silently_discard_nonobject_array_members",
+          discarded == "candidate.files[2]: expected_object"
+          and "PRIVATE_ITEM_VALUE" not in discarded
+          and invalid(lambda body: body["commands"].append(None))
+          == "candidate.commands[1]: expected_object"
+          and invalid(lambda body: body["expected_artifacts"].append(True))
+          == "candidate.expected_artifacts[0]: expected_object")
+    check("candidate_nested_missing_fields_name_the_item",
+          invalid(lambda body: body["files"][0].pop("purpose"))
+          == "candidate.files[0]: missing_fields=purpose")
+    check("candidate_does_not_coerce_boolean_numeric_null_or_string_collections",
+          invalid(lambda body: body["commands"][0].update(network_access="false"))
+          == "candidate.commands[0].network_access: expected_boolean"
+          and invalid(lambda body: body["commands"][0].update(timeout_seconds="300"))
+          == "candidate.commands[0].timeout_seconds: expected_finite_number"
+          and invalid(lambda body: body.update(summary=None)) == "candidate.summary: expected_text"
+          and invalid(lambda body: body["files"][0].update(acceptance="text"))
+          == "candidate.files[0].acceptance: expected_array"
+          and invalid(lambda body: body["commands"][0].update(expected_exit_codes=[True]))
+          == "candidate.commands[0].expected_exit_codes[0]: expected_integer")
+    check("unexpected_field_diagnostic_does_not_expose_untrusted_key",
+          invalid(lambda body: body.update({"PRIVATE_FIELD_NAME": "PRIVATE_VALUE"}))
+          == "candidate: unexpected_fields_count=1")
+    check("authored_and_command_produced_artifacts_still_cannot_overlap",
+          bool(invalid(lambda body: body.update(expected_artifacts=[{
+              "path": "library.py", "media_type": "text/x-python"}]))))
+    bad_manifest = {**manifest_body, "files": [{"path": "library.py", "content": None}]}
+    try:
+        GeneratedProjectManifest.from_mapping(bad_manifest)
+        manifest_refused = ""
+    except GeneratedProjectError as exc:
+        manifest_refused = str(exc)
+    check("manifest_reader_also_refuses_null_file_content_without_coercion",
+          manifest_refused == "manifest.files[0].content: expected_text")
+
+    owner = Loop("code-only delivery checks", LoopConfig(
+        framework="custom", custom_steps=("execute",), power="light",
+        allowable_modes=("deterministic",), preferred_modes=("deterministic",)),
+        identity=LoopRoleIdentity(LoopRole.PRACTITIONER, "practitioner.solver"))
+    authority = GeneratedProjectAuthority("self-test", True, True, False, True)
+    unavailable = BackendAvailability(False, "docker", "dependency_unavailable", "offline fixture")
+
+    def execute(project, root):
+        with patch.object(DockerWorkspace, "availability", return_value=unavailable):
+            return execute_generated_project(GeneratedProjectExecutionRequest(
+                project, root, authority), GeneratedProjectExecutionContext(owner))
+
+    with tempfile.TemporaryDirectory(prefix="code-only-verified-") as root:
+        result = execute(manifest, root)
+        check("successful_code_only_verification_exposes_exact_authored_sources",
+              result["deterministic_checks_passed"]
+              and len(result["artifacts"]) == 2
+              and all(item["verified"] and item["source_digest_matches"]
+                      and item["artifact_origin"] == "authored_source"
+                      and item["command_produced"] is False for item in result["artifacts"]))
+        public = _product_result({"project_attempts": [{
+            **result, "workspace_path": root, "manifest": manifest.to_dict()}]}, True)
+        check("public_product_projection_includes_code_only_files",
+              len(public["artifacts"]) == 2
+              and {Path(item["path"]).name for item in public["artifacts"]}
+              == {"library.py", "test_library.py"})
+    broken = replace(manifest, files=(manifest.files[0], GeneratedProjectFile(
+        manifest.files[1].path, manifest.files[1].content.replace(
+            "combine(2, 3), 5", "combine(2, 3), 6"))))
+    with tempfile.TemporaryDirectory(prefix="code-only-failed-") as root:
+        result = execute(broken, root)
+        check("failed_verify_cannot_verify_authored_source_artifacts",
+              not result["deterministic_checks_passed"]
+              and result["commands"][0]["exit_code"] != 0
+              and all(not item["verified"] for item in result["artifacts"]))
+    for label, content in (
+            ("changed", "from pathlib import Path\nPath('library.py').write_text('changed = True\\n')\n"),
+            ("missing", "from pathlib import Path\nPath('library.py').unlink()\n")):
+        altered = replace(manifest,
+            files=(*manifest.files, GeneratedProjectFile("alter.py", content)),
+            commands=(*manifest.commands, GeneratedProjectCommand(
+                ("python", "alter.py"), "Alter source after tests")))
+        with tempfile.TemporaryDirectory(prefix="code-only-source-") as root:
+            result = execute(altered, root)
+            check("post_verification_" + label + "_source_invalidates_source_set",
+                  not result["deterministic_checks_passed"]
+                  and all(not item["verified"] for item in result["artifacts"]))
+    syntax_bad = replace(manifest, files=(*manifest.files,
+        GeneratedProjectFile("unused.py", "def incomplete(\n")))
+    with tempfile.TemporaryDirectory(prefix="code-only-syntax-") as root:
+        result = execute(syntax_bad, root)
+        check("unimported_invalid_python_source_cannot_be_verified_by_passing_tests",
+              result["commands"][0]["exit_code"] == 0
+              and not result["deterministic_checks_passed"]
+              and all(not item["verified"] for item in result["artifacts"]))
+    return tests

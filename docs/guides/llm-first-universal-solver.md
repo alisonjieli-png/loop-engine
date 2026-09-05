@@ -109,6 +109,35 @@ loop-engine solve --file task.txt --quickstart \
 Delegated choices, safe defaults, derived values, research questions, and
 nonmaterial preferences do not interrupt the run.
 
+## Task files and external data
+
+`--file task.txt` reads the instruction text at intake. The Practitioner receives
+that captured text with its digest and origin. The origin is provenance, not an
+unread dataset, and no second file inspection is required to recover the task.
+Changing the file after intake does not change the captured instruction.
+
+`--dataset` and `--repository` are different: their referenced contents still
+require explicit source-to-model authority and selected materialization. A path
+mentioned in task text grants no access by itself.
+
+## Source code is a deliverable
+
+A code-only task can return authored modules and tests after they are written
+and verified. It does not need an invented report file or a script whose only
+purpose is to write another script.
+
+The project contract separates authored `files` from command-produced
+`expected_artifacts`. The latter may be empty when a zero-exit verification
+command is declared. After execution, the runtime checks the authored bytes
+against their manifest digests, checks Python syntax where applicable, and
+requires the verification command to have passed. Returned source artifacts
+are explicitly marked `authored_source`, not command-produced outputs.
+
+Declared computed outputs must still exist and pass their checks. An authored
+file cannot also satisfy a command-produced-output declaration. These checks
+establish materialization and execution evidence; independent task evaluation
+is still needed to catch incorrect code or weak generated tests.
+
 ## Learning and future shortcuts
 
 Repeated use should make the system cheaper without narrowing the task domain:

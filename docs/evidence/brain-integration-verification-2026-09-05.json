@@ -1,0 +1,1211 @@
+{
+  "cancelled_run": {
+    "adaptive_file_sha256": "6008f6863d15f65cb6f368b5a04df05c301afeddb7db7d7bb9c64b4da1399109",
+    "corrected_v5_projection": {
+      "model_call_accounting_complete": false,
+      "model_calls": null,
+      "model_calls_known_subtotal": 44
+    },
+    "historical_incorrect_model_calls": 0,
+    "historical_public_schema": "solve_outcome/v4",
+    "old_files_rewritten": false,
+    "old_outcome_file_sha256": "c6db906e9b8f126a1ac86cc5c5ba3ec094358c72683093ca636dfbb07e314723",
+    "reason": "operator interruption after verified unrecoverable attempt-directory reuse and workspace-reader binding defects; not a call-count limit",
+    "run_history": {
+      "broken_at": [],
+      "chain_intact": true,
+      "events": 3447,
+      "head_digest": "e1860a7d5c77e0ab89c6217b9054a1a6def40bd4f9799c6ccb6aace6dfd02b10",
+      "path": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/runs/adaptive-dadfc5e6b5b24bf8eb61f7d0",
+      "product_outcome_bound": true,
+      "product_outcome_digest": "913119ccd5d6512e14c896ddb160cd745abfb81f67e2fe42fd79ed9dc5e150a3",
+      "run_id": "adaptive-dadfc5e6b5b24bf8eb61f7d0",
+      "terminal_code": "CANCELLED"
+    },
+    "run_id": "adaptive-dadfc5e6b5b24bf8eb61f7d0"
+  },
+  "ci_status": "NOT_GREEN_PENDING_EXISTING_HARDCODING_AUDIT_TRIAGE",
+  "historical_incident_ref": "artifact://sha256/601d63e9af656c75e49937a95e09e39da44527cad1d01f600aff6b4220d2847e",
+  "independent_reviews": [
+    {
+      "case": "attempt-1",
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--pull",
+        "never",
+        "--name",
+        "loop-duration-review-00f94d1ad7ff",
+        "--network",
+        "none",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--pids-limit",
+        "64",
+        "--memory",
+        "256m",
+        "--cpus",
+        "1",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev,size=67108864",
+        "--env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "--env",
+        "PYTHONPYCACHEPREFIX=/tmp/review-pycache",
+        "--volume",
+        "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/workspace-a/attempt-1:/candidate:ro",
+        "--volume",
+        "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/independent-duration-review/duration_probe.py:/review/probe.py:ro",
+        "--workdir",
+        "/candidate",
+        "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+        "python",
+        "-B",
+        "/review/probe.py",
+        "--project-root",
+        "/candidate",
+        "--module",
+        "iso_duration",
+        "--function",
+        "parse_duration"
+      ],
+      "driver_sha256": "153dda94608f10638d9b0991e5de20129484196fec609c42fad46177524f8dc7",
+      "model_calls": 0,
+      "network_calls": 0,
+      "probe_sha256": "1b2d365d959fbda3bd03a69e03d292f507827c8f4888db04767b3952fcd73307",
+      "report_ref": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/independent-duration-review/attempt-1/review.json",
+      "report_sha256": "ebbe9e6fab764a0eb2ee54ebccebe1b88bf5b5b65130875be515dba72475dbd3",
+      "source_hashes_unchanged": true,
+      "summary": {
+        "all_passed": false,
+        "api": "iso_duration:parse_duration",
+        "broader_form_observations": [
+          {
+            "acceptance_required": false,
+            "exception_type": "ValueError",
+            "input": "P1W"
+          },
+          {
+            "acceptance_required": false,
+            "exception_type": "ValueError",
+            "input": "PT0.5S"
+          },
+          {
+            "acceptance_required": false,
+            "exception_type": "ValueError",
+            "input": "PT1.5H"
+          },
+          {
+            "acceptance_required": false,
+            "exception_type": "ValueError",
+            "input": "-P1D"
+          },
+          {
+            "acceptance_required": false,
+            "input": "PT١S",
+            "returned_integer": 1,
+            "returned_type": "int"
+          }
+        ],
+        "candidate_own_suite": {
+          "errors": 0,
+          "failures": 0,
+          "skipped": 0,
+          "successful": true,
+          "tests_run": 25
+        },
+        "groups": {
+          "generated_integer_compositions": {
+            "passed": 128,
+            "total": 128
+          },
+          "input_type_error_contract": {
+            "passed": 0,
+            "total": 7
+          },
+          "integer_units_and_boundaries": {
+            "passed": 17,
+            "total": 17
+          },
+          "malformed_strings": {
+            "passed": 22,
+            "total": 24
+          },
+          "user_examples": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        "model_calls": 0,
+        "network_calls": 0,
+        "oracle_basis": "independent arithmetic, not a second duration parser",
+        "passed": 170,
+        "record_type": "independent_duration_oracle/v1",
+        "scope": "integer Y/M/D and T-H/M/S designator strings; year365days,month30days",
+        "scope_notes": [
+          "Weeks, fractions, signs and non-ASCII digits are observations, not added required features.",
+          "Non-string errors are a separately reported API boundary; the candidate annotates str.",
+          "A terminal newline is checked as trailing non-duration input, consistent with strict whole-string parsing.",
+          "This finite suite does not establish complete ISO-8601 conformance."
+        ],
+        "total": 179
+      }
+    },
+    {
+      "case": "checkpoint-case",
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--pull",
+        "never",
+        "--name",
+        "loop-duration-review-68b74d2467a7",
+        "--network",
+        "none",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--pids-limit",
+        "64",
+        "--memory",
+        "256m",
+        "--cpus",
+        "1",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev,size=67108864",
+        "--env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "--env",
+        "PYTHONPYCACHEPREFIX=/tmp/review-pycache",
+        "--volume",
+        "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/workspace-a-checkpoint:/candidate:ro",
+        "--volume",
+        "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/independent-duration-review/duration_probe.py:/review/probe.py:ro",
+        "--workdir",
+        "/candidate",
+        "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+        "python",
+        "-B",
+        "/review/probe.py",
+        "--project-root",
+        "/candidate",
+        "--module",
+        "iso_duration",
+        "--function",
+        "parse_duration"
+      ],
+      "driver_sha256": "153dda94608f10638d9b0991e5de20129484196fec609c42fad46177524f8dc7",
+      "model_calls": 0,
+      "network_calls": 0,
+      "probe_sha256": "1b2d365d959fbda3bd03a69e03d292f507827c8f4888db04767b3952fcd73307",
+      "report_ref": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/independent-duration-review/checkpoint-case/review.json",
+      "report_sha256": "5f276d0dfbb470f623b462be01731574620a6116657f13648d063496e8d346b0",
+      "source_hashes_unchanged": true,
+      "summary": {
+        "all_passed": true,
+        "api": "iso_duration:parse_duration",
+        "broader_form_observations": [
+          {
+            "acceptance_required": false,
+            "exception_type": "ValueError",
+            "input": "P1W"
+          },
+          {
+            "acceptance_required": false,
+            "exception_type": "ValueError",
+            "input": "PT0.5S"
+          },
+          {
+            "acceptance_required": false,
+            "exception_type": "ValueError",
+            "input": "PT1.5H"
+          },
+          {
+            "acceptance_required": false,
+            "exception_type": "ValueError",
+            "input": "-P1D"
+          },
+          {
+            "acceptance_required": false,
+            "input": "PT١S",
+            "returned_integer": 1,
+            "returned_type": "int"
+          }
+        ],
+        "candidate_own_suite": {
+          "errors": 0,
+          "failures": 0,
+          "skipped": 0,
+          "successful": true,
+          "tests_run": 34
+        },
+        "groups": {
+          "generated_integer_compositions": {
+            "passed": 128,
+            "total": 128
+          },
+          "input_type_error_contract": {
+            "passed": 7,
+            "total": 7
+          },
+          "integer_units_and_boundaries": {
+            "passed": 17,
+            "total": 17
+          },
+          "malformed_strings": {
+            "passed": 24,
+            "total": 24
+          },
+          "user_examples": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        "model_calls": 0,
+        "network_calls": 0,
+        "oracle_basis": "independent arithmetic, not a second duration parser",
+        "passed": 179,
+        "record_type": "independent_duration_oracle/v1",
+        "scope": "integer Y/M/D and T-H/M/S designator strings; year365days,month30days",
+        "scope_notes": [
+          "Weeks, fractions, signs and non-ASCII digits are observations, not added required features.",
+          "Non-string errors are a separately reported API boundary; the candidate annotates str.",
+          "A terminal newline is checked as trailing non-duration input, consistent with strict whole-string parsing.",
+          "This finite suite does not establish complete ISO-8601 conformance."
+        ],
+        "total": 179
+      }
+    },
+    {
+      "case": "final-public-repair-case",
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--pull",
+        "never",
+        "--name",
+        "loop-duration-review-7fb4da046573",
+        "--network",
+        "none",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--pids-limit",
+        "64",
+        "--memory",
+        "256m",
+        "--cpus",
+        "1",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev,size=67108864",
+        "--env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "--env",
+        "PYTHONPYCACHEPREFIX=/tmp/review-pycache",
+        "--volume",
+        "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/workspace-a-repair-final/attempt-1:/candidate:ro",
+        "--volume",
+        "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/independent-duration-review/duration_probe.py:/review/probe.py:ro",
+        "--workdir",
+        "/candidate",
+        "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+        "python",
+        "-B",
+        "/review/probe.py",
+        "--project-root",
+        "/candidate",
+        "--module",
+        "iso_duration",
+        "--function",
+        "parse_duration"
+      ],
+      "driver_sha256": "153dda94608f10638d9b0991e5de20129484196fec609c42fad46177524f8dc7",
+      "model_calls": 0,
+      "network_calls": 0,
+      "probe_sha256": "1b2d365d959fbda3bd03a69e03d292f507827c8f4888db04767b3952fcd73307",
+      "report_ref": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/independent-duration-review/final-public-repair-case/review.json",
+      "report_sha256": "2c7678d78867b2060cdf19a7a8066ede285a03367b4d40cdab28fe18bd4f51ca",
+      "source_hashes_unchanged": true,
+      "summary": {
+        "all_passed": true,
+        "api": "iso_duration:parse_duration",
+        "broader_form_observations": [
+          {
+            "acceptance_required": false,
+            "exception_type": "ValueError",
+            "input": "P1W"
+          },
+          {
+            "acceptance_required": false,
+            "exception_type": "ValueError",
+            "input": "PT0.5S"
+          },
+          {
+            "acceptance_required": false,
+            "exception_type": "ValueError",
+            "input": "PT1.5H"
+          },
+          {
+            "acceptance_required": false,
+            "exception_type": "ValueError",
+            "input": "-P1D"
+          },
+          {
+            "acceptance_required": false,
+            "input": "PT١S",
+            "returned_integer": 1,
+            "returned_type": "int"
+          }
+        ],
+        "candidate_own_suite": {
+          "errors": 0,
+          "failures": 0,
+          "skipped": 0,
+          "successful": true,
+          "tests_run": 34
+        },
+        "groups": {
+          "generated_integer_compositions": {
+            "passed": 128,
+            "total": 128
+          },
+          "input_type_error_contract": {
+            "passed": 7,
+            "total": 7
+          },
+          "integer_units_and_boundaries": {
+            "passed": 17,
+            "total": 17
+          },
+          "malformed_strings": {
+            "passed": 24,
+            "total": 24
+          },
+          "user_examples": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        "model_calls": 0,
+        "network_calls": 0,
+        "oracle_basis": "independent arithmetic, not a second duration parser",
+        "passed": 179,
+        "record_type": "independent_duration_oracle/v1",
+        "scope": "integer Y/M/D and T-H/M/S designator strings; year365days,month30days",
+        "scope_notes": [
+          "Weeks, fractions, signs and non-ASCII digits are observations, not added required features.",
+          "Non-string errors are a separately reported API boundary; the candidate annotates str.",
+          "A terminal newline is checked as trailing non-duration input, consistent with strict whole-string parsing.",
+          "This finite suite does not establish complete ISO-8601 conformance."
+        ],
+        "total": 179
+      }
+    },
+    {
+      "case": "min-case",
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--pull",
+        "never",
+        "--name",
+        "loop-seconds-review-a306c4db4ddc",
+        "--network",
+        "none",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "256m",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "64",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev,size=67108864",
+        "--env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "--env",
+        "PYTHONPYCACHEPREFIX=/tmp/review-pycache",
+        "--volume",
+        "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/workspace-min/attempt-1:/candidate:ro",
+        "--volume",
+        "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/independent-duration-review/seconds_probe.py:/review/probe.py:ro",
+        "--workdir",
+        "/candidate",
+        "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+        "python",
+        "-B",
+        "/review/probe.py"
+      ],
+      "driver_sha256": null,
+      "model_calls": 0,
+      "network_calls": 0,
+      "probe_sha256": "f51290eb217688ecdcf86552a56cde883ccbc78a11b6a6cb7b7a39d937475fd3",
+      "report_ref": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/independent-duration-review/min-case/review.json",
+      "report_sha256": "0058248facea5a205a80eda6deed4659eccf08c4a3777d69acd113176f692c07",
+      "source_hashes_unchanged": true,
+      "summary": {
+        "api": "seconds:to_seconds",
+        "candidate_own_suite": {
+          "errors": 0,
+          "failures": 0,
+          "skipped": 0,
+          "tests_run": 3
+        },
+        "model_calls": 0,
+        "network_calls": 0,
+        "passed": 24,
+        "record_type": "independent_seconds_formula_oracle/v1",
+        "scope": "numeric formula only; no new input-validation requirements",
+        "total": 24
+      }
+    }
+  ],
+  "initial_offline_checkpoint_sha256": "383329009386e03d4700bc60d677a5ed972d878f2657666a2e56ebc04542a185",
+  "limitations": [
+    "Independent duration checks cover integer Y/M/D/H/M/S forms and clarified non-string error behavior, not complete ISO-8601 conformance.",
+    "Historical failures and actual feedback were used; these are not unseen holdouts or a controlled causal performance comparison.",
+    "Two test-only runtime file changes occurred during the final live repair. Production logic was unchanged, but complete live-checkout file-byte freezing is not claimed.",
+    "The separate stopped Kaggle campaign still has zero new competition downloads, submissions or scores.",
+    "Raw prompts, raw completions, credentials and unrelated project data are not published."
+  ],
+  "live_runs": [
+    {
+      "artifacts": [
+        {
+          "artifact_origin": "authored_source",
+          "byte_count": 1634,
+          "command_produced": false,
+          "digest": "ef8d42071d861558b45bb56e3b896bf8949f76bbf7e7c63069443d429969661c",
+          "error_code": "",
+          "expected_source_digest": "ef8d42071d861558b45bb56e3b896bf8949f76bbf7e7c63069443d429969661c",
+          "format_error": "",
+          "format_valid": true,
+          "media_type": "text/x-python",
+          "path": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/workspace-a/attempt-1/iso_duration.py",
+          "present": true,
+          "source_digest_matches": true,
+          "verification_command_passed": true,
+          "verification_method": "post_run_authored_digest_python_syntax_and_verify_command",
+          "verified": true
+        },
+        {
+          "artifact_origin": "authored_source",
+          "byte_count": 3088,
+          "command_produced": false,
+          "digest": "f2b2031568ddce3f352b107ba28c998c9d58b74372e95aef69464ed94844cabe",
+          "error_code": "",
+          "expected_source_digest": "f2b2031568ddce3f352b107ba28c998c9d58b74372e95aef69464ed94844cabe",
+          "format_error": "",
+          "format_valid": true,
+          "media_type": "text/x-python",
+          "path": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/workspace-a/attempt-1/test_iso_duration.py",
+          "present": true,
+          "source_digest_matches": true,
+          "verification_command_passed": true,
+          "verification_method": "post_run_authored_digest_python_syntax_and_verify_command",
+          "verified": true
+        }
+      ],
+      "call_ceiling": null,
+      "elapsed_seconds": 131.226,
+      "input_tokens": 117606,
+      "invoiced_cost": null,
+      "model_calls": 8,
+      "monetary_ceiling": null,
+      "outcome_file_sha256": "116bbf79d00a52a7faa6463d8f5ec72b9ff783521bebf24588471d6a2b9394e0",
+      "output_tokens": 27112,
+      "pass_ceiling": null,
+      "outcome_record_type": "solve_outcome/v4",
+      "run_history": {
+        "broken_at": [],
+        "chain_intact": true,
+        "events": 738,
+        "head_digest": "697fd1ab71878c239a145745bbaf5640acf4593454d99d3bed038b79ea749b8b",
+        "path": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/runs/adaptive-b78daa66cada87357dd9c741",
+        "product_outcome_bound": true,
+        "product_outcome_digest": "1123333a342291088a1ad0d1e74d0fb8cc4c158096f2b95a565facd9d4d4dce7",
+        "run_id": "adaptive-b78daa66cada87357dd9c741",
+        "terminal_code": "COMPLETED_VERIFIED"
+      },
+      "run_id": "adaptive-b78daa66cada87357dd9c741",
+      "terminal_code": "COMPLETED_VERIFIED",
+      "total_token_ceiling": null,
+      "usage_complete": true
+    },
+    {
+      "artifacts": [
+        {
+          "artifact_origin": "authored_source",
+          "byte_count": 71,
+          "command_produced": false,
+          "digest": "2295e3ed0fdd34aa4b207753d729f9efe404055756a2be11fd1b1eb2e114f36d",
+          "error_code": "",
+          "expected_source_digest": "2295e3ed0fdd34aa4b207753d729f9efe404055756a2be11fd1b1eb2e114f36d",
+          "format_error": "",
+          "format_valid": true,
+          "media_type": "text/x-python",
+          "path": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/workspace-min/attempt-1/seconds.py",
+          "present": true,
+          "source_digest_matches": true,
+          "verification_command_passed": true,
+          "verification_method": "post_run_authored_digest_python_syntax_and_verify_command",
+          "verified": true
+        },
+        {
+          "artifact_origin": "authored_source",
+          "byte_count": 377,
+          "command_produced": false,
+          "digest": "28910790c7e75ec232ce98ab0f93c72118521fb7d0e593e55ec2f9b27128c336",
+          "error_code": "",
+          "expected_source_digest": "28910790c7e75ec232ce98ab0f93c72118521fb7d0e593e55ec2f9b27128c336",
+          "format_error": "",
+          "format_valid": true,
+          "media_type": "text/x-python",
+          "path": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/workspace-min/attempt-1/test_seconds.py",
+          "present": true,
+          "source_digest_matches": true,
+          "verification_command_passed": true,
+          "verification_method": "post_run_authored_digest_python_syntax_and_verify_command",
+          "verified": true
+        }
+      ],
+      "call_ceiling": null,
+      "elapsed_seconds": 66.026,
+      "input_tokens": 108906,
+      "invoiced_cost": null,
+      "model_calls": 8,
+      "monetary_ceiling": null,
+      "outcome_file_sha256": "542cefb05c43f300c7ce982cd83b7f6e5d31904c85fc67c62b821a49b7b893a6",
+      "output_tokens": 11375,
+      "pass_ceiling": null,
+      "outcome_record_type": "solve_outcome/v4",
+      "run_history": {
+        "broken_at": [],
+        "chain_intact": true,
+        "events": 738,
+        "head_digest": "b500f73807b913138f797ac25b6f41917ce7dd13c797a32ad94a74e1b41b6d22",
+        "path": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/runs/adaptive-12e6c7d1970cdfdd1aafd91d",
+        "product_outcome_bound": true,
+        "product_outcome_digest": "1f9d04f328528f61d88d3860b265bb3002dc15e46c2253b7a0e960f2e07428e1",
+        "run_id": "adaptive-12e6c7d1970cdfdd1aafd91d",
+        "terminal_code": "COMPLETED_VERIFIED"
+      },
+      "run_id": "adaptive-12e6c7d1970cdfdd1aafd91d",
+      "terminal_code": "COMPLETED_VERIFIED",
+      "total_token_ceiling": null,
+      "usage_complete": true
+    },
+    {
+      "artifacts": [
+        {
+          "artifact_origin": "authored_source",
+          "byte_count": 1928,
+          "command_produced": false,
+          "digest": "812389078e56be4c5bc3ab0da57539df2bf6a023525d73e112e3e65087f4929d",
+          "error_code": "",
+          "expected_source_digest": "812389078e56be4c5bc3ab0da57539df2bf6a023525d73e112e3e65087f4929d",
+          "format_error": "",
+          "format_valid": true,
+          "media_type": "text/x-python",
+          "path": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/workspace-a-repair-final/attempt-1/iso_duration.py",
+          "present": true,
+          "source_digest_matches": true,
+          "verification_command_passed": true,
+          "verification_method": "post_run_authored_digest_python_syntax_and_verify_command",
+          "verified": true
+        },
+        {
+          "artifact_origin": "authored_source",
+          "byte_count": 4351,
+          "command_produced": false,
+          "digest": "e34c05ef13a6b10a6a10e247795bced80cf7e05ba365d96bc4f4b0fcbdc990c0",
+          "error_code": "",
+          "expected_source_digest": "e34c05ef13a6b10a6a10e247795bced80cf7e05ba365d96bc4f4b0fcbdc990c0",
+          "format_error": "",
+          "format_valid": true,
+          "media_type": "text/x-python",
+          "path": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/workspace-a-repair-final/attempt-1/test_iso_duration.py",
+          "present": true,
+          "source_digest_matches": true,
+          "verification_command_passed": true,
+          "verification_method": "post_run_authored_digest_python_syntax_and_verify_command",
+          "verified": true
+        }
+      ],
+      "call_ceiling": null,
+      "elapsed_seconds": 218.547,
+      "input_tokens": 266959,
+      "invoiced_cost": null,
+      "model_calls": 15,
+      "monetary_ceiling": null,
+      "outcome_file_sha256": "e77e16484b789cf170c8515dfba858687579511b22342746fd9a1b0f4f9bcd25",
+      "output_tokens": 58309,
+      "pass_ceiling": null,
+      "outcome_record_type": "solve_outcome/v5",
+      "run_history": {
+        "broken_at": [],
+        "chain_intact": true,
+        "events": 1298,
+        "head_digest": "a9e99fa9085c3cea83520d9b4be5b46f4b508e6a497b973c1a7b5487029530ac",
+        "path": "/home/username/loop-engine/.loop-engine-dev/brain-integration-20260905.kkYYct/runs/adaptive-51141ecb49499529308e8197",
+        "product_outcome_bound": true,
+        "product_outcome_digest": "7ec51392d20835bc379f68f199c152cf12910324ea7b261d39c5c806f8ac04b1",
+        "run_id": "adaptive-51141ecb49499529308e8197",
+        "terminal_code": "COMPLETED_VERIFIED"
+      },
+      "run_id": "adaptive-51141ecb49499529308e8197",
+      "terminal_code": "COMPLETED_VERIFIED",
+      "total_token_ceiling": null,
+      "usage_complete": true
+    }
+  ],
+  "offline_verification": {
+    "all_final_checks_passed": true,
+    "command_count": 14,
+    "commands": [
+      {
+        "command": [
+          "python3",
+          "-m",
+          "loop_engine",
+          "--self-test",
+          "--format",
+          "json"
+        ],
+        "cwd": "/home/username/loop-engine",
+        "elapsed_seconds": 166.2614496173337,
+        "exit_code": 0,
+        "phase": "brain-final-source-selftest-final",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-source-selftest-final-record.json",
+        "record_sha256": "b8fb3412183b3aef3f6c013c9a17935e411aab0478bd058c58d71e0810f8ca86",
+        "result_summary": {
+          "all_passed": true,
+          "failures": [],
+          "optional_adapters_not_tested": [],
+          "passed": 2894,
+          "provider_calls_made": 0,
+          "total": 2894
+        },
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-source-selftest-final-stderr.txt",
+        "stderr_sha256": "11f1c58c7dd8749bb6cc39853c847b9d23337399dee6bfee09f6a755000199f1",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-source-selftest-final-stdout.txt",
+        "stdout_sha256": "b01afb5a0801be92422e2246b43eee37b2359224792f92391abb551544f0a0d6"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "loop_engine",
+          "--conformance"
+        ],
+        "conformance_passed": 27,
+        "cwd": "/home/username/loop-engine",
+        "elapsed_seconds": 30.778611627873033,
+        "exit_code": 0,
+        "phase": "brain-final-conformance-final",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-conformance-final-record.json",
+        "record_sha256": "49e510219d7499c50830a8df23b212fb723fbb9cd02ff23a992a1b57a2034dd0",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-conformance-final-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-conformance-final-stdout.txt",
+        "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "build",
+          "--no-isolation",
+          "--outdir",
+          "/tmp/loop-engine-brain-final-package.Kr2dfU/dist"
+        ],
+        "cwd": "/home/username/loop-engine",
+        "elapsed_seconds": 3.270903459750116,
+        "exit_code": 0,
+        "phase": "brain-final-build",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-build-record.json",
+        "record_sha256": "933c3f715d270bff8ad20e5b445b6d7373f84b45c719b552ce0a9fed19cace0e",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-build-stderr.txt",
+        "stderr_sha256": "b181eea8a45f807f5fa1607f003eb1ae5363271ec186d4780a7fd3630cdea57e",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-build-stdout.txt",
+        "stdout_sha256": "6a5af1e45725300ebd033f8de96e1e64c7dd02fe89663e9098401b453196c507"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "venv",
+          "/tmp/loop-engine-brain-final-package.Kr2dfU/wheel-env"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 2.208674327004701,
+        "exit_code": 0,
+        "phase": "wheel-brain-final-venv",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-venv-record.json",
+        "record_sha256": "026812cfbc548eeff729b4192a7912486425f16ed21d8e89974722de30634020",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-venv-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-venv-stdout.txt",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-brain-final-package.Kr2dfU/wheel-env/bin/python",
+          "-m",
+          "pip",
+          "install",
+          "--no-index",
+          "--find-links",
+          "/tmp/loop-engine-final-verification.W0wq3F/dependency-wheelhouse",
+          "/tmp/loop-engine-brain-final-package.Kr2dfU/dist/loop_engine-0.1.0-py3-none-any.whl"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 1.6162093882448971,
+        "exit_code": 0,
+        "phase": "wheel-brain-final-install",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-install-record.json",
+        "record_sha256": "7cecbb1f8a9f2a2214da5ee39a919f828f28be7b87b3e954266fceffb1b8e9fe",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-install-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-install-stdout.txt",
+        "stdout_sha256": "6ef180ce4835491e22bde939e33bfa9a4f9a270c1453c1369262f6f876202c4c"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-brain-final-package.Kr2dfU/wheel-env/bin/python",
+          "-m",
+          "loop_engine",
+          "--self-test",
+          "--format",
+          "json"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 139.95035200286657,
+        "exit_code": 0,
+        "phase": "wheel-brain-final-selftest",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-selftest-record.json",
+        "record_sha256": "8341691b221e22eac123ead328e4ef285e92b02313e529a3523afa603472ea1e",
+        "result_summary": {
+          "all_passed": true,
+          "failures": [],
+          "optional_adapters_not_tested": [
+            "duckdb",
+            "mcp",
+            "model2vec",
+            "numpy",
+            "opentelemetry-sdk",
+            "pandas",
+            "sklearn"
+          ],
+          "passed": 2849,
+          "provider_calls_made": 0,
+          "total": 2849
+        },
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-selftest-stderr.txt",
+        "stderr_sha256": "3d27aed1b9a4b8a22d659a1e10553d8f25cc44efb3a1f9a9a2383f7f2064b1fc",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-selftest-stdout.txt",
+        "stdout_sha256": "d6c968a7bb2af83b2b9ed8751d4f7a5856811a1200585d15f93f07e90ab2a9e5"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-brain-final-package.Kr2dfU/wheel-env/bin/python",
+          "-m",
+          "loop_engine",
+          "--conformance"
+        ],
+        "conformance_passed": 27,
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 21.05580758024007,
+        "exit_code": 0,
+        "phase": "wheel-brain-final-conformance",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-conformance-record.json",
+        "record_sha256": "52652fe23e8feef481d866f8e6686e79f64d471975a1aa24d19dd38dcb4473dc",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-conformance-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-conformance-stdout.txt",
+        "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-brain-final-package.Kr2dfU/wheel-env/bin/python",
+          "/tmp/loop-engine-brain-final-package.Kr2dfU/package_integrity.py"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 0.24134437600150704,
+        "exit_code": 0,
+        "phase": "wheel-brain-final-parity",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-parity-record.json",
+        "record_sha256": "b4c8fbb060ccebdda3619b32856c5ba59d75637f9ad6c29db6905291ec7e34b7",
+        "result_summary": {
+          "all_passed": true
+        },
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-parity-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-parity-stdout.txt",
+        "stdout_sha256": "ab51cd594d3acfce06cef0c68d4ccaf3d31e5cc617bf235d87c0d61572c26378"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-brain-final-package.Kr2dfU/wheel-env/bin/loop-engine",
+          "--help"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 0.06547853304073215,
+        "exit_code": 0,
+        "phase": "wheel-brain-final-cli-help",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-cli-help-record.json",
+        "record_sha256": "0a7dd3269d8067035183c5118a1ee79d0bb8afa63353c786fd2b6f3e447ef7aa",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-cli-help-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-cli-help-stdout.txt",
+        "stdout_sha256": "287d9bdc7556a10e4610abd015eea1013514db476c534c7c2ba4fe86f5ba0dbf"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-brain-final-package.Kr2dfU/wheel-env/bin/python",
+          "-m",
+          "pip",
+          "check"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 0.27111294213682413,
+        "exit_code": 0,
+        "phase": "wheel-brain-final-pip-check",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-pip-check-record.json",
+        "record_sha256": "2c028b532fd7ba8dd504613ebeb732906dfe88d618c9891a929c4fd444c2b433",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-pip-check-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-pip-check-stdout.txt",
+        "stdout_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-brain-final-package.Kr2dfU/wheel-env/bin/python",
+          "/tmp/loop-engine-brain-final-package.Kr2dfU/package_integrity.py"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 0.21788082597777247,
+        "exit_code": 0,
+        "phase": "wheel-brain-final-final-parity",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-final-parity-record.json",
+        "record_sha256": "80b0310d031356525bef2227cba3e253e787429dd4e7ef631353f58a70f6ba04",
+        "result_summary": {
+          "all_passed": true
+        },
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-final-parity-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-brain-final-final-parity-stdout.txt",
+        "stdout_sha256": "ab51cd594d3acfce06cef0c68d4ccaf3d31e5cc617bf235d87c0d61572c26378"
+      }
+    ],
+    "driver": {
+      "os_network_sandbox_claimed": false,
+      "path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/verify.py",
+      "pip_network_disabled": true,
+      "provider_credentials_stripped": true,
+      "sha256": "c4d06c6cb48f2146692318046bc4732fed3a3265c1e1625d3d676c7110331a8a"
+    },
+    "frozen_changed_source_sha256": {
+      "src/loop_engine/code_nodes/solve_request_adaptation.py": "69f5aedd1d81a384b7e79d69e58796b58c51637b788e3a124deeab0614345a04",
+      "src/loop_engine/code_nodes/solve_runtime.py": "329c15ea2f50280ea27a9dad3a632ce35800267681a2b76e463b5a9794eb2173",
+      "src/loop_engine/core/adaptive_practitioner_capabilities.py": "743707cb8b8fb0b6cca2ecfa499d4a9ad1aa83ebefa315c7d9a900985f09e1d7",
+      "src/loop_engine/core/adaptive_practitioner_project.py": "d2ececb07b2b768b4b70479340cd9daa3699492d0be185d9bcd1efd77d4c50c6",
+      "src/loop_engine/core/generated_project.py": "991c0d8c94e68704b001860b570bcd80c9db184e3dddc613ed4351b8a892dd99",
+      "src/loop_engine/core/product_outcome_store.py": "8ac803cb2f55ca0f04282150a3929d29edb1e4e5a74b9668c3879598d2da96c1",
+      "src/loop_engine/core/workspace_read.py": "fc6a0f2abadbef823240db93280b85f86c842b63834cfdbd61036a9681aa715f",
+      "src/loop_engine/solve_cli.py": "2558389a2e584b2eaf44dff1e678f4601a75d41465ee4ddfec3b834470ca397b"
+    },
+    "head_at_driver_completion": "1b30d49d1f8e889c908fbf2af60f28f76fd973ba",
+    "integrity_checker": {
+      "path": "/tmp/loop-engine-brain-final-package.Kr2dfU/package_integrity.py",
+      "sha256": "0a26cfd31102761ee6d49d9fa147bf9f9ce0e72f7a66730cdad650e690d47f5f"
+    },
+    "known_separate_failures": {
+      "ci_green_claimed": false,
+      "hardcoding_semantic_triage_complete": false,
+      "prior_audit_artifact_digest": "3630778aeab4b676d356248173ff3eb7cfd112f48d47d62aff3cfebb39203657",
+      "prior_new_high_finding_count": 187
+    },
+    "limitations": [
+      "Python 3.14.4 executed; Python 3.10 was not run in this clean environment.",
+      "Clean wheel installs base dependencies only; seven optional adapter omissions remain explicit.",
+      "No live provider/Kaggle calls, downloads, submissions, or task acceptance are established by these offline checks."
+    ],
+    "package_directory": "/tmp/loop-engine-brain-final-package.Kr2dfU",
+    "preserved_initial_failures": [
+      {
+        "command": [
+          "python3",
+          "-m",
+          "loop_engine",
+          "--self-test",
+          "--format",
+          "json"
+        ],
+        "cwd": "/home/username/loop-engine",
+        "elapsed_seconds": 161.11764245806262,
+        "exit_code": 1,
+        "phase": "brain-final-source-selftest",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-source-selftest-record.json",
+        "record_sha256": "5aad6cd06a7d49313dc55b418acb97ba2624bbb152700a88c5c8e4ebb9dd520e",
+        "result_summary": {
+          "all_passed": false,
+          "failures": [
+            {
+              "detail": "{\"retired_source_nomenclature\": 1, \"direct_resource_access\": 1}",
+              "test": "live_tree_scans_clean_for_every_zero_tolerance_rule"
+            },
+            {
+              "detail": "{\"direct_resource_access_above_baseline\": 1}",
+              "test": "all_zero_tolerance_gates_pass_on_the_live_tree"
+            }
+          ],
+          "optional_adapters_not_tested": [],
+          "passed": 2892,
+          "provider_calls_made": 0,
+          "total": 2894
+        },
+        "source_changes": [
+          "src/loop_engine/architecture_conformance.json"
+        ],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-source-selftest-stderr.txt",
+        "stderr_sha256": "5f357007288e58684d650101433e622d217aa1212baa74ec63e8d5b4c02085f3",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-source-selftest-stdout.txt",
+        "stdout_sha256": "d927e2b4e691b3b6317ddb9ba199ec8e281264e6d35e208999e091bcb08c00be"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "loop_engine",
+          "--conformance"
+        ],
+        "conformance_passed": 26,
+        "cwd": "/home/username/loop-engine",
+        "elapsed_seconds": 30.000236101914197,
+        "exit_code": 1,
+        "phase": "brain-final-conformance",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-conformance-record.json",
+        "record_sha256": "4311f151fb84f8f45be80e94500f4a55abbfe072376d7c78b74b55f492a79fcf",
+        "source_changes": [
+          "src/loop_engine/architecture_conformance.json"
+        ],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-conformance-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-conformance-stdout.txt",
+        "stdout_sha256": "1d8b4326abbf33eb339e5cef8b5af4dc171d9fbbaecec327ca50d0fb1e3113a4"
+      }
+    ],
+    "record_type": "brain_final_offline_verification/v1",
+    "refreeze_conformance": {
+      "command": [
+        "python3",
+        "-m",
+        "loop_engine",
+        "--conformance"
+      ],
+      "conformance_passed": 27,
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 29.124183259904385,
+      "exit_code": 0,
+      "phase": "brain-final-refreeze-conformance",
+      "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-refreeze-conformance-record.json",
+      "record_sha256": "7b77a6faff2f0ffbaa4e4492f95c4626aacd16673d415ac9a742294fd223cada",
+      "source_changes": [
+        "src/loop_engine/architecture_conformance.json"
+      ],
+      "source_file_count": 475,
+      "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-refreeze-conformance-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/brain-final-refreeze-conformance-stdout.txt",
+      "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+    },
+    "runtime_changes_since_previous_verified_snapshot": {
+      "src/loop_engine/code_nodes/solve_request_adaptation.py": {
+        "after": "69f5aedd1d81a384b7e79d69e58796b58c51637b788e3a124deeab0614345a04",
+        "before": "26b2038dc77d4facc649ae052e62dbb535b0010828b104c69f8699aaf804a004"
+      },
+      "src/loop_engine/code_nodes/solve_runtime.py": {
+        "after": "329c15ea2f50280ea27a9dad3a632ce35800267681a2b76e463b5a9794eb2173",
+        "before": "6826e7c9dcaa9a57ecdafe9e03e532ea2c6d56560b8dbc89d97fe54a8686e456"
+      },
+      "src/loop_engine/core/adaptive_practitioner_capabilities.py": {
+        "after": "743707cb8b8fb0b6cca2ecfa499d4a9ad1aa83ebefa315c7d9a900985f09e1d7",
+        "before": "259c078c17b32765c3b3c44dea77a83d009a0b569fc8d8ffde417350d12949cb"
+      },
+      "src/loop_engine/core/adaptive_practitioner_project.py": {
+        "after": "d2ececb07b2b768b4b70479340cd9daa3699492d0be185d9bcd1efd77d4c50c6",
+        "before": "529635450acf89bae8d65cc560f82257162b31070c871cdef3b6813f26cdd2ce"
+      },
+      "src/loop_engine/core/generated_project.py": {
+        "after": "991c0d8c94e68704b001860b570bcd80c9db184e3dddc613ed4351b8a892dd99",
+        "before": "f16f44f3c1b50ffc4aca7fb592667df745f4782661272a9303cdba8126685c42"
+      },
+      "src/loop_engine/core/product_outcome_store.py": {
+        "after": "8ac803cb2f55ca0f04282150a3929d29edb1e4e5a74b9668c3879598d2da96c1",
+        "before": "6e92d3d294da951d4de42eb0d15f5e18f524e9c8a7194c42e7215353cc78ca6a"
+      },
+      "src/loop_engine/core/workspace_read.py": {
+        "after": "fc6a0f2abadbef823240db93280b85f86c842b63834cfdbd61036a9681aa715f",
+        "before": "b4c72fa11a1d58b90c00a01cd30db94ed7699383ca9c4c67d25d1a0159735a5a"
+      },
+      "src/loop_engine/solve_cli.py": {
+        "after": "2558389a2e584b2eaf44dff1e678f4601a75d41465ee4ddfec3b834470ca397b",
+        "before": "1b79a5dfe09acca2baca3ccb4127b4a4a94d5279b111b07794e781411d3ac157"
+      }
+    },
+    "runtime_parity": {
+      "all_passed": true,
+      "differences": {
+        "source_vs_installed": [],
+        "source_vs_sdist": [],
+        "source_vs_tested": [],
+        "source_vs_wheel": []
+      },
+      "installed_root": "/tmp/loop-engine-brain-final-package.Kr2dfU/wheel-env/lib/python3.14/site-packages/loop_engine",
+      "network_calls": 0,
+      "provider_calls": 0,
+      "python": "3.14.4 (main, Jun 18 2026, 14:25:02) [GCC 15.2.0]",
+      "record_type": "package_runtime_integrity/v1",
+      "runtime_file_counts": {
+        "installed": 475,
+        "sdist": 475,
+        "source": 475,
+        "tested": 475,
+        "wheel": 475
+      },
+      "sdist_sha256": "7cfa802d86e8981a2774e3a3b1426afd3f4c2aa14261ef5f6734e840a12c5c62",
+      "source_map_sha256": "0ea5d9225c88e1a19dd790fc1fbcc35255916a364329802431162d0aecdcd845",
+      "tested_snapshot_sha256": "ba8f304cb8ca23e8e82c6af3981ece8d680cb4251547ddd6e380567549fec866",
+      "wheel_sha256": "b11cf77c128dcef605700cdc1356d61ba374014c25b63d43e0f3ec88cdea56b2"
+    },
+    "scope": "Final offline source/package/CLI commands only. Initial failures are preserved; active live repair and CI audit qualification are separate.",
+    "source_conformance": 27,
+    "source_self_test": {
+      "all_passed": true,
+      "failures": [],
+      "optional_adapters_not_tested": [],
+      "passed": 2894,
+      "provider_calls_made": 0,
+      "total": 2894
+    },
+    "successful_final_command_count": 11,
+    "test_only_corrections": {
+      "changes": [
+        "Outcome accounting fixture now enables and writes Run History through its owning Loop rather than calling RunHistory.from_ledger directly.",
+        "Generated-project collision fixture label authored_child renamed authored_nested; collision path and production behavior unchanged."
+      ],
+      "live_file_bytes_frozen_during_entire_repair": false,
+      "live_run_caveat": "These two self-test-only source-file deltas were authorized while the separate live repair was active. No claim of unchanged implementation file bytes throughout that live run is made.",
+      "production_behavior_changed": false,
+      "source_hash_changes": {
+        "src/loop_engine/code_nodes/solve_request_adaptation.py": {
+          "after": "69f5aedd1d81a384b7e79d69e58796b58c51637b788e3a124deeab0614345a04",
+          "before": "ce8784d2ee6a6573c27226075b69053bbdb47afd22de209eaba01f848096bf1a"
+        },
+        "src/loop_engine/core/generated_project.py": {
+          "after": "991c0d8c94e68704b001860b570bcd80c9db184e3dddc613ed4351b8a892dd99",
+          "before": "3e147bbc145949b838ca221d239f8073aac540927b3c55bf11297d2049934769"
+        }
+      }
+    },
+    "wheel_conformance": 27,
+    "wheel_self_test": {
+      "all_passed": true,
+      "failures": [],
+      "optional_adapters_not_tested": [
+        "duckdb",
+        "mcp",
+        "model2vec",
+        "numpy",
+        "opentelemetry-sdk",
+        "pandas",
+        "sklearn"
+      ],
+      "passed": 2849,
+      "provider_calls_made": 0,
+      "total": 2849
+    }
+  },
+  "operator_checkpoint_continuation": {
+    "new_model_calls": 0,
+    "operator_assisted": true,
+    "report_ref": "artifact://sha256/fc78b5301161ce9a807b96ca7f6e8915c1ce9bd83b5283bdf0bd615719400dcc",
+    "source_bodies_edited": false
+  },
+  "provider_capability_correction": {
+    "native_format_field_enabled": false,
+    "native_structured_outputs": false,
+    "provider": "ollama_cloud",
+    "retrieved_on": "2026-09-05",
+    "source": "https://docs.ollama.com/capabilities/structured-outputs"
+  },
+  "published_artifacts": {
+    "docs/evidence/brain-integration-20260905/independent_duration_probe.py": "1b2d365d959fbda3bd03a69e03d292f507827c8f4888db04767b3952fcd73307",
+    "docs/evidence/brain-integration-20260905/iso_duration.py": "812389078e56be4c5bc3ab0da57539df2bf6a023525d73e112e3e65087f4929d",
+    "docs/evidence/brain-integration-20260905/test_iso_duration.py": "e34c05ef13a6b10a6a10e247795bced80cf7e05ba365d96bc4f4b0fcbdc990c0"
+  },
+  "record_type": "brain_integration_verification/v1",
+  "source_head_before_changes": "1b30d49d1f8e889c908fbf2af60f28f76fd973ba",
+  "source_sha256": {
+    "src/loop_engine/code_nodes/solve_request_adaptation.py": "69f5aedd1d81a384b7e79d69e58796b58c51637b788e3a124deeab0614345a04",
+    "src/loop_engine/code_nodes/solve_runtime.py": "329c15ea2f50280ea27a9dad3a632ce35800267681a2b76e463b5a9794eb2173",
+    "src/loop_engine/core/adaptive_practitioner_capabilities.py": "743707cb8b8fb0b6cca2ecfa499d4a9ad1aa83ebefa315c7d9a900985f09e1d7",
+    "src/loop_engine/core/adaptive_practitioner_project.py": "d2ececb07b2b768b4b70479340cd9daa3699492d0be185d9bcd1efd77d4c50c6",
+    "src/loop_engine/core/adaptive_practitioner_records.py": "433624f6cbb5b07831306dc11b3a5c935ee1adcd7b201032c8d4269425f056fd",
+    "src/loop_engine/core/generated_project.py": "991c0d8c94e68704b001860b570bcd80c9db184e3dddc613ed4351b8a892dd99",
+    "src/loop_engine/core/model_routes.py": "41bb2ce9d9b5a361981c73c792265796b3182f6814683ecb6c3d1ee26a0563c7",
+    "src/loop_engine/core/practitioner_runtime_facts.py": "02f18d20dc9ad94a227612dd4119e625c447c9cb6f0d43b7f16049ebf434225d",
+    "src/loop_engine/core/product_outcome_store.py": "8ac803cb2f55ca0f04282150a3929d29edb1e4e5a74b9668c3879598d2da96c1",
+    "src/loop_engine/core/workspace_read.py": "fc6a0f2abadbef823240db93280b85f86c842b63834cfdbd61036a9681aa715f",
+    "src/loop_engine/solve_cli.py": "2558389a2e584b2eaf44dff1e678f4601a75d41465ee4ddfec3b834470ca397b",
+    "src/loop_engine/templates/intake.py": "3713fc678aa87fd65d7907fc5d4aa7a7d7edd80193f803373f504d39fd5d81ae"
+  }
+}

@@ -42,7 +42,8 @@ from .context_artifacts import ContextArtifactRef
 from .generated_project import (
     ALLOWED_PYTHON_EXECUTABLES, GeneratedProjectCandidate,
     GeneratedProjectError, GeneratedProjectFile, GeneratedProjectFileSpec,
-    GeneratedProjectInputArtifact, GeneratedProjectManifest)
+    GeneratedProjectInputArtifact, GeneratedProjectManifest,
+    validate_generated_project_input_paths)
 
 
 def generated_file_checkpoint_identity(
@@ -104,6 +105,10 @@ def project_manifest(
                 else []),
             "previous_project_attempts": [{
                 "manifest_digest": item.get("manifest_digest"),
+                "attempt_number": item.get("attempt_number"),
+                "execution_status": item.get("execution_status"),
+                "workspace_path": item.get("workspace_path"),
+                "error": item.get("error"),
                 "deterministic_checks_passed": item.get(
                     "deterministic_checks_passed"),
                 "commands": item.get("commands"),
@@ -126,18 +131,25 @@ def project_manifest(
                     "Author only what a person would write by hand: code, "
                     "tests, configuration, documentation. Anything a command "
                     "produces belongs in expected_artifacts and must not "
-                    "appear here"),
+                    "appear here. Authored paths must not equal, contain, or "
+                    "sit beneath any available_input_artifacts file path; "
+                    "choose distinct output paths and read the supplied inputs"),
                 "commands": (
-                    "argv-only Python commands; create .venv, install declared "
-                    "requirements, run the solution, then run its tests"),
+                    "necessary argv-only Python commands; create .venv and "
+                    "install requirements only if needed, run the solution "
+                    "when needed, and run its tests. Code-only projects must "
+                    "include a command_kind verify command with expected_exit_codes [0]"),
                 "expected_artifacts": (
-                    "every output required by the original task, with media "
-                    "type; minimum_bytes must equal the framework nonempty "
-                    "value 1. These are checked after the commands run, so "
-                    "each one must be produced by a command. A path here may "
-                    "not also appear in files: typing an output is not "
-                    "producing it, and results you did not compute are not "
-                    "results"),
+                    "command-produced data outputs required by the task, "
+                    "with media type and minimum_bytes 1. Use [] when the "
+                    "requested deliverables are authored source, tests, or "
+                    "documentation only; a code-only project requires a "
+                    "successful verify command. Authored files are reported "
+                    "separately as source artifacts after digest and verification "
+                    "checks. Never invent a marker file or generator wrapper "
+                    "just to fill expected_artifacts. A path here may not "
+                    "also appear in files; command-produced outputs must "
+                    "actually be produced by a command"),
                 "runtime": "immutable Python Docker image",
                 "network_inside_sandbox": "dependency_setup_only",
                 "allowed_command_executables": list(ALLOWED_PYTHON_EXECUTABLES),
@@ -175,15 +187,18 @@ def project_manifest(
         value = services.model(ModelStepRequest(
             "act",
             ("Design the complete project structure needed to execute and "
-             "verify the task. Do not generate file contents yet."
+             "verify the task. Do not generate file contents yet. For code-only "
+             "deliverables use expected_artifacts [] and include a verify command."
              if attempt == 1 else
              "Repair the rejected project candidate without changing the task."),
             {**state, "candidate_validation_failures": failures},
             candidate_schema))
         try:
             candidate = GeneratedProjectCandidate.from_mapping(value)
+            validate_generated_project_input_paths(candidate, input_artifacts)
             break
         except GeneratedProjectError as exc:
+            candidate = None
             failure = {
                 "attempt": attempt, "error_type": type(exc).__name__,
                 "error": str(exc)[:500]}
@@ -528,5 +543,53 @@ def self_test() -> dict:
                    == "inputs/comp/rows.csv"),
         "detail": project_input_path("comp/rows.csv"),
     }]
+    tests.extend(_candidate_input_collision_checks())
     return {"module": "core.adaptive_practitioner_project",
             "passed": all(item["passed"] for item in tests), "tests": tests}
+
+
+def _candidate_input_collision_checks() -> list[dict]:
+    """Feed path collisions back before any per-file model emission."""
+    from types import SimpleNamespace
+
+    candidate = {
+        "record_type": "generated_project_candidate/v1", "project_id": "collision_fixture",
+        "summary": "Repair a project without overwriting its input.",
+        "files": [{"path": "inputs/original.py", "purpose": "Proposed source.",
+                   "acceptance": ["Source is verified."]}],
+        "commands": [{"argv": ["python", "-m", "unittest"], "purpose": "Verify.",
+                      "command_kind": "verify"}], "expected_artifacts": []}
+    calls = []
+
+    def model(request):
+        calls.append(request)
+        return candidate
+
+    services = SimpleNamespace(
+        request=SimpleNamespace(allow_source_materialization_to_model=False,
+                                task="Verify supplied code.", context_budget=None),
+        web_search_results=[], web_results=[], source_inspections=[], project_attempts=[{
+            "attempt_number": 1, "execution_status": "FAILED", "workspace_path": "/fixture/attempt-1",
+            "manifest_digest": "prior", "deterministic_checks_passed": False,
+            "error": "fixture input copy failed", "commands": [], "artifacts": []}],
+        plan_details={}, generated_file_checkpoint_summaries=list,
+        model=model, diagnostic=lambda *_: None)
+    try:
+        project_manifest(PractitionerState(spec=None),
+                         ExecutionPlan("use", "run_dag", handle="core.generated_project"),
+                         services, (GeneratedProjectInputArtifact("inputs/original.py", b"original"),))
+        refused = False
+    except GeneratedProjectError as exc:
+        refused = "distinct authored and output paths" in str(exc)
+    failures = services.plan_details.get("candidate_validation_failures", [])
+    return [{"test": "candidate_input_collision_reaches_repair_feedback_before_file_generation",
+             "passed": refused and len(calls) == 2 and len(failures) == 2
+             and all("files[0].path" in item["error"]
+                     and "input_artifacts[0].path" in item["error"] for item in failures),
+             "detail": "both structural candidates refused; no file body requested"},
+            {"test": "project_repair_context_preserves_failed_attempt_workspace_and_error",
+             "passed": calls[0].state["previous_project_attempts"][0]["workspace_path"]
+             == "/fixture/attempt-1"
+             and calls[0].state["previous_project_attempts"][0]["execution_status"] == "FAILED"
+             and calls[0].state["previous_project_attempts"][0]["error"] == "fixture input copy failed",
+             "detail": "failure address and cause survive into the next design context"}]

@@ -139,7 +139,10 @@ def default_routes() -> list:
     off for counted generation."""
     cloud_caps = ModelProviderCapabilities(
         provider="ollama_cloud", locality="cloud",
-        tokens_provider_reported=True, supports_structured_output=True,
+        # Prompted JSON is not provider-enforced JSON Schema. Official Cloud
+        # support is absent: docs.ollama.com/capabilities/structured-outputs
+        # (checked 2026-09-05). Local/custom adapters declare their own support.
+        tokens_provider_reported=True, supports_structured_output=False,
         max_context=131072)
     routes = [
         ModelRoute("cloud.default", "ollama_cloud", DEFAULT_MODEL, "cloud",
@@ -361,6 +364,11 @@ def self_test() -> dict:
           caps is not None and caps.tokens_provider_reported is True
           and caps.locality == "cloud",
           "cloud tokens are provider-reported (admissible as evidence)")
+    check("ollama_cloud_does_not_claim_native_structured_output",
+          all(route.capabilities is not None
+              and not route.capabilities.supports_structured_output
+              for route in reg.all() if route.provider == "ollama_cloud"),
+          "Cloud JSON prompting remains distinct from constrained decoding")
 
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "model_routes_self_test", "tests": results,

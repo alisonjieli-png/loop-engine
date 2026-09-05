@@ -114,6 +114,15 @@ database or immutable revisions. Existing authority Markdown and historical
 evidence have not been migrated, and generated session views remain planned.
 
 For the latest new-task attempt and generalization boundary, first read the
+[external-caller and code-only repair report](../verification/BRAIN-INTEGRATION-CODE-ONLY-2026-09-05.md).
+It traces the actual duration-parser failure, fixes source-only artifact
+delivery and captured instructions, and records real creation and repair
+runs with independent checks. Public results now use `solve_outcome/v5` to
+preserve unknown model-call totals and known subtotals. Failed-attempt tracking
+and workspace visibility are repaired; broader ISO support, arbitrary harness
+integration, and the separate CI audit remain outside those claims.
+
+For the preceding campaign checkpoint, read the
 [live Kaggle pilot checkpoint](../verification/KAGGLE-LIVE-PILOT-2026-09-05.md).
 It records a real provider probe, explicit no-total-token-ceiling authorization,
 source-integrity fixes, and a model-generated tool whose own passing tests missed

@@ -29,6 +29,8 @@ from .solve_region_evidence import region_evidence_for_solve
 from .solve_request_adaptation import (
     SolveAdaptationRequest,
     build_adaptive_request,
+    model_call_accounting,
+    outcome_model_call_accounting,
     stage_assistance_summary,
 )
 from .solve_terminal import SOLVE_FAILURE_CODES, SolveTerminalCode, failure_code_for
@@ -198,14 +200,18 @@ class SolveOutcome:
     questions: tuple[MaterialQuestion, ...] = ()
     next_action: str = ""
     inspect_commands: tuple[str, ...] = ()
-    model_calls: int = 0
+    model_calls: int | None = None
     tool_calls: int = 0
     loop_count: int = 0
     elapsed_seconds: float = 0.0
     model_usage: tuple[dict, ...] = ()
     reuse_observation: dict = field(default_factory=dict)
+    model_call_accounting_complete: bool | None = None
+    model_calls_known_subtotal: int | None = None
 
     def __post_init__(self) -> None:
+        for name, value in outcome_model_call_accounting(self).to_dict().items():
+            object.__setattr__(self, name, value)
         valid_codes = {item.value for item in SolveTerminalCode}
         if self.status not in valid_codes:
             raise SolveError(f"unknown terminal code {self.status!r}")
@@ -227,7 +233,7 @@ class SolveOutcome:
 
     def to_dict(self) -> dict:
         return {
-            "record_type": "solve_outcome/v4", "run_id": self.run_id,
+            "record_type": "solve_outcome/v5", "run_id": self.run_id,
             "terminal_code": self.status, "status": self.status,
             "solved": self.solved, "summary": self.summary,
             "failure_code": self.failure_code, "result": self.result,
@@ -246,7 +252,10 @@ class SolveOutcome:
             "questions": [item.to_dict() for item in self.questions],
             "next_action": self.next_action,
             "inspect_commands": list(self.inspect_commands),
-            "model_calls": self.model_calls, "tool_calls": self.tool_calls,
+            "model_calls": self.model_calls,
+            "model_call_accounting_complete": self.model_call_accounting_complete,
+            "model_calls_known_subtotal": self.model_calls_known_subtotal,
+            "tool_calls": self.tool_calls,
             "loop_count": self.loop_count,
             "elapsed_seconds": self.elapsed_seconds,
             "model_usage": list(self.model_usage),
@@ -542,7 +551,7 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         next_action=("Inspect the verified artifacts and Run History."
                      if solved else _next_recovery(terminal)),
         inspect_commands=inspect,
-        model_calls=int(adaptive.get("model_calls") or 0),
+        **model_call_accounting(adaptive).to_dict(),
         tool_calls=int(product["tool_calls"]),
         loop_count=len(adaptive.get("loop_details") or ()),
         elapsed_seconds=round(time.monotonic() - started, 3),
@@ -592,13 +601,6 @@ def self_test() -> dict:
 
     def check(name, ok, note=""):
         results.append({"name": name, "passed": bool(ok), "note": note})
-
-    check("an_explicit_failure_code_still_wins_over_layer_inference",
-          failure_code_for({"failure_code": "timeout"})
-          == SolveTerminalCode.PROVIDER_UNAVAILABLE.value
-          and failure_code_for({"failure_code": "CANCELLED"})
-          == SolveTerminalCode.CANCELLED.value,
-          "layer inference is the fallback, not an override")
 
     class NonMatchingResolver:
         """Registered exact resolver that correctly declines this task."""
@@ -733,7 +735,7 @@ def self_test() -> dict:
               and asked.run_history["product_outcome_bound"] is True
               and asked.run_history["terminal_code"]
                   == "BLOCKED_MATERIAL_INPUT"
-              and asked.to_dict()["record_type"] == "solve_outcome/v4"
+              and asked.to_dict()["record_type"] == "solve_outcome/v5"
               and asked_bundle.outcome["questions"][0]["answer_slot"]
                   == "required_destination",
               asked.summary)

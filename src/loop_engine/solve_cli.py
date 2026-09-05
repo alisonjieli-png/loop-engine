@@ -270,7 +270,10 @@ def run_solve(args) -> int:
                 f"Run ID: {value['run_id']}",
                 f"Run History: {value['run_history'].get('path', 'unavailable')}",
                 f"Loops: {value['loop_count']}",
-                f"Model calls: {value['model_calls']}",
+                (f"Model calls: {value['model_calls']}"
+                 if value["model_calls"] is not None else
+                 "Model calls: unknown (known subtotal "
+                 f"{value['model_calls_known_subtotal']})"),
                 f"Tool calls: {value['tool_calls']}",
             ])
             if value.get("questions"):

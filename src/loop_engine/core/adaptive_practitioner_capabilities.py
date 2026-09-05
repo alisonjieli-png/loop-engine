@@ -125,6 +125,60 @@ def _search_operation(arguments, services, owner):
         WebSearchContext(owner))
 
 
+def _execute_project_attempt(manifest, input_artifacts, input_validation,
+                             services, owner):
+    """Keep every started attempt, including partial failures and cancellation.
+
+    Allocate before the executor can create a workspace. This is run-local
+    serial allocation, not a concurrent or cross-process workspace allocator.
+    """
+    attempt = len(services.project_attempts) + 1
+    workspace = services.workspace_base / f"attempt-{attempt}"
+    execution_request = GeneratedProjectExecutionRequest(
+        manifest, str(workspace), GeneratedProjectAuthority(
+            services.run_id,
+            services.request.allow_workspace_writes,
+            services.request.allow_sandbox_commands,
+            services.request.allow_network_reads,
+            allow_local_execution=services.request.allow_local_execution),
+        sandbox_image(), input_artifacts=input_artifacts)
+    context = GeneratedProjectExecutionContext(owner)
+    record = {
+        "record_type": "generated_project_execution/v1",
+        "attempt_number": attempt, "execution_status": "STARTED",
+        "manifest_digest": manifest.digest, "manifest": manifest.to_dict(),
+        "workspace_path": str(workspace),
+        "input_use_validation": input_validation,
+        "deterministic_checks_passed": False,
+        "commands": [], "artifacts": [], "effects_complete": False,
+    }
+    services.project_attempts.append(record)
+    try:
+        result = dict(services.dependencies.project_executor(execution_request, context))
+        completed = result.get("deterministic_checks_passed") is True
+        if not completed:
+            result["artifacts"] = [
+                {**item, "verified": False} for item in result.get("artifacts", ())]
+        # The executor supplies evidence; the runtime owns attempt identity.
+        result.update({key: record[key] for key in (
+            "record_type", "attempt_number", "manifest_digest", "manifest",
+            "workspace_path", "input_use_validation")})
+        result.update(execution_status="COMPLETED" if completed else "FAILED",
+                      deterministic_checks_passed=completed, effects_complete=True)
+        record.update(result)
+        return record
+    except BaseException as exc:
+        rejection = rejection_from_exception(
+            "core.generated_project", exc,
+            pass_number=services.active_pass_number)
+        record.update(
+            execution_status="FAILED", deterministic_checks_passed=False,
+            error_type=type(exc).__name__, error=rejection.message,
+            cancelled=isinstance(exc, (KeyboardInterrupt, SystemExit)),
+            effects_complete=False, artifacts=[], commands=[])
+        raise
+
+
 def execute_adaptive_capability(
         request: AdaptiveCapabilityExecutionRequest,
         services: AdaptiveRunServices) -> ResultPacket:
@@ -272,26 +326,9 @@ def execute_adaptive_capability(
                 "The generated project ignored supplied inputs or violated "
                 "offline execution policy; no effect was performed.",
                 attempt_arguments)
-        attempt = len(services.project_attempts) + 1
-        workspace = services.workspace_base / f"attempt-{attempt}"
-
         def operation(_value, _params):
-            result = services.dependencies.project_executor(
-                GeneratedProjectExecutionRequest(
-                    manifest, str(workspace), GeneratedProjectAuthority(
-                        services.run_id,
-                        services.request.allow_workspace_writes,
-                        services.request.allow_sandbox_commands,
-                        services.request.allow_network_reads,
-                        allow_local_execution=
-                            services.request.allow_local_execution),
-                    sandbox_image(),
-                    input_artifacts=input_artifacts),
-                GeneratedProjectExecutionContext(owner))
-            result["manifest"] = manifest.to_dict()
-            result["input_use_validation"] = input_validation
-            result["workspace_path"] = str(workspace)
-            return result
+            return _execute_project_attempt(
+                manifest, input_artifacts, input_validation, services, owner)
         input_value = manifest.to_dict()
         input_role = "generated_project_manifest/v1"
         output_role = "generated_project_execution/v1"
@@ -466,7 +503,6 @@ def execute_adaptive_capability(
             confidence=1.0,
             lineage=(compiled["digest"],))
     output["context_evidence_count"] = len(services.web_results)
-    services.project_attempts.append(output)
     errors = (() if output.get("deterministic_checks_passed") else (
         "generated project deterministic checks failed",))
     return ResultPacket(
@@ -518,6 +554,7 @@ def self_test() -> dict:
                    f"{fence_policy.identical_failures_before_fence} identical "
                    "failures; a different argument set stays admissible"),
     }]
+    tests.extend(_project_attempt_checks())
     return {
         "record_type": "adaptive_capability_compilation_test/v1",
         "tests": tests,
@@ -525,3 +562,123 @@ def self_test() -> dict:
         "total": len(tests), "all_passed": all(
             item["passed"] for item in tests),
     }
+
+
+def _project_attempt_checks() -> list[dict]:
+    """Offline physical-executor fixture through the real capability graph."""
+    import tempfile
+    from types import SimpleNamespace
+    from unittest.mock import patch
+
+    from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
+    from ..loop.recursive_loop import Loop, LoopConfig
+    from .adaptive_practitioner_records import AdaptivePractitionerDependencies
+    from .generated_project import (
+        GeneratedProjectInputArtifact,
+        GeneratedProjectManifest,
+    )
+
+    tests = []
+
+    def check(name, value):
+        tests.append({"test": name, "passed": bool(value),
+                      "detail": "offline executor fixture; no model or container calls"})
+
+    manifest = GeneratedProjectManifest.from_mapping({
+        "record_type": "generated_project_manifest/v1", "project_id": "attempt_fixture",
+        "summary": "Read the input and verify authored code.",
+        "files": [{"path": "main.py", "content": "open('inputs/source.txt').read()\n"}],
+        "commands": [{"argv": ["python", "main.py"], "purpose": "Verify code.",
+                      "command_kind": "verify", "expected_exit_codes": [0]}],
+        "expected_artifacts": []})
+    inputs = (GeneratedProjectInputArtifact("inputs/source.txt", b"admitted fixture"),)
+    owner = Loop("attempt lifecycle fixture", LoopConfig(
+        framework="custom", custom_steps=("execute",), power="light",
+        allowable_modes=("deterministic",), preferred_modes=("deterministic",),
+        delegated_modes=("deterministic",), logical_kind="execution",
+        replay_guarantee="event_equivalent", exit_condition="steps_complete"),
+        identity=LoopRoleIdentity(LoopRole.PRACTITIONER, "practitioner.solver"),
+        relationship=LoopRelationship.starting())
+    request = AdaptiveCapabilityExecutionRequest(
+        PractitionerState(spec=None), ExecutionPlan("use", "run_dag",
+            handle="core.generated_project"), owner)
+    with tempfile.TemporaryDirectory(prefix="loop-engine-attempt-check-") as directory:
+        physical_paths, observed_started = [], []
+        outcome = ["raise"]
+
+        def executor(execution, _context):
+            path = Path(execution.workspace_root)
+            physical_paths.append(path)
+            record = services.project_attempts[-1]
+            observed_started.append(record["execution_status"] == "STARTED"
+                and not record["deterministic_checks_passed"]
+                and not record["artifacts"] and not path.exists())
+            path.mkdir()
+            (path / "inputs").mkdir()
+            (path / inputs[0].path).write_bytes(inputs[0].content)
+            (path / "partial.py").write_text("partial = True\n", encoding="utf-8")
+            if outcome[0] == "raise":
+                raise GeneratedProjectError("fixture failure after input copy")
+            if outcome[0] == "cancel":
+                raise KeyboardInterrupt("fixture cancellation after input copy")
+            return {"deterministic_checks_passed": outcome[0] == "pass",
+                    "commands": [], "artifacts": [{"path": "main.py", "verified": True}]}
+
+        services = AdaptiveRunServices(
+            request=SimpleNamespace(allow_workspace_writes=True,
+                allow_sandbox_commands=True, allow_network_reads=False,
+                allow_local_execution=False, context_budget=None),
+            dependencies=AdaptivePractitionerDependencies(project_executor=executor),
+            run_id="attempt-fixture", workspace_base=Path(directory),
+            artifacts=None, portfolio=None)
+        services.plan_details["accepted_incumbent"] = {"reference": "prior unchanged"}
+        with patch(__name__ + ".project_inputs", return_value=inputs), \
+                patch(__name__ + ".project_manifest", return_value=manifest):
+            first = execute_adaptive_capability(request, services)
+            failed = services.project_attempts[0]
+            check("partial_executor_failure_keeps_exact_failed_attempt",
+                  first.errors and len(services.project_attempts) == 1
+                  and failed["execution_status"] == "FAILED"
+                  and not failed["deterministic_checks_passed"]
+                  and not failed["artifacts"] and not failed["effects_complete"]
+                  and failed["manifest_digest"] == manifest.digest
+                  and failed["manifest"] == manifest.to_dict()
+                  and "fixture failure" in failed["error"])
+            partial = workspace_read_operation({"path": "attempt-1/partial.py"}, services)
+            check("production_workspace_base_reads_partial_failed_attempt",
+                  not hasattr(services, "workspace")
+                  and partial["read"]["lines"] == [{"line": 1, "text": "partial = True"}])
+            outcome[0] = "pass"
+            second = execute_adaptive_capability(request, services)
+            check("retry_after_partial_copy_allocates_fresh_attempt_without_double_append",
+                  not second.errors and len(services.project_attempts) == 2
+                  and [path.name for path in physical_paths] == ["attempt-1", "attempt-2"]
+                  and services.project_attempts[1]["execution_status"] == "COMPLETED"
+                  and services.project_attempts[0] is failed)
+            outcome[0] = "cancel"
+            cancelled = False
+            try:
+                execute_adaptive_capability(request, services)
+            except KeyboardInterrupt:
+                cancelled = True
+            cancellation = services.project_attempts[-1]
+            check("cancellation_finalizes_failure_and_propagates_without_verified_artifacts",
+                  cancelled and len(services.project_attempts) == 3
+                  and cancellation["execution_status"] == "FAILED"
+                  and cancellation["cancelled"] and not cancellation["effects_complete"]
+                  and not cancellation["deterministic_checks_passed"]
+                  and not cancellation["artifacts"])
+            outcome[0] = "fail_checks"
+            fourth = execute_adaptive_capability(request, services)
+            check("failed_checks_cannot_mark_source_artifacts_verified",
+                  fourth.errors and not fourth.artifact_refs
+                  and services.project_attempts[-1]["execution_status"] == "FAILED"
+                  and not services.project_attempts[-1]["artifacts"][0]["verified"])
+            check("every_physical_attempt_is_recorded_before_its_first_effect",
+                  len(observed_started) == 4 and all(observed_started)
+                  and physical_paths[-1].name == "attempt-4")
+            check("failed_and_cancelled_attempts_do_not_replace_accepted_incumbent",
+                  services.plan_details["accepted_incumbent"] == {"reference": "prior unchanged"}
+                  and inputs[0].content == b"admitted fixture"
+                  and (physical_paths[0] / inputs[0].path).read_bytes() == inputs[0].content)
+    return tests

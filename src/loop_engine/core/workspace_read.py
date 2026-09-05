@@ -13,9 +13,9 @@ spent twenty passes correctly restating a repair it had no way to perform.
 
 This capability is that observation and nothing else. It reads inside the
 run's own workspace, which the runtime created and owns; it never reaches the
-supplied inputs, which remain ``core.source.inspect``'s to admit, and it never
-executes anything. It is a read of the run's own output, which is the one
-thing a run should never have to take on faith.
+original supplied source roots, which remain ``core.source.inspect``'s to
+admit, and it never executes anything. The workspace includes partial failed
+attempts and admitted input copies, not only completed outputs.
 
 Owns:
     - workspace_read_operation(): the capability's whole behaviour.
@@ -69,8 +69,9 @@ def _listing(root: str) -> list:
         for name in names:
             full = os.path.join(base, name)
             try:
+                _within(root, full)
                 size = os.path.getsize(full)
-            except OSError:
+            except (OSError, WorkspaceReadError):
                 continue
             found.append({"path": os.path.relpath(full, root),
                           "byte_count": size})
@@ -85,7 +86,9 @@ def workspace_read_operation(arguments, services) -> dict:
     returns numbered lines, because the failures this exists to repair are
     reported by line number and a model cannot count to line 131 in a blob.
     """
-    root = str(getattr(services, "workspace", "") or "")
+    root = str(getattr(services, "workspace_base", "") or "")
+    if root and os.path.islink(root):
+        raise WorkspaceReadError("this run's workspace root cannot be a symbolic link")
     if not root or not os.path.isdir(root):
         raise WorkspaceReadError(
             "this run has no workspace directory yet; nothing has been "
@@ -145,7 +148,7 @@ def self_test() -> dict:
 
     class Services:
         def __init__(self, workspace):
-            self.workspace = workspace
+            self.workspace_base = workspace
             self.request = type("R", (), {"context_budget": None})()
 
     with tempfile.TemporaryDirectory(prefix="loop-engine-wsread-") as root:
@@ -207,6 +210,27 @@ def self_test() -> dict:
             stated = str(exc)
         check("a_run_with_no_workspace_says_so_rather_than_failing_opaquely",
               "nothing has been produced" in stated, stated[:120])
+
+        with tempfile.TemporaryDirectory(prefix="loop-engine-wsread-outside-") as outside:
+            outside_file = os.path.join(outside, "fixture.txt")
+            with open(outside_file, "w", encoding="utf-8") as handle:
+                handle.write("outside fixture")
+            os.symlink(outside_file, os.path.join(root, "outside-link.txt"))
+            try:
+                workspace_read_operation({"path": "outside-link.txt"}, services)
+                refused = False
+            except WorkspaceReadError:
+                refused = True
+            listed = workspace_read_operation({}, services)["produced_files"]
+            check("escaped_file_symlink_is_neither_read_nor_stat_listed",
+                  refused and all(item["path"] != "outside-link.txt" for item in listed))
+            os.symlink(root, os.path.join(outside, "root-link"))
+            try:
+                workspace_read_operation({}, Services(os.path.join(outside, "root-link")))
+                root_refused = False
+            except WorkspaceReadError:
+                root_refused = True
+            check("workspace_root_symlink_is_refused", root_refused)
 
     passed = sum(1 for item in tests if item["passed"])
     return {"record_type": "workspace_read_test/v1",
