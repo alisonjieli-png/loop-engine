@@ -338,25 +338,32 @@ def _local_project_inputs(
             "local task sources require explicit source-to-model authority")
     available = dict(inspectable_source_files(services))
     selected_records = {}
+    missing = set()
     for inspection in services.source_inspections:
+        previous_paths = {str(item.get("path") or "")
+                          for item in inspection.get("source_manifest", ())}
         for item in inspection.get("selected", ()):
             raw = str(item.get("path") or "")
             if not raw:
+                continue
+            if raw in previous_paths and raw not in available:
+                missing.add(raw)
                 continue
             relative = raw if raw in available else (
                 _resolve_requested_paths([raw], available).get(raw, ""))
             if relative:
                 selected_records[relative] = str(item.get("digest") or "")
+            else:
+                missing.add(raw)
+    if missing:
+        raise GeneratedProjectError(
+            f"selected local source paths are no longer available: {sorted(missing)}")
     selected_paths = tuple(selected_records)
     if not selected_paths:
         raise GeneratedProjectError(
             "local sources were supplied but the model has not selected any "
             "through core.source.inspect; request manifest_paths from "
             "core.source.inspect first, then select exact paths")
-    missing = sorted(set(selected_paths) - set(available))
-    if missing:
-        raise GeneratedProjectError(
-            f"selected local source paths are no longer available: {missing}")
     # Checked by size, before any body is read, against what this machine
     # measures right now rather than a number written here. Discovering the
     # limit halfway through a copy leaves the run diagnosing an executor error
@@ -385,9 +392,15 @@ def _local_project_inputs(
 
 def self_test() -> dict:
     """Prove input placement, checkpoint reuse, and the pre-authored refusal."""
+    import tempfile
+    from types import SimpleNamespace
+
+    from .adaptive_practitioner_source import source_inspection_operation
     from .generated_project import (
-        ExpectedProjectArtifact, GeneratedProjectCommand,
-        GeneratedProjectFileSpec)
+        ExpectedProjectArtifact,
+        GeneratedProjectCommand,
+        GeneratedProjectFileSpec,
+    )
 
     used: set[str] = set()
     first_path = _input_artifact_path(
@@ -426,7 +439,76 @@ def self_test() -> dict:
     except GeneratedProjectError as exc:
         typed_output_refused = str(exc)[:80]
 
+    with tempfile.TemporaryDirectory() as directory:
+        source_root = Path(directory) / "source"
+        source_root.mkdir()
+        first, second = source_root / "first.txt", source_root / "second.txt"
+        first.write_bytes(b"first")
+        second.write_bytes(b"second")
+        services = SimpleNamespace(
+            request=SimpleNamespace(
+                source_kind="repository", source_refs=(str(source_root),),
+                allow_source_materialization_to_model=True),
+            source_inspections=[])
+        services.source_inspections.append(source_inspection_operation({
+            "paths": ["source/first.txt", "source/second.txt"],
+            "include_contents": False}, services))
+        local_inputs = _local_project_inputs(services)
+        normal_selected = (
+            [(item.path, item.content) for item in local_inputs]
+            == [("inputs/source/first.txt", b"first"),
+                ("inputs/source/second.txt", b"second")])
+        second.unlink()
+        try:
+            _local_project_inputs(services)
+            deletion_refused = False
+        except GeneratedProjectError as exc:
+            deletion_refused = "source/second.txt" in str(exc)
+        other_root = Path(directory) / "other"
+        other_root.mkdir()
+        (other_root / "second.txt").write_bytes(b"second")
+        services.request.source_refs = (str(source_root), str(other_root))
+        try:
+            _local_project_inputs(services)
+            substitution_refused = False
+        except GeneratedProjectError as exc:
+            substitution_refused = "source/second.txt" in str(exc)
+        services.request.source_refs = (str(source_root),)
+        second.write_bytes(b"second")
+        first.write_bytes(b"other")
+        try:
+            _local_project_inputs(services)
+            digest_refused = False
+        except GeneratedProjectError as exc:
+            digest_refused = "digest changed" in str(exc)
+        services.source_inspections.clear()
+        try:
+            _local_project_inputs(services)
+            unselected_refused = False
+        except GeneratedProjectError as exc:
+            unselected_refused = "has not selected any" in str(exc)
+
     tests = [{
+        "test": "normal_selected_sources_preserve_input_paths_and_exact_bytes",
+        "passed": normal_selected,
+        "detail": "both selected sources become existing typed input artifacts",
+    }, {
+        "test": "deleting_one_of_two_selected_sources_refuses_the_project",
+        "passed": deletion_refused,
+        "detail": "a surviving selected source does not hide the missing selection",
+    }, {
+        "test": "a_missing_canonical_selection_cannot_remap_to_another_basename",
+        "passed": substitution_refused,
+        "detail": "the old manifest fixes which admitted relative path was selected",
+    }, {
+        "test": "changed_source_bytes_still_fail_the_existing_input_digest_check",
+        "passed": digest_refused,
+        "detail": "same-size edits remain refused at input artifact construction",
+    }, {
+        "test": "local_sources_still_require_explicit_selection",
+        "passed": unselected_refused,
+        "detail": "the existing not-selected failure is preserved",
+    }, {
         "test": "fetched_inputs_preserve_safe_authoritative_basenames",
         "passed": (first_path == "inputs/records.data"
                    and duplicate_path == "inputs/source-2.data"),

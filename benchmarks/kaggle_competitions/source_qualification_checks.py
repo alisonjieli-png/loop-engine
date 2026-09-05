@@ -241,6 +241,105 @@ def _history_events(path: str) -> list[dict]:
         return [json.loads(line) for line in handle if line.strip()]
 
 
+def _filtered_preflight_checks() -> list[dict]:
+    """Verify old and optional-search populations without live page reads."""
+    from source_qualification_records import (
+        SourceQualificationError,
+        verified_preflight,
+    )
+
+    tests = []
+
+    def check(name, passed):
+        tests.append({"test": name, "passed": bool(passed), "detail": ""})
+
+    def encode(report):
+        report.pop("report_digest", None)
+        report["report_digest"] = _digest(report)
+        return _canonical(report).encode("utf-8")
+
+    def bind_population(report, search):
+        population = report["population"]
+        population["search"] = search
+        report["request"]["search"] = search
+        body = {key: population[key] for key in (
+            "record_type", "group", "sort_by", "page_size",
+            "target_competitions", "selected", "list_failures", "search")}
+        population["population_digest"] = _digest(body)
+        return encode(report)
+
+    def refused(content, request):
+        try:
+            verified_preflight(content, request)
+        except SourceQualificationError:
+            return True
+        return False
+
+    with tempfile.TemporaryDirectory(prefix="kaggle-filter-compatibility-") as root:
+        request = _request(root, "filtered-preflight")
+        original_bytes = Path(request.paths.preflight_report_path).read_bytes()
+        original, selected, probes = verified_preflight(original_bytes, request)
+        check("legacy_population_without_search_retains_its_original_digest",
+              "search" not in original["population"]
+              and original["population"]["population_digest"] == request.expected_population_digest
+              and set(selected) == set(probes) == {"fixture-competition"})
+        filtered = json.loads(original_bytes)
+        filtered_bytes = bind_population(filtered, "fixture-competition")
+        filtered_request = replace(
+            request, expected_preflight_report_digest=filtered["report_digest"],
+            expected_population_digest=filtered["population"]["population_digest"])
+        restored, _, _ = verified_preflight(filtered_bytes, filtered_request)
+        check("filtered_population_verifies_the_search_bound_digest",
+              restored["population"]["search"] == "fixture-competition"
+              and filtered_request.expected_population_digest != request.expected_population_digest)
+
+        empty_filter = json.loads(original_bytes)
+        empty_bytes = bind_population(empty_filter, "")
+        empty_request = replace(
+            request, expected_preflight_report_digest=empty_filter["report_digest"],
+            expected_population_digest=empty_filter["population"]["population_digest"])
+        empty_restored, _, _ = verified_preflight(empty_bytes, empty_request)
+        check("explicit_empty_search_uses_the_new_field_set_not_a_legacy_rewrite",
+              empty_restored["population"]["search"] == ""
+              and empty_request.expected_population_digest != request.expected_population_digest)
+
+        for name, operation in (
+                ("changed", lambda value: value.update(search="different-filter")),
+                ("removed", lambda value: value.pop("search"))):
+            tampered = json.loads(filtered_bytes)
+            operation(tampered["population"])
+            tampered_bytes = encode(tampered)
+            check("tampered_search_" + name + "_cannot_hide_behind_a_new_report_digest",
+                  refused(tampered_bytes, replace(
+                      filtered_request,
+                      expected_preflight_report_digest=tampered["report_digest"])))
+        rehashed = json.loads(filtered_bytes)
+        rehashed_bytes = bind_population(rehashed, "different-filter")
+        check("rehashing_search_and_report_cannot_replace_the_expected_population",
+              refused(rehashed_bytes, replace(
+                  filtered_request,
+                  expected_preflight_report_digest=rehashed["report_digest"])))
+        invalid_refused = []
+        for search in (None, [], 1, " leading", "line\nbreak"):
+            invalid = json.loads(original_bytes)
+            invalid_bytes = bind_population(invalid, search)
+            invalid_refused.append(refused(invalid_bytes, replace(
+                request, expected_preflight_report_digest=invalid["report_digest"],
+                expected_population_digest=invalid["population"]["population_digest"])))
+        check("malformed_search_is_refused_even_with_matching_digests", all(invalid_refused))
+
+        Path(request.paths.preflight_report_path).write_bytes(filtered_bytes)
+        runner = FixturePageRunner(_fixture_pages())
+        result = run_source_qualification_as_loop(filtered_request, runner).record
+        source = result["qualifications"][0]
+        check("filtered_preflight_does_not_bypass_genuine_human_review",
+              len(runner.commands) == 1 and source["state"] == "DEFERRED"
+              and source["human_or_legal_review"]["state"] == "UNRESOLVED"
+              and source["license_and_data_use"]["authoritative_decision"] == "UNRESOLVED"
+              and result["summary"]["downloads"] == result["summary"]["submissions"] == 0)
+    return tests
+
+
 def self_test() -> dict:
     tests: list[dict] = []
 
@@ -805,6 +904,7 @@ def self_test() -> dict:
             and "EXTERNAL_MODEL_USE_DENIED_BY_REVIEW" in denied_source["reasons"],
         )
 
+    tests.extend(_filtered_preflight_checks())
     passed = sum(item["passed"] for item in tests)
     return {
         "record_type": "kaggle_source_qualification_checks/v1",

@@ -66,6 +66,7 @@ class KagglePreflightRequest:
     authorize_network_reads: bool = False
     group: str = "entered"
     sort_by: str = "prize"
+    search: str = ""
 
     def __post_init__(self) -> None:
         if not self.campaign_id.strip():
@@ -106,6 +107,15 @@ class KagglePreflightRequest:
             "numberOfTeams", "recentlyCreated",
         ):
             raise KagglePreflightError("unsupported Kaggle competition ordering")
+        if (type(self.search) is not str or self.search != self.search.strip()
+                or any(ord(character) < 32 or ord(character) == 127
+                       for character in self.search)):
+            raise KagglePreflightError(
+                "search must be trimmed text without control characters")
+        try:
+            self.search.encode("utf-8")
+        except UnicodeError:
+            raise KagglePreflightError("search must be UTF-8 text") from None
 
 
 def _confined_path(root: str, value: str, label: str) -> Path:
@@ -287,7 +297,7 @@ def _list_command(request: KagglePreflightRequest, page: int) -> tuple[str, ...]
         "kaggle", "competitions", "list", "--group", request.group,
         "--sort-by", request.sort_by, "--page", str(page), "--page-size",
         str(request.page_size), "--format", "json",
-    )
+    ) + (("--search", request.search) if request.search else ())
 
 
 def _files_command(slug: str) -> tuple[str, ...]:
@@ -363,6 +373,7 @@ def freeze_population(
         "record_type": POPULATION_TYPE,
         "group": request.group,
         "sort_by": request.sort_by,
+        "search": request.search,
         "page_size": request.page_size,
         "target_competitions": request.target_competitions,
         "selected": selected,
@@ -425,18 +436,24 @@ def _load_resume_report(path: str, request: KagglePreflightRequest) -> dict:
             "target_competitions", "selected", "list_failures",
         )
     }
+    # Historical v1 populations predate the optional filter. Verify their
+    # original bytes/field set; absence means the unfiltered default only.
+    if "search" in population:
+        population_body["search"] = population["search"]
     if population.get("population_digest") != _digest(population_body):
         raise KagglePreflightError("resume population digest does not match")
     requested_semantics = {
         "group": request.group,
         "sort_by": request.sort_by,
+        "search": request.search,
         "page_size": request.page_size,
         "target_competitions": request.target_competitions,
     }
     mismatches = {
-        name: {"requested": value, "frozen": population.get(name)}
+        name: {"requested": value, "frozen": population.get(
+            name, "" if name == "search" else None)}
         for name, value in requested_semantics.items()
-        if population.get(name) != value
+        if population.get(name, "" if name == "search" else None) != value
     }
     if mismatches:
         raise KagglePreflightError(
@@ -798,6 +815,7 @@ def run_preflight(
             "network_reads_authorized": request.authorize_network_reads,
             "group": request.group,
             "sort_by": request.sort_by,
+            "search": request.search,
         },
         "implementation": implementation_snapshot(),
         "privacy": {
@@ -997,6 +1015,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--timeout-seconds", type=int, default=60)
     parser.add_argument("--probe-delay-seconds", type=float, default=0.0)
     parser.add_argument("--resume-report", default="")
+    parser.add_argument("--search", default="",
+                        help="optional exact Kaggle competition-list search filter")
     parser.add_argument("--authorize-network-reads", action="store_true")
     return parser
 
@@ -1012,6 +1032,7 @@ def main(argv: list[str] | None = None) -> int:
         timeout_seconds=args.timeout_seconds,
         probe_delay_seconds=args.probe_delay_seconds,
         resume_report_path=args.resume_report,
+        search=args.search,
         workspace_root=args.workspace_root,
         authorize_network_reads=args.authorize_network_reads,
     )

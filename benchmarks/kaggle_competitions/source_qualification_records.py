@@ -635,6 +635,15 @@ def verified_preflight(
             "list_failures",
         )
     }
+    # Older v1 populations did not have a search field. Preserve that exact
+    # digest shape; new populations bind the filter even when it is empty.
+    if "search" in population:
+        search = population["search"]
+        if (type(search) is not str or search != search.strip()
+                or any(ord(character) < 32 or ord(character) == 127
+                       for character in search)):
+            raise SourceQualificationError("preflight search filter is invalid")
+        population_body["search"] = search
     calculated_population_digest = digest(population_body)
     if population.get("population_digest") != calculated_population_digest:
         raise SourceQualificationError("preflight population digest does not match")

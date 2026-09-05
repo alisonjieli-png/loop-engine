@@ -9,6 +9,14 @@ First public release.
 
 ### Added
 
+- A [live Kaggle pilot checkpoint](docs/verification/KAGGLE-LIVE-PILOT-2026-09-05.md)
+  with an authorized Ollama probe, filtered population selection, and exact
+  source/wheel verification. Source inspection derives content and digests from
+  one read, and selected inputs cannot silently disappear or remap. Explicit
+  no-total-token-ceiling probes remain distinct from strict token-bound calls.
+  Independent review rejected a generated tool despite its passing tests;
+  this checkpoint claims no Kaggle submission or score.
+
 - **A primary-source long-horizon skills and recurrence review.** The dated
   report separates Agent Skills packaging, explicit execution state, recursive
   inference, neural recurrence, test-time learning, and persistent memory. It

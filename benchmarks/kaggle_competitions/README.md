@@ -4,6 +4,12 @@ This directory supports a staged Kaggle campaign. The current saved evidence
 covers metadata access for a frozen population of 120 competitions. It does
 not show 120 competition solves.
 
+The [September 5 live pilot](../../docs/verification/KAGGLE-LIVE-PILOT-2026-09-05.md)
+records a real provider probe and a public-specification tool-building run.
+Independent review found defects despite the tool's passing generated tests.
+No Kaggle score is claimed. An explicit `--search` filter now binds a smaller
+selected population to its preflight and qualification evidence.
+
 ```text
 Kaggle campaign evidence
 ├── Metadata access preflight

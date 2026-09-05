@@ -14,6 +14,8 @@ from preflight import (
     CommandResult,
     KagglePreflightRequest,
     _digest,
+    _list_command,
+    _parser,
     _validate_destinations,
     freeze_population,
     probe_competition_files,
@@ -333,6 +335,7 @@ def self_test() -> dict:
     check("real_network_runner_cannot_execute_outside_a_Loop",
           unowned_real_runner_refused)
 
+    tests.extend(_search_checks())
     passed = sum(item["passed"] for item in tests)
     return {
         "record_type": "kaggle_access_preflight_test/v1",
@@ -344,6 +347,113 @@ def self_test() -> dict:
         "model_calls": 0,
         "submissions": 0,
     }
+
+
+def _search_checks() -> list[dict]:
+    """Search is explicit selection identity, never a solve-routing rule."""
+    tests = []
+
+    def check(name, passed):
+        tests.append({"test": name, "passed": bool(passed), "detail": "offline fixture"})
+
+    request = KagglePreflightRequest(
+        "search-fixture", target_competitions=4, maximum_pages=3,
+        page_size=2, concurrency=1, authorize_network_reads=True)
+    search = "playground-series-s6e9"
+    selected = replace(request, search=search)
+    expected = (
+        "kaggle", "competitions", "list", "--group", "entered",
+        "--sort-by", "prize", "--page", "1", "--page-size", "2",
+        "--format", "json")
+    cli_required = ["--campaign-id", "fixture", "--workspace-root", "/fixture",
+                    "--output", "/fixture/report.json", "--runs-dir", "/fixture/runs"]
+    check("absent_search_preserves_existing_cli_command_and_default",
+          request.search == "" and _list_command(request, 1) == expected
+          and _parser().parse_args(cli_required).search == "")
+    check("explicit_search_is_one_exact_kaggle_argument_value",
+          _list_command(selected, 1) == expected + ("--search", search)
+          and _parser().parse_args(cli_required + ["--search", search]).search == search
+          and _list_command(replace(request, search="two words"), 1)[-2:]
+          == ("--search", "two words"))
+    invalid = 0
+    for value in (None, True, 1, [], " ", " leading", "trailing ",
+                  "line\nbreak", "tab\tinside", "nul\x00inside", "\ud800"):
+        try:
+            replace(request, search=value)
+        except ValueError:
+            invalid += 1
+    check("invalid_search_types_whitespace_controls_and_encoding_are_refused",
+          invalid == 11)
+
+    runner = FixtureRunner()
+    report = run_preflight(selected, runner)
+    unfiltered = run_preflight(request, FixtureRunner())
+    check("search_is_bound_in_request_population_and_population_digest",
+          report["request"]["search"] == report["population"]["search"] == search
+          and report["population"]["selected"] == unfiltered["population"]["selected"]
+          and report["population"]["population_digest"]
+          != unfiltered["population"]["population_digest"]
+          and all(command[-2:] == ("--search", search)
+                  for command in runner.commands if command[2] == "list"))
+
+    with tempfile.TemporaryDirectory(prefix="kaggle-search-check-") as root:
+        loop_runner = FixtureRunner()
+        loop_report = run_preflight_as_loop(
+            replace(selected, workspace_root=root), os.path.join(root, "runs"),
+            loop_runner)
+        check("search_survives_canonical_Loop_owned_preflight_and_report_binding",
+              loop_report["request"]["search"] == loop_report["population"]["search"] == search
+              and loop_report["loop_execution"]["run_history_chain"]["intact"]
+              and all(command[-2:] == ("--search", search)
+                      for command in loop_runner.commands if command[2] == "list"))
+        filtered_path = os.path.join(root, "filtered.json")
+        write_report(report, filtered_path, root)
+        runner = FixtureRunner()
+        resumed = run_preflight(replace(
+            selected, resume_report_path=filtered_path, workspace_root=root), runner)
+        check("resume_with_same_search_keeps_frozen_population_without_relisting",
+              resumed["population"] == report["population"]
+              and resumed["request"]["search"] == search
+              and not any(command[2] == "list" for command in runner.commands))
+        mismatches_refused = 0
+        for changed in ("", "another-query"):
+            runner = FixtureRunner()
+            try:
+                run_preflight(replace(
+                    selected, search=changed, resume_report_path=filtered_path,
+                    workspace_root=root), runner)
+            except ValueError:
+                mismatches_refused += not bool(runner.commands)
+        check("resume_cannot_drop_or_change_a_frozen_search_filter",
+              mismatches_refused == 2)
+
+        legacy = json.loads(json.dumps(unfiltered))
+        legacy["request"].pop("search")
+        population = legacy["population"]
+        population.pop("search")
+        population["population_digest"] = _digest({
+            key: population[key] for key in (
+                "record_type", "group", "sort_by", "page_size",
+                "target_competitions", "selected", "list_failures")})
+        legacy.pop("report_digest")
+        legacy["report_digest"] = _digest(legacy)
+        legacy_path = os.path.join(root, "legacy.json")
+        write_report(legacy, legacy_path, root)
+        resumed_legacy = run_preflight(replace(
+            request, resume_report_path=legacy_path, workspace_root=root), FixtureRunner())
+        check("legacy_absent_search_resumes_as_unfiltered_without_rehashing_population",
+              resumed_legacy["population"] == legacy["population"]
+              and resumed_legacy["request"]["search"] == "")
+        runner = FixtureRunner()
+        refused = False
+        try:
+            run_preflight(replace(
+                selected, resume_report_path=legacy_path, workspace_root=root), runner)
+        except ValueError:
+            refused = True
+        check("legacy_population_cannot_acquire_a_new_search_on_resume",
+              refused and not runner.commands)
+    return tests
 
 
 if __name__ == "__main__":

@@ -3,12 +3,13 @@
 Ordinary self-tests never contact a model provider.  This module is the only
 verification path that may claim provider integration. It requires explicit
 authorization, one physical call, a source-backed model output maximum, a
-declared total-token budget, exact grading, and secret-safe saved evidence.
+declared token-budget policy, exact grading, and secret-safe saved evidence.
 """
 from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import tempfile
 import time
@@ -65,18 +66,29 @@ class LiveModelVerificationRequest:
     max_total_tokens: "int | None" = None
     timeout_seconds: float = 300.0
     evidence_path: str = ""
+    allow_unbounded_total_tokens: bool = False
 
     def __post_init__(self) -> None:
-        if not self.provider.strip():
+        if not isinstance(self.provider, str) or not self.provider.strip():
             raise LiveModelVerificationError("provider is required")
-        if self.max_physical_model_calls < 0:
+        if (type(self.authorize_model_calls) is not bool
+                or type(self.allow_unbounded_total_tokens) is not bool):
+            raise LiveModelVerificationError("authorization flags must be booleans")
+        if (type(self.max_physical_model_calls) is not int
+                or self.max_physical_model_calls < 0):
             raise LiveModelVerificationError(
-                "max_physical_model_calls cannot be negative")
-        if self.max_total_tokens is not None and self.max_total_tokens < 1:
+                "max_physical_model_calls must be a nonnegative integer")
+        if self.max_total_tokens is not None and (
+                type(self.max_total_tokens) is not int or self.max_total_tokens < 1):
             raise LiveModelVerificationError(
-                "max_total_tokens must be positive when set")
-        if self.timeout_seconds <= 0:
-            raise LiveModelVerificationError("timeout_seconds must be positive")
+                "max_total_tokens must be a positive integer when set")
+        if self.allow_unbounded_total_tokens and self.max_total_tokens is not None:
+            raise LiveModelVerificationError(
+                "an unbounded-token grant cannot override an explicit token ceiling")
+        if (type(self.timeout_seconds) not in (int, float)
+                or not math.isfinite(self.timeout_seconds)
+                or self.timeout_seconds <= 0):
+            raise LiveModelVerificationError("timeout_seconds must be finite and positive")
 
 
 @dataclass(frozen=True)
@@ -240,11 +252,10 @@ def plan_live_model_verification(
         raise LiveModelVerificationError(str(exc)) from exc
     probe = _repository_probe(request.repository_root)
     prompt = _prompt(probe)
-    # The provider may add protocol tokens that are not visible locally.  A
-    # total budget smaller than the declared output maximum plus the complete
-    # UTF-8 input cannot be a physical upper bound, so refuse it before use.
-    minimum_total = (capability.maximum_output_tokens
-                     + len(prompt.encode("utf-8")))
+    # Output capacity is only a necessary lower bound on a total ceiling.
+    # UTF-8 length is not a qualified bound on provider-billed input tokens.
+    # A strict total budget still needs the gateway's exact-request resolver.
+    minimum_total = capability.maximum_output_tokens
     return LiveModelVerificationPlan(
         provider=request.provider,
         model=route.model,
@@ -293,14 +304,17 @@ def run_live_model_verification(request: LiveModelVerificationRequest) -> dict:
     if request.max_physical_model_calls != 1:
         raise LiveModelVerificationError(
             "live verification requires max_physical_model_calls=1")
-    if request.max_total_tokens is None:
+    if (request.max_total_tokens is None
+            and not request.allow_unbounded_total_tokens):
         raise LiveModelVerificationError(
-            "live verification requires an explicit max_total_tokens budget")
+            "live verification requires an explicit max_total_tokens budget "
+            "or allow_unbounded_total_tokens=True")
     plan = plan_live_model_verification(request)
     if not plan.credential_present:
         raise LiveModelVerificationError(
             "the selected provider credential is not present; no call made")
-    if request.max_total_tokens < plan.minimum_total_token_ceiling:
+    if (request.max_total_tokens is not None
+            and request.max_total_tokens < plan.minimum_total_token_ceiling):
         raise LiveModelVerificationError(
             "max_total_tokens is too small to permit the model's declared "
             "maximum output without imposing an arbitrary lower cap; required "
@@ -334,7 +348,8 @@ def run_live_model_verification(request: LiveModelVerificationRequest) -> dict:
         result.ok and result.provider_responded and physical_calls == 1
         and accounting_complete
         and result.total_tokens is not None
-        and result.total_tokens <= request.max_total_tokens)
+        and (request.max_total_tokens is None
+             or result.total_tokens <= request.max_total_tokens))
     evidence = {
         "record_type": "live_model_verification/v1",
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -351,6 +366,11 @@ def run_live_model_verification(request: LiveModelVerificationRequest) -> dict:
         "maximum_output_tokens": plan.maximum_output_tokens,
         "maximum_output_source": plan.maximum_output_source,
         "total_token_ceiling": request.max_total_tokens,
+        "total_token_budget_enforced": request.max_total_tokens is not None,
+        "unbounded_total_tokens_authorized": request.allow_unbounded_total_tokens,
+        "budget_scope": ("physical_call_timeout_and_total_tokens"
+                         if request.max_total_tokens is not None
+                         else "physical_call_and_timeout"),
         "input_tokens": result.input_tokens,
         "output_tokens": result.output_tokens,
         "total_tokens": result.total_tokens,
@@ -378,6 +398,11 @@ def run_live_model_verification(request: LiveModelVerificationRequest) -> dict:
 
 def self_test() -> dict:
     """Offline policy checks over installed package metadata. No model call."""
+    from dataclasses import replace
+    from unittest.mock import patch
+
+    from .model_gateway_accounting_checks import _Adapter, _gateway
+
     results = []
 
     def check(name, ok, detail=""):
@@ -402,6 +427,69 @@ def self_test() -> dict:
     check("the_prompt_contains_only_public_repository_metadata",
           probe.distribution_name in safe
           and "API_KEY" not in safe and "secret" not in safe.lower())
+
+    authorized = replace(request, authorize_model_calls=True,
+                         max_physical_model_calls=1)
+    try:
+        run_live_model_verification(authorized)
+        refused = False
+    except LiveModelVerificationError as exc:
+        refused = "max_total_tokens" in str(exc)
+    check("omitted_total_ceiling_still_requires_a_separate_explicit_grant", refused)
+
+    for field, value in (
+            ("authorize_model_calls", 1), ("max_physical_model_calls", True),
+            ("max_total_tokens", True), ("max_total_tokens", 1.5),
+            ("allow_unbounded_total_tokens", "true"),
+            ("timeout_seconds", float("inf")),
+            ("timeout_seconds", float("nan")), ("timeout_seconds", True)):
+        try:
+            replace(authorized, **{field: value})
+            refused = False
+        except LiveModelVerificationError:
+            refused = True
+        check(f"invalid_{field}_{type(value).__name__}_{repr(value)}_refuses", refused)
+    try:
+        replace(authorized, allow_unbounded_total_tokens=True, max_total_tokens=100)
+        refused = False
+    except LiveModelVerificationError:
+        refused = True
+    check("unbounded_grant_cannot_override_a_total_ceiling", refused)
+
+    adapter = _Adapter("probe-fixture", text=json.dumps(probe.expected()))
+    gateway, routes = _gateway(adapter)
+    gateway.token_bound_resolver = None
+    plan = LiveModelVerificationPlan(
+        provider="p0", model=adapter.model, route_name=routes[0],
+        maximum_output_tokens=16, maximum_output_source="offline fixture",
+        minimum_total_token_ceiling=16, credential_present=True,
+        probe=probe, prompt=safe, gateway=gateway)
+    with tempfile.TemporaryDirectory() as directory:
+        with patch(__name__ + ".plan_live_model_verification", return_value=plan):
+            strict = run_live_model_verification(replace(
+                authorized, max_total_tokens=100,
+                evidence_path=str(Path(directory) / "strict.json")))
+            check("strict_probe_still_requires_a_qualified_token_bound",
+                  strict["status"] == "failed" and adapter.calls == 0
+                  and strict["failure_code"] == "token_bound_unavailable")
+            uncapped = replace(
+                authorized, allow_unbounded_total_tokens=True,
+                evidence_path=str(Path(directory) / "call-only.json"))
+            record = run_live_model_verification(uncapped)
+            check("explicit_call_only_probe_keeps_exact_output_and_usage",
+                  record["status"] == "accepted" and adapter.calls == 1
+                  and adapter.requested_output_tokens == [16]
+                  and record["total_tokens"] == 3
+                  and record["total_token_ceiling"] is None
+                  and record["total_token_budget_enforced"] is False
+                  and record["budget_scope"] == "physical_call_and_timeout")
+            adapter.prompt_tokens = None
+            missing = run_live_model_verification(replace(
+                uncapped, evidence_path=str(Path(directory) / "unknown.json")))
+            check("unbounded_tokens_do_not_turn_unknown_usage_into_proof",
+                  missing["status"] == "failed"
+                  and not missing["usage_accounting_complete"]
+                  and missing["input_tokens"] is None)
 
     passed = sum(1 for test in results if test["passed"])
     return {"record_type": "live_model_verification_contract_test/v1",

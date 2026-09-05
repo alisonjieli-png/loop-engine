@@ -1,0 +1,450 @@
+{
+  "benchmark_checks": {
+    "preflight": {
+      "passed": 34,
+      "total": 34
+    },
+    "provider_calls": 0,
+    "source_qualification": {
+      "passed": 39,
+      "total": 39
+    }
+  },
+  "changed_source_sha256": {
+    "benchmarks/kaggle_competitions/preflight.py": "b7b5b92fdc3584c4642359632e765104a1f4aca73350f8473109fc286827b756",
+    "benchmarks/kaggle_competitions/preflight_checks.py": "e8cb32a7e8d4cc7d9e26467f7e29aa2074345a664ee11fc8175383c16c9e1fd2",
+    "benchmarks/kaggle_competitions/source_qualification_checks.py": "24a1f2aa76fa2b1f68fb5ca81358e8d2c8dd7c533d6a9231bc25c0cbfaee487a",
+    "benchmarks/kaggle_competitions/source_qualification_records.py": "a7e0f236000cc3307de8c0dae981cacc526dca5c7802718dbf0d79d0d0a5f8c2",
+    "src/loop_engine/core/adaptive_practitioner_project.py": "defe065498a27e0c7d13636375dc51a8a26291025d7bae97683bf7d51349742e",
+    "src/loop_engine/core/adaptive_practitioner_source.py": "22511569ef1955a7291e317fabdf3f7bed0a2310cbb571bc5f77c0a8edc89c43",
+    "src/loop_engine/core/live_model_verification.py": "f5f7d9f502611fd2d3ba78d22a9f1a8d5b6f7fa3a4963db11cfa2f835f8ac3ed"
+  },
+  "competition_results": {
+    "downloaded": 0,
+    "externally_scored": 0,
+    "hundred_plus_goal_completed": false,
+    "submitted": 0
+  },
+  "offline_verification": {
+    "all_passed": true,
+    "command_count": 10,
+    "commands": [
+      {
+        "command": [
+          "python3",
+          "-m",
+          "loop_engine",
+          "--self-test",
+          "--format",
+          "json"
+        ],
+        "cwd": "/home/username/loop-engine",
+        "elapsed_seconds": 166.5267650289461,
+        "exit_code": 0,
+        "phase": "kaggle-pilot-source-test-20260905",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/kaggle-pilot-source-test-20260905-record.json",
+        "record_sha256": "7baf55e2ad2ec25f22879cce2f2cd250d65a154c782a5a96bdc2fafe8182b967",
+        "result_summary": {
+          "all_passed": true,
+          "failures": [],
+          "optional_adapters_not_tested": [],
+          "passed": 2825,
+          "provider_calls_made": 0,
+          "total": 2825
+        },
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/kaggle-pilot-source-test-20260905-stderr.txt",
+        "stderr_sha256": "11f1c58c7dd8749bb6cc39853c847b9d23337399dee6bfee09f6a755000199f1",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/kaggle-pilot-source-test-20260905-stdout.txt",
+        "stdout_sha256": "179a0b12b56a06f3038ce8bb3b6657c0ce49a35d180babd3370d14ef6f896546"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "loop_engine",
+          "--conformance"
+        ],
+        "conformance_passed": 27,
+        "cwd": "/home/username/loop-engine",
+        "elapsed_seconds": 30.082036869833246,
+        "exit_code": 0,
+        "phase": "kaggle-pilot-conformance-20260905",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/kaggle-pilot-conformance-20260905-record.json",
+        "record_sha256": "43e3fa51ff97ead009490d9dfeb376cb0f5266f58163a6088cba88b31b6325f6",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/kaggle-pilot-conformance-20260905-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/kaggle-pilot-conformance-20260905-stdout.txt",
+        "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "build",
+          "--no-isolation",
+          "--outdir",
+          "/tmp/loop-engine-kaggle-pilot-package.ivExsd/dist"
+        ],
+        "cwd": "/home/username/loop-engine",
+        "elapsed_seconds": 3.1582244550809264,
+        "exit_code": 0,
+        "phase": "kaggle-pilot-build-20260905",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/kaggle-pilot-build-20260905-record.json",
+        "record_sha256": "c9809e924d4a94af1f0e7c4da81a2c16cd6e72f9ec67cfca026ba7ff2d35afca",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/kaggle-pilot-build-20260905-stderr.txt",
+        "stderr_sha256": "b181eea8a45f807f5fa1607f003eb1ae5363271ec186d4780a7fd3630cdea57e",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/kaggle-pilot-build-20260905-stdout.txt",
+        "stdout_sha256": "9302e1a7ce64d6a6f702a087ea6987ccd74636431fb3e1f9180460963d95cca3"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "venv",
+          "/tmp/loop-engine-kaggle-pilot-package.ivExsd/wheel-env"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 2.178536545019597,
+        "exit_code": 0,
+        "phase": "wheel-kaggle-pilot-venv-20260905",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-venv-20260905-record.json",
+        "record_sha256": "ca2186054174751e8d91e088d8599aa2ec9a58e600ea934dbf2e5d7d9b5ae4be",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-venv-20260905-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-venv-20260905-stdout.txt",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-kaggle-pilot-package.ivExsd/wheel-env/bin/python",
+          "-m",
+          "pip",
+          "install",
+          "--no-index",
+          "--find-links",
+          "/tmp/loop-engine-final-verification.W0wq3F/dependency-wheelhouse",
+          "/tmp/loop-engine-kaggle-pilot-package.ivExsd/dist/loop_engine-0.1.0-py3-none-any.whl"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 1.8192681120708585,
+        "exit_code": 0,
+        "phase": "wheel-kaggle-pilot-install-20260905",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-install-20260905-record.json",
+        "record_sha256": "8248415b802fc66e197744bb32b8251b2c0aafc0489f3545f43db302ee0e038b",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-install-20260905-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-install-20260905-stdout.txt",
+        "stdout_sha256": "637a5c976274169748c519550cda10f91692b539f14fe8b8e23c86016950aaff"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-kaggle-pilot-package.ivExsd/wheel-env/bin/python",
+          "-m",
+          "loop_engine",
+          "--self-test",
+          "--format",
+          "json"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 146.92672866489738,
+        "exit_code": 0,
+        "phase": "wheel-kaggle-pilot-self-test-20260905",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-self-test-20260905-record.json",
+        "record_sha256": "8f5fd33b36d2b5325670692fad94e2412f890b372a248da18e2363e720416a64",
+        "result_summary": {
+          "all_passed": true,
+          "failures": [],
+          "optional_adapters_not_tested": [
+            "duckdb",
+            "mcp",
+            "model2vec",
+            "numpy",
+            "opentelemetry-sdk",
+            "pandas",
+            "sklearn"
+          ],
+          "passed": 2780,
+          "provider_calls_made": 0,
+          "total": 2780
+        },
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-self-test-20260905-stderr.txt",
+        "stderr_sha256": "0cb20fced0316d3f245f44e20075956fb38a253b029975ba43012a6273d6a1f5",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-self-test-20260905-stdout.txt",
+        "stdout_sha256": "64ee1279dd2102933a6aeac06c9eefbe2ed6147df1d9295c24bf57b1908fc066"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-kaggle-pilot-package.ivExsd/wheel-env/bin/python",
+          "-m",
+          "loop_engine",
+          "--conformance"
+        ],
+        "conformance_passed": 27,
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 21.01928005227819,
+        "exit_code": 0,
+        "phase": "wheel-kaggle-pilot-conformance-20260905",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-conformance-20260905-record.json",
+        "record_sha256": "34ebdcb5de2601db77a78f5a4f58e3ce6b69783c58ec5f1bbd5cc83f0dffae7e",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-conformance-20260905-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-conformance-20260905-stdout.txt",
+        "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-kaggle-pilot-package.ivExsd/wheel-env/bin/python",
+          "/tmp/loop-engine-kaggle-pilot-package.ivExsd/package_integrity.py"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 0.27566088922321796,
+        "exit_code": 0,
+        "phase": "wheel-kaggle-pilot-parity-20260905",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-parity-20260905-record.json",
+        "record_sha256": "4c6394f30b37c6945f9a4685458584d7d0e6c24f5073165cd38a22dd52a772e5",
+        "result_summary": {
+          "all_passed": true
+        },
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-parity-20260905-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-parity-20260905-stdout.txt",
+        "stdout_sha256": "dee99e977d01abf2fd09c1e657eeabaa2803af35be38ea3747a195918f1d207b"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-kaggle-pilot-package.ivExsd/wheel-env/bin/python",
+          "-m",
+          "pip",
+          "check"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 0.28694173181429505,
+        "exit_code": 0,
+        "phase": "wheel-kaggle-pilot-pip-check-20260905",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-pip-check-20260905-record.json",
+        "record_sha256": "1ebec367072c4ca32ce96332a79f944bf4c1d9212528f570a204fbd96ba2e8f4",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-pip-check-20260905-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-pip-check-20260905-stdout.txt",
+        "stdout_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-kaggle-pilot-package.ivExsd/wheel-env/bin/python",
+          "/tmp/loop-engine-kaggle-pilot-package.ivExsd/package_integrity.py"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 0.2600062442943454,
+        "exit_code": 0,
+        "phase": "wheel-kaggle-pilot-final-parity-20260905",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-final-parity-20260905-record.json",
+        "record_sha256": "a5a910fc0499fbf86c9d4f019e64013235b2b475e95efc2e580f3accf1060269",
+        "result_summary": {
+          "all_passed": true
+        },
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-final-parity-20260905-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-kaggle-pilot-final-parity-20260905-stdout.txt",
+        "stdout_sha256": "dee99e977d01abf2fd09c1e657eeabaa2803af35be38ea3747a195918f1d207b"
+      }
+    ],
+    "driver": {
+      "os_network_sandbox_claimed": false,
+      "path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/verify.py",
+      "pip_network_disabled": true,
+      "provider_credentials_stripped": true,
+      "sha256": "c4d06c6cb48f2146692318046bc4732fed3a3265c1e1625d3d676c7110331a8a"
+    },
+    "head_at_driver_completion": "690303f3ee97669f638da950daca665b747f450d",
+    "integrity_checker": {
+      "path": "/tmp/loop-engine-kaggle-pilot-package.ivExsd/package_integrity.py",
+      "sha256": "86797589011f8ce5a91193a6ec852e8867d65d6bc8982cb38e058e52e739ae6e"
+    },
+    "limitations": [
+      "Python 3.14.4 executed; Python 3.10 was not run in this clean environment.",
+      "Clean wheel installs base dependencies only; optional adapter omissions remain explicit.",
+      "This is offline contract, conformance and delivery evidence, not a live task completion or provider quality comparison."
+    ],
+    "package_directory": "/tmp/loop-engine-kaggle-pilot-package.ivExsd",
+    "record_type": "kaggle_pilot_offline_verification/v1",
+    "runtime_parity": {
+      "all_passed": true,
+      "differences": {
+        "source_vs_installed": [],
+        "source_vs_sdist": [],
+        "source_vs_tested": [],
+        "source_vs_wheel": []
+      },
+      "installed_root": "/tmp/loop-engine-kaggle-pilot-package.ivExsd/wheel-env/lib/python3.14/site-packages/loop_engine",
+      "network_calls": 0,
+      "provider_calls": 0,
+      "python": "3.14.4 (main, Jun 18 2026, 14:25:02) [GCC 15.2.0]",
+      "record_type": "package_runtime_integrity/v1",
+      "runtime_file_counts": {
+        "installed": 475,
+        "sdist": 475,
+        "source": 475,
+        "tested": 475,
+        "wheel": 475
+      },
+      "sdist_sha256": "022b264b3d04cf3dca4db3e1335a3bbe7ad32d63aa05f6dc73324c1e4c59aa2f",
+      "source_map_sha256": "0279e422dcd7ed466f9844aebf1f73c1758cdd8d5d3406d16c117bcc95f0440c",
+      "tested_snapshot_sha256": "6d7786342e5c0017b406deae22a7378c472a4683e37dc7349fe757f9ddd7b1bd",
+      "wheel_sha256": "dd8c6fd4774ee5524bbed6d645f2e3e62270531d1f937c0c1e36d2a739f3cdb8"
+    },
+    "scope": "Frozen packaged runtime; benchmark-only concurrent edits are outside this source snapshot. No live provider or Kaggle calls by verification.",
+    "source_conformance": 27,
+    "source_self_test": {
+      "all_passed": true,
+      "failures": [],
+      "optional_adapters_not_tested": [],
+      "passed": 2825,
+      "provider_calls_made": 0,
+      "total": 2825
+    },
+    "wheel_conformance": 27,
+    "wheel_self_test": {
+      "all_passed": true,
+      "failures": [],
+      "optional_adapters_not_tested": [
+        "duckdb",
+        "mcp",
+        "model2vec",
+        "numpy",
+        "opentelemetry-sdk",
+        "pandas",
+        "sklearn"
+      ],
+      "passed": 2780,
+      "provider_calls_made": 0,
+      "total": 2780
+    }
+  },
+  "privacy": "No raw Kaggle rows downloaded or exposed to hosted models. Private prompts, responses, memberships, rules bodies and credentials excluded.",
+  "provider_probe": {
+    "authorized": true,
+    "budget_scope": "physical_call_and_timeout",
+    "created_at": "2026-09-05T19:21:46.388459+00:00",
+    "elapsed_seconds": 0.929829,
+    "failure_code": "",
+    "failure_detail_sha256": "",
+    "input_tokens": 66,
+    "maximum_output_source": "Ollama HTTP 400 response declared the exact model maximum",
+    "maximum_output_tokens": 65536,
+    "model": "deepseek-v4-flash:0731",
+    "output_accepted_by_exact_grader": true,
+    "output_sha256": "803ac3690d2db65339f45f9da1527eac86adbccd6bcf77bf1126cbcc635ca68b",
+    "output_tokens": 100,
+    "physical_model_call_ceiling": 1,
+    "physical_model_calls": 1,
+    "prompt_sha256": "8a7d8ea8ef34e0ee3642e0612030517c27578dea774a0b1acb4f4708e0ece381",
+    "provider": "ollama_cloud",
+    "provider_integration_proven": true,
+    "provider_responded": true,
+    "record_type": "live_model_verification/v1",
+    "repository_input": {
+      "source_bytes": 3333,
+      "source_path": "pyproject.toml",
+      "source_sha256": "7467995fe4c3ed80e55f8f806cca66b6a84e044aceb92265e68bc321f34a9ef6"
+    },
+    "route_name": "cloud.default",
+    "secret_policy": "raw prompt, raw output, credentials, and provider error text are not saved",
+    "status": "accepted",
+    "timeout_seconds": 180,
+    "total_token_budget_enforced": false,
+    "total_token_ceiling": null,
+    "total_tokens": 166,
+    "unbounded_total_tokens_authorized": true,
+    "usage_accounting_complete": true
+  },
+  "provider_probe_file_sha256": "658ece62a7626e3d47574dbd25bc371fce72cb9c3741fe9599610caad1a890a4",
+  "record_type": "kaggle_live_pilot_checkpoint/v1",
+  "scope": "Initial provider probe and public-specification tool candidate; later repair run excluded. This is not an operational store or Kaggle score.",
+  "source_head": "690303f3ee97669f638da950daca665b747f450d",
+  "source_qualification": {
+    "record_digest": "df5b0f8be74a3fd67a5c0550b2f0eca878fae128d1085a0f8b6a555d683d7f84",
+    "source_bundle_digest": "af8e0d15522a3eb223798750f3c8c08140e7a9a0eca8849d9c53481afed17448",
+    "summary": {
+      "downloads": 0,
+      "model_calls": 0,
+      "physical_page_reads": 1,
+      "private_page_artifacts": 7,
+      "private_page_bytes": 36817,
+      "selected_denominator": 1,
+      "state_counts": {
+        "BLOCKED": 0,
+        "DEFERRED": 1,
+        "QUALIFIED": 0,
+        "UNSUPPORTED": 0
+      },
+      "submissions": 0
+    },
+    "unresolved_reasons": [
+      "COMPETITION_DEADLINE_UNRESOLVED",
+      "HUMAN_LEGAL_REVIEW_UNRESOLVED",
+      "INDEPENDENT_EVALUATOR_REVIEW_UNRESOLVED"
+    ]
+  },
+  "tool_candidate": {
+    "accounting_complete": true,
+    "cost_state": "UNKNOWN",
+    "elapsed_seconds": 515.029,
+    "failed_physical_calls": 1,
+    "generated_tests": {
+      "independent": false,
+      "passed": 8,
+      "total": 8
+    },
+    "independent_acceptance": "REJECTED_SOURCE_REVIEW_PENDING_EXECUTABLE_PROBES",
+    "input_tokens": 494788,
+    "invoiced_cost": null,
+    "loop_count": 276,
+    "monetary_ceiling": null,
+    "outcome_file_sha256": "d3638d95dcf71d8524b1a1d330f7c9b574de9f0ec79d0cbf13139dab50b8cf37",
+    "output_tokens": 113543,
+    "physical_model_calls": 26,
+    "recovery_calls": 1,
+    "run_history": {
+      "broken_at": [],
+      "chain_intact": true,
+      "events": 2582,
+      "head_digest": "715afded27b7eaaa6bae0cf91a5e9685dffc7987dbd230ee6d4e8376cb7bf536",
+      "path": "/home/username/loop-engine/.loop-engine-dev/kaggle-campaign-20260905.3Vmzbq/public-tool-runs/adaptive-73203b75487eece93d022b8b",
+      "product_outcome_bound": true,
+      "product_outcome_digest": "58d29d0768fd6561578b2d4f39107d324cb63c03cbc85a384c1f6aa84abc14c9",
+      "run_id": "adaptive-73203b75487eece93d022b8b",
+      "terminal_code": "COMPLETED_VERIFIED"
+    },
+    "run_id": "adaptive-73203b75487eece93d022b8b",
+    "runtime_terminal": "COMPLETED_VERIFIED",
+    "source_review_findings": [
+      "Preprocessing fit before cross-validation splits",
+      "Predictions aligned positionally rather than by ID",
+      "Sparse preprocessing incompatible with chosen dense-only classifier",
+      "Synthetic evidence marker hardcoded for all inputs"
+    ],
+    "task_sha256": "47f92ca1f48f5da15a057a16b5e121b402d5a5fb3f7eb04c053cf02140d7b14f",
+    "tool_calls": 22,
+    "total_tokens": 608331
+  }
+}

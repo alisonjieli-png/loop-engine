@@ -114,6 +114,15 @@ database or immutable revisions. Existing authority Markdown and historical
 evidence have not been migrated, and generated session views remain planned.
 
 For the latest new-task attempt and generalization boundary, first read the
+[live Kaggle pilot checkpoint](../verification/KAGGLE-LIVE-PILOT-2026-09-05.md).
+It records a real provider probe, explicit no-total-token-ceiling authorization,
+source-integrity fixes, and a model-generated tool whose own passing tests missed
+defects found by independent review. No Kaggle score exists in that checkpoint.
+The later repair and source/data-use gates remain separate work. The user's
+no-monetary-ceiling instruction does not qualify strict token bounds or approve
+raw competition-data export.
+
+For the preceding diagnostic, read the
 [new-task diagnostic report](../verification/UNSEEN-TASK-DIAGNOSTIC-AND-GENERALIZATION-2026-09-04.md).
 Two real-provider attempts on one generated Kaggle-shaped case produced no
 verified task completion. The second reproduced a post-dispatch token-budget

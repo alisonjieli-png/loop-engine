@@ -179,7 +179,10 @@ def inspectable_source_files(
     resolved = []
     used = set()
     for source_ref in services.request.source_refs:
-        source = Path(source_ref).expanduser().resolve()
+        source = Path(source_ref).expanduser()
+        if source.is_symlink():
+            raise PermissionError("source inspection refuses symbolic-link roots")
+        source = source.resolve()
         if not source.exists() or source.is_symlink():
             continue
         candidates = (source,) if source.is_file() else tuple(sorted(
@@ -242,7 +245,10 @@ def _resolve_requested_paths(
 
 def source_inspection_operation(
         arguments: dict, services: AdaptiveRunServices) -> dict:
-    """Return an exact manifest and deterministic relevance band."""
+    """Derive each file's text and metadata from one read in this inspection.
+
+    This does not freeze sources across calls or make a directory read atomic.
+    """
     files = inspectable_source_files(services)
     requested = arguments.get("paths") or []
     if not isinstance(requested, list) or any(
@@ -275,6 +281,7 @@ def source_inspection_operation(
     query_terms = tuple(dict.fromkeys(
         re.findall(r"[a-z0-9_]{2,}", query.lower())))
     text_by_path = {}
+    rows_by_path = {}
     scored = []
     for relative, path in files:
         body = path.read_bytes()
@@ -291,6 +298,7 @@ def source_inspection_operation(
             "media_type": mimetypes.guess_type(path.name)[0] or "text/plain",
             "surface": surface,
         }
+        rows_by_path[relative] = row
         if query_terms and (path_hits or body_hits) \
                 and surface != "generated_or_evidence":
             scored.append((path_hits, body_hits, row))
@@ -322,23 +330,11 @@ def source_inspection_operation(
     selected_paths = deduplicated
     selected = []
     for relative in selected_paths:
-        path = by_path[relative]
-        body = path.read_bytes()
-        row = {
-            "path": relative, "byte_count": len(body),
-            "digest": hashlib.sha256(body).hexdigest(),
-            "media_type": mimetypes.guess_type(path.name)[0] or "text/plain",
-            "surface": _source_surface(relative),
-        }
+        row = dict(rows_by_path[relative])
         if include_contents:
             row["content"] = text_by_path[relative]
         selected.append(row)
-    manifest = [{
-        "path": relative, "byte_count": path.stat().st_size,
-        "digest": hashlib.sha256(path.read_bytes()).hexdigest(),
-        "media_type": mimetypes.guess_type(path.name)[0] or "text/plain",
-        "surface": _source_surface(relative),
-    } for relative, path in files]
+    manifest = list(rows_by_path.values())
     return {
         "record_type": "source_inspection_result/v1",
         "source_manifest": manifest, "candidates": candidates,
@@ -580,6 +576,7 @@ def self_test() -> dict:
     """Prove exact selection and bounded model projection."""
     import tempfile
     from types import SimpleNamespace
+    from unittest.mock import patch
 
     with tempfile.TemporaryDirectory() as directory:
         source_root = Path(directory) / "source"
@@ -598,6 +595,24 @@ def self_test() -> dict:
                  and inspected["selected"][0]["content"].startswith(
                      "def convert")
                  and len(inspected["selected"][0]["digest"]) == 64)
+        with patch.object(Path, "read_bytes", side_effect=(b"A", b"B", b"C")) as reader:
+            changing = source_inspection_operation({
+                "paths": ["source/unexpected_format.py"],
+                "query": "unexpected_format", "include_contents": True}, services)
+        one_read_consistent = (
+            reader.call_count == 1 and changing["selected"][0]["content"] == "A"
+            and all(row["digest"] == hashlib.sha256(b"A").hexdigest()
+                    and row["byte_count"] == 1 for row in (
+                        *changing["selected"], *changing["candidates"],
+                        *changing["source_manifest"]))
+            and all("content" not in row for row in changing["source_manifest"]))
+        with patch.object(Path, "is_symlink", return_value=True), patch.object(
+                Path, "resolve", side_effect=AssertionError("must refuse before resolve")):
+            try:
+                inspectable_source_files(services)
+                root_symlink_refused = False
+            except PermissionError:
+                root_symlink_refused = True
         generated = source_root / "artifacts"
         generated.mkdir()
         (generated / "orientation.json").write_text(
@@ -688,6 +703,14 @@ def self_test() -> dict:
             tiny_row["content"] == "a,b\n1,2\n"
             and "content_truncated" not in tiny_row)
     tests = [{
+        "test": "one_read_binds_selected_content_candidates_and_manifest",
+        "passed": one_read_consistent,
+        "detail": "mocked A/B/C reads consume only A; metadata shares those bytes",
+    }, {
+        "test": "root_symlink_is_refused_before_resolution",
+        "passed": root_symlink_refused,
+        "detail": "a root classified as a symbolic link never reaches resolve",
+    }, {
         "test": "source_inspection_returns_exact_selected_content",
         "passed": exact,
         "detail": "selected UTF-8 body and digest",
