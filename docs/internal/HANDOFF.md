@@ -1,51 +1,31 @@
 # Loop Engine maintainer handoff
 
-## Canonical source
+This is a stable pointer, not a live checkout report.
 
-This repository is the source of truth:
+Use the [coding-agent start page](../context/CODEX-START-HERE.md) first. For
+broad continued development, load only the
+[universal solver continuation brief](../prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md).
+Do not combine it with historical prompts.
 
-`https://github.com/alisonjieli-png/loop-engine`
+Volatile state belongs in an immutable generated packet that conforms to
+[`session_handoff/v1`](../contracts/session-handoff.schema.json). A packet must
+record the full source revision, worktree digests, explicit ownership claims,
+test receipts, evidence limits, active objective, and next work. It is stale
+when its HEAD or worktree snapshot no longer matches. This page does not claim
+that such a packet has been generated.
 
-There is no projection or synchronization script. Edit and test this tree
-directly.
+Do not infer ownership from this file, a process ID, or a file timestamp.
+Preserve every dirty path whose owner is not supported by an explicit claim.
 
-## Public names
+Use the [main README](../../README.md) for current installation and
+verification commands. Do not copy commands or adapter-availability claims
+into this page because those details change with the package.
 
-| Surface | Name |
-|---|---|
-| Product | Loop Engine |
-| Repository | `loop-engine` |
-| Python distribution | `loop-engine` |
-| Python import | `loop_engine` |
-| Command-line program | `loop-engine` |
+For a GPT-6 Astra consumer, read the dated
+[compatibility note](../context/GPT-6-ASTRA-READINESS-2026-09-04.md). Loop
+Engine remains model-neutral, and model access remains unproven until an
+authorized provider probe succeeds.
 
-The old package and repository names have no compatibility aliases.
-
-## Install and verify
-
-From any directory:
-
-```bash
-python -m pip install "git+https://github.com/alisonjieli-png/loop-engine.git"
-python -m loop_engine --self-test
-python -m loop_engine --conformance
-python -m loop_engine --map
-```
-
-The install command includes the runtime and every supported adapter. Do not
-add task-specific installation variants.
-
-## Repository rules
-
-- Keep one recursive loop runtime.
-- A loop can run deterministic, hybrid, or non-deterministic steps.
-- Spawned Loops cannot exceed the permissions of their parent.
-- Missing dependencies, providers, measurements, and saved runs remain visible.
-- Run the full test and conformance commands before release.
-- Keep package metadata, documentation, examples, and CI on the same names.
-
-## Historical material
-
-The retired repository history and its integrity-bearing evidence were saved
-before this repository was created. Do not reconstruct old records under the
-new name. New evidence must describe work that actually ran as Loop Engine.
+For work on long-horizon skills, execution state, recursive inference,
+recurrent models, or test-time memory, read the dated
+[primary-source research review](../research/LONG-HORIZON-RECURRENT-SKILLS-AND-STATE-2026-09-04.md).

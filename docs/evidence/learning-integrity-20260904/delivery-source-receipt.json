@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "-m",
+    "loop_engine",
+    "--self-test",
+    "--format",
+    "json"
+  ],
+  "elapsed_seconds": 144.5043480230961,
+  "exit_code": 0,
+  "finished_at": "2026-09-04T22:35:29.071048+00:00",
+  "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+  "phase": "delivery-source",
+  "result_summary": {
+    "all_passed": true,
+    "passed": 2492,
+    "total": 2492
+  },
+  "source_changes_during_check": [],
+  "source_files": 450,
+  "started_at": "2026-09-04T22:33:04.564521+00:00"
+}

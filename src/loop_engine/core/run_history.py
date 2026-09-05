@@ -1,41 +1,15 @@
 """Loop Engine saved run history.
 
-Architectural role: internal saved-run event log service.
+This internal service owns the append-only, hash-chained event record, its
+ledger projection, persistence, integrity check, replay output, and telemetry
+projection. It also re-exports the established saved-run path and bound product
+outcome contracts for compatible callers.
 
-Owns:
-    - RunHistoryEvent: the one canonical event envelope (identity, ordering,
-      lineage refs, tokens/cost, status, digest);
-    - RunHistory: append-only, monotonically sequenced, HASH-CHAINED history —
-      immutable after commit, tamper-evident, persistable to the standard
-      ``runs/<run_id>/`` layout (manifest.json + events.jsonl), replayable;
-    - ProductOutcomeRef and SavedRunBundle: an optional digest-bound final
-      solve result stored as outcome.json without changing committed events;
-    - from_ledger: the projection from the runtime's lightweight LoopLedger
-      into canonical events (the ledger records; the RunHistory is the record);
-    - to_otel_spans: the OpenTelemetry-shaped export projection (runs→traces,
-      loops/iterations→spans, model calls→GenAI spans) — an EXPORT view,
-      never the authoritative store;
-    - recorded_output_handler: recorded-output REPLAY — re-run orchestration
-      substituting the originally recorded semantic outputs (no model calls).
+Playback and analytics remain separate projections. A committed history is
+never edited; replay or a fork creates new work. Provider usage preserves
+positive, missing, partial, and real-zero observations.
 
-Does not own:
-    - playback rendering (run_playback), metrics (run_analytics/run_quality),
-      or any mutation of history — an edit is a NEW proposal + a NEW run.
-
-Public entry points:
-    - RunHistory(run_id).append(...) / commit() / verify_chain()
-    - RunHistory.from_ledger(events, run_id=...)
-    - run_history.save(root) / RunHistory.load(root, run_id)
-    - run_history.to_otel_spans()
-    - recorded_output_handler(run_history, base_handler, semantic_steps)
-
-Key invariants:
-    - append-only: committed events can never be altered (the digest chain
-      breaks loudly on tamper — verify_chain refuses);
-    - playback reads history; replay re-executes; a fork is a NEW run linked
-      by parent_run_id — history is never mutated.
-
-Verification: self_test() (folded into the package suite).
+Verification lives in ``self_test()`` and the focused usage checks.
 """
 from __future__ import annotations
 
@@ -46,8 +20,17 @@ import time
 from dataclasses import dataclass, field
 
 from .run_history_paths import (
-    RUNS_DIR_ENV, RunHistoryIntegrityError, default_runs_dir, saved_run_ids,
-    validated_run_id)
+    RUNS_DIR_ENV as RUNS_DIR_ENV,
+)
+from .run_history_paths import (
+    RunHistoryIntegrityError,
+    saved_run_ids,
+    validated_run_id,
+)
+from .run_history_paths import (
+    default_runs_dir as default_runs_dir,
+)
+from .run_history_usage import apply_model_usage, prepare_model_event
 
 EVENT_TYPES = ("run_started", "loop_init", "loop_spawn", "iteration",
                "capability_search", "context_retrieval", "code_execution",
@@ -101,7 +84,10 @@ def as_ledger_event(event) -> dict:
                row.get("spawning_loop_id", "") or "")})
     for key in ("model", "prompt_tokens", "eval_tokens", "status"):
         value = row.get(key)
-        if key not in out and value not in (None, "", 0):
+        if (key not in out and event_type == "model_invocation"
+                and key in ("prompt_tokens", "eval_tokens")):
+            out[key] = value
+        elif key not in out and value not in (None, "", 0):
             out[key] = value
     return out
 
@@ -136,8 +122,8 @@ class RunHistoryEvent:
     consumed_refs: tuple = ()
     produced_refs: tuple = ()
     model: str = ""
-    prompt_tokens: int = 0
-    eval_tokens: int = 0
+    prompt_tokens: "int | None" = 0
+    eval_tokens: "int | None" = 0
     status: str = "ok"
     detail: dict = field(default_factory=dict)
     prev_digest: str = ""
@@ -169,6 +155,8 @@ class RunHistory:
                              "start a NEW run (fork) instead")
         if event_type not in EVENT_TYPES:
             raise ValueError(f"unknown event_type {event_type!r}")
+        if event_type == "model_invocation":
+            prepare_model_event(kw)
         prev = self.event_log[-1].event_digest if self.event_log else ""
         ev = RunHistoryEvent(event_type=event_type, run_id=self.run_id,
                             sequence_number=len(self.event_log),
@@ -268,18 +256,18 @@ class RunHistory:
                                              "mode", "ts")}}}
             if et == "model_invocation":
                 kw["model"] = str(e.get("model", ""))
-                kw["prompt_tokens"] = int(e.get("prompt_tokens", 0) or 0)
-                kw["eval_tokens"] = int(e.get("eval_tokens", 0) or 0)
+                apply_model_usage(kw, e)
                 kw["status"] = ("failed" if e.get("event")
                                 == "model_invocation_failed" else "ok")
             if (not explicit_model_events and et == "iteration"
                     and e.get("mode") in (
                         "hybrid", "non_deterministic")):
+                apply_model_usage(kw, {})
                 if ui < len(usage):
-                    u = usage[ui]; ui += 1
+                    u = usage[ui]
+                    ui += 1
                     kw["model"] = str(u.get("model", ""))
-                    kw["prompt_tokens"] = int(u.get("prompt_tokens", 0) or 0)
-                    kw["eval_tokens"] = int(u.get("eval_tokens", 0) or 0)
+                    apply_model_usage(kw, u)
                 invocation = dict(kw)
                 invocation["detail"] = {
                     **dict(kw["detail"]), "_ledger_event": "model_invocation"}
@@ -348,19 +336,24 @@ class RunHistory:
     def to_otel_spans(self) -> list:
         """Return the one canonical safe OpenTelemetry projection as dicts."""
         from dataclasses import asdict
+
         from .otel_export import run_history_to_spans
 
         records = run_history_to_spans(self, run_id=self.run_id)
         return [asdict(record) for record in records]
 
 
-from .product_outcome_store import (                         # noqa: E402
-    PRODUCT_OUTCOME_FILENAME, ProductOutcomeRef, SavedRunBundle,
-    bind_product_outcome, load_saved_run_bundle)
-
-
-from .product_outcome_store import (
-    PRODUCT_OUTCOME_FILENAME, bind_product_outcome, load_saved_run_bundle)
+from .product_outcome_store import (  # noqa: E402
+    PRODUCT_OUTCOME_FILENAME,
+    bind_product_outcome,
+    load_saved_run_bundle,
+)
+from .product_outcome_store import (  # noqa: E402
+    ProductOutcomeRef as ProductOutcomeRef,
+)
+from .product_outcome_store import (  # noqa: E402
+    SavedRunBundle as SavedRunBundle,
+)
 
 
 def verify_saved_run(root: str, run_id: str) -> dict:
@@ -414,9 +407,14 @@ def recorded_output_handler(run_history: RunHistory, base_handler,
 # The canonical vocabulary lives in `event_vocabulary` (split out when this
 # module crossed the size cap).  Re-exported here so every existing import
 # site keeps working and the vocabulary keeps one home.
-from .event_vocabulary import (
-    EVENT_FAMILIES, _CANONICAL_EVENT_MAP, _EVENT_TYPE_FAMILY,
-    family_of, to_canonical_events, canonical_event_coverage)
+from .event_vocabulary import (  # noqa: E402
+    _CANONICAL_EVENT_MAP,
+    _EVENT_TYPE_FAMILY,
+    EVENT_FAMILIES,
+    canonical_event_coverage,
+    family_of,
+    to_canonical_events,
+)
 
 
 def self_test() -> dict:
@@ -427,8 +425,7 @@ def self_test() -> dict:
     def check(name, ok, note=""):
         results.append({"name": name, "passed": bool(ok), "note": note})
 
-    from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome, \
-        default_handler
+    from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome, default_handler
 
     def handler(loop, step, context):
         if step == "research":
@@ -784,6 +781,10 @@ def self_test() -> dict:
     check("terminal_projects_by_reason_not_by_optimism",
           fams == ["loop.completed", "loop.failed", "loop.failed"],
           f"done/budget/cancelled -> {fams}")
+
+    from .run_history_usage_checks import self_test as usage_self_test
+    for item in usage_self_test()["tests"]:
+        check(item["test"], item["passed"], item.get("detail", ""))
 
     passed = sum(1 for r in results if r["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

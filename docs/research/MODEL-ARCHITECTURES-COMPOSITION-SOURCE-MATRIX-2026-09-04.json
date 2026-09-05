@@ -1,0 +1,732 @@
+{
+  "record_type": "research_source_matrix/v1",
+  "research_date": "2026-09-04",
+  "timezone": "America/New_York",
+  "source_revision": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+  "scope": "Bounded architecture, compiler, response, and distributed-systems review; not an exhaustive catalog.",
+  "source_results_independently_reproduced": false,
+  "rows": [
+    {
+      "id": "R01",
+      "source": {
+        "label": "Attention Is All You Need",
+        "authors_or_provider": "Vaswani et al.",
+        "date_or_version": "2017; v7 2023",
+        "url": "https://arxiv.org/html/1706.03762v7"
+      },
+      "workstream": "architecture",
+      "source_claim": "Attention encoder-decoder with autoregressive output.",
+      "evidence": "WMT14 translation; eight P100 GPUs, 3.5 days for the large model.",
+      "transferable_pattern": "Treat connectivity and generation procedure separately.",
+      "assumption_mismatch": "Parallel teacher-forced training is not parallel generation.",
+      "repository_mapping": "core/model_demand.py; model capability catalog; context contracts",
+      "proposed_experiment": "Matched-checkpoint prefill/decode and exact-output tests.",
+      "failure_and_falsifier": "Reported throughput fails to reproduce under the actual batch and precision.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R02",
+      "source": {
+        "label": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+        "authors_or_provider": "Devlin et al.",
+        "date_or_version": "2018; v2 2019",
+        "url": "https://arxiv.org/html/1810.04805v2"
+      },
+      "workstream": "architecture",
+      "source_claim": "Bidirectional masked-language encoder with downstream adaptation.",
+      "evidence": "Eleven NLP tasks; task-specific fine-tuning.",
+      "transferable_pattern": "Representation or bounded classification candidate.",
+      "assumption_mismatch": "Encoder outputs are not automatically calibrated retrieval embeddings or a chat planner.",
+      "repository_mapping": "core/model_demand.py; model capability catalog; context contracts",
+      "proposed_experiment": "Retrieval/classification holdout with calibrated acceptance.",
+      "failure_and_falsifier": "Semantic retrieval or OOD errors exceed the incumbent.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R03",
+      "source": {
+        "label": "Language Models are Few-Shot Learners",
+        "authors_or_provider": "Brown et al.",
+        "date_or_version": "2020; v4",
+        "url": "https://arxiv.org/html/2005.14165v4"
+      },
+      "workstream": "architecture",
+      "source_claim": "Large causal language model performs tasks from examples in context.",
+      "evidence": "175B parameters and 300B training tokens; broad language benchmark evaluation.",
+      "transferable_pattern": "Model-as-interpreter candidate.",
+      "assumption_mismatch": "In-context adaptation is not weight learning; benchmark contamination and calibration matter.",
+      "repository_mapping": "core/model_demand.py; model capability catalog; context contracts",
+      "proposed_experiment": "Freeze model, prompt, task lineage and exact response contracts.",
+      "failure_and_falsifier": "Apparent learning disappears under source-family holdout.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R04",
+      "source": {
+        "label": "Mixtral of Experts",
+        "authors_or_provider": "Jiang et al.",
+        "date_or_version": "2024",
+        "url": "https://arxiv.org/html/2401.04088v1"
+      },
+      "workstream": "architecture",
+      "source_claim": "Sparse feed-forward expert selection inside a Transformer.",
+      "evidence": "Two of eight experts per token; about 47B total and 13B active parameters.",
+      "transferable_pattern": "Optional model realization.",
+      "assumption_mismatch": "Active parameters exclude resident memory and routing/communication overhead; experts are not governed agents.",
+      "repository_mapping": "core/model_demand.py; model capability catalog; context contracts",
+      "proposed_experiment": "Compare total memory, latency and verified quality at actual concurrency.",
+      "failure_and_falsifier": "Active-parameter saving does not reduce end-to-end cost.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R05",
+      "source": {
+        "label": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+        "authors_or_provider": "Dao et al.",
+        "date_or_version": "2022; v2",
+        "url": "https://arxiv.org/html/2205.14135v2"
+      },
+      "workstream": "serving",
+      "source_claim": "Tiled exact attention reduces high-bandwidth-memory traffic.",
+      "evidence": "Hardware- and workload-specific attention/training comparisons.",
+      "transferable_pattern": "Physical implementation optimization.",
+      "assumption_mismatch": "It does not turn dense attention arithmetic into linear complexity.",
+      "repository_mapping": "model provider adapter; usage accounting; context manifests",
+      "proposed_experiment": "Pin hardware, precision, sequence length and checkpoint.",
+      "failure_and_falsifier": "Kernel speedup does not improve the product latency or budget.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R06",
+      "source": {
+        "label": "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+        "authors_or_provider": "Kwon et al.",
+        "date_or_version": "2023",
+        "url": "https://arxiv.org/html/2309.06180v1"
+      },
+      "workstream": "serving",
+      "source_claim": "Paged KV allocation reduces serving memory waste and enables sharing.",
+      "evidence": "Historical A100 trace workloads and reconstructed comparison systems.",
+      "transferable_pattern": "Provider-serving capability rather than semantic memory.",
+      "assumption_mismatch": "Throughput under load is not single-request latency; prompt-cache isolation remains separate.",
+      "repository_mapping": "model provider adapter; usage accounting; context manifests",
+      "proposed_experiment": "Compare throughput and p95 latency with namespace/caching tests.",
+      "failure_and_falsifier": "More throughput causes unacceptable tail latency or contamination.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R07",
+      "source": {
+        "label": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+        "authors_or_provider": "Gu and Dao",
+        "date_or_version": "2023; v2 2024",
+        "url": "https://arxiv.org/html/2312.00752v2"
+      },
+      "workstream": "architecture",
+      "source_claim": "Input-dependent state-space recurrence supports efficient sequence processing.",
+      "evidence": "Language and other sequence tasks; throughput depends on batch and hardware.",
+      "transferable_pattern": "Long-stream model candidate.",
+      "assumption_mismatch": "Long input length is not proof of retained exact facts; one efficiency model was untrained.",
+      "repository_mapping": "core/model_demand.py; model capability catalog; context contracts",
+      "proposed_experiment": "Rare identifiers, negation, ordering, restart and state-isolation tests.",
+      "failure_and_falsifier": "Compression loses contract-critical information.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R08",
+      "source": {
+        "label": "Jamba: A Hybrid Transformer-Mamba Language Model",
+        "authors_or_provider": "Lieber et al.",
+        "date_or_version": "2024; v2",
+        "url": "https://arxiv.org/html/2403.19887v2"
+      },
+      "workstream": "architecture",
+      "source_claim": "Combines attention, Mamba, and sparse experts.",
+      "evidence": "About 52B total/12B active; long-context and hardware-dependent comparisons.",
+      "transferable_pattern": "Alternative interpreter profile.",
+      "assumption_mismatch": "Neural hybrid differs from Loop hybrid mode; precision and hardware confound comparisons.",
+      "repository_mapping": "core/model_demand.py; model capability catalog; context contracts",
+      "proposed_experiment": "Match actual hardware/precision and test long-context task loss.",
+      "failure_and_falsifier": "Savings vanish or exact dependency retrieval regresses.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R09",
+      "source": {
+        "label": "Denoising Diffusion Probabilistic Models",
+        "authors_or_provider": "Ho et al.",
+        "date_or_version": "2020; v2",
+        "url": "https://arxiv.org/html/2006.11239v2"
+      },
+      "workstream": "generation",
+      "source_claim": "Learns a reverse denoising process for generation.",
+      "evidence": "Image quality evaluation with iterative sampling, including a 1000-step schedule.",
+      "transferable_pattern": "Modality-specific Solution realization.",
+      "assumption_mismatch": "Image metrics do not establish instruction correctness; denoising steps cost compute.",
+      "repository_mapping": "model provider adapter; semantic_runtime_records; verification",
+      "proposed_experiment": "Measure end-to-end generation and independent artifact verification.",
+      "failure_and_falsifier": "Fewer steps reduce cost but violate required quality.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R10",
+      "source": {
+        "label": "Large Language Diffusion Models",
+        "authors_or_provider": "Nie et al.",
+        "date_or_version": "2025; v3",
+        "url": "https://arxiv.org/html/2502.09992v3"
+      },
+      "workstream": "generation",
+      "source_claim": "Masked diffusion language generation with a non-causal Transformer.",
+      "evidence": "8B model, 2.3T tokens, supervised tuning and language benchmarks.",
+      "transferable_pattern": "Alternative semantic interpreter candidate.",
+      "assumption_mismatch": "Largest causal comparison is not fully training-matched; agent/tool integration unproven.",
+      "repository_mapping": "model provider adapter; semantic_runtime_records; verification",
+      "proposed_experiment": "Replay identical semantic contracts and count steps, tokens, latency, repairs.",
+      "failure_and_falsifier": "Schema/task reliability or total cost loses to the incumbent.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R11",
+      "source": {
+        "label": "Flow Matching for Generative Modeling",
+        "authors_or_provider": "Lipman et al.",
+        "date_or_version": "2022; v2 2023",
+        "url": "https://arxiv.org/html/2210.02747v2"
+      },
+      "workstream": "generation",
+      "source_claim": "Regresses vector fields along probability paths without simulating the full training trajectory.",
+      "evidence": "Image generation with diffusion and transport-related paths.",
+      "transferable_pattern": "Alternative generation objective.",
+      "assumption_mismatch": "Sampling still solves dynamics; conditional transport is not a universal global-optimality claim.",
+      "repository_mapping": "model provider adapter; semantic_runtime_records; verification",
+      "proposed_experiment": "Matched-quality compute comparison including numerical integration.",
+      "failure_and_falsifier": "Function-evaluation reduction does not reduce physical cost.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R12",
+      "source": {
+        "label": "Mastering diverse control tasks through world models",
+        "authors_or_provider": "Hafner et al.",
+        "date_or_version": "Nature 2025",
+        "url": "https://www.nature.com/articles/s41586-025-08744-2"
+      },
+      "workstream": "world_model",
+      "source_claim": "DreamerV3 learns latent dynamics and behavior through imagined trajectories.",
+      "evidence": "More than 150 tasks with shared hyperparameters and task-specific training.",
+      "transferable_pattern": "Candidate simulation and planning responsibility.",
+      "assumption_mismatch": "Shared settings do not mean one trained universal agent; learned dynamics can be wrong.",
+      "repository_mapping": "Practitioner candidate planning; speculative state; verification",
+      "proposed_experiment": "Counterfactual/environment-shift tests with real outcome verification.",
+      "failure_and_falsifier": "Imagined reward increases while actual outcomes deteriorate.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R13",
+      "source": {
+        "label": "Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model",
+        "authors_or_provider": "Schrittwieser et al.",
+        "date_or_version": "2019; Nature 2020",
+        "url": "https://arxiv.org/html/1911.08265v2"
+      },
+      "workstream": "world_model",
+      "source_claim": "MuZero learns planning-relevant latent dynamics and uses tree search.",
+      "evidence": "57 Atari games and three board-game domains; substantial self-play/search compute.",
+      "transferable_pattern": "Bounded search candidate.",
+      "assumption_mismatch": "Root legality and environment assumptions remain; search can amplify model bias.",
+      "repository_mapping": "Practitioner candidate planning; speculative state; verification",
+      "proposed_experiment": "Include illegal/stale actions and charge training/search/evaluation.",
+      "failure_and_falsifier": "Simulated success cannot survive independent environment checks.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R14",
+      "source": {
+        "label": "Solving olympiad geometry without human demonstrations",
+        "authors_or_provider": "Trinh et al.",
+        "date_or_version": "Nature 2024",
+        "url": "https://www.nature.com/articles/s41586-023-06747-5"
+      },
+      "workstream": "symbolic",
+      "source_claim": "Learned geometric proposals combined with symbolic deduction.",
+      "evidence": "25 of 30 translated geometry problems in the studied subset.",
+      "transferable_pattern": "Proposal plus exact bounded verifier.",
+      "assumption_mismatch": "Restricted formalization excludes important problem classes; synthetic-data generation is expensive.",
+      "repository_mapping": "semantic_runtime_records; reusable_capability_resolution",
+      "proposed_experiment": "Measure translation correctness separately from proof checking.",
+      "failure_and_falsifier": "A verified proof establishes the wrong formalized task.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R15",
+      "source": {
+        "label": "An LLM Compiler for Parallel Function Calling",
+        "authors_or_provider": "Kim et al.",
+        "date_or_version": "ICML 2024; v3",
+        "url": "https://arxiv.org/html/2312.04511v3"
+      },
+      "workstream": "compiler",
+      "source_claim": "Tool descriptions and argument dependencies guide parallel execution plans.",
+      "evidence": "Historical HotpotQA parallel subset and movie tasks; latency gains depend on available parallelism.",
+      "transferable_pattern": "Contract-card graph proposal.",
+      "assumption_mismatch": "Data independence does not establish effect commutativity or source freshness.",
+      "repository_mapping": "core/semantic_runtime_records.py; core/reusable_capability_resolution.py; code_nodes/solution_graph_validation.py",
+      "proposed_experiment": "Full-source versus contract-card planning with conflicting effects.",
+      "failure_and_falsifier": "Parallel composition duplicates effects or returns stale results.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R16",
+      "source": {
+        "label": "Program Synthesis from Polymorphic Refinement Types",
+        "authors_or_provider": "Polikarpova, Kuraj and Solar-Lezama",
+        "date_or_version": "PLDI 2016",
+        "url": "https://cseweb.ucsd.edu/~npolikarpova/publications/pldi16.pdf"
+      },
+      "workstream": "compiler",
+      "source_claim": "Refinement types constrain synthesis in a restricted logic.",
+      "evidence": "64 functional synthesis problems.",
+      "transferable_pattern": "Stronger preconditions and postconditions.",
+      "assumption_mismatch": "Decidable refinement assumptions do not cover arbitrary tools or side effects.",
+      "repository_mapping": "core/semantic_runtime_records.py; core/reusable_capability_resolution.py; code_nodes/solution_graph_validation.py",
+      "proposed_experiment": "Same ordinary types with different semantic refinements.",
+      "failure_and_falsifier": "Type-correct composition violates a required postcondition.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R17",
+      "source": {
+        "label": "Type-Guided Abstraction Refinement for Synthesis",
+        "authors_or_provider": "Guo et al.",
+        "date_or_version": "POPL 2020",
+        "url": "https://arxiv.org/pdf/1911.04091"
+      },
+      "workstream": "compiler",
+      "source_claim": "TYGAR refines abstractions to search typed component compositions.",
+      "evidence": "291 Haskell components, 44 queries; 43 typed results within 60 seconds and 32 useful top-five results in inspected text.",
+      "transferable_pattern": "Typed candidate search.",
+      "assumption_mismatch": "Well-typed does not imply useful; reported abstract/body counts differ.",
+      "repository_mapping": "core/semantic_runtime_records.py; core/reusable_capability_resolution.py; code_nodes/solution_graph_validation.py",
+      "proposed_experiment": "Measure semantic usefulness after type admission.",
+      "failure_and_falsifier": "Typed success overstates independently verified usefulness.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R18",
+      "source": {
+        "label": "PAL: Program-aided Language Models",
+        "authors_or_provider": "Gao et al.",
+        "date_or_version": "ICML 2023",
+        "url": "https://proceedings.mlr.press/v202/gao23f.html"
+      },
+      "workstream": "compiler",
+      "source_claim": "Generate programs and delegate calculations to an interpreter.",
+      "evidence": "13 mathematical and symbolic tasks.",
+      "transferable_pattern": "Separate semantic formalization from mechanical computation.",
+      "assumption_mismatch": "Wrong formalization remains possible; some headline comparisons use different models.",
+      "repository_mapping": "core/semantic_runtime_records.py; core/reusable_capability_resolution.py; code_nodes/solution_graph_validation.py",
+      "proposed_experiment": "Hidden unit/edge-case tests for emitted programs.",
+      "failure_and_falsifier": "Correct execution produces the wrong task answer.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R19",
+      "source": {
+        "label": "Program of Thoughts Prompting: Disentangling Computation from Reasoning for Numerical Reasoning Tasks",
+        "authors_or_provider": "Chen et al.",
+        "date_or_version": "2022; v3",
+        "url": "https://arxiv.org/html/2211.12588v3"
+      },
+      "workstream": "compiler",
+      "source_claim": "Programmed calculations support numerical reasoning.",
+      "evidence": "Five math and three finance datasets; some variants include final model synthesis.",
+      "transferable_pattern": "Typed intermediate artifacts.",
+      "assumption_mismatch": "Charge every stage; roots, units, and interpretation can remain ambiguous.",
+      "repository_mapping": "core/semantic_runtime_records.py; core/reusable_capability_resolution.py; code_nodes/solution_graph_validation.py",
+      "proposed_experiment": "Equivalent formulations and multi-root counterexamples.",
+      "failure_and_falsifier": "Mechanical calculation hides a semantic selection error.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R20",
+      "source": {
+        "label": "Answer-set-program distillation study, arXiv:2607.28086",
+        "authors_or_provider": "Higuera Ruiz et al.",
+        "date_or_version": "2026-07-30",
+        "url": "https://arxiv.org/html/2607.28086v1"
+      },
+      "workstream": "compiler",
+      "source_claim": "Distills task knowledge into reusable clingo theories.",
+      "evidence": "100 training and 200 validation examples, three seeds, bounded search; symbolic inputs.",
+      "transferable_pattern": "Narrow verified deterministic realization.",
+      "assumption_mismatch": "Ground-truth symbolic scenes/questions bypass perception; brave entailment can admit multiple answers.",
+      "repository_mapping": "core/semantic_runtime_records.py; core/reusable_capability_resolution.py; code_nodes/solution_graph_validation.py",
+      "proposed_experiment": "Require unique correct entailment and audit input formalization.",
+      "failure_and_falsifier": "The solver includes a correct answer among incorrect alternatives.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R21",
+      "source": {
+        "label": "PICARD: Parsing Incrementally for Constrained Auto-Regressive Decoding from Language Models",
+        "authors_or_provider": "Scholak et al.",
+        "date_or_version": "EMNLP 2021",
+        "url": "https://aclanthology.org/2021.emnlp-main.779.pdf"
+      },
+      "workstream": "response",
+      "source_claim": "Incremental parsing and scope checks constrain text-to-SQL output.",
+      "evidence": "T5-3B SQL experiments report fewer unusable queries.",
+      "transferable_pattern": "Mechanical structured-output admission.",
+      "assumption_mismatch": "Syntax and scope do not establish intended joins or answer correctness.",
+      "repository_mapping": "core/template_negotiation.py; core/model_response_admission.py; context compiler",
+      "proposed_experiment": "Execute on multiple databases and adversarial schemas.",
+      "failure_and_falsifier": "A valid query returns a coincidentally correct result on one database.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R22",
+      "source": {
+        "label": "JSONSchemaBench",
+        "authors_or_provider": "Geng et al.",
+        "date_or_version": "2025; v3",
+        "url": "https://arxiv.org/html/2501.10868v3"
+      },
+      "workstream": "response",
+      "source_claim": "Separates schema coverage, efficiency and output quality.",
+      "evidence": "10,000 real-world schemas and six structured-generation systems.",
+      "transferable_pattern": "Versioned schema-subset handshake and conformance corpus.",
+      "assumption_mismatch": "Different models/system versions confound direct comparisons.",
+      "repository_mapping": "core/template_negotiation.py; core/model_response_admission.py; context compiler",
+      "proposed_experiment": "Count invalid outputs accepted and valid outputs excluded.",
+      "failure_and_falsifier": "Advertised schema support is not observed at runtime.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R23",
+      "source": {
+        "label": "Grammar-Aligned Decoding",
+        "authors_or_provider": "Park et al.",
+        "date_or_version": "NeurIPS 2024; v4 2026-09-02",
+        "url": "https://arxiv.org/html/2405.21047v4"
+      },
+      "workstream": "response",
+      "source_claim": "Examines distribution distortion from constrained decoding and proposes approximate correction.",
+      "evidence": "Finite-sample approximation studies with mixed task outcomes and convergence cost.",
+      "transferable_pattern": "Treat decoding policy as an experiment variable.",
+      "assumption_mismatch": "Finite approximation is not an exact guarantee or universal accuracy improvement.",
+      "repository_mapping": "core/template_negotiation.py; core/model_response_admission.py; context compiler",
+      "proposed_experiment": "Matched semantic loss, sample count and decoder cost.",
+      "failure_and_falsifier": "Validity improves while downstream correctness falls.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R24",
+      "source": {
+        "label": "Let Me Speak Freely",
+        "authors_or_provider": "Tam et al.",
+        "date_or_version": "2024; v3",
+        "url": "https://arxiv.org/html/2408.02442v3"
+      },
+      "workstream": "response",
+      "source_claim": "Response format restrictions affect tasks differently.",
+      "evidence": "Format/task comparisons with limited schema complexity and imperfect answer extraction.",
+      "transferable_pattern": "Negotiable payload inside a stable protocol envelope.",
+      "assumption_mismatch": "Does not justify removing effect or authority fields.",
+      "repository_mapping": "core/template_negotiation.py; core/model_response_admission.py; context compiler",
+      "proposed_experiment": "Minimal versus fixed versus negotiated formats.",
+      "failure_and_falsifier": "Schema overhead excludes valid answers or increases repair cost.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R25",
+      "source": {
+        "label": "AdaCoder",
+        "authors_or_provider": "Ukai et al.",
+        "date_or_version": "2024; v1",
+        "url": "https://arxiv.org/html/2407.19410v1"
+      },
+      "workstream": "response",
+      "source_claim": "Compresses APIs/examples with question-type adaptation for visual question answering.",
+      "evidence": "Reports substantial input reduction in a bounded VQA system.",
+      "transferable_pattern": "Progressive API and example hydration.",
+      "assumption_mismatch": "Classifier errors, extra calls and narrow task assumptions matter.",
+      "repository_mapping": "core/template_negotiation.py; core/model_response_admission.py; context compiler",
+      "proposed_experiment": "Full-source versus compressed cards with total-cost accounting.",
+      "failure_and_falsifier": "Compression harms rare API behavior or loses economic benefit.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R26",
+      "source": {
+        "label": "LLMLingua: Compressing Prompts for Accelerated Inference of Large Language Models",
+        "authors_or_provider": "Jiang et al.",
+        "date_or_version": "EMNLP 2023",
+        "url": "https://aclanthology.org/2023.emnlp-main.825.pdf"
+      },
+      "workstream": "response",
+      "source_claim": "Small-model token selection reduces supplied prompt text.",
+      "evidence": "Four datasets with task- and compression-dependent tradeoffs.",
+      "transferable_pattern": "Candidate context compression.",
+      "assumption_mismatch": "Predictability is not task sufficiency; aggressive compression can break code or exact constraints.",
+      "repository_mapping": "core/template_negotiation.py; core/model_response_admission.py; context compiler",
+      "proposed_experiment": "Negation, exact keys, units and causal-history holdouts.",
+      "failure_and_falsifier": "Shorter prompts increase downstream loss or repair.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R27",
+      "source": {
+        "label": "Web of Things Thing Description 1.1",
+        "authors_or_provider": "W3C",
+        "date_or_version": "Recommendation 2023-12-05",
+        "url": "https://www.w3.org/TR/wot-thing-description11/"
+      },
+      "workstream": "distributed",
+      "source_claim": "Describes properties, actions, events, schemas and security mechanisms.",
+      "evidence": "Normative interoperability vocabulary, not a Loop Engine deployment result.",
+      "transferable_pattern": "Versioned device-description adapter.",
+      "assumption_mismatch": "Descriptions do not grant authority or secure an insecure endpoint.",
+      "repository_mapping": "core/reactive_worker.py; workspace_backends; catalog/handshake.py; effect authority",
+      "proposed_experiment": "Schema/units/security/version and unknown-extension tests.",
+      "failure_and_falsifier": "Descriptive metadata is treated as permission or verified behavior.",
+      "evidence_class": "STANDARD",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R28",
+      "source": {
+        "label": "Worlds and WIT",
+        "authors_or_provider": "Bytecode Alliance",
+        "date_or_version": "documentation retrieved 2026-09-04",
+        "url": "https://component-model.bytecodealliance.org/design/worlds.html"
+      },
+      "workstream": "distributed",
+      "source_claim": "Explicit imports and exports define a component interaction surface.",
+      "evidence": "Component-model documentation, not a behavior-proof theorem.",
+      "transferable_pattern": "Contract-level component packaging.",
+      "assumption_mismatch": "Typed interfaces do not prove behavior or host isolation.",
+      "repository_mapping": "core/reactive_worker.py; workspace_backends; catalog/handshake.py; effect authority",
+      "proposed_experiment": "Missing import, resource ownership and effect-isolation tests.",
+      "failure_and_falsifier": "A component escapes declared effects or lacks needed semantics.",
+      "evidence_class": "OFFICIAL_IMPLEMENTATION",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R29",
+      "source": {
+        "label": "SPIFFE Concepts",
+        "authors_or_provider": "SPIFFE project",
+        "date_or_version": "documentation retrieved 2026-09-04",
+        "url": "https://spiffe.io/docs/latest/spiffe-about/spiffe-concepts/"
+      },
+      "workstream": "distributed",
+      "source_claim": "Workload identity documents and trust-domain verification.",
+      "evidence": "X.509/JWT identity concepts; workload isolation is assumed.",
+      "transferable_pattern": "Authenticated worker identity.",
+      "assumption_mismatch": "Authentication is distinct from authorization; token replay and trust rotation matter.",
+      "repository_mapping": "core/reactive_worker.py; workspace_backends; catalog/handshake.py; effect authority",
+      "proposed_experiment": "Revocation, replay, cross-domain and credential-isolation tests.",
+      "failure_and_falsifier": "Valid identity grants an unauthorized effect.",
+      "evidence_class": "OFFICIAL_IMPLEMENTATION",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R30",
+      "source": {
+        "label": "MQTT Version 5.0",
+        "authors_or_provider": "OASIS",
+        "date_or_version": "2019-03-07",
+        "url": "https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html"
+      },
+      "workstream": "distributed",
+      "source_claim": "Publish/subscribe transport with multiple delivery guarantees.",
+      "evidence": "Normative protocol and session behavior.",
+      "transferable_pattern": "Sensor/event transport adapter.",
+      "assumption_mismatch": "Message delivery is not verified exactly-once physical actuation.",
+      "repository_mapping": "core/reactive_worker.py; workspace_backends; catalog/handshake.py; effect authority",
+      "proposed_experiment": "Duplicate, reconnect, stale retained event and crash-window tests.",
+      "failure_and_falsifier": "A retry duplicates an effect or uses expired state.",
+      "evidence_class": "STANDARD",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R31",
+      "source": {
+        "label": "CloudEvents specification v1.0.2",
+        "authors_or_provider": "CNCF CloudEvents",
+        "date_or_version": "version 1.0.2",
+        "url": "https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md"
+      },
+      "workstream": "distributed",
+      "source_claim": "Common event context, identity and payload metadata.",
+      "evidence": "Normative source/id uniqueness and event representation.",
+      "transferable_pattern": "Versioned event adapter.",
+      "assumption_mismatch": "Does not supply authority, semantic validity or exactly-once effects.",
+      "repository_mapping": "core/reactive_worker.py; workspace_backends; catalog/handshake.py; effect authority",
+      "proposed_experiment": "Duplicate identity, schema mismatch and namespace isolation.",
+      "failure_and_falsifier": "Duplicate transport event creates a second committed action.",
+      "evidence_class": "STANDARD",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R32",
+      "source": {
+        "label": "Security checklist",
+        "authors_or_provider": "Kubernetes project",
+        "date_or_version": "documentation retrieved 2026-09-04",
+        "url": "https://kubernetes.io/docs/concepts/security/security-checklist/"
+      },
+      "workstream": "distributed",
+      "source_claim": "Deployment restrictions reduce container and cluster exposure.",
+      "evidence": "Official operational guidance, not product assurance.",
+      "transferable_pattern": "Bounded worker and sandbox deployment.",
+      "assumption_mismatch": "Container presence alone is not full isolation or hard real-time control.",
+      "repository_mapping": "core/reactive_worker.py; workspace_backends; catalog/handshake.py; effect authority",
+      "proposed_experiment": "Mount, privilege, network, resource and timeout escape tests.",
+      "failure_and_falsifier": "A worker accesses another task or outlives its owned budget.",
+      "evidence_class": "OFFICIAL_IMPLEMENTATION",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R33",
+      "source": {
+        "label": "Structured Outputs",
+        "authors_or_provider": "Ollama",
+        "date_or_version": "documentation retrieved 2026-09-04",
+        "url": "https://docs.ollama.com/capabilities/structured-outputs"
+      },
+      "workstream": "provider",
+      "source_claim": "Documents schema enforcement and states Cloud currently lacks structured outputs.",
+      "evidence": "Official capability statement; actual configured provider needs independent probing.",
+      "transferable_pattern": "Separate JSON emission from provider-enforced schema support.",
+      "assumption_mismatch": "Local Ollama examples cannot prove Cloud support.",
+      "repository_mapping": "core/model_gateway.py; model response admission; model capability catalog",
+      "proposed_experiment": "Exact route/schema canary and response-admission tests.",
+      "failure_and_falsifier": "A Boolean capability claim silently assumes unsupported enforcement.",
+      "evidence_class": "OFFICIAL_IMPLEMENTATION",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R34",
+      "source": {
+        "label": "Self-Consistency Improves Chain of Thought Reasoning in Language Models",
+        "authors_or_provider": "Wang et al.",
+        "date_or_version": "ICLR 2023; v4 2023-03-07",
+        "url": "https://arxiv.org/html/2203.11171v4"
+      },
+      "workstream": "triads_and_consistency",
+      "source_claim": "Samples and aggregates multiple candidate answers.",
+      "evidence": "Forty samples per question in main setup; four model families and multiple arithmetic/commonsense tasks; primary comparison is one greedy output.",
+      "transferable_pattern": "Candidate diversity before aggregation.",
+      "assumption_mismatch": "Inference cost is not matched; stochastic samples do not imply independent errors.",
+      "repository_mapping": "canonical Loop delegation, candidate comparison, model demand and independent verification",
+      "proposed_experiment": "Compare 1/3/5 samples with one stronger model at matched actual cost.",
+      "failure_and_falsifier": "Shared wrong answers or no marginal verified utility after full cost.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R35",
+      "source": {
+        "label": "Improving Factuality and Reasoning in Language Models through Multiagent Debate",
+        "authors_or_provider": "Du et al.",
+        "date_or_version": "2023-05-23 v1",
+        "url": "https://arxiv.org/html/2305.14325v1"
+      },
+      "workstream": "triads_and_consistency",
+      "source_claim": "Peers revise candidate answers after exchange.",
+      "evidence": "Usually three agents/two rounds; 100-case math/knowledge sets, 300 chess games, 524 biography subjects; biography evaluator can miss unsupported extra false claims.",
+      "transferable_pattern": "Compare independent sampling with peer critique.",
+      "assumption_mismatch": "More rounds cost more; heterogeneous graders and incomplete factual coverage limit claims.",
+      "repository_mapping": "canonical Loop delegation, candidate comparison, model demand and independent verification",
+      "proposed_experiment": "Preserve initial candidates and count corrections versus corruptions under budget control.",
+      "failure_and_falsifier": "Debate advantage disappears against equal-cost sampling or harms exact correctness.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R36",
+      "source": {
+        "label": "Talk Isn't Always Cheap: Understanding Failure Modes in Multi-Agent Debate",
+        "authors_or_provider": "Wynn, Satija and Hadfield",
+        "date_or_version": "2025; v2 2025-10-13",
+        "url": "https://arxiv.org/html/2509.05396v2"
+      },
+      "workstream": "triads_and_consistency",
+      "source_claim": "Peer exchange can turn initially correct answers into wrong consensus.",
+      "evidence": "Three task sets with 100 sampled questions each, five seeds, several model strengths and two rounds.",
+      "transferable_pattern": "Retain dissent and test harmful revisions.",
+      "assumption_mismatch": "Repeated seeds do not imply new independent tasks; conformity is not uniquely established as the cause.",
+      "repository_mapping": "canonical Loop delegation, candidate comparison, model demand and independent verification",
+      "proposed_experiment": "Randomize peer order and inject persuasive incorrect critique; independent outcome checks.",
+      "failure_and_falsifier": "Harmful flips exceed corrections despite increased agreement.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R37",
+      "source": {
+        "label": "Single-Agent LLMs Outperform Multi-Agent Systems on Multi-Hop Reasoning Under Equal Thinking Token Budgets",
+        "authors_or_provider": "Tran and Kiela",
+        "date_or_version": "2026; v2 2026-04-11",
+        "url": "https://arxiv.org/html/2604.02460v2"
+      },
+      "workstream": "triads_and_consistency",
+      "source_claim": "Simpler agents win many studied multi-hop comparisons after requested thinking-budget controls.",
+      "evidence": "FRAMES and MuSiQue 4-hop; multiple model families, six requested caps, five multi-agent patterns; model-judge scoring.",
+      "transferable_pattern": "Charge coordination and compare equal evidence access.",
+      "assumption_mismatch": "Requested caps are not measured equal compute; approximate provider accounting; ideal-predictor information arguments do not prove finite-LLM dominance.",
+      "repository_mapping": "canonical Loop delegation, candidate comparison, model demand and independent verification",
+      "proposed_experiment": "Measure complete input/output/call/latency cost and independent task quality.",
+      "failure_and_falsifier": "Complementary specialists retain verified gains after fair accounting; otherwise narrow the panel policy.",
+      "evidence_class": "PRIMARY_EMPIRICAL",
+      "adaptation_maturity": "DESIGNED"
+    },
+    {
+      "id": "R38",
+      "source": {
+        "label": "In Search of an Understandable Consensus Algorithm (Extended Version)",
+        "authors_or_provider": "Ongaro and Ousterhout",
+        "date_or_version": "2014-05-20",
+        "url": "https://raft.github.io/raft.pdf"
+      },
+      "workstream": "triads_and_consistency",
+      "source_claim": "Raft agrees on an ordered log for deterministic replicated state machines.",
+      "evidence": "Algorithm, safety argument, implementation and understandability study; non-Byzantine/crash fault assumptions.",
+      "transferable_pattern": "Consistent committed history, not semantic truth voting.",
+      "assumption_mismatch": "Requires log/term/election rules and stable state; a quorum does not validate task facts.",
+      "repository_mapping": "Run History and any future replicated-store adapter; not LLM answer voting",
+      "proposed_experiment": "Inject delay, reorder, loss and one crash; separately reject consistently replicated wrong task candidates.",
+      "failure_and_falsifier": "Committed state divergence or semantic acceptance based only on quorum.",
+      "evidence_class": "PRIMARY_THEORETICAL",
+      "adaptation_maturity": "DESIGNED"
+    }
+  ]
+}

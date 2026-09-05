@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "loop_engine",
+    "--conformance"
+  ],
+  "cwd": "/home/username/loop-engine",
+  "elapsed_seconds": 30.339152914006263,
+  "exit_code": 0,
+  "finished_at": "2026-09-05T01:11:55.583487+00:00",
+  "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+  "package_network_disabled": true,
+  "phase": "conformance",
+  "provider_credentials_removed": true,
+  "source_changes_during_check": [],
+  "source_changes_from_baseline": [],
+  "source_file_count": 466,
+  "started_at": "2026-09-05T01:11:25.244330+00:00",
+  "stderr": "/tmp/loop-engine-final-verification.W0wq3F/conformance-stderr.txt",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout": "/tmp/loop-engine-final-verification.W0wq3F/conformance-stdout.txt",
+  "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+}

@@ -1,0 +1,206 @@
+{
+  "record_type": "unseen_task_diagnostic_session/v1",
+  "source_revision": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+  "branch": "main",
+  "timezone": "America/New_York",
+  "date": "2026-09-04",
+  "scope": "Generic runtime diagnostics and primary-source research; no completed full-spectrum or paired-assistance milestone.",
+  "campaign": {
+    "generated_cases_selected": 3,
+    "generated_cases_attempted": 1,
+    "product_attempts": 2,
+    "valid_completed_tasks": 0,
+    "verified_incumbents": 0,
+    "independent_grades": 0,
+    "actual_kaggle_solves": 0,
+    "kaggle_submissions": 0,
+    "actual_competition_data_downloads": 0,
+    "remaining_generated_cases": [
+      "fresh-shaped-case-b-v1",
+      "fresh-shaped-case-c-v1"
+    ],
+    "canonical_fresh_controls": 0,
+    "assisted_fresh_pairs": 0,
+    "campaign_digest": "1808fd4dd3fa2cb98a4d8da0050cf5e2182092cbb878f720e4f9d23720cf0776",
+    "generator_digest": "36cd80ccd2c790f9ccc886cae020d9fe342df3df716745caec656c887da064d7",
+    "novelty_limit": "New generated source instances hidden from the tested model, not globally unseen task families or a proved uncontaminated model-training holdout. Author-side baseline feasibility used hidden labels before live testing; no formula/threshold changes afterward."
+  },
+  "provider": {
+    "provider": "ollama_cloud",
+    "model": "deepseek-v4-flash:0731",
+    "route": "cloud.default",
+    "live_calls": 25,
+    "breakdown": {
+      "probe": 1,
+      "attempt_01": 8,
+      "attempt_02": 16
+    },
+    "known_input_tokens": 477848,
+    "known_output_tokens": 58236,
+    "known_token_subtotal": 536084,
+    "total_tokens": null,
+    "unknown_usage_calls": 1,
+    "monetary_cost": null,
+    "cost_state": "UNKNOWN_SUBSCRIPTION_QUOTA_MAY_APPLY",
+    "maximum_output_tokens": 65536,
+    "failover_enabled": false,
+    "probe": {
+      "accepted": true,
+      "input_tokens": 66,
+      "output_tokens": 57,
+      "elapsed_seconds": 1.023524,
+      "prompt_sha256": "8a7d8ea8ef34e0ee3642e0612030517c27578dea774a0b1acb4f4708e0ece381",
+      "output_sha256": "803ac3690d2db65339f45f9da1527eac86adbccd6bcf77bf1126cbcc635ca68b"
+    }
+  },
+  "attempts": [
+    {
+      "case_id": "fresh-shaped-case-a-v1",
+      "attempt": "attempt-01",
+      "run_id": "adaptive-20a3de26abf2fe910aece403",
+      "status": "NO_PROGRESS",
+      "model_calls": 8,
+      "tool_calls": 0,
+      "elapsed_seconds": 200.0226,
+      "input_tokens": null,
+      "output_tokens": null,
+      "known_input_tokens": 113376,
+      "known_output_tokens": 16976,
+      "unknown_usage_calls": 1,
+      "run_history_events": 576,
+      "run_history_intact": true,
+      "product_solved": false,
+      "source_unchanged": true,
+      "canonical_fresh_arm": false,
+      "independent_grade": null,
+      "source_settings_freeze_limit": "No full runtime or runner hash manifest at this first launch; later retry added those controls.",
+      "failure": "Three distinct invalid-JSON outputs; later no-response attempt with unknown usage. Original transport subtype was lost before diagnostics fix."
+    },
+    {
+      "case_id": "fresh-shaped-case-a-v1",
+      "attempt": "attempt-02",
+      "run_id": "adaptive-3987beb466f0f212136f82ce",
+      "status": "NO_PROGRESS",
+      "model_calls": 16,
+      "tool_calls": 0,
+      "elapsed_seconds": 222.02488269284368,
+      "input_tokens": 364406,
+      "output_tokens": 41203,
+      "total_tokens": 405609,
+      "configured_total_token_ceiling": 400000,
+      "observed_overshoot": 5609,
+      "unknown_usage_calls": 0,
+      "run_history_events": 1132,
+      "run_history_intact": true,
+      "run_history_head_digest": "b5ade5d99bf5c1f88fd02443b5c6af62f74c2cb89e1838ab1da16ba92127540b",
+      "product_outcome_digest": "dec03474a5e021b04a2e89a62d5099c876fac2392aaaab7cc50c1cf4f9a62ecd",
+      "source_unchanged": true,
+      "runtime_unchanged": true,
+      "product_solved": false,
+      "canonical_fresh_arm": false,
+      "stage_mode": "shadow",
+      "prior_stages_loaded": 0,
+      "packet_objects": 17,
+      "model_prompt_links": 16,
+      "independent_grade": null,
+      "artifact_count": 0,
+      "unexecuted_code_checkpoints": 2,
+      "failure": "Post-dispatch total-token refusal prevented project completion. The saved solution.py candidate independently fails Python syntax.",
+      "launch_sha256": "6d9c906da2ff851712613d135492df73d117a3529de40c124fa90a024718709f",
+      "stdout_sha256": "e11e90f87f3ef5451336efc50b4e0676fe0b2d7d38ccff2f46d07d253dc156e4",
+      "progress_sha256": "6485c22d278aef07e695bf047976c0669610269e9ad65e1a27bd6a647d91e740"
+    }
+  ],
+  "candidate_checks": [
+    {
+      "name": "solution.py",
+      "sha256": "ec84da3fb2ba61ace8e5de2b55850cb25f6e910ae36b8bcd95c743bed9530e75",
+      "bytes": 5274,
+      "syntax_valid": false,
+      "failure_class": "unterminated_triple_quoted_string",
+      "line": 147,
+      "executed": false
+    },
+    {
+      "name": "verify.py",
+      "sha256": "e7a93764e86fd00b44be2a21863f3cd82303a79328dab95558b118dfdc303a97",
+      "bytes": 5596,
+      "syntax_valid": true,
+      "executed": false,
+      "independent_semantic_evaluator": false,
+      "limitation": "Uses self-reported metrics; parsing does not establish quality."
+    }
+  ],
+  "verification": {
+    "source": {
+      "passed": 2504,
+      "total": 2504
+    },
+    "clean_base_wheel": {
+      "passed": 2466,
+      "total": 2466,
+      "optional_adapters_not_tested": [
+        "duckdb",
+        "mcp",
+        "model2vec",
+        "numpy",
+        "opentelemetry-sdk",
+        "pandas",
+        "sklearn"
+      ]
+    },
+    "conformance": {
+      "source": 27,
+      "wheel": 27
+    },
+    "targeted": {
+      "passed": 79,
+      "total": 79
+    },
+    "privacy_independent_probes": {
+      "passed": 3,
+      "total": 3
+    },
+    "parser_differential_cases": 3678,
+    "parser_behavior_differences": 0,
+    "provider_calls_in_offline_suites": 0,
+    "wheel_sha256": "ecaeb6a7b3bca17cd0b2f70871541b22f1e66df19d4da84cbc7908a7239f148d",
+    "sdist_sha256": "ee80ae65a6758393fdf80a4206a000c318acb9cb63da555eae0ab96c7a1058fb",
+    "source_files_checked": 466,
+    "intermediate_superseded_failure": {
+      "passed": 2503,
+      "total": 2504,
+      "reason": "An intermediate privacy change invalidated a fixture that expected raw provider error text; final fixture proves delivery by typed status and exact prompt digest."
+    }
+  },
+  "research": {
+    "source_rows": 38,
+    "coverage_domains": 26,
+    "coverage_families_listed": 157,
+    "exhaustive": false,
+    "imported_mechanisms_qualified": false
+  },
+  "publication": {
+    "user_authorized_commit_and_push": true,
+    "private_live_histories_excluded": true,
+    "generated_data_and_hidden_labels_excluded": true,
+    "other_worktree_excluded": true,
+    "commit": null,
+    "push_status": "PRE_COMMIT_SNAPSHOT",
+    "status_note": "This record predates the publication commit; Git history records the eventual commit and push.",
+    "conversation_identity_metadata_excluded": true,
+    "generated_cases_after_publication": "PUBLIC_REPRODUCIBLE_FIXTURES_NOT_FUTURE_UNSEEN_HOLDOUTS"
+  },
+  "next_action": "Define and implement source-backed pre-dispatch token reservation without silently shrinking the required output maximum; replay the saved budget counterexample offline before any further paid model run.",
+  "unproven": [
+    "live assisted-versus-fresh pair",
+    "general memory benefit",
+    "pre-dispatch hard token consumption ceiling",
+    "new task solved and independently graded",
+    "five-task or 100-task campaign gate",
+    "generic capsule-only scenario compilation",
+    "cross-provider triads",
+    "distributed endpoint mesh and physical safety",
+    "all-domain or AGI capability"
+  ]
+}

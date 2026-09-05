@@ -1,6 +1,6 @@
-# Building a self-tuning Loop-node solver: what actually goes wrong
+# Building a self-tuning Loop solver: what actually goes wrong
 
-This is guidance for building the universal Loop-node solver — a network of
+This is guidance for building the universal Loop solver, a network of
 LLM-reasoned Loops that can meet an unfamiliar task, construct its own
 approach, recover from its own failures, and get cheaper over time by
 learning which of its own moves worked.
@@ -28,7 +28,7 @@ that fails silently.
 
 ---
 
-## Part I — The failure modes
+## Part I: The failure modes
 
 ### 1. The developer writes the intelligence into a table and calls it infrastructure
 
@@ -49,7 +49,7 @@ compaction in reserve. The table said: retry the same route six times.
 
 **The rule.** A constant that answers "what should happen next" is a
 hypothesis with no expiry date. Deterministic code may state what is
-*possible* — this route has no credential, that window cannot hold the
+*possible*: this route has no credential, that window cannot hold the
 request. It should not state what is *wise*.
 
 ### 2. Instrumentation that can fail the thing it observes
@@ -58,28 +58,29 @@ request. It should not state what is *wise*.
 raised `NameError` from inside orientation. Two passing fixture solves became
 unsolved runs. The observer changed the observed.
 
-**The rule.** Every recording path swallows its own errors and continues.
-Non-negotiable.
+**The rule.** Every recording path contains its own errors so the user task
+can continue. It also emits a degradation record or counter so the missing
+evidence cannot look like an empty history.
 
-### 3. …and the defensive wrapper then hides your own bugs
+### 3. The defensive wrapper then hides your own bugs
 
 **The incident.** Having applied rule 2, stage persistence was wrapped so it
 could never fail a run. It was then wired into the success path only, and
 three failure exits returned before reaching it. Runs that died wrote
-nothing — and the wrapper swallowed the *absence* exactly as readily as it
+nothing, and the wrapper swallowed the *absence* exactly as readily as it
 would have swallowed an error. The runs most worth learning from, the ones
 where recovery and model demand are actually tested, left no trace.
 
 **The rule.** A defensive boundary protects the run and conceals your
 mistakes with equal enthusiasm. Count what it swallows. A store must be able
-to say "I lost three writes" — because "no prior evidence" and "the recorder
+to say "I lost three writes" because "no prior evidence" and "the recorder
 broke" call for opposite responses and otherwise look identical.
 
 ### 4. A control arm that controls for nothing
 
 **The incident.** To distinguish real convergence from convergence the system
 had suggested, a share of stages was answered with no template offered. The
-arm was assigned by hashing the stage signature — so a stage *region* landed
+arm was assigned by hashing the stage signature, so a stage *region* landed
 in the same arm permanently. Treated and control could never contain the same
 kind of work. The one question worth asking was unanswerable by construction,
 and the design looked rigorous while controlling for nothing.
@@ -105,14 +106,14 @@ nothing separates convergence from suggestion.
 
 **The incident.** An LLM judge was asked whether a criterion was met. Given a
 patch that *concealed* a defect rather than fixing it, it described the
-concealment precisely in its own evidence — and answered that the criterion
+concealment precisely in its own evidence, then answered that the criterion
 was met. A second pass asked whether that evidence supported that conclusion;
 it explained that it did not, and answered that it did. The prose was right
 both times; the boolean was wrong both times.
 
 **The rule.** A judgement field invites agreement. Ask which of several
 neutrally-worded options matches what was read, and derive the verdict from
-the answer. The model keeps the part it is good at — reading — and is left
+the answer. The model keeps the part it is good at, reading, and is left
 nothing to be agreeable about. Measured against a keyword grader on two
 adversarial cases: keywords 0 of 2, observation-derived 2 of 2.
 
@@ -136,8 +137,8 @@ accident.
 ### 8. Telling the model a constraint is enforced when it is not
 
 **The incident.** A choice interface rendered `SETTINGS YOU MAY ADJUST
-(bounds are enforced)` above ranges written as prose — `"between 512 and
-65536"` — while admission checked only that the setting's *name* had been
+(bounds are enforced)` above ranges written as prose: `"between 512 and
+65536"`. Admission checked only that the setting's *name* had been
 offered. Any value was accepted. The sentence was false, written in the same
 commit that argued for typed contracts.
 
@@ -157,7 +158,7 @@ rather than the field, so two attempts to explain it were wrong.
 
 **The rule.** Absence is a defect; surplus is information. A caller with more
 to say than the form allows should not have its whole reply discarded. And
-every refusal must name what it refused — that message is the entire guidance
+every refusal must name what it refused. That message is the entire guidance
 the repair attempt receives.
 
 ### 10. Run-level credit for stage-level decisions
@@ -170,8 +171,10 @@ a good diagnosis, and a valid experiment.
 **The rule.** A boolean `helped` at run granularity is not a training target.
 Record the granularity you actually have and say so, so a rate computed from
 run-level joins is read as describing *chains* of decisions rather than
-individual ones. This repository currently has exactly that limitation and
-labels it.
+individual ones. The committed `OutcomeVector` can keep local verification,
+downstream use, branch contribution, later invalidation, and task outcome
+separate. Not every producer populates those stage-local signals yet, so this
+does not establish complete stage attribution.
 
 ### 11. A name that promises identity and delivers similarity
 
@@ -186,7 +189,7 @@ confused: occurrence (this activation), signature (this situation), shape
 
 ### 12. A closed vocabulary presented as an open one
 
-**The incident.** Cross-domain retrieval turned on "motifs" — four
+**The incident.** Cross-domain retrieval turned on "motifs": four
 hand-written rules, asked in order so the first match won, with everything
 unanticipated collapsing to `unclassified`. The vocabulary was whatever its
 author had thought of that day, and it decided all cross-domain matching.
@@ -201,7 +204,7 @@ vocabulary cannot describe is exactly the one worth finding again.
 
 **The incident, repeatedly.** A 30-field schema shown to the model and the
 `required` set enforced on its answer. Selection keys in three copies. Two
-builders of the same result record — the ownership tally was added to the one
+builders of the same result record. The ownership tally was added to the one
 that is not persisted, so it never reached disk.
 
 **The rule.** Derive, never restate. Where a second copy is genuinely needed
@@ -215,7 +218,7 @@ though nothing has been done. It passes every test, produces plausible
 artifacts, and learns nothing.
 
 **The incident.** Stage records were keyed to each run's own directory, so
-every run read only what it had written — the same as reading nothing. Three
+every run read only what it had written, the same as reading nothing. Three
 runs produced three isolated files.
 
 **The rule.** Test the *second* run. A learning system's first run proves
@@ -223,10 +226,12 @@ nothing about it.
 
 ---
 
-## Part II — The invariants these imply
+## Part II: The invariants these imply
 
-1. Every task-conditioned decision is owned by an LLM-reasoned Loop or an
-   explicit human instruction, and carries a record of who owned it.
+1. During the model-led research phase, every unfamiliar task-conditioned
+   semantic decision is owned by an LLM-reasoned Loop or an explicit human
+   instruction, and carries a record of who owned it. A narrow qualified
+   policy may later act only inside its reviewed applicability region.
 2. Deterministic code states what is possible, enforces what is safe, and
    records what happened. It does not state what is wise.
 3. When reasoning is unavailable, the system waits, restores a route, asks
@@ -246,12 +251,12 @@ nothing about it.
 
 ---
 
-## Part III — Where the cheap-model work actually starts
+## Part III: Where the cheap-model work actually starts
 
 The instinct to stop paying frontier prices for every step is right, and the
 order matters. The first savings are not in replacing the answer.
 
-**What is safe to reuse first** — these change the *starting point* without
+**What is safe to reuse first**: these change the *starting point* without
 touching the decision:
 
 - which response shape suits this kind of stage
@@ -270,11 +275,11 @@ Choosing per task is the mistake; choosing per stage is the point of having
 stages at all.
 
 **The ladder, not the pick.** Order routes cheapest-first where the evidence
-supports it and escalate on failure, so being wrong costs a retry rather than
-a wrong answer. A ladder that starts too low degrades into a slower correct
-answer; one that starts too high overpays silently, forever.
+supports it, the effect is reversible, and verification can detect failure.
+Escalate when the contract permits it. A ladder that starts too low may add
+retries or admit a defect. One that starts too high may overpay silently.
 
-**The maturity ladder for any shortcut** — n-gram, embedding, LSH, decision
+**The maturity ladder for any shortcut**: n-gram, embedding, LSH, decision
 tree, or small tuned model:
 
 ```text
@@ -290,14 +295,14 @@ Nothing skips a rung. The gate between L3 and L4 is an experiment, not a
 threshold: agreement between shortcut and reasoning is not evidence the
 shortcut is right, only that it has learned to imitate.
 
-**Evidence maturity, honestly.** Hundreds of observations characterise a
-mechanism. Thousands support a regional hypothesis. Broad automatic policy
-needs a corpus that is *varied*, not merely large — a million activations of
-one repeated template is one observation with a large exponent.
+**Evidence maturity, honestly.** Required evidence depends on task diversity,
+outcome variance, consequence, false-acceptance risk, and the width of the
+claimed applicability region. A large raw count is not enough. A million
+activations of one repeated template do not establish broad generalization.
 
 ---
 
-## Part IV — Reading a claim about this system
+## Part IV: Reading a claim about this system
 
 When this system, or an agent working on it, reports progress, these are the
 questions that separate a working mechanism from a plausible one:
@@ -313,6 +318,6 @@ questions that separate a working mechanism from a plausible one:
 
 The most common failure in reporting this work is a true statement about
 machinery presented as a statement about capability. "The loop is closed" was
-one such: cross-run recording and shadow consultation were connected;
-operational use, stage-level credit, and assisted-versus-fresh comparison
-were not, and saying so plainly would have been both shorter and true.
+one such. Cross-run recording, shadow consultation, and an initial outcome
+vector are connected. Operational use, complete stage contribution, and an
+assisted-versus-fresh comparison are not yet established.

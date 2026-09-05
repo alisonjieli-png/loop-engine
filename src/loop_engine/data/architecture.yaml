@@ -31,7 +31,8 @@ component_architecture:
     - does_not_mutate_itself
     - does_not_grant_permission
     - is_not_a_graph_vertex
-  execution_rule: every_semantic_value_and_transformation_is_a_logical_loop
+  execution_rule: independently_governed_semantic_work_executes_as_a_loop
+  internal_primitive_rule: low_level_values_and_transformations_stay_inside_their_owning_loop_unless_independently_governed
   default_atomic_mode: deterministic
   value_contract: loop_engine.loop.atomic_primitives.LoopValue
   intrinsic_kernel: loop_engine.loop.intrinsic_kernel
@@ -66,6 +67,238 @@ adaptive_recovery:
     advisory_finding_blocks_completion: false
     proposed_new_requirement_blocks_completion: false
     semantic_step_contract_is_task_acceptance: false
+
+state_centric_skill_context:
+  operational_runtime_type: Loop
+  current_maturity: offline_passive_context_candidate
+  product_prompt_integration: false
+  skill_authority: loop_engine.core.skill_registry.SkillAdmissionRecord
+  discovery_projection: loop_engine.core.skill_discovery_projection.SkillDiscoveryProjection
+  execution_profile: loop_engine.core.skill_state_context.SkillExecutionProfile
+  execution_binding: loop_engine.core.skill_state_context.SkillExecutionBinding
+  context_request: loop_engine.core.skill_state_context.SkillStateContextRequest
+  trusted_state: loop_engine.core.semantic_runtime_records.TrustedStateSnapshot
+  invariants:
+    - new_skill_manifests_use_standard_frontmatter_with_namespaced_loop_engine_metadata
+    - startup_discovery_is_byte_bounded_and_excludes_full_instructions
+    - exact_digest_bound_skill_admission_record_is_required
+    - skill_requested_tools_never_grant_runtime_authority
+    - state_must_validate_against_a_self_contained_digest_bound_schema
+    - observation_and_selected_history_values_are_deep_sealed
+    - task_run_branch_graph_loop_tenant_state_and_privacy_are_bound
+    - state_insufficiency_requires_selected_evidence_backed_history_material
+    - passive_context_candidate_does_not_execute_or_mutate_state
+  unproven:
+    - product_prompt_integration
+    - authoritative_history_and_materialization_resolution
+    - general_constant_space_state
+    - preserved_live_task_quality
+    - realized_provider_cost_reduction
+
+information_theory_evidence:
+  operational_runtime_type: Loop
+  current_maturity: implemented_offline_candidate_measurement
+  experiment_owner_requirement: classified_loop
+  measurement_specification: loop_engine.core.information_evidence_contracts.InformationMeasurementSpec
+  infrastructure_validity_record: loop_engine.core.information_evidence_contracts.InfrastructureValidityRecord
+  information_update: loop_engine.core.information_update_evidence.InformationUpdateEvidence
+  categorical_forecast_score: loop_engine.core.information_update_evidence.CategoricalForecastScore
+  categorical_forecast_scorer: loop_engine.core.information_update_evidence.score_categorical_forecast
+  predictive_sample: loop_engine.core.information_theory_evidence.PredictiveStateSample
+  predictive_result: loop_engine.core.information_theory_evidence.EmpiricalPredictiveInformation
+  compression_distortion_trial: loop_engine.core.state_policy_evidence.PairedStatePolicyTrial
+  compression_distortion_result: loop_engine.core.state_policy_evidence.StatePolicyAssessment
+  authority:
+    selects_context_or_state_policy: false
+    mutates_memory_or_trusted_state: false
+    promotes_shortcut: false
+  invariants:
+    - predictive_and_paired_measurements_bind_declared_variables_target_population_evaluator_estimator_and_holdout
+    - empirical_information_uses_discrete_base_two_plugin_estimates_only
+    - observed_deterministic_state_projection_must_obey_data_processing
+    - excluded_infrastructure_invalid_rows_remain_in_the_exact_population_identity
+    - declared_minimum_valid_population_coverage_blocks_high_attrition
+    - paired_occurrences_and_outcomes_cannot_be_counted_more_than_once
+    - absolute_treatment_loss_is_bounded_separately_from_relative_regret
+    - paired_compression_and_distortion_is_an_observed_operating_point_not_a_rate_distortion_function
+    - paired_assessment_uses_a_distinct_byte_and_declared_loss_estimator_contract
+    - unknown_cost_or_latency_never_becomes_zero_or_a_partial_aggregate
+    - public_aggregate_result_construction_requires_recomputation_functions
+    - measurements_grant_no_execution_promotion_or_generalization_authority
+    - proper_forecast_loss_is_distinct_from_entropy_surprise_and_decision_utility
+    - forecast_scores_are_recomputed_and_do_not_establish_temporal_order_or_calibration
+  unproven:
+    - external_reference_manifest_and_validity_record_resolution
+    - issued_preregistration_identity_for_measurement_design
+    - verified_markov_condition_for_deterministic_or_stochastic_data_processing
+    - product_operational_loop_ownership
+    - issued_population_bound_information_update_measurements
+    - canonical_run_history_persistence_and_join
+    - product_context_compiler_integration
+    - held_out_predictive_state_quality
+    - confidence_intervals_or_finite_sample_bias_correction
+    - causal_stage_credit
+    - cost_or_quality_benefit
+
+procedural_control_evidence:
+  operational_runtime_type: Loop
+  current_maturity: implemented_offline_candidate_assessment
+  experiment_owner_requirement: classified_loop
+  assessment: loop_engine.memory.procedural.control_assessment.ProceduralControlAssessment
+  probe: loop_engine.memory.procedural.control_assessment.ProceduralProbeEvidence
+  procedure_identity: loop_engine.memory.model.memory_type.MemoryIdentity
+  procedure_memory_type: procedural
+  authority:
+    retrieves_or_executes_procedure: false
+    mutates_graph_or_memory: false
+    promotes_procedure: false
+  required_probe_kinds:
+    - initiation
+    - termination
+    - interruption
+    - outcome_devaluation
+    - negative_transfer
+    - fresh_control
+    - deliberative_fallback
+  invariants:
+    - candidate_assessment_names_one_exact_procedural_memory_version_and_loop_definition
+    - positive_negative_and_negative_transfer_episodes_remain_distinct
+    - producer_and_assessor_reference_strings_must_differ
+    - fresh_control_records_distinct_ordered_occurrences_and_outcomes
+    - contaminated_or_invalid_infrastructure_cannot_count_as_a_semantic_probe
+    - all_required_valid_probes_must_pass_for_candidate_support_pending_resolution
+    - deliberative_fallback_definition_reference_must_differ_from_the_procedure
+    - assessment_grants_no_execution_promotion_or_generalization_authority
+  unproven:
+    - exact_probe_to_procedure_and_scope_manifest_resolution
+    - exact_assessor_identity_and_independence
+    - fresh_packet_body_and_frozen_variable_verification
+    - infrastructure_validity_record_resolution
+    - registered_available_authorized_practitioner_fallback
+    - durable_procedural_memory_journal_integration
+    - product_retrieval_or_execution
+    - cross_task_transfer
+    - provider_quality_or_cost_benefit
+    - qualification_or_promotion
+
+astra_model_route:
+  operational_runtime_type: Loop
+  internal_runtime_mechanic: true
+  current_maturity: offline_quarantined_route_policy_prototype
+  executable_route_qualified: false
+  adapter: loop_engine.core.openai_responses_client.OpenAIResponsesAdapter
+  demand: loop_engine.core.astra_route_authority.AstraModelDemand
+  paid_authority_candidate: loop_engine.core.astra_route_authority.PaidModelRouteAuthority
+  provider_readiness: loop_engine.core.astra_route_authority.AstraProviderReadiness
+  readiness_decision: loop_engine.core.astra_route_authority.AstraReadinessDecision
+  plan: loop_engine.core.astra_route_planning.AstraRoutePlan
+  invariants:
+    - candidate_provider_model_route_credential_reference_and_price_source_are_bound
+    - unknown_or_insufficient_authority_fails_closed
+    - conservative_cost_exposure_assumes_no_cache_discount
+    - thinking_power_to_reasoning_effort_is_versioned_policy_data
+    - declared_model_capability_is_separate_from_adapter_qualification
+    - readiness_decision_binds_the_complete_candidate_request_digest
+    - only_global_standard_text_policy_enters_the_candidate_scope
+    - executable_route_plan_construction_is_hard_quarantined
+    - astra_is_absent_from_default_routes_and_failover
+  unproven:
+    - account_access
+    - live_request_compatibility
+    - realized_price_latency_or_quality
+    - issued_expiring_revocable_one_use_paid_authority
+    - trusted_clock_availability_and_exact_adapter_credential_binding
+    - invocation_time_call_token_and_cost_enforcement
+    - per_call_thinking_power_to_reasoning_effort_binding
+    - regional_flex_batch_fast_or_priority_workflows
+    - structured_output_tool_async_and_steering_integration
+    - optimal_reasoning_effort_selection
+
+stage_assistance_evidence:
+  operational_runtime_type: Loop
+  current_maturity: implemented_offline_public_solve_mechanism_only
+  operational_integration: public_solve_with_injected_provider_mechanism_only
+  source_authority: loop_engine.core.run_history.RunHistory
+  evidence_namespace: loop_engine.core.stage_evidence_records.EvidenceNamespace
+  occurrence_identity: loop_engine.core.stage_evidence_records.StageOccurrenceIdentity
+  experiment_definition: loop_engine.core.stage_assistance_experiment.StageAssistanceExperimentSpec
+  paired_trial: loop_engine.core.stage_assistance_experiment.PairedStageAssistanceTrial
+  assignment: loop_engine.core.stage_assistance_experiment.StageExperimentAssignment
+  exposure_manifest: loop_engine.core.stage_evidence_records.StageExposureManifest
+  assistance_decision: loop_engine.core.stage_evidence_records.StageAssistanceDecision
+  trial_outcome: loop_engine.core.stage_evidence_records.StageTrialOutcome
+  hydrated_material: loop_engine.core.stage_assistance_material.StageAssistanceMaterial
+  public_request_adapter: loop_engine.code_nodes.solve_request_adaptation
+  action_lineage: loop_engine.core.stage_action_lineage
+  verification_record_schema: adaptive_verification/v2
+  state_integration: loop_engine.core.adaptive_practitioner_result.integrate_adaptive_state
+  control_manifest: loop_engine.core.solve_control_manifest.PublicSolveControlManifest
+  control_application_candidate: loop_engine.core.solve_control_manifest.StageControlApplicationCandidate
+  model_visible_history_projection: loop_engine.core.semantic_event_history.semantic_event_history
+  rebuildable_projection: loop_engine.core.stage_evidence_projection.SQLiteStageEvidenceProjection
+  invariants:
+    - loop_activation_identity_is_separate_from_semantic_call_and_similarity_signatures
+    - physical_retries_do_not_change_the_semantic_call_occurrence
+    - canonical_stage_evidence_contract_requires_exact_experiment_trial_occurrence_assignment_exposure_decision_and_outcome_refs
+    - the_fresh_arm_records_zero_prior_stage_references
+    - unknown_hard_compatibility_cannot_enter_advisory_exposure
+    - packet_facts_must_precede_the_exposure_manifest_in_intact_run_history
+    - trial_outcomes_require_an_earlier_matching_evaluation_event
+    - sqlite_wal_is_a_rebuildable_projection_and_never_evidence_authority
+    - product_use_requires_a_classified_owning_loop
+    - active_exposure_requires_a_schema_admitted_exact_assistance_decision
+    - advisory_exposure_requires_digest_bound_hydrated_material
+    - hydrated_prior_body_enters_the_rendered_selected_intelligence_section
+    - fresh_exposure_contains_no_candidate_or_hydrated_material
+    - exposure_is_recorded_only_after_a_physical_model_attempt_loop_exists
+    - decision_binds_exposure_packet_prompt_gateway_provider_response_and_semantic_payload_digests
+    - selected_action_execution_and_verification_join_by_exact_occurrence_refs
+    - verification_binds_frozen_plan_action_ordered_results_and_execution_refs_before_model_call
+    - evaluation_subject_and_verdict_must_match_the_canonical_verification_record_digest
+    - historical_subjectless_verdicts_cannot_grant_exact_stage_credit
+    - rejected_provisional_or_unbound_attempts_cannot_replace_the_accepted_incumbent
+    - failed_and_unselected_reported_artifacts_invalidate_overlapping_mutable_addresses
+    - public_success_requires_bound_acceptance_of_the_exact_emitted_project
+    - foreign_stale_duplicate_or_changed_lineage_cannot_create_stage_credit
+    - canonical_lineage_events_precede_in_memory_credit_projection
+    - unavailable_or_provisional_semantic_verification_remains_unknown
+    - every_active_public_solve_experiment_binds_a_control_manifest
+    - mechanism_only_controls_cannot_be_reported_as_paired_candidate_evidence
+    - control_and_experiment_bodies_cannot_enter_model_visible_event_history
+    - raw_experiment_and_trial_labels_do_not_enter_the_model_packet
+    - unrelated_semantic_stages_retain_unknown_local_credit
+    - session_budgets_count_physical_attempts_and_preserve_unknown_usage
+    - contradicted_stage_evidence_cannot_receive_positive_credit
+  unproven:
+    - live_provider_public_solve_execution
+    - canonical_run_history_intelligence_query_for_hydrated_candidates
+    - canonical_per_stage_paired_product_outcomes
+    - complete_cryptographic_source_and_dependency_freezing
+    - paired_candidate_public_solve_control_manifest
+    - stage_local_base_packet_and_control_application
+    - complete_stage_contribution_and_attribution
+    - causal_quality_or_cost_benefit
+    - price_and_currency_authority
+    - complete_degradation_result_serialization
+    - campaign_safe_shared_storage
+
+model_ladder_evidence:
+  operational_runtime_type: Loop
+  current_maturity: bootstrap_advisory_calculation
+  policy: loop_engine.core.model_demand.ModelLadderEvidencePolicy
+  recommendation: loop_engine.core.model_demand.ModelLadder
+  invariants:
+    - minimum_decided_outcomes_apply_per_route_not_across_the_population
+    - outcomes_must_be_exact_booleans_or_unknown
+    - unknown_and_unrouted_outcomes_remain_visible
+    - cost_order_cannot_qualify_a_thin_or_unobserved_route
+    - legacy_proven_property_means_advisory_order_not_statistical_proof
+    - calculation_grants_no_routing_escalation_verification_or_promotion_authority
+  unproven:
+    - independent_sample_deduplication_and_representative_population
+    - calibration_and_out_of_distribution_detection
+    - causal_route_quality_and_total_cost_benefit
+    - qualified_automatic_routing
 
 reactive_execution:
   operational_runtime_type: Loop

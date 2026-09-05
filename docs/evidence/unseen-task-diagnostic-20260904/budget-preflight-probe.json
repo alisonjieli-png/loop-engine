@@ -1,0 +1,28 @@
+{
+  "current_gap_reproduced": true,
+  "hard_total_ceiling_proven": false,
+  "live_provider_calls": 0,
+  "record_type": "budget_preflight_gap_probe/v1",
+  "rows": [
+    {
+      "context_limit": 131072,
+      "error_code": "token_budget_exhausted",
+      "estimated_input_tokens": 27772,
+      "fixture_dispatches": 1,
+      "fixture_reported_total_tokens": 35739,
+      "live_provider_calls": 0,
+      "remaining_total_budget": 30130,
+      "requested_output_tokens": 65536
+    },
+    {
+      "context_limit": 90000,
+      "error_code": "context_window_exceeded",
+      "estimated_input_tokens": 27772,
+      "fixture_dispatches": 0,
+      "fixture_reported_total_tokens": null,
+      "live_provider_calls": 0,
+      "remaining_total_budget": 30130,
+      "requested_output_tokens": 65536
+    }
+  ]
+}

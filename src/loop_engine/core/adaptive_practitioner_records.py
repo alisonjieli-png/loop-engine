@@ -17,47 +17,64 @@ import hashlib
 import json
 import os
 import time
-from dataclasses import asdict, dataclass, field, fields
+from dataclasses import asdict, dataclass, field, fields, replace
 from pathlib import Path
-from typing import Callable, Protocol, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Protocol
 
 from ..code_nodes.solution_model_port import (
-    ModelExecution, ModelInvocationRequest, SolutionModelError)
+    ModelExecution,
+    ModelInvocationRequest,
+    SolutionModelError,
+)
 from ..loop.kernel_runtime import current_kernel_owner
 from ..templates.model import TaskFeedback
+from .adaptive_practitioner_prompting import (
+    AdaptivePromptAssemblyRequest,
+    assemble_work_packet,
+    serialize_work_packet,
+)
+from .adaptive_practitioner_validation import _short_strings, _short_text
+from .choice import ParameterSpec
 from .context_artifacts import ContextArtifactManager
 from .context_budget import ContextBudgetPolicy, bound_state_view
 from .context_pack_manifest import build_context_pack_manifest
-from .generated_project import (
-    execute_generated_project)
-from .choice import ParameterSpec
-from .recovery import choose_recovery, recovery_options
-from .convergence import (TEMPLATE_OFFER, ConvergenceMeasure,
-                          experiment_arm)
+from .convergence import CACHE_ASSIST, ConvergenceMeasure, experiment_arm
 from .decision_outcome import OutcomeLedger
-from .stage_fingerprint import SemanticStageFingerprint
+from .generated_project import execute_generated_project
+from .llm_work_packet import LLMContextBlock, LLMWorkPacket, WorkDirective
 from .model_demand import ladder_from_observations
-from .stage_store import StageStore
-from .semantic_decision import (SemanticAutonomyTally,
-                                SemanticDecisionRecord)
-from .option_selection import (SELECTION_KEYS, SELECTION_REPORT_CONTRACT,
-                              SelectionTally, admitted_selection)
-from .llm_work_packet import (
-    LLMContextBlock, LLMWorkPacket, WorkDirective)
-from .adaptive_practitioner_prompting import (
-    AdaptivePromptAssemblyRequest, assemble_work_packet,
-    serialize_work_packet)
 from .model_response_admission import (
-    ModelResponseAdmissionRequest, ModelResponseRepairStalled,
-    admit_model_response_as_loop)
-from .practitioner_context import (
-    PractitionerContextPortfolio)
+    ModelResponseAdmissionRequest,
+    ModelResponseRepairStalled,
+    admit_model_response_as_loop,
+)
+from .option_selection import (
+    SELECTION_KEYS,
+    SELECTION_REPORT_CONTRACT,
+    SelectionTally,
+    admitted_selection,
+)
+from .practitioner_context import PractitionerContextPortfolio
+from .recovery import choose_recovery, recovery_options
 from .reusable_capability_harvest import ReuseObservationPort
-from .adaptive_practitioner_validation import _short_strings, _short_text
-from .web_fetch import (
-    fetch_web_resource)
-from .web_search import (
-    search_web)
+from .semantic_decision import SemanticAutonomyTally, SemanticDecisionRecord
+from .semantic_event_history import semantic_event_history
+from .solve_control_manifest import PublicSolveControlManifest
+from .stage_assistance_material import StageAssistanceMaterial
+from .stage_assistance_runtime_records import (
+    StageAssistanceRuntimeRecordError,
+    physical_exposure,
+    source_ref_states,
+    validate_decision,
+)
+from .stage_evidence_records import (
+    STAGE_ASSISTANCE_DISPOSITIONS,
+    StageRetrievalCandidate,
+)
+from .stage_fingerprint import SemanticStageFingerprint
+from .stage_store import StageObservation, StageStore
+from .web_fetch import fetch_web_resource
+from .web_search import search_web
 
 if TYPE_CHECKING:
     from .action_fence import ActionFenceLedger
@@ -257,7 +274,7 @@ def _note_recovery(services, owner, request, error_code: str,
         pass
 
 
-def _stage_for(services, request) -> "SemanticStageFingerprint | None":
+def _stage_for(services, request) -> SemanticStageFingerprint | None:
     """Name the cognitive situation of one model step.
 
     Built from what the step already carries — its responsibility, the
@@ -283,12 +300,62 @@ def _stage_for(services, request) -> "SemanticStageFingerprint | None":
             consumer="practitioner",
             task_ref=services.run_id,
             branch_depth=len(services.project_attempts))
-    except Exception:                                   # noqa: BLE001
+    except Exception as exc:                            # noqa: BLE001
+        _stage_degraded(
+            services, "build_stage_fingerprint", exc,
+            procedure_step=str(getattr(request, "step_id", "")))
         return None
 
 
-def _observe_stage(services, stage) -> None:
+def _stage_degraded(services, operation: str, exc: BaseException,
+                    **fields) -> None:
+    """Keep stage instrumentation failure visible without failing the task."""
+    record = {
+        "record_type": "stage_evidence_degraded/v1",
+        "operation": operation,
+        "error_type": type(exc).__name__,
+        "error": str(exc)[:300],
+        **fields,
+    }
+    sink = getattr(services, "stage_evidence_degradations", None)
+    if isinstance(sink, list):
+        sink.append(record)
+    try:
+        services.diagnostic("stage_evidence_degraded", record)
+    except Exception:                                   # noqa: BLE001
+        try:
+            services.publish(
+                "practitioner.diagnostic",
+                diagnostic_code="stage_evidence_degraded",
+                diagnostic_detail=json.dumps(record, sort_keys=True))
+        except Exception:                               # noqa: BLE001
+            # The bounded in-memory record above remains readable in the
+            # product result even when both event sinks are unavailable.
+            return
+
+
+def _stage_event(services, custom_kind: str, observation, **fields) -> None:
+    """Append one exact stage fact to the owning Loop ledger."""
+    owner = current_kernel_owner()
+    if owner is None:
+        raise AdaptivePractitionerError(
+            f"{custom_kind} has no active Practitioner Loop owner")
+    owner.ledger.record(
+        loop_id=owner.loop_id, event="custom", custom_kind=custom_kind,
+        stage_occurrence_id=observation.occurrence_id,
+        stage_observation_ref=observation.observation_ref,
+        semantic_call_id=observation.semantic_call_id,
+        owner_loop_id=observation.owner_loop_id,
+        semantic_stage_signature=observation.digest,
+        pass_number=observation.pass_number,
+        **fields)
+
+
+def _observe_stage(services, stage) -> StageObservation | None:
     """Record this stage, if there is one, and ask what the record advises.
+
+    Returns the observation so its outcome can be graded when this step's
+    own result is known, rather than inheriting whatever the run does.
 
     The advice is written down and not followed. Below the evidence floor
     the ladder declines to advise at all, and even above it the
@@ -299,37 +366,499 @@ def _observe_stage(services, stage) -> None:
     """
     if not hasattr(stage, "digest"):
         # A situation that could not be described is simply not observed.
-        return
+        return None
     try:
+        prior_status = services.prior_stages.to_dict()
+        if (prior_status.get("degraded")
+                and not services.prior_stage_degradation_reported):
+            services.prior_stage_degradation_reported = True
+            _stage_degraded(
+                services, "load_prior_stages",
+                RuntimeError(str(prior_status.get("last_storage_error")
+                                 or "stored stage evidence is degraded")),
+                write_failures=prior_status.get("write_failures", 0),
+                read_failures=prior_status.get("read_failures", 0),
+                unreadable_rows=prior_status.get("unreadable_rows", 0))
         # One occurrence of this region, identified so that independent
         # occurrences can fall on both sides while retries of this one
         # cannot drift between them.
-        occurrence = (f"{services.run_id}.{stage.cognitive_phase}."
-                      f"{len(services.stage_store.observations)}")
-        services.stage_arms[stage.digest] = experiment_arm(
-            TEMPLATE_OFFER, stage.digest, occurrence)
-        route = str(getattr(services.request, "model_route", "") or "")
-        # What earlier runs did with stages of this shape.
+        owner = current_kernel_owner()
+        if owner is None:
+            raise AdaptivePractitionerError(
+                "stage occurrence has no active Practitioner Loop owner")
+        material = json.dumps({
+            "run_id": services.run_id,
+            "owner_loop_id": owner.loop_id,
+            "pass_number": int(
+                getattr(services, "active_pass_number", 0) or 0),
+            "position": len(services.stage_store.observations),
+            "semantic_signature": stage.digest,
+        }, sort_keys=True, separators=(",", ":"))
+        occurrence = "stage-occurrence:sha256:" + hashlib.sha256(
+            material.encode("utf-8")).hexdigest()
+        semantic_call_id = "semantic-stage-" + hashlib.sha256(
+            (occurrence + "\0" + stage.digest).encode("utf-8")
+        ).hexdigest()[:48]
+        binding = services.request.stage_assistance
+        assigned_arm = experiment_arm(CACHE_ASSIST, stage.digest, occurrence)
         priors = []
-        for match in services.prior_stages.lookup(
-                stage, exclude_run=services.run_id):
-            if match.found_by == "shape":
-                priors = list(match.observations)
-                break
+        typed_candidates = ()
+        typed_materials = ()
+        retrieval_performed = False
+        if binding.mode == "advisory":
+            typed_candidates = tuple(
+                item for item in binding.candidates
+                if item.semantic_signature == stage.digest)
+            candidate_refs = {item.candidate_ref for item in typed_candidates}
+            typed_materials = tuple(
+                item for item in binding.materials
+                if item.candidate_ref in candidate_refs
+                and item.semantic_signature == stage.digest
+            )
+            retrieval_performed = True
+        elif binding.mode == "shadow":
+            # What earlier runs did with stages of this shape. Shadow lookups
+            # are measured and never added to the prompt.
+            for match in services.prior_stages.lookup(
+                    stage, exclude_run=services.run_id):
+                if match.found_by == "shape":
+                    priors = list(match.observations)
+                    break
+            retrieval_performed = True
+        # Fresh performs no stage-prior query. Zero returned after a query is
+        # not the same evidence as proving no query occurred.
         ladder = ladder_from_observations(priors)
-        if ladder.observations:
-            services.stage_ladders[stage.digest] = ladder.to_dict()
-        services.convergence.note(
-            services.stage_arms[stage.digest],
-            "|".join(str(item) for item in stage.shape))
-        services.stage_store.add(stage, run_id=services.run_id,
-                                 model_route=route)
-    except Exception:                                   # noqa: BLE001
-        pass
+        prior_refs = (tuple(item.candidate_ref for item in typed_candidates)
+                      if typed_candidates else
+                      tuple(item.observation_ref for item in priors))
+        if binding.mode == "shadow" and ladder.observations:
+            services.stage_ladders[occurrence] = ladder.to_dict()
+        exposure_applied = bool(typed_candidates)
+        services.stage_arms[occurrence] = {
+            "experiment": CACHE_ASSIST,
+            "cognitive_phase": stage.cognitive_phase,
+            "assigned_arm": (
+                binding.mode if binding.mode != "shadow" else assigned_arm),
+            "exposure_applied": exposure_applied,
+            "retrieval_performed": retrieval_performed,
+            "retrieved_prior_refs": list(prior_refs),
+            "exposed_prior_refs": (
+                list(prior_refs) if exposure_applied else []),
+            "exposed_material_refs": [
+                item.material_ref for item in typed_materials
+            ],
+            "exposed_material_digests": [
+                item.content_digest for item in typed_materials
+            ],
+            "semantic_signature": stage.digest,
+            "experiment_ref": binding.experiment_ref,
+            "trial_ref": binding.trial_ref,
+            "source_state_digest": binding.source_state_digest,
+            "control_manifest_ref": (
+                binding.control_manifest.manifest_ref
+                if binding.control_manifest is not None else ""),
+            "control_manifest_digest": (
+                binding.control_manifest.content_digest
+                if binding.control_manifest is not None else ""),
+            "control_set_digest": (
+                binding.control_manifest.control_set_digest
+                if binding.control_manifest is not None else ""),
+            "control_evidence_class": (
+                binding.control_manifest.evidence_class
+                if binding.control_manifest is not None else "unrecorded"),
+        }
+        observation = services.stage_store.add(
+            stage, run_id=services.run_id,
+            occurrence_id=occurrence,
+            semantic_call_id=semantic_call_id,
+            owner_loop_id=owner.loop_id,
+            pass_number=int(getattr(services, "active_pass_number", 0) or 0))
+        _stage_event(
+            services, "stage_occurrence_opened", observation,
+            stage_fingerprint=stage.to_dict())
+        _stage_event(
+            services, "stage_retrieval_snapshot", observation,
+            experiment=CACHE_ASSIST,
+            assigned_arm=services.stage_arms[occurrence]["assigned_arm"],
+            experiment_ref=binding.experiment_ref,
+            trial_ref=binding.trial_ref,
+            source_state_digest=binding.source_state_digest,
+            control_manifest_ref=services.stage_arms[occurrence][
+                "control_manifest_ref"],
+            control_manifest_digest=services.stage_arms[occurrence][
+                "control_manifest_digest"],
+            control_set_digest=services.stage_arms[occurrence][
+                "control_set_digest"],
+            control_evidence_class=services.stage_arms[occurrence][
+                "control_evidence_class"],
+            retrieval_performed=retrieval_performed,
+            retrieved_prior_refs=prior_refs,
+            prior_not_proof=True)
+        return observation
+    except Exception as exc:                            # noqa: BLE001
+        _stage_degraded(
+            services, "open_stage_occurrence", exc,
+            semantic_signature=str(getattr(stage, "digest", "")))
+    return None
+
+
+def _grade_stage(services, observation, **signals):
+    """Record what this step's own result says about the stage.
+
+    Stage-local, and deliberately separate from the run's fate: whether this
+    step's answer satisfied its own contract is known here and now, and a
+    run that later fails for unrelated reasons does not make it untrue.
+
+    Swallows its own failures. Grading is instrumentation, and instrumentation
+    that can end a run changes the thing it is measuring.
+    """
+    if observation is None:
+        return None
+    try:
+        updated = services.stage_store.observe(observation, **signals)
+        services._graded_stage = updated
+        _stage_event(
+            services, "stage_local_outcome_observed", updated,
+            observed_signals=dict(signals),
+            outcome=updated.outcome.to_dict())
+        return updated
+    except Exception as exc:                            # noqa: BLE001
+        _stage_degraded(
+            services, "record_stage_outcome", exc,
+            stage_occurrence_id=str(
+                getattr(observation, "occurrence_id", "")),
+            observed_signal_names=sorted(signals))
+        return observation
+
+
+def _record_stage_execution(services, observation, results):
+    """Join the real gateway results and attempts to the exact stage."""
+    if observation is None:
+        return None
+    try:
+        rows = tuple(results or ())
+        foreign = sorted({
+            str(getattr(item, "semantic_call_id", "") or "")
+            for item in rows
+            if str(getattr(item, "semantic_call_id", "") or "")
+            != observation.semantic_call_id})
+        foreign_owners = sorted({
+            str(getattr(item, "owner_loop_id", "") or "")
+            for item in rows
+            if str(getattr(item, "owner_loop_id", "") or "")
+            != observation.owner_loop_id})
+        physical = tuple(
+            attempt for item in rows
+            for attempt in tuple(getattr(item, "attempts", ()) or ())
+            if str(getattr(attempt, "loop_id", "") or ""))
+        attempt_mismatch = any(
+            str(getattr(attempt, "semantic_call_id", "") or "")
+            != observation.semantic_call_id
+            or str(getattr(attempt, "owner_loop_id", "") or "")
+            != observation.owner_loop_id
+            for attempt in physical)
+        if foreign or foreign_owners or attempt_mismatch:
+            raise AdaptivePractitionerError(
+                "model execution identity differs from its stage occurrence")
+        updated = services.stage_store.record_execution(observation, rows)
+        services._graded_stage = updated
+        _stage_event(
+            services, "stage_model_execution_observed", updated,
+            gateway_calls=updated.gateway_calls,
+            physical_model_calls=updated.model_calls,
+            model_route=updated.model_route,
+            model_routes=updated.model_routes,
+            model_provider=updated.model_provider,
+            model_name=updated.model_name,
+            model_attempt_loop_ids=updated.model_attempt_loop_ids,
+            elapsed_seconds=updated.elapsed_seconds,
+            input_tokens=updated.input_tokens,
+            output_tokens=updated.output_tokens,
+            usage_complete=(updated.input_tokens is not None
+                            and updated.output_tokens is not None))
+        return updated
+    except Exception as exc:                            # noqa: BLE001
+        _stage_degraded(
+            services, "join_stage_model_execution", exc,
+            stage_occurrence_id=str(
+                getattr(observation, "occurrence_id", "")))
+        return observation
+
+
+def _observed_response_shape(value: object) -> str:
+    """Describe the returned topology, not the input stage shape."""
+    if isinstance(value, dict):
+        keys = ",".join(sorted(str(key) for key in value)[:32])
+        return f"record[{keys}]"
+    if isinstance(value, list):
+        return "typed_list"
+    if isinstance(value, tuple):
+        return "tuple"
+    if value is None:
+        return "none"
+    return type(value).__name__
+
+
+def _record_stage_packet_exposure(
+        services, observation, snapshot: dict, blocks, template_candidates,
+        *, packet_digest: str, gateway_result, format_attempt: int,
+        transport_attempt: int):
+    """Record exposure only after an exact physical provider attempt exists."""
+    if observation is None:
+        return None
+    try:
+        facts = services.stage_arms[observation.occurrence_id]
+        facts.pop("active_exposure", None)
+        exposure = physical_exposure(
+            observation, snapshot, packet_digest=packet_digest,
+            gateway_result=gateway_result, format_attempt=format_attempt,
+            transport_attempt=transport_attempt)
+        if exposure is None:
+            return None
+        _stage_event(
+            services, "stage_assistance_exposure", observation,
+            experiment=CACHE_ASSIST,
+            experiment_ref=facts.get("experiment_ref", ""),
+            trial_ref=facts.get("trial_ref", ""),
+            control_manifest_ref=facts.get("control_manifest_ref", ""),
+            control_manifest_digest=facts.get("control_manifest_digest", ""),
+            control_set_digest=facts.get("control_set_digest", ""),
+            control_evidence_class=facts.get("control_evidence_class", ""),
+            assigned_arm=facts.get("assigned_arm", ""),
+            exposure_applied=bool(facts.get("exposure_applied")),
+            retrieval_performed=bool(facts.get("retrieval_performed")),
+            retrieved_prior_refs=tuple(
+                facts.get("retrieved_prior_refs", ())),
+            exposed_prior_refs=tuple(facts.get("exposed_prior_refs", ())),
+            **exposure,
+            context_block_ids=tuple(item.block_id for item in blocks),
+            baseline_template_ids=tuple(
+                str(item.get("template_id") or "")
+                for item in template_candidates
+                if item.get("template_id")),
+            stage_prior_context_present=bool(
+                facts.get("exposed_material_refs")),
+            stage_prior_prompt_material_present=bool(
+                facts.get("exposed_material_refs")),
+            exposed_material_refs=tuple(
+                facts.get("exposed_material_refs", ())),
+            exposed_material_digests=tuple(
+                facts.get("exposed_material_digests", ())),
+            prior_not_proof=True)
+        facts["active_exposure"] = exposure
+        return exposure
+    except Exception as exc:                            # noqa: BLE001
+        _stage_degraded(
+            services, "record_stage_exposure", exc,
+            stage_occurrence_id=str(
+                getattr(observation, "occurrence_id", "")))
+        return None
+
+
+def _record_stage_assistance_decision(
+        services, observation, raw_decision: object, *,
+        admitted_response_digest: str, admission_loop_id: str,
+        semantic_payload_digest: str):
+    """Validate and record the model's use or rejection of exposed priors."""
+    if observation is None:
+        return
+    facts = services.stage_arms.get(observation.occurrence_id, {})
+    mode = services.request.stage_assistance.mode
+    if mode not in ("advisory", "fresh"):
+        return None
+    if raw_decision is None:
+        try:
+            _stage_event(
+                services, "stage_assistance_decision_missing", observation,
+                experiment_ref=facts.get("experiment_ref", ""),
+                trial_ref=facts.get("trial_ref", ""), assigned_arm=mode,
+                reason="the active experiment requested a model decision")
+        except Exception as exc:                        # noqa: BLE001
+            _stage_degraded(
+                services, "record_missing_assistance_decision", exc,
+                stage_occurrence_id=observation.occurrence_id)
+        raise AdaptivePractitionerError(
+            "active stage assistance requires an exact model decision")
+    try:
+        exposure = facts.get("active_exposure")
+        validated = validate_decision(
+            raw_decision, mode=mode,
+            exposed_refs=facts.get("exposed_prior_refs", ()),
+            exposure=exposure)
+        disposition = validated["disposition"]
+        selected = validated["selected_prior_refs"]
+        reason = validated["reason"]
+        record = {
+            "record_type": "stage_assistance_decision_observed/v1",
+            "stage_occurrence_id": observation.occurrence_id,
+            "experiment_ref": facts.get("experiment_ref", ""),
+            "trial_ref": facts.get("trial_ref", ""),
+            "control_manifest_ref": facts.get("control_manifest_ref", ""),
+            "control_manifest_digest": facts.get(
+                "control_manifest_digest", ""),
+            "control_set_digest": facts.get("control_set_digest", ""),
+            "control_evidence_class": facts.get(
+                "control_evidence_class", ""),
+            "assigned_arm": mode,
+            "exposure_ref": exposure["exposure_ref"],
+            "packet_digest": exposure["packet_digest"],
+            "prompt_digest": exposure["prompt_digest"],
+            "prompt_assembly_id": exposure["prompt_assembly_id"],
+            "gateway_request_digest": exposure["gateway_request_digest"],
+            "provider_request_digests": list(
+                exposure["provider_request_digests"]),
+            "physical_attempt_loop_ids": list(
+                exposure["physical_attempt_loop_ids"]),
+            "admitted_response_digest": admitted_response_digest,
+            "admission_loop_id": admission_loop_id,
+            "semantic_payload_digest": semantic_payload_digest,
+            "disposition": disposition,
+            "selected_prior_refs": list(selected),
+            "reason": reason[:500],
+        }
+        services.stage_assistance_decisions.append(record)
+        _stage_event(
+            services, "stage_assistance_decision", observation,
+            **{key: value for key, value in record.items()
+               if key not in ("record_type", "stage_occurrence_id")})
+        return record
+    except Exception as exc:
+        try:
+            _stage_event(
+                services, "stage_assistance_decision_rejected", observation,
+                experiment_ref=facts.get("experiment_ref", ""),
+                trial_ref=facts.get("trial_ref", ""),
+                assigned_arm=mode,
+                error_type=type(exc).__name__, error=str(exc)[:300])
+        except Exception as event_exc:                  # noqa: BLE001
+            _stage_degraded(
+                services, "record_rejected_assistance_decision", event_exc,
+                stage_occurrence_id=observation.occurrence_id)
+        if isinstance(exc, AdaptivePractitionerError):
+            raise
+        if isinstance(exc, StageAssistanceRuntimeRecordError):
+            raise AdaptivePractitionerError(str(exc)) from exc
+        raise AdaptivePractitionerError(
+            f"stage assistance decision validation failed: {exc}") from exc
 
 
 class AdaptivePractitionerError(ValueError):
     """The adaptive Practitioner could not satisfy a typed runtime contract."""
+
+
+STAGE_ASSISTANCE_MODES = ("shadow", "advisory", "fresh")
+
+
+@dataclass(frozen=True)
+class StageAssistanceRuntimeBinding:
+    """Explicit passive input for one stage-assistance experiment arm.
+
+    The default is shadow and changes no model input. Advisory candidates
+    must have independently supplied hard compatibility facts. A fresh arm
+    cannot carry candidates at all.
+    """
+
+    mode: str = "shadow"
+    experiment_ref: str = ""
+    trial_ref: str = ""
+    source_state_digest: str = ""
+    candidates: tuple[StageRetrievalCandidate, ...] = ()
+    materials: tuple[StageAssistanceMaterial, ...] = ()
+    control_manifest: PublicSolveControlManifest | None = field(
+        default=None, repr=False)
+
+    def __post_init__(self) -> None:
+        if self.mode not in STAGE_ASSISTANCE_MODES:
+            raise AdaptivePractitionerError(
+                f"stage assistance mode must be one of "
+                f"{STAGE_ASSISTANCE_MODES}")
+        if (self.control_manifest is not None
+                and not isinstance(
+                    self.control_manifest, PublicSolveControlManifest)):
+            raise AdaptivePractitionerError(
+                "stage assistance control manifest has the wrong contract")
+        candidates = tuple(self.candidates)
+        if any(not isinstance(item, StageRetrievalCandidate)
+               for item in candidates):
+            raise AdaptivePractitionerError(
+                "stage assistance candidates need typed retrieval records")
+        if len({item.candidate_ref for item in candidates}) != len(candidates):
+            raise AdaptivePractitionerError(
+                "stage assistance candidate refs must be unique")
+        materials = tuple(self.materials)
+        if any(not isinstance(item, StageAssistanceMaterial) for item in materials):
+            raise AdaptivePractitionerError(
+                "stage assistance materials need typed hydrated records"
+            )
+        if len({item.material_ref for item in materials}) != len(materials):
+            raise AdaptivePractitionerError(
+                "stage assistance material refs must be unique"
+            )
+        candidate_by_ref = {item.candidate_ref: item for item in candidates}
+        if {item.candidate_ref for item in materials} != set(candidate_by_ref):
+            raise AdaptivePractitionerError(
+                "advisory candidates and hydrated materials must match exactly"
+            )
+        if any(
+            item.source_occurrence_ref
+            != candidate_by_ref[item.candidate_ref].source_occurrence_ref
+            or item.semantic_signature
+            != candidate_by_ref[item.candidate_ref].semantic_signature
+            for item in materials
+        ):
+            raise AdaptivePractitionerError(
+                "hydrated material identity differs from its retrieval candidate"
+            )
+        if self.mode in ("advisory", "fresh"):
+            if self.control_manifest is None:
+                raise AdaptivePractitionerError(
+                    "an active stage experiment needs a control manifest")
+            if not self.experiment_ref.strip() or not self.trial_ref.strip():
+                raise AdaptivePractitionerError(
+                    "an active stage experiment needs experiment and trial refs")
+            allowed_ref = set(
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:._-")
+            if any(len(value) > 256 or any(char not in allowed_ref
+                                           for char in value)
+                   for value in (self.experiment_ref, self.trial_ref)):
+                raise AdaptivePractitionerError(
+                    "stage experiment refs must be bounded opaque text")
+            if (len(self.source_state_digest) != 64
+                    or any(character not in "0123456789abcdef"
+                           for character in self.source_state_digest)):
+                raise AdaptivePractitionerError(
+                    "an active stage experiment needs a source-state SHA-256")
+            controlled_state = self.control_manifest.component(
+                "task_and_source")
+            if (controlled_state.status != "exact"
+                    or controlled_state.body.get("source_state_digest")
+                    != self.source_state_digest):
+                raise AdaptivePractitionerError(
+                    "control manifest does not exactly bind the source state")
+        if self.mode == "fresh" and (candidates or materials):
+            raise AdaptivePractitionerError(
+                "a fresh stage-assistance arm cannot carry prior material")
+        if self.mode == "advisory":
+            if not candidates:
+                raise AdaptivePractitionerError(
+                    "an advisory stage-assistance arm needs candidates")
+            if not materials:
+                raise AdaptivePractitionerError(
+                    "an advisory stage-assistance arm needs hydrated material"
+                )
+            incompatible = [item.candidate_ref for item in candidates
+                            if not all((item.contract_compatible,
+                                       item.effect_compatible,
+                                       item.authority_compatible,
+                                       item.privacy_compatible))]
+            if incompatible:
+                raise AdaptivePractitionerError(
+                    "advisory stage candidates need proven contract, effect, "
+                    "authority, and privacy compatibility")
+        object.__setattr__(self, "candidates", candidates)
+        object.__setattr__(self, "materials", materials)
+
+
 @dataclass(frozen=True)
 class DeterministicAttemptTrace:
     """Complete explicit exact-reuse attempt preserved for later reasoning."""
@@ -631,16 +1160,32 @@ class AdaptivePractitionerRequest:
     context_budget: ContextBudgetPolicy = field(
         default_factory=ContextBudgetPolicy)
     prior_region_evidence: dict = field(default_factory=dict)
+    stage_assistance: StageAssistanceRuntimeBinding = field(
+        default_factory=StageAssistanceRuntimeBinding)
 
     def __post_init__(self) -> None:
         if not isinstance(self.prior_region_evidence, dict):
             raise AdaptivePractitionerError(
                 "prior_region_evidence must be a mapping")
         try:
-            json.dumps(self.prior_region_evidence, sort_keys=True)
+            frozen_prior = json.loads(json.dumps(
+                self.prior_region_evidence, sort_keys=True,
+                separators=(",", ":"), allow_nan=False))
         except (TypeError, ValueError) as exc:
             raise AdaptivePractitionerError(
                 "prior_region_evidence must be JSON serializable") from exc
+        # Detach the request from a caller-owned dictionary. A later mutation
+        # of the source object must not change an already checked control.
+        object.__setattr__(self, "prior_region_evidence", frozen_prior)
+        if not isinstance(self.stage_assistance,
+                          StageAssistanceRuntimeBinding):
+            raise AdaptivePractitionerError(
+                "stage_assistance must be a StageAssistanceRuntimeBinding")
+        if (self.stage_assistance.mode == "fresh"
+                and self.prior_region_evidence):
+            raise AdaptivePractitionerError(
+                "a fresh stage-assistance arm cannot carry prior region "
+                "evidence")
         if not self.task.strip():
             raise AdaptivePractitionerError("adaptive Practitioner needs a task")
         if self.mode not in ("deterministic", "hybrid", "non_deterministic"):
@@ -679,6 +1224,51 @@ class AdaptivePractitionerRequest:
             raise AdaptivePractitionerError(
                 "feedback must use unique typed TaskFeedback slots")
         object.__setattr__(self, "feedback", feedback)
+        if (self.stage_assistance.mode in ("advisory", "fresh")
+                and self.stage_assistance.source_state_digest
+                != self.source_state_digest):
+            raise AdaptivePractitionerError(
+                "stage experiment source_state_digest does not match the "
+                "request's treatment-neutral task/source state")
+
+    @property
+    def source_state_digest(self) -> str:
+        """Digest task/source semantics, authority, policy, and budgets.
+
+        This is not a full experimental-control digest. Model execution,
+        context implementation, capabilities, evaluator, environment,
+        workspace seed, observer bindings, occurrence identity, and treatment
+        are recorded separately by the public-solve control manifest.
+        """
+        value = {
+            "task": self.task,
+            "mode": self.mode,
+            "max_passes": self.max_passes,
+            "interaction_mode": self.interaction_mode,
+            "authority": {
+                "network_reads": self.allow_network_reads,
+                "workspace_writes": self.allow_workspace_writes,
+                "sandbox_commands": self.allow_sandbox_commands,
+                "source_materialization_to_model":
+                    self.allow_source_materialization_to_model,
+                "local_execution": self.allow_local_execution,
+            },
+            "source_kind": self.source_kind,
+            "source_refs": list(self.source_refs),
+            "source_ref_states": source_ref_states(self.source_refs),
+            "feedback": [item.to_dict() for item in self.feedback],
+            "granularity_profile": self.granularity_profile,
+            "context_budget": asdict(self.context_budget),
+            "prior_region_evidence": self.prior_region_evidence,
+        }
+        return hashlib.sha256(json.dumps(
+            value, sort_keys=True, separators=(",", ":"), default=str
+        ).encode("utf-8")).hexdigest()
+
+    @property
+    def frozen_state_digest(self) -> str:
+        """Compatibility alias for the narrower source-state digest."""
+        return self.source_state_digest
 @dataclass(frozen=True)
 class AdaptivePractitionerDependencies:
     """Model authority and optional exact deterministic resolvers."""
@@ -707,7 +1297,8 @@ class AdaptivePractitionerDependencies:
         if any(not callable(getattr(item, "supports", None))
                or not callable(getattr(item, "execute", None))
                for item in self.deterministic_resolvers):
-            raise AdaptivePractitionerError("deterministic resolvers must implement supports and execute")
+            raise AdaptivePractitionerError(
+                "deterministic resolvers must implement supports and execute")
         if self.context_portfolio is not None and not isinstance(
                 self.context_portfolio, PractitionerContextPortfolio):
             raise AdaptivePractitionerError(
@@ -730,6 +1321,14 @@ class AdaptivePractitionerDependencies:
                 != "extension_snapshot/v1")):
             raise AdaptivePractitionerError(
                 "extension_snapshot has an invalid contract")
+        try:
+            frozen_extensions = json.loads(json.dumps(
+                self.extension_snapshot, sort_keys=True,
+                separators=(",", ":"), allow_nan=False))
+        except (TypeError, ValueError) as exc:
+            raise AdaptivePractitionerError(
+                "extension_snapshot must contain strict JSON") from exc
+        object.__setattr__(self, "extension_snapshot", frozen_extensions)
 @dataclass(frozen=True)
 class ModelStepRequest:
     """One question-portfolio step and exact safe problem state."""
@@ -849,6 +1448,22 @@ class AdaptiveRunServices:
     #: acting on it before it is checked is the premature determinism this
     #: whole layer exists to avoid.
     stage_ladders: dict = field(default_factory=dict)
+    stage_assistance_decisions: list[dict] = field(default_factory=list)
+    stage_action_links: list[dict] = field(default_factory=list)
+    stage_execution_links: list[dict] = field(default_factory=list)
+    stage_outcome_links: list[dict] = field(default_factory=list)
+    control_manifest_evidence: dict = field(default_factory=dict)
+    #: Non-fatal instrumentation failures stay visible in the returned
+    #: product record and, when possible, in Run History.
+    stage_evidence_degradations: list[dict] = field(default_factory=list)
+    prior_stage_degradation_reported: bool = False
+    #: Pass-level verifier facts that could not be attributed to individual
+    #: semantic stages. Keeping the boundary is safer than copying a verdict.
+    stage_attribution_events: list[dict] = field(default_factory=list)
+    #: The stage the step now running belongs to, so its own result can be
+    #: graded however the step ends — including the failure exits, which are
+    #: the ones worth learning from.
+    _graded_stage: object = None
     convergence: ConvergenceMeasure = field(
         default_factory=ConvergenceMeasure)
     selected_intelligence_refs: list[str] = field(default_factory=list)
@@ -1068,8 +1683,7 @@ class AdaptiveRunServices:
             # version raised NameError from here and turned a clean
             # BUDGET_EXHAUSTED into NO_PROGRESS, hiding the real cause
             # behind the machinery meant to explain it.
-            from .recovery import (NO_REASONING_ROUTE_AVAILABLE,
-                                   RecoveryOutcome)
+            from .recovery import NO_REASONING_ROUTE_AVAILABLE, RecoveryOutcome
             return RecoveryOutcome(
                 blocker=NO_REASONING_ROUTE_AVAILABLE,
                 reason=f"recovery reasoning was unavailable "
@@ -1095,6 +1709,30 @@ class AdaptiveRunServices:
         return tuple(rows[:8])
 
     def model(self, request: ModelStepRequest) -> dict:
+        """Run one model step, grading the stage however it ends.
+
+        The grading sits here rather than on the success path because the
+        exits that matter most for learning are the ones that fail, and a
+        recorder wired only to the happy path leaves no trace of exactly the
+        runs worth studying.
+        """
+        self._graded_stage = None
+        results = (getattr(self.model_session, "results", None)
+                   if self.model_session is not None else None)
+        result_start = len(results) if isinstance(results, list) else 0
+        try:
+            return self._model_step(request)
+        except ModelResponseRepairStalled:
+            _grade_stage(self, self._graded_stage, output_admitted=False)
+            raise
+        finally:
+            results = (getattr(self.model_session, "results", None)
+                       if self.model_session is not None else None)
+            if isinstance(results, list):
+                _record_stage_execution(
+                    self, self._graded_stage, results[result_start:])
+
+    def _model_step(self, request: ModelStepRequest) -> dict:
         if self.model_session is None:
             raise AdaptivePractitionerError(
                 f"step {request.step_id} needs a model executor")
@@ -1105,6 +1743,18 @@ class AdaptiveRunServices:
         if self.deterministic_attempt is None:
             raise AdaptivePractitionerError(
                 "semantic model work needs a deterministic attempt trace")
+        binding = self.request.stage_assistance
+        if (binding.mode in ("advisory", "fresh")
+                and binding.source_state_digest
+                != self.request.source_state_digest):
+            raise SolutionModelError(
+                "stage experiment frozen state changed after binding",
+                error_code="stage_experiment_state_changed")
+        # Open the exact occurrence before context compilation. An advisory
+        # arm can then add its typed candidate block, while a fresh arm skips
+        # both retrieval and exposure.
+        observed = _observe_stage(self, _stage_for(self, request))
+        self._graded_stage = observed
         step_context = self.portfolio.for_step(request.step_id)
         persona_candidates = self.portfolio.persona_candidates(request.step_id)
         guidance_candidates = self.portfolio.guidance_candidates(
@@ -1122,15 +1772,7 @@ class AdaptiveRunServices:
                 "selection_authority": "model",
             }, parent=owner, profile_id="intelligence.context.serve")
         context_value = selected_context["value"]
-        prior_events = []
-        for event in owner.ledger.events:
-            if event.get("custom_kind") == "llm_work_packet_assembled":
-                break
-            prior_events.append({
-                key: value
-                for key, value in event.items() if key != "ts"
-                and not any(marker in key.lower() for marker in (
-                    "secret", "token", "authorization", "prompt", "content"))})
+        prior_events = list(semantic_event_history(owner.ledger.events))
         capability_descriptors = self.available_capabilities()
         from ..templates.library import TemplateLibrary
         template_candidates = [{
@@ -1233,14 +1875,43 @@ class AdaptiveRunServices:
                 "canonical Loop event log", "complete prior event history", 8,
                 prior_events),
         )
-        if self.request.prior_region_evidence:
+        stage_facts = (self.stage_arms.get(observed.occurrence_id, {})
+                       if observed is not None else {})
+        active_prior_refs = tuple(stage_facts.get("exposed_prior_refs", ()))
+        active_prior_candidates = tuple(
+            item for item in binding.candidates
+            if item.candidate_ref in active_prior_refs)
+        material_by_candidate = {
+            item.candidate_ref: item for item in binding.materials
+        }
+        active_prior_materials = tuple(
+            material_by_candidate[item.candidate_ref]
+            for item in active_prior_candidates
+        )
+        stage_prior_intelligence = tuple(
+            {
+                "record_type": "rendered_stage_assistance_candidate/v1",
+                "record_id": candidate.candidate_ref,
+                "selection_authority": "model",
+                "prior_not_proof": True,
+                "prior_not_instruction": True,
+                "candidate": candidate.to_dict(),
+                "material": material.to_dict(),
+            }
+            for candidate, material in zip(
+                active_prior_candidates, active_prior_materials
+            )
+        )
+        if self.request.prior_region_evidence \
+                and binding.mode != "fresh":
             # Advisory evidence from earlier runs in this task region: the
             # region statistics, the shortcut decision, and the tuning
             # decision. The model may use it; it selects nothing by itself.
             blocks = blocks + (LLMContextBlock.create(
                 "prior_region_evidence", "region_evidence", "1.0.0",
                 "saved Run History projections",
-                "advisory evidence from earlier runs in this task region", 9,
+                "advisory evidence from earlier runs in this task region",
+                10 if active_prior_candidates else 9,
                 {"selection_authority": "model", "advisory": True,
                  **self.request.prior_region_evidence}),)
         requested_state_version = int(request.state.get("state_version", -1))
@@ -1351,8 +2022,10 @@ class AdaptiveRunServices:
                 "return_destination": "owning Practitioner",
                 "terminal_contract": "verified task acceptance or typed blocker",
             },
-            context_intelligence=tuple(
-                context_value["guidance_candidates"]),
+            context_intelligence=(
+                tuple(context_value["guidance_candidates"])
+                + stage_prior_intelligence
+            ),
             question_portfolio={
                 "selection_authority": "model",
                 "active_step_hint": context_value["active_step_hint"],
@@ -1383,11 +2056,30 @@ class AdaptiveRunServices:
                 # and removed before that schema is validated. The portfolio
                 # can only be judged on use, and use is only visible if the
                 # caller says what it used.
-                "selection_report": SELECTION_REPORT_CONTRACT},
+                "selection_report": SELECTION_REPORT_CONTRACT,
+                **({"stage_assistance_decision": {
+                    "disposition": "|".join(
+                        STAGE_ASSISTANCE_DISPOSITIONS),
+                    "selected_prior_refs": ["candidate_ref"],
+                    "reason": "string",
+                    "required_for_active_experiment": True,
+                }} if binding.mode in ("advisory", "fresh") else {})},
             policy_context={
                 "interaction_mode": self.request.interaction_mode,
                 "permissions": list(permissions),
-                "model_cannot_grant_authority": True},
+                "model_cannot_grant_authority": True,
+                "stage_assistance": {
+                    "mode": binding.mode,
+                    "experiment_ref_digest": hashlib.sha256(
+                        binding.experiment_ref.encode("utf-8")).hexdigest(),
+                    "trial_ref_digest": hashlib.sha256(
+                        binding.trial_ref.encode("utf-8")).hexdigest(),
+                    "source_state_digest": binding.source_state_digest,
+                    "prior_retrieval_exposed": (
+                        bool(active_prior_candidates)),
+                    "exposed_prior_refs": (
+                        list(active_prior_refs)),
+                }},
             token_budget={"model_calls_remaining": remaining_calls},
             source_refs=tuple(self.request.source_refs), context_blocks=blocks)
         offered_options = {
@@ -1402,10 +2094,6 @@ class AdaptiveRunServices:
                 for item in packet.context_intelligence],
         }
         self.selection_tally.note_offered(request.step_id)
-        # Name this step's situation and record it. The arm is decided from
-        # the situation's own identity, before anything is offered to the
-        # call, so the split cannot be influenced by what happens next.
-        _observe_stage(self, _stage_for(self, request))
         packet_artifact = self.artifacts.store.put(
             serialize_work_packet(packet, owner),
             media_type="application/json", encoding="utf-8",
@@ -1521,14 +2209,40 @@ class AdaptiveRunServices:
                 if self.route_health_ledger is None:
                     from .route_health import RouteHealthLedger
                     self.route_health_ledger = RouteHealthLedger()
+                result_count = len(self.model_session.results)
                 try:
                     text = self.model_session.invoke(
                         ModelInvocationRequest(
                             assembled.prompt,
-                            temperature=assembled.temperature), owner)
+                            temperature=assembled.temperature,
+                            semantic_call_id=(
+                                observed.semantic_call_id
+                                if observed is not None else "")), owner)
+                    latest_result = (
+                        self.model_session.results[-1]
+                        if len(self.model_session.results) > result_count
+                        else None)
+                    _record_stage_packet_exposure(
+                        self, observed, snapshot, blocks, template_candidates,
+                        packet_digest=packet.content_digest,
+                        gateway_result=latest_result,
+                        format_attempt=format_attempt,
+                        transport_attempt=transport_attempt)
                     self._record_generation_outcome(request, error_code="")
                     break
                 except SolutionModelError as exc:
+                    latest_result = (
+                        self.model_session.results[-1]
+                        if len(self.model_session.results) > result_count
+                        else None)
+                    if latest_result is not None:
+                        _record_stage_packet_exposure(
+                            self, observed, snapshot, blocks,
+                            template_candidates,
+                            packet_digest=packet.content_digest,
+                            gateway_result=latest_result,
+                            format_attempt=format_attempt,
+                            transport_attempt=transport_attempt)
                     error_code = exc.error_code or "model_gateway_failed"
                     self._record_generation_outcome(
                         request, error_code=error_code)
@@ -1595,11 +2309,37 @@ class AdaptiveRunServices:
                     text, "inline:" + contract_digest, contract_digest),
                 parent=owner)
             value = admitted.value
+            decision_failure_code = ""
             if isinstance(value, dict):
+                assistance_decision = value.get(
+                    "stage_assistance_decision")
+                try:
+                    semantic_payload_digest = hashlib.sha256(json.dumps(
+                        {key: item for key, item in value.items()
+                         if key != "stage_assistance_decision"},
+                        sort_keys=True, separators=(",", ":"),
+                        ensure_ascii=False, allow_nan=False,
+                    ).encode("utf-8")).hexdigest()
+                    _record_stage_assistance_decision(
+                        self, observed, assistance_decision,
+                        admitted_response_digest=admitted.raw_digest,
+                        admission_loop_id=admitted.loop_id,
+                        semantic_payload_digest=semantic_payload_digest)
+                except AdaptivePractitionerError as exc:
+                    decision_failure_code = (
+                        "stage_assistance_decision_invalid")
+                    self.publish(
+                        "model.step.assistance_decision_invalid",
+                        step=request.step_id, format_attempt=format_attempt,
+                        error=str(exc)[:300],
+                        response_digest=admitted.raw_digest)
+                    value = None
+                if value is not None:
+                    value.pop("stage_assistance_decision", None)
                 # Read before the step's typed validator does, and removed so
                 # that validator never has to know these keys exist.
-                reported = {key: value.pop(key) for key in SELECTION_KEYS
-                            if key in value}
+                reported = ({key: value.pop(key) for key in SELECTION_KEYS
+                             if key in value} if value is not None else {})
                 if reported:
                     selection = admitted_selection(reported, offered_options)
                     self.selection_tally.note(request.step_id, selection)
@@ -1640,10 +2380,13 @@ class AdaptiveRunServices:
             self.publish(
                 "model.step.output_invalid", step=request.step_id,
                 format_attempt=format_attempt,
-                failure_code=admitted.failure_code,
+                failure_code=(decision_failure_code
+                              or admitted.failure_code),
                 parse_strategy=admitted.strategy,
                 response_digest=admitted.raw_digest,
-                admission_loop_id=admitted.loop_id)
+                admission_loop_id=admitted.loop_id,
+                syntax_diagnostics=[item.to_dict()
+                                    for item in admitted.syntax_diagnostics])
             if admitted.raw_digest in invalid_digests:
                 self.publish(
                     "model.step.repair_stalled", step=request.step_id,
@@ -1655,7 +2398,41 @@ class AdaptiveRunServices:
                     f"model step {request.step_id} repeated the same invalid "
                     "JSON output without progress")
             invalid_digests.add(admitted.raw_digest)
-            format_failure_code = admitted.failure_code
+            format_failure_code = (decision_failure_code
+                                   or admitted.failure_code)
             rejected_output_digest = admitted.raw_digest
+            packet = replace(packet, attempt_history={
+                **packet.attempt_history,
+                "response_syntax_failure": {
+                    "response_digest": admitted.raw_digest,
+                    "failure_code": format_failure_code,
+                    "schema_errors": list(admitted.schema_errors),
+                    "syntax_diagnostics": [item.to_dict()
+                                           for item in admitted.syntax_diagnostics],
+                },
+            })
+            packet_artifact = self.artifacts.store.put(
+                serialize_work_packet(packet, owner),
+                media_type="application/json", encoding="utf-8",
+                artifact_kind="llm_work_packet")
             format_attempt += 1
+        # This step answered the contract it was given. Whether the work is
+        # any good is a different question, answered by verification and
+        # recorded separately: well-formed output can still be wrong.
+        try:
+            observed = self.stage_store.record_response(
+                observed, _observed_response_shape(value)) \
+                if observed is not None else None
+            if observed is not None:
+                self._graded_stage = observed
+                _stage_event(
+                    self, "stage_response_admitted", observed,
+                    response_shape=observed.response_shape,
+                    output_admitted=True)
+        except Exception as exc:                        # noqa: BLE001
+            _stage_degraded(
+                self, "record_stage_response", exc,
+                stage_occurrence_id=str(
+                    getattr(observed, "occurrence_id", "")))
+        _grade_stage(self, observed, output_admitted=True)
         return value

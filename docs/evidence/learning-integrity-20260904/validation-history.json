@@ -1,0 +1,89 @@
+[
+  {
+    "disposition": "INTERMEDIATE_SUPERSEDED",
+    "exit_code": 0,
+    "phase": "accepted-build",
+    "receipt_ref": "accepted-build-receipt.json",
+    "source_changes_during_check": []
+  },
+  {
+    "disposition": "INTERMEDIATE_SUPERSEDED",
+    "exit_code": 0,
+    "phase": "accepted-conformance",
+    "receipt_ref": "accepted-conformance-receipt.json",
+    "source_changes_during_check": []
+  },
+  {
+    "disposition": "INVALID_FOR_EXACT_CHECKOUT",
+    "exit_code": 0,
+    "phase": "accepted-final",
+    "receipt_ref": "accepted-final-receipt.json",
+    "source_changes_during_check": [
+      "src/loop_engine/core/information_theory_adversarial_checks.py",
+      "src/loop_engine/core/information_update_evidence.py"
+    ]
+  },
+  {
+    "disposition": "BASELINE",
+    "exit_code": 0,
+    "phase": "baseline-conformance",
+    "receipt_ref": "baseline-conformance-receipt.json",
+    "source_changes_during_check": []
+  },
+  {
+    "disposition": "BASELINE",
+    "exit_code": 0,
+    "phase": "baseline",
+    "receipt_ref": "baseline-receipt.json",
+    "source_changes_during_check": []
+  },
+  {
+    "disposition": "DELIVERY",
+    "exit_code": 0,
+    "phase": "delivery-build",
+    "receipt_ref": "delivery-build-receipt.json",
+    "source_changes_during_check": []
+  },
+  {
+    "disposition": "DELIVERY",
+    "exit_code": 0,
+    "phase": "delivery-conformance",
+    "receipt_ref": "delivery-conformance-receipt.json",
+    "source_changes_during_check": []
+  },
+  {
+    "disposition": "DELIVERY",
+    "exit_code": 0,
+    "phase": "delivery-source",
+    "receipt_ref": "delivery-source-receipt.json",
+    "source_changes_during_check": []
+  },
+  {
+    "disposition": "DELIVERY",
+    "exit_code": 0,
+    "phase": "delivery-wheel-receipt",
+    "receipt_ref": "delivery-wheel-receipt.json",
+    "source_changes_during_check": []
+  },
+  {
+    "disposition": "INTERMEDIATE_SUPERSEDED",
+    "exit_code": 0,
+    "phase": "final-conformance",
+    "receipt_ref": "final-conformance-receipt.json",
+    "source_changes_during_check": []
+  },
+  {
+    "disposition": "INTERMEDIATE_SUPERSEDED",
+    "exit_code": 0,
+    "phase": "final",
+    "receipt_ref": "final-receipt.json",
+    "source_changes_during_check": []
+  },
+  {
+    "disposition": "INTERMEDIATE_SUPERSEDED",
+    "exit_code": 0,
+    "phase": "wheel-receipt",
+    "receipt_ref": "wheel-receipt.json",
+    "source_changes_during_check": []
+  }
+]

@@ -29,10 +29,11 @@ raising-callable evidence, pinned-settings check.
 """
 from __future__ import annotations
 
+import uuid
+
 from .loop_definition import LoopStartRequest
 from .loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
-from .recursive_loop import (Loop, LoopConfig, LoopError, LoopLedger,
-                             StepOutcome)
+from .recursive_loop import Loop, LoopConfig, LoopError, LoopLedger, StepOutcome
 
 
 def _identity(role: LoopRole, profile_id: str) -> LoopRoleIdentity:
@@ -145,10 +146,28 @@ def as_component_loop(objective: str, fn, *, fallbacks=(),
     return out
 
 
+def _reported_token(value: object) -> int | None:
+    """Preserve an exact provider count; missing or malformed stays unknown."""
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        return None
+    return value
+
+
+def _reported_token_attr(value: object, name: str) -> int | None:
+    """Read a provider property without letting a partial total raise."""
+    try:
+        raw = getattr(value, name, None)
+    except (AttributeError, TypeError, ValueError):
+        return None
+    return _reported_token(raw)
+
+
 def as_model_loop(objective: str, fn, *, inputs=None,
                   parent: "Loop | None" = None,
                   ledger: "LoopLedger | None" = None,
-                  llm_thinking_power: str = "medium") -> dict:
+                  llm_thinking_power: str = "medium",
+                  semantic_call_id: str = "",
+                  owner_loop_id: str = "") -> dict:
     """EVERY MODEL CALL IS A LOOP (owner, 2026-08-24).
 
     The other encapsulators pin deterministic-only and assert zero semantic
@@ -162,6 +181,26 @@ def as_model_loop(objective: str, fn, *, inputs=None,
     ``model.invocation.completed`` or ``.failed`` after — with whatever
     provider-reported usage the result carries. A raising call still leaves
     its failure as evidence before the error surfaces."""
+    for name, value in (("semantic_call_id", semantic_call_id),
+                        ("owner_loop_id", owner_loop_id)):
+        if not isinstance(value, str):
+            raise LoopError(f"{name} must be text")
+        if (value and (value != value.strip()
+                       or any(character.isspace() for character in value)
+                       or len(value) > 192)):
+            raise LoopError(f"{name} must be bounded text without whitespace")
+    if owner_loop_id:
+        ancestor = parent
+        ancestor_ids = set()
+        while ancestor is not None:
+            ancestor_ids.add(ancestor.loop_id)
+            ancestor = ancestor.parent
+        if owner_loop_id not in ancestor_ids:
+            raise LoopError(
+                "owner_loop_id must name the model Loop's parent or ancestor")
+
+    semantic_call_id = (
+        semantic_call_id or f"semantic-call:{uuid.uuid4().hex}")
     cfg = LoopConfig(framework="custom", custom_steps=("invoke",),
                      power="light",
                      allowable_modes=("non_deterministic",),
@@ -177,9 +216,12 @@ def as_model_loop(objective: str, fn, *, inputs=None,
             if parent is not None else Loop(
                 goal, cfg, ledger=ledger, identity=identity,
                 relationship=relationship))
+    semantic_owner_loop_id = (
+        owner_loop_id or (parent.loop_id if parent is not None else loop.loop_id))
     lg = loop.ledger
     lg.record(loop_id=loop.loop_id, event="model_boundary_deferred",
-              objective=objective[:120])
+              objective=objective[:120], semantic_call_id=semantic_call_id,
+              owner_loop_id=semantic_owner_loop_id)
     holder: dict = {}
 
     def handler(lp: Loop, step: str, context: dict) -> StepOutcome:
@@ -198,24 +240,38 @@ def as_model_loop(objective: str, fn, *, inputs=None,
     # LITERAL kinds on both arms: a conditional expression is a computed
     # event name, which the vocabulary gate refuses (rightly — it cannot be
     # checked against the canonical families).
-    _prompt_tokens = int(getattr(value, "prompt_tokens", 0) or 0)
-    _eval_tokens = int(getattr(value, "eval_tokens", 0) or 0)
+    _prompt_tokens = _reported_token_attr(value, "prompt_tokens")
+    _eval_tokens = _reported_token_attr(value, "eval_tokens")
+    _total_tokens = _reported_token_attr(value, "total_tokens")
+    _known_usage = sum(item is not None for item in (
+        _prompt_tokens, _eval_tokens, _total_tokens))
     _usage = {"model": str(getattr(value, "model_used", "")
                            or getattr(value, "model", ""))[:60],
               "provider": str(getattr(value, "provider", ""))[:60],
               "prompt_tokens": _prompt_tokens,
               "eval_tokens": _eval_tokens,
-              "accounting_complete": bool(_prompt_tokens or _eval_tokens)}
+              "total_tokens": _total_tokens,
+              "accounting_complete": (
+                  _prompt_tokens is not None and _eval_tokens is not None),
+              "usage_state": (
+                  "unknown" if _known_usage == 0 else
+                  "complete" if _known_usage == 3 else "partial"),
+              "usage_record_type": "model_usage/v2"}
     if ok:
-        lg.record(loop_id=loop.loop_id, event="model_led", **_usage)
+        lg.record(loop_id=loop.loop_id, event="model_led", **_usage,
+                  semantic_call_id=semantic_call_id,
+                  owner_loop_id=semantic_owner_loop_id)
     else:
         lg.record(loop_id=loop.loop_id, event="model_invocation_failed",
-                  **_usage)
+                  **_usage, semantic_call_id=semantic_call_id,
+                  owner_loop_id=semantic_owner_loop_id)
     if "error" in holder:
         raise LoopError(
             f"model invocation {objective!r} raised inside loop "
             f"{res.loop_id} (evidence on the ledger)") from holder["error"]
     return {"value": value, "loop_id": res.loop_id,
+            "semantic_call_id": semantic_call_id,
+            "owner_loop_id": semantic_owner_loop_id,
             "steps_run": res.steps_run, "stopped": res.stopped, "ok": ok,
             "loop_definition_id": res.loop_definition_id,
             "loop_definition_version": res.loop_definition_version,
@@ -519,11 +575,12 @@ def self_test() -> dict:
     # semantic call, and permits exactly one.  Request and outcome both land
     # on the timeline, so a provider call can never be a silent side effect
     # of a helper; a failing call still leaves evidence before it raises.
-    from .recursive_loop import LoopLedger as _LL2
     from ..core.run_history import to_canonical_events as _tce
+    from .recursive_loop import LoopLedger as _LL2
 
     class _Res:
         ok, model_used, prompt_tokens, eval_tokens = True, "m", 11, 22
+        total_tokens = 33
 
     lg9 = _LL2()
     good = as_model_loop("ask something", lambda: _Res(), ledger=lg9)
@@ -536,12 +593,59 @@ def self_test() -> dict:
     except LoopError:
         raised = True
     fams9b = {c["type"] for c in _tce(lg9b.events)}
+    completed9 = next(
+        event for event in lg9.events if event.get("event") == "model_led")
+    failed9 = next(event for event in lg9b.events
+                   if event.get("event") == "model_invocation_failed")
     check("the_model_boundary_crosses_a_loop_that_permits_one_semantic_call",
           good["ok"] and good["stopped"] == "success_once"
+          and completed9.get("semantic_call_id") == good["semantic_call_id"]
+          and completed9.get("owner_loop_id") == good["owner_loop_id"]
+          and good["owner_loop_id"] == good["loop_id"]
           and {"model.invocation.requested",
                "model.invocation.completed"} <= fams9
-          and raised and "model.invocation.failed" in fams9b,
+          and raised and "model.invocation.failed" in fams9b
+          and bool(failed9.get("semantic_call_id"))
+          and failed9.get("owner_loop_id") == failed9.get("loop_id"),
           "request+completion recorded; a raising call records failure first")
+
+    class _MissingUsage:
+        ok, model_used = True, "missing"
+
+    class _PartialUsage:
+        ok, model_used, prompt_tokens, eval_tokens = True, "partial", None, 7
+        total_tokens = None
+
+    class _ZeroUsage:
+        ok, model_used, prompt_tokens, eval_tokens = True, "zero", 0, 0
+        total_tokens = 0
+
+    usage_events = []
+    for label, result in (
+            ("positive", _Res()), ("missing", _MissingUsage()),
+            ("partial", _PartialUsage()), ("zero", _ZeroUsage())):
+        usage_ledger = _LL2()
+        as_model_loop(label, lambda result=result: result, ledger=usage_ledger)
+        usage_events.append(next(
+            event for event in usage_ledger.events
+            if event.get("event") == "model_led"))
+    positive, missing, partial, zero = usage_events
+    check("model_boundary_preserves_positive_missing_partial_and_zero_usage",
+          (positive["prompt_tokens"], positive["eval_tokens"],
+           positive["total_tokens"], positive["usage_state"])
+          == (11, 22, 33, "complete")
+          and missing["prompt_tokens"] is None
+          and missing["eval_tokens"] is None
+          and missing["total_tokens"] is None
+          and missing["usage_state"] == "unknown"
+          and partial["prompt_tokens"] is None
+          and partial["eval_tokens"] == 7
+          and partial["total_tokens"] is None
+          and partial["usage_state"] == "partial"
+          and zero["prompt_tokens"] == 0 and zero["eval_tokens"] == 0
+          and zero["total_tokens"] == 0
+          and zero["accounting_complete"] is True,
+          "None remains unknown while provider-reported zero remains zero")
 
     passed = sum(1 for t in results if t["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

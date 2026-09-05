@@ -1,0 +1,1684 @@
+{
+ "record_type": "solve_outcome/v4",
+ "run_id": "adaptive-1ef605de5de76af301f48a00",
+ "terminal_code": "COMPLETED_VERIFIED",
+ "status": "COMPLETED_VERIFIED",
+ "solved": true,
+ "summary": "A bounded test project.",
+ "failure_code": "",
+ "result": {
+  "record_type": "generated_project_execution/v1",
+  "manifest_digest": "5b574820a8b9410b520609dbcccbfe0f0424d89943059dfe6828443d86272548",
+  "workspace": {
+   "workspace_id": "fixture",
+   "backend_kind": "fixture",
+   "root": "/home/username/loop-engine/docs/evidence/runs/learning-integrity-public-offline-20260904/adaptive-1ef605de5de76af301f48a00-workspace/attempt-1"
+  },
+  "sandbox": {
+   "backend_kind": "fixture",
+   "network_reads": false
+  },
+  "writes": [],
+  "commands": [
+   {
+    "purpose": "run",
+    "ok": true,
+    "exit_code": 0,
+    "stdout": "done\n",
+    "stderr": "",
+    "error_code": ""
+   }
+  ],
+  "artifacts": [
+   {
+    "path": "output.txt",
+    "media_type": "text/plain",
+    "minimum_bytes": 1,
+    "present": true,
+    "byte_count": 5,
+    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "error_code": "",
+    "verified": true
+   }
+  ],
+  "snapshot": {
+   "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "file_count": 2,
+   "total_bytes": 19
+  },
+  "deterministic_checks_passed": true,
+  "manifest": {
+   "record_type": "generated_project_manifest/v1",
+   "project_id": "stage_assistance_fixture",
+   "summary": "A bounded test project.",
+   "files": [
+    {
+     "path": "main.py",
+     "content": "print('done')\n"
+    }
+   ],
+   "commands": [
+    {
+     "argv": [
+      "python",
+      "main.py"
+     ],
+     "purpose": "Run the project.",
+     "timeout_seconds": 30.0,
+     "command_kind": "execute",
+     "network_access": false,
+     "expected_exit_codes": [
+      0
+     ]
+    }
+   ],
+   "expected_artifacts": [
+    {
+     "path": "output.txt",
+     "media_type": "text/plain",
+     "minimum_bytes": 1
+    }
+   ]
+  },
+  "input_use_validation": {
+   "record_type": "generated_project_input_use_validation/v1",
+   "supplied_paths": [],
+   "referenced_paths": [],
+   "offline_network_imports": [],
+   "passed": true
+  },
+  "workspace_path": "/home/username/loop-engine/docs/evidence/runs/learning-integrity-public-offline-20260904/adaptive-1ef605de5de76af301f48a00-workspace/attempt-1",
+  "context_evidence_count": 0
+ },
+ "compiled_task": {
+  "compiled_task_id": "task:open:b4f682c785ce6737bc63",
+  "original_input": "Create one verified text artifact from the supplied task.",
+  "normalized_interpretation": "Create one verified text artifact from the supplied task.",
+  "task_type": "unknown",
+  "output_kind": "unknown",
+  "binding": null,
+  "variables": {},
+  "file_refs": [],
+  "source_refs": [],
+  "provenance": "LLM-first open task compiler",
+  "work_item": {
+   "record_type": "work_item_ir/v1",
+   "work_item_id": "task:open:b4f682c785ce6737bc63",
+   "source_kind": "text",
+   "original_input": "Create one verified text artifact from the supplied task.",
+   "normalized_interpretation": "Create one verified text artifact from the supplied task.",
+   "coordinates": {
+    "question": "Create one verified text artifact from the supplied task.",
+    "operator": "unknown",
+    "response_topology": "unknown",
+    "decision_consumer": "verify_then_return_or_stage_learning"
+   },
+   "source_refs": [],
+   "acceptance_criteria": [
+    "output contract validates",
+    "independent verification passes"
+   ],
+   "constraints": [],
+   "known_facts": [],
+   "unknowns": [],
+   "requirement_dispositions": [],
+   "tags": [
+    "task:open",
+    "response:unknown"
+   ],
+   "risk": "unknown",
+   "consequence": "unknown",
+   "privacy_scope": "project",
+   "provenance": "LLM-first open task compiler"
+  },
+  "template_selection_authority": "model_only",
+  "template_candidates": [
+   {
+    "template_id": "core.task.data_standardization",
+    "template_version": "1.0.0",
+    "task_type": "transformation",
+    "output_kind": "artifact",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.kaggle_competition",
+    "template_version": "1.0.0",
+    "task_type": "prediction",
+    "output_kind": "artifact",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.source_digestion",
+    "template_version": "1.0.0",
+    "task_type": "generation",
+    "output_kind": "artifact",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.tabular_classification",
+    "template_version": "1.0.0",
+    "task_type": "classification",
+    "output_kind": "label",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.tabular_model_comparison",
+    "template_version": "1.0.0",
+    "task_type": "prediction",
+    "output_kind": "report",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.tabular_regression",
+    "template_version": "1.0.0",
+    "task_type": "regression",
+    "output_kind": "score",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   }
+  ],
+  "task_feedback": []
+ },
+ "intelligence": {
+  "context": {
+   "portfolio_id": "core.context.practitioner.general",
+   "version": "1.0.0",
+   "persona": {
+    "persona_id": "core.persona.task_interpreter",
+    "version": "1.0.0",
+    "instruction": "You are a careful task interpreter and systems analyst. Preserve the request, identify the intended outcome, separate facts from assumptions, detect material ambiguity, identify expected inputs and outputs, and propose only the next useful action. Do not solve the domain task unless the current work directive explicitly asks you to do so. Do not assume a domain, dataset, file layout, tool, implementation, or answer that the task and observed evidence do not establish."
+   },
+   "selected_refs": []
+  },
+  "option_selection": {
+   "record_type": "option_selection_tally/v1",
+   "perspectives": {},
+   "question_refs": {},
+   "guidance_refs": {},
+   "steps_reported": {},
+   "steps_offered": {
+    "act": 2,
+    "decide_next": 1,
+    "how": 1,
+    "orient": 1,
+    "route": 1,
+    "verify": 1
+   },
+   "wanted_but_absent": [],
+   "operator_gaps": [],
+   "named_but_not_offered": [],
+   "other_observations": [],
+   "reports": 0,
+   "calls": 7
+  },
+  "semantic_autonomy": {
+   "record_type": "semantic_autonomy_coverage/v1",
+   "semantic_autonomy_coverage": 1.0,
+   "decisions_recorded": 2,
+   "attributable_to_reasoning": 2,
+   "by_owner": {
+    "llm": 2,
+    "user": 0,
+    "deterministic": 0
+   },
+   "by_decision_kind": {
+    "interpret_task": 1,
+    "select_next_operation": 1
+   },
+   "unattributed_by_kind": {},
+   "uncontested_decisions": 2,
+   "decision_kinds_not_anticipated": [],
+   "reading": "all 2 decisions were reasoned, but none had a second alternative open, so the coverage figure is weak evidence on its own"
+  },
+  "decision_outcomes": {
+   "record_type": "decision_outcome_ledger/v1",
+   "decisions_followed": 2,
+   "reached_an_observation": 2,
+   "outcome_known": 2,
+   "helped": 2,
+   "by_stage": {
+    "proposed": 0,
+    "admitted": 0,
+    "executed": 0,
+    "observed": 0,
+    "verified": 0,
+    "contributed": 2
+   },
+   "by_decision_kind": {
+    "interpret_task": {
+     "helped": 1,
+     "hurt": 0,
+     "unknown": 0
+    },
+    "select_next_operation": {
+     "helped": 1,
+     "hurt": 0,
+     "unknown": 0
+    }
+   },
+   "invalidated_later": 0,
+   "verification_granularity": "run",
+   "reading": "2 of 2 decisions have a known outcome, of which 2 helped"
+  },
+  "search_candidates": [],
+  "fetched_sources": [],
+  "extensions": {},
+  "region_evidence": {},
+  "stage_assistance": {
+   "mode": "fresh",
+   "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+   "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+   "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+   "control_manifest_recorded": true,
+   "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+   "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+   "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+   "control_evidence_class": "mechanism_only",
+   "control_blocking_unknowns": [
+    "dirty_runtime_build_digest",
+    "arm_specific_injected_response_queue",
+    "project_executor_implementation_digest",
+    "independent_evaluator_identity",
+    "initial_workspace_content_digest",
+    "progress_callback_implementation_digest"
+   ],
+   "stage_arms": {
+    "stage-occurrence:sha256:d7539c5ff50df494a6eb4626c0c6dd27102559318a048a5162fd0e7c65b33484": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "orient",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:7da96c3ba4cd409f312285c8d23687c3",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:515cbd2abc00363c6dff6681e1c5029cf4d6b8ba6cb6a5d45946b6f40d4b989b",
+      "packet_digest": "e2260c81e254becc081849609f4ed5f782712efe6cf839c7b901d9a6bf757abd",
+      "prompt_digest": "adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+      "prompt_assembly_id": "assembly.sha256_adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+      "gateway_request_digest": "499a7a2312e078fbc8b3f944fed2edc8743668c0010049b181ac981590d09f8a",
+      "provider_request_digests": [
+       "c4894860c045194f9ed34062acff84dba61fc689bd58a10b0a70378931099ef5"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop7"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:997e99160798ce1bc5664e721b68d09814e7e957e73bcb0bab136b35ab35df02": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "decide_next",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:7cc4a5dca6038ceeb83772e0718ef013",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:6770b2fd83f7c20344de2ce19890cfea343278dbd1c98696fa8b9d9772f5e174",
+      "packet_digest": "6b508f5b5f8e8a893dfe26c58a4cc4bd355423eb97707ac9392cae32c70175cf",
+      "prompt_digest": "3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+      "prompt_assembly_id": "assembly.sha256_3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+      "gateway_request_digest": "e787a1e0670c4b5b8566a32f59dca8f654ceb295f39fac4977df419c8fa13aae",
+      "provider_request_digests": [
+       "2cec5d535e8cf11050ea5fb9ec64f49602bb3a46d204446fd6ee590c640e1964"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop14"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:46e23b7e412da456d27ac565e904fa737607d517571993cb68af1b5ac1118e57": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "how",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:b9dbbaf794ee05a64b440da4d0237a03",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:77b6a7ddc2648b6c02394fa716cd0cb2b54a8eb7baff9a6cc83e8b7f26b848c2",
+      "packet_digest": "d50f2934b554f6d3f56c1e7c7e9bd712bb73feb4aedcaf00acdc3d1dd7a6916d",
+      "prompt_digest": "06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+      "prompt_assembly_id": "assembly.sha256_06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+      "gateway_request_digest": "b9783c8ad6a0cae8d17ce0016411d5988fa6268b4db243965db92d53353a968e",
+      "provider_request_digests": [
+       "f8fdd0e4d9b5534f6d7b890b4775d91ca83925e37e89af0c7af237d9c61fc704"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop21"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:769544c55241d29eaf810bd8425bb660f31918919406a9a2085f930a280e5076": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "act",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:105fc8361f67a44df9e53ee855d91d75",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:0928000eb3f1992715fd917d58ccce611ad6fd5e62f128f2358c28c43d7fbb6b",
+      "packet_digest": "37eb22a1e579f8825a664accf42103525b47179a25fa0b74e424a2f9d45a999f",
+      "prompt_digest": "f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+      "prompt_assembly_id": "assembly.sha256_f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+      "gateway_request_digest": "8ede3819335de4fd8a690275ee083139fb4505cc1e881ff5c5a7b92e262b9253",
+      "provider_request_digests": [
+       "222881d57496a0f5616d6a4097ea4f84fd8f1693cc4ade393e31860a08dbf0c4"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop28"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:31fe0fb17c18a8bbe82456c95f69b51740f47d3d2801a891bb5aa043e5f03138": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "act",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:78a84b02ff42517b1a4a239b8f4fb18d",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:a58905f3e0d03611999c6c60050c2a7fac97a67b549b9ba8df31d0e70d459306",
+      "packet_digest": "a02a18c093bfe551b0fb6c2fb32464d9ab2e43aa3b7743fd7c185e112da9e235",
+      "prompt_digest": "683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+      "prompt_assembly_id": "assembly.sha256_683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+      "gateway_request_digest": "da4ac3e124152faebddbebcf12b2503a5b14bc80b46e132d15a5d58d5c071bde",
+      "provider_request_digests": [
+       "6aa9a0619e8139e9cc1684b5af77f4ce2e6162cae085d5fe7ea6b4a2aff65224"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop35"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:9fb24e0d15ebf6e26f182a24fe75d22a347d75672c99f921208bcdb7b4bb492b": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "verify",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:c397f308bebcb975c35bc583a4152eb8",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:71e594e74fb85b51162ca1dc33dd43ce9e6268df008d2e3ce2b3e57b1fd1d261",
+      "packet_digest": "bbdb0aee295d03f11a6f5d0bfcda75b0f0ca27e0bbc79524d58490c92ce6bc20",
+      "prompt_digest": "2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+      "prompt_assembly_id": "assembly.sha256_2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+      "gateway_request_digest": "10d9c89cec468ebb4b9355cc4ba3e4cbe64471769d8581cd4641562b7e72118b",
+      "provider_request_digests": [
+       "93dfc4b0da3a0715a951e4612b061db18e727c5046cc2683d6a244c4eb394b1a"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop45"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:7c183ad80829cdf914ffce0fda690a3f6408b8798ae1818b3b27a8bdf8d38268": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "route",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:fb4d56ea64ae2abe345d46d08a3a3e60",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:7f28e30d5fbe46d2469e6e7d85fb8fa754f19bef5ed8dd840d445164c9aeebfd",
+      "packet_digest": "277fda14e5c55bc2df72dab6e1998d136827a2b1c5b0b05dba3ea5e48afddafc",
+      "prompt_digest": "83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+      "prompt_assembly_id": "assembly.sha256_83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+      "gateway_request_digest": "2ec284227444dc111092790f487c8bf3cc25fbd38d5e159510f9b6099cef070e",
+      "provider_request_digests": [
+       "a9adee9d5a709934295a79d7fc8456ff908d219c56b9239aedfb3c2fb25f667d"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop52"
+      ]
+     }
+    }
+   },
+   "decisions": [
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:d7539c5ff50df494a6eb4626c0c6dd27102559318a048a5162fd0e7c65b33484",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:515cbd2abc00363c6dff6681e1c5029cf4d6b8ba6cb6a5d45946b6f40d4b989b",
+     "packet_digest": "e2260c81e254becc081849609f4ed5f782712efe6cf839c7b901d9a6bf757abd",
+     "prompt_digest": "adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+     "prompt_assembly_id": "assembly.sha256_adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+     "gateway_request_digest": "499a7a2312e078fbc8b3f944fed2edc8743668c0010049b181ac981590d09f8a",
+     "provider_request_digests": [
+      "c4894860c045194f9ed34062acff84dba61fc689bd58a10b0a70378931099ef5"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop7"
+     ],
+     "admitted_response_digest": "64995fdde43e5dcd0484af618656a53010b50bacbd6a572ae2b4a915b68631f5",
+     "admission_loop_id": "loop8",
+     "semantic_payload_digest": "91b469801c629ede65d9063e106982450fdce454c49f5f2abaef00049ff18f30",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:997e99160798ce1bc5664e721b68d09814e7e957e73bcb0bab136b35ab35df02",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:6770b2fd83f7c20344de2ce19890cfea343278dbd1c98696fa8b9d9772f5e174",
+     "packet_digest": "6b508f5b5f8e8a893dfe26c58a4cc4bd355423eb97707ac9392cae32c70175cf",
+     "prompt_digest": "3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+     "prompt_assembly_id": "assembly.sha256_3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+     "gateway_request_digest": "e787a1e0670c4b5b8566a32f59dca8f654ceb295f39fac4977df419c8fa13aae",
+     "provider_request_digests": [
+      "2cec5d535e8cf11050ea5fb9ec64f49602bb3a46d204446fd6ee590c640e1964"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop14"
+     ],
+     "admitted_response_digest": "2f4051e98c142be723a07a9755c614e88e2300f522089f8254a12d84f56988c1",
+     "admission_loop_id": "loop15",
+     "semantic_payload_digest": "27719685a0d29283a6c5cb9a01040fb25e9efeb039a49e753ecdc508578a8199",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:46e23b7e412da456d27ac565e904fa737607d517571993cb68af1b5ac1118e57",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:77b6a7ddc2648b6c02394fa716cd0cb2b54a8eb7baff9a6cc83e8b7f26b848c2",
+     "packet_digest": "d50f2934b554f6d3f56c1e7c7e9bd712bb73feb4aedcaf00acdc3d1dd7a6916d",
+     "prompt_digest": "06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+     "prompt_assembly_id": "assembly.sha256_06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+     "gateway_request_digest": "b9783c8ad6a0cae8d17ce0016411d5988fa6268b4db243965db92d53353a968e",
+     "provider_request_digests": [
+      "f8fdd0e4d9b5534f6d7b890b4775d91ca83925e37e89af0c7af237d9c61fc704"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop21"
+     ],
+     "admitted_response_digest": "be077a9846e5ec71f99aa0259fe058c05ffb704f72f0816f89ccdcd6c28d62bd",
+     "admission_loop_id": "loop22",
+     "semantic_payload_digest": "6bd80df1cb66664b5a576bfe536a2b5badc496fffc36ba4b6b65f0de64b1fbcf",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:769544c55241d29eaf810bd8425bb660f31918919406a9a2085f930a280e5076",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:0928000eb3f1992715fd917d58ccce611ad6fd5e62f128f2358c28c43d7fbb6b",
+     "packet_digest": "37eb22a1e579f8825a664accf42103525b47179a25fa0b74e424a2f9d45a999f",
+     "prompt_digest": "f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+     "prompt_assembly_id": "assembly.sha256_f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+     "gateway_request_digest": "8ede3819335de4fd8a690275ee083139fb4505cc1e881ff5c5a7b92e262b9253",
+     "provider_request_digests": [
+      "222881d57496a0f5616d6a4097ea4f84fd8f1693cc4ade393e31860a08dbf0c4"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop28"
+     ],
+     "admitted_response_digest": "d91f97faec3be0968326f1385a0c0bfa0bf07b816eef05bff18cf9acdfe41d5b",
+     "admission_loop_id": "loop29",
+     "semantic_payload_digest": "ab6666282b9255cf6a1c107b1fd392d4a40386b5a7cf3e7b03a6f2848d0bc936",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:31fe0fb17c18a8bbe82456c95f69b51740f47d3d2801a891bb5aa043e5f03138",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:a58905f3e0d03611999c6c60050c2a7fac97a67b549b9ba8df31d0e70d459306",
+     "packet_digest": "a02a18c093bfe551b0fb6c2fb32464d9ab2e43aa3b7743fd7c185e112da9e235",
+     "prompt_digest": "683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+     "prompt_assembly_id": "assembly.sha256_683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+     "gateway_request_digest": "da4ac3e124152faebddbebcf12b2503a5b14bc80b46e132d15a5d58d5c071bde",
+     "provider_request_digests": [
+      "6aa9a0619e8139e9cc1684b5af77f4ce2e6162cae085d5fe7ea6b4a2aff65224"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop35"
+     ],
+     "admitted_response_digest": "29588fb0cf07eef5f84843aaf971c0ced119489b1b73f6b6091276b578d3a452",
+     "admission_loop_id": "loop36",
+     "semantic_payload_digest": "d3ac992e10a1be84256b7505c195cf7b448413338f68613d60a0e5a9cc46dfe6",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:9fb24e0d15ebf6e26f182a24fe75d22a347d75672c99f921208bcdb7b4bb492b",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:71e594e74fb85b51162ca1dc33dd43ce9e6268df008d2e3ce2b3e57b1fd1d261",
+     "packet_digest": "bbdb0aee295d03f11a6f5d0bfcda75b0f0ca27e0bbc79524d58490c92ce6bc20",
+     "prompt_digest": "2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+     "prompt_assembly_id": "assembly.sha256_2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+     "gateway_request_digest": "10d9c89cec468ebb4b9355cc4ba3e4cbe64471769d8581cd4641562b7e72118b",
+     "provider_request_digests": [
+      "93dfc4b0da3a0715a951e4612b061db18e727c5046cc2683d6a244c4eb394b1a"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop45"
+     ],
+     "admitted_response_digest": "c0704014b46aa38f28969bb876205d7681c10afe87e3be256a19d302e881fe0e",
+     "admission_loop_id": "loop46",
+     "semantic_payload_digest": "dc09685f4b88af75e084b40bb983f685a4c129bf23da06473137f3841737c543",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:7c183ad80829cdf914ffce0fda690a3f6408b8798ae1818b3b27a8bdf8d38268",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:7f28e30d5fbe46d2469e6e7d85fb8fa754f19bef5ed8dd840d445164c9aeebfd",
+     "packet_digest": "277fda14e5c55bc2df72dab6e1998d136827a2b1c5b0b05dba3ea5e48afddafc",
+     "prompt_digest": "83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+     "prompt_assembly_id": "assembly.sha256_83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+     "gateway_request_digest": "2ec284227444dc111092790f487c8bf3cc25fbd38d5e159510f9b6099cef070e",
+     "provider_request_digests": [
+      "a9adee9d5a709934295a79d7fc8456ff908d219c56b9239aedfb3c2fb25f667d"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop52"
+     ],
+     "admitted_response_digest": "d41436a39f4c0fac2b63b8c7f69abb678974317e195ce46f868cc8ec6791d850",
+     "admission_loop_id": "loop53",
+     "semantic_payload_digest": "08ffa868e58485e9fbf6ec9fa153ac006e3e2266cc316beb5473d83b02a77ac5",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    }
+   ],
+   "action_links": [
+    {
+     "record_type": "stage_selected_action_lineage/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:997e99160798ce1bc5664e721b68d09814e7e957e73bcb0bab136b35ab35df02",
+     "semantic_call_id": "semantic-stage-b9c4f5eac9ef7cf688f0bc0146a06ae99acfa1cd2963a5bd",
+     "run_id": "adaptive-1ef605de5de76af301f48a00",
+     "owner_loop_id": "loop1",
+     "pass_number": 1,
+     "action_id": "action:3e4f1aaa8d6e4eba86c6",
+     "action_occurrence_ref": "action-occurrence:sha256:d241b39fc58927dbc915c2524492be557463bf68524282179bced25653e8b3cb",
+     "action_payload_digest": "3e4f1aaa8d6e4eba86c6a220f99dc0c8157c8951804a7226e74fd9323a8b87d3",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "assistance_decision_digest": "ccac6f6bb72afddfb1b69f95e2330c704f932150f180bbc000f1fa33c800a576",
+     "attribution_method": "EXACT_SELECTED_ACTION_IDENTITY"
+    }
+   ],
+   "execution_links": [
+    {
+     "record_type": "stage_action_execution_lineage/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:997e99160798ce1bc5664e721b68d09814e7e957e73bcb0bab136b35ab35df02",
+     "action_occurrence_ref": "action-occurrence:sha256:d241b39fc58927dbc915c2524492be557463bf68524282179bced25653e8b3cb",
+     "execution_ref": "action-execution:sha256:cdd843ff08105dffd748ebea45bd2df633b6b83c9a029a9dc0a2ba5f450c5b5a",
+     "action_id": "action:3e4f1aaa8d6e4eba86c6",
+     "capability_ref": "core.generated_project",
+     "plan_digest": "df7c980a120d758e876b9b8ff861286980aae79da47b52c8545d2e29bf069e44",
+     "result_digest": "7c4d17ae8bf0d1d4e87dc1376d742a6dc44aaa204c49f1ffd1ca6d9e775583ba",
+     "execution_succeeded": true,
+     "downstream_use": true,
+     "attribution_method": "DIRECT_DOWNSTREAM_CONSUMPTION"
+    }
+   ],
+   "outcome_links": [
+    {
+     "record_type": "stage_action_verification_lineage/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:997e99160798ce1bc5664e721b68d09814e7e957e73bcb0bab136b35ab35df02",
+     "stage_observation_ref": "stage-observation:sha256:61249d3cc477543065b83ee85d8b0e0f52c242422a101bb5a829b3c7310c5366",
+     "action_occurrence_ref": "action-occurrence:sha256:d241b39fc58927dbc915c2524492be557463bf68524282179bced25653e8b3cb",
+     "execution_ref": "action-execution:sha256:cdd843ff08105dffd748ebea45bd2df633b6b83c9a029a9dc0a2ba5f450c5b5a",
+     "verification_ref": "action-verification:sha256:8b1717f4933e9c839c01dc751e32a8605c4fbc56b7c8f2b4535dd8cc23b691ef",
+     "action_id": "action:3e4f1aaa8d6e4eba86c6",
+     "execution_result_digest": "7c4d17ae8bf0d1d4e87dc1376d742a6dc44aaa204c49f1ffd1ca6d9e775583ba",
+     "verifier_stage_occurrence_id": "stage-occurrence:sha256:9fb24e0d15ebf6e26f182a24fe75d22a347d75672c99f921208bcdb7b4bb492b",
+     "verifier_semantic_call_id": "semantic-stage-66273f9bc4ac5c7105958b414473e565778d0fd75264732e",
+     "verification_verdict": "accept",
+     "deterministic_checks_passed": true,
+     "semantic_verification_observed": true,
+     "evaluation_record_digest": "658416de3b0b91145be5f31a3a77c2de5ff72a57425f30e3ec068b856abc44d6",
+     "local_verification": true,
+     "outcome_after_verification": {
+      "record_type": "outcome_vector/v1",
+      "credit": "helped",
+      "granularity": "stage",
+      "known": [
+       "output_admitted",
+       "local_verification",
+       "downstream_use"
+      ],
+      "unknown": [
+       "branch_contribution",
+       "later_invalidated",
+       "task_outcome"
+      ],
+      "contradictions": [],
+      "reading": "helped on stage-local evidence: output_admitted, local_verification, downstream_use",
+      "output_admitted": true,
+      "local_verification": true,
+      "downstream_use": true,
+      "branch_contribution": null,
+      "later_invalidated": null,
+      "task_outcome": null
+     },
+     "attribution_method": "DIRECT_LOCAL_VERIFIER",
+     "attribution_confidence": null,
+     "verifier_independence": "same_practitioner_model_path"
+    }
+   ],
+   "stages": {
+    "record_type": "stage_store/v1",
+    "degraded": false,
+    "write_failures": 0,
+    "read_failures": 0,
+    "unreadable_rows": 0,
+    "last_storage_error": "",
+    "degradation_events": [],
+    "observations": 7,
+    "distinct_situations": 7,
+    "distinct_motifs": 6,
+    "distinct_shapes": 6,
+    "path": "/home/username/loop-engine/docs/evidence/runs/learning-integrity-public-offline-20260904/stages.jsonl"
+   },
+   "prior_stages_loaded": 14,
+   "attribution_boundaries": [
+    {
+     "record_type": "stage_attribution_boundary/v1",
+     "pass_number": 1,
+     "verification_verdict": "accept",
+     "stage_occurrence_ids": [
+      "stage-occurrence:sha256:d7539c5ff50df494a6eb4626c0c6dd27102559318a048a5162fd0e7c65b33484",
+      "stage-occurrence:sha256:997e99160798ce1bc5664e721b68d09814e7e957e73bcb0bab136b35ab35df02",
+      "stage-occurrence:sha256:46e23b7e412da456d27ac565e904fa737607d517571993cb68af1b5ac1118e57",
+      "stage-occurrence:sha256:769544c55241d29eaf810bd8425bb660f31918919406a9a2085f930a280e5076",
+      "stage-occurrence:sha256:31fe0fb17c18a8bbe82456c95f69b51740f47d3d2801a891bb5aa043e5f03138",
+      "stage-occurrence:sha256:9fb24e0d15ebf6e26f182a24fe75d22a347d75672c99f921208bcdb7b4bb492b"
+     ],
+     "local_stage_outcomes_changed": false,
+     "reason": "the pass verdict evaluates selected action results, not every semantic model call in the pass"
+    }
+   ],
+   "degradations": []
+  }
+ },
+ "selected_mode": "non_deterministic",
+ "requested_mode": "non_deterministic",
+ "selected_canvas": {
+  "candidate_id": "canvas:d98b5c833cf1dfda691d",
+  "selected": true,
+  "graph_digest": "450aa0fdfa3f4eef48c6d473ed80ed43506cc581323e052c1b4257171f92ce34",
+  "loop_graph": {
+   "record_type": "loop_graph_definition/v1",
+   "graph_id": "adaptive.action.d98b5c833cf1dfda691d",
+   "version": "1.0.0",
+   "permitted_vertex_modes": [
+    "deterministic"
+   ],
+   "input_ports": [
+    {
+     "name": "input",
+     "role": "generated_project_manifest/v1",
+     "targets": [
+      {
+       "vertex_id": "solution.controller",
+       "port_role": "generated_project_manifest/v1"
+      }
+     ]
+    }
+   ],
+   "output_ports": [
+    {
+     "name": "output",
+     "role": "generated_project_execution/v1",
+     "source": {
+      "vertex_id": "solution.stage1.component",
+      "port_role": "generated_project_execution/v1"
+     }
+    }
+   ],
+   "vertices": [
+    {
+     "vertex_id": "solution.controller",
+     "definition_ref": {
+      "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_controller",
+      "version": "1.0.0",
+      "content_digest": "5d14f99339b013f4033cc65265a2021a387c7049ca5d91f5b275f1aa6e811be4"
+     },
+     "definition": {
+      "record_type": "loop_definition/v1",
+      "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_controller",
+      "version": "1.0.0",
+      "role_profile": {
+       "profile_id": "solution.pipeline",
+       "version": "1.0.0"
+      },
+      "contract": {
+       "name": "adaptive.action.d98b5c833cf1dfda691d:solution.controller",
+       "execution_mode": "code_only",
+       "input_roles": [
+        "generated_project_manifest/v1"
+       ],
+       "output_roles": [
+        "generated_project_manifest/v1",
+        "generated_project_execution/v1"
+       ],
+       "effects": [
+        "pure"
+       ],
+       "locality": "local_machine",
+       "cost_class": "free",
+       "role": "solution"
+      },
+      "configuration_facts": {
+       "allowable_modes": [
+        "deterministic"
+       ],
+       "custom_steps": [
+        "act"
+       ],
+       "delegated_modes": [
+        "deterministic"
+       ],
+       "exit_condition": "accepted_success",
+       "framework": "custom",
+       "graph_id": "adaptive.action.d98b5c833cf1dfda691d",
+       "llm_thinking_power": "",
+       "logical_kind": "execution",
+       "loop_condition": "steps_remain",
+       "max_depth": 32,
+       "operation_ref": "",
+       "parameters": {
+        "logical_solution_id": "adaptive.action.d98b5c833cf1dfda691d",
+        "max_members": null
+       },
+       "power": "light",
+       "preferred_modes": [
+        "deterministic"
+       ],
+       "purpose": "controller",
+       "replay_guarantee": "event_equivalent",
+       "success_confidence_min": 0.5,
+       "vertex_id": "solution.controller"
+      },
+      "supported_modes": [
+       "deterministic"
+      ],
+      "installed_executor_modes": [
+       "deterministic"
+      ],
+      "step_profile": "compact_five_beat",
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "effects": [
+       "pure"
+      ],
+      "permissions": [],
+      "required_capabilities": [
+       "pipeline_execution",
+       "solution_canvas",
+       "typed_connection_check"
+      ],
+      "content_digest": "5d14f99339b013f4033cc65265a2021a387c7049ca5d91f5b275f1aa6e811be4"
+     },
+     "selected_mode": "deterministic",
+     "purpose": "controller",
+     "operation_ref": "",
+     "parameters": {
+      "logical_solution_id": "adaptive.action.d98b5c833cf1dfda691d",
+      "max_members": null
+     }
+    },
+    {
+     "vertex_id": "solution.stage1.component",
+     "definition_ref": {
+      "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_stage1_component",
+      "version": "1.0.0",
+      "content_digest": "6a6a77abef790a261174e271b63f20950dca7a0570183a112bee2c4b82c2b4bd"
+     },
+     "definition": {
+      "record_type": "loop_definition/v1",
+      "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_stage1_component",
+      "version": "1.0.0",
+      "role_profile": {
+       "profile_id": "solution.atomic_component",
+       "version": "1.0.0"
+      },
+      "contract": {
+       "name": "adaptive.action.d98b5c833cf1dfda691d:solution.stage1.component",
+       "execution_mode": "code_only",
+       "input_roles": [
+        "generated_project_manifest/v1"
+       ],
+       "output_roles": [
+        "generated_project_execution/v1"
+       ],
+       "effects": [
+        "pure"
+       ],
+       "locality": "local_machine",
+       "cost_class": "free",
+       "role": "solution"
+      },
+      "configuration_facts": {
+       "allowable_modes": [
+        "deterministic"
+       ],
+       "custom_steps": [
+        "act"
+       ],
+       "delegated_modes": [
+        "deterministic"
+       ],
+       "exit_condition": "accepted_success",
+       "framework": "custom",
+       "graph_id": "adaptive.action.d98b5c833cf1dfda691d",
+       "llm_thinking_power": "",
+       "logical_kind": "execution",
+       "loop_condition": "steps_remain",
+       "max_depth": 32,
+       "operation_ref": "core.generated_project",
+       "parameters": {
+        "instruction": "Generate a bounded project.",
+        "plan_digest": "d98b5c833cf1dfda691d"
+       },
+       "power": "light",
+       "preferred_modes": [
+        "deterministic"
+       ],
+       "purpose": "component",
+       "replay_guarantee": "event_equivalent",
+       "success_confidence_min": 0.5,
+       "vertex_id": "solution.stage1.component"
+      },
+      "supported_modes": [
+       "deterministic"
+      ],
+      "installed_executor_modes": [
+       "deterministic"
+      ],
+      "step_profile": "atomic_code_only",
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "effects": [
+       "pure"
+      ],
+      "permissions": [],
+      "required_capabilities": [
+       "component_execution",
+       "solution_canvas"
+      ],
+      "content_digest": "6a6a77abef790a261174e271b63f20950dca7a0570183a112bee2c4b82c2b4bd"
+     },
+     "selected_mode": "deterministic",
+     "purpose": "component",
+     "operation_ref": "core.generated_project",
+     "parameters": {
+      "instruction": "Generate a bounded project.",
+      "plan_digest": "d98b5c833cf1dfda691d"
+     }
+    }
+   ],
+   "edges": [
+    {
+     "edge_id": "edge:1",
+     "source": {
+      "vertex_id": "solution.controller",
+      "port_role": "generated_project_manifest/v1"
+     },
+     "target": {
+      "vertex_id": "solution.stage1.component",
+      "port_role": "generated_project_manifest/v1"
+     },
+     "relationship": "connected_from",
+     "order": 0,
+     "metadata": {}
+    }
+   ],
+   "groups": [
+    {
+     "group_id": "solution.group",
+     "controller_vertex_id": "solution.controller",
+     "stages": [
+      {
+       "stage_id": "execute_selected_capability",
+       "attempt_vertex_ids": [
+        "solution.stage1.component"
+       ],
+       "router_vertex_id": ""
+      }
+     ],
+     "member_group_ids": [],
+     "combination": "single",
+     "weights": [],
+     "route_vertex_id": "",
+     "evaluator_vertex_ids": []
+    }
+   ],
+   "starting_group_id": "solution.group",
+   "content_digest": "450aa0fdfa3f4eef48c6d473ed80ed43506cc581323e052c1b4257171f92ce34"
+  },
+  "mermaid": "flowchart TD\n  IN([inputs])\n  L1((\"solution.controller: single<br/>deterministic\"))\n  L2((\"solution.stage1.component: core.generated_project<br/>deterministic\"))\n  IN --> L1\n  L1 -->|connected_from: generated_project_manifest/v1| L2\n  OUT([output])\n  L2 --> OUT",
+  "runtime_trace": [
+   {
+    "runtime_event": "started",
+    "solution": "adaptive.action.d98b5c833cf1dfda691d",
+    "logical_loop_id": "adaptive.action.d98b5c833cf1dfda691d",
+    "mode": "deterministic",
+    "runtime_loop_id": "loop38",
+    "role": "solution",
+    "profile_id": "solution.pipeline",
+    "profile_version": "1.0.0",
+    "relationship_kind": "spawned_by",
+    "spawned_by_loop_id": "loop1"
+   },
+   {
+    "runtime_event": "started",
+    "solution": "adaptive.action.d98b5c833cf1dfda691d",
+    "logical_loop_id": "execute_selected_capability",
+    "mode": "deterministic",
+    "runtime_loop_id": "loop39",
+    "role": "solution",
+    "profile_id": "solution.atomic_component",
+    "profile_version": "1.0.0",
+    "relationship_kind": "connected_from",
+    "connected_from_loop_ids": [
+     "loop38"
+    ]
+   },
+   {
+    "solution_loop": "execute_selected_capability",
+    "operation": "core.generated_project",
+    "mode": "deterministic",
+    "component_loop_id": "loop39",
+    "input_role": "generated_project_manifest/v1",
+    "output_role": "generated_project_execution/v1",
+    "input_type": "dict",
+    "output_type": "dict",
+    "runtime_loop_id": "loop39",
+    "role": "solution",
+    "profile_id": "solution.atomic_component",
+    "profile_version": "1.0.0",
+    "relationship_kind": "connected_from",
+    "connected_from_loop_ids": [
+     "loop38"
+    ]
+   },
+   {
+    "runtime_event": "completed",
+    "solution": "adaptive.action.d98b5c833cf1dfda691d",
+    "logical_loop_id": "execute_selected_capability",
+    "status": "done",
+    "terminal_reason": "success_once",
+    "actual_modes": [
+     "deterministic"
+    ],
+    "runtime_loop_id": "loop39",
+    "role": "solution",
+    "profile_id": "solution.atomic_component",
+    "profile_version": "1.0.0",
+    "relationship_kind": "connected_from",
+    "connected_from_loop_ids": [
+     "loop38"
+    ]
+   },
+   {
+    "runtime_event": "completed",
+    "solution": "adaptive.action.d98b5c833cf1dfda691d",
+    "logical_loop_id": "adaptive.action.d98b5c833cf1dfda691d",
+    "status": "done",
+    "terminal_reason": "success_once",
+    "actual_modes": [
+     "deterministic"
+    ],
+    "runtime_loop_id": "loop38",
+    "role": "solution",
+    "profile_id": "solution.pipeline",
+    "profile_version": "1.0.0",
+    "relationship_kind": "spawned_by",
+    "spawned_by_loop_id": "loop1"
+   }
+  ]
+ },
+ "graph_digest": "450aa0fdfa3f4eef48c6d473ed80ed43506cc581323e052c1b4257171f92ce34",
+ "verification": {
+  "record_type": "adaptive_verification/v2",
+  "verdict": "accept",
+  "subject": {
+   "record_type": "adaptive_verification_subject/v1",
+   "run_id": "adaptive-1ef605de5de76af301f48a00",
+   "action_id": "action:3e4f1aaa8d6e4eba86c6",
+   "action_occurrence_ref": "action-occurrence:sha256:d241b39fc58927dbc915c2524492be557463bf68524282179bced25653e8b3cb",
+   "plan_digest": "df7c980a120d758e876b9b8ff861286980aae79da47b52c8545d2e29bf069e44",
+   "result_digests": [
+    "7c4d17ae8bf0d1d4e87dc1376d742a6dc44aaa204c49f1ffd1ca6d9e775583ba"
+   ],
+   "execution_refs": [
+    "action-execution:sha256:cdd843ff08105dffd748ebea45bd2df633b6b83c9a029a9dc0a2ba5f450c5b5a"
+   ]
+  },
+  "evaluation": {
+   "verdict": "accept",
+   "best_index": 0,
+   "scores": [
+    1.0
+   ],
+   "notes": "Deterministic checks passed."
+  },
+  "pass_number": 1,
+  "verifier_stage_occurrence_id": "stage-occurrence:sha256:9fb24e0d15ebf6e26f182a24fe75d22a347d75672c99f921208bcdb7b4bb492b",
+  "verifier_semantic_call_id": "semantic-stage-66273f9bc4ac5c7105958b414473e565778d0fd75264732e",
+  "semantic_verification_observed": true,
+  "deterministic_checks_passed": true,
+  "notes": "Deterministic checks passed.",
+  "remaining_gaps": [],
+  "gap_assessments": [],
+  "advisory_findings": [],
+  "new_requirement_proposals": [],
+  "registered_acceptance_criteria": [
+   {
+    "criterion_ref": "criterion:0",
+    "text": "test command passes"
+   },
+   {
+    "criterion_ref": "criterion:1",
+    "text": "output file exists"
+   }
+  ],
+  "passed": true
+ },
+ "run_history": {
+  "run_id": "adaptive-1ef605de5de76af301f48a00",
+  "events": 552,
+  "head_digest": "52e6a3e79714f85c5d33845ca7e0a077bd87105d1fdd1318e462863242426517",
+  "chain_intact": true,
+  "broken_at": [],
+  "path": "/home/username/loop-engine/docs/evidence/runs/learning-integrity-public-offline-20260904/adaptive-1ef605de5de76af301f48a00",
+  "product_outcome_bound": false,
+  "product_outcome_digest": "",
+  "terminal_code": ""
+ },
+ "artifacts": [
+  {
+   "path": "/home/username/loop-engine/docs/evidence/runs/learning-integrity-public-offline-20260904/adaptive-1ef605de5de76af301f48a00-workspace/attempt-1/output.txt",
+   "media_type": "text/plain",
+   "minimum_bytes": 1,
+   "present": true,
+   "byte_count": 5,
+   "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "error_code": "",
+   "verified": true
+  }
+ ],
+ "workspace": "/home/username/loop-engine/docs/evidence/runs/learning-integrity-public-offline-20260904/adaptive-1ef605de5de76af301f48a00-workspace/attempt-1",
+ "limitations": [],
+ "questions": [],
+ "next_action": "Inspect the verified artifacts and Run History.",
+ "inspect_commands": [
+  "loop-engine report adaptive-1ef605de5de76af301f48a00 --runs-dir /home/username/loop-engine/docs/evidence/runs/learning-integrity-public-offline-20260904",
+  "loop-engine studio --port 0 --runs-dir /home/username/loop-engine/docs/evidence/runs/learning-integrity-public-offline-20260904"
+ ],
+ "model_calls": 7,
+ "tool_calls": 1,
+ "loop_count": 53,
+ "elapsed_seconds": 0.193,
+ "model_usage": [
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop7",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000706,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-bf69e464340d8c4ca1e3e957a07de06be7f886596f97a9ad",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "499a7a2312e078fbc8b3f944fed2edc8743668c0010049b181ac981590d09f8a",
+     "provider_request_digest": "c4894860c045194f9ed34062acff84dba61fc689bd58a10b0a70378931099ef5"
+    }
+   ],
+   "gateway_loop_id": "loop6",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-bf69e464340d8c4ca1e3e957a07de06be7f886596f97a9ad",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "499a7a2312e078fbc8b3f944fed2edc8743668c0010049b181ac981590d09f8a"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop14",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.00057,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-b9c4f5eac9ef7cf688f0bc0146a06ae99acfa1cd2963a5bd",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "e787a1e0670c4b5b8566a32f59dca8f654ceb295f39fac4977df419c8fa13aae",
+     "provider_request_digest": "2cec5d535e8cf11050ea5fb9ec64f49602bb3a46d204446fd6ee590c640e1964"
+    }
+   ],
+   "gateway_loop_id": "loop13",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-b9c4f5eac9ef7cf688f0bc0146a06ae99acfa1cd2963a5bd",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "e787a1e0670c4b5b8566a32f59dca8f654ceb295f39fac4977df419c8fa13aae"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop21",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000581,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-1e624168b815fb88c5f67fad5632baa2d3508c722f135a3a",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "b9783c8ad6a0cae8d17ce0016411d5988fa6268b4db243965db92d53353a968e",
+     "provider_request_digest": "f8fdd0e4d9b5534f6d7b890b4775d91ca83925e37e89af0c7af237d9c61fc704"
+    }
+   ],
+   "gateway_loop_id": "loop20",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-1e624168b815fb88c5f67fad5632baa2d3508c722f135a3a",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "b9783c8ad6a0cae8d17ce0016411d5988fa6268b4db243965db92d53353a968e"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop28",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000531,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-6a7b3a24f712d5ab02cfd1bbd2f070803c795713dc0050ba",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "8ede3819335de4fd8a690275ee083139fb4505cc1e881ff5c5a7b92e262b9253",
+     "provider_request_digest": "222881d57496a0f5616d6a4097ea4f84fd8f1693cc4ade393e31860a08dbf0c4"
+    }
+   ],
+   "gateway_loop_id": "loop27",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-6a7b3a24f712d5ab02cfd1bbd2f070803c795713dc0050ba",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "8ede3819335de4fd8a690275ee083139fb4505cc1e881ff5c5a7b92e262b9253"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop35",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.00061,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-b07331eff510047fb07f46f0a17d3f777b1db86a098d2ed6",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "da4ac3e124152faebddbebcf12b2503a5b14bc80b46e132d15a5d58d5c071bde",
+     "provider_request_digest": "6aa9a0619e8139e9cc1684b5af77f4ce2e6162cae085d5fe7ea6b4a2aff65224"
+    }
+   ],
+   "gateway_loop_id": "loop34",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-b07331eff510047fb07f46f0a17d3f777b1db86a098d2ed6",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "da4ac3e124152faebddbebcf12b2503a5b14bc80b46e132d15a5d58d5c071bde"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop45",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000558,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-66273f9bc4ac5c7105958b414473e565778d0fd75264732e",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "10d9c89cec468ebb4b9355cc4ba3e4cbe64471769d8581cd4641562b7e72118b",
+     "provider_request_digest": "93dfc4b0da3a0715a951e4612b061db18e727c5046cc2683d6a244c4eb394b1a"
+    }
+   ],
+   "gateway_loop_id": "loop44",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-66273f9bc4ac5c7105958b414473e565778d0fd75264732e",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "10d9c89cec468ebb4b9355cc4ba3e4cbe64471769d8581cd4641562b7e72118b"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop52",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000603,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-516d2637f46983acb170d4e3371c34eddbf9fd89878733e6",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "2ec284227444dc111092790f487c8bf3cc25fbd38d5e159510f9b6099cef070e",
+     "provider_request_digest": "a9adee9d5a709934295a79d7fc8456ff908d219c56b9239aedfb3c2fb25f667d"
+    }
+   ],
+   "gateway_loop_id": "loop51",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-516d2637f46983acb170d4e3371c34eddbf9fd89878733e6",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "2ec284227444dc111092790f487c8bf3cc25fbd38d5e159510f9b6099cef070e"
+  }
+ ]
+}

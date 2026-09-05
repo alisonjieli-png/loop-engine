@@ -22,6 +22,7 @@ Operational runtime type
     ├── Step profile
     ├── Typed input and output contract
     ├── Loop condition and exit condition
+    ├── Graph relationships
     ├── Budget, permissions, and effect policy
     ├── Model settings when the selected mode permits a model
     └── Run History records
@@ -206,12 +207,15 @@ The canonical governed entrypoint wraps that deterministic selector in a Loop
 and records the request, rejections, selection, and completed decision:
 
 ```python
-from loop_engine.core.model_routing_intelligence import select_model_as_loop
+from loop_engine.core.model_routing_intelligence import (
+    ModelSelectionLoopContext,
+    select_model_as_loop,
+)
 
 selection_run = select_model_as_loop(
     selector,
     selection_request,
-    parent=current_loop,
+    context=ModelSelectionLoopContext(parent=current_loop),
 )
 decision = selection_run["decision"]
 ```
@@ -251,3 +255,8 @@ The benchmark uses synthetic routes and adapters that raise if called. It
 proves selector contracts only. It does not prove a live provider, the quality
 of any model, a local Qwen deployment, automatic portfolio retrieval, Run
 History integration, or Studio playback.
+
+The current selector is a deterministic bootstrap for hard eligibility and
+evidence-aware ordering. It does not implement model-led stage allocation,
+expose retrieved stage candidates to an allocating model, change the adaptive
+solve route automatically, or prove that a cheaper route preserves quality.

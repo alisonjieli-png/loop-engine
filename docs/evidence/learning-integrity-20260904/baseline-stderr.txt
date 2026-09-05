@@ -1,0 +1,17 @@
+Running the full offline self-test. This scans the installed package and may take about a minute. No provider is called.
+Self-test still running: 10 seconds elapsed.
+Self-test still running: 20 seconds elapsed.
+Self-test still running: 30 seconds elapsed.
+Self-test still running: 40 seconds elapsed.
+Self-test still running: 50 seconds elapsed.
+Self-test still running: 60 seconds elapsed.
+Self-test still running: 70 seconds elapsed.
+Self-test still running: 80 seconds elapsed.
+Self-test still running: 90 seconds elapsed.
+Self-test still running: 100 seconds elapsed.
+Self-test still running: 110 seconds elapsed.
+Self-test still running: 120 seconds elapsed.
+Self-test still running: 130 seconds elapsed.
+Self-test still running: 140 seconds elapsed.
+Self-test still running: 150 seconds elapsed.
+Self-test still running: 160 seconds elapsed.

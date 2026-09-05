@@ -1,0 +1,341 @@
+{
+  "record_type": "research_seed_coverage/v1",
+  "sources": [
+    {
+      "identifier": "2405.06907",
+      "requested_label": "AIOS Compiler / CoRE",
+      "url": "https://arxiv.org/abs/2405.06907",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2601.04688",
+      "requested_label": "ToolGate",
+      "url": "https://arxiv.org/abs/2601.04688",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2605.21470",
+      "requested_label": "Agent JIT",
+      "url": "https://arxiv.org/abs/2605.21470",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2512.24601",
+      "requested_label": "Recursive Language Models",
+      "url": "https://arxiv.org/abs/2512.24601",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2603.20105",
+      "requested_label": "λ-RLM",
+      "url": "https://arxiv.org/abs/2603.20105",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2310.03714",
+      "requested_label": "DSPy",
+      "url": "https://arxiv.org/abs/2310.03714",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2408.03314",
+      "requested_label": "Compute-optimal test-time scaling",
+      "url": "https://arxiv.org/abs/2408.03314",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2502.18080",
+      "requested_label": "Thinking-optimal scaling",
+      "url": "https://arxiv.org/abs/2502.18080",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2406.18665",
+      "requested_label": "RouteLLM",
+      "url": "https://arxiv.org/abs/2406.18665",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2305.05176",
+      "requested_label": "FrugalGPT",
+      "url": "https://arxiv.org/abs/2305.05176",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2601.18130",
+      "requested_label": "RouteMoA",
+      "url": "https://arxiv.org/abs/2601.18130",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2605.18796",
+      "requested_label": "UCCI",
+      "url": "https://arxiv.org/abs/2605.18796",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2505.11730",
+      "requested_label": "VG-Search",
+      "url": "https://arxiv.org/abs/2505.11730",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2605.15706",
+      "requested_label": "Differentiable MoA",
+      "url": "https://arxiv.org/abs/2605.15706",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2608.26263",
+      "requested_label": "SKILL.state",
+      "url": "https://arxiv.org/abs/2608.26263",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2604.15877",
+      "requested_label": "Experience Compression Spectrum",
+      "url": "https://arxiv.org/abs/2604.15877",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2501.00663",
+      "requested_label": "Titans",
+      "url": "https://arxiv.org/abs/2501.00663",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2602.02474",
+      "requested_label": "MemSkill",
+      "url": "https://arxiv.org/abs/2602.02474",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2601.21714",
+      "requested_label": "E-mem",
+      "url": "https://arxiv.org/abs/2601.21714",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2606.23127",
+      "requested_label": "AFTER",
+      "url": "https://arxiv.org/abs/2606.23127",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2607.28048",
+      "requested_label": "SKILL-KD",
+      "url": "https://arxiv.org/abs/2607.28048",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2605.18693",
+      "requested_label": "SkillGenBench",
+      "url": "https://arxiv.org/abs/2605.18693",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2305.17126",
+      "requested_label": "LATM",
+      "url": "https://arxiv.org/abs/2305.17126",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2305.16291",
+      "requested_label": "Voyager",
+      "url": "https://arxiv.org/abs/2305.16291",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2309.17428",
+      "requested_label": "CRAFT",
+      "url": "https://arxiv.org/abs/2309.17428",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2305.14318",
+      "requested_label": "CREATOR",
+      "url": "https://arxiv.org/abs/2305.14318",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2510.07768",
+      "requested_label": "ToolLibGen",
+      "url": "https://arxiv.org/abs/2510.07768",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2605.20616",
+      "requested_label": "Auto-Dreamer",
+      "url": "https://arxiv.org/abs/2605.20616",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2408.08435",
+      "requested_label": "Automated Design of Agentic Systems",
+      "url": "https://arxiv.org/abs/2408.08435",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2505.22954",
+      "requested_label": "Darwin Gödel Machine",
+      "url": "https://arxiv.org/abs/2505.22954",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2507.19457",
+      "requested_label": "GEPA",
+      "url": "https://arxiv.org/abs/2507.19457",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2309.16797",
+      "requested_label": "Promptbreeder",
+      "url": "https://arxiv.org/abs/2309.16797",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2605.23019",
+      "requested_label": "PACE two-timescale",
+      "url": "https://arxiv.org/abs/2605.23019",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2606.08106",
+      "requested_label": "PACE anytime-valid acceptance",
+      "url": "https://arxiv.org/abs/2606.08106",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2608.25593",
+      "requested_label": "JIT-Agent",
+      "url": "https://arxiv.org/abs/2608.25593",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2512.16962",
+      "requested_label": "MemoryGraft",
+      "url": "https://arxiv.org/abs/2512.16962",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2607.28103",
+      "requested_label": "MIND",
+      "url": "https://arxiv.org/abs/2607.28103",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2606.07131",
+      "requested_label": "MalSkillBench",
+      "url": "https://arxiv.org/abs/2606.07131",
+      "identity_checked": true,
+      "methods_review": "FOCUSED"
+    },
+    {
+      "identifier": "2410.07095",
+      "requested_label": "MLE-bench",
+      "url": "https://arxiv.org/abs/2410.07095",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2504.01848",
+      "requested_label": "PaperBench",
+      "url": "https://arxiv.org/abs/2504.01848",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2409.11363",
+      "requested_label": "CORE-Bench",
+      "url": "https://arxiv.org/abs/2409.11363",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2502.13897",
+      "requested_label": "DataSciBench",
+      "url": "https://arxiv.org/abs/2502.13897",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2401.05507",
+      "requested_label": "InfiAgent-DABench",
+      "url": "https://arxiv.org/abs/2401.05507",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2607.28033",
+      "requested_label": "DataClawEval",
+      "url": "https://arxiv.org/abs/2607.28033",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "identifier": "2512.04324",
+      "requested_label": "DAComp",
+      "url": "https://arxiv.org/abs/2512.04324",
+      "identity_checked": true,
+      "methods_review": "METADATA_ABSTRACT_ONLY"
+    },
+    {
+      "requested_label": "Logan instance theory",
+      "url": "https://doi.org/10.1037/0033-295X.95.4.492",
+      "identity_checked": true,
+      "methods_review": "PRIMARY_FULL_TEXT_INACCESSIBLE"
+    },
+    {
+      "requested_label": "AlphaEvolve",
+      "url": "https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/",
+      "identity_checked": true,
+      "methods_review": "OFFICIAL_OVERVIEW_ONLY"
+    },
+    {
+      "requested_label": "Blackboard / actor / Kahn networks / process calculi / options / successor features",
+      "identity_checked": false,
+      "methods_review": "NOT_EXHAUSTIVELY_REVIEWED_THIS_SESSION"
+    }
+  ],
+  "arxiv_seed_count": 45,
+  "deeply_reviewed_arxiv_seeds": 14,
+  "additional_focused_sources": 8,
+  "limitations": "Metadata review does not establish paper methods or result validity."
+}

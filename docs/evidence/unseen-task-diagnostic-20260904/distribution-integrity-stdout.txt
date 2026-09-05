@@ -1,0 +1,44 @@
+{
+  "all_passed": true,
+  "artifacts": [
+    {
+      "bytes": 2036969,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/dist/loop_engine-0.1.0-py3-none-any.whl",
+      "sha256": "ecaeb6a7b3bca17cd0b2f70871541b22f1e66df19d4da84cbc7908a7239f148d"
+    },
+    {
+      "bytes": 1768815,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/dist/loop_engine-0.1.0.tar.gz",
+      "sha256": "ee80ae65a6758393fdf80a4206a000c318acb9cb63da555eae0ab96c7a1058fb"
+    }
+  ],
+  "passed": 4,
+  "record_type": "final_distribution_integrity/v1",
+  "tests": [
+    {
+      "passed": true,
+      "test": "wheel_has_no_local_run_or_evaluator_paths",
+      "unexpected_paths": []
+    },
+    {
+      "passed": true,
+      "test": "sdist_has_no_local_run_or_evaluator_paths",
+      "unexpected_paths": []
+    },
+    {
+      "mismatched": [],
+      "missing": [],
+      "passed": true,
+      "source_file_count": 466,
+      "test": "wheel_bodies_match_frozen_runtime_sources"
+    },
+    {
+      "mismatched": [],
+      "missing": [],
+      "passed": true,
+      "source_file_count": 466,
+      "test": "sdist_bodies_match_frozen_runtime_sources"
+    }
+  ],
+  "total": 4
+}

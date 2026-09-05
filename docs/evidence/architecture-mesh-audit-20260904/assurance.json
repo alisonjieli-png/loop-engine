@@ -1,0 +1,3887 @@
+{
+  "evidence": {
+    "directories": 61,
+    "file_alignment_evidence": "NOT_REQUESTED",
+    "files_in_full_audit": 1853,
+    "files_indexed": 405,
+    "files_requiring_alignment": 114,
+    "loop_id": "loop1",
+    "parameter_boundary": {
+      "approved_violations": 0,
+      "callables_scanned": 3295,
+      "exceptions_applied": 0,
+      "exceptions_loaded": 0,
+      "files_scanned": 411,
+      "focus_files": [],
+      "focused_by_rule": {},
+      "focused_unapproved_violations": 0,
+      "passed": false,
+      "policy": {
+        "boolean_flag_threshold": 2,
+        "max_direct_parameters": 3
+      },
+      "record_type": "parameter_boundary_scan/v1",
+      "revision": "working-tree",
+      "root": "/home/username/loop-engine",
+      "source_paths": [
+        "src/loop_engine",
+        "devtools/src"
+      ],
+      "unapproved_by_rule": {
+        "boolean_flag_explosion": 6,
+        "kwargs_escape": 42,
+        "parameter_count": 171,
+        "untyped_options_bag": 1,
+        "varargs_escape": 5
+      },
+      "unapproved_violations": 225,
+      "violations": [
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/catalog/handshake.py",
+          "line": 56,
+          "rule": "parameter_count",
+          "symbol": "negotiate"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/catalog/registry.py",
+          "line": 44,
+          "rule": "parameter_count",
+          "symbol": "AdapterRegistry.negotiate"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/catalog/registry.py",
+          "line": 56,
+          "rule": "parameter_count",
+          "symbol": "AdapterRegistry.select"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/blueprint.py",
+          "line": 255,
+          "rule": "parameter_count",
+          "symbol": "build_anchor"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "8 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/campaign_runner.py",
+          "line": 347,
+          "rule": "parameter_count",
+          "symbol": "default_campaign_spec"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**event hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/campaign_runner.py",
+          "line": 384,
+          "rule": "kwargs_escape",
+          "symbol": "WatchingLedger.record"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**record hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/guidance_ledger.py",
+          "line": 124,
+          "rule": "kwargs_escape",
+          "symbol": "GuidanceLedger.advance"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "2 boolean flags form an implicit mode matrix: interactive, run_loop",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/guided_setup.py",
+          "line": 156,
+          "rule": "boolean_flag_explosion",
+          "symbol": "run_setup"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/housekeeping.py",
+          "line": 337,
+          "rule": "parameter_count",
+          "symbol": "mine_legacy"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/housekeeping.py",
+          "line": 361,
+          "rule": "parameter_count",
+          "symbol": "modernization_blueprint"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/housekeeping.py",
+          "line": 376,
+          "rule": "parameter_count",
+          "symbol": "housekeeping_spec"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/housekeeping.py",
+          "line": 416,
+          "rule": "parameter_count",
+          "symbol": "run_housekeeping"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/kaggle_executor.py",
+          "line": 429,
+          "rule": "parameter_count",
+          "symbol": "execute_tabular"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/learning_bundle.py",
+          "line": 212,
+          "rule": "parameter_count",
+          "symbol": "make_learning_bundle"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**kw hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/live_run_demo.py",
+          "line": 60,
+          "rule": "kwargs_escape",
+          "symbol": "TappedLedger.record"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/live_run_demo.py",
+          "line": 149,
+          "rule": "parameter_count",
+          "symbol": "run_live_demo"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/logic_ast.py",
+          "line": 52,
+          "rule": "parameter_count",
+          "symbol": "evaluate"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "11 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/measurement.py",
+          "line": 69,
+          "rule": "parameter_count",
+          "symbol": "read_generalization_gap"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "**gap_kwargs hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/measurement.py",
+          "line": 342,
+          "rule": "kwargs_escape",
+          "symbol": "interpret_measurement"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/measurement.py",
+          "line": 342,
+          "rule": "parameter_count",
+          "symbol": "interpret_measurement"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/run_playback.py",
+          "line": 177,
+          "rule": "parameter_count",
+          "symbol": "render_run_report"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/self_improvement_loop.py",
+          "line": 64,
+          "rule": "parameter_count",
+          "symbol": "load_run_history"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/self_improvement_loop.py",
+          "line": 109,
+          "rule": "parameter_count",
+          "symbol": "run_self_improvement"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "8 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/smoke_ladder.py",
+          "line": 137,
+          "rule": "parameter_count",
+          "symbol": "make_smoke_handler"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "13 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/smoke_ladder.py",
+          "line": 293,
+          "rule": "parameter_count",
+          "symbol": "run_smoke_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/smoke_ladder.py",
+          "line": 350,
+          "rule": "parameter_count",
+          "symbol": "submission_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "8 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/solution_canvas.py",
+          "line": 688,
+          "rule": "parameter_count",
+          "symbol": "_run_solution_runtime"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/solution_canvas.py",
+          "line": 761,
+          "rule": "parameter_count",
+          "symbol": "run_solution"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/solution_compiler.py",
+          "line": 68,
+          "rule": "parameter_count",
+          "symbol": "run_compiled"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/solution_graph.py",
+          "line": 687,
+          "rule": "parameter_count",
+          "symbol": "vertex_from_definition"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/solution_records.py",
+          "line": 187,
+          "rule": "parameter_count",
+          "symbol": "evaluate_candidate"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/solution_records.py",
+          "line": 206,
+          "rule": "parameter_count",
+          "symbol": "package_solution"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/solution_records.py",
+          "line": 213,
+          "rule": "parameter_count",
+          "symbol": "record_run"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/string_foundry.py",
+          "line": 377,
+          "rule": "parameter_count",
+          "symbol": "stage_candidates"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/string_foundry.py",
+          "line": 448,
+          "rule": "parameter_count",
+          "symbol": "foundry_wave_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/code_nodes/string_foundry.py",
+          "line": 736,
+          "rule": "parameter_count",
+          "symbol": "validate_staged_candidate"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/action_fence.py",
+          "line": 97,
+          "rule": "parameter_count",
+          "symbol": "ActionFenceLedger.note_failure"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/action_fence.py",
+          "line": 125,
+          "rule": "parameter_count",
+          "symbol": "ActionFenceLedger.refusal"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "**changes hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/adaptive_practitioner_acceptance_checks.py",
+          "line": 23,
+          "rule": "kwargs_escape",
+          "symbol": "_orientation"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "**changes hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/adaptive_practitioner_acceptance_checks.py",
+          "line": 54,
+          "rule": "kwargs_escape",
+          "symbol": "_decision"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/adaptive_practitioner_project.py",
+          "line": 72,
+          "rule": "parameter_count",
+          "symbol": "project_manifest"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**fields hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/adaptive_practitioner_records.py",
+          "line": 1531,
+          "rule": "kwargs_escape",
+          "symbol": "AdaptiveRunServices.publish"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/adaptive_practitioner_records.py",
+          "line": 1559,
+          "rule": "parameter_count",
+          "symbol": "AdaptiveRunServices.checkpoint_generated_file"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/adaptive_practitioner_result.py",
+          "line": 116,
+          "rule": "parameter_count",
+          "symbol": "failed_adaptive_output"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/adaptive_practitioner_reuse.py",
+          "line": 15,
+          "rule": "parameter_count",
+          "symbol": "observe_generated_project_reuse"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/adaptive_practitioner_validation.py",
+          "line": 24,
+          "rule": "parameter_count",
+          "symbol": "_short_strings"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/asset_lifecycle.py",
+          "line": 178,
+          "rule": "parameter_count",
+          "symbol": "Resource.to_store_record"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/asset_lifecycle.py",
+          "line": 217,
+          "rule": "parameter_count",
+          "symbol": "promotion_review_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "2 boolean flags form an implicit mode matrix: discover, read_endpoint_env",
+          "exception_id": null,
+          "file": "src/loop_engine/core/autoconfigure.py",
+          "line": 135,
+          "rule": "boolean_flag_explosion",
+          "symbol": "configure"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "8 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/autoconfigure.py",
+          "line": 135,
+          "rule": "parameter_count",
+          "symbol": "configure"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/brave_search.py",
+          "line": 374,
+          "rule": "parameter_count",
+          "symbol": "register_brave_search"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/capability_directory.py",
+          "line": 193,
+          "rule": "parameter_count",
+          "symbol": "CapabilityDirectory.register"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**kwargs hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/capability_directory.py",
+          "line": 298,
+          "rule": "kwargs_escape",
+          "symbol": "CapabilityDirectory.call"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**kwargs hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/capability_directory.py",
+          "line": 457,
+          "rule": "kwargs_escape",
+          "symbol": "CapabilityDirectory.serve"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "**values hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/code_intelligence_assets.py",
+          "line": 439,
+          "rule": "kwargs_escape",
+          "symbol": "spec_from_template"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/config.py",
+          "line": 131,
+          "rule": "parameter_count",
+          "symbol": "permit_plan"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/context_artifacts.py",
+          "line": 101,
+          "rule": "parameter_count",
+          "symbol": "ContextArtifactStore.put"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/context_artifacts.py",
+          "line": 420,
+          "rule": "parameter_count",
+          "symbol": "compact_context_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "*texts hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/context_budget.py",
+          "line": 132,
+          "rule": "varargs_escape",
+          "symbol": "estimate_tokens"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "9 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/context_pack_manifest.py",
+          "line": 291,
+          "rule": "parameter_count",
+          "symbol": "build_context_pack_manifest"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/convergence.py",
+          "line": 70,
+          "rule": "parameter_count",
+          "symbol": "experiment_arm"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/convergence.py",
+          "line": 122,
+          "rule": "parameter_count",
+          "symbol": "ConvergenceMeasure.note"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**fields hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/decision_outcome.py",
+          "line": 102,
+          "rule": "kwargs_escape",
+          "symbol": "DecisionOutcome.advance"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**fields hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/decision_outcome.py",
+          "line": 187,
+          "rule": "kwargs_escape",
+          "symbol": "OutcomeLedger.open"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**fields hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/decision_outcome.py",
+          "line": 202,
+          "rule": "kwargs_escape",
+          "symbol": "OutcomeLedger.advance"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/external_harness.py",
+          "line": 662,
+          "rule": "parameter_count",
+          "symbol": "run_external_harness"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**kwargs hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/external_harness_adapters.py",
+          "line": 111,
+          "rule": "kwargs_escape",
+          "symbol": "PhysicalCallCountingClient.get_response"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "*args hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/external_harness_adapters.py",
+          "line": 111,
+          "rule": "varargs_escape",
+          "symbol": "PhysicalCallCountingClient.get_response"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/facets.py",
+          "line": 80,
+          "rule": "parameter_count",
+          "symbol": "code_facets"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "**legacy_fields hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/facets.py",
+          "line": 182,
+          "rule": "kwargs_escape",
+          "symbol": "string_facets"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "**legacy_fields hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/facets.py",
+          "line": 199,
+          "rule": "kwargs_escape",
+          "symbol": "context_facets"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/intelligence_layers.py",
+          "line": 425,
+          "rule": "parameter_count",
+          "symbol": "runtime_memory_write"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/intelligence_registry.py",
+          "line": 145,
+          "rule": "parameter_count",
+          "symbol": "IntelligenceRegistry.promote"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/knowledge_loader.py",
+          "line": 451,
+          "rule": "parameter_count",
+          "symbol": "load_knowledge"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/knowledge_loader.py",
+          "line": 562,
+          "rule": "parameter_count",
+          "symbol": "load_into_store"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/llm_work_packet.py",
+          "line": 57,
+          "rule": "parameter_count",
+          "symbol": "LLMContextBlock.create"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "8 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/mistral_client.py",
+          "line": 139,
+          "rule": "parameter_count",
+          "symbol": "chat"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "11 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/mistral_client.py",
+          "line": 202,
+          "rule": "parameter_count",
+          "symbol": "chat_maxout"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/model_capabilities.py",
+          "line": 83,
+          "rule": "parameter_count",
+          "symbol": "resolve_output_capability"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "2 boolean flags form an implicit mode matrix: supports_reasoning, supports_tools",
+          "exception_id": null,
+          "file": "src/loop_engine/core/model_discovery.py",
+          "line": 151,
+          "rule": "boolean_flag_explosion",
+          "symbol": "classify"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/model_discovery.py",
+          "line": 151,
+          "rule": "parameter_count",
+          "symbol": "classify"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "8 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/model_gateway.py",
+          "line": 48,
+          "rule": "parameter_count",
+          "symbol": "ProviderAdapter.chat_maxout"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**overrides hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/model_gateway.py",
+          "line": 259,
+          "rule": "kwargs_escape",
+          "symbol": "ModelGatewayConfig.from_operating_profile"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/model_gateway.py",
+          "line": 629,
+          "rule": "parameter_count",
+          "symbol": "ModelGateway.invoke"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "**kwargs hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/model_gateway.py",
+          "line": 1046,
+          "rule": "kwargs_escape",
+          "symbol": "invoke_model_gateway"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/model_routes.py",
+          "line": 246,
+          "rule": "parameter_count",
+          "symbol": "resolve_route"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "11 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/ollama_client.py",
+          "line": 165,
+          "rule": "parameter_count",
+          "symbol": "chat_maxout"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "8 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/ollama_client.py",
+          "line": 190,
+          "rule": "parameter_count",
+          "symbol": "chat"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/openai_responses_client.py",
+          "line": 451,
+          "rule": "parameter_count",
+          "symbol": "normalize_response"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "8 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/openai_responses_client.py",
+          "line": 590,
+          "rule": "parameter_count",
+          "symbol": "OpenAIResponsesAdapter.chat_maxout"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/opencode_client.py",
+          "line": 73,
+          "rule": "parameter_count",
+          "symbol": "build_command"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/opencode_client.py",
+          "line": 96,
+          "rule": "parameter_count",
+          "symbol": "run_agent"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "8 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/openrouter_client.py",
+          "line": 205,
+          "rule": "parameter_count",
+          "symbol": "chat"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "11 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/openrouter_client.py",
+          "line": 274,
+          "rule": "parameter_count",
+          "symbol": "chat_maxout"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "*profiles hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/operating_profile.py",
+          "line": 95,
+          "rule": "varargs_escape",
+          "symbol": "resolve_chain"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "**signals hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/outcome_vector.py",
+          "line": 209,
+          "rule": "kwargs_escape",
+          "symbol": "observe"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/persistence.py",
+          "line": 24,
+          "rule": "parameter_count",
+          "symbol": "append_record_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/provider_pinned.py",
+          "line": 46,
+          "rule": "parameter_count",
+          "symbol": "invoke_provider_model"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/reasoning_call.py",
+          "line": 240,
+          "rule": "parameter_count",
+          "symbol": "invoke"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "9 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/reasoning_call.py",
+          "line": 290,
+          "rule": "parameter_count",
+          "symbol": "run_reasoning"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/recovery.py",
+          "line": 150,
+          "rule": "parameter_count",
+          "symbol": "choose_recovery"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "untyped or Any-valued option bag: parameters",
+          "exception_id": null,
+          "file": "src/loop_engine/core/recovery.py",
+          "line": 150,
+          "rule": "untyped_options_bag",
+          "symbol": "choose_recovery"
+        },
+        {
+          "approved": false,
+          "boundary": "public_constructor",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/retrieval.py",
+          "line": 320,
+          "rule": "parameter_count",
+          "symbol": "Retriever.__init__"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/retrieval.py",
+          "line": 361,
+          "rule": "parameter_count",
+          "symbol": "Retriever.search"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/retrieval.py",
+          "line": 404,
+          "rule": "parameter_count",
+          "symbol": "tournament_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/reusable_capability_flywheel.py",
+          "line": 66,
+          "rule": "parameter_count",
+          "symbol": "_run_operation"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/reusable_capability_flywheel.py",
+          "line": 596,
+          "rule": "parameter_count",
+          "symbol": "CapabilityAuthority.transition_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/reusable_capability_harvest.py",
+          "line": 142,
+          "rule": "parameter_count",
+          "symbol": "harvest_reuse_opportunity_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/reusable_capability_harvest.py",
+          "line": 330,
+          "rule": "parameter_count",
+          "symbol": "dispatch_reuse_opportunity_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/reusable_capability_resolution.py",
+          "line": 40,
+          "rule": "parameter_count",
+          "symbol": "rebuild_capability_projection_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/reusable_capability_resolution.py",
+          "line": 532,
+          "rule": "parameter_count",
+          "symbol": "invoke_capability_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**kw hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/run_history.py",
+          "line": 152,
+          "rule": "kwargs_escape",
+          "symbol": "RunHistory.append"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/runtime_capacity.py",
+          "line": 152,
+          "rule": "parameter_count",
+          "symbol": "converged"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**kw hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/runtime_memory.py",
+          "line": 53,
+          "rule": "kwargs_escape",
+          "symbol": "RunNoteBoard.write_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**kw hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/runtime_memory.py",
+          "line": 65,
+          "rule": "kwargs_escape",
+          "symbol": "RunNoteBoard.read_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/runtime_memory.py",
+          "line": 72,
+          "rule": "parameter_count",
+          "symbol": "RunNoteBoard.write"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/saas_routes.py",
+          "line": 133,
+          "rule": "parameter_count",
+          "symbol": "serve_api"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/saas_routes.py",
+          "line": 169,
+          "rule": "parameter_count",
+          "symbol": "intelligence_surface"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/self_tuning.py",
+          "line": 183,
+          "rule": "parameter_count",
+          "symbol": "choose_context_budget"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "**fields hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/semantic_decision.py",
+          "line": 222,
+          "rule": "kwargs_escape",
+          "symbol": "note_decision"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/semantic_runtime.py",
+          "line": 234,
+          "rule": "parameter_count",
+          "symbol": "select_semantic_realization"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/semantic_runtime_fixture.py",
+          "line": 139,
+          "rule": "parameter_count",
+          "symbol": "preconditions"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/semantic_runtime_fixture.py",
+          "line": 235,
+          "rule": "parameter_count",
+          "symbol": "routing_verification"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/semantic_state.py",
+          "line": 54,
+          "rule": "parameter_count",
+          "symbol": "SemanticVerifier.verify"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/semantic_state.py",
+          "line": 201,
+          "rule": "parameter_count",
+          "symbol": "CatalogTrustedSemanticState.commit"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/skill_registry.py",
+          "line": 666,
+          "rule": "parameter_count",
+          "symbol": "SkillRegistry.load"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/solve_control_manifest.py",
+          "line": 142,
+          "rule": "parameter_count",
+          "symbol": "ControlComponentRecord.create"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**fields hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/solve_control_manifest.py",
+          "line": 331,
+          "rule": "kwargs_escape",
+          "symbol": "StageControlApplicationCandidate.create"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/source_role_orientation.py",
+          "line": 89,
+          "rule": "parameter_count",
+          "symbol": "validated_source_roles"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/stage_assistance_experiment.py",
+          "line": 331,
+          "rule": "parameter_count",
+          "symbol": "packet_event_detail"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/stage_assistance_experiment.py",
+          "line": 385,
+          "rule": "parameter_count",
+          "symbol": "build_exposure_manifest"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/stage_assistance_runtime_records.py",
+          "line": 44,
+          "rule": "parameter_count",
+          "symbol": "physical_exposure"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/stage_assistance_runtime_records.py",
+          "line": 116,
+          "rule": "parameter_count",
+          "symbol": "validate_decision"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/stage_evidence_projection.py",
+          "line": 706,
+          "rule": "parameter_count",
+          "symbol": "SQLiteStageEvidenceProjection.query"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**fields hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/stage_store.py",
+          "line": 152,
+          "rule": "kwargs_escape",
+          "symbol": "StageStore.add"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**signals hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/stage_store.py",
+          "line": 182,
+          "rule": "kwargs_escape",
+          "symbol": "StageStore.observe"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/state_policy_evidence.py",
+          "line": 559,
+          "rule": "parameter_count",
+          "symbol": "assess_state_policy"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/task_compile_model.py",
+          "line": 192,
+          "rule": "parameter_count",
+          "symbol": "openrouter_zero_cost_gateway"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/task_region_statistics.py",
+          "line": 356,
+          "rule": "parameter_count",
+          "symbol": "recommend_shortcut"
+        },
+        {
+          "approved": false,
+          "boundary": "explicit_export",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/task_similarity_engine.py",
+          "line": 385,
+          "rule": "parameter_count",
+          "symbol": "find_similar_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "*classes hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/core/template_negotiation.py",
+          "line": 122,
+          "rule": "varargs_escape",
+          "symbol": "ResponseTemplate.of_class"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/user_feedback_intelligence.py",
+          "line": 196,
+          "rule": "parameter_count",
+          "symbol": "AdviceStore.leave_advice"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/user_feedback_intelligence.py",
+          "line": 227,
+          "rule": "parameter_count",
+          "symbol": "AdviceStore.respond"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/user_feedback_intelligence.py",
+          "line": 265,
+          "rule": "parameter_count",
+          "symbol": "AdviceStore.consult"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/user_feedback_intelligence.py",
+          "line": 283,
+          "rule": "parameter_count",
+          "symbol": "resolve_user_feedback_intelligence"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/core/user_feedback_intelligence.py",
+          "line": 524,
+          "rule": "parameter_count",
+          "symbol": "propose_generalization"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "8 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/canvas.py",
+          "line": 106,
+          "rule": "parameter_count",
+          "symbol": "SolutionLoopCandidate.declared"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**options hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/canvas.py",
+          "line": 125,
+          "rule": "kwargs_escape",
+          "symbol": "SolutionLoopCandidate.from_callable"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/canvas.py",
+          "line": 229,
+          "rule": "parameter_count",
+          "symbol": "execute_matrix"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "**kwargs hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/capability_loops.py",
+          "line": 69,
+          "rule": "kwargs_escape",
+          "symbol": "run_capability_ref_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/capability_loops.py",
+          "line": 69,
+          "rule": "parameter_count",
+          "symbol": "run_capability_ref_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "**kwargs hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/capability_loops.py",
+          "line": 100,
+          "rule": "kwargs_escape",
+          "symbol": "run_capability_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/capability_loops.py",
+          "line": 100,
+          "rule": "parameter_count",
+          "symbol": "run_capability_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_constructor",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/delegation_runtime.py",
+          "line": 427,
+          "rule": "parameter_count",
+          "symbol": "SpawnedTaskManager.__init__"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/effect_approval.py",
+          "line": 137,
+          "rule": "parameter_count",
+          "symbol": "ApprovalRequest.create"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/effect_approval.py",
+          "line": 194,
+          "rule": "parameter_count",
+          "symbol": "ApprovalDecision.approve"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/effect_approval.py",
+          "line": 200,
+          "rule": "parameter_count",
+          "symbol": "ApprovalDecision.edit"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/effect_approval.py",
+          "line": 206,
+          "rule": "parameter_count",
+          "symbol": "ApprovalDecision.reject"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/encapsulate.py",
+          "line": 48,
+          "rule": "parameter_count",
+          "symbol": "as_practitioner_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/encapsulate.py",
+          "line": 111,
+          "rule": "parameter_count",
+          "symbol": "as_component_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "8 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/encapsulate.py",
+          "line": 165,
+          "rule": "parameter_count",
+          "symbol": "as_model_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/encapsulate.py",
+          "line": 281,
+          "rule": "parameter_count",
+          "symbol": "as_loop_of_stage_loops"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "9 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/encapsulate.py",
+          "line": 354,
+          "rule": "parameter_count",
+          "symbol": "as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/encapsulate.py",
+          "line": 431,
+          "rule": "parameter_count",
+          "symbol": "serve_intelligence"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 198,
+          "rule": "parameter_count",
+          "symbol": "make_intelligence_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "**kw hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 207,
+          "rule": "kwargs_escape",
+          "symbol": "serve_context_intelligence"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 207,
+          "rule": "parameter_count",
+          "symbol": "serve_context_intelligence"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "**kw hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 218,
+          "rule": "kwargs_escape",
+          "symbol": "serve_code_intelligence"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 218,
+          "rule": "parameter_count",
+          "symbol": "serve_code_intelligence"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "**kw hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 227,
+          "rule": "kwargs_escape",
+          "symbol": "serve_guidance_intelligence"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 227,
+          "rule": "parameter_count",
+          "symbol": "serve_guidance_intelligence"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "**kw hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 236,
+          "rule": "kwargs_escape",
+          "symbol": "serve_historical_intelligence"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 236,
+          "rule": "parameter_count",
+          "symbol": "serve_historical_intelligence"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "**kw hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 245,
+          "rule": "kwargs_escape",
+          "symbol": "serve_pillar"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 245,
+          "rule": "parameter_count",
+          "symbol": "serve_pillar"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 255,
+          "rule": "parameter_count",
+          "symbol": "search_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 274,
+          "rule": "parameter_count",
+          "symbol": "search_as_loop_refs"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 292,
+          "rule": "parameter_count",
+          "symbol": "serve_record_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 302,
+          "rule": "parameter_count",
+          "symbol": "records_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 310,
+          "rule": "parameter_count",
+          "symbol": "consult_guidance_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 323,
+          "rule": "parameter_count",
+          "symbol": "guidance_for_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "**kw hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 332,
+          "rule": "kwargs_escape",
+          "symbol": "leave_guidance_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/intelligence_loops.py",
+          "line": 332,
+          "rule": "parameter_count",
+          "symbol": "leave_guidance_as_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**changes hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/kernel.py",
+          "line": 274,
+          "rule": "kwargs_escape",
+          "symbol": "PractitionerState.derive"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "*lenses hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/lens.py",
+          "line": 143,
+          "rule": "varargs_escape",
+          "symbol": "apply_lens"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/loop_contract.py",
+          "line": 278,
+          "rule": "parameter_count",
+          "symbol": "contract_for_code_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/loop_contract.py",
+          "line": 292,
+          "rule": "parameter_count",
+          "symbol": "contract_compatible"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "8 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/loop_definition.py",
+          "line": 360,
+          "rule": "parameter_count",
+          "symbol": "LoopDefinition.from_runtime"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/loop_doctrine.py",
+          "line": 161,
+          "rule": "parameter_count",
+          "symbol": "baseline_for_code_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/loop_doctrine.py",
+          "line": 174,
+          "rule": "parameter_count",
+          "symbol": "baseline_for_solution_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/loop_doctrine.py",
+          "line": 186,
+          "rule": "parameter_count",
+          "symbol": "baseline_for_practitioner"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/loop_doctrine.py",
+          "line": 196,
+          "rule": "parameter_count",
+          "symbol": "baseline_for_validation"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "**facet_kw hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/loop_doctrine.py",
+          "line": 206,
+          "rule": "kwargs_escape",
+          "symbol": "loop_baseline_for"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/loop_handoff.py",
+          "line": 97,
+          "rule": "parameter_count",
+          "symbol": "LoopHandoffRequest.create"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "13 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/loop_profile_catalog.py",
+          "line": 174,
+          "rule": "parameter_count",
+          "symbol": "_spec"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**kw hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/recursive_loop.py",
+          "line": 277,
+          "rule": "kwargs_escape",
+          "symbol": "LoopLedger.record"
+        },
+        {
+          "approved": false,
+          "boundary": "public_constructor",
+          "detail": "9 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/recursive_loop.py",
+          "line": 463,
+          "rule": "parameter_count",
+          "symbol": "Loop.__init__"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "2 boolean flags form an implicit mode matrix: deterministic_available, needs_judgement",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/recursive_loop.py",
+          "line": 577,
+          "rule": "boolean_flag_explosion",
+          "symbol": "Loop.choose_mode"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/recursive_loop.py",
+          "line": 629,
+          "rule": "parameter_count",
+          "symbol": "Loop.spawn"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/spawned_practitioner.py",
+          "line": 20,
+          "rule": "parameter_count",
+          "symbol": "spawn_practitioner_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/loop/spawned_runtime_port.py",
+          "line": 110,
+          "rule": "parameter_count",
+          "symbol": "RuntimeMemoryService.write"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/memory/loop_integration.py",
+          "line": 36,
+          "rule": "parameter_count",
+          "symbol": "recall_through_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/memory/storage/learning_cycle.py",
+          "line": 253,
+          "rule": "parameter_count",
+          "symbol": "CandidateJournal.stage"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/memory/storage/learning_cycle.py",
+          "line": 462,
+          "rule": "parameter_count",
+          "symbol": "CandidateJournal.supersede"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/memory/storage/learning_cycle.py",
+          "line": 522,
+          "rule": "parameter_count",
+          "symbol": "CandidateJournal.recall"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "8 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/memory/storage/learning_cycle.py",
+          "line": 585,
+          "rule": "parameter_count",
+          "symbol": "CandidateJournal.observe_use"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "**changes hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/memory/storage/learning_records.py",
+          "line": 519,
+          "rule": "kwargs_escape",
+          "symbol": "transitioned_record"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "9 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/memory/storage/learning_records.py",
+          "line": 590,
+          "rule": "parameter_count",
+          "symbol": "run_loop_action"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "2 boolean flags form an implicit mode matrix: pinned, parent_shared",
+          "exception_id": null,
+          "file": "src/loop_engine/memory/working/state.py",
+          "line": 73,
+          "rule": "boolean_flag_explosion",
+          "symbol": "WorkingMemoryState.put"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/memory/working/state.py",
+          "line": 73,
+          "rule": "parameter_count",
+          "symbol": "WorkingMemoryState.put"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/parallel_runner.py",
+          "line": 163,
+          "rule": "parameter_count",
+          "symbol": "run_parallel_through_loop"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/semantic_freedom_conformance.py",
+          "line": 13,
+          "rule": "parameter_count",
+          "symbol": "scan_semantic_freedom"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/strings/ask_strategies.py",
+          "line": 211,
+          "rule": "parameter_count",
+          "symbol": "StrategyRegistry.remix"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "**kw hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/strings/ask_strategies.py",
+          "line": 239,
+          "rule": "kwargs_escape",
+          "symbol": "run_strategy"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/strings/ask_strategies.py",
+          "line": 239,
+          "rule": "parameter_count",
+          "symbol": "run_strategy"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/strings/intelligence_strings.py",
+          "line": 140,
+          "rule": "parameter_count",
+          "symbol": "compose"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/strings/intelligence_strings.py",
+          "line": 163,
+          "rule": "parameter_count",
+          "symbol": "distill_string"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "**params hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/strings/interrogation.py",
+          "line": 276,
+          "rule": "kwargs_escape",
+          "symbol": "preset_goal"
+        },
+        {
+          "approved": false,
+          "boundary": "cross_module_function",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/strings/notes.py",
+          "line": 91,
+          "rule": "parameter_count",
+          "symbol": "fill_note"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "6 boolean flags form an implicit mode matrix: is_code, is_judgement, is_metric, has_conditions, is_multi, is_atomic",
+          "exception_id": null,
+          "file": "src/loop_engine/strings/output_templates.py",
+          "line": 200,
+          "rule": "boolean_flag_explosion",
+          "symbol": "recommend_form"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "6 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/strings/output_templates.py",
+          "line": 200,
+          "rule": "parameter_count",
+          "symbol": "recommend_form"
+        },
+        {
+          "approved": false,
+          "boundary": "public_method",
+          "detail": "**values hides the direct parameter contract",
+          "exception_id": null,
+          "file": "src/loop_engine/strings/question_engine.py",
+          "line": 98,
+          "rule": "kwargs_escape",
+          "symbol": "QuestionForm.render"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "7 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/strings/question_engine.py",
+          "line": 224,
+          "rule": "parameter_count",
+          "symbol": "multiply"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "4 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/strings/question_engine.py",
+          "line": 269,
+          "rule": "parameter_count",
+          "symbol": "combination_space"
+        },
+        {
+          "approved": false,
+          "boundary": "public_function",
+          "detail": "5 direct parameters exceed the limit of 3",
+          "exception_id": null,
+          "file": "src/loop_engine/strings/question_engine.py",
+          "line": 275,
+          "rule": "parameter_count",
+          "symbol": "register_generated_form"
+        }
+      ],
+      "violations_total": 225
+    },
+    "profile_id": "practitioner.verifier",
+    "runtime_type": "Loop",
+    "semantic_conformance": {
+      "passed": true,
+      "record_type": "semantic_conformance/v1",
+      "violations": []
+    },
+    "steps": [
+      "inventory",
+      "architecture",
+      "semantics",
+      "boundaries",
+      "report"
+    ]
+  },
+  "findings": [],
+  "record_type": "repository_assurance/v1",
+  "verdict": "PASS_WITH_DOCUMENTED_WARNINGS",
+  "warnings": [
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/catalog/handshake.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/catalog/registry.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/catalog/registry.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/blueprint.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "8 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/campaign_runner.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**event hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/campaign_runner.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "**record hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/guidance_ledger.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "2 boolean flags form an implicit mode matrix: interactive, run_loop",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/guided_setup.py",
+      "rule": "call_boundary.boolean_flag_explosion",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/housekeeping.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/housekeeping.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/housekeeping.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/housekeeping.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/kaggle_executor.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/learning_bundle.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kw hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/live_run_demo.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/live_run_demo.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/logic_ast.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "11 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/measurement.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**gap_kwargs hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/measurement.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/measurement.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/run_playback.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/self_improvement_loop.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/self_improvement_loop.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "8 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/smoke_ladder.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "13 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/smoke_ladder.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/smoke_ladder.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "8 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/solution_canvas.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/solution_canvas.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/solution_compiler.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/solution_graph.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/solution_records.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/solution_records.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/solution_records.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/string_foundry.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/string_foundry.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/code_nodes/string_foundry.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/action_fence.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/action_fence.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**changes hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/adaptive_practitioner_acceptance_checks.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "**changes hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/adaptive_practitioner_acceptance_checks.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/adaptive_practitioner_project.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**fields hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/adaptive_practitioner_records.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/adaptive_practitioner_records.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/adaptive_practitioner_result.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/adaptive_practitioner_reuse.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/adaptive_practitioner_validation.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/asset_lifecycle.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/asset_lifecycle.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "2 boolean flags form an implicit mode matrix: discover, read_endpoint_env",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/autoconfigure.py",
+      "rule": "call_boundary.boolean_flag_explosion",
+      "severity": "medium"
+    },
+    {
+      "detail": "8 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/autoconfigure.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/brave_search.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/capability_directory.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kwargs hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/capability_directory.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kwargs hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/capability_directory.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "**values hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/code_intelligence_assets.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/config.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/context_artifacts.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/context_artifacts.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "*texts hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/context_budget.py",
+      "rule": "call_boundary.varargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "9 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/context_pack_manifest.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/convergence.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/convergence.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**fields hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/decision_outcome.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "**fields hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/decision_outcome.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "**fields hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/decision_outcome.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/external_harness.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kwargs hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/external_harness_adapters.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "*args hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/external_harness_adapters.py",
+      "rule": "call_boundary.varargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/facets.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**legacy_fields hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/facets.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "**legacy_fields hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/facets.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/intelligence_layers.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/intelligence_registry.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/knowledge_loader.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/knowledge_loader.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/llm_work_packet.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "8 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/mistral_client.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "11 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/mistral_client.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/model_capabilities.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "2 boolean flags form an implicit mode matrix: supports_reasoning, supports_tools",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/model_discovery.py",
+      "rule": "call_boundary.boolean_flag_explosion",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/model_discovery.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "8 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/model_gateway.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**overrides hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/model_gateway.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/model_gateway.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kwargs hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/model_gateway.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/model_routes.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "11 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/ollama_client.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "8 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/ollama_client.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/openai_responses_client.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "8 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/openai_responses_client.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/opencode_client.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/opencode_client.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "8 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/openrouter_client.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "11 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/openrouter_client.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "*profiles hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/operating_profile.py",
+      "rule": "call_boundary.varargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "**signals hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/outcome_vector.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/persistence.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/provider_pinned.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/reasoning_call.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "9 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/reasoning_call.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/recovery.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "untyped or Any-valued option bag: parameters",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/recovery.py",
+      "rule": "call_boundary.untyped_options_bag",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/retrieval.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/retrieval.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/retrieval.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/reusable_capability_flywheel.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/reusable_capability_flywheel.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/reusable_capability_harvest.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/reusable_capability_harvest.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/reusable_capability_resolution.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/reusable_capability_resolution.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kw hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/run_history.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/runtime_capacity.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kw hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/runtime_memory.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kw hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/runtime_memory.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/runtime_memory.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/saas_routes.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/saas_routes.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/self_tuning.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**fields hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/semantic_decision.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/semantic_runtime.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/semantic_runtime_fixture.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/semantic_runtime_fixture.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/semantic_state.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/semantic_state.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/skill_registry.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/solve_control_manifest.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**fields hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/solve_control_manifest.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/source_role_orientation.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/stage_assistance_experiment.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/stage_assistance_experiment.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/stage_assistance_runtime_records.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/stage_assistance_runtime_records.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/stage_evidence_projection.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**fields hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/stage_store.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "**signals hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/stage_store.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/state_policy_evidence.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/task_compile_model.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/task_region_statistics.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/task_similarity_engine.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "*classes hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/template_negotiation.py",
+      "rule": "call_boundary.varargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/user_feedback_intelligence.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/user_feedback_intelligence.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/user_feedback_intelligence.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/user_feedback_intelligence.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/core/user_feedback_intelligence.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "8 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/canvas.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**options hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/canvas.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/canvas.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kwargs hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/capability_loops.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/capability_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kwargs hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/capability_loops.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/capability_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/delegation_runtime.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/effect_approval.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/effect_approval.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/effect_approval.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/effect_approval.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/encapsulate.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/encapsulate.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "8 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/encapsulate.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/encapsulate.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "9 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/encapsulate.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/encapsulate.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kw hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kw hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kw hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kw hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kw hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kw hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/intelligence_loops.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**changes hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/kernel.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "*lenses hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/lens.py",
+      "rule": "call_boundary.varargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/loop_contract.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/loop_contract.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "8 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/loop_definition.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/loop_doctrine.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/loop_doctrine.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/loop_doctrine.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/loop_doctrine.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**facet_kw hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/loop_doctrine.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/loop_handoff.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "13 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/loop_profile_catalog.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kw hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/recursive_loop.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "9 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/recursive_loop.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "2 boolean flags form an implicit mode matrix: deterministic_available, needs_judgement",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/recursive_loop.py",
+      "rule": "call_boundary.boolean_flag_explosion",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/recursive_loop.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/spawned_practitioner.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/loop/spawned_runtime_port.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/memory/loop_integration.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/memory/storage/learning_cycle.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/memory/storage/learning_cycle.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/memory/storage/learning_cycle.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "8 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/memory/storage/learning_cycle.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**changes hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/memory/storage/learning_records.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "9 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/memory/storage/learning_records.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "2 boolean flags form an implicit mode matrix: pinned, parent_shared",
+      "invariant_id": "",
+      "path": "src/loop_engine/memory/working/state.py",
+      "rule": "call_boundary.boolean_flag_explosion",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/memory/working/state.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/parallel_runner.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/semantic_freedom_conformance.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/strings/ask_strategies.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**kw hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/strings/ask_strategies.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/strings/ask_strategies.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/strings/intelligence_strings.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/strings/intelligence_strings.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**params hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/strings/interrogation.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/strings/notes.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 boolean flags form an implicit mode matrix: is_code, is_judgement, is_metric, has_conditions, is_multi, is_atomic",
+      "invariant_id": "",
+      "path": "src/loop_engine/strings/output_templates.py",
+      "rule": "call_boundary.boolean_flag_explosion",
+      "severity": "medium"
+    },
+    {
+      "detail": "6 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/strings/output_templates.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "**values hides the direct parameter contract",
+      "invariant_id": "",
+      "path": "src/loop_engine/strings/question_engine.py",
+      "rule": "call_boundary.kwargs_escape",
+      "severity": "medium"
+    },
+    {
+      "detail": "7 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/strings/question_engine.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "4 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/strings/question_engine.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    },
+    {
+      "detail": "5 direct parameters exceed the limit of 3",
+      "invariant_id": "",
+      "path": "src/loop_engine/strings/question_engine.py",
+      "rule": "call_boundary.parameter_count",
+      "severity": "medium"
+    }
+  ]
+}

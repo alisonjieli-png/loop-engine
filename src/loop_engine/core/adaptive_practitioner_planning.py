@@ -9,11 +9,19 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, dataclass
 
-from ..loop.kernel import (
-    CandidateAction, ExecutionPlan, PractitionerState, ProblemSpec, Situation)
 from ..code_nodes.solution_model_port import SolutionModelError
+from ..loop.kernel import (
+    CandidateAction,
+    ExecutionPlan,
+    PractitionerState,
+    ProblemSpec,
+    Situation,
+)
 from .adaptive_practitioner_records import (
-    AdaptivePractitionerError, AdaptiveRunServices, ModelStepRequest)
+    AdaptivePractitionerError,
+    AdaptiveRunServices,
+    ModelStepRequest,
+)
 from .adaptive_practitioner_validation import _short_strings, _short_text
 
 
@@ -82,7 +90,7 @@ def _validate_plan_response(value, request, services) -> ExecutionPlan:
     return ExecutionPlan(
         str(value.get("how_mode")), str(value.get("act_mode")),
         handle=capability_ref, steps=steps, spawned_loops=spawned,
-        experiment={"arguments": arguments},
+        experiment={"arguments": arguments, "action_id": chosen.action},
         rationale=_short_text(value.get("rationale"), "plan rationale"))
 
 
@@ -102,6 +110,7 @@ def build_execution_plan(
         return ExecutionPlan(
             "use", "run_direct",
             handle=terminal_handles[action.action_kind],
+            experiment={"action_id": chosen.action},
             rationale=action.reason)
     if action.action_kind == "REPAIR" and not action.required_capabilities:
         services.plan_details[chosen.action] = {
@@ -110,6 +119,7 @@ def build_execution_plan(
                 "repair action did not bind an executable capability")}
         return ExecutionPlan(
             "use", "run_direct", handle="core.invalid",
+            experiment={"action_id": chosen.action},
             rationale=(
                 "A repair proposal without a registered capability cannot "
                 "perform work."))
@@ -144,6 +154,7 @@ def build_execution_plan(
         "steps": [], "validation_failure": failure}
     return ExecutionPlan(
         "use", "run_direct", handle="core.invalid",
+        experiment={"action_id": chosen.action},
         rationale=f"method selection remained invalid: {failure}")
 
 

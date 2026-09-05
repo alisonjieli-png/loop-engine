@@ -9,25 +9,138 @@ First public release.
 
 ### Added
 
+- **A primary-source long-horizon skills and recurrence review.** The dated
+  report separates Agent Skills packaging, explicit execution state, recursive
+  inference, neural recurrence, test-time learning, and persistent memory. It
+  compares SKILL.state, ReasoningBank, Recuris, SkillGLoW, PILOT, Recursive
+  Language Models, agent-system scaling, Mamba, RecurrentGemma, TTT, Titans,
+  Miras, Nested Learning, and official OpenAI runtime features. It also defines
+  state sufficiency, rate-distortion, residual predictive information, three
+  meanings of surprise, and ten falsifiable Loop Engine experiments. Reported
+  paper results remain unreproduced.
+
+- **Offline predictive-state and procedural-control evidence.** New passive
+  records distinguish unissued Shannon and Bayesian surprise calculations,
+  empirical predictive information, and paired context compression with task
+  loss. Those records use typed validity records, declared populations and
+  evaluators, minimum coverage, exact source identities, and an absolute
+  treatment-loss ceiling.
+  Separate procedural assessments test initiation, termination, interruption,
+  outcome devaluation, negative transfer, fresh control, and deliberative
+  fallback candidates for one named procedural-memory version. Their strongest
+  result is candidate support pending canonical reference resolution. The
+  records cannot select context, retrieve or execute a procedure,
+  mutate state, or authorize promotion. Product integration, held-out quality,
+  causal credit, and cost benefit remain unproven.
+
+- **A byte-bounded Agent Skills registry and passive state-context candidate.**
+  New manifests use standard frontmatter plus namespaced Loop Engine metadata.
+  Startup cards omit complete instructions, paths, and tool requests. A
+  separate offline candidate binds an admitted skill, exact JSON Schema,
+  trusted state, latest observation, selected history, scope, privacy, and byte
+  limits without entering the product prompt. Registry checks pass 21 of 21
+  and state-context checks pass 17 of 17. No live quality or cost result is
+  claimed.
+
+- **Unknown model usage remains unknown through reporting.** Model-call events
+  now distinguish positive, missing, partial, and real-zero provider usage with
+  `model_usage/v2`. Run History preserves the distinction through projection,
+  digesting, JSONL save and load, analytics, quality reports, and playback.
+  Mixed known and missing attempts produce an unknown aggregate instead of a
+  fabricated zero or a partial total.
+
+- **A private, staged Kaggle access campaign.** A read-only preflight froze 120
+  entered competition identifiers and received 120 readable file-list
+  responses. A total of 117 lists contain rows, 3 are empty, and 49 have more
+  pages. This is metadata evidence, not source qualification or competition
+  solving. An adversarial review found and fixed pagination parsing, authority
+  bypass, secret-preview retention, effect ownership, path confinement, and
+  result-to-history binding defects. A fresh three-competition canary then
+  recorded four exact approvals, tool receipts, and retrievals in an intact
+  151-event Run History. No dataset, model call, or submission was used.
+
+- **A fail-closed Kaggle source-qualification layer.** An exact preflight and
+  population digest now bind page retrieval, private content-addressed source
+  artifacts, legal and data-use candidates, deadline assessment, evaluator
+  candidates, completeness, and a passive download plan. Thirty-one offline
+  checks pass. A live read-only canary covered the three active candidates in
+  the frozen 120-member population, made three page reads, stored 27 private
+  artifacts, and preserved an intact 1,227-event Run History. None reached
+  `QUALIFIED`; no data was downloaded and no model or submission was used.
+
+- **An explicit-only GPT-6 Astra Responses adapter and route quarantine.** The internal adapter
+  binds the exact model, official output maximum, supported reasoning efforts,
+  request fields, response status, and provider-reported usage. It omits
+  unsupported sampling fields, refuses tool-call output, hashes private prompt
+  text in summaries, and excludes raw provider error messages. A separate
+  typed demand, candidate paid-use envelope, pricing, availability, locality,
+  capability, and complete request digest fails closed before route
+  construction. The adapter passes 21 offline checks and the quarantined policy
+  passes 38. No executable route can be built. It remains outside default
+  routes and made no credential read or live call.
+
+  A separate authorized one-call Ollama Cloud canary succeeded through the
+  existing model-neutral path with 66 input, 130 output, and 196 total
+  provider-reported tokens. It proves that configured provider path only. It
+  is not an Astra call or an assisted-versus-fresh experiment.
+
+- **Logical model-call correlation through Run History.** One semantic call ID
+  now survives across its physical provider attempts, while every attempt
+  retains its own Loop ID and the semantic owner Loop. An injected adaptive
+  fixture retained seven logical calls, seven physical attempt Loops, and an
+  intact 497-event Run History with no provider call.
+
+- **Fail-closed Kaggle tabular admission.** The current narrow executor now
+  rejects multi-output submissions, duplicate headers, absent or test-visible
+  targets, unexplained train-only columns, and preprocessing that leaves no
+  usable feature. A local cross-validation number is described as a diagnostic,
+  not an official competition metric.
+
+- **Fail-closed stage credit and advisory plumbing.** The earlier product path
+  applied one pass verdict to every stage, treated admission as help,
+  contaminated a nominal fresh control, and suppressed missing evidence. The
+  current offline product path requires an exact assistance decision before
+  downstream use, records exposure only after a physical attempt, counts
+  failover attempts and cumulative tokens, keeps contradicted credit unknown,
+  and leaves run-only contribution unknown. Canonical paired outcomes and
+  causal benefit remain unproven.
+
 - **The architecture as a typed model, rendered rather than drawn.** A diagram
   drawn by hand starts accurate and drifts, because nothing makes it wrong
   when the code moves. `code_nodes.architecture_diagram` holds C4-style
-  context and component models in which every element names a module that
-  must exist; a self-test fails if one stops existing, so a rename breaks the
-  diagram loudly instead of leaving it quietly wrong. Mermaid and Structurizr
-  DSL are two renderings and neither is the record — a diagram language can
-  express things the system does not do, and once the picture is
-  authoritative those inventions become requirements nobody agreed to. Edges
-  must say what travels along them, since an unlabelled arrow only claims
-  that two things are somehow related, and the advice edge from the model
-  ladder records in the drawing that it is not obeyed.
+  context, container, component, dynamic, fingerprint-lattice, experiment,
+  and deployment views. Every code-backed element names a module that must
+  exist. Each element also says whether it is implemented, partial, shadow,
+  or target behavior. A self-test fails after a module rename or a stale
+  generated page. Mermaid and Structurizr DSL are renderings, not architecture
+  authorities.
   `docs/ARCHITECTURE-DIAGRAMS.md` is generated from the models.
 
-- **The learning loop is closed: runs now read what earlier runs recorded.**
-  Prior stages are loaded once at the start of a run, every step consults the
-  model ladder for its shape, and the convergence measure accumulates per arm.
-  All three are surfaced on the result. The ladder's recommendation is written
-  down and not followed: below its evidence floor it declines to advise, and
+- **A stage-assistance evidence foundation on the public offline solve path.** New
+  passive records separate Loop activation identity, semantic-call identity,
+  and similarity signatures. A paired-trial contract assigns one advisory and
+  one fresh occurrence, binds packet and evaluation events, and refuses prior
+  references in the fresh arm. An idempotent SQLite/WAL projection accepts
+  only committed intact Run History and remains a rebuildable index rather
+  than evidence authority. The public `SolveRequest` accepts an explicit
+  experiment binding. Advisory candidates require digest-bound hydrated
+  material, and that body enters the rendered selected-intelligence section;
+  fresh receives neither candidate nor material. The prompt-sensitive fixture
+  binds logical and physical request digests, the admitted response, the
+  semantic payload, and one selected action through exact selection,
+  execution, and verification occurrence references. Foreign, stale,
+  duplicate, changed-result, or unpersisted joins cannot create local credit.
+  Every active arm carries a pre-run control manifest; the fixture labels its
+  six unresolved controls as `mechanism_only`. The provider responses remain
+  injected. The verifier uses the same Practitioner model path and attribution
+  confidence remains unknown. Canonical per-stage pairs, live model behavior,
+  causal benefit, exact control freezing, and campaign-safe shared storage
+  remain unproven.
+
+- **Cross-run stage recording and shadow consultation are connected.**
+  Prior stages are loaded once at the start of a run, and shadow mode consults
+  the model ladder for each shape. The ladder's recommendation is written down
+  and not followed: below its evidence floor it declines to advise, and
   even above it a recommendation about a stage shape is a hypothesis rather
   than a fact about this stage. Recording it now is what makes checking it
   possible later; acting on it now would make the check impossible, because
@@ -35,55 +148,52 @@ First public release.
 
   Demonstrated across two consecutive runs of the same task. The first loaded
   0 priors, wrote 14 stages over 7 motifs, and its convergence measure
-  reported 12 offered against 2 control — "too few to compare; the split
-  exists and the comparison does not yet". The second loaded those 14 priors
-  and consulted the ladder 15 times, every consultation correctly declining:
+  reported 12 nominal offered assignments against 2 nominal control
+  assignments. Those labels did not change packet exposure. The second loaded
+  those 14 priors and consulted the ladder 15 times, every consultation
+  correctly declining:
   "2 observations of this shape is too few to fit a ladder to; the caller's
   default stands". The machinery works and says, accurately, that it does not
   yet know anything.
 
 - **The fingerprint stack is live, and runs now accumulate stages.** Every
-  model step names its cognitive situation, is assigned a control arm from
-  that situation's own identity before anything is offered to the call, and is
-  recorded. At the end of a run each stage is closed with what became of it
-  and written beside the run history. Nothing is written before the outcome is
-  known, because an unresolved row cannot later be told apart from a stage
-  that genuinely finished unknown, and a stage that already failed is not
-  relabelled by a run that went on to succeed. Naming a stage cannot fail a
-  run: a situation that cannot be described is simply not named. First live
-  reading on a verified run: 19 observations collapsing to 7 motifs and 7
-  shapes, with the arms splitting 17 offered to 2 control.
+  model step names its cognitive situation. Its experiment arm is assigned
+  from the experiment, semantic signature, occurrence identity, and campaign
+  seed before anything is offered to the call. Admission and local verification
+  are recorded separately. A pass-wide outcome is an unattributed boundary,
+  not stage credit, and run outcome remains contextual evidence only. A stage
+  that already failed is not relabelled by a run that later succeeds. Naming a
+  stage cannot fail a run: a situation that cannot be described is simply not
+  named. First live reading on a verified
+  run: 19 observations collapsing to 7 motifs and 7 shapes, with 17 nominal
+  offered assignments and 2 nominal control assignments. The product path
+  did not apply those assignments to template exposure.
 
-- **Fingerprints at more than one scale, and a segment that matches across
-  pipelines.** A stage now carries the scale it names — operation, loop,
-  segment or run — and a `shape`: the unit of work with its subject removed.
-  A cleaning step in a billing pipeline and a normalising step over telemetry
-  differ in every noun and come out identical there. `compose_segment()` names
-  a run of consecutive stages by its ordered motifs, so
-  clean-then-validate-then-load matches the same three moves in an unrelated
-  domain, and `sliding_segments()` lets a middle sequence match without the
-  ends having to agree. Order is kept separable from set membership, because
-  doing the same work in a different sequence is a weaker match and a caller
-  should be told which one it has.
+- **Fingerprint contracts name several scales; production emits one.** The
+  contract names operation, Loop, segment, and run scopes. Production stage
+  recording currently emits the default Loop scope only. `compose_segment()`
+  and `sliding_segments()` demonstrate ordered cross-domain segment signatures
+  in offline checks; no product path composes or persists them. Transition,
+  episode, subgraph, branch, campaign, and linked physical-call fingerprints
+  remain target behavior.
 
 - **Somewhere to keep them.** `core.stage_store` indexes observations three
-  ways — exact situation, motif, and shape — and returns every level rather
-  than only the strongest, because one exact match against four hundred by
-  shape is a different thing from the reverse and a single blended score
-  hides which you hold. Matches carry counts and outcomes, never a rate: two
-  of three and two hundred of three hundred are not the same claim. Storage
-  is append-only newline JSON, and a store that cannot write degrades to
-  in-memory rather than failing the run.
+  ways: semantic situation signature, motif, and shape. It returns every level
+  rather than only the strongest, because one signature match against four
+  hundred shape matches is a different thing from the reverse. A single
+  blended score hides which evidence you hold. Matches carry counts and
+  outcomes, never a rate: two of three and two hundred of three hundred are
+  not the same claim. Storage is append-only newline JSON, and a store that
+  cannot write degrades to in-memory rather than failing the run.
 
-- **A model ladder fitted to what worked.** `core.model_demand` reads prior
-  stages of the same shape and recommends an order to try routes in, cheapest
-  first where the evidence supports it, escalating on failure — so being
-  wrong costs a retry rather than a wrong answer. Below twelve observations
-  of a shape it recommends nothing and says so: a ladder fitted to four rows
-  is a guess with provenance, which is worse than an honest guess because it
-  looks like data. Routes with no known outcome never lead, and where the
-  evidence ties the cheaper route wins, which is where the saving actually
-  comes from.
+- **An advisory model ladder fitted to recorded outcomes.**
+  `core.model_demand` reads prior stages of the same shape and recommends an
+  order to try routes in, cheapest first where the evidence supports it. It
+  does not select or execute a route. Below twelve observations of a shape it
+  recommends nothing and says so: a ladder fitted to four rows is a guess with
+  provenance, which is worse than an honest guess because it looks like data.
+  Routes with no known outcome never lead. Where evidence ties, the cheaper
+  route leads in the advisory order.
 
 - **The cognitive situation, as a unit smaller than the task.** A task
   fingerprint identifies the problem and is too coarse to learn what a
@@ -95,23 +205,20 @@ First public release.
   step, what it knows and does not, what its answer is for — with a digest
   that deliberately excludes run, loop and branch references so the same
   situation in another run is the same situation. Its coarser `motif` is the
-  cross-domain shape: a provider failing over and a test refusing to
-  reproduce both come out as `failure_diagnosis/choose_among_causes`, which is
-  where a response shape learned in one place could be worth anything in
-  another.
+  cross-domain shape derived from the phase and populated situation fields.
+  This creates a retrieval key. It does not prove that two matched stages are
+  compatible or should use the same response.
 
-- **A control arm, before there is data to contaminate.** The obvious way to
-  be fooled by convergence is to offer a template, watch calls adopt it, and
-  read the resulting agreement as discovery. A shortcut fitted to that record
-  would encode the suggestion rather than the finding. `core.convergence`
-  answers a deterministic share of stages with no template offered at all, so
-  agreement in that arm is agreement the offer cannot explain. Assignment is
-  computed from the stage identity, so a retry cannot walk a stage into the
-  other arm and the split is reproducible from the record alone. It reports
-  concentration, entropy, novel-field and departure rates per arm, says when
-  an arm is too thin to compare, and says plainly when there is no control arm
-  that nothing can separate convergence from suggestion. Building it later
-  cannot rescue a record already collected without it.
+- **Occurrence-based exposure exists in the public offline product path.**
+  `core.convergence` assigns an occurrence from the experiment, semantic
+  signature, occurrence identity, and campaign seed, so a retry cannot walk
+  that occurrence into another arm. An explicit advisory binding can expose
+  compatible prior-stage candidates with hydrated material, while a fresh
+  binding performs no prior retrieval and exposes neither. Exposure is
+  recorded only after a physical attempt and binds the work packet, prompt,
+  gateway request, and provider request. The current request-wide fixture is
+  not a canonical per-stage paired trial and does not estimate an assistance
+  effect.
 
 - **Decisions are joined forward to what became of them.** A decision record
   says what was chosen and who chose it, which supports one finding — how
@@ -124,9 +231,11 @@ First public release.
   flatter itself: a decision whose outcome never arrived is unresolved rather
   than successful, a decision that passed its check inside a run that then
   failed is not counted as having helped, and a later invalidation overrides
-  an earlier success rather than being edited away. Verification is currently
-  joined at run level, and the record says so — a rate computed from run-level
-  joins describes chains of decisions, not individual ones.
+  an earlier success rather than being edited away. `DecisionOutcome`
+  verification remains joined at run level and says so. The committed
+  `OutcomeVector` can separately carry stage-local verification, downstream
+  use, branch contribution, later invalidation, and task outcome. The product
+  path does not yet populate every stage-local signal.
 
 - **A response shape a caller may argue with.** A schema handed to a model is
   a hypothesis about how an answer should look, and it is sometimes wrong: a
@@ -134,11 +243,10 @@ First public release.
   supporting three, and one asking for a single next action discards the
   topology of a task needing two experiments and a join. A caller that fills
   such a template obediently has produced a well-formed misrepresentation
-  that nothing downstream can detect. `core.template_negotiation` offers the
-  shape instead of imposing it: a reply may accept, extend, modify, simplify,
-  compose, replace or ignore it, and says which and why. Departure is
-  reported, never treated as noncompliance, because a template that is
-  regularly abandoned is evidence about the template.
+  that nothing downstream can detect. `core.template_negotiation` defines a
+  passive contract through which a reply may accept, extend, modify, simplify,
+  compose, replace, or ignore a shape. The adaptive product path still uses
+  fixed per-step schemas and does not invoke this negotiation contract.
 
   What stays fixed is narrow and load-bearing. Fields are classed by how
   negotiable they are, and two classes are not: identity and provenance,

@@ -15,8 +15,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field, replace
 from typing import Callable
 
-from ..core.model_gateway import (ModelGateway, ModelGatewayConfig,
-                                  ModelGatewayRequest, ModelGatewayResult)
+from ..core.model_gateway import (
+    ModelGateway,
+    ModelGatewayConfig,
+    ModelGatewayRequest,
+    ModelGatewayResult,
+)
 from ..loop.recursive_loop import MODEL_THINKING_POWER_LEVELS
 
 MODEL_LEAF_MODES = ("hybrid", "non_deterministic")
@@ -38,6 +42,7 @@ class ModelInvocationRequest:
     system: str = ""
     model: str = ""
     temperature: float = 0.7
+    semantic_call_id: str = ""
 
     def __post_init__(self) -> None:
         if not isinstance(self.prompt, str) or not self.prompt.strip():
@@ -50,6 +55,17 @@ class ModelInvocationRequest:
                 or isinstance(self.temperature, bool)):
             raise SolutionModelError(
                 "ModelInvocationRequest.temperature must be numeric")
+        if not isinstance(self.semantic_call_id, str):
+            raise SolutionModelError(
+                "ModelInvocationRequest.semantic_call_id must be text")
+        if (self.semantic_call_id
+                and (self.semantic_call_id != self.semantic_call_id.strip()
+                     or any(character.isspace()
+                            for character in self.semantic_call_id)
+                     or len(self.semantic_call_id) > 192)):
+            raise SolutionModelError(
+                "ModelInvocationRequest.semantic_call_id must be bounded text "
+                "without whitespace")
 
 
 @dataclass(frozen=True)
@@ -61,6 +77,8 @@ class FixtureModelExecutionRequest:
     validator: "Callable[[str], bool] | None" = field(
         default=None, repr=False, compare=False)
     reported_model: str = "fixture-model"
+    required_prompt_fragments: tuple[str, ...] = ()
+    forbidden_prompt_fragments: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.answers, tuple) or not all(
@@ -75,6 +93,15 @@ class FixtureModelExecutionRequest:
             raise SolutionModelError("fixture validator must be callable")
         if not isinstance(self.reported_model, str) or not self.reported_model:
             raise SolutionModelError("fixture reported_model must be non-empty")
+        for name in ("required_prompt_fragments", "forbidden_prompt_fragments"):
+            values = tuple(getattr(self, name))
+            if (any(not isinstance(item, str) or not item for item in values)
+                    or len(values) != len(set(values))):
+                raise SolutionModelError(f"fixture {name} must contain text")
+            object.__setattr__(self, name, values)
+        if set(self.required_prompt_fragments) & set(
+                self.forbidden_prompt_fragments):
+            raise SolutionModelError("fixture prompt requirements overlap")
 
 
 @dataclass(frozen=True)
@@ -121,7 +148,23 @@ class ModelExecutionSession:
 
     @property
     def calls_used(self) -> int:
+        """Physical provider attempts, excluding effect-free preflight rows."""
+        return sum(result.physical_model_calls for result in self.results)
+
+    @property
+    def semantic_calls_used(self) -> int:
         return len(self.results)
+
+    @property
+    def total_tokens_used(self) -> "int | None":
+        physical = sum(result.physical_model_calls for result in self.results)
+        if not physical:
+            return 0
+        totals = tuple(result.total_tokens for result in self.results
+                       if result.physical_model_calls)
+        if any(value is None for value in totals):
+            return None
+        return sum(totals)  # type: ignore[arg-type]
 
     def invoke(self, request: ModelInvocationRequest, parent_loop) -> str:
         """Invoke the gateway for one typed request owned by ``parent_loop``."""
@@ -135,15 +178,41 @@ class ModelExecutionSession:
                 f"{self.calls_used}/{maximum_calls}",
                 error_code="model_call_budget_exhausted")
         config = self.authority.config
+        if maximum_calls is not None:
+            remaining_calls = maximum_calls - self.calls_used
+            configured_attempts = config.max_route_attempts
+            config = replace(
+                config,
+                max_route_attempts=(
+                    remaining_calls if configured_attempts is None
+                    else min(configured_attempts, remaining_calls)))
+        if config.max_total_tokens is not None:
+            used_tokens = self.total_tokens_used
+            if used_tokens is None:
+                raise SolutionModelError(
+                    "whole-Solution token accounting is incomplete; the "
+                    "declared total-token ceiling cannot be enforced",
+                    error_code="token_accounting_unavailable")
+            remaining_tokens = config.max_total_tokens - used_tokens
+            if remaining_tokens < 1:
+                raise SolutionModelError(
+                    "whole-Solution total-token budget exhausted",
+                    error_code="token_budget_exhausted")
+            config = replace(config, max_total_tokens=remaining_tokens)
         if request.model:
             config = replace(config, allowed_models=(request.model,))
         gateway_request = ModelGatewayRequest(
             prompt=request.prompt, config=config, system=request.system,
-            temperature=request.temperature)
+            temperature=request.temperature,
+            semantic_call_id=request.semantic_call_id)
         result = self.authority.gateway.invoke(
             gateway_request, validate=self.authority.validator,
             parent=parent_loop)
         self.results.append(result)
+        if maximum_calls is not None and self.calls_used > maximum_calls:
+            raise SolutionModelError(
+                "ModelGateway exceeded the whole-Solution physical-call budget",
+                error_code="model_call_budget_exhausted")
         if not result.ok:
             raise SolutionModelError(
                 f"ModelGateway failed with {result.error_code or 'unknown'}: "
@@ -221,6 +290,26 @@ def fixture_model_execution(
 
         @staticmethod
         def chat_maxout(prompt, **kwargs):
+            missing = tuple(
+                item for item in fixture.required_prompt_fragments
+                if item not in prompt
+            )
+            forbidden = tuple(
+                item for item in fixture.forbidden_prompt_fragments
+                if item in prompt
+            )
+            if missing or forbidden:
+                result = ChatResult(
+                    "",
+                    fixture.reported_model,
+                    ok=False,
+                    error=(
+                        "fixture_prompt_contract_failed: "
+                        f"missing={missing!r} forbidden={forbidden!r}"
+                    ),
+                )
+                result.provider_status = "fixture_prompt_contract_failed"
+                return result
             text = queue.pop(0) if queue else "fixture answer"
             return ChatResult(text, fixture.reported_model, prompt_tokens=2,
                               eval_tokens=3, ok=True)
@@ -268,7 +357,8 @@ def self_test() -> dict:
     session = authority.start_session()
     owner = Loop("fixture Solution owner")
     port = ModelInvocationPort(session, "hybrid", owner)
-    first = port(ModelInvocationRequest("one"))
+    first = port(ModelInvocationRequest(
+        "one", semantic_call_id="semantic-call:solution-port-first"))
     second = port(ModelInvocationRequest("two"))
     check("model_port_uses_canonical_gateway",
           first == "first" and second == "second"
@@ -281,6 +371,27 @@ def self_test() -> dict:
     check("every_physical_attempt_has_its_own_loop_identity",
           len(attempt_ids) == 2 and len(set(attempt_ids)) == 2
           and all(attempt_ids))
+    from ..core.run_history import RunHistory
+    history = RunHistory.from_ledger(
+        owner.ledger.events, run_id="solution-model-port-correlation")
+    history.commit()
+    invocation_events = tuple(
+        event for event in history.event_log
+        if event.event_type == "model_invocation")
+    semantic_call_ids = tuple(
+        item.semantic_call_id for item in session.results)
+    check("model_port_projects_logical_call_and_owner_into_run_history",
+          semantic_call_ids[0] == "semantic-call:solution-port-first"
+          and len(set(semantic_call_ids)) == 2
+          and len(invocation_events) == 2
+          and {event.detail.get("semantic_call_id")
+               for event in invocation_events} == set(semantic_call_ids)
+          and all(event.detail.get("owner_loop_id") == owner.loop_id
+                  for event in invocation_events)
+          and {event.loop_id for event in invocation_events}
+              == set(attempt_ids)
+          and history.verify_chain()["intact"],
+          "separate logical calls retain distinct physical attempt Loops")
     refused = False
     try:
         port(ModelInvocationRequest("three"))
@@ -288,6 +399,7 @@ def self_test() -> dict:
         refused = True
     check("whole_solution_budget_is_fail_closed",
           refused and session.calls_used == 2)
+
     mismatch_session = fixture_model_execution(FixtureModelExecutionRequest(
         answers=("wrong deployment",), reported_model="unexpected-model",
         max_model_calls=1)).start_session()
@@ -301,6 +413,26 @@ def self_test() -> dict:
           mismatch_refused
           and mismatch_session.results[0].error_code
               == "model_identity_mismatch")
+    prompt_guard = fixture_model_execution(FixtureModelExecutionRequest(
+        answers=("guarded",), max_model_calls=1,
+        required_prompt_fragments=("required-marker",),
+        forbidden_prompt_fragments=("forbidden-marker",))).start_session()
+    prompt_guard_refused = False
+    try:
+        ModelInvocationPort(prompt_guard, "non_deterministic", owner)(
+            ModelInvocationRequest("marker is absent"))
+    except SolutionModelError:
+        prompt_guard_refused = True
+    prompt_guard_result = prompt_guard.results[0]
+    prompt_guard_attempt = prompt_guard_result.attempts[0]
+    check("fixture_can_prove_prompt_body_reached_the_provider_adapter",
+          prompt_guard_refused
+          and prompt_guard_result.error_code == "provider_failed"
+          and prompt_guard_attempt.provider_status
+              == "fixture_prompt_contract_failed"
+          and prompt_guard_attempt.prompt_digest
+              == ModelGatewayRequest("marker is absent").prompt_digest
+          and "required-marker" not in prompt_guard_result.error)
     arbitrary_refused = False
     try:
         ModelExecution(lambda prompt: prompt, ModelGatewayConfig())  # type: ignore[arg-type]

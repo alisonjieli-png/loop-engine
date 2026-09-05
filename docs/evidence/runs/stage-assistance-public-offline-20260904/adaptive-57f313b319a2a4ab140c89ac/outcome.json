@@ -1,0 +1,1613 @@
+{
+ "record_type": "solve_outcome/v4",
+ "run_id": "adaptive-57f313b319a2a4ab140c89ac",
+ "terminal_code": "COMPLETED_VERIFIED",
+ "status": "COMPLETED_VERIFIED",
+ "solved": true,
+ "summary": "A bounded test project.",
+ "failure_code": "",
+ "result": {
+  "record_type": "generated_project_execution/v1",
+  "manifest_digest": "5b574820a8b9410b520609dbcccbfe0f0424d89943059dfe6828443d86272548",
+  "workspace": {
+   "workspace_id": "fixture",
+   "backend_kind": "fixture",
+   "root": "/home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-20260904/adaptive-57f313b319a2a4ab140c89ac-workspace/attempt-1"
+  },
+  "sandbox": {
+   "backend_kind": "fixture",
+   "network_reads": false
+  },
+  "writes": [],
+  "commands": [
+   {
+    "purpose": "run",
+    "ok": true,
+    "exit_code": 0,
+    "stdout": "done\n",
+    "stderr": "",
+    "error_code": ""
+   }
+  ],
+  "artifacts": [
+   {
+    "path": "output.txt",
+    "media_type": "text/plain",
+    "minimum_bytes": 1,
+    "present": true,
+    "byte_count": 5,
+    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "error_code": "",
+    "verified": true
+   }
+  ],
+  "snapshot": {
+   "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "file_count": 2,
+   "total_bytes": 19
+  },
+  "deterministic_checks_passed": true,
+  "manifest": {
+   "record_type": "generated_project_manifest/v1",
+   "project_id": "stage_assistance_fixture",
+   "summary": "A bounded test project.",
+   "files": [
+    {
+     "path": "main.py",
+     "content": "print('done')\n"
+    }
+   ],
+   "commands": [
+    {
+     "argv": [
+      "python",
+      "main.py"
+     ],
+     "purpose": "Run the project.",
+     "timeout_seconds": 30.0,
+     "command_kind": "execute",
+     "network_access": false,
+     "expected_exit_codes": [
+      0
+     ]
+    }
+   ],
+   "expected_artifacts": [
+    {
+     "path": "output.txt",
+     "media_type": "text/plain",
+     "minimum_bytes": 1
+    }
+   ]
+  },
+  "input_use_validation": {
+   "record_type": "generated_project_input_use_validation/v1",
+   "supplied_paths": [],
+   "referenced_paths": [],
+   "offline_network_imports": [],
+   "passed": true
+  },
+  "workspace_path": "/home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-20260904/adaptive-57f313b319a2a4ab140c89ac-workspace/attempt-1",
+  "context_evidence_count": 0
+ },
+ "compiled_task": {
+  "compiled_task_id": "task:open:b4f682c785ce6737bc63",
+  "original_input": "Create one verified text artifact from the supplied task.",
+  "normalized_interpretation": "Create one verified text artifact from the supplied task.",
+  "task_type": "unknown",
+  "output_kind": "unknown",
+  "binding": null,
+  "variables": {},
+  "file_refs": [],
+  "source_refs": [],
+  "provenance": "LLM-first open task compiler",
+  "work_item": {
+   "record_type": "work_item_ir/v1",
+   "work_item_id": "task:open:b4f682c785ce6737bc63",
+   "source_kind": "text",
+   "original_input": "Create one verified text artifact from the supplied task.",
+   "normalized_interpretation": "Create one verified text artifact from the supplied task.",
+   "coordinates": {
+    "question": "Create one verified text artifact from the supplied task.",
+    "operator": "unknown",
+    "response_topology": "unknown",
+    "decision_consumer": "verify_then_return_or_stage_learning"
+   },
+   "source_refs": [],
+   "acceptance_criteria": [
+    "output contract validates",
+    "independent verification passes"
+   ],
+   "constraints": [],
+   "known_facts": [],
+   "unknowns": [],
+   "requirement_dispositions": [],
+   "tags": [
+    "task:open",
+    "response:unknown"
+   ],
+   "risk": "unknown",
+   "consequence": "unknown",
+   "privacy_scope": "project",
+   "provenance": "LLM-first open task compiler"
+  },
+  "template_selection_authority": "model_only",
+  "template_candidates": [
+   {
+    "template_id": "core.task.data_standardization",
+    "template_version": "1.0.0",
+    "task_type": "transformation",
+    "output_kind": "artifact",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.kaggle_competition",
+    "template_version": "1.0.0",
+    "task_type": "prediction",
+    "output_kind": "artifact",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.source_digestion",
+    "template_version": "1.0.0",
+    "task_type": "generation",
+    "output_kind": "artifact",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.tabular_classification",
+    "template_version": "1.0.0",
+    "task_type": "classification",
+    "output_kind": "label",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.tabular_model_comparison",
+    "template_version": "1.0.0",
+    "task_type": "prediction",
+    "output_kind": "report",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.tabular_regression",
+    "template_version": "1.0.0",
+    "task_type": "regression",
+    "output_kind": "score",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   }
+  ],
+  "task_feedback": []
+ },
+ "intelligence": {
+  "context": {
+   "portfolio_id": "core.context.practitioner.general",
+   "version": "1.0.0",
+   "persona": {
+    "persona_id": "core.persona.task_interpreter",
+    "version": "1.0.0",
+    "instruction": "You are a careful task interpreter and systems analyst. Preserve the request, identify the intended outcome, separate facts from assumptions, detect material ambiguity, identify expected inputs and outputs, and propose only the next useful action. Do not solve the domain task unless the current work directive explicitly asks you to do so. Do not assume a domain, dataset, file layout, tool, implementation, or answer that the task and observed evidence do not establish."
+   },
+   "selected_refs": []
+  },
+  "option_selection": {
+   "record_type": "option_selection_tally/v1",
+   "perspectives": {},
+   "question_refs": {},
+   "guidance_refs": {},
+   "steps_reported": {},
+   "steps_offered": {
+    "act": 2,
+    "decide_next": 1,
+    "how": 1,
+    "orient": 1,
+    "route": 1,
+    "verify": 1
+   },
+   "wanted_but_absent": [],
+   "operator_gaps": [],
+   "named_but_not_offered": [],
+   "other_observations": [],
+   "reports": 0,
+   "calls": 7
+  },
+  "semantic_autonomy": {
+   "record_type": "semantic_autonomy_coverage/v1",
+   "semantic_autonomy_coverage": 1.0,
+   "decisions_recorded": 2,
+   "attributable_to_reasoning": 2,
+   "by_owner": {
+    "llm": 2,
+    "user": 0,
+    "deterministic": 0
+   },
+   "by_decision_kind": {
+    "interpret_task": 1,
+    "select_next_operation": 1
+   },
+   "unattributed_by_kind": {},
+   "uncontested_decisions": 2,
+   "decision_kinds_not_anticipated": [],
+   "reading": "all 2 decisions were reasoned, but none had a second alternative open, so the coverage figure is weak evidence on its own"
+  },
+  "decision_outcomes": {
+   "record_type": "decision_outcome_ledger/v1",
+   "decisions_followed": 2,
+   "reached_an_observation": 2,
+   "outcome_known": 2,
+   "helped": 2,
+   "by_stage": {
+    "proposed": 0,
+    "admitted": 0,
+    "executed": 0,
+    "observed": 0,
+    "verified": 0,
+    "contributed": 2
+   },
+   "by_decision_kind": {
+    "interpret_task": {
+     "helped": 1,
+     "hurt": 0,
+     "unknown": 0
+    },
+    "select_next_operation": {
+     "helped": 1,
+     "hurt": 0,
+     "unknown": 0
+    }
+   },
+   "invalidated_later": 0,
+   "verification_granularity": "run",
+   "reading": "2 of 2 decisions have a known outcome, of which 2 helped"
+  },
+  "search_candidates": [],
+  "fetched_sources": [],
+  "extensions": {},
+  "region_evidence": {},
+  "stage_assistance": {
+   "mode": "advisory",
+   "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+   "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+   "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+   "stage_arms": {
+    "stage-occurrence:sha256:9de386f242ba94307760d988690c5321bdd76e7eab39c42cc932430acdc8098d": {
+     "experiment": "cache_assist",
+     "assigned_arm": "advisory",
+     "exposure_applied": true,
+     "retrieval_performed": true,
+     "retrieved_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:0"
+     ],
+     "exposed_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:0"
+     ],
+     "exposed_material_refs": [
+      "stage-material:fixture:0"
+     ],
+     "exposed_material_digests": [
+      "aa28ac77c668987746a149e9ed7f12f3f642284146d5548bf7543213163b9cf6"
+     ],
+     "semantic_signature": "stage:sha256:7da96c3ba4cd409f312285c8d23687c3",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:2b89cc659b00afea57734d560fce29020730ed2be875b0aa2026bd65e7cadea1",
+      "packet_digest": "6de5fe53e7871d2c858f9525bdb4c1595095ca6b3cfd8b4cea24f6bba053bb31",
+      "prompt_digest": "2efcd95f4c7aaefcf99e2b62d841bb69e426ba1ddd777675910842f3e07f1fc1",
+      "prompt_assembly_id": "assembly.sha256_2efcd95f4c7aaefcf99e2b62d841bb69e426ba1ddd777675910842f3e07f1fc1",
+      "gateway_request_digest": "c96443c5b3371664a77f9cd2d2c254a1a938b517eaf5bf021adc772ea45683ca",
+      "provider_request_digests": [
+       "462f98d166fe37214ca02549d9e134748a02c0a3b76e394aa5d10fead1e23cb8"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop7"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:b0479ba12d9a1d6179e79bb7a8762012ac213ccc4fec50409525530237a87dae": {
+     "experiment": "cache_assist",
+     "assigned_arm": "advisory",
+     "exposure_applied": true,
+     "retrieval_performed": true,
+     "retrieved_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:1"
+     ],
+     "exposed_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:1"
+     ],
+     "exposed_material_refs": [
+      "stage-material:fixture:1"
+     ],
+     "exposed_material_digests": [
+      "b83c748da717c8944af6ff7231a9ff8c06fbe5efa1e035e73ebeeb5025ea58a1"
+     ],
+     "semantic_signature": "stage:sha256:7cc4a5dca6038ceeb83772e0718ef013",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:71d796f38163a202cd33392fe558b8fc106799e89b1beecb56090e575f6393f0",
+      "packet_digest": "00920818b054ed28ed61300f55e1525b2261a882cb6bcc0485045e6438bb39fe",
+      "prompt_digest": "e610bbfd4eb187232c374c676b2bf3dfa7f4a73a7b015379b618018907a1a744",
+      "prompt_assembly_id": "assembly.sha256_e610bbfd4eb187232c374c676b2bf3dfa7f4a73a7b015379b618018907a1a744",
+      "gateway_request_digest": "83f1a0db2524733f8e61875c5ce5a41a63edbf72a256bccf9af59eb141ed5e75",
+      "provider_request_digests": [
+       "f4276923195c971398a8ecbf407347c69cccc347e397a8c90ffc3b315a14e566"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop14"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:3ad05f6891b50b73b95e445ae1ed5883e4542cd31422a05dd528b3f3b29a7108": {
+     "experiment": "cache_assist",
+     "assigned_arm": "advisory",
+     "exposure_applied": true,
+     "retrieval_performed": true,
+     "retrieved_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:2"
+     ],
+     "exposed_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:2"
+     ],
+     "exposed_material_refs": [
+      "stage-material:fixture:2"
+     ],
+     "exposed_material_digests": [
+      "8bfc75fd7fa41a07002679f051b2355212c9d3c6a4fa9d4eb6a3bd68cb0ff86c"
+     ],
+     "semantic_signature": "stage:sha256:b9dbbaf794ee05a64b440da4d0237a03",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:33c6c3917b629ffbc4ea4e39761753e2b2ce76edb144ede52ba97fd1c8ea0b76",
+      "packet_digest": "9d27e270c72769172c46d07f5a66188d1ac8707df7ada1acdc11e7cce49bb82d",
+      "prompt_digest": "08b8a14acc780f7af5e482c7026c6a7c4b59ebaa7e7e7274b0a80a4e2848c856",
+      "prompt_assembly_id": "assembly.sha256_08b8a14acc780f7af5e482c7026c6a7c4b59ebaa7e7e7274b0a80a4e2848c856",
+      "gateway_request_digest": "6f8ce0b85c21b118750c7eaba01c1dc37fd3714ec35894d64a5286980e0e9cb4",
+      "provider_request_digests": [
+       "1f3abcd34caf8644859135542d6fa8959d583815441c912f96b8e0f5aac229a7"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop21"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:2435e7e36bd2e5cc88235850f404e1fd63690f644710632dfbcc9b1fd265688f": {
+     "experiment": "cache_assist",
+     "assigned_arm": "advisory",
+     "exposure_applied": true,
+     "retrieval_performed": true,
+     "retrieved_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:3"
+     ],
+     "exposed_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:3"
+     ],
+     "exposed_material_refs": [
+      "stage-material:fixture:3"
+     ],
+     "exposed_material_digests": [
+      "6a39f03b30bb33e9f0972d31a656696597654c7e754a8bacd2f10347ed260b28"
+     ],
+     "semantic_signature": "stage:sha256:105fc8361f67a44df9e53ee855d91d75",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:6f8839636344b9bf0111d06b6299fdbeed0f1bc533d449e50522109e447c3bd7",
+      "packet_digest": "a08520f8da8c134203014b2b179f2681b12cc53c0261d2c6d42640c5e2443e58",
+      "prompt_digest": "b3dc76ae4af03731c4f5a7f066cb3fd92f5aa2223cddb10d508a911b6236efbe",
+      "prompt_assembly_id": "assembly.sha256_b3dc76ae4af03731c4f5a7f066cb3fd92f5aa2223cddb10d508a911b6236efbe",
+      "gateway_request_digest": "adeb3dd942a1097aeb1b25dfece4bf34f5c576bed5449a55ddcb8267896074d9",
+      "provider_request_digests": [
+       "ef35fb2b951dc0de2b61fffe9f418520c9a59596450c60c49eb2ea6cdde21efb"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop28"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:74b1e9ca9f90b6a24488c3a4c084d90c20e781aa8b4f4d202dbaa9a7fcf478e0": {
+     "experiment": "cache_assist",
+     "assigned_arm": "advisory",
+     "exposure_applied": true,
+     "retrieval_performed": true,
+     "retrieved_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:4"
+     ],
+     "exposed_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:4"
+     ],
+     "exposed_material_refs": [
+      "stage-material:fixture:4"
+     ],
+     "exposed_material_digests": [
+      "80e46abf3872d9fd88412ffc9fdaa682145f8eb00385ed283d1aa504061d4060"
+     ],
+     "semantic_signature": "stage:sha256:78a84b02ff42517b1a4a239b8f4fb18d",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:e7741012cadcfe43a29516b04e4e8aae7faa3bfdc66601ca67945c76b0c1c500",
+      "packet_digest": "44187477d585d328b8f8cc7ce6d5c30d73c405bc6fe43d33b86760a84b8b4084",
+      "prompt_digest": "4a8faeca702a6a818f1ee51768ea9b6360575d49c0864c5cf3ae71c0501c468f",
+      "prompt_assembly_id": "assembly.sha256_4a8faeca702a6a818f1ee51768ea9b6360575d49c0864c5cf3ae71c0501c468f",
+      "gateway_request_digest": "c2d0bd24992b72ba1620552445a671c219c209bad2f5224af4e5cc14408f0d7e",
+      "provider_request_digests": [
+       "98d2633572664fcbdacdfb5941f7dc873ead052d1fe7de1dd00206e7d089474f"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop35"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:f37c4f662969a52cd3fd964639cbe9be4fb09f8397ce2bc3ff3107c5737e8e5e": {
+     "experiment": "cache_assist",
+     "assigned_arm": "advisory",
+     "exposure_applied": true,
+     "retrieval_performed": true,
+     "retrieved_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:5"
+     ],
+     "exposed_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:5"
+     ],
+     "exposed_material_refs": [
+      "stage-material:fixture:5"
+     ],
+     "exposed_material_digests": [
+      "ed97a7ead88361f24acc1c3dfd40e027cb9044f89e475d61fb9f35f6c1eb2e09"
+     ],
+     "semantic_signature": "stage:sha256:c397f308bebcb975c35bc583a4152eb8",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:5e7f117aacf88ca52b64f2a4a3a413d8e01b672ad0fdf0707ad4303340f73333",
+      "packet_digest": "ae8d63723561f897efa9141aec98b9b11f716814710654829711236009ad3c12",
+      "prompt_digest": "2372fea7543dbceaa3e4c390c906183af2307875ceff751e08e63ea7eb0f5331",
+      "prompt_assembly_id": "assembly.sha256_2372fea7543dbceaa3e4c390c906183af2307875ceff751e08e63ea7eb0f5331",
+      "gateway_request_digest": "cd0916c4cc84e3adf7a2ee97d1d1047b632a96e1c8bdf611255e2fabad8c8f6e",
+      "provider_request_digests": [
+       "62f455fa5d4646edd28eca0ded14e8b0f385d8a53d79d2293529e028a66887c6"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop45"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:cf1ff50d12250fd69ac75a6e125e4e40ed4aa06e8738117e18864bbb6dfd27f1": {
+     "experiment": "cache_assist",
+     "assigned_arm": "advisory",
+     "exposure_applied": true,
+     "retrieval_performed": true,
+     "retrieved_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:6"
+     ],
+     "exposed_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:6"
+     ],
+     "exposed_material_refs": [
+      "stage-material:fixture:6"
+     ],
+     "exposed_material_digests": [
+      "5a811f2f680304bd001e5233cd1c6479773659c9d48386ffcb09694d2863f8da"
+     ],
+     "semantic_signature": "stage:sha256:fb4d56ea64ae2abe345d46d08a3a3e60",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:9c499c3264c3dae8fe7ccbd9a97328890bbd2c107c9a017120c13a40442a18cb",
+      "packet_digest": "6238a459894391f0c3e27b671a8d22eee69ebac67a726b796d0c444b5a023b19",
+      "prompt_digest": "9992b4e6b502e18b1b86f0ce58cb64b8bd05b3c98905523407db7533638fb3bb",
+      "prompt_assembly_id": "assembly.sha256_9992b4e6b502e18b1b86f0ce58cb64b8bd05b3c98905523407db7533638fb3bb",
+      "gateway_request_digest": "c7c1994082f0a0a01e2591e542dbeca5e531b3caac12595c8e37102bc0d04f65",
+      "provider_request_digests": [
+       "7543c14021bcea14f73c6e70f2a8a3ea1bc785c722205537d24644b502d89aca"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop52"
+      ]
+     }
+    }
+   },
+   "decisions": [
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:9de386f242ba94307760d988690c5321bdd76e7eab39c42cc932430acdc8098d",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "assigned_arm": "advisory",
+     "exposure_ref": "stage-exposure:sha256:2b89cc659b00afea57734d560fce29020730ed2be875b0aa2026bd65e7cadea1",
+     "packet_digest": "6de5fe53e7871d2c858f9525bdb4c1595095ca6b3cfd8b4cea24f6bba053bb31",
+     "prompt_digest": "2efcd95f4c7aaefcf99e2b62d841bb69e426ba1ddd777675910842f3e07f1fc1",
+     "prompt_assembly_id": "assembly.sha256_2efcd95f4c7aaefcf99e2b62d841bb69e426ba1ddd777675910842f3e07f1fc1",
+     "gateway_request_digest": "c96443c5b3371664a77f9cd2d2c254a1a938b517eaf5bf021adc772ea45683ca",
+     "provider_request_digests": [
+      "462f98d166fe37214ca02549d9e134748a02c0a3b76e394aa5d10fead1e23cb8"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop7"
+     ],
+     "admitted_response_digest": "0240e7a4e2b44fd1160c8691bd54d9f4390cb6d1a5c4c961c485ffe48e063c84",
+     "admission_loop_id": "loop8",
+     "semantic_payload_digest": "91b469801c629ede65d9063e106982450fdce454c49f5f2abaef00049ff18f30",
+     "disposition": "USE",
+     "selected_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:0"
+     ],
+     "reason": "The compatible prior supports the bounded artifact plan."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:b0479ba12d9a1d6179e79bb7a8762012ac213ccc4fec50409525530237a87dae",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "assigned_arm": "advisory",
+     "exposure_ref": "stage-exposure:sha256:71d796f38163a202cd33392fe558b8fc106799e89b1beecb56090e575f6393f0",
+     "packet_digest": "00920818b054ed28ed61300f55e1525b2261a882cb6bcc0485045e6438bb39fe",
+     "prompt_digest": "e610bbfd4eb187232c374c676b2bf3dfa7f4a73a7b015379b618018907a1a744",
+     "prompt_assembly_id": "assembly.sha256_e610bbfd4eb187232c374c676b2bf3dfa7f4a73a7b015379b618018907a1a744",
+     "gateway_request_digest": "83f1a0db2524733f8e61875c5ce5a41a63edbf72a256bccf9af59eb141ed5e75",
+     "provider_request_digests": [
+      "f4276923195c971398a8ecbf407347c69cccc347e397a8c90ffc3b315a14e566"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop14"
+     ],
+     "admitted_response_digest": "5dfe6417b6b2c556e00065af04611329a01708f59e2d4fdf04a17e5408aebe5b",
+     "admission_loop_id": "loop15",
+     "semantic_payload_digest": "27719685a0d29283a6c5cb9a01040fb25e9efeb039a49e753ecdc508578a8199",
+     "disposition": "USE",
+     "selected_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:1"
+     ],
+     "reason": "The compatible prior supports the bounded artifact plan."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:3ad05f6891b50b73b95e445ae1ed5883e4542cd31422a05dd528b3f3b29a7108",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "assigned_arm": "advisory",
+     "exposure_ref": "stage-exposure:sha256:33c6c3917b629ffbc4ea4e39761753e2b2ce76edb144ede52ba97fd1c8ea0b76",
+     "packet_digest": "9d27e270c72769172c46d07f5a66188d1ac8707df7ada1acdc11e7cce49bb82d",
+     "prompt_digest": "08b8a14acc780f7af5e482c7026c6a7c4b59ebaa7e7e7274b0a80a4e2848c856",
+     "prompt_assembly_id": "assembly.sha256_08b8a14acc780f7af5e482c7026c6a7c4b59ebaa7e7e7274b0a80a4e2848c856",
+     "gateway_request_digest": "6f8ce0b85c21b118750c7eaba01c1dc37fd3714ec35894d64a5286980e0e9cb4",
+     "provider_request_digests": [
+      "1f3abcd34caf8644859135542d6fa8959d583815441c912f96b8e0f5aac229a7"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop21"
+     ],
+     "admitted_response_digest": "5cfbad16b9b66b70aeb5cd924006a8623b2ee5db1b21e62d479e4f60d5c39241",
+     "admission_loop_id": "loop22",
+     "semantic_payload_digest": "6bd80df1cb66664b5a576bfe536a2b5badc496fffc36ba4b6b65f0de64b1fbcf",
+     "disposition": "USE",
+     "selected_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:2"
+     ],
+     "reason": "The compatible prior supports the bounded artifact plan."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:2435e7e36bd2e5cc88235850f404e1fd63690f644710632dfbcc9b1fd265688f",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "assigned_arm": "advisory",
+     "exposure_ref": "stage-exposure:sha256:6f8839636344b9bf0111d06b6299fdbeed0f1bc533d449e50522109e447c3bd7",
+     "packet_digest": "a08520f8da8c134203014b2b179f2681b12cc53c0261d2c6d42640c5e2443e58",
+     "prompt_digest": "b3dc76ae4af03731c4f5a7f066cb3fd92f5aa2223cddb10d508a911b6236efbe",
+     "prompt_assembly_id": "assembly.sha256_b3dc76ae4af03731c4f5a7f066cb3fd92f5aa2223cddb10d508a911b6236efbe",
+     "gateway_request_digest": "adeb3dd942a1097aeb1b25dfece4bf34f5c576bed5449a55ddcb8267896074d9",
+     "provider_request_digests": [
+      "ef35fb2b951dc0de2b61fffe9f418520c9a59596450c60c49eb2ea6cdde21efb"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop28"
+     ],
+     "admitted_response_digest": "631a4dc3a7ebfd2167e45e957808d421c97cbddec31f11bf94dac665a3056b2a",
+     "admission_loop_id": "loop29",
+     "semantic_payload_digest": "ab6666282b9255cf6a1c107b1fd392d4a40386b5a7cf3e7b03a6f2848d0bc936",
+     "disposition": "USE",
+     "selected_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:3"
+     ],
+     "reason": "The compatible prior supports the bounded artifact plan."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:74b1e9ca9f90b6a24488c3a4c084d90c20e781aa8b4f4d202dbaa9a7fcf478e0",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "assigned_arm": "advisory",
+     "exposure_ref": "stage-exposure:sha256:e7741012cadcfe43a29516b04e4e8aae7faa3bfdc66601ca67945c76b0c1c500",
+     "packet_digest": "44187477d585d328b8f8cc7ce6d5c30d73c405bc6fe43d33b86760a84b8b4084",
+     "prompt_digest": "4a8faeca702a6a818f1ee51768ea9b6360575d49c0864c5cf3ae71c0501c468f",
+     "prompt_assembly_id": "assembly.sha256_4a8faeca702a6a818f1ee51768ea9b6360575d49c0864c5cf3ae71c0501c468f",
+     "gateway_request_digest": "c2d0bd24992b72ba1620552445a671c219c209bad2f5224af4e5cc14408f0d7e",
+     "provider_request_digests": [
+      "98d2633572664fcbdacdfb5941f7dc873ead052d1fe7de1dd00206e7d089474f"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop35"
+     ],
+     "admitted_response_digest": "dcdebab56ff33eaa2c8f253bda472ce4159b57b1f099f53049db6fa801433e27",
+     "admission_loop_id": "loop36",
+     "semantic_payload_digest": "d3ac992e10a1be84256b7505c195cf7b448413338f68613d60a0e5a9cc46dfe6",
+     "disposition": "USE",
+     "selected_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:4"
+     ],
+     "reason": "The compatible prior supports the bounded artifact plan."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:f37c4f662969a52cd3fd964639cbe9be4fb09f8397ce2bc3ff3107c5737e8e5e",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "assigned_arm": "advisory",
+     "exposure_ref": "stage-exposure:sha256:5e7f117aacf88ca52b64f2a4a3a413d8e01b672ad0fdf0707ad4303340f73333",
+     "packet_digest": "ae8d63723561f897efa9141aec98b9b11f716814710654829711236009ad3c12",
+     "prompt_digest": "2372fea7543dbceaa3e4c390c906183af2307875ceff751e08e63ea7eb0f5331",
+     "prompt_assembly_id": "assembly.sha256_2372fea7543dbceaa3e4c390c906183af2307875ceff751e08e63ea7eb0f5331",
+     "gateway_request_digest": "cd0916c4cc84e3adf7a2ee97d1d1047b632a96e1c8bdf611255e2fabad8c8f6e",
+     "provider_request_digests": [
+      "62f455fa5d4646edd28eca0ded14e8b0f385d8a53d79d2293529e028a66887c6"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop45"
+     ],
+     "admitted_response_digest": "117601822403ce781bebd71d9eacb621496d2a310efcf9565489c1e11fb7fe1e",
+     "admission_loop_id": "loop46",
+     "semantic_payload_digest": "dc09685f4b88af75e084b40bb983f685a4c129bf23da06473137f3841737c543",
+     "disposition": "USE",
+     "selected_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:5"
+     ],
+     "reason": "The compatible prior supports the bounded artifact plan."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:cf1ff50d12250fd69ac75a6e125e4e40ed4aa06e8738117e18864bbb6dfd27f1",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "assigned_arm": "advisory",
+     "exposure_ref": "stage-exposure:sha256:9c499c3264c3dae8fe7ccbd9a97328890bbd2c107c9a017120c13a40442a18cb",
+     "packet_digest": "6238a459894391f0c3e27b671a8d22eee69ebac67a726b796d0c444b5a023b19",
+     "prompt_digest": "9992b4e6b502e18b1b86f0ce58cb64b8bd05b3c98905523407db7533638fb3bb",
+     "prompt_assembly_id": "assembly.sha256_9992b4e6b502e18b1b86f0ce58cb64b8bd05b3c98905523407db7533638fb3bb",
+     "gateway_request_digest": "c7c1994082f0a0a01e2591e542dbeca5e531b3caac12595c8e37102bc0d04f65",
+     "provider_request_digests": [
+      "7543c14021bcea14f73c6e70f2a8a3ea1bc785c722205537d24644b502d89aca"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop52"
+     ],
+     "admitted_response_digest": "8645d7e2b94f52801e918f38759ab94062a4cc2d9de84b1f225bbee08fb116d2",
+     "admission_loop_id": "loop53",
+     "semantic_payload_digest": "08ffa868e58485e9fbf6ec9fa153ac006e3e2266cc316beb5473d83b02a77ac5",
+     "disposition": "USE",
+     "selected_prior_refs": [
+      "prior-stage:fixture:verified-text-artifact:6"
+     ],
+     "reason": "The compatible prior supports the bounded artifact plan."
+    }
+   ],
+   "action_links": [
+    {
+     "record_type": "stage_selected_action_lineage/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:b0479ba12d9a1d6179e79bb7a8762012ac213ccc4fec50409525530237a87dae",
+     "semantic_call_id": "semantic-stage-8b74ec381e5b33d91774fdf15e9366263b3b6a33150fcbdb",
+     "action_id": "action:3e4f1aaa8d6e4eba86c6",
+     "action_payload_digest": "3e4f1aaa8d6e4eba86c6a220f99dc0c8157c8951804a7226e74fd9323a8b87d3",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:one-frozen-state:v1",
+     "assistance_decision_digest": "6a400d7633c33bd717345745a050e7adc6fceadea5415de84f8a2f5b388192a4",
+     "attribution_method": "DIRECT_DOWNSTREAM_CONSUMPTION"
+    }
+   ],
+   "execution_links": [
+    {
+     "record_type": "stage_action_execution_lineage/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:b0479ba12d9a1d6179e79bb7a8762012ac213ccc4fec50409525530237a87dae",
+     "action_id": "action:3e4f1aaa8d6e4eba86c6",
+     "capability_ref": "core.generated_project",
+     "result_digest": "9f0518b8d65457f0b1ae3d1d671ac1cead57844c46462b94dfdc72bf71ae4dc7",
+     "execution_succeeded": true,
+     "attribution_method": "DIRECT_DOWNSTREAM_CONSUMPTION"
+    }
+   ],
+   "outcome_links": [
+    {
+     "record_type": "stage_action_verification_lineage/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:b0479ba12d9a1d6179e79bb7a8762012ac213ccc4fec50409525530237a87dae",
+     "stage_observation_ref": "stage-observation:sha256:658ff1a85e424dddc3fc2ec7443d9b9ca2c9ad608291ad81d55f78a6572feaa7",
+     "action_id": "action:3e4f1aaa8d6e4eba86c6",
+     "execution_result_digest": "9f0518b8d65457f0b1ae3d1d671ac1cead57844c46462b94dfdc72bf71ae4dc7",
+     "verifier_stage_occurrence_id": "stage-occurrence:sha256:f37c4f662969a52cd3fd964639cbe9be4fb09f8397ce2bc3ff3107c5737e8e5e",
+     "verification_verdict": "accept",
+     "deterministic_checks_passed": true,
+     "local_verification": true,
+     "attribution_method": "DIRECT_DOWNSTREAM_CONSUMPTION",
+     "attribution_confidence": 1.0
+    }
+   ],
+   "stages": {
+    "record_type": "stage_store/v1",
+    "degraded": false,
+    "write_failures": 0,
+    "read_failures": 0,
+    "unreadable_rows": 0,
+    "last_storage_error": "",
+    "degradation_events": [],
+    "observations": 7,
+    "distinct_situations": 7,
+    "distinct_motifs": 6,
+    "distinct_shapes": 6,
+    "path": "/home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-20260904/stages.jsonl"
+   },
+   "prior_stages_loaded": 7,
+   "attribution_boundaries": [
+    {
+     "record_type": "stage_attribution_boundary/v1",
+     "pass_number": 1,
+     "verification_verdict": "accept",
+     "stage_occurrence_ids": [
+      "stage-occurrence:sha256:9de386f242ba94307760d988690c5321bdd76e7eab39c42cc932430acdc8098d",
+      "stage-occurrence:sha256:b0479ba12d9a1d6179e79bb7a8762012ac213ccc4fec50409525530237a87dae",
+      "stage-occurrence:sha256:3ad05f6891b50b73b95e445ae1ed5883e4542cd31422a05dd528b3f3b29a7108",
+      "stage-occurrence:sha256:2435e7e36bd2e5cc88235850f404e1fd63690f644710632dfbcc9b1fd265688f",
+      "stage-occurrence:sha256:74b1e9ca9f90b6a24488c3a4c084d90c20e781aa8b4f4d202dbaa9a7fcf478e0",
+      "stage-occurrence:sha256:f37c4f662969a52cd3fd964639cbe9be4fb09f8397ce2bc3ff3107c5737e8e5e"
+     ],
+     "local_stage_outcomes_changed": false,
+     "reason": "the pass verdict evaluates selected action results, not every semantic model call in the pass"
+    }
+   ],
+   "degradations": []
+  }
+ },
+ "selected_mode": "non_deterministic",
+ "requested_mode": "non_deterministic",
+ "selected_canvas": {
+  "candidate_id": "canvas:d98b5c833cf1dfda691d",
+  "selected": true,
+  "graph_digest": "450aa0fdfa3f4eef48c6d473ed80ed43506cc581323e052c1b4257171f92ce34",
+  "loop_graph": {
+   "record_type": "loop_graph_definition/v1",
+   "graph_id": "adaptive.action.d98b5c833cf1dfda691d",
+   "version": "1.0.0",
+   "permitted_vertex_modes": [
+    "deterministic"
+   ],
+   "input_ports": [
+    {
+     "name": "input",
+     "role": "generated_project_manifest/v1",
+     "targets": [
+      {
+       "vertex_id": "solution.controller",
+       "port_role": "generated_project_manifest/v1"
+      }
+     ]
+    }
+   ],
+   "output_ports": [
+    {
+     "name": "output",
+     "role": "generated_project_execution/v1",
+     "source": {
+      "vertex_id": "solution.stage1.component",
+      "port_role": "generated_project_execution/v1"
+     }
+    }
+   ],
+   "vertices": [
+    {
+     "vertex_id": "solution.controller",
+     "definition_ref": {
+      "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_controller",
+      "version": "1.0.0",
+      "content_digest": "5d14f99339b013f4033cc65265a2021a387c7049ca5d91f5b275f1aa6e811be4"
+     },
+     "definition": {
+      "record_type": "loop_definition/v1",
+      "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_controller",
+      "version": "1.0.0",
+      "role_profile": {
+       "profile_id": "solution.pipeline",
+       "version": "1.0.0"
+      },
+      "contract": {
+       "name": "adaptive.action.d98b5c833cf1dfda691d:solution.controller",
+       "execution_mode": "code_only",
+       "input_roles": [
+        "generated_project_manifest/v1"
+       ],
+       "output_roles": [
+        "generated_project_manifest/v1",
+        "generated_project_execution/v1"
+       ],
+       "effects": [
+        "pure"
+       ],
+       "locality": "local_machine",
+       "cost_class": "free",
+       "role": "solution"
+      },
+      "configuration_facts": {
+       "allowable_modes": [
+        "deterministic"
+       ],
+       "custom_steps": [
+        "act"
+       ],
+       "delegated_modes": [
+        "deterministic"
+       ],
+       "exit_condition": "accepted_success",
+       "framework": "custom",
+       "graph_id": "adaptive.action.d98b5c833cf1dfda691d",
+       "llm_thinking_power": "",
+       "logical_kind": "execution",
+       "loop_condition": "steps_remain",
+       "max_depth": 32,
+       "operation_ref": "",
+       "parameters": {
+        "logical_solution_id": "adaptive.action.d98b5c833cf1dfda691d",
+        "max_members": null
+       },
+       "power": "light",
+       "preferred_modes": [
+        "deterministic"
+       ],
+       "purpose": "controller",
+       "replay_guarantee": "event_equivalent",
+       "success_confidence_min": 0.5,
+       "vertex_id": "solution.controller"
+      },
+      "supported_modes": [
+       "deterministic"
+      ],
+      "installed_executor_modes": [
+       "deterministic"
+      ],
+      "step_profile": "compact_five_beat",
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "effects": [
+       "pure"
+      ],
+      "permissions": [],
+      "required_capabilities": [
+       "pipeline_execution",
+       "solution_canvas",
+       "typed_connection_check"
+      ],
+      "content_digest": "5d14f99339b013f4033cc65265a2021a387c7049ca5d91f5b275f1aa6e811be4"
+     },
+     "selected_mode": "deterministic",
+     "purpose": "controller",
+     "operation_ref": "",
+     "parameters": {
+      "logical_solution_id": "adaptive.action.d98b5c833cf1dfda691d",
+      "max_members": null
+     }
+    },
+    {
+     "vertex_id": "solution.stage1.component",
+     "definition_ref": {
+      "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_stage1_component",
+      "version": "1.0.0",
+      "content_digest": "6a6a77abef790a261174e271b63f20950dca7a0570183a112bee2c4b82c2b4bd"
+     },
+     "definition": {
+      "record_type": "loop_definition/v1",
+      "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_stage1_component",
+      "version": "1.0.0",
+      "role_profile": {
+       "profile_id": "solution.atomic_component",
+       "version": "1.0.0"
+      },
+      "contract": {
+       "name": "adaptive.action.d98b5c833cf1dfda691d:solution.stage1.component",
+       "execution_mode": "code_only",
+       "input_roles": [
+        "generated_project_manifest/v1"
+       ],
+       "output_roles": [
+        "generated_project_execution/v1"
+       ],
+       "effects": [
+        "pure"
+       ],
+       "locality": "local_machine",
+       "cost_class": "free",
+       "role": "solution"
+      },
+      "configuration_facts": {
+       "allowable_modes": [
+        "deterministic"
+       ],
+       "custom_steps": [
+        "act"
+       ],
+       "delegated_modes": [
+        "deterministic"
+       ],
+       "exit_condition": "accepted_success",
+       "framework": "custom",
+       "graph_id": "adaptive.action.d98b5c833cf1dfda691d",
+       "llm_thinking_power": "",
+       "logical_kind": "execution",
+       "loop_condition": "steps_remain",
+       "max_depth": 32,
+       "operation_ref": "core.generated_project",
+       "parameters": {
+        "instruction": "Generate a bounded project.",
+        "plan_digest": "d98b5c833cf1dfda691d"
+       },
+       "power": "light",
+       "preferred_modes": [
+        "deterministic"
+       ],
+       "purpose": "component",
+       "replay_guarantee": "event_equivalent",
+       "success_confidence_min": 0.5,
+       "vertex_id": "solution.stage1.component"
+      },
+      "supported_modes": [
+       "deterministic"
+      ],
+      "installed_executor_modes": [
+       "deterministic"
+      ],
+      "step_profile": "atomic_code_only",
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "effects": [
+       "pure"
+      ],
+      "permissions": [],
+      "required_capabilities": [
+       "component_execution",
+       "solution_canvas"
+      ],
+      "content_digest": "6a6a77abef790a261174e271b63f20950dca7a0570183a112bee2c4b82c2b4bd"
+     },
+     "selected_mode": "deterministic",
+     "purpose": "component",
+     "operation_ref": "core.generated_project",
+     "parameters": {
+      "instruction": "Generate a bounded project.",
+      "plan_digest": "d98b5c833cf1dfda691d"
+     }
+    }
+   ],
+   "edges": [
+    {
+     "edge_id": "edge:1",
+     "source": {
+      "vertex_id": "solution.controller",
+      "port_role": "generated_project_manifest/v1"
+     },
+     "target": {
+      "vertex_id": "solution.stage1.component",
+      "port_role": "generated_project_manifest/v1"
+     },
+     "relationship": "connected_from",
+     "order": 0,
+     "metadata": {}
+    }
+   ],
+   "groups": [
+    {
+     "group_id": "solution.group",
+     "controller_vertex_id": "solution.controller",
+     "stages": [
+      {
+       "stage_id": "execute_selected_capability",
+       "attempt_vertex_ids": [
+        "solution.stage1.component"
+       ],
+       "router_vertex_id": ""
+      }
+     ],
+     "member_group_ids": [],
+     "combination": "single",
+     "weights": [],
+     "route_vertex_id": "",
+     "evaluator_vertex_ids": []
+    }
+   ],
+   "starting_group_id": "solution.group",
+   "content_digest": "450aa0fdfa3f4eef48c6d473ed80ed43506cc581323e052c1b4257171f92ce34"
+  },
+  "mermaid": "flowchart TD\n  IN([inputs])\n  L1((\"solution.controller: single<br/>deterministic\"))\n  L2((\"solution.stage1.component: core.generated_project<br/>deterministic\"))\n  IN --> L1\n  L1 -->|connected_from: generated_project_manifest/v1| L2\n  OUT([output])\n  L2 --> OUT",
+  "runtime_trace": [
+   {
+    "runtime_event": "started",
+    "solution": "adaptive.action.d98b5c833cf1dfda691d",
+    "logical_loop_id": "adaptive.action.d98b5c833cf1dfda691d",
+    "mode": "deterministic",
+    "runtime_loop_id": "loop38",
+    "role": "solution",
+    "profile_id": "solution.pipeline",
+    "profile_version": "1.0.0",
+    "relationship_kind": "spawned_by",
+    "spawned_by_loop_id": "loop1"
+   },
+   {
+    "runtime_event": "started",
+    "solution": "adaptive.action.d98b5c833cf1dfda691d",
+    "logical_loop_id": "execute_selected_capability",
+    "mode": "deterministic",
+    "runtime_loop_id": "loop39",
+    "role": "solution",
+    "profile_id": "solution.atomic_component",
+    "profile_version": "1.0.0",
+    "relationship_kind": "connected_from",
+    "connected_from_loop_ids": [
+     "loop38"
+    ]
+   },
+   {
+    "solution_loop": "execute_selected_capability",
+    "operation": "core.generated_project",
+    "mode": "deterministic",
+    "component_loop_id": "loop39",
+    "input_role": "generated_project_manifest/v1",
+    "output_role": "generated_project_execution/v1",
+    "input_type": "dict",
+    "output_type": "dict",
+    "runtime_loop_id": "loop39",
+    "role": "solution",
+    "profile_id": "solution.atomic_component",
+    "profile_version": "1.0.0",
+    "relationship_kind": "connected_from",
+    "connected_from_loop_ids": [
+     "loop38"
+    ]
+   },
+   {
+    "runtime_event": "completed",
+    "solution": "adaptive.action.d98b5c833cf1dfda691d",
+    "logical_loop_id": "execute_selected_capability",
+    "status": "done",
+    "terminal_reason": "success_once",
+    "actual_modes": [
+     "deterministic"
+    ],
+    "runtime_loop_id": "loop39",
+    "role": "solution",
+    "profile_id": "solution.atomic_component",
+    "profile_version": "1.0.0",
+    "relationship_kind": "connected_from",
+    "connected_from_loop_ids": [
+     "loop38"
+    ]
+   },
+   {
+    "runtime_event": "completed",
+    "solution": "adaptive.action.d98b5c833cf1dfda691d",
+    "logical_loop_id": "adaptive.action.d98b5c833cf1dfda691d",
+    "status": "done",
+    "terminal_reason": "success_once",
+    "actual_modes": [
+     "deterministic"
+    ],
+    "runtime_loop_id": "loop38",
+    "role": "solution",
+    "profile_id": "solution.pipeline",
+    "profile_version": "1.0.0",
+    "relationship_kind": "spawned_by",
+    "spawned_by_loop_id": "loop1"
+   }
+  ]
+ },
+ "graph_digest": "450aa0fdfa3f4eef48c6d473ed80ed43506cc581323e052c1b4257171f92ce34",
+ "verification": {
+  "record_type": "adaptive_verification/v1",
+  "verdict": "accept",
+  "deterministic_checks_passed": true,
+  "notes": "Deterministic checks passed.",
+  "remaining_gaps": [],
+  "gap_assessments": [],
+  "advisory_findings": [],
+  "new_requirement_proposals": [],
+  "registered_acceptance_criteria": [
+   {
+    "criterion_ref": "criterion:0",
+    "text": "test command passes"
+   },
+   {
+    "criterion_ref": "criterion:1",
+    "text": "output file exists"
+   }
+  ],
+  "passed": true
+ },
+ "run_history": {
+  "run_id": "adaptive-57f313b319a2a4ab140c89ac",
+  "events": 550,
+  "head_digest": "3fc0175fc95660ebf166c83737152b4a9a2f98378f884c14ef2c0d43e63c9744",
+  "chain_intact": true,
+  "broken_at": [],
+  "path": "/home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-20260904/adaptive-57f313b319a2a4ab140c89ac",
+  "product_outcome_bound": false,
+  "product_outcome_digest": "",
+  "terminal_code": ""
+ },
+ "artifacts": [
+  {
+   "path": "/home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-20260904/adaptive-57f313b319a2a4ab140c89ac-workspace/attempt-1/output.txt",
+   "media_type": "text/plain",
+   "minimum_bytes": 1,
+   "present": true,
+   "byte_count": 5,
+   "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "error_code": "",
+   "verified": true
+  }
+ ],
+ "workspace": "/home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-20260904/adaptive-57f313b319a2a4ab140c89ac-workspace/attempt-1",
+ "limitations": [],
+ "questions": [],
+ "next_action": "Inspect the verified artifacts and Run History.",
+ "inspect_commands": [
+  "loop-engine report adaptive-57f313b319a2a4ab140c89ac --runs-dir /home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-20260904",
+  "loop-engine studio --port 0 --runs-dir /home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-20260904"
+ ],
+ "model_calls": 7,
+ "tool_calls": 1,
+ "loop_count": 53,
+ "elapsed_seconds": 0.296,
+ "model_usage": [
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop7",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000661,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-7630b6cb943d1f63fce093f94aefe711e6dc4b519b4d0db2",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "2efcd95f4c7aaefcf99e2b62d841bb69e426ba1ddd777675910842f3e07f1fc1",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "c96443c5b3371664a77f9cd2d2c254a1a938b517eaf5bf021adc772ea45683ca",
+     "provider_request_digest": "462f98d166fe37214ca02549d9e134748a02c0a3b76e394aa5d10fead1e23cb8"
+    }
+   ],
+   "gateway_loop_id": "loop6",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-7630b6cb943d1f63fce093f94aefe711e6dc4b519b4d0db2",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "2efcd95f4c7aaefcf99e2b62d841bb69e426ba1ddd777675910842f3e07f1fc1",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "c96443c5b3371664a77f9cd2d2c254a1a938b517eaf5bf021adc772ea45683ca"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop14",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000744,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-8b74ec381e5b33d91774fdf15e9366263b3b6a33150fcbdb",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "e610bbfd4eb187232c374c676b2bf3dfa7f4a73a7b015379b618018907a1a744",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "83f1a0db2524733f8e61875c5ce5a41a63edbf72a256bccf9af59eb141ed5e75",
+     "provider_request_digest": "f4276923195c971398a8ecbf407347c69cccc347e397a8c90ffc3b315a14e566"
+    }
+   ],
+   "gateway_loop_id": "loop13",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-8b74ec381e5b33d91774fdf15e9366263b3b6a33150fcbdb",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "e610bbfd4eb187232c374c676b2bf3dfa7f4a73a7b015379b618018907a1a744",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "83f1a0db2524733f8e61875c5ce5a41a63edbf72a256bccf9af59eb141ed5e75"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop21",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.00077,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-f48181d6bd7009c878e242b2ae7d0df088dd52292b9dcdb7",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "08b8a14acc780f7af5e482c7026c6a7c4b59ebaa7e7e7274b0a80a4e2848c856",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "6f8ce0b85c21b118750c7eaba01c1dc37fd3714ec35894d64a5286980e0e9cb4",
+     "provider_request_digest": "1f3abcd34caf8644859135542d6fa8959d583815441c912f96b8e0f5aac229a7"
+    }
+   ],
+   "gateway_loop_id": "loop20",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-f48181d6bd7009c878e242b2ae7d0df088dd52292b9dcdb7",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "08b8a14acc780f7af5e482c7026c6a7c4b59ebaa7e7e7274b0a80a4e2848c856",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "6f8ce0b85c21b118750c7eaba01c1dc37fd3714ec35894d64a5286980e0e9cb4"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop28",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.001285,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-a2ca993ebf1626367fb58318309fda68fec2788a0383f53d",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "b3dc76ae4af03731c4f5a7f066cb3fd92f5aa2223cddb10d508a911b6236efbe",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "adeb3dd942a1097aeb1b25dfece4bf34f5c576bed5449a55ddcb8267896074d9",
+     "provider_request_digest": "ef35fb2b951dc0de2b61fffe9f418520c9a59596450c60c49eb2ea6cdde21efb"
+    }
+   ],
+   "gateway_loop_id": "loop27",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-a2ca993ebf1626367fb58318309fda68fec2788a0383f53d",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "b3dc76ae4af03731c4f5a7f066cb3fd92f5aa2223cddb10d508a911b6236efbe",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "adeb3dd942a1097aeb1b25dfece4bf34f5c576bed5449a55ddcb8267896074d9"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop35",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.00116,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-c1753417e4f7302476fedba167849fb16748e7918d349fd4",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "4a8faeca702a6a818f1ee51768ea9b6360575d49c0864c5cf3ae71c0501c468f",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "c2d0bd24992b72ba1620552445a671c219c209bad2f5224af4e5cc14408f0d7e",
+     "provider_request_digest": "98d2633572664fcbdacdfb5941f7dc873ead052d1fe7de1dd00206e7d089474f"
+    }
+   ],
+   "gateway_loop_id": "loop34",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-c1753417e4f7302476fedba167849fb16748e7918d349fd4",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "4a8faeca702a6a818f1ee51768ea9b6360575d49c0864c5cf3ae71c0501c468f",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "c2d0bd24992b72ba1620552445a671c219c209bad2f5224af4e5cc14408f0d7e"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop45",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000888,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-2297f4fade3cce1d6266c4fa6a027255b08031afc5245a82",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "2372fea7543dbceaa3e4c390c906183af2307875ceff751e08e63ea7eb0f5331",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "cd0916c4cc84e3adf7a2ee97d1d1047b632a96e1c8bdf611255e2fabad8c8f6e",
+     "provider_request_digest": "62f455fa5d4646edd28eca0ded14e8b0f385d8a53d79d2293529e028a66887c6"
+    }
+   ],
+   "gateway_loop_id": "loop44",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-2297f4fade3cce1d6266c4fa6a027255b08031afc5245a82",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "2372fea7543dbceaa3e4c390c906183af2307875ceff751e08e63ea7eb0f5331",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "cd0916c4cc84e3adf7a2ee97d1d1047b632a96e1c8bdf611255e2fabad8c8f6e"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop52",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000933,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-8880ad51cf5c9705ad36f80e0f291a978fb2079fb3252dd8",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "9992b4e6b502e18b1b86f0ce58cb64b8bd05b3c98905523407db7533638fb3bb",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "c7c1994082f0a0a01e2591e542dbeca5e531b3caac12595c8e37102bc0d04f65",
+     "provider_request_digest": "7543c14021bcea14f73c6e70f2a8a3ea1bc785c722205537d24644b502d89aca"
+    }
+   ],
+   "gateway_loop_id": "loop51",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-8880ad51cf5c9705ad36f80e0f291a978fb2079fb3252dd8",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "9992b4e6b502e18b1b86f0ce58cb64b8bd05b3c98905523407db7533638fb3bb",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "c7c1994082f0a0a01e2591e542dbeca5e531b3caac12595c8e37102bc0d04f65"
+  }
+ ]
+}

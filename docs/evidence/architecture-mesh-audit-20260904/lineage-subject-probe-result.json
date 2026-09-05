@@ -1,0 +1,152 @@
+{
+  "cross_subject_evaluation": {
+    "a_local_verification_after_b_evaluation": true,
+    "credit_linked_to_a": {
+      "action_id": "action:6cb5781c59e22d0445f0",
+      "action_occurrence_ref": "action-occurrence:sha256:f4464ec06bbe9a596b82fcbc359d4c99615efd6527209e0a19ef227c24286883",
+      "attribution_confidence": null,
+      "attribution_method": "DIRECT_LOCAL_VERIFIER",
+      "deterministic_checks_passed": true,
+      "evaluation_record_digest": "f5d93d42e2a2f7d819f46a4b6230247069d480f4a858e01432d1114c8de7a24c",
+      "execution_ref": "action-execution:sha256:7a62dd79effde1ccbb3a01a8d8d6a18b4e37344fc769b7527496a7bad28db26b",
+      "execution_result_digest": "9a3a68ecd1f9e937b7431c457932b06e522865489e0d22ee478b83a45a558b14",
+      "local_verification": true,
+      "outcome_after_verification": {
+        "branch_contribution": null,
+        "contradictions": [],
+        "credit": "helped",
+        "downstream_use": true,
+        "granularity": "stage",
+        "known": [
+          "output_admitted",
+          "local_verification",
+          "downstream_use"
+        ],
+        "later_invalidated": null,
+        "local_verification": true,
+        "output_admitted": true,
+        "reading": "helped on stage-local evidence: output_admitted, local_verification, downstream_use",
+        "record_type": "outcome_vector/v1",
+        "task_outcome": null,
+        "unknown": [
+          "branch_contribution",
+          "later_invalidated",
+          "task_outcome"
+        ]
+      },
+      "record_type": "stage_action_verification_lineage/v1",
+      "semantic_verification_observed": true,
+      "stage_observation_ref": "stage-observation:sha256:6cf37c74b3b605e8f705d9aa069d4da7c71e5fcd856913eb31e56a9d02e40afb",
+      "stage_occurrence_id": "occurrence.decision.1",
+      "verification_ref": "action-verification:sha256:1f842c3b5c9f890452438ef7bb06374b62881eb5d0524b7f6c8eadfd63121cdf",
+      "verification_verdict": "accept",
+      "verifier_independence": "same_practitioner_model_path",
+      "verifier_semantic_call_id": "semantic.verifier.1",
+      "verifier_stage_occurrence_id": "occurrence.verifier.1"
+    },
+    "genuine_evaluation_record_for_b": {
+      "advisory_findings": [],
+      "deterministic_checks_passed": true,
+      "gap_assessments": [],
+      "new_requirement_proposals": [],
+      "notes": "Accepted B, which is the only supplied result.",
+      "pass_number": 2,
+      "record_type": "adaptive_verification/v1",
+      "registered_acceptance_criteria": [
+        {
+          "criterion_ref": "criterion:0",
+          "text": "Evaluate subject B only"
+        }
+      ],
+      "remaining_gaps": [],
+      "semantic_verification_observed": true,
+      "verdict": "accept",
+      "verifier_semantic_call_id": "semantic.verifier.1",
+      "verifier_stage_occurrence_id": "occurrence.verifier.1"
+    },
+    "provider_calls": 0,
+    "result_a_digest": "9a3a68ecd1f9e937b7431c457932b06e522865489e0d22ee478b83a45a558b14",
+    "result_b_digest": "a444b57002ed0c178f7d89522414613a111abe8aa72f61b1ede81cec146eb11e",
+    "result_digests_differ": true,
+    "verification_verdict": "accept",
+    "verified_model_request": {
+      "objective": "Evaluate actual results against the original task.",
+      "output_contract": "{\"verdict\":\"accept|accept_provisional|repair|research_more|try_another|expand_swarm|tune|reset|stop\",\"best_index\":0,\"scores\":[0.0],\"notes\":\"string\",\"remaining_gaps\":[{\"criterion_ref\":\"criterion:0\",\"gap\":\"string\"}],\"advisory_findings\":[\"string\"],\"new_requirement_proposals\":[\"string\"]}",
+      "state": {
+        "deterministic_checks_passed": true,
+        "plan": {
+          "act_mode": "run_direct",
+          "experiment": {
+            "action_id": "action.B",
+            "action_occurrence_ref": "occurrence.B"
+          },
+          "handle": "core.generated_project",
+          "how_mode": "use",
+          "rationale": "",
+          "resources": [],
+          "spawned_loops": [],
+          "steps": []
+        },
+        "registered_acceptance_criteria": [
+          {
+            "criterion_ref": "criterion:0",
+            "text": "Evaluate subject B only"
+          }
+        ],
+        "results": [
+          {
+            "artifact_refs": [],
+            "confidence": 0.5,
+            "errors": [],
+            "evidence_refs": [],
+            "limitations": [],
+            "lineage": [],
+            "metrics": {},
+            "objective": "build B",
+            "result": {
+              "answer": "accepted",
+              "subject": "B"
+            }
+          }
+        ],
+        "verification_scope_rule": "Every blocking gap must reference one registered acceptance criterion. Put optional improvements or new requirements in their separate advisory fields; they cannot block."
+      },
+      "step_id": "verify"
+    }
+  },
+  "integrate_rejected_result": {
+    "artifacts": {
+      "accepted.csv": "accepted.csv",
+      "rejected.csv": "rejected.csv"
+    },
+    "later_state_last_verification": {
+      "notes": "New result C passed.",
+      "verdict": "accept"
+    },
+    "original_state_unchanged": true,
+    "out_of_range_best_index": "IndexError: list index out of range",
+    "rejected_artifact_enters_state_artifacts": true,
+    "rejected_artifact_remains_after_later_accept": true,
+    "rejected_result_overwrites_last_result": {
+      "artifact_refs": [
+        "rejected.csv"
+      ],
+      "confidence": 0.5,
+      "errors": [
+        "verification failed"
+      ],
+      "evidence_refs": [],
+      "limitations": [],
+      "lineage": [],
+      "metrics": {},
+      "objective": "rejected next attempt",
+      "result": {
+        "answer": "wrong"
+      }
+    },
+    "repair_record_is_preserved": {
+      "notes": "Result was rejected.",
+      "verdict": "repair"
+    }
+  }
+}

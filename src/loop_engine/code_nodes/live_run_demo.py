@@ -76,7 +76,8 @@ _PAGE = """<!doctype html><meta charset="utf-8"><title>Loop Engine live run</tit
 .wrap{max-width:880px;margin:0 auto;padding:20px}
 h1{font-size:1.2rem}.pace{color:#93a0ac;font-size:.8rem}
 .rail{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
-.rail span{border:1.5px solid #2a323b;border-radius:8px;padding:.4em .8em;font-size:.82rem;color:#93a0ac}
+.rail span{border:1.5px solid #2a323b;border-radius:8px;padding:.4em .8em;\
+font-size:.82rem;color:#93a0ac}
 .rail span.on{border-color:#4ec0ae;color:#4ec0ae;background:rgba(78,192,174,.12)}
 .pull{margin:10px 0;font-size:.85rem;color:#4fb0d6}
 pre{background:#0c0f13;border:1px solid #2a323b;border-radius:10px;padding:12px;
@@ -90,11 +91,17 @@ event stream the run record is built from</div>
 <div class="pull" id="pull"></div><pre id="log"></pre>
 <div id="st" class="pace">running…</div>
 <div style="margin-top:14px;display:flex;gap:8px">
-<input id="adv" placeholder="Advise this loop, like a coworker on Slack: 'try the rapidfuzz package'"
- style="flex:1;background:#0c0f13;border:1px solid #2a323b;border-radius:8px;color:#e8edf2;padding:.6em .8em;font:13px system-ui">
-<button onclick="sendAdvice()" style="background:#4ec0ae;color:#0c0f13;border:0;border-radius:8px;padding:.6em 1em;font-weight:600;cursor:pointer">Advise</button>
+<input id="adv" placeholder="Advise this loop, like a coworker on Slack: \
+'try the rapidfuzz package'"
+ style="flex:1;background:#0c0f13;border:1px solid #2a323b;\
+border-radius:8px;color:#e8edf2;padding:.6em .8em;font:13px system-ui">
+<button onclick="sendAdvice()" style="background:#4ec0ae;color:#0c0f13;\
+border:0;border-radius:8px;padding:.6em 1em;font-weight:600;\
+cursor:pointer">Advise</button>
 <button onclick="fetch('/restart').then(()=>{since=0;log.textContent='';tick()})"
- style="background:transparent;color:#4fb0d6;border:1.5px solid #4fb0d6;border-radius:8px;padding:.6em 1em;font-weight:600;cursor:pointer">Run again</button>
+ style="background:transparent;color:#4fb0d6;border:1.5px solid #4fb0d6;\
+border-radius:8px;padding:.6em 1em;font-weight:600;\
+cursor:pointer">Run again</button>
 </div>
 <div class="pace" id="advst" style="margin-top:6px">Your advice becomes User
 Intelligence: it is consulted (and recorded) at the start of each run.</div>
@@ -117,9 +124,26 @@ tick();
 function sendAdvice(){var v=document.getElementById('adv').value;
  fetch('/advice',{method:'POST',body:JSON.stringify({text:v})}).then(r=>r.json())
  .then(d=>{document.getElementById('advst').textContent = d.ok ?
-  'Advice on file: '+d.on_file+': consulted at the start of each run (press Run again to see it).' :
+  'Advice on file: '+d.on_file+': consulted at the start of each run \
+(press Run again to see it).' :
   'Refused: '+d.error; if(d.ok) document.getElementById('adv').value='';});}
 </script>"""
+
+
+def _wait_for(condition, seconds: float = 180.0) -> bool:
+    """Wait for a real run to finish, and say plainly whether it did.
+
+    The demo performs an actual solve — around fifteen seconds on an idle
+    machine and longer on a busy one. Budgeting a few seconds for it and
+    then asserting anyway does not test the server; it tests how fast the
+    machine happened to be that minute, and passes or fails accordingly.
+    """
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline:
+        if condition():
+            return True
+        time.sleep(0.05)
+    return False
 
 
 def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
@@ -130,10 +154,10 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
     blocks until interrupted (the CLI path)."""
     import tempfile
     from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-    from .smoke_ladder import run_smoke_loop, _fixture
-    from ..core.user_feedback_intelligence import AdviceStore
 
     from ..core.run_history import default_runs_dir
+    from ..core.user_feedback_intelligence import AdviceStore
+    from .smoke_ladder import _fixture, run_smoke_loop
     shared_runs_dir = default_runs_dir(runs_dir)
     state = {"events": [], "raw": [], "done": False, "runs": 0,
              "run_id": "", "runs_dir": shared_runs_dir, "saved_path": ""}
@@ -199,7 +223,9 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
                 try:
                     text = json.loads(self.rfile.read(n)).get("text", "")
                     from ..loop.intelligence_loops import (
-                        guidance_for_as_loop, leave_guidance_as_loop)
+                        guidance_for_as_loop,
+                        leave_guidance_as_loop,
+                    )
                     leave_guidance_as_loop(advice, text, scope="task",
                                            target="live-demo")
                     on_file = guidance_for_as_loop(advice, "task",
@@ -217,7 +243,8 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
                 self.end_headers()
                 self.wfile.write(body)
                 return
-            self.send_response(404); self.end_headers()
+            self.send_response(404)
+            self.end_headers()
 
         def do_GET(self):
             if self.path == "/restart" and state["done"]:
@@ -253,8 +280,7 @@ def run_live_demo(port: int = 8770, pace_seconds: float = 0.5,
                 self.wfile.write(body)
                 return
             if self.path == "/api/runs/live/runtime":
-                from ..core.studio_operational_views import (
-                    project_run_runtime)
+                from ..core.studio_operational_views import project_run_runtime
                 body = json.dumps(
                     project_run_runtime(state["raw"]), default=str).encode()
                 self.send_response(200)
@@ -326,8 +352,9 @@ def self_test() -> dict:
     # network hang, which is the least diagnosable failure shape there is.
     # Declare the dependency up front and fail fast with the remedy instead.
     try:
-        import numpy
-        import pandas
+        import numpy as _numpy
+        import pandas as _pandas
+        del _numpy, _pandas
     except ImportError as exc:
         return {"tests": [{
             "test": "live_run_demo_self_test", "passed": False,
@@ -354,10 +381,11 @@ def self_test() -> dict:
     import urllib.request
     test_runs_dir = tempfile.mkdtemp(prefix="live_demo_runs_")
     d = run_live_demo(port=0, pace_seconds=0, runs_dir=test_runs_dir)
-    for _ in range(100):
-        if d["state"]["done"]:
-            break
-        time.sleep(0.05)
+    finished = _wait_for(lambda: d["state"]["done"])
+    check("the live demo run finishes before it is inspected",
+          finished,
+          "every check below reads a finished run; asserting on a partial "
+          "one measures machine speed, not the server")
     base = f"http://127.0.0.1:{d['port']}"
     runs = json.loads(urllib.request.urlopen(base + "/api/runs",
                                              timeout=5).read())
@@ -370,13 +398,20 @@ def self_test() -> dict:
     conn.request("GET", "/events/sse")
     resp = conn.getresponse()
     sse_data, sse_done = 0, False
-    for _ in range(400):
-        line = resp.fp.readline().decode()
-        if line.startswith("data:"):
-            sse_data += 1
-        if line.startswith("event: done"):
-            sse_done = True
-            break
+    try:
+        for _ in range(400):
+            line = resp.fp.readline().decode()
+            if not line:
+                break
+            if line.startswith("data:"):
+                sse_data += 1
+            if line.startswith("event: done"):
+                sse_done = True
+                break
+    except OSError:
+        # The stream stopped early. That is a failed check with a readable
+        # count, not an exception that takes the whole suite with it.
+        pass
     conn.close()
     check("api_and_sse_serve_the_one_event_stream",
           runs[0]["done"] and runs[0]["events"] == len(canon)
@@ -404,20 +439,14 @@ def self_test() -> dict:
     # and the next run's event stream shows the guidance consultation.
     import urllib.request as _u
     d2 = run_live_demo(port=0, pace_seconds=0, runs_dir=test_runs_dir)
-    for _ in range(100):
-        if d2["state"]["done"]:
-            break
-        time.sleep(0.05)
+    _wait_for(lambda: d2["state"]["done"])
     b2 = f"http://127.0.0.1:{d2['port']}"
     req = _u.Request(b2 + "/advice", method="POST",
                      data=json.dumps({"text": "try the rapidfuzz package"
                                       }).encode())
     posted = json.loads(_u.urlopen(req, timeout=5).read())
     _u.urlopen(b2 + "/restart", timeout=5).read()
-    for _ in range(120):
-        if d2["state"]["done"] and d2["state"]["runs"] == 2:
-            break
-        time.sleep(0.05)
+    _wait_for(lambda: d2["state"]["done"] and d2["state"]["runs"] == 2)
     lines = " ".join(e["line"] for e in d2["state"]["events"])
     d2["server"].shutdown()
     check("advice_posted_then_consulted_on_next_run",

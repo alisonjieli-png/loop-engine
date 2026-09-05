@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "build",
+    "--no-isolation",
+    "--outdir",
+    "/tmp/loop-engine-final-verification.W0wq3F/dist"
+  ],
+  "cwd": "/home/username/loop-engine",
+  "elapsed_seconds": 2.9932749529834837,
+  "exit_code": 0,
+  "finished_at": "2026-09-05T01:12:05.474127+00:00",
+  "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+  "package_network_disabled": true,
+  "phase": "build",
+  "provider_credentials_removed": true,
+  "source_changes_during_check": [],
+  "source_changes_from_baseline": [],
+  "source_file_count": 466,
+  "started_at": "2026-09-05T01:12:02.480843+00:00",
+  "stderr": "/tmp/loop-engine-final-verification.W0wq3F/build-stderr.txt",
+  "stderr_sha256": "b181eea8a45f807f5fa1607f003eb1ae5363271ec186d4780a7fd3630cdea57e",
+  "stdout": "/tmp/loop-engine-final-verification.W0wq3F/build-stdout.txt",
+  "stdout_sha256": "9c060576f9569b0cd4d39b226b58c5216cfe5ff6d41d772c248055ed8faf3f34"
+}

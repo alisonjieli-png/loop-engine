@@ -1,0 +1,443 @@
+{
+  "all_passed": true,
+  "modules": [
+    {
+      "module": "loop_engine.core.model_response_admission",
+      "result": {
+        "all_passed": true,
+        "passed": 10,
+        "record_type": "model_response_admission_test/v1",
+        "tests": [
+          {
+            "detail": "strict_json, json_markdown_fence_removed, approved_json_preamble_removed, double_encoded_json_unwrapped",
+            "passed": true,
+            "test": "approved_response_envelopes_are_repaired_deterministically"
+          },
+          {
+            "detail": "invalid_json; schema_validation_failed",
+            "passed": true,
+            "test": "arbitrary_prose_and_schema_mismatch_are_rejected"
+          },
+          {
+            "detail": "6ddabff3a19684cd2d21c4a0f8b3726bca7286481f70ec487f1be6e94a5c3041",
+            "passed": true,
+            "test": "admission_records_digests_not_raw_model_text"
+          },
+          {
+            "passed": true,
+            "test": "json_syntax_diagnostics_preserve_exact_location_and_utf8_counts"
+          },
+          {
+            "passed": true,
+            "test": "each_attempted_normalization_has_candidate_relative_diagnostics"
+          },
+          {
+            "passed": true,
+            "test": "syntax_reporting_keeps_admission_and_envelope_semantics"
+          },
+          {
+            "passed": true,
+            "test": "syntax_evidence_and_ledger_do_not_leak_candidate_or_error_text"
+          },
+          {
+            "passed": true,
+            "test": "schema_rejections_keep_fixed_constraint_categories"
+          },
+          {
+            "passed": true,
+            "test": "schema_diagnostics_and_ledger_redact_values_names_and_invalid_schema"
+          },
+          {
+            "passed": true,
+            "test": "adaptive_format_repair_receives_bound_private_safe_parse_feedback"
+          }
+        ],
+        "total": 10
+      }
+    },
+    {
+      "module": "loop_engine.core.model_gateway_accounting_checks",
+      "result": {
+        "all_passed": true,
+        "passed": 11,
+        "provider_calls": 0,
+        "record_type": "model_gateway_accounting_test/v1",
+        "tests": [
+          {
+            "passed": true,
+            "test": "gateway_aggregates_failed_and_winning_physical_usage"
+          },
+          {
+            "passed": true,
+            "test": "partial_usage_preserves_unknown_instead_of_zero"
+          },
+          {
+            "passed": true,
+            "test": "exact_token_budget_refuses_incomplete_usage"
+          },
+          {
+            "passed": true,
+            "test": "transport_failure_survives_missing_usage_accounting_block"
+          },
+          {
+            "passed": true,
+            "test": "successful_response_missing_usage_has_no_transport_failure"
+          },
+          {
+            "passed": true,
+            "test": "known_usage_preserves_public_transport_failure"
+          },
+          {
+            "passed": true,
+            "test": "prior_transport_diagnostic_stays_on_attempt_after_recovery"
+          },
+          {
+            "passed": true,
+            "test": "saved_transport_diagnostic_does_not_persist_provider_secret"
+          },
+          {
+            "passed": true,
+            "test": "session_call_ceiling_caps_physical_failover_attempts"
+          },
+          {
+            "passed": true,
+            "test": "session_token_ceiling_is_cumulative_across_semantic_calls"
+          },
+          {
+            "passed": true,
+            "test": "effect_free_preflight_is_not_a_physical_model_call"
+          }
+        ],
+        "total": 11
+      }
+    },
+    {
+      "module": "loop_engine.core.model_gateway",
+      "result": {
+        "all_passed": true,
+        "passed": 18,
+        "provider_integration_proven": false,
+        "record_type": "model_gateway_contract_test/v2",
+        "scope": "offline_contract_only",
+        "tests": [
+          {
+            "detail": "this is a contract refusal, not a provider integration test",
+            "passed": true,
+            "test": "unknown_output_capability_refuses_before_provider_use"
+          },
+          {
+            "detail": "an explicit caller ceiling that cannot fit is refused rather than quietly shrunk; max_context=100",
+            "passed": true,
+            "test": "context_window_preflight_refuses_before_provider_use"
+          },
+          {
+            "detail": "floor of 512 output tokens",
+            "passed": true,
+            "test": "a defaulted ceiling leaves usable room in the context window"
+          },
+          {
+            "detail": "a keyless provider is skipped by failover, not fatal to it",
+            "passed": true,
+            "test": "missing_credential_is_not_an_authentication_failure"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "invalid_explicit_output_values_are_refused"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "provider_descriptions_carry_references_not_secret_values"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "operating_profile_controls_gateway_route_locality"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "an_unspecified_output_limit_remains_unspecified_until_capability_resolution"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "authentication_failure_does_not_silently_fail_over"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "payment_failure_can_fail_over_to_another_authorized_provider"
+          },
+          {
+            "detail": "logical identity is shared; physical attempt Loop IDs remain exact",
+            "passed": true,
+            "test": "failover_attempts_share_one_logical_semantic_call_in_run_history"
+          },
+          {
+            "detail": "one gateway invocation is one logical semantic call",
+            "passed": true,
+            "test": "separate_gateway_invocations_receive_distinct_semantic_call_ids"
+          },
+          {
+            "detail": "a partial HTTP 200 is evidence, not a successful model answer",
+            "passed": true,
+            "test": "output_limit_is_typed_and_can_fail_over"
+          },
+          {
+            "detail": "routing and DNS failures remain distinct from model rejection",
+            "passed": true,
+            "test": "network_transport_failures_have_specific_codes"
+          },
+          {
+            "detail": "practitioner -> spawned stage -> candidate -> route -> attempt",
+            "passed": true,
+            "test": "spawned_gateway_inherits_spawning_depth_without_reparenting"
+          },
+          {
+            "detail": "starting gateway uses no product-imposed recursion ceiling",
+            "passed": true,
+            "test": "starting_gateway_has_no_implicit_depth_ceiling"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "a_response_without_usage_reports_unknown_not_zero"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "a_response_without_usage_carries_a_typed_diagnostic"
+          }
+        ],
+        "total": 18
+      }
+    },
+    {
+      "module": "loop_engine.code_nodes.solution_model_port",
+      "result": {
+        "tests": [
+          {
+            "name": "model_execution_has_no_implicit_whole_run_call_ceiling",
+            "note": "",
+            "passed": true
+          },
+          {
+            "name": "model_port_uses_canonical_gateway",
+            "note": "",
+            "passed": true
+          },
+          {
+            "name": "private_reasoning_is_removed_before_solution_use",
+            "note": "",
+            "passed": true
+          },
+          {
+            "name": "every_physical_attempt_has_its_own_loop_identity",
+            "note": "",
+            "passed": true
+          },
+          {
+            "name": "model_port_projects_logical_call_and_owner_into_run_history",
+            "note": "separate logical calls retain distinct physical attempt Loops",
+            "passed": true
+          },
+          {
+            "name": "whole_solution_budget_is_fail_closed",
+            "note": "",
+            "passed": true
+          },
+          {
+            "name": "unexpected_model_identity_is_rejected",
+            "note": "",
+            "passed": true
+          },
+          {
+            "name": "fixture_can_prove_prompt_body_reached_the_provider_adapter",
+            "note": "",
+            "passed": true
+          },
+          {
+            "name": "arbitrary_callable_is_not_model_authority",
+            "note": "",
+            "passed": true
+          }
+        ]
+      }
+    },
+    {
+      "module": "fresh_shaped_cases",
+      "result": {
+        "all_passed": true,
+        "network_calls": 0,
+        "passed": 31,
+        "provider_calls": 0,
+        "record_type": "fresh_kaggle_shaped_cases_checks/v1",
+        "submissions": 0,
+        "tests": [
+          {
+            "detail": "",
+            "passed": true,
+            "test": "three_fixed_generated_cases_are_materialized"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "generation_is_byte_deterministic"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "overwrite_and_missing_authority_are_refused"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "campaign_must_remain_below_the_authorized_workspace"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "symlink_campaign_root_is_refused"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-a-v1_source_and_hidden_trees_are_disjoint"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-a-v1_task_exposes_metric_and_output_not_generator"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-a-v1_shape_and_missingness_are_present"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-a-v1_hidden_header_is_exact"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-b-v1_source_and_hidden_trees_are_disjoint"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-b-v1_task_exposes_metric_and_output_not_generator"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-b-v1_shape_and_missingness_are_present"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-b-v1_target_is_not_last"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-b-v1_hidden_header_is_exact"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-c-v1_source_and_hidden_trees_are_disjoint"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-c-v1_task_exposes_metric_and_output_not_generator"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-c-v1_shape_and_missingness_are_present"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-c-v1_target_is_not_last"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "fresh-shaped-case-c-v1_hidden_header_is_exact"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "perfect_outputs_pass_predeclared_thresholds"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "constant_outputs_fail_predeclared_thresholds"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "score_does_not_claim_runtime_isolation"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "bad_header_ids_and_probability_range_are_refused"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "nonfinite_regression_and_unknown_labels_are_refused"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "large_finite_rmse_is_stable_and_nonfinite_is_refused"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "external_campaign_and_case_digest_anchors_are_required"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "nested_evaluator_symlink_escape_is_refused"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "submission_ancestor_symlink_escape_is_refused"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "self_consistent_rewrite_needs_external_freeze_and_generator"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "source_mutation_is_refused_before_scoring"
+          },
+          {
+            "detail": "",
+            "passed": true,
+            "test": "manual_metrics_match_sklearn_analytic_cases"
+          }
+        ],
+        "total": 31
+      }
+    }
+  ],
+  "passed": 79,
+  "provider_calls": 0,
+  "record_type": "final_targeted_checks/v1",
+  "total": 79
+}

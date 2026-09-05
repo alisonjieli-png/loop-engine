@@ -82,6 +82,7 @@
   "core/mistral_client.py:chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead.",
   "core/ollama_client.py:chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead.",
   "core/openrouter_client.py:chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest or ProviderPinnedRequest instead.",
+  "core/openai_responses_client.py:OpenAIResponsesAdapter.chat_maxout": "Provider adapter protocol implementation. Application callers use ModelGatewayRequest after explicit route and paid-model authority are configured.",
   "loop/decision_need.py:detect_decision_need": "Legacy decision classifier. Group state signals in one DecisionContext object.",
   "loop/iteration_records.py:build_iteration_record": "Iteration evidence builder. Replace the parameter list with one typed IterationRecordInput while preserving the stored format.",
   "loop/studio.py:build_studio_view": "Legacy projection builder. Add one StudioProjectionInput that groups run state, usage, and display options."
@@ -112,6 +113,7 @@
   "core/ollama_client.py",
   "core/mistral_client.py",
   "core/openrouter_client.py",
+  "core/openai_responses_client.py",
   "core/opencode_zen_catalog.py",
   "core/custom_endpoint.py",
   "core/brave_search.py",
@@ -123,7 +125,7 @@
   "code_nodes/live_run_demo.py"
  ],
  "notes": [
-  "network_allowed: HTTP happens ONLY in a declared provider adapter (ollama_client, mistral_client, openrouter_client, and custom_endpoint, which is the ONE parameterised adapter for user-supplied OpenAI-compatible servers rather than a per-server module) or a declared server/demo module; everything else asks the directory. Amended 2026-08-24: the rule was written when one provider existed and said 'the ONE place'. Provider plurality is now a requirement, not a convenience \u2014 a single provider's 429 stopped a whole campaign \u2014 so the invariant is 'only in a declared adapter', and each adapter is listed above. Adding a provider means adding its adapter here with its reason, never relaxing the rule.",
+  "network_allowed: HTTP happens ONLY in a declared provider adapter (ollama_client, mistral_client, openrouter_client, openai_responses_client, and custom_endpoint, which is the ONE parameterised adapter for user-supplied OpenAI-compatible servers rather than a per-server module) or a declared server/demo module; everything else asks the directory. Amended 2026-08-24: the rule was written when one provider existed and said 'the ONE place'. Provider plurality is now a requirement, not a convenience \u2014 a single provider's 429 stopped a whole campaign \u2014 so the invariant is 'only in a declared adapter', and each adapter is listed above. Adding a provider means adding its adapter here with its reason, never relaxing the rule.",
   "subprocess_allowed: opencode_client is the declared coding-worker adapter; mcp_sdk_transport may start an explicitly registered stdio MCP server; workspace_local runs an explicitly authorized argv inside one restricted root; workspace_optional runs Docker with explicit policy and request authority; smoke_ladder.submit_to_kaggle is a declared external effect; _conformance_scan.scan_min_python_syntax invokes an older interpreter because a newer parser cannot prove the declared Python floor.",
   "eval/exec: never \u2014 logic_ast interprets a closed operator set instead.",
   "dynamic imports: explicit lazy public exports, self-test registry plumbing, and optional harness availability discovery only; a dynamic import elsewhere is a registration bypass.",

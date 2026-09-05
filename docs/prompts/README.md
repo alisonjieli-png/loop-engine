@@ -1,93 +1,84 @@
 # Loop Engine prompts
 
-These prompts help start a new coding-agent session. They defer to the current
-repository and `AGENTS.md`. They are not parallel architecture authorities.
+Every prompt defers to the current repository, `AGENTS.md`, the Architecture
+Constitution, machine-readable contracts, and enforcing tests. Load one prompt
+for the active task. Do not concatenate several prompts into a larger mandate.
 
-- [Generalized self-tuning Loop-node guidance](GENERALIZED-LOOP-NODE-SELF-TUNING-GUIDANCE.md)
-  is written from building the solver rather than designing it: fourteen
-  failure modes that each looked like correct engineering and each would have
-  destroyed the evidence the system exists to collect, the invariants they
-  imply, the order in which cheap-model work is safe to start, and the
-  questions that separate a working mechanism from a plausible one.
+## Broad continuation
+
+Use only the [universal solver continuation
+brief](LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md) for broad continued
+development. It is model-neutral and is the sole broad continuation prompt.
+Current checkout and test facts belong in a generated `session_handoff/v1`
+packet, not in the prompt.
+
+## Focused entry points
+
+Choose one of these only when its scope exactly matches the task:
+
 - [Universal component prompt suite](UNIVERSAL-COMPONENT-PROMPT-SUITE.md)
-  is the current implementation, adversarial review, ideation, and continuous
-  conformance set for passive component encapsulation, typed context handoff,
-  deterministic prompt assembly, and recursive Practitioner work.
-- [Everything-is-a-Loop adversarial audit](LOOP-ENGINE-EVERYTHING-IS-A-LOOP-ADVERSARIAL-AUDIT.md)
-  is a read-first audit mandate with several hundred evidence-scored
-  questions and twenty-five required probes on the one-runtime invariant,
-  the abstraction lineage behind it, passive data, modes and distillation,
-  shortcuts, supervisors, the distribution fabric, and the harness
-  comparison. It grades claims PROVEN, IMPLEMENTED_UNPROVEN, PARTIAL,
-  ABSENT, or CONTRADICTED and forbids repairs before the report is durable.
-- [Strict everything-is-a-Loop primitives](STRICT-EVERYTHING-IS-A-LOOP-PRIMITIVES.md)
-  moves semantic values and transformations into deterministic atomic Loops
-  over one finite audited intrinsic kernel.
+  routes a component change through implementation, independent review,
+  ideation, and conformance prompts in separate sessions.
 - [Ollama component qualification lab](OLLAMA-COMPONENT-QUALIFICATION-LAB.md)
-  builds an independent black-box lab that qualifies one component,
-  interaction, state transition, and architecture classification at a time.
+  creates a separate black-box qualification repository.
+- [Architecture showcase and video
+  prompt](LOOP-ENGINE-ARCHITECTURE-VIDEO-BUILD-PROMPT.md) changes the
+  presentation artifacts.
 
-- [Governing development prompt](LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md)
-  continues implementation, cleanup, testing, falsification, documentation,
-  and completion auditing in OpenCode or Codex.
-- [Self-orienting Code Intelligence master prompt](LOOP-ENGINE-SELF-ORIENTING-CODE-INTELLIGENCE-MASTER-PROMPT.md)
-  is the current paste-ready mandate for repository orientation, contextual
-  hardcoding review, parameter and prompt governance, optional descriptive
-  code graphs, reusable capability compounding, and bounded real-provider
-  verification.
-- [Cleanup and intelligence access prompt](LOOP-ENGINE-CLEANUP-AND-INTELLIGENCE-ACCESS-PROMPT.md)
-  deletes the legacy decision-spine cluster, renames `static_architecture` to
-  `core`, fixes every conformance gate, and builds the file and database
-  intelligence access adapter layer.
-- [Adversarial intelligence-seeking mandate](LOOP-ENGINE-ADVERSARIAL-INTELLIGENCE-SEEKING-MANDATE.md)
-  implements the universal, composable, inheritable, versioned,
-  policy-constrained intelligence-seeking configuration system: access
-  policies, query profiles, seeking strategies, bindings, resolved plans,
-  portfolio snapshots, and receipts, with adversarial tests and a strict
-  predeploy gate.
+The focused entry points do not supplement the broad continuation brief in the
+same session.
+
+## Supporting guidance
+
+These pages explain a concern. They are not additional session prompts:
+
+- [Generalized self-tuning Loop
+  guidance](GENERALIZED-LOOP-NODE-SELF-TUNING-GUIDANCE.md)
+- [Adversarial component architecture
+  review](ADVERSARIAL-COMPONENT-ARCHITECTURE-REVIEW.md)
+- [Component ideation and
+  conformity](COMPONENT-IDEATION-AND-CONFORMITY.md)
+- [Continuous component
+  conformance](CONTINUOUS-COMPONENT-CONFORMANCE.md)
+- [Universal component implementation
+  mandate](UNIVERSAL-COMPONENT-IMPLEMENTATION-MANDATE.md)
+
+Load one of these only when the selected focused workflow calls for it.
+
+## Design history
+
+The following files preserve earlier mandates and research directions. They
+are not current entry points. Some contain retired runtime, relationship,
+intelligence, or Run History terms. Do not paste them into a new session:
+
+- [AGI LoopNode network food for
+  thought](AGI-LOOPNODE-NETWORK-SELF-ORIENTING-FOOD-FOR-THOUGHT.md)
+- [Everything-is-a-Loop adversarial
+  audit](LOOP-ENGINE-EVERYTHING-IS-A-LOOP-ADVERSARIAL-AUDIT.md)
+- [Strict everything-is-a-Loop
+  primitives](STRICT-EVERYTHING-IS-A-LOOP-PRIMITIVES.md)
+- [Governing development
+  prompt](LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md)
+- [Self-orienting Code Intelligence master
+  prompt](LOOP-ENGINE-SELF-ORIENTING-CODE-INTELLIGENCE-MASTER-PROMPT.md)
+- [Cleanup and intelligence access
+  prompt](LOOP-ENGINE-CLEANUP-AND-INTELLIGENCE-ACCESS-PROMPT.md)
+- [Adversarial intelligence-seeking
+  mandate](LOOP-ENGINE-ADVERSARIAL-INTELLIGENCE-SEEKING-MANDATE.md)
 - [Plane-interaction mandate](LOOP-ENGINE-PLANE-INTERACTION-MANDATE.md)
-  generalizes the intelligence-seeking model to every operational plane a
-  LoopNode touches: intelligence, model, effect, execution, verification,
-  persistence, and observability, all served by one shared resolution,
-  merge, compatibility, adaptation, budget, and receipt engine.
 - [LoopNode specification mandate](LOOP-ENGINE-LOOPNODE-SPEC-MANDATE.md)
-  is retained as superseded design history. Its active `LoopNode` terminology
-  must not override the canonical `Loop` runtime or the current component
-  prompt suite. It described a configuration envelope using:
-  LoopNodeDefinitionRecord, LoopProcedureSpec, LoopStepBinding,
-  RunModePolicy, ModelPolicy, ResolvedLoopNodePlan, and the small runtime
-  LoopNode that carries references rather than bodies.
-- [Development Assurance Plane mandate](LOOP-ENGINE-DEVELOPMENT-ASSURANCE-PLANE-MANDATE.md)
-  builds devtools as a first-class Loop Engine application: a recursive
-  Repository Assurance Practitioner hierarchy, Devtools Core and Learned
-  intelligence, development plugins, a no-import bootstrap verifier,
-  declared-versus-observed graph conformance, and LLM reviewers that may
-  identify drift but never waive deterministic violations.
-- [Development Assurance Intelligence mandate](LOOP-ENGINE-DEVELOPMENT-ASSURANCE-INTELLIGENCE-MANDATE.md)
-  defines the auditor's own intelligence domain: typed assurance
-  questions, question packs, auditor profiles, seeking strategies,
-  assurance claims, finding definitions versus occurrences versus
-  patterns, content-addressed evidence, and the promotion path from raw
-  observations to reviewed Learned Assurance Intelligence.
-- [Parallel execution and microservice mandate](LOOP-ENGINE-PARALLEL-EXECUTION-MANDATE.md)
-  implements parallel procedures, bounded concurrency, join policies,
-  the complete async child LoopNode lifecycle with no orphaned tasks,
-  shared budget pools, and the microservice lifecycle: discovery,
-  governed build and deploy, service invocation through ordinary
-  LoopNodes, and independent review of service descriptors.
-- [Intelligence Foundry and Capability Campaign mandate](LOOP-ENGINE-FOUNDRY-AND-CAMPAIGN-MANDATE.md)
-  implements the typed generation system (seeds, fragments, variation
-  dimensions, conditional rules, bounded expansion, search strategies,
-  no self-promotion) and the proving campaign (task tiers, controls
-  and ablations, failure preservation, independent repair and
-  certification), all through the canonical Loop runtime, with the
-  positioning rule: the prompt is an emitted artifact, not the
-  architecture.
+- [Development Assurance Plane
+  mandate](LOOP-ENGINE-DEVELOPMENT-ASSURANCE-PLANE-MANDATE.md)
+- [Development Assurance Intelligence
+  mandate](LOOP-ENGINE-DEVELOPMENT-ASSURANCE-INTELLIGENCE-MANDATE.md)
+- [Development Engineering Assurance Planes
+  mandate](LOOP-ENGINE-DEVELOPMENT-ENGINEERING-ASSURANCE-PLANES-MANDATE.md)
+- [Parallel execution and microservice
+  mandate](LOOP-ENGINE-PARALLEL-EXECUTION-MANDATE.md)
+- [Intelligence Foundry and Capability Campaign
+  mandate](LOOP-ENGINE-FOUNDRY-AND-CAMPAIGN-MANDATE.md)
 - [Universal evolution prompt](LOOP-ENGINE-UNIVERSAL-EVOLUTION-PROMPT.md)
-  is the long-horizon ontology, storage, compatibility, and migration harness.
-- [Architecture showcase and video prompt](LOOP-ENGINE-ARCHITECTURE-VIDEO-BUILD-PROMPT.md)
-  builds the interactive diagram, animation timeline, and exported video.
 
-Always use `/home/username/loop-engine` as the workspace directory. Read the current
-repository before acting because implementation and evidence may have changed
-since a prompt was written.
+Always use `/home/username/loop-engine` as the workspace directory. Read the
+current repository before acting because implementation and evidence may have
+changed since a prompt was written.

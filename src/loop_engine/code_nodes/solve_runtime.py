@@ -11,24 +11,27 @@ import json
 import re
 import time
 from dataclasses import dataclass, field, replace
-from enum import Enum
 from pathlib import Path
 from typing import Callable
 
-from .material_questions import screen_material_questions
-from .solve_region_evidence import region_evidence_for_solve
 from ..core.adaptive_practitioner import run_adaptive_practitioner
 from ..core.adaptive_practitioner_records import (
-    AdaptivePractitionerDependencies, AdaptivePractitionerRequest)
+    AdaptivePractitionerDependencies,
+    StageAssistanceRuntimeBinding,
+)
+from ..core.generated_project import execute_generated_project
 from ..templates.compiler import TaskCompileRequest, compile_task_value
 from ..templates.intake import TaskIntake
 from ..templates.model import InteractionMode, TaskFeedback
-from ..core.generated_project import execute_generated_project
-from ..core.terminal_layer import deepest_layer_reached
+from .material_questions import screen_material_questions
 from .solution_model_port import ModelExecution
-from .solve_terminal import (
-    SOLVE_FAILURE_CODES, SolveTerminalCode, failure_code_for)
-
+from .solve_region_evidence import region_evidence_for_solve
+from .solve_request_adaptation import (
+    SolveAdaptationRequest,
+    build_adaptive_request,
+    stage_assistance_summary,
+)
+from .solve_terminal import SOLVE_FAILURE_CODES, SolveTerminalCode, failure_code_for
 
 #: The modes a solve may run in, named once. The first is also what a run
 #: becomes when there is no model execution to call, which is why it is
@@ -103,6 +106,10 @@ class SolveRequest:
     #: Operator context budget; None selects the canonical policy default.
     context_budget: "object | None" = field(
         default=None, repr=False, compare=False)
+    stage_assistance: StageAssistanceRuntimeBinding = field(
+        default_factory=StageAssistanceRuntimeBinding,
+        repr=False,
+    )
 
     def __post_init__(self) -> None:
         mode = self.interaction_mode
@@ -114,6 +121,17 @@ class SolveRequest:
             object.__setattr__(self, "interaction_mode", mode)
         if self.practitioner_mode not in PRACTITIONER_MODES:
             raise SolveError("practitioner_mode is not recognized")
+        if not isinstance(self.stage_assistance, StageAssistanceRuntimeBinding):
+            raise SolveError("stage_assistance has the wrong contract")
+        if self.stage_assistance.mode in ("advisory", "fresh") and (
+            self.model_execution is None
+            or self.practitioner_mode == NO_REASONING_MODE
+            or not self.save_run_history
+        ):
+            raise SolveError(
+                "an active stage-assistance experiment needs model-led execution "
+                "and saved Run History"
+            )
         feedback = tuple(self.feedback)
         if any(not isinstance(item, TaskFeedback) for item in feedback):
             raise SolveError("feedback must contain TaskFeedback values")
@@ -136,6 +154,12 @@ class SolveRequest:
                 and self.extension_snapshot.get("record_type")
                 != "extension_snapshot/v1")):
             raise SolveError("extension_snapshot has an invalid contract")
+        try:
+            snapshot = json.loads(json.dumps(
+                self.extension_snapshot, sort_keys=True, allow_nan=False))
+        except (TypeError, ValueError) as exc:
+            raise SolveError("extension_snapshot must contain strict JSON") from exc
+        object.__setattr__(self, "extension_snapshot", snapshot)
         if self.progress is not None and not callable(self.progress):
             raise SolveError("progress must be callable when supplied")
         from ..core.reusable_capability_harvest import ReuseObservationPort
@@ -386,6 +410,20 @@ def _product_result(adaptive: dict, solved: bool) -> dict:
     }
 
 
+def stage_assistance_source_state_digest(request: SolveRequest) -> str:
+    """Return the treatment-neutral source-state digest for a paired solve."""
+    if not isinstance(request, SolveRequest):
+        raise SolveError("source-state digest needs SolveRequest")
+    if (
+        request.model_execution is None
+        or request.practitioner_mode == NO_REASONING_MODE
+    ):
+        raise SolveError("a paired source state needs model-led execution")
+    return build_adaptive_request(
+        SolveAdaptationRequest(request, request.practitioner_mode, {}, None)
+    ).source_state_digest
+
+
 def solve_task(request: SolveRequest) -> SolveOutcome:
     """Run one intake through the universal adaptive Practitioner."""
     if not isinstance(request, SolveRequest):
@@ -407,30 +445,16 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
                 f"asked for {request.practitioner_mode!r} but no model "
                 "execution was configured, so no model was ever called")
         mode = NO_REASONING_MODE
-    region_evidence, tuned_budget = region_evidence_for_solve(request)
+    active_stage_experiment = request.stage_assistance.mode in ("advisory", "fresh")
+    if active_stage_experiment:
+        region_evidence, tuned_budget = {}, None
+    else:
+        region_evidence, tuned_budget = region_evidence_for_solve(request)
+    adaptive_request = build_adaptive_request(
+        SolveAdaptationRequest(request, mode, region_evidence, tuned_budget)
+    )
     adaptive = run_adaptive_practitioner(
-        AdaptivePractitionerRequest(
-            request.intake.original_input, mode=mode,
-            runs_dir=request.runs_dir,
-            max_passes=request.max_passes,
-            interaction_mode=request.interaction_mode.value,
-            allow_network_reads=request.allow_network_reads,
-            allow_workspace_writes=request.allow_workspace_writes,
-            allow_sandbox_commands=request.allow_sandbox_commands,
-            source_kind=request.intake.kind,
-            source_refs=request.intake.source_refs,
-            feedback=request.feedback,
-            workspace_root=request.workspace_root,
-            allow_source_materialization_to_model=
-                request.allow_source_materialization_to_model,
-            persist_run_history=request.save_run_history,
-            quiet_model_io=request.quiet_model_io,
-            allow_local_execution=request.allow_local_execution,
-            prior_region_evidence=region_evidence,
-            **({"context_budget": request.context_budget}
-               if request.context_budget is not None
-               else {"context_budget": tuned_budget}
-               if tuned_budget is not None else {})),
+        adaptive_request,
         AdaptivePractitionerDependencies(
             model_execution=request.model_execution,
             deterministic_resolvers=resolvers,
@@ -503,6 +527,7 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             "fetched_sources": adaptive.get("web_evidence", []),
             "extensions": dict(request.extension_snapshot),
             "region_evidence": region_evidence,
+            "stage_assistance": stage_assistance_summary(request, adaptive),
         },
         selected_mode=mode,
         requested_mode=request.practitioner_mode,
@@ -666,7 +691,9 @@ def self_test() -> dict:
               and model.failure_code == "BUDGET_EXHAUSTED"
               and model.run_history["chain_intact"])
         from ..core.adaptive_practitioner_acceptance_checks import (
-            _decision, _orientation)
+            _decision,
+            _orientation,
+        )
         material_orientation = _orientation(
             unknowns=["required destination"],
             ambiguities=[{

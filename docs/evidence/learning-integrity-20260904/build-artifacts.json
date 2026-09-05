@@ -1,0 +1,20 @@
+{
+  "artifacts": [
+    {
+      "bytes": 2032224,
+      "path": "/tmp/loop-learning-20260904.nM5vjD/dist-delivery/loop_engine-0.1.0-py3-none-any.whl",
+      "sha256": "9193a09b3e34f1b0561a2a808cb4a5e9c3e3b4f31e1eb1a1264a0145bd5a89ef"
+    },
+    {
+      "bytes": 1764269,
+      "path": "/tmp/loop-learning-20260904.nM5vjD/dist-delivery/loop_engine-0.1.0.tar.gz",
+      "sha256": "37aae47dfac4f3f86e1faea9a7d746da3bbbd13583d3ef1997f1e4005024b4c2"
+    }
+  ],
+  "command": "python3 -m build --no-isolation --outdir /tmp/loop-learning-20260904.nM5vjD/dist-delivery",
+  "earlier_builds_preserved_at": [
+    "/tmp/loop-learning-20260904.nM5vjD/dist",
+    "/tmp/loop-learning-20260904.nM5vjD/dist-final"
+  ],
+  "exit_code": 0
+}

@@ -1,6 +1,8 @@
 # Core Architecture
 
-The built-in, immutable, released portion of Core Code Intelligence.
+Core Architecture supplies capability ports and internal runtime mechanics.
+It is distinct from Code Intelligence, which contains governed executable
+assets. Released runtime code is not a separate persistent intelligence layer.
 
 ## Purpose
 

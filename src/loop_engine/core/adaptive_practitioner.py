@@ -14,47 +14,55 @@ import time
 from dataclasses import replace
 from pathlib import Path
 
+from ..code_nodes.solution_model_port import SolutionModelError
 from ..loop.kernel import (
     CandidateAction, DecisionSupportPortfolio, ExecutionPlan,
     KernelRunRequest, PractitionerState, ProblemSpec, ResultPacket,
-    Situation, run_kernel_passes)
+    Situation, run_kernel_passes,
+)
 from ..loop.kernel_runtime import current_kernel_owner
 from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
 from ..loop.recursive_loop import Loop, LoopConfig, LoopLedger
-from ..code_nodes.solution_model_port import SolutionModelError
-from .run_stages import close_stages, load_prior_stages
-from .semantic_decision import SemanticDecisionRecord, note_decision
-from .adaptive_practitioner_records import (
-    _unnamed_fields,
-    ADAPTIVE_PRACTITIONER_RECORD_TYPE,
-    NEXT_ACTION_KINDS,
-    AdaptivePractitionerDependencies, AdaptivePractitionerError,
-    AdaptivePractitionerRequest, AdaptiveRunServices,
-    DeterministicAttemptTrace, ModelStepRequest, NextActionDecision,
-    TaskOrientationResult)
-from .adaptive_practitioner_deterministic import run_deterministic_attempt
+from . import stage_action_lineage as _lineage
 from .adaptive_practitioner_capabilities import (
     AdaptiveCapabilityExecutionRequest, build_action_canvas_candidate,
-    execute_adaptive_capability)
-from .adaptive_practitioner_source import source_inspection_model_view
-from .runtime_capacity import model_evidence_bytes
-from .adaptive_practitioner_planning import (
-    AdaptivePlanningRequest, build_execution_plan)
+    execute_adaptive_capability,
+)
+from .adaptive_practitioner_deterministic import run_deterministic_attempt
 from .adaptive_practitioner_orientation import orientation_policy_findings
+from .adaptive_practitioner_planning import (
+    AdaptivePlanningRequest, build_execution_plan,
+)
+from .adaptive_practitioner_records import (
+    _unnamed_fields, ADAPTIVE_PRACTITIONER_RECORD_TYPE, NEXT_ACTION_KINDS,
+    AdaptivePractitionerDependencies, AdaptivePractitionerError,
+    AdaptivePractitionerRequest, AdaptiveRunServices, DeterministicAttemptTrace,
+    ModelStepRequest, NextActionDecision, TaskOrientationResult,
+)
+from .adaptive_practitioner_result import (
+    failed_adaptive_output, finish_deterministic_attempt, has_bound_accepted_incumbent,
+    integrate_adaptive_state,
+    loop_details, safe_model_usage, save_adaptive_result,
+)
+from .adaptive_practitioner_reuse import observe_generated_project_reuse
+from .adaptive_practitioner_source import source_inspection_model_view
 from .adaptive_practitioner_supervision import (
-    supervision_context, validate_progressing_action)
+    supervision_context, validate_progressing_action,
+)
 from .adaptive_practitioner_verification import (
     AdaptiveRouteRequest, AdaptiveVerificationRequest,
-    route_adaptive_result, safe_result, verify_adaptive_results)
-from .adaptive_practitioner_reuse import observe_generated_project_reuse
+    route_adaptive_result, verify_adaptive_results,
+)
 from .context_artifacts import (
     ContextArtifactManager, ContextArtifactServices, ContextArtifactStore,
-    ContextArtifactStoreSpec)
+    ContextArtifactStoreSpec,
+)
 from .practitioner_context import load_practitioner_context
 from .run_history import default_runs_dir
-from .adaptive_practitioner_result import (
-    failed_adaptive_output, finish_deterministic_attempt, loop_details,
-    safe_model_usage, save_adaptive_result)
+from .run_stages import close_stages, load_prior_stages
+from .runtime_capacity import model_evidence_bytes
+from .semantic_decision import note_decision
+from .solve_control_manifest import record_control_manifest
 def _copy_workspace_confined(workspace: Path, destination: Path) -> dict:
     """Copy a workspace into Run History without following links out of it.
 
@@ -83,8 +91,6 @@ def _copy_workspace_confined(workspace: Path, destination: Path) -> dict:
     shutil.copytree(workspace, destination, symlinks=True, ignore=ignore)
     return {"symlinks_preserved": True,
             "skipped_outside_workspace": skipped}
-
-
 def _model_state(state: PractitionerState,
                  services: AdaptiveRunServices) -> dict:
     view = {
@@ -289,7 +295,6 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
             "binding_mode": "model_oriented_open_task",
             "source": "adaptive_practitioner_orientation",
         }
-
     def reconcile_horizon(state: PractitionerState, situation: Situation):
         orientation = situation.knowns["orientation"]
         return {
@@ -301,7 +306,6 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
             "remaining_success_criteria": list(
                 orientation.verification_obligations),
         }
-
     def assess_prepare(state: PractitionerState,
                        situation: Situation) -> DecisionSupportPortfolio:
         orientation = situation.knowns["orientation"]
@@ -316,7 +320,6 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
             perspectives=[services.portfolio.persona.persona_id],
             generated=[services.portfolio.portfolio_id],
             notes="General questions only; no task-specific template selected.")
-
     def decide_next(state: PractitionerState,
                     situation: Situation) -> list[CandidateAction]:
         schema = json.dumps({"actions": [{
@@ -332,6 +335,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                 "confidence": 0.0, "fallback": {},
             }], "selected_action_index": 0}, separators=(",", ":"))
         decisions = None
+        decision_stage = None
         selected_index = 0
         failure = ""
         for attempt in (1, 2):
@@ -345,6 +349,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                     {**_model_state(state, services),
                      "orientation": situation.knowns["orientation"].to_dict(),
                      "next_action_validation_failure": failure}, schema))
+                decision_stage = services._graded_stage
                 actions = value.get("actions")
                 if not isinstance(actions, list) or not actions:
                     raise AdaptivePractitionerError(
@@ -413,6 +418,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                     "attempt": attempt, "error": failure})
         model_choice_failed = decisions is None
         if decisions is None:
+            decision_stage = None
             decisions = [NextActionDecision.from_mapping({
                 "action_kind": "REPAIR",
                 "goal": "Repair the typed next-action decision.",
@@ -436,6 +442,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
             services.action_details[decision_id] = decision
             services.action_history.append({
                 "decision_id": decision_id, "state_version": state.version,
+                **_lineage.source_stage_fields(decision_stage),
                 **decision.to_dict()})
             canvas_candidates.append(build_action_canvas_candidate(
                 decision_id, decision))
@@ -456,6 +463,12 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
         selected_action = candidates[selected_index]
         services.plan_details["model_selected_action_id"] = (
             selected_action.action)
+        lineage = (_lineage._try_selected(
+            services, decision_stage, selected_action.action,
+            decisions[selected_index].to_dict())
+            if decision_stage is not None else None)
+        services.plan_details["active_action_occurrence_ref"] = str(
+            (lineage or {}).get("action_occurrence_ref") or "")
         # The decision this pass turns on, and who made it. When the model's
         # response could not be admitted the runtime synthesised a REPAIR
         # above; that is still a choice about what happens next, so it is
@@ -472,12 +485,13 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                 decisions[selected_index].expected_output[:200]),
             state_snapshot_ref=str(state.version))
         return [selected_action]
-
     def determine_how(state: PractitionerState, situation: Situation,
                       chosen: CandidateAction) -> ExecutionPlan:
-        return build_execution_plan(
+        plan = build_execution_plan(
             AdaptivePlanningRequest(state, situation, chosen), services)
-
+        plan.experiment["action_occurrence_ref"] = str(
+            services.plan_details.get("active_action_occurrence_ref") or "")
+        return plan
     def act(state: PractitionerState, plan: ExecutionPlan) -> list[ResultPacket]:
         owner = current_kernel_owner()
         if owner is None:
@@ -507,9 +521,10 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
             return results
         if plan.handle in {item["capability_ref"]
                            for item in services.available_capabilities()}:
-            return [execute_adaptive_capability(
-                AdaptiveCapabilityExecutionRequest(state, plan, owner),
-                services)]
+            result = execute_adaptive_capability(
+                AdaptiveCapabilityExecutionRequest(state, plan, owner), services)
+            _lineage._try_execution(services, owner, plan, result)
+            return [result]
         if plan.handle == "core.finish" and services.project_attempts:
             result = services.project_attempts[-1]
             return [ResultPacket(
@@ -527,29 +542,17 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
             objective=plan.handle or "unresolved action",
             errors=("action cannot execute through a registered capability",),
             confidence=0.0)]
-
     def verify(state: PractitionerState, plan: ExecutionPlan, results: list):
-        return verify_adaptive_results(AdaptiveVerificationRequest(
+        evaluation = verify_adaptive_results(AdaptiveVerificationRequest(
             state, plan, tuple(results), _model_state(state, services)), services)
-
+        _lineage._try_verification(services, plan, results, evaluation)
+        return evaluation
     def integrate_commit(state: PractitionerState,
                          record) -> PractitionerState:
-        facts = dict(state.facts)
-        artifacts = dict(state.artifacts)
-        if record.results:
-            latest = record.results[record.evaluation.best_index]
-            facts["last_result"] = safe_result(latest)
-            for ref in latest.artifact_refs:
-                artifacts[str(ref)] = str(ref)
-        facts["last_verification"] = (
-            services.verification_records[-1]
-            if services.verification_records else {})
-        return state.derive(facts=facts, artifacts=artifacts)
-
+        return integrate_adaptive_state(state, record, services)
     def route(state: PractitionerState, record) -> tuple:
         return route_adaptive_result(AdaptiveRouteRequest(
             state, record, _model_state(state, services)), services)
-
     return {
         "orient": orient,
         "standardize_task": standardize_task,
@@ -562,8 +565,6 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
         "integrate_commit": integrate_commit,
         "route": route,
     }
-
-
 def _history_record(owner: Loop, services: AdaptiveRunServices,
                     runs_dir: Path) -> dict:
     """Return a verified saved or in-memory Run History summary."""
@@ -582,7 +583,6 @@ def _history_record(owner: Loop, services: AdaptiveRunServices,
         "saved": False, "product_outcome_bound": False,
         "product_outcome_digest": "", "terminal_code": "",
     }
-
 def run_adaptive_practitioner(
         request: AdaptivePractitionerRequest,
         dependencies: AdaptivePractitionerDependencies) -> dict:
@@ -636,6 +636,9 @@ def run_adaptive_practitioner(
         relationship=LoopRelationship.starting())
     if request.persist_run_history:
         owner.enable_run_history(run_id, root_dir=str(runs_dir))
+    if request.stage_assistance.control_manifest is not None:
+        services.control_manifest_evidence = record_control_manifest(
+            owner, request.stage_assistance.control_manifest)
     if request.mode == "non_deterministic":
         services.deterministic_attempt = DeterministicAttemptTrace(
             hashlib.sha256(request.task.encode()).hexdigest(), request.task,
@@ -690,7 +693,8 @@ def run_adaptive_practitioner(
         if services.project_attempts else None
     solved = bool(
         run.get("final_route") == "stop_success" and final_attempt
-        and final_attempt.get("deterministic_checks_passed"))
+        and final_attempt.get("deterministic_checks_passed")
+        and has_bound_accepted_incumbent(run, final_attempt))
     # A run that failed casts its result over every choice that led there.
     close_stages(services, runs_dir, helped=solved)
     services.decision_outcomes.close_run(
@@ -702,6 +706,9 @@ def run_adaptive_practitioner(
         "record_type": ADAPTIVE_PRACTITIONER_RECORD_TYPE,
         "run_id": run_id,
         "status": "VERIFIED_WORKING" if solved else "NOT_YET_PROVEN",
+        "state_evidence": {
+            key: run.get("facts", {}).get(key) for key in (
+                "last_attempt", "accepted_incumbent", "artifact_dispositions")},
         "solved": solved,
         "original_task": request.task,
         "task_feedback": [item.to_dict() for item in request.feedback],
@@ -739,8 +746,8 @@ def run_adaptive_practitioner(
         # Who decided what this run did, saved beside what it chose from.
         "semantic_autonomy": services.semantic_decisions.to_dict(),
         "decision_outcomes": services.decision_outcomes.to_dict(),
-        "stages": services.stage_store.to_dict(),
-        "stage_arms": dict(services.stage_arms),
+        "control_manifest_evidence": dict(services.control_manifest_evidence),
+        **_lineage.stage_lineage_summary(services),
         "prior_stages_loaded": len(services.prior_stages.observations),
         "stage_ladders": dict(services.stage_ladders),
         "response_shape_convergence": services.convergence.to_dict(),
@@ -769,12 +776,12 @@ def run_adaptive_practitioner(
         output["reuse_observation"] = reuse_observation
     save_adaptive_result(history, output)
     return output
-
 def self_test() -> dict:
     """Run focused task-agnostic adaptive Practitioner checks."""
-    from .adaptive_practitioner_checks import run_checks
     from .adaptive_practitioner_acceptance_checks import (
-        run_checks as run_acceptance_checks)
+        run_checks as run_acceptance_checks,
+    )
+    from .adaptive_practitioner_checks import run_checks
     focused = run_checks()
     acceptance = run_acceptance_checks()
     from .practitioner_contract_guards import contract_guard_checks

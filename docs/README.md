@@ -1,8 +1,11 @@
 # Documentation
 
-Start with the [main README](../README.md). Its first diagram shows how a task,
-Practitioner loops, a Solution Canvas, Core Architecture, and the four
-intelligence layers fit together.
+Start with the [main README](../README.md) for the public quickstart and current
+limits. Use the
+[taxonomy and class map](architecture/TAXONOMY-ONTOLOGY-AND-CLASS-MAP.md) for
+the complete runtime classification and the
+[generated architecture diagrams](ARCHITECTURE-DIAGRAMS.md) for current
+system, container, and component views.
 
 The [architecture showcase](../showcase/) explains the same system as a linear
 slide deck, browser player, and exported video.
@@ -58,8 +61,12 @@ starting point.
 
 | Page | Purpose |
 |---|---|
+| [Learning integrity and research implementation](verification/LEARNING-INTEGRITY-AND-RESEARCH-2026-09-04.md) | Current subject-bound acceptance, accepted/candidate state separation, bootstrap model evidence, proper forecast scoring, exact offline checks, and the remaining paired gate. |
 | [Generated architecture map](../src/loop_engine/ARCHITECTURE-MAP.md) | Current module inventory generated from the package. |
 | [Architecture conformance](architecture/ARCHITECTURE_CONFORMANCE.md) | Automated architecture checks and their purpose. |
+| [Architecture mesh and corpus audit](verification/ARCHITECTURE-MESH-CORPUS-AUDIT-2026-09-04.md) | Current runtime, four intelligence layers, static infrastructure, full Markdown coverage, local commit inventory, and reproduced credit/state defects. Read this before relying on earlier exact-lineage claims. |
+| [Stage assistance integration audit](verification/STAGE-ASSISTANCE-INTEGRATION-AUDIT-2026-09-04.md) | Dated evidence, stop-ship attribution defects, and the safe integration order. |
+| [Predictive state, procedural memory, and stage assistance verification](verification/PREDICTIVE-STATE-PROCEDURAL-MEMORY-AND-STAGE-ASSISTANCE-2026-09-04.md) | Current offline evidence for information diagnostics, procedural-control candidates, hydrated public-solve assistance, exact action-stage lineage, distribution checks, and remaining live-product gaps. |
 | [Design language](architecture/DESIGN-LANGUAGE.md) | Naming and visual rules. |
 | [Typed API design](architecture/API-DESIGN.md) | Request objects, typed loop ports, compatibility wrappers, and the public parameter cap. |
 | [Design guidance](architecture/DESIGN-GUIDANCE.md) | Applying the design language. |
@@ -70,6 +77,11 @@ starting point.
 
 | Page | Purpose |
 |---|---|
+| [Learning from verified Loop outcomes](research/LEARNING-FROM-VERIFIED-LOOP-OUTCOMES-2026-09-04.md) | Primary-source follow-up across adaptive compute, memory, distillation, verification and repeated improvement, with assumptions, falsifiers, coverage, and official adapter boundaries. |
+| [Adaptive cognitive Loops and amortized computation](research/ADAPTIVE-COGNITIVE-MESH-AND-AMORTIZED-COMPUTATION-2026-09-04.md) | Research and proposed cognitive mesh design: joint computation allocation, information sufficiency, repeated-task transfer, distillation economics, twelve passive template cards, and falsifiable experiments. |
+| [Long-horizon recurrence, skills, and state](research/LONG-HORIZON-RECURRENT-SKILLS-AND-STATE-2026-09-04.md) | Primary-source review of SKILL.state, Agent Skills, recurrent and test-time-memory models, information-theory limits, OpenAI runtime features, and falsifiable Loop Engine experiments. |
+| [Procedural memory, predictive state, and information value](research/PROCEDURAL-MEMORY-PREDICTIVE-STATE-AND-INFORMATION-VALUE-2026-09-04.md) | Defines evidence-gated procedural automaticity, seven control probes, predictive-state and compression measurements, negative-transfer controls, and a falsifiable comparison against full history. |
+| [SKILL.state execution and cache economics](research/SKILL-STATE-EXECUTION-AND-CACHE-ECONOMICS.md) | Earlier focused review of state-centric execution, provider-cache economics, and cost per verified completion. |
 | [Model routing and gateway options](research/MODEL-ROUTING-AND-GATEWAY-OPTIONS.md) | Primary-source comparison of gateways, routers, overhead, and integration choices. |
 
 ## Reference
@@ -95,20 +107,25 @@ not onboarding pages or a statement that every described feature is shipped.
 [`evidence/`](evidence/) contains dated run evidence. Each record states what
 was measured and what the result does not establish.
 
-[`internal/`](internal/) contains build prompts, handoffs, migration logs, and
-design history. These files preserve provenance, but they are not current user
-documentation.
+[`internal/`](internal/) contains a stable handoff pointer and historical
+development notes. These files preserve provenance, but they are not a live
+checkout report or current user documentation.
 
 [`context/CODEX-START-HERE.md`](context/CODEX-START-HERE.md) is the compact
-entry point for a new Codex session. Repository-wide coding-agent rules are in
-[`AGENTS.md`](../AGENTS.md).
+entry point for a new coding-agent session. Repository-wide coding-agent rules
+are in [`AGENTS.md`](../AGENTS.md). The
+[`session_handoff/v1` schema](contracts/session-handoff.schema.json) defines an
+immutable generated checkout packet without inferring dirty-file ownership.
+The dated [GPT-6 Astra readiness
+note](context/GPT-6-ASTRA-READINESS-2026-09-04.md) records model-specific facts
+and current compatibility gaps without changing the model-neutral core.
 [The older reference-source map](context/REFERENCE-SOURCES.md) explains how to
 consult Taedri and preserved design history without copying their structure
 into Loop Engine.
 
-If you are taking over development, read
-[HANDOFF.md](internal/HANDOFF.md) after the current component and architecture
-pages.
+If you are taking over development, use the stable
+[maintainer handoff pointer](internal/HANDOFF.md) after the current component
+and architecture pages. Use a generated session packet for volatile state.
 
 ## Writing templates
 
@@ -118,10 +135,10 @@ pages.
 
 ## Coding-agent prompts
 
-- [Governing OpenCode and Codex development prompt](prompts/LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md)
-- [Self-orienting Code Intelligence master prompt](prompts/LOOP-ENGINE-SELF-ORIENTING-CODE-INTELLIGENCE-MASTER-PROMPT.md)
-- [Architecture showcase and video prompt](prompts/LOOP-ENGINE-ARCHITECTURE-VIDEO-BUILD-PROMPT.md)
-- [Generalized self-tuning Loop-node guidance](prompts/GENERALIZED-LOOP-NODE-SELF-TUNING-GUIDANCE.md)
+- [Universal solver continuation handoff](prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md),
+  the sole broad continuation brief
+- [Prompt index](prompts/) for focused entry points, supporting guidance, and
+  clearly separated design history
 
 Public prose also follows the repository's
 [`humanizer-context.md`](../humanizer-context.md) file. It defines the reader,

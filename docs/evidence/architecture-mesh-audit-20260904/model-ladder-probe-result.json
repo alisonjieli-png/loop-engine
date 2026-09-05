@@ -1,0 +1,33 @@
+{
+  "known_outcomes": 1,
+  "ladder": {
+    "basis": "prior stages of this shape",
+    "evidence": [
+      {
+        "attempts": 1,
+        "helped": 1,
+        "route": "cheap",
+        "success_share": 1.0,
+        "unknown": 0
+      },
+      {
+        "attempts": 11,
+        "helped": 0,
+        "route": "strong",
+        "success_share": null,
+        "unknown": 11
+      }
+    ],
+    "observations": 12,
+    "order": [
+      "cheap",
+      "strong"
+    ],
+    "reading": "try 'cheap' first: it succeeded on 1.0 of 1 decided attempts at this shape, with 1 route(s) behind it",
+    "record_type": "model_ladder/v1"
+  },
+  "observations": 12,
+  "proven_property": true,
+  "provider_calls": 0,
+  "scope": "Bootstrap evidence sufficiency only; no live model, routing or quality claim."
+}

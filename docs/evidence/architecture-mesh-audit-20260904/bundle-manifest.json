@@ -1,0 +1,146 @@
+{
+  "artifacts": [
+    {
+      "bytes": 6398,
+      "path": "README.md",
+      "sha256": "db661575c90c662c948209fc9a94ddd9a1cde98f2e2ed8a6c3807a027754be47"
+    },
+    {
+      "bytes": 134750,
+      "path": "assurance.json",
+      "sha256": "6b1d47161b5f477f40e3a3a39a7a92cfe6504d5e831c47ceb6ada405e85d2b6d"
+    },
+    {
+      "bytes": 1345,
+      "path": "checks.py",
+      "sha256": "fff9245e611279b3b81908093780958a1544212424fe3d30e761265ca3362cdf"
+    },
+    {
+      "bytes": 37289,
+      "path": "commit-history-audit.md",
+      "sha256": "19957ec77dd11ffc26d5a4b67038cd505adb64ce3d9c564e6a83c09b6478948d"
+    },
+    {
+      "bytes": 145773,
+      "path": "commit-inventory-additional.json",
+      "sha256": "c06cc222b934b0d5a1d578080bfbe1ae28f559489a55c647153a6beff3031025"
+    },
+    {
+      "bytes": 348438,
+      "path": "commit-inventory-reachable.json",
+      "sha256": "82ee497fcb0d9723113927a0c8eab5b28b92f99736cf3219d0dda192f1fed0c1"
+    },
+    {
+      "bytes": 716381,
+      "path": "commits.jsonl",
+      "sha256": "15bc566d852cd87490f024377bdc95079b0736e821e577ba8d318c012ce43f42"
+    },
+    {
+      "bytes": 7271,
+      "path": "conformance.json",
+      "sha256": "d77ee559efad98c2402447a6ec1bc872dcb97a8d71c760609f01c4540ea987f1"
+    },
+    {
+      "bytes": 3448,
+      "path": "delivery-validation.json",
+      "sha256": "85ba680b9221fc7e9ccf9c88175bf20bd508986776c14664aca59cef1934d310"
+    },
+    {
+      "bytes": 13394,
+      "path": "environment-at-publication.json",
+      "sha256": "8825e50eee115c21def11e2bb15b713471d59c789ab9944a905412d6d875e601"
+    },
+    {
+      "bytes": 6865,
+      "path": "excluded.jsonl",
+      "sha256": "0c3ca64d62b117da1505d8757ac804383d1f0d806d1da50311fbc9400b8528c4"
+    },
+    {
+      "bytes": 11767,
+      "path": "external-guidance-audit.md",
+      "sha256": "b065ceb71d2da2737da47fe4a19c5af0ff72dffe7dc9d5929ab65a85b90adb86"
+    },
+    {
+      "bytes": 4490,
+      "path": "external-guidance-coverage.json",
+      "sha256": "3c2ab49a71b400dfe2dd89c82ac5d09b41b9b5307c14f2ebe7616293d08b9a46"
+    },
+    {
+      "bytes": 150029,
+      "path": "external-prompts.json",
+      "sha256": "3220785e06e2acb293e74e5413a9bb38ebc01635ed5c7de965e446ba9aacdf22"
+    },
+    {
+      "bytes": 1194055,
+      "path": "files.jsonl",
+      "sha256": "70b7f82e139dbb10cd5509cd5a995173af0718ad6724bd7fdef42f7a62ea7662"
+    },
+    {
+      "bytes": 22378,
+      "path": "guidance-component-audit.md",
+      "sha256": "19369576477eeebaf0751bc8168a4805377c6ec65992d77a4eaab67739430c0e"
+    },
+    {
+      "bytes": 8853,
+      "path": "inventory.py",
+      "sha256": "31d336671159beac8fbaa665c24e78f9bc038a4b7d63b0d4fa2c57258c0ecb59"
+    },
+    {
+      "bytes": 6134,
+      "path": "lineage-subject-audit.md",
+      "sha256": "89b4f8f4ff49545a7e91d01935259d2f06b83de5372f69e40b8f8df8fdd6c82c"
+    },
+    {
+      "bytes": 5798,
+      "path": "lineage-subject-probe-result.json",
+      "sha256": "7f004d4002a9bcbf6f806d0ed493311027c984fa22b6d3de871f7353c09a07e6"
+    },
+    {
+      "bytes": 4889,
+      "path": "lineage-subject-probe.py",
+      "sha256": "0924913204c8b1919545fd5e34bc0ce0421e5c1f4b0e020f53ab2bf94500bcf9"
+    },
+    {
+      "bytes": 98880,
+      "path": "markdown-semantic-coverage.json",
+      "sha256": "7214ba591290505f628c366514795f4dc3bb1149962e0f6286bdf0f6a9ae3769"
+    },
+    {
+      "bytes": 789,
+      "path": "model-ladder-probe-result.json",
+      "sha256": "ae6f4c54ac0f2b257c42fe5d62450efd87289912279be85564cf192e54cb6ad4"
+    },
+    {
+      "bytes": 686,
+      "path": "model-ladder-probe.py",
+      "sha256": "9000e6b8e484067b2d62d636b319f382ee76fbe509b45e47b5dfa5660fd3c8da"
+    },
+    {
+      "bytes": 17433,
+      "path": "other-markdown-audit.md",
+      "sha256": "a89cdf7e0ce1173f0f555e2337970fac9c64fcf51f503492e546785f687b2c89"
+    },
+    {
+      "bytes": 34533,
+      "path": "registered-conversation-sources.json",
+      "sha256": "024004f4549bf4e8ac336031bc2b76fffcbf710303d3cf2029e9c9f85b931c3a"
+    },
+    {
+      "bytes": 25242,
+      "path": "remaining-docs-audit.md",
+      "sha256": "93428125b8e316037902b10328e16978ab730af1fe9ea7569c1bb09a3c04e489"
+    },
+    {
+      "bytes": 154,
+      "path": "source-recheck-before-report-index-edits.json",
+      "sha256": "24a4cf1377e057b8cbfd2891e11a135e56cc6728546775e68f42ef39f0d5b581"
+    },
+    {
+      "bytes": 2161,
+      "path": "summary.json",
+      "sha256": "192b3d458514aedc3d4d0a7d622eec924d8cc535d5e6310b13cb2893f33331e0"
+    }
+  ],
+  "created_at": "2026-09-04T21:39:45.630984+00:00",
+  "record_type": "audit_artifact_manifest/v1"
+}

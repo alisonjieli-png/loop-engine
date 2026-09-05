@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "-m",
+    "loop_engine",
+    "--self-test"
+  ],
+  "elapsed_seconds": 168.59942876012065,
+  "exit_code": 0,
+  "finished_at": "2026-09-04T21:49:45.405695+00:00",
+  "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+  "phase": "baseline",
+  "source_changes_during_check": [],
+  "source_files": 450,
+  "started_at": "2026-09-04T21:46:56.803989+00:00",
+  "stdout_tail": "Loop Engine full self-test: PASSED\nChecks: 2430/2430\nElapsed: 165.565 seconds\nProvider calls: 0\nUse --format json for the complete typed summary.\n"
+}

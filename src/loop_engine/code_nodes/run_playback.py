@@ -36,9 +36,7 @@ from __future__ import annotations
 import html as _html
 import json
 
-from .run_analytics import (
-    analyze_run, loop_relationship_dag, propose_edits)
-
+from .run_analytics import analyze_run, loop_relationship_dag, propose_edits
 
 _RELATIONSHIP_LABELS = {
     "starting": "Starting",
@@ -207,7 +205,15 @@ def render_run_report(events, usage_log=(), trace=None, *, canvas=None,
         f'<li><b>{_html.escape(p["kind"])}</b>: '
         f'{_html.escape(p["proposal"])} <i>({_html.escape(p["evidence"])})'
         f'</i></li>' for p in proposals) or "<li>none</li>"
-    lines = "\n".join(_html.escape(l) for l in transcript)
+    lines = "\n".join(_html.escape(line) for line in transcript)
+    relationship_mermaid = _html.escape(canonical["relationship_mermaid"])
+    relationship_section = (
+        '<h2>Semantic relationship DAG</h2><pre class="mermaid">'
+        + relationship_mermaid + "</pre>")
+    canvas_mermaid = canonical["canvas_mermaid"]
+    canvas_section = (
+        '<h2>Solution canvas</h2><pre class="mermaid">'
+        + _html.escape(canvas_mermaid) + "</pre>" if canvas_mermaid else "")
     body = f"""<h1>{_html.escape(title)}</h1>
 <p class="k">{analysis['totals']['loops']} loops · {analysis['totals']['steps']}
 steps · {analysis['totals']['semantic_calls']} semantic calls ·
@@ -215,8 +221,8 @@ steps · {analysis['totals']['semantic_calls']} semantic calls ·
 ({tok['calls_with_usage']} calls with usage)</p>
 <h2>Troublesome loops (pain-ranked)</h2>{bars}
 <h2>Loop ownership tree</h2><pre class="mermaid">{_html.escape(mermaid)}</pre>
-<h2>Semantic relationship DAG</h2><pre class="mermaid">{_html.escape(canonical["relationship_mermaid"])}</pre>
-{'<h2>Solution canvas</h2><pre class="mermaid">' + _html.escape(canonical["canvas_mermaid"]) + '</pre>' if canonical["canvas_mermaid"] else ''}
+{relationship_section}
+{canvas_section}
 <h2>Stuck signals</h2><ul>{stuck_rows}</ul>
 <h2>Proposed edits (candidates: never self-applied)</h2><ul>{prop_rows}</ul>
 <h2>Transcript</h2><pre class="tx">{lines}</pre>"""
@@ -230,8 +236,7 @@ def self_test() -> dict:
     def check(name, ok, note=""):
         results.append({"name": name, "passed": bool(ok), "note": note})
 
-    from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome, \
-        default_handler
+    from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome, default_handler
 
     def handler(loop, step, context):
         if step == "research" and loop.depth == 0 \
@@ -253,9 +258,9 @@ def self_test() -> dict:
     tx = playback(lp.ledger.events)
     check("transcript_replays_the_run_in_order",
           tx[0].startswith(f"[{lp.loop_id}] INIT")
-          and any("SPAWN ->" in l for l in tx)
-          and any("(hybrid)" in l for l in tx)
-          and any("TERMINAL: done" in l for l in tx),
+          and any("SPAWN ->" in line for line in tx)
+          and any("(hybrid)" in line for line in tx)
+          and any("TERMINAL: done" in line for line in tx),
           f"{len(tx)} transcript lines")
 
     # 2. the report derives every view from ONE canonical dict: mermaid tree
@@ -285,6 +290,7 @@ def self_test() -> dict:
     # 4. Loaded saved-run events use a different storage envelope. Playback
     # and analytics must use the shared adapter rather than render an empty run.
     import tempfile
+
     from ..core.run_history import RunHistory, bind_product_outcome
     ch = RunHistory.from_ledger(lp.ledger.events, run_id="playback-saved",
                                usage_log=usage)
@@ -295,8 +301,9 @@ def self_test() -> dict:
           saved_tx and any("INIT" in line for line in saved_tx)
           and any("TERMINAL" in line for line in saved_tx)
           and saved_report["analysis"]["totals"]["loops"] >= 2
-          and saved_report["analysis"]["tokens"]["prompt"] == 50,
-          "stored events produced transcript, tree, and provider usage")
+          and saved_report["analysis"]["tokens"] == {
+              "prompt": None, "eval": None, "calls_with_usage": 1},
+          "one known and one missing call make aggregate usage unknown")
     with tempfile.TemporaryDirectory() as saved_root:
         ch.save(saved_root)
         bind_product_outcome(saved_root, "playback-saved", {

@@ -42,6 +42,8 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 
+from ..core.run_history_usage import optional_token
+
 SEMANTIC_MODES = ("hybrid", "non_deterministic")
 _RELATIONSHIP_FIELDS = (
     "spawned_by_loop_id", "queried_by_loop_id",
@@ -219,9 +221,8 @@ def _cycle_nodes(vertex_ids: set[str],
 
 def loop_relationship_dag(events) -> LoopRelationshipDag:
     """Project current relationship declarations from canonical events only."""
+    from ..core.run_history import as_ledger_events, to_canonical_events
     from ..loop.loop_role import LoopRelationship
-    from ..core.run_history import (
-        as_ledger_events, to_canonical_events)
 
     canonical = to_canonical_events(as_ledger_events(events))
     metadata: dict[str, dict[str, str]] = {}
@@ -362,18 +363,32 @@ def analyze_run(events, usage_log=(), trace: "dict | None" = None) -> dict:
                 or e.get("spawned_by_loop_id", "") or "?")
             per_loop[spawning_loop_id]["spawned"] += 1
         elif ev == "model_invocation":
-            stored_usage.append({"prompt_tokens": e.get("prompt_tokens", 0),
-                                 "eval_tokens": e.get("eval_tokens", 0)})
+            stored_usage.append({"prompt_tokens": e.get("prompt_tokens"),
+                                 "eval_tokens": e.get("eval_tokens")})
     for row in per_loop.values():
         if row["first_ts"] is not None and row["last_ts"] is not None:
             row["wall_seconds"] = round(row["last_ts"] - row["first_ts"], 3)
         row["step_counts"] = dict(row["step_counts"])
 
     tokens = {"prompt": 0, "eval": 0, "calls_with_usage": 0}
+    prompt_complete = eval_complete = True
     for u in (usage_log or stored_usage):
-        tokens["prompt"] += int(u.get("prompt_tokens", 0) or 0)
-        tokens["eval"] += int(u.get("eval_tokens", 0) or 0)
-        tokens["calls_with_usage"] += 1
+        prompt = optional_token(u.get("prompt_tokens"))
+        output = optional_token(u.get("eval_tokens"))
+        if prompt is None:
+            prompt_complete = False
+        else:
+            tokens["prompt"] += prompt
+        if output is None:
+            eval_complete = False
+        else:
+            tokens["eval"] += output
+        tokens["calls_with_usage"] += int(
+            prompt is not None and output is not None)
+    if not prompt_complete:
+        tokens["prompt"] = None
+    if not eval_complete:
+        tokens["eval"] = None
 
     # stuck signals: a step resolved more than twice in one loop, any budget
     # stop, any fallback chain, any empty model output.
@@ -488,8 +503,7 @@ def self_test() -> dict:
     def check(name, ok, note=""):
         results.append({"name": name, "passed": bool(ok), "note": note})
 
-    from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome, \
-        default_handler
+    from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome, default_handler
 
     # A real run with a semantic step, a fallback, and a spawned Loop.
     def handler(loop, step, context):
@@ -522,6 +536,24 @@ def self_test() -> dict:
           and isinstance(root["wall_seconds"], float),
           f"root: {root['steps']} steps, {root['semantic_calls']} calls, "
           f"{root['wall_seconds']}s")
+
+    missing_usage = analyze_run(
+        lp.ledger.events,
+        [{"prompt_tokens": None, "eval_tokens": None}])["tokens"]
+    partial_usage = analyze_run(
+        lp.ledger.events,
+        [{"prompt_tokens": None, "eval_tokens": 7}])["tokens"]
+    zero_usage = analyze_run(
+        lp.ledger.events,
+        [{"prompt_tokens": 0, "eval_tokens": 0}])["tokens"]
+    check("rollup_preserves_missing_partial_and_real_zero_usage",
+          missing_usage == {"prompt": None, "eval": None,
+                            "calls_with_usage": 0}
+          and partial_usage == {"prompt": None, "eval": 7,
+                                "calls_with_usage": 0}
+          and zero_usage == {"prompt": 0, "eval": 0,
+                             "calls_with_usage": 1},
+          "unknown totals stay unknown while real zero remains zero")
 
     # 2. hotspots rank by pain; the root (calls+fallbacks) outranks the
     # clean spawned Loop.

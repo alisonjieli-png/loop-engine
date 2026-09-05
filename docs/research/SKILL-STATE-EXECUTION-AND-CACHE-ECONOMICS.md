@@ -1,15 +1,18 @@
 # SKILL.state research: state-centric execution and the cache question
 
-Review date: 2026-09-01. This document records what a published paper claims,
-what it does not report, and what that means for Loop Engine. Every claim below
-is labeled observed, inferred, assumed, or unverified.
+Review date: 2026-09-01. Status: focused supplemental cost analysis. Use the
+[2026-09-04 v3 research review](LONG-HORIZON-RECURRENT-SKILLS-AND-STATE-2026-09-04.md)
+for the broader and newer source comparison. This document records what a
+published paper claims, what it does not report, and what that means for Loop
+Engine. Every claim below is labeled observed, inferred, assumed, or
+unverified.
 
 ## Source
 
-Sanket Badhe, Priyanka Tiwari (Google LLC), Jonghyun Chung (Google LLC /
-Purdue University). "SKILL.state: Scalable Long-Horizon Agent Skills."
+Sanket Badhe and Jonghyun Chung (Google LLC), Priyanka Tiwari (Purdue
+University). "SKILL.state: Scalable Long-Horizon Agent Skills."
 arXiv:2608.26263v2, revised 2026-08-28, accepted at EMNLP.
-<https://arxiv.org/abs/2608.26263>
+<https://arxiv.org/abs/2608.26263v2>
 
 No code has been released as of this review date. Nothing in the paper has been
 independently reproduced.
@@ -54,7 +57,7 @@ Other reported results (observed, from the paper):
 - Silent external state change: history baselines took 5 to 8 turns to
   recover; SKILL.state took 0, because decisions read the current state and
   the corrective alert simply updates it.
-- Budget-matched controls (all pinned to about 1,800 tokens at T=100):
+- Budget-matched controls (all pinned to about 1,800 prompt characters at T=100):
   sliding window 0.18, LLMLingua compression 0.22, summary-capped 0.52,
   SKILL.state 0.94. Structure, not brevity, carries the accuracy.
 - Public benchmarks: InterCode CTF pass@1 54.2 percent (best baseline 46.4)
@@ -70,38 +73,30 @@ stable prefix beyond the fixed specification P, so most of each prompt is
 billed fresh. The paper reports token counts, which is not the same as the
 bill.
 
-### Worked cost model (inferred; assumptions stated)
+### Why the paper does not determine a provider bill
 
-Assume a provider bills cached input at one tenth of fresh input, which is
-close to current published rates on major providers. Assume ReAct achieves a
-97.4 percent cache hit on its accumulated prefix (a real platform-reported
-figure from an operator of long-horizon agent sessions; treated here as an
-input assumption, not a paper result).
+The reported total-token counts do not separate fresh input, cached input,
+cache writes, output, or reasoning tokens. The reported average prompt sizes
+are characters, not tokens. A provider bill therefore cannot be reconstructed
+from the paper tables without adding assumptions that dominate the result.
 
-At T=100, Stateful baseline, about 1,062,387 cumulative tokens. Roughly
-35,000 of those (new suffix per step, about 350 per step) would be fresh; the
-rest billed at 0.1x:
+A valid comparison needs provider-reported values for every physical attempt:
 
 ```text
-Stateful effective cost ~= 35,000 fresh + 1,027,387 cached x 0.1
-                        ~= 137,700 effective fresh-equivalent tokens
+realized cost =
+    fresh input tokens * fresh input rate
+  + cached input tokens * cached input rate
+  + cache-write tokens * cache-write rate
+  + output tokens * output rate
 ```
 
-SKILL.state, 65,408 cumulative tokens. The specification P is the same every
-step and could be cached (assumed 500 tokens of the roughly 1,900-token
-prompt); state and observation are rewritten each step:
+It must also count state construction, verification, repair, failed calls, and
+retries. The earlier worked estimate in this document treated a character
+count as a token count and treated aggregate tokens as input tokens. It is
+withdrawn. The defensible conclusion is narrower: raw token reduction alone
+does not settle the economics.
 
-```text
-SKILL.state effective cost ~= 100 x (500 cached x 0.1 + 1,405 fresh)
-                          ~= 145,500 effective fresh-equivalent tokens
-```
-
-Under these assumptions the 16x token gap collapses to roughly parity on
-input cost per attempt. The exact crossover depends on |P|, |Sigma|, |O|, the
-provider's cached-price ratio, and the real cache-hit ratio; the direction of
-the conclusion is that token reduction alone does not settle the economics.
-
-### What still favors SKILL.state even at cost parity (inferred)
+### Factors a measured comparison must include
 
 - Cost per completed task: accuracy 0.94 against 0.91 means fewer retries.
   Expected attempts per success are 1/0.94 = 1.064 against 1/0.91 = 1.099,
@@ -110,9 +105,9 @@ the conclusion is that token reduction alone does not settle the economics.
 - Output tokens are never cached on any provider, and reasoning tokens are
   output. Both runtimes pay full price there; the paper does not report
   output-token splits.
-- Prefill latency for a 36,000-token prompt is slower than a 1,900-token
-  prompt even with cached billing, so wall-clock still favors the state
-  runtime.
+- Prompt shape can affect prefill latency even when some input receives cached
+  billing. The paper does not provide the provider-level latency and cache
+  observations needed to quantify that effect.
 - The noise and state-recovery results (0.98 under heavy noise; zero-turn
   recovery) are quality effects with no cache offset; cache discounts do not
   compensate for wrong answers caused by poisoned history.
@@ -182,8 +177,9 @@ immediate implementation:
 
 ## Decisions
 
-1. Treat SKILL.state as directionally confirmed for accuracy, latency, and
-   robustness under noise (paper-observed, unreproduced).
+1. Treat SKILL.state as directionally supported for accuracy and robustness
+   under noise in the paper's settings (paper-observed, unreproduced). The
+   paper does not report a direct latency benchmark.
 2. Treat its economics as unproven until measured under real cache pricing.
    Any adoption argument must compare effective cost per completed task,
    never token counts.
@@ -199,10 +195,8 @@ immediate implementation:
 
 - The paper is recent, unreproduced, and has no released code; every number
   above is author-reported.
-- The cache model is a worked estimate under stated assumptions, not a
-  benchmark result. Real crossover points need measured cache-hit ratios
-  and provider invoices.
-- The 97.4 percent cache-hit ratio is an operator-reported figure used as
-  an input assumption, not a verified measurement.
+- The paper's aggregate token totals and prompt character counts cannot
+  reconstruct a provider bill. Real crossover points need separated token
+  classes, measured cache behavior, and provider invoices.
 - Loop Engine prompt sizes cited here come from the 2026-09-01 Kaggle run
   records and are environment-specific.

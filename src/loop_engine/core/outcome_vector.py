@@ -20,11 +20,11 @@ Three verdicts, not two. A decision that was locally correct and reached
 nothing is NEUTRAL, not HURT: the wasted loop and the harmful one need
 telling apart, because one is a cost and the other is a defect.
 
-The granularity travels with the verdict. When the only thing known about a
-stage is that its run succeeded, this says so, and calls the credit
-run-level. Anyone joining these rows can then see that the number describes
-chains of decisions rather than individual ones, which is the honest reading
-and the one that gets lost when a boolean is copied down a column.
+The granularity travels beside the evidence. When the only thing known about a
+stage is that its run succeeded, the stage credit remains UNKNOWN. The run
+outcome is still recorded, but it is not converted into a label about the
+stage. Anyone joining these rows can therefore use the run outcome as context
+without accidentally training on it as local contribution.
 
 Owns:
     - OutcomeVector: the separate signals, their granularity, and the verdict.
@@ -70,25 +70,32 @@ class OutcomeVector:
     common case early and must never be read as failure.
     """
 
-    #: Did this decision's own output pass the checks made of it?
-    local_verification: "bool | None" = _signal(
-        _STAGE_LOCAL, "the decision's own output passed its checks")
+    #: Did the answer satisfy the contract it was given? A mechanical fact
+    #: about the response, and deliberately not the same question as whether
+    #: the work was any good: well-formed output that is wrong passes this
+    #: and fails the next one.
+    output_admitted: bool | None = _signal(
+        _STAGE_LOCAL, "the answer satisfied the contract it was given")
+
+    #: Did the work this decision produced hold up when it was checked?
+    local_verification: bool | None = _signal(
+        _STAGE_LOCAL, "the work held up when it was verified")
 
     #: Did anything later actually consume what this decision produced?
-    downstream_use: "bool | None" = _signal(
+    downstream_use: bool | None = _signal(
         _STAGE_LOCAL, "later work consumed this decision's output")
 
     #: Did it end up on the branch that was accepted, or on one abandoned?
-    branch_contribution: "bool | None" = _signal(
+    branch_contribution: bool | None = _signal(
         _STAGE_LOCAL, "the decision reached the accepted branch")
 
     #: Was it revised, retracted, or contradicted after the fact?
-    later_invalidated: "bool | None" = _signal(
+    later_invalidated: bool | None = _signal(
         _STAGE_LOCAL, "the decision was retracted or contradicted afterwards")
 
     #: How the run that contained it ended. True of every stage in that run,
     #: which is exactly why it cannot stand alone as stage credit.
-    task_outcome: "bool | None" = _signal(
+    task_outcome: bool | None = _signal(
         _RUN_LEVEL, "the run containing the decision succeeded")
 
     #: Signals that were observed twice with different answers. Kept rather
@@ -130,26 +137,31 @@ class OutcomeVector:
         outranks everything, including the run succeeding: a decision the
         system itself took back did not help, whatever happened around it.
         """
+        # Disputed evidence is not positive or negative training material.
+        # Keeping the first observation preserves the chronology, but a
+        # consumer must not turn that first writer into an authority winner.
+        if self.contradicted:
+            return UNKNOWN
         if self.later_invalidated is True:
+            return HURT
+        if self.output_admitted is False:
             return HURT
         if self.local_verification is False:
             return HURT
-        if self.branch_contribution is False:
-            # Correct work that reached nothing. A cost, not a defect, and
-            # the distinction the run-level boolean could not draw.
-            return NEUTRAL
-        if self.granularity == STAGE:
-            positive = [getattr(self, item.name) for item in _signal_fields()
-                        if item.metadata["scope"] == _STAGE_LOCAL
-                        and item.name != "later_invalidated"]
-            if any(value is True for value in positive):
-                return HELPED
-            return UNKNOWN
-        if self.task_outcome is None:
-            return UNKNOWN
-        # Only the run's fate is known. The verdict follows it, and
-        # `granularity` says plainly that this is not stage evidence.
-        return HELPED if self.task_outcome else HURT
+        if (self.downstream_use is False
+                or self.branch_contribution is False):
+            # Only verified work can be called a harmless dead end. Without
+            # that local check, an abandoned answer may simply be wrong.
+            return NEUTRAL if self.local_verification is True else UNKNOWN
+        if self.local_verification is True:
+            # Local verification is the first signal that establishes the
+            # stage's own work held up. Admission, consumption, and placement
+            # on a branch do not establish that by themselves.
+            return HELPED
+        # A run outcome, schema admission, downstream consumption, or branch
+        # placement alone never becomes stage credit. They remain useful
+        # dimensions, but local contribution has not been established.
+        return UNKNOWN
 
     @property
     def reading(self) -> str:
@@ -211,12 +223,15 @@ def observe(vector: OutcomeVector, **signals) -> OutcomeVector:
                 f"known signals are {', '.join(sorted(known))}")
         if value is None:
             continue
+        if not isinstance(value, bool):
+            raise ValueError(
+                f"outcome signal {name!r} must be bool or None")
         current = getattr(vector, name)
-        if current is not None and bool(current) != bool(value):
+        if current is not None and current != value:
             if name not in clashes:
                 clashes.append(name)
             continue
-        updates[name] = bool(value)
+        updates[name] = value
     return replace(vector, contradictions=tuple(clashes), **updates)
 
 
@@ -233,9 +248,9 @@ def self_test() -> dict:
           "unknown must never be read as false")
 
     run_only = OutcomeVector(task_outcome=True)
-    check("a successful run alone gives only run-level credit",
-          run_only.credit == HELPED and run_only.granularity == RUN,
-          "this is the defect being fixed: run success is not stage evidence")
+    check("a successful run alone leaves stage credit unknown",
+          run_only.credit == UNKNOWN and run_only.granularity == RUN,
+          "the run outcome is context, not a label about one stage")
     check("run-level credit says so in its reading",
           "not the decision" in run_only.reading)
 
@@ -272,8 +287,26 @@ def self_test() -> dict:
 
     check("unknown signals are listed rather than assumed",
           set(OutcomeVector(task_outcome=True).unknown)
-          == {"local_verification", "downstream_use", "branch_contribution",
-              "later_invalidated"})
+          == {"output_admitted", "local_verification", "downstream_use",
+              "branch_contribution", "later_invalidated"})
+
+    check("well-formed output that fails verification is not credited",
+          OutcomeVector(output_admitted=True, local_verification=False,
+                        task_outcome=True).credit == HURT,
+          "passing a schema is not the same as being right")
+    check("admission alone does not become positive stage credit",
+          OutcomeVector(output_admitted=True).granularity == STAGE
+          and OutcomeVector(output_admitted=True).credit == UNKNOWN,
+          "schema-valid output can still be semantically wrong")
+    check("failed admission is a local mechanical failure",
+          OutcomeVector(output_admitted=False).credit == HURT)
+    check("consumption alone does not become positive stage credit",
+          OutcomeVector(downstream_use=True, task_outcome=True).credit == UNKNOWN,
+          "using an unchecked answer does not prove it helped")
+    check("branch placement alone does not become positive stage credit",
+          OutcomeVector(branch_contribution=True,
+                        task_outcome=True).credit == UNKNOWN,
+          "a winning branch can still contain an unchecked stage")
 
     folded = observe(OutcomeVector(), local_verification=True)
     folded = observe(folded, task_outcome=True)
@@ -291,11 +324,26 @@ def self_test() -> dict:
     check("a disagreement leaves the first observation standing",
           clash.local_verification is True,
           "the run must not die because two observers differ")
+    check("a disagreement cannot become stage credit",
+          clash.credit == UNKNOWN,
+          "disputed evidence must not train the positive or negative class")
     check("a disagreement is visible in the reading",
           "signals disagreed" in clash.reading)
 
     check("folding None changes nothing",
           observe(OutcomeVector(), local_verification=None).credit == UNKNOWN)
+
+    check("verified work explicitly unused downstream is neutral",
+          OutcomeVector(local_verification=True,
+                        downstream_use=False).credit == NEUTRAL,
+          "locally sound work that reached nothing is a cost, not a benefit")
+
+    non_boolean_refused = False
+    try:
+        observe(OutcomeVector(), local_verification="false")
+    except ValueError:
+        non_boolean_refused = True
+    check("non_boolean outcome signals are refused", non_boolean_refused)
 
     try:
         observe(OutcomeVector(), invented_signal=True)

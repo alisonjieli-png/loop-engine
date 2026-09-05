@@ -162,6 +162,33 @@ terms:
   LoopGraphDefinition:
     kind: canonical
     definition: The one authoritative reusable executable graph contract.
+  StageOccurrenceIdentity:
+    kind: canonical
+    definition: Passive exact identity for one semantic-call occurrence inside one Loop activation; separate activation and semantic-call references exclude similarity signatures and physical retries.
+  StageRetrievalSnapshot:
+    kind: canonical
+    definition: Passive immutable portfolio of prior-stage candidates considered for one exact occurrence; every candidate remains prior evidence rather than proof.
+  StageAssistanceExperimentSpec:
+    kind: canonical
+    definition: Passive versioned definition for one advisory-versus-fresh stage-assistance comparison.
+  PairedStageAssistanceTrial:
+    kind: canonical
+    definition: Passive pair of distinct stage occurrences that share one source-state digest, semantic signature, shape signature, graph version, and experiment reference.
+  StageExperimentAssignment:
+    kind: canonical
+    definition: Passive retry-stable binding of one paired-trial occurrence to exactly one advisory or fresh arm.
+  StageExposureManifest:
+    kind: canonical
+    definition: Passive record binding one assignment to the exact packet event and the prior-stage references recorded as retrieved and exposed.
+  StageAssistanceDecision:
+    kind: canonical
+    definition: Passive solver disposition to use, modify, combine, ignore, hydrate, start fresh from, or challenge prior-stage candidates.
+  StageTrialOutcome:
+    kind: canonical
+    definition: Passive outcome link joining one occurrence, experiment, trial, assignment, exposure, decision, evaluation, metric, run-validity state, cost, latency, and usage.
+  SQLiteStageEvidenceProjection:
+    kind: internal_only
+    definition: Idempotent SQLite/WAL query projection rebuilt from committed intact Run History events; never an evidence or execution authority.
   IntelligenceItemRef:
     kind: canonical
     definition: Passive body-free pointer to one intelligence item and its compatibility facts.

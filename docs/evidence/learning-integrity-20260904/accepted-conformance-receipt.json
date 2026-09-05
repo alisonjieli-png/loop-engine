@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "-m",
+    "loop_engine",
+    "--conformance"
+  ],
+  "elapsed_seconds": 25.311418995959684,
+  "exit_code": 0,
+  "finished_at": "2026-09-04T22:31:05.613345+00:00",
+  "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+  "phase": "accepted-conformance",
+  "source_changes_during_check": [],
+  "source_files": 450,
+  "started_at": "2026-09-04T22:30:40.299865+00:00",
+  "stdout_tail": "odules = 0\n  PASS  modules_over_size_cap_without_declared_exception = 0\n  PASS  public_interfaces_over_parameter_cap_without_declared_exception = 0\n  PASS  syntax_newer_than_the_declared_minimum_python = 0\n  PASS  modules_missing_llm_context_docstring = 0\n  PASS  stale_current_architecture_documents = 0\n  PASS  conformance_test_skip_markers = 0\n  PASS  runtime_event_kinds_outside_the_canonical_vocabulary = 0\n  PASS  modules_whose_self_test_the_suite_never_runs = 0\n  PASS  envelope_owning_modules_missing_from_the_register = 0\n  PASS  operational_boundaries_outside_loop_ontology = 0\n  PASS  operational_boundary_relationship_kind_violations = 0\n  PASS  operational_graph_vertex_types_outside_canonical_loop = 0\n  PASS  semantic_identities_without_one_meaning_and_authority = 0\n  PASS  direct_resource_access_above_baseline = 0\n  PASS  architecture_map_freshness = 0\n  guard-enforced rails: 8 (positive + adversarial tests in the suite)\n  manifest: architecture_conformance.json | ALL GATES PASS\n"
+}

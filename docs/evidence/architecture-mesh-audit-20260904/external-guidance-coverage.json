@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "source_manifest": "/tmp/loop-engine-architecture-audit.UBvdFH/external-prompts.json",
+  "authority": "historical_data_only",
+  "reviewer": "/root/mesh_state_check",
+  "file_count": 4,
+  "full_semantic_files": 4,
+  "partial_semantic_files": 0,
+  "total_lines": 34367,
+  "reviewed_line_count": 34367,
+  "all_source_hashes_match": true,
+  "files": [
+    {
+      "path": "/home/username/Downloads/LOOP_ENGINE_COMPLETE_START_TO_FINISH_MASTER_IMPLEMENTATION_MANDATE.md",
+      "bytes": 593918,
+      "lines": 23506,
+      "sha256": "b9adc701df208ebbc7c59c47cc92f393626397173df047c72224ef3e5c07f589",
+      "reviewer": "/root/mesh_state_check",
+      "source_hash_match": true,
+      "hash_check": "sha256sum --check --status against external-prompts.json; exit 0",
+      "review": "FULL_TEXT_REVIEW_VIA_DIRECT_READ_AND_VERIFIED_DUPLICATE",
+      "fully_semantically_reviewed": true,
+      "reviewed_line_count": 23506,
+      "unreviewed_line_count": 0,
+      "reviewed_ranges": [
+        [
+          1,
+          23506
+        ]
+      ],
+      "direct_read_ranges": [
+        [
+          1,
+          637
+        ],
+        [
+          3027,
+          23506
+        ]
+      ],
+      "review_method": "Direct reading covers lines 1-637 and 3027-23506. Lines 158-3030 are byte-identical to fully read Absolute lines 1195-4067, verified by cmp exit 0; their union covers every line. Every annex is fully read.",
+      "exact_duplicate_mapping": {
+        "source_path": "/home/username/Downloads/LOOP_ENGINE_ABSOLUTE_BUILD_FIX_MEASURE_ALIGN_AND_KAGGLE_RSI_MANDATE.md",
+        "source_range": [
+          1195,
+          4067
+        ],
+        "target_range": [
+          158,
+          3030
+        ],
+        "comparison": "cmp -s over exact sed ranges",
+        "comparison_exit_code": 0
+      }
+    },
+    {
+      "path": "/home/username/Downloads/LOOP_ENGINE_ABSOLUTE_BUILD_FIX_MEASURE_ALIGN_AND_KAGGLE_RSI_MANDATE.md",
+      "bytes": 97019,
+      "lines": 4976,
+      "sha256": "3cc4e3fff8cdf2714db5b40f643e919b2abc73b5559771ad3f17ba2b3986aaa1",
+      "reviewer": "/root/mesh_state_check",
+      "source_hash_match": true,
+      "hash_check": "sha256sum --check --status against external-prompts.json; exit 0",
+      "review": "FULL_TEXT_READ",
+      "fully_semantically_reviewed": true,
+      "reviewed_line_count": 4976,
+      "unreviewed_line_count": 0,
+      "reviewed_ranges": [
+        [
+          1,
+          4976
+        ]
+      ],
+      "direct_read_ranges": [
+        [
+          1,
+          4976
+        ]
+      ],
+      "review_method": "Direct full text read"
+    },
+    {
+      "path": "/home/username/Downloads/LOOP_ENGINE_AGGRESSIVE_ARCHITECTURE_CLEANUP_AND_IMPLEMENTATION_MANDATE.md",
+      "bytes": 60738,
+      "lines": 2034,
+      "sha256": "2a0830a6fa56d0c2de1e3307927cedfce1cb86ba9a651a399c06eb55c6928dfa",
+      "reviewer": "/root/mesh_state_check",
+      "source_hash_match": true,
+      "hash_check": "sha256sum --check --status against external-prompts.json; exit 0",
+      "review": "FULL_TEXT_READ",
+      "fully_semantically_reviewed": true,
+      "reviewed_line_count": 2034,
+      "unreviewed_line_count": 0,
+      "reviewed_ranges": [
+        [
+          1,
+          2034
+        ]
+      ],
+      "direct_read_ranges": [
+        [
+          1,
+          2034
+        ]
+      ],
+      "review_method": "Direct full text read"
+    },
+    {
+      "path": "/home/username/Downloads/LOOP_ENGINE_UNIVERSAL_EVOLUTION_COMPATIBILITY_IMPLEMENTATION_HARNESS.md",
+      "bytes": 95946,
+      "lines": 3851,
+      "sha256": "470f58694c22ddc56d6c742f54f36e007ca12cc1ee9519127882b18bcd318a87",
+      "reviewer": "/root/mesh_state_check",
+      "source_hash_match": true,
+      "hash_check": "sha256sum --check --status against external-prompts.json; exit 0",
+      "review": "FULL_TEXT_REVIEW_VIA_READ_BASE_AND_COMPLETE_DIFF",
+      "fully_semantically_reviewed": true,
+      "reviewed_line_count": 3851,
+      "unreviewed_line_count": 0,
+      "reviewed_ranges": [
+        [
+          1,
+          3851
+        ]
+      ],
+      "direct_read_ranges": [],
+      "review_method": "Fully read docs/prompts/LOOP-ENGINE-UNIVERSAL-EVOLUTION-PROMPT.md plus complete diff, nine changed terminology/punctuation hunks. Not represented as a direct reread of the external file.",
+      "read_base": "/home/username/loop-engine/docs/prompts/LOOP-ENGINE-UNIVERSAL-EVOLUTION-PROMPT.md",
+      "complete_diff_reviewed": true,
+      "diff_hunks": 9
+    }
+  ]
+}

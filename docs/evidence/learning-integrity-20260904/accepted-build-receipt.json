@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "-m",
+    "build",
+    "--no-isolation",
+    "--outdir",
+    "/tmp/loop-learning-20260904.nM5vjD/dist-final"
+  ],
+  "elapsed_seconds": 3.0118650749791414,
+  "exit_code": 0,
+  "finished_at": "2026-09-04T22:30:44.529360+00:00",
+  "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+  "phase": "accepted-build",
+  "source_changes_during_check": [],
+  "source_files": 450,
+  "started_at": "2026-09-04T22:30:41.515408+00:00",
+  "stdout_tail": "n.py'\nadding 'loop_engine/strings/knowledge.py'\nadding 'loop_engine/strings/knowledge_state.py'\nadding 'loop_engine/strings/notes.py'\nadding 'loop_engine/strings/output_templates.py'\nadding 'loop_engine/strings/prompt_fragments.py'\nadding 'loop_engine/strings/question_engine.py'\nadding 'loop_engine/strings/solution_shaping.py'\nadding 'loop_engine/strings/studio_shell.html'\nadding 'loop_engine/templates/__init__.py'\nadding 'loop_engine/templates/compiler.py'\nadding 'loop_engine/templates/intake.py'\nadding 'loop_engine/templates/library.py'\nadding 'loop_engine/templates/model.py'\nadding 'loop_engine-0.1.0.dist-info/licenses/LICENSE'\nadding 'loop_engine-0.1.0.dist-info/METADATA'\nadding 'loop_engine-0.1.0.dist-info/WHEEL'\nadding 'loop_engine-0.1.0.dist-info/entry_points.txt'\nadding 'loop_engine-0.1.0.dist-info/top_level.txt'\nadding 'loop_engine-0.1.0.dist-info/RECORD'\nremoving build/bdist.linux-x86_64/wheel\nSuccessfully built loop_engine-0.1.0.tar.gz and loop_engine-0.1.0-py3-none-any.whl\n"
+}

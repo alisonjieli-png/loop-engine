@@ -17,6 +17,23 @@ Deterministic loops need no provider. Hybrid and non-deterministic loops use
 Ollama Cloud is not local Ollama. Configure a local Ollama server as a custom
 endpoint with `wire="ollama"` and `locality="local"`.
 
+## GPT-6 Astra adapter status
+
+The repository contains an offline-tested, text-only OpenAI Responses adapter
+for `gpt-6-astra`. It is not in the default route table, provider discovery,
+failover order, tiers, or runtime settings. Setting `OPENAI_API_KEY` therefore
+does not activate it or authorize paid use.
+
+The adapter has 21 of 21 local contract checks. A separate demand, pricing,
+availability, locality, capability, and candidate-authority policy has 38 of 38
+offline checks. Both suites made zero provider calls and read no credential.
+The policy is hard-quarantined and cannot construct an executable route. It
+still needs issued one-use spending authority, trusted-clock availability,
+exact adapter and credential binding, invocation-budget enforcement, an
+authorized live probe, and a bounded product-path test. Tool calls, structured
+output, async tools, and mid-turn steering are not implemented. See the dated
+[GPT-6 Astra readiness note](../context/GPT-6-ASTRA-READINESS-2026-09-04.md).
+
 ## Library provider verification
 
 The CLI command `loop-engine configure` only inspects credential references.

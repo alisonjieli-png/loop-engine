@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/tmp/loop-learning-20260904.nM5vjD/wheel-env/bin/python",
+    "-m",
+    "loop_engine",
+    "--self-test",
+    "--format",
+    "json"
+  ],
+  "cwd": "/tmp/loop-learning-20260904.nM5vjD",
+  "elapsed_seconds": 123.97574835200794,
+  "exit_code": 0,
+  "finished_at": "2026-09-04T22:39:39.241312+00:00",
+  "import_identity": "/tmp/loop-learning-20260904.nM5vjD/wheel-env/lib/python3.14/site-packages/loop_engine/__init__.py\n3.14.4 (main, Jun 18 2026, 14:25:02) [GCC 15.2.0]\n",
+  "record_type": "clean_base_wheel_check/v1",
+  "result": {
+    "all_passed": true,
+    "captured_output_lines": 0,
+    "elapsed_seconds": 121.707,
+    "failures": [],
+    "missing_dependencies": [],
+    "optional_adapters_not_tested": [
+      "duckdb",
+      "mcp",
+      "model2vec",
+      "numpy",
+      "opentelemetry-sdk",
+      "pandas",
+      "sklearn"
+    ],
+    "passed": 2454,
+    "provider_calls_made": 0,
+    "record_type": "loop_engine_self_test_summary/v1",
+    "total": 2454
+  },
+  "scope": "Isolated base dependencies only; optional adapters may be not tested.",
+  "started_at": "2026-09-04T22:37:35.265554+00:00",
+  "wheel_sha256": "9193a09b3e34f1b0561a2a808cb4a5e9c3e3b4f31e1eb1a1264a0145bd5a89ef"
+}

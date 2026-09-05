@@ -36,6 +36,8 @@ from __future__ import annotations
 
 from collections import Counter
 
+from ..core.run_history_usage import optional_token
+
 INTERVENTIONS = ("compress_context", "replace_loop_template",
                  "spawn_history_blind_loop", "switch_resolution_mode",
                  "research_the_blocker", "invoke_another_model",
@@ -43,6 +45,16 @@ INTERVENTIONS = ("compress_context", "replace_loop_template",
                  "retrieve_prior_solution", "stop_branch")
 
 ATTRIBUTION = ("temporal_association", "matched_control", "ablation")
+
+
+def _event_tokens(event) -> int | None:
+    prompt = optional_token(
+        event.get("prompt_tokens") if isinstance(event, dict)
+        else event.prompt_tokens)
+    output = optional_token(
+        event.get("eval_tokens") if isinstance(event, dict)
+        else event.eval_tokens)
+    return None if prompt is None or output is None else prompt + output
 
 
 def call_contributions(events, evaluations=()) -> list:
@@ -63,9 +75,7 @@ def call_contributions(events, evaluations=()) -> list:
         qb = before[-1] if before else None
         qa = after[0] if after else None
         delta = (qa - qb) if (qa is not None and qb is not None) else None
-        tok = ((e.prompt_tokens + e.eval_tokens)
-               if not isinstance(e, dict)
-               else e.get("prompt_tokens", 0) + e.get("eval_tokens", 0))
+        tok = _event_tokens(e)
         out.append({
             "record_type": "model_call_contribution/v1",
             "model_call_seq": seq,
@@ -110,8 +120,9 @@ def stuckness_report(events) -> dict:
     repeated_work = [(k, n) for k, n in step_by_loop.items() if n > 2]
     if repeated_work:
         indicators.append({"indicator": "repeated_equivalent_work",
-                           "detail": [f"{l}:{s} x{n}"
-                                      for (l, s), n in repeated_work]})
+                           "detail": [f"{loop_id}:{step} x{count}"
+                                      for (loop_id, step), count
+                                      in repeated_work]})
     repeated_out = [(o, n) for o, n in outputs.items() if n > 2]
     if repeated_out:
         indicators.append({"indicator": "repeated_similar_responses",
@@ -210,6 +221,20 @@ def self_test() -> dict:
     c2 = call_contributions(ch.event_log, [])[0]
     check("unknown_quality_stays_unknown",
           c2["quality_delta"] is None and c2["gain_per_1k_tokens"] is None)
+
+    usage_shapes = call_contributions([
+        {"event_type": "model_invocation", "sequence_number": 1,
+         "prompt_tokens": None, "eval_tokens": None},
+        {"event_type": "model_invocation", "sequence_number": 2,
+         "prompt_tokens": None, "eval_tokens": 7},
+        {"event_type": "model_invocation", "sequence_number": 3,
+         "prompt_tokens": 0, "eval_tokens": 0},
+    ])
+    check("contributions_preserve_missing_partial_and_real_zero_usage",
+          [item["tokens"] for item in usage_shapes] == [None, None, 0]
+          and all(item["gain_per_1k_tokens"] is None
+                  for item in usage_shapes),
+          "unknown never becomes zero; real provider zero remains zero")
 
     # 3. stuckness: co-occurring indicators → score + interventions.
     rep = stuckness_report(ch.event_log)

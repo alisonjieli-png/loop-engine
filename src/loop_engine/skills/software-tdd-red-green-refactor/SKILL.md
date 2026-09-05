@@ -1,12 +1,10 @@
 ---
 name: software-tdd-red-green-refactor
-title: Software TDD red green refactor
 description: Implement one bounded software requirement by proving failure, making the minimum change, refactoring while green, and rerunning required verification.
-version: 1.0.0
-tags:
-  - software
-  - testing
-  - evidence-first
+metadata:
+  loop-engine.version: "1.0.0"
+  loop-engine.title: Software TDD red green refactor
+  loop-engine.tags: software,testing,evidence-first
 ---
 
 # Software TDD red green refactor
@@ -27,4 +25,3 @@ capability.
 Do not commit, push, publish, broaden permissions, change unrelated files, or
 mark completion from test text alone. The requested artifact must exist and
 independent verification must pass when the task contract requires it.
-

@@ -1,0 +1,421 @@
+{
+  "record_type": "cognitive_loop_template_design_catalog/v1",
+  "catalog_id": "research.cognitive_loop_templates.20260904",
+  "version": "0.1.0",
+  "status": "DESIGN_CANDIDATE",
+  "runtime_imported": false,
+  "grants_authority": false,
+  "source_note": "ADAPTIVE-COGNITIVE-MESH-AND-AMORTIZED-COMPUTATION-2026-09-04.md",
+  "interpretation": "Design examples for canonical Loops. Profile names are suggestions. Resolve exact definition versions, digests, contracts, permitted modes, budgets, and effect authority before any runtime use. Schema validity establishes structure only.",
+  "common_envelope_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": ["record_type", "template_id", "disposition", "evidence_refs", "uncertainties", "payload"],
+    "properties": {
+      "record_type": {"const": "cognitive_loop_response_candidate/v1"},
+      "template_id": {"type": "string", "minLength": 1},
+      "disposition": {"enum": ["PROPOSED", "PARTIAL", "NEEDS_CONTEXT", "NEEDS_AUTHORITY", "ABSTAINED"]},
+      "template_disposition": {"enum": ["ACCEPT", "EXTEND", "SIMPLIFY", "REPLACE", "DEFER"]},
+      "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+      "uncertainties": {"type": "array", "items": {"type": "string", "minLength": 1}},
+      "payload": {"type": "object"},
+      "extensions": {"type": "object"}
+    },
+    "additionalProperties": true
+  },
+  "runtime_owned_bindings": [
+    "exact_activation_identity",
+    "loop_definition_ref_with_version_and_digest",
+    "source_state_revision_and_digest",
+    "input_and_consumer_contract_refs",
+    "model_and_tool_capability_handshakes",
+    "authority_and_effect_scope",
+    "budget_and_cancellation",
+    "event_and_artifact_identity"
+  ],
+  "negotiation_rule": "A model may propose extensions or a replacement payload. A downstream consumer must admit a changed contract before using it. No response may edit runtime-owned bindings or acceptance criteria.",
+  "templates": [
+    {
+      "template_id": "cognitive.orientation",
+      "responsibility": "Determine what completion means and identify the smallest useful next responsibility.",
+      "suggested_role": "practitioner",
+      "suggested_profile_id": "practitioner.solver",
+      "binding_status": "UNBOUND",
+      "input_meanings": ["original task", "accepted amendments", "available evidence", "authority", "requested artifacts"],
+      "suggested_topology": "typed_record_with_open_frontier",
+      "completion_condition": "The task interpretation and next responsibility are inspectable, or a material ambiguity is stated.",
+      "interruption_conditions": ["task amendment changes the objective", "required authority is absent"],
+      "outcome_dimensions": ["interpretation correction", "acceptance coverage", "unnecessary downstream work"],
+      "suggested_payload_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": ["goal", "acceptance_obligations", "unknowns", "next_responsibility"],
+        "properties": {
+          "goal": {"type": "string", "minLength": 1},
+          "acceptance_obligations": {"type": "array", "items": {"type": "string"}},
+          "unknowns": {"type": "array", "items": {"type": "string"}},
+          "next_responsibility": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      },
+      "example_payload": {
+        "goal": "Repair ingestion while preserving valid records.",
+        "acceptance_obligations": ["invalid rows are reported", "valid rows remain recoverable"],
+        "unknowns": ["whether a source field changed meaning"],
+        "next_responsibility": "Compare source contract revisions."
+      }
+    },
+    {
+      "template_id": "cognitive.context_sufficiency",
+      "responsibility": "Identify which missing or contradictory facts could change the current decision.",
+      "suggested_role": "practitioner",
+      "suggested_profile_id": "practitioner.research",
+      "binding_status": "UNBOUND",
+      "input_meanings": ["decision to support", "context manifest", "claims and evidence", "authorized retrieval options"],
+      "suggested_topology": "obligation_evidence_table",
+      "completion_condition": "Each important obligation has support or an explicit missing-evidence status.",
+      "interruption_conditions": ["source is invalidated", "consumer contract changes"],
+      "outcome_dimensions": ["missing-fact recall", "retrieval cost", "downstream loss", "late-relevance recovery"],
+      "suggested_payload_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": ["sufficiency_assessment", "missing_obligations", "proposed_queries", "expected_decision_change"],
+        "properties": {
+          "sufficiency_assessment": {"enum": ["SUPPORTED_CANDIDATE", "INCOMPLETE", "CONTRADICTORY", "UNKNOWN"]},
+          "missing_obligations": {"type": "array", "items": {"type": "string"}},
+          "proposed_queries": {"type": "array", "items": {"type": "string"}},
+          "expected_decision_change": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      },
+      "example_payload": {
+        "sufficiency_assessment": "INCOMPLETE",
+        "missing_obligations": ["timezone interpretation"],
+        "proposed_queries": ["Read the source timestamp contract."],
+        "expected_decision_change": "Choose parsing and validation behavior."
+      }
+    },
+    {
+      "template_id": "cognitive.analogy_comparison",
+      "responsibility": "Compare prior and current responsibilities while preserving material differences.",
+      "suggested_role": "intelligence",
+      "suggested_profile_id": "intelligence.runtime_history_solution.compare",
+      "binding_status": "UNBOUND",
+      "input_meanings": ["current contract", "selected prior references", "compatibility facts", "negative outcomes"],
+      "suggested_topology": "mapping_and_counterexample_table",
+      "completion_condition": "A proposed transfer mapping has explicit differences and unresolved compatibility.",
+      "interruption_conditions": ["prior loses qualification", "namespace or authority mismatch"],
+      "outcome_dimensions": ["useful candidate recall", "negative transfer", "inspection cost"],
+      "suggested_payload_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": ["prior_ref", "shared_structure", "material_differences", "use_proposal"],
+        "properties": {
+          "prior_ref": {"type": "string", "minLength": 1},
+          "shared_structure": {"type": "array", "items": {"type": "string"}},
+          "material_differences": {"type": "array", "items": {"type": "string"}},
+          "use_proposal": {"enum": ["USE", "MODIFY", "COMBINE", "IGNORE", "RETRIEVE_DEEPER", "START_FRESH", "SPAWN_CHALLENGER"]}
+        },
+        "additionalProperties": true
+      },
+      "example_payload": {
+        "prior_ref": "example:prior:table-profile",
+        "shared_structure": ["missingness and field-role inspection"],
+        "material_differences": ["current identifiers encode time and require leakage review"],
+        "use_proposal": "MODIFY"
+      }
+    },
+    {
+      "template_id": "cognitive.compute_allocation",
+      "responsibility": "Propose a realization, context, computation budget, verifier, and escalation plan together.",
+      "suggested_role": "practitioner",
+      "suggested_profile_id": "practitioner.solver",
+      "binding_status": "UNBOUND",
+      "input_meanings": ["semantic contract", "eligible realizations", "decision-time features", "historical outcomes", "cost and latency records"],
+      "suggested_topology": "portfolio_with_selected_candidate",
+      "completion_condition": "The selected proposal names its evidence limits and verification path.",
+      "interruption_conditions": ["route capability changes", "new evidence changes applicability", "remaining budget changes"],
+      "outcome_dimensions": ["accepted-error risk", "total cost", "latency", "coverage", "escalation regret", "controller overhead"],
+      "suggested_payload_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": ["selected_realization_ref", "context_plan_ref", "verifier_ref", "escalation_conditions", "cost_estimate"],
+        "properties": {
+          "selected_realization_ref": {"type": ["string", "null"]},
+          "context_plan_ref": {"type": ["string", "null"]},
+          "verifier_ref": {"type": ["string", "null"]},
+          "escalation_conditions": {"type": "array", "items": {"type": "string"}},
+          "cost_estimate": {"type": ["number", "null"], "minimum": 0},
+          "cost_unit": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      },
+      "example_payload": {
+        "selected_realization_ref": "example:qualified:timestamp-parser",
+        "context_plan_ref": "example:context:timestamp-contract",
+        "verifier_ref": "example:verifier:timestamp-roundtrip",
+        "escalation_conditions": ["format ambiguity", "unexpected timezone", "contract mismatch"],
+        "cost_estimate": null,
+        "cost_unit": null
+      }
+    },
+    {
+      "template_id": "cognitive.candidate_comparison",
+      "responsibility": "Compare candidate solutions on declared outcomes and preserve tradeoffs.",
+      "suggested_role": "practitioner",
+      "suggested_profile_id": "practitioner.verifier",
+      "binding_status": "UNBOUND",
+      "input_meanings": ["candidate outputs", "independent evaluations", "cost records", "acceptance criteria"],
+      "suggested_topology": "pareto_table",
+      "completion_condition": "There is a justified incumbent or an explicit inability to choose.",
+      "interruption_conditions": ["evaluator changes", "candidate is invalidated"],
+      "outcome_dimensions": ["selected-result quality", "false acceptance", "comparison cost"],
+      "suggested_payload_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": ["candidate_refs", "proposed_incumbent_ref", "tradeoffs", "unresolved_checks"],
+        "properties": {
+          "candidate_refs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "proposed_incumbent_ref": {"type": ["string", "null"]},
+          "tradeoffs": {"type": "array", "items": {"type": "string"}},
+          "unresolved_checks": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      },
+      "example_payload": {
+        "candidate_refs": ["example:solution:baseline", "example:solution:challenger"],
+        "proposed_incumbent_ref": "example:solution:baseline",
+        "tradeoffs": ["challenger is faster but lacks a shift test"],
+        "unresolved_checks": ["challenger temporal holdout"]
+      }
+    },
+    {
+      "template_id": "cognitive.typed_execution",
+      "responsibility": "Perform one admitted computation and return exact output and effect records.",
+      "suggested_role": "solution",
+      "suggested_profile_id": "solution.atomic_component",
+      "binding_status": "UNBOUND",
+      "input_meanings": ["admitted operation", "typed inputs", "workspace", "exact authority", "verification obligations"],
+      "suggested_topology": "artifact_manifest_with_observation",
+      "completion_condition": "The execution result or failure is inspectable and no effect is silently replayed.",
+      "interruption_conditions": ["cancellation", "invalidated input", "authority expiry"],
+      "outcome_dimensions": ["mechanical completion", "artifact correctness", "latency", "actual effects"],
+      "suggested_payload_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": ["operation_ref", "artifact_refs", "observation", "execution_status"],
+        "properties": {
+          "operation_ref": {"type": "string", "minLength": 1},
+          "artifact_refs": {"type": "array", "items": {"type": "string"}},
+          "observation": {"type": "string"},
+          "execution_status": {"enum": ["COMPLETED", "PARTIAL", "FAILED", "CANCELLED"]}
+        },
+        "additionalProperties": true
+      },
+      "example_payload": {
+        "operation_ref": "example:operation:normalize-records",
+        "artifact_refs": ["example:artifact:normalized", "example:artifact:rejected-rows"],
+        "observation": "Both output partitions were produced; verification is pending.",
+        "execution_status": "COMPLETED"
+      }
+    },
+    {
+      "template_id": "cognitive.verification",
+      "responsibility": "Check one candidate against original obligations and record what remains unverified.",
+      "suggested_role": "practitioner",
+      "suggested_profile_id": "practitioner.verifier",
+      "binding_status": "UNBOUND",
+      "input_meanings": ["candidate artifact", "acceptance contract", "independent evidence", "evaluator version"],
+      "suggested_topology": "criterion_verdict_table",
+      "completion_condition": "Each claimed result has a check or an explicit unknown state.",
+      "interruption_conditions": ["candidate changes", "evaluator invalidation"],
+      "outcome_dimensions": ["false acceptance", "false rejection", "verification cost", "later invalidation"],
+      "suggested_payload_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": ["candidate_ref", "verdict", "checks", "independence_status"],
+        "properties": {
+          "candidate_ref": {"type": "string", "minLength": 1},
+          "verdict": {"enum": ["ACCEPT_CANDIDATE", "REJECT", "REPAIR", "INCONCLUSIVE"]},
+          "checks": {"type": "array", "items": {"type": "object", "required": ["criterion", "status"], "properties": {"criterion": {"type": "string"}, "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]}}, "additionalProperties": true}},
+          "independence_status": {"enum": ["RESOLVED_INDEPENDENT", "SHARED_PRODUCER", "UNKNOWN"]}
+        },
+        "additionalProperties": true
+      },
+      "example_payload": {
+        "candidate_ref": "example:artifact:normalized",
+        "verdict": "INCONCLUSIVE",
+        "checks": [{"criterion": "row conservation", "status": "PASS"}, {"criterion": "timestamp semantics", "status": "UNKNOWN"}],
+        "independence_status": "UNKNOWN"
+      }
+    },
+    {
+      "template_id": "cognitive.diagnosis_and_repair",
+      "responsibility": "Explain an observed divergence and propose the smallest discriminating repair.",
+      "suggested_role": "practitioner",
+      "suggested_profile_id": "practitioner.solver",
+      "binding_status": "UNBOUND",
+      "input_meanings": ["incident", "exact execution evidence", "current state", "valid artifacts", "available probes"],
+      "suggested_topology": "hypothesis_portfolio_and_patch_proposal",
+      "completion_condition": "A repair addresses a supported cause and preserves work outside its boundary, or a blocker is stated.",
+      "interruption_conditions": ["new contradictory observation", "checkpoint no longer valid"],
+      "outcome_dimensions": ["original failure resolved", "regressions", "preserved work", "recovery cost"],
+      "suggested_payload_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": ["earliest_divergence", "hypotheses", "selected_probe", "preserve_refs"],
+        "properties": {
+          "earliest_divergence": {"type": ["string", "null"]},
+          "hypotheses": {"type": "array", "items": {"type": "string"}},
+          "selected_probe": {"type": ["string", "null"]},
+          "preserve_refs": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      },
+      "example_payload": {
+        "earliest_divergence": "The verified artifact was absent at the publication destination.",
+        "hypotheses": ["destination mapping error", "publication permission failure"],
+        "selected_probe": "Inspect the publication event and destination binding.",
+        "preserve_refs": ["example:artifact:verified-predictions"]
+      }
+    },
+    {
+      "template_id": "cognitive.experiment_design",
+      "responsibility": "Specify a comparison that can distinguish a claimed improvement from uncontrolled variation.",
+      "suggested_role": "practitioner",
+      "suggested_profile_id": "practitioner.research",
+      "binding_status": "UNBOUND",
+      "input_meanings": ["hypothesis", "task population", "intervention", "control", "outcome and cost contracts"],
+      "suggested_topology": "experiment_contract",
+      "completion_condition": "The intervention, independent sample unit, evaluator, exclusions, and stopping plan are explicit.",
+      "interruption_conditions": ["fresh contamination", "evaluator change", "source drift", "unresolved assignment"],
+      "outcome_dimensions": ["experiment validity", "quality delta", "cost delta", "coverage", "negative transfer"],
+      "suggested_payload_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": ["hypothesis", "population_ref", "sample_unit", "treatment", "control", "unresolved_controls"],
+        "properties": {
+          "hypothesis": {"type": "string"},
+          "population_ref": {"type": ["string", "null"]},
+          "sample_unit": {"type": "string"},
+          "treatment": {"type": "string"},
+          "control": {"type": "string"},
+          "unresolved_controls": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      },
+      "example_payload": {
+        "hypothesis": "A field-role template reduces repair cost without increasing accepted errors.",
+        "population_ref": null,
+        "sample_unit": "independent source task",
+        "treatment": "retrieved field-role template",
+        "control": "fresh response program from the same frozen checkpoint",
+        "unresolved_controls": ["source snapshot", "independent evaluator"]
+      }
+    },
+    {
+      "template_id": "cognitive.procedure_consolidation",
+      "responsibility": "Extract a reusable bounded procedure and its counterexamples from resolved episodes.",
+      "suggested_role": "practitioner",
+      "suggested_profile_id": "practitioner.self_improvement",
+      "binding_status": "UNBOUND",
+      "input_meanings": ["exact episode population", "local and downstream outcomes", "negative cases", "catalog overlap"],
+      "suggested_topology": "procedure_candidate_with_control_tests",
+      "completion_condition": "The candidate has initiation, termination, interruption, devaluation, and fallback tests for independent review.",
+      "interruption_conditions": ["source outcome invalidation", "insufficient diversity"],
+      "outcome_dimensions": ["held-out transfer", "negative transfer", "description length", "qualification cost"],
+      "suggested_payload_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": ["source_episode_refs", "proposed_contract", "applicability", "counterexamples", "fallback"],
+        "properties": {
+          "source_episode_refs": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+          "proposed_contract": {"type": "string"},
+          "applicability": {"type": "array", "items": {"type": "string"}},
+          "counterexamples": {"type": "array", "items": {"type": "string"}},
+          "fallback": {"type": "string"}
+        },
+        "additionalProperties": true
+      },
+      "example_payload": {
+        "source_episode_refs": ["example:episode:normalization"],
+        "proposed_contract": "Partition parseable and unparseable timestamps without discarding rows.",
+        "applicability": ["explicit format and timezone supplied"],
+        "counterexamples": ["ambiguous local time at daylight-saving transition"],
+        "fallback": "Return ambiguity and request a parsing decision."
+      }
+    },
+    {
+      "template_id": "cognitive.training_candidate",
+      "responsibility": "Propose a smaller realization and evaluate whether training can amortize over its expected useful lifetime.",
+      "suggested_role": "practitioner",
+      "suggested_profile_id": "practitioner.self_improvement",
+      "binding_status": "UNBOUND",
+      "input_meanings": ["training purpose", "representative population", "decision-time features", "independent labels", "training capability", "expected traffic"],
+      "suggested_topology": "training_and_amortization_proposal",
+      "completion_condition": "The target, split, alternatives, evaluation, cost assumptions, and abstention behavior are reviewable.",
+      "interruption_conditions": ["data leakage", "teacher invalidation", "training route unavailable", "nonpositive expected saving when cost reduction is the declared objective"],
+      "outcome_dimensions": ["independent loss", "teacher agreement", "retention", "training cost", "break-even traffic"],
+      "suggested_payload_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": ["target_kind", "supervision_kind", "candidate_families", "dataset_manifest_ref", "holdout_design", "expected_incoming_requests", "candidate_routing_fraction", "training_cost", "cost_unit"],
+        "properties": {
+          "target_kind": {"enum": ["CLASSIFICATION", "REGRESSION", "FORECASTING", "RANKING", "EMBEDDING", "GENERATION", "PROGRAM_SYNTHESIS"]},
+          "supervision_kind": {"enum": ["TEACHER_IMITATION", "PREFERENCE", "INDEPENDENT_OUTCOME", "SELF_SUPERVISION", "UNRESOLVED"]},
+          "candidate_families": {"type": "array", "items": {"type": "string"}},
+          "dataset_manifest_ref": {"type": ["string", "null"]},
+          "holdout_design": {"type": "string"},
+          "expected_incoming_requests": {"type": ["integer", "null"], "minimum": 0},
+          "candidate_routing_fraction": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+          "training_cost": {"type": ["number", "null"], "minimum": 0},
+          "cost_unit": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      },
+      "example_payload": {
+        "target_kind": "RANKING",
+        "supervision_kind": "INDEPENDENT_OUTCOME",
+        "candidate_families": ["lexical baseline", "embedding ranker", "small LLM"],
+        "dataset_manifest_ref": null,
+        "holdout_design": "Split by source task, time, and template lineage.",
+        "expected_incoming_requests": null,
+        "candidate_routing_fraction": null,
+        "training_cost": null,
+        "cost_unit": null
+      }
+    },
+    {
+      "template_id": "cognitive.qualification_assessment",
+      "responsibility": "Assess independent evidence for a candidate's applicability region and recommend a lifecycle action.",
+      "suggested_role": "practitioner",
+      "suggested_profile_id": "practitioner.verifier",
+      "binding_status": "UNBOUND",
+      "input_meanings": ["immutable candidate", "independent population", "risk and utility requirements", "cost evidence", "failure regions"],
+      "suggested_topology": "qualification_report",
+      "completion_condition": "Supported scope, unresolved evidence, and rollback conditions are explicit; promotion remains a separate authority decision.",
+      "interruption_conditions": ["candidate changes", "evaluator invalidation", "holdout contamination"],
+      "outcome_dimensions": ["calibrated risk", "coverage", "retained capability", "drift response", "operator usefulness"],
+      "suggested_payload_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": ["candidate_ref", "recommendation", "supported_region", "unproven", "rollback_conditions"],
+        "properties": {
+          "candidate_ref": {"type": "string", "minLength": 1},
+          "recommendation": {"enum": ["KEEP_CANDIDATE", "SHADOW", "ADVISORY", "NARROW_SCOPE", "REJECT", "REQUEST_INDEPENDENT_PROMOTION_REVIEW"]},
+          "supported_region": {"type": ["string", "null"]},
+          "unproven": {"type": "array", "items": {"type": "string"}},
+          "rollback_conditions": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      },
+      "example_payload": {
+        "candidate_ref": "example:model:response-program-ranker",
+        "recommendation": "SHADOW",
+        "supported_region": null,
+        "unproven": ["independent transfer", "accepted-error bound", "total-cost saving"],
+        "rollback_conditions": ["output contract changes", "new failure cluster"]
+      }
+    }
+  ]
+}

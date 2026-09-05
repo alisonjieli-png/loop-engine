@@ -25,6 +25,7 @@ def self_test() -> dict:
         "memory.model.memory_type", "memory.working.state",
         "memory.episodic.record", "memory.semantic.record",
         "memory.procedural.record", "memory.query.query",
+        "memory.procedural.control_assessment_checks",
         "memory.lifecycle.lifecycle", "memory.storage.store",
         "memory.storage.repository",
         "memory.loop_integration", "campaign",
@@ -45,7 +46,13 @@ def self_test() -> dict:
         "core.task_region_statistics", "core.option_selection",
         "core.semantic_decision", "core.decision_outcome",
         "core.stage_fingerprint", "core.convergence",
-        "core.stage_store", "core.model_demand", "core.run_stages", "core.choice",
+        "core.stage_store", "core.stage_assistance_checks",
+        "core.stage_action_lineage",
+        "core.stage_action_lineage_adversarial_checks",
+        "core.stage_assistance_material",
+        "core.solve_control_manifest",
+        "core.semantic_event_history",
+        "core.model_demand", "core.run_stages", "core.choice",
         "core.outcome_vector",
         "core.recovery", "core.template_negotiation",
         "core.workspace_read",
@@ -80,6 +87,7 @@ def self_test() -> dict:
         "code_nodes.context_seed", "code_nodes.self_improvement_loop",
         "code_nodes.solution_canvas", "code_nodes.solution_compiler",
         "code_nodes.solve_runtime",
+        "code_nodes.solve_request_adaptation",
         "code_nodes.solve_mode_checks",
         "code_nodes.solve_terminal",
         "code_nodes.architecture_diagram",
@@ -88,7 +96,8 @@ def self_test() -> dict:
         "code_nodes.solution_graph_checks",
         "code_nodes.ascii_views_checks",
         "code_nodes.run_analytics", "code_nodes.run_playback",
-        "core.run_history", "code_nodes.run_quality",
+        "core.run_history", "core.run_history_usage_checks",
+        "code_nodes.run_quality",
         "core.intelligence_layers",
         "core.intelligence_query_contracts",
         "core.intelligence_portfolio",
@@ -107,6 +116,9 @@ def self_test() -> dict:
         "core.mcp_sdk_transport",
         "core.otel_export",
         "core.skill_registry",
+        "core.skill_state_context_checks",
+        "core.information_theory_adversarial_checks",
+        "core.information_theory_evidence_checks",
         "core.workspace_backends",
         "core.workspace_operations",
         "core.user_feedback_intelligence",
@@ -170,11 +182,13 @@ def self_test() -> dict:
         "core.intelligence_registry",
         "core.knowledge_loader",
         "core.mistral_client",
-        "core.model_call",
+        "core.model_call", "core.model_gateway_accounting_checks",
         "core.model_discovery",
         "core.model_routes",
         "core.opencode_client",
         "core.opencode_zen_catalog",
+        "core.openai_responses_client",
+        "core.astra_route_authority_checks",
         "core.openrouter_client",
         "core.operating_profile",
         "core.persistence",
@@ -218,6 +232,7 @@ def self_test() -> dict:
         "core.parameter_resolution",
                                                                                                                                                                                     ]
     import importlib as _importlib
+    import importlib.util as _importlib_util
 
     #: Import names used to explain a genuinely missing required dependency.
     _PACKAGE_FOR_MODULE = {
@@ -243,7 +258,7 @@ def self_test() -> dict:
         test runs, so guarding only the call left that case uncaught."""
         optional = _OPTIONAL_TEST_DEPENDENCIES.get(name, ())
         unavailable = tuple(module for module in optional
-                            if _importlib.util.find_spec(module) is None)
+                            if _importlib_util.find_spec(module) is None)
         if unavailable:
             return [{
                 "test": f"{name}_optional_adapter_not_tested",

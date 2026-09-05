@@ -1,0 +1,2417 @@
+{
+  "file_count": 280,
+  "files": [
+    {
+      "lines": 367,
+      "observed_sha256": "5bdd9a483dc12771b12ba92fdbb3fb78022fb18aec4b0d4b79a801b9d01b50f1",
+      "path": "AGENTS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "5bdd9a483dc12771b12ba92fdbb3fb78022fb18aec4b0d4b79a801b9d01b50f1",
+      "source_hash_match": true
+    },
+    {
+      "lines": 1204,
+      "observed_sha256": "d4ab1a0c2b1147f0dc72b477b7c2e4647bfd2c94f6e5b99df394bec453d4a02d",
+      "path": "CHANGELOG.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "d4ab1a0c2b1147f0dc72b477b7c2e4647bfd2c94f6e5b99df394bec453d4a02d",
+      "source_hash_match": true
+    },
+    {
+      "lines": 66,
+      "observed_sha256": "1b5fa15d4d9db294269525f92dbe2228049d288a468a387f3709472f5674063d",
+      "path": "CONTRIBUTING.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "1b5fa15d4d9db294269525f92dbe2228049d288a468a387f3709472f5674063d",
+      "source_hash_match": true
+    },
+    {
+      "lines": 352,
+      "observed_sha256": "07d48c233977018bf93c575ce94b9654bd16c04d39c0d933eaaf03478a842fff",
+      "path": "README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "07d48c233977018bf93c575ce94b9654bd16c04d39c0d933eaaf03478a842fff",
+      "source_hash_match": true
+    },
+    {
+      "lines": 35,
+      "observed_sha256": "2d8c88e115ede904fd81014d68ea1c16ff22b67408f91d7a3c181458c001f68a",
+      "path": "SECURITY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "2d8c88e115ede904fd81014d68ea1c16ff22b67408f91d7a3c181458c001f68a",
+      "source_hash_match": true
+    },
+    {
+      "lines": 4,
+      "observed_sha256": "14ac08b91082abb4af6e56290ec6b75c691fa8502b5f3edc2a53b6f8abb4ccb4",
+      "path": "artifacts/product-proof/acceptance/task-a-workspace/attempt-1/report.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "14ac08b91082abb4af6e56290ec6b75c691fa8502b5f3edc2a53b6f8abb4ccb4",
+      "source_hash_match": true
+    },
+    {
+      "lines": 5,
+      "observed_sha256": "51cbc931cc18e9863446b3299aee94e84c0fab6747febe48c4c49c96ce17e7e2",
+      "path": "artifacts/product-proof/acceptance/task-b-workspace/attempt-1/summary.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "51cbc931cc18e9863446b3299aee94e84c0fab6747febe48c4c49c96ce17e7e2",
+      "source_hash_match": true
+    },
+    {
+      "lines": 17,
+      "observed_sha256": "4bf2b412710ec894bf3c2781f9778d8d4576c6433cb3d8d5182ec893e663b2f0",
+      "path": "artifacts/product-proof/acceptance/task-c-workspace/attempt-1/index.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "4bf2b412710ec894bf3c2781f9778d8d4576c6433cb3d8d5182ec893e663b2f0",
+      "source_hash_match": true
+    },
+    {
+      "lines": 7,
+      "observed_sha256": "0e7dcf19b9af9f75298754497f8c3adcb86c6ebbdf7bd07f009e3c2603534694",
+      "path": "artifacts/product-proof/acceptance/task-c-workspace/attempt-1/inputs/docs/alpha.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "0e7dcf19b9af9f75298754497f8c3adcb86c6ebbdf7bd07f009e3c2603534694",
+      "source_hash_match": true
+    },
+    {
+      "lines": 7,
+      "observed_sha256": "1cc3c17e1b8f7ab3069cce0dcfe69e01ad01177573f74db4260279db94384ef6",
+      "path": "artifacts/product-proof/acceptance/task-c-workspace/attempt-1/inputs/docs/beta.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "1cc3c17e1b8f7ab3069cce0dcfe69e01ad01177573f74db4260279db94384ef6",
+      "source_hash_match": true
+    },
+    {
+      "lines": 5,
+      "observed_sha256": "51cbc931cc18e9863446b3299aee94e84c0fab6747febe48c4c49c96ce17e7e2",
+      "path": "artifacts/product-proof/cli/dataset-workspace/attempt-1/summary.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "51cbc931cc18e9863446b3299aee94e84c0fab6747febe48c4c49c96ce17e7e2",
+      "source_hash_match": true
+    },
+    {
+      "lines": 4,
+      "observed_sha256": "14ac08b91082abb4af6e56290ec6b75c691fa8502b5f3edc2a53b6f8abb4ccb4",
+      "path": "artifacts/product-proof/cli/workspace-from-file/attempt-1/report.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "14ac08b91082abb4af6e56290ec6b75c691fa8502b5f3edc2a53b6f8abb4ccb4",
+      "source_hash_match": true
+    },
+    {
+      "lines": 4,
+      "observed_sha256": "14ac08b91082abb4af6e56290ec6b75c691fa8502b5f3edc2a53b6f8abb4ccb4",
+      "path": "artifacts/product-proof/cli/workspace/attempt-1/report.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "14ac08b91082abb4af6e56290ec6b75c691fa8502b5f3edc2a53b6f8abb4ccb4",
+      "source_hash_match": true
+    },
+    {
+      "lines": 126,
+      "observed_sha256": "a83df0837918251913cd541708be0ea4a2ecc9f809af406b6d7668a4d83f8e23",
+      "path": "benchmarks/beir_scifact/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "a83df0837918251913cd541708be0ea4a2ecc9f809af406b6d7668a4d83f8e23",
+      "source_hash_match": true
+    },
+    {
+      "lines": 66,
+      "observed_sha256": "d0bc6e45600d5e72f18e5709950f513a62601392d1cac0777ad3af02c6d9cb22",
+      "path": "benchmarks/capability-scenarios/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "d0bc6e45600d5e72f18e5709950f513a62601392d1cac0777ad3af02c6d9cb22",
+      "source_hash_match": true
+    },
+    {
+      "lines": 95,
+      "observed_sha256": "9aaba1e7f7d6787b4c7af7ebac40bedc0c804a656bb0cf80675c5e490bbc5061",
+      "path": "benchmarks/ds1000/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "9aaba1e7f7d6787b4c7af7ebac40bedc0c804a656bb0cf80675c5e490bbc5061",
+      "source_hash_match": true
+    },
+    {
+      "lines": 196,
+      "observed_sha256": "c0e2cf28b7099486b6ad06b083c8b5e2fd97203a35984216b2abb617dfd3056c",
+      "path": "benchmarks/kaggle_competitions/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "c0e2cf28b7099486b6ad06b083c8b5e2fd97203a35984216b2abb617dfd3056c",
+      "source_hash_match": true
+    },
+    {
+      "lines": 52,
+      "observed_sha256": "f5f3f7ded49cdcb9a00633069281d42ff8050b2d1a209fbd1cb2ca17b2f389f3",
+      "path": "benchmarks/model-routing/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "f5f3f7ded49cdcb9a00633069281d42ff8050b2d1a209fbd1cb2ca17b2f389f3",
+      "source_hash_match": true
+    },
+    {
+      "lines": 97,
+      "observed_sha256": "1d4d76f374eed484bb7677182b086fcdeefa27a82be454c7c108c77d0a5cf6e1",
+      "path": "benchmarks/ngram-retrieval/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "1d4d76f374eed484bb7677182b086fcdeefa27a82be454c7c108c77d0a5cf6e1",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "8a5847274d38e71bc4edf89a3847db871f3c0d8a9d8f19e2d309d25296294e0d",
+      "path": "benchmarks/openml_cc18/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "8a5847274d38e71bc4edf89a3847db871f3c0d8a9d8f19e2d309d25296294e0d",
+      "source_hash_match": true
+    },
+    {
+      "lines": 44,
+      "observed_sha256": "7a3eb9d69b32eff954e76d905a339f6aebdeb393ec0c10250e02ddfaac99ba23",
+      "path": "case-studies/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "7a3eb9d69b32eff954e76d905a339f6aebdeb393ec0c10250e02ddfaac99ba23",
+      "source_hash_match": true
+    },
+    {
+      "lines": 40,
+      "observed_sha256": "ebb6716b2e469ea725d574849860310d20e2afd31930188cec3251f920f4e19f",
+      "path": "case-studies/TEMPLATE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "ebb6716b2e469ea725d574849860310d20e2afd31930188cec3251f920f4e19f",
+      "source_hash_match": true
+    },
+    {
+      "lines": 147,
+      "observed_sha256": "cae614684b4fe151d37785d7880b13a98100b0457e035a74e076b4a80709eea6",
+      "path": "case-studies/ds1000-four-task-recorded-output-correction.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "cae614684b4fe151d37785d7880b13a98100b0457e035a74e076b4a80709eea6",
+      "source_hash_match": true
+    },
+    {
+      "lines": 126,
+      "observed_sha256": "84304a060d3a49e487e0b03484c64690b3f098b821226c96a9ed7a90dcb5514d",
+      "path": "case-studies/openml-cc18-three-task-run.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "84304a060d3a49e487e0b03484c64690b3f098b821226c96a9ed7a90dcb5514d",
+      "source_hash_match": true
+    },
+    {
+      "lines": 14,
+      "observed_sha256": "684889546bb5936364f4c5555d83aacf2ec9f9f12952efd13aa485c62b500da3",
+      "path": "checkpoints/2026-08-26-pre-five-step/SNAPSHOT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "684889546bb5936364f4c5555d83aacf2ec9f9f12952efd13aa485c62b500da3",
+      "source_hash_match": true
+    },
+    {
+      "lines": 28,
+      "observed_sha256": "a16d85dca05a2fe69a3378d964a9c91a2f2fc935daa70b61b8bb9815358fdce9",
+      "path": "checkpoints/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "a16d85dca05a2fe69a3378d964a9c91a2f2fc935daa70b61b8bb9815358fdce9",
+      "source_hash_match": true
+    },
+    {
+      "lines": 83,
+      "observed_sha256": "2740079d748b3edb276d20562c04d60463476dc332b312645bf60f465e01de1b",
+      "path": "devtools/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "2740079d748b3edb276d20562c04d60463476dc332b312645bf60f465e01de1b",
+      "source_hash_match": true
+    },
+    {
+      "lines": 63,
+      "observed_sha256": "0fae068c431849826b433452fd7460a03833ad758fa0770d8094fa8e615987a8",
+      "path": "devtools/qualification_lab/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "0fae068c431849826b433452fd7460a03833ad758fa0770d8094fa8e615987a8",
+      "source_hash_match": true
+    },
+    {
+      "lines": 16,
+      "observed_sha256": "efd45217a183698773b580e597f928fbf9efcb617f51dac58d20cc92bff8ceb3",
+      "path": "devtools/src/loop_engine_devtools/intelligence/core/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "efd45217a183698773b580e597f928fbf9efcb617f51dac58d20cc92bff8ceb3",
+      "source_hash_match": true
+    },
+    {
+      "lines": 555,
+      "path": "docs/ARCHITECTURE-DIAGRAMS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "9397762d72032f35693832d4b80c68e3e3179c874f0675ce8f8bd9207b579f11",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 143,
+      "path": "docs/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "c04c285db9c5f32caa0f7cb1ad2e0f64a728e840cf891cc1ec2b57574a12c38e",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 42,
+      "path": "docs/REPOSITORY-ORGANIZATION.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "c38c4855c36e39b59657d2e697a181b445ef855a0580236c0601eaf353e2744c",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 88,
+      "path": "docs/STYLE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "3c1a49ebcd486a6c76b36f70edb415ad17b404fb6ab322345642fd589e63cda3",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 176,
+      "path": "docs/TROUBLESHOOTING-LADDER.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "cd62d685e9b858c860e180880d783658d9e059792ca24b47aec448c9e90b98d6",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 190,
+      "path": "docs/architecture/ADAPTIVE-WORK-APPROACH-ARCHITECTURE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "d207f878bec403bd49635c37a43a732762f89b0df42190fe35e2206cac36423d",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 244,
+      "path": "docs/architecture/ADDED-FILE-EXTENSIONS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "05507c116a2b07e3b92b7a28e602160ecb3dee7c02adbf6cd38960e533d7cc4d",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 173,
+      "path": "docs/architecture/ADR-REUSABLE-CAPABILITY-FLYWHEEL.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "63bfffdfd4d4058310b72a71e4ac6eec87a81b302dc3f93d3d65d5037f9a3752",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 125,
+      "path": "docs/architecture/ADR-SELF-ORIENTING-ABSTRACTION-GOVERNANCE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "6077494da70c33531f86bbdec065c8992d45231ed1cd2efb100ea18f8df119ed",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 184,
+      "path": "docs/architecture/ADR-TRANSACTIONAL-SEMANTIC-RUNTIME.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "99741967059d691f33924c41a24275e8270da75bbaa816c381edbf4d902b6328",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 38,
+      "path": "docs/architecture/AMBIGUITY-REGISTER.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "5a01ec31b76f92e258232da32207686e4bbc6cb2d3ae8a613a523385c2b35804",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 55,
+      "path": "docs/architecture/API-DESIGN.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "bab680198c7e059dc2cfe85b627242f53873d99358d3835a6d810dac16650d31",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 302,
+      "path": "docs/architecture/ARCHITECTURE-CONFLICT-REGISTER.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "38431d92e8f4ab92a33a4ceb7ea715ed79caabefd0ec9c22f75c3baf88a2d005",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 18,
+      "path": "docs/architecture/ARCHITECTURE-MAP.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "b99e6608a425da394e0ca4bbfc722b0306fe7b1a462508fe55d9e511765925da",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 136,
+      "path": "docs/architecture/ARCHITECTURE-VISUAL-GUIDANCE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "1c8183612e1b4b34db8dbb654cafa89692118de682db4a09ffafbc0fb959eb85",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 53,
+      "path": "docs/architecture/ARCHITECTURE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "b04ed75ef049df1f7d45aaa96d633d1e41b8f99cd6e56dc375bed765670410d2",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 66,
+      "path": "docs/architecture/ARCHITECTURE_CONFORMANCE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "464305cb9d5a65743c18617d2711c252932466b4bfa40550cbaa473233f082a2",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 145,
+      "path": "docs/architecture/COMPONENT-DATA-DICTIONARY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "ee5fcda8fc9a877e6a6775981aa9df4b6aeeb5081299dede78aff955012aa334",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 72,
+      "path": "docs/architecture/COMPONENT-EXTENSION-AND-PARAMETERIZATION-RULES.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "1e7caa3685984255c00509d46266f6973e58e600559cca7eb3188bf9e875f201",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 63,
+      "observed_sha256": "e3e61925559ae382f3f8591760c50a56f8106379cdaa2ec04737315282a6c40b",
+      "path": "docs/architecture/COMPONENT-GLOSSARY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "e3e61925559ae382f3f8591760c50a56f8106379cdaa2ec04737315282a6c40b",
+      "source_hash_match": true
+    },
+    {
+      "lines": 142,
+      "path": "docs/architecture/COMPONENT-INTERACTION-DICTIONARY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "9a6fa88c0073343ebd8eff3f0339914bf64225d559f434d91a05e3f0ccd7dd84",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 237,
+      "path": "docs/architecture/CONSTITUTION.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "1eadee00babb95f596fd0c8aade8fb6a8deef882158f3d88a56bbc6bdde2882c",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 92,
+      "path": "docs/architecture/CONTEXT-HANDOFF-ONTOLOGY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "dcfcdea42cb9f28f69ff20205bb5a32c0a57f636d2d48a1e005b171a3043bcbd",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 492,
+      "path": "docs/architecture/CURRENT-ARCHITECTURE-MAP.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "97459eb4319ab603782e6ea011e9c9826b6edd581918f7ce248ab55dbcabbcb1",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 15,
+      "path": "docs/architecture/DATA-DICTIONARY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "960399e39cd103beee1e175e9994ae75791a6029544d27ac493920410c24b082",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 54,
+      "path": "docs/architecture/DESIGN-GUIDANCE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "f307a21c729f741e7580142aa3b16d6bad4caa99c4e9e031733d6e289c27b34d",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 204,
+      "path": "docs/architecture/DESIGN-LANGUAGE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "f5f824c3eebbc76e9b51d84d86c2dfa4a0e469fdee1043ed198d8e22724745d2",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 8,
+      "path": "docs/architecture/EXECUTION-CONTEXT-FINGERPRINTS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "7efe6d9f8c8ac20fdd9bcfaba1c4139dced63a004dcc3f528e4bd343713d23f4",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 227,
+      "observed_sha256": "77b4a40fae1233962f5e163c8307f60153312648f247db0dbe13d38e48852bd6",
+      "path": "docs/architecture/GLOSSARY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "77b4a40fae1233962f5e163c8307f60153312648f247db0dbe13d38e48852bd6",
+      "source_hash_match": true
+    },
+    {
+      "lines": 22,
+      "path": "docs/architecture/HCF-CONCEPT-FIT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "56d2c23a7e6b2db5de830eb2add1854670fc4e20883565e20fcfca85ae7767b8",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 8,
+      "path": "docs/architecture/LIFECYCLE-EXTENSION-CONTRACT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "88d7242814b5877e9df93384eec54ed13a033997fb56bcdb31248a1220be49fa",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 317,
+      "path": "docs/architecture/LOOP-ENGINE-ARCHITECTURE-DRIFT-AUDIT-2026-08-25.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "d43cdb1d62556bd85e2f46db5ef2b34121408ce85360fffa5a4068f67d983091",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 22,
+      "path": "docs/architecture/PLAN-EXECUTION-BOUNDARY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "a408f1c2ae9d09a68eb0d59a71cfd2f81a2288dd2371c8ca9aec78905537b48a",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 41,
+      "path": "docs/architecture/PLUGIN-BUNDLE-DISTRIBUTION.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "6e8a4cf67d86a9a3827e67276b837e025a4d20937d8197ce42195924d72358a6",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 98,
+      "path": "docs/architecture/PROMPT-AND-INVOCATION-ENCAPSULATION.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "4cba802f2899d6cf3abfef215d8fd8bbdcbf9cec572e30fafb2f70b1777da11f",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 214,
+      "path": "docs/architecture/REACTIVE-LOOP-ACTIVATION-AND-OUTPUT-SERVING.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "9c3daee7dec8ac87e3ab7cb8d9b7d7d06f23bab5774f0ae4374eebb2da1cc05b",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 9,
+      "path": "docs/architecture/RESOLVE-ONCE-PASS-EXACT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "94892b06be2ed1d24ffeb6f43116604d1ab86a0057d533329b2dee87625dda4a",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 102,
+      "path": "docs/architecture/REUSABLE-CAPABILITY-AUTHORITY-AND-RESEARCH.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "5d4116bb1faf73f1ea3e260bff474d6c022f35cab1bc75e46c454fa4d2320449",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 11,
+      "path": "docs/architecture/SELF-HOSTING-BOUNDARY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "d60ff38ffde1a05ceaca214562fb4f00e173850a79b2b6ea22c4ebf5a3bc024e",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 90,
+      "path": "docs/architecture/SEMANTIC-DECISION-RULES.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "2407d6f7f4bb26c94160019ee917997c6d3c8cdb54e3d5b5bcd7025092ecced8",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 149,
+      "observed_sha256": "dd8661c48073831f8f862231748f8b8b7856ba2a2c1e349b95579b756e2080a1",
+      "path": "docs/architecture/SEMANTIC-IDENTITY-DICTIONARY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "dd8661c48073831f8f862231748f8b8b7856ba2a2c1e349b95579b756e2080a1",
+      "source_hash_match": true
+    },
+    {
+      "lines": 306,
+      "observed_sha256": "2d0bf52e684713857fcfe8477f4ba84aa1b4a27e3b087f91b5f819254cd0d809",
+      "path": "docs/architecture/TAXONOMY-ONTOLOGY-AND-CLASS-MAP.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "2d0bf52e684713857fcfe8477f4ba84aa1b4a27e3b087f91b5f819254cd0d809",
+      "source_hash_match": true
+    },
+    {
+      "lines": 426,
+      "path": "docs/architecture/WORK-APPROACH-INSTRUMENTATION.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "cf91483c3574f03c7f808575d547cc2e1815bb4c006d6c9bb0db2d12f4966e38",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 190,
+      "path": "docs/benchmarks/FIRST-LOOP-ENGINE-PORTFOLIO-SOURCE-REVIEW.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "0a476bc188014d153c254248ae099a4e51da9cf44c26e6dc4cc8551fdc661234",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 176,
+      "path": "docs/benchmarks/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "4698651cfb37fab74ecf91221f4a440c1733c2c9ef063f54f59a7e9a4d6cf04c",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 61,
+      "observed_sha256": "a639e1fdf05b2d6e2cb1840a58275fd9ae0de0023a93b84f76ca361c27bdbf6f",
+      "path": "docs/components/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "a639e1fdf05b2d6e2cb1840a58275fd9ae0de0023a93b84f76ca361c27bdbf6f",
+      "source_hash_match": true
+    },
+    {
+      "lines": 130,
+      "observed_sha256": "844b10519042129eb972b465e5307073709d00914c8ffd725f38805789575f89",
+      "path": "docs/components/core-architecture/BRAVE-SEARCH-PLUGIN.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "844b10519042129eb972b465e5307073709d00914c8ffd725f38805789575f89",
+      "source_hash_match": true
+    },
+    {
+      "lines": 92,
+      "observed_sha256": "fd7b96a94003f40c5ffba15b4cf1228ee35af6a68ed2b859cb1d61b8a658174e",
+      "path": "docs/components/core-architecture/CONTEXT-ARTIFACTS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "fd7b96a94003f40c5ffba15b4cf1228ee35af6a68ed2b859cb1d61b8a658174e",
+      "source_hash_match": true
+    },
+    {
+      "lines": 147,
+      "observed_sha256": "78d4305ec50fbe633c659715f775c66c7390b7bd6b1fa26c4d5f82a1a7a7de9f",
+      "path": "docs/components/core-architecture/EFFECT-APPROVALS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "78d4305ec50fbe633c659715f775c66c7390b7bd6b1fa26c4d5f82a1a7a7de9f",
+      "source_hash_match": true
+    },
+    {
+      "lines": 101,
+      "observed_sha256": "07b1cfe7ca71fe96226690cb674d1eee5d05429a0b60d510f89a61e9b9fb081c",
+      "path": "docs/components/core-architecture/EXTERNAL-HARNESS-ADAPTERS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "07b1cfe7ca71fe96226690cb674d1eee5d05429a0b60d510f89a61e9b9fb081c",
+      "source_hash_match": true
+    },
+    {
+      "lines": 294,
+      "observed_sha256": "8c84df0948e54de2d4b7bde8576e887396d69349c4f11331dd5803a40b64d3dd",
+      "path": "docs/components/core-architecture/MCP-AND-SKILLS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "8c84df0948e54de2d4b7bde8576e887396d69349c4f11331dd5803a40b64d3dd",
+      "source_hash_match": true
+    },
+    {
+      "lines": 234,
+      "observed_sha256": "b28d0170fea9804676367f5144a813e99c17a230207c41a28af8eab2c9030bc0",
+      "path": "docs/components/core-architecture/MODEL-GATEWAY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "b28d0170fea9804676367f5144a813e99c17a230207c41a28af8eab2c9030bc0",
+      "source_hash_match": true
+    },
+    {
+      "lines": 68,
+      "observed_sha256": "6112cc294a9ef5e727c8d537efcd24d0b9ec14d105967349b74dbec94edd8819",
+      "path": "docs/components/core-architecture/MODEL-RESPONSE-ADMISSION.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "6112cc294a9ef5e727c8d537efcd24d0b9ec14d105967349b74dbec94edd8819",
+      "source_hash_match": true
+    },
+    {
+      "lines": 87,
+      "observed_sha256": "98b274c786f6545d758e88c43a608926e5b64cde0ebf785f3bbc497c42c6adb0",
+      "path": "docs/components/core-architecture/OPENTELEMETRY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "98b274c786f6545d758e88c43a608926e5b64cde0ebf785f3bbc497c42c6adb0",
+      "source_hash_match": true
+    },
+    {
+      "lines": 97,
+      "observed_sha256": "8ca94b58247e9972826eb5715703165b9cc2f21d37d2362864b94c08bac73f71",
+      "path": "docs/components/core-architecture/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "8ca94b58247e9972826eb5715703165b9cc2f21d37d2362864b94c08bac73f71",
+      "source_hash_match": true
+    },
+    {
+      "lines": 122,
+      "observed_sha256": "287ad48ad11c17d667081bca78a3fee2c67e4884ebd42a825c92352e35d7efc1",
+      "path": "docs/components/core-architecture/SEARCH-AND-STORAGE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "287ad48ad11c17d667081bca78a3fee2c67e4884ebd42a825c92352e35d7efc1",
+      "source_hash_match": true
+    },
+    {
+      "lines": 192,
+      "observed_sha256": "82d5ef333c0de70a9ba143617bb7276dfa70eab40b691a5c83cf109689fd458b",
+      "path": "docs/components/core-architecture/WORKSPACE-BACKENDS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "82d5ef333c0de70a9ba143617bb7276dfa70eab40b691a5c83cf109689fd458b",
+      "source_hash_match": true
+    },
+    {
+      "lines": 210,
+      "observed_sha256": "d1afb850d80cdb95c813eb5087ef99a35e2f026ae79b452c07b0c6e513efeda5",
+      "path": "docs/components/intelligence-layers/CODE-INTELLIGENCE-TEMPLATES.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "d1afb850d80cdb95c813eb5087ef99a35e2f026ae79b452c07b0c6e513efeda5",
+      "source_hash_match": true
+    },
+    {
+      "lines": 290,
+      "observed_sha256": "4ed1383eab4e8b92a509f93b221de00951f76f1af0a88d0cd31f41ad699952a3",
+      "path": "docs/components/intelligence-layers/CONTEXT-HIERARCHY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "4ed1383eab4e8b92a509f93b221de00951f76f1af0a88d0cd31f41ad699952a3",
+      "source_hash_match": true
+    },
+    {
+      "lines": 89,
+      "observed_sha256": "8fdc97c3901fd276072df64166d6211f18cd74698c841026a03727eb6a75d977",
+      "path": "docs/components/intelligence-layers/EXTERNAL-HARNESS-IMPORTS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "8fdc97c3901fd276072df64166d6211f18cd74698c841026a03727eb6a75d977",
+      "source_hash_match": true
+    },
+    {
+      "lines": 144,
+      "observed_sha256": "753ccc81103502c6686c2217a47edb7395b4ac654719a88f72d72248dcda8a78",
+      "path": "docs/components/intelligence-layers/INTELLIGENCE-AS-LOOPS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "753ccc81103502c6686c2217a47edb7395b4ac654719a88f72d72248dcda8a78",
+      "source_hash_match": true
+    },
+    {
+      "lines": 101,
+      "observed_sha256": "d104accc3c8dc7b859fa8bc4094fd1e97a563bb0cf711cdef533d077919177c9",
+      "path": "docs/components/intelligence-layers/INTELLIGENCE-PORTFOLIOS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "d104accc3c8dc7b859fa8bc4094fd1e97a563bb0cf711cdef533d077919177c9",
+      "source_hash_match": true
+    },
+    {
+      "lines": 157,
+      "observed_sha256": "cb38f34452745685e7e9449efcc7e3ad8339bf4439a5852b5f4e1664d8e2b2d4",
+      "path": "docs/components/intelligence-layers/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "cb38f34452745685e7e9449efcc7e3ad8339bf4439a5852b5f4e1664d8e2b2d4",
+      "source_hash_match": true
+    },
+    {
+      "lines": 201,
+      "observed_sha256": "4da05188156f554c01adab92f9a7d481b3b94897854518523f1e78341b347836",
+      "path": "docs/components/intelligence-layers/REUSABLE-CAPABILITY-FLYWHEEL.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "4da05188156f554c01adab92f9a7d481b3b94897854518523f1e78341b347836",
+      "source_hash_match": true
+    },
+    {
+      "lines": 360,
+      "observed_sha256": "4819fef0934a6a62e96e63c5c73cd6a35d4d2c90faea783ac9403f50f049e635",
+      "path": "docs/components/intelligence-layers/RUNTIME-HISTORY-AND-SOLUTION-INTELLIGENCE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "4819fef0934a6a62e96e63c5c73cd6a35d4d2c90faea783ac9403f50f049e635",
+      "source_hash_match": true
+    },
+    {
+      "lines": 412,
+      "observed_sha256": "11226f5583f07d4b317bc42898febf9ec51f1706e1a634eebbe2e95610393858",
+      "path": "docs/components/intelligence-layers/USER-FEEDBACK-INTELLIGENCE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "11226f5583f07d4b317bc42898febf9ec51f1706e1a634eebbe2e95610393858",
+      "source_hash_match": true
+    },
+    {
+      "lines": 271,
+      "observed_sha256": "f9db2097f59a6841c5c7cc46f7ff8dbba7806c3f3f66f234816b4aceb18dbcbd",
+      "path": "docs/components/loop-object/LOOP-PROFILE-ONTOLOGY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "f9db2097f59a6841c5c7cc46f7ff8dbba7806c3f3f66f234816b4aceb18dbcbd",
+      "source_hash_match": true
+    },
+    {
+      "lines": 225,
+      "observed_sha256": "89c51bb9b2d7dcfeacbb39227fe24deb5a4219817163be307b080e072c2d8854",
+      "path": "docs/components/loop-object/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "89c51bb9b2d7dcfeacbb39227fe24deb5a4219817163be307b080e072c2d8854",
+      "source_hash_match": true
+    },
+    {
+      "lines": 218,
+      "observed_sha256": "28ce14020f11f38f8168850fb29eb69f97de90398eb6f6c2e4092d160c016535",
+      "path": "docs/components/loop-object/SEMANTIC-RUNTIME.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "28ce14020f11f38f8168850fb29eb69f97de90398eb6f6c2e4092d160c016535",
+      "source_hash_match": true
+    },
+    {
+      "lines": 138,
+      "observed_sha256": "2cd85213f950ecb5008a98ccc7b6fca8c14410ae4b28c7846bb4cf0297a9cf36",
+      "path": "docs/components/practitioner/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "2cd85213f950ecb5008a98ccc7b6fca8c14410ae4b28c7846bb4cf0297a9cf36",
+      "source_hash_match": true
+    },
+    {
+      "lines": 128,
+      "observed_sha256": "7b4c7e47eff36ff122e85931fbf4664a1834f32baf004e6e299fdc07396e4fea",
+      "path": "docs/components/self-improvement/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "7b4c7e47eff36ff122e85931fbf4664a1834f32baf004e6e299fdc07396e4fea",
+      "source_hash_match": true
+    },
+    {
+      "lines": 112,
+      "observed_sha256": "d0644c5b962166ca98ce30b78c76729aa8ec0e8f626b7e48037f70b7fdc747bf",
+      "path": "docs/components/solution-canvas/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "d0644c5b962166ca98ce30b78c76729aa8ec0e8f626b7e48037f70b7fdc747bf",
+      "source_hash_match": true
+    },
+    {
+      "lines": 147,
+      "path": "docs/context/CODEX-START-HERE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "b3f2aa087dcd67c85ef13daacf551c6451fbc0da2586ee854ffbbede0b85407d",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 193,
+      "path": "docs/context/GPT-6-ASTRA-READINESS-2026-09-04.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "987b70c4ee67e1511cf61ec3f20326fdebfa530fd2ac832413d176a0138825b8",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 98,
+      "path": "docs/context/REFERENCE-SOURCES.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "d963965a28fe98f6dde2e2a0a8b3a2cd2ed99fdf2ae57de9c4d1a488c819b389",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 110,
+      "path": "docs/contracts/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "9b8b8e54e9990f24d6c61527d08d7c936c7a86753d15de4bb6da1a965a4ba911",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 107,
+      "path": "docs/getting-started.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "611661bf47a648c681af08f7d451da6ba41cd5484fe9bcebbf0809f9843fb74e",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 122,
+      "path": "docs/guides/campaigns.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "90e57c01ddebd6179dcf07eeed141958fb94b974f9791526c01bfa7bb881632b",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 125,
+      "path": "docs/guides/complex-task-comparisons.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "36ac812dd99f3d70f4cd605881f44f237ce99260417ce59fb86317c23687728b",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 122,
+      "path": "docs/guides/custom-endpoints.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "60c6d0745840d373beb5e53e0cb0f0b595bd3d3d1c5a0a4a87e5314fc9ceb5c0",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 26,
+      "path": "docs/guides/how-it-works.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "7031030e239d9365cab5718a303ee87c46a1ac53429dc0eb88abfbf90fc1c56a",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 76,
+      "path": "docs/guides/install-macos/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "0f5585fbb26147ee122ea175fb683ccc7d6fcace85282bbce5459f61e6b62bcb",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 83,
+      "path": "docs/guides/install-windows/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "c86d28ffc1daeb636e5115ca61398a618fe2a26b445edbe9d40e8633449f8eca",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 146,
+      "path": "docs/guides/llm-first-universal-solver.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "3cb72f31e6b627de298e29ede7adae13ffa54106139a8a33890cf1f8593fed89",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 133,
+      "path": "docs/guides/loops-and-modes.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "5243d403ddf1ed86c2de2faac792e26729069bf88d4a30a7827b7e4af4fe248c",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 262,
+      "path": "docs/guides/model-routing-intelligence.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "963b8fd9ad36ad5472942c2cb1cadd54a45009f0ab0678c6c777f211b6c8e962",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 189,
+      "path": "docs/guides/ngram-retrieval.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "5c5250a08b44600654d39996113b0f19a506277c09e3fc67a1f885e4b7230415",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 37,
+      "path": "docs/guides/plugins-and-integrations.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "30267eefe21515cbe8d9da704b296e80a557145bd25050785ec28a5ae2e13e10",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 142,
+      "path": "docs/guides/provider-endpoint-landscape.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "81b671d6ec1767b43bccfbba5a3a80d6e67cf273584be60d409b4b9cf2160c65",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 310,
+      "path": "docs/guides/providers-and-keys.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "20b9eebb6431c60d2240a5a69a69a9959b69c769fd73bb9cc0569f092cc6bbb9",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 69,
+      "path": "docs/guides/quick-start.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "5283430956f7c875de1bd0724936c386182efd4049ba6293eabddb4450e2cf96",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 137,
+      "path": "docs/guides/reports.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "8fe230aaad325450a2378dced0d1f9bdba1213249deca646122d686360146f17",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 158,
+      "path": "docs/guides/settings.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "372b31d1263d9ac7d35dadb28d4caa147f892dcf1537ce4887f1dee320d6eacf",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 363,
+      "path": "docs/guides/spawned-loop-delegation.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "2ab1f0c03e1028e22f2f08c656f1b1f53bb528cc8e73ecb6830bc3a5f9d03881",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 98,
+      "path": "docs/guides/studio-runtime-views.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "e8a808e0ad392af6e1122548988eb4dc4b36e6fcfd1877b4fc1f3b63f5e4816e",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 127,
+      "path": "docs/guides/typed-loop-connections.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "cb8e6011da4545bb12b40dbe3de35c262bea382c6abe1da33d030c06d257e895",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 450,
+      "path": "docs/implementation/CODEX-5.6-MAX-EXECUTION-LEDGER.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "363f662bbde9f42df858f2f8fd52b859dac2024f06d9b4999bbf607f96ff8245",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 31,
+      "path": "docs/internal/HANDOFF.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "21d92c23660a96a3d97c347c526816eb522d1c62e0e926786ff1c4f47e3fa17e",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 13,
+      "path": "docs/internal/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "10349bd6e818b60aa90c20946eb1dee94b4a73adb9a927daa3499a3b37b5b08f",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 215,
+      "observed_sha256": "9e6758fc0af8b8f430cf320084abfc7fa9f95a4052d1a977142156d33291aa85",
+      "path": "docs/prompts/ADVERSARIAL-COMPONENT-ARCHITECTURE-REVIEW.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "9e6758fc0af8b8f430cf320084abfc7fa9f95a4052d1a977142156d33291aa85",
+      "source_hash_match": true
+    },
+    {
+      "lines": 528,
+      "observed_sha256": "a44a0b3dff2d551af8e749df7de61d8ef99e88d079bce39091715b0c590abff5",
+      "path": "docs/prompts/AGI-LOOPNODE-NETWORK-SELF-ORIENTING-FOOD-FOR-THOUGHT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "a44a0b3dff2d551af8e749df7de61d8ef99e88d079bce39091715b0c590abff5",
+      "source_hash_match": true
+    },
+    {
+      "lines": 191,
+      "observed_sha256": "179edb69beb6333e535b23719804d6e78825f44f70b2b5a00f1a74fe09e3a536",
+      "path": "docs/prompts/COMPONENT-IDEATION-AND-CONFORMITY.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "179edb69beb6333e535b23719804d6e78825f44f70b2b5a00f1a74fe09e3a536",
+      "source_hash_match": true
+    },
+    {
+      "lines": 80,
+      "observed_sha256": "87a0f64f524eeb5902e0bcf3727bd914c9cd5ae67e0dbbd175e295d0802052a5",
+      "path": "docs/prompts/CONTINUOUS-COMPONENT-CONFORMANCE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "87a0f64f524eeb5902e0bcf3727bd914c9cd5ae67e0dbbd175e295d0802052a5",
+      "source_hash_match": true
+    },
+    {
+      "lines": 323,
+      "observed_sha256": "a6ab039ded0f3bfbdb9e3401618dd0a71c50ca14af2807acdd712ecef3aff9b3",
+      "path": "docs/prompts/GENERALIZED-LOOP-NODE-SELF-TUNING-GUIDANCE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "a6ab039ded0f3bfbdb9e3401618dd0a71c50ca14af2807acdd712ecef3aff9b3",
+      "source_hash_match": true
+    },
+    {
+      "lines": 1985,
+      "observed_sha256": "dfd4de6fd7c88917c11be49e7d2e1828135757faf0445f522a99a6a9369737ae",
+      "path": "docs/prompts/LOOP-ENGINE-ADVERSARIAL-INTELLIGENCE-SEEKING-MANDATE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "dfd4de6fd7c88917c11be49e7d2e1828135757faf0445f522a99a6a9369737ae",
+      "source_hash_match": true
+    },
+    {
+      "lines": 352,
+      "observed_sha256": "0488d27cbb26e97116c2feb64fc5f7a3de67304c50abfbc59ee7e14767e5d12b",
+      "path": "docs/prompts/LOOP-ENGINE-ARCHITECTURE-VIDEO-BUILD-PROMPT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "0488d27cbb26e97116c2feb64fc5f7a3de67304c50abfbc59ee7e14767e5d12b",
+      "source_hash_match": true
+    },
+    {
+      "lines": 795,
+      "observed_sha256": "993e18379705ac11d3900deecc628f619230ff3a52d4c4687211035e2c8b4759",
+      "path": "docs/prompts/LOOP-ENGINE-CLEANUP-AND-INTELLIGENCE-ACCESS-PROMPT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "993e18379705ac11d3900deecc628f619230ff3a52d4c4687211035e2c8b4759",
+      "source_hash_match": true
+    },
+    {
+      "lines": 1239,
+      "observed_sha256": "ce590ac263189f9d8cf5dd42f8db682b2e76f35fea9de28801eed8f45b01d876",
+      "path": "docs/prompts/LOOP-ENGINE-DEVELOPMENT-ASSURANCE-INTELLIGENCE-MANDATE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "ce590ac263189f9d8cf5dd42f8db682b2e76f35fea9de28801eed8f45b01d876",
+      "source_hash_match": true
+    },
+    {
+      "lines": 805,
+      "observed_sha256": "4ff01637b966f3161f392b9be94c06f7b1bb424396ee0adcf7b20b67ff448baa",
+      "path": "docs/prompts/LOOP-ENGINE-DEVELOPMENT-ASSURANCE-PLANE-MANDATE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "4ff01637b966f3161f392b9be94c06f7b1bb424396ee0adcf7b20b67ff448baa",
+      "source_hash_match": true
+    },
+    {
+      "lines": 900,
+      "observed_sha256": "2029fc8141ccd605504afc88e233160f3b6ac2962a8b5eadf719da3f9e2f7eb2",
+      "path": "docs/prompts/LOOP-ENGINE-DEVELOPMENT-ENGINEERING-ASSURANCE-PLANES-MANDATE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "2029fc8141ccd605504afc88e233160f3b6ac2962a8b5eadf719da3f9e2f7eb2",
+      "source_hash_match": true
+    },
+    {
+      "lines": 1132,
+      "observed_sha256": "034d49af6e3fcd80a2a8ffb0ec389e35d341cd7a9cb27f27c2d3baa96c5b74bb",
+      "path": "docs/prompts/LOOP-ENGINE-EVERYTHING-IS-A-LOOP-ADVERSARIAL-AUDIT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "034d49af6e3fcd80a2a8ffb0ec389e35d341cd7a9cb27f27c2d3baa96c5b74bb",
+      "source_hash_match": true
+    },
+    {
+      "lines": 486,
+      "observed_sha256": "0e27061f48c4c63336b4602b5b09258b916d895206cc4058590116c4f17f2683",
+      "path": "docs/prompts/LOOP-ENGINE-FOUNDRY-AND-CAMPAIGN-MANDATE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "0e27061f48c4c63336b4602b5b09258b916d895206cc4058590116c4f17f2683",
+      "source_hash_match": true
+    },
+    {
+      "lines": 503,
+      "observed_sha256": "69c34d0df01d914e9f51e2a842d61ade5a3b98e1c2c0ba907b0b81a9b8f23402",
+      "path": "docs/prompts/LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "69c34d0df01d914e9f51e2a842d61ade5a3b98e1c2c0ba907b0b81a9b8f23402",
+      "source_hash_match": true
+    },
+    {
+      "lines": 1869,
+      "observed_sha256": "4e78b9d0ba1b9c8495678e06548206820d1460503c4d8f19dba1ffcc12564578",
+      "path": "docs/prompts/LOOP-ENGINE-LOOPNODE-SPEC-MANDATE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "4e78b9d0ba1b9c8495678e06548206820d1460503c4d8f19dba1ffcc12564578",
+      "source_hash_match": true
+    },
+    {
+      "lines": 553,
+      "observed_sha256": "198700645276a3331576283c5fa7335ce0cc7059ad45223898fb03086f2bf6b3",
+      "path": "docs/prompts/LOOP-ENGINE-PARALLEL-EXECUTION-MANDATE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "198700645276a3331576283c5fa7335ce0cc7059ad45223898fb03086f2bf6b3",
+      "source_hash_match": true
+    },
+    {
+      "lines": 1405,
+      "observed_sha256": "adef6c4e9d6d81c534d6c2ca09aa889b6344ec1387dd7f8a13830d6c5469bcd7",
+      "path": "docs/prompts/LOOP-ENGINE-PLANE-INTERACTION-MANDATE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "adef6c4e9d6d81c534d6c2ca09aa889b6344ec1387dd7f8a13830d6c5469bcd7",
+      "source_hash_match": true
+    },
+    {
+      "lines": 783,
+      "observed_sha256": "1ef6e295ab982dbd845588279217dd5c39050f5ebcfc14dbce339d203933add8",
+      "path": "docs/prompts/LOOP-ENGINE-SELF-ORIENTING-CODE-INTELLIGENCE-MASTER-PROMPT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "1ef6e295ab982dbd845588279217dd5c39050f5ebcfc14dbce339d203933add8",
+      "source_hash_match": true
+    },
+    {
+      "lines": 3851,
+      "observed_sha256": "49e1023013937131d5e01c81427742360a74b2db4a200ea007a0725b57191d1d",
+      "path": "docs/prompts/LOOP-ENGINE-UNIVERSAL-EVOLUTION-PROMPT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "49e1023013937131d5e01c81427742360a74b2db4a200ea007a0725b57191d1d",
+      "source_hash_match": true
+    },
+    {
+      "lines": 472,
+      "observed_sha256": "37172f66a43ab5be9bfb96074a0664c9799f05596b61660f526db3151efdba82",
+      "path": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "37172f66a43ab5be9bfb96074a0664c9799f05596b61660f526db3151efdba82",
+      "source_hash_match": true
+    },
+    {
+      "lines": 350,
+      "observed_sha256": "f39c6fde5a261db82ea632f8135838ad44a001e37233ed4b08f58b6498368d5c",
+      "path": "docs/prompts/OLLAMA-COMPONENT-QUALIFICATION-LAB.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "f39c6fde5a261db82ea632f8135838ad44a001e37233ed4b08f58b6498368d5c",
+      "source_hash_match": true
+    },
+    {
+      "lines": 84,
+      "observed_sha256": "cf72d63c2c573f5d2f552bb9ba0d5dfa715fddcdb705ba70eaedd7aad0a49470",
+      "path": "docs/prompts/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "cf72d63c2c573f5d2f552bb9ba0d5dfa715fddcdb705ba70eaedd7aad0a49470",
+      "source_hash_match": true
+    },
+    {
+      "lines": 103,
+      "observed_sha256": "ef331d06c71f8d4389b0ec865b41fbfa2a579fab584edf44c730f4fc2f99847f",
+      "path": "docs/prompts/STRICT-EVERYTHING-IS-A-LOOP-PRIMITIVES.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "ef331d06c71f8d4389b0ec865b41fbfa2a579fab584edf44c730f4fc2f99847f",
+      "source_hash_match": true
+    },
+    {
+      "lines": 319,
+      "observed_sha256": "0131ede69626143665d7a290b126775e50855ced0b8456d70eb864d74313690d",
+      "path": "docs/prompts/UNIVERSAL-COMPONENT-IMPLEMENTATION-MANDATE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "0131ede69626143665d7a290b126775e50855ced0b8456d70eb864d74313690d",
+      "source_hash_match": true
+    },
+    {
+      "lines": 33,
+      "observed_sha256": "50967f9ce4d5ed40f064ed3dc7ae260c1d8fc5d60d06b016b466b9e47dd7517c",
+      "path": "docs/prompts/UNIVERSAL-COMPONENT-PROMPT-SUITE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "50967f9ce4d5ed40f064ed3dc7ae260c1d8fc5d60d06b016b466b9e47dd7517c",
+      "source_hash_match": true
+    },
+    {
+      "lines": 108,
+      "observed_sha256": "8d8814bf9e8ef2c59a148b1969b50de54ea73c5fc72a5f3072e3261607f4a733",
+      "path": "docs/reference/INTELLIGENCE-RETRIEVAL-PLAN.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "8d8814bf9e8ef2c59a148b1969b50de54ea73c5fc72a5f3072e3261607f4a733",
+      "source_hash_match": true
+    },
+    {
+      "lines": 18,
+      "observed_sha256": "8addf16c33679187712f84a297ca99971a790234d7a9bfbd30441173cfa28646",
+      "path": "docs/reference/MASTER-SPECIFICATION.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "8addf16c33679187712f84a297ca99971a790234d7a9bfbd30441173cfa28646",
+      "source_hash_match": true
+    },
+    {
+      "lines": 134,
+      "observed_sha256": "4b2f4ec8cc8207542a608a8246fd61521832807dff94e8c35c2e8d4bc76f76dc",
+      "path": "docs/reference/PRODUCT-NOMENCLATURE.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "4b2f4ec8cc8207542a608a8246fd61521832807dff94e8c35c2e8d4bc76f76dc",
+      "source_hash_match": true
+    },
+    {
+      "lines": 164,
+      "observed_sha256": "65cfb17d8fc5f2493e49a59484c962d32569acc5b4dfdf2e5392bc104ead87a6",
+      "path": "docs/reference/UNIVERSAL-LOOP-STANDARD.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "65cfb17d8fc5f2493e49a59484c962d32569acc5b4dfdf2e5392bc104ead87a6",
+      "source_hash_match": true
+    },
+    {
+      "lines": 766,
+      "path": "docs/research/ADAPTIVE-COGNITIVE-MESH-AND-AMORTIZED-COMPUTATION-2026-09-04.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "712dc2dde8948a55c3e8165ae5f435f92d7ccb0ade570dbebbc939e82c3408b9",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 226,
+      "path": "docs/research/CODING-HARNESS-ARCHITECTURE-COMPARISON.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "731b00a5a369f70d9c186a527bebed34ea79c4729a3ea27a9383ba9441f71a00",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 201,
+      "path": "docs/research/GRAPHIFY-CODE-INTELLIGENCE-EVALUATION.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "981cf85e83eb91563eefde50e3d8392639e163692260e9638f6cba24a825afce",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 59,
+      "path": "docs/research/HCF-PATTERN-REVIEW.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "ae03cdd595ff61f6db2b16e003c3364988b07b2cefb6afd63dc4745081632dce",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 984,
+      "path": "docs/research/LONG-HORIZON-RECURRENT-SKILLS-AND-STATE-2026-09-04.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "33df82129ab8a78526158451cf204d8fb71688a186cf503119709cda026cd2a5",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 175,
+      "path": "docs/research/MODEL-ROUTING-AND-GATEWAY-OPTIONS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "66bc77d130d2d59b97d53f0d566b703a8be999bdc05f1a467598946ac3ab1897",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 592,
+      "path": "docs/research/PROCEDURAL-MEMORY-PREDICTIVE-STATE-AND-INFORMATION-VALUE-2026-09-04.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "6d868a4fd5b70013d6c9084b14f8398760080894b8e1cc687a037f9f4e306784",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 156,
+      "path": "docs/research/PUBLISHED-HARNESS-BENCHMARKS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "4e75c57c8bcd0664f55e0fa866c974151c6c64f7f4e2ea97b2ed7fd3ff830cd7",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 202,
+      "path": "docs/research/SKILL-STATE-EXECUTION-AND-CACHE-ECONOMICS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "e9356c72980391218a621d6f48126aec319685b513fb3eff4d43e13d79c9a4f2",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 34,
+      "path": "docs/templates/concept-page.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "1583c71a6f16f9246e862b1c31c2b856e081589a12626b934a9219d761b25a8f",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 56,
+      "path": "docs/templates/example-readme.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "0b9283566286dc4708acf0dba9226be376689847cf675c81f3b69bc96e0b9d68",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 163,
+      "path": "docs/verification/BENCHMARK-AND-RETRIEVAL-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "363fdd7ef9000675ed7c5fe3c711f39e04c62b91a859c869c30927b205222e61",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 77,
+      "path": "docs/verification/CLEAN-INSTALL-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "f3a7d4875771e5d34a365ab448765b513343db74ef2761aed0ce3d2c744e89e9",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 216,
+      "path": "docs/verification/CODE-REVIEW-2026-09-02.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "39c77a4d4610f6fe236a58796105bde232b88b0465dcaeb940642faad4449d3e",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 215,
+      "path": "docs/verification/COGNITIVE-ARCHITECTURE-AUDIT-2026-09-02.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "d948314128fabe1e2046dc2da973e7f8d1911f2c8adab0e9877aae1f74a9e384",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 24,
+      "path": "docs/verification/CORE-ENGINE-COMPLETION-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "56884d7e0ef8ebe7255711df44c698edaee261251232ac5f02cd6e0d6716a897",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 208,
+      "path": "docs/verification/EVERYTHING-IS-A-LOOP-AUDIT-2026-09-01.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "c8a63428d7a55d9a9c6ae52847d8fd20b88a48e9f62bdac035b8527ef1524558",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 34,
+      "path": "docs/verification/FILE-BY-FILE-ALIGNMENT-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "a27d29c084f16ccac5772eb5291710112ab8a8922f38421df5b08d00c7eb61b4",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 51,
+      "path": "docs/verification/GENERALIZATION-OPPORTUNITY-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "dc9e0748bed340404b3f74c3d6847aea3abcf82582954c049dedf6c2987ce54b",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 342,
+      "path": "docs/verification/KAGGLE-120-ACCESS-PREFLIGHT-2026-09-04.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "f518e48e2b30ed7094249f4596cd761d562853f9da91a7c3400db5cb70f1ed6c",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 117,
+      "path": "docs/verification/KAGGLE-RSI-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "b62eea6f2a57250f9e8f4d1961106e38f684a8e3320e9d9c62b12a9264617ae4",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 143,
+      "path": "docs/verification/KAGGLE-TWELVE-COMPETITION-CAMPAIGN-2026-09-03.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "7c09336a9b0df0891f75c5d2f992fe0b69873796e892eaab58d746b42fedfa36",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 205,
+      "path": "docs/verification/LEARNING-CYCLE-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "00786919fbcb0aae2e3d229b78e22403e2f15f4737580cbfb54f16375c4eb329",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 224,
+      "path": "docs/verification/LIVE-KAGGLE-DIAGNOSTIC-2026-09-02.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "fac30066d56e614d7ff0fee553358a549acf351018dbc257c8769574354b46be",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 90,
+      "path": "docs/verification/LIVE-OLLAMA-TEXT-SCENARIO-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "5fe117cf88865df26ca1af3d7559484747649bbb47cc0dfce839f26147cda8ae",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 91,
+      "path": "docs/verification/MODEL-ASSISTED-TASK-COMPILE-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "7f1e2ebdc60f4927768846125c2b976ecd7193c1b47daf47a07e5f90c8952606",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 129,
+      "path": "docs/verification/MODEL-ROUTING-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "3d0163c5344bce22adc34eff9d27fe289d7f8dfd35aaafacf80c2adb875a1227",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 95,
+      "path": "docs/verification/NOMENCLATURE-AND-ARCHITECTURE-REGRESSION-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "cf40b804654aa02a6d755bd2fe91a2339b0ed517f6422a5c0c639abe63c3aee5",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 93,
+      "path": "docs/verification/ONBOARDING-CLI-USABILITY-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "392d8ef2e0091ee8b71499b626492fcd004d2933b87fcf09e091aebdad0a8992",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 326,
+      "path": "docs/verification/PREDICTIVE-STATE-PROCEDURAL-MEMORY-AND-STAGE-ASSISTANCE-2026-09-04.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "1f5e9aee1b77fdfcc4e5e35aedad81c2d4b30f1702d8a39915c08635490457c0",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 141,
+      "path": "docs/verification/REACTIVE-LOOP-FOUNDATION-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "40f7befe3e3f9dd9e40055851cf96badcbb944b5ed0d79be32df18ee68d4d10f",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 12,
+      "path": "docs/verification/RELEASE-READINESS-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "1cf0c7d6b8218adbf3b2e73e79104ab6e76697f7f5c9fcbbada412b0c2791bf7",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 113,
+      "path": "docs/verification/RESEARCH-TO-INTELLIGENCE-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "0594ce349e32b24ab0719c574fe9ec5d6f2966452988d9c952b8f8b21eaa0568",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 201,
+      "path": "docs/verification/REUSABLE-CAPABILITY-FLYWHEEL-EVALUATION.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "1ea281ce42988da02856770b8cff64b6ffca099353952525fc14619f9dd5d4d9",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 133,
+      "path": "docs/verification/REUSABLE-CAPABILITY-FLYWHEEL-IMPLEMENTATION-LEDGER.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "aee0146a3e622c0b989dedadc5c0f92f5f6cac93825ed18476a4a34a2c74ef88",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 152,
+      "path": "docs/verification/REUSE-RESOLUTION-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "f39002d6771662af2a8758da83c281540f287f3b8eeb2145050fb5ca909506fb",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 196,
+      "path": "docs/verification/SELF-ORIENTING-ABSTRACTION-EVALUATION.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "1ec5c6dfc43d6fd1dc97a94c9c775a0938578f17060fb88c7fdcd53e26a65e39",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 191,
+      "path": "docs/verification/SELF-ORIENTING-ABSTRACTION-IMPLEMENTATION-LEDGER.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "6b6198052fc1d31ec3e0f3d0df0abea7b89542eec3cd08f350f13d06af56f66f",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 168,
+      "path": "docs/verification/SEMANTIC-RUNTIME-EVALUATION.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "e296fcf0482cd9c928ac849fb537ec3117ffd39b54ab260b45392dbed6b44c45",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 122,
+      "path": "docs/verification/SOLUTION-FACTORY-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "f3c56b9821805d45836ef5f2bfa2206f16da0f305d8c28df6dd8f3e0657c520d",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 186,
+      "path": "docs/verification/STAGE-ASSISTANCE-INTEGRATION-AUDIT-2026-09-04.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "2e4d65befff041c59eae7fea2ecd8a3ed2a5ad82005978084d2d37d9ba18cf05",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 172,
+      "path": "docs/verification/THREE-PARAMETER-BOUNDARY-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "c99c621b4bd5089266d968e1c362a764f33b22ff7132b4245ce4a06d78d72d57",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 228,
+      "path": "docs/verification/UNIVERSAL-COMPONENT-AND-STRICT-PRIMITIVE-REPORT.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/commit_architecture_audit",
+      "sha256": "180084a4f0ae2808627e97e0561f64c995282b84ba30275490ee3bbd7fad0a7a",
+      "source_hash_unchanged": true
+    },
+    {
+      "lines": 43,
+      "observed_sha256": "f5e623702018ed52f68eaf138b5b4ca66b6adc561c2605ca51274f9fbe8df0b6",
+      "path": "example-output/incident-report/report.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "f5e623702018ed52f68eaf138b5b4ca66b6adc561c2605ca51274f9fbe8df0b6",
+      "source_hash_match": true
+    },
+    {
+      "lines": 20,
+      "observed_sha256": "175a631438f2e94275590bbf0e6d3dcb21d84c8198813492d90902b19b766626",
+      "path": "examples/01_prioritize_support_queue/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "175a631438f2e94275590bbf0e6d3dcb21d84c8198813492d90902b19b766626",
+      "source_hash_match": true
+    },
+    {
+      "lines": 19,
+      "observed_sha256": "c0ab28cb74c978c3ac7cd5d58d7ac0f0224e23760591e759c684ac1f9f21d65e",
+      "path": "examples/02_predict_customer_renewal/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "c0ab28cb74c978c3ac7cd5d58d7ac0f0224e23760591e759c684ac1f9f21d65e",
+      "source_hash_match": true
+    },
+    {
+      "lines": 20,
+      "observed_sha256": "50153d98629cd839d89db5c9e62e4445ea8c6fb213ea3d7a1000ae3a433cfef1",
+      "path": "examples/03_connect_a_model/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "50153d98629cd839d89db5c9e62e4445ea8c6fb213ea3d7a1000ae3a433cfef1",
+      "source_hash_match": true
+    },
+    {
+      "lines": 19,
+      "observed_sha256": "7ec972f4c5fd73bdeb543daf4861e79046a3c0d14a0b3016d07e2a049c0a040a",
+      "path": "examples/04_read_run_reports/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "7ec972f4c5fd73bdeb543daf4861e79046a3c0d14a0b3016d07e2a049c0a040a",
+      "source_hash_match": true
+    },
+    {
+      "lines": 29,
+      "observed_sha256": "53367ff867828d3cd9e1abae4edc7db975f87259e3e716393241da7edb8ee2c7",
+      "path": "examples/05_kaggle_competition/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "53367ff867828d3cd9e1abae4edc7db975f87259e3e716393241da7edb8ee2c7",
+      "source_hash_match": true
+    },
+    {
+      "lines": 19,
+      "observed_sha256": "06b5f46d1fde1fe1c266f4d0ee751a61adad509e6ebc230cc1be6cd34c021c82",
+      "path": "examples/06_reconcile_invoices/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "06b5f46d1fde1fe1c266f4d0ee751a61adad509e6ebc230cc1be6cd34c021c82",
+      "source_hash_match": true
+    },
+    {
+      "lines": 23,
+      "observed_sha256": "5a78a9d942598fbfc8c26355940d1cd83af6bb41abf53771ffb9e81ee363d077",
+      "path": "examples/07_watch_a_run_live/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "5a78a9d942598fbfc8c26355940d1cd83af6bb41abf53771ffb9e81ee363d077",
+      "source_hash_match": true
+    },
+    {
+      "lines": 22,
+      "observed_sha256": "392f31851ece749eef6fd851144f9f3ee0ba488fca7b85dd62b9441565b7f486",
+      "path": "examples/08_play_back_a_saved_run/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "392f31851ece749eef6fd851144f9f3ee0ba488fca7b85dd62b9441565b7f486",
+      "source_hash_match": true
+    },
+    {
+      "lines": 23,
+      "observed_sha256": "63609d36430be080ab75d3bb8bab4a9eb31a51479bdc97a69c874e2f3558a51c",
+      "path": "examples/09_search_the_intelligence_layers/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "63609d36430be080ab75d3bb8bab4a9eb31a51479bdc97a69c874e2f3558a51c",
+      "source_hash_match": true
+    },
+    {
+      "lines": 33,
+      "observed_sha256": "90974ed1145a69661f31542a9aa2542a596e715ab220a32a367543e31e44669c",
+      "path": "examples/10_validate_customer_import/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "90974ed1145a69661f31542a9aa2542a596e715ab220a32a367543e31e44669c",
+      "source_hash_match": true
+    },
+    {
+      "lines": 58,
+      "observed_sha256": "4260ca74f5972c328c4b4101851eb8a45ce5176fc32d5ce67c315d428217c4d4",
+      "path": "examples/11_seed_space_context/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "4260ca74f5972c328c4b4101851eb8a45ce5176fc32d5ce67c315d428217c4d4",
+      "source_hash_match": true
+    },
+    {
+      "lines": 27,
+      "observed_sha256": "bbf31e3d63e54db4908d42b0ccf489c37d02fb23c89fa357e564f5560e3951d9",
+      "path": "examples/12_wrap_a_large_codebase/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "bbf31e3d63e54db4908d42b0ccf489c37d02fb23c89fa357e564f5560e3951d9",
+      "source_hash_match": true
+    },
+    {
+      "lines": 37,
+      "observed_sha256": "156cf4319e78f914b56eb10ec3b3acc13dd10755a83b5ab8281c01cea437417f",
+      "path": "examples/13_brave_search_plugin/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "156cf4319e78f914b56eb10ec3b3acc13dd10755a83b5ab8281c01cea437417f",
+      "source_hash_match": true
+    },
+    {
+      "lines": 29,
+      "observed_sha256": "373eb8243ab0bcb9108a9ca4473703264fbf17895959f424da6fd21864d67747",
+      "path": "examples/14_five_problem_campaign/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "373eb8243ab0bcb9108a9ca4473703264fbf17895959f424da6fd21864d67747",
+      "source_hash_match": true
+    },
+    {
+      "lines": 64,
+      "observed_sha256": "07bbced5cb68c7f756b9cdbbd851cac17d07437e38961751a9b0caf4608d1bfd",
+      "path": "examples/15_verify_a_deployment_profile/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "07bbced5cb68c7f756b9cdbbd851cac17d07437e38961751a9b0caf4608d1bfd",
+      "source_hash_match": true
+    },
+    {
+      "lines": 70,
+      "observed_sha256": "9e9e2f8299375d125d63d5f0c31d490010a478e1242aa524eb93bf95c685138f",
+      "path": "examples/16_compare_complex_harnesses/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "9e9e2f8299375d125d63d5f0c31d490010a478e1242aa524eb93bf95c685138f",
+      "source_hash_match": true
+    },
+    {
+      "lines": 38,
+      "observed_sha256": "13fa74c61dd687d70b627f64a9cd28598fe7eeeec8296fb6c9b15c17b0a1b279",
+      "path": "examples/17_classify_harness_files/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "13fa74c61dd687d70b627f64a9cd28598fe7eeeec8296fb6c9b15c17b0a1b279",
+      "source_hash_match": true
+    },
+    {
+      "lines": 22,
+      "observed_sha256": "f721a0068e4117b8b105a670ca38c1b5799d91a3659ed2aee8d683ead99880a3",
+      "path": "examples/18_three_model_ensemble/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "f721a0068e4117b8b105a670ca38c1b5799d91a3659ed2aee8d683ead99880a3",
+      "source_hash_match": true
+    },
+    {
+      "lines": 20,
+      "observed_sha256": "272040ae50b1ed522c894e97242f9266fbd6f0610b181fc7204399e5198af6e3",
+      "path": "examples/19_four_memory_demonstration/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "272040ae50b1ed522c894e97242f9266fbd6f0610b181fc7204399e5198af6e3",
+      "source_hash_match": true
+    },
+    {
+      "lines": 64,
+      "observed_sha256": "ac405d7f42915f958ed76dbcdbc4da0d3ba229a9e152c3d81c22c89ef03a2461",
+      "path": "examples/20_compile_text_tasks/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "ac405d7f42915f958ed76dbcdbc4da0d3ba229a9e152c3d81c22c89ef03a2461",
+      "source_hash_match": true
+    },
+    {
+      "lines": 31,
+      "observed_sha256": "cbb5550ecf214638478d1942e3cce4c6eae7bfd99f581e58f717be7cc48038b3",
+      "path": "examples/21_schema_org_data_standardization/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "cbb5550ecf214638478d1942e3cce4c6eae7bfd99f581e58f717be7cc48038b3",
+      "source_hash_match": true
+    },
+    {
+      "lines": 18,
+      "observed_sha256": "b470687328c3fa515c7b9e86ec5372ba4d3dfa7d3cfe73fb8dc2eb57cbef784a",
+      "path": "examples/22_product_quickstart/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "b470687328c3fa515c7b9e86ec5372ba4d3dfa7d3cfe73fb8dc2eb57cbef784a",
+      "source_hash_match": true
+    },
+    {
+      "lines": 7,
+      "observed_sha256": "0e7dcf19b9af9f75298754497f8c3adcb86c6ebbdf7bd07f009e3c2603534694",
+      "path": "examples/22_product_quickstart/fixtures/docs/alpha.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "0e7dcf19b9af9f75298754497f8c3adcb86c6ebbdf7bd07f009e3c2603534694",
+      "source_hash_match": true
+    },
+    {
+      "lines": 7,
+      "observed_sha256": "1cc3c17e1b8f7ab3069cce0dcfe69e01ad01177573f74db4260279db94384ef6",
+      "path": "examples/22_product_quickstart/fixtures/docs/beta.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "1cc3c17e1b8f7ab3069cce0dcfe69e01ad01177573f74db4260279db94384ef6",
+      "source_hash_match": true
+    },
+    {
+      "lines": 48,
+      "observed_sha256": "a03a611c3e794aaf7154f45a17b8795274676916ce2533c942786086b51bc0e5",
+      "path": "examples/23_drop_in_extensions/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "a03a611c3e794aaf7154f45a17b8795274676916ce2533c942786086b51bc0e5",
+      "source_hash_match": true
+    },
+    {
+      "lines": 10,
+      "observed_sha256": "1deae160b8f4b2b738a89c59b338fe52a6ccb7adb0f7a342a4ce536455874923",
+      "path": "examples/23_drop_in_extensions/example_extension/skills/summary-skill/SKILL.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "1deae160b8f4b2b738a89c59b338fe52a6ccb7adb0f7a342a4ce536455874923",
+      "source_hash_match": true
+    },
+    {
+      "lines": 22,
+      "observed_sha256": "92b9389507b1bb8b853aaef1312959855f3105131106ed1f8385d26ad3ec7c7a",
+      "path": "examples/23_drop_in_extensions/provider_templates/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "92b9389507b1bb8b853aaef1312959855f3105131106ed1f8385d26ad3ec7c7a",
+      "source_hash_match": true
+    },
+    {
+      "lines": 69,
+      "observed_sha256": "f7c58f65ec722a80d7d97400441543d43e1cf25a4f4641c4cf0f7baf4d9eaf60",
+      "path": "examples/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "f7c58f65ec722a80d7d97400441543d43e1cf25a4f4641c4cf0f7baf4d9eaf60",
+      "source_hash_match": true
+    },
+    {
+      "lines": 100,
+      "observed_sha256": "f727f571de26245ef6caad9ce70049068e4f6e86854be504663a7c3c4ba168ac",
+      "path": "examples/tasks/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "f727f571de26245ef6caad9ce70049068e4f6e86854be504663a7c3c4ba168ac",
+      "source_hash_match": true
+    },
+    {
+      "lines": 112,
+      "observed_sha256": "855342a310cfcdf2c458276375aadb7f44046667b56369c7d4bc7c0d046b0317",
+      "path": "humanizer-context.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "855342a310cfcdf2c458276375aadb7f44046667b56369c7d4bc7c0d046b0317",
+      "source_hash_match": true
+    },
+    {
+      "lines": 15,
+      "observed_sha256": "8eea8d13f3565aa72520b74e3af7f61a102ea09dcb781528d438144baf869b97",
+      "path": "integrations/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "8eea8d13f3565aa72520b74e3af7f61a102ea09dcb781528d438144baf869b97",
+      "source_hash_match": true
+    },
+    {
+      "lines": 10,
+      "observed_sha256": "0d822eece1e3d504c47050a7af7a40d2874f7c595f075198cf845f731947b987",
+      "path": "integrations/claude-code/skills/loop-engine-inspect/SKILL.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "0d822eece1e3d504c47050a7af7a40d2874f7c595f075198cf845f731947b987",
+      "source_hash_match": true
+    },
+    {
+      "lines": 12,
+      "observed_sha256": "0617adc21a68f4233db8f8066e1fc56b4f3a46f198b5f75f3b0f29a0f5b4360b",
+      "path": "integrations/claude-code/skills/loop-engine-run/SKILL.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "0617adc21a68f4233db8f8066e1fc56b4f3a46f198b5f75f3b0f29a0f5b4360b",
+      "source_hash_match": true
+    },
+    {
+      "lines": 12,
+      "observed_sha256": "dfa90365e14ca251146dc7448e7913e850062bcfa2d0a36f736f521ae77c3130",
+      "path": "integrations/claude-code/skills/loop-engine-setup/SKILL.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "dfa90365e14ca251146dc7448e7913e850062bcfa2d0a36f736f521ae77c3130",
+      "source_hash_match": true
+    },
+    {
+      "lines": 15,
+      "observed_sha256": "a5965bd1de87294d75bc6cdc50d82859b50c182aa13a094705737139f17d6350",
+      "path": "integrations/codex/plugins/loop-engine/skills/loop-engine-inspect/SKILL.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "a5965bd1de87294d75bc6cdc50d82859b50c182aa13a094705737139f17d6350",
+      "source_hash_match": true
+    },
+    {
+      "lines": 18,
+      "observed_sha256": "83df822d5b95c16b8bd40f078f163a6b92fbde7023a7843ff253683376b6a8e8",
+      "path": "integrations/codex/plugins/loop-engine/skills/loop-engine-run/SKILL.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "83df822d5b95c16b8bd40f078f163a6b92fbde7023a7843ff253683376b6a8e8",
+      "source_hash_match": true
+    },
+    {
+      "lines": 19,
+      "observed_sha256": "a11e8d6d8b4df8baae9e81d25ab5437c1a87a923f133652275e0e725d0fb6eb0",
+      "path": "integrations/codex/plugins/loop-engine/skills/loop-engine-setup/SKILL.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "a11e8d6d8b4df8baae9e81d25ab5437c1a87a923f133652275e0e725d0fb6eb0",
+      "source_hash_match": true
+    },
+    {
+      "lines": 252,
+      "observed_sha256": "a5528febf093c039c89888444ad83ea1b4b14c3e0428dd6cd8f280e2871c87b3",
+      "path": "kaggle/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "a5528febf093c039c89888444ad83ea1b4b14c3e0428dd6cd8f280e2871c87b3",
+      "source_hash_match": true
+    },
+    {
+      "lines": 106,
+      "observed_sha256": "f26aa810c3507d233a06eef4a173be10cfca0c769be8fbd8eb84280158baf368",
+      "path": "showcase/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "f26aa810c3507d233a06eef4a173be10cfca0c769be8fbd8eb84280158baf368",
+      "source_hash_match": true
+    },
+    {
+      "lines": 44,
+      "observed_sha256": "ccd371c1f2f94ebefbad1afe7b82dc9820b8b99a2d3648e7aa7a3926a8490e1c",
+      "path": "src/loop_engine/ARCHITECTURE-MAP.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "ccd371c1f2f94ebefbad1afe7b82dc9820b8b99a2d3648e7aa7a3926a8490e1c",
+      "source_hash_match": true
+    },
+    {
+      "lines": 27,
+      "observed_sha256": "a70ab8bf81757130b5dfde70005c633bed4344a34184ae2ab1fe96082a063a98",
+      "path": "src/loop_engine/catalog/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "a70ab8bf81757130b5dfde70005c633bed4344a34184ae2ab1fe96082a063a98",
+      "source_hash_match": true
+    },
+    {
+      "lines": 22,
+      "observed_sha256": "df330e6b10a4f7852b22755fe425e92b1a2720880e043d9452c21c0344af1da9",
+      "path": "src/loop_engine/core/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "df330e6b10a4f7852b22755fe425e92b1a2720880e043d9452c21c0344af1da9",
+      "source_hash_match": true
+    },
+    {
+      "lines": 40,
+      "observed_sha256": "a7c59ef4509e3a6712e3f7373a7d25e33a27d2c5c356abbf18d2440f0ddc784f",
+      "path": "src/loop_engine/governance/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "a7c59ef4509e3a6712e3f7373a7d25e33a27d2c5c356abbf18d2440f0ddc784f",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "ae4212874e82d38830975822265746522158ed93c7b2f8bb9264a210b19372ca",
+      "path": "src/loop_engine/governance/approval/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "ae4212874e82d38830975822265746522158ed93c7b2f8bb9264a210b19372ca",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "86fb56870b0475534fc6f96fb9298ef8a9597e735224197764e95f7f44ffb5c9",
+      "path": "src/loop_engine/governance/candidates/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "86fb56870b0475534fc6f96fb9298ef8a9597e735224197764e95f7f44ffb5c9",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "8be742757a58cbc8fe56f92df7c71c89793399e385da94eaa00d89eca5b3d943",
+      "path": "src/loop_engine/governance/promotion/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "8be742757a58cbc8fe56f92df7c71c89793399e385da94eaa00d89eca5b3d943",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "198c7b7430b15b8b69318122933ab6d6049310ebc95fcb70cdd8563a7c2794af",
+      "path": "src/loop_engine/governance/review/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "198c7b7430b15b8b69318122933ab6d6049310ebc95fcb70cdd8563a7c2794af",
+      "source_hash_match": true
+    },
+    {
+      "lines": 40,
+      "observed_sha256": "cf40857f21b20bbd2685c0997fb32c978665ab9ff3ccdfd937e85c59fd68a334",
+      "path": "src/loop_engine/intelligence/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "cf40857f21b20bbd2685c0997fb32c978665ab9ff3ccdfd937e85c59fd68a334",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "ba1becd45b28e473301b488278f0d56affd4c390836fab0301a7852fc176acec",
+      "path": "src/loop_engine/intelligence/code/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "ba1becd45b28e473301b488278f0d56affd4c390836fab0301a7852fc176acec",
+      "source_hash_match": true
+    },
+    {
+      "lines": 44,
+      "observed_sha256": "808edd7b4aff6526ea0d0dd15749ce9b8369267b86734fbf8e21dac8381dc4c8",
+      "path": "src/loop_engine/intelligence/code/core/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "808edd7b4aff6526ea0d0dd15749ce9b8369267b86734fbf8e21dac8381dc4c8",
+      "source_hash_match": true
+    },
+    {
+      "lines": 44,
+      "observed_sha256": "9b700cb51f9897ad152e9f237107b2241b4ebbe08edf6b029b78a0940e64997f",
+      "path": "src/loop_engine/intelligence/code/learned/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "9b700cb51f9897ad152e9f237107b2241b4ebbe08edf6b029b78a0940e64997f",
+      "source_hash_match": true
+    },
+    {
+      "lines": 44,
+      "observed_sha256": "82ac9ba3803c4060a108d6d92408564e4c92aad3396a33d11bcf852c9abe7595",
+      "path": "src/loop_engine/intelligence/code/plugin/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "82ac9ba3803c4060a108d6d92408564e4c92aad3396a33d11bcf852c9abe7595",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "45a47e2b73dc5a3a1646f7370fdf3411dc435cb7fa75a516b4ec6f45ed4530c4",
+      "path": "src/loop_engine/intelligence/context/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "45a47e2b73dc5a3a1646f7370fdf3411dc435cb7fa75a516b4ec6f45ed4530c4",
+      "source_hash_match": true
+    },
+    {
+      "lines": 49,
+      "observed_sha256": "9908747fd6ebf0de519376856ec0b72fd98f0f1921580b9bec0fc1f25b0aca91",
+      "path": "src/loop_engine/intelligence/context/core/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "9908747fd6ebf0de519376856ec0b72fd98f0f1921580b9bec0fc1f25b0aca91",
+      "source_hash_match": true
+    },
+    {
+      "lines": 44,
+      "observed_sha256": "2121635985b0007df0adfa1b9be046297f902da703977a028dbd31f5cd0060d8",
+      "path": "src/loop_engine/intelligence/context/learned/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "2121635985b0007df0adfa1b9be046297f902da703977a028dbd31f5cd0060d8",
+      "source_hash_match": true
+    },
+    {
+      "lines": 44,
+      "observed_sha256": "4be4b34aa5d73d8543a273c93971db12ec1faa12679e9b21b39b2fd66c798f98",
+      "path": "src/loop_engine/intelligence/context/plugin/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "4be4b34aa5d73d8543a273c93971db12ec1faa12679e9b21b39b2fd66c798f98",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "254ecb70a03055ac4ab8e91e87288490113ca5b9d5e23a04982f7b9efd38da68",
+      "path": "src/loop_engine/intelligence/runtime_history_solution/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "254ecb70a03055ac4ab8e91e87288490113ca5b9d5e23a04982f7b9efd38da68",
+      "source_hash_match": true
+    },
+    {
+      "lines": 44,
+      "observed_sha256": "fba146e84da9b6e865c6f8da03cd876ae717c4241f9ac1f40a0062b7c206ff9b",
+      "path": "src/loop_engine/intelligence/runtime_history_solution/core/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "fba146e84da9b6e865c6f8da03cd876ae717c4241f9ac1f40a0062b7c206ff9b",
+      "source_hash_match": true
+    },
+    {
+      "lines": 44,
+      "observed_sha256": "874c4baa29b17a6093ff36df3237b1f755d93e4b313a8289f382c98f53501c65",
+      "path": "src/loop_engine/intelligence/runtime_history_solution/learned/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "874c4baa29b17a6093ff36df3237b1f755d93e4b313a8289f382c98f53501c65",
+      "source_hash_match": true
+    },
+    {
+      "lines": 44,
+      "observed_sha256": "71df3108063230a46f856f3af89b470d9c25938ca9209406c9a48f802ee549b6",
+      "path": "src/loop_engine/intelligence/runtime_history_solution/plugin/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "71df3108063230a46f856f3af89b470d9c25938ca9209406c9a48f802ee549b6",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "bb95415cf553a8c488a577cea78e3c6f827c59a1fa04c1e93eeae7659e6e6c76",
+      "path": "src/loop_engine/intelligence/user_feedback/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "bb95415cf553a8c488a577cea78e3c6f827c59a1fa04c1e93eeae7659e6e6c76",
+      "source_hash_match": true
+    },
+    {
+      "lines": 44,
+      "observed_sha256": "611f28ba62969a3b263c5a646b747becb7e3a57e730a5a920bd820d3f5e34f57",
+      "path": "src/loop_engine/intelligence/user_feedback/core/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "611f28ba62969a3b263c5a646b747becb7e3a57e730a5a920bd820d3f5e34f57",
+      "source_hash_match": true
+    },
+    {
+      "lines": 44,
+      "observed_sha256": "6daed6c84b3351e459a183dd35e8e0dc7a24c6053b214aacd86f48bfd9ba444b",
+      "path": "src/loop_engine/intelligence/user_feedback/learned/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "6daed6c84b3351e459a183dd35e8e0dc7a24c6053b214aacd86f48bfd9ba444b",
+      "source_hash_match": true
+    },
+    {
+      "lines": 44,
+      "observed_sha256": "40ac22547c5b99ffaed98cb0ebe221f19b8c410cef53868c7848bf1f417bf3d8",
+      "path": "src/loop_engine/intelligence/user_feedback/plugin/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "40ac22547c5b99ffaed98cb0ebe221f19b8c410cef53868c7848bf1f417bf3d8",
+      "source_hash_match": true
+    },
+    {
+      "lines": 40,
+      "observed_sha256": "59911d4202821ae2da9088a06460d3e2c1d7ab4d3e753ea9e42238f0f4174f1b",
+      "path": "src/loop_engine/kernel/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "59911d4202821ae2da9088a06460d3e2c1d7ab4d3e753ea9e42238f0f4174f1b",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "67026435de7f7de3086f77879efac2fe7bf9cea696d3ce32fb00154337f470bd",
+      "path": "src/loop_engine/kernel/enforcement/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "67026435de7f7de3086f77879efac2fe7bf9cea696d3ce32fb00154337f470bd",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "2498594f55e8ed73ba07f395e3bb97a2d74d3d576646fbf3a2776fb70c78e482",
+      "path": "src/loop_engine/kernel/executor/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "2498594f55e8ed73ba07f395e3bb97a2d74d3d576646fbf3a2776fb70c78e482",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "4ca4d79fec9cf0700177d86f6c36eb238e1c0e80eeae73539e0459bb72e4e753",
+      "path": "src/loop_engine/kernel/loader/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "4ca4d79fec9cf0700177d86f6c36eb238e1c0e80eeae73539e0459bb72e4e753",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "adb271bfff388846620ff14a33e4f07c3721a87860b6cc9e898e77ae7f96fd70",
+      "path": "src/loop_engine/kernel/resolver/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "adb271bfff388846620ff14a33e4f07c3721a87860b6cc9e898e77ae7f96fd70",
+      "source_hash_match": true
+    },
+    {
+      "lines": 115,
+      "observed_sha256": "2915f1dd08b841b0ddb19d98e16315bfeaa97e30e87a8d82e8f16711a1a2d671",
+      "path": "src/loop_engine/node/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "2915f1dd08b841b0ddb19d98e16315bfeaa97e30e87a8d82e8f16711a1a2d671",
+      "source_hash_match": true
+    },
+    {
+      "lines": 14,
+      "observed_sha256": "13f0f3229314b396e2f1e32aeb143bbd6fff7ba1294423b4de4cb493dcb8aa5e",
+      "path": "src/loop_engine/node/loop_node/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "13f0f3229314b396e2f1e32aeb143bbd6fff7ba1294423b4de4cb493dcb8aa5e",
+      "source_hash_match": true
+    },
+    {
+      "lines": 104,
+      "observed_sha256": "4ad067355e3c801da8180f92cb8251ba6a6f1a01ccd58eb16ca565b1d055c691",
+      "path": "src/loop_engine/ontology/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "4ad067355e3c801da8180f92cb8251ba6a6f1a01ccd58eb16ca565b1d055c691",
+      "source_hash_match": true
+    },
+    {
+      "lines": 40,
+      "observed_sha256": "312fba048024d3bac9b1be8053d5026304df9722a60e5d667605a5eba013d4b8",
+      "path": "src/loop_engine/runtime/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "312fba048024d3bac9b1be8053d5026304df9722a60e5d667605a5eba013d4b8",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "62bd2270d75bdcf8850de45bcc057a496a3762b77e729c3d69e5516f1068e28a",
+      "path": "src/loop_engine/runtime/artifacts/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "62bd2270d75bdcf8850de45bcc057a496a3762b77e729c3d69e5516f1068e28a",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "fb3efe99cc80360dbe92b1ce4a02ceac93f72da118d343c7bdd625eaea67f71b",
+      "path": "src/loop_engine/runtime/runs/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "fb3efe99cc80360dbe92b1ce4a02ceac93f72da118d343c7bdd625eaea67f71b",
+      "source_hash_match": true
+    },
+    {
+      "lines": 41,
+      "observed_sha256": "3ef16c387f6bf7d6801f265fafb84783f918fa43859821ede20b298127a847f9",
+      "path": "src/loop_engine/runtime/runtime_memory/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "3ef16c387f6bf7d6801f265fafb84783f918fa43859821ede20b298127a847f9",
+      "source_hash_match": true
+    },
+    {
+      "lines": 5,
+      "observed_sha256": "0c4c33a4d61449b0d1c12063979c009922f41bde836d28f4138699c88fb3fe36",
+      "path": "src/loop_engine/skills/README.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "0c4c33a4d61449b0d1c12063979c009922f41bde836d28f4138699c88fb3fe36",
+      "source_hash_match": true
+    },
+    {
+      "lines": 27,
+      "observed_sha256": "4ee68f0e14fde6ec9bf645308809e32715a2d6ae2b8c4fc1ec291396728e95bd",
+      "path": "src/loop_engine/skills/software-tdd-red-green-refactor/SKILL.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "4ee68f0e14fde6ec9bf645308809e32715a2d6ae2b8c4fc1ec291396728e95bd",
+      "source_hash_match": true
+    },
+    {
+      "lines": 383,
+      "observed_sha256": "90be6febab4f6427fd8919488e58716a228d01f82de50f5d07e534014e411aa1",
+      "path": "src/loop_engine/strings/SEED-DIMENSIONS.md",
+      "review": "FULL_TEXT_READ",
+      "reviewer": "/root/mesh_state_check",
+      "sha256": "90be6febab4f6427fd8919488e58716a228d01f82de50f5d07e534014e411aa1",
+      "source_hash_match": true
+    }
+  ],
+  "record_type": "audit_reading_coverage/v1",
+  "scope": "All Markdown in the frozen input corpus; not every Python or historical patch line.",
+  "source_lines": 50106
+}

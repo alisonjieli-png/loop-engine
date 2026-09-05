@@ -1,0 +1,16 @@
+{
+ "record_type": "run_history_manifest/v1",
+ "run_id": "adaptive-b5035c12fb916c68301156f3",
+ "parent_run_id": "",
+ "events": 552,
+ "head_digest": "5dd8cb9dfef860b635b1e47e519467295ecd9c473095ac4054e6860c7ab60731",
+ "committed": true,
+ "product_outcome": {
+  "record_type": "product_outcome_ref/v1",
+  "path": "outcome.json",
+  "content_digest": "6024af5954c6523e353bae1274d60fe9d547d40682b41d3de8586d7ac8520102",
+  "outcome_record_type": "solve_outcome/v4",
+  "terminal_code": "COMPLETED_VERIFIED",
+  "solved": true
+ }
+}

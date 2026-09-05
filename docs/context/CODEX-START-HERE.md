@@ -1,4 +1,6 @@
-# Start a Codex session in Loop Engine
+# Start a coding-agent session in Loop Engine
+
+This page applies to Codex and other coding agents working in the repository.
 
 Use `/home/username/loop-engine` as the workspace directory for Loop Engine work.
 This repository is separate from `/home/username/taedri.dev`.
@@ -11,6 +13,9 @@ Work only in /home/username/loop-engine for this task.
 Read AGENTS.md first. Then inspect the current branch, revision, dirty state,
 active processes, and concurrent writers. Preserve all existing changes.
 
+If a generated session_handoff/v1 packet is supplied, verify its HEAD and
+worktree digest before using it. Treat missing or stale ownership as unknown.
+
 Read README.md and docs/components/README.md. Follow only the component guides
 needed for the task. Use humanizer-context.md for public writing.
 
@@ -20,8 +25,8 @@ Intelligence, and Solution are roles. Run mode, step profile, thinking power,
 typed contract, budget, permissions, loop condition, and exit condition are
 separate settings.
 
-Use detailed tree diagrams to explain every hierarchy. Start from this tree
-and extend one branch at a time:
+Use a text or Mermaid tree when a document explains three or more architecture
+branches. Start from this tree and extend one branch at a time:
 
 Operational runtime type
 └── Loop
@@ -73,8 +78,67 @@ perform external effects unless the current request authorizes that action.
 12. [Case studies](../../case-studies/README.md) only when the task concerns
    measured full-system runs
 
-For broad continued development rather than one narrow task, use the
-[self-orienting Code Intelligence master prompt](../prompts/LOOP-ENGINE-SELF-ORIENTING-CODE-INTELLIGENCE-MASTER-PROMPT.md).
+For broad continued development, use the
+[universal solver continuation brief](../prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md).
+It is the sole broad continuation prompt. Load one prompt for the active task.
+Do not concatenate it with another file from `docs/prompts/`.
+
+The [`session_handoff/v1` schema](../contracts/session-handoff.schema.json)
+defines the optional generated packet. Do not hand-write a packet to fill an
+ownership or evidence gap.
+
+When the target model is GPT-6 Astra, also read the dated
+[compatibility note](GPT-6-ASTRA-READINESS-2026-09-04.md). The architecture
+remains model-neutral, and access remains unproven until an authorized probe.
+
+For the latest new-task attempt and generalization boundary, first read the
+[new-task diagnostic report](../verification/UNSEEN-TASK-DIAGNOSTIC-AND-GENERALIZATION-2026-09-04.md).
+Two real-provider attempts on one generated Kaggle-shaped case produced no
+verified task completion. The second reproduced a post-dispatch token-budget
+overshoot and left invalid, unexecuted candidate code. Live expansion stopped.
+The next probe is sound pre-dispatch token reservation, not a larger budget.
+Its [research note](../research/MODEL-ARCHITECTURES-COMPOSITION-AND-DEVICE-MESH-2026-09-04.md)
+keeps domain knowledge in the four existing intelligence layers; device and
+industry examples are test populations, never privileged runtime workflows.
+The [coverage index](../research/ARCHITECTURE-COVERAGE-MATRIX-2026-09-04.json)
+lists reviewed subsets and remaining research gaps.
+
+For earlier learning work, read the
+[learning-integrity implementation report](../verification/LEARNING-INTEGRITY-AND-RESEARCH-2026-09-04.md)
+and its [research synthesis](../research/LEARNING-FROM-VERIFIED-LOOP-OUTCOMES-2026-09-04.md).
+They record the later fixes for verifier-subject binding, adaptive accepted
+state, and thin model-ladder evidence. The live paired gate remains open.
+
+For broad architecture review, read the
+[mesh and corpus audit](../verification/ARCHITECTURE-MESH-CORPUS-AUDIT-2026-09-04.md).
+It records full Markdown coverage and local history inventory, separates
+runtime behavior from proposals, and reproduces an unresolved verifier-subject
+binding defect plus adaptive accepted/speculative state gaps. That audit
+made no runtime fixes; use the later implementation report for their current
+status. Other documented gaps remain open.
+
+When the task concerns stage learning, hydrated material, action lineage, or
+predictive-state evidence, including the mechanism-only control manifest and
+its unresolved controls, first read the
+[offline verification report](../verification/PREDICTIVE-STATE-PROCEDURAL-MEMORY-AND-STAGE-ASSISTANCE-2026-09-04.md),
+with the later audit's subject-binding limitation.
+Use the dated
+[stage assistance integration audit](../verification/STAGE-ASSISTANCE-INTEGRATION-AUDIT-2026-09-04.md)
+only as the historical defect trail; its intermediate counts are superseded.
+When it concerns long-horizon skills, execution state, recursive inference,
+recurrent models, or test-time memory, read the dated
+[primary-source research review](../research/LONG-HORIZON-RECURRENT-SKILLS-AND-STATE-2026-09-04.md).
+When it concerns procedural reuse, predictive state, information measurements,
+or the "AI muscle memory" research metaphor, read the narrower
+[procedural-memory evidence note](../research/PROCEDURAL-MEMORY-PREDICTIVE-STATE-AND-INFORMATION-VALUE-2026-09-04.md).
+For adaptive computation, repeated-task transfer, distillation, or cognitive
+Loop templates, read the
+[cognitive mesh research and design](../research/ADAPTIVE-COGNITIVE-MESH-AND-AMORTIZED-COMPUTATION-2026-09-04.md).
+Its accompanying JSON catalog contains unbound design examples, not installed
+profiles or qualified shortcuts.
+When it concerns the Kaggle campaign, read the
+[120-competition metadata report](../verification/KAGGLE-120-ACCESS-PREFLIGHT-2026-09-04.md).
+Do not load these dated reports for unrelated work.
 
 ## Working-directory check
 
@@ -84,11 +148,20 @@ Run this before changing files:
 pwd
 git rev-parse --show-toplevel
 git remote get-url origin
+git branch --show-current
+git rev-parse HEAD
 git status --short --branch
+git diff --name-status
+git ls-files --others --exclude-standard
+git worktree list --porcelain
+ps -eo pid=,ppid=,etime=,stat=,comm=
 ```
 
 The first two paths should both resolve to `/home/username/loop-engine`. The
-remote should resolve to the Loop Engine GitHub repository.
+remote should resolve to the Loop Engine GitHub repository. The process list
+omits arguments and environment values because they may contain private data.
+A matching working directory or process name does not prove ownership. Record
+an owner only from an explicit claim.
 
 ## What not to include
 

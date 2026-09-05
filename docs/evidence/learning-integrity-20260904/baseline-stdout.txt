@@ -1,0 +1,5 @@
+Loop Engine full self-test: PASSED
+Checks: 2430/2430
+Elapsed: 165.565 seconds
+Provider calls: 0
+Use --format json for the complete typed summary.

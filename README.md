@@ -4,11 +4,10 @@ Loop Engine works like a careful, curious colleague. Give it a task, and it
 performs real work in a confined workspace, verifies the result, and saves an
 inspectable Run History.
 
-It takes small steps and selects the next concrete action itself. It keeps
-notes on every decision and checks its own work before claiming success. It
-saves what it learns for reuse: verified code, context, and solutions.
-Because the structure carries the discipline, a smaller hosted model can
-reach verified results that a plain chat session cannot promise.
+It takes small steps and selects the next concrete action itself. It records
+typed model decisions and material actions, then checks its work before
+claiming success. Verified code, context, and solutions can become candidates
+for governed reuse.
 
 ## Solve with human-like loops
 
@@ -118,6 +117,20 @@ same contract with zero model calls for its declared input region. Read
 Read the
 [Reusable Capability Flywheel](docs/components/intelligence-layers/REUSABLE-CAPABILITY-FLYWHEEL.md)
 for candidate harvesting, promotion, search, and deterministic reuse.
+
+An offline research foundation now computes candidate diagnostics that compare
+a compact state with history and records procedural-memory probes for control
+boundaries that safe reuse would need. The strongest procedural status remains
+pending canonical reference resolution. These records cannot select or promote
+a procedure. A separate offline public-solve fixture now exposes hydrated
+prior-stage material to a prompt-sensitive provider adapter and links one
+action stage through exact selection, execution, and verification occurrence
+references. Its pre-run control manifest is saved before model work and says
+`mechanism_only` because six controls remain unresolved. It uses injected
+responses, so no live-model quality or assistance benefit is claimed. See the
+[procedural-memory and predictive-state note](docs/research/PROCEDURAL-MEMORY-PREDICTIVE-STATE-AND-INFORMATION-VALUE-2026-09-04.md)
+and the
+[current offline verification report](docs/verification/PREDICTIVE-STATE-PROCEDURAL-MEMORY-AND-STAGE-ASSISTANCE-2026-09-04.md).
 
 ## How it works
 

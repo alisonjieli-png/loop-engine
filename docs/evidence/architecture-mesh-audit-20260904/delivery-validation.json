@@ -1,0 +1,75 @@
+{
+  "checked_at": "2026-09-04T21:39:45.626255+00:00",
+  "claims_not_tested": [
+    "Full self-test suite",
+    "Clean wheel",
+    "Live provider integration",
+    "Kaggle task solving",
+    "Universal solving",
+    "Causal assistance benefit"
+  ],
+  "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+  "input_files_rechecked": 1502,
+  "intentional_document_pointer_changes": [
+    "docs/README.md",
+    "docs/context/CODEX-START-HERE.md",
+    "docs/verification/PREDICTIVE-STATE-PROCEDURAL-MEMORY-AND-STAGE-ASSISTANCE-2026-09-04.md"
+  ],
+  "json_or_jsonl_artifacts_parsed": [
+    "assurance.json",
+    "bundle-manifest.json",
+    "commit-inventory-additional.json",
+    "commit-inventory-reachable.json",
+    "commits.jsonl",
+    "conformance.json",
+    "delivery-validation.json",
+    "environment-at-publication.json",
+    "excluded.jsonl",
+    "external-guidance-coverage.json",
+    "external-prompts.json",
+    "files.jsonl",
+    "lineage-subject-probe-result.json",
+    "markdown-semantic-coverage.json",
+    "model-ladder-probe-result.json",
+    "registered-conversation-sources.json",
+    "source-recheck-before-report-index-edits.json",
+    "summary.json"
+  ],
+  "main_report_sha256": "7b07c8f0dced30cfa60af0d7a5e74415333bebc104ef5b68be5671d3f5b5f8d6",
+  "markdownlint": {
+    "command": [
+      "npx",
+      "--no-install",
+      "markdownlint-cli2",
+      "docs/verification/ARCHITECTURE-MESH-CORPUS-AUDIT-2026-09-04.md",
+      "docs/evidence/architecture-mesh-audit-20260904/README.md",
+      "docs/evidence/architecture-mesh-audit-20260904/commit-history-audit.md",
+      "docs/evidence/architecture-mesh-audit-20260904/external-guidance-audit.md",
+      "docs/evidence/architecture-mesh-audit-20260904/guidance-component-audit.md",
+      "docs/evidence/architecture-mesh-audit-20260904/lineage-subject-audit.md",
+      "docs/evidence/architecture-mesh-audit-20260904/other-markdown-audit.md",
+      "docs/evidence/architecture-mesh-audit-20260904/remaining-docs-audit.md",
+      "docs/context/CODEX-START-HERE.md",
+      "docs/README.md",
+      "docs/verification/PREDICTIVE-STATE-PROCEDURAL-MEMORY-AND-STAGE-ASSISTANCE-2026-09-04.md"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "markdownlint-cli2 v0.23.2 (markdownlint v0.41.1)\nFinding: docs/verification/ARCHITECTURE-MESH-CORPUS-AUDIT-2026-09-04.md docs/evidence/architecture-mesh-audit-20260904/README.md docs/evidence/architecture-mesh-audit-20260904/commit-history-audit.md docs/evidence/architecture-mesh-audit-20260904/external-guidance-audit.md docs/evidence/architecture-mesh-audit-20260904/guidance-component-audit.md docs/evidence/architecture-mesh-audit-20260904/lineage-subject-audit.md docs/evidence/architecture-mesh-audit-20260904/other-markdown-audit.md docs/evidence/architecture-mesh-audit-20260904/remaining-docs-audit.md docs/context/CODEX-START-HERE.md docs/README.md docs/verification/PREDICTIVE-STATE-PROCEDURAL-MEMORY-AND-STAGE-ASSISTANCE-2026-09-04.md\nLinting: 11 files\nSummary: 0 issues in 0 files\n"
+  },
+  "missing_local_links": [],
+  "offline_defect_probes": {
+    "lineage-subject-probe.py": {
+      "exit_code": 0,
+      "provider_calls": 0,
+      "result_ref": "lineage-subject-probe-result.json"
+    },
+    "model-ladder-probe.py": {
+      "exit_code": 0,
+      "provider_calls": 0,
+      "result_ref": "model-ladder-probe-result.json"
+    }
+  },
+  "record_type": "audit_delivery_validation/v1",
+  "unexpected_input_changes": []
+}

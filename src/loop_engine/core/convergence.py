@@ -8,20 +8,25 @@ that record would encode the suggestion, not the finding, and would keep
 encoding it as the evidence base grew.
 
 The only defence that works is one built before the data exists: a share of
-stages must be answered with no template offered at all. Those are the control
-arm. If shapes converge there too, the convergence is in the work. If they
-converge only where a template was shown, the convergence is in the showing.
-Adding a control arm later cannot rescue a record already collected without
-one, which is why this is here now rather than when there is enough data to
-analyse.
+independent occurrences must be answered with no template offered at all.
+Those are the control arm. If response shapes converge there too, the
+convergence is in the work. If they converge only where a template was shown,
+the convergence is in the showing. Adding a control arm later cannot rescue a
+record already collected without one.
 
-Assignment is deterministic from the stage identity, so the same situation
-always lands in the same arm — a run cannot drift into the offered arm by
-retrying, and the split is reproducible from the record alone.
+Assignment is deterministic from the experiment, semantic signature, exact
+occurrence, and campaign seed. Retries of one occurrence stay in one arm,
+while later occurrences of the same semantic situation may enter either arm.
 
-Nothing here decides that a shape is good. It reports how much agreement
-exists, how much of it survives without prompting, and how often something
-genuinely new appeared.
+This module only assigns an arm and summarizes labels supplied by its caller.
+It does not alter a work packet. A caller has not created a control merely by
+recording this assignment, and a response-shape analysis is invalid when the
+caller supplies an input-stage shape instead of the observed response shape.
+
+Nothing here decides that a shape is good. When a caller applies the assigned
+exposure and supplies observed response shapes, this module can summarize
+agreement, control-arm agreement, and novelty. Without those caller actions,
+its output is assignment bookkeeping rather than convergence evidence.
 
 Owns:
     - experiment_arm(): which arm one occurrence belongs to, decided
@@ -98,11 +103,21 @@ def experiment_arm(experiment: str, signature: str, occurrence: str,
 class ConvergenceMeasure:
     """How much response shapes agree, and how much of that was prompted."""
 
+    control_arm_share: float = CONTROL_ARM_SHARE
+    thin_arm_observations: int = _THIN_ARM
     #: shape identity -> count, per arm.
     shapes: dict = field(default_factory=lambda: {OFFERED: {}, CONTROL: {}})
     novel_fields: dict = field(default_factory=lambda: {OFFERED: 0,
                                                         CONTROL: 0})
     departures: dict = field(default_factory=lambda: {OFFERED: 0, CONTROL: 0})
+
+    def __post_init__(self) -> None:
+        if not 0.0 <= float(self.control_arm_share) <= 1.0:
+            raise ValueError("the control share must be between 0 and 1")
+        if (isinstance(self.thin_arm_observations, bool)
+                or not isinstance(self.thin_arm_observations, int)
+                or self.thin_arm_observations < 1):
+            raise ValueError("the thin-arm threshold must be a positive integer")
 
     def note(self, arm: str, shape: str, *, novel_fields: int = 0,
              departed: bool = False) -> None:
@@ -134,7 +149,7 @@ class ConvergenceMeasure:
             "entropy_bits": round(entropy, 4),
             "novel_fields": self.novel_fields[arm],
             "departure_rate": round(self.departures[arm] / total, 4),
-            "thin": total < _THIN_ARM,
+            "thin": total < self.thin_arm_observations,
         }
 
     def to_dict(self) -> dict:
@@ -142,7 +157,8 @@ class ConvergenceMeasure:
         return {
             "record_type": CONVERGENCE_RECORD_TYPE,
             "offered": offered, "control": control,
-            "control_arm_share": CONTROL_ARM_SHARE,
+            "control_arm_share": self.control_arm_share,
+            "thin_arm_observations": self.thin_arm_observations,
             "reading": _reading(offered, control),
         }
 
@@ -219,10 +235,10 @@ def self_test() -> dict:
           all(experiment_arm(TEMPLATE_OFFER, "s", f"o{n}", share=1.0)
               == CONTROL for n in range(50)))
     check("a campaign seed re-randomises without a code change",
-          experiment_arm(TEMPLATE_OFFER, region, "occ1", seed="a")
-          != experiment_arm(TEMPLATE_OFFER, region, "occ1", seed="b")
-          or True,
-          "seeds differ per campaign; equality here is not a failure")
+          any(experiment_arm(TEMPLATE_OFFER, region, f"occ{n}", seed="a")
+              != experiment_arm(TEMPLATE_OFFER, region, f"occ{n}", seed="b")
+              for n in range(100)),
+          "campaigns need a reproducible way to draw a different split")
 
     bad_share = False
     try:
@@ -230,6 +246,23 @@ def self_test() -> dict:
     except ValueError:
         bad_share = True
     check("an impossible share is refused", bad_share)
+
+    configured = ConvergenceMeasure(
+        control_arm_share=0.4, thin_arm_observations=3)
+    configured.note(OFFERED, "a")
+    configured.note(CONTROL, "a")
+    check("the recorded share and evidence floor are configurable",
+          configured.to_dict()["control_arm_share"] == 0.4
+          and configured.to_dict()["thin_arm_observations"] == 3
+          and configured.to_dict()["control"]["thin"])
+    bad_configs = 0
+    for values in ({"control_arm_share": -0.1},
+                   {"thin_arm_observations": 0}):
+        try:
+            ConvergenceMeasure(**values)
+        except ValueError:
+            bad_configs += 1
+    check("invalid convergence settings are refused", bad_configs == 2)
 
     empty = ConvergenceMeasure()
     check("with no control observations nothing can be concluded",

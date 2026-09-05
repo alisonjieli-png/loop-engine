@@ -15,18 +15,31 @@ solving method, or approve spend. Those inputs must be resolved before invoke.
 """
 from __future__ import annotations
 
+import hashlib
+import json
+import math
 import time
-from dataclasses import dataclass, field
+import uuid
+from dataclasses import asdict, dataclass, field
 from typing import Callable, Protocol, Sequence
 
+from .context_budget import estimate_tokens
 from .model_capabilities import (
-    ModelOutputCapability, ModelOutputLimitMismatch, UnknownModelOutputLimit,
+    ModelOutputCapability,
+    ModelOutputLimitMismatch,
+    UnknownModelOutputLimit,
     require_declared_maximum,
 )
-from .model_routes import (LOCALITIES, PURPOSES, ModelRoute, RoutePolicy,
-                           RouteRegistry, screen_route)
+from .model_gateway_accounting import complete_attempt_sum, reported_token
 from .model_response_text import extract_final_answer
-from .context_budget import estimate_tokens
+from .model_routes import (
+    LOCALITIES,
+    PURPOSES,
+    ModelRoute,
+    RoutePolicy,
+    RouteRegistry,
+    screen_route,
+)
 
 
 class ProviderAdapter(Protocol):
@@ -117,6 +130,10 @@ def builtin_provider_specs(
                     "https://api.mistral.ai/v1/chat/completions"),
         "openrouter": ("openai_compatible", "env:OPENROUTER_API_KEY",
                        "https://openrouter.ai/api/v1/chat/completions"),
+        # Available only when a caller explicitly supplies the adapter. It is
+        # intentionally absent from default routes, discovery, and failover.
+        "openai": ("openai_responses", "env:OPENAI_API_KEY",
+                   "https://api.openai.com/v1/responses"),
     }
     specs = []
     for provider_id, adapter in adapters.items():
@@ -131,9 +148,13 @@ def builtin_provider_specs(
             locality=getattr(custom, "locality", "cloud"),
             tokens_provider_reported=(getattr(
                 custom, "counts_as_evidence", True)),
-            wire_format=getattr(custom, "wire", "provider_native"),
+            wire_format=getattr(
+                custom, "wire", getattr(adapter, "WIRE_FORMAT",
+                                         "provider_native")),
             endpoint=getattr(custom, "base_url", endpoint),
-            capabilities=("chat", "list_models", "verify"),
+            capabilities=tuple(getattr(
+                adapter, "PROVIDER_CAPABILITIES",
+                ("chat", "list_models", "verify"))),
         ))
     return tuple(specs)
 
@@ -261,9 +282,53 @@ class ModelGatewayRequest:
     temperature: float = 0.7
     output_contract: str = ""
     trace_id: str = ""
+    semantic_call_id: str = ""
     def __post_init__(self):
-        if not self.prompt.strip():
+        if not isinstance(self.prompt, str) or not self.prompt.strip():
             raise ValueError("a model gateway request needs a prompt")
+        if any(not isinstance(value, str) for value in (
+                self.system, self.output_contract, self.trace_id)):
+            raise ValueError("model gateway text fields must be text")
+        if (isinstance(self.temperature, bool)
+                or not isinstance(self.temperature, (int, float))
+                or not math.isfinite(float(self.temperature))):
+            raise ValueError("model gateway temperature must be finite")
+        if not isinstance(self.semantic_call_id, str):
+            raise ValueError("semantic_call_id must be text")
+        if (self.semantic_call_id
+                and (self.semantic_call_id != self.semantic_call_id.strip()
+                     or any(character.isspace()
+                            for character in self.semantic_call_id)
+                     or len(self.semantic_call_id) > 192)):
+            raise ValueError(
+                "semantic_call_id must be bounded text without whitespace")
+
+    @property
+    def prompt_digest(self) -> str:
+        return hashlib.sha256(self.prompt.encode("utf-8")).hexdigest()
+
+    @property
+    def system_digest(self) -> str:
+        return hashlib.sha256(self.system.encode("utf-8")).hexdigest()
+
+    @property
+    def request_digest(self) -> str:
+        value = json.dumps(
+            {
+                "prompt_digest": self.prompt_digest,
+                "system_digest": self.system_digest,
+                "temperature": self.temperature,
+                "output_contract": self.output_contract,
+                "trace_id": self.trace_id,
+                "semantic_call_id": self.semantic_call_id,
+                "config": asdict(self.config),
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        )
+        return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -290,6 +355,25 @@ class GatewayAttempt:
     provider_stop_reason: str = ""
     output_limit_reached: bool = False
     usage_diagnostic: "dict | None" = None
+    provider_status: str = ""
+    provider_response_id: str = ""
+    provider_service_tier: str = ""
+    provider_incomplete_details: dict | None = None
+    provider_usage: dict | None = None
+    semantic_call_id: str = ""
+    owner_loop_id: str = ""
+    prompt_digest: str = ""
+    system_digest: str = ""
+    logical_request_digest: str = ""
+    provider_request_digest: str = ""
+    transport_succeeded: "bool | None" = None
+    transport_error_code: str = ""
+
+    @property
+    def transport_error(self) -> str:
+        return (_safe_transport_error(self.transport_error_code)
+                if self.transport_error_code else "")
+
     def to_dict(self) -> dict:
         return {
             "provider": self.provider,
@@ -314,6 +398,20 @@ class GatewayAttempt:
             "provider_done": self.provider_done,
             "provider_stop_reason": self.provider_stop_reason,
             "output_limit_reached": self.output_limit_reached,
+            "provider_status": self.provider_status,
+            "provider_response_id": self.provider_response_id,
+            "provider_service_tier": self.provider_service_tier,
+            "provider_incomplete_details": self.provider_incomplete_details,
+            "provider_usage": self.provider_usage,
+            "semantic_call_id": self.semantic_call_id,
+            "owner_loop_id": self.owner_loop_id,
+            "prompt_digest": self.prompt_digest,
+            "system_digest": self.system_digest,
+            "logical_request_digest": self.logical_request_digest,
+            "provider_request_digest": self.provider_request_digest,
+            "transport_succeeded": self.transport_succeeded,
+            "transport_error_code": self.transport_error_code,
+            "transport_error": self.transport_error,
         }
 
 
@@ -332,6 +430,28 @@ class ModelGatewayResult:
     error_code: str = ""
     error: str = ""
     reasoning_present: bool = False
+    semantic_call_id: str = ""
+    owner_loop_id: str = ""
+    prompt_digest: str = ""
+    system_digest: str = ""
+    request_digest: str = ""
+    transport_succeeded: "bool | None" = None
+    transport_error_code: str = ""
+
+    @property
+    def transport_error(self) -> str:
+        return (_safe_transport_error(self.transport_error_code)
+                if self.transport_error_code else "")
+
+    @property
+    def physical_provider_attempts(self) -> tuple[GatewayAttempt, ...]:
+        """Attempts that crossed the provider boundary and own a model Loop."""
+        return tuple(attempt for attempt in self.attempts if attempt.loop_id)
+
+    @property
+    def physical_model_calls(self) -> int:
+        return len(self.physical_provider_attempts)
+
     @property
     def total_tokens(self) -> "int | None":
         if self.input_tokens is None or self.output_tokens is None:
@@ -361,11 +481,20 @@ class ModelGatewayResult:
             "total_tokens": self.total_tokens,
             "accounting_complete": self.accounting_complete,
             "provider_responded": self.provider_responded,
+            "physical_model_calls": self.physical_model_calls,
             "attempts": [attempt.to_dict() for attempt in self.attempts],
             "gateway_loop_id": self.gateway_loop_id,
             "error_code": self.error_code,
             "error": self.error[:200],
             "reasoning_present": self.reasoning_present,
+            "semantic_call_id": self.semantic_call_id,
+            "owner_loop_id": self.owner_loop_id,
+            "prompt_digest": self.prompt_digest,
+            "system_digest": self.system_digest,
+            "request_digest": self.request_digest,
+            "transport_succeeded": self.transport_succeeded,
+            "transport_error_code": self.transport_error_code,
+            "transport_error": self.transport_error,
         }
 
 
@@ -386,6 +515,8 @@ def _error_code(error: str) -> str:
         return "provider_unavailable"
     if "context_window_exceeded" in low:
         return "context_window_exceeded"
+    if "token_accounting_unavailable" in low:
+        return "token_accounting_unavailable"
     if ("output_limit_reached" in low or "max_tokens" in low
             or ("maximum output" in low and "reached" in low)):
         return "output_limit_reached"
@@ -397,6 +528,8 @@ def _error_code(error: str) -> str:
         return "network_unreachable"
     if "incomplete_response" in low:
         return "incomplete_response"
+    if "unsupported_tool_call" in low:
+        return "unsupported_tool_call"
     if "empty_response" in low:
         return "empty_response"
     if "unknown_model_output_limit" in low:
@@ -437,9 +570,20 @@ def _error_code(error: str) -> str:
     return "provider_failed"
 
 
+def _safe_transport_error(error_code: str) -> str:
+    """Describe an upstream provider failure without persisting its payload.
+
+    ``error_code`` comes only from :func:`_error_code`'s fixed vocabulary.
+    Provider exception text can contain request bodies, headers, or secrets,
+    so it is used transiently for classification and never copied here.
+    """
+    return f"provider attempt failed with classified code {error_code}"
+
+
 _FAILOVER_FORBIDDEN_ERRORS = {
     "authentication_failed", "invalid_request",
     "model_output_limit_mismatch", "model_identity_mismatch",
+    "token_accounting_unavailable",
 }
 
 
@@ -517,17 +661,31 @@ class ModelGateway:
     def invoke(self, request: ModelGatewayRequest, *,
                validate: "Callable[[str], bool] | None" = None,
                ledger=None, parent=None) -> ModelGatewayResult:
-        """Run one route at a time; every provider attempt is a model loop."""
+        """Run one route at a time; every provider attempt is a model loop.
+
+        One logical semantic-call identity is allocated before routing. Every
+        physical attempt made for this invocation carries that same identity,
+        while its Loop ID remains the exact physical-attempt identity.
+        """
         from ..loop.encapsulate import as_model_loop
-        from ..loop.loop_role import (LoopRelationship, LoopRole,
-                                     LoopRoleIdentity)
+        from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
         from ..loop.recursive_loop import Loop, StepOutcome
 
+        semantic_call_id = (
+            request.semantic_call_id
+            or f"semantic-call:{uuid.uuid4().hex}")
+        requested_owner_loop_id = str(
+            getattr(parent, "loop_id", "") or "")
         routes = self._routes(request.config)
         if not routes:
             return ModelGatewayResult(
                 ok=False, error_code="no_eligible_route",
-                error="no model route is permitted by this request and policy")
+                error="no model route is permitted by this request and policy",
+                semantic_call_id=semantic_call_id,
+                owner_loop_id=requested_owner_loop_id,
+                prompt_digest=request.prompt_digest,
+                system_digest=request.system_digest,
+                request_digest=request.request_digest)
 
         orchestration_config = _gateway_orchestration_config(parent)
         identity = LoopRoleIdentity(
@@ -542,7 +700,14 @@ class ModelGateway:
                     "route one model request", orchestration_config,
                     ledger=ledger, identity=identity,
                     relationship=relationship))
-        result = ModelGatewayResult(gateway_loop_id=starting.loop_id)
+        owner_loop_id = requested_owner_loop_id or starting.loop_id
+        result = ModelGatewayResult(
+            gateway_loop_id=starting.loop_id,
+            semantic_call_id=semantic_call_id,
+            owner_loop_id=owner_loop_id,
+            prompt_digest=request.prompt_digest,
+            system_digest=request.system_digest,
+            request_digest=request.request_digest)
         known_tokens = 0
 
         def handler(loop, step, context):
@@ -577,7 +742,9 @@ class ModelGateway:
                         route.provider, route.model, route.name, "", False,
                         error_code="provider_not_configured",
                         error=f"no ProviderSpec for {route.provider!r}",
-                        thinking_power=current_power))
+                        thinking_power=current_power,
+                        semantic_call_id=semantic_call_id,
+                        owner_loop_id=owner_loop_id))
                     continue
                 started = time.monotonic()
                 attempt_timeout = min(
@@ -594,7 +761,9 @@ class ModelGateway:
                     result.attempts.append(GatewayAttempt(
                         route.provider, route.model, route.name, "", False,
                         error_code="model_output_limit_mismatch", error=error,
-                        thinking_power=current_power))
+                        thinking_power=current_power,
+                        semantic_call_id=semantic_call_id,
+                        owner_loop_id=owner_loop_id))
                     continue
                 requested_output = (requested_outputs[0]
                                     if requested_outputs else None)
@@ -607,7 +776,9 @@ class ModelGateway:
                     result.attempts.append(GatewayAttempt(
                         route.provider, route.model, route.name, "", False,
                         error_code=_error_code(str(exc)), error=str(exc),
-                        thinking_power=current_power))
+                        thinking_power=current_power,
+                        semantic_call_id=semantic_call_id,
+                        owner_loop_id=owner_loop_id))
                     continue
 
                 # Context-window preflight: a request whose estimated input
@@ -645,7 +816,9 @@ class ModelGateway:
                         route.provider, route.model, route.name, "", False,
                         error_code="context_window_exceeded", error=error,
                         thinking_power=current_power,
-                        maximum_output_tokens=attempt_output))
+                        maximum_output_tokens=attempt_output,
+                        semantic_call_id=semantic_call_id,
+                        owner_loop_id=owner_loop_id))
                     loop.ledger.record(
                         loop_id=loop.loop_id, event="custom",
                         action="context_window_preflight_refused",
@@ -662,9 +835,33 @@ class ModelGateway:
                         action="tls_verification_policy", route=route.name,
                         provider=route.provider, tls_verification=tls_policy)
 
+                provider_request = json.dumps(
+                    {
+                        "provider": route.provider,
+                        "route": route.name,
+                        "model": route.model,
+                        "prompt_digest": request.prompt_digest,
+                        "system_digest": request.system_digest,
+                        "temperature": request.temperature,
+                        "timeout_seconds": attempt_timeout,
+                        "max_attempts": 1,
+                        "max_output_tokens": attempt_output,
+                        "output_capability": output_capability.summary(),
+                        "thinking_power": current_power,
+                    },
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    ensure_ascii=False,
+                    allow_nan=False,
+                )
+                provider_request_digest = hashlib.sha256(
+                    provider_request.encode("utf-8")
+                ).hexdigest()
+
                 def invoke_provider(spec=spec, route=route,
                                     attempt_timeout=attempt_timeout,
-                                    attempt_output=attempt_output):
+                                    attempt_output=attempt_output,
+                                    output_capability=output_capability):
                     value = spec.adapter.chat_maxout(
                         request.prompt, model=route.model,
                         system=request.system,
@@ -683,7 +880,9 @@ class ModelGateway:
                     f"{route.provider}:{route.model}",
                     invoke_provider,
                     parent=loop,
-                    llm_thinking_power=current_power)
+                    llm_thinking_power=current_power,
+                    semantic_call_id=semantic_call_id,
+                    owner_loop_id=owner_loop_id)
                 provider_result = call["value"]
                 raw_text = str(getattr(provider_result, "text", "") or "")
                 text, embedded_reasoning = extract_final_answer(raw_text)
@@ -693,6 +892,22 @@ class ModelGateway:
                 provider_done = getattr(provider_result, "done", None)
                 provider_stop_reason = str(
                     getattr(provider_result, "done_reason", "") or "")
+                provider_status = str(
+                    getattr(provider_result, "provider_status", "") or "")
+                provider_response_id = str(getattr(
+                    provider_result, "provider_response_id", "") or "")
+                provider_service_tier = str(getattr(
+                    provider_result, "provider_service_tier", "") or "")
+                raw_incomplete_details = getattr(
+                    provider_result, "provider_incomplete_details", None)
+                provider_incomplete_details = (
+                    dict(raw_incomplete_details)
+                    if isinstance(raw_incomplete_details, dict) else None)
+                raw_provider_usage = getattr(
+                    provider_result, "provider_usage", None)
+                provider_usage = (dict(raw_provider_usage)
+                                  if isinstance(raw_provider_usage, dict)
+                                  else None)
                 output_limit_reached = bool(getattr(
                     provider_result, "output_limit_reached", False))
                 response_received = bool(
@@ -701,8 +916,9 @@ class ModelGateway:
                     or getattr(provider_result, "prompt_tokens", 0)
                     or getattr(provider_result, "eval_tokens", 0)
                     or provider_done is not None)
-                transport_ok = bool(getattr(provider_result, "ok", False)
-                                    and raw_text.strip())
+                transport_succeeded = bool(
+                    getattr(provider_result, "ok", False))
+                transport_ok = bool(transport_succeeded and raw_text.strip())
                 reported_model = str(
                     getattr(provider_result, "model", "") or route.model)
                 identity_ok = reported_model == route.model
@@ -716,19 +932,25 @@ class ModelGateway:
                     validation_ok = False
                     validation_error = (
                         f"output validation raised {type(exc).__name__}")
-                raw_in = int(getattr(provider_result, "prompt_tokens", 0) or 0)
-                raw_out = int(getattr(provider_result, "eval_tokens", 0) or 0)
-                usage_known = bool(raw_in or raw_out)
-                input_tokens = raw_in if usage_known else None
-                output_tokens = raw_out if usage_known else None
-                if usage_known:
-                    known_tokens += raw_in + raw_out
+                input_tokens = reported_token(
+                    getattr(provider_result, "prompt_tokens", None))
+                output_tokens = reported_token(
+                    getattr(provider_result, "eval_tokens", None))
+                # Legacy adapters use two zero defaults when the provider sent
+                # no usage object. Do not turn that absence into known zero.
+                if input_tokens == 0 and output_tokens == 0:
+                    input_tokens = output_tokens = None
+                usage_complete = (
+                    input_tokens is not None and output_tokens is not None)
+                if usage_complete:
+                    known_tokens += input_tokens + output_tokens
                 # A real response with no provider-reported usage is an
                 # accounting anomaly worth a typed record: the diagnostic
                 # carries a clearly-labeled rough estimate, while the
                 # accounting fields stay None (unknown, never fabricated).
                 usage_diagnostic = None
-                if not usage_known and response_received and raw_text.strip():
+                if (not usage_complete and response_received
+                        and raw_text.strip()):
                     usage_diagnostic = {
                         "record_type": "usage_accounting_unavailable/v1",
                         "reason": (
@@ -740,7 +962,9 @@ class ModelGateway:
                             "not provider accounting and never reported as "
                             "usage"),
                     }
-                error = str(getattr(provider_result, "error", "") or "")
+                provider_error = str(
+                    getattr(provider_result, "error", "") or "")
+                error = provider_error
                 if output_limit_reached:
                     error = error or (
                         "output_limit_reached: provider response reached its "
@@ -758,17 +982,39 @@ class ModelGateway:
                         "final answer outside private reasoning")
                 if provider_ok and not validation_ok:
                     error = validation_error or "output failed validation"
+                pre_accounting_error_code = _error_code(error)
+                transport_error_code = ""
+                if not transport_succeeded and error:
+                    transport_error_code = pre_accounting_error_code
+                # Provider-supplied failure text is useful transiently for
+                # classification but is not safe evidence: it may contain a
+                # request body, an authorization header, or another secret.
+                # Keep the classified code and a fixed summary instead.
+                if provider_error and error == provider_error:
+                    error = _safe_transport_error(pre_accounting_error_code)
+                accounting_blocks = bool(
+                    request.config.max_total_tokens is not None
+                    and not usage_complete)
+                if accounting_blocks:
+                    error = (
+                        "token_accounting_unavailable: provider usage is "
+                        "incomplete, so the total-token ceiling cannot be "
+                        "enforced")
                 attempt = GatewayAttempt(
                     provider=route.provider,
                     model=reported_model,
                     route=route.name,
                     loop_id=call["loop_id"],
-                    ok=bool(provider_ok and validation_ok),
+                    ok=bool(provider_ok and validation_ok
+                            and not accounting_blocks),
                     input_tokens=input_tokens,
                     output_tokens=output_tokens,
                     validation_ok=validation_ok if provider_ok else None,
-                    error_code="" if provider_ok and validation_ok
-                    else _error_code(error),
+                    error_code="" if (provider_ok and validation_ok
+                                      and not accounting_blocks)
+                    else ("token_accounting_unavailable"
+                          if accounting_blocks
+                          else pre_accounting_error_code),
                     error=error,
                     elapsed_seconds=round(time.monotonic() - started, 6),
                     provider_ok=transport_ok,
@@ -782,6 +1028,19 @@ class ModelGateway:
                     provider_stop_reason=provider_stop_reason,
                     output_limit_reached=output_limit_reached,
                     usage_diagnostic=usage_diagnostic,
+                    provider_status=provider_status,
+                    provider_response_id=provider_response_id,
+                    provider_service_tier=provider_service_tier,
+                    provider_incomplete_details=provider_incomplete_details,
+                    provider_usage=provider_usage,
+                    semantic_call_id=semantic_call_id,
+                    owner_loop_id=owner_loop_id,
+                    prompt_digest=request.prompt_digest,
+                    system_digest=request.system_digest,
+                    logical_request_digest=request.request_digest,
+                    provider_request_digest=provider_request_digest,
+                    transport_succeeded=transport_succeeded,
+                    transport_error_code=transport_error_code,
                 )
                 result.attempts.append(attempt)
                 if (not attempt.ok
@@ -823,6 +1082,24 @@ class ModelGateway:
                                confidence=0.1, failed=True)
 
         starting.run(handler=handler, max_steps=2)
+        # A logical result reports transport state only for its final physical
+        # attempt. Earlier failures remain on their exact attempt records, so
+        # a recovered result does not imply that its winning exchange failed.
+        final_physical_attempt = (
+            result.physical_provider_attempts[-1]
+            if result.physical_provider_attempts else None)
+        if final_physical_attempt is not None:
+            result.transport_succeeded = (
+                final_physical_attempt.transport_succeeded)
+            result.transport_error_code = (
+                final_physical_attempt.transport_error_code)
+        # Top-level usage describes the complete logical invocation, including
+        # failed failover calls. Preflight rows have no Loop ID and are not
+        # physical attempts.
+        result.input_tokens = complete_attempt_sum(
+            result.attempts, "input_tokens")
+        result.output_tokens = complete_attempt_sum(
+            result.attempts, "output_tokens")
         return result
 
 
@@ -834,8 +1111,7 @@ def invoke_model_gateway(gateway: ModelGateway, request: ModelGatewayRequest,
 
 def self_test() -> dict:
     """Offline contract and refusal tests.  No provider is contacted."""
-    from .model_capabilities import (
-        ModelOutputCapability, UnknownModelOutputLimit)
+    from .model_capabilities import ModelOutputCapability, UnknownModelOutputLimit
     from .ollama_client import ChatResult
     from .operating_profile import OperatingProfile
 
@@ -882,6 +1158,7 @@ def self_test() -> dict:
           not refused.ok
           and refused.error_code == "unknown_model_output_limit"
           and not boundary.chat_attempted
+          and refused.physical_model_calls == 0
           and refused.attempts[0].loop_id == "",
           "this is a contract refusal, not a provider integration test")
 
@@ -1040,6 +1317,9 @@ def self_test() -> dict:
           and auth_result.error_code == "authentication_failed"
           and auth.calls == 1 and auth_fallback.calls == 0)
 
+    from ..loop.recursive_loop import LoopLedger
+    from .run_history import RunHistory
+
     payment, payment_fallback = ErrorAdapter(
         "HTTP 402 insufficient credits"), SuccessAdapter()
     payment_gateway = ModelGateway(
@@ -1048,14 +1328,60 @@ def self_test() -> dict:
                                 "env:SECOND")),
         routes=(ModelRoute("first.route", "first", "first-model"),
                 ModelRoute("second.route", "second", "second-model")))
-    payment_result = payment_gateway.invoke(ModelGatewayRequest(
-        "payment failure may use another authorized provider",
-        ModelGatewayConfig(route_names=("first.route", "second.route"),
-                           max_route_attempts=2)))
+    payment_ledger = LoopLedger()
+    payment_result = payment_gateway.invoke(
+        ModelGatewayRequest(
+            "payment failure may use another authorized provider",
+            ModelGatewayConfig(route_names=("first.route", "second.route"),
+                               max_route_attempts=2),
+            semantic_call_id="semantic-call:payment-failover"),
+        ledger=payment_ledger)
     check("payment_failure_can_fail_over_to_another_authorized_provider",
           payment_result.ok and payment_result.provider == "second"
           and payment_result.attempts[0].error_code == "payment_required"
           and payment.calls == 1 and payment_fallback.calls == 1)
+
+    second_payment_result = payment_gateway.invoke(
+        ModelGatewayRequest(
+            "a separate logical call receives a separate identity",
+            ModelGatewayConfig(route_names=("first.route", "second.route"),
+                               max_route_attempts=2)),
+        ledger=payment_ledger)
+    payment_history = RunHistory.from_ledger(
+        payment_ledger.events, run_id="model-gateway-correlation")
+    payment_history.commit()
+    payment_events = tuple(
+        event for event in payment_history.event_log
+        if event.event_type == "model_invocation")
+    first_events = tuple(
+        event for event in payment_events
+        if event.detail.get("semantic_call_id")
+        == payment_result.semantic_call_id)
+    first_attempt_ids = {
+        attempt.loop_id for attempt in payment_result.attempts}
+    check("failover_attempts_share_one_logical_semantic_call_in_run_history",
+          payment_result.ok
+          and payment_result.semantic_call_id
+              == "semantic-call:payment-failover"
+          and len(payment_result.attempts) == 2
+          and len(first_events) == 2
+          and {event.loop_id for event in first_events} == first_attempt_ids
+          and len(first_attempt_ids) == 2
+          and all(event.detail.get("owner_loop_id")
+                  == payment_result.owner_loop_id for event in first_events)
+          and all(attempt.semantic_call_id
+                  == payment_result.semantic_call_id
+                  and attempt.owner_loop_id == payment_result.owner_loop_id
+                  for attempt in payment_result.attempts)
+          and payment_history.verify_chain()["intact"],
+          "logical identity is shared; physical attempt Loop IDs remain exact")
+    check("separate_gateway_invocations_receive_distinct_semantic_call_ids",
+          second_payment_result.ok
+          and payment_result.semantic_call_id
+          != second_payment_result.semantic_call_id
+          and len({event.detail.get("semantic_call_id")
+                   for event in payment_events}) == 2,
+          "one gateway invocation is one logical semantic call")
 
     limited, limit_fallback = OutputLimitAdapter(), SuccessAdapter()
     limit_gateway = ModelGateway(
@@ -1077,7 +1403,6 @@ def self_test() -> dict:
           and first_limit.output_limit_reached
           and limited.calls == 1 and limit_fallback.calls == 1,
           "a partial HTTP 200 is evidence, not a successful model answer")
-
     check("network_transport_failures_have_specific_codes",
           _error_code("URLError(OSError(113, 'No route to host'))")
           == "network_unreachable"

@@ -1,0 +1,2109 @@
+running egg_info
+writing src/loop_engine.egg-info/PKG-INFO
+writing dependency_links to src/loop_engine.egg-info/dependency_links.txt
+writing entry points to src/loop_engine.egg-info/entry_points.txt
+writing requirements to src/loop_engine.egg-info/requires.txt
+writing top-level names to src/loop_engine.egg-info/top_level.txt
+reading manifest file 'src/loop_engine.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file 'src/loop_engine.egg-info/SOURCES.txt'
+running sdist
+running egg_info
+writing src/loop_engine.egg-info/PKG-INFO
+writing dependency_links to src/loop_engine.egg-info/dependency_links.txt
+writing entry points to src/loop_engine.egg-info/entry_points.txt
+writing requirements to src/loop_engine.egg-info/requires.txt
+writing top-level names to src/loop_engine.egg-info/top_level.txt
+reading manifest file 'src/loop_engine.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file 'src/loop_engine.egg-info/SOURCES.txt'
+running check
+creating loop_engine-0.1.0
+creating loop_engine-0.1.0/src/loop_engine
+creating loop_engine-0.1.0/src/loop_engine.egg-info
+creating loop_engine-0.1.0/src/loop_engine/catalog
+creating loop_engine-0.1.0/src/loop_engine/catalog/stores
+creating loop_engine-0.1.0/src/loop_engine/code_nodes
+creating loop_engine-0.1.0/src/loop_engine/core
+creating loop_engine-0.1.0/src/loop_engine/data
+creating loop_engine-0.1.0/src/loop_engine/generation
+creating loop_engine-0.1.0/src/loop_engine/generation/model
+creating loop_engine-0.1.0/src/loop_engine/governance
+creating loop_engine-0.1.0/src/loop_engine/governance/approval
+creating loop_engine-0.1.0/src/loop_engine/governance/candidates
+creating loop_engine-0.1.0/src/loop_engine/governance/promotion
+creating loop_engine-0.1.0/src/loop_engine/governance/review
+creating loop_engine-0.1.0/src/loop_engine/intelligence
+creating loop_engine-0.1.0/src/loop_engine/intelligence/code
+creating loop_engine-0.1.0/src/loop_engine/intelligence/code/core
+creating loop_engine-0.1.0/src/loop_engine/intelligence/code/learned
+creating loop_engine-0.1.0/src/loop_engine/intelligence/code/plugin
+creating loop_engine-0.1.0/src/loop_engine/intelligence/context
+creating loop_engine-0.1.0/src/loop_engine/intelligence/context/core
+creating loop_engine-0.1.0/src/loop_engine/intelligence/context/core/records
+creating loop_engine-0.1.0/src/loop_engine/intelligence/context/learned
+creating loop_engine-0.1.0/src/loop_engine/intelligence/context/plugin
+creating loop_engine-0.1.0/src/loop_engine/intelligence/runtime_history_solution
+creating loop_engine-0.1.0/src/loop_engine/intelligence/runtime_history_solution/core
+creating loop_engine-0.1.0/src/loop_engine/intelligence/runtime_history_solution/learned
+creating loop_engine-0.1.0/src/loop_engine/intelligence/runtime_history_solution/plugin
+creating loop_engine-0.1.0/src/loop_engine/intelligence/user_feedback
+creating loop_engine-0.1.0/src/loop_engine/intelligence/user_feedback/core
+creating loop_engine-0.1.0/src/loop_engine/intelligence/user_feedback/learned
+creating loop_engine-0.1.0/src/loop_engine/intelligence/user_feedback/plugin
+creating loop_engine-0.1.0/src/loop_engine/kernel
+creating loop_engine-0.1.0/src/loop_engine/kernel/enforcement
+creating loop_engine-0.1.0/src/loop_engine/kernel/executor
+creating loop_engine-0.1.0/src/loop_engine/kernel/loader
+creating loop_engine-0.1.0/src/loop_engine/kernel/resolver
+creating loop_engine-0.1.0/src/loop_engine/loop
+creating loop_engine-0.1.0/src/loop_engine/memory
+creating loop_engine-0.1.0/src/loop_engine/memory/episodic
+creating loop_engine-0.1.0/src/loop_engine/memory/lifecycle
+creating loop_engine-0.1.0/src/loop_engine/memory/model
+creating loop_engine-0.1.0/src/loop_engine/memory/procedural
+creating loop_engine-0.1.0/src/loop_engine/memory/query
+creating loop_engine-0.1.0/src/loop_engine/memory/semantic
+creating loop_engine-0.1.0/src/loop_engine/memory/storage
+creating loop_engine-0.1.0/src/loop_engine/memory/working
+creating loop_engine-0.1.0/src/loop_engine/node
+creating loop_engine-0.1.0/src/loop_engine/node/loop_node
+creating loop_engine-0.1.0/src/loop_engine/ontology
+creating loop_engine-0.1.0/src/loop_engine/runtime
+creating loop_engine-0.1.0/src/loop_engine/runtime/artifacts
+creating loop_engine-0.1.0/src/loop_engine/runtime/runs
+creating loop_engine-0.1.0/src/loop_engine/runtime/runtime_memory
+creating loop_engine-0.1.0/src/loop_engine/skills
+creating loop_engine-0.1.0/src/loop_engine/skills/software-tdd-red-green-refactor
+creating loop_engine-0.1.0/src/loop_engine/strings
+creating loop_engine-0.1.0/src/loop_engine/templates
+copying files to loop_engine-0.1.0...
+copying LICENSE -> loop_engine-0.1.0
+copying README.md -> loop_engine-0.1.0
+copying pyproject.toml -> loop_engine-0.1.0
+copying src/loop_engine/ARCHITECTURE-MAP.md -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/__init__.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/__main__.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/_conformance_scan.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/_conformance_test.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/_self_test.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/adaptive_practitioner_cli.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/architecture_conformance.json -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/architecture_contract.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/architecture_map.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/backend_isolation.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/campaign.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/cli_help.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/cli_operations.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/conformance_report.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/forbidden_paths.json -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/kaggle_report.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/nomenclature_conformance.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/parallel_runner.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/parameter_boundary.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/parameter_boundary_checks.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/public_runtime_conformance.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/repository_conformance.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/repository_structure.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/run_history_cli.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/runtime_ontology_check.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/scheduling.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/semantic_conformance.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/semantic_freedom_conformance.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/solve_cli.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine/structure_review.py -> loop_engine-0.1.0/src/loop_engine
+copying src/loop_engine.egg-info/PKG-INFO -> loop_engine-0.1.0/src/loop_engine.egg-info
+copying src/loop_engine.egg-info/SOURCES.txt -> loop_engine-0.1.0/src/loop_engine.egg-info
+copying src/loop_engine.egg-info/dependency_links.txt -> loop_engine-0.1.0/src/loop_engine.egg-info
+copying src/loop_engine.egg-info/entry_points.txt -> loop_engine-0.1.0/src/loop_engine.egg-info
+copying src/loop_engine.egg-info/requires.txt -> loop_engine-0.1.0/src/loop_engine.egg-info
+copying src/loop_engine.egg-info/top_level.txt -> loop_engine-0.1.0/src/loop_engine.egg-info
+copying src/loop_engine/catalog/README.md -> loop_engine-0.1.0/src/loop_engine/catalog
+copying src/loop_engine/catalog/__init__.py -> loop_engine-0.1.0/src/loop_engine/catalog
+copying src/loop_engine/catalog/capabilities.py -> loop_engine-0.1.0/src/loop_engine/catalog
+copying src/loop_engine/catalog/composite.py -> loop_engine-0.1.0/src/loop_engine/catalog
+copying src/loop_engine/catalog/conformance.py -> loop_engine-0.1.0/src/loop_engine/catalog
+copying src/loop_engine/catalog/handshake.py -> loop_engine-0.1.0/src/loop_engine/catalog
+copying src/loop_engine/catalog/protocol.py -> loop_engine-0.1.0/src/loop_engine/catalog
+copying src/loop_engine/catalog/query.py -> loop_engine-0.1.0/src/loop_engine/catalog
+copying src/loop_engine/catalog/registry.py -> loop_engine-0.1.0/src/loop_engine/catalog
+copying src/loop_engine/catalog/stores/__init__.py -> loop_engine-0.1.0/src/loop_engine/catalog/stores
+copying src/loop_engine/catalog/stores/duckdb_files.py -> loop_engine-0.1.0/src/loop_engine/catalog/stores
+copying src/loop_engine/catalog/stores/duckdb_store.py -> loop_engine-0.1.0/src/loop_engine/catalog/stores
+copying src/loop_engine/catalog/stores/in_memory.py -> loop_engine-0.1.0/src/loop_engine/catalog/stores
+copying src/loop_engine/catalog/stores/package_jsonl.py -> loop_engine-0.1.0/src/loop_engine/catalog/stores
+copying src/loop_engine/catalog/stores/sqlite_store.py -> loop_engine-0.1.0/src/loop_engine/catalog/stores
+copying src/loop_engine/code_nodes/__init__.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/architecture_diagram.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/architecture_diagram_text.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/ascii_views.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/ascii_views_checks.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/blueprint.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/campaign_runner.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/capture.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/complex_task_benchmark.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/complex_task_native_evidence.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/complex_task_published_evidence.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/context_seed.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/core_engine_proof.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/follow_up.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/guidance_ledger.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/guided_setup.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/housekeeping.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/kaggle_executor.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/learning_bundle.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/live_run_demo.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/logic_ast.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/loop_report.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/material_questions.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/measurement.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/public_examples.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/run_analytics.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/run_playback.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/run_quality.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/runtime_contracts.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/self_improvement_loop.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/smoke_ladder.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_canvas.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_canvas_checks.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_compiler.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_graph.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_graph_builder.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_graph_checks.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_graph_validation.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_model_port.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_records.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solve_mode_checks.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solve_region_evidence.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solve_request_adaptation.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solve_runtime.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solve_terminal.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/string_foundry.py -> loop_engine-0.1.0/src/loop_engine/code_nodes
+copying src/loop_engine/core/README.md -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/__init__.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/action_fence.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_acceptance_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_capabilities.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_deterministic.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_orientation.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_orientation_capabilities.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_planning.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_project.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_prompting.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_records.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_recovery.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_result.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_reuse.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_source.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_supervision.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_validation.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_verification.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/api_quality.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/asset_class.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/asset_lifecycle.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/astra_route_authority.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/astra_route_authority_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/astra_route_planning.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/astra_route_record_identity.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/autoconfigure.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/boundary_registry.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/boundary_runtime_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/brave_search.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/capability_directory.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/capability_rejection.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/choice.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/code_intelligence_assets.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/cognitive_grammar.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/component_contracts.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/component_inventory.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/config.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/context_artifacts.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/context_budget.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/context_catalog.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/context_classification.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/context_ontology.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/context_pack_manifest.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/convergence.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/custom_endpoint.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/decision_outcome.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/development_execution.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/development_execution_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/development_governance.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/development_governance_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/development_planning.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/development_planning_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/duckdb_catalog.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/event_vocabulary.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/extension_discovery.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/external_harness.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/external_harness_adapters.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/external_harness_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/facets.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/generated_project.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/generated_project_artifact_validation.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/harness_intelligence_bridge.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/information_access.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/information_access_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/information_evidence_contracts.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/information_theory_adversarial_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/information_theory_evidence.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/information_theory_evidence_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/information_update_evidence.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/intelligence_layers.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/intelligence_portfolio.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/intelligence_portfolio_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/intelligence_query_contracts.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/intelligence_registry.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/knowledge_loader.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/lifecycle_extensions.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/lifecycle_extensions_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/live_model_verification.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/live_text_scenarios.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/llm_work_packet.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/mcp_adapter.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/mcp_adapter_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/mcp_sdk_transport.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/mistral_client.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_call.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_capabilities.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_demand.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_discovery.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_gateway.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_gateway_accounting.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_gateway_accounting_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_response_admission.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_response_text.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_routes.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_routing_intelligence.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_routing_intelligence_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_routing_records.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/model_routing_selector.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/ngram_benchmark.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/ngram_retrieval.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/ollama_client.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/openai_responses_client.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/openai_responses_client_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/opencode_client.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/opencode_harness_adapter.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/opencode_zen_catalog.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/openrouter_client.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/operating_profile.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/option_selection.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/otel_export.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/outcome_vector.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/parameter_resolution.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/persistence.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/plugin_bundles.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/plugin_bundles_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/practitioner_context.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/practitioner_contract_guards.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/practitioner_runtime_facts.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/primitive_conformance.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/product_outcome_store.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/prompt_experiment.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/provider_failover.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/provider_pinned.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/reactive_output_store.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/reactive_output_store_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/reactive_scheduler.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/reactive_scheduler_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/reactive_worker.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/reactive_worker_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/reasoning_call.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/recovery.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/resolution.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/retrieval.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/reusable_capability_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/reusable_capability_flywheel.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/reusable_capability_harvest.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/reusable_capability_hybrid.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/reusable_capability_records.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/reusable_capability_resolution.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/route_health.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/run_history.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/run_history_paths.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/run_history_usage.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/run_history_usage_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/run_stages.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/run_validity.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/runtime_capacity.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/runtime_memory.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/runtime_observer.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/runtime_settings.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/saas_routes.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/self_tuning.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/semantic_decision.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/semantic_event_history.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/semantic_runtime.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/semantic_runtime_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/semantic_runtime_evidence.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/semantic_runtime_fixture.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/semantic_runtime_records.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/semantic_state.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/settings_loader.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/skill_discovery_projection.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/skill_registry.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/skill_registry_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/skill_state_context.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/skill_state_context_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/software_tdd_skill_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/solution_library.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/solve_control_manifest.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/source_role_orientation.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/stage_action_lineage.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/stage_action_lineage_adversarial_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/stage_assistance_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/stage_assistance_experiment.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/stage_assistance_material.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/stage_assistance_runtime_records.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/stage_evidence_projection.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/stage_evidence_records.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/stage_evidence_temporal.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/stage_evidence_values.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/stage_fingerprint.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/stage_store.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/stage_store_records.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/state_policy_evidence.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/store_serve.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/studio_operational_views.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/studio_server.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/task_compile_model.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/task_fingerprint.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/task_fingerprint_facets.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/task_frontier.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/task_region_statistics.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/task_similarity_engine.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/template_negotiation.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/terminal_layer.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/user_feedback_intelligence.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/web_fetch.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/web_search.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/workspace_backends.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/workspace_contracts.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/workspace_local.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/workspace_operation_checks.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/workspace_operations.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/workspace_optional.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/core/workspace_read.py -> loop_engine-0.1.0/src/loop_engine/core
+copying src/loop_engine/data/architecture.yaml -> loop_engine-0.1.0/src/loop_engine/data
+copying src/loop_engine/data/component_folder_map.yaml -> loop_engine-0.1.0/src/loop_engine/data
+copying src/loop_engine/data/component_interactions.yaml -> loop_engine-0.1.0/src/loop_engine/data
+copying src/loop_engine/data/component_ontology.yaml -> loop_engine-0.1.0/src/loop_engine/data
+copying src/loop_engine/data/loop-engine-benchmark-evidence.json -> loop_engine-0.1.0/src/loop_engine/data
+copying src/loop_engine/data/practitioner_context_fallback.yaml -> loop_engine-0.1.0/src/loop_engine/data
+copying src/loop_engine/data/published-harness-evidence.json -> loop_engine-0.1.0/src/loop_engine/data
+copying src/loop_engine/data/reusable_capability_hybrid_profiles.yaml -> loop_engine-0.1.0/src/loop_engine/data
+copying src/loop_engine/data/semantic_data_dictionary.yaml -> loop_engine-0.1.0/src/loop_engine/data
+copying src/loop_engine/data/terminology.yaml -> loop_engine-0.1.0/src/loop_engine/data
+copying src/loop_engine/generation/__init__.py -> loop_engine-0.1.0/src/loop_engine/generation
+copying src/loop_engine/generation/expansion.py -> loop_engine-0.1.0/src/loop_engine/generation
+copying src/loop_engine/generation/operators.py -> loop_engine-0.1.0/src/loop_engine/generation
+copying src/loop_engine/generation/model/__init__.py -> loop_engine-0.1.0/src/loop_engine/generation/model
+copying src/loop_engine/generation/model/campaign.py -> loop_engine-0.1.0/src/loop_engine/generation/model
+copying src/loop_engine/generation/model/dimensions.py -> loop_engine-0.1.0/src/loop_engine/generation/model
+copying src/loop_engine/generation/model/fragments.py -> loop_engine-0.1.0/src/loop_engine/generation/model
+copying src/loop_engine/generation/model/seeds.py -> loop_engine-0.1.0/src/loop_engine/generation/model
+copying src/loop_engine/governance/README.md -> loop_engine-0.1.0/src/loop_engine/governance
+copying src/loop_engine/governance/approval/README.md -> loop_engine-0.1.0/src/loop_engine/governance/approval
+copying src/loop_engine/governance/candidates/README.md -> loop_engine-0.1.0/src/loop_engine/governance/candidates
+copying src/loop_engine/governance/candidates/part-00000.jsonl -> loop_engine-0.1.0/src/loop_engine/governance/candidates
+copying src/loop_engine/governance/promotion/README.md -> loop_engine-0.1.0/src/loop_engine/governance/promotion
+copying src/loop_engine/governance/review/README.md -> loop_engine-0.1.0/src/loop_engine/governance/review
+copying src/loop_engine/intelligence/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence
+copying src/loop_engine/intelligence/code/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/code
+copying src/loop_engine/intelligence/code/core/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/code/core
+copying src/loop_engine/intelligence/code/core/manifest.yaml -> loop_engine-0.1.0/src/loop_engine/intelligence/code/core
+copying src/loop_engine/intelligence/code/learned/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/code/learned
+copying src/loop_engine/intelligence/code/plugin/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/code/plugin
+copying src/loop_engine/intelligence/context/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/context
+copying src/loop_engine/intelligence/context/core/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/context/core
+copying src/loop_engine/intelligence/context/core/manifest.yaml -> loop_engine-0.1.0/src/loop_engine/intelligence/context/core
+copying src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml -> loop_engine-0.1.0/src/loop_engine/intelligence/context/core
+copying src/loop_engine/intelligence/context/core/records/part-00000.jsonl -> loop_engine-0.1.0/src/loop_engine/intelligence/context/core/records
+copying src/loop_engine/intelligence/context/core/records/part-00000.manifest.json -> loop_engine-0.1.0/src/loop_engine/intelligence/context/core/records
+copying src/loop_engine/intelligence/context/learned/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/context/learned
+copying src/loop_engine/intelligence/context/plugin/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/context/plugin
+copying src/loop_engine/intelligence/runtime_history_solution/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/runtime_history_solution
+copying src/loop_engine/intelligence/runtime_history_solution/core/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/runtime_history_solution/core
+copying src/loop_engine/intelligence/runtime_history_solution/core/manifest.yaml -> loop_engine-0.1.0/src/loop_engine/intelligence/runtime_history_solution/core
+copying src/loop_engine/intelligence/runtime_history_solution/learned/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/runtime_history_solution/learned
+copying src/loop_engine/intelligence/runtime_history_solution/plugin/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/runtime_history_solution/plugin
+copying src/loop_engine/intelligence/user_feedback/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/user_feedback
+copying src/loop_engine/intelligence/user_feedback/core/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/user_feedback/core
+copying src/loop_engine/intelligence/user_feedback/learned/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/user_feedback/learned
+copying src/loop_engine/intelligence/user_feedback/plugin/README.md -> loop_engine-0.1.0/src/loop_engine/intelligence/user_feedback/plugin
+copying src/loop_engine/kernel/README.md -> loop_engine-0.1.0/src/loop_engine/kernel
+copying src/loop_engine/kernel/enforcement/README.md -> loop_engine-0.1.0/src/loop_engine/kernel/enforcement
+copying src/loop_engine/kernel/executor/README.md -> loop_engine-0.1.0/src/loop_engine/kernel/executor
+copying src/loop_engine/kernel/loader/README.md -> loop_engine-0.1.0/src/loop_engine/kernel/loader
+copying src/loop_engine/kernel/resolver/README.md -> loop_engine-0.1.0/src/loop_engine/kernel/resolver
+copying src/loop_engine/loop/__init__.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/approval_state_store.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/approval_state_store_checks.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/atomic_primitives.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/canvas.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/capability_loops.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/checklist_loop.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/delegation_checkpoint_checks.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/delegation_runtime.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/delegation_runtime_checks.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/effect_approval.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/encapsulate.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/intelligence_loops.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/intrinsic_kernel.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/kernel.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/kernel_runtime.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/lens.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/loop_capsule.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/loop_contract.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/loop_control.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/loop_definition.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/loop_definition_checks.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/loop_doctrine.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/loop_handoff.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/loop_profile_catalog.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/loop_profile_ontology.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/loop_role.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/loop_templates.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/reactive_activation.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/reactive_contract_checks.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/reactive_contracts.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/reactive_outputs.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/recursive_loop.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/runtime_context.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/service_loop_envelope.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/spawned_practitioner.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/spawned_runtime_port.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/spawned_task_checkpoint.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/spawned_task_state_store.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/spawned_task_state_store_checks.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/spawned_workspace_executor.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/spawned_workspace_executor_checks.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/loop/supervision_policy.py -> loop_engine-0.1.0/src/loop_engine/loop
+copying src/loop_engine/memory/__init__.py -> loop_engine-0.1.0/src/loop_engine/memory
+copying src/loop_engine/memory/loop_integration.py -> loop_engine-0.1.0/src/loop_engine/memory
+copying src/loop_engine/memory/episodic/__init__.py -> loop_engine-0.1.0/src/loop_engine/memory/episodic
+copying src/loop_engine/memory/episodic/record.py -> loop_engine-0.1.0/src/loop_engine/memory/episodic
+copying src/loop_engine/memory/lifecycle/__init__.py -> loop_engine-0.1.0/src/loop_engine/memory/lifecycle
+copying src/loop_engine/memory/lifecycle/lifecycle.py -> loop_engine-0.1.0/src/loop_engine/memory/lifecycle
+copying src/loop_engine/memory/model/__init__.py -> loop_engine-0.1.0/src/loop_engine/memory/model
+copying src/loop_engine/memory/model/identity.py -> loop_engine-0.1.0/src/loop_engine/memory/model
+copying src/loop_engine/memory/model/lifecycle.py -> loop_engine-0.1.0/src/loop_engine/memory/model
+copying src/loop_engine/memory/model/memory_type.py -> loop_engine-0.1.0/src/loop_engine/memory/model
+copying src/loop_engine/memory/model/reference.py -> loop_engine-0.1.0/src/loop_engine/memory/model
+copying src/loop_engine/memory/model/scope.py -> loop_engine-0.1.0/src/loop_engine/memory/model
+copying src/loop_engine/memory/procedural/__init__.py -> loop_engine-0.1.0/src/loop_engine/memory/procedural
+copying src/loop_engine/memory/procedural/control_assessment.py -> loop_engine-0.1.0/src/loop_engine/memory/procedural
+copying src/loop_engine/memory/procedural/control_assessment_checks.py -> loop_engine-0.1.0/src/loop_engine/memory/procedural
+copying src/loop_engine/memory/procedural/record.py -> loop_engine-0.1.0/src/loop_engine/memory/procedural
+copying src/loop_engine/memory/query/__init__.py -> loop_engine-0.1.0/src/loop_engine/memory/query
+copying src/loop_engine/memory/query/query.py -> loop_engine-0.1.0/src/loop_engine/memory/query
+copying src/loop_engine/memory/query/receipts.py -> loop_engine-0.1.0/src/loop_engine/memory/query
+copying src/loop_engine/memory/semantic/__init__.py -> loop_engine-0.1.0/src/loop_engine/memory/semantic
+copying src/loop_engine/memory/semantic/record.py -> loop_engine-0.1.0/src/loop_engine/memory/semantic
+copying src/loop_engine/memory/storage/__init__.py -> loop_engine-0.1.0/src/loop_engine/memory/storage
+copying src/loop_engine/memory/storage/learning_cycle.py -> loop_engine-0.1.0/src/loop_engine/memory/storage
+copying src/loop_engine/memory/storage/learning_cycle_checks.py -> loop_engine-0.1.0/src/loop_engine/memory/storage
+copying src/loop_engine/memory/storage/learning_records.py -> loop_engine-0.1.0/src/loop_engine/memory/storage
+copying src/loop_engine/memory/storage/repository.py -> loop_engine-0.1.0/src/loop_engine/memory/storage
+copying src/loop_engine/memory/storage/store.py -> loop_engine-0.1.0/src/loop_engine/memory/storage
+copying src/loop_engine/memory/working/__init__.py -> loop_engine-0.1.0/src/loop_engine/memory/working
+copying src/loop_engine/memory/working/state.py -> loop_engine-0.1.0/src/loop_engine/memory/working
+copying src/loop_engine/node/README.md -> loop_engine-0.1.0/src/loop_engine/node
+copying src/loop_engine/node/__init__.py -> loop_engine-0.1.0/src/loop_engine/node
+copying src/loop_engine/node/loop_node/README.md -> loop_engine-0.1.0/src/loop_engine/node/loop_node
+copying src/loop_engine/node/loop_node/__init__.py -> loop_engine-0.1.0/src/loop_engine/node/loop_node
+copying src/loop_engine/ontology/README.md -> loop_engine-0.1.0/src/loop_engine/ontology
+copying src/loop_engine/ontology/__init__.py -> loop_engine-0.1.0/src/loop_engine/ontology
+copying src/loop_engine/ontology/artifacts.py -> loop_engine-0.1.0/src/loop_engine/ontology
+copying src/loop_engine/ontology/catalog.py -> loop_engine-0.1.0/src/loop_engine/ontology
+copying src/loop_engine/ontology/folders.py -> loop_engine-0.1.0/src/loop_engine/ontology
+copying src/loop_engine/ontology/index.json -> loop_engine-0.1.0/src/loop_engine/ontology
+copying src/loop_engine/ontology/loop_definition_record.py -> loop_engine-0.1.0/src/loop_engine/ontology
+copying src/loop_engine/ontology/loop_node.py -> loop_engine-0.1.0/src/loop_engine/ontology
+copying src/loop_engine/ontology/node.py -> loop_engine-0.1.0/src/loop_engine/ontology
+copying src/loop_engine/ontology/ontology_checks.py -> loop_engine-0.1.0/src/loop_engine/ontology
+copying src/loop_engine/ontology/records.py -> loop_engine-0.1.0/src/loop_engine/ontology
+copying src/loop_engine/runtime/README.md -> loop_engine-0.1.0/src/loop_engine/runtime
+copying src/loop_engine/runtime/artifacts/README.md -> loop_engine-0.1.0/src/loop_engine/runtime/artifacts
+copying src/loop_engine/runtime/runs/README.md -> loop_engine-0.1.0/src/loop_engine/runtime/runs
+copying src/loop_engine/runtime/runtime_memory/README.md -> loop_engine-0.1.0/src/loop_engine/runtime/runtime_memory
+copying src/loop_engine/skills/README.md -> loop_engine-0.1.0/src/loop_engine/skills
+copying src/loop_engine/skills/software-tdd-red-green-refactor/SKILL.md -> loop_engine-0.1.0/src/loop_engine/skills/software-tdd-red-green-refactor
+copying src/loop_engine/strings/SEED-DIMENSIONS.md -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/__init__.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/ask_strategies.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/context.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/decision_schemas.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/frame.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/intelligence_strings.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/interrogation.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/knowledge.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/knowledge_state.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/notes.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/output_templates.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/prompt_fragments.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/question_engine.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/solution_shaping.py -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/strings/studio_shell.html -> loop_engine-0.1.0/src/loop_engine/strings
+copying src/loop_engine/templates/__init__.py -> loop_engine-0.1.0/src/loop_engine/templates
+copying src/loop_engine/templates/compiler.py -> loop_engine-0.1.0/src/loop_engine/templates
+copying src/loop_engine/templates/intake.py -> loop_engine-0.1.0/src/loop_engine/templates
+copying src/loop_engine/templates/library.py -> loop_engine-0.1.0/src/loop_engine/templates
+copying src/loop_engine/templates/model.py -> loop_engine-0.1.0/src/loop_engine/templates
+copying src/loop_engine.egg-info/SOURCES.txt -> loop_engine-0.1.0/src/loop_engine.egg-info
+Writing loop_engine-0.1.0/setup.cfg
+Creating tar archive
+removing 'loop_engine-0.1.0' (and everything under it)
+running egg_info
+writing src/loop_engine.egg-info/PKG-INFO
+writing dependency_links to src/loop_engine.egg-info/dependency_links.txt
+writing entry points to src/loop_engine.egg-info/entry_points.txt
+writing requirements to src/loop_engine.egg-info/requires.txt
+writing top-level names to src/loop_engine.egg-info/top_level.txt
+reading manifest file 'src/loop_engine.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file 'src/loop_engine.egg-info/SOURCES.txt'
+running bdist_wheel
+running build
+running build_py
+creating build/lib/loop_engine
+copying src/loop_engine/structure_review.py -> build/lib/loop_engine
+copying src/loop_engine/solve_cli.py -> build/lib/loop_engine
+copying src/loop_engine/semantic_freedom_conformance.py -> build/lib/loop_engine
+copying src/loop_engine/semantic_conformance.py -> build/lib/loop_engine
+copying src/loop_engine/scheduling.py -> build/lib/loop_engine
+copying src/loop_engine/runtime_ontology_check.py -> build/lib/loop_engine
+copying src/loop_engine/run_history_cli.py -> build/lib/loop_engine
+copying src/loop_engine/repository_structure.py -> build/lib/loop_engine
+copying src/loop_engine/repository_conformance.py -> build/lib/loop_engine
+copying src/loop_engine/public_runtime_conformance.py -> build/lib/loop_engine
+copying src/loop_engine/parameter_boundary_checks.py -> build/lib/loop_engine
+copying src/loop_engine/parameter_boundary.py -> build/lib/loop_engine
+copying src/loop_engine/parallel_runner.py -> build/lib/loop_engine
+copying src/loop_engine/nomenclature_conformance.py -> build/lib/loop_engine
+copying src/loop_engine/kaggle_report.py -> build/lib/loop_engine
+copying src/loop_engine/conformance_report.py -> build/lib/loop_engine
+copying src/loop_engine/cli_operations.py -> build/lib/loop_engine
+copying src/loop_engine/cli_help.py -> build/lib/loop_engine
+copying src/loop_engine/campaign.py -> build/lib/loop_engine
+copying src/loop_engine/backend_isolation.py -> build/lib/loop_engine
+copying src/loop_engine/architecture_map.py -> build/lib/loop_engine
+copying src/loop_engine/architecture_contract.py -> build/lib/loop_engine
+copying src/loop_engine/adaptive_practitioner_cli.py -> build/lib/loop_engine
+copying src/loop_engine/_self_test.py -> build/lib/loop_engine
+copying src/loop_engine/_conformance_test.py -> build/lib/loop_engine
+copying src/loop_engine/_conformance_scan.py -> build/lib/loop_engine
+copying src/loop_engine/__main__.py -> build/lib/loop_engine
+copying src/loop_engine/__init__.py -> build/lib/loop_engine
+creating build/lib/loop_engine/templates
+copying src/loop_engine/templates/model.py -> build/lib/loop_engine/templates
+copying src/loop_engine/templates/library.py -> build/lib/loop_engine/templates
+copying src/loop_engine/templates/intake.py -> build/lib/loop_engine/templates
+copying src/loop_engine/templates/compiler.py -> build/lib/loop_engine/templates
+copying src/loop_engine/templates/__init__.py -> build/lib/loop_engine/templates
+creating build/lib/loop_engine/strings
+copying src/loop_engine/strings/solution_shaping.py -> build/lib/loop_engine/strings
+copying src/loop_engine/strings/question_engine.py -> build/lib/loop_engine/strings
+copying src/loop_engine/strings/prompt_fragments.py -> build/lib/loop_engine/strings
+copying src/loop_engine/strings/output_templates.py -> build/lib/loop_engine/strings
+copying src/loop_engine/strings/notes.py -> build/lib/loop_engine/strings
+copying src/loop_engine/strings/knowledge_state.py -> build/lib/loop_engine/strings
+copying src/loop_engine/strings/knowledge.py -> build/lib/loop_engine/strings
+copying src/loop_engine/strings/interrogation.py -> build/lib/loop_engine/strings
+copying src/loop_engine/strings/intelligence_strings.py -> build/lib/loop_engine/strings
+copying src/loop_engine/strings/frame.py -> build/lib/loop_engine/strings
+copying src/loop_engine/strings/decision_schemas.py -> build/lib/loop_engine/strings
+copying src/loop_engine/strings/context.py -> build/lib/loop_engine/strings
+copying src/loop_engine/strings/ask_strategies.py -> build/lib/loop_engine/strings
+copying src/loop_engine/strings/__init__.py -> build/lib/loop_engine/strings
+creating build/lib/loop_engine/ontology
+copying src/loop_engine/ontology/records.py -> build/lib/loop_engine/ontology
+copying src/loop_engine/ontology/ontology_checks.py -> build/lib/loop_engine/ontology
+copying src/loop_engine/ontology/node.py -> build/lib/loop_engine/ontology
+copying src/loop_engine/ontology/loop_node.py -> build/lib/loop_engine/ontology
+copying src/loop_engine/ontology/loop_definition_record.py -> build/lib/loop_engine/ontology
+copying src/loop_engine/ontology/folders.py -> build/lib/loop_engine/ontology
+copying src/loop_engine/ontology/catalog.py -> build/lib/loop_engine/ontology
+copying src/loop_engine/ontology/artifacts.py -> build/lib/loop_engine/ontology
+copying src/loop_engine/ontology/__init__.py -> build/lib/loop_engine/ontology
+creating build/lib/loop_engine/node
+copying src/loop_engine/node/__init__.py -> build/lib/loop_engine/node
+creating build/lib/loop_engine/memory
+copying src/loop_engine/memory/loop_integration.py -> build/lib/loop_engine/memory
+copying src/loop_engine/memory/__init__.py -> build/lib/loop_engine/memory
+creating build/lib/loop_engine/loop
+copying src/loop_engine/loop/supervision_policy.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/spawned_workspace_executor_checks.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/spawned_workspace_executor.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/spawned_task_state_store_checks.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/spawned_task_state_store.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/spawned_task_checkpoint.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/spawned_runtime_port.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/spawned_practitioner.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/service_loop_envelope.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/runtime_context.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/recursive_loop.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/reactive_outputs.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/reactive_contracts.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/reactive_contract_checks.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/reactive_activation.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/loop_templates.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/loop_role.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/loop_profile_ontology.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/loop_profile_catalog.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/loop_handoff.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/loop_doctrine.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/loop_definition_checks.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/loop_definition.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/loop_control.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/loop_contract.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/loop_capsule.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/lens.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/kernel_runtime.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/kernel.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/intrinsic_kernel.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/intelligence_loops.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/encapsulate.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/effect_approval.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/delegation_runtime_checks.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/delegation_runtime.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/delegation_checkpoint_checks.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/checklist_loop.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/capability_loops.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/canvas.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/atomic_primitives.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/approval_state_store_checks.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/approval_state_store.py -> build/lib/loop_engine/loop
+copying src/loop_engine/loop/__init__.py -> build/lib/loop_engine/loop
+creating build/lib/loop_engine/generation
+copying src/loop_engine/generation/operators.py -> build/lib/loop_engine/generation
+copying src/loop_engine/generation/expansion.py -> build/lib/loop_engine/generation
+copying src/loop_engine/generation/__init__.py -> build/lib/loop_engine/generation
+creating build/lib/loop_engine/core
+copying src/loop_engine/core/workspace_read.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/workspace_optional.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/workspace_operations.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/workspace_operation_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/workspace_local.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/workspace_contracts.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/workspace_backends.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/web_search.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/web_fetch.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/user_feedback_intelligence.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/terminal_layer.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/template_negotiation.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/task_similarity_engine.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/task_region_statistics.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/task_frontier.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/task_fingerprint_facets.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/task_fingerprint.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/task_compile_model.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/studio_server.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/studio_operational_views.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/store_serve.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/state_policy_evidence.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/stage_store_records.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/stage_store.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/stage_fingerprint.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/stage_evidence_values.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/stage_evidence_temporal.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/stage_evidence_records.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/stage_evidence_projection.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/stage_assistance_runtime_records.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/stage_assistance_material.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/stage_assistance_experiment.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/stage_assistance_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/stage_action_lineage_adversarial_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/stage_action_lineage.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/source_role_orientation.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/solve_control_manifest.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/solution_library.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/software_tdd_skill_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/skill_state_context_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/skill_state_context.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/skill_registry_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/skill_registry.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/skill_discovery_projection.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/settings_loader.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/semantic_state.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/semantic_runtime_records.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/semantic_runtime_fixture.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/semantic_runtime_evidence.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/semantic_runtime_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/semantic_runtime.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/semantic_event_history.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/semantic_decision.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/self_tuning.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/saas_routes.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/runtime_settings.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/runtime_observer.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/runtime_memory.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/runtime_capacity.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/run_validity.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/run_stages.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/run_history_usage_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/run_history_usage.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/run_history_paths.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/run_history.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/route_health.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/reusable_capability_resolution.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/reusable_capability_records.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/reusable_capability_hybrid.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/reusable_capability_harvest.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/reusable_capability_flywheel.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/reusable_capability_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/retrieval.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/resolution.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/recovery.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/reasoning_call.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/reactive_worker_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/reactive_worker.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/reactive_scheduler_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/reactive_scheduler.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/reactive_output_store_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/reactive_output_store.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/provider_pinned.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/provider_failover.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/prompt_experiment.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/product_outcome_store.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/primitive_conformance.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/practitioner_runtime_facts.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/practitioner_contract_guards.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/practitioner_context.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/plugin_bundles_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/plugin_bundles.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/persistence.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/parameter_resolution.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/outcome_vector.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/otel_export.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/option_selection.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/operating_profile.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/openrouter_client.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/opencode_zen_catalog.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/opencode_harness_adapter.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/opencode_client.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/openai_responses_client_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/openai_responses_client.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/ollama_client.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/ngram_retrieval.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/ngram_benchmark.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_routing_selector.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_routing_records.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_routing_intelligence_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_routing_intelligence.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_routes.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_response_text.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_response_admission.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_gateway_accounting_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_gateway_accounting.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_gateway.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_discovery.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_demand.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_capabilities.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/model_call.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/mistral_client.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/mcp_sdk_transport.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/mcp_adapter_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/mcp_adapter.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/llm_work_packet.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/live_text_scenarios.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/live_model_verification.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/lifecycle_extensions_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/lifecycle_extensions.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/knowledge_loader.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/intelligence_registry.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/intelligence_query_contracts.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/intelligence_portfolio_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/intelligence_portfolio.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/intelligence_layers.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/information_update_evidence.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/information_theory_evidence_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/information_theory_evidence.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/information_theory_adversarial_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/information_evidence_contracts.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/information_access_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/information_access.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/harness_intelligence_bridge.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/generated_project_artifact_validation.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/generated_project.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/facets.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/external_harness_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/external_harness_adapters.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/external_harness.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/extension_discovery.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/event_vocabulary.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/duckdb_catalog.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/development_planning_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/development_planning.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/development_governance_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/development_governance.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/development_execution_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/development_execution.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/decision_outcome.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/custom_endpoint.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/convergence.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/context_pack_manifest.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/context_ontology.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/context_classification.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/context_catalog.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/context_budget.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/context_artifacts.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/config.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/component_inventory.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/component_contracts.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/cognitive_grammar.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/code_intelligence_assets.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/choice.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/capability_rejection.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/capability_directory.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/brave_search.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/boundary_runtime_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/boundary_registry.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/autoconfigure.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/astra_route_record_identity.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/astra_route_planning.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/astra_route_authority_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/astra_route_authority.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/asset_lifecycle.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/asset_class.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/api_quality.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_verification.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_validation.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_supervision.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_source.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_reuse.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_result.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_recovery.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_records.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_prompting.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_project.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_planning.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_orientation_capabilities.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_orientation.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_deterministic.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_capabilities.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner_acceptance_checks.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/adaptive_practitioner.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/action_fence.py -> build/lib/loop_engine/core
+copying src/loop_engine/core/__init__.py -> build/lib/loop_engine/core
+creating build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/string_foundry.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solve_terminal.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solve_runtime.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solve_request_adaptation.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solve_region_evidence.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solve_mode_checks.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_records.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_model_port.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_graph_validation.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_graph_checks.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_graph_builder.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_graph.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_compiler.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_canvas_checks.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/solution_canvas.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/smoke_ladder.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/self_improvement_loop.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/runtime_contracts.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/run_quality.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/run_playback.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/run_analytics.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/public_examples.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/measurement.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/material_questions.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/loop_report.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/logic_ast.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/live_run_demo.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/learning_bundle.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/kaggle_executor.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/housekeeping.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/guided_setup.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/guidance_ledger.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/follow_up.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/core_engine_proof.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/context_seed.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/complex_task_published_evidence.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/complex_task_native_evidence.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/complex_task_benchmark.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/capture.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/campaign_runner.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/blueprint.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/ascii_views_checks.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/ascii_views.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/architecture_diagram_text.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/architecture_diagram.py -> build/lib/loop_engine/code_nodes
+copying src/loop_engine/code_nodes/__init__.py -> build/lib/loop_engine/code_nodes
+creating build/lib/loop_engine/catalog
+copying src/loop_engine/catalog/registry.py -> build/lib/loop_engine/catalog
+copying src/loop_engine/catalog/query.py -> build/lib/loop_engine/catalog
+copying src/loop_engine/catalog/protocol.py -> build/lib/loop_engine/catalog
+copying src/loop_engine/catalog/handshake.py -> build/lib/loop_engine/catalog
+copying src/loop_engine/catalog/conformance.py -> build/lib/loop_engine/catalog
+copying src/loop_engine/catalog/composite.py -> build/lib/loop_engine/catalog
+copying src/loop_engine/catalog/capabilities.py -> build/lib/loop_engine/catalog
+copying src/loop_engine/catalog/__init__.py -> build/lib/loop_engine/catalog
+creating build/lib/loop_engine/node/loop_node
+copying src/loop_engine/node/loop_node/__init__.py -> build/lib/loop_engine/node/loop_node
+creating build/lib/loop_engine/memory/working
+copying src/loop_engine/memory/working/state.py -> build/lib/loop_engine/memory/working
+copying src/loop_engine/memory/working/__init__.py -> build/lib/loop_engine/memory/working
+creating build/lib/loop_engine/memory/storage
+copying src/loop_engine/memory/storage/store.py -> build/lib/loop_engine/memory/storage
+copying src/loop_engine/memory/storage/repository.py -> build/lib/loop_engine/memory/storage
+copying src/loop_engine/memory/storage/learning_records.py -> build/lib/loop_engine/memory/storage
+copying src/loop_engine/memory/storage/learning_cycle_checks.py -> build/lib/loop_engine/memory/storage
+copying src/loop_engine/memory/storage/learning_cycle.py -> build/lib/loop_engine/memory/storage
+copying src/loop_engine/memory/storage/__init__.py -> build/lib/loop_engine/memory/storage
+creating build/lib/loop_engine/memory/semantic
+copying src/loop_engine/memory/semantic/record.py -> build/lib/loop_engine/memory/semantic
+copying src/loop_engine/memory/semantic/__init__.py -> build/lib/loop_engine/memory/semantic
+creating build/lib/loop_engine/memory/query
+copying src/loop_engine/memory/query/receipts.py -> build/lib/loop_engine/memory/query
+copying src/loop_engine/memory/query/query.py -> build/lib/loop_engine/memory/query
+copying src/loop_engine/memory/query/__init__.py -> build/lib/loop_engine/memory/query
+creating build/lib/loop_engine/memory/procedural
+copying src/loop_engine/memory/procedural/record.py -> build/lib/loop_engine/memory/procedural
+copying src/loop_engine/memory/procedural/control_assessment_checks.py -> build/lib/loop_engine/memory/procedural
+copying src/loop_engine/memory/procedural/control_assessment.py -> build/lib/loop_engine/memory/procedural
+copying src/loop_engine/memory/procedural/__init__.py -> build/lib/loop_engine/memory/procedural
+creating build/lib/loop_engine/memory/model
+copying src/loop_engine/memory/model/scope.py -> build/lib/loop_engine/memory/model
+copying src/loop_engine/memory/model/reference.py -> build/lib/loop_engine/memory/model
+copying src/loop_engine/memory/model/memory_type.py -> build/lib/loop_engine/memory/model
+copying src/loop_engine/memory/model/lifecycle.py -> build/lib/loop_engine/memory/model
+copying src/loop_engine/memory/model/identity.py -> build/lib/loop_engine/memory/model
+copying src/loop_engine/memory/model/__init__.py -> build/lib/loop_engine/memory/model
+creating build/lib/loop_engine/memory/lifecycle
+copying src/loop_engine/memory/lifecycle/lifecycle.py -> build/lib/loop_engine/memory/lifecycle
+copying src/loop_engine/memory/lifecycle/__init__.py -> build/lib/loop_engine/memory/lifecycle
+creating build/lib/loop_engine/memory/episodic
+copying src/loop_engine/memory/episodic/record.py -> build/lib/loop_engine/memory/episodic
+copying src/loop_engine/memory/episodic/__init__.py -> build/lib/loop_engine/memory/episodic
+creating build/lib/loop_engine/generation/model
+copying src/loop_engine/generation/model/seeds.py -> build/lib/loop_engine/generation/model
+copying src/loop_engine/generation/model/fragments.py -> build/lib/loop_engine/generation/model
+copying src/loop_engine/generation/model/dimensions.py -> build/lib/loop_engine/generation/model
+copying src/loop_engine/generation/model/campaign.py -> build/lib/loop_engine/generation/model
+copying src/loop_engine/generation/model/__init__.py -> build/lib/loop_engine/generation/model
+creating build/lib/loop_engine/catalog/stores
+copying src/loop_engine/catalog/stores/sqlite_store.py -> build/lib/loop_engine/catalog/stores
+copying src/loop_engine/catalog/stores/package_jsonl.py -> build/lib/loop_engine/catalog/stores
+copying src/loop_engine/catalog/stores/in_memory.py -> build/lib/loop_engine/catalog/stores
+copying src/loop_engine/catalog/stores/duckdb_store.py -> build/lib/loop_engine/catalog/stores
+copying src/loop_engine/catalog/stores/duckdb_files.py -> build/lib/loop_engine/catalog/stores
+copying src/loop_engine/catalog/stores/__init__.py -> build/lib/loop_engine/catalog/stores
+running egg_info
+writing src/loop_engine.egg-info/PKG-INFO
+writing dependency_links to src/loop_engine.egg-info/dependency_links.txt
+writing entry points to src/loop_engine.egg-info/entry_points.txt
+writing requirements to src/loop_engine.egg-info/requires.txt
+writing top-level names to src/loop_engine.egg-info/top_level.txt
+reading manifest file 'src/loop_engine.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file 'src/loop_engine.egg-info/SOURCES.txt'
+copying src/loop_engine/ARCHITECTURE-MAP.md -> build/lib/loop_engine
+copying src/loop_engine/architecture_conformance.json -> build/lib/loop_engine
+copying src/loop_engine/forbidden_paths.json -> build/lib/loop_engine
+copying src/loop_engine/strings/SEED-DIMENSIONS.md -> build/lib/loop_engine/strings
+creating build/lib/loop_engine/skills
+copying src/loop_engine/skills/README.md -> build/lib/loop_engine/skills
+creating build/lib/loop_engine/skills/software-tdd-red-green-refactor
+copying src/loop_engine/skills/software-tdd-red-green-refactor/SKILL.md -> build/lib/loop_engine/skills/software-tdd-red-green-refactor
+creating build/lib/loop_engine/runtime
+copying src/loop_engine/runtime/README.md -> build/lib/loop_engine/runtime
+creating build/lib/loop_engine/runtime/runtime_memory
+copying src/loop_engine/runtime/runtime_memory/README.md -> build/lib/loop_engine/runtime/runtime_memory
+creating build/lib/loop_engine/runtime/runs
+copying src/loop_engine/runtime/runs/README.md -> build/lib/loop_engine/runtime/runs
+creating build/lib/loop_engine/runtime/artifacts
+copying src/loop_engine/runtime/artifacts/README.md -> build/lib/loop_engine/runtime/artifacts
+copying src/loop_engine/ontology/README.md -> build/lib/loop_engine/ontology
+copying src/loop_engine/node/README.md -> build/lib/loop_engine/node
+copying src/loop_engine/node/loop_node/README.md -> build/lib/loop_engine/node/loop_node
+creating build/lib/loop_engine/kernel
+copying src/loop_engine/kernel/README.md -> build/lib/loop_engine/kernel
+creating build/lib/loop_engine/kernel/resolver
+copying src/loop_engine/kernel/resolver/README.md -> build/lib/loop_engine/kernel/resolver
+creating build/lib/loop_engine/kernel/loader
+copying src/loop_engine/kernel/loader/README.md -> build/lib/loop_engine/kernel/loader
+creating build/lib/loop_engine/kernel/executor
+copying src/loop_engine/kernel/executor/README.md -> build/lib/loop_engine/kernel/executor
+creating build/lib/loop_engine/kernel/enforcement
+copying src/loop_engine/kernel/enforcement/README.md -> build/lib/loop_engine/kernel/enforcement
+creating build/lib/loop_engine/intelligence
+copying src/loop_engine/intelligence/README.md -> build/lib/loop_engine/intelligence
+creating build/lib/loop_engine/intelligence/user_feedback
+copying src/loop_engine/intelligence/user_feedback/README.md -> build/lib/loop_engine/intelligence/user_feedback
+creating build/lib/loop_engine/intelligence/user_feedback/plugin
+copying src/loop_engine/intelligence/user_feedback/plugin/README.md -> build/lib/loop_engine/intelligence/user_feedback/plugin
+creating build/lib/loop_engine/intelligence/user_feedback/learned
+copying src/loop_engine/intelligence/user_feedback/learned/README.md -> build/lib/loop_engine/intelligence/user_feedback/learned
+creating build/lib/loop_engine/intelligence/user_feedback/core
+copying src/loop_engine/intelligence/user_feedback/core/README.md -> build/lib/loop_engine/intelligence/user_feedback/core
+creating build/lib/loop_engine/intelligence/runtime_history_solution
+copying src/loop_engine/intelligence/runtime_history_solution/README.md -> build/lib/loop_engine/intelligence/runtime_history_solution
+creating build/lib/loop_engine/intelligence/runtime_history_solution/plugin
+copying src/loop_engine/intelligence/runtime_history_solution/plugin/README.md -> build/lib/loop_engine/intelligence/runtime_history_solution/plugin
+creating build/lib/loop_engine/intelligence/runtime_history_solution/learned
+copying src/loop_engine/intelligence/runtime_history_solution/learned/README.md -> build/lib/loop_engine/intelligence/runtime_history_solution/learned
+creating build/lib/loop_engine/intelligence/runtime_history_solution/core
+copying src/loop_engine/intelligence/runtime_history_solution/core/README.md -> build/lib/loop_engine/intelligence/runtime_history_solution/core
+creating build/lib/loop_engine/intelligence/context
+copying src/loop_engine/intelligence/context/README.md -> build/lib/loop_engine/intelligence/context
+creating build/lib/loop_engine/intelligence/context/plugin
+copying src/loop_engine/intelligence/context/plugin/README.md -> build/lib/loop_engine/intelligence/context/plugin
+creating build/lib/loop_engine/intelligence/context/learned
+copying src/loop_engine/intelligence/context/learned/README.md -> build/lib/loop_engine/intelligence/context/learned
+creating build/lib/loop_engine/intelligence/context/core
+copying src/loop_engine/intelligence/context/core/README.md -> build/lib/loop_engine/intelligence/context/core
+creating build/lib/loop_engine/intelligence/code
+copying src/loop_engine/intelligence/code/README.md -> build/lib/loop_engine/intelligence/code
+creating build/lib/loop_engine/intelligence/code/plugin
+copying src/loop_engine/intelligence/code/plugin/README.md -> build/lib/loop_engine/intelligence/code/plugin
+creating build/lib/loop_engine/intelligence/code/learned
+copying src/loop_engine/intelligence/code/learned/README.md -> build/lib/loop_engine/intelligence/code/learned
+creating build/lib/loop_engine/intelligence/code/core
+copying src/loop_engine/intelligence/code/core/README.md -> build/lib/loop_engine/intelligence/code/core
+creating build/lib/loop_engine/governance
+copying src/loop_engine/governance/README.md -> build/lib/loop_engine/governance
+creating build/lib/loop_engine/governance/review
+copying src/loop_engine/governance/review/README.md -> build/lib/loop_engine/governance/review
+creating build/lib/loop_engine/governance/promotion
+copying src/loop_engine/governance/promotion/README.md -> build/lib/loop_engine/governance/promotion
+creating build/lib/loop_engine/governance/candidates
+copying src/loop_engine/governance/candidates/README.md -> build/lib/loop_engine/governance/candidates
+creating build/lib/loop_engine/governance/approval
+copying src/loop_engine/governance/approval/README.md -> build/lib/loop_engine/governance/approval
+copying src/loop_engine/core/README.md -> build/lib/loop_engine/core
+copying src/loop_engine/catalog/README.md -> build/lib/loop_engine/catalog
+copying src/loop_engine/strings/studio_shell.html -> build/lib/loop_engine/strings
+copying src/loop_engine/ontology/index.json -> build/lib/loop_engine/ontology
+creating build/lib/loop_engine/intelligence/context/core/records
+copying src/loop_engine/intelligence/context/core/records/part-00000.manifest.json -> build/lib/loop_engine/intelligence/context/core/records
+creating build/lib/loop_engine/data
+copying src/loop_engine/data/published-harness-evidence.json -> build/lib/loop_engine/data
+copying src/loop_engine/data/loop-engine-benchmark-evidence.json -> build/lib/loop_engine/data
+copying src/loop_engine/intelligence/context/core/records/part-00000.jsonl -> build/lib/loop_engine/intelligence/context/core/records
+copying src/loop_engine/governance/candidates/part-00000.jsonl -> build/lib/loop_engine/governance/candidates
+copying src/loop_engine/intelligence/runtime_history_solution/core/manifest.yaml -> build/lib/loop_engine/intelligence/runtime_history_solution/core
+copying src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml -> build/lib/loop_engine/intelligence/context/core
+copying src/loop_engine/intelligence/context/core/manifest.yaml -> build/lib/loop_engine/intelligence/context/core
+copying src/loop_engine/intelligence/code/core/manifest.yaml -> build/lib/loop_engine/intelligence/code/core
+copying src/loop_engine/data/terminology.yaml -> build/lib/loop_engine/data
+copying src/loop_engine/data/semantic_data_dictionary.yaml -> build/lib/loop_engine/data
+copying src/loop_engine/data/reusable_capability_hybrid_profiles.yaml -> build/lib/loop_engine/data
+copying src/loop_engine/data/practitioner_context_fallback.yaml -> build/lib/loop_engine/data
+copying src/loop_engine/data/component_ontology.yaml -> build/lib/loop_engine/data
+copying src/loop_engine/data/component_interactions.yaml -> build/lib/loop_engine/data
+copying src/loop_engine/data/component_folder_map.yaml -> build/lib/loop_engine/data
+copying src/loop_engine/data/architecture.yaml -> build/lib/loop_engine/data
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/loop_engine
+creating build/bdist.linux-x86_64/wheel/loop_engine/data
+copying build/lib/loop_engine/data/architecture.yaml -> build/bdist.linux-x86_64/wheel/./loop_engine/data
+copying build/lib/loop_engine/data/component_folder_map.yaml -> build/bdist.linux-x86_64/wheel/./loop_engine/data
+copying build/lib/loop_engine/data/component_interactions.yaml -> build/bdist.linux-x86_64/wheel/./loop_engine/data
+copying build/lib/loop_engine/data/component_ontology.yaml -> build/bdist.linux-x86_64/wheel/./loop_engine/data
+copying build/lib/loop_engine/data/practitioner_context_fallback.yaml -> build/bdist.linux-x86_64/wheel/./loop_engine/data
+copying build/lib/loop_engine/data/reusable_capability_hybrid_profiles.yaml -> build/bdist.linux-x86_64/wheel/./loop_engine/data
+copying build/lib/loop_engine/data/semantic_data_dictionary.yaml -> build/bdist.linux-x86_64/wheel/./loop_engine/data
+copying build/lib/loop_engine/data/terminology.yaml -> build/bdist.linux-x86_64/wheel/./loop_engine/data
+copying build/lib/loop_engine/data/loop-engine-benchmark-evidence.json -> build/bdist.linux-x86_64/wheel/./loop_engine/data
+copying build/lib/loop_engine/data/published-harness-evidence.json -> build/bdist.linux-x86_64/wheel/./loop_engine/data
+creating build/bdist.linux-x86_64/wheel/loop_engine/governance
+creating build/bdist.linux-x86_64/wheel/loop_engine/governance/approval
+copying build/lib/loop_engine/governance/approval/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/governance/approval
+creating build/bdist.linux-x86_64/wheel/loop_engine/governance/candidates
+copying build/lib/loop_engine/governance/candidates/part-00000.jsonl -> build/bdist.linux-x86_64/wheel/./loop_engine/governance/candidates
+copying build/lib/loop_engine/governance/candidates/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/governance/candidates
+creating build/bdist.linux-x86_64/wheel/loop_engine/governance/promotion
+copying build/lib/loop_engine/governance/promotion/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/governance/promotion
+creating build/bdist.linux-x86_64/wheel/loop_engine/governance/review
+copying build/lib/loop_engine/governance/review/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/governance/review
+copying build/lib/loop_engine/governance/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/governance
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/code
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/code/core
+copying build/lib/loop_engine/intelligence/code/core/manifest.yaml -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/code/core
+copying build/lib/loop_engine/intelligence/code/core/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/code/core
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/code/learned
+copying build/lib/loop_engine/intelligence/code/learned/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/code/learned
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/code/plugin
+copying build/lib/loop_engine/intelligence/code/plugin/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/code/plugin
+copying build/lib/loop_engine/intelligence/code/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/code
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/context
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/context/core
+copying build/lib/loop_engine/intelligence/context/core/manifest.yaml -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/context/core
+copying build/lib/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/context/core
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/context/core/records
+copying build/lib/loop_engine/intelligence/context/core/records/part-00000.jsonl -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/context/core/records
+copying build/lib/loop_engine/intelligence/context/core/records/part-00000.manifest.json -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/context/core/records
+copying build/lib/loop_engine/intelligence/context/core/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/context/core
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/context/learned
+copying build/lib/loop_engine/intelligence/context/learned/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/context/learned
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/context/plugin
+copying build/lib/loop_engine/intelligence/context/plugin/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/context/plugin
+copying build/lib/loop_engine/intelligence/context/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/context
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/runtime_history_solution
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/runtime_history_solution/core
+copying build/lib/loop_engine/intelligence/runtime_history_solution/core/manifest.yaml -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/runtime_history_solution/core
+copying build/lib/loop_engine/intelligence/runtime_history_solution/core/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/runtime_history_solution/core
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/runtime_history_solution/learned
+copying build/lib/loop_engine/intelligence/runtime_history_solution/learned/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/runtime_history_solution/learned
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/runtime_history_solution/plugin
+copying build/lib/loop_engine/intelligence/runtime_history_solution/plugin/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/runtime_history_solution/plugin
+copying build/lib/loop_engine/intelligence/runtime_history_solution/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/runtime_history_solution
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/user_feedback
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/user_feedback/core
+copying build/lib/loop_engine/intelligence/user_feedback/core/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/user_feedback/core
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/user_feedback/learned
+copying build/lib/loop_engine/intelligence/user_feedback/learned/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/user_feedback/learned
+creating build/bdist.linux-x86_64/wheel/loop_engine/intelligence/user_feedback/plugin
+copying build/lib/loop_engine/intelligence/user_feedback/plugin/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/user_feedback/plugin
+copying build/lib/loop_engine/intelligence/user_feedback/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence/user_feedback
+copying build/lib/loop_engine/intelligence/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/intelligence
+creating build/bdist.linux-x86_64/wheel/loop_engine/kernel
+creating build/bdist.linux-x86_64/wheel/loop_engine/kernel/enforcement
+copying build/lib/loop_engine/kernel/enforcement/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/kernel/enforcement
+creating build/bdist.linux-x86_64/wheel/loop_engine/kernel/executor
+copying build/lib/loop_engine/kernel/executor/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/kernel/executor
+creating build/bdist.linux-x86_64/wheel/loop_engine/kernel/loader
+copying build/lib/loop_engine/kernel/loader/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/kernel/loader
+creating build/bdist.linux-x86_64/wheel/loop_engine/kernel/resolver
+copying build/lib/loop_engine/kernel/resolver/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/kernel/resolver
+copying build/lib/loop_engine/kernel/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/kernel
+creating build/bdist.linux-x86_64/wheel/loop_engine/runtime
+creating build/bdist.linux-x86_64/wheel/loop_engine/runtime/artifacts
+copying build/lib/loop_engine/runtime/artifacts/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/runtime/artifacts
+creating build/bdist.linux-x86_64/wheel/loop_engine/runtime/runs
+copying build/lib/loop_engine/runtime/runs/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/runtime/runs
+creating build/bdist.linux-x86_64/wheel/loop_engine/runtime/runtime_memory
+copying build/lib/loop_engine/runtime/runtime_memory/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/runtime/runtime_memory
+copying build/lib/loop_engine/runtime/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/runtime
+creating build/bdist.linux-x86_64/wheel/loop_engine/skills
+creating build/bdist.linux-x86_64/wheel/loop_engine/skills/software-tdd-red-green-refactor
+copying build/lib/loop_engine/skills/software-tdd-red-green-refactor/SKILL.md -> build/bdist.linux-x86_64/wheel/./loop_engine/skills/software-tdd-red-green-refactor
+copying build/lib/loop_engine/skills/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/skills
+copying build/lib/loop_engine/forbidden_paths.json -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/architecture_conformance.json -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/ARCHITECTURE-MAP.md -> build/bdist.linux-x86_64/wheel/./loop_engine
+creating build/bdist.linux-x86_64/wheel/loop_engine/catalog
+copying build/lib/loop_engine/catalog/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog
+creating build/bdist.linux-x86_64/wheel/loop_engine/catalog/stores
+copying build/lib/loop_engine/catalog/stores/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog/stores
+copying build/lib/loop_engine/catalog/stores/duckdb_files.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog/stores
+copying build/lib/loop_engine/catalog/stores/duckdb_store.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog/stores
+copying build/lib/loop_engine/catalog/stores/in_memory.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog/stores
+copying build/lib/loop_engine/catalog/stores/package_jsonl.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog/stores
+copying build/lib/loop_engine/catalog/stores/sqlite_store.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog/stores
+copying build/lib/loop_engine/catalog/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog
+copying build/lib/loop_engine/catalog/capabilities.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog
+copying build/lib/loop_engine/catalog/composite.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog
+copying build/lib/loop_engine/catalog/conformance.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog
+copying build/lib/loop_engine/catalog/handshake.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog
+copying build/lib/loop_engine/catalog/protocol.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog
+copying build/lib/loop_engine/catalog/query.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog
+copying build/lib/loop_engine/catalog/registry.py -> build/bdist.linux-x86_64/wheel/./loop_engine/catalog
+creating build/bdist.linux-x86_64/wheel/loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/architecture_diagram.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/architecture_diagram_text.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/ascii_views.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/ascii_views_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/blueprint.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/campaign_runner.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/capture.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/complex_task_benchmark.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/complex_task_native_evidence.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/complex_task_published_evidence.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/context_seed.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/core_engine_proof.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/follow_up.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/guidance_ledger.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/guided_setup.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/housekeeping.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/kaggle_executor.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/learning_bundle.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/live_run_demo.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/logic_ast.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/loop_report.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/material_questions.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/measurement.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/public_examples.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/run_analytics.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/run_playback.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/run_quality.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/runtime_contracts.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/self_improvement_loop.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/smoke_ladder.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solution_canvas.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solution_canvas_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solution_compiler.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solution_graph.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solution_graph_builder.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solution_graph_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solution_graph_validation.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solution_model_port.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solution_records.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solve_mode_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solve_region_evidence.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solve_request_adaptation.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solve_runtime.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/solve_terminal.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+copying build/lib/loop_engine/code_nodes/string_foundry.py -> build/bdist.linux-x86_64/wheel/./loop_engine/code_nodes
+creating build/bdist.linux-x86_64/wheel/loop_engine/core
+copying build/lib/loop_engine/core/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/action_fence.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_acceptance_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_capabilities.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_deterministic.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_orientation.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_orientation_capabilities.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_planning.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_project.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_prompting.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_records.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_recovery.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_result.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_reuse.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_source.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_supervision.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_validation.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/adaptive_practitioner_verification.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/api_quality.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/asset_class.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/asset_lifecycle.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/astra_route_authority.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/astra_route_authority_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/astra_route_planning.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/astra_route_record_identity.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/autoconfigure.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/boundary_registry.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/boundary_runtime_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/brave_search.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/capability_directory.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/capability_rejection.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/choice.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/code_intelligence_assets.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/cognitive_grammar.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/component_contracts.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/component_inventory.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/config.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/context_artifacts.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/context_budget.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/context_catalog.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/context_classification.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/context_ontology.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/context_pack_manifest.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/convergence.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/custom_endpoint.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/decision_outcome.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/development_execution.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/development_execution_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/development_governance.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/development_governance_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/development_planning.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/development_planning_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/duckdb_catalog.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/event_vocabulary.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/extension_discovery.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/external_harness.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/external_harness_adapters.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/external_harness_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/facets.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/generated_project.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/generated_project_artifact_validation.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/harness_intelligence_bridge.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/information_access.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/information_access_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/information_evidence_contracts.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/information_theory_adversarial_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/information_theory_evidence.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/information_theory_evidence_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/information_update_evidence.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/intelligence_layers.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/intelligence_portfolio.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/intelligence_portfolio_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/intelligence_query_contracts.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/intelligence_registry.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/knowledge_loader.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/lifecycle_extensions.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/lifecycle_extensions_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/live_model_verification.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/live_text_scenarios.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/llm_work_packet.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/mcp_adapter.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/mcp_adapter_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/mcp_sdk_transport.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/mistral_client.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_call.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_capabilities.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_demand.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_discovery.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_gateway.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_gateway_accounting.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_gateway_accounting_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_response_admission.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_response_text.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_routes.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_routing_intelligence.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_routing_intelligence_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_routing_records.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/model_routing_selector.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/ngram_benchmark.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/ngram_retrieval.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/ollama_client.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/openai_responses_client.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/openai_responses_client_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/opencode_client.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/opencode_harness_adapter.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/opencode_zen_catalog.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/openrouter_client.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/operating_profile.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/option_selection.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/otel_export.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/outcome_vector.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/parameter_resolution.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/persistence.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/plugin_bundles.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/plugin_bundles_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/practitioner_context.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/practitioner_contract_guards.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/practitioner_runtime_facts.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/primitive_conformance.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/product_outcome_store.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/prompt_experiment.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/provider_failover.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/provider_pinned.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/reactive_output_store.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/reactive_output_store_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/reactive_scheduler.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/reactive_scheduler_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/reactive_worker.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/reactive_worker_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/reasoning_call.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/recovery.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/resolution.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/retrieval.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/reusable_capability_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/reusable_capability_flywheel.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/reusable_capability_harvest.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/reusable_capability_hybrid.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/reusable_capability_records.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/reusable_capability_resolution.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/route_health.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/run_history.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/run_history_paths.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/run_history_usage.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/run_history_usage_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/run_stages.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/run_validity.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/runtime_capacity.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/runtime_memory.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/runtime_observer.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/runtime_settings.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/saas_routes.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/self_tuning.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/semantic_decision.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/semantic_event_history.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/semantic_runtime.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/semantic_runtime_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/semantic_runtime_evidence.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/semantic_runtime_fixture.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/semantic_runtime_records.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/semantic_state.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/settings_loader.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/skill_discovery_projection.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/skill_registry.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/skill_registry_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/skill_state_context.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/skill_state_context_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/software_tdd_skill_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/solution_library.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/solve_control_manifest.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/source_role_orientation.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/stage_action_lineage.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/stage_action_lineage_adversarial_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/stage_assistance_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/stage_assistance_experiment.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/stage_assistance_material.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/stage_assistance_runtime_records.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/stage_evidence_projection.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/stage_evidence_records.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/stage_evidence_temporal.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/stage_evidence_values.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/stage_fingerprint.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/stage_store.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/stage_store_records.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/state_policy_evidence.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/store_serve.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/studio_operational_views.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/studio_server.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/task_compile_model.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/task_fingerprint.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/task_fingerprint_facets.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/task_frontier.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/task_region_statistics.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/task_similarity_engine.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/template_negotiation.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/terminal_layer.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/user_feedback_intelligence.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/web_fetch.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/web_search.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/workspace_backends.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/workspace_contracts.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/workspace_local.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/workspace_operation_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/workspace_operations.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/workspace_optional.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+copying build/lib/loop_engine/core/workspace_read.py -> build/bdist.linux-x86_64/wheel/./loop_engine/core
+creating build/bdist.linux-x86_64/wheel/loop_engine/generation
+creating build/bdist.linux-x86_64/wheel/loop_engine/generation/model
+copying build/lib/loop_engine/generation/model/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/generation/model
+copying build/lib/loop_engine/generation/model/campaign.py -> build/bdist.linux-x86_64/wheel/./loop_engine/generation/model
+copying build/lib/loop_engine/generation/model/dimensions.py -> build/bdist.linux-x86_64/wheel/./loop_engine/generation/model
+copying build/lib/loop_engine/generation/model/fragments.py -> build/bdist.linux-x86_64/wheel/./loop_engine/generation/model
+copying build/lib/loop_engine/generation/model/seeds.py -> build/bdist.linux-x86_64/wheel/./loop_engine/generation/model
+copying build/lib/loop_engine/generation/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/generation
+copying build/lib/loop_engine/generation/expansion.py -> build/bdist.linux-x86_64/wheel/./loop_engine/generation
+copying build/lib/loop_engine/generation/operators.py -> build/bdist.linux-x86_64/wheel/./loop_engine/generation
+creating build/bdist.linux-x86_64/wheel/loop_engine/loop
+copying build/lib/loop_engine/loop/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/approval_state_store.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/approval_state_store_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/atomic_primitives.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/canvas.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/capability_loops.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/checklist_loop.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/delegation_checkpoint_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/delegation_runtime.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/delegation_runtime_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/effect_approval.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/encapsulate.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/intelligence_loops.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/intrinsic_kernel.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/kernel.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/kernel_runtime.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/lens.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/loop_capsule.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/loop_contract.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/loop_control.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/loop_definition.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/loop_definition_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/loop_doctrine.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/loop_handoff.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/loop_profile_catalog.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/loop_profile_ontology.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/loop_role.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/loop_templates.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/reactive_activation.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/reactive_contract_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/reactive_contracts.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/reactive_outputs.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/recursive_loop.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/runtime_context.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/service_loop_envelope.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/spawned_practitioner.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/spawned_runtime_port.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/spawned_task_checkpoint.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/spawned_task_state_store.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/spawned_task_state_store_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/spawned_workspace_executor.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/spawned_workspace_executor_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+copying build/lib/loop_engine/loop/supervision_policy.py -> build/bdist.linux-x86_64/wheel/./loop_engine/loop
+creating build/bdist.linux-x86_64/wheel/loop_engine/memory
+creating build/bdist.linux-x86_64/wheel/loop_engine/memory/episodic
+copying build/lib/loop_engine/memory/episodic/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/episodic
+copying build/lib/loop_engine/memory/episodic/record.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/episodic
+creating build/bdist.linux-x86_64/wheel/loop_engine/memory/lifecycle
+copying build/lib/loop_engine/memory/lifecycle/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/lifecycle
+copying build/lib/loop_engine/memory/lifecycle/lifecycle.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/lifecycle
+creating build/bdist.linux-x86_64/wheel/loop_engine/memory/model
+copying build/lib/loop_engine/memory/model/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/model
+copying build/lib/loop_engine/memory/model/identity.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/model
+copying build/lib/loop_engine/memory/model/lifecycle.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/model
+copying build/lib/loop_engine/memory/model/memory_type.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/model
+copying build/lib/loop_engine/memory/model/reference.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/model
+copying build/lib/loop_engine/memory/model/scope.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/model
+creating build/bdist.linux-x86_64/wheel/loop_engine/memory/procedural
+copying build/lib/loop_engine/memory/procedural/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/procedural
+copying build/lib/loop_engine/memory/procedural/control_assessment.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/procedural
+copying build/lib/loop_engine/memory/procedural/control_assessment_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/procedural
+copying build/lib/loop_engine/memory/procedural/record.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/procedural
+creating build/bdist.linux-x86_64/wheel/loop_engine/memory/query
+copying build/lib/loop_engine/memory/query/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/query
+copying build/lib/loop_engine/memory/query/query.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/query
+copying build/lib/loop_engine/memory/query/receipts.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/query
+creating build/bdist.linux-x86_64/wheel/loop_engine/memory/semantic
+copying build/lib/loop_engine/memory/semantic/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/semantic
+copying build/lib/loop_engine/memory/semantic/record.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/semantic
+creating build/bdist.linux-x86_64/wheel/loop_engine/memory/storage
+copying build/lib/loop_engine/memory/storage/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/storage
+copying build/lib/loop_engine/memory/storage/learning_cycle.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/storage
+copying build/lib/loop_engine/memory/storage/learning_cycle_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/storage
+copying build/lib/loop_engine/memory/storage/learning_records.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/storage
+copying build/lib/loop_engine/memory/storage/repository.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/storage
+copying build/lib/loop_engine/memory/storage/store.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/storage
+creating build/bdist.linux-x86_64/wheel/loop_engine/memory/working
+copying build/lib/loop_engine/memory/working/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/working
+copying build/lib/loop_engine/memory/working/state.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory/working
+copying build/lib/loop_engine/memory/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory
+copying build/lib/loop_engine/memory/loop_integration.py -> build/bdist.linux-x86_64/wheel/./loop_engine/memory
+creating build/bdist.linux-x86_64/wheel/loop_engine/node
+copying build/lib/loop_engine/node/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/node
+creating build/bdist.linux-x86_64/wheel/loop_engine/node/loop_node
+copying build/lib/loop_engine/node/loop_node/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/node/loop_node
+copying build/lib/loop_engine/node/loop_node/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/node/loop_node
+copying build/lib/loop_engine/node/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/node
+creating build/bdist.linux-x86_64/wheel/loop_engine/ontology
+copying build/lib/loop_engine/ontology/index.json -> build/bdist.linux-x86_64/wheel/./loop_engine/ontology
+copying build/lib/loop_engine/ontology/README.md -> build/bdist.linux-x86_64/wheel/./loop_engine/ontology
+copying build/lib/loop_engine/ontology/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/ontology
+copying build/lib/loop_engine/ontology/artifacts.py -> build/bdist.linux-x86_64/wheel/./loop_engine/ontology
+copying build/lib/loop_engine/ontology/catalog.py -> build/bdist.linux-x86_64/wheel/./loop_engine/ontology
+copying build/lib/loop_engine/ontology/folders.py -> build/bdist.linux-x86_64/wheel/./loop_engine/ontology
+copying build/lib/loop_engine/ontology/loop_definition_record.py -> build/bdist.linux-x86_64/wheel/./loop_engine/ontology
+copying build/lib/loop_engine/ontology/loop_node.py -> build/bdist.linux-x86_64/wheel/./loop_engine/ontology
+copying build/lib/loop_engine/ontology/node.py -> build/bdist.linux-x86_64/wheel/./loop_engine/ontology
+copying build/lib/loop_engine/ontology/ontology_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine/ontology
+copying build/lib/loop_engine/ontology/records.py -> build/bdist.linux-x86_64/wheel/./loop_engine/ontology
+creating build/bdist.linux-x86_64/wheel/loop_engine/strings
+copying build/lib/loop_engine/strings/studio_shell.html -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/SEED-DIMENSIONS.md -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/ask_strategies.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/context.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/decision_schemas.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/frame.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/intelligence_strings.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/interrogation.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/knowledge.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/knowledge_state.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/notes.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/output_templates.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/prompt_fragments.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/question_engine.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+copying build/lib/loop_engine/strings/solution_shaping.py -> build/bdist.linux-x86_64/wheel/./loop_engine/strings
+creating build/bdist.linux-x86_64/wheel/loop_engine/templates
+copying build/lib/loop_engine/templates/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine/templates
+copying build/lib/loop_engine/templates/compiler.py -> build/bdist.linux-x86_64/wheel/./loop_engine/templates
+copying build/lib/loop_engine/templates/intake.py -> build/bdist.linux-x86_64/wheel/./loop_engine/templates
+copying build/lib/loop_engine/templates/library.py -> build/bdist.linux-x86_64/wheel/./loop_engine/templates
+copying build/lib/loop_engine/templates/model.py -> build/bdist.linux-x86_64/wheel/./loop_engine/templates
+copying build/lib/loop_engine/__init__.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/__main__.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/_conformance_scan.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/_conformance_test.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/_self_test.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/adaptive_practitioner_cli.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/architecture_contract.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/architecture_map.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/backend_isolation.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/campaign.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/cli_help.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/cli_operations.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/conformance_report.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/kaggle_report.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/nomenclature_conformance.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/parallel_runner.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/parameter_boundary.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/parameter_boundary_checks.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/public_runtime_conformance.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/repository_conformance.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/repository_structure.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/run_history_cli.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/runtime_ontology_check.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/scheduling.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/semantic_conformance.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/semantic_freedom_conformance.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/solve_cli.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+copying build/lib/loop_engine/structure_review.py -> build/bdist.linux-x86_64/wheel/./loop_engine
+running install_egg_info
+Copying src/loop_engine.egg-info to build/bdist.linux-x86_64/wheel/./loop_engine-0.1.0.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/loop_engine-0.1.0.dist-info/WHEEL
+creating '/tmp/loop-learning-20260904.nM5vjD/dist-delivery/.tmp-bzoc4mqo/loop_engine-0.1.0-py3-none-any.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'loop_engine/ARCHITECTURE-MAP.md'
+adding 'loop_engine/__init__.py'
+adding 'loop_engine/__main__.py'
+adding 'loop_engine/_conformance_scan.py'
+adding 'loop_engine/_conformance_test.py'
+adding 'loop_engine/_self_test.py'
+adding 'loop_engine/adaptive_practitioner_cli.py'
+adding 'loop_engine/architecture_conformance.json'
+adding 'loop_engine/architecture_contract.py'
+adding 'loop_engine/architecture_map.py'
+adding 'loop_engine/backend_isolation.py'
+adding 'loop_engine/campaign.py'
+adding 'loop_engine/cli_help.py'
+adding 'loop_engine/cli_operations.py'
+adding 'loop_engine/conformance_report.py'
+adding 'loop_engine/forbidden_paths.json'
+adding 'loop_engine/kaggle_report.py'
+adding 'loop_engine/nomenclature_conformance.py'
+adding 'loop_engine/parallel_runner.py'
+adding 'loop_engine/parameter_boundary.py'
+adding 'loop_engine/parameter_boundary_checks.py'
+adding 'loop_engine/public_runtime_conformance.py'
+adding 'loop_engine/repository_conformance.py'
+adding 'loop_engine/repository_structure.py'
+adding 'loop_engine/run_history_cli.py'
+adding 'loop_engine/runtime_ontology_check.py'
+adding 'loop_engine/scheduling.py'
+adding 'loop_engine/semantic_conformance.py'
+adding 'loop_engine/semantic_freedom_conformance.py'
+adding 'loop_engine/solve_cli.py'
+adding 'loop_engine/structure_review.py'
+adding 'loop_engine/catalog/README.md'
+adding 'loop_engine/catalog/__init__.py'
+adding 'loop_engine/catalog/capabilities.py'
+adding 'loop_engine/catalog/composite.py'
+adding 'loop_engine/catalog/conformance.py'
+adding 'loop_engine/catalog/handshake.py'
+adding 'loop_engine/catalog/protocol.py'
+adding 'loop_engine/catalog/query.py'
+adding 'loop_engine/catalog/registry.py'
+adding 'loop_engine/catalog/stores/__init__.py'
+adding 'loop_engine/catalog/stores/duckdb_files.py'
+adding 'loop_engine/catalog/stores/duckdb_store.py'
+adding 'loop_engine/catalog/stores/in_memory.py'
+adding 'loop_engine/catalog/stores/package_jsonl.py'
+adding 'loop_engine/catalog/stores/sqlite_store.py'
+adding 'loop_engine/code_nodes/__init__.py'
+adding 'loop_engine/code_nodes/architecture_diagram.py'
+adding 'loop_engine/code_nodes/architecture_diagram_text.py'
+adding 'loop_engine/code_nodes/ascii_views.py'
+adding 'loop_engine/code_nodes/ascii_views_checks.py'
+adding 'loop_engine/code_nodes/blueprint.py'
+adding 'loop_engine/code_nodes/campaign_runner.py'
+adding 'loop_engine/code_nodes/capture.py'
+adding 'loop_engine/code_nodes/complex_task_benchmark.py'
+adding 'loop_engine/code_nodes/complex_task_native_evidence.py'
+adding 'loop_engine/code_nodes/complex_task_published_evidence.py'
+adding 'loop_engine/code_nodes/context_seed.py'
+adding 'loop_engine/code_nodes/core_engine_proof.py'
+adding 'loop_engine/code_nodes/follow_up.py'
+adding 'loop_engine/code_nodes/guidance_ledger.py'
+adding 'loop_engine/code_nodes/guided_setup.py'
+adding 'loop_engine/code_nodes/housekeeping.py'
+adding 'loop_engine/code_nodes/kaggle_executor.py'
+adding 'loop_engine/code_nodes/learning_bundle.py'
+adding 'loop_engine/code_nodes/live_run_demo.py'
+adding 'loop_engine/code_nodes/logic_ast.py'
+adding 'loop_engine/code_nodes/loop_report.py'
+adding 'loop_engine/code_nodes/material_questions.py'
+adding 'loop_engine/code_nodes/measurement.py'
+adding 'loop_engine/code_nodes/public_examples.py'
+adding 'loop_engine/code_nodes/run_analytics.py'
+adding 'loop_engine/code_nodes/run_playback.py'
+adding 'loop_engine/code_nodes/run_quality.py'
+adding 'loop_engine/code_nodes/runtime_contracts.py'
+adding 'loop_engine/code_nodes/self_improvement_loop.py'
+adding 'loop_engine/code_nodes/smoke_ladder.py'
+adding 'loop_engine/code_nodes/solution_canvas.py'
+adding 'loop_engine/code_nodes/solution_canvas_checks.py'
+adding 'loop_engine/code_nodes/solution_compiler.py'
+adding 'loop_engine/code_nodes/solution_graph.py'
+adding 'loop_engine/code_nodes/solution_graph_builder.py'
+adding 'loop_engine/code_nodes/solution_graph_checks.py'
+adding 'loop_engine/code_nodes/solution_graph_validation.py'
+adding 'loop_engine/code_nodes/solution_model_port.py'
+adding 'loop_engine/code_nodes/solution_records.py'
+adding 'loop_engine/code_nodes/solve_mode_checks.py'
+adding 'loop_engine/code_nodes/solve_region_evidence.py'
+adding 'loop_engine/code_nodes/solve_request_adaptation.py'
+adding 'loop_engine/code_nodes/solve_runtime.py'
+adding 'loop_engine/code_nodes/solve_terminal.py'
+adding 'loop_engine/code_nodes/string_foundry.py'
+adding 'loop_engine/core/README.md'
+adding 'loop_engine/core/__init__.py'
+adding 'loop_engine/core/action_fence.py'
+adding 'loop_engine/core/adaptive_practitioner.py'
+adding 'loop_engine/core/adaptive_practitioner_acceptance_checks.py'
+adding 'loop_engine/core/adaptive_practitioner_capabilities.py'
+adding 'loop_engine/core/adaptive_practitioner_checks.py'
+adding 'loop_engine/core/adaptive_practitioner_deterministic.py'
+adding 'loop_engine/core/adaptive_practitioner_orientation.py'
+adding 'loop_engine/core/adaptive_practitioner_orientation_capabilities.py'
+adding 'loop_engine/core/adaptive_practitioner_planning.py'
+adding 'loop_engine/core/adaptive_practitioner_project.py'
+adding 'loop_engine/core/adaptive_practitioner_prompting.py'
+adding 'loop_engine/core/adaptive_practitioner_records.py'
+adding 'loop_engine/core/adaptive_practitioner_recovery.py'
+adding 'loop_engine/core/adaptive_practitioner_result.py'
+adding 'loop_engine/core/adaptive_practitioner_reuse.py'
+adding 'loop_engine/core/adaptive_practitioner_source.py'
+adding 'loop_engine/core/adaptive_practitioner_supervision.py'
+adding 'loop_engine/core/adaptive_practitioner_validation.py'
+adding 'loop_engine/core/adaptive_practitioner_verification.py'
+adding 'loop_engine/core/api_quality.py'
+adding 'loop_engine/core/asset_class.py'
+adding 'loop_engine/core/asset_lifecycle.py'
+adding 'loop_engine/core/astra_route_authority.py'
+adding 'loop_engine/core/astra_route_authority_checks.py'
+adding 'loop_engine/core/astra_route_planning.py'
+adding 'loop_engine/core/astra_route_record_identity.py'
+adding 'loop_engine/core/autoconfigure.py'
+adding 'loop_engine/core/boundary_registry.py'
+adding 'loop_engine/core/boundary_runtime_checks.py'
+adding 'loop_engine/core/brave_search.py'
+adding 'loop_engine/core/capability_directory.py'
+adding 'loop_engine/core/capability_rejection.py'
+adding 'loop_engine/core/choice.py'
+adding 'loop_engine/core/code_intelligence_assets.py'
+adding 'loop_engine/core/cognitive_grammar.py'
+adding 'loop_engine/core/component_contracts.py'
+adding 'loop_engine/core/component_inventory.py'
+adding 'loop_engine/core/config.py'
+adding 'loop_engine/core/context_artifacts.py'
+adding 'loop_engine/core/context_budget.py'
+adding 'loop_engine/core/context_catalog.py'
+adding 'loop_engine/core/context_classification.py'
+adding 'loop_engine/core/context_ontology.py'
+adding 'loop_engine/core/context_pack_manifest.py'
+adding 'loop_engine/core/convergence.py'
+adding 'loop_engine/core/custom_endpoint.py'
+adding 'loop_engine/core/decision_outcome.py'
+adding 'loop_engine/core/development_execution.py'
+adding 'loop_engine/core/development_execution_checks.py'
+adding 'loop_engine/core/development_governance.py'
+adding 'loop_engine/core/development_governance_checks.py'
+adding 'loop_engine/core/development_planning.py'
+adding 'loop_engine/core/development_planning_checks.py'
+adding 'loop_engine/core/duckdb_catalog.py'
+adding 'loop_engine/core/event_vocabulary.py'
+adding 'loop_engine/core/extension_discovery.py'
+adding 'loop_engine/core/external_harness.py'
+adding 'loop_engine/core/external_harness_adapters.py'
+adding 'loop_engine/core/external_harness_checks.py'
+adding 'loop_engine/core/facets.py'
+adding 'loop_engine/core/generated_project.py'
+adding 'loop_engine/core/generated_project_artifact_validation.py'
+adding 'loop_engine/core/harness_intelligence_bridge.py'
+adding 'loop_engine/core/information_access.py'
+adding 'loop_engine/core/information_access_checks.py'
+adding 'loop_engine/core/information_evidence_contracts.py'
+adding 'loop_engine/core/information_theory_adversarial_checks.py'
+adding 'loop_engine/core/information_theory_evidence.py'
+adding 'loop_engine/core/information_theory_evidence_checks.py'
+adding 'loop_engine/core/information_update_evidence.py'
+adding 'loop_engine/core/intelligence_layers.py'
+adding 'loop_engine/core/intelligence_portfolio.py'
+adding 'loop_engine/core/intelligence_portfolio_checks.py'
+adding 'loop_engine/core/intelligence_query_contracts.py'
+adding 'loop_engine/core/intelligence_registry.py'
+adding 'loop_engine/core/knowledge_loader.py'
+adding 'loop_engine/core/lifecycle_extensions.py'
+adding 'loop_engine/core/lifecycle_extensions_checks.py'
+adding 'loop_engine/core/live_model_verification.py'
+adding 'loop_engine/core/live_text_scenarios.py'
+adding 'loop_engine/core/llm_work_packet.py'
+adding 'loop_engine/core/mcp_adapter.py'
+adding 'loop_engine/core/mcp_adapter_checks.py'
+adding 'loop_engine/core/mcp_sdk_transport.py'
+adding 'loop_engine/core/mistral_client.py'
+adding 'loop_engine/core/model_call.py'
+adding 'loop_engine/core/model_capabilities.py'
+adding 'loop_engine/core/model_demand.py'
+adding 'loop_engine/core/model_discovery.py'
+adding 'loop_engine/core/model_gateway.py'
+adding 'loop_engine/core/model_gateway_accounting.py'
+adding 'loop_engine/core/model_gateway_accounting_checks.py'
+adding 'loop_engine/core/model_response_admission.py'
+adding 'loop_engine/core/model_response_text.py'
+adding 'loop_engine/core/model_routes.py'
+adding 'loop_engine/core/model_routing_intelligence.py'
+adding 'loop_engine/core/model_routing_intelligence_checks.py'
+adding 'loop_engine/core/model_routing_records.py'
+adding 'loop_engine/core/model_routing_selector.py'
+adding 'loop_engine/core/ngram_benchmark.py'
+adding 'loop_engine/core/ngram_retrieval.py'
+adding 'loop_engine/core/ollama_client.py'
+adding 'loop_engine/core/openai_responses_client.py'
+adding 'loop_engine/core/openai_responses_client_checks.py'
+adding 'loop_engine/core/opencode_client.py'
+adding 'loop_engine/core/opencode_harness_adapter.py'
+adding 'loop_engine/core/opencode_zen_catalog.py'
+adding 'loop_engine/core/openrouter_client.py'
+adding 'loop_engine/core/operating_profile.py'
+adding 'loop_engine/core/option_selection.py'
+adding 'loop_engine/core/otel_export.py'
+adding 'loop_engine/core/outcome_vector.py'
+adding 'loop_engine/core/parameter_resolution.py'
+adding 'loop_engine/core/persistence.py'
+adding 'loop_engine/core/plugin_bundles.py'
+adding 'loop_engine/core/plugin_bundles_checks.py'
+adding 'loop_engine/core/practitioner_context.py'
+adding 'loop_engine/core/practitioner_contract_guards.py'
+adding 'loop_engine/core/practitioner_runtime_facts.py'
+adding 'loop_engine/core/primitive_conformance.py'
+adding 'loop_engine/core/product_outcome_store.py'
+adding 'loop_engine/core/prompt_experiment.py'
+adding 'loop_engine/core/provider_failover.py'
+adding 'loop_engine/core/provider_pinned.py'
+adding 'loop_engine/core/reactive_output_store.py'
+adding 'loop_engine/core/reactive_output_store_checks.py'
+adding 'loop_engine/core/reactive_scheduler.py'
+adding 'loop_engine/core/reactive_scheduler_checks.py'
+adding 'loop_engine/core/reactive_worker.py'
+adding 'loop_engine/core/reactive_worker_checks.py'
+adding 'loop_engine/core/reasoning_call.py'
+adding 'loop_engine/core/recovery.py'
+adding 'loop_engine/core/resolution.py'
+adding 'loop_engine/core/retrieval.py'
+adding 'loop_engine/core/reusable_capability_checks.py'
+adding 'loop_engine/core/reusable_capability_flywheel.py'
+adding 'loop_engine/core/reusable_capability_harvest.py'
+adding 'loop_engine/core/reusable_capability_hybrid.py'
+adding 'loop_engine/core/reusable_capability_records.py'
+adding 'loop_engine/core/reusable_capability_resolution.py'
+adding 'loop_engine/core/route_health.py'
+adding 'loop_engine/core/run_history.py'
+adding 'loop_engine/core/run_history_paths.py'
+adding 'loop_engine/core/run_history_usage.py'
+adding 'loop_engine/core/run_history_usage_checks.py'
+adding 'loop_engine/core/run_stages.py'
+adding 'loop_engine/core/run_validity.py'
+adding 'loop_engine/core/runtime_capacity.py'
+adding 'loop_engine/core/runtime_memory.py'
+adding 'loop_engine/core/runtime_observer.py'
+adding 'loop_engine/core/runtime_settings.py'
+adding 'loop_engine/core/saas_routes.py'
+adding 'loop_engine/core/self_tuning.py'
+adding 'loop_engine/core/semantic_decision.py'
+adding 'loop_engine/core/semantic_event_history.py'
+adding 'loop_engine/core/semantic_runtime.py'
+adding 'loop_engine/core/semantic_runtime_checks.py'
+adding 'loop_engine/core/semantic_runtime_evidence.py'
+adding 'loop_engine/core/semantic_runtime_fixture.py'
+adding 'loop_engine/core/semantic_runtime_records.py'
+adding 'loop_engine/core/semantic_state.py'
+adding 'loop_engine/core/settings_loader.py'
+adding 'loop_engine/core/skill_discovery_projection.py'
+adding 'loop_engine/core/skill_registry.py'
+adding 'loop_engine/core/skill_registry_checks.py'
+adding 'loop_engine/core/skill_state_context.py'
+adding 'loop_engine/core/skill_state_context_checks.py'
+adding 'loop_engine/core/software_tdd_skill_checks.py'
+adding 'loop_engine/core/solution_library.py'
+adding 'loop_engine/core/solve_control_manifest.py'
+adding 'loop_engine/core/source_role_orientation.py'
+adding 'loop_engine/core/stage_action_lineage.py'
+adding 'loop_engine/core/stage_action_lineage_adversarial_checks.py'
+adding 'loop_engine/core/stage_assistance_checks.py'
+adding 'loop_engine/core/stage_assistance_experiment.py'
+adding 'loop_engine/core/stage_assistance_material.py'
+adding 'loop_engine/core/stage_assistance_runtime_records.py'
+adding 'loop_engine/core/stage_evidence_projection.py'
+adding 'loop_engine/core/stage_evidence_records.py'
+adding 'loop_engine/core/stage_evidence_temporal.py'
+adding 'loop_engine/core/stage_evidence_values.py'
+adding 'loop_engine/core/stage_fingerprint.py'
+adding 'loop_engine/core/stage_store.py'
+adding 'loop_engine/core/stage_store_records.py'
+adding 'loop_engine/core/state_policy_evidence.py'
+adding 'loop_engine/core/store_serve.py'
+adding 'loop_engine/core/studio_operational_views.py'
+adding 'loop_engine/core/studio_server.py'
+adding 'loop_engine/core/task_compile_model.py'
+adding 'loop_engine/core/task_fingerprint.py'
+adding 'loop_engine/core/task_fingerprint_facets.py'
+adding 'loop_engine/core/task_frontier.py'
+adding 'loop_engine/core/task_region_statistics.py'
+adding 'loop_engine/core/task_similarity_engine.py'
+adding 'loop_engine/core/template_negotiation.py'
+adding 'loop_engine/core/terminal_layer.py'
+adding 'loop_engine/core/user_feedback_intelligence.py'
+adding 'loop_engine/core/web_fetch.py'
+adding 'loop_engine/core/web_search.py'
+adding 'loop_engine/core/workspace_backends.py'
+adding 'loop_engine/core/workspace_contracts.py'
+adding 'loop_engine/core/workspace_local.py'
+adding 'loop_engine/core/workspace_operation_checks.py'
+adding 'loop_engine/core/workspace_operations.py'
+adding 'loop_engine/core/workspace_optional.py'
+adding 'loop_engine/core/workspace_read.py'
+adding 'loop_engine/data/architecture.yaml'
+adding 'loop_engine/data/component_folder_map.yaml'
+adding 'loop_engine/data/component_interactions.yaml'
+adding 'loop_engine/data/component_ontology.yaml'
+adding 'loop_engine/data/loop-engine-benchmark-evidence.json'
+adding 'loop_engine/data/practitioner_context_fallback.yaml'
+adding 'loop_engine/data/published-harness-evidence.json'
+adding 'loop_engine/data/reusable_capability_hybrid_profiles.yaml'
+adding 'loop_engine/data/semantic_data_dictionary.yaml'
+adding 'loop_engine/data/terminology.yaml'
+adding 'loop_engine/generation/__init__.py'
+adding 'loop_engine/generation/expansion.py'
+adding 'loop_engine/generation/operators.py'
+adding 'loop_engine/generation/model/__init__.py'
+adding 'loop_engine/generation/model/campaign.py'
+adding 'loop_engine/generation/model/dimensions.py'
+adding 'loop_engine/generation/model/fragments.py'
+adding 'loop_engine/generation/model/seeds.py'
+adding 'loop_engine/governance/README.md'
+adding 'loop_engine/governance/approval/README.md'
+adding 'loop_engine/governance/candidates/README.md'
+adding 'loop_engine/governance/candidates/part-00000.jsonl'
+adding 'loop_engine/governance/promotion/README.md'
+adding 'loop_engine/governance/review/README.md'
+adding 'loop_engine/intelligence/README.md'
+adding 'loop_engine/intelligence/code/README.md'
+adding 'loop_engine/intelligence/code/core/README.md'
+adding 'loop_engine/intelligence/code/core/manifest.yaml'
+adding 'loop_engine/intelligence/code/learned/README.md'
+adding 'loop_engine/intelligence/code/plugin/README.md'
+adding 'loop_engine/intelligence/context/README.md'
+adding 'loop_engine/intelligence/context/core/README.md'
+adding 'loop_engine/intelligence/context/core/manifest.yaml'
+adding 'loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml'
+adding 'loop_engine/intelligence/context/core/records/part-00000.jsonl'
+adding 'loop_engine/intelligence/context/core/records/part-00000.manifest.json'
+adding 'loop_engine/intelligence/context/learned/README.md'
+adding 'loop_engine/intelligence/context/plugin/README.md'
+adding 'loop_engine/intelligence/runtime_history_solution/README.md'
+adding 'loop_engine/intelligence/runtime_history_solution/core/README.md'
+adding 'loop_engine/intelligence/runtime_history_solution/core/manifest.yaml'
+adding 'loop_engine/intelligence/runtime_history_solution/learned/README.md'
+adding 'loop_engine/intelligence/runtime_history_solution/plugin/README.md'
+adding 'loop_engine/intelligence/user_feedback/README.md'
+adding 'loop_engine/intelligence/user_feedback/core/README.md'
+adding 'loop_engine/intelligence/user_feedback/learned/README.md'
+adding 'loop_engine/intelligence/user_feedback/plugin/README.md'
+adding 'loop_engine/kernel/README.md'
+adding 'loop_engine/kernel/enforcement/README.md'
+adding 'loop_engine/kernel/executor/README.md'
+adding 'loop_engine/kernel/loader/README.md'
+adding 'loop_engine/kernel/resolver/README.md'
+adding 'loop_engine/loop/__init__.py'
+adding 'loop_engine/loop/approval_state_store.py'
+adding 'loop_engine/loop/approval_state_store_checks.py'
+adding 'loop_engine/loop/atomic_primitives.py'
+adding 'loop_engine/loop/canvas.py'
+adding 'loop_engine/loop/capability_loops.py'
+adding 'loop_engine/loop/checklist_loop.py'
+adding 'loop_engine/loop/delegation_checkpoint_checks.py'
+adding 'loop_engine/loop/delegation_runtime.py'
+adding 'loop_engine/loop/delegation_runtime_checks.py'
+adding 'loop_engine/loop/effect_approval.py'
+adding 'loop_engine/loop/encapsulate.py'
+adding 'loop_engine/loop/intelligence_loops.py'
+adding 'loop_engine/loop/intrinsic_kernel.py'
+adding 'loop_engine/loop/kernel.py'
+adding 'loop_engine/loop/kernel_runtime.py'
+adding 'loop_engine/loop/lens.py'
+adding 'loop_engine/loop/loop_capsule.py'
+adding 'loop_engine/loop/loop_contract.py'
+adding 'loop_engine/loop/loop_control.py'
+adding 'loop_engine/loop/loop_definition.py'
+adding 'loop_engine/loop/loop_definition_checks.py'
+adding 'loop_engine/loop/loop_doctrine.py'
+adding 'loop_engine/loop/loop_handoff.py'
+adding 'loop_engine/loop/loop_profile_catalog.py'
+adding 'loop_engine/loop/loop_profile_ontology.py'
+adding 'loop_engine/loop/loop_role.py'
+adding 'loop_engine/loop/loop_templates.py'
+adding 'loop_engine/loop/reactive_activation.py'
+adding 'loop_engine/loop/reactive_contract_checks.py'
+adding 'loop_engine/loop/reactive_contracts.py'
+adding 'loop_engine/loop/reactive_outputs.py'
+adding 'loop_engine/loop/recursive_loop.py'
+adding 'loop_engine/loop/runtime_context.py'
+adding 'loop_engine/loop/service_loop_envelope.py'
+adding 'loop_engine/loop/spawned_practitioner.py'
+adding 'loop_engine/loop/spawned_runtime_port.py'
+adding 'loop_engine/loop/spawned_task_checkpoint.py'
+adding 'loop_engine/loop/spawned_task_state_store.py'
+adding 'loop_engine/loop/spawned_task_state_store_checks.py'
+adding 'loop_engine/loop/spawned_workspace_executor.py'
+adding 'loop_engine/loop/spawned_workspace_executor_checks.py'
+adding 'loop_engine/loop/supervision_policy.py'
+adding 'loop_engine/memory/__init__.py'
+adding 'loop_engine/memory/loop_integration.py'
+adding 'loop_engine/memory/episodic/__init__.py'
+adding 'loop_engine/memory/episodic/record.py'
+adding 'loop_engine/memory/lifecycle/__init__.py'
+adding 'loop_engine/memory/lifecycle/lifecycle.py'
+adding 'loop_engine/memory/model/__init__.py'
+adding 'loop_engine/memory/model/identity.py'
+adding 'loop_engine/memory/model/lifecycle.py'
+adding 'loop_engine/memory/model/memory_type.py'
+adding 'loop_engine/memory/model/reference.py'
+adding 'loop_engine/memory/model/scope.py'
+adding 'loop_engine/memory/procedural/__init__.py'
+adding 'loop_engine/memory/procedural/control_assessment.py'
+adding 'loop_engine/memory/procedural/control_assessment_checks.py'
+adding 'loop_engine/memory/procedural/record.py'
+adding 'loop_engine/memory/query/__init__.py'
+adding 'loop_engine/memory/query/query.py'
+adding 'loop_engine/memory/query/receipts.py'
+adding 'loop_engine/memory/semantic/__init__.py'
+adding 'loop_engine/memory/semantic/record.py'
+adding 'loop_engine/memory/storage/__init__.py'
+adding 'loop_engine/memory/storage/learning_cycle.py'
+adding 'loop_engine/memory/storage/learning_cycle_checks.py'
+adding 'loop_engine/memory/storage/learning_records.py'
+adding 'loop_engine/memory/storage/repository.py'
+adding 'loop_engine/memory/storage/store.py'
+adding 'loop_engine/memory/working/__init__.py'
+adding 'loop_engine/memory/working/state.py'
+adding 'loop_engine/node/README.md'
+adding 'loop_engine/node/__init__.py'
+adding 'loop_engine/node/loop_node/README.md'
+adding 'loop_engine/node/loop_node/__init__.py'
+adding 'loop_engine/ontology/README.md'
+adding 'loop_engine/ontology/__init__.py'
+adding 'loop_engine/ontology/artifacts.py'
+adding 'loop_engine/ontology/catalog.py'
+adding 'loop_engine/ontology/folders.py'
+adding 'loop_engine/ontology/index.json'
+adding 'loop_engine/ontology/loop_definition_record.py'
+adding 'loop_engine/ontology/loop_node.py'
+adding 'loop_engine/ontology/node.py'
+adding 'loop_engine/ontology/ontology_checks.py'
+adding 'loop_engine/ontology/records.py'
+adding 'loop_engine/runtime/README.md'
+adding 'loop_engine/runtime/artifacts/README.md'
+adding 'loop_engine/runtime/runs/README.md'
+adding 'loop_engine/runtime/runtime_memory/README.md'
+adding 'loop_engine/skills/README.md'
+adding 'loop_engine/skills/software-tdd-red-green-refactor/SKILL.md'
+adding 'loop_engine/strings/SEED-DIMENSIONS.md'
+adding 'loop_engine/strings/__init__.py'
+adding 'loop_engine/strings/ask_strategies.py'
+adding 'loop_engine/strings/context.py'
+adding 'loop_engine/strings/decision_schemas.py'
+adding 'loop_engine/strings/frame.py'
+adding 'loop_engine/strings/intelligence_strings.py'
+adding 'loop_engine/strings/interrogation.py'
+adding 'loop_engine/strings/knowledge.py'
+adding 'loop_engine/strings/knowledge_state.py'
+adding 'loop_engine/strings/notes.py'
+adding 'loop_engine/strings/output_templates.py'
+adding 'loop_engine/strings/prompt_fragments.py'
+adding 'loop_engine/strings/question_engine.py'
+adding 'loop_engine/strings/solution_shaping.py'
+adding 'loop_engine/strings/studio_shell.html'
+adding 'loop_engine/templates/__init__.py'
+adding 'loop_engine/templates/compiler.py'
+adding 'loop_engine/templates/intake.py'
+adding 'loop_engine/templates/library.py'
+adding 'loop_engine/templates/model.py'
+adding 'loop_engine-0.1.0.dist-info/licenses/LICENSE'
+adding 'loop_engine-0.1.0.dist-info/METADATA'
+adding 'loop_engine-0.1.0.dist-info/WHEEL'
+adding 'loop_engine-0.1.0.dist-info/entry_points.txt'
+adding 'loop_engine-0.1.0.dist-info/top_level.txt'
+adding 'loop_engine-0.1.0.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+Successfully built loop_engine-0.1.0.tar.gz and loop_engine-0.1.0-py3-none-any.whl

@@ -1,0 +1,480 @@
+{
+  "branch": "main",
+  "delivery_base_wheel_test": 2454,
+  "delivery_source_test": 2492,
+  "git_status": [
+    "## main...origin/main",
+    " M .gitignore",
+    " M CHANGELOG.md",
+    " M README.md",
+    " M architecture.yaml",
+    " M benchmarks/kaggle_competitions/README.md",
+    " M benchmarks/kaggle_competitions/contract.py",
+    " M docs/ARCHITECTURE-DIAGRAMS.md",
+    " M docs/README.md",
+    " M docs/components/core-architecture/MCP-AND-SKILLS.md",
+    " M docs/context/CODEX-START-HERE.md",
+    " M docs/contracts/README.md",
+    " M docs/guides/model-routing-intelligence.md",
+    " M docs/guides/providers-and-keys.md",
+    " M docs/internal/HANDOFF.md",
+    " M docs/internal/README.md",
+    " M docs/prompts/GENERALIZED-LOOP-NODE-SELF-TUNING-GUIDANCE.md",
+    " M docs/prompts/README.md",
+    " M docs/prompts/STRICT-EVERYTHING-IS-A-LOOP-PRIMITIVES.md",
+    " M docs/prompts/UNIVERSAL-COMPONENT-PROMPT-SUITE.md",
+    " M docs/research/SKILL-STATE-EXECUTION-AND-CACHE-ECONOMICS.md",
+    " M src/loop_engine/ARCHITECTURE-MAP.md",
+    " M src/loop_engine/_conformance_test.py",
+    " M src/loop_engine/_self_test.py",
+    " M src/loop_engine/architecture_conformance.json",
+    " M src/loop_engine/architecture_map.py",
+    " M src/loop_engine/code_nodes/architecture_diagram.py",
+    " M src/loop_engine/code_nodes/kaggle_executor.py",
+    " M src/loop_engine/code_nodes/live_run_demo.py",
+    " M src/loop_engine/code_nodes/run_analytics.py",
+    " M src/loop_engine/code_nodes/run_playback.py",
+    " M src/loop_engine/code_nodes/run_quality.py",
+    " M src/loop_engine/code_nodes/solution_model_port.py",
+    " M src/loop_engine/code_nodes/solve_runtime.py",
+    " M src/loop_engine/core/README.md",
+    " M src/loop_engine/core/adaptive_practitioner.py",
+    " M src/loop_engine/core/adaptive_practitioner_planning.py",
+    " M src/loop_engine/core/adaptive_practitioner_records.py",
+    " M src/loop_engine/core/adaptive_practitioner_result.py",
+    " M src/loop_engine/core/adaptive_practitioner_verification.py",
+    " M src/loop_engine/core/convergence.py",
+    " M src/loop_engine/core/model_demand.py",
+    " M src/loop_engine/core/model_gateway.py",
+    " M src/loop_engine/core/outcome_vector.py",
+    " M src/loop_engine/core/run_history.py",
+    " M src/loop_engine/core/skill_registry.py",
+    " M src/loop_engine/core/stage_store.py",
+    " M src/loop_engine/data/architecture.yaml",
+    " M src/loop_engine/data/terminology.yaml",
+    " M src/loop_engine/forbidden_paths.json",
+    " M src/loop_engine/loop/encapsulate.py",
+    " M src/loop_engine/skills/software-tdd-red-green-refactor/SKILL.md",
+    " M terminology.yaml",
+    "?? benchmarks/kaggle_competitions/preflight.py",
+    "?? benchmarks/kaggle_competitions/preflight_checks.py",
+    "?? benchmarks/kaggle_competitions/source_qualification.py",
+    "?? benchmarks/kaggle_competitions/source_qualification_checks.py",
+    "?? benchmarks/kaggle_competitions/source_qualification_evidence.py",
+    "?? benchmarks/kaggle_competitions/source_qualification_records.py",
+    "?? benchmarks/kaggle_competitions/source_qualification_runtime.py",
+    "?? benchmarks/stage_assistance_fixture_material.py",
+    "?? benchmarks/stage_assistance_paired_fixture.py",
+    "?? docs/context/GPT-6-ASTRA-READINESS-2026-09-04.md",
+    "?? docs/contracts/session-handoff.schema.json",
+    "?? docs/evidence/architecture-mesh-audit-20260904/",
+    "?? docs/evidence/learning-integrity-20260904/",
+    "?? docs/evidence/runs/learning-integrity-public-offline-20260904/",
+    "?? docs/evidence/runs/stage-assistance-public-offline-20260904/",
+    "?? docs/evidence/runs/stage-assistance-public-offline-exact-lineage-20260904/",
+    "?? docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+    "?? docs/research/ADAPTIVE-COGNITIVE-MESH-AND-AMORTIZED-COMPUTATION-2026-09-04.md",
+    "?? docs/research/COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json",
+    "?? docs/research/LEARNING-FROM-VERIFIED-LOOP-OUTCOMES-2026-09-04.md",
+    "?? docs/research/LONG-HORIZON-RECURRENT-SKILLS-AND-STATE-2026-09-04.md",
+    "?? docs/research/PROCEDURAL-MEMORY-PREDICTIVE-STATE-AND-INFORMATION-VALUE-2026-09-04.md",
+    "?? docs/verification/ARCHITECTURE-MESH-CORPUS-AUDIT-2026-09-04.md",
+    "?? docs/verification/KAGGLE-120-ACCESS-PREFLIGHT-2026-09-04.md",
+    "?? docs/verification/LEARNING-INTEGRITY-AND-RESEARCH-2026-09-04.md",
+    "?? docs/verification/PREDICTIVE-STATE-PROCEDURAL-MEMORY-AND-STAGE-ASSISTANCE-2026-09-04.md",
+    "?? docs/verification/STAGE-ASSISTANCE-INTEGRATION-AUDIT-2026-09-04.md",
+    "?? src/loop_engine/code_nodes/architecture_diagram_text.py",
+    "?? src/loop_engine/code_nodes/solve_request_adaptation.py",
+    "?? src/loop_engine/core/astra_route_authority.py",
+    "?? src/loop_engine/core/astra_route_authority_checks.py",
+    "?? src/loop_engine/core/astra_route_planning.py",
+    "?? src/loop_engine/core/astra_route_record_identity.py",
+    "?? src/loop_engine/core/information_evidence_contracts.py",
+    "?? src/loop_engine/core/information_theory_adversarial_checks.py",
+    "?? src/loop_engine/core/information_theory_evidence.py",
+    "?? src/loop_engine/core/information_theory_evidence_checks.py",
+    "?? src/loop_engine/core/information_update_evidence.py",
+    "?? src/loop_engine/core/model_gateway_accounting.py",
+    "?? src/loop_engine/core/model_gateway_accounting_checks.py",
+    "?? src/loop_engine/core/openai_responses_client.py",
+    "?? src/loop_engine/core/openai_responses_client_checks.py",
+    "?? src/loop_engine/core/run_history_usage.py",
+    "?? src/loop_engine/core/run_history_usage_checks.py",
+    "?? src/loop_engine/core/semantic_event_history.py",
+    "?? src/loop_engine/core/skill_discovery_projection.py",
+    "?? src/loop_engine/core/skill_registry_checks.py",
+    "?? src/loop_engine/core/skill_state_context.py",
+    "?? src/loop_engine/core/skill_state_context_checks.py",
+    "?? src/loop_engine/core/solve_control_manifest.py",
+    "?? src/loop_engine/core/stage_action_lineage.py",
+    "?? src/loop_engine/core/stage_action_lineage_adversarial_checks.py",
+    "?? src/loop_engine/core/stage_assistance_checks.py",
+    "?? src/loop_engine/core/stage_assistance_experiment.py",
+    "?? src/loop_engine/core/stage_assistance_material.py",
+    "?? src/loop_engine/core/stage_assistance_runtime_records.py",
+    "?? src/loop_engine/core/stage_evidence_projection.py",
+    "?? src/loop_engine/core/stage_evidence_records.py",
+    "?? src/loop_engine/core/stage_evidence_temporal.py",
+    "?? src/loop_engine/core/stage_evidence_values.py",
+    "?? src/loop_engine/core/stage_store_records.py",
+    "?? src/loop_engine/core/state_policy_evidence.py",
+    "?? src/loop_engine/memory/procedural/control_assessment.py",
+    "?? src/loop_engine/memory/procedural/control_assessment_checks.py"
+  ],
+  "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+  "next_action": "Freeze source bytes/tree and bind canonical controls for one decide_next pair.",
+  "ownership": "Session-owned patches on the listed files preserve prior edits. Other dirty paths remain unowned by this session.",
+  "pending_session_owned_processes": [],
+  "processes": [
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "1-03:08:47",
+      "name": "bash",
+      "pid": 373898,
+      "ppid": 2597470,
+      "status": "Ss"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "1-03:08:38",
+      "name": "opencode",
+      "pid": 374064,
+      "ppid": 373898,
+      "status": "Sl+"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "1-01:44:19",
+      "name": "bash",
+      "pid": 454975,
+      "ppid": 2597470,
+      "status": "Ss"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "1-01:44:17",
+      "name": "codex",
+      "pid": 455012,
+      "ppid": 454975,
+      "status": "Sl+"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "1-01:44:14",
+      "name": "node",
+      "pid": 455454,
+      "ppid": 455012,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "1-01:44:14",
+      "name": "node_repl",
+      "pid": 455455,
+      "ppid": 455012,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "1-01:44:14",
+      "name": "MainThread",
+      "pid": 455573,
+      "ppid": 455454,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "1-01:43:57",
+      "name": "bash",
+      "pid": 456601,
+      "ppid": 2597470,
+      "status": "Ss"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "23:11:14",
+      "name": "codex",
+      "pid": 631184,
+      "ppid": 456601,
+      "status": "Sl+"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "23:11:14",
+      "name": "node",
+      "pid": 631503,
+      "ppid": 631184,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "23:11:14",
+      "name": "node_repl",
+      "pid": 631506,
+      "ppid": 631184,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "23:11:13",
+      "name": "MainThread",
+      "pid": 631633,
+      "ppid": 631503,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "20:14:01",
+      "name": "bash",
+      "pid": 885847,
+      "ppid": 2597470,
+      "status": "Ss"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "20:10:08",
+      "name": "node",
+      "pid": 890143,
+      "ppid": 885847,
+      "status": "Sl+"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "20:10:08",
+      "name": "codex",
+      "pid": 890152,
+      "ppid": 890143,
+      "status": "Sl+"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "20:10:07",
+      "name": "node",
+      "pid": 890350,
+      "ppid": 890152,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "20:10:07",
+      "name": "node_repl",
+      "pid": 890351,
+      "ppid": 890152,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "20:10:07",
+      "name": "MainThread",
+      "pid": 890462,
+      "ppid": 890350,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "20:09:06",
+      "name": "bash",
+      "pid": 891827,
+      "ppid": 2597470,
+      "status": "Ss"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "20:08:45",
+      "name": "node",
+      "pid": 892883,
+      "ppid": 891827,
+      "status": "Sl+"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "20:08:45",
+      "name": "codex",
+      "pid": 892890,
+      "ppid": 892883,
+      "status": "Sl+"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "17:41:41",
+      "name": "codex-code-mode",
+      "pid": 1061196,
+      "ppid": 892890,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "2-14:42:55",
+      "name": "opencode",
+      "pid": 1469971,
+      "ppid": 3897237,
+      "status": "Sl+"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "2-13:56:02",
+      "name": "python3",
+      "pid": 1519397,
+      "ppid": 2415,
+      "status": "S"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "4-09:52:36",
+      "name": "bash",
+      "pid": 2597550,
+      "ppid": 2597470,
+      "status": "Ss"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "00:01",
+      "name": "python3",
+      "pid": 2600069,
+      "ppid": 892890,
+      "status": "Ss"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "4-09:50:33",
+      "name": "codex",
+      "pid": 2604334,
+      "ppid": 2597550,
+      "status": "Sl+"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "4-09:50:30",
+      "name": "node_repl",
+      "pid": 2604841,
+      "ppid": 2604334,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "4-09:47:18",
+      "name": "codex-code-mode",
+      "pid": 2608480,
+      "ppid": 2604334,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "4-03:30:59",
+      "name": "MainThread",
+      "pid": 3448884,
+      "ppid": 2604841,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "4-03:30:59",
+      "name": "codex",
+      "pid": 3448920,
+      "ppid": 2604841,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "3-23:20:53",
+      "name": "node",
+      "pid": 3893183,
+      "ppid": 2604334,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "3-23:20:53",
+      "name": "MainThread",
+      "pid": 3893209,
+      "ppid": 3893183,
+      "status": "Sl"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "3-23:16:33",
+      "name": "bash",
+      "pid": 3897237,
+      "ppid": 2597470,
+      "status": "Ss"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "3-23:15:21",
+      "name": "bash",
+      "pid": 3898523,
+      "ppid": 2597470,
+      "status": "Ss"
+    },
+    {
+      "cwd": "/home/username/loop-engine",
+      "elapsed": "3-18:20:11",
+      "name": "opencode",
+      "pid": 4168885,
+      "ppid": 3898523,
+      "status": "Sl+"
+    }
+  ],
+  "record_type": "learning_implementation_session/v1",
+  "recorded_at": "2026-09-04T22:44:50.188404+00:00",
+  "source_changes_this_session": [
+    {
+      "after_sha256": "8acbad03eb0f9bbbfb9379e23301e542f7493452bfd7072c5369ff6c9609b7cc",
+      "before_sha256": "fbd909c680653c6dcbd449e368ec219129eb126333d29f990462ce9ad766d0b2",
+      "path": "src/loop_engine/core/adaptive_practitioner.py"
+    },
+    {
+      "after_sha256": "a80f2bc57363174aac838d24d00b54710041715385b077635131b9df37b3c574",
+      "before_sha256": "2fbed4f2cab7976ed3782dff5bf28e75421a2ac1e38a92b2d7b4e4514b5fbb69",
+      "path": "src/loop_engine/core/adaptive_practitioner_result.py"
+    },
+    {
+      "after_sha256": "bb20229bb85e20c8e5845bd9c73733fc75851f99f85df74ad36be93c70012e59",
+      "before_sha256": "fd54a790bebfa3d34fce26e49db43925523eb15b814fe5507f77ca20c4f2109f",
+      "path": "src/loop_engine/core/adaptive_practitioner_verification.py"
+    },
+    {
+      "after_sha256": "e59043de344a423c2a56b0ad874fdccefab40f8b5c16758eb322b66bc0614757",
+      "before_sha256": "41102c09572839db51b6daa65932e3aa9b965861427dbf5326207d22a3f57ab9",
+      "path": "src/loop_engine/core/information_theory_adversarial_checks.py"
+    },
+    {
+      "after_sha256": "604e7370657492d92141a26f567fdf47cf8eb0d01702e7f92cb4b5d271290f2e",
+      "before_sha256": "84ad517e97bbb71e39b085c64067d1a4d011206838db2d0421547a5ce8abbf80",
+      "path": "src/loop_engine/core/information_update_evidence.py"
+    },
+    {
+      "after_sha256": "0c4ef1f2dbf714f52b261917040c8bd5424de25798d6dfe8e318be2429b921d3",
+      "before_sha256": "3949a2adc1719b9f863c19755e9059fa3781a8fd41f07f019f20ee79a16be0de",
+      "path": "src/loop_engine/core/model_demand.py"
+    },
+    {
+      "after_sha256": "6d11a4065c41c0da2e77bfafb22f8f544663bca2a821eecdc2f48d3f534d6c93",
+      "before_sha256": "879856313c8948c91c5a63bd726ba01b224f01816ee1fc9d5103efe11025efb0",
+      "path": "src/loop_engine/core/stage_action_lineage.py"
+    },
+    {
+      "after_sha256": "85440f28ed5a7fd9392cae9faf2af3de707f7dea682fc4069f86dc928eb3f33d",
+      "before_sha256": "00ae7d8aa1fd80c83f3cd3f42ababa0f9d6a27391d2466cc5e55b2f655a938d3",
+      "path": "src/loop_engine/core/stage_action_lineage_adversarial_checks.py"
+    }
+  ],
+  "unproven": [
+    "immutable source/control capture",
+    "valid live assistance pair",
+    "independent semantic evaluator",
+    "causal benefit",
+    "100 new Kaggle solves",
+    "calibrated or qualified learned routing"
+  ],
+  "worktrees": [
+    "worktree /home/username/loop-engine",
+    "HEAD 22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+    "branch refs/heads/main",
+    "",
+    "worktree /home/username/loop-engine-showcase-v4-worktree",
+    "HEAD 3491e2369639361893819ac6975a21bec47ea68c",
+    "branch refs/heads/codex/showcase-v4",
+    ""
+  ]
+}

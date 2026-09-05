@@ -1,0 +1,20 @@
+{
+  "all_passed": true,
+  "captured_output_lines": 0,
+  "elapsed_seconds": 124.745,
+  "failures": [],
+  "missing_dependencies": [],
+  "optional_adapters_not_tested": [
+    "duckdb",
+    "mcp",
+    "model2vec",
+    "numpy",
+    "opentelemetry-sdk",
+    "pandas",
+    "sklearn"
+  ],
+  "passed": 2452,
+  "provider_calls_made": 0,
+  "record_type": "loop_engine_self_test_summary/v1",
+  "total": 2452
+}

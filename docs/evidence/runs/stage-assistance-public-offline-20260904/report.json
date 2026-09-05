@@ -1,0 +1,864 @@
+{
+  "arms": {
+    "advisory": {
+      "action_execution_link_records": 1,
+      "action_outcome_link_records": 1,
+      "admitted_response_digests": [
+        "0240e7a4e2b44fd1160c8691bd54d9f4390cb6d1a5c4c961c485ffe48e063c84",
+        "117601822403ce781bebd71d9eacb621496d2a310efcf9565489c1e11fb7fe1e",
+        "5cfbad16b9b66b70aeb5cd924006a8623b2ee5db1b21e62d479e4f60d5c39241",
+        "5dfe6417b6b2c556e00065af04611329a01708f59e2d4fdf04a17e5408aebe5b",
+        "631a4dc3a7ebfd2167e45e957808d421c97cbddec31f11bf94dac665a3056b2a",
+        "8645d7e2b94f52801e918f38759ab94062a4cc2d9de84b1f225bbee08fb116d2",
+        "dcdebab56ff33eaa2c8f253bda472ce4159b57b1f099f53049db6fa801433e27"
+      ],
+      "assistance_decisions": 7,
+      "attribution_boundary_records": 1,
+      "baseline_template_ids": [
+        "core.task.data_standardization",
+        "core.task.kaggle_competition",
+        "core.task.source_digestion",
+        "core.task.tabular_classification",
+        "core.task.tabular_model_comparison",
+        "core.task.tabular_regression"
+      ],
+      "candidate_ref_present_in_prompt": true,
+      "decision_dispositions": [
+        "USE"
+      ],
+      "decision_exposure_refs": [
+        "stage-exposure:sha256:2b89cc659b00afea57734d560fce29020730ed2be875b0aa2026bd65e7cadea1",
+        "stage-exposure:sha256:33c6c3917b629ffbc4ea4e39761753e2b2ce76edb144ede52ba97fd1c8ea0b76",
+        "stage-exposure:sha256:5e7f117aacf88ca52b64f2a4a3a413d8e01b672ad0fdf0707ad4303340f73333",
+        "stage-exposure:sha256:6f8839636344b9bf0111d06b6299fdbeed0f1bc533d449e50522109e447c3bd7",
+        "stage-exposure:sha256:71d796f38163a202cd33392fe558b8fc106799e89b1beecb56090e575f6393f0",
+        "stage-exposure:sha256:9c499c3264c3dae8fe7ccbd9a97328890bbd2c107c9a017120c13a40442a18cb",
+        "stage-exposure:sha256:e7741012cadcfe43a29516b04e4e8aae7faa3bfdc66601ca67945c76b0c1c500"
+      ],
+      "decision_gateway_request_digests": [
+        "6f8ce0b85c21b118750c7eaba01c1dc37fd3714ec35894d64a5286980e0e9cb4",
+        "83f1a0db2524733f8e61875c5ce5a41a63edbf72a256bccf9af59eb141ed5e75",
+        "adeb3dd942a1097aeb1b25dfece4bf34f5c576bed5449a55ddcb8267896074d9",
+        "c2d0bd24992b72ba1620552445a671c219c209bad2f5224af4e5cc14408f0d7e",
+        "c7c1994082f0a0a01e2591e542dbeca5e531b3caac12595c8e37102bc0d04f65",
+        "c96443c5b3371664a77f9cd2d2c254a1a938b517eaf5bf021adc772ea45683ca",
+        "cd0916c4cc84e3adf7a2ee97d1d1047b632a96e1c8bdf611255e2fabad8c8f6e"
+      ],
+      "decision_packet_digests": [
+        "00920818b054ed28ed61300f55e1525b2261a882cb6bcc0485045e6438bb39fe",
+        "44187477d585d328b8f8cc7ce6d5c30d73c405bc6fe43d33b86760a84b8b4084",
+        "6238a459894391f0c3e27b671a8d22eee69ebac67a726b796d0c444b5a023b19",
+        "6de5fe53e7871d2c858f9525bdb4c1595095ca6b3cfd8b4cea24f6bba053bb31",
+        "9d27e270c72769172c46d07f5a66188d1ac8707df7ada1acdc11e7cce49bb82d",
+        "a08520f8da8c134203014b2b179f2681b12cc53c0261d2c6d42640c5e2443e58",
+        "ae8d63723561f897efa9141aec98b9b11f716814710654829711236009ad3c12"
+      ],
+      "decision_provider_request_digests": [
+        "1f3abcd34caf8644859135542d6fa8959d583815441c912f96b8e0f5aac229a7",
+        "462f98d166fe37214ca02549d9e134748a02c0a3b76e394aa5d10fead1e23cb8",
+        "62f455fa5d4646edd28eca0ded14e8b0f385d8a53d79d2293529e028a66887c6",
+        "7543c14021bcea14f73c6e70f2a8a3ea1bc785c722205537d24644b502d89aca",
+        "98d2633572664fcbdacdfb5941f7dc873ead052d1fe7de1dd00206e7d089474f",
+        "ef35fb2b951dc0de2b61fffe9f418520c9a59596450c60c49eb2ea6cdde21efb",
+        "f4276923195c971398a8ecbf407347c69cccc347e397a8c90ffc3b315a14e566"
+      ],
+      "direct_local_verification_passed": true,
+      "elapsed_seconds_known": true,
+      "exposed_material_digests": [
+        "5a811f2f680304bd001e5233cd1c6479773659c9d48386ffcb09694d2863f8da",
+        "6a39f03b30bb33e9f0972d31a656696597654c7e754a8bacd2f10347ed260b28",
+        "80e46abf3872d9fd88412ffc9fdaa682145f8eb00385ed283d1aa504061d4060",
+        "8bfc75fd7fa41a07002679f051b2355212c9d3c6a4fa9d4eb6a3bd68cb0ff86c",
+        "aa28ac77c668987746a149e9ed7f12f3f642284146d5548bf7543213163b9cf6",
+        "b83c748da717c8944af6ff7231a9ff8c06fbe5efa1e035e73ebeeb5025ea58a1",
+        "ed97a7ead88361f24acc1c3dfd40e027cb9044f89e475d61fb9f35f6c1eb2e09"
+      ],
+      "exposed_material_refs": [
+        "stage-material:fixture:0",
+        "stage-material:fixture:1",
+        "stage-material:fixture:2",
+        "stage-material:fixture:3",
+        "stage-material:fixture:4",
+        "stage-material:fixture:5",
+        "stage-material:fixture:6"
+      ],
+      "exposed_prior_refs": [
+        "prior-stage:fixture:verified-text-artifact:0",
+        "prior-stage:fixture:verified-text-artifact:1",
+        "prior-stage:fixture:verified-text-artifact:2",
+        "prior-stage:fixture:verified-text-artifact:3",
+        "prior-stage:fixture:verified-text-artifact:4",
+        "prior-stage:fixture:verified-text-artifact:5",
+        "prior-stage:fixture:verified-text-artifact:6"
+      ],
+      "exposure_gateway_request_digests": [
+        "6f8ce0b85c21b118750c7eaba01c1dc37fd3714ec35894d64a5286980e0e9cb4",
+        "83f1a0db2524733f8e61875c5ce5a41a63edbf72a256bccf9af59eb141ed5e75",
+        "adeb3dd942a1097aeb1b25dfece4bf34f5c576bed5449a55ddcb8267896074d9",
+        "c2d0bd24992b72ba1620552445a671c219c209bad2f5224af4e5cc14408f0d7e",
+        "c7c1994082f0a0a01e2591e542dbeca5e531b3caac12595c8e37102bc0d04f65",
+        "c96443c5b3371664a77f9cd2d2c254a1a938b517eaf5bf021adc772ea45683ca",
+        "cd0916c4cc84e3adf7a2ee97d1d1047b632a96e1c8bdf611255e2fabad8c8f6e"
+      ],
+      "exposure_packet_digests": [
+        "00920818b054ed28ed61300f55e1525b2261a882cb6bcc0485045e6438bb39fe",
+        "44187477d585d328b8f8cc7ce6d5c30d73c405bc6fe43d33b86760a84b8b4084",
+        "6238a459894391f0c3e27b671a8d22eee69ebac67a726b796d0c444b5a023b19",
+        "6de5fe53e7871d2c858f9525bdb4c1595095ca6b3cfd8b4cea24f6bba053bb31",
+        "9d27e270c72769172c46d07f5a66188d1ac8707df7ada1acdc11e7cce49bb82d",
+        "a08520f8da8c134203014b2b179f2681b12cc53c0261d2c6d42640c5e2443e58",
+        "ae8d63723561f897efa9141aec98b9b11f716814710654829711236009ad3c12"
+      ],
+      "exposure_provider_request_digests": [
+        "1f3abcd34caf8644859135542d6fa8959d583815441c912f96b8e0f5aac229a7",
+        "462f98d166fe37214ca02549d9e134748a02c0a3b76e394aa5d10fead1e23cb8",
+        "62f455fa5d4646edd28eca0ded14e8b0f385d8a53d79d2293529e028a66887c6",
+        "7543c14021bcea14f73c6e70f2a8a3ea1bc785c722205537d24644b502d89aca",
+        "98d2633572664fcbdacdfb5941f7dc873ead052d1fe7de1dd00206e7d089474f",
+        "ef35fb2b951dc0de2b61fffe9f418520c9a59596450c60c49eb2ea6cdde21efb",
+        "f4276923195c971398a8ecbf407347c69cccc347e397a8c90ffc3b315a14e566"
+      ],
+      "exposure_records": 7,
+      "exposure_refs": [
+        "stage-exposure:sha256:2b89cc659b00afea57734d560fce29020730ed2be875b0aa2026bd65e7cadea1",
+        "stage-exposure:sha256:33c6c3917b629ffbc4ea4e39761753e2b2ce76edb144ede52ba97fd1c8ea0b76",
+        "stage-exposure:sha256:5e7f117aacf88ca52b64f2a4a3a413d8e01b672ad0fdf0707ad4303340f73333",
+        "stage-exposure:sha256:6f8839636344b9bf0111d06b6299fdbeed0f1bc533d449e50522109e447c3bd7",
+        "stage-exposure:sha256:71d796f38163a202cd33392fe558b8fc106799e89b1beecb56090e575f6393f0",
+        "stage-exposure:sha256:9c499c3264c3dae8fe7ccbd9a97328890bbd2c107c9a017120c13a40442a18cb",
+        "stage-exposure:sha256:e7741012cadcfe43a29516b04e4e8aae7faa3bfdc66601ca67945c76b0c1c500"
+      ],
+      "input_tokens": 14,
+      "linked_action_ids": [
+        "action:3e4f1aaa8d6e4eba86c6"
+      ],
+      "linked_stage_occurrence_ids": [
+        "stage-occurrence:sha256:b0479ba12d9a1d6179e79bb7a8762012ac213ccc4fec50409525530237a87dae"
+      ],
+      "local_outcome_records": 7,
+      "model_calls": 7,
+      "outcome_attribution_methods": [
+        "DIRECT_DOWNSTREAM_CONSUMPTION"
+      ],
+      "output_tokens": 21,
+      "physical_attempt_loop_ids": [
+        "loop14",
+        "loop21",
+        "loop28",
+        "loop35",
+        "loop45",
+        "loop52",
+        "loop7"
+      ],
+      "physical_attempts": 7,
+      "prior_material_body_present_in_prompt": true,
+      "prior_stages_loaded": 7,
+      "prompt_count": 7,
+      "public_product_outcome_bound": true,
+      "retrieval_performed": true,
+      "routes": [
+        "fixture.route"
+      ],
+      "run_history_events": 550,
+      "run_history_intact": true,
+      "run_id": "adaptive-57f313b319a2a4ab140c89ac",
+      "selected_action_link_records": 1,
+      "semantic_call_correlation_complete": true,
+      "semantic_call_ids": [
+        "semantic-stage-2297f4fade3cce1d6266c4fa6a027255b08031afc5245a82",
+        "semantic-stage-7630b6cb943d1f63fce093f94aefe711e6dc4b519b4d0db2",
+        "semantic-stage-8880ad51cf5c9705ad36f80e0f291a978fb2079fb3252dd8",
+        "semantic-stage-8b74ec381e5b33d91774fdf15e9366263b3b6a33150fcbdb",
+        "semantic-stage-a2ca993ebf1626367fb58318309fda68fec2788a0383f53d",
+        "semantic-stage-c1753417e4f7302476fedba167849fb16748e7918d349fd4",
+        "semantic-stage-f48181d6bd7009c878e242b2ae7d0df088dd52292b9dcdb7"
+      ],
+      "semantic_payload_digests": [
+        "08ffa868e58485e9fbf6ec9fa153ac006e3e2266cc316beb5473d83b02a77ac5",
+        "27719685a0d29283a6c5cb9a01040fb25e9efeb039a49e753ecdc508578a8199",
+        "6bd80df1cb66664b5a576bfe536a2b5badc496fffc36ba4b6b65f0de64b1fbcf",
+        "91b469801c629ede65d9063e106982450fdce454c49f5f2abaef00049ff18f30",
+        "ab6666282b9255cf6a1c107b1fd392d4a40386b5a7cf3e7b03a6f2848d0bc936",
+        "d3ac992e10a1be84256b7505c195cf7b448413338f68613d60a0e5a9cc46dfe6",
+        "dc09685f4b88af75e084b40bb983f685a4c129bf23da06473137f3841737c543"
+      ],
+      "semantic_signatures": [
+        "stage:sha256:105fc8361f67a44df9e53ee855d91d75",
+        "stage:sha256:78a84b02ff42517b1a4a239b8f4fb18d",
+        "stage:sha256:7cc4a5dca6038ceeb83772e0718ef013",
+        "stage:sha256:7da96c3ba4cd409f312285c8d23687c3",
+        "stage:sha256:b9dbbaf794ee05a64b440da4d0237a03",
+        "stage:sha256:c397f308bebcb975c35bc583a4152eb8",
+        "stage:sha256:fb4d56ea64ae2abe345d46d08a3a3e60"
+      ],
+      "solved": true,
+      "source_occurrence_ref_present_in_prompt": true,
+      "source_state_digests": [
+        "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617"
+      ],
+      "stage_credit_known": 1,
+      "stage_occurrences": 7,
+      "stage_prior_context_present": true,
+      "stage_prior_prompt_material_present": true,
+      "usage_complete": true
+    },
+    "fresh": {
+      "action_execution_link_records": 1,
+      "action_outcome_link_records": 1,
+      "admitted_response_digests": [
+        "29588fb0cf07eef5f84843aaf971c0ced119489b1b73f6b6091276b578d3a452",
+        "2f4051e98c142be723a07a9755c614e88e2300f522089f8254a12d84f56988c1",
+        "64995fdde43e5dcd0484af618656a53010b50bacbd6a572ae2b4a915b68631f5",
+        "be077a9846e5ec71f99aa0259fe058c05ffb704f72f0816f89ccdcd6c28d62bd",
+        "c0704014b46aa38f28969bb876205d7681c10afe87e3be256a19d302e881fe0e",
+        "d41436a39f4c0fac2b63b8c7f69abb678974317e195ce46f868cc8ec6791d850",
+        "d91f97faec3be0968326f1385a0c0bfa0bf07b816eef05bff18cf9acdfe41d5b"
+      ],
+      "assistance_decisions": 7,
+      "attribution_boundary_records": 1,
+      "baseline_template_ids": [
+        "core.task.data_standardization",
+        "core.task.kaggle_competition",
+        "core.task.source_digestion",
+        "core.task.tabular_classification",
+        "core.task.tabular_model_comparison",
+        "core.task.tabular_regression"
+      ],
+      "candidate_ref_present_in_prompt": false,
+      "decision_dispositions": [
+        "START_FRESH"
+      ],
+      "decision_exposure_refs": [
+        "stage-exposure:sha256:4072c6a9dc504893da447d5092cb9e46ba8e3236a72055645480e0dec9bbf5cf",
+        "stage-exposure:sha256:59c2981759283427c8dd9a2ab5ca21a05e6a6a5c261375eafbdf576003a6f389",
+        "stage-exposure:sha256:5f14e08bfa39b940e4da9c048524915865701dfd38bfa7432286f41854d487b7",
+        "stage-exposure:sha256:7216521ebbc6d482083806d0aa1198566da1349539713cb21bd96e9727170a9d",
+        "stage-exposure:sha256:bfd2d46607c551b8a4a5ea3967d7cffd6f3e55d81c31153b52dca8c8804a973e",
+        "stage-exposure:sha256:c8480c7536361ecd90c1a5673e26d8a41ccf9153993e4de9398112b9bb7612e7",
+        "stage-exposure:sha256:e9cc5a2fad38b51d408653d6192178a5aff983e7bfa55551e5fcc6751eea3a17"
+      ],
+      "decision_gateway_request_digests": [
+        "0c71e32dd20e8ffa0b5fea164506dc776cc6a304aaba33b9ae70a1396c2d7661",
+        "69d37195074bee86d4214fbabc1dbd16fe913592ef597aeb5c8cb7f3c8693b22",
+        "af252883fa48f2eb5cca1672c134a3f196f791ec882dbc1ab835b560d9b21eab",
+        "b6fa7c110e927982f7c1cf76033cfb211e29cfc44d4c9ef2f0d09b88a4c824a0",
+        "b8ffdb20e36e5e86ee7bb3fbddf6d4fb49126462b3574df2d135b955950312e4",
+        "d0414955654f86b0dcd79e6bed5409a8626fd84a1d2f3e981332714eb762b4e2",
+        "e016718a508b37d61531e95423e774dfb5a178dd1cea285035ef1b8004178ba1"
+      ],
+      "decision_packet_digests": [
+        "2a4bc2a90bab90efa06a36ca499be177729d6e4a7909de136e2282802e3962f9",
+        "2c584409fa48ac6ca529b8d80c3bae95ba2fa09a159f8747902d20e4cefb1e6b",
+        "503f1ccb0d61c22cf26e6c0fa1d04cb6f6b4caf96962b3be4b2aa283275f6f74",
+        "b34acab5b0934ac4ecb233d69633cef916ba5a59c7e9a9c8b1b0da06bb56b28b",
+        "cf5beace8c643946680016736314d955dafe14e2eb5902b4dbd39f65af27b87b",
+        "d7ef07cc6587228b2f9f2c5afa5af5a2ae303ae0e1b5d6962ffa532c411a1a0e",
+        "e6bd8d9855a6cf6fb6d29232bc3c578d073248ccaa70e0f5c4f891d08ae64c5b"
+      ],
+      "decision_provider_request_digests": [
+        "0142de8a2f53d19e314cef91ae39f714fca5cec04280c5890679fb0953850990",
+        "3e6976710f9b386bb4ba64ba09bf68463ad7c88216278b33c6a0b429c395b076",
+        "736a9265112425e46ed46226df2cb746b7344763fe185a8053c69faff6615c3a",
+        "9a3ff820c712b7524cce5949694f524649e0f4bd7ec256aa25e3c16140e578ff",
+        "9ad4389dda53d4483819a1b9126d5c0b77df8a110b2a16beecd740239b55379d",
+        "bc5c237afeffd24e276610e3ac1e7093377cff06adbac6bcea3257b0720ae629",
+        "f55e92bbf7d45927c7eea08f09274ca5974fa788ef54b8d828ea7cb733324cce"
+      ],
+      "direct_local_verification_passed": true,
+      "elapsed_seconds_known": true,
+      "exposed_material_digests": [],
+      "exposed_material_refs": [],
+      "exposed_prior_refs": [],
+      "exposure_gateway_request_digests": [
+        "0c71e32dd20e8ffa0b5fea164506dc776cc6a304aaba33b9ae70a1396c2d7661",
+        "69d37195074bee86d4214fbabc1dbd16fe913592ef597aeb5c8cb7f3c8693b22",
+        "af252883fa48f2eb5cca1672c134a3f196f791ec882dbc1ab835b560d9b21eab",
+        "b6fa7c110e927982f7c1cf76033cfb211e29cfc44d4c9ef2f0d09b88a4c824a0",
+        "b8ffdb20e36e5e86ee7bb3fbddf6d4fb49126462b3574df2d135b955950312e4",
+        "d0414955654f86b0dcd79e6bed5409a8626fd84a1d2f3e981332714eb762b4e2",
+        "e016718a508b37d61531e95423e774dfb5a178dd1cea285035ef1b8004178ba1"
+      ],
+      "exposure_packet_digests": [
+        "2a4bc2a90bab90efa06a36ca499be177729d6e4a7909de136e2282802e3962f9",
+        "2c584409fa48ac6ca529b8d80c3bae95ba2fa09a159f8747902d20e4cefb1e6b",
+        "503f1ccb0d61c22cf26e6c0fa1d04cb6f6b4caf96962b3be4b2aa283275f6f74",
+        "b34acab5b0934ac4ecb233d69633cef916ba5a59c7e9a9c8b1b0da06bb56b28b",
+        "cf5beace8c643946680016736314d955dafe14e2eb5902b4dbd39f65af27b87b",
+        "d7ef07cc6587228b2f9f2c5afa5af5a2ae303ae0e1b5d6962ffa532c411a1a0e",
+        "e6bd8d9855a6cf6fb6d29232bc3c578d073248ccaa70e0f5c4f891d08ae64c5b"
+      ],
+      "exposure_provider_request_digests": [
+        "0142de8a2f53d19e314cef91ae39f714fca5cec04280c5890679fb0953850990",
+        "3e6976710f9b386bb4ba64ba09bf68463ad7c88216278b33c6a0b429c395b076",
+        "736a9265112425e46ed46226df2cb746b7344763fe185a8053c69faff6615c3a",
+        "9a3ff820c712b7524cce5949694f524649e0f4bd7ec256aa25e3c16140e578ff",
+        "9ad4389dda53d4483819a1b9126d5c0b77df8a110b2a16beecd740239b55379d",
+        "bc5c237afeffd24e276610e3ac1e7093377cff06adbac6bcea3257b0720ae629",
+        "f55e92bbf7d45927c7eea08f09274ca5974fa788ef54b8d828ea7cb733324cce"
+      ],
+      "exposure_records": 7,
+      "exposure_refs": [
+        "stage-exposure:sha256:4072c6a9dc504893da447d5092cb9e46ba8e3236a72055645480e0dec9bbf5cf",
+        "stage-exposure:sha256:59c2981759283427c8dd9a2ab5ca21a05e6a6a5c261375eafbdf576003a6f389",
+        "stage-exposure:sha256:5f14e08bfa39b940e4da9c048524915865701dfd38bfa7432286f41854d487b7",
+        "stage-exposure:sha256:7216521ebbc6d482083806d0aa1198566da1349539713cb21bd96e9727170a9d",
+        "stage-exposure:sha256:bfd2d46607c551b8a4a5ea3967d7cffd6f3e55d81c31153b52dca8c8804a973e",
+        "stage-exposure:sha256:c8480c7536361ecd90c1a5673e26d8a41ccf9153993e4de9398112b9bb7612e7",
+        "stage-exposure:sha256:e9cc5a2fad38b51d408653d6192178a5aff983e7bfa55551e5fcc6751eea3a17"
+      ],
+      "input_tokens": 14,
+      "linked_action_ids": [
+        "action:3e4f1aaa8d6e4eba86c6"
+      ],
+      "linked_stage_occurrence_ids": [
+        "stage-occurrence:sha256:6a437bd2b6bc366ae890d7b3dd27aad4d2307655125d18ff419041fbe6d05c03"
+      ],
+      "local_outcome_records": 7,
+      "model_calls": 7,
+      "outcome_attribution_methods": [
+        "DIRECT_DOWNSTREAM_CONSUMPTION"
+      ],
+      "output_tokens": 21,
+      "physical_attempt_loop_ids": [
+        "loop14",
+        "loop21",
+        "loop28",
+        "loop35",
+        "loop45",
+        "loop52",
+        "loop7"
+      ],
+      "physical_attempts": 7,
+      "prior_material_body_present_in_prompt": false,
+      "prior_stages_loaded": 14,
+      "prompt_count": 7,
+      "public_product_outcome_bound": true,
+      "retrieval_performed": false,
+      "routes": [
+        "fixture.route"
+      ],
+      "run_history_events": 550,
+      "run_history_intact": true,
+      "run_id": "adaptive-33fae01c48d00e56b746a5d5",
+      "selected_action_link_records": 1,
+      "semantic_call_correlation_complete": true,
+      "semantic_call_ids": [
+        "semantic-stage-0c0228e72b9e23ca17642937e9d7247ab24bbbd43a4bc6b7",
+        "semantic-stage-0fa9378eb9e0960e9f1cbc7e1948e38af3be533e9e1e7abc",
+        "semantic-stage-1cdd542e3581a5eee72748ffaeb518dcb9f66b1835d47fb2",
+        "semantic-stage-4281d53ff89ccb3813c8d7273a734d16dfa51a165e1e4819",
+        "semantic-stage-6150d1a2b92a14a1528a543908e36d2703343b5810cc42fe",
+        "semantic-stage-ae0c6c2d5e2a315f82250a8c7c1406a81afca1967de95f26",
+        "semantic-stage-f78ec3dc811ca5f456a4922112a03bc8cbe193031065f18e"
+      ],
+      "semantic_payload_digests": [
+        "08ffa868e58485e9fbf6ec9fa153ac006e3e2266cc316beb5473d83b02a77ac5",
+        "27719685a0d29283a6c5cb9a01040fb25e9efeb039a49e753ecdc508578a8199",
+        "6bd80df1cb66664b5a576bfe536a2b5badc496fffc36ba4b6b65f0de64b1fbcf",
+        "91b469801c629ede65d9063e106982450fdce454c49f5f2abaef00049ff18f30",
+        "ab6666282b9255cf6a1c107b1fd392d4a40386b5a7cf3e7b03a6f2848d0bc936",
+        "d3ac992e10a1be84256b7505c195cf7b448413338f68613d60a0e5a9cc46dfe6",
+        "dc09685f4b88af75e084b40bb983f685a4c129bf23da06473137f3841737c543"
+      ],
+      "semantic_signatures": [
+        "stage:sha256:105fc8361f67a44df9e53ee855d91d75",
+        "stage:sha256:78a84b02ff42517b1a4a239b8f4fb18d",
+        "stage:sha256:7cc4a5dca6038ceeb83772e0718ef013",
+        "stage:sha256:7da96c3ba4cd409f312285c8d23687c3",
+        "stage:sha256:b9dbbaf794ee05a64b440da4d0237a03",
+        "stage:sha256:c397f308bebcb975c35bc583a4152eb8",
+        "stage:sha256:fb4d56ea64ae2abe345d46d08a3a3e60"
+      ],
+      "solved": true,
+      "source_occurrence_ref_present_in_prompt": false,
+      "source_state_digests": [
+        "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617"
+      ],
+      "stage_credit_known": 1,
+      "stage_occurrences": 7,
+      "stage_prior_context_present": false,
+      "stage_prior_prompt_material_present": false,
+      "usage_complete": true
+    }
+  },
+  "calibration": {
+    "included_in_pair": false,
+    "model_calls": 7,
+    "run_history_intact": true,
+    "run_id": "adaptive-903e807d1dd1cdc1d6ead54d",
+    "stage_occurrences": 7
+  },
+  "candidate_records": [
+    {
+      "authority_compatible": true,
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:0",
+      "contract_compatible": true,
+      "counterexample_refs": [],
+      "effect_compatible": true,
+      "evidence_refs": [
+        "run-history:fixture:prior"
+      ],
+      "found_by": "paired_fixture",
+      "material_differences": [
+        "different exact task occurrence"
+      ],
+      "outcome_refs": [
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "prior_not_proof": true,
+      "privacy_compatible": true,
+      "record_type": "stage_retrieval_candidate/v1",
+      "schema_version": "stage_retrieval_candidate/v1",
+      "semantic_signature": "stage:sha256:7da96c3ba4cd409f312285c8d23687c3",
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:0"
+    },
+    {
+      "authority_compatible": true,
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:1",
+      "contract_compatible": true,
+      "counterexample_refs": [],
+      "effect_compatible": true,
+      "evidence_refs": [
+        "run-history:fixture:prior"
+      ],
+      "found_by": "paired_fixture",
+      "material_differences": [
+        "different exact task occurrence"
+      ],
+      "outcome_refs": [
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "prior_not_proof": true,
+      "privacy_compatible": true,
+      "record_type": "stage_retrieval_candidate/v1",
+      "schema_version": "stage_retrieval_candidate/v1",
+      "semantic_signature": "stage:sha256:7cc4a5dca6038ceeb83772e0718ef013",
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:1"
+    },
+    {
+      "authority_compatible": true,
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:2",
+      "contract_compatible": true,
+      "counterexample_refs": [],
+      "effect_compatible": true,
+      "evidence_refs": [
+        "run-history:fixture:prior"
+      ],
+      "found_by": "paired_fixture",
+      "material_differences": [
+        "different exact task occurrence"
+      ],
+      "outcome_refs": [
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "prior_not_proof": true,
+      "privacy_compatible": true,
+      "record_type": "stage_retrieval_candidate/v1",
+      "schema_version": "stage_retrieval_candidate/v1",
+      "semantic_signature": "stage:sha256:b9dbbaf794ee05a64b440da4d0237a03",
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:2"
+    },
+    {
+      "authority_compatible": true,
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:3",
+      "contract_compatible": true,
+      "counterexample_refs": [],
+      "effect_compatible": true,
+      "evidence_refs": [
+        "run-history:fixture:prior"
+      ],
+      "found_by": "paired_fixture",
+      "material_differences": [
+        "different exact task occurrence"
+      ],
+      "outcome_refs": [
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "prior_not_proof": true,
+      "privacy_compatible": true,
+      "record_type": "stage_retrieval_candidate/v1",
+      "schema_version": "stage_retrieval_candidate/v1",
+      "semantic_signature": "stage:sha256:105fc8361f67a44df9e53ee855d91d75",
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:3"
+    },
+    {
+      "authority_compatible": true,
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:4",
+      "contract_compatible": true,
+      "counterexample_refs": [],
+      "effect_compatible": true,
+      "evidence_refs": [
+        "run-history:fixture:prior"
+      ],
+      "found_by": "paired_fixture",
+      "material_differences": [
+        "different exact task occurrence"
+      ],
+      "outcome_refs": [
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "prior_not_proof": true,
+      "privacy_compatible": true,
+      "record_type": "stage_retrieval_candidate/v1",
+      "schema_version": "stage_retrieval_candidate/v1",
+      "semantic_signature": "stage:sha256:78a84b02ff42517b1a4a239b8f4fb18d",
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:4"
+    },
+    {
+      "authority_compatible": true,
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:5",
+      "contract_compatible": true,
+      "counterexample_refs": [],
+      "effect_compatible": true,
+      "evidence_refs": [
+        "run-history:fixture:prior"
+      ],
+      "found_by": "paired_fixture",
+      "material_differences": [
+        "different exact task occurrence"
+      ],
+      "outcome_refs": [
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "prior_not_proof": true,
+      "privacy_compatible": true,
+      "record_type": "stage_retrieval_candidate/v1",
+      "schema_version": "stage_retrieval_candidate/v1",
+      "semantic_signature": "stage:sha256:c397f308bebcb975c35bc583a4152eb8",
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:5"
+    },
+    {
+      "authority_compatible": true,
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:6",
+      "contract_compatible": true,
+      "counterexample_refs": [],
+      "effect_compatible": true,
+      "evidence_refs": [
+        "run-history:fixture:prior"
+      ],
+      "found_by": "paired_fixture",
+      "material_differences": [
+        "different exact task occurrence"
+      ],
+      "outcome_refs": [
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "prior_not_proof": true,
+      "privacy_compatible": true,
+      "record_type": "stage_retrieval_candidate/v1",
+      "schema_version": "stage_retrieval_candidate/v1",
+      "semantic_signature": "stage:sha256:fb4d56ea64ae2abe345d46d08a3a3e60",
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:6"
+    }
+  ],
+  "candidate_refs": [
+    "prior-stage:fixture:verified-text-artifact:0",
+    "prior-stage:fixture:verified-text-artifact:1",
+    "prior-stage:fixture:verified-text-artifact:2",
+    "prior-stage:fixture:verified-text-artifact:3",
+    "prior-stage:fixture:verified-text-artifact:4",
+    "prior-stage:fixture:verified-text-artifact:5",
+    "prior-stage:fixture:verified-text-artifact:6"
+  ],
+  "denominators": {
+    "calibration_runs": 1,
+    "frozen_task_states": 1,
+    "independent_arms": 2,
+    "live_provider_calls": 0,
+    "logical_semantic_calls_total": 21,
+    "offline_fixture_physical_attempts_total": 21,
+    "paired_logical_semantic_calls": 14,
+    "paired_offline_fixture_physical_attempts": 14,
+    "product_runs_total": 3,
+    "stored_stage_rows": 21
+  },
+  "evidence_class": "offline_public_solve_with_injected_provider",
+  "frozen_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+  "limitations": [
+    "injected responses do not establish live model quality",
+    "equal fixture outcomes do not establish assistance benefit",
+    "six of seven semantic stages retain unknown local contribution",
+    "one separate fresh calibration run identifies stage signatures",
+    "the request-wide trial label is not a canonical per-stage trial",
+    "no causal assistance effect or canonical paired outcome is claimed",
+    "full non-treatment variable and provider request freezing is unproven",
+    "retrieval candidates are injected rather than queried from Run History"
+  ],
+  "material_records": [
+    {
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:0",
+      "content": {
+        "context_plan_candidate": {
+          "exclude": [
+            "unrelated parent-task details"
+          ],
+          "include": [
+            "task contract",
+            "latest state",
+            "artifact checks"
+          ]
+        },
+        "known_local_outcome": "verified",
+        "prior_stage_summary": "A bounded artifact stage succeeded after preserving an exact output contract and independent file verification.",
+        "response_program_candidate": {
+          "required_sections": [
+            "candidate action",
+            "expected observation",
+            "verification"
+          ]
+        },
+        "semantic_stage_signature": "stage:sha256:7da96c3ba4cd409f312285c8d23687c3",
+        "source_candidate_ref": "prior-stage:fixture:verified-text-artifact:0"
+      },
+      "content_digest": "aa28ac77c668987746a149e9ed7f12f3f642284146d5548bf7543213163b9cf6",
+      "grants_authority": false,
+      "hydration_level": "L2",
+      "material_kind": "response_program_and_context_plan",
+      "material_ref": "stage-material:fixture:0",
+      "prior_not_instruction": true,
+      "record_type": "stage_assistance_material/v1",
+      "semantic_signature": "stage:sha256:7da96c3ba4cd409f312285c8d23687c3",
+      "source_evidence_refs": [
+        "run-history:fixture:prior",
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:0"
+    },
+    {
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:1",
+      "content": {
+        "context_plan_candidate": {
+          "exclude": [
+            "unrelated parent-task details"
+          ],
+          "include": [
+            "task contract",
+            "latest state",
+            "artifact checks"
+          ]
+        },
+        "known_local_outcome": "verified",
+        "prior_stage_summary": "A bounded artifact stage succeeded after preserving an exact output contract and independent file verification.",
+        "response_program_candidate": {
+          "required_sections": [
+            "candidate action",
+            "expected observation",
+            "verification"
+          ]
+        },
+        "semantic_stage_signature": "stage:sha256:7cc4a5dca6038ceeb83772e0718ef013",
+        "source_candidate_ref": "prior-stage:fixture:verified-text-artifact:1"
+      },
+      "content_digest": "b83c748da717c8944af6ff7231a9ff8c06fbe5efa1e035e73ebeeb5025ea58a1",
+      "grants_authority": false,
+      "hydration_level": "L2",
+      "material_kind": "response_program_and_context_plan",
+      "material_ref": "stage-material:fixture:1",
+      "prior_not_instruction": true,
+      "record_type": "stage_assistance_material/v1",
+      "semantic_signature": "stage:sha256:7cc4a5dca6038ceeb83772e0718ef013",
+      "source_evidence_refs": [
+        "run-history:fixture:prior",
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:1"
+    },
+    {
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:2",
+      "content": {
+        "context_plan_candidate": {
+          "exclude": [
+            "unrelated parent-task details"
+          ],
+          "include": [
+            "task contract",
+            "latest state",
+            "artifact checks"
+          ]
+        },
+        "known_local_outcome": "verified",
+        "prior_stage_summary": "A bounded artifact stage succeeded after preserving an exact output contract and independent file verification.",
+        "response_program_candidate": {
+          "required_sections": [
+            "candidate action",
+            "expected observation",
+            "verification"
+          ]
+        },
+        "semantic_stage_signature": "stage:sha256:b9dbbaf794ee05a64b440da4d0237a03",
+        "source_candidate_ref": "prior-stage:fixture:verified-text-artifact:2"
+      },
+      "content_digest": "8bfc75fd7fa41a07002679f051b2355212c9d3c6a4fa9d4eb6a3bd68cb0ff86c",
+      "grants_authority": false,
+      "hydration_level": "L2",
+      "material_kind": "response_program_and_context_plan",
+      "material_ref": "stage-material:fixture:2",
+      "prior_not_instruction": true,
+      "record_type": "stage_assistance_material/v1",
+      "semantic_signature": "stage:sha256:b9dbbaf794ee05a64b440da4d0237a03",
+      "source_evidence_refs": [
+        "run-history:fixture:prior",
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:2"
+    },
+    {
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:3",
+      "content": {
+        "context_plan_candidate": {
+          "exclude": [
+            "unrelated parent-task details"
+          ],
+          "include": [
+            "task contract",
+            "latest state",
+            "artifact checks"
+          ]
+        },
+        "known_local_outcome": "verified",
+        "prior_stage_summary": "A bounded artifact stage succeeded after preserving an exact output contract and independent file verification.",
+        "response_program_candidate": {
+          "required_sections": [
+            "candidate action",
+            "expected observation",
+            "verification"
+          ]
+        },
+        "semantic_stage_signature": "stage:sha256:105fc8361f67a44df9e53ee855d91d75",
+        "source_candidate_ref": "prior-stage:fixture:verified-text-artifact:3"
+      },
+      "content_digest": "6a39f03b30bb33e9f0972d31a656696597654c7e754a8bacd2f10347ed260b28",
+      "grants_authority": false,
+      "hydration_level": "L2",
+      "material_kind": "response_program_and_context_plan",
+      "material_ref": "stage-material:fixture:3",
+      "prior_not_instruction": true,
+      "record_type": "stage_assistance_material/v1",
+      "semantic_signature": "stage:sha256:105fc8361f67a44df9e53ee855d91d75",
+      "source_evidence_refs": [
+        "run-history:fixture:prior",
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:3"
+    },
+    {
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:4",
+      "content": {
+        "context_plan_candidate": {
+          "exclude": [
+            "unrelated parent-task details"
+          ],
+          "include": [
+            "task contract",
+            "latest state",
+            "artifact checks"
+          ]
+        },
+        "known_local_outcome": "verified",
+        "prior_stage_summary": "A bounded artifact stage succeeded after preserving an exact output contract and independent file verification.",
+        "response_program_candidate": {
+          "required_sections": [
+            "candidate action",
+            "expected observation",
+            "verification"
+          ]
+        },
+        "semantic_stage_signature": "stage:sha256:78a84b02ff42517b1a4a239b8f4fb18d",
+        "source_candidate_ref": "prior-stage:fixture:verified-text-artifact:4"
+      },
+      "content_digest": "80e46abf3872d9fd88412ffc9fdaa682145f8eb00385ed283d1aa504061d4060",
+      "grants_authority": false,
+      "hydration_level": "L2",
+      "material_kind": "response_program_and_context_plan",
+      "material_ref": "stage-material:fixture:4",
+      "prior_not_instruction": true,
+      "record_type": "stage_assistance_material/v1",
+      "semantic_signature": "stage:sha256:78a84b02ff42517b1a4a239b8f4fb18d",
+      "source_evidence_refs": [
+        "run-history:fixture:prior",
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:4"
+    },
+    {
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:5",
+      "content": {
+        "context_plan_candidate": {
+          "exclude": [
+            "unrelated parent-task details"
+          ],
+          "include": [
+            "task contract",
+            "latest state",
+            "artifact checks"
+          ]
+        },
+        "known_local_outcome": "verified",
+        "prior_stage_summary": "A bounded artifact stage succeeded after preserving an exact output contract and independent file verification.",
+        "response_program_candidate": {
+          "required_sections": [
+            "candidate action",
+            "expected observation",
+            "verification"
+          ]
+        },
+        "semantic_stage_signature": "stage:sha256:c397f308bebcb975c35bc583a4152eb8",
+        "source_candidate_ref": "prior-stage:fixture:verified-text-artifact:5"
+      },
+      "content_digest": "ed97a7ead88361f24acc1c3dfd40e027cb9044f89e475d61fb9f35f6c1eb2e09",
+      "grants_authority": false,
+      "hydration_level": "L2",
+      "material_kind": "response_program_and_context_plan",
+      "material_ref": "stage-material:fixture:5",
+      "prior_not_instruction": true,
+      "record_type": "stage_assistance_material/v1",
+      "semantic_signature": "stage:sha256:c397f308bebcb975c35bc583a4152eb8",
+      "source_evidence_refs": [
+        "run-history:fixture:prior",
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:5"
+    },
+    {
+      "candidate_ref": "prior-stage:fixture:verified-text-artifact:6",
+      "content": {
+        "context_plan_candidate": {
+          "exclude": [
+            "unrelated parent-task details"
+          ],
+          "include": [
+            "task contract",
+            "latest state",
+            "artifact checks"
+          ]
+        },
+        "known_local_outcome": "verified",
+        "prior_stage_summary": "A bounded artifact stage succeeded after preserving an exact output contract and independent file verification.",
+        "response_program_candidate": {
+          "required_sections": [
+            "candidate action",
+            "expected observation",
+            "verification"
+          ]
+        },
+        "semantic_stage_signature": "stage:sha256:fb4d56ea64ae2abe345d46d08a3a3e60",
+        "source_candidate_ref": "prior-stage:fixture:verified-text-artifact:6"
+      },
+      "content_digest": "5a811f2f680304bd001e5233cd1c6479773659c9d48386ffcb09694d2863f8da",
+      "grants_authority": false,
+      "hydration_level": "L2",
+      "material_kind": "response_program_and_context_plan",
+      "material_ref": "stage-material:fixture:6",
+      "prior_not_instruction": true,
+      "record_type": "stage_assistance_material/v1",
+      "semantic_signature": "stage:sha256:fb4d56ea64ae2abe345d46d08a3a3e60",
+      "source_evidence_refs": [
+        "run-history:fixture:prior",
+        "stage-outcome:fixture:locally-verified"
+      ],
+      "source_occurrence_ref": "semantic-call:fixture:prior-occurrence:6"
+    }
+  ],
+  "occurrence_ids_disjoint": true,
+  "record_type": "stage_assistance_public_solve_fixture/v2"
+}

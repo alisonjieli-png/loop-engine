@@ -1,0 +1,6502 @@
+[
+  {
+    "bytes": 593918,
+    "coverage": "FULL_TEXT_AUTOMATED_INSPECTION",
+    "headings": [
+      {
+        "line": 1,
+        "title": "# LOOP ENGINE COMPLETE START-TO-FINISH MASTER IMPLEMENTATION, PRODUCTIZATION, RESEARCH, BENCHMARK, AND SELF-IMPROVEMENT MANDATE"
+      },
+      {
+        "line": 3,
+        "title": "## Paste this entire Markdown file into a fresh OpenCode, Kimi, DeepSeek, Codex, Claude Code, or equivalent repository-development session"
+      },
+      {
+        "line": 53,
+        "title": "# 0. How to use this master mandate"
+      },
+      {
+        "line": 55,
+        "title": "## 0.1 Read the entire file before making architectural edits"
+      },
+      {
+        "line": 63,
+        "title": "## 0.2 Precedence order"
+      },
+      {
+        "line": 82,
+        "title": "## 0.3 Historical evidence is not current proof"
+      },
+      {
+        "line": 119,
+        "title": "## 0.4 Preserve unrelated work"
+      },
+      {
+        "line": 134,
+        "title": "## 0.5 Normative language"
+      },
+      {
+        "line": 158,
+        "title": "# 1. Executive mission"
+      },
+      {
+        "line": 215,
+        "title": "# 2. Superseding architecture decisions"
+      },
+      {
+        "line": 219,
+        "title": "## 2.1 One concrete operational runtime: `Loop`"
+      },
+      {
+        "line": 268,
+        "title": "## 2.2 Everything that independently performs governed work is a Loop"
+      },
+      {
+        "line": 312,
+        "title": "## 2.3 Independent dimensions"
+      },
+      {
+        "line": 375,
+        "title": "## 2.4 Default Practitioner is now ten stages"
+      },
+      {
+        "line": 412,
+        "title": "## 2.5 Functional Intelligence Domains replace the old four exclusive layers"
+      },
+      {
+        "line": 454,
+        "title": "## 2.6 Runtime state and four memory types"
+      },
+      {
+        "line": 493,
+        "title": "## 2.7 Core, Learned, Plugin, Candidate"
+      },
+      {
+        "line": 533,
+        "title": "## 2.8 Core capabilities are not a separate runtime"
+      },
+      {
+        "line": 561,
+        "title": "## 2.9 Development Engineering and Development Assurance"
+      },
+      {
+        "line": 578,
+        "title": "## 2.10 Search, browsing, and research"
+      },
+      {
+        "line": 600,
+        "title": "## 2.11 N-grams and frequency statistics"
+      },
+      {
+        "line": 614,
+        "title": "## 2.12 Benchmarks"
+      },
+      {
+        "line": 637,
+        "title": "# 3. Mandatory repository-first audit"
+      },
+      {
+        "line": 685,
+        "title": "# 4. Universal task compilation"
+      },
+      {
+        "line": 714,
+        "title": "## 4.1 `CompiledTask`"
+      },
+      {
+        "line": 752,
+        "title": "## 4.2 Binding modes"
+      },
+      {
+        "line": 776,
+        "title": "## 4.3 Four independent query coordinates"
+      },
+      {
+        "line": 796,
+        "title": "## 4.4 Task Question Graph"
+      },
+      {
+        "line": 847,
+        "title": "## 4.5 Persona-distance panel"
+      },
+      {
+        "line": 875,
+        "title": "## 4.6 Standard question packs"
+      },
+      {
+        "line": 917,
+        "title": "# 5. Intelligence model and seeking"
+      },
+      {
+        "line": 919,
+        "title": "## 5.1 Intelligence record dimensions"
+      },
+      {
+        "line": 944,
+        "title": "## 5.2 Intelligence seeking objects"
+      },
+      {
+        "line": 971,
+        "title": "## 5.3 Default stage preferences"
+      },
+      {
+        "line": 1007,
+        "title": "## 5.4 Strategy examples"
+      },
+      {
+        "line": 1030,
+        "title": "## 5.5 Intelligence Foundry"
+      },
+      {
+        "line": 1078,
+        "title": "# 6. Four-memory architecture"
+      },
+      {
+        "line": 1082,
+        "title": "## 6.1 Working memory"
+      },
+      {
+        "line": 1112,
+        "title": "## 6.2 Episodic memory"
+      },
+      {
+        "line": 1141,
+        "title": "## 6.3 Semantic memory"
+      },
+      {
+        "line": 1166,
+        "title": "## 6.4 Procedural memory"
+      },
+      {
+        "line": 1195,
+        "title": "## 6.5 Lifecycle"
+      },
+      {
+        "line": 1213,
+        "title": "# 7. External Evidence Substrate"
+      },
+      {
+        "line": 1217,
+        "title": "## 7.1 Separate operators"
+      },
+      {
+        "line": 1248,
+        "title": "## 7.2 Ports"
+      },
+      {
+        "line": 1261,
+        "title": "## 7.3 Initial adapters"
+      },
+      {
+        "line": 1284,
+        "title": "## 7.4 Acquisition ladder"
+      },
+      {
+        "line": 1301,
+        "title": "## 7.5 Search results are not intelligence"
+      },
+      {
+        "line": 1316,
+        "title": "## 7.6 Research-to-Intelligence application"
+      },
+      {
+        "line": 1359,
+        "title": "# 8. Solution Canvas and reusable solution construction"
+      },
+      {
+        "line": 1365,
+        "title": "## 8.1 Do not show one linear projection only"
+      },
+      {
+        "line": 1399,
+        "title": "## 8.2 Reusable solution package"
+      },
+      {
+        "line": 1426,
+        "title": "## 8.3 Serviceization decision"
+      },
+      {
+        "line": 1461,
+        "title": "# 9. Scheduling, async, parallel, durable, and distributed work"
+      },
+      {
+        "line": 1463,
+        "title": "## 9.1 Concurrency contract"
+      },
+      {
+        "line": 1490,
+        "title": "## 9.2 Standard question"
+      },
+      {
+        "line": 1505,
+        "title": "## 9.3 Join policies"
+      },
+      {
+        "line": 1517,
+        "title": "## 9.4 No anonymous fire-and-forget"
+      },
+      {
+        "line": 1528,
+        "title": "## 9.5 Durable work"
+      },
+      {
+        "line": 1551,
+        "title": "# 10. Development Engineering and Development Assurance"
+      },
+      {
+        "line": 1553,
+        "title": "## 10.1 Shared runtime, separate management"
+      },
+      {
+        "line": 1585,
+        "title": "## 10.2 Builder-auditor cycle"
+      },
+      {
+        "line": 1619,
+        "title": "## 10.3 Assurance intelligence"
+      },
+      {
+        "line": 1634,
+        "title": "## 10.4 Who reviews the reviewers"
+      },
+      {
+        "line": 1649,
+        "title": "# 11. Repository and architecture conformance"
+      },
+      {
+        "line": 1690,
+        "title": "## 11.1 Structure CLI"
+      },
+      {
+        "line": 1711,
+        "title": "## 11.2 LLM semantic review"
+      },
+      {
+        "line": 1734,
+        "title": "# 12. Storage, query engines, and portability"
+      },
+      {
+        "line": 1736,
+        "title": "## 12.1 Logical identity versus materialization"
+      },
+      {
+        "line": 1772,
+        "title": "## 12.2 One authority by default"
+      },
+      {
+        "line": 1786,
+        "title": "## 12.3 Ports and adapters"
+      },
+      {
+        "line": 1808,
+        "title": "## 12.4 Backend-neutral query IR"
+      },
+      {
+        "line": 1824,
+        "title": "## 12.5 Compatibility"
+      },
+      {
+        "line": 1860,
+        "title": "# 13. Five-minute onboarding and public CLI"
+      },
+      {
+        "line": 1864,
+        "title": "## 13.1 Install"
+      },
+      {
+        "line": 1878,
+        "title": "## 13.2 Setup"
+      },
+      {
+        "line": 1905,
+        "title": "## 13.3 Five canonical product steps"
+      },
+      {
+        "line": 1938,
+        "title": "## 13.4 One-command demo"
+      },
+      {
+        "line": 1959,
+        "title": "# 14. README and System-at-a-Glance redesign"
+      },
+      {
+        "line": 1963,
+        "title": "## 14.1 Problems to eliminate"
+      },
+      {
+        "line": 1978,
+        "title": "## 14.2 New diagram logic"
+      },
+      {
+        "line": 2019,
+        "title": "## 14.3 Per-Loop run modes"
+      },
+      {
+        "line": 2027,
+        "title": "## 14.4 Solution Canvas explanation"
+      },
+      {
+        "line": 2039,
+        "title": "## 14.5 Links"
+      },
+      {
+        "line": 2059,
+        "title": "# 15. Studio, live run, and playback"
+      },
+      {
+        "line": 2063,
+        "title": "## 15.1 Core views"
+      },
+      {
+        "line": 2083,
+        "title": "## 15.2 Tree cards"
+      },
+      {
+        "line": 2103,
+        "title": "## 15.3 Parallel lanes"
+      },
+      {
+        "line": 2117,
+        "title": "## 15.4 Research playback"
+      },
+      {
+        "line": 2135,
+        "title": "## 15.5 Benchmark playback"
+      },
+      {
+        "line": 2163,
+        "title": "# 16. Capability-proving and solution-factory campaigns"
+      },
+      {
+        "line": 2191,
+        "title": "## 16.1 Required flagship reference applications"
+      },
+      {
+        "line": 2218,
+        "title": "## 16.2 Address factory"
+      },
+      {
+        "line": 2253,
+        "title": "## 16.3 Schema.org data standardization"
+      },
+      {
+        "line": 2270,
+        "title": "## 16.4 Kaggle / ML factory"
+      },
+      {
+        "line": 2297,
+        "title": "## 16.5 Media factory"
+      },
+      {
+        "line": 2309,
+        "title": "## 16.6 Research-to-Intelligence"
+      },
+      {
+        "line": 2315,
+        "title": "# 17. Development Benchmark Plane"
+      },
+      {
+        "line": 2319,
+        "title": "## 17.1 Distinguish variables"
+      },
+      {
+        "line": 2339,
+        "title": "## 17.2 Harnesses"
+      },
+      {
+        "line": 2360,
+        "title": "## 17.3 Comparison tracks"
+      },
+      {
+        "line": 2372,
+        "title": "## 17.4 Benchmarks"
+      },
+      {
+        "line": 2389,
+        "title": "## 17.5 Measures"
+      },
+      {
+        "line": 2414,
+        "title": "## 17.6 Fair comparison"
+      },
+      {
+        "line": 2432,
+        "title": "## 17.7 Loop Engine ablation ladder"
+      },
+      {
+        "line": 2449,
+        "title": "# 18. Statistical lexical intelligence, n-grams, and frequency distributions"
+      },
+      {
+        "line": 2455,
+        "title": "## 18.1 Model-internal versus system-external n-grams"
+      },
+      {
+        "line": 2471,
+        "title": "## 18.2 `NgramSpaceDefinition`"
+      },
+      {
+        "line": 2498,
+        "title": "## 18.3 N-gram families"
+      },
+      {
+        "line": 2520,
+        "title": "## 18.4 Statistics"
+      },
+      {
+        "line": 2547,
+        "title": "## 18.5 Sketches"
+      },
+      {
+        "line": 2563,
+        "title": "## 18.6 Hybrid retrieval"
+      },
+      {
+        "line": 2600,
+        "title": "## 18.7 Retrieval benchmark"
+      },
+      {
+        "line": 2647,
+        "title": "## 18.8 Prefetch"
+      },
+      {
+        "line": 2664,
+        "title": "# 19. Qwen3.8-Flash-Next integration and experiments"
+      },
+      {
+        "line": 2707,
+        "title": "# 20. Broad reusable-solution benchmark catalog"
+      },
+      {
+        "line": 2786,
+        "title": "# 21. Required implementation phases"
+      },
+      {
+        "line": 2833,
+        "title": "# 22. Testing and proof policy"
+      },
+      {
+        "line": 2906,
+        "title": "# 23. Hard anti-shortcut rules"
+      },
+      {
+        "line": 2940,
+        "title": "# 24. Required final deliverables"
+      },
+      {
+        "line": 2990,
+        "title": "# 25. Final handoff format"
+      },
+      {
+        "line": 3026,
+        "title": "# 26. Final constitutional statement"
+      },
+      {
+        "line": 3032,
+        "title": "# ANNEX PRECEDENCE NOTE"
+      },
+      {
+        "line": 3066,
+        "title": "# ANNEX A \u2014 ULTIMATE ARCHITECTURE AUDIT, REFACTOR, IMPLEMENTATION, AND SELF-IMPROVEMENT MANDATE"
+      },
+      {
+        "line": 3070,
+        "title": "# Loop Engine Ultimate Architecture Audit, Refactor, Implementation, and Self-Improvement Mandate"
+      },
+      {
+        "line": 3072,
+        "title": "## Paste this entire document into a new Kimi 3 session running through OpenCode"
+      },
+      {
+        "line": 3076,
+        "title": "# 0. Superseding execution authority"
+      },
+      {
+        "line": 3116,
+        "title": "# 1. Mission"
+      },
+      {
+        "line": 3145,
+        "title": "# 2. Evidence and authority hierarchy"
+      },
+      {
+        "line": 3176,
+        "title": "# 3. Normative language"
+      },
+      {
+        "line": 3188,
+        "title": "# 4. Non-negotiable constitutional invariants"
+      },
+      {
+        "line": 3190,
+        "title": "## 4.1 Node is the category; LoopNode is the only operational Node"
+      },
+      {
+        "line": 3238,
+        "title": "## 4.2 Not every Python object is a LoopNode"
+      },
+      {
+        "line": 3284,
+        "title": "## 4.3 LoopNode is the composition root"
+      },
+      {
+        "line": 3343,
+        "title": "## 4.4 Presets, not subclasses"
+      },
+      {
+        "line": 3386,
+        "title": "## 4.5 Roles, profiles, position, run mode, placement, and scheduling are independent"
+      },
+      {
+        "line": 3451,
+        "title": "## 4.6 Governed-work boundary"
+      },
+      {
+        "line": 3486,
+        "title": "## 4.7 Flexible procedures"
+      },
+      {
+        "line": 3521,
+        "title": "## 4.8 One engine, sibling applications"
+      },
+      {
+        "line": 3536,
+        "title": "## 4.9 Independent development authority"
+      },
+      {
+        "line": 3556,
+        "title": "## 4.10 Intelligence is multidimensional and non-exclusive"
+      },
+      {
+        "line": 3580,
+        "title": "## 4.11 Access policy, seeking strategy, and query profile are different"
+      },
+      {
+        "line": 3609,
+        "title": "## 4.12 Core, Learned, Plugin, Candidate, provenance, scope, lifecycle, and storage are distinct dimensions"
+      },
+      {
+        "line": 3694,
+        "title": "## 4.13 Runtime state is not persistent intelligence"
+      },
+      {
+        "line": 3715,
+        "title": "## 4.14 Storage is orthogonal to ontology"
+      },
+      {
+        "line": 3739,
+        "title": "## 4.15 Providers are replaceable"
+      },
+      {
+        "line": 3765,
+        "title": "## 4.16 Parallelism changes scheduling, not ontology"
+      },
+      {
+        "line": 3773,
+        "title": "## 4.17 Generated services are artifacts and providers, not Nodes"
+      },
+      {
+        "line": 3781,
+        "title": "## 4.18 Prose is not executable authority"
+      },
+      {
+        "line": 3787,
+        "title": "## 4.19 Exact versions and content hashes are pinned at runtime"
+      },
+      {
+        "line": 3797,
+        "title": "# 5. Canonical terminology and non-conflated definitions"
+      },
+      {
+        "line": 3803,
+        "title": "## 5.1 Node and Loop terminology"
+      },
+      {
+        "line": 3820,
+        "title": "## 5.2 Purpose and execution dimensions"
+      },
+      {
+        "line": 3832,
+        "title": "## 5.3 Intelligence terminology"
+      },
+      {
+        "line": 3851,
+        "title": "## 5.4 Catalog and storage terminology"
+      },
+      {
+        "line": 3871,
+        "title": "## 5.5 Contract and governance terminology"
+      },
+      {
+        "line": 3893,
+        "title": "## 5.6 Development terminology"
+      },
+      {
+        "line": 3912,
+        "title": "## 5.7 Concurrency and service terminology"
+      },
+      {
+        "line": 3928,
+        "title": "## 5.8 Ambiguous terms that MUST be qualified or retired"
+      },
+      {
+        "line": 3985,
+        "title": "# 6. Canonical LoopNode object model"
+      },
+      {
+        "line": 4077,
+        "title": "# 7. Functional Intelligence Domains and multidimensional record model"
+      },
+      {
+        "line": 4079,
+        "title": "## 7.1 Core Functional Intelligence Domains"
+      },
+      {
+        "line": 4116,
+        "title": "## 7.2 Additional intelligence axes"
+      },
+      {
+        "line": 4157,
+        "title": "## 7.3 Artifact kinds"
+      },
+      {
+        "line": 4193,
+        "title": "## 7.4 No fixed step-affinity field in the constitutional schema"
+      },
+      {
+        "line": 4203,
+        "title": "# 8. Intelligence access, strategies, profiles, inheritance, and adaptation"
+      },
+      {
+        "line": 4205,
+        "title": "## 8.1 IntelligenceAccessPolicy"
+      },
+      {
+        "line": 4224,
+        "title": "## 8.2 IntelligenceSeekingStrategy"
+      },
+      {
+        "line": 4272,
+        "title": "## 8.3 IntelligenceQueryProfile"
+      },
+      {
+        "line": 4293,
+        "title": "## 8.4 IntelligenceSeekingBinding"
+      },
+      {
+        "line": 4307,
+        "title": "## 8.5 Inheritance hierarchy"
+      },
+      {
+        "line": 4341,
+        "title": "## 8.6 Inheritance modes"
+      },
+      {
+        "line": 4355,
+        "title": "## 8.7 Deterministic merge semantics"
+      },
+      {
+        "line": 4379,
+        "title": "## 8.8 Runtime adaptation"
+      },
+      {
+        "line": 4398,
+        "title": "## 8.9 LLM-authored strategies"
+      },
+      {
+        "line": 4420,
+        "title": "# 9. Default nine-step Practitioner as Core presets"
+      },
+      {
+        "line": 4460,
+        "title": "# 10. Scheduling, asynchronous execution, parallelism, and durability"
+      },
+      {
+        "line": 4462,
+        "title": "## 10.1 ConcurrencyContract"
+      },
+      {
+        "line": 4521,
+        "title": "## 10.2 ConcurrencyDecision"
+      },
+      {
+        "line": 4547,
+        "title": "## 10.3 Standard engineering questions"
+      },
+      {
+        "line": 4566,
+        "title": "## 10.4 Async task ownership"
+      },
+      {
+        "line": 4580,
+        "title": "## 10.5 Durable and detached work"
+      },
+      {
+        "line": 4590,
+        "title": "# 11. Generated services, microservices, containers, and Kubernetes"
+      },
+      {
+        "line": 4592,
+        "title": "## 11.1 ServiceizationDecision"
+      },
+      {
+        "line": 4622,
+        "title": "## 11.2 Service-building Practitioner"
+      },
+      {
+        "line": 4647,
+        "title": "## 11.3 Service records"
+      },
+      {
+        "line": 4688,
+        "title": "## 11.4 Runtime ports"
+      },
+      {
+        "line": 4703,
+        "title": "## 11.5 Service security"
+      },
+      {
+        "line": 4712,
+        "title": "# 12. Canonical repository and package architecture"
+      },
+      {
+        "line": 5056,
+        "title": "## 12.1 Physical tree rules"
+      },
+      {
+        "line": 5069,
+        "title": "## 12.2 Legacy architecture absorption rules"
+      },
+      {
+        "line": 5130,
+        "title": "## 12.3 Prohibited generic folders"
+      },
+      {
+        "line": 5155,
+        "title": "# 13. Development Engineering Plane"
+      },
+      {
+        "line": 5159,
+        "title": "## 13.1 Root Practitioner hierarchy"
+      },
+      {
+        "line": 5181,
+        "title": "## 13.2 Engineering Core Intelligence"
+      },
+      {
+        "line": 5203,
+        "title": "## 13.3 Engineering Learned Intelligence"
+      },
+      {
+        "line": 5218,
+        "title": "## 13.4 Engineering outputs"
+      },
+      {
+        "line": 5238,
+        "title": "## 13.5 Engineering permissions"
+      },
+      {
+        "line": 5257,
+        "title": "# 14. Development Assurance Plane"
+      },
+      {
+        "line": 5261,
+        "title": "## 14.1 Root Practitioner hierarchy"
+      },
+      {
+        "line": 5283,
+        "title": "## 14.2 Supervisor versus router"
+      },
+      {
+        "line": 5291,
+        "title": "## 14.3 Assurance Core Intelligence"
+      },
+      {
+        "line": 5312,
+        "title": "## 14.4 Assurance Learned Intelligence"
+      },
+      {
+        "line": 5330,
+        "title": "## 14.5 Assurance outputs"
+      },
+      {
+        "line": 5351,
+        "title": "## 14.6 Assurance case model"
+      },
+      {
+        "line": 5369,
+        "title": "## 14.7 Finding lifecycle"
+      },
+      {
+        "line": 5383,
+        "title": "## 14.8 Assurance permissions"
+      },
+      {
+        "line": 5403,
+        "title": "# 15. Builder-auditor handshake"
+      },
+      {
+        "line": 5447,
+        "title": "# 16. Development Assurance question system"
+      },
+      {
+        "line": 5451,
+        "title": "## 16.1 AssuranceQuestionDefinition"
+      },
+      {
+        "line": 5475,
+        "title": "## 16.2 Functional question groups"
+      },
+      {
+        "line": 5477,
+        "title": "### Ask"
+      },
+      {
+        "line": 5487,
+        "title": "### Horizon"
+      },
+      {
+        "line": 5496,
+        "title": "### Readiness"
+      },
+      {
+        "line": 5506,
+        "title": "### Deliberation"
+      },
+      {
+        "line": 5517,
+        "title": "### Implementation"
+      },
+      {
+        "line": 5527,
+        "title": "### Execution"
+      },
+      {
+        "line": 5537,
+        "title": "### Verification"
+      },
+      {
+        "line": 5550,
+        "title": "### Integration"
+      },
+      {
+        "line": 5560,
+        "title": "### Routing"
+      },
+      {
+        "line": 5570,
+        "title": "## 16.3 Core Assurance Question Packs"
+      },
+      {
+        "line": 5610,
+        "title": "## 16.4 Core Auditor Profiles"
+      },
+      {
+        "line": 5640,
+        "title": "# 17. Catalog, files, databases, bundles, and materialization"
+      },
+      {
+        "line": 5642,
+        "title": "## 17.1 One logical catalog"
+      },
+      {
+        "line": 5650,
+        "title": "## 17.2 Core package profile"
+      },
+      {
+        "line": 5665,
+        "title": "## 17.3 Learned profiles"
+      },
+      {
+        "line": 5680,
+        "title": "## 17.4 Portable bundle"
+      },
+      {
+        "line": 5712,
+        "title": "## 17.5 File and database coexistence"
+      },
+      {
+        "line": 5727,
+        "title": "## 17.6 Storage invariants"
+      },
+      {
+        "line": 5745,
+        "title": "# 18. Backend-neutral query architecture and provider substitution"
+      },
+      {
+        "line": 5747,
+        "title": "## 18.1 Canonical query stack"
+      },
+      {
+        "line": 5771,
+        "title": "## 18.2 Preferred result representation"
+      },
+      {
+        "line": 5775,
+        "title": "## 18.3 Adapter protocols"
+      },
+      {
+        "line": 5801,
+        "title": "## 18.4 DuckDB"
+      },
+      {
+        "line": 5814,
+        "title": "## 18.5 Alternative engines"
+      },
+      {
+        "line": 5830,
+        "title": "## 18.6 Backend substitution process"
+      },
+      {
+        "line": 5854,
+        "title": "# 19. Versioning, compatibility, and migrations"
+      },
+      {
+        "line": 5856,
+        "title": "## 19.1 Version dimensions"
+      },
+      {
+        "line": 5883,
+        "title": "## 19.2 Operation-specific compatibility"
+      },
+      {
+        "line": 5900,
+        "title": "## 19.3 Verdicts"
+      },
+      {
+        "line": 5919,
+        "title": "## 19.4 Handshake"
+      },
+      {
+        "line": 5938,
+        "title": "## 19.5 Migrations"
+      },
+      {
+        "line": 5960,
+        "title": "## 19.6 Rule and schema changes"
+      },
+      {
+        "line": 5966,
+        "title": "# 20. Runtime plugins and development plugins"
+      },
+      {
+        "line": 5968,
+        "title": "## 20.1 Runtime plugin host"
+      },
+      {
+        "line": 5992,
+        "title": "## 20.2 Development plugin host"
+      },
+      {
+        "line": 6012,
+        "title": "## 20.3 Separate registries and entry points"
+      },
+      {
+        "line": 6025,
+        "title": "## 20.4 Shared manifest envelope, distinct contribution schemas"
+      },
+      {
+        "line": 6031,
+        "title": "## 20.5 Plugin guardrails"
+      },
+      {
+        "line": 6048,
+        "title": "# 21. Documentation architecture"
+      },
+      {
+        "line": 6050,
+        "title": "## 21.1 Documentation authority hierarchy"
+      },
+      {
+        "line": 6064,
+        "title": "## 21.2 Required documents"
+      },
+      {
+        "line": 6091,
+        "title": "## 21.3 Constitution"
+      },
+      {
+        "line": 6119,
+        "title": "## 21.4 Folder README contracts"
+      },
+      {
+        "line": 6141,
+        "title": "## 21.5 AGENTS.md"
+      },
+      {
+        "line": 6147,
+        "title": "## 21.6 Comments and docstrings"
+      },
+      {
+        "line": 6165,
+        "title": "## 21.7 Prose and annotations"
+      },
+      {
+        "line": 6180,
+        "title": "## 21.8 ADRs"
+      },
+      {
+        "line": 6189,
+        "title": "# 22. Repository Conformance Harness"
+      },
+      {
+        "line": 6193,
+        "title": "## 22.1 Three relationship graphs"
+      },
+      {
+        "line": 6222,
+        "title": "## 22.2 Repository indexers"
+      },
+      {
+        "line": 6256,
+        "title": "## 22.3 Repository conformance store"
+      },
+      {
+        "line": 6287,
+        "title": "## 22.4 File-by-file ownership"
+      },
+      {
+        "line": 6306,
+        "title": "## 22.5 Symbol-by-symbol checks"
+      },
+      {
+        "line": 6326,
+        "title": "## 22.6 Call-by-call checks"
+      },
+      {
+        "line": 6357,
+        "title": "## 22.7 Source-to-sink checks"
+      },
+      {
+        "line": 6376,
+        "title": "## 22.8 Python runtime object conformance"
+      },
+      {
+        "line": 6418,
+        "title": "## 22.9 Async task conformance"
+      },
+      {
+        "line": 6434,
+        "title": "## 22.10 Structure CLI"
+      },
+      {
+        "line": 6480,
+        "title": "## 22.11 Deterministic checks before LLM review"
+      },
+      {
+        "line": 6488,
+        "title": "## 22.12 Evidence-based LLM semantic review"
+      },
+      {
+        "line": 6514,
+        "title": "## 22.13 Auditor self-conformance"
+      },
+      {
+        "line": 6534,
+        "title": "# 23. Independent personas and adversarial Practitioner children"
+      },
+      {
+        "line": 6550,
+        "title": "## 23.1 Repository Archaeologist"
+      },
+      {
+        "line": 6573,
+        "title": "## 23.2 LoopNode Constitutional Architect"
+      },
+      {
+        "line": 6595,
+        "title": "## 23.3 Semantic Ontology and Terminology Auditor"
+      },
+      {
+        "line": 6618,
+        "title": "## 23.4 Architecture Simplifier"
+      },
+      {
+        "line": 6641,
+        "title": "## 23.5 Custom Procedure and Practitioner Architect"
+      },
+      {
+        "line": 6661,
+        "title": "## 23.6 Intelligence Ontologist"
+      },
+      {
+        "line": 6683,
+        "title": "## 23.7 Intelligence-Seeking and Decision Architect"
+      },
+      {
+        "line": 6705,
+        "title": "## 23.8 Scheduling and Concurrency Architect"
+      },
+      {
+        "line": 6727,
+        "title": "## 23.9 Service Runtime and Kubernetes Architect"
+      },
+      {
+        "line": 6749,
+        "title": "## 23.10 Storage and Portability Architect"
+      },
+      {
+        "line": 6771,
+        "title": "## 23.11 Query Engine Substitution Specialist"
+      },
+      {
+        "line": 6792,
+        "title": "## 23.12 Plugin Boundary Architect"
+      },
+      {
+        "line": 6813,
+        "title": "## 23.13 Compatibility and Migration Engineer"
+      },
+      {
+        "line": 6835,
+        "title": "## 23.14 Development Engineering Supervisor"
+      },
+      {
+        "line": 6854,
+        "title": "## 23.15 Development Assurance Supervisor"
+      },
+      {
+        "line": 6876,
+        "title": "## 23.16 Security and Trust Boundary Reviewer"
+      },
+      {
+        "line": 6897,
+        "title": "## 23.17 Test and Proof Engineer"
+      },
+      {
+        "line": 6919,
+        "title": "## 23.18 Documentation and Repository Contract Auditor"
+      },
+      {
+        "line": 6939,
+        "title": "## 23.19 Adversarial Red-Team Architect"
+      },
+      {
+        "line": 6963,
+        "title": "## 23.20 Independent Final Verifier"
+      },
+      {
+        "line": 6981,
+        "title": "# 24. Required first actions"
+      },
+      {
+        "line": 6985,
+        "title": "## 24.1 Read repository instructions"
+      },
+      {
+        "line": 7001,
+        "title": "## 24.2 Capture repository state"
+      },
+      {
+        "line": 7019,
+        "title": "## 24.3 Build ledgers"
+      },
+      {
+        "line": 7051,
+        "title": "## 24.4 Establish baseline tests"
+      },
+      {
+        "line": 7059,
+        "title": "# 25. Research and decision protocol"
+      },
+      {
+        "line": 7116,
+        "title": "# 26. Aggressive implementation phases"
+      },
+      {
+        "line": 7120,
+        "title": "## Phase 0: Baseline, inventory, and safety"
+      },
+      {
+        "line": 7128,
+        "title": "## Phase 1: Freeze constitutional contracts"
+      },
+      {
+        "line": 7135,
+        "title": "## Phase 2: Canonicalize Node and LoopNode"
+      },
+      {
+        "line": 7144,
+        "title": "## Phase 3: Canonicalize procedures and custom Practitioners"
+      },
+      {
+        "line": 7151,
+        "title": "## Phase 4: Canonicalize intelligence"
+      },
+      {
+        "line": 7159,
+        "title": "## Phase 5: Build catalog, query, ports, and adapters"
+      },
+      {
+        "line": 7170,
+        "title": "## Phase 6: Build scheduling and durable runtime"
+      },
+      {
+        "line": 7179,
+        "title": "## Phase 7: Build service runtime"
+      },
+      {
+        "line": 7188,
+        "title": "## Phase 8: Build Development Engineering Plane"
+      },
+      {
+        "line": 7194,
+        "title": "## Phase 9: Build Development Assurance Plane"
+      },
+      {
+        "line": 7202,
+        "title": "## Phase 10: Separate and migrate plugins"
+      },
+      {
+        "line": 7209,
+        "title": "## Phase 11: Migrate files, records, databases, and bundles"
+      },
+      {
+        "line": 7218,
+        "title": "## Phase 12: Remove obsolete architecture"
+      },
+      {
+        "line": 7224,
+        "title": "## Phase 13: Documentation and examples"
+      },
+      {
+        "line": 7232,
+        "title": "## Phase 14: Full adversarial proof and simplification"
+      },
+      {
+        "line": 7243,
+        "title": "# 27. Required executable examples and acceptance demonstrations"
+      },
+      {
+        "line": 7247,
+        "title": "## 27.1 Minimal constant and configuration LoopNodes"
+      },
+      {
+        "line": 7263,
+        "title": "## 27.2 Custom Practitioner with arbitrary steps"
+      },
+      {
+        "line": 7278,
+        "title": "## 27.3 Parallel machine-learning ensemble example"
+      },
+      {
+        "line": 7292,
+        "title": "### Required typed artifacts"
+      },
+      {
+        "line": 7308,
+        "title": "### Required LoopNode graph"
+      },
+      {
+        "line": 7331,
+        "title": "### Parallelism requirements"
+      },
+      {
+        "line": 7339,
+        "title": "### Reproducibility requirements"
+      },
+      {
+        "line": 7349,
+        "title": "### Implementation suggestion"
+      },
+      {
+        "line": 7362,
+        "title": "### Verification"
+      },
+      {
+        "line": 7378,
+        "title": "### Required outputs"
+      },
+      {
+        "line": 7390,
+        "title": "## 27.4 Storage substitution example"
+      },
+      {
+        "line": 7405,
+        "title": "## 27.5 Builder-auditor-repair example"
+      },
+      {
+        "line": 7419,
+        "title": "## 27.6 Generated service example"
+      },
+      {
+        "line": 7437,
+        "title": "## 27.7 Custom intelligence-seeking example"
+      },
+      {
+        "line": 7450,
+        "title": "# 28. Required test and proof system"
+      },
+      {
+        "line": 7452,
+        "title": "## 28.1 Constitutional Node tests"
+      },
+      {
+        "line": 7469,
+        "title": "## 28.2 Object composition tests"
+      },
+      {
+        "line": 7480,
+        "title": "## 28.3 Custom procedure tests"
+      },
+      {
+        "line": 7494,
+        "title": "## 28.4 Intelligence tests"
+      },
+      {
+        "line": 7513,
+        "title": "## 28.5 Repository structure tests"
+      },
+      {
+        "line": 7531,
+        "title": "## 28.6 Import and call tests"
+      },
+      {
+        "line": 7548,
+        "title": "## 28.7 Async and concurrency tests"
+      },
+      {
+        "line": 7572,
+        "title": "## 28.8 Storage and adapter tests"
+      },
+      {
+        "line": 7596,
+        "title": "## 28.9 File tests"
+      },
+      {
+        "line": 7613,
+        "title": "## 28.10 Database and hybrid tests"
+      },
+      {
+        "line": 7634,
+        "title": "## 28.11 Query equivalence and substitution tests"
+      },
+      {
+        "line": 7655,
+        "title": "## 28.12 Compatibility and migration tests"
+      },
+      {
+        "line": 7675,
+        "title": "## 28.13 Plugin tests"
+      },
+      {
+        "line": 7689,
+        "title": "## 28.14 Service runtime tests"
+      },
+      {
+        "line": 7707,
+        "title": "## 28.15 Development plane separation tests"
+      },
+      {
+        "line": 7721,
+        "title": "## 28.16 Documentation tests"
+      },
+      {
+        "line": 7735,
+        "title": "## 28.17 Security tests"
+      },
+      {
+        "line": 7752,
+        "title": "## 28.18 Negative fixtures"
+      },
+      {
+        "line": 7758,
+        "title": "## 28.19 Mutation tests"
+      },
+      {
+        "line": 7777,
+        "title": "## 28.20 Coverage policy"
+      },
+      {
+        "line": 7805,
+        "title": "# 29. Required reports, notes, and generated guidance"
+      },
+      {
+        "line": 7852,
+        "title": "## 29.1 Notes and self-improvement"
+      },
+      {
+        "line": 7890,
+        "title": "# 30. Continuous aggressive execution loop"
+      },
+      {
+        "line": 7940,
+        "title": "# 31. Strict predeployment gate"
+      },
+      {
+        "line": 8017,
+        "title": "# 32. Hard rejection patterns"
+      },
+      {
+        "line": 8048,
+        "title": "# 33. Final required deliverables"
+      },
+      {
+        "line": 8090,
+        "title": "# 34. Final handoff format"
+      },
+      {
+        "line": 8131,
+        "title": "# 35. Final constitutional statement"
+      },
+      {
+        "line": 8175,
+        "title": "# ANNEX B \u2014 ADVERSARIAL INTELLIGENCE QUERY ARCHITECTURE, VALIDATION, AND IMPLEMENTATION MANDATE"
+      },
+      {
+        "line": 8179,
+        "title": "# Loop Engine Adversarial Intelligence Query Architecture, Validation, and Implementation Mandate"
+      },
+      {
+        "line": 8181,
+        "title": "## Paste this entire prompt into a new OpenCode, Codex, Claude Code, or equivalent repository-development session"
+      },
+      {
+        "line": 8212,
+        "title": "# 1. Mission"
+      },
+      {
+        "line": 8243,
+        "title": "# 2. Architectural baseline"
+      },
+      {
+        "line": 8245,
+        "title": "## 2.1 One operational node"
+      },
+      {
+        "line": 8275,
+        "title": "## 2.2 Governed work boundary"
+      },
+      {
+        "line": 8300,
+        "title": "## 2.3 Intelligence is multidimensional"
+      },
+      {
+        "line": 8310,
+        "title": "# 3. Required canonical concepts"
+      },
+      {
+        "line": 8314,
+        "title": "## 3.1 `IntelligenceFunction`"
+      },
+      {
+        "line": 8353,
+        "title": "## 3.2 `IntelligencePerspective`"
+      },
+      {
+        "line": 8372,
+        "title": "## 3.3 `IntelligenceAccessPolicy`"
+      },
+      {
+        "line": 8398,
+        "title": "## 3.4 `IntelligenceQueryProfile`"
+      },
+      {
+        "line": 8432,
+        "title": "## 3.5 `IntelligenceQueryBinding`"
+      },
+      {
+        "line": 8464,
+        "title": "## 3.6 `ResolvedIntelligenceQueryPlan`"
+      },
+      {
+        "line": 8481,
+        "title": "## 3.7 `IntelligencePortfolioSnapshot`"
+      },
+      {
+        "line": 8504,
+        "title": "## 3.8 `IntelligenceQueryReceipt`"
+      },
+      {
+        "line": 8536,
+        "title": "# 4. Core defaults without hard-coded step dependence"
+      },
+      {
+        "line": 8604,
+        "title": "# 5. Step traits and custom behavior"
+      },
+      {
+        "line": 8606,
+        "title": "## 5.1 Registered traits"
+      },
+      {
+        "line": 8640,
+        "title": "## 5.2 Free-form labels"
+      },
+      {
+        "line": 8657,
+        "title": "## 5.3 Explicit bindings beat recommendations"
+      },
+      {
+        "line": 8673,
+        "title": "# 6. Universal inheritance model"
+      },
+      {
+        "line": 8677,
+        "title": "## 6.1 Potential inheritance sources"
+      },
+      {
+        "line": 8705,
+        "title": "## 6.2 Inheritance modes"
+      },
+      {
+        "line": 8729,
+        "title": "## 6.3 Precedence"
+      },
+      {
+        "line": 8757,
+        "title": "## 6.4 Diamond inheritance"
+      },
+      {
+        "line": 8774,
+        "title": "## 6.5 Inheritance cycles"
+      },
+      {
+        "line": 8788,
+        "title": "## 6.6 Revocation and deprecation"
+      },
+      {
+        "line": 8802,
+        "title": "# 7. Deterministic merge semantics"
+      },
+      {
+        "line": 8808,
+        "title": "## 7.1 Recommended merge rules"
+      },
+      {
+        "line": 8839,
+        "title": "## 7.2 Weight rules"
+      },
+      {
+        "line": 8863,
+        "title": "## 7.3 Unsatisfiable merges"
+      },
+      {
+        "line": 8880,
+        "title": "## 7.4 Merge receipts"
+      },
+      {
+        "line": 8897,
+        "title": "# 8. Query modes"
+      },
+      {
+        "line": 8908,
+        "title": "## 8.1 Open"
+      },
+      {
+        "line": 8914,
+        "title": "## 8.2 Guided"
+      },
+      {
+        "line": 8928,
+        "title": "## 8.3 Bounded"
+      },
+      {
+        "line": 8934,
+        "title": "## 8.4 Strict"
+      },
+      {
+        "line": 8955,
+        "title": "# 9. Query planning pipeline"
+      },
+      {
+        "line": 8997,
+        "title": "## 9.1 Candidate generation"
+      },
+      {
+        "line": 9017,
+        "title": "## 9.2 Hard filters before soft ranking"
+      },
+      {
+        "line": 9023,
+        "title": "## 9.3 Multi-stage ranking"
+      },
+      {
+        "line": 9044,
+        "title": "## 9.4 Deterministic ranking"
+      },
+      {
+        "line": 9063,
+        "title": "## 9.5 Diversity"
+      },
+      {
+        "line": 9078,
+        "title": "## 9.6 Empty results"
+      },
+      {
+        "line": 9099,
+        "title": "## 9.7 Excessive results"
+      },
+      {
+        "line": 9115,
+        "title": "## 9.8 Conflicting intelligence"
+      },
+      {
+        "line": 9132,
+        "title": "# 10. Runtime adaptation"
+      },
+      {
+        "line": 9136,
+        "title": "## 10.1 Adaptable fields"
+      },
+      {
+        "line": 9151,
+        "title": "## 10.2 Frozen fields"
+      },
+      {
+        "line": 9167,
+        "title": "## 10.3 Adaptation protocol"
+      },
+      {
+        "line": 9183,
+        "title": "## 10.4 Adaptation triggers"
+      },
+      {
+        "line": 9200,
+        "title": "## 10.5 Runaway expansion"
+      },
+      {
+        "line": 9221,
+        "title": "# 11. Custom Practitioner and graph corner cases"
+      },
+      {
+        "line": 9225,
+        "title": "## 11.1 Arbitrary step count"
+      },
+      {
+        "line": 9236,
+        "title": "## 11.2 Arbitrary names"
+      },
+      {
+        "line": 9259,
+        "title": "## 11.3 Renamed steps"
+      },
+      {
+        "line": 9263,
+        "title": "## 11.4 Repeated steps"
+      },
+      {
+        "line": 9275,
+        "title": "## 11.5 Optional and skipped steps"
+      },
+      {
+        "line": 9285,
+        "title": "## 11.6 Branches"
+      },
+      {
+        "line": 9291,
+        "title": "## 11.7 Concurrency"
+      },
+      {
+        "line": 9302,
+        "title": "## 11.8 Cycles and iterative loops"
+      },
+      {
+        "line": 9315,
+        "title": "## 11.9 Dynamic graph generation"
+      },
+      {
+        "line": 9329,
+        "title": "## 11.10 Internal step versus Child LoopNode"
+      },
+      {
+        "line": 9337,
+        "title": "## 11.11 Parent and child privacy"
+      },
+      {
+        "line": 9351,
+        "title": "## 11.12 Nested Practitioners"
+      },
+      {
+        "line": 9365,
+        "title": "# 12. Functional vocabulary extensibility"
+      },
+      {
+        "line": 9367,
+        "title": "## 12.1 Core functions are defaults, not a closed universe"
+      },
+      {
+        "line": 9384,
+        "title": "## 12.2 Unknown terms"
+      },
+      {
+        "line": 9398,
+        "title": "## 12.3 Vocabulary collisions"
+      },
+      {
+        "line": 9408,
+        "title": "## 12.4 Mappings"
+      },
+      {
+        "line": 9419,
+        "title": "## 12.5 Taxonomy depth"
+      },
+      {
+        "line": 9429,
+        "title": "# 13. Record ontology and assertions"
+      },
+      {
+        "line": 9431,
+        "title": "## 13.1 Intelligence record"
+      },
+      {
+        "line": 9450,
+        "title": "## 13.2 Functional classifications"
+      },
+      {
+        "line": 9466,
+        "title": "## 13.3 Conflicting classifications"
+      },
+      {
+        "line": 9474,
+        "title": "## 13.4 Temporal validity"
+      },
+      {
+        "line": 9486,
+        "title": "## 13.5 Scope"
+      },
+      {
+        "line": 9501,
+        "title": "# 14. Core, Learned, Plugin, and Candidate semantics"
+      },
+      {
+        "line": 9505,
+        "title": "## 14.1 Catalog namespace"
+      },
+      {
+        "line": 9513,
+        "title": "## 14.2 Producer origin"
+      },
+      {
+        "line": 9527,
+        "title": "## 14.3 Lifecycle"
+      },
+      {
+        "line": 9543,
+        "title": "## 14.4 Candidate"
+      },
+      {
+        "line": 9558,
+        "title": "## 14.5 Learned"
+      },
+      {
+        "line": 9566,
+        "title": "## 14.6 Plugin-produced Learned intelligence"
+      },
+      {
+        "line": 9579,
+        "title": "# 15. Storage independence and authority"
+      },
+      {
+        "line": 9581,
+        "title": "## 15.1 Logical identity is storage-independent"
+      },
+      {
+        "line": 9595,
+        "title": "## 15.2 One authority, many materializations"
+      },
+      {
+        "line": 9607,
+        "title": "## 15.3 Core"
+      },
+      {
+        "line": 9620,
+        "title": "## 15.4 Learned local"
+      },
+      {
+        "line": 9631,
+        "title": "## 15.5 Learned server"
+      },
+      {
+        "line": 9642,
+        "title": "## 15.6 Plugins"
+      },
+      {
+        "line": 9652,
+        "title": "## 15.7 File and database coexistence"
+      },
+      {
+        "line": 9676,
+        "title": "## 15.8 Snapshot consistency"
+      },
+      {
+        "line": 9692,
+        "title": "# 16. Adapter and query-backend corner cases"
+      },
+      {
+        "line": 9694,
+        "title": "## 16.1 Common adapter protocols"
+      },
+      {
+        "line": 9715,
+        "title": "## 16.2 Handshake"
+      },
+      {
+        "line": 9737,
+        "title": "## 16.3 Cross-backend equivalence"
+      },
+      {
+        "line": 9756,
+        "title": "## 16.4 DuckDB"
+      },
+      {
+        "line": 9769,
+        "title": "## 16.5 Partial source outage"
+      },
+      {
+        "line": 9779,
+        "title": "## 16.6 Stale replicas"
+      },
+      {
+        "line": 9789,
+        "title": "## 16.7 Duplicate materializations"
+      },
+      {
+        "line": 9793,
+        "title": "## 16.8 Conflicting versions"
+      },
+      {
+        "line": 9808,
+        "title": "# 17. Security and trust adversarial cases"
+      },
+      {
+        "line": 9810,
+        "title": "## 17.1 Prompt injection in intelligence records"
+      },
+      {
+        "line": 9823,
+        "title": "## 17.2 Malicious metadata"
+      },
+      {
+        "line": 9836,
+        "title": "## 17.3 SQL injection"
+      },
+      {
+        "line": 9844,
+        "title": "## 17.4 Vector poisoning"
+      },
+      {
+        "line": 9850,
+        "title": "## 17.5 Plugin shadowing"
+      },
+      {
+        "line": 9854,
+        "title": "## 17.6 Tenant isolation"
+      },
+      {
+        "line": 9867,
+        "title": "## 17.7 Secret leakage"
+      },
+      {
+        "line": 9881,
+        "title": "## 17.8 Executable intelligence"
+      },
+      {
+        "line": 9898,
+        "title": "## 17.9 Denial of service"
+      },
+      {
+        "line": 9915,
+        "title": "# 18. Governance and review corner cases"
+      },
+      {
+        "line": 9917,
+        "title": "## 18.1 Self-approval"
+      },
+      {
+        "line": 9929,
+        "title": "## 18.2 Exact approved bytes"
+      },
+      {
+        "line": 9942,
+        "title": "## 18.3 Partial approval"
+      },
+      {
+        "line": 9953,
+        "title": "## 18.4 Revocation"
+      },
+      {
+        "line": 9961,
+        "title": "## 18.5 Imported Learned bundle"
+      },
+      {
+        "line": 9965,
+        "title": "## 18.6 Policy conflict"
+      },
+      {
+        "line": 9971,
+        "title": "# 19. Compatibility and versioning"
+      },
+      {
+        "line": 9994,
+        "title": "## 19.1 Handshake verdicts"
+      },
+      {
+        "line": 10009,
+        "title": "## 19.2 Range versus pin"
+      },
+      {
+        "line": 10015,
+        "title": "## 19.3 Migration"
+      },
+      {
+        "line": 10029,
+        "title": "## 19.4 Profile schema evolution"
+      },
+      {
+        "line": 10048,
+        "title": "# 20. Performance and scale"
+      },
+      {
+        "line": 10052,
+        "title": "## 20.1 Record scale"
+      },
+      {
+        "line": 10064,
+        "title": "## 20.2 Planner scale"
+      },
+      {
+        "line": 10077,
+        "title": "## 20.3 Caching"
+      },
+      {
+        "line": 10093,
+        "title": "## 20.4 Incremental indexes"
+      },
+      {
+        "line": 10107,
+        "title": "# 21. Real-use scenarios that must work"
+      },
+      {
+        "line": 10111,
+        "title": "## Scenario A: Core nine-step Practitioner"
+      },
+      {
+        "line": 10117,
+        "title": "## Scenario B: Four-step repository-migration Practitioner"
+      },
+      {
+        "line": 10130,
+        "title": "## Scenario C: One-step deterministic validator"
+      },
+      {
+        "line": 10136,
+        "title": "## Scenario D: Dynamic research Practitioner"
+      },
+      {
+        "line": 10142,
+        "title": "## Scenario E: Concurrent candidate Practitioners"
+      },
+      {
+        "line": 10148,
+        "title": "## Scenario F: Regulated high-assurance Practitioner"
+      },
+      {
+        "line": 10152,
+        "title": "## Scenario G: Offline local deployment"
+      },
+      {
+        "line": 10156,
+        "title": "## Scenario H: Server deployment"
+      },
+      {
+        "line": 10160,
+        "title": "## Scenario I: Plugin-provided profile"
+      },
+      {
+        "line": 10166,
+        "title": "## Scenario J: Profile update during a long run"
+      },
+      {
+        "line": 10172,
+        "title": "## Scenario K: Source outage"
+      },
+      {
+        "line": 10178,
+        "title": "## Scenario L: Empty catalog match"
+      },
+      {
+        "line": 10184,
+        "title": "## Scenario M: Conflicting evidence"
+      },
+      {
+        "line": 10190,
+        "title": "## Scenario N: Multi-tenant server"
+      },
+      {
+        "line": 10194,
+        "title": "## Scenario O: Portable round trip"
+      },
+      {
+        "line": 10198,
+        "title": "## Scenario P: Cyclic profile inheritance"
+      },
+      {
+        "line": 10202,
+        "title": "## Scenario Q: Unsatisfiable policy"
+      },
+      {
+        "line": 10208,
+        "title": "## Scenario R: Malicious intelligence record"
+      },
+      {
+        "line": 10214,
+        "title": "## Scenario S: Large result set"
+      },
+      {
+        "line": 10220,
+        "title": "## Scenario T: Repeated iterative step"
+      },
+      {
+        "line": 10226,
+        "title": "# 22. Required implementation architecture"
+      },
+      {
+        "line": 10327,
+        "title": "# 23. Suggested typed models"
+      },
+      {
+        "line": 10331,
+        "title": "## 23.1 Profile reference"
+      },
+      {
+        "line": 10341,
+        "title": "## 23.2 Binding"
+      },
+      {
+        "line": 10355,
+        "title": "## 23.3 Resolved plan"
+      },
+      {
+        "line": 10376,
+        "title": "## 23.4 Portfolio snapshot"
+      },
+      {
+        "line": 10394,
+        "title": "# 24. Schema and Core record requirements"
+      },
+      {
+        "line": 10436,
+        "title": "# 25. Migration mandate"
+      },
+      {
+        "line": 10488,
+        "title": "# 26. Adversarial review before implementation"
+      },
+      {
+        "line": 10519,
+        "title": "# 27. Required test suite"
+      },
+      {
+        "line": 10521,
+        "title": "## 27.1 Architecture tests"
+      },
+      {
+        "line": 10536,
+        "title": "## 27.2 Profile and binding tests"
+      },
+      {
+        "line": 10553,
+        "title": "## 27.3 Policy tests"
+      },
+      {
+        "line": 10569,
+        "title": "## 27.4 Merge property tests"
+      },
+      {
+        "line": 10586,
+        "title": "## 27.5 Query tests"
+      },
+      {
+        "line": 10604,
+        "title": "## 27.6 Runtime adaptation tests"
+      },
+      {
+        "line": 10617,
+        "title": "## 27.7 Storage conformance tests"
+      },
+      {
+        "line": 10655,
+        "title": "## 27.8 Security tests"
+      },
+      {
+        "line": 10670,
+        "title": "## 27.9 Governance tests"
+      },
+      {
+        "line": 10682,
+        "title": "## 27.10 Migration tests"
+      },
+      {
+        "line": 10696,
+        "title": "## 27.11 End-to-end scenarios"
+      },
+      {
+        "line": 10700,
+        "title": "## 27.12 Performance tests"
+      },
+      {
+        "line": 10719,
+        "title": "# 28. Fuzzing and mutation testing"
+      },
+      {
+        "line": 10750,
+        "title": "# 29. Observability and explainability"
+      },
+      {
+        "line": 10775,
+        "title": "# 30. Documentation requirements"
+      },
+      {
+        "line": 10809,
+        "title": "# 31. Development workflow"
+      },
+      {
+        "line": 10813,
+        "title": "## Phase 0: inventory"
+      },
+      {
+        "line": 10823,
+        "title": "## Phase 1: adversarial decision record"
+      },
+      {
+        "line": 10831,
+        "title": "## Phase 2: schemas and models"
+      },
+      {
+        "line": 10842,
+        "title": "## Phase 3: resolver and merge engine"
+      },
+      {
+        "line": 10851,
+        "title": "## Phase 4: catalog and adapters"
+      },
+      {
+        "line": 10861,
+        "title": "## Phase 5: query planner"
+      },
+      {
+        "line": 10873,
+        "title": "## Phase 6: Core defaults"
+      },
+      {
+        "line": 10882,
+        "title": "## Phase 7: runtime integration"
+      },
+      {
+        "line": 10892,
+        "title": "## Phase 8: migration"
+      },
+      {
+        "line": 10900,
+        "title": "## Phase 9: red team"
+      },
+      {
+        "line": 10909,
+        "title": "## Phase 10: packaging and clean install"
+      },
+      {
+        "line": 10918,
+        "title": "## Phase 11: predeploy"
+      },
+      {
+        "line": 10938,
+        "title": "# 32. Prohibited shortcuts"
+      },
+      {
+        "line": 10968,
+        "title": "# 33. Required final deliverables"
+      },
+      {
+        "line": 11007,
+        "title": "# 34. Final completion standard"
+      },
+      {
+        "line": 11061,
+        "title": "# ANNEX C \u2014 FOUR-MEMORY IMPLEMENTATION MANDATE"
+      },
+      {
+        "line": 11065,
+        "title": "# MASTER IMPLEMENTATION PROMPT"
+      },
+      {
+        "line": 11066,
+        "title": "## Aggressively implement a production-grade four-memory architecture in Loop Engine"
+      },
+      {
+        "line": 11078,
+        "title": "# 1. First read the repository, then act"
+      },
+      {
+        "line": 11139,
+        "title": "# 2. Non-negotiable architecture constitution"
+      },
+      {
+        "line": 11143,
+        "title": "## 2.1 One operational runtime object"
+      },
+      {
+        "line": 11161,
+        "title": "## 2.2 The four memory types and the nine intelligence functions are orthogonal"
+      },
+      {
+        "line": 11214,
+        "title": "## 2.3 Runtime state is not persistent intelligence"
+      },
+      {
+        "line": 11235,
+        "title": "## 2.4 Candidate generation and promotion are separate"
+      },
+      {
+        "line": 11243,
+        "title": "## 2.5 Memory never grants authority"
+      },
+      {
+        "line": 11261,
+        "title": "# 3. Canonical target model"
+      },
+      {
+        "line": 11265,
+        "title": "## 3.1 Shared types"
+      },
+      {
+        "line": 11305,
+        "title": "## 3.2 Common persistent record envelope"
+      },
+      {
+        "line": 11350,
+        "title": "## 3.3 Persistent memory type is primary and singular"
+      },
+      {
+        "line": 11364,
+        "title": "# 4. Working memory implementation"
+      },
+      {
+        "line": 11403,
+        "title": "## 4.1 Compartments and visibility"
+      },
+      {
+        "line": 11429,
+        "title": "## 4.2 Capacity, compaction, and eviction"
+      },
+      {
+        "line": 11449,
+        "title": "## 4.3 Checkpoint and replay"
+      },
+      {
+        "line": 11465,
+        "title": "# 5. Episodic memory implementation"
+      },
+      {
+        "line": 11506,
+        "title": "## 5.1 Chronicle remains authoritative"
+      },
+      {
+        "line": 11524,
+        "title": "## 5.2 Retrieval"
+      },
+      {
+        "line": 11546,
+        "title": "# 6. Semantic memory implementation"
+      },
+      {
+        "line": 11595,
+        "title": "## 6.1 Bi-temporal and contradiction-aware behavior"
+      },
+      {
+        "line": 11619,
+        "title": "## 6.2 Semantic consolidation"
+      },
+      {
+        "line": 11633,
+        "title": "# 7. Procedural memory implementation"
+      },
+      {
+        "line": 11685,
+        "title": "## 7.1 Procedure induction"
+      },
+      {
+        "line": 11705,
+        "title": "# 8. Functional Intelligence Domains and portfolio integration"
+      },
+      {
+        "line": 11790,
+        "title": "# 9. Unified memory lifecycle"
+      },
+      {
+        "line": 11863,
+        "title": "# 10. Retrieval and context assembly"
+      },
+      {
+        "line": 11919,
+        "title": "## 10.1 Type-specific ranking"
+      },
+      {
+        "line": 11929,
+        "title": "## 10.2 Retrieval explainability"
+      },
+      {
+        "line": 11953,
+        "title": "## 10.3 Memory content is untrusted data"
+      },
+      {
+        "line": 11969,
+        "title": "# 11. Storage, indexing, portability, and concurrency"
+      },
+      {
+        "line": 12040,
+        "title": "# 12. Loop integration"
+      },
+      {
+        "line": 12086,
+        "title": "# 13. Chronicle, receipts, reports, and observability"
+      },
+      {
+        "line": 12162,
+        "title": "# 14. Security, privacy, governance, and deletion"
+      },
+      {
+        "line": 12204,
+        "title": "# 15. Migration and backward compatibility"
+      },
+      {
+        "line": 12260,
+        "title": "# 16. Suggested package organization"
+      },
+      {
+        "line": 12341,
+        "title": "# 17. Public API and CLI"
+      },
+      {
+        "line": 12391,
+        "title": "# 18. Required Loop presets and profiles"
+      },
+      {
+        "line": 12432,
+        "title": "# 19. Testing requirements"
+      },
+      {
+        "line": 12436,
+        "title": "## 19.1 Ontology and architecture"
+      },
+      {
+        "line": 12453,
+        "title": "## 19.2 Working memory"
+      },
+      {
+        "line": 12475,
+        "title": "## 19.3 Episodic memory"
+      },
+      {
+        "line": 12496,
+        "title": "## 19.4 Semantic memory"
+      },
+      {
+        "line": 12518,
+        "title": "## 19.5 Procedural memory"
+      },
+      {
+        "line": 12541,
+        "title": "## 19.6 Retrieval"
+      },
+      {
+        "line": 12564,
+        "title": "## 19.7 Lifecycle and consolidation"
+      },
+      {
+        "line": 12583,
+        "title": "## 19.8 Storage and migration"
+      },
+      {
+        "line": 12604,
+        "title": "## 19.9 Security and adversarial tests"
+      },
+      {
+        "line": 12626,
+        "title": "## 19.10 Test techniques"
+      },
+      {
+        "line": 12650,
+        "title": "# 20. Benchmark and evaluation harness"
+      },
+      {
+        "line": 12706,
+        "title": "# 21. Mandatory end-to-end demonstration"
+      },
+      {
+        "line": 12712,
+        "title": "## First run"
+      },
+      {
+        "line": 12727,
+        "title": "## Second run"
+      },
+      {
+        "line": 12753,
+        "title": "# 22. Documentation deliverables"
+      },
+      {
+        "line": 12801,
+        "title": "# 23. Research-informed review"
+      },
+      {
+        "line": 12833,
+        "title": "# 24. Multi-pass implementation and review process"
+      },
+      {
+        "line": 12839,
+        "title": "## Pass A: architecture and ontology"
+      },
+      {
+        "line": 12848,
+        "title": "## Pass B: implementation"
+      },
+      {
+        "line": 12856,
+        "title": "## Pass C: compatibility and migration"
+      },
+      {
+        "line": 12864,
+        "title": "## Pass D: adversarial security"
+      },
+      {
+        "line": 12873,
+        "title": "## Pass E: test and benchmark"
+      },
+      {
+        "line": 12881,
+        "title": "## Pass F: documentation and stale-term audit"
+      },
+      {
+        "line": 12888,
+        "title": "## Pass G: final redundancy and simplicity review"
+      },
+      {
+        "line": 12905,
+        "title": "# 25. Hard acceptance gates"
+      },
+      {
+        "line": 12909,
+        "title": "## Architecture"
+      },
+      {
+        "line": 12920,
+        "title": "## Behavior"
+      },
+      {
+        "line": 12932,
+        "title": "## Quality"
+      },
+      {
+        "line": 12946,
+        "title": "## Naming"
+      },
+      {
+        "line": 12955,
+        "title": "# 26. Execution order"
+      },
+      {
+        "line": 12983,
+        "title": "# 27. Final handoff"
+      },
+      {
+        "line": 13008,
+        "title": "# 28. Internal questions to repeat throughout the work"
+      },
+      {
+        "line": 13053,
+        "title": "# ANNEX D \u2014 AUTONOMOUS CAPABILITY PROVING AND SELF-IMPROVEMENT CAMPAIGN"
+      },
+      {
+        "line": 13057,
+        "title": "# MASTER EXECUTION PROMPT"
+      },
+      {
+        "line": 13058,
+        "title": "## Aggressively prove, exercise, repair, benchmark, and improve Loop Engine across real problem families"
+      },
+      {
+        "line": 13072,
+        "title": "# 0. The most important answer"
+      },
+      {
+        "line": 13105,
+        "title": "# 1. Operating instructions"
+      },
+      {
+        "line": 13145,
+        "title": "# 2. Non-negotiable constitutional invariants"
+      },
+      {
+        "line": 13147,
+        "title": "## 2.1 One operational Node"
+      },
+      {
+        "line": 13174,
+        "title": "## 2.2 Typed objects remain typed objects"
+      },
+      {
+        "line": 13204,
+        "title": "## 2.3 Root and child are topology"
+      },
+      {
+        "line": 13216,
+        "title": "## 2.4 Memory and intelligence are orthogonal"
+      },
+      {
+        "line": 13248,
+        "title": "## 2.5 No self-approval"
+      },
+      {
+        "line": 13280,
+        "title": "## 2.6 Evidence over claims"
+      },
+      {
+        "line": 13304,
+        "title": "## 2.7 No benchmark theater"
+      },
+      {
+        "line": 13325,
+        "title": "# 3. The Capability Proving and Improvement Campaign"
+      },
+      {
+        "line": 13368,
+        "title": "# 4. Use a Practitioner-style campaign loop"
+      },
+      {
+        "line": 13372,
+        "title": "## 4.1 Orient"
+      },
+      {
+        "line": 13396,
+        "title": "## 4.2 Reconcile Horizon"
+      },
+      {
+        "line": 13418,
+        "title": "## 4.3 Assess and Prepare"
+      },
+      {
+        "line": 13444,
+        "title": "## 4.4 Decide Next"
+      },
+      {
+        "line": 13467,
+        "title": "## 4.5 Determine How"
+      },
+      {
+        "line": 13491,
+        "title": "## 4.6 Act"
+      },
+      {
+        "line": 13508,
+        "title": "## 4.7 Verify"
+      },
+      {
+        "line": 13534,
+        "title": "## 4.8 Integrate and Commit"
+      },
+      {
+        "line": 13559,
+        "title": "## 4.9 Route"
+      },
+      {
+        "line": 13583,
+        "title": "# 5. Canonical typed campaign objects"
+      },
+      {
+        "line": 13587,
+        "title": "## 5.1 CapabilityTaskDefinition"
+      },
+      {
+        "line": 13622,
+        "title": "## 5.2 CampaignDefinition"
+      },
+      {
+        "line": 13648,
+        "title": "## 5.3 CampaignArm"
+      },
+      {
+        "line": 13674,
+        "title": "## 5.4 CampaignRunManifest"
+      },
+      {
+        "line": 13698,
+        "title": "## 5.5 CampaignResult"
+      },
+      {
+        "line": 13720,
+        "title": "## 5.6 CapabilityGap"
+      },
+      {
+        "line": 13739,
+        "title": "## 5.7 ImprovementCandidate"
+      },
+      {
+        "line": 13760,
+        "title": "# 6. Task portfolio: prove breadth, not one demo"
+      },
+      {
+        "line": 13764,
+        "title": "## Tier A: atomic and deterministic"
+      },
+      {
+        "line": 13777,
+        "title": "## Tier B: composite graphs"
+      },
+      {
+        "line": 13790,
+        "title": "## Tier C: data and machine learning"
+      },
+      {
+        "line": 13803,
+        "title": "## Tier D: software engineering"
+      },
+      {
+        "line": 13816,
+        "title": "## Tier E: memory and transfer"
+      },
+      {
+        "line": 13829,
+        "title": "## Tier F: storage and portability"
+      },
+      {
+        "line": 13842,
+        "title": "## Tier G: concurrency and durability"
+      },
+      {
+        "line": 13855,
+        "title": "## Tier H: service generation and invocation"
+      },
+      {
+        "line": 13868,
+        "title": "## Tier I: adversarial and recovery"
+      },
+      {
+        "line": 13883,
+        "title": "# 7. Mandatory flagship example: three-model ensemble"
+      },
+      {
+        "line": 13959,
+        "title": "# 8. Additional flagship examples"
+      },
+      {
+        "line": 13961,
+        "title": "## 8.1 Organization and contact data pipeline"
+      },
+      {
+        "line": 13975,
+        "title": "## 8.2 Repository repair cycle"
+      },
+      {
+        "line": 14001,
+        "title": "## 8.3 Custom Practitioner"
+      },
+      {
+        "line": 14016,
+        "title": "## 8.4 Backend substitution"
+      },
+      {
+        "line": 14026,
+        "title": "## 8.5 Service generation"
+      },
+      {
+        "line": 14032,
+        "title": "# 9. Controls, treatments, and ablations"
+      },
+      {
+        "line": 14036,
+        "title": "## 9.1 Execution controls"
+      },
+      {
+        "line": 14051,
+        "title": "## 9.2 Memory ablations"
+      },
+      {
+        "line": 14078,
+        "title": "## 9.3 Intelligence strategy ablations"
+      },
+      {
+        "line": 14095,
+        "title": "## 9.4 Scheduling ablations"
+      },
+      {
+        "line": 14108,
+        "title": "## 9.5 Backend ablations"
+      },
+      {
+        "line": 14114,
+        "title": "## 9.6 Run-mode ablations"
+      },
+      {
+        "line": 14126,
+        "title": "# 10. Benchmark-science rules"
+      },
+      {
+        "line": 14128,
+        "title": "## 10.1 Development, validation, and certification separation"
+      },
+      {
+        "line": 14145,
+        "title": "## 10.2 No cherry-picking"
+      },
+      {
+        "line": 14159,
+        "title": "## 10.3 Repetition and uncertainty"
+      },
+      {
+        "line": 14171,
+        "title": "## 10.4 Matched budgets"
+      },
+      {
+        "line": 14186,
+        "title": "## 10.5 Oracles"
+      },
+      {
+        "line": 14199,
+        "title": "## 10.6 Benchmark contamination"
+      },
+      {
+        "line": 14214,
+        "title": "# 11. Metrics"
+      },
+      {
+        "line": 14218,
+        "title": "## Correctness"
+      },
+      {
+        "line": 14228,
+        "title": "## Reliability"
+      },
+      {
+        "line": 14239,
+        "title": "## Efficiency"
+      },
+      {
+        "line": 14253,
+        "title": "## Architecture"
+      },
+      {
+        "line": 14265,
+        "title": "## Memory"
+      },
+      {
+        "line": 14277,
+        "title": "## Search and solutioning"
+      },
+      {
+        "line": 14288,
+        "title": "## Development"
+      },
+      {
+        "line": 14300,
+        "title": "# 12. Failure taxonomy"
+      },
+      {
+        "line": 14353,
+        "title": "# 13. Repair loop"
+      },
+      {
+        "line": 14397,
+        "title": "# 14. Self-improvement without self-deception"
+      },
+      {
+        "line": 14401,
+        "title": "## 14.1 Notes and idea ledger"
+      },
+      {
+        "line": 14432,
+        "title": "## 14.2 Candidate generation"
+      },
+      {
+        "line": 14447,
+        "title": "## 14.3 Independent review"
+      },
+      {
+        "line": 14459,
+        "title": "## 14.4 Promotion"
+      },
+      {
+        "line": 14471,
+        "title": "## 14.5 Champion and challenger"
+      },
+      {
+        "line": 14490,
+        "title": "# 15. Parallel work"
+      },
+      {
+        "line": 14517,
+        "title": "# 16. Storage and backend portability"
+      },
+      {
+        "line": 14561,
+        "title": "# 17. Plugin campaign"
+      },
+      {
+        "line": 14591,
+        "title": "# 18. Service and deployment campaign"
+      },
+      {
+        "line": 14642,
+        "title": "# 19. Development Assurance integration"
+      },
+      {
+        "line": 14677,
+        "title": "# 20. Personas and adversarial questions"
+      },
+      {
+        "line": 14681,
+        "title": "## 20.1 LoopNode constitutional architect"
+      },
+      {
+        "line": 14693,
+        "title": "## 20.2 Runtime engineer"
+      },
+      {
+        "line": 14706,
+        "title": "## 20.3 Data engineer"
+      },
+      {
+        "line": 14719,
+        "title": "## 20.4 Machine-learning scientist"
+      },
+      {
+        "line": 14733,
+        "title": "## 20.5 Distributed-systems engineer"
+      },
+      {
+        "line": 14746,
+        "title": "## 20.6 Security reviewer"
+      },
+      {
+        "line": 14759,
+        "title": "## 20.7 Portability architect"
+      },
+      {
+        "line": 14771,
+        "title": "## 20.8 Memory architect"
+      },
+      {
+        "line": 14784,
+        "title": "## 20.9 Benchmark scientist"
+      },
+      {
+        "line": 14797,
+        "title": "## 20.10 Novice developer"
+      },
+      {
+        "line": 14808,
+        "title": "## 20.11 Plugin author"
+      },
+      {
+        "line": 14820,
+        "title": "## 20.12 Cost and performance reviewer"
+      },
+      {
+        "line": 14833,
+        "title": "## 20.13 Adversarial architect"
+      },
+      {
+        "line": 14846,
+        "title": "## 20.14 Independent final verifier"
+      },
+      {
+        "line": 14860,
+        "title": "# 21. Repository implementation targets"
+      },
+      {
+        "line": 14924,
+        "title": "# 22. CLI requirements"
+      },
+      {
+        "line": 14960,
+        "title": "# 23. Test requirements"
+      },
+      {
+        "line": 14962,
+        "title": "## 23.1 Unit tests"
+      },
+      {
+        "line": 14966,
+        "title": "## 23.2 Integration tests"
+      },
+      {
+        "line": 14979,
+        "title": "## 23.3 End-to-end tests"
+      },
+      {
+        "line": 14983,
+        "title": "## 23.4 Property tests"
+      },
+      {
+        "line": 15006,
+        "title": "## 23.5 State-machine tests"
+      },
+      {
+        "line": 15019,
+        "title": "## 23.6 Mutation tests"
+      },
+      {
+        "line": 15035,
+        "title": "## 23.7 Failure injection"
+      },
+      {
+        "line": 15052,
+        "title": "## 23.8 Clean-install tests"
+      },
+      {
+        "line": 15072,
+        "title": "# 24. Coverage requirements"
+      },
+      {
+        "line": 15110,
+        "title": "# 25. Reporting"
+      },
+      {
+        "line": 15114,
+        "title": "## Machine-readable"
+      },
+      {
+        "line": 15129,
+        "title": "## Human-readable"
+      },
+      {
+        "line": 15149,
+        "title": "# 26. Campaign profiles"
+      },
+      {
+        "line": 15194,
+        "title": "# 27. Stop conditions"
+      },
+      {
+        "line": 15213,
+        "title": "# 28. Required final deliverables"
+      },
+      {
+        "line": 15245,
+        "title": "# 29. Strict acceptance gates"
+      },
+      {
+        "line": 15249,
+        "title": "## Architecture"
+      },
+      {
+        "line": 15258,
+        "title": "## Execution"
+      },
+      {
+        "line": 15268,
+        "title": "## Memory"
+      },
+      {
+        "line": 15278,
+        "title": "## Concurrency"
+      },
+      {
+        "line": 15286,
+        "title": "## Portability"
+      },
+      {
+        "line": 15294,
+        "title": "## Assurance"
+      },
+      {
+        "line": 15302,
+        "title": "## Packaging"
+      },
+      {
+        "line": 15311,
+        "title": "## Honesty"
+      },
+      {
+        "line": 15321,
+        "title": "# 30. Final execution directive"
+      },
+      {
+        "line": 15360,
+        "title": "# Appendix A. Expanded practitioner question bank"
+      },
+      {
+        "line": 15362,
+        "title": "## Repository archaeologist"
+      },
+      {
+        "line": 15374,
+        "title": "## Task portfolio curator"
+      },
+      {
+        "line": 15386,
+        "title": "## Solutioning scientist"
+      },
+      {
+        "line": 15398,
+        "title": "## Concurrency auditor"
+      },
+      {
+        "line": 15410,
+        "title": "## Memory evaluator"
+      },
+      {
+        "line": 15422,
+        "title": "## Assurance scientist"
+      },
+      {
+        "line": 15434,
+        "title": "# Appendix B. Campaign scenario dimensions"
+      },
+      {
+        "line": 15438,
+        "title": "## Run mode"
+      },
+      {
+        "line": 15442,
+        "title": "## Procedure"
+      },
+      {
+        "line": 15449,
+        "title": "## Schedule"
+      },
+      {
+        "line": 15455,
+        "title": "## Memory"
+      },
+      {
+        "line": 15462,
+        "title": "## Intelligence source"
+      },
+      {
+        "line": 15467,
+        "title": "## Storage"
+      },
+      {
+        "line": 15474,
+        "title": "## Placement"
+      },
+      {
+        "line": 15481,
+        "title": "## Assurance"
+      },
+      {
+        "line": 15487,
+        "title": "# Appendix C. Minimum campaign run sequence"
+      },
+      {
+        "line": 15517,
+        "title": "# Appendix D. Required report assertions"
+      },
+      {
+        "line": 15540,
+        "title": "# Appendix E. One-sentence invariant"
+      },
+      {
+        "line": 15548,
+        "title": "# ANNEX E \u2014 BENCHMARK EXECUTION, HARNESS COMPARISON, AND STATISTICAL LEXICAL INTELLIGENCE MANDATE"
+      },
+      {
+        "line": 15552,
+        "title": "# LOOP ENGINE AGGRESSIVE BENCHMARK EXECUTION, HARNESS COMPARISON, AND STATISTICAL LEXICAL INTELLIGENCE MANDATE"
+      },
+      {
+        "line": 15586,
+        "title": "# 0. Executive mission"
+      },
+      {
+        "line": 15643,
+        "title": "# 1. Core constitutional invariants"
+      },
+      {
+        "line": 15649,
+        "title": "## 1.1 One operational runtime"
+      },
+      {
+        "line": 15664,
+        "title": "## 1.2 Per-Loop mode"
+      },
+      {
+        "line": 15676,
+        "title": "## 1.3 No self-approval"
+      },
+      {
+        "line": 15686,
+        "title": "## 1.4 Published evidence is not executed evidence"
+      },
+      {
+        "line": 15713,
+        "title": "## 1.5 Statistical materialization is not intelligence truth"
+      },
+      {
+        "line": 15747,
+        "title": "## 1.6 Storage and backend independence"
+      },
+      {
+        "line": 15755,
+        "title": "# 2. Research facts and conceptual boundary to preserve"
+      },
+      {
+        "line": 15761,
+        "title": "## 2.1 Qwen model-internal n-gram embedding"
+      },
+      {
+        "line": 15794,
+        "title": "## 2.2 Loop Engine statistical lexical substrate"
+      },
+      {
+        "line": 15824,
+        "title": "## 2.3 Benchmark facts must record harness configuration"
+      },
+      {
+        "line": 15859,
+        "title": "# 3. Current-state audit: inspect before designing"
+      },
+      {
+        "line": 15865,
+        "title": "## 3.1 Existing benchmark-related seams to inspect"
+      },
+      {
+        "line": 15909,
+        "title": "## 3.2 Existing retrieval-related seams to inspect"
+      },
+      {
+        "line": 15962,
+        "title": "## 3.3 Run the existing gates first"
+      },
+      {
+        "line": 15999,
+        "title": "# 4. Required independent personas"
+      },
+      {
+        "line": 16015,
+        "title": "## 4.1 Benchmark Scientist"
+      },
+      {
+        "line": 16031,
+        "title": "## 4.2 Coding-Harness Integration Engineer"
+      },
+      {
+        "line": 16044,
+        "title": "## 4.3 Harbor Integration Specialist"
+      },
+      {
+        "line": 16057,
+        "title": "## 4.4 Inspect AI Integration Specialist"
+      },
+      {
+        "line": 16068,
+        "title": "## 4.5 Statistical Experimentalist"
+      },
+      {
+        "line": 16081,
+        "title": "## 4.6 Information Retrieval Scientist"
+      },
+      {
+        "line": 16093,
+        "title": "## 4.7 Statistical Data-Structure Specialist"
+      },
+      {
+        "line": 16107,
+        "title": "## 4.8 Qwen Architecture Reviewer"
+      },
+      {
+        "line": 16120,
+        "title": "## 4.9 Retrieval Security and Privacy Reviewer"
+      },
+      {
+        "line": 16133,
+        "title": "## 4.10 Independent Final Verifier"
+      },
+      {
+        "line": 16141,
+        "title": "# 5. Development Benchmark Plane"
+      },
+      {
+        "line": 16147,
+        "title": "## 5.1 Conceptual hierarchy"
+      },
+      {
+        "line": 16170,
+        "title": "## 5.2 Root Practitioner"
+      },
+      {
+        "line": 16201,
+        "title": "## 5.3 Typed benchmark objects"
+      },
+      {
+        "line": 16240,
+        "title": "## 5.4 Benchmark comparison key"
+      },
+      {
+        "line": 16284,
+        "title": "## 5.5 Required comparison tracks"
+      },
+      {
+        "line": 16288,
+        "title": "### Track A: same model, different harness"
+      },
+      {
+        "line": 16308,
+        "title": "### Track B: same harness, different model"
+      },
+      {
+        "line": 16323,
+        "title": "### Track C: product defaults"
+      },
+      {
+        "line": 16335,
+        "title": "### Track D: fixed tuning budget"
+      },
+      {
+        "line": 16350,
+        "title": "### Track E: Loop Engine ablation"
+      },
+      {
+        "line": 16376,
+        "title": "### Track F: Qwen-specific matrix"
+      },
+      {
+        "line": 16399,
+        "title": "## 5.6 Benchmark suites"
+      },
+      {
+        "line": 16432,
+        "title": "## 5.7 Harbor-first interoperability"
+      },
+      {
+        "line": 16468,
+        "title": "## 5.8 External coding harness adapters"
+      },
+      {
+        "line": 16519,
+        "title": "## 5.9 Benchmark task format"
+      },
+      {
+        "line": 16560,
+        "title": "## 5.10 Trial isolation"
+      },
+      {
+        "line": 16585,
+        "title": "## 5.11 Evaluators"
+      },
+      {
+        "line": 16609,
+        "title": "## 5.12 Statistics"
+      },
+      {
+        "line": 16640,
+        "title": "## 5.13 Benchmark safety and integrity"
+      },
+      {
+        "line": 16662,
+        "title": "## 5.14 Benchmark evidence stores"
+      },
+      {
+        "line": 16680,
+        "title": "## 5.15 Benchmark CLI"
+      },
+      {
+        "line": 16708,
+        "title": "## 5.16 Minimum real benchmark execution"
+      },
+      {
+        "line": 16740,
+        "title": "# 6. Statistical Lexical Intelligence Substrate"
+      },
+      {
+        "line": 16750,
+        "title": "## 6.1 Purpose"
+      },
+      {
+        "line": 16775,
+        "title": "## 6.2 Canonical typed objects"
+      },
+      {
+        "line": 16811,
+        "title": "## 6.3 NgramSpaceDefinition"
+      },
+      {
+        "line": 16866,
+        "title": "## 6.4 N-gram families"
+      },
+      {
+        "line": 16868,
+        "title": "### Character n-grams"
+      },
+      {
+        "line": 16896,
+        "title": "### Word n-grams"
+      },
+      {
+        "line": 16918,
+        "title": "### Code n-grams"
+      },
+      {
+        "line": 16937,
+        "title": "### Question and operator n-grams"
+      },
+      {
+        "line": 16950,
+        "title": "### Run and trajectory n-grams"
+      },
+      {
+        "line": 16967,
+        "title": "### Graph path n-grams"
+      },
+      {
+        "line": 16981,
+        "title": "## 6.5 Frequency and distribution features"
+      },
+      {
+        "line": 17026,
+        "title": "## 6.6 Streaming and probabilistic structures"
+      },
+      {
+        "line": 17068,
+        "title": "## 6.7 Corpus statistics are scoped"
+      },
+      {
+        "line": 17090,
+        "title": "## 6.8 Phrase and collocation intelligence"
+      },
+      {
+        "line": 17109,
+        "title": "## 6.9 Hybrid retrieval architecture"
+      },
+      {
+        "line": 17145,
+        "title": "## 6.10 Fusion"
+      },
+      {
+        "line": 17178,
+        "title": "## 6.11 Retrieval score dimensions"
+      },
+      {
+        "line": 17205,
+        "title": "## 6.12 Task fingerprinting"
+      },
+      {
+        "line": 17229,
+        "title": "## 6.13 Retrieval-informed prefetch"
+      },
+      {
+        "line": 17265,
+        "title": "## 6.14 Benchmark-informed harness routing"
+      },
+      {
+        "line": 17291,
+        "title": "## 6.15 Privacy and rare n-grams"
+      },
+      {
+        "line": 17323,
+        "title": "## 6.16 Backend adapters"
+      },
+      {
+        "line": 17344,
+        "title": "## 6.17 Current retrieval refactor questions"
+      },
+      {
+        "line": 17378,
+        "title": "# 7. Retrieval and n-gram benchmark suite"
+      },
+      {
+        "line": 17382,
+        "title": "## 7.1 Test populations"
+      },
+      {
+        "line": 17411,
+        "title": "## 7.2 Metrics"
+      },
+      {
+        "line": 17439,
+        "title": "## 7.3 Required ablations"
+      },
+      {
+        "line": 17461,
+        "title": "## 7.4 Frozen judgments"
+      },
+      {
+        "line": 17491,
+        "title": "## 7.5 Retrieval tournament as Loops"
+      },
+      {
+        "line": 17517,
+        "title": "# 8. Qwen3.8-Flash-Next integration and experiments"
+      },
+      {
+        "line": 17521,
+        "title": "## 8.1 Model capability profile"
+      },
+      {
+        "line": 17543,
+        "title": "## 8.2 Safe reasoning handling"
+      },
+      {
+        "line": 17560,
+        "title": "## 8.3 Qwen benchmark experiments"
+      },
+      {
+        "line": 17595,
+        "title": "## 8.4 Do not attribute causality without ablation"
+      },
+      {
+        "line": 17615,
+        "title": "# 9. Benchmark and retrieval learning"
+      },
+      {
+        "line": 17617,
+        "title": "## 9.1 Episodic memory"
+      },
+      {
+        "line": 17637,
+        "title": "## 9.2 Semantic candidates"
+      },
+      {
+        "line": 17663,
+        "title": "## 9.3 Procedural candidates"
+      },
+      {
+        "line": 17677,
+        "title": "## 9.4 No automatic routing promotion"
+      },
+      {
+        "line": 17691,
+        "title": "# 10. Studio and report requirements"
+      },
+      {
+        "line": 17695,
+        "title": "## 10.1 Benchmark views"
+      },
+      {
+        "line": 17716,
+        "title": "## 10.2 Retrieval views"
+      },
+      {
+        "line": 17736,
+        "title": "## 10.3 Playback"
+      },
+      {
+        "line": 17763,
+        "title": "# 11. Target repository structure"
+      },
+      {
+        "line": 17847,
+        "title": "# 12. Documentation distinctions"
+      },
+      {
+        "line": 17913,
+        "title": "# 13. Required tests"
+      },
+      {
+        "line": 17915,
+        "title": "## 13.1 Benchmark architecture tests"
+      },
+      {
+        "line": 17930,
+        "title": "## 13.2 Harness tests"
+      },
+      {
+        "line": 17949,
+        "title": "## 13.3 Campaign tests"
+      },
+      {
+        "line": 17963,
+        "title": "## 13.4 Evaluator tests"
+      },
+      {
+        "line": 17975,
+        "title": "## 13.5 Statistical tests"
+      },
+      {
+        "line": 17988,
+        "title": "## 13.6 N-gram ontology tests"
+      },
+      {
+        "line": 18000,
+        "title": "## 13.7 Retrieval tests"
+      },
+      {
+        "line": 18020,
+        "title": "## 13.8 Sketch tests"
+      },
+      {
+        "line": 18031,
+        "title": "## 13.9 Prefetch tests"
+      },
+      {
+        "line": 18041,
+        "title": "## 13.10 Qwen tests"
+      },
+      {
+        "line": 18053,
+        "title": "## 13.11 Meta-tests"
+      },
+      {
+        "line": 18066,
+        "title": "# 14. Required benchmark examples"
+      },
+      {
+        "line": 18070,
+        "title": "## 14.1 Coding harness smoke comparison"
+      },
+      {
+        "line": 18088,
+        "title": "## 14.2 Repository bug repair"
+      },
+      {
+        "line": 18095,
+        "title": "## 14.3 Retrieval improvement task"
+      },
+      {
+        "line": 18104,
+        "title": "## 14.4 Small ML engineering task"
+      },
+      {
+        "line": 18112,
+        "title": "## 14.5 Human-escalation task"
+      },
+      {
+        "line": 18122,
+        "title": "## 14.6 Qwen retrieval ablation"
+      },
+      {
+        "line": 18136,
+        "title": "# 15. CLI quickstart target"
+      },
+      {
+        "line": 18141,
+        "title": "# Install dev benchmark extras"
+      },
+      {
+        "line": 18144,
+        "title": "# Verify architecture and benchmark dependencies"
+      },
+      {
+        "line": 18147,
+        "title": "# See available harnesses and datasets"
+      },
+      {
+        "line": 18150,
+        "title": "# Run deterministic smoke tasks"
+      },
+      {
+        "line": 18153,
+        "title": "# Plan a matched coding-harness comparison"
+      },
+      {
+        "line": 18160,
+        "title": "# Run only available compatible cells"
+      },
+      {
+        "line": 18164,
+        "title": "# Compare matched cells"
+      },
+      {
+        "line": 18169,
+        "title": "# Open Studio"
+      },
+      {
+        "line": 18172,
+        "title": "# Run retrieval tournament"
+      },
+      {
+        "line": 18176,
+        "title": "# Compare current and candidate retrieval"
+      },
+      {
+        "line": 18196,
+        "title": "# 16. Execution sequence"
+      },
+      {
+        "line": 18200,
+        "title": "## Phase 1: establish baseline"
+      },
+      {
+        "line": 18212,
+        "title": "## Phase 2: formalize contracts"
+      },
+      {
+        "line": 18225,
+        "title": "## Phase 3: offline benchmark plane"
+      },
+      {
+        "line": 18238,
+        "title": "## Phase 4: Harbor adapter"
+      },
+      {
+        "line": 18249,
+        "title": "## Phase 5: external harnesses"
+      },
+      {
+        "line": 18260,
+        "title": "## Phase 6: statistical lexical index"
+      },
+      {
+        "line": 18273,
+        "title": "## Phase 7: retrieval tournament"
+      },
+      {
+        "line": 18286,
+        "title": "## Phase 8: Qwen profile and ablations"
+      },
+      {
+        "line": 18297,
+        "title": "## Phase 9: advanced benchmark comparison"
+      },
+      {
+        "line": 18306,
+        "title": "## Phase 10: hardening"
+      },
+      {
+        "line": 18319,
+        "title": "# 17. Hard completion gates"
+      },
+      {
+        "line": 18323,
+        "title": "## Architecture"
+      },
+      {
+        "line": 18334,
+        "title": "## Benchmark execution"
+      },
+      {
+        "line": 18346,
+        "title": "## Retrieval"
+      },
+      {
+        "line": 18358,
+        "title": "## Statistics"
+      },
+      {
+        "line": 18368,
+        "title": "## Portability"
+      },
+      {
+        "line": 18378,
+        "title": "## Clean installation"
+      },
+      {
+        "line": 18393,
+        "title": "# 18. Required final reports"
+      },
+      {
+        "line": 18430,
+        "title": "# 19. Final anti-shortcut rules"
+      },
+      {
+        "line": 18465,
+        "title": "# ANNEX F \u2014 UNIVERSAL TASK QUESTION GRAPH ENGINE SOURCE ARCHITECTURE"
+      },
+      {
+        "line": 18469,
+        "title": "# Universal Task Question Graph Engine"
+      },
+      {
+        "line": 18493,
+        "title": "# 1. Keep the concepts separate"
+      },
+      {
+        "line": 18542,
+        "title": "# 2. End-to-end architecture"
+      },
+      {
+        "line": 18592,
+        "title": "# 3. Everything remains a loop"
+      },
+      {
+        "line": 18655,
+        "title": "# 4. Universal Work Item IR"
+      },
+      {
+        "line": 18762,
+        "title": "# 5. Multi-axis classification"
+      },
+      {
+        "line": 18787,
+        "title": "## Classification facets"
+      },
+      {
+        "line": 18825,
+        "title": "# 6. Hierarchical tagging across all dimensions"
+      },
+      {
+        "line": 18829,
+        "title": "## Major tag facets"
+      },
+      {
+        "line": 18865,
+        "title": "## Tag assignment schema"
+      },
+      {
+        "line": 18901,
+        "title": "# 7. Profile families"
+      },
+      {
+        "line": 18905,
+        "title": "## Base object profiles"
+      },
+      {
+        "line": 18924,
+        "title": "## Work-type profiles"
+      },
+      {
+        "line": 18943,
+        "title": "## Discipline and domain profiles"
+      },
+      {
+        "line": 18959,
+        "title": "## Situation profiles"
+      },
+      {
+        "line": 19002,
+        "title": "## Persona profiles"
+      },
+      {
+        "line": 19025,
+        "title": "## Reference-frame profiles"
+      },
+      {
+        "line": 19072,
+        "title": "# 8. Profile schema"
+      },
+      {
+        "line": 19118,
+        "title": "# 9. Question generation as a controlled combination"
+      },
+      {
+        "line": 19197,
+        "title": "# 10. Avoid uncontrolled combinatorial explosion"
+      },
+      {
+        "line": 19203,
+        "title": "## Applicability filtering"
+      },
+      {
+        "line": 19207,
+        "title": "## Parent-gated expansion"
+      },
+      {
+        "line": 19211,
+        "title": "## Risk-weighted depth"
+      },
+      {
+        "line": 19215,
+        "title": "## Lazy generation"
+      },
+      {
+        "line": 19219,
+        "title": "## Semantic deduplication"
+      },
+      {
+        "line": 19223,
+        "title": "## Conflation splitting"
+      },
+      {
+        "line": 19227,
+        "title": "## Question budgets"
+      },
+      {
+        "line": 19231,
+        "title": "## Perspective novelty scoring"
+      },
+      {
+        "line": 19235,
+        "title": "## Coverage quotas"
+      },
+      {
+        "line": 19239,
+        "title": "## Stopping rules"
+      },
+      {
+        "line": 19267,
+        "title": "# 11. Question-template schema"
+      },
+      {
+        "line": 19333,
+        "title": "# 12. Concrete question-node schema"
+      },
+      {
+        "line": 19413,
+        "title": "# 13. Structured answer object"
+      },
+      {
+        "line": 19460,
+        "title": "# 14. Graph relationships"
+      },
+      {
+        "line": 19514,
+        "title": "# 15. Situation detection and transient activation"
+      },
+      {
+        "line": 19568,
+        "title": "# 16. Persona\u2013distance compiler"
+      },
+      {
+        "line": 19617,
+        "title": "# 17. Reference-frame compiler"
+      },
+      {
+        "line": 19660,
+        "title": "# 18. Rightness classifier"
+      },
+      {
+        "line": 19699,
+        "title": "# 19. Historical analogue and memory layer"
+      },
+      {
+        "line": 19759,
+        "title": "# 20. Sunk cost and opportunity-cost analysis"
+      },
+      {
+        "line": 19795,
+        "title": "# 21. Question-priority scoring"
+      },
+      {
+        "line": 19846,
+        "title": "# 22. Resolver assignment"
+      },
+      {
+        "line": 19850,
+        "title": "## Deterministic"
+      },
+      {
+        "line": 19864,
+        "title": "## Hybrid"
+      },
+      {
+        "line": 19874,
+        "title": "## Nondeterministic"
+      },
+      {
+        "line": 19884,
+        "title": "## Human gates"
+      },
+      {
+        "line": 19896,
+        "title": "# 23. Configuration system"
+      },
+      {
+        "line": 19993,
+        "title": "# 24. Standard generation modes"
+      },
+      {
+        "line": 20012,
+        "title": "# 25. Generation pipeline"
+      },
+      {
+        "line": 20016,
+        "title": "## Pass 1 \u2014 Preserve and parse"
+      },
+      {
+        "line": 20022,
+        "title": "## Pass 2 \u2014 Goal reconstruction"
+      },
+      {
+        "line": 20028,
+        "title": "## Pass 3 \u2014 Object graph construction"
+      },
+      {
+        "line": 20033,
+        "title": "## Pass 4 \u2014 Classification"
+      },
+      {
+        "line": 20038,
+        "title": "## Pass 5 \u2014 Tagging"
+      },
+      {
+        "line": 20042,
+        "title": "## Pass 6 \u2014 Situation detection"
+      },
+      {
+        "line": 20046,
+        "title": "## Pass 7 \u2014 Historical retrieval"
+      },
+      {
+        "line": 20050,
+        "title": "## Pass 8 \u2014 Profile activation"
+      },
+      {
+        "line": 20054,
+        "title": "## Pass 9 \u2014 Base question instantiation"
+      },
+      {
+        "line": 20058,
+        "title": "## Pass 10 \u2014 Persona-distance expansion"
+      },
+      {
+        "line": 20062,
+        "title": "## Pass 11 \u2014 Dimensional expansion"
+      },
+      {
+        "line": 20066,
+        "title": "## Pass 12 \u2014 Mutation and failure expansion"
+      },
+      {
+        "line": 20070,
+        "title": "## Pass 13 \u2014 Conditional child expansion"
+      },
+      {
+        "line": 20074,
+        "title": "## Pass 14 \u2014 Semantic normalization"
+      },
+      {
+        "line": 20080,
+        "title": "## Pass 15 \u2014 Coverage audit"
+      },
+      {
+        "line": 20084,
+        "title": "## Pass 16 \u2014 Prioritization"
+      },
+      {
+        "line": 20088,
+        "title": "## Pass 17 \u2014 Resolver assignment"
+      },
+      {
+        "line": 20092,
+        "title": "## Pass 18 \u2014 Execution planning"
+      },
+      {
+        "line": 20096,
+        "title": "## Pass 19 \u2014 Resolution and action"
+      },
+      {
+        "line": 20100,
+        "title": "## Pass 20 \u2014 Verification and learning"
+      },
+      {
+        "line": 20107,
+        "title": "# 26. Pseudocode"
+      },
+      {
+        "line": 20216,
+        "title": "# 27. Example"
+      },
+      {
+        "line": 20222,
+        "title": "## Classifications"
+      },
+      {
+        "line": 20234,
+        "title": "## Tags"
+      },
+      {
+        "line": 20251,
+        "title": "## Activated profiles"
+      },
+      {
+        "line": 20266,
+        "title": "## Initial questions"
+      },
+      {
+        "line": 20316,
+        "title": "## Conditional activation"
+      },
+      {
+        "line": 20343,
+        "title": "# 28. Run and parallel-work integration"
+      },
+      {
+        "line": 20390,
+        "title": "# 29. Coverage audit"
+      },
+      {
+        "line": 20394,
+        "title": "## Every action must cover"
+      },
+      {
+        "line": 20412,
+        "title": "## Every decision must cover"
+      },
+      {
+        "line": 20427,
+        "title": "## Every artifact must cover"
+      },
+      {
+        "line": 20440,
+        "title": "## Every run must cover"
+      },
+      {
+        "line": 20458,
+        "title": "## Every exception must cover"
+      },
+      {
+        "line": 20471,
+        "title": "## Every important stakeholder must cover"
+      },
+      {
+        "line": 20485,
+        "title": "# 30. Evaluation metrics"
+      },
+      {
+        "line": 20487,
+        "title": "## Classifier and tagger quality"
+      },
+      {
+        "line": 20499,
+        "title": "## Question quality"
+      },
+      {
+        "line": 20515,
+        "title": "## Runtime quality"
+      },
+      {
+        "line": 20529,
+        "title": "## Outcome quality"
+      },
+      {
+        "line": 20549,
+        "title": "# 31. Learning loop"
+      },
+      {
+        "line": 20603,
+        "title": "# 32. Suggested package structure"
+      },
+      {
+        "line": 20725,
+        "title": "# 33. Practical implementation sequence"
+      },
+      {
+        "line": 20727,
+        "title": "## Version 1 \u2014 Compiler foundation"
+      },
+      {
+        "line": 20745,
+        "title": "## Version 2 \u2014 Conditional graph runtime"
+      },
+      {
+        "line": 20762,
+        "title": "## Version 3 \u2014 Persona, memory, and self-improvement"
+      },
+      {
+        "line": 20780,
+        "title": "# 34. Final target state"
+      },
+      {
+        "line": 20833,
+        "title": "# ANNEX G \u2014 UNIVERSAL QUERY\u2013RESPONSE OPERATOR ONTOLOGY SOURCE ARCHITECTURE"
+      },
+      {
+        "line": 20837,
+        "title": "# The Missing Layer: A Universal Query\u2013Response Operator Ontology"
+      },
+      {
+        "line": 20904,
+        "title": "# 1. The Four Coordinates of Every Work Question"
+      },
+      {
+        "line": 20908,
+        "title": "## 1.1 Subject"
+      },
+      {
+        "line": 20940,
+        "title": "## 1.2 Operator"
+      },
+      {
+        "line": 20966,
+        "title": "## 1.3 Response topology"
+      },
+      {
+        "line": 20998,
+        "title": "## 1.4 Decision consequence"
+      },
+      {
+        "line": 21044,
+        "title": "# 2. Universal Operator Ontology"
+      },
+      {
+        "line": 21046,
+        "title": "## 2.1 Retrieval and discovery"
+      },
+      {
+        "line": 21075,
+        "title": "## 2.2 Extraction and parsing"
+      },
+      {
+        "line": 21103,
+        "title": "## 2.3 Validation and verification"
+      },
+      {
+        "line": 21135,
+        "title": "## 2.4 Classification"
+      },
+      {
+        "line": 21139,
+        "title": "### Classification variants"
+      },
+      {
+        "line": 21156,
+        "title": "### Hidden classification questions"
+      },
+      {
+        "line": 21176,
+        "title": "### Better classification response"
+      },
+      {
+        "line": 21210,
+        "title": "## 2.5 Scoring"
+      },
+      {
+        "line": 21263,
+        "title": "## 2.6 Ranking"
+      },
+      {
+        "line": 21267,
+        "title": "### Ranking variants"
+      },
+      {
+        "line": 21284,
+        "title": "### Hidden ranking questions"
+      },
+      {
+        "line": 21306,
+        "title": "### Ranked response contract"
+      },
+      {
+        "line": 21332,
+        "title": "## 2.7 Regression and numerical estimation"
+      },
+      {
+        "line": 21336,
+        "title": "### Regression variants"
+      },
+      {
+        "line": 21355,
+        "title": "### Hidden regression questions"
+      },
+      {
+        "line": 21402,
+        "title": "## 2.8 Probability estimation"
+      },
+      {
+        "line": 21446,
+        "title": "## 2.9 Prediction and forecasting"
+      },
+      {
+        "line": 21450,
+        "title": "### Forecast variants"
+      },
+      {
+        "line": 21469,
+        "title": "### Hidden forecasting questions"
+      },
+      {
+        "line": 21491,
+        "title": "## 2.10 Detection"
+      },
+      {
+        "line": 21546,
+        "title": "## 2.11 Clustering and unsupervised grouping"
+      },
+      {
+        "line": 21550,
+        "title": "### Clustering variants"
+      },
+      {
+        "line": 21568,
+        "title": "### Hidden clustering questions"
+      },
+      {
+        "line": 21591,
+        "title": "### Better cluster response"
+      },
+      {
+        "line": 21621,
+        "title": "## 2.12 Segmentation"
+      },
+      {
+        "line": 21649,
+        "title": "## 2.13 Similarity, matching, and entity resolution"
+      },
+      {
+        "line": 21680,
+        "title": "## 2.14 Recommendation"
+      },
+      {
+        "line": 21739,
+        "title": "## 2.15 Optimization"
+      },
+      {
+        "line": 21800,
+        "title": "## 2.16 Planning and decomposition"
+      },
+      {
+        "line": 21842,
+        "title": "## 2.17 Diagnosis and explanation"
+      },
+      {
+        "line": 21897,
+        "title": "## 2.18 Causal inference"
+      },
+      {
+        "line": 21944,
+        "title": "## 2.19 Simulation"
+      },
+      {
+        "line": 21999,
+        "title": "## 2.20 Generation and synthesis"
+      },
+      {
+        "line": 22051,
+        "title": "## 2.21 Comparison and benchmarking"
+      },
+      {
+        "line": 22082,
+        "title": "## 2.22 Summarization and compression"
+      },
+      {
+        "line": 22120,
+        "title": "## 2.23 Monitoring and alerting"
+      },
+      {
+        "line": 22156,
+        "title": "## 2.24 Decision and policy"
+      },
+      {
+        "line": 22189,
+        "title": "## 2.25 Active learning and next-question selection"
+      },
+      {
+        "line": 22225,
+        "title": "## 2.26 Abstention, deferral, and escalation"
+      },
+      {
+        "line": 22260,
+        "title": "# 3. Response Topology Ontology"
+      },
+      {
+        "line": 22262,
+        "title": "## 3.1 Atomic outputs"
+      },
+      {
+        "line": 22280,
+        "title": "## 3.2 Collection outputs"
+      },
+      {
+        "line": 22297,
+        "title": "## 3.3 Relational outputs"
+      },
+      {
+        "line": 22313,
+        "title": "## 3.4 Hierarchical outputs"
+      },
+      {
+        "line": 22327,
+        "title": "## 3.5 Temporal outputs"
+      },
+      {
+        "line": 22341,
+        "title": "## 3.6 Dynamic outputs"
+      },
+      {
+        "line": 22354,
+        "title": "## 3.7 Scenario outputs"
+      },
+      {
+        "line": 22366,
+        "title": "## 3.8 Operational outputs"
+      },
+      {
+        "line": 22385,
+        "title": "## 3.9 Epistemic outputs"
+      },
+      {
+        "line": 22403,
+        "title": "# 4. List Responses Are Their Own Ontology"
+      },
+      {
+        "line": 22407,
+        "title": "## Possible list contracts"
+      },
+      {
+        "line": 22438,
+        "title": "## Hidden questions before generating a list"
+      },
+      {
+        "line": 22462,
+        "title": "# 5. Confidence Should Be a Vector, Not One Number"
+      },
+      {
+        "line": 22485,
+        "title": "## Confidence profile"
+      },
+      {
+        "line": 22517,
+        "title": "# 6. Outside-the-Box Response Types"
+      },
+      {
+        "line": 22519,
+        "title": "## 6.1 The anti-answer"
+      },
+      {
+        "line": 22532,
+        "title": "## 6.2 The boundary map"
+      },
+      {
+        "line": 22542,
+        "title": "## 6.3 The counterexample"
+      },
+      {
+        "line": 22554,
+        "title": "## 6.4 The impossibility certificate"
+      },
+      {
+        "line": 22570,
+        "title": "## 6.5 The minimal sufficient answer"
+      },
+      {
+        "line": 22579,
+        "title": "## 6.6 The unknowns map"
+      },
+      {
+        "line": 22593,
+        "title": "## 6.7 The contradiction graph"
+      },
+      {
+        "line": 22603,
+        "title": "## 6.8 The information-gain response"
+      },
+      {
+        "line": 22611,
+        "title": "## 6.9 The option-value response"
+      },
+      {
+        "line": 22620,
+        "title": "## 6.10 The regret response"
+      },
+      {
+        "line": 22628,
+        "title": "## 6.11 The sensitivity response"
+      },
+      {
+        "line": 22637,
+        "title": "## 6.12 The tipping-point response"
+      },
+      {
+        "line": 22647,
+        "title": "## 6.13 The invariant certificate"
+      },
+      {
+        "line": 22657,
+        "title": "## 6.14 The equivalence-class response"
+      },
+      {
+        "line": 22670,
+        "title": "## 6.15 The state-space response"
+      },
+      {
+        "line": 22683,
+        "title": "## 6.16 The latent-variable response"
+      },
+      {
+        "line": 22692,
+        "title": "## 6.17 The shadow-system response"
+      },
+      {
+        "line": 22704,
+        "title": "## 6.18 The adversarial response"
+      },
+      {
+        "line": 22714,
+        "title": "## 6.19 The reversible-action response"
+      },
+      {
+        "line": 22727,
+        "title": "## 6.20 The portfolio response"
+      },
+      {
+        "line": 22737,
+        "title": "## 6.21 The diversity response"
+      },
+      {
+        "line": 22749,
+        "title": "## 6.22 The disagreement response"
+      },
+      {
+        "line": 22760,
+        "title": "## 6.23 The abstention frontier"
+      },
+      {
+        "line": 22771,
+        "title": "## 6.24 The monitoring response"
+      },
+      {
+        "line": 22781,
+        "title": "## 6.25 The response-as-experiment"
+      },
+      {
+        "line": 22794,
+        "title": "# 7. The Same Business Question Can Compile into Many Operators"
+      },
+      {
+        "line": 22796,
+        "title": "## Example: \u201cWhich features should we build next?\u201d"
+      },
+      {
+        "line": 22846,
+        "title": "# 8. Composite Response Bundles"
+      },
+      {
+        "line": 22896,
+        "title": "# 9. Evaluation Must Match the Operator"
+      },
+      {
+        "line": 22943,
+        "title": "# 10. Universal Question and Response Contract"
+      },
+      {
+        "line": 23016,
+        "title": "# 11. Query-to-Response Compiler"
+      },
+      {
+        "line": 23066,
+        "title": "# 12. A More Complete Universal Work Loop"
+      },
+      {
+        "line": 23131,
+        "title": "# ANNEX H \u2014 REUSABLE LOOP ENGINE SOLUTION-FACTORY TASK CATALOG"
+      },
+      {
+        "line": 23139,
+        "title": "## Data quality, repair, and standardization"
+      },
+      {
+        "line": 23152,
+        "title": "## Data ingestion, integration, and lakehouse engineering"
+      },
+      {
+        "line": 23165,
+        "title": "## Data observability and reliability"
+      },
+      {
+        "line": 23178,
+        "title": "## Entity resolution and knowledge graphs"
+      },
+      {
+        "line": 23191,
+        "title": "## Research-to-intelligence systems"
+      },
+      {
+        "line": 23204,
+        "title": "## Tabular machine learning and Kaggle"
+      },
+      {
+        "line": 23217,
+        "title": "## Forecasting, optimization, and simulation"
+      },
+      {
+        "line": 23230,
+        "title": "## Document and language intelligence"
+      },
+      {
+        "line": 23243,
+        "title": "## Image, video, and audio pipelines"
+      },
+      {
+        "line": 23256,
+        "title": "## Software engineering and repository transformation"
+      },
+      {
+        "line": 23269,
+        "title": "## Cloud, Kubernetes, reliability, and operations"
+      },
+      {
+        "line": 23282,
+        "title": "## Security, compliance, and assurance"
+      },
+      {
+        "line": 23295,
+        "title": "## Business and operational systems"
+      },
+      {
+        "line": 23308,
+        "title": "## Scientific, industrial, and physical-system examples"
+      },
+      {
+        "line": 23321,
+        "title": "## LLM, agent, and intelligence-generation systems"
+      },
+      {
+        "line": 23334,
+        "title": "## Memory, learning, and self-improvement tests"
+      },
+      {
+        "line": 23347,
+        "title": "## Meta-level Loop Engine proving tasks"
+      },
+      {
+        "line": 23360,
+        "title": "## Combinatorial task generator"
+      },
+      {
+        "line": 23452,
+        "title": "# ANNEX I \u2014 SOURCE-EVIDENCE NOTES THAT MUST BE REVERIFIED"
+      },
+      {
+        "line": 23456,
+        "title": "## Qwen3.8-Flash-Next"
+      },
+      {
+        "line": 23478,
+        "title": "## Historical Loop Engine checkpoint"
+      },
+      {
+        "line": 23496,
+        "title": "## Public and live benchmark evidence"
+      }
+    ],
+    "lines": 23506,
+    "marker_counts": {
+      "Core Code Intelligence": 0,
+      "LoopNode": 209,
+      "deterministic.first": 1,
+      "every semantic": 4,
+      "four.layer": 3,
+      "learning loop": 1,
+      "million": 5
+    },
+    "path": "/home/username/Downloads/LOOP_ENGINE_COMPLETE_START_TO_FINISH_MASTER_IMPLEMENTATION_MANDATE.md",
+    "semantic_review": "NOT_IMPLIED",
+    "sha256": "b9adc701df208ebbc7c59c47cc92f393626397173df047c72224ef3e5c07f589"
+  },
+  {
+    "bytes": 97019,
+    "coverage": "FULL_TEXT_AUTOMATED_INSPECTION",
+    "headings": [
+      {
+        "line": 1,
+        "title": "# LOOP ENGINE ABSOLUTE BUILD, FIX, MEASURE, ALIGN, VERIFY, PRODUCTIZE, BENCHMARK, AND KAGGLE-RSI MANDATE"
+      },
+      {
+        "line": 3,
+        "title": "## Use this entire Markdown file in a fresh OpenCode, Kimi, DeepSeek, Codex, Claude Code, or equivalent coding-harness session at the root of the Loop Engine repository"
+      },
+      {
+        "line": 84,
+        "title": "# A. Absolute execution posture"
+      },
+      {
+        "line": 86,
+        "title": "## A.1 Read before changing"
+      },
+      {
+        "line": 105,
+        "title": "## A.2 Source precedence"
+      },
+      {
+        "line": 144,
+        "title": "## A.3 Required decision for every material finding"
+      },
+      {
+        "line": 197,
+        "title": "## A.4 Build-Fix-Measure-Align cycle"
+      },
+      {
+        "line": 247,
+        "title": "# B. Strict scope and repository hygiene"
+      },
+      {
+        "line": 249,
+        "title": "## B.1 Loop Engine only"
+      },
+      {
+        "line": 281,
+        "title": "## B.2 Preserve unrelated concurrent work"
+      },
+      {
+        "line": 301,
+        "title": "# C. Git and GitHub truth reconstruction"
+      },
+      {
+        "line": 303,
+        "title": "## C.1 Local Git inventory"
+      },
+      {
+        "line": 346,
+        "title": "## C.2 GitHub inventory"
+      },
+      {
+        "line": 380,
+        "title": "## C.3 Compare current checkout with important history"
+      },
+      {
+        "line": 404,
+        "title": "## C.4 Required GitHub state report"
+      },
+      {
+        "line": 424,
+        "title": "# D. Loop-Engine prompt and edit-history reconciliation"
+      },
+      {
+        "line": 426,
+        "title": "## D.1 Discover only relevant history"
+      },
+      {
+        "line": 463,
+        "title": "## D.2 PromptHistoryRecord"
+      },
+      {
+        "line": 501,
+        "title": "## D.3 Reconstruct the architecture evolution timeline"
+      },
+      {
+        "line": 523,
+        "title": "## D.4 Prompt conflict rule"
+      },
+      {
+        "line": 542,
+        "title": "## D.5 Required history outputs"
+      },
+      {
+        "line": 558,
+        "title": "# E. Precise constitutional interpretation"
+      },
+      {
+        "line": 560,
+        "title": "## E.1 One operational runtime"
+      },
+      {
+        "line": 569,
+        "title": "## E.2 Everything that independently performs governed work is a Loop"
+      },
+      {
+        "line": 610,
+        "title": "## E.3 Independent dimensions"
+      },
+      {
+        "line": 670,
+        "title": "## E.4 No architecture drift through convenience"
+      },
+      {
+        "line": 689,
+        "title": "# F. Mandatory baseline and current-state proof"
+      },
+      {
+        "line": 746,
+        "title": "# G. Required architecture truth ledger"
+      },
+      {
+        "line": 804,
+        "title": "# H. Mandatory implementation philosophy"
+      },
+      {
+        "line": 806,
+        "title": "## H.1 Build vertical slices, not disconnected components"
+      },
+      {
+        "line": 822,
+        "title": "## H.2 Minimum-change architecture, maximum execution proof"
+      },
+      {
+        "line": 846,
+        "title": "## H.3 No fake completeness"
+      },
+      {
+        "line": 864,
+        "title": "# I. Required personas and adversarial review"
+      },
+      {
+        "line": 908,
+        "title": "# J. Execution phases"
+      },
+      {
+        "line": 910,
+        "title": "## Phase 0 \u2014 Safe checkpoint and inventory"
+      },
+      {
+        "line": 921,
+        "title": "## Phase 1 \u2014 Truth and alignment"
+      },
+      {
+        "line": 934,
+        "title": "## Phase 2 \u2014 Reproduce and fix hard defects"
+      },
+      {
+        "line": 952,
+        "title": "## Phase 3 \u2014 Complete the public five-step vertical slice"
+      },
+      {
+        "line": 965,
+        "title": "## Phase 4 \u2014 Scenario Factory"
+      },
+      {
+        "line": 969,
+        "title": "## Phase 5 \u2014 Development Benchmark Plane"
+      },
+      {
+        "line": 973,
+        "title": "## Phase 6 \u2014 Kaggle Recursive Improvement Plane"
+      },
+      {
+        "line": 977,
+        "title": "## Phase 7 \u2014 Retrieval and memory improvement"
+      },
+      {
+        "line": 981,
+        "title": "## Phase 8 \u2014 Product alignment"
+      },
+      {
+        "line": 995,
+        "title": "## Phase 9 \u2014 Clean-install, independent assurance, and final verdict"
+      },
+      {
+        "line": 999,
+        "title": "# K. Hard rule for previous edits"
+      },
+      {
+        "line": 1022,
+        "title": "# L. Measurement framework"
+      },
+      {
+        "line": 1024,
+        "title": "## L.1 Architecture measures"
+      },
+      {
+        "line": 1039,
+        "title": "## L.2 Product measures"
+      },
+      {
+        "line": 1053,
+        "title": "## L.3 Solution measures"
+      },
+      {
+        "line": 1069,
+        "title": "## L.4 Learning measures"
+      },
+      {
+        "line": 1081,
+        "title": "## L.5 Recursive improvement measures"
+      },
+      {
+        "line": 1101,
+        "title": "# M. Git commit and push policy"
+      },
+      {
+        "line": 1123,
+        "title": "# N. Required product truth"
+      },
+      {
+        "line": 1128,
+        "title": "# Install"
+      },
+      {
+        "line": 1131,
+        "title": "# Verify"
+      },
+      {
+        "line": 1136,
+        "title": "# Configure"
+      },
+      {
+        "line": 1141,
+        "title": "# Compile"
+      },
+      {
+        "line": 1144,
+        "title": "# Generate intelligence"
+      },
+      {
+        "line": 1147,
+        "title": "# Solve"
+      },
+      {
+        "line": 1152,
+        "title": "# Learn"
+      },
+      {
+        "line": 1155,
+        "title": "# Review candidates"
+      },
+      {
+        "line": 1159,
+        "title": "# Watch and replay"
+      },
+      {
+        "line": 1169,
+        "title": "# O. Final completion posture"
+      },
+      {
+        "line": 1193,
+        "title": "# PART II \u2014 CONSOLIDATED IDEAL-STATE SPECIFICATION"
+      },
+      {
+        "line": 1195,
+        "title": "# 1. Executive mission"
+      },
+      {
+        "line": 1252,
+        "title": "# 2. Superseding architecture decisions"
+      },
+      {
+        "line": 1256,
+        "title": "## 2.1 One concrete operational runtime: `Loop`"
+      },
+      {
+        "line": 1305,
+        "title": "## 2.2 Everything that independently performs governed work is a Loop"
+      },
+      {
+        "line": 1349,
+        "title": "## 2.3 Independent dimensions"
+      },
+      {
+        "line": 1412,
+        "title": "## 2.4 Default Practitioner is now ten stages"
+      },
+      {
+        "line": 1449,
+        "title": "## 2.5 Functional Intelligence Domains replace the old four exclusive layers"
+      },
+      {
+        "line": 1491,
+        "title": "## 2.6 Runtime state and four memory types"
+      },
+      {
+        "line": 1530,
+        "title": "## 2.7 Core, Learned, Plugin, Candidate"
+      },
+      {
+        "line": 1570,
+        "title": "## 2.8 Core capabilities are not a separate runtime"
+      },
+      {
+        "line": 1598,
+        "title": "## 2.9 Development Engineering and Development Assurance"
+      },
+      {
+        "line": 1615,
+        "title": "## 2.10 Search, browsing, and research"
+      },
+      {
+        "line": 1637,
+        "title": "## 2.11 N-grams and frequency statistics"
+      },
+      {
+        "line": 1651,
+        "title": "## 2.12 Benchmarks"
+      },
+      {
+        "line": 1674,
+        "title": "# 3. Mandatory repository-first audit"
+      },
+      {
+        "line": 1722,
+        "title": "# 4. Universal task compilation"
+      },
+      {
+        "line": 1751,
+        "title": "## 4.1 `CompiledTask`"
+      },
+      {
+        "line": 1789,
+        "title": "## 4.2 Binding modes"
+      },
+      {
+        "line": 1813,
+        "title": "## 4.3 Four independent query coordinates"
+      },
+      {
+        "line": 1833,
+        "title": "## 4.4 Task Question Graph"
+      },
+      {
+        "line": 1884,
+        "title": "## 4.5 Persona-distance panel"
+      },
+      {
+        "line": 1912,
+        "title": "## 4.6 Standard question packs"
+      },
+      {
+        "line": 1954,
+        "title": "# 5. Intelligence model and seeking"
+      },
+      {
+        "line": 1956,
+        "title": "## 5.1 Intelligence record dimensions"
+      },
+      {
+        "line": 1981,
+        "title": "## 5.2 Intelligence seeking objects"
+      },
+      {
+        "line": 2008,
+        "title": "## 5.3 Default stage preferences"
+      },
+      {
+        "line": 2044,
+        "title": "## 5.4 Strategy examples"
+      },
+      {
+        "line": 2067,
+        "title": "## 5.5 Intelligence Foundry"
+      },
+      {
+        "line": 2115,
+        "title": "# 6. Four-memory architecture"
+      },
+      {
+        "line": 2119,
+        "title": "## 6.1 Working memory"
+      },
+      {
+        "line": 2149,
+        "title": "## 6.2 Episodic memory"
+      },
+      {
+        "line": 2178,
+        "title": "## 6.3 Semantic memory"
+      },
+      {
+        "line": 2203,
+        "title": "## 6.4 Procedural memory"
+      },
+      {
+        "line": 2232,
+        "title": "## 6.5 Lifecycle"
+      },
+      {
+        "line": 2250,
+        "title": "# 7. External Evidence Substrate"
+      },
+      {
+        "line": 2254,
+        "title": "## 7.1 Separate operators"
+      },
+      {
+        "line": 2285,
+        "title": "## 7.2 Ports"
+      },
+      {
+        "line": 2298,
+        "title": "## 7.3 Initial adapters"
+      },
+      {
+        "line": 2321,
+        "title": "## 7.4 Acquisition ladder"
+      },
+      {
+        "line": 2338,
+        "title": "## 7.5 Search results are not intelligence"
+      },
+      {
+        "line": 2353,
+        "title": "## 7.6 Research-to-Intelligence application"
+      },
+      {
+        "line": 2396,
+        "title": "# 8. Solution Canvas and reusable solution construction"
+      },
+      {
+        "line": 2402,
+        "title": "## 8.1 Do not show one linear projection only"
+      },
+      {
+        "line": 2436,
+        "title": "## 8.2 Reusable solution package"
+      },
+      {
+        "line": 2463,
+        "title": "## 8.3 Serviceization decision"
+      },
+      {
+        "line": 2498,
+        "title": "# 9. Scheduling, async, parallel, durable, and distributed work"
+      },
+      {
+        "line": 2500,
+        "title": "## 9.1 Concurrency contract"
+      },
+      {
+        "line": 2527,
+        "title": "## 9.2 Standard question"
+      },
+      {
+        "line": 2542,
+        "title": "## 9.3 Join policies"
+      },
+      {
+        "line": 2554,
+        "title": "## 9.4 No anonymous fire-and-forget"
+      },
+      {
+        "line": 2565,
+        "title": "## 9.5 Durable work"
+      },
+      {
+        "line": 2588,
+        "title": "# 10. Development Engineering and Development Assurance"
+      },
+      {
+        "line": 2590,
+        "title": "## 10.1 Shared runtime, separate management"
+      },
+      {
+        "line": 2622,
+        "title": "## 10.2 Builder-auditor cycle"
+      },
+      {
+        "line": 2656,
+        "title": "## 10.3 Assurance intelligence"
+      },
+      {
+        "line": 2671,
+        "title": "## 10.4 Who reviews the reviewers"
+      },
+      {
+        "line": 2686,
+        "title": "# 11. Repository and architecture conformance"
+      },
+      {
+        "line": 2727,
+        "title": "## 11.1 Structure CLI"
+      },
+      {
+        "line": 2748,
+        "title": "## 11.2 LLM semantic review"
+      },
+      {
+        "line": 2771,
+        "title": "# 12. Storage, query engines, and portability"
+      },
+      {
+        "line": 2773,
+        "title": "## 12.1 Logical identity versus materialization"
+      },
+      {
+        "line": 2809,
+        "title": "## 12.2 One authority by default"
+      },
+      {
+        "line": 2823,
+        "title": "## 12.3 Ports and adapters"
+      },
+      {
+        "line": 2845,
+        "title": "## 12.4 Backend-neutral query IR"
+      },
+      {
+        "line": 2861,
+        "title": "## 12.5 Compatibility"
+      },
+      {
+        "line": 2897,
+        "title": "# 13. Five-minute onboarding and public CLI"
+      },
+      {
+        "line": 2901,
+        "title": "## 13.1 Install"
+      },
+      {
+        "line": 2915,
+        "title": "## 13.2 Setup"
+      },
+      {
+        "line": 2942,
+        "title": "## 13.3 Five canonical product steps"
+      },
+      {
+        "line": 2975,
+        "title": "## 13.4 One-command demo"
+      },
+      {
+        "line": 2996,
+        "title": "# 14. README and System-at-a-Glance redesign"
+      },
+      {
+        "line": 3000,
+        "title": "## 14.1 Problems to eliminate"
+      },
+      {
+        "line": 3015,
+        "title": "## 14.2 New diagram logic"
+      },
+      {
+        "line": 3056,
+        "title": "## 14.3 Per-Loop run modes"
+      },
+      {
+        "line": 3064,
+        "title": "## 14.4 Solution Canvas explanation"
+      },
+      {
+        "line": 3076,
+        "title": "## 14.5 Links"
+      },
+      {
+        "line": 3096,
+        "title": "# 15. Studio, live run, and playback"
+      },
+      {
+        "line": 3100,
+        "title": "## 15.1 Core views"
+      },
+      {
+        "line": 3120,
+        "title": "## 15.2 Tree cards"
+      },
+      {
+        "line": 3140,
+        "title": "## 15.3 Parallel lanes"
+      },
+      {
+        "line": 3154,
+        "title": "## 15.4 Research playback"
+      },
+      {
+        "line": 3172,
+        "title": "## 15.5 Benchmark playback"
+      },
+      {
+        "line": 3200,
+        "title": "# 16. Capability-proving and solution-factory campaigns"
+      },
+      {
+        "line": 3228,
+        "title": "## 16.1 Required flagship reference applications"
+      },
+      {
+        "line": 3255,
+        "title": "## 16.2 Address factory"
+      },
+      {
+        "line": 3290,
+        "title": "## 16.3 Schema.org data standardization"
+      },
+      {
+        "line": 3307,
+        "title": "## 16.4 Kaggle / ML factory"
+      },
+      {
+        "line": 3334,
+        "title": "## 16.5 Media factory"
+      },
+      {
+        "line": 3346,
+        "title": "## 16.6 Research-to-Intelligence"
+      },
+      {
+        "line": 3352,
+        "title": "# 17. Development Benchmark Plane"
+      },
+      {
+        "line": 3356,
+        "title": "## 17.1 Distinguish variables"
+      },
+      {
+        "line": 3376,
+        "title": "## 17.2 Harnesses"
+      },
+      {
+        "line": 3397,
+        "title": "## 17.3 Comparison tracks"
+      },
+      {
+        "line": 3409,
+        "title": "## 17.4 Benchmarks"
+      },
+      {
+        "line": 3426,
+        "title": "## 17.5 Measures"
+      },
+      {
+        "line": 3451,
+        "title": "## 17.6 Fair comparison"
+      },
+      {
+        "line": 3469,
+        "title": "## 17.7 Loop Engine ablation ladder"
+      },
+      {
+        "line": 3486,
+        "title": "# 18. Statistical lexical intelligence, n-grams, and frequency distributions"
+      },
+      {
+        "line": 3492,
+        "title": "## 18.1 Model-internal versus system-external n-grams"
+      },
+      {
+        "line": 3508,
+        "title": "## 18.2 `NgramSpaceDefinition`"
+      },
+      {
+        "line": 3535,
+        "title": "## 18.3 N-gram families"
+      },
+      {
+        "line": 3557,
+        "title": "## 18.4 Statistics"
+      },
+      {
+        "line": 3584,
+        "title": "## 18.5 Sketches"
+      },
+      {
+        "line": 3600,
+        "title": "## 18.6 Hybrid retrieval"
+      },
+      {
+        "line": 3637,
+        "title": "## 18.7 Retrieval benchmark"
+      },
+      {
+        "line": 3684,
+        "title": "## 18.8 Prefetch"
+      },
+      {
+        "line": 3701,
+        "title": "# 19. Qwen3.8-Flash-Next integration and experiments"
+      },
+      {
+        "line": 3744,
+        "title": "# 20. Broad reusable-solution benchmark catalog"
+      },
+      {
+        "line": 3823,
+        "title": "# 21. Required implementation phases"
+      },
+      {
+        "line": 3870,
+        "title": "# 22. Testing and proof policy"
+      },
+      {
+        "line": 3943,
+        "title": "# 23. Hard anti-shortcut rules"
+      },
+      {
+        "line": 3977,
+        "title": "# 24. Required final deliverables"
+      },
+      {
+        "line": 4027,
+        "title": "# 25. Final handoff format"
+      },
+      {
+        "line": 4063,
+        "title": "# 26. Final constitutional statement"
+      },
+      {
+        "line": 4069,
+        "title": "# PART III \u2014 KAGGLE RECURSIVE IMPROVEMENT PLANE"
+      },
+      {
+        "line": 4071,
+        "title": "## 27. Purpose and positioning"
+      },
+      {
+        "line": 4109,
+        "title": "## 28. Architecture"
+      },
+      {
+        "line": 4138,
+        "title": "## 29. Three nested improvement loops"
+      },
+      {
+        "line": 4140,
+        "title": "### 29.1 Inner competition loop"
+      },
+      {
+        "line": 4158,
+        "title": "### 29.2 Cross-competition learning loop"
+      },
+      {
+        "line": 4171,
+        "title": "### 29.3 Meta-improvement loop"
+      },
+      {
+        "line": 4186,
+        "title": "## 30. Kaggle RSI levels"
+      },
+      {
+        "line": 4215,
+        "title": "## 31. Competition fingerprint"
+      },
+      {
+        "line": 4250,
+        "title": "## 32. Solution genome"
+      },
+      {
+        "line": 4283,
+        "title": "## 33. Mutation operators"
+      },
+      {
+        "line": 4310,
+        "title": "## 34. Candidate archive and Pareto frontier"
+      },
+      {
+        "line": 4334,
+        "title": "## 35. Competition Practitioner"
+      },
+      {
+        "line": 4367,
+        "title": "## 36. Experiment object"
+      },
+      {
+        "line": 4396,
+        "title": "## 37. Evaluation hierarchy"
+      },
+      {
+        "line": 4398,
+        "title": "### 37.1 Primary"
+      },
+      {
+        "line": 4406,
+        "title": "### 37.2 Secondary"
+      },
+      {
+        "line": 4412,
+        "title": "### 37.3 Historical final"
+      },
+      {
+        "line": 4418,
+        "title": "### 37.4 Live final"
+      },
+      {
+        "line": 4426,
+        "title": "## 38. Fixed and mutable surfaces"
+      },
+      {
+        "line": 4428,
+        "title": "### Fixed or independently controlled"
+      },
+      {
+        "line": 4444,
+        "title": "### Freely mutable within a competition campaign"
+      },
+      {
+        "line": 4459,
+        "title": "### Independently reviewed before activation"
+      },
+      {
+        "line": 4473,
+        "title": "## 39. Four-memory integration"
+      },
+      {
+        "line": 4475,
+        "title": "### Working memory"
+      },
+      {
+        "line": 4487,
+        "title": "### Episodic memory"
+      },
+      {
+        "line": 4503,
+        "title": "### Semantic memory"
+      },
+      {
+        "line": 4513,
+        "title": "### Procedural memory"
+      },
+      {
+        "line": 4526,
+        "title": "## 40. Curriculum"
+      },
+      {
+        "line": 4562,
+        "title": "## 41. Recursive-improvement campaign"
+      },
+      {
+        "line": 4595,
+        "title": "## 42. Kaggle benchmark metrics"
+      },
+      {
+        "line": 4597,
+        "title": "### Competition result"
+      },
+      {
+        "line": 4608,
+        "title": "### Engineering"
+      },
+      {
+        "line": 4620,
+        "title": "### Search efficiency"
+      },
+      {
+        "line": 4630,
+        "title": "### Recursive quality"
+      },
+      {
+        "line": 4641,
+        "title": "### Cost"
+      },
+      {
+        "line": 4653,
+        "title": "## 43. Kaggle provider adapters"
+      },
+      {
+        "line": 4677,
+        "title": "## 44. Mandatory Kaggle scenarios"
+      },
+      {
+        "line": 4707,
+        "title": "## 45. Kaggle RSI safety and honesty"
+      },
+      {
+        "line": 4724,
+        "title": "## 46. Kaggle RSI CLI target"
+      },
+      {
+        "line": 4745,
+        "title": "## 47. Kaggle RSI completion gate"
+      },
+      {
+        "line": 4765,
+        "title": "# PART IV \u2014 ABSOLUTE TEST, MEASUREMENT, ALIGNMENT, AND RELEASE GATES"
+      },
+      {
+        "line": 4767,
+        "title": "## 48. Static architecture proof"
+      },
+      {
+        "line": 4785,
+        "title": "## 49. Runtime proof"
+      },
+      {
+        "line": 4805,
+        "title": "## 50. Conformance of conformance"
+      },
+      {
+        "line": 4820,
+        "title": "## 51. Clean-install proof"
+      },
+      {
+        "line": 4841,
+        "title": "## 52. Documentation and GitHub alignment"
+      },
+      {
+        "line": 4860,
+        "title": "## 53. Required final report tree"
+      },
+      {
+        "line": 4904,
+        "title": "## 54. Final handoff"
+      },
+      {
+        "line": 4939,
+        "title": "## 55. Anti-shortcut rules"
+      },
+      {
+        "line": 4968,
+        "title": "## 56. Final constitutional target"
+      }
+    ],
+    "lines": 4976,
+    "marker_counts": {
+      "Core Code Intelligence": 0,
+      "LoopNode": 6,
+      "deterministic.first": 0,
+      "every semantic": 0,
+      "four.layer": 0,
+      "learning loop": 1,
+      "million": 0
+    },
+    "path": "/home/username/Downloads/LOOP_ENGINE_ABSOLUTE_BUILD_FIX_MEASURE_ALIGN_AND_KAGGLE_RSI_MANDATE.md",
+    "semantic_review": "NOT_IMPLIED",
+    "sha256": "3cc4e3fff8cdf2714db5b40f643e919b2abc73b5559771ad3f17ba2b3986aaa1"
+  },
+  {
+    "bytes": 60738,
+    "coverage": "FULL_TEXT_AUTOMATED_INSPECTION",
+    "headings": [
+      {
+        "line": 1,
+        "title": "# Loop Engine Full Architecture Cleanup, Reorganization, Migration, and Verification Mandate"
+      },
+      {
+        "line": 14,
+        "title": "## Immediate execution posture"
+      },
+      {
+        "line": 39,
+        "title": "### Canonical-path rule"
+      },
+      {
+        "line": 55,
+        "title": "### No-copy and no-symlink escape hatch"
+      },
+      {
+        "line": 59,
+        "title": "### Internal compatibility policy"
+      },
+      {
+        "line": 63,
+        "title": "### Required migration-state artifact"
+      },
+      {
+        "line": 106,
+        "title": "### Clean-install requirement"
+      },
+      {
+        "line": 120,
+        "title": "### Evidence over assertion"
+      },
+      {
+        "line": 142,
+        "title": "## 0. Superseding authority"
+      },
+      {
+        "line": 171,
+        "title": "## 1. Primary mission"
+      },
+      {
+        "line": 208,
+        "title": "## 2. Explicit authorization"
+      },
+      {
+        "line": 250,
+        "title": "## 3. Safety boundaries"
+      },
+      {
+        "line": 273,
+        "title": "## 4. Non-negotiable ontology"
+      },
+      {
+        "line": 275,
+        "title": "### 4.1 One operational runtime object"
+      },
+      {
+        "line": 323,
+        "title": "### 4.2 Stable dimensions remain metadata or typed fields"
+      },
+      {
+        "line": 340,
+        "title": "### 4.3 Intelligence layers"
+      },
+      {
+        "line": 353,
+        "title": "### 4.4 Universal source collections"
+      },
+      {
+        "line": 388,
+        "title": "### 4.5 Static Architecture is retired as a parallel kingdom"
+      },
+      {
+        "line": 415,
+        "title": "## 5. Repository-first discovery"
+      },
+      {
+        "line": 494,
+        "title": "## 6. Target logical architecture"
+      },
+      {
+        "line": 592,
+        "title": "## 7. Mandatory target source tree"
+      },
+      {
+        "line": 810,
+        "title": "## 8. Mandatory writable deployment-state tree"
+      },
+      {
+        "line": 858,
+        "title": "## 9. Folder rules"
+      },
+      {
+        "line": 860,
+        "title": "### 9.1 Folders encode only stable, low-cardinality architecture"
+      },
+      {
+        "line": 907,
+        "title": "### 9.2 Canonical path versus generated view"
+      },
+      {
+        "line": 931,
+        "title": "### 9.3 Local README contracts"
+      },
+      {
+        "line": 954,
+        "title": "## 10. Universal record and artifact model"
+      },
+      {
+        "line": 1020,
+        "title": "## 11. Core seed intelligence"
+      },
+      {
+        "line": 1055,
+        "title": "## 12. Storage and adapter architecture"
+      },
+      {
+        "line": 1075,
+        "title": "### 12.1 Research and selection"
+      },
+      {
+        "line": 1112,
+        "title": "### 12.2 Store protocol"
+      },
+      {
+        "line": 1138,
+        "title": "### 12.3 Capability negotiation"
+      },
+      {
+        "line": 1165,
+        "title": "### 12.4 File and database coexistence"
+      },
+      {
+        "line": 1195,
+        "title": "### 12.5 Store conformance suite"
+      },
+      {
+        "line": 1223,
+        "title": "## 13. Version and compatibility handshakes"
+      },
+      {
+        "line": 1295,
+        "title": "## 14. Required migration ledger"
+      },
+      {
+        "line": 1345,
+        "title": "## 15. Mandatory cleanup and migration sequence"
+      },
+      {
+        "line": 1347,
+        "title": "### Phase A: Baseline"
+      },
+      {
+        "line": 1357,
+        "title": "### Phase B: Freeze the target ontology"
+      },
+      {
+        "line": 1366,
+        "title": "### Phase C: Create the destination skeleton"
+      },
+      {
+        "line": 1374,
+        "title": "### Phase D: Move and rewrite Node architecture"
+      },
+      {
+        "line": 1384,
+        "title": "### Phase E: Absorb former Static Architecture"
+      },
+      {
+        "line": 1402,
+        "title": "### Phase F: Migrate Code Nodes and Solution Canvas"
+      },
+      {
+        "line": 1414,
+        "title": "### Phase G: Implement intelligence collections"
+      },
+      {
+        "line": 1437,
+        "title": "### Phase H: Implement storage adapters"
+      },
+      {
+        "line": 1448,
+        "title": "### Phase I: Migrate persisted data"
+      },
+      {
+        "line": 1459,
+        "title": "### Phase J: Rewrite documentation and generated views"
+      },
+      {
+        "line": 1470,
+        "title": "### Phase K: Remove obsolete structure"
+      },
+      {
+        "line": 1499,
+        "title": "### Phase L: Final simplification"
+      },
+      {
+        "line": 1511,
+        "title": "## 16. Mandatory old-structure absence checks"
+      },
+      {
+        "line": 1544,
+        "title": "## 17. Required tests"
+      },
+      {
+        "line": 1546,
+        "title": "### 17.1 Repository architecture tests"
+      },
+      {
+        "line": 1563,
+        "title": "### 17.2 One-runtime tests"
+      },
+      {
+        "line": 1575,
+        "title": "### 17.3 Core tests"
+      },
+      {
+        "line": 1590,
+        "title": "### 17.4 Learned and Candidate tests"
+      },
+      {
+        "line": 1606,
+        "title": "### 17.5 Plugin tests"
+      },
+      {
+        "line": 1626,
+        "title": "### 17.6 Store conformance tests"
+      },
+      {
+        "line": 1641,
+        "title": "### 17.7 Migration tests"
+      },
+      {
+        "line": 1663,
+        "title": "### 17.8 Documentation tests"
+      },
+      {
+        "line": 1676,
+        "title": "### 17.9 Property, fuzz, and failure tests"
+      },
+      {
+        "line": 1697,
+        "title": "### 17.10 End-to-end tests"
+      },
+      {
+        "line": 1714,
+        "title": "## 18. Verification commands"
+      },
+      {
+        "line": 1760,
+        "title": "## 19. Hard rejection gates"
+      },
+      {
+        "line": 1792,
+        "title": "## 20. Completion criteria"
+      },
+      {
+        "line": 1824,
+        "title": "## 21. Required deliverables"
+      },
+      {
+        "line": 1870,
+        "title": "## 22. Mandatory final handoff"
+      },
+      {
+        "line": 1898,
+        "title": "## 23. Aggressive execution loop"
+      },
+      {
+        "line": 1945,
+        "title": "## 24. Required zero-tolerance cleanup assertions"
+      },
+      {
+        "line": 1971,
+        "title": "### Required failure behavior"
+      },
+      {
+        "line": 1992,
+        "title": "### Required final diff review"
+      },
+      {
+        "line": 2011,
+        "title": "## 25. Final architectural rule"
+      }
+    ],
+    "lines": 2034,
+    "marker_counts": {
+      "Core Code Intelligence": 8,
+      "LoopNode": 9,
+      "deterministic.first": 0,
+      "every semantic": 0,
+      "four.layer": 0,
+      "learning loop": 0,
+      "million": 0
+    },
+    "path": "/home/username/Downloads/LOOP_ENGINE_AGGRESSIVE_ARCHITECTURE_CLEANUP_AND_IMPLEMENTATION_MANDATE.md",
+    "semantic_review": "NOT_IMPLIED",
+    "sha256": "2a0830a6fa56d0c2de1e3307927cedfce1cb86ba9a651a399c06eb55c6928dfa"
+  },
+  {
+    "bytes": 95946,
+    "coverage": "FULL_TEXT_AUTOMATED_INSPECTION",
+    "headings": [
+      {
+        "line": 1,
+        "title": "# Loop Engine Universal Evolution, Compatibility, Storage, and Ontology Implementation Harness"
+      },
+      {
+        "line": 11,
+        "title": "## 0. Operating posture"
+      },
+      {
+        "line": 35,
+        "title": "## 1. Mission"
+      },
+      {
+        "line": 70,
+        "title": "## 2. Repository-first authority"
+      },
+      {
+        "line": 145,
+        "title": "## 3. Normative language"
+      },
+      {
+        "line": 164,
+        "title": "## 4. Non-negotiable Loop ontology"
+      },
+      {
+        "line": 166,
+        "title": "### 4.1 One operational runtime"
+      },
+      {
+        "line": 187,
+        "title": "### 4.2 Independent Loop dimensions"
+      },
+      {
+        "line": 219,
+        "title": "### 4.3 Role is not artifact kind"
+      },
+      {
+        "line": 240,
+        "title": "### 4.4 Position is runtime topology"
+      },
+      {
+        "line": 244,
+        "title": "### 4.5 Everything that performs work is a Loop"
+      },
+      {
+        "line": 271,
+        "title": "### 4.6 Minimal Kernel boundary"
+      },
+      {
+        "line": 292,
+        "title": "## 5. Persistent intelligence ontology"
+      },
+      {
+        "line": 308,
+        "title": "### 5.1 Universal source collections"
+      },
+      {
+        "line": 339,
+        "title": "### 5.2 Candidate is lifecycle, not source"
+      },
+      {
+        "line": 355,
+        "title": "### 5.3 Generated is provenance, not source"
+      },
+      {
+        "line": 367,
+        "title": "### 5.4 Core Architecture"
+      },
+      {
+        "line": 385,
+        "title": "## 6. Stable architecture versus high-cardinality classification"
+      },
+      {
+        "line": 456,
+        "title": "## 7. Target logical architecture tree"
+      },
+      {
+        "line": 619,
+        "title": "## 8. Recommended source repository tree"
+      },
+      {
+        "line": 914,
+        "title": "## 9. Writable deployment-state tree"
+      },
+      {
+        "line": 973,
+        "title": "## 10. Storage and authority profiles"
+      },
+      {
+        "line": 977,
+        "title": "### 10.1 Package-only profile"
+      },
+      {
+        "line": 985,
+        "title": "### 10.2 Portable-first profile"
+      },
+      {
+        "line": 993,
+        "title": "### 10.3 Local-database profile"
+      },
+      {
+        "line": 1002,
+        "title": "### 10.4 Server-database profile"
+      },
+      {
+        "line": 1011,
+        "title": "### 10.5 Event-ledger profile"
+      },
+      {
+        "line": 1019,
+        "title": "### 10.6 Federated catalog profile"
+      },
+      {
+        "line": 1027,
+        "title": "### 10.7 Hybrid profile"
+      },
+      {
+        "line": 1054,
+        "title": "## 11. Universal record envelope"
+      },
+      {
+        "line": 1106,
+        "title": "### 11.1 Stable envelope versus extensible spec"
+      },
+      {
+        "line": 1116,
+        "title": "### 11.2 Unknown fields"
+      },
+      {
+        "line": 1130,
+        "title": "### 11.3 Immutable content and mutable membership"
+      },
+      {
+        "line": 1148,
+        "title": "## 12. Artifact-specific ontologies"
+      },
+      {
+        "line": 1179,
+        "title": "### 12.1 Loop Definition spec"
+      },
+      {
+        "line": 1202,
+        "title": "### 12.2 Loop Canvas spec"
+      },
+      {
+        "line": 1228,
+        "title": "### 12.3 Code Unit spec"
+      },
+      {
+        "line": 1248,
+        "title": "### 12.4 Evaluator spec"
+      },
+      {
+        "line": 1264,
+        "title": "### 12.5 Binding spec"
+      },
+      {
+        "line": 1287,
+        "title": "## 13. Contract ontology"
+      },
+      {
+        "line": 1311,
+        "title": "### 13.1 Contract families"
+      },
+      {
+        "line": 1372,
+        "title": "### 13.2 Contract composition"
+      },
+      {
+        "line": 1389,
+        "title": "### 13.3 Enforcement points"
+      },
+      {
+        "line": 1406,
+        "title": "### 13.4 Data contract mapping"
+      },
+      {
+        "line": 1412,
+        "title": "## 14. Rule ontology"
+      },
+      {
+        "line": 1457,
+        "title": "### 14.1 Rule language research"
+      },
+      {
+        "line": 1494,
+        "title": "## 15. Policy ontology"
+      },
+      {
+        "line": 1531,
+        "title": "## 16. Standardization ontology"
+      },
+      {
+        "line": 1592,
+        "title": "## 17. Attribute, vocabulary, and relationship ontology"
+      },
+      {
+        "line": 1596,
+        "title": "### 17.1 Attribute Definition"
+      },
+      {
+        "line": 1624,
+        "title": "### 17.2 Attribute Assertion"
+      },
+      {
+        "line": 1642,
+        "title": "### 17.3 Namespaces"
+      },
+      {
+        "line": 1655,
+        "title": "### 17.4 Relationship Definition"
+      },
+      {
+        "line": 1707,
+        "title": "### 17.5 Semantic-web mappings"
+      },
+      {
+        "line": 1725,
+        "title": "## 18. Descriptor families"
+      },
+      {
+        "line": 1768,
+        "title": "## 19. Plugin ontology"
+      },
+      {
+        "line": 1834,
+        "title": "### 19.1 Plugin deployment variations"
+      },
+      {
+        "line": 1853,
+        "title": "### 19.2 Plugin isolation"
+      },
+      {
+        "line": 1870,
+        "title": "## 20. Store and materialization ontology"
+      },
+      {
+        "line": 1874,
+        "title": "### 20.1 Store Descriptor"
+      },
+      {
+        "line": 1916,
+        "title": "### 20.2 Materialization"
+      },
+      {
+        "line": 1949,
+        "title": "### 20.3 Large bodies"
+      },
+      {
+        "line": 1966,
+        "title": "### 20.4 Content addressing"
+      },
+      {
+        "line": 1980,
+        "title": "## 21. Unified catalog and store interface"
+      },
+      {
+        "line": 2015,
+        "title": "### 21.1 Store contract"
+      },
+      {
+        "line": 2036,
+        "title": "### 21.2 Query capability negotiation"
+      },
+      {
+        "line": 2060,
+        "title": "## 22. Portable bundle standard"
+      },
+      {
+        "line": 2115,
+        "title": "### 22.1 Bundle import rules"
+      },
+      {
+        "line": 2135,
+        "title": "### 22.2 Distribution research"
+      },
+      {
+        "line": 2141,
+        "title": "## 23. Version ontology"
+      },
+      {
+        "line": 2168,
+        "title": "### 23.1 Version semantics"
+      },
+      {
+        "line": 2185,
+        "title": "### 23.2 Version ranges"
+      },
+      {
+        "line": 2201,
+        "title": "### 23.3 Immutable versions"
+      },
+      {
+        "line": 2211,
+        "title": "### 23.4 Deprecation"
+      },
+      {
+        "line": 2229,
+        "title": "## 24. Compatibility handshake ontology"
+      },
+      {
+        "line": 2233,
+        "title": "### 24.1 Handshake participants"
+      },
+      {
+        "line": 2252,
+        "title": "### 24.2 Handshake request"
+      },
+      {
+        "line": 2286,
+        "title": "### 24.3 Handshake response"
+      },
+      {
+        "line": 2311,
+        "title": "### 24.4 Verdicts"
+      },
+      {
+        "line": 2326,
+        "title": "### 24.5 Handshake checks"
+      },
+      {
+        "line": 2353,
+        "title": "### 24.6 Compatibility matrix"
+      },
+      {
+        "line": 2373,
+        "title": "## 25. Schema evolution and migration ontology"
+      },
+      {
+        "line": 2403,
+        "title": "### 25.1 Evolution rules"
+      },
+      {
+        "line": 2424,
+        "title": "### 25.2 Preserve source representations"
+      },
+      {
+        "line": 2428,
+        "title": "### 25.3 Migration graph"
+      },
+      {
+        "line": 2451,
+        "title": "### 25.4 Online migrations"
+      },
+      {
+        "line": 2471,
+        "title": "## 26. File and database coexistence"
+      },
+      {
+        "line": 2475,
+        "title": "### 26.1 Supported authority patterns"
+      },
+      {
+        "line": 2487,
+        "title": "### 26.2 Avoid naive dual write"
+      },
+      {
+        "line": 2504,
+        "title": "### 26.3 Synchronization records"
+      },
+      {
+        "line": 2521,
+        "title": "### 26.4 Conflict handling"
+      },
+      {
+        "line": 2538,
+        "title": "### 26.5 Round-trip guarantees"
+      },
+      {
+        "line": 2567,
+        "title": "## 27. Chronicle and event ontology"
+      },
+      {
+        "line": 2613,
+        "title": "## 28. Standards research program"
+      },
+      {
+        "line": 2619,
+        "title": "### 28.1 Schemas and API descriptions"
+      },
+      {
+        "line": 2643,
+        "title": "### 28.2 Versioning and identifiers"
+      },
+      {
+        "line": 2657,
+        "title": "### 28.3 Semantic vocabularies and provenance"
+      },
+      {
+        "line": 2667,
+        "title": "### 28.4 Rules and policy"
+      },
+      {
+        "line": 2677,
+        "title": "### 28.5 Events and observability"
+      },
+      {
+        "line": 2685,
+        "title": "### 28.6 Packaging, supply chain, and distribution"
+      },
+      {
+        "line": 2697,
+        "title": "### 28.7 Standard-selection rule"
+      },
+      {
+        "line": 2730,
+        "title": "## 29. Research, compare, and selection protocol"
+      },
+      {
+        "line": 2796,
+        "title": "## 30. Compatibility and conformance test strategy"
+      },
+      {
+        "line": 2798,
+        "title": "### 30.1 Golden fixtures"
+      },
+      {
+        "line": 2802,
+        "title": "### 30.2 Pairwise compatibility tests"
+      },
+      {
+        "line": 2818,
+        "title": "### 30.3 Store conformance suite"
+      },
+      {
+        "line": 2833,
+        "title": "### 30.4 Property-based tests"
+      },
+      {
+        "line": 2850,
+        "title": "### 30.5 Fuzzing"
+      },
+      {
+        "line": 2867,
+        "title": "### 30.6 Failure injection"
+      },
+      {
+        "line": 2892,
+        "title": "## 31. Governance requirements"
+      },
+      {
+        "line": 2918,
+        "title": "### 31.1 Governance separation"
+      },
+      {
+        "line": 2932,
+        "title": "### 31.2 Promotion transaction"
+      },
+      {
+        "line": 2947,
+        "title": "### 31.3 Revocation"
+      },
+      {
+        "line": 2955,
+        "title": "## 32. Security and supply-chain requirements"
+      },
+      {
+        "line": 2959,
+        "title": "### 32.1 Integrity"
+      },
+      {
+        "line": 2970,
+        "title": "### 32.2 Dependency transparency"
+      },
+      {
+        "line": 2974,
+        "title": "### 32.3 Build provenance"
+      },
+      {
+        "line": 2978,
+        "title": "### 32.4 Secure updates"
+      },
+      {
+        "line": 2982,
+        "title": "### 32.5 Archive safety"
+      },
+      {
+        "line": 2995,
+        "title": "### 32.6 Plugin permissions"
+      },
+      {
+        "line": 3014,
+        "title": "### 32.7 Execution isolation"
+      },
+      {
+        "line": 3018,
+        "title": "### 32.8 Secret handling"
+      },
+      {
+        "line": 3024,
+        "title": "## 33. Preflight and pre-deploy gates"
+      },
+      {
+        "line": 3028,
+        "title": "### 33.1 Architecture gates"
+      },
+      {
+        "line": 3040,
+        "title": "### 33.2 Schema and ontology gates"
+      },
+      {
+        "line": 3052,
+        "title": "### 33.3 Compatibility gates"
+      },
+      {
+        "line": 3062,
+        "title": "### 33.4 Migration gates"
+      },
+      {
+        "line": 3074,
+        "title": "### 33.5 Storage gates"
+      },
+      {
+        "line": 3085,
+        "title": "### 33.6 Plugin gates"
+      },
+      {
+        "line": 3099,
+        "title": "### 33.7 Security gates"
+      },
+      {
+        "line": 3111,
+        "title": "### 33.8 Quality gates"
+      },
+      {
+        "line": 3124,
+        "title": "### 33.9 Deployment decision"
+      },
+      {
+        "line": 3138,
+        "title": "## 34. Documentation as local architecture contracts"
+      },
+      {
+        "line": 3186,
+        "title": "## 35. API and event interfaces"
+      },
+      {
+        "line": 3190,
+        "title": "### 35.1 HTTP API"
+      },
+      {
+        "line": 3208,
+        "title": "### 35.2 Event API"
+      },
+      {
+        "line": 3223,
+        "title": "### 35.3 Workflow mapping"
+      },
+      {
+        "line": 3227,
+        "title": "### 35.4 Error model"
+      },
+      {
+        "line": 3245,
+        "title": "## 36. Performance and scale"
+      },
+      {
+        "line": 3286,
+        "title": "## 37. Implementation phases"
+      },
+      {
+        "line": 3290,
+        "title": "### Phase 0: Baseline and safety"
+      },
+      {
+        "line": 3302,
+        "title": "### Phase 1: Architecture decisions"
+      },
+      {
+        "line": 3319,
+        "title": "### Phase 2: Canonical models and schemas"
+      },
+      {
+        "line": 3334,
+        "title": "### Phase 3: Unified catalog and package Core store"
+      },
+      {
+        "line": 3348,
+        "title": "### Phase 4: Learned local store"
+      },
+      {
+        "line": 3367,
+        "title": "### Phase 5: Portable bundles"
+      },
+      {
+        "line": 3381,
+        "title": "### Phase 6: Compatibility handshakes"
+      },
+      {
+        "line": 3393,
+        "title": "### Phase 7: Migration framework"
+      },
+      {
+        "line": 3409,
+        "title": "### Phase 8: Core Architecture absorption"
+      },
+      {
+        "line": 3415,
+        "title": "### Phase 9: Contracts, rules, and standardizations"
+      },
+      {
+        "line": 3421,
+        "title": "### Phase 10: Plugin system"
+      },
+      {
+        "line": 3440,
+        "title": "### Phase 11: Governance and self-review"
+      },
+      {
+        "line": 3446,
+        "title": "### Phase 12: Server store and federation"
+      },
+      {
+        "line": 3452,
+        "title": "### Phase 13: API, events, and observability"
+      },
+      {
+        "line": 3456,
+        "title": "### Phase 14: Predeploy and conformance"
+      },
+      {
+        "line": 3460,
+        "title": "### Phase 15: Simplification and removal"
+      },
+      {
+        "line": 3477,
+        "title": "## 38. Aggressive implementation loop"
+      },
+      {
+        "line": 3545,
+        "title": "## 39. Required end-to-end demonstrations"
+      },
+      {
+        "line": 3549,
+        "title": "### 39.1 Core seed to runtime"
+      },
+      {
+        "line": 3561,
+        "title": "### 39.2 Learned candidate promotion"
+      },
+      {
+        "line": 3573,
+        "title": "### 39.3 File/database round trip"
+      },
+      {
+        "line": 3583,
+        "title": "### 39.4 Plugin compatibility"
+      },
+      {
+        "line": 3596,
+        "title": "### 39.5 Migration"
+      },
+      {
+        "line": 3609,
+        "title": "### 39.6 Mixed materializations"
+      },
+      {
+        "line": 3619,
+        "title": "### 39.7 Compatibility degradation"
+      },
+      {
+        "line": 3629,
+        "title": "### 39.8 Contract, rule, and standardization"
+      },
+      {
+        "line": 3641,
+        "title": "## 40. Architecture rejection gates"
+      },
+      {
+        "line": 3674,
+        "title": "## 41. Required automated tests"
+      },
+      {
+        "line": 3719,
+        "title": "## 42. Deliverables"
+      },
+      {
+        "line": 3756,
+        "title": "## 43. Final verification checklist"
+      },
+      {
+        "line": 3794,
+        "title": "## 44. Final handoff format"
+      },
+      {
+        "line": 3819,
+        "title": "## 45. Final architectural rule"
+      }
+    ],
+    "lines": 3851,
+    "marker_counts": {
+      "Core Code Intelligence": 4,
+      "LoopNode": 6,
+      "deterministic.first": 0,
+      "every semantic": 0,
+      "four.layer": 0,
+      "learning loop": 0,
+      "million": 2
+    },
+    "path": "/home/username/Downloads/LOOP_ENGINE_UNIVERSAL_EVOLUTION_COMPATIBILITY_IMPLEMENTATION_HARNESS.md",
+    "semantic_review": "NOT_IMPLIED",
+    "sha256": "470f58694c22ddc56d6c742f54f36e007ca12cc1ee9519127882b18bcd318a87"
+  }
+]

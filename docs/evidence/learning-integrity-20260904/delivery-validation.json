@@ -1,0 +1,30 @@
+{
+  "checked_at": "2026-09-04T22:44:51.919481+00:00",
+  "live_provider_calls": 0,
+  "markdown_exit_code": 0,
+  "markdown_output": "markdownlint-cli2 v0.23.2 (markdownlint v0.41.1)\nFinding: docs/verification/LEARNING-INTEGRITY-AND-RESEARCH-2026-09-04.md docs/research/LEARNING-FROM-VERIFIED-LOOP-OUTCOMES-2026-09-04.md docs/evidence/learning-integrity-20260904/README.md docs/README.md docs/context/CODEX-START-HERE.md docs/contracts/README.md src/loop_engine/core/README.md\nLinting: 7 files\nSummary: 0 issues in 0 files\n",
+  "missing_local_links": [],
+  "python_310_syntax_checked": [
+    "src/loop_engine/core/adaptive_practitioner.py",
+    "src/loop_engine/core/adaptive_practitioner_result.py",
+    "src/loop_engine/core/adaptive_practitioner_verification.py",
+    "src/loop_engine/core/information_theory_adversarial_checks.py",
+    "src/loop_engine/core/information_update_evidence.py",
+    "src/loop_engine/core/model_demand.py",
+    "src/loop_engine/core/stage_action_lineage.py",
+    "src/loop_engine/core/stage_action_lineage_adversarial_checks.py"
+  ],
+  "report_sha256": "a669bc16951d5ba0865096f4fba9b8f3ba531e703dfd5404844aa97abb1d67a0",
+  "research_sha256": "801ce417bddc0c8ebe8208867dabb2d9fb219014efaea7c94a426c25bd9633db",
+  "root_and_installed_architecture_match": true,
+  "ruff_command": "ruff check --select E9,F63,F7,F82 <eight changed source files>",
+  "ruff_exit_code": 0,
+  "ruff_output": "All checks passed!\n",
+  "source_drift": [],
+  "source_gate": "PASS",
+  "source_passed": 2492,
+  "source_total": 2492,
+  "visual_review": "NOT_PERFORMED_TEXT_AND_JSON_DELIVERABLES",
+  "wheel_passed": 2454,
+  "wheel_total": 2454
+}

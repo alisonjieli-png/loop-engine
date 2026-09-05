@@ -1,6 +1,15 @@
 # Strict everything-is-a-Loop primitive mandate
 
-Use this focused prompt when migrating native semantic operations.
+Status: superseded design history. Do not use this file as a current
+implementation mandate.
+
+This prompt predates Architecture Constitution rule LE-NODE-008. The current
+rule is narrower: independently governed work executes as a Loop. A low-level
+value or transformation stays inside its owning Loop unless it needs an
+independent goal, contract, authority, budget, retry, verification, scheduling
+decision, cancellation behavior, or Run History identity.
+
+The historical prompt follows for provenance.
 
 ```text
 Read the current Loop Engine repository and universal component mandate before

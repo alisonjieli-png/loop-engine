@@ -1,0 +1,4876 @@
+{
+  "record_type": "adaptive_practitioner_run/v1",
+  "run_id": "adaptive-1ef605de5de76af301f48a00",
+  "status": "VERIFIED_WORKING",
+  "state_evidence": {
+    "last_attempt": {
+      "record_type": "adaptive_attempt_state/v1",
+      "status": "ACCEPTED_LOCAL",
+      "state_version": 0,
+      "projected_result_digest": "2667a00889c9ceebe0ada4a2937e29e7defef4f46b1c59c0788fbb806c818ca9",
+      "verification_record_digest": "658416de3b0b91145be5f31a3a77c2de5ff72a57425f30e3ec068b856abc44d6",
+      "verification_bound": true,
+      "binding_error": "",
+      "persistent_promotion_authorized": false,
+      "result_ref": "facts.last_result"
+    },
+    "accepted_incumbent": {
+      "record_type": "adaptive_attempt_state/v1",
+      "status": "ACCEPTED_LOCAL",
+      "state_version": 0,
+      "projected_result_digest": "2667a00889c9ceebe0ada4a2937e29e7defef4f46b1c59c0788fbb806c818ca9",
+      "verification_record_digest": "658416de3b0b91145be5f31a3a77c2de5ff72a57425f30e3ec068b856abc44d6",
+      "verification_bound": true,
+      "binding_error": "",
+      "persistent_promotion_authorized": false,
+      "result_ref": "facts.last_result",
+      "artifact_refs": [
+        "output.txt"
+      ],
+      "verification_subject": {
+        "record_type": "adaptive_verification_subject/v1",
+        "run_id": "adaptive-1ef605de5de76af301f48a00",
+        "action_id": "action:3e4f1aaa8d6e4eba86c6",
+        "action_occurrence_ref": "action-occurrence:sha256:d241b39fc58927dbc915c2524492be557463bf68524282179bced25653e8b3cb",
+        "plan_digest": "df7c980a120d758e876b9b8ff861286980aae79da47b52c8545d2e29bf069e44",
+        "result_digests": [
+          "7c4d17ae8bf0d1d4e87dc1376d742a6dc44aaa204c49f1ffd1ca6d9e775583ba"
+        ],
+        "execution_refs": [
+          "action-execution:sha256:cdd843ff08105dffd748ebea45bd2df633b6b83c9a029a9dc0a2ba5f450c5b5a"
+        ]
+      }
+    },
+    "artifact_dispositions": {
+      "output.txt": {
+        "status": "ACCEPTED_LOCAL",
+        "projected_result_digest": "2667a00889c9ceebe0ada4a2937e29e7defef4f46b1c59c0788fbb806c818ca9",
+        "state_version": 0,
+        "verification_bound": true
+      }
+    }
+  },
+  "solved": true,
+  "original_task": "Create one verified text artifact from the supplied task.",
+  "task_feedback": [],
+  "mode": "non_deterministic",
+  "context_intelligence": {
+    "portfolio_id": "core.context.practitioner.general",
+    "version": "1.0.0",
+    "persona": {
+      "persona_id": "core.persona.task_interpreter",
+      "version": "1.0.0",
+      "instruction": "You are a careful task interpreter and systems analyst. Preserve the request, identify the intended outcome, separate facts from assumptions, detect material ambiguity, identify expected inputs and outputs, and propose only the next useful action. Do not solve the domain task unless the current work directive explicitly asks you to do so. Do not assume a domain, dataset, file layout, tool, implementation, or answer that the task and observed evidence do not establish."
+    },
+    "selected_refs": []
+  },
+  "deterministic_attempt": {
+    "record_type": "deterministic_attempt_trace/v1",
+    "original_input_digest": "b4f682c785ce6737bc632067ba02cb0f9268e8e0d0a36ab76436573ed392f8e6",
+    "literal_input": "Create one verified text artifact from the supplied task.",
+    "status": "SKIPPED_LLM_LED",
+    "parsers_attempted": [],
+    "templates_considered": [],
+    "exact_values": {},
+    "capabilities_considered": [],
+    "rejected_matches": [],
+    "unresolved_requirements": [],
+    "ambiguities": [],
+    "decisions": [],
+    "outputs": {},
+    "errors": [],
+    "diagnostics": [
+      "LLM-led mode starts with semantic orientation by policy"
+    ],
+    "recommended_escalation": ""
+  },
+  "passes": 1,
+  "final_route": "stop_success",
+  "failures": [],
+  "orientations": [
+    {
+      "original_task_ref": "sha256:b4f682c785ce6737bc632067ba02cb0f9268e8e0d0a36ab76436573ed392f8e6",
+      "task_summary": "Create the requested output in a bounded project.",
+      "ultimate_goal": "Return a verified output artifact.",
+      "immediate_goal": "Build and test the artifact.",
+      "current_state": "Only the task text is available.",
+      "desired_state": "The output exists and its check passes.",
+      "inputs": [
+        "user task text"
+      ],
+      "outputs": [
+        "verified output file"
+      ],
+      "operator_bundle": [
+        "generate",
+        "validate"
+      ],
+      "response_contract": "artifact plus verification evidence",
+      "decision_consumer": "the requesting user",
+      "explicit_constraints": [],
+      "inferred_constraints": [],
+      "non_goals": [],
+      "knowns": [
+        "an output file is required"
+      ],
+      "unknowns": [],
+      "assumptions": [],
+      "ambiguities": [],
+      "delegated_choices": [],
+      "safe_defaults": [],
+      "blocking_questions": [],
+      "research_questions": [],
+      "subproblems": [
+        "create project",
+        "run check"
+      ],
+      "dependencies": [
+        "create before checking"
+      ],
+      "parallel_candidates": [],
+      "candidate_profiles": [
+        "practitioner.solver"
+      ],
+      "candidate_capabilities": [
+        "core.generated_project"
+      ],
+      "verification_obligations": [
+        "test command passes",
+        "output file exists"
+      ],
+      "confidence_profile": {
+        "overall": 0.95
+      },
+      "proposed_next_action": "Build the project.",
+      "record_type": "task_orientation_result/v1"
+    }
+  ],
+  "action_decisions": [
+    {
+      "decision_id": "action:3e4f1aaa8d6e4eba86c6",
+      "state_version": 0,
+      "source_stage_occurrence_id": "stage-occurrence:sha256:997e99160798ce1bc5664e721b68d09814e7e957e73bcb0bab136b35ab35df02",
+      "source_semantic_call_id": "semantic-stage-b9c4f5eac9ef7cf688f0bc0146a06ae99acfa1cd2963a5bd",
+      "record_type": "next_action_decision/v1",
+      "action_kind": "BUILD_CAPABILITY",
+      "goal": "Build and test the output.",
+      "reason": "The requested output needs executable work.",
+      "inputs": {},
+      "expected_output": "A verified output file.",
+      "required_capabilities": [
+        "core.generated_project"
+      ],
+      "permissions": [
+        "workspace_write",
+        "sandbox_command"
+      ],
+      "budget": {
+        "estimated_cost": 1.0,
+        "reversibility": 1.0,
+        "risk": 0.1
+      },
+      "dependencies": [],
+      "scheduling": "sequential",
+      "verification": "Run the declared check and inspect the output.",
+      "return_destination": "requesting user",
+      "confidence": 0.9,
+      "fallback": {
+        "action_kind": "REPAIR"
+      }
+    }
+  ],
+  "context_snapshots": [
+    {
+      "step": "orient",
+      "objective": "Orient on the task and return TaskOrientationResult version 1.",
+      "packet_id": "packet.adaptive_1ef605de5de76af301f48a00.orient.attempt_1",
+      "packet_digest": "e2260c81e254becc081849609f4ed5f782712efe6cf839c7b901d9a6bf757abd",
+      "packet_artifact_ref": {
+        "digest": "bd3c67e76119d7eac4f9096c2a5fca23ec18bd5d86e17c869db9254e804e8813",
+        "byte_count": 89349,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "llm_work_packet",
+        "object_key": "sha256/bd/bd3c67e76119d7eac4f9096c2a5fca23ec18bd5d86e17c869db9254e804e8813"
+      },
+      "context_pack": {
+        "context_pack_id": "context-pack.adbff8fb2b1d7f26",
+        "pack_digest": "98df2d74224802b0b5c7d1c277b03b58f9fc51b4ed0623fb230fe1433896d2cb",
+        "packet_digest": "e2260c81e254becc081849609f4ed5f782712efe6cf839c7b901d9a6bf757abd",
+        "prompt_digest": "adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+        "estimated_input_tokens": 11145,
+        "context_limit_tokens": null,
+        "reserved_output_tokens": null,
+        "fits_declared_context": null,
+        "within_operator_ceiling": null,
+        "bytes_removed": 0,
+        "included_count": 9,
+        "compacted_count": 0,
+        "excluded_count": 0,
+        "deduplicated_count": 0
+      },
+      "context_pack_artifact_ref": {
+        "digest": "3fcf3fb24f36bf25913f5c669188f529a32926122f84ee642f73e8fd0edf7baf",
+        "byte_count": 3976,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "context_pack_manifest",
+        "object_key": "sha256/3f/3fcf3fb24f36bf25913f5c669188f529a32926122f84ee642f73e8fd0edf7baf"
+      },
+      "intelligence_loop_id": "loop2",
+      "assembly_loop_id": "loop5",
+      "primitive_loop_ids": [],
+      "prompt_assembly": {
+        "record_type": "prompt_assembly_snapshot/v1",
+        "assembly_id": "assembly.sha256_adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+        "definition_ref": "core.prompt.standard_balanced@1.0.0",
+        "run_id": "adaptive-1ef605de5de76af301f48a00",
+        "loop_id": "loop1",
+        "ordered_block_refs": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rendered_block_digests": [
+          "dd15af2ad8c6d61847fdeb55e7dad82e2bedf744c206608d853892b06b859cf5",
+          "c1c34de621287a7cade99adb17394cf09cc8da868fbb5ae265124060b88cd5c6",
+          "10b83863b7a9e2c9145fa8c5fca7fd78fccf34de37f1a47fe77d70f30369cb9b",
+          "3bd5a2c9e0246714da8683fce9df8fe34f6f306fd99997ba21e26ea6d3db64a1",
+          "115fb347ba6d8c0c5311ad9f71d0f6d907a800bc755f71b4a54a512a7de76f0d",
+          "4f1fa54a340318129a1f065226db6d2e732667139beb564c88a9b6c17cbed896",
+          "9a7f7550db8e9c0c8345bca7b94a8fd44d36b61e3b23374f4638703a761be095",
+          "f9654d1f86419c67081a76bba9b6e374d3d4e74d874f3a6f489f4db8e7de5a64",
+          "5f231028276561260e8e17dd3291e534a08a1bcf1bc224b80575138b3750ddb2",
+          "63d1a0467bd9894d020db61c400597a1c34077e9a3bf46cd0a49adb56675fedd",
+          "45f93e98c947613a285c10d63401c939f941abe6486d4f5f0fbb78a8a225df29",
+          "ae70e4a04fadd06ff234dc2783a9a29398083eb08202afc24863cb8f741c3f95",
+          "0c27eb52ca2b1f8171962aa3c7cd134bf752810cd61001859a4525b4ea3d355e"
+        ],
+        "selected_blocks": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rejected_blocks": [],
+        "selection_reasons": [
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy"
+        ],
+        "estimated_tokens": 11145,
+        "prompt_digest": "adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+        "packet_digest": "e2260c81e254becc081849609f4ed5f782712efe6cf839c7b901d9a6bf757abd"
+      },
+      "blocks": [
+        {
+          "block_id": "persona",
+          "kind": "persona_context",
+          "version": "1.0.0",
+          "digest": "89d6247b55251d04b713eec9aca6474525949995c01ffcaec13c111a0709d7ee",
+          "source": "core.persona.task_interpreter",
+          "selection_reason": "base role and optional model-selected perspectives",
+          "position": 0,
+          "token_cost": 2884
+        },
+        {
+          "block_id": "guidance.orient",
+          "kind": "context_intelligence",
+          "version": "1.0.0",
+          "digest": "a656c1cbf89d475d1d8180effe719040d95e0ce285859ce1c31b37dd08c93b6d",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional guidance with step affinity metadata",
+          "position": 1,
+          "token_cost": 2754
+        },
+        {
+          "block_id": "questions.orient",
+          "kind": "question_portfolio",
+          "version": "1.0.0",
+          "digest": "1db4a85dbe05f48a82fdb234e82ddda14405f54051a59a9ff5c1b8823262693b",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional question sets with an active-step hint",
+          "position": 2,
+          "token_cost": 2879
+        },
+        {
+          "block_id": "deterministic_attempt",
+          "kind": "attempt_trace",
+          "version": "1.0.0",
+          "digest": "befb94e4b16f95ae32d037c2fd4c6d57eac70631970378effc06d7610da862c8",
+          "source": "adaptive_practitioner",
+          "selection_reason": "exact-attempt result or explicit LLM-first skip",
+          "position": 3,
+          "token_cost": 137
+        },
+        {
+          "block_id": "current_state",
+          "kind": "task_context",
+          "version": "1.0.0",
+          "digest": "fc323a94ca435bf680cf0d9223030f5577683fa2e2c7df339d24b952d71f57ef",
+          "source": "active Practitioner run",
+          "selection_reason": "latest accepted state",
+          "position": 4,
+          "token_cost": 218
+        },
+        {
+          "block_id": "runtime_facts",
+          "kind": "runtime_facts",
+          "version": "1.0.0",
+          "digest": "100063f483ac022fbb4aff165f16dcea7bda5daaf2536bf5271870cd53a0e994",
+          "source": "practitioner runtime",
+          "selection_reason": "exact facts the runtime states",
+          "position": 5,
+          "token_cost": 159
+        },
+        {
+          "block_id": "template_candidates",
+          "kind": "procedure_candidates",
+          "version": "1.0.0",
+          "digest": "e6bb72eb6711f23e9e479f222c128a61ca12b2044935641aa78d75887b94d871",
+          "source": "core template library",
+          "selection_reason": "optional reusable patterns",
+          "position": 6,
+          "token_cost": 440
+        },
+        {
+          "block_id": "capability_descriptors",
+          "kind": "capability_snapshot",
+          "version": "1.0.0",
+          "digest": "9e796318291a6cfc6e27551170897388cd75184fb1cc661197d9819c2340801d",
+          "source": "core capability registry",
+          "selection_reason": "available execution paths",
+          "position": 7,
+          "token_cost": 238
+        },
+        {
+          "block_id": "deterministic_event_history",
+          "kind": "attempt_event_history",
+          "version": "1.0.0",
+          "digest": "2c116fdc55b9356da9689c9bf138f75e47034f145a1febda0694b65d82a0c87f",
+          "source": "canonical Loop event log",
+          "selection_reason": "complete prior event history",
+          "position": 8,
+          "token_cost": 612
+        }
+      ],
+      "total_estimated_tokens": 11145
+    },
+    {
+      "step": "decide_next",
+      "objective": "Return typed NextActionDecision candidates for verified progress.",
+      "packet_id": "packet.adaptive_1ef605de5de76af301f48a00.decide_next.attempt_2",
+      "packet_digest": "6b508f5b5f8e8a893dfe26c58a4cc4bd355423eb97707ac9392cae32c70175cf",
+      "packet_artifact_ref": {
+        "digest": "9e8a59c8e79b1f143eaad899e5b3cb76a0f8d9376579ff111a0be982b74c3dd1",
+        "byte_count": 94806,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "llm_work_packet",
+        "object_key": "sha256/9e/9e8a59c8e79b1f143eaad899e5b3cb76a0f8d9376579ff111a0be982b74c3dd1"
+      },
+      "context_pack": {
+        "context_pack_id": "context-pack.3aec8d70f63b9804",
+        "pack_digest": "d38679a0d73cba871b600f0a5836e1dcd84879c033f7ace2b66e82d376de3d37",
+        "packet_digest": "6b508f5b5f8e8a893dfe26c58a4cc4bd355423eb97707ac9392cae32c70175cf",
+        "prompt_digest": "3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+        "estimated_input_tokens": 11839,
+        "context_limit_tokens": null,
+        "reserved_output_tokens": null,
+        "fits_declared_context": null,
+        "within_operator_ceiling": null,
+        "bytes_removed": 0,
+        "included_count": 9,
+        "compacted_count": 0,
+        "excluded_count": 0,
+        "deduplicated_count": 0
+      },
+      "context_pack_artifact_ref": {
+        "digest": "d1ba936219f68f25778dfebdceac58d43e05e2d677ebb1ce46c181d1dcea4027",
+        "byte_count": 3999,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "context_pack_manifest",
+        "object_key": "sha256/d1/d1ba936219f68f25778dfebdceac58d43e05e2d677ebb1ce46c181d1dcea4027"
+      },
+      "intelligence_loop_id": "loop9",
+      "assembly_loop_id": "loop12",
+      "primitive_loop_ids": [],
+      "prompt_assembly": {
+        "record_type": "prompt_assembly_snapshot/v1",
+        "assembly_id": "assembly.sha256_3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+        "definition_ref": "core.prompt.standard_balanced@1.0.0",
+        "run_id": "adaptive-1ef605de5de76af301f48a00",
+        "loop_id": "loop1",
+        "ordered_block_refs": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rendered_block_digests": [
+          "dd15af2ad8c6d61847fdeb55e7dad82e2bedf744c206608d853892b06b859cf5",
+          "c1c34de621287a7cade99adb17394cf09cc8da868fbb5ae265124060b88cd5c6",
+          "cd4322e7b240cdc30e891c4bf31c5143743c2e74510f16f91a750024d51aba3a",
+          "87a7fd98528fdb715837cb9ccc070894e80815e44053fa5bbc6b35ac54f2f113",
+          "115fb347ba6d8c0c5311ad9f71d0f6d907a800bc755f71b4a54a512a7de76f0d",
+          "f1e52ec11f9e9f9ce76109d56dd2115ddc1fbd62060eb0167274cb0c02aa7d7a",
+          "239963735cc055db037fc13693e2fcc42ded7db3d622b753090afda776261fdd",
+          "80d2106166e4145839996d18ddec2b4f83d0cd6535ef8e7ef6c6573ddbd49b12",
+          "60fd14e1c157c1fd42ad869e3b8ef60e346b4c6aee7b383ac3e1b0b1d068a2c5",
+          "5499323ca8ac90d5c1647e7dbf669fb24320da203f9dca748ae9f7f27026d36e",
+          "45f93e98c947613a285c10d63401c939f941abe6486d4f5f0fbb78a8a225df29",
+          "f480b90ebfbcc69ffcbce460669ee09d132bc34159b9b1969fc114e400799079",
+          "892b9234928031fe3884f1029ab6fb99dac1cedf94864a28c839474dc56615ea"
+        ],
+        "selected_blocks": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rejected_blocks": [],
+        "selection_reasons": [
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy"
+        ],
+        "estimated_tokens": 11839,
+        "prompt_digest": "3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+        "packet_digest": "6b508f5b5f8e8a893dfe26c58a4cc4bd355423eb97707ac9392cae32c70175cf"
+      },
+      "blocks": [
+        {
+          "block_id": "persona",
+          "kind": "persona_context",
+          "version": "1.0.0",
+          "digest": "188153ba133a8e88a0e0529e16042bc29bf0de8ad9ea8a47c93d6c44fe3b6c2b",
+          "source": "core.persona.task_interpreter",
+          "selection_reason": "base role and optional model-selected perspectives",
+          "position": 0,
+          "token_cost": 2884
+        },
+        {
+          "block_id": "guidance.decide_next",
+          "kind": "context_intelligence",
+          "version": "1.0.0",
+          "digest": "3a3517ddba0a60043a2b18126eeda208e615e3ac441a4879f563307929b2abd6",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional guidance with step affinity metadata",
+          "position": 1,
+          "token_cost": 2754
+        },
+        {
+          "block_id": "questions.decide_next",
+          "kind": "question_portfolio",
+          "version": "1.0.0",
+          "digest": "b33a9c2e04a66682a5484c31e1fc00888987dc1f13d3cbe9f6736ec9cea08722",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional question sets with an active-step hint",
+          "position": 2,
+          "token_cost": 2782
+        },
+        {
+          "block_id": "deterministic_attempt",
+          "kind": "attempt_trace",
+          "version": "1.0.0",
+          "digest": "befb94e4b16f95ae32d037c2fd4c6d57eac70631970378effc06d7610da862c8",
+          "source": "adaptive_practitioner",
+          "selection_reason": "exact-attempt result or explicit LLM-first skip",
+          "position": 3,
+          "token_cost": 137
+        },
+        {
+          "block_id": "current_state",
+          "kind": "task_context",
+          "version": "1.0.0",
+          "digest": "5f075d9e908d8713452cb871a6c0e2bb7859a61fd16b23babc61b4121bf401ff",
+          "source": "active Practitioner run",
+          "selection_reason": "latest accepted state",
+          "position": 4,
+          "token_cost": 528
+        },
+        {
+          "block_id": "runtime_facts",
+          "kind": "runtime_facts",
+          "version": "1.0.0",
+          "digest": "100063f483ac022fbb4aff165f16dcea7bda5daaf2536bf5271870cd53a0e994",
+          "source": "practitioner runtime",
+          "selection_reason": "exact facts the runtime states",
+          "position": 5,
+          "token_cost": 159
+        },
+        {
+          "block_id": "template_candidates",
+          "kind": "procedure_candidates",
+          "version": "1.0.0",
+          "digest": "e6bb72eb6711f23e9e479f222c128a61ca12b2044935641aa78d75887b94d871",
+          "source": "core template library",
+          "selection_reason": "optional reusable patterns",
+          "position": 6,
+          "token_cost": 440
+        },
+        {
+          "block_id": "capability_descriptors",
+          "kind": "capability_snapshot",
+          "version": "1.0.0",
+          "digest": "9e796318291a6cfc6e27551170897388cd75184fb1cc661197d9819c2340801d",
+          "source": "core capability registry",
+          "selection_reason": "available execution paths",
+          "position": 7,
+          "token_cost": 238
+        },
+        {
+          "block_id": "deterministic_event_history",
+          "kind": "attempt_event_history",
+          "version": "1.0.0",
+          "digest": "8587f041e380fbe2aaefc352c6bfb43e9f271f0ba638fb4c5dee4f1e3a7ba62d",
+          "source": "canonical Loop event log",
+          "selection_reason": "complete prior event history",
+          "position": 8,
+          "token_cost": 1061
+        }
+      ],
+      "total_estimated_tokens": 11839
+    },
+    {
+      "step": "how",
+      "objective": "Design the method for the selected next action.",
+      "packet_id": "packet.adaptive_1ef605de5de76af301f48a00.how.attempt_3",
+      "packet_digest": "d50f2934b554f6d3f56c1e7c7e9bd712bb73feb4aedcaf00acdc3d1dd7a6916d",
+      "packet_artifact_ref": {
+        "digest": "9231e82bec36879ffdbdb331fe8f97a74a6a77db4d36f162194977aff2bc74f8",
+        "byte_count": 94223,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "llm_work_packet",
+        "object_key": "sha256/92/9231e82bec36879ffdbdb331fe8f97a74a6a77db4d36f162194977aff2bc74f8"
+      },
+      "context_pack": {
+        "context_pack_id": "context-pack.06b680acfd47ef19",
+        "pack_digest": "6838b3fe41616a0bdcf2a6140da784b5dfbf84dfd86c8d30df0119f3e9190074",
+        "packet_digest": "d50f2934b554f6d3f56c1e7c7e9bd712bb73feb4aedcaf00acdc3d1dd7a6916d",
+        "prompt_digest": "06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+        "estimated_input_tokens": 11678,
+        "context_limit_tokens": null,
+        "reserved_output_tokens": null,
+        "fits_declared_context": null,
+        "within_operator_ceiling": null,
+        "bytes_removed": 0,
+        "included_count": 9,
+        "compacted_count": 0,
+        "excluded_count": 0,
+        "deduplicated_count": 0
+      },
+      "context_pack_artifact_ref": {
+        "digest": "405a543f7981bc2b8b41aa47e0237f0deb1ed80055d82a8a28b9ddfca3d26c10",
+        "byte_count": 3967,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "context_pack_manifest",
+        "object_key": "sha256/40/405a543f7981bc2b8b41aa47e0237f0deb1ed80055d82a8a28b9ddfca3d26c10"
+      },
+      "intelligence_loop_id": "loop16",
+      "assembly_loop_id": "loop19",
+      "primitive_loop_ids": [],
+      "prompt_assembly": {
+        "record_type": "prompt_assembly_snapshot/v1",
+        "assembly_id": "assembly.sha256_06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+        "definition_ref": "core.prompt.standard_balanced@1.0.0",
+        "run_id": "adaptive-1ef605de5de76af301f48a00",
+        "loop_id": "loop1",
+        "ordered_block_refs": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rendered_block_digests": [
+          "dd15af2ad8c6d61847fdeb55e7dad82e2bedf744c206608d853892b06b859cf5",
+          "c1c34de621287a7cade99adb17394cf09cc8da868fbb5ae265124060b88cd5c6",
+          "a73699e296a0b45c9f86e4ed58806f411669701f751765c0817070eac05d7da4",
+          "76e75485ed31c1e54879888aab11c0f4a5459a28564eb1c3b67f409a8a130591",
+          "115fb347ba6d8c0c5311ad9f71d0f6d907a800bc755f71b4a54a512a7de76f0d",
+          "2a1cb83e9baed5487a5b2c3ab1870f2b9ca3c25c231f1c8a0ba07ec2685d6295",
+          "c4540ad25ce4b7fe53316d46e2464cf5259fe8c172852da04f43124945092a85",
+          "80d2106166e4145839996d18ddec2b4f83d0cd6535ef8e7ef6c6573ddbd49b12",
+          "c007d412d1dd1733923b7839714ffe210a92a76cf7d0556041fe4c34b7a1b7a5",
+          "2b1565f9f7cffb00a1a2cf996b63e22597596d541adefa4646b743531c9a8a97",
+          "45f93e98c947613a285c10d63401c939f941abe6486d4f5f0fbb78a8a225df29",
+          "c04c7d07311499b041bef0756f234eb80b410e75e1811823069c4c3b12076fe7",
+          "06e124bc98d61c5ac402b9aca6387eafbcef3e923e8a59b8cb7fc9384dd9760e"
+        ],
+        "selected_blocks": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rejected_blocks": [],
+        "selection_reasons": [
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy"
+        ],
+        "estimated_tokens": 11678,
+        "prompt_digest": "06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+        "packet_digest": "d50f2934b554f6d3f56c1e7c7e9bd712bb73feb4aedcaf00acdc3d1dd7a6916d"
+      },
+      "blocks": [
+        {
+          "block_id": "persona",
+          "kind": "persona_context",
+          "version": "1.0.0",
+          "digest": "28f55adcea1618adf6ff3359db6285b33fed310d44526fb46220786f2bccca18",
+          "source": "core.persona.task_interpreter",
+          "selection_reason": "base role and optional model-selected perspectives",
+          "position": 0,
+          "token_cost": 2884
+        },
+        {
+          "block_id": "guidance.how",
+          "kind": "context_intelligence",
+          "version": "1.0.0",
+          "digest": "55331a4d7e5a5df9e6018d6b73173055c9c0759530f364b30bae7aab0acb395b",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional guidance with step affinity metadata",
+          "position": 1,
+          "token_cost": 2754
+        },
+        {
+          "block_id": "questions.how",
+          "kind": "question_portfolio",
+          "version": "1.0.0",
+          "digest": "8c5d8011cf6c31755cc92b724db8bda567d3a1a4434a8fa3f8361b45ff51fbde",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional question sets with an active-step hint",
+          "position": 2,
+          "token_cost": 2772
+        },
+        {
+          "block_id": "deterministic_attempt",
+          "kind": "attempt_trace",
+          "version": "1.0.0",
+          "digest": "befb94e4b16f95ae32d037c2fd4c6d57eac70631970378effc06d7610da862c8",
+          "source": "adaptive_practitioner",
+          "selection_reason": "exact-attempt result or explicit LLM-first skip",
+          "position": 3,
+          "token_cost": 137
+        },
+        {
+          "block_id": "current_state",
+          "kind": "task_context",
+          "version": "1.0.0",
+          "digest": "fb8b4387d98d449330c9b906821accea64dd2a824522fc287e06d41c1772978a",
+          "source": "active Practitioner run",
+          "selection_reason": "latest accepted state",
+          "position": 4,
+          "token_cost": 569
+        },
+        {
+          "block_id": "runtime_facts",
+          "kind": "runtime_facts",
+          "version": "1.0.0",
+          "digest": "100063f483ac022fbb4aff165f16dcea7bda5daaf2536bf5271870cd53a0e994",
+          "source": "practitioner runtime",
+          "selection_reason": "exact facts the runtime states",
+          "position": 5,
+          "token_cost": 159
+        },
+        {
+          "block_id": "template_candidates",
+          "kind": "procedure_candidates",
+          "version": "1.0.0",
+          "digest": "e6bb72eb6711f23e9e479f222c128a61ca12b2044935641aa78d75887b94d871",
+          "source": "core template library",
+          "selection_reason": "optional reusable patterns",
+          "position": 6,
+          "token_cost": 440
+        },
+        {
+          "block_id": "capability_descriptors",
+          "kind": "capability_snapshot",
+          "version": "1.0.0",
+          "digest": "9e796318291a6cfc6e27551170897388cd75184fb1cc661197d9819c2340801d",
+          "source": "core capability registry",
+          "selection_reason": "available execution paths",
+          "position": 7,
+          "token_cost": 238
+        },
+        {
+          "block_id": "deterministic_event_history",
+          "kind": "attempt_event_history",
+          "version": "1.0.0",
+          "digest": "8587f041e380fbe2aaefc352c6bfb43e9f271f0ba638fb4c5dee4f1e3a7ba62d",
+          "source": "canonical Loop event log",
+          "selection_reason": "complete prior event history",
+          "position": 8,
+          "token_cost": 1061
+        }
+      ],
+      "total_estimated_tokens": 11678
+    },
+    {
+      "step": "act",
+      "objective": "Design the complete project structure needed to execute and verify the task. Do not generate file contents yet.",
+      "packet_id": "packet.adaptive_1ef605de5de76af301f48a00.act.attempt_4",
+      "packet_digest": "37eb22a1e579f8825a664accf42103525b47179a25fa0b74e424a2f9d45a999f",
+      "packet_artifact_ref": {
+        "digest": "98e75acd112232152b3ca7e72001d2061ef12e42996bc51d756214e092ed57f9",
+        "byte_count": 94546,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "llm_work_packet",
+        "object_key": "sha256/98/98e75acd112232152b3ca7e72001d2061ef12e42996bc51d756214e092ed57f9"
+      },
+      "context_pack": {
+        "context_pack_id": "context-pack.f58dd2a39122b97d",
+        "pack_digest": "57bc00a7cee988eea30884c122bcbed4ea14cbe04ddd9ef0ee468fa669cd09d9",
+        "packet_digest": "37eb22a1e579f8825a664accf42103525b47179a25fa0b74e424a2f9d45a999f",
+        "prompt_digest": "f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+        "estimated_input_tokens": 11720,
+        "context_limit_tokens": null,
+        "reserved_output_tokens": null,
+        "fits_declared_context": null,
+        "within_operator_ceiling": null,
+        "bytes_removed": 0,
+        "included_count": 9,
+        "compacted_count": 0,
+        "excluded_count": 0,
+        "deduplicated_count": 0
+      },
+      "context_pack_artifact_ref": {
+        "digest": "0e1e53a16700cc9827bf2324fad9c3b3c226f9420b47f00ac03d68e9090d2d5f",
+        "byte_count": 3967,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "context_pack_manifest",
+        "object_key": "sha256/0e/0e1e53a16700cc9827bf2324fad9c3b3c226f9420b47f00ac03d68e9090d2d5f"
+      },
+      "intelligence_loop_id": "loop23",
+      "assembly_loop_id": "loop26",
+      "primitive_loop_ids": [],
+      "prompt_assembly": {
+        "record_type": "prompt_assembly_snapshot/v1",
+        "assembly_id": "assembly.sha256_f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+        "definition_ref": "core.prompt.standard_balanced@1.0.0",
+        "run_id": "adaptive-1ef605de5de76af301f48a00",
+        "loop_id": "loop1",
+        "ordered_block_refs": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rendered_block_digests": [
+          "dd15af2ad8c6d61847fdeb55e7dad82e2bedf744c206608d853892b06b859cf5",
+          "c1c34de621287a7cade99adb17394cf09cc8da868fbb5ae265124060b88cd5c6",
+          "c6f2cf77c3e4074b5a0ee333d14e55a7993c0c995846587936a132094f37ab69",
+          "3ec66f4edb535bd195b519d10096d6bb8a02afa9d82936cbc88840c160ac3253",
+          "115fb347ba6d8c0c5311ad9f71d0f6d907a800bc755f71b4a54a512a7de76f0d",
+          "01d7b8a39cd3c8f5a33f1767a740f6597ca0bb5d99e9fe1fd84c3baf23094dd5",
+          "ee6d4d8b1251495a58c5d143843e7f84e0b1f771df4d2a5c716cb49bc3ceeb12",
+          "80d2106166e4145839996d18ddec2b4f83d0cd6535ef8e7ef6c6573ddbd49b12",
+          "da58dca2c312e5f26bbfe8c396bf65f6a5b4232b6dd057a96ff588b071a8088e",
+          "cd0648336e3deceb98d8134253f1c76707147653c117633d72dedcd6a20eb2dd",
+          "45f93e98c947613a285c10d63401c939f941abe6486d4f5f0fbb78a8a225df29",
+          "d23b14d8567ea7c47fbe2ab16a6f17d2156b44afcc39b8bc75258708a93274c9",
+          "fff84571c154c100aa7920309356b46d6cee653ae56fa035bddd73117f0888da"
+        ],
+        "selected_blocks": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rejected_blocks": [],
+        "selection_reasons": [
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy"
+        ],
+        "estimated_tokens": 11720,
+        "prompt_digest": "f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+        "packet_digest": "37eb22a1e579f8825a664accf42103525b47179a25fa0b74e424a2f9d45a999f"
+      },
+      "blocks": [
+        {
+          "block_id": "persona",
+          "kind": "persona_context",
+          "version": "1.0.0",
+          "digest": "23599c9f8ce444bfca8ac5992ef145c578fb264396705d9d3874ea2c3551ffe0",
+          "source": "core.persona.task_interpreter",
+          "selection_reason": "base role and optional model-selected perspectives",
+          "position": 0,
+          "token_cost": 2884
+        },
+        {
+          "block_id": "guidance.act",
+          "kind": "context_intelligence",
+          "version": "1.0.0",
+          "digest": "d5a43fe9a234636ff3f1540f51021618b7bd2d5130387a67b5a0ba504b30cdd2",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional guidance with step affinity metadata",
+          "position": 1,
+          "token_cost": 2755
+        },
+        {
+          "block_id": "questions.act",
+          "kind": "question_portfolio",
+          "version": "1.0.0",
+          "digest": "6e676dd3280f902ff26dc100ad727609b8cd7b2b5da43151f60e8a4aee32a94f",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional question sets with an active-step hint",
+          "position": 2,
+          "token_cost": 2720
+        },
+        {
+          "block_id": "deterministic_attempt",
+          "kind": "attempt_trace",
+          "version": "1.0.0",
+          "digest": "befb94e4b16f95ae32d037c2fd4c6d57eac70631970378effc06d7610da862c8",
+          "source": "adaptive_practitioner",
+          "selection_reason": "exact-attempt result or explicit LLM-first skip",
+          "position": 3,
+          "token_cost": 137
+        },
+        {
+          "block_id": "current_state",
+          "kind": "task_context",
+          "version": "1.0.0",
+          "digest": "004b2dc911ae3c729714032238a60edadfacbc1c5a33ab48b97b7230df72b5a5",
+          "source": "active Practitioner run",
+          "selection_reason": "latest accepted state",
+          "position": 4,
+          "token_cost": 641
+        },
+        {
+          "block_id": "runtime_facts",
+          "kind": "runtime_facts",
+          "version": "1.0.0",
+          "digest": "100063f483ac022fbb4aff165f16dcea7bda5daaf2536bf5271870cd53a0e994",
+          "source": "practitioner runtime",
+          "selection_reason": "exact facts the runtime states",
+          "position": 5,
+          "token_cost": 159
+        },
+        {
+          "block_id": "template_candidates",
+          "kind": "procedure_candidates",
+          "version": "1.0.0",
+          "digest": "e6bb72eb6711f23e9e479f222c128a61ca12b2044935641aa78d75887b94d871",
+          "source": "core template library",
+          "selection_reason": "optional reusable patterns",
+          "position": 6,
+          "token_cost": 440
+        },
+        {
+          "block_id": "capability_descriptors",
+          "kind": "capability_snapshot",
+          "version": "1.0.0",
+          "digest": "9e796318291a6cfc6e27551170897388cd75184fb1cc661197d9819c2340801d",
+          "source": "core capability registry",
+          "selection_reason": "available execution paths",
+          "position": 7,
+          "token_cost": 238
+        },
+        {
+          "block_id": "deterministic_event_history",
+          "kind": "attempt_event_history",
+          "version": "1.0.0",
+          "digest": "8587f041e380fbe2aaefc352c6bfb43e9f271f0ba638fb4c5dee4f1e3a7ba62d",
+          "source": "canonical Loop event log",
+          "selection_reason": "complete prior event history",
+          "position": 8,
+          "token_cost": 1061
+        }
+      ],
+      "total_estimated_tokens": 11720
+    },
+    {
+      "step": "act",
+      "objective": "Generate the complete content for main.py.",
+      "packet_id": "packet.adaptive_1ef605de5de76af301f48a00.act.attempt_5",
+      "packet_digest": "a02a18c093bfe551b0fb6c2fb32464d9ab2e43aa3b7743fd7c185e112da9e235",
+      "packet_artifact_ref": {
+        "digest": "c2bc28a1f9b58b24db78dfc3ef4d0c45621dbafb3c9d3312e877fb85175adbbf",
+        "byte_count": 95121,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "llm_work_packet",
+        "object_key": "sha256/c2/c2bc28a1f9b58b24db78dfc3ef4d0c45621dbafb3c9d3312e877fb85175adbbf"
+      },
+      "context_pack": {
+        "context_pack_id": "context-pack.683b92a10f7e764b",
+        "pack_digest": "f3b9c324e759b82c1660f7c577c42f219370e905d31c7c42163e39305c525ac6",
+        "packet_digest": "a02a18c093bfe551b0fb6c2fb32464d9ab2e43aa3b7743fd7c185e112da9e235",
+        "prompt_digest": "683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+        "estimated_input_tokens": 11727,
+        "context_limit_tokens": null,
+        "reserved_output_tokens": null,
+        "fits_declared_context": null,
+        "within_operator_ceiling": null,
+        "bytes_removed": 0,
+        "included_count": 9,
+        "compacted_count": 0,
+        "excluded_count": 0,
+        "deduplicated_count": 0
+      },
+      "context_pack_artifact_ref": {
+        "digest": "f092dd67621102a87b447b8e2ac29caa04abccf7e702fad00e461436e0dcb588",
+        "byte_count": 3967,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "context_pack_manifest",
+        "object_key": "sha256/f0/f092dd67621102a87b447b8e2ac29caa04abccf7e702fad00e461436e0dcb588"
+      },
+      "intelligence_loop_id": "loop30",
+      "assembly_loop_id": "loop33",
+      "primitive_loop_ids": [],
+      "prompt_assembly": {
+        "record_type": "prompt_assembly_snapshot/v1",
+        "assembly_id": "assembly.sha256_683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+        "definition_ref": "core.prompt.standard_balanced@1.0.0",
+        "run_id": "adaptive-1ef605de5de76af301f48a00",
+        "loop_id": "loop1",
+        "ordered_block_refs": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rendered_block_digests": [
+          "dd15af2ad8c6d61847fdeb55e7dad82e2bedf744c206608d853892b06b859cf5",
+          "c1c34de621287a7cade99adb17394cf09cc8da868fbb5ae265124060b88cd5c6",
+          "5f4582eb008b21195cdf6574a8c9fea74bf460b26b3f768acf057712a5fe04d8",
+          "3ec66f4edb535bd195b519d10096d6bb8a02afa9d82936cbc88840c160ac3253",
+          "115fb347ba6d8c0c5311ad9f71d0f6d907a800bc755f71b4a54a512a7de76f0d",
+          "453c79fde0adc6a573fba0d6e7374e0c2e4ef11b11ec9885e14b8e6f73467290",
+          "ee6d4d8b1251495a58c5d143843e7f84e0b1f771df4d2a5c716cb49bc3ceeb12",
+          "80d2106166e4145839996d18ddec2b4f83d0cd6535ef8e7ef6c6573ddbd49b12",
+          "da58dca2c312e5f26bbfe8c396bf65f6a5b4232b6dd057a96ff588b071a8088e",
+          "cd0648336e3deceb98d8134253f1c76707147653c117633d72dedcd6a20eb2dd",
+          "45f93e98c947613a285c10d63401c939f941abe6486d4f5f0fbb78a8a225df29",
+          "a686cc30725c365a06b6dcd63257fbc21a8630e51f182f6b1dbe1aa16950a0db",
+          "96796b0e8d6e0251b17f11c26b356212372384a9a5819b0c9383f1aeffa91191"
+        ],
+        "selected_blocks": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rejected_blocks": [],
+        "selection_reasons": [
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy"
+        ],
+        "estimated_tokens": 11727,
+        "prompt_digest": "683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+        "packet_digest": "a02a18c093bfe551b0fb6c2fb32464d9ab2e43aa3b7743fd7c185e112da9e235"
+      },
+      "blocks": [
+        {
+          "block_id": "persona",
+          "kind": "persona_context",
+          "version": "1.0.0",
+          "digest": "23599c9f8ce444bfca8ac5992ef145c578fb264396705d9d3874ea2c3551ffe0",
+          "source": "core.persona.task_interpreter",
+          "selection_reason": "base role and optional model-selected perspectives",
+          "position": 0,
+          "token_cost": 2884
+        },
+        {
+          "block_id": "guidance.act",
+          "kind": "context_intelligence",
+          "version": "1.0.0",
+          "digest": "d5a43fe9a234636ff3f1540f51021618b7bd2d5130387a67b5a0ba504b30cdd2",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional guidance with step affinity metadata",
+          "position": 1,
+          "token_cost": 2755
+        },
+        {
+          "block_id": "questions.act",
+          "kind": "question_portfolio",
+          "version": "1.0.0",
+          "digest": "6e676dd3280f902ff26dc100ad727609b8cd7b2b5da43151f60e8a4aee32a94f",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional question sets with an active-step hint",
+          "position": 2,
+          "token_cost": 2720
+        },
+        {
+          "block_id": "deterministic_attempt",
+          "kind": "attempt_trace",
+          "version": "1.0.0",
+          "digest": "befb94e4b16f95ae32d037c2fd4c6d57eac70631970378effc06d7610da862c8",
+          "source": "adaptive_practitioner",
+          "selection_reason": "exact-attempt result or explicit LLM-first skip",
+          "position": 3,
+          "token_cost": 137
+        },
+        {
+          "block_id": "current_state",
+          "kind": "task_context",
+          "version": "1.0.0",
+          "digest": "f69d69d654e4e4a31b97182814a7220535b438b16cf3a44264e3a4ec6637df33",
+          "source": "active Practitioner run",
+          "selection_reason": "latest accepted state",
+          "position": 4,
+          "token_cost": 795
+        },
+        {
+          "block_id": "runtime_facts",
+          "kind": "runtime_facts",
+          "version": "1.0.0",
+          "digest": "100063f483ac022fbb4aff165f16dcea7bda5daaf2536bf5271870cd53a0e994",
+          "source": "practitioner runtime",
+          "selection_reason": "exact facts the runtime states",
+          "position": 5,
+          "token_cost": 159
+        },
+        {
+          "block_id": "template_candidates",
+          "kind": "procedure_candidates",
+          "version": "1.0.0",
+          "digest": "e6bb72eb6711f23e9e479f222c128a61ca12b2044935641aa78d75887b94d871",
+          "source": "core template library",
+          "selection_reason": "optional reusable patterns",
+          "position": 6,
+          "token_cost": 440
+        },
+        {
+          "block_id": "capability_descriptors",
+          "kind": "capability_snapshot",
+          "version": "1.0.0",
+          "digest": "9e796318291a6cfc6e27551170897388cd75184fb1cc661197d9819c2340801d",
+          "source": "core capability registry",
+          "selection_reason": "available execution paths",
+          "position": 7,
+          "token_cost": 238
+        },
+        {
+          "block_id": "deterministic_event_history",
+          "kind": "attempt_event_history",
+          "version": "1.0.0",
+          "digest": "8587f041e380fbe2aaefc352c6bfb43e9f271f0ba638fb4c5dee4f1e3a7ba62d",
+          "source": "canonical Loop event log",
+          "selection_reason": "complete prior event history",
+          "position": 8,
+          "token_cost": 1061
+        }
+      ],
+      "total_estimated_tokens": 11727
+    },
+    {
+      "step": "verify",
+      "objective": "Evaluate actual results against the original task.",
+      "packet_id": "packet.adaptive_1ef605de5de76af301f48a00.verify.attempt_6",
+      "packet_digest": "bbdb0aee295d03f11a6f5d0bfcda75b0f0ca27e0bbc79524d58490c92ce6bc20",
+      "packet_artifact_ref": {
+        "digest": "90dd889e688c06f2a4171a283275df8291186f55fad29c9a17b253e3c36343fe",
+        "byte_count": 97980,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "llm_work_packet",
+        "object_key": "sha256/90/90dd889e688c06f2a4171a283275df8291186f55fad29c9a17b253e3c36343fe"
+      },
+      "context_pack": {
+        "context_pack_id": "context-pack.2cf8250afb22fb39",
+        "pack_digest": "77e85b8b2b408ffdef88e6004ab6f911ffbb0f87b14195a39b190c625a70cd07",
+        "packet_digest": "bbdb0aee295d03f11a6f5d0bfcda75b0f0ca27e0bbc79524d58490c92ce6bc20",
+        "prompt_digest": "2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+        "estimated_input_tokens": 12134,
+        "context_limit_tokens": null,
+        "reserved_output_tokens": null,
+        "fits_declared_context": null,
+        "within_operator_ceiling": null,
+        "bytes_removed": 0,
+        "included_count": 9,
+        "compacted_count": 0,
+        "excluded_count": 0,
+        "deduplicated_count": 0
+      },
+      "context_pack_artifact_ref": {
+        "digest": "c03a5e8d88c6c082cdce524c0ced78a4beac0d13797d05c0eb3cb7bdee34ff23",
+        "byte_count": 3980,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "context_pack_manifest",
+        "object_key": "sha256/c0/c03a5e8d88c6c082cdce524c0ced78a4beac0d13797d05c0eb3cb7bdee34ff23"
+      },
+      "intelligence_loop_id": "loop40",
+      "assembly_loop_id": "loop43",
+      "primitive_loop_ids": [],
+      "prompt_assembly": {
+        "record_type": "prompt_assembly_snapshot/v1",
+        "assembly_id": "assembly.sha256_2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+        "definition_ref": "core.prompt.standard_balanced@1.0.0",
+        "run_id": "adaptive-1ef605de5de76af301f48a00",
+        "loop_id": "loop1",
+        "ordered_block_refs": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rendered_block_digests": [
+          "dd15af2ad8c6d61847fdeb55e7dad82e2bedf744c206608d853892b06b859cf5",
+          "c1c34de621287a7cade99adb17394cf09cc8da868fbb5ae265124060b88cd5c6",
+          "6d9f389af4bc2771901be109fedc9b797f4c9a56bbf5eb33c152f9e96fce9d74",
+          "1957f74ba23fa6b5e524a5fb9816fec88b6e92907588d3ee745631138e95b394",
+          "115fb347ba6d8c0c5311ad9f71d0f6d907a800bc755f71b4a54a512a7de76f0d",
+          "781567552544800010fbabd22be96c8361d2f1f7ed4ffe83c8fb1535bf90402e",
+          "31b6fbd478d2631e529ab23712d827fc9b48227d31c02543b58078597c88d783",
+          "80d2106166e4145839996d18ddec2b4f83d0cd6535ef8e7ef6c6573ddbd49b12",
+          "706cc2d56ca0dc339423f6678acf4440a958f7459196dfef740bca188700d614",
+          "34737bea12a14e6a25eb98c06128a9fd09e225f380ff112ffd650c1f60c3018b",
+          "45f93e98c947613a285c10d63401c939f941abe6486d4f5f0fbb78a8a225df29",
+          "04e556637701ecbe29a5de743f536ea8ef085e9001b5bb4311f07e8e55c45ced",
+          "7c4ecaa5d7ab7fc49d7680c4b2304b75d8807fd86f513ec4dfb3e059d0480255"
+        ],
+        "selected_blocks": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rejected_blocks": [],
+        "selection_reasons": [
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy"
+        ],
+        "estimated_tokens": 12134,
+        "prompt_digest": "2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+        "packet_digest": "bbdb0aee295d03f11a6f5d0bfcda75b0f0ca27e0bbc79524d58490c92ce6bc20"
+      },
+      "blocks": [
+        {
+          "block_id": "persona",
+          "kind": "persona_context",
+          "version": "1.0.0",
+          "digest": "ddd35d597fbadfd4335af1920161b53bf929182894087d4088a8161381fc2d8e",
+          "source": "core.persona.task_interpreter",
+          "selection_reason": "base role and optional model-selected perspectives",
+          "position": 0,
+          "token_cost": 2884
+        },
+        {
+          "block_id": "guidance.verify",
+          "kind": "context_intelligence",
+          "version": "1.0.0",
+          "digest": "96f8839640118afee75546f48933b261767b7f1d9008819e8094dc3c96c9c5a5",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional guidance with step affinity metadata",
+          "position": 1,
+          "token_cost": 2753
+        },
+        {
+          "block_id": "questions.verify",
+          "kind": "question_portfolio",
+          "version": "1.0.0",
+          "digest": "ef301ae1f42eabcd4a5de6839b7c56251a36494b38b1ee5e618b23f0e5c0689f",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional question sets with an active-step hint",
+          "position": 2,
+          "token_cost": 2770
+        },
+        {
+          "block_id": "deterministic_attempt",
+          "kind": "attempt_trace",
+          "version": "1.0.0",
+          "digest": "befb94e4b16f95ae32d037c2fd4c6d57eac70631970378effc06d7610da862c8",
+          "source": "adaptive_practitioner",
+          "selection_reason": "exact-attempt result or explicit LLM-first skip",
+          "position": 3,
+          "token_cost": 137
+        },
+        {
+          "block_id": "current_state",
+          "kind": "task_context",
+          "version": "1.0.0",
+          "digest": "d9e41b1d09d111307ecb8a32f9c8a45df56b09e42a6bf5391653f34dd2aaf537",
+          "source": "active Practitioner run",
+          "selection_reason": "latest accepted state",
+          "position": 4,
+          "token_cost": 1050
+        },
+        {
+          "block_id": "runtime_facts",
+          "kind": "runtime_facts",
+          "version": "1.0.0",
+          "digest": "100063f483ac022fbb4aff165f16dcea7bda5daaf2536bf5271870cd53a0e994",
+          "source": "practitioner runtime",
+          "selection_reason": "exact facts the runtime states",
+          "position": 5,
+          "token_cost": 159
+        },
+        {
+          "block_id": "template_candidates",
+          "kind": "procedure_candidates",
+          "version": "1.0.0",
+          "digest": "e6bb72eb6711f23e9e479f222c128a61ca12b2044935641aa78d75887b94d871",
+          "source": "core template library",
+          "selection_reason": "optional reusable patterns",
+          "position": 6,
+          "token_cost": 440
+        },
+        {
+          "block_id": "capability_descriptors",
+          "kind": "capability_snapshot",
+          "version": "1.0.0",
+          "digest": "9e796318291a6cfc6e27551170897388cd75184fb1cc661197d9819c2340801d",
+          "source": "core capability registry",
+          "selection_reason": "available execution paths",
+          "position": 7,
+          "token_cost": 238
+        },
+        {
+          "block_id": "deterministic_event_history",
+          "kind": "attempt_event_history",
+          "version": "1.0.0",
+          "digest": "8587f041e380fbe2aaefc352c6bfb43e9f271f0ba638fb4c5dee4f1e3a7ba62d",
+          "source": "canonical Loop event log",
+          "selection_reason": "complete prior event history",
+          "position": 8,
+          "token_cost": 1061
+        }
+      ],
+      "total_estimated_tokens": 12134
+    },
+    {
+      "step": "route",
+      "objective": "Choose the next pass or finish the verified task.",
+      "packet_id": "packet.adaptive_1ef605de5de76af301f48a00.route.attempt_7",
+      "packet_digest": "277fda14e5c55bc2df72dab6e1998d136827a2b1c5b0b05dba3ea5e48afddafc",
+      "packet_artifact_ref": {
+        "digest": "1ec71164377fd82c1c696570fed1629d40276d982a1c30966c1778a9b88b9473",
+        "byte_count": 102210,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "llm_work_packet",
+        "object_key": "sha256/1e/1ec71164377fd82c1c696570fed1629d40276d982a1c30966c1778a9b88b9473"
+      },
+      "context_pack": {
+        "context_pack_id": "context-pack.83477b53fa0b530f",
+        "pack_digest": "72299cd0173e9fb3f5f0d3ed6d3107c9d50bf6c6fcc64e40483a991391b32043",
+        "packet_digest": "277fda14e5c55bc2df72dab6e1998d136827a2b1c5b0b05dba3ea5e48afddafc",
+        "prompt_digest": "83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+        "estimated_input_tokens": 12638,
+        "context_limit_tokens": null,
+        "reserved_output_tokens": null,
+        "fits_declared_context": null,
+        "within_operator_ceiling": null,
+        "bytes_removed": 0,
+        "included_count": 9,
+        "compacted_count": 0,
+        "excluded_count": 0,
+        "deduplicated_count": 0
+      },
+      "context_pack_artifact_ref": {
+        "digest": "34f626398ac93c713afc05f0969e2c4d24a38536cd1a6b946b0d16b686d048f5",
+        "byte_count": 3976,
+        "media_type": "application/json",
+        "encoding": "utf-8",
+        "artifact_kind": "context_pack_manifest",
+        "object_key": "sha256/34/34f626398ac93c713afc05f0969e2c4d24a38536cd1a6b946b0d16b686d048f5"
+      },
+      "intelligence_loop_id": "loop47",
+      "assembly_loop_id": "loop50",
+      "primitive_loop_ids": [],
+      "prompt_assembly": {
+        "record_type": "prompt_assembly_snapshot/v1",
+        "assembly_id": "assembly.sha256_83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+        "definition_ref": "core.prompt.standard_balanced@1.0.0",
+        "run_id": "adaptive-1ef605de5de76af301f48a00",
+        "loop_id": "loop1",
+        "ordered_block_refs": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rendered_block_digests": [
+          "dd15af2ad8c6d61847fdeb55e7dad82e2bedf744c206608d853892b06b859cf5",
+          "c1c34de621287a7cade99adb17394cf09cc8da868fbb5ae265124060b88cd5c6",
+          "b4aceac6de8a72c2b32371199afa77cf8bc8316833a41aabb9f5f80f49101e26",
+          "bfc168ff218fb2ebf598baed13d97762bf04e094d3827c0ea93f13a46696b96c",
+          "115fb347ba6d8c0c5311ad9f71d0f6d907a800bc755f71b4a54a512a7de76f0d",
+          "3881b183adec76096dc2cbb1cf17c07cceeedb7f362facebd8a871af1530b68d",
+          "f1c93298060931a0413765c8188ed1465dbb0bd83e3bfa68e35e55fd626799f5",
+          "80d2106166e4145839996d18ddec2b4f83d0cd6535ef8e7ef6c6573ddbd49b12",
+          "e2965afdc7386279a76ff59ab84dbe977f2a2eff2fc990b17dd48adb34d0b64b",
+          "e49331f54273f77571fa3ba04915ec615bc4e93ad58154e73efc9f054e41bbfb",
+          "45f93e98c947613a285c10d63401c939f941abe6486d4f5f0fbb78a8a225df29",
+          "29ea26dc700fdf7e81e47554ad2e0e9cdd08f71775c184319a2efee30b146c82",
+          "eaa0541e760353a3cbb972d2167ae301e4ed5eebc2ee1adebd3ea1d96c385af7"
+        ],
+        "selected_blocks": [
+          "authority_and_policy",
+          "model_role_and_capabilities",
+          "objective_and_success",
+          "immediate_question",
+          "hard_constraints_and_tools",
+          "verified_problem_state",
+          "selected_evidence",
+          "prior_attempts_and_failures",
+          "reasoning_perspective",
+          "question_pattern",
+          "candidate_alternatives",
+          "output_contract",
+          "final_directive"
+        ],
+        "rejected_blocks": [],
+        "selection_reasons": [
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy",
+          "selected by registered layout policy"
+        ],
+        "estimated_tokens": 12638,
+        "prompt_digest": "83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+        "packet_digest": "277fda14e5c55bc2df72dab6e1998d136827a2b1c5b0b05dba3ea5e48afddafc"
+      },
+      "blocks": [
+        {
+          "block_id": "persona",
+          "kind": "persona_context",
+          "version": "1.0.0",
+          "digest": "5d0c50ce46de7031dab130e6a1cfb9a0a0f3300ec8a7656da297199a2a8a557e",
+          "source": "core.persona.task_interpreter",
+          "selection_reason": "base role and optional model-selected perspectives",
+          "position": 0,
+          "token_cost": 2884
+        },
+        {
+          "block_id": "guidance.route",
+          "kind": "context_intelligence",
+          "version": "1.0.0",
+          "digest": "e4c7187c82f430326a8c6e345f5576ef75d437f816100bee4238027b700f3b6d",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional guidance with step affinity metadata",
+          "position": 1,
+          "token_cost": 2755
+        },
+        {
+          "block_id": "questions.route",
+          "kind": "question_portfolio",
+          "version": "1.0.0",
+          "digest": "0e960c08aa4c88951f62081bd6db2764d9a31b6a3dfc5050ebe0e29bfc5fd00d",
+          "source": "core.context.practitioner.general",
+          "selection_reason": "optional question sets with an active-step hint",
+          "position": 2,
+          "token_cost": 2727
+        },
+        {
+          "block_id": "deterministic_attempt",
+          "kind": "attempt_trace",
+          "version": "1.0.0",
+          "digest": "befb94e4b16f95ae32d037c2fd4c6d57eac70631970378effc06d7610da862c8",
+          "source": "adaptive_practitioner",
+          "selection_reason": "exact-attempt result or explicit LLM-first skip",
+          "position": 3,
+          "token_cost": 137
+        },
+        {
+          "block_id": "current_state",
+          "kind": "task_context",
+          "version": "1.0.0",
+          "digest": "df6fb20a7c4600d0c1b54a6c9d29b20bd9f5f80910f3306629c89dcac77d4d7f",
+          "source": "active Practitioner run",
+          "selection_reason": "latest accepted state",
+          "position": 4,
+          "token_cost": 1640
+        },
+        {
+          "block_id": "runtime_facts",
+          "kind": "runtime_facts",
+          "version": "1.0.0",
+          "digest": "100063f483ac022fbb4aff165f16dcea7bda5daaf2536bf5271870cd53a0e994",
+          "source": "practitioner runtime",
+          "selection_reason": "exact facts the runtime states",
+          "position": 5,
+          "token_cost": 159
+        },
+        {
+          "block_id": "template_candidates",
+          "kind": "procedure_candidates",
+          "version": "1.0.0",
+          "digest": "e6bb72eb6711f23e9e479f222c128a61ca12b2044935641aa78d75887b94d871",
+          "source": "core template library",
+          "selection_reason": "optional reusable patterns",
+          "position": 6,
+          "token_cost": 440
+        },
+        {
+          "block_id": "capability_descriptors",
+          "kind": "capability_snapshot",
+          "version": "1.0.0",
+          "digest": "9e796318291a6cfc6e27551170897388cd75184fb1cc661197d9819c2340801d",
+          "source": "core capability registry",
+          "selection_reason": "available execution paths",
+          "position": 7,
+          "token_cost": 238
+        },
+        {
+          "block_id": "deterministic_event_history",
+          "kind": "attempt_event_history",
+          "version": "1.0.0",
+          "digest": "8587f041e380fbe2aaefc352c6bfb43e9f271f0ba638fb4c5dee4f1e3a7ba62d",
+          "source": "canonical Loop event log",
+          "selection_reason": "complete prior event history",
+          "position": 8,
+          "token_cost": 1061
+        }
+      ],
+      "total_estimated_tokens": 12638
+    }
+  ],
+  "candidate_solution_canvases": [
+    {
+      "record_type": "solution_canvas_candidate/v1",
+      "candidate_id": "canvas:action:3e4f1aaa8d6e4eba86c6",
+      "action_kind": "BUILD_CAPABILITY",
+      "selected": true,
+      "graph": {
+        "record_type": "loop_graph_definition/v1",
+        "graph_id": "adaptive.candidate.action_3e4f1aaa8d6e4eba86c6",
+        "version": "1.0.0",
+        "permitted_vertex_modes": [
+          "deterministic"
+        ],
+        "input_ports": [
+          {
+            "name": "input",
+            "role": "next_action_decision/v1",
+            "targets": [
+              {
+                "vertex_id": "solution.controller",
+                "port_role": "next_action_decision/v1"
+              }
+            ]
+          }
+        ],
+        "output_ports": [
+          {
+            "name": "output",
+            "role": "capability_result/v1",
+            "source": {
+              "vertex_id": "solution.stage1.component",
+              "port_role": "capability_result/v1"
+            }
+          }
+        ],
+        "vertices": [
+          {
+            "vertex_id": "solution.controller",
+            "definition_ref": {
+              "definition_id": "solution.graph.adaptive_candidate_action_3e4f1aaa8d6e4eba86c6.solution_controller",
+              "version": "1.0.0",
+              "content_digest": "a0c1cfdec9b9b1907330b14906fcda8ddb0b70b9d87390901727cf3181ec89c6"
+            },
+            "definition": {
+              "record_type": "loop_definition/v1",
+              "definition_id": "solution.graph.adaptive_candidate_action_3e4f1aaa8d6e4eba86c6.solution_controller",
+              "version": "1.0.0",
+              "role_profile": {
+                "profile_id": "solution.pipeline",
+                "version": "1.0.0"
+              },
+              "contract": {
+                "name": "adaptive.candidate.action_3e4f1aaa8d6e4eba86c6:solution.controller",
+                "execution_mode": "code_only",
+                "input_roles": [
+                  "next_action_decision/v1"
+                ],
+                "output_roles": [
+                  "next_action_decision/v1",
+                  "capability_result/v1"
+                ],
+                "effects": [
+                  "pure"
+                ],
+                "locality": "local_machine",
+                "cost_class": "free",
+                "role": "solution"
+              },
+              "configuration_facts": {
+                "allowable_modes": [
+                  "deterministic"
+                ],
+                "custom_steps": [
+                  "act"
+                ],
+                "delegated_modes": [
+                  "deterministic"
+                ],
+                "exit_condition": "accepted_success",
+                "framework": "custom",
+                "graph_id": "adaptive.candidate.action_3e4f1aaa8d6e4eba86c6",
+                "llm_thinking_power": "",
+                "logical_kind": "execution",
+                "loop_condition": "steps_remain",
+                "max_depth": 32,
+                "operation_ref": "",
+                "parameters": {
+                  "logical_solution_id": "adaptive.candidate.action_3e4f1aaa8d6e4eba86c6",
+                  "max_members": null
+                },
+                "power": "light",
+                "preferred_modes": [
+                  "deterministic"
+                ],
+                "purpose": "controller",
+                "replay_guarantee": "event_equivalent",
+                "success_confidence_min": 0.5,
+                "vertex_id": "solution.controller"
+              },
+              "supported_modes": [
+                "deterministic"
+              ],
+              "installed_executor_modes": [
+                "deterministic"
+              ],
+              "step_profile": "compact_five_beat",
+              "loop_condition": "steps_remain",
+              "exit_condition": "accepted_success",
+              "effects": [
+                "pure"
+              ],
+              "permissions": [],
+              "required_capabilities": [
+                "pipeline_execution",
+                "solution_canvas",
+                "typed_connection_check"
+              ],
+              "content_digest": "a0c1cfdec9b9b1907330b14906fcda8ddb0b70b9d87390901727cf3181ec89c6"
+            },
+            "selected_mode": "deterministic",
+            "purpose": "controller",
+            "operation_ref": "",
+            "parameters": {
+              "logical_solution_id": "adaptive.candidate.action_3e4f1aaa8d6e4eba86c6",
+              "max_members": null
+            }
+          },
+          {
+            "vertex_id": "solution.stage1.component",
+            "definition_ref": {
+              "definition_id": "solution.graph.adaptive_candidate_action_3e4f1aaa8d6e4eba86c6.solution_stage1_component",
+              "version": "1.0.0",
+              "content_digest": "91a8e7d1242bab98bb91c2461c8b0efb12cfe505dfe4434ba60fa438c1fb46b5"
+            },
+            "definition": {
+              "record_type": "loop_definition/v1",
+              "definition_id": "solution.graph.adaptive_candidate_action_3e4f1aaa8d6e4eba86c6.solution_stage1_component",
+              "version": "1.0.0",
+              "role_profile": {
+                "profile_id": "solution.atomic_component",
+                "version": "1.0.0"
+              },
+              "contract": {
+                "name": "adaptive.candidate.action_3e4f1aaa8d6e4eba86c6:solution.stage1.component",
+                "execution_mode": "code_only",
+                "input_roles": [
+                  "next_action_decision/v1"
+                ],
+                "output_roles": [
+                  "capability_result/v1"
+                ],
+                "effects": [
+                  "pure"
+                ],
+                "locality": "local_machine",
+                "cost_class": "free",
+                "role": "solution"
+              },
+              "configuration_facts": {
+                "allowable_modes": [
+                  "deterministic"
+                ],
+                "custom_steps": [
+                  "act"
+                ],
+                "delegated_modes": [
+                  "deterministic"
+                ],
+                "exit_condition": "accepted_success",
+                "framework": "custom",
+                "graph_id": "adaptive.candidate.action_3e4f1aaa8d6e4eba86c6",
+                "llm_thinking_power": "",
+                "logical_kind": "execution",
+                "loop_condition": "steps_remain",
+                "max_depth": 32,
+                "operation_ref": "core.generated_project",
+                "parameters": {
+                  "action_kind": "BUILD_CAPABILITY",
+                  "verification": "Run the declared check and inspect the output."
+                },
+                "power": "light",
+                "preferred_modes": [
+                  "deterministic"
+                ],
+                "purpose": "component",
+                "replay_guarantee": "event_equivalent",
+                "success_confidence_min": 0.5,
+                "vertex_id": "solution.stage1.component"
+              },
+              "supported_modes": [
+                "deterministic"
+              ],
+              "installed_executor_modes": [
+                "deterministic"
+              ],
+              "step_profile": "atomic_code_only",
+              "loop_condition": "steps_remain",
+              "exit_condition": "accepted_success",
+              "effects": [
+                "pure"
+              ],
+              "permissions": [],
+              "required_capabilities": [
+                "component_execution",
+                "solution_canvas"
+              ],
+              "content_digest": "91a8e7d1242bab98bb91c2461c8b0efb12cfe505dfe4434ba60fa438c1fb46b5"
+            },
+            "selected_mode": "deterministic",
+            "purpose": "component",
+            "operation_ref": "core.generated_project",
+            "parameters": {
+              "action_kind": "BUILD_CAPABILITY",
+              "verification": "Run the declared check and inspect the output."
+            }
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": "edge:1",
+            "source": {
+              "vertex_id": "solution.controller",
+              "port_role": "next_action_decision/v1"
+            },
+            "target": {
+              "vertex_id": "solution.stage1.component",
+              "port_role": "next_action_decision/v1"
+            },
+            "relationship": "connected_from",
+            "order": 0,
+            "metadata": {}
+          }
+        ],
+        "groups": [
+          {
+            "group_id": "solution.group",
+            "controller_vertex_id": "solution.controller",
+            "stages": [
+              {
+                "stage_id": "candidate_action",
+                "attempt_vertex_ids": [
+                  "solution.stage1.component"
+                ],
+                "router_vertex_id": ""
+              }
+            ],
+            "member_group_ids": [],
+            "combination": "single",
+            "weights": [],
+            "route_vertex_id": "",
+            "evaluator_vertex_ids": []
+          }
+        ],
+        "starting_group_id": "solution.group",
+        "content_digest": "34dc973efcd1f073d31c9ede9c07f6e7aa1a7920e6fcef0ea303930ae9d42f21"
+      },
+      "validation": {
+        "valid": true,
+        "violations": []
+      }
+    }
+  ],
+  "selected_solution_canvas": {
+    "candidate_id": "canvas:d98b5c833cf1dfda691d",
+    "selected": true,
+    "graph_digest": "450aa0fdfa3f4eef48c6d473ed80ed43506cc581323e052c1b4257171f92ce34",
+    "loop_graph": {
+      "record_type": "loop_graph_definition/v1",
+      "graph_id": "adaptive.action.d98b5c833cf1dfda691d",
+      "version": "1.0.0",
+      "permitted_vertex_modes": [
+        "deterministic"
+      ],
+      "input_ports": [
+        {
+          "name": "input",
+          "role": "generated_project_manifest/v1",
+          "targets": [
+            {
+              "vertex_id": "solution.controller",
+              "port_role": "generated_project_manifest/v1"
+            }
+          ]
+        }
+      ],
+      "output_ports": [
+        {
+          "name": "output",
+          "role": "generated_project_execution/v1",
+          "source": {
+            "vertex_id": "solution.stage1.component",
+            "port_role": "generated_project_execution/v1"
+          }
+        }
+      ],
+      "vertices": [
+        {
+          "vertex_id": "solution.controller",
+          "definition_ref": {
+            "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_controller",
+            "version": "1.0.0",
+            "content_digest": "5d14f99339b013f4033cc65265a2021a387c7049ca5d91f5b275f1aa6e811be4"
+          },
+          "definition": {
+            "record_type": "loop_definition/v1",
+            "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_controller",
+            "version": "1.0.0",
+            "role_profile": {
+              "profile_id": "solution.pipeline",
+              "version": "1.0.0"
+            },
+            "contract": {
+              "name": "adaptive.action.d98b5c833cf1dfda691d:solution.controller",
+              "execution_mode": "code_only",
+              "input_roles": [
+                "generated_project_manifest/v1"
+              ],
+              "output_roles": [
+                "generated_project_manifest/v1",
+                "generated_project_execution/v1"
+              ],
+              "effects": [
+                "pure"
+              ],
+              "locality": "local_machine",
+              "cost_class": "free",
+              "role": "solution"
+            },
+            "configuration_facts": {
+              "allowable_modes": [
+                "deterministic"
+              ],
+              "custom_steps": [
+                "act"
+              ],
+              "delegated_modes": [
+                "deterministic"
+              ],
+              "exit_condition": "accepted_success",
+              "framework": "custom",
+              "graph_id": "adaptive.action.d98b5c833cf1dfda691d",
+              "llm_thinking_power": "",
+              "logical_kind": "execution",
+              "loop_condition": "steps_remain",
+              "max_depth": 32,
+              "operation_ref": "",
+              "parameters": {
+                "logical_solution_id": "adaptive.action.d98b5c833cf1dfda691d",
+                "max_members": null
+              },
+              "power": "light",
+              "preferred_modes": [
+                "deterministic"
+              ],
+              "purpose": "controller",
+              "replay_guarantee": "event_equivalent",
+              "success_confidence_min": 0.5,
+              "vertex_id": "solution.controller"
+            },
+            "supported_modes": [
+              "deterministic"
+            ],
+            "installed_executor_modes": [
+              "deterministic"
+            ],
+            "step_profile": "compact_five_beat",
+            "loop_condition": "steps_remain",
+            "exit_condition": "accepted_success",
+            "effects": [
+              "pure"
+            ],
+            "permissions": [],
+            "required_capabilities": [
+              "pipeline_execution",
+              "solution_canvas",
+              "typed_connection_check"
+            ],
+            "content_digest": "5d14f99339b013f4033cc65265a2021a387c7049ca5d91f5b275f1aa6e811be4"
+          },
+          "selected_mode": "deterministic",
+          "purpose": "controller",
+          "operation_ref": "",
+          "parameters": {
+            "logical_solution_id": "adaptive.action.d98b5c833cf1dfda691d",
+            "max_members": null
+          }
+        },
+        {
+          "vertex_id": "solution.stage1.component",
+          "definition_ref": {
+            "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_stage1_component",
+            "version": "1.0.0",
+            "content_digest": "6a6a77abef790a261174e271b63f20950dca7a0570183a112bee2c4b82c2b4bd"
+          },
+          "definition": {
+            "record_type": "loop_definition/v1",
+            "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_stage1_component",
+            "version": "1.0.0",
+            "role_profile": {
+              "profile_id": "solution.atomic_component",
+              "version": "1.0.0"
+            },
+            "contract": {
+              "name": "adaptive.action.d98b5c833cf1dfda691d:solution.stage1.component",
+              "execution_mode": "code_only",
+              "input_roles": [
+                "generated_project_manifest/v1"
+              ],
+              "output_roles": [
+                "generated_project_execution/v1"
+              ],
+              "effects": [
+                "pure"
+              ],
+              "locality": "local_machine",
+              "cost_class": "free",
+              "role": "solution"
+            },
+            "configuration_facts": {
+              "allowable_modes": [
+                "deterministic"
+              ],
+              "custom_steps": [
+                "act"
+              ],
+              "delegated_modes": [
+                "deterministic"
+              ],
+              "exit_condition": "accepted_success",
+              "framework": "custom",
+              "graph_id": "adaptive.action.d98b5c833cf1dfda691d",
+              "llm_thinking_power": "",
+              "logical_kind": "execution",
+              "loop_condition": "steps_remain",
+              "max_depth": 32,
+              "operation_ref": "core.generated_project",
+              "parameters": {
+                "instruction": "Generate a bounded project.",
+                "plan_digest": "d98b5c833cf1dfda691d"
+              },
+              "power": "light",
+              "preferred_modes": [
+                "deterministic"
+              ],
+              "purpose": "component",
+              "replay_guarantee": "event_equivalent",
+              "success_confidence_min": 0.5,
+              "vertex_id": "solution.stage1.component"
+            },
+            "supported_modes": [
+              "deterministic"
+            ],
+            "installed_executor_modes": [
+              "deterministic"
+            ],
+            "step_profile": "atomic_code_only",
+            "loop_condition": "steps_remain",
+            "exit_condition": "accepted_success",
+            "effects": [
+              "pure"
+            ],
+            "permissions": [],
+            "required_capabilities": [
+              "component_execution",
+              "solution_canvas"
+            ],
+            "content_digest": "6a6a77abef790a261174e271b63f20950dca7a0570183a112bee2c4b82c2b4bd"
+          },
+          "selected_mode": "deterministic",
+          "purpose": "component",
+          "operation_ref": "core.generated_project",
+          "parameters": {
+            "instruction": "Generate a bounded project.",
+            "plan_digest": "d98b5c833cf1dfda691d"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "edge_id": "edge:1",
+          "source": {
+            "vertex_id": "solution.controller",
+            "port_role": "generated_project_manifest/v1"
+          },
+          "target": {
+            "vertex_id": "solution.stage1.component",
+            "port_role": "generated_project_manifest/v1"
+          },
+          "relationship": "connected_from",
+          "order": 0,
+          "metadata": {}
+        }
+      ],
+      "groups": [
+        {
+          "group_id": "solution.group",
+          "controller_vertex_id": "solution.controller",
+          "stages": [
+            {
+              "stage_id": "execute_selected_capability",
+              "attempt_vertex_ids": [
+                "solution.stage1.component"
+              ],
+              "router_vertex_id": ""
+            }
+          ],
+          "member_group_ids": [],
+          "combination": "single",
+          "weights": [],
+          "route_vertex_id": "",
+          "evaluator_vertex_ids": []
+        }
+      ],
+      "starting_group_id": "solution.group",
+      "content_digest": "450aa0fdfa3f4eef48c6d473ed80ed43506cc581323e052c1b4257171f92ce34"
+    },
+    "mermaid": "flowchart TD\n  IN([inputs])\n  L1((\"solution.controller: single<br/>deterministic\"))\n  L2((\"solution.stage1.component: core.generated_project<br/>deterministic\"))\n  IN --> L1\n  L1 -->|connected_from: generated_project_manifest/v1| L2\n  OUT([output])\n  L2 --> OUT",
+    "runtime_trace": [
+      {
+        "runtime_event": "started",
+        "solution": "adaptive.action.d98b5c833cf1dfda691d",
+        "logical_loop_id": "adaptive.action.d98b5c833cf1dfda691d",
+        "mode": "deterministic",
+        "runtime_loop_id": "loop38",
+        "role": "solution",
+        "profile_id": "solution.pipeline",
+        "profile_version": "1.0.0",
+        "relationship_kind": "spawned_by",
+        "spawned_by_loop_id": "loop1"
+      },
+      {
+        "runtime_event": "started",
+        "solution": "adaptive.action.d98b5c833cf1dfda691d",
+        "logical_loop_id": "execute_selected_capability",
+        "mode": "deterministic",
+        "runtime_loop_id": "loop39",
+        "role": "solution",
+        "profile_id": "solution.atomic_component",
+        "profile_version": "1.0.0",
+        "relationship_kind": "connected_from",
+        "connected_from_loop_ids": [
+          "loop38"
+        ]
+      },
+      {
+        "solution_loop": "execute_selected_capability",
+        "operation": "core.generated_project",
+        "mode": "deterministic",
+        "component_loop_id": "loop39",
+        "input_role": "generated_project_manifest/v1",
+        "output_role": "generated_project_execution/v1",
+        "input_type": "dict",
+        "output_type": "dict",
+        "runtime_loop_id": "loop39",
+        "role": "solution",
+        "profile_id": "solution.atomic_component",
+        "profile_version": "1.0.0",
+        "relationship_kind": "connected_from",
+        "connected_from_loop_ids": [
+          "loop38"
+        ]
+      },
+      {
+        "runtime_event": "completed",
+        "solution": "adaptive.action.d98b5c833cf1dfda691d",
+        "logical_loop_id": "execute_selected_capability",
+        "status": "done",
+        "terminal_reason": "success_once",
+        "actual_modes": [
+          "deterministic"
+        ],
+        "runtime_loop_id": "loop39",
+        "role": "solution",
+        "profile_id": "solution.atomic_component",
+        "profile_version": "1.0.0",
+        "relationship_kind": "connected_from",
+        "connected_from_loop_ids": [
+          "loop38"
+        ]
+      },
+      {
+        "runtime_event": "completed",
+        "solution": "adaptive.action.d98b5c833cf1dfda691d",
+        "logical_loop_id": "adaptive.action.d98b5c833cf1dfda691d",
+        "status": "done",
+        "terminal_reason": "success_once",
+        "actual_modes": [
+          "deterministic"
+        ],
+        "runtime_loop_id": "loop38",
+        "role": "solution",
+        "profile_id": "solution.pipeline",
+        "profile_version": "1.0.0",
+        "relationship_kind": "spawned_by",
+        "spawned_by_loop_id": "loop1"
+      }
+    ]
+  },
+  "web_search_candidates": [],
+  "web_evidence": [],
+  "source_inspections": [],
+  "source_roles": null,
+  "project_attempts": [
+    {
+      "record_type": "generated_project_execution/v1",
+      "manifest_digest": "5b574820a8b9410b520609dbcccbfe0f0424d89943059dfe6828443d86272548",
+      "workspace": {
+        "workspace_id": "fixture",
+        "backend_kind": "fixture",
+        "root": "/home/username/loop-engine/docs/evidence/runs/learning-integrity-public-offline-20260904/adaptive-1ef605de5de76af301f48a00-workspace/attempt-1"
+      },
+      "sandbox": {
+        "backend_kind": "fixture",
+        "network_reads": false
+      },
+      "writes": [],
+      "commands": [
+        {
+          "purpose": "run",
+          "ok": true,
+          "exit_code": 0,
+          "stdout": "done\n",
+          "stderr": "",
+          "error_code": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "output.txt",
+          "media_type": "text/plain",
+          "minimum_bytes": 1,
+          "present": true,
+          "byte_count": 5,
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "error_code": "",
+          "verified": true
+        }
+      ],
+      "snapshot": {
+        "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "file_count": 2,
+        "total_bytes": 19
+      },
+      "deterministic_checks_passed": true,
+      "manifest": {
+        "record_type": "generated_project_manifest/v1",
+        "project_id": "stage_assistance_fixture",
+        "summary": "A bounded test project.",
+        "files": [
+          {
+            "path": "main.py",
+            "content": "print('done')\n"
+          }
+        ],
+        "commands": [
+          {
+            "argv": [
+              "python",
+              "main.py"
+            ],
+            "purpose": "Run the project.",
+            "timeout_seconds": 30.0,
+            "command_kind": "execute",
+            "network_access": false,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        ],
+        "expected_artifacts": [
+          {
+            "path": "output.txt",
+            "media_type": "text/plain",
+            "minimum_bytes": 1
+          }
+        ]
+      },
+      "input_use_validation": {
+        "record_type": "generated_project_input_use_validation/v1",
+        "supplied_paths": [],
+        "referenced_paths": [],
+        "offline_network_imports": [],
+        "passed": true
+      },
+      "workspace_path": "/home/username/loop-engine/docs/evidence/runs/learning-integrity-public-offline-20260904/adaptive-1ef605de5de76af301f48a00-workspace/attempt-1",
+      "context_evidence_count": 0
+    }
+  ],
+  "verification": [
+    {
+      "record_type": "adaptive_verification/v2",
+      "verdict": "accept",
+      "subject": {
+        "record_type": "adaptive_verification_subject/v1",
+        "run_id": "adaptive-1ef605de5de76af301f48a00",
+        "action_id": "action:3e4f1aaa8d6e4eba86c6",
+        "action_occurrence_ref": "action-occurrence:sha256:d241b39fc58927dbc915c2524492be557463bf68524282179bced25653e8b3cb",
+        "plan_digest": "df7c980a120d758e876b9b8ff861286980aae79da47b52c8545d2e29bf069e44",
+        "result_digests": [
+          "7c4d17ae8bf0d1d4e87dc1376d742a6dc44aaa204c49f1ffd1ca6d9e775583ba"
+        ],
+        "execution_refs": [
+          "action-execution:sha256:cdd843ff08105dffd748ebea45bd2df633b6b83c9a029a9dc0a2ba5f450c5b5a"
+        ]
+      },
+      "evaluation": {
+        "verdict": "accept",
+        "best_index": 0,
+        "scores": [
+          1.0
+        ],
+        "notes": "Deterministic checks passed."
+      },
+      "pass_number": 1,
+      "verifier_stage_occurrence_id": "stage-occurrence:sha256:9fb24e0d15ebf6e26f182a24fe75d22a347d75672c99f921208bcdb7b4bb492b",
+      "verifier_semantic_call_id": "semantic-stage-66273f9bc4ac5c7105958b414473e565778d0fd75264732e",
+      "semantic_verification_observed": true,
+      "deterministic_checks_passed": true,
+      "notes": "Deterministic checks passed.",
+      "remaining_gaps": [],
+      "gap_assessments": [],
+      "advisory_findings": [],
+      "new_requirement_proposals": [],
+      "registered_acceptance_criteria": [
+        {
+          "criterion_ref": "criterion:0",
+          "text": "test command passes"
+        },
+        {
+          "criterion_ref": "criterion:1",
+          "text": "output file exists"
+        }
+      ]
+    }
+  ],
+  "supervision": [],
+  "recovery_directives": [],
+  "generated_file_checkpoints": [
+    {
+      "checkpoint_key": "generated-file.015bdde16af601c7b4472c4793ec5d7ee42e053f90dcd4ff51902d03e0cd5089",
+      "path": "main.py",
+      "content_digest": "5ad83658673857c5b83e787f097fdb39b88b43024e8b09102456301f98236534",
+      "contract_digest": "b5cd410854a86bd2c3a13b3f18644e430fdabfeadfd681da2c6b90ec3f91275d",
+      "artifact_ref": {
+        "digest": "5ad83658673857c5b83e787f097fdb39b88b43024e8b09102456301f98236534",
+        "byte_count": 14,
+        "media_type": "text/plain",
+        "encoding": "utf-8",
+        "artifact_kind": "generated_project_file_checkpoint",
+        "object_key": "sha256/5a/5ad83658673857c5b83e787f097fdb39b88b43024e8b09102456301f98236534"
+      },
+      "byte_count": 14
+    }
+  ],
+  "model_calls": 7,
+  "model_usage": [
+    {
+      "record_type": "model_gateway_result/v1",
+      "ok": true,
+      "provider": "fixture",
+      "model": "fixture-model",
+      "route": "fixture.route",
+      "thinking_power": "medium",
+      "input_tokens": 2,
+      "output_tokens": 3,
+      "total_tokens": 5,
+      "accounting_complete": true,
+      "provider_responded": true,
+      "physical_model_calls": 1,
+      "attempts": [
+        {
+          "provider": "fixture",
+          "model": "fixture-model",
+          "route": "fixture.route",
+          "thinking_power": "medium",
+          "loop_id": "loop7",
+          "ok": true,
+          "provider_ok": true,
+          "input_tokens": 2,
+          "output_tokens": 3,
+          "validation_ok": true,
+          "error_code": "",
+          "error": "",
+          "elapsed_seconds": 0.000706,
+          "usage_diagnostic": null,
+          "maximum_output_tokens": 64,
+          "maximum_output_source": "offline fixture contract",
+          "expected_model": "fixture-model",
+          "reasoning_present": false,
+          "response_received": true,
+          "provider_done": null,
+          "provider_stop_reason": "",
+          "output_limit_reached": false,
+          "provider_status": "",
+          "provider_response_id": "",
+          "provider_service_tier": "",
+          "provider_incomplete_details": null,
+          "provider_usage": null,
+          "semantic_call_id": "semantic-stage-bf69e464340d8c4ca1e3e957a07de06be7f886596f97a9ad",
+          "owner_loop_id": "loop1",
+          "prompt_digest": "adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+          "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "logical_request_digest": "499a7a2312e078fbc8b3f944fed2edc8743668c0010049b181ac981590d09f8a",
+          "provider_request_digest": "c4894860c045194f9ed34062acff84dba61fc689bd58a10b0a70378931099ef5"
+        }
+      ],
+      "gateway_loop_id": "loop6",
+      "error_code": "",
+      "error": "",
+      "reasoning_present": false,
+      "semantic_call_id": "semantic-stage-bf69e464340d8c4ca1e3e957a07de06be7f886596f97a9ad",
+      "owner_loop_id": "loop1",
+      "prompt_digest": "adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+      "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_digest": "499a7a2312e078fbc8b3f944fed2edc8743668c0010049b181ac981590d09f8a"
+    },
+    {
+      "record_type": "model_gateway_result/v1",
+      "ok": true,
+      "provider": "fixture",
+      "model": "fixture-model",
+      "route": "fixture.route",
+      "thinking_power": "medium",
+      "input_tokens": 2,
+      "output_tokens": 3,
+      "total_tokens": 5,
+      "accounting_complete": true,
+      "provider_responded": true,
+      "physical_model_calls": 1,
+      "attempts": [
+        {
+          "provider": "fixture",
+          "model": "fixture-model",
+          "route": "fixture.route",
+          "thinking_power": "medium",
+          "loop_id": "loop14",
+          "ok": true,
+          "provider_ok": true,
+          "input_tokens": 2,
+          "output_tokens": 3,
+          "validation_ok": true,
+          "error_code": "",
+          "error": "",
+          "elapsed_seconds": 0.00057,
+          "usage_diagnostic": null,
+          "maximum_output_tokens": 64,
+          "maximum_output_source": "offline fixture contract",
+          "expected_model": "fixture-model",
+          "reasoning_present": false,
+          "response_received": true,
+          "provider_done": null,
+          "provider_stop_reason": "",
+          "output_limit_reached": false,
+          "provider_status": "",
+          "provider_response_id": "",
+          "provider_service_tier": "",
+          "provider_incomplete_details": null,
+          "provider_usage": null,
+          "semantic_call_id": "semantic-stage-b9c4f5eac9ef7cf688f0bc0146a06ae99acfa1cd2963a5bd",
+          "owner_loop_id": "loop1",
+          "prompt_digest": "3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+          "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "logical_request_digest": "e787a1e0670c4b5b8566a32f59dca8f654ceb295f39fac4977df419c8fa13aae",
+          "provider_request_digest": "2cec5d535e8cf11050ea5fb9ec64f49602bb3a46d204446fd6ee590c640e1964"
+        }
+      ],
+      "gateway_loop_id": "loop13",
+      "error_code": "",
+      "error": "",
+      "reasoning_present": false,
+      "semantic_call_id": "semantic-stage-b9c4f5eac9ef7cf688f0bc0146a06ae99acfa1cd2963a5bd",
+      "owner_loop_id": "loop1",
+      "prompt_digest": "3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+      "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_digest": "e787a1e0670c4b5b8566a32f59dca8f654ceb295f39fac4977df419c8fa13aae"
+    },
+    {
+      "record_type": "model_gateway_result/v1",
+      "ok": true,
+      "provider": "fixture",
+      "model": "fixture-model",
+      "route": "fixture.route",
+      "thinking_power": "medium",
+      "input_tokens": 2,
+      "output_tokens": 3,
+      "total_tokens": 5,
+      "accounting_complete": true,
+      "provider_responded": true,
+      "physical_model_calls": 1,
+      "attempts": [
+        {
+          "provider": "fixture",
+          "model": "fixture-model",
+          "route": "fixture.route",
+          "thinking_power": "medium",
+          "loop_id": "loop21",
+          "ok": true,
+          "provider_ok": true,
+          "input_tokens": 2,
+          "output_tokens": 3,
+          "validation_ok": true,
+          "error_code": "",
+          "error": "",
+          "elapsed_seconds": 0.000581,
+          "usage_diagnostic": null,
+          "maximum_output_tokens": 64,
+          "maximum_output_source": "offline fixture contract",
+          "expected_model": "fixture-model",
+          "reasoning_present": false,
+          "response_received": true,
+          "provider_done": null,
+          "provider_stop_reason": "",
+          "output_limit_reached": false,
+          "provider_status": "",
+          "provider_response_id": "",
+          "provider_service_tier": "",
+          "provider_incomplete_details": null,
+          "provider_usage": null,
+          "semantic_call_id": "semantic-stage-1e624168b815fb88c5f67fad5632baa2d3508c722f135a3a",
+          "owner_loop_id": "loop1",
+          "prompt_digest": "06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+          "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "logical_request_digest": "b9783c8ad6a0cae8d17ce0016411d5988fa6268b4db243965db92d53353a968e",
+          "provider_request_digest": "f8fdd0e4d9b5534f6d7b890b4775d91ca83925e37e89af0c7af237d9c61fc704"
+        }
+      ],
+      "gateway_loop_id": "loop20",
+      "error_code": "",
+      "error": "",
+      "reasoning_present": false,
+      "semantic_call_id": "semantic-stage-1e624168b815fb88c5f67fad5632baa2d3508c722f135a3a",
+      "owner_loop_id": "loop1",
+      "prompt_digest": "06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+      "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_digest": "b9783c8ad6a0cae8d17ce0016411d5988fa6268b4db243965db92d53353a968e"
+    },
+    {
+      "record_type": "model_gateway_result/v1",
+      "ok": true,
+      "provider": "fixture",
+      "model": "fixture-model",
+      "route": "fixture.route",
+      "thinking_power": "medium",
+      "input_tokens": 2,
+      "output_tokens": 3,
+      "total_tokens": 5,
+      "accounting_complete": true,
+      "provider_responded": true,
+      "physical_model_calls": 1,
+      "attempts": [
+        {
+          "provider": "fixture",
+          "model": "fixture-model",
+          "route": "fixture.route",
+          "thinking_power": "medium",
+          "loop_id": "loop28",
+          "ok": true,
+          "provider_ok": true,
+          "input_tokens": 2,
+          "output_tokens": 3,
+          "validation_ok": true,
+          "error_code": "",
+          "error": "",
+          "elapsed_seconds": 0.000531,
+          "usage_diagnostic": null,
+          "maximum_output_tokens": 64,
+          "maximum_output_source": "offline fixture contract",
+          "expected_model": "fixture-model",
+          "reasoning_present": false,
+          "response_received": true,
+          "provider_done": null,
+          "provider_stop_reason": "",
+          "output_limit_reached": false,
+          "provider_status": "",
+          "provider_response_id": "",
+          "provider_service_tier": "",
+          "provider_incomplete_details": null,
+          "provider_usage": null,
+          "semantic_call_id": "semantic-stage-6a7b3a24f712d5ab02cfd1bbd2f070803c795713dc0050ba",
+          "owner_loop_id": "loop1",
+          "prompt_digest": "f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+          "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "logical_request_digest": "8ede3819335de4fd8a690275ee083139fb4505cc1e881ff5c5a7b92e262b9253",
+          "provider_request_digest": "222881d57496a0f5616d6a4097ea4f84fd8f1693cc4ade393e31860a08dbf0c4"
+        }
+      ],
+      "gateway_loop_id": "loop27",
+      "error_code": "",
+      "error": "",
+      "reasoning_present": false,
+      "semantic_call_id": "semantic-stage-6a7b3a24f712d5ab02cfd1bbd2f070803c795713dc0050ba",
+      "owner_loop_id": "loop1",
+      "prompt_digest": "f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+      "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_digest": "8ede3819335de4fd8a690275ee083139fb4505cc1e881ff5c5a7b92e262b9253"
+    },
+    {
+      "record_type": "model_gateway_result/v1",
+      "ok": true,
+      "provider": "fixture",
+      "model": "fixture-model",
+      "route": "fixture.route",
+      "thinking_power": "medium",
+      "input_tokens": 2,
+      "output_tokens": 3,
+      "total_tokens": 5,
+      "accounting_complete": true,
+      "provider_responded": true,
+      "physical_model_calls": 1,
+      "attempts": [
+        {
+          "provider": "fixture",
+          "model": "fixture-model",
+          "route": "fixture.route",
+          "thinking_power": "medium",
+          "loop_id": "loop35",
+          "ok": true,
+          "provider_ok": true,
+          "input_tokens": 2,
+          "output_tokens": 3,
+          "validation_ok": true,
+          "error_code": "",
+          "error": "",
+          "elapsed_seconds": 0.00061,
+          "usage_diagnostic": null,
+          "maximum_output_tokens": 64,
+          "maximum_output_source": "offline fixture contract",
+          "expected_model": "fixture-model",
+          "reasoning_present": false,
+          "response_received": true,
+          "provider_done": null,
+          "provider_stop_reason": "",
+          "output_limit_reached": false,
+          "provider_status": "",
+          "provider_response_id": "",
+          "provider_service_tier": "",
+          "provider_incomplete_details": null,
+          "provider_usage": null,
+          "semantic_call_id": "semantic-stage-b07331eff510047fb07f46f0a17d3f777b1db86a098d2ed6",
+          "owner_loop_id": "loop1",
+          "prompt_digest": "683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+          "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "logical_request_digest": "da4ac3e124152faebddbebcf12b2503a5b14bc80b46e132d15a5d58d5c071bde",
+          "provider_request_digest": "6aa9a0619e8139e9cc1684b5af77f4ce2e6162cae085d5fe7ea6b4a2aff65224"
+        }
+      ],
+      "gateway_loop_id": "loop34",
+      "error_code": "",
+      "error": "",
+      "reasoning_present": false,
+      "semantic_call_id": "semantic-stage-b07331eff510047fb07f46f0a17d3f777b1db86a098d2ed6",
+      "owner_loop_id": "loop1",
+      "prompt_digest": "683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+      "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_digest": "da4ac3e124152faebddbebcf12b2503a5b14bc80b46e132d15a5d58d5c071bde"
+    },
+    {
+      "record_type": "model_gateway_result/v1",
+      "ok": true,
+      "provider": "fixture",
+      "model": "fixture-model",
+      "route": "fixture.route",
+      "thinking_power": "medium",
+      "input_tokens": 2,
+      "output_tokens": 3,
+      "total_tokens": 5,
+      "accounting_complete": true,
+      "provider_responded": true,
+      "physical_model_calls": 1,
+      "attempts": [
+        {
+          "provider": "fixture",
+          "model": "fixture-model",
+          "route": "fixture.route",
+          "thinking_power": "medium",
+          "loop_id": "loop45",
+          "ok": true,
+          "provider_ok": true,
+          "input_tokens": 2,
+          "output_tokens": 3,
+          "validation_ok": true,
+          "error_code": "",
+          "error": "",
+          "elapsed_seconds": 0.000558,
+          "usage_diagnostic": null,
+          "maximum_output_tokens": 64,
+          "maximum_output_source": "offline fixture contract",
+          "expected_model": "fixture-model",
+          "reasoning_present": false,
+          "response_received": true,
+          "provider_done": null,
+          "provider_stop_reason": "",
+          "output_limit_reached": false,
+          "provider_status": "",
+          "provider_response_id": "",
+          "provider_service_tier": "",
+          "provider_incomplete_details": null,
+          "provider_usage": null,
+          "semantic_call_id": "semantic-stage-66273f9bc4ac5c7105958b414473e565778d0fd75264732e",
+          "owner_loop_id": "loop1",
+          "prompt_digest": "2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+          "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "logical_request_digest": "10d9c89cec468ebb4b9355cc4ba3e4cbe64471769d8581cd4641562b7e72118b",
+          "provider_request_digest": "93dfc4b0da3a0715a951e4612b061db18e727c5046cc2683d6a244c4eb394b1a"
+        }
+      ],
+      "gateway_loop_id": "loop44",
+      "error_code": "",
+      "error": "",
+      "reasoning_present": false,
+      "semantic_call_id": "semantic-stage-66273f9bc4ac5c7105958b414473e565778d0fd75264732e",
+      "owner_loop_id": "loop1",
+      "prompt_digest": "2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+      "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_digest": "10d9c89cec468ebb4b9355cc4ba3e4cbe64471769d8581cd4641562b7e72118b"
+    },
+    {
+      "record_type": "model_gateway_result/v1",
+      "ok": true,
+      "provider": "fixture",
+      "model": "fixture-model",
+      "route": "fixture.route",
+      "thinking_power": "medium",
+      "input_tokens": 2,
+      "output_tokens": 3,
+      "total_tokens": 5,
+      "accounting_complete": true,
+      "provider_responded": true,
+      "physical_model_calls": 1,
+      "attempts": [
+        {
+          "provider": "fixture",
+          "model": "fixture-model",
+          "route": "fixture.route",
+          "thinking_power": "medium",
+          "loop_id": "loop52",
+          "ok": true,
+          "provider_ok": true,
+          "input_tokens": 2,
+          "output_tokens": 3,
+          "validation_ok": true,
+          "error_code": "",
+          "error": "",
+          "elapsed_seconds": 0.000603,
+          "usage_diagnostic": null,
+          "maximum_output_tokens": 64,
+          "maximum_output_source": "offline fixture contract",
+          "expected_model": "fixture-model",
+          "reasoning_present": false,
+          "response_received": true,
+          "provider_done": null,
+          "provider_stop_reason": "",
+          "output_limit_reached": false,
+          "provider_status": "",
+          "provider_response_id": "",
+          "provider_service_tier": "",
+          "provider_incomplete_details": null,
+          "provider_usage": null,
+          "semantic_call_id": "semantic-stage-516d2637f46983acb170d4e3371c34eddbf9fd89878733e6",
+          "owner_loop_id": "loop1",
+          "prompt_digest": "83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+          "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "logical_request_digest": "2ec284227444dc111092790f487c8bf3cc25fbd38d5e159510f9b6099cef070e",
+          "provider_request_digest": "a9adee9d5a709934295a79d7fc8456ff908d219c56b9239aedfb3c2fb25f667d"
+        }
+      ],
+      "gateway_loop_id": "loop51",
+      "error_code": "",
+      "error": "",
+      "reasoning_present": false,
+      "semantic_call_id": "semantic-stage-516d2637f46983acb170d4e3371c34eddbf9fd89878733e6",
+      "owner_loop_id": "loop1",
+      "prompt_digest": "83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+      "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_digest": "2ec284227444dc111092790f487c8bf3cc25fbd38d5e159510f9b6099cef070e"
+    }
+  ],
+  "option_selection": {
+    "record_type": "option_selection_tally/v1",
+    "perspectives": {},
+    "question_refs": {},
+    "guidance_refs": {},
+    "steps_reported": {},
+    "steps_offered": {
+      "act": 2,
+      "decide_next": 1,
+      "how": 1,
+      "orient": 1,
+      "route": 1,
+      "verify": 1
+    },
+    "wanted_but_absent": [],
+    "operator_gaps": [],
+    "named_but_not_offered": [],
+    "other_observations": [],
+    "reports": 0,
+    "calls": 7
+  },
+  "semantic_autonomy": {
+    "record_type": "semantic_autonomy_coverage/v1",
+    "semantic_autonomy_coverage": 1.0,
+    "decisions_recorded": 2,
+    "attributable_to_reasoning": 2,
+    "by_owner": {
+      "llm": 2,
+      "user": 0,
+      "deterministic": 0
+    },
+    "by_decision_kind": {
+      "interpret_task": 1,
+      "select_next_operation": 1
+    },
+    "unattributed_by_kind": {},
+    "uncontested_decisions": 2,
+    "decision_kinds_not_anticipated": [],
+    "reading": "all 2 decisions were reasoned, but none had a second alternative open, so the coverage figure is weak evidence on its own"
+  },
+  "decision_outcomes": {
+    "record_type": "decision_outcome_ledger/v1",
+    "decisions_followed": 2,
+    "reached_an_observation": 2,
+    "outcome_known": 2,
+    "helped": 2,
+    "by_stage": {
+      "proposed": 0,
+      "admitted": 0,
+      "executed": 0,
+      "observed": 0,
+      "verified": 0,
+      "contributed": 2
+    },
+    "by_decision_kind": {
+      "interpret_task": {
+        "helped": 1,
+        "hurt": 0,
+        "unknown": 0
+      },
+      "select_next_operation": {
+        "helped": 1,
+        "hurt": 0,
+        "unknown": 0
+      }
+    },
+    "invalidated_later": 0,
+    "verification_granularity": "run",
+    "reading": "2 of 2 decisions have a known outcome, of which 2 helped"
+  },
+  "control_manifest_evidence": {
+    "record_type": "recorded_solve_control_manifest/v1",
+    "recorded": true,
+    "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+    "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+    "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+    "control_evidence_class": "mechanism_only"
+  },
+  "stages": {
+    "record_type": "stage_store/v1",
+    "degraded": false,
+    "write_failures": 0,
+    "read_failures": 0,
+    "unreadable_rows": 0,
+    "last_storage_error": "",
+    "degradation_events": [],
+    "observations": 7,
+    "distinct_situations": 7,
+    "distinct_motifs": 6,
+    "distinct_shapes": 6,
+    "path": "/home/username/loop-engine/docs/evidence/runs/learning-integrity-public-offline-20260904/stages.jsonl"
+  },
+  "stage_arms": {
+    "stage-occurrence:sha256:d7539c5ff50df494a6eb4626c0c6dd27102559318a048a5162fd0e7c65b33484": {
+      "experiment": "cache_assist",
+      "cognitive_phase": "orient",
+      "assigned_arm": "fresh",
+      "exposure_applied": false,
+      "retrieval_performed": false,
+      "retrieved_prior_refs": [],
+      "exposed_prior_refs": [],
+      "exposed_material_refs": [],
+      "exposed_material_digests": [],
+      "semantic_signature": "stage:sha256:7da96c3ba4cd409f312285c8d23687c3",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "active_exposure": {
+        "exposure_ref": "stage-exposure:sha256:515cbd2abc00363c6dff6681e1c5029cf4d6b8ba6cb6a5d45946b6f40d4b989b",
+        "packet_digest": "e2260c81e254becc081849609f4ed5f782712efe6cf839c7b901d9a6bf757abd",
+        "prompt_digest": "adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+        "prompt_assembly_id": "assembly.sha256_adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+        "gateway_request_digest": "499a7a2312e078fbc8b3f944fed2edc8743668c0010049b181ac981590d09f8a",
+        "provider_request_digests": [
+          "c4894860c045194f9ed34062acff84dba61fc689bd58a10b0a70378931099ef5"
+        ],
+        "format_attempt": 1,
+        "transport_attempt": 1,
+        "physical_attempt_loop_ids": [
+          "loop7"
+        ]
+      }
+    },
+    "stage-occurrence:sha256:997e99160798ce1bc5664e721b68d09814e7e957e73bcb0bab136b35ab35df02": {
+      "experiment": "cache_assist",
+      "cognitive_phase": "decide_next",
+      "assigned_arm": "fresh",
+      "exposure_applied": false,
+      "retrieval_performed": false,
+      "retrieved_prior_refs": [],
+      "exposed_prior_refs": [],
+      "exposed_material_refs": [],
+      "exposed_material_digests": [],
+      "semantic_signature": "stage:sha256:7cc4a5dca6038ceeb83772e0718ef013",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "active_exposure": {
+        "exposure_ref": "stage-exposure:sha256:6770b2fd83f7c20344de2ce19890cfea343278dbd1c98696fa8b9d9772f5e174",
+        "packet_digest": "6b508f5b5f8e8a893dfe26c58a4cc4bd355423eb97707ac9392cae32c70175cf",
+        "prompt_digest": "3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+        "prompt_assembly_id": "assembly.sha256_3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+        "gateway_request_digest": "e787a1e0670c4b5b8566a32f59dca8f654ceb295f39fac4977df419c8fa13aae",
+        "provider_request_digests": [
+          "2cec5d535e8cf11050ea5fb9ec64f49602bb3a46d204446fd6ee590c640e1964"
+        ],
+        "format_attempt": 1,
+        "transport_attempt": 1,
+        "physical_attempt_loop_ids": [
+          "loop14"
+        ]
+      }
+    },
+    "stage-occurrence:sha256:46e23b7e412da456d27ac565e904fa737607d517571993cb68af1b5ac1118e57": {
+      "experiment": "cache_assist",
+      "cognitive_phase": "how",
+      "assigned_arm": "fresh",
+      "exposure_applied": false,
+      "retrieval_performed": false,
+      "retrieved_prior_refs": [],
+      "exposed_prior_refs": [],
+      "exposed_material_refs": [],
+      "exposed_material_digests": [],
+      "semantic_signature": "stage:sha256:b9dbbaf794ee05a64b440da4d0237a03",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "active_exposure": {
+        "exposure_ref": "stage-exposure:sha256:77b6a7ddc2648b6c02394fa716cd0cb2b54a8eb7baff9a6cc83e8b7f26b848c2",
+        "packet_digest": "d50f2934b554f6d3f56c1e7c7e9bd712bb73feb4aedcaf00acdc3d1dd7a6916d",
+        "prompt_digest": "06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+        "prompt_assembly_id": "assembly.sha256_06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+        "gateway_request_digest": "b9783c8ad6a0cae8d17ce0016411d5988fa6268b4db243965db92d53353a968e",
+        "provider_request_digests": [
+          "f8fdd0e4d9b5534f6d7b890b4775d91ca83925e37e89af0c7af237d9c61fc704"
+        ],
+        "format_attempt": 1,
+        "transport_attempt": 1,
+        "physical_attempt_loop_ids": [
+          "loop21"
+        ]
+      }
+    },
+    "stage-occurrence:sha256:769544c55241d29eaf810bd8425bb660f31918919406a9a2085f930a280e5076": {
+      "experiment": "cache_assist",
+      "cognitive_phase": "act",
+      "assigned_arm": "fresh",
+      "exposure_applied": false,
+      "retrieval_performed": false,
+      "retrieved_prior_refs": [],
+      "exposed_prior_refs": [],
+      "exposed_material_refs": [],
+      "exposed_material_digests": [],
+      "semantic_signature": "stage:sha256:105fc8361f67a44df9e53ee855d91d75",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "active_exposure": {
+        "exposure_ref": "stage-exposure:sha256:0928000eb3f1992715fd917d58ccce611ad6fd5e62f128f2358c28c43d7fbb6b",
+        "packet_digest": "37eb22a1e579f8825a664accf42103525b47179a25fa0b74e424a2f9d45a999f",
+        "prompt_digest": "f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+        "prompt_assembly_id": "assembly.sha256_f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+        "gateway_request_digest": "8ede3819335de4fd8a690275ee083139fb4505cc1e881ff5c5a7b92e262b9253",
+        "provider_request_digests": [
+          "222881d57496a0f5616d6a4097ea4f84fd8f1693cc4ade393e31860a08dbf0c4"
+        ],
+        "format_attempt": 1,
+        "transport_attempt": 1,
+        "physical_attempt_loop_ids": [
+          "loop28"
+        ]
+      }
+    },
+    "stage-occurrence:sha256:31fe0fb17c18a8bbe82456c95f69b51740f47d3d2801a891bb5aa043e5f03138": {
+      "experiment": "cache_assist",
+      "cognitive_phase": "act",
+      "assigned_arm": "fresh",
+      "exposure_applied": false,
+      "retrieval_performed": false,
+      "retrieved_prior_refs": [],
+      "exposed_prior_refs": [],
+      "exposed_material_refs": [],
+      "exposed_material_digests": [],
+      "semantic_signature": "stage:sha256:78a84b02ff42517b1a4a239b8f4fb18d",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "active_exposure": {
+        "exposure_ref": "stage-exposure:sha256:a58905f3e0d03611999c6c60050c2a7fac97a67b549b9ba8df31d0e70d459306",
+        "packet_digest": "a02a18c093bfe551b0fb6c2fb32464d9ab2e43aa3b7743fd7c185e112da9e235",
+        "prompt_digest": "683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+        "prompt_assembly_id": "assembly.sha256_683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+        "gateway_request_digest": "da4ac3e124152faebddbebcf12b2503a5b14bc80b46e132d15a5d58d5c071bde",
+        "provider_request_digests": [
+          "6aa9a0619e8139e9cc1684b5af77f4ce2e6162cae085d5fe7ea6b4a2aff65224"
+        ],
+        "format_attempt": 1,
+        "transport_attempt": 1,
+        "physical_attempt_loop_ids": [
+          "loop35"
+        ]
+      }
+    },
+    "stage-occurrence:sha256:9fb24e0d15ebf6e26f182a24fe75d22a347d75672c99f921208bcdb7b4bb492b": {
+      "experiment": "cache_assist",
+      "cognitive_phase": "verify",
+      "assigned_arm": "fresh",
+      "exposure_applied": false,
+      "retrieval_performed": false,
+      "retrieved_prior_refs": [],
+      "exposed_prior_refs": [],
+      "exposed_material_refs": [],
+      "exposed_material_digests": [],
+      "semantic_signature": "stage:sha256:c397f308bebcb975c35bc583a4152eb8",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "active_exposure": {
+        "exposure_ref": "stage-exposure:sha256:71e594e74fb85b51162ca1dc33dd43ce9e6268df008d2e3ce2b3e57b1fd1d261",
+        "packet_digest": "bbdb0aee295d03f11a6f5d0bfcda75b0f0ca27e0bbc79524d58490c92ce6bc20",
+        "prompt_digest": "2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+        "prompt_assembly_id": "assembly.sha256_2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+        "gateway_request_digest": "10d9c89cec468ebb4b9355cc4ba3e4cbe64471769d8581cd4641562b7e72118b",
+        "provider_request_digests": [
+          "93dfc4b0da3a0715a951e4612b061db18e727c5046cc2683d6a244c4eb394b1a"
+        ],
+        "format_attempt": 1,
+        "transport_attempt": 1,
+        "physical_attempt_loop_ids": [
+          "loop45"
+        ]
+      }
+    },
+    "stage-occurrence:sha256:7c183ad80829cdf914ffce0fda690a3f6408b8798ae1818b3b27a8bdf8d38268": {
+      "experiment": "cache_assist",
+      "cognitive_phase": "route",
+      "assigned_arm": "fresh",
+      "exposure_applied": false,
+      "retrieval_performed": false,
+      "retrieved_prior_refs": [],
+      "exposed_prior_refs": [],
+      "exposed_material_refs": [],
+      "exposed_material_digests": [],
+      "semantic_signature": "stage:sha256:fb4d56ea64ae2abe345d46d08a3a3e60",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "active_exposure": {
+        "exposure_ref": "stage-exposure:sha256:7f28e30d5fbe46d2469e6e7d85fb8fa754f19bef5ed8dd840d445164c9aeebfd",
+        "packet_digest": "277fda14e5c55bc2df72dab6e1998d136827a2b1c5b0b05dba3ea5e48afddafc",
+        "prompt_digest": "83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+        "prompt_assembly_id": "assembly.sha256_83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+        "gateway_request_digest": "2ec284227444dc111092790f487c8bf3cc25fbd38d5e159510f9b6099cef070e",
+        "provider_request_digests": [
+          "a9adee9d5a709934295a79d7fc8456ff908d219c56b9239aedfb3c2fb25f667d"
+        ],
+        "format_attempt": 1,
+        "transport_attempt": 1,
+        "physical_attempt_loop_ids": [
+          "loop52"
+        ]
+      }
+    }
+  },
+  "stage_assistance_decisions": [
+    {
+      "record_type": "stage_assistance_decision_observed/v1",
+      "stage_occurrence_id": "stage-occurrence:sha256:d7539c5ff50df494a6eb4626c0c6dd27102559318a048a5162fd0e7c65b33484",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "assigned_arm": "fresh",
+      "exposure_ref": "stage-exposure:sha256:515cbd2abc00363c6dff6681e1c5029cf4d6b8ba6cb6a5d45946b6f40d4b989b",
+      "packet_digest": "e2260c81e254becc081849609f4ed5f782712efe6cf839c7b901d9a6bf757abd",
+      "prompt_digest": "adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+      "prompt_assembly_id": "assembly.sha256_adbff8fb2b1d7f26963c550ea8eb4190379f5aecfe5babe5ffa0e7e56110dac5",
+      "gateway_request_digest": "499a7a2312e078fbc8b3f944fed2edc8743668c0010049b181ac981590d09f8a",
+      "provider_request_digests": [
+        "c4894860c045194f9ed34062acff84dba61fc689bd58a10b0a70378931099ef5"
+      ],
+      "physical_attempt_loop_ids": [
+        "loop7"
+      ],
+      "admitted_response_digest": "64995fdde43e5dcd0484af618656a53010b50bacbd6a572ae2b4a915b68631f5",
+      "admission_loop_id": "loop8",
+      "semantic_payload_digest": "91b469801c629ede65d9063e106982450fdce454c49f5f2abaef00049ff18f30",
+      "disposition": "START_FRESH",
+      "selected_prior_refs": [],
+      "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+      "record_type": "stage_assistance_decision_observed/v1",
+      "stage_occurrence_id": "stage-occurrence:sha256:997e99160798ce1bc5664e721b68d09814e7e957e73bcb0bab136b35ab35df02",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "assigned_arm": "fresh",
+      "exposure_ref": "stage-exposure:sha256:6770b2fd83f7c20344de2ce19890cfea343278dbd1c98696fa8b9d9772f5e174",
+      "packet_digest": "6b508f5b5f8e8a893dfe26c58a4cc4bd355423eb97707ac9392cae32c70175cf",
+      "prompt_digest": "3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+      "prompt_assembly_id": "assembly.sha256_3aec8d70f63b9804a8c58fb9f52eb5941e5b510486c7be446e1a9c2bed16cff7",
+      "gateway_request_digest": "e787a1e0670c4b5b8566a32f59dca8f654ceb295f39fac4977df419c8fa13aae",
+      "provider_request_digests": [
+        "2cec5d535e8cf11050ea5fb9ec64f49602bb3a46d204446fd6ee590c640e1964"
+      ],
+      "physical_attempt_loop_ids": [
+        "loop14"
+      ],
+      "admitted_response_digest": "2f4051e98c142be723a07a9755c614e88e2300f522089f8254a12d84f56988c1",
+      "admission_loop_id": "loop15",
+      "semantic_payload_digest": "27719685a0d29283a6c5cb9a01040fb25e9efeb039a49e753ecdc508578a8199",
+      "disposition": "START_FRESH",
+      "selected_prior_refs": [],
+      "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+      "record_type": "stage_assistance_decision_observed/v1",
+      "stage_occurrence_id": "stage-occurrence:sha256:46e23b7e412da456d27ac565e904fa737607d517571993cb68af1b5ac1118e57",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "assigned_arm": "fresh",
+      "exposure_ref": "stage-exposure:sha256:77b6a7ddc2648b6c02394fa716cd0cb2b54a8eb7baff9a6cc83e8b7f26b848c2",
+      "packet_digest": "d50f2934b554f6d3f56c1e7c7e9bd712bb73feb4aedcaf00acdc3d1dd7a6916d",
+      "prompt_digest": "06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+      "prompt_assembly_id": "assembly.sha256_06b680acfd47ef197758a23af942e0f69f869c1de3c94fb591369711d5b140eb",
+      "gateway_request_digest": "b9783c8ad6a0cae8d17ce0016411d5988fa6268b4db243965db92d53353a968e",
+      "provider_request_digests": [
+        "f8fdd0e4d9b5534f6d7b890b4775d91ca83925e37e89af0c7af237d9c61fc704"
+      ],
+      "physical_attempt_loop_ids": [
+        "loop21"
+      ],
+      "admitted_response_digest": "be077a9846e5ec71f99aa0259fe058c05ffb704f72f0816f89ccdcd6c28d62bd",
+      "admission_loop_id": "loop22",
+      "semantic_payload_digest": "6bd80df1cb66664b5a576bfe536a2b5badc496fffc36ba4b6b65f0de64b1fbcf",
+      "disposition": "START_FRESH",
+      "selected_prior_refs": [],
+      "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+      "record_type": "stage_assistance_decision_observed/v1",
+      "stage_occurrence_id": "stage-occurrence:sha256:769544c55241d29eaf810bd8425bb660f31918919406a9a2085f930a280e5076",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "assigned_arm": "fresh",
+      "exposure_ref": "stage-exposure:sha256:0928000eb3f1992715fd917d58ccce611ad6fd5e62f128f2358c28c43d7fbb6b",
+      "packet_digest": "37eb22a1e579f8825a664accf42103525b47179a25fa0b74e424a2f9d45a999f",
+      "prompt_digest": "f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+      "prompt_assembly_id": "assembly.sha256_f58dd2a39122b97d6764da7bc3655d380f92910cbf328ee809a2df787dc22c63",
+      "gateway_request_digest": "8ede3819335de4fd8a690275ee083139fb4505cc1e881ff5c5a7b92e262b9253",
+      "provider_request_digests": [
+        "222881d57496a0f5616d6a4097ea4f84fd8f1693cc4ade393e31860a08dbf0c4"
+      ],
+      "physical_attempt_loop_ids": [
+        "loop28"
+      ],
+      "admitted_response_digest": "d91f97faec3be0968326f1385a0c0bfa0bf07b816eef05bff18cf9acdfe41d5b",
+      "admission_loop_id": "loop29",
+      "semantic_payload_digest": "ab6666282b9255cf6a1c107b1fd392d4a40386b5a7cf3e7b03a6f2848d0bc936",
+      "disposition": "START_FRESH",
+      "selected_prior_refs": [],
+      "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+      "record_type": "stage_assistance_decision_observed/v1",
+      "stage_occurrence_id": "stage-occurrence:sha256:31fe0fb17c18a8bbe82456c95f69b51740f47d3d2801a891bb5aa043e5f03138",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "assigned_arm": "fresh",
+      "exposure_ref": "stage-exposure:sha256:a58905f3e0d03611999c6c60050c2a7fac97a67b549b9ba8df31d0e70d459306",
+      "packet_digest": "a02a18c093bfe551b0fb6c2fb32464d9ab2e43aa3b7743fd7c185e112da9e235",
+      "prompt_digest": "683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+      "prompt_assembly_id": "assembly.sha256_683b92a10f7e764be75b2654e9edaec2a0dfd99068af6241cf42b0021aad9166",
+      "gateway_request_digest": "da4ac3e124152faebddbebcf12b2503a5b14bc80b46e132d15a5d58d5c071bde",
+      "provider_request_digests": [
+        "6aa9a0619e8139e9cc1684b5af77f4ce2e6162cae085d5fe7ea6b4a2aff65224"
+      ],
+      "physical_attempt_loop_ids": [
+        "loop35"
+      ],
+      "admitted_response_digest": "29588fb0cf07eef5f84843aaf971c0ced119489b1b73f6b6091276b578d3a452",
+      "admission_loop_id": "loop36",
+      "semantic_payload_digest": "d3ac992e10a1be84256b7505c195cf7b448413338f68613d60a0e5a9cc46dfe6",
+      "disposition": "START_FRESH",
+      "selected_prior_refs": [],
+      "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+      "record_type": "stage_assistance_decision_observed/v1",
+      "stage_occurrence_id": "stage-occurrence:sha256:9fb24e0d15ebf6e26f182a24fe75d22a347d75672c99f921208bcdb7b4bb492b",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "assigned_arm": "fresh",
+      "exposure_ref": "stage-exposure:sha256:71e594e74fb85b51162ca1dc33dd43ce9e6268df008d2e3ce2b3e57b1fd1d261",
+      "packet_digest": "bbdb0aee295d03f11a6f5d0bfcda75b0f0ca27e0bbc79524d58490c92ce6bc20",
+      "prompt_digest": "2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+      "prompt_assembly_id": "assembly.sha256_2cf8250afb22fb396159d6d14954d05ed381966b6262aa56fc6276f1f2d63c4c",
+      "gateway_request_digest": "10d9c89cec468ebb4b9355cc4ba3e4cbe64471769d8581cd4641562b7e72118b",
+      "provider_request_digests": [
+        "93dfc4b0da3a0715a951e4612b061db18e727c5046cc2683d6a244c4eb394b1a"
+      ],
+      "physical_attempt_loop_ids": [
+        "loop45"
+      ],
+      "admitted_response_digest": "c0704014b46aa38f28969bb876205d7681c10afe87e3be256a19d302e881fe0e",
+      "admission_loop_id": "loop46",
+      "semantic_payload_digest": "dc09685f4b88af75e084b40bb983f685a4c129bf23da06473137f3841737c543",
+      "disposition": "START_FRESH",
+      "selected_prior_refs": [],
+      "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+      "record_type": "stage_assistance_decision_observed/v1",
+      "stage_occurrence_id": "stage-occurrence:sha256:7c183ad80829cdf914ffce0fda690a3f6408b8798ae1818b3b27a8bdf8d38268",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+      "control_evidence_class": "mechanism_only",
+      "assigned_arm": "fresh",
+      "exposure_ref": "stage-exposure:sha256:7f28e30d5fbe46d2469e6e7d85fb8fa754f19bef5ed8dd840d445164c9aeebfd",
+      "packet_digest": "277fda14e5c55bc2df72dab6e1998d136827a2b1c5b0b05dba3ea5e48afddafc",
+      "prompt_digest": "83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+      "prompt_assembly_id": "assembly.sha256_83477b53fa0b530f283d8baa0543ce3b060e08cf775fcc880a167a091ac9a4ff",
+      "gateway_request_digest": "2ec284227444dc111092790f487c8bf3cc25fbd38d5e159510f9b6099cef070e",
+      "provider_request_digests": [
+        "a9adee9d5a709934295a79d7fc8456ff908d219c56b9239aedfb3c2fb25f667d"
+      ],
+      "physical_attempt_loop_ids": [
+        "loop52"
+      ],
+      "admitted_response_digest": "d41436a39f4c0fac2b63b8c7f69abb678974317e195ce46f868cc8ec6791d850",
+      "admission_loop_id": "loop53",
+      "semantic_payload_digest": "08ffa868e58485e9fbf6ec9fa153ac006e3e2266cc316beb5473d83b02a77ac5",
+      "disposition": "START_FRESH",
+      "selected_prior_refs": [],
+      "reason": "No prior-stage candidate was retrieved or exposed."
+    }
+  ],
+  "stage_action_links": [
+    {
+      "record_type": "stage_selected_action_lineage/v1",
+      "stage_occurrence_id": "stage-occurrence:sha256:997e99160798ce1bc5664e721b68d09814e7e957e73bcb0bab136b35ab35df02",
+      "semantic_call_id": "semantic-stage-b9c4f5eac9ef7cf688f0bc0146a06ae99acfa1cd2963a5bd",
+      "run_id": "adaptive-1ef605de5de76af301f48a00",
+      "owner_loop_id": "loop1",
+      "pass_number": 1,
+      "action_id": "action:3e4f1aaa8d6e4eba86c6",
+      "action_occurrence_ref": "action-occurrence:sha256:d241b39fc58927dbc915c2524492be557463bf68524282179bced25653e8b3cb",
+      "action_payload_digest": "3e4f1aaa8d6e4eba86c6a220f99dc0c8157c8951804a7226e74fd9323a8b87d3",
+      "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+      "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+      "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+      "assistance_decision_digest": "ccac6f6bb72afddfb1b69f95e2330c704f932150f180bbc000f1fa33c800a576",
+      "attribution_method": "EXACT_SELECTED_ACTION_IDENTITY"
+    }
+  ],
+  "stage_execution_links": [
+    {
+      "record_type": "stage_action_execution_lineage/v1",
+      "stage_occurrence_id": "stage-occurrence:sha256:997e99160798ce1bc5664e721b68d09814e7e957e73bcb0bab136b35ab35df02",
+      "action_occurrence_ref": "action-occurrence:sha256:d241b39fc58927dbc915c2524492be557463bf68524282179bced25653e8b3cb",
+      "execution_ref": "action-execution:sha256:cdd843ff08105dffd748ebea45bd2df633b6b83c9a029a9dc0a2ba5f450c5b5a",
+      "action_id": "action:3e4f1aaa8d6e4eba86c6",
+      "capability_ref": "core.generated_project",
+      "plan_digest": "df7c980a120d758e876b9b8ff861286980aae79da47b52c8545d2e29bf069e44",
+      "result_digest": "7c4d17ae8bf0d1d4e87dc1376d742a6dc44aaa204c49f1ffd1ca6d9e775583ba",
+      "execution_succeeded": true,
+      "downstream_use": true,
+      "attribution_method": "DIRECT_DOWNSTREAM_CONSUMPTION"
+    }
+  ],
+  "stage_outcome_links": [
+    {
+      "record_type": "stage_action_verification_lineage/v1",
+      "stage_occurrence_id": "stage-occurrence:sha256:997e99160798ce1bc5664e721b68d09814e7e957e73bcb0bab136b35ab35df02",
+      "stage_observation_ref": "stage-observation:sha256:61249d3cc477543065b83ee85d8b0e0f52c242422a101bb5a829b3c7310c5366",
+      "action_occurrence_ref": "action-occurrence:sha256:d241b39fc58927dbc915c2524492be557463bf68524282179bced25653e8b3cb",
+      "execution_ref": "action-execution:sha256:cdd843ff08105dffd748ebea45bd2df633b6b83c9a029a9dc0a2ba5f450c5b5a",
+      "verification_ref": "action-verification:sha256:8b1717f4933e9c839c01dc751e32a8605c4fbc56b7c8f2b4535dd8cc23b691ef",
+      "action_id": "action:3e4f1aaa8d6e4eba86c6",
+      "execution_result_digest": "7c4d17ae8bf0d1d4e87dc1376d742a6dc44aaa204c49f1ffd1ca6d9e775583ba",
+      "verifier_stage_occurrence_id": "stage-occurrence:sha256:9fb24e0d15ebf6e26f182a24fe75d22a347d75672c99f921208bcdb7b4bb492b",
+      "verifier_semantic_call_id": "semantic-stage-66273f9bc4ac5c7105958b414473e565778d0fd75264732e",
+      "verification_verdict": "accept",
+      "deterministic_checks_passed": true,
+      "semantic_verification_observed": true,
+      "evaluation_record_digest": "658416de3b0b91145be5f31a3a77c2de5ff72a57425f30e3ec068b856abc44d6",
+      "local_verification": true,
+      "outcome_after_verification": {
+        "record_type": "outcome_vector/v1",
+        "credit": "helped",
+        "granularity": "stage",
+        "known": [
+          "output_admitted",
+          "local_verification",
+          "downstream_use"
+        ],
+        "unknown": [
+          "branch_contribution",
+          "later_invalidated",
+          "task_outcome"
+        ],
+        "contradictions": [],
+        "reading": "helped on stage-local evidence: output_admitted, local_verification, downstream_use",
+        "output_admitted": true,
+        "local_verification": true,
+        "downstream_use": true,
+        "branch_contribution": null,
+        "later_invalidated": null,
+        "task_outcome": null
+      },
+      "attribution_method": "DIRECT_LOCAL_VERIFIER",
+      "attribution_confidence": null,
+      "verifier_independence": "same_practitioner_model_path"
+    }
+  ],
+  "stage_attribution_events": [
+    {
+      "record_type": "stage_attribution_boundary/v1",
+      "pass_number": 1,
+      "verification_verdict": "accept",
+      "stage_occurrence_ids": [
+        "stage-occurrence:sha256:d7539c5ff50df494a6eb4626c0c6dd27102559318a048a5162fd0e7c65b33484",
+        "stage-occurrence:sha256:997e99160798ce1bc5664e721b68d09814e7e957e73bcb0bab136b35ab35df02",
+        "stage-occurrence:sha256:46e23b7e412da456d27ac565e904fa737607d517571993cb68af1b5ac1118e57",
+        "stage-occurrence:sha256:769544c55241d29eaf810bd8425bb660f31918919406a9a2085f930a280e5076",
+        "stage-occurrence:sha256:31fe0fb17c18a8bbe82456c95f69b51740f47d3d2801a891bb5aa043e5f03138",
+        "stage-occurrence:sha256:9fb24e0d15ebf6e26f182a24fe75d22a347d75672c99f921208bcdb7b4bb492b"
+      ],
+      "local_stage_outcomes_changed": false,
+      "reason": "the pass verdict evaluates selected action results, not every semantic model call in the pass"
+    }
+  ],
+  "stage_evidence_degradations": [],
+  "prior_stages_loaded": 14,
+  "stage_ladders": {},
+  "response_shape_convergence": {
+    "record_type": "response_shape_convergence/v1",
+    "offered": {
+      "observations": 0,
+      "distinct_shapes": 0,
+      "concentration": null,
+      "entropy": null,
+      "novel_fields": 0,
+      "departure_rate": null,
+      "thin": true
+    },
+    "control": {
+      "observations": 0,
+      "distinct_shapes": 0,
+      "concentration": null,
+      "entropy": null,
+      "novel_fields": 0,
+      "departure_rate": null,
+      "thin": true
+    },
+    "control_arm_share": 0.15,
+    "thin_arm_observations": 20,
+    "reading": "no stage was answered without a template offered, so nothing here can separate convergence from suggestion"
+  },
+  "decision_outcome_rows": [
+    {
+      "record_type": "decision_outcome/v1",
+      "decision_id": "adaptive-1ef605de5de76af301f48a00.orient.1",
+      "run_id": "adaptive-1ef605de5de76af301f48a00",
+      "decision_kind": "interpret_task",
+      "owner": "llm",
+      "selected": "Build and test the artifact.",
+      "expected_observation": "The output exists and its check passes.",
+      "stage": "contributed",
+      "refused": [],
+      "executed_action": "",
+      "observation": "",
+      "expectation_result": "unobserved",
+      "verification_passed": true,
+      "task_succeeded": true,
+      "invalidated_later": false,
+      "invalidation_reason": "",
+      "helped": true,
+      "model_calls": 0,
+      "elapsed_seconds": null
+    },
+    {
+      "record_type": "decision_outcome/v1",
+      "decision_id": "adaptive-1ef605de5de76af301f48a00.decide.0",
+      "run_id": "adaptive-1ef605de5de76af301f48a00",
+      "decision_kind": "select_next_operation",
+      "owner": "llm",
+      "selected": "BUILD_CAPABILITY",
+      "expected_observation": "A verified output file.",
+      "stage": "contributed",
+      "refused": [],
+      "executed_action": "",
+      "observation": "",
+      "expectation_result": "unobserved",
+      "verification_passed": true,
+      "task_succeeded": true,
+      "invalidated_later": false,
+      "invalidation_reason": "",
+      "helped": true,
+      "model_calls": 0,
+      "elapsed_seconds": null
+    }
+  ],
+  "semantic_decisions": [
+    {
+      "record_type": "semantic_decision/v1",
+      "decision_id": "adaptive-1ef605de5de76af301f48a00.orient.1",
+      "run_id": "adaptive-1ef605de5de76af301f48a00",
+      "loop_id": "loop1",
+      "branch_id": "",
+      "decision_kind": "interpret_task",
+      "owner": "llm",
+      "selected": "Build and test the artifact.",
+      "alternatives_considered": [],
+      "reason_summary": "Create the requested output in a bounded project.",
+      "evidence_refs": [],
+      "assumptions": [],
+      "uncertainties": [],
+      "expected_observation": "The output exists and its check passes.",
+      "model_identity": "",
+      "context_manifest_ref": "",
+      "state_snapshot_ref": ""
+    },
+    {
+      "record_type": "semantic_decision/v1",
+      "decision_id": "adaptive-1ef605de5de76af301f48a00.decide.0",
+      "run_id": "adaptive-1ef605de5de76af301f48a00",
+      "loop_id": "loop1",
+      "branch_id": "",
+      "decision_kind": "select_next_operation",
+      "owner": "llm",
+      "selected": "BUILD_CAPABILITY",
+      "alternatives_considered": [
+        "BUILD_CAPABILITY"
+      ],
+      "reason_summary": "The requested output needs executable work.",
+      "evidence_refs": [],
+      "assumptions": [],
+      "uncertainties": [],
+      "expected_observation": "A verified output file.",
+      "model_identity": "",
+      "context_manifest_ref": "",
+      "state_snapshot_ref": "0"
+    }
+  ],
+  "loop_details": [
+    {
+      "loop_id": "loop1",
+      "goal": "Create one verified text artifact from the supplied task.",
+      "role": "practitioner",
+      "profile_id": "practitioner.reference_nine_step",
+      "relationship": "starting",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "steps_complete",
+      "steps": [
+        {
+          "step": "orient",
+          "mode": "deterministic",
+          "output": "kernel:orient:structural_boundary",
+          "accepted": true
+        },
+        {
+          "step": "standardize_task",
+          "mode": "deterministic",
+          "output": "kernel:standardize_task:structural_boundary",
+          "accepted": true
+        },
+        {
+          "step": "frame_alternatives",
+          "mode": "deterministic",
+          "output": "kernel:frame_alternatives:structural_boundary",
+          "accepted": true
+        },
+        {
+          "step": "reconcile_horizon",
+          "mode": "deterministic",
+          "output": "kernel:reconcile_horizon:structural_boundary",
+          "accepted": true
+        },
+        {
+          "step": "assess_prepare",
+          "mode": "deterministic",
+          "output": "kernel:assess_prepare:structural_boundary",
+          "accepted": true
+        },
+        {
+          "step": "decide_next",
+          "mode": "deterministic",
+          "output": "kernel:decide_next:structural_boundary",
+          "accepted": true
+        },
+        {
+          "step": "how",
+          "mode": "deterministic",
+          "output": "kernel:how:structural_boundary",
+          "accepted": true
+        },
+        {
+          "step": "forecast_outcome",
+          "mode": "deterministic",
+          "output": "kernel:forecast_outcome:structural_boundary",
+          "accepted": true
+        },
+        {
+          "step": "act",
+          "mode": "non_deterministic",
+          "output": "stop_success",
+          "accepted": true
+        },
+        {
+          "step": "verify",
+          "mode": "deterministic",
+          "output": "kernel:verify:structural_boundary",
+          "accepted": true
+        },
+        {
+          "step": "calibrate",
+          "mode": "deterministic",
+          "output": "kernel:calibrate:structural_boundary",
+          "accepted": true
+        },
+        {
+          "step": "integrate_commit",
+          "mode": "deterministic",
+          "output": "kernel:integrate_commit:structural_boundary",
+          "accepted": true
+        },
+        {
+          "step": "route",
+          "mode": "deterministic",
+          "output": "kernel:route:structural_boundary",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "done"
+    },
+    {
+      "loop_id": "loop2",
+      "goal": "serve callable: context_loop:adaptive-context-orient",
+      "role": "intelligence",
+      "profile_id": "intelligence.context.serve",
+      "relationship": "retrieved_by",
+      "input_roles": [
+        "intelligence_reference"
+      ],
+      "output_roles": [
+        "context_intelligence"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "serve",
+          "mode": "deterministic",
+          "output": "serve:done",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop3",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "value/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop4",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "json_text/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop5",
+      "goal": "assemble one LLM work packet",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "llm_work_packet/v1"
+      ],
+      "output_roles": [
+        "prompt_assembly_snapshot/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "assembly:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop6",
+      "goal": "route one model request",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "steps_complete",
+      "steps": [
+        {
+          "step": "route",
+          "mode": "deterministic",
+          "output": "route:answered:fixture",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "done"
+    },
+    {
+      "loop_id": "loop7",
+      "goal": "model invocation: fixture:fixture-model",
+      "role": "practitioner",
+      "profile_id": "practitioner.reference_nine_step",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "invoke",
+          "mode": "non_deterministic",
+          "output": "invoke:answered",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop8",
+      "goal": "admit one untrusted model response",
+      "role": "solution",
+      "profile_id": "solution.validator",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "admit",
+          "mode": "deterministic",
+          "output": "response:admitted",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop9",
+      "goal": "serve callable: context_loop:adaptive-context-decide_next",
+      "role": "intelligence",
+      "profile_id": "intelligence.context.serve",
+      "relationship": "retrieved_by",
+      "input_roles": [
+        "intelligence_reference"
+      ],
+      "output_roles": [
+        "context_intelligence"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "serve",
+          "mode": "deterministic",
+          "output": "serve:done",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop10",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "value/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop11",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "json_text/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop12",
+      "goal": "assemble one LLM work packet",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "llm_work_packet/v1"
+      ],
+      "output_roles": [
+        "prompt_assembly_snapshot/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "assembly:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop13",
+      "goal": "route one model request",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "steps_complete",
+      "steps": [
+        {
+          "step": "route",
+          "mode": "deterministic",
+          "output": "route:answered:fixture",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "done"
+    },
+    {
+      "loop_id": "loop14",
+      "goal": "model invocation: fixture:fixture-model",
+      "role": "practitioner",
+      "profile_id": "practitioner.reference_nine_step",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "invoke",
+          "mode": "non_deterministic",
+          "output": "invoke:answered",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop15",
+      "goal": "admit one untrusted model response",
+      "role": "solution",
+      "profile_id": "solution.validator",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "admit",
+          "mode": "deterministic",
+          "output": "response:admitted",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop16",
+      "goal": "serve callable: context_loop:adaptive-context-how",
+      "role": "intelligence",
+      "profile_id": "intelligence.context.serve",
+      "relationship": "retrieved_by",
+      "input_roles": [
+        "intelligence_reference"
+      ],
+      "output_roles": [
+        "context_intelligence"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "serve",
+          "mode": "deterministic",
+          "output": "serve:done",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop17",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "value/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop18",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "json_text/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop19",
+      "goal": "assemble one LLM work packet",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "llm_work_packet/v1"
+      ],
+      "output_roles": [
+        "prompt_assembly_snapshot/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "assembly:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop20",
+      "goal": "route one model request",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "steps_complete",
+      "steps": [
+        {
+          "step": "route",
+          "mode": "deterministic",
+          "output": "route:answered:fixture",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "done"
+    },
+    {
+      "loop_id": "loop21",
+      "goal": "model invocation: fixture:fixture-model",
+      "role": "practitioner",
+      "profile_id": "practitioner.reference_nine_step",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "invoke",
+          "mode": "non_deterministic",
+          "output": "invoke:answered",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop22",
+      "goal": "admit one untrusted model response",
+      "role": "solution",
+      "profile_id": "solution.validator",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "admit",
+          "mode": "deterministic",
+          "output": "response:admitted",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop23",
+      "goal": "serve callable: context_loop:adaptive-context-act",
+      "role": "intelligence",
+      "profile_id": "intelligence.context.serve",
+      "relationship": "retrieved_by",
+      "input_roles": [
+        "intelligence_reference"
+      ],
+      "output_roles": [
+        "context_intelligence"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "serve",
+          "mode": "deterministic",
+          "output": "serve:done",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop24",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "value/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop25",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "json_text/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop26",
+      "goal": "assemble one LLM work packet",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "llm_work_packet/v1"
+      ],
+      "output_roles": [
+        "prompt_assembly_snapshot/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "assembly:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop27",
+      "goal": "route one model request",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "steps_complete",
+      "steps": [
+        {
+          "step": "route",
+          "mode": "deterministic",
+          "output": "route:answered:fixture",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "done"
+    },
+    {
+      "loop_id": "loop28",
+      "goal": "model invocation: fixture:fixture-model",
+      "role": "practitioner",
+      "profile_id": "practitioner.reference_nine_step",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "invoke",
+          "mode": "non_deterministic",
+          "output": "invoke:answered",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop29",
+      "goal": "admit one untrusted model response",
+      "role": "solution",
+      "profile_id": "solution.validator",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "admit",
+          "mode": "deterministic",
+          "output": "response:admitted",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop30",
+      "goal": "serve callable: context_loop:adaptive-context-act",
+      "role": "intelligence",
+      "profile_id": "intelligence.context.serve",
+      "relationship": "retrieved_by",
+      "input_roles": [
+        "intelligence_reference"
+      ],
+      "output_roles": [
+        "context_intelligence"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "serve",
+          "mode": "deterministic",
+          "output": "serve:done",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop31",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "value/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop32",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "json_text/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop33",
+      "goal": "assemble one LLM work packet",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "llm_work_packet/v1"
+      ],
+      "output_roles": [
+        "prompt_assembly_snapshot/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "assembly:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop34",
+      "goal": "route one model request",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "steps_complete",
+      "steps": [
+        {
+          "step": "route",
+          "mode": "deterministic",
+          "output": "route:answered:fixture",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "done"
+    },
+    {
+      "loop_id": "loop35",
+      "goal": "model invocation: fixture:fixture-model",
+      "role": "practitioner",
+      "profile_id": "practitioner.reference_nine_step",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "invoke",
+          "mode": "non_deterministic",
+          "output": "invoke:answered",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop36",
+      "goal": "admit one untrusted model response",
+      "role": "solution",
+      "profile_id": "solution.validator",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "admit",
+          "mode": "deterministic",
+          "output": "response:admitted",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop37",
+      "goal": "deterministic check: validate generated project input use",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "steps_complete",
+      "steps": [
+        {
+          "step": "load",
+          "mode": "deterministic",
+          "output": "load:done",
+          "accepted": true
+        },
+        {
+          "step": "choose",
+          "mode": "deterministic",
+          "output": "choose:done",
+          "accepted": true
+        },
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "act:done:dict",
+          "accepted": true
+        },
+        {
+          "step": "check",
+          "mode": "deterministic",
+          "output": "check:ok",
+          "accepted": true
+        },
+        {
+          "step": "commit",
+          "mode": "deterministic",
+          "output": "commit:done",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "done"
+    },
+    {
+      "loop_id": "loop38",
+      "goal": "execute solution adaptive.action.d98b5c833cf1dfda691d",
+      "role": "solution",
+      "profile_id": "solution.pipeline",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "generated_project_manifest/v1"
+      ],
+      "output_roles": [
+        "generated_project_manifest/v1",
+        "generated_project_execution/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "act:done",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop39",
+      "goal": "run core.generated_project for solution adaptive.action.d98b5c833cf1dfda691d",
+      "role": "solution",
+      "profile_id": "solution.atomic_component",
+      "relationship": "connected_from",
+      "input_roles": [
+        "generated_project_manifest/v1"
+      ],
+      "output_roles": [
+        "generated_project_execution/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "act:done",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop40",
+      "goal": "serve callable: context_loop:adaptive-context-verify",
+      "role": "intelligence",
+      "profile_id": "intelligence.context.serve",
+      "relationship": "retrieved_by",
+      "input_roles": [
+        "intelligence_reference"
+      ],
+      "output_roles": [
+        "context_intelligence"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "serve",
+          "mode": "deterministic",
+          "output": "serve:done",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop41",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "value/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop42",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "json_text/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop43",
+      "goal": "assemble one LLM work packet",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "llm_work_packet/v1"
+      ],
+      "output_roles": [
+        "prompt_assembly_snapshot/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "assembly:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop44",
+      "goal": "route one model request",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "steps_complete",
+      "steps": [
+        {
+          "step": "route",
+          "mode": "deterministic",
+          "output": "route:answered:fixture",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "done"
+    },
+    {
+      "loop_id": "loop45",
+      "goal": "model invocation: fixture:fixture-model",
+      "role": "practitioner",
+      "profile_id": "practitioner.reference_nine_step",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "invoke",
+          "mode": "non_deterministic",
+          "output": "invoke:answered",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop46",
+      "goal": "admit one untrusted model response",
+      "role": "solution",
+      "profile_id": "solution.validator",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "admit",
+          "mode": "deterministic",
+          "output": "response:admitted",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop47",
+      "goal": "serve callable: context_loop:adaptive-context-route",
+      "role": "intelligence",
+      "profile_id": "intelligence.context.serve",
+      "relationship": "retrieved_by",
+      "input_roles": [
+        "intelligence_reference"
+      ],
+      "output_roles": [
+        "context_intelligence"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "serve",
+          "mode": "deterministic",
+          "output": "serve:done",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop48",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "value/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop49",
+      "goal": "execute registered atomic primitive",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "atomic_primitive_request/v1"
+      ],
+      "output_roles": [
+        "json_text/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "atomic:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop50",
+      "goal": "assemble one LLM work packet",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [
+        "llm_work_packet/v1"
+      ],
+      "output_roles": [
+        "prompt_assembly_snapshot/v1"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "act",
+          "mode": "deterministic",
+          "output": "assembly:completed",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop51",
+      "goal": "route one model request",
+      "role": "practitioner",
+      "profile_id": "practitioner.code_execution",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "steps_complete",
+      "steps": [
+        {
+          "step": "route",
+          "mode": "deterministic",
+          "output": "route:answered:fixture",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "done"
+    },
+    {
+      "loop_id": "loop52",
+      "goal": "model invocation: fixture:fixture-model",
+      "role": "practitioner",
+      "profile_id": "practitioner.reference_nine_step",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "invoke",
+          "mode": "non_deterministic",
+          "output": "invoke:answered",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    },
+    {
+      "loop_id": "loop53",
+      "goal": "admit one untrusted model response",
+      "role": "solution",
+      "profile_id": "solution.validator",
+      "relationship": "spawned_by",
+      "input_roles": [],
+      "output_roles": [
+        "result"
+      ],
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "steps": [
+        {
+          "step": "admit",
+          "mode": "deterministic",
+          "output": "response:admitted",
+          "accepted": true
+        }
+      ],
+      "terminal_reason": "success_once"
+    }
+  ],
+  "run_history": {
+    "run_id": "adaptive-1ef605de5de76af301f48a00",
+    "events": 552,
+    "head_digest": "52e6a3e79714f85c5d33845ca7e0a077bd87105d1fdd1318e462863242426517",
+    "chain_intact": true,
+    "broken_at": [],
+    "path": "/home/username/loop-engine/docs/evidence/runs/learning-integrity-public-offline-20260904/adaptive-1ef605de5de76af301f48a00",
+    "product_outcome_bound": false,
+    "product_outcome_digest": "",
+    "terminal_code": ""
+  },
+  "solution_attempts_path": "/home/username/loop-engine/docs/evidence/runs/learning-integrity-public-offline-20260904/adaptive-1ef605de5de76af301f48a00/solution-attempts",
+  "solution_attempts_copy": {
+    "symlinks_preserved": true,
+    "skipped_outside_workspace": []
+  }
+}

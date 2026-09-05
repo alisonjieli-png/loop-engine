@@ -1,0 +1,795 @@
+{
+  "all_required_commands_exited_zero": true,
+  "all_required_source_snapshots_stable": true,
+  "clean_base_wheel_suite": {
+    "all_passed": true,
+    "captured_output_lines": 0,
+    "elapsed_seconds": 166.077,
+    "failures": [],
+    "missing_dependencies": [],
+    "optional_adapters_not_tested": [
+      "duckdb",
+      "mcp",
+      "model2vec",
+      "numpy",
+      "opentelemetry-sdk",
+      "pandas",
+      "sklearn"
+    ],
+    "passed": 2466,
+    "provider_calls_made": 0,
+    "record_type": "loop_engine_self_test_summary/v1",
+    "total": 2466
+  },
+  "created_at": "2026-09-05T01:16:33.100615+00:00",
+  "distribution_integrity": {
+    "all_passed": true,
+    "artifacts": [
+      {
+        "bytes": 2036969,
+        "path": "/tmp/loop-engine-final-verification.W0wq3F/dist/loop_engine-0.1.0-py3-none-any.whl",
+        "sha256": "ecaeb6a7b3bca17cd0b2f70871541b22f1e66df19d4da84cbc7908a7239f148d"
+      },
+      {
+        "bytes": 1768815,
+        "path": "/tmp/loop-engine-final-verification.W0wq3F/dist/loop_engine-0.1.0.tar.gz",
+        "sha256": "ee80ae65a6758393fdf80a4206a000c318acb9cb63da555eae0ab96c7a1058fb"
+      }
+    ],
+    "passed": 4,
+    "record_type": "final_distribution_integrity/v1",
+    "tests": [
+      {
+        "passed": true,
+        "test": "wheel_has_no_local_run_or_evaluator_paths",
+        "unexpected_paths": []
+      },
+      {
+        "passed": true,
+        "test": "sdist_has_no_local_run_or_evaluator_paths",
+        "unexpected_paths": []
+      },
+      {
+        "mismatched": [],
+        "missing": [],
+        "passed": true,
+        "source_file_count": 466,
+        "test": "wheel_bodies_match_frozen_runtime_sources"
+      },
+      {
+        "mismatched": [],
+        "missing": [],
+        "passed": true,
+        "source_file_count": 466,
+        "test": "sdist_bodies_match_frozen_runtime_sources"
+      }
+    ],
+    "total": 4
+  },
+  "evidence_files": [
+    {
+      "bytes": 933,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/build-receipt.json",
+      "sha256": "3d5decfef6bb98e748c0baed5e3f4dad61260e1db9dd41ed2fab3cd4e34b60a2"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/build-source-after.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/build-source-before.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 271,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/build-stderr.txt",
+      "sha256": "b181eea8a45f807f5fa1607f003eb1ae5363271ec186d4780a7fd3630cdea57e"
+    },
+    {
+      "bytes": 176565,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/build-stdout.txt",
+      "sha256": "9c060576f9569b0cd4d39b226b58c5216cfe5ff6d41d772c248055ed8faf3f34"
+    },
+    {
+      "bytes": 2795,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/check_distribution.py",
+      "sha256": "d87c227ad815e56370fbcecf2cf9b2c45ff1fd3a379d6d38e8c7eda9c052fa87"
+    },
+    {
+      "bytes": 885,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/conformance-receipt.json",
+      "sha256": "0f2f8d4f11710ba470b9e4e08e267c6c1f37ac0784b85d827f3aa0444a62db43"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/conformance-source-after.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/conformance-source-before.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 0,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/conformance-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1563,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/conformance-stdout.txt",
+      "sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+    },
+    {
+      "bytes": 1016,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/dependency-cache-receipt.json",
+      "sha256": "0a944db61583b19b47713efea03012ec4b9e5487a3d68eb4b1c4a48bfafc29d6"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/dependency-cache-source-after.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/dependency-cache-source-before.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 0,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/dependency-cache-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2716,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/dependency-cache-stdout.txt",
+      "sha256": "c0e382f7a1d0b6c2cf6b2bc11c77dedf60d7f3fb0751216c6b6bcf8b2f38b807"
+    },
+    {
+      "bytes": 2716,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/dependency-wheelhouse-manifest.json",
+      "sha256": "c0e382f7a1d0b6c2cf6b2bc11c77dedf60d7f3fb0751216c6b6bcf8b2f38b807"
+    },
+    {
+      "bytes": 856,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/diff-check-receipt.json",
+      "sha256": "1cdd7f2036dca31c924c000585a701e7fdef9dba6a1a9cd27789bee373472a7b"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/diff-check-source-after.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/diff-check-source-before.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 0,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/diff-check-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/diff-check-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1078,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/distribution-integrity-receipt.json",
+      "sha256": "e2b1459c4b1dd3977fc82ed27947fb570a6e7c37157a1d53be46c1b0ad738585"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/distribution-integrity-source-after.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/distribution-integrity-source-before.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 0,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/distribution-integrity-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1160,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/distribution-integrity-stdout.txt",
+      "sha256": "0af0663761963136a4d2ba7d84f0370a7a156a434f62f3da58189130fae5403e"
+    },
+    {
+      "bytes": 3452,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/finalize.py",
+      "sha256": "defa68b6ceabcf841b2ff5a6636bac5df406f43694fa61c017f3090c387be7a7"
+    },
+    {
+      "bytes": 2393,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/recover_cached_dependencies.py",
+      "sha256": "6c40a4e80e9aa57fa70974a52f1eb6c389f05e65a041dcb35b47b964e4ec53d4"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/source-baseline.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 1054,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/source-full-receipt.json",
+      "sha256": "a889e4fb996e9aa37dd98f49c28699b81c90efbe5ce204579230b54d470969f2"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/source-full-source-after.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/source-full-source-before.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 848,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/source-full-stderr.txt",
+      "sha256": "11f1c58c7dd8749bb6cc39853c847b9d23337399dee6bfee09f6a755000199f1"
+    },
+    {
+      "bytes": 279,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/source-full-stdout.txt",
+      "sha256": "291cdbb93661d4240f84073de2f71d1dec79a580fa5bd98825dce131aeb25f6a"
+    },
+    {
+      "bytes": 1705,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/targeted-receipt.json",
+      "sha256": "55639a0e536c01149896261408697186606155e0d8051511f67771680987291c"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/targeted-source-after.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/targeted-source-before.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 0,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/targeted-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 13974,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/targeted-stdout.txt",
+      "sha256": "c4ab03a0ac1de99b2b134e4d9226923521e2b8ee32d9dfa2cc3df381068d4864"
+    },
+    {
+      "bytes": 917,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/venv-create-receipt.json",
+      "sha256": "a9290c6dca92e5a0de0a11f22810b540d85f5fef48c2595d51b6ea44c0256a5b"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/venv-create-source-after.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/venv-create-source-before.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 0,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/venv-create-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/venv-create-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3492,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/verify.py",
+      "sha256": "0352a5efcf76ff3522db026cc2064519745619a2e105b5d756e2a579a2ae6434"
+    },
+    {
+      "bytes": 992,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-conformance-receipt.json",
+      "sha256": "f35ea686cdc2eb01383e18c01d82a9a2cc44b520d971fafc8b74648aa85d88d8"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-conformance-source-after.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-conformance-source-before.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 0,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-conformance-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1563,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-conformance-stdout.txt",
+      "sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+    },
+    {
+      "bytes": 1143,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-full-receipt.json",
+      "sha256": "6db773a92df9b96f4250cdb3bf62c0c45d3ab79cfe0e8f2fbb777ae5740a1eb8"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-full-source-after.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-full-source-before.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 848,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-full-stderr.txt",
+      "sha256": "11f1c58c7dd8749bb6cc39853c847b9d23337399dee6bfee09f6a755000199f1"
+    },
+    {
+      "bytes": 373,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-full-stdout.txt",
+      "sha256": "01d6d0108d85262a750501c46c1a777b24d4e3c443c9deb168698a03627dc97d"
+    },
+    {
+      "bytes": 1246,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-identity-receipt.json",
+      "sha256": "e36200707ef8967a6da0d11061de1b65223b0aabd651dd15fdeb92f22e700b49"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-identity-source-after.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-identity-source-before.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 0,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-identity-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 510,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-identity-stdout.txt",
+      "sha256": "acc12efffd1ac618dd65348984d20c83b4f8095a0e7661d5c123cb163304c49a"
+    },
+    {
+      "bytes": 1168,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-install-receipt.json",
+      "sha256": "64a775e5150c64ae5a3c54b21faf482fe59d170f50aca60c124a66145116c380"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-install-source-after.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-install-source-before.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 0,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-install-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1396,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-install-stdout.txt",
+      "sha256": "335a0e8f7c4f2f3b7b6e13d494981e9661e18b079ea34567bba25a41bd265a4f"
+    },
+    {
+      "bytes": 972,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-pip-check-receipt.json",
+      "sha256": "c14a455aab217342070c046688687a365a2f4cfa1176934fd6c5bc1aba7caa8b"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-pip-check-source-after.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 54832,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-pip-check-source-before.json",
+      "sha256": "1112e155bc6ecd625d315e40bc97c9657ba2bff6f8bffd98eae5706667a9025e"
+    },
+    {
+      "bytes": 0,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-pip-check-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 30,
+      "path": "/tmp/loop-engine-final-verification.W0wq3F/wheel-pip-check-stdout.txt",
+      "sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+    }
+  ],
+  "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+  "limitations": [
+    "Prior transitional source result 2503/2504 is superseded failure evidence, not deleted.",
+    "The base-wheel environment omits optional data and integration dependencies; consult explicit not-tested entries.",
+    "No live model quality, causal assistance effect, or Kaggle competition result is established.",
+    "Existing worktree edits were preserved; no source edits or commits were made by this verification task."
+  ],
+  "receipts": {
+    "build": {
+      "command": [
+        "python3",
+        "-m",
+        "build",
+        "--no-isolation",
+        "--outdir",
+        "/tmp/loop-engine-final-verification.W0wq3F/dist"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 2.9932749529834837,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T01:12:05.474127+00:00",
+      "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+      "package_network_disabled": true,
+      "phase": "build",
+      "provider_credentials_removed": true,
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 466,
+      "started_at": "2026-09-05T01:12:02.480843+00:00",
+      "stderr": "/tmp/loop-engine-final-verification.W0wq3F/build-stderr.txt",
+      "stderr_sha256": "b181eea8a45f807f5fa1607f003eb1ae5363271ec186d4780a7fd3630cdea57e",
+      "stdout": "/tmp/loop-engine-final-verification.W0wq3F/build-stdout.txt",
+      "stdout_sha256": "9c060576f9569b0cd4d39b226b58c5216cfe5ff6d41d772c248055ed8faf3f34"
+    },
+    "conformance": {
+      "command": [
+        "python3",
+        "-m",
+        "loop_engine",
+        "--conformance"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 30.339152914006263,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T01:11:55.583487+00:00",
+      "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+      "package_network_disabled": true,
+      "phase": "conformance",
+      "provider_credentials_removed": true,
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 466,
+      "started_at": "2026-09-05T01:11:25.244330+00:00",
+      "stderr": "/tmp/loop-engine-final-verification.W0wq3F/conformance-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-final-verification.W0wq3F/conformance-stdout.txt",
+      "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+    },
+    "dependency-cache": {
+      "command": [
+        "python3",
+        "/tmp/loop-engine-final-verification.W0wq3F/recover_cached_dependencies.py"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 0.8774464279413223,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T01:13:02.070184+00:00",
+      "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+      "package_network_disabled": true,
+      "phase": "dependency-cache",
+      "provider_credentials_removed": true,
+      "result_summary": {
+        "record_type": "offline_dependency_wheel_recovery/v1"
+      },
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 466,
+      "started_at": "2026-09-05T01:13:01.192727+00:00",
+      "stderr": "/tmp/loop-engine-final-verification.W0wq3F/dependency-cache-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-final-verification.W0wq3F/dependency-cache-stdout.txt",
+      "stdout_sha256": "c0e382f7a1d0b6c2cf6b2bc11c77dedf60d7f3fb0751216c6b6bcf8b2f38b807"
+    },
+    "diff-check": {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 0.06503988103941083,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T01:15:07.053097+00:00",
+      "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+      "package_network_disabled": true,
+      "phase": "diff-check",
+      "provider_credentials_removed": true,
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 466,
+      "started_at": "2026-09-05T01:15:06.988054+00:00",
+      "stderr": "/tmp/loop-engine-final-verification.W0wq3F/diff-check-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-final-verification.W0wq3F/diff-check-stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "distribution-integrity": {
+      "command": [
+        "python3",
+        "/tmp/loop-engine-final-verification.W0wq3F/check_distribution.py"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 0.24186890106648207,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T01:15:06.898435+00:00",
+      "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+      "package_network_disabled": true,
+      "phase": "distribution-integrity",
+      "provider_credentials_removed": true,
+      "result_summary": {
+        "all_passed": true,
+        "passed": 4,
+        "record_type": "final_distribution_integrity/v1",
+        "total": 4
+      },
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 466,
+      "started_at": "2026-09-05T01:15:06.656552+00:00",
+      "stderr": "/tmp/loop-engine-final-verification.W0wq3F/distribution-integrity-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-final-verification.W0wq3F/distribution-integrity-stdout.txt",
+      "stdout_sha256": "0af0663761963136a4d2ba7d84f0370a7a156a434f62f3da58189130fae5403e"
+    },
+    "source-full": {
+      "command": [
+        "python3",
+        "-m",
+        "loop_engine",
+        "--self-test",
+        "--format",
+        "json"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 168.6987701950129,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T01:13:44.624420+00:00",
+      "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+      "package_network_disabled": true,
+      "phase": "source-full",
+      "provider_credentials_removed": true,
+      "result_summary": {
+        "all_passed": true,
+        "passed": 2504,
+        "record_type": "loop_engine_self_test_summary/v1",
+        "total": 2504
+      },
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 466,
+      "started_at": "2026-09-05T01:10:55.925637+00:00",
+      "stderr": "/tmp/loop-engine-final-verification.W0wq3F/source-full-stderr.txt",
+      "stderr_sha256": "11f1c58c7dd8749bb6cc39853c847b9d23337399dee6bfee09f6a755000199f1",
+      "stdout": "/tmp/loop-engine-final-verification.W0wq3F/source-full-stdout.txt",
+      "stdout_sha256": "291cdbb93661d4240f84073de2f71d1dec79a580fa5bd98825dce131aeb25f6a"
+    },
+    "targeted": {
+      "command": [
+        "python3",
+        "-c",
+        "import json; from loop_engine.core import model_response_admission as a, model_gateway_accounting_checks as b, model_gateway as c; from loop_engine.code_nodes import solution_model_port as d; import fresh_shaped_cases as e; out=[]; all_tests=[]; exec(\"for m in (a,b,c,d,e):\\n r=m.self_test(); t=r[\\\"tests\\\"]; out.append({\\\"module\\\":m.__name__,\\\"result\\\":r}); all_tests.extend(t)\"); passed=sum(t[\"passed\"] for t in all_tests); print(json.dumps({\"record_type\":\"final_targeted_checks/v1\",\"passed\":passed,\"total\":len(all_tests),\"all_passed\":passed==len(all_tests),\"provider_calls\":0,\"modules\":out},sort_keys=True,indent=2)); raise SystemExit(0 if passed==len(all_tests) else 1)"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 3.2859722869470716,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T01:11:29.733434+00:00",
+      "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+      "package_network_disabled": true,
+      "phase": "targeted",
+      "provider_credentials_removed": true,
+      "result_summary": {
+        "all_passed": true,
+        "passed": 79,
+        "provider_calls": 0,
+        "record_type": "final_targeted_checks/v1",
+        "total": 79
+      },
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 466,
+      "started_at": "2026-09-05T01:11:26.447453+00:00",
+      "stderr": "/tmp/loop-engine-final-verification.W0wq3F/targeted-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-final-verification.W0wq3F/targeted-stdout.txt",
+      "stdout_sha256": "c4ab03a0ac1de99b2b134e4d9226923521e2b8ee32d9dfa2cc3df381068d4864"
+    },
+    "venv-create": {
+      "command": [
+        "python3",
+        "-m",
+        "venv",
+        "/tmp/loop-engine-final-verification.W0wq3F/wheel-env"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 2.1118320492096245,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T01:13:04.252253+00:00",
+      "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+      "package_network_disabled": true,
+      "phase": "venv-create",
+      "provider_credentials_removed": true,
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 466,
+      "started_at": "2026-09-05T01:13:02.140407+00:00",
+      "stderr": "/tmp/loop-engine-final-verification.W0wq3F/venv-create-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-final-verification.W0wq3F/venv-create-stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "wheel-conformance": {
+      "command": [
+        "/tmp/loop-engine-final-verification.W0wq3F/wheel-env/bin/python",
+        "-m",
+        "loop_engine",
+        "--conformance"
+      ],
+      "cwd": "/tmp/loop-engine-final-verification.W0wq3F/outside-repository",
+      "elapsed_seconds": 21.8298720670864,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T01:14:38.109818+00:00",
+      "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+      "package_network_disabled": true,
+      "phase": "wheel-conformance",
+      "provider_credentials_removed": true,
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 466,
+      "started_at": "2026-09-05T01:14:16.279926+00:00",
+      "stderr": "/tmp/loop-engine-final-verification.W0wq3F/wheel-conformance-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-final-verification.W0wq3F/wheel-conformance-stdout.txt",
+      "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+    },
+    "wheel-full": {
+      "command": [
+        "/tmp/loop-engine-final-verification.W0wq3F/wheel-env/bin/python",
+        "-m",
+        "loop_engine",
+        "--self-test",
+        "--format",
+        "json"
+      ],
+      "cwd": "/tmp/loop-engine-final-verification.W0wq3F/outside-repository",
+      "elapsed_seconds": 168.92527740984224,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T01:16:22.330262+00:00",
+      "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+      "package_network_disabled": true,
+      "phase": "wheel-full",
+      "provider_credentials_removed": true,
+      "result_summary": {
+        "all_passed": true,
+        "passed": 2466,
+        "record_type": "loop_engine_self_test_summary/v1",
+        "total": 2466
+      },
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 466,
+      "started_at": "2026-09-05T01:13:33.404978+00:00",
+      "stderr": "/tmp/loop-engine-final-verification.W0wq3F/wheel-full-stderr.txt",
+      "stderr_sha256": "11f1c58c7dd8749bb6cc39853c847b9d23337399dee6bfee09f6a755000199f1",
+      "stdout": "/tmp/loop-engine-final-verification.W0wq3F/wheel-full-stdout.txt",
+      "stdout_sha256": "01d6d0108d85262a750501c46c1a777b24d4e3c443c9deb168698a03627dc97d"
+    },
+    "wheel-identity": {
+      "command": [
+        "/tmp/loop-engine-final-verification.W0wq3F/wheel-env/bin/python",
+        "-c",
+        "import json,sys,loop_engine,importlib.metadata; print(json.dumps({\"import_file\":loop_engine.__file__,\"python\":sys.version,\"sys_prefix\":sys.prefix,\"packages\":{d.metadata[\"Name\"]:d.version for d in importlib.metadata.distributions()}},sort_keys=True,indent=2))"
+      ],
+      "cwd": "/tmp/loop-engine-final-verification.W0wq3F/outside-repository",
+      "elapsed_seconds": 0.09671455412171781,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T01:13:33.165797+00:00",
+      "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+      "package_network_disabled": true,
+      "phase": "wheel-identity",
+      "provider_credentials_removed": true,
+      "result_summary": {},
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 466,
+      "started_at": "2026-09-05T01:13:33.069064+00:00",
+      "stderr": "/tmp/loop-engine-final-verification.W0wq3F/wheel-identity-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-final-verification.W0wq3F/wheel-identity-stdout.txt",
+      "stdout_sha256": "acc12efffd1ac618dd65348984d20c83b4f8095a0e7661d5c123cb163304c49a"
+    },
+    "wheel-install": {
+      "command": [
+        "/tmp/loop-engine-final-verification.W0wq3F/wheel-env/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-index",
+        "--find-links",
+        "/tmp/loop-engine-final-verification.W0wq3F/dependency-wheelhouse",
+        "/tmp/loop-engine-final-verification.W0wq3F/dist/loop_engine-0.1.0-py3-none-any.whl"
+      ],
+      "cwd": "/tmp/loop-engine-final-verification.W0wq3F/outside-repository",
+      "elapsed_seconds": 1.8394977059215307,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T01:13:17.754996+00:00",
+      "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+      "package_network_disabled": true,
+      "phase": "wheel-install",
+      "provider_credentials_removed": true,
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 466,
+      "started_at": "2026-09-05T01:13:15.915487+00:00",
+      "stderr": "/tmp/loop-engine-final-verification.W0wq3F/wheel-install-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-final-verification.W0wq3F/wheel-install-stdout.txt",
+      "stdout_sha256": "335a0e8f7c4f2f3b7b6e13d494981e9661e18b079ea34567bba25a41bd265a4f"
+    },
+    "wheel-pip-check": {
+      "command": [
+        "/tmp/loop-engine-final-verification.W0wq3F/wheel-env/bin/python",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "cwd": "/tmp/loop-engine-final-verification.W0wq3F/outside-repository",
+      "elapsed_seconds": 0.3044345830567181,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T01:14:16.199345+00:00",
+      "head": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+      "package_network_disabled": true,
+      "phase": "wheel-pip-check",
+      "provider_credentials_removed": true,
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 466,
+      "started_at": "2026-09-05T01:14:15.894896+00:00",
+      "stderr": "/tmp/loop-engine-final-verification.W0wq3F/wheel-pip-check-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-final-verification.W0wq3F/wheel-pip-check-stdout.txt",
+      "stdout_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+    }
+  },
+  "record_type": "final_offline_verification/v1",
+  "scope": "Offline source, base-wheel, conformance, and package verification only.",
+  "source_changes_from_baseline": [],
+  "source_file_count": 466,
+  "source_suite": {
+    "all_passed": true,
+    "captured_output_lines": 208,
+    "elapsed_seconds": 165.403,
+    "failures": [],
+    "missing_dependencies": [],
+    "optional_adapters_not_tested": [],
+    "passed": 2504,
+    "provider_calls_made": 0,
+    "record_type": "loop_engine_self_test_summary/v1",
+    "total": 2504
+  }
+}

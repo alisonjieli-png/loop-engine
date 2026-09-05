@@ -199,6 +199,20 @@ Pass the same `RuntimeObservationServices` object used by the spawning Loop.
 In this example, `parent_loop` is the independently authorized review
 Practitioner.
 
+New manifests follow the open Agent Skills frontmatter: `name`, `description`,
+and the optional `license`, `compatibility`, `metadata`, and experimental
+`allowed-tools` fields. Loop Engine version, title, and tags use namespaced
+metadata keys. Known older Loop Engine fields remain readable under an
+explicit legacy policy and are not described as standard-compatible. Unknown
+top-level fields fail closed. A directory must contain exactly one
+case-insensitive `SKILL.md` file.
+
+Discovery supports a byte-bounded startup projection. Each card includes the
+skill identity, description, version, digest, lifecycle, source, and manifest
+policy. It excludes full instructions, supporting paths, and requested tools.
+When a card does not fit the declared projection budget, the projection records
+it as omitted instead of silently exceeding the budget.
+
 ```python
 from hashlib import sha256
 from loop_engine import SkillAdmissionRecord, SkillLoadPurpose
@@ -252,6 +266,21 @@ active task context. It can load only with
 requires `admit()` with a matching `SkillAdmissionRecord`. A changed manifest
 cannot reuse the record. Loading a skill does not register it, execute its
 scripts, approve effects, or promote it.
+
+The repository also contains an offline passive state-context candidate based
+on the SKILL.state research direction. It combines one admitted procedure, an
+exact state schema, a trusted state snapshot, the latest observation, and any
+explicitly selected history material. It preserves task, run, branch, graph,
+Loop, tenant, privacy, destination, revision, digest, and byte-budget
+bindings. State-sufficiency flags require selected history material rather
+than silently discarding a potentially relevant observation.
+
+This candidate is not connected to the product prompt renderer. It does not
+read Run History, update state, call a model, execute a tool, or grant
+authority. Product integration must resolve its history and materialization
+references through existing authoritative services and preserve the separate
+trust and privacy class of every part. See the dated
+[long-horizon research review](../../research/LONG-HORIZON-RECURRENT-SKILLS-AND-STATE-2026-09-04.md).
 
 ## Shared observer
 

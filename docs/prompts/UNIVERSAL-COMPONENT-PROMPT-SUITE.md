@@ -14,9 +14,6 @@ Use the prompts in this order:
 4. [Continuous component conformance](CONTINUOUS-COMPONENT-CONFORMANCE.md)
    after each meaningful implementation batch or commit.
 
-5. [Strict everything-is-a-Loop primitives](STRICT-EVERYTHING-IS-A-LOOP-PRIMITIVES.md)
-   for native string, JSON, mapping, path, command, and schema migration.
-
 All four prompts use the same architectural distinction:
 
 ```text
@@ -30,3 +27,7 @@ independently governed operation
 They do not authorize an active `LoopNode` class, another runtime, another
 graph authority, another intelligence layer, or a task-specific generic
 solver branch.
+
+The earlier strict-primitives prompt is design history. Its rule that every
+semantic value and transformation becomes a Loop conflicts with constitutional
+rule LE-NODE-008. Do not add it to this suite or load it as a current mandate.

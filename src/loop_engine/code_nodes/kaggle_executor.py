@@ -14,8 +14,8 @@ Flow::
 
     resolve roles from sample_submission  ->  run the next-action Loop to get a
     PLAN (which estimator, whether to encode / impute)  ->  execute that plan with
-    a real scikit-learn / LightGBM pipeline  ->  cross-validate for an honest local
-    score  ->  write submission.csv in the template's exact shape.
+    a real scikit-learn / LightGBM pipeline  ->  compute a cross-validated local
+    diagnostic  ->  write submission.csv in the template's exact shape.
 
 The estimator is chosen by the loop's proposals when they name one, else by a
 deterministic default (histogram gradient boosting — a strong tabular default;
@@ -25,13 +25,13 @@ file with the Kaggle command-line tool; this module never makes an external call
 
 from __future__ import annotations
 
+import csv
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Sequence
 
 import numpy as np
 import pandas as pd
-
 
 # ---------------------------------------------------------------------------
 # Role resolution — the sample submission is the authority on output shape.
@@ -49,22 +49,67 @@ class TaskRoles:
     sample_shape: tuple = (0, 0)
 
 
-def resolve_roles(train: pd.DataFrame, sample: pd.DataFrame) -> TaskRoles:
+class TabularExecutionContractError(ValueError):
+    """Base error for input contracts the tabular executor cannot admit."""
+
+
+class UnsupportedTabularContractError(TabularExecutionContractError):
+    """A valid source contract is outside the single-target executor."""
+
+
+class AmbiguousTabularContractError(TabularExecutionContractError):
+    """The supplied tables do not identify one unambiguous target."""
+
+
+class NoUsableTabularFeaturesError(UnsupportedTabularContractError):
+    """Preprocessing left no feature that the tabular executor can use."""
+
+
+def _validate_sample_columns(columns: Sequence[object]) -> tuple[object, object]:
+    names = tuple(columns)
+    if len(names) != 2 or len(set(names)) != 2:
+        raise UnsupportedTabularContractError(
+            "the single-target executor requires exactly two unique "
+            "sample-submission columns")
+    return names[0], names[1]
+
+
+def _csv_header(path: str) -> tuple[str, ...]:
+    """Read the unmangled CSV header so duplicate fields remain observable."""
+    with open(path, newline="", encoding="utf-8", errors="replace") as handle:
+        header = next(csv.reader(handle), None)
+    if not header:
+        raise AmbiguousTabularContractError(
+            f"CSV has no readable header: {path}")
+    return tuple(header)
+
+
+def resolve_roles(
+    train: pd.DataFrame, sample: pd.DataFrame,
+    test: pd.DataFrame | None = None,
+) -> TaskRoles:
     """Derive id/target/problem-type from the sample submission + train frame.
 
     The sample submission's first column is the row identifier and its remaining
     column(s) are what must be predicted — this is the template contract, not a
     name guess.  Whether the target is a class label or a probability is read
     from the training target's own values, never assumed."""
-    id_col = sample.columns[0]
-    target_col = sample.columns[1] if len(sample.columns) > 1 else sample.columns[0]
-    # The training frame carries the real target values under the same name.
+    id_col, target_col = _validate_sample_columns(sample.columns)
     if target_col not in train.columns:
-        # Some competitions name the sample column differently from train; fall
-        # back to "the train column absent from the sample id" heuristic.
-        cand = [c for c in train.columns if c != id_col
-                and c not in sample.columns]
-        target_col = cand[-1] if cand else target_col
+        raise AmbiguousTabularContractError(
+            f"sample-submission target {target_col!r} is absent from train")
+    if test is not None:
+        if target_col in test.columns:
+            raise AmbiguousTabularContractError(
+                f"selected target {target_col!r} also appears in test")
+        train_only = [column for column in train.columns
+                      if column not in set(test.columns)]
+        unexplained = [column for column in train_only
+                       if column != target_col]
+        if unexplained:
+            raise AmbiguousTabularContractError(
+                f"train-only columns other than target {target_col!r}: "
+                f"{unexplained!r}")
     y = train[target_col] if target_col in train.columns else None
     proba = False
     problem = "classification"
@@ -164,19 +209,20 @@ def _build_estimator(family: str, problem: str, *, conservative: bool = False):
             kw["eval_metric"] = "logloss"
         return xgb.XGBClassifier(**kw) if clf else xgb.XGBRegressor(**kw)
     if family == "rf":
-        from sklearn.ensemble import (RandomForestClassifier,
-                                      RandomForestRegressor)
+        from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
         kw = dict(n_estimators=n_est, n_jobs=-1, random_state=0,
                   min_samples_leaf=5 if conservative else 1)
         return (RandomForestClassifier(**kw) if clf
                 else RandomForestRegressor(**kw))
     if family in ("logreg", "linear", "ridge"):
-        from sklearn.linear_model import (LogisticRegression, Ridge)
+        from sklearn.linear_model import LogisticRegression, Ridge
         return (LogisticRegression(max_iter=2000)
                 if clf else Ridge())
     # default: histogram gradient boosting
-    from sklearn.ensemble import (HistGradientBoostingClassifier,
-                                  HistGradientBoostingRegressor)
+    from sklearn.ensemble import (
+        HistGradientBoostingClassifier,
+        HistGradientBoostingRegressor,
+    )
     kw = dict(random_state=0)
     if conservative:
         kw.update(max_leaf_nodes=15, min_samples_leaf=30, l2_regularization=1.0)
@@ -361,7 +407,7 @@ def _prepare_features(train: pd.DataFrame, test: pd.DataFrame, roles: TaskRoles)
 
 
 # ---------------------------------------------------------------------------
-# The executor — plan in, real submission file + honest local score out.
+# The executor — plan in, real submission file + local diagnostic out.
 # ---------------------------------------------------------------------------
 
 
@@ -388,22 +434,32 @@ def execute_tabular(train_csv: str, test_csv: str, sample_csv: str,
     """Execute a tabular plan end to end and write a submittable file.
 
     ``proposed_keys`` are the loop's proposed move keys; they steer the estimator
-    choice.  Returns an honest cross-validated local score alongside the written
-    path — the local score is what we know before Kaggle grades the hidden half.
+    choice. Returns a cross-validated local diagnostic alongside the written
+    path. It is not an official or leaderboard-equivalent metric unless an
+    independent competition contract establishes that equivalence.
 
-    ``output_probabilities`` overrides the sample-derived shape: pass True when
-    the OFFICIAL metric is a ranking metric (ROC-AUC) even though the sample
-    shows hard labels — probabilities score strictly better under AUC.  The
-    local metric then switches to out-of-fold ROC-AUC so the number we quote is
-    the number the leaderboard grades (the metric-confirmation rule)."""
-    from sklearn.model_selection import (StratifiedKFold, KFold,
-                                         cross_val_predict, cross_val_score)
+    ``output_probabilities`` overrides the sample-derived shape. When true, the
+    local diagnostic switches to out-of-fold ROC-AUC. The caller must establish
+    any relationship to the official metric independently."""
     from sklearn.metrics import accuracy_score, roc_auc_score
+    from sklearn.model_selection import (
+        KFold,
+        StratifiedKFold,
+        cross_val_predict,
+        cross_val_score,
+    )
 
+    train_header = _csv_header(train_csv)
+    test_header = _csv_header(test_csv)
+    _validate_sample_columns(_csv_header(sample_csv))
+    for label, header in (("train", train_header), ("test", test_header)):
+        if len(header) != len(set(header)):
+            raise AmbiguousTabularContractError(
+                f"{label} CSV contains duplicate column names")
     train = pd.read_csv(train_csv)
     test = pd.read_csv(test_csv)
     sample = pd.read_csv(sample_csv)
-    roles = resolve_roles(train, sample)
+    roles = resolve_roles(train, sample, test)
     family = estimator_from_moves(proposed_keys, roles.problem)
 
     # Execute the council's proposed feature engineering (generically detected),
@@ -412,6 +468,9 @@ def execute_tabular(train_csv: str, test_csv: str, sample_csv: str,
                                                  proposed_keys)
     y = train[roles.target_col].values
     Xtr, Xte, cols = _prepare_features(train, test, roles)
+    if Xtr.shape[1] == 0:
+        raise NoUsableTabularFeaturesError(
+            "preprocessing left no usable feature columns")
     # Conservative capacity when the data is small OR the council asked for a
     # regularized/conservative/robust model — small tabular sets overfit big
     # boosters, and the council flagged exactly this risk on Titanic.
@@ -421,12 +480,8 @@ def execute_tabular(train_csv: str, test_csv: str, sample_csv: str,
                                              "shrink", "penal")))
     est = _build_estimator(family, roles.problem, conservative=conservative)
 
-    # Honest local score by cross-validation (no leakage: folds are internal).
-    # For a hard-label submission we report ACCURACY — the metric the leaderboard
-    # actually grades — because a healthy roc_auc (a ranking metric) can hide a
-    # poor accuracy, which is exactly how the first Titanic run misled us.
-    # When probabilities are the shipped artifact, the honest local metric is
-    # out-of-fold ROC-AUC: quote what the leaderboard grades, never a proxy.
+    # Cross-validation supplies a local diagnostic. It is not called an official
+    # metric without a separately reviewed competition metric contract.
     force_proba = (roles.proba if output_probabilities is None
                    else bool(output_probabilities))
     if roles.problem == "classification" and force_proba:
@@ -471,7 +526,8 @@ def execute_tabular(train_csv: str, test_csv: str, sample_csv: str,
 
 
 def self_test() -> dict:
-    import tempfile, os
+    import os
+    import tempfile
     results: list[dict] = []
 
     def check(name: str, ok: bool, detail: str = "") -> None:
@@ -506,7 +562,7 @@ def self_test() -> dict:
                          "days": np.arange(20.), "y": [0, 1] * 10})
     _fte = _ftr.drop(columns="y").copy()
     _fsa = pd.DataFrame({"id": range(20), "y": [0] * 20})
-    _froles = resolve_roles(_ftr, _fsa)
+    _froles = resolve_roles(_ftr, _fsa, _fte)
     _, _, _named = _engineer_features(
         _ftr, _fte, _froles, ("ratio = hours / (days + 1)",))
     _, _, _unnamed = _engineer_features(
@@ -530,13 +586,49 @@ def self_test() -> dict:
     te = df.iloc[200:].drop(columns=["y"]).copy()
     samp = pd.DataFrame({"id": te["id"], "y": 0})
 
+    try:
+        resolve_roles(tr, pd.DataFrame({
+            "id": te["id"], "class_a": 0.5, "class_b": 0.5,
+        }), te)
+    except UnsupportedTabularContractError:
+        check("multiple_submission_outputs_are_rejected", True)
+    else:
+        check("multiple_submission_outputs_are_rejected", False)
+
+    duplicate_sample = pd.DataFrame(
+        np.zeros((len(te), 2)), columns=["id", "id"])
+    try:
+        resolve_roles(tr, duplicate_sample, te)
+    except UnsupportedTabularContractError:
+        check("duplicate_submission_columns_are_rejected", True)
+    else:
+        check("duplicate_submission_columns_are_rejected", False)
+
+    try:
+        resolve_roles(tr, pd.DataFrame({"id": te["id"], "unknown": 0}), te)
+    except AmbiguousTabularContractError:
+        check("a_submission_target_absent_from_train_is_rejected", True)
+    else:
+        check("a_submission_target_absent_from_train_is_rejected", False)
+
+    train_with_extra = tr.assign(unexplained=np.arange(len(tr)))
+    try:
+        resolve_roles(train_with_extra, samp, te)
+    except AmbiguousTabularContractError:
+        check("an_extra_train_only_column_is_rejected", True)
+    else:
+        check("an_extra_train_only_column_is_rejected", False)
+
     with tempfile.TemporaryDirectory() as d:
-        p_tr = os.path.join(d, "train.csv"); tr.to_csv(p_tr, index=False)
-        p_te = os.path.join(d, "test.csv"); te.to_csv(p_te, index=False)
-        p_sa = os.path.join(d, "samp.csv"); samp.to_csv(p_sa, index=False)
+        p_tr = os.path.join(d, "train.csv")
+        tr.to_csv(p_tr, index=False)
+        p_te = os.path.join(d, "test.csv")
+        te.to_csv(p_te, index=False)
+        p_sa = os.path.join(d, "samp.csv")
+        samp.to_csv(p_sa, index=False)
         p_out = os.path.join(d, "sub.csv")
 
-        roles = resolve_roles(tr, samp)
+        roles = resolve_roles(tr, samp, te)
         check("roles_resolve_id_and_target_from_the_sample_submission",
               roles.id_col == "id" and roles.target_col == "y"
               and roles.problem == "classification",
@@ -551,6 +643,28 @@ def self_test() -> dict:
         check("no_proposal_falls_back_to_a_real_default_estimator",
               estimator_from_moves([], "classification") == "hgb",
               "with no estimator proposed the executor still has a real default")
+
+        with open(p_sa, "w", newline="", encoding="utf-8") as handle:
+            csv.writer(handle).writerows((("id", "id"), ("200", "200")))
+        try:
+            execute_tabular(p_tr, p_te, p_sa, p_out)
+        except UnsupportedTabularContractError:
+            check("a_duplicate_raw_csv_header_is_rejected", True)
+        else:
+            check("a_duplicate_raw_csv_header_is_rejected", False)
+        samp.to_csv(p_sa, index=False)
+
+        with open(p_tr, "w", newline="", encoding="utf-8") as handle:
+            writer = csv.writer(handle)
+            writer.writerow(("id", "num", "num", "cat", "text", "y"))
+            writer.writerows(tr.itertuples(index=False, name=None))
+        try:
+            execute_tabular(p_tr, p_te, p_sa, p_out)
+        except AmbiguousTabularContractError:
+            check("a_duplicate_raw_train_header_is_rejected", True)
+        else:
+            check("a_duplicate_raw_train_header_is_rejected", False)
+        tr.to_csv(p_tr, index=False)
 
         res = execute_tabular(p_tr, p_te, p_sa, p_out,
                               proposed_keys=["estimator=random_forest"], folds=3)
@@ -571,9 +685,9 @@ def self_test() -> dict:
               f"synthetic signal")
 
 
-        # the probability override: forced proba writes floats in (0,1) and the
-        # local metric becomes out-of-fold ROC-AUC — quote what an AUC
-        # leaderboard grades, never a proxy (the metric-confirmation rule).
+        # The probability override writes floats in (0,1), and the local
+        # diagnostic becomes out-of-fold ROC-AUC. No leaderboard equivalence is
+        # inferred here.
         p_out2 = p_out.replace(".csv", "_proba.csv")
         res_p = execute_tabular(p_tr, p_te, p_sa, p_out2,
                                 output_probabilities=True)
@@ -587,6 +701,26 @@ def self_test() -> dict:
               and vals.nunique() > 2,
               f"oof roc_auc={res_p.local_score:.4f}; submission column is "
               "continuous probabilities")
+
+        text_train = pd.DataFrame({
+            "id": np.arange(30),
+            "text": [f"unique document {index}" for index in range(30)],
+            "y": [0, 1] * 15,
+        })
+        text_test = pd.DataFrame({
+            "id": np.arange(30, 40),
+            "text": [f"unseen document {index}" for index in range(10)],
+        })
+        text_sample = pd.DataFrame({"id": text_test["id"], "y": 0})
+        text_train.to_csv(p_tr, index=False)
+        text_test.to_csv(p_te, index=False)
+        text_sample.to_csv(p_sa, index=False)
+        try:
+            execute_tabular(p_tr, p_te, p_sa, p_out)
+        except NoUsableTabularFeaturesError:
+            check("a_featureless_preprocessed_table_is_rejected", True)
+        else:
+            check("a_featureless_preprocessed_table_is_rejected", False)
 
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "kaggle_executor_self_test", "tests": results,

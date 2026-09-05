@@ -1,0 +1,459 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/alisonjieli-png/loop-engine/blob/main/docs/contracts/session-handoff.schema.json",
+  "title": "Loop Engine session handoff",
+  "description": "Contract for one immutable generated session snapshot. It is evidence about a checkout, not architecture authority or an ownership inference.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "packet_id",
+    "packet_digest",
+    "generated_at",
+    "generator",
+    "repository",
+    "authority_refs",
+    "task",
+    "worktree",
+    "claims",
+    "evidence_receipts",
+    "next_work",
+    "loading_plan",
+    "validity"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "session_handoff/v1"
+    },
+    "packet_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "packet_digest": {
+      "$ref": "#/$defs/digest",
+      "description": "SHA-256 of the UTF-8 RFC 8785 canonical packet with this field omitted."
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1}
+      }
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "root",
+        "remote",
+        "branch",
+        "head",
+        "upstream",
+        "ahead",
+        "behind"
+      ],
+      "properties": {
+        "name": {"const": "loop-engine"},
+        "root": {"const": "/home/username/loop-engine"},
+        "remote": {"type": "string", "minLength": 1},
+        "branch": {"type": "string", "minLength": 1},
+        "head": {"$ref": "#/$defs/git_oid"},
+        "upstream": {"type": ["string", "null"]},
+        "ahead": {"type": "integer", "minimum": 0},
+        "behind": {"type": "integer", "minimum": 0}
+      }
+    },
+    "authority_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/authority_ref"}
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "objective",
+        "requested_outputs",
+        "source_request_refs",
+        "authorized_effects",
+        "prohibited_effects"
+      ],
+      "properties": {
+        "objective": {"type": "string", "minLength": 1},
+        "requested_outputs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "source_request_refs": {
+          "type": "array",
+          "description": "References and digests only. Do not copy a large prompt or transcript into this packet.",
+          "items": {"$ref": "#/$defs/artifact_ref"}
+        },
+        "authorized_effects": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "prohibited_effects": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        }
+      }
+    },
+    "worktree": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observed_at",
+        "dirty",
+        "snapshot_algorithm",
+        "snapshot_digest",
+        "entries"
+      ],
+      "properties": {
+        "observed_at": {"type": "string", "format": "date-time"},
+        "dirty": {"type": "boolean"},
+        "snapshot_algorithm": {"const": "session_worktree_snapshot/v1"},
+        "snapshot_digest": {
+          "$ref": "#/$defs/digest",
+          "description": "SHA-256 of UTF-8 RFC 8785 canonical JSON containing repository.head plus each path, git_status, base_blob, and worktree_digest, sorted by path."
+        },
+        "entries": {
+          "type": "array",
+          "description": "One entry per changed path, sorted by path. Semantic validation must reject duplicates.",
+          "items": {"$ref": "#/$defs/worktree_entry"}
+        }
+      }
+    },
+    "active_work": {
+      "type": "array",
+      "description": "Explicit task claims only. Process identity and timestamps are not ownership evidence.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["task_ref", "status", "claimed_paths", "claim_evidence_refs"],
+        "properties": {
+          "task_ref": {"type": "string", "minLength": 1},
+          "status": {
+            "enum": ["RUNNING", "WAITING", "COMPLETE", "INTERRUPTED", "UNKNOWN"]
+          },
+          "claimed_paths": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "uniqueItems": true
+          },
+          "claim_evidence_refs": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/claim"}
+    },
+    "evidence_receipts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evidence_receipt"}
+    },
+    "campaigns": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/campaign"}
+    },
+    "model_target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["core_is_model_neutral", "requested_model", "availability", "source_refs"],
+      "properties": {
+        "core_is_model_neutral": {"const": true},
+        "requested_model": {"type": ["string", "null"]},
+        "availability": {
+          "enum": ["PROBED_AVAILABLE", "PROBED_UNAVAILABLE", "NOT_PROBED", "UNKNOWN"]
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {"type": "string", "format": "uri"},
+          "uniqueItems": true
+        }
+      }
+    },
+    "next_work": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objective", "prerequisites", "blockers", "safe_commands"],
+      "properties": {
+        "objective": {"type": "string", "minLength": 1},
+        "prerequisites": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "blockers": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "safe_commands": {
+          "type": "array",
+          "description": "Reviewable commands with literal secrets, authorization headers, and private prompt bodies removed.",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "loading_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["load_first", "load_on_demand", "exclude_by_default"],
+      "properties": {
+        "load_first": {"$ref": "#/$defs/path_list"},
+        "load_on_demand": {"$ref": "#/$defs/path_list"},
+        "exclude_by_default": {"$ref": "#/$defs/path_list"}
+      }
+    },
+    "validity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reader_must_recompute", "invalidated_by"],
+      "properties": {
+        "reader_must_recompute": {"const": true},
+        "invalidated_by": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "enum": [
+              "HEAD_CHANGED",
+              "WORKTREE_SNAPSHOT_CHANGED",
+              "TASK_REPLACED",
+              "OWNERSHIP_CLAIM_CHANGED",
+              "EVIDENCE_INVALIDATED"
+            ]
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Versioned passive metadata only. Do not store credentials, process arguments, raw private prompts, or hidden reasoning."
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "git_oid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40,64}$"
+    },
+    "path_list": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "authority_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "digest", "rank"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"},
+        "rank": {"type": "integer", "minimum": 1}
+      }
+    },
+    "artifact_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "digest"],
+      "properties": {
+        "ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "ownership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "owner_refs", "claim_evidence_refs", "must_preserve"],
+      "properties": {
+        "state": {"enum": ["CLAIMED", "SHARED", "RELEASED", "UNKNOWN"]},
+        "owner_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "claim_evidence_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "must_preserve": {"type": "boolean"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"state": {"const": "UNKNOWN"}}},
+          "then": {
+            "properties": {
+              "owner_refs": {"maxItems": 0},
+              "claim_evidence_refs": {"maxItems": 0},
+              "must_preserve": {"const": true}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"state": {"const": "CLAIMED"}}},
+          "then": {
+            "properties": {
+              "owner_refs": {"minItems": 1},
+              "claim_evidence_refs": {"minItems": 1}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"state": {"const": "SHARED"}}},
+          "then": {
+            "properties": {
+              "owner_refs": {"minItems": 2},
+              "claim_evidence_refs": {"minItems": 1}
+            }
+          }
+        }
+      ]
+    },
+    "worktree_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "git_status", "base_blob", "worktree_digest", "ownership"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "git_status": {"type": "string", "minLength": 2, "maxLength": 2},
+        "base_blob": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40,64}$"},
+        "worktree_digest": {
+          "anyOf": [
+            {"$ref": "#/$defs/digest"},
+            {"type": "null"}
+          ]
+        },
+        "ownership": {"$ref": "#/$defs/ownership"}
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "fact_state", "maturity", "statement", "evidence_refs", "limitations"],
+      "properties": {
+        "claim_id": {"type": "string", "minLength": 1},
+        "fact_state": {
+          "enum": ["OBSERVED", "INFERRED", "ASSUMED", "MISSING", "DISPUTED"]
+        },
+        "maturity": {
+          "enum": ["CURRENT", "PARTIAL", "TARGET", "BLOCKED", "UNPROVEN"]
+        },
+        "statement": {"type": "string", "minLength": 1},
+        "evidence_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "limitations": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "evidence_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receipt_id",
+        "evidence_class",
+        "command",
+        "started_at",
+        "finished_at",
+        "exit_code",
+        "result_summary",
+        "source_head",
+        "worktree_digest_before",
+        "worktree_digest_after",
+        "provider_calls",
+        "artifact_refs",
+        "limitations"
+      ],
+      "properties": {
+        "receipt_id": {"type": "string", "minLength": 1},
+        "evidence_class": {
+          "enum": [
+            "STATIC_INSPECTION",
+            "OFFLINE_FIXTURE",
+            "LOCAL_RUNTIME",
+            "CLEAN_INSTALL",
+            "LIVE_PROVIDER",
+            "EXTERNAL_EVALUATION"
+          ]
+        },
+        "command": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Exact secret-free display form of the command."
+        },
+        "started_at": {"type": "string", "format": "date-time"},
+        "finished_at": {"type": "string", "format": "date-time"},
+        "exit_code": {"type": "integer"},
+        "result_summary": {"type": "string", "minLength": 1},
+        "source_head": {"$ref": "#/$defs/git_oid"},
+        "worktree_digest_before": {"$ref": "#/$defs/digest"},
+        "worktree_digest_after": {"$ref": "#/$defs/digest"},
+        "provider_calls": {"type": ["integer", "null"], "minimum": 0},
+        "artifact_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/artifact_ref"}
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "campaign": {
+      "type": "object",
+      "description": "Aggregate counts only. Semantic validation must enforce evaluated <= valid <= executed <= selected and bind the exact population manifest.",
+      "additionalProperties": false,
+      "required": [
+        "campaign_ref",
+        "manifest_ref",
+        "target_population",
+        "selected",
+        "executed",
+        "valid",
+        "evaluated",
+        "excluded",
+        "limitations"
+      ],
+      "properties": {
+        "campaign_ref": {"type": "string", "minLength": 1},
+        "manifest_ref": {"$ref": "#/$defs/artifact_ref"},
+        "target_population": {"type": "integer", "minimum": 0},
+        "selected": {"type": "integer", "minimum": 0},
+        "executed": {"type": "integer", "minimum": 0},
+        "valid": {"type": "integer", "minimum": 0},
+        "evaluated": {"type": "integer", "minimum": 0},
+        "excluded": {"type": "integer", "minimum": 0},
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

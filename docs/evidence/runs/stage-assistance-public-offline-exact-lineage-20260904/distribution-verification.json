@@ -1,0 +1,53 @@
+{
+  "artifacts": [
+    {
+      "byte_count": 1755227,
+      "filename": "loop_engine-0.1.0.tar.gz",
+      "kind": "sdist",
+      "sha256": "699944ceca0a802c1884978992e0cd288503d13c1fbf624c6ef06d1510633986"
+    },
+    {
+      "byte_count": 2018633,
+      "filename": "loop_engine-0.1.0-py3-none-any.whl",
+      "kind": "wheel_from_sdist",
+      "sha256": "03dc0b2075a71d14ebe707cafced830e65ad6cf3d3e10f5dbe50da1c353f5985"
+    }
+  ],
+  "build_method": "sdist built from checkout; wheel rebuilt from fresh sdist extraction",
+  "clean_wheel_conformance": {
+    "passed_gates": 27,
+    "total_gates": 27
+  },
+  "clean_wheel_self_test": {
+    "optional_adapters_not_tested": [
+      "duckdb",
+      "mcp",
+      "model2vec",
+      "numpy",
+      "opentelemetry-sdk",
+      "pandas",
+      "sklearn"
+    ],
+    "passed": 2392,
+    "provider_calls": 0,
+    "total": 2392
+  },
+  "generated_at": "2026-09-04T16:29:31.708053-04:00",
+  "limitations": [
+    "artifact binaries remained in an ephemeral temporary build directory",
+    "the dirty checkout was not bound by a complete content digest",
+    "optional adapter suites were not installed in the clean wheel environment"
+  ],
+  "record_type": "distribution_verification/v1",
+  "source_conformance": {
+    "passed_gates": 27,
+    "total_gates": 27
+  },
+  "source_revision": "22ee44052b027ba96ce50c37e4cc6a659e1b91c8",
+  "source_self_test": {
+    "passed": 2430,
+    "provider_calls": 0,
+    "total": 2430
+  },
+  "source_snapshot_status": "dirty_checkout_not_content_bound"
+}

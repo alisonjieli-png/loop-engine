@@ -39,6 +39,14 @@ class CompetitionContractError(ValueError):
     """A competition directory did not hold a readable contract."""
 
 
+class UnsupportedCompetitionContractError(CompetitionContractError):
+    """The source contract is valid but outside this single-target reader."""
+
+
+class AmbiguousCompetitionContractError(CompetitionContractError):
+    """The source files do not identify one unambiguous prediction target."""
+
+
 def _header_and_sample(path: str, column: "int | None" = None) -> tuple:
     with open(path, newline="", encoding="utf-8", errors="replace") as handle:
         reader = csv.reader(handle)
@@ -106,21 +114,31 @@ def read_contract(directory: str, competition: str = "") -> CompetitionContract:
     train_columns, _ = _header_and_sample(paths["train"])
     test_columns, _ = _header_and_sample(paths["test"])
     submission_columns, _ = _header_and_sample(paths["sample_submission"])
-    if len(submission_columns) < 2:
-        raise CompetitionContractError(
-            f"{name}: the sample submission has no prediction column")
+    if len(submission_columns) != 2 or len(set(submission_columns)) != 2:
+        raise UnsupportedCompetitionContractError(
+            f"{name}: the single-target reader requires exactly two unique "
+            "sample-submission columns")
+    for label, columns in (("train", train_columns), ("test", test_columns)):
+        if len(columns) != len(set(columns)):
+            raise AmbiguousCompetitionContractError(
+                f"{name}: {label} contains duplicate column names")
     identifier = submission_columns[0]
-    asked_for = submission_columns[-1]
+    target = submission_columns[1]
 
-    # The target is what training has and prediction does not. The sample
-    # submission confirms it; where they disagree the submission wins,
-    # because that is the file the grader reads.
+    if target not in train_columns:
+        raise AmbiguousCompetitionContractError(
+            f"{name}: sample-submission target {target!r} is absent from train")
+    if target in test_columns:
+        raise AmbiguousCompetitionContractError(
+            f"{name}: selected target {target!r} also appears in test")
     only_in_train = [column for column in train_columns
                      if column not in set(test_columns)]
-    target = asked_for if asked_for in only_in_train else (
-        only_in_train[0] if only_in_train else asked_for)
-    position = (train_columns.index(target)
-                if target in train_columns else -1)
+    extra_train_only = [column for column in only_in_train if column != target]
+    if extra_train_only:
+        raise AmbiguousCompetitionContractError(
+            f"{name}: train-only columns other than target {target!r}: "
+            f"{extra_train_only!r}")
+    position = train_columns.index(target)
     _header, values = _header_and_sample(paths["train"], position)
     distinct = len({value for value in values})
     blanks = any(not str(value).strip() for value in values)
@@ -218,4 +236,89 @@ def grade_discovery(contract: CompetitionContract, discovered: dict) -> dict:
         "shape_consistent": bool(
             found_shape and shape_words & set(found_shape.split())),
         "trap": contract.trap,
+    }
+
+
+def self_test() -> dict:
+    """Exercise supported, unsupported, and ambiguous contracts offline."""
+    import tempfile
+
+    results: list[dict] = []
+
+    def check(name: str, passed: bool, detail: str = "") -> None:
+        results.append({"test": name, "passed": bool(passed), "detail": detail})
+
+    def write(directory: str, stem: str, rows: tuple[tuple[str, ...], ...]) -> None:
+        with open(os.path.join(directory, f"{stem}.csv"), "w", newline="",
+                  encoding="utf-8") as handle:
+            csv.writer(handle).writerows(rows)
+
+    with tempfile.TemporaryDirectory() as directory:
+        train = (("id", "feature", "target"), ("1", "10", "0"),
+                 ("2", "20", "1"))
+        test = (("id", "feature"), ("3", "30"))
+        sample = (("id", "target"), ("3", "0"))
+        write(directory, "train", train)
+        write(directory, "test", test)
+        write(directory, "sample_submission", sample)
+        contract = read_contract(directory, "supported")
+        check("one_target_and_shared_features_are_admitted",
+              contract.identifier == "id" and contract.target == "target")
+
+        write(directory, "sample_submission",
+              (("id", "class_a", "class_b"), ("3", "0.5", "0.5")))
+        try:
+            read_contract(directory, "multiple-outputs")
+        except UnsupportedCompetitionContractError:
+            check("multiple_outputs_are_rejected", True)
+        else:
+            check("multiple_outputs_are_rejected", False)
+
+        write(directory, "sample_submission",
+              (("id", "id"), ("3", "3")))
+        try:
+            read_contract(directory, "duplicate-columns")
+        except UnsupportedCompetitionContractError:
+            check("duplicate_sample_columns_are_rejected", True)
+        else:
+            check("duplicate_sample_columns_are_rejected", False)
+
+        write(directory, "sample_submission",
+              (("id", "unknown_target"), ("3", "0")))
+        try:
+            read_contract(directory, "missing-target")
+        except AmbiguousCompetitionContractError:
+            check("a_target_absent_from_train_is_rejected", True)
+        else:
+            check("a_target_absent_from_train_is_rejected", False)
+
+        write(directory, "sample_submission", sample)
+        write(directory, "train",
+              (("id", "feature", "feature", "target"),
+               ("1", "10", "11", "0"), ("2", "20", "21", "1")))
+        try:
+            read_contract(directory, "duplicate-train-columns")
+        except AmbiguousCompetitionContractError:
+            check("duplicate_train_columns_are_rejected", True)
+        else:
+            check("duplicate_train_columns_are_rejected", False)
+
+        write(directory, "train", train)
+        write(directory, "train",
+              (("id", "feature", "target", "unexplained"),
+               ("1", "10", "0", "a"), ("2", "20", "1", "b")))
+        try:
+            read_contract(directory, "extra-train-only")
+        except AmbiguousCompetitionContractError:
+            check("an_extra_train_only_column_is_rejected", True)
+        else:
+            check("an_extra_train_only_column_is_rejected", False)
+
+    passed = sum(1 for item in results if item["passed"])
+    return {
+        "record_type": "competition_contract_self_test/v1",
+        "tests": results,
+        "passed": passed,
+        "total": len(results),
+        "all_passed": passed == len(results),
     }

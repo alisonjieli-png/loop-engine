@@ -1,0 +1,1663 @@
+{
+ "record_type": "solve_outcome/v4",
+ "run_id": "adaptive-64dc506ed803819e6a38f992",
+ "terminal_code": "COMPLETED_VERIFIED",
+ "status": "COMPLETED_VERIFIED",
+ "solved": true,
+ "summary": "A bounded test project.",
+ "failure_code": "",
+ "result": {
+  "record_type": "generated_project_execution/v1",
+  "manifest_digest": "5b574820a8b9410b520609dbcccbfe0f0424d89943059dfe6828443d86272548",
+  "workspace": {
+   "workspace_id": "fixture",
+   "backend_kind": "fixture",
+   "root": "/home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-exact-lineage-20260904/adaptive-64dc506ed803819e6a38f992-workspace/attempt-1"
+  },
+  "sandbox": {
+   "backend_kind": "fixture",
+   "network_reads": false
+  },
+  "writes": [],
+  "commands": [
+   {
+    "purpose": "run",
+    "ok": true,
+    "exit_code": 0,
+    "stdout": "done\n",
+    "stderr": "",
+    "error_code": ""
+   }
+  ],
+  "artifacts": [
+   {
+    "path": "output.txt",
+    "media_type": "text/plain",
+    "minimum_bytes": 1,
+    "present": true,
+    "byte_count": 5,
+    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "error_code": "",
+    "verified": true
+   }
+  ],
+  "snapshot": {
+   "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "file_count": 2,
+   "total_bytes": 19
+  },
+  "deterministic_checks_passed": true,
+  "manifest": {
+   "record_type": "generated_project_manifest/v1",
+   "project_id": "stage_assistance_fixture",
+   "summary": "A bounded test project.",
+   "files": [
+    {
+     "path": "main.py",
+     "content": "print('done')\n"
+    }
+   ],
+   "commands": [
+    {
+     "argv": [
+      "python",
+      "main.py"
+     ],
+     "purpose": "Run the project.",
+     "timeout_seconds": 30.0,
+     "command_kind": "execute",
+     "network_access": false,
+     "expected_exit_codes": [
+      0
+     ]
+    }
+   ],
+   "expected_artifacts": [
+    {
+     "path": "output.txt",
+     "media_type": "text/plain",
+     "minimum_bytes": 1
+    }
+   ]
+  },
+  "input_use_validation": {
+   "record_type": "generated_project_input_use_validation/v1",
+   "supplied_paths": [],
+   "referenced_paths": [],
+   "offline_network_imports": [],
+   "passed": true
+  },
+  "workspace_path": "/home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-exact-lineage-20260904/adaptive-64dc506ed803819e6a38f992-workspace/attempt-1",
+  "context_evidence_count": 0
+ },
+ "compiled_task": {
+  "compiled_task_id": "task:open:b4f682c785ce6737bc63",
+  "original_input": "Create one verified text artifact from the supplied task.",
+  "normalized_interpretation": "Create one verified text artifact from the supplied task.",
+  "task_type": "unknown",
+  "output_kind": "unknown",
+  "binding": null,
+  "variables": {},
+  "file_refs": [],
+  "source_refs": [],
+  "provenance": "LLM-first open task compiler",
+  "work_item": {
+   "record_type": "work_item_ir/v1",
+   "work_item_id": "task:open:b4f682c785ce6737bc63",
+   "source_kind": "text",
+   "original_input": "Create one verified text artifact from the supplied task.",
+   "normalized_interpretation": "Create one verified text artifact from the supplied task.",
+   "coordinates": {
+    "question": "Create one verified text artifact from the supplied task.",
+    "operator": "unknown",
+    "response_topology": "unknown",
+    "decision_consumer": "verify_then_return_or_stage_learning"
+   },
+   "source_refs": [],
+   "acceptance_criteria": [
+    "output contract validates",
+    "independent verification passes"
+   ],
+   "constraints": [],
+   "known_facts": [],
+   "unknowns": [],
+   "requirement_dispositions": [],
+   "tags": [
+    "task:open",
+    "response:unknown"
+   ],
+   "risk": "unknown",
+   "consequence": "unknown",
+   "privacy_scope": "project",
+   "provenance": "LLM-first open task compiler"
+  },
+  "template_selection_authority": "model_only",
+  "template_candidates": [
+   {
+    "template_id": "core.task.data_standardization",
+    "template_version": "1.0.0",
+    "task_type": "transformation",
+    "output_kind": "artifact",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.kaggle_competition",
+    "template_version": "1.0.0",
+    "task_type": "prediction",
+    "output_kind": "artifact",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.source_digestion",
+    "template_version": "1.0.0",
+    "task_type": "generation",
+    "output_kind": "artifact",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.tabular_classification",
+    "template_version": "1.0.0",
+    "task_type": "classification",
+    "output_kind": "label",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.tabular_model_comparison",
+    "template_version": "1.0.0",
+    "task_type": "prediction",
+    "output_kind": "report",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   },
+   {
+    "template_id": "core.task.tabular_regression",
+    "template_version": "1.0.0",
+    "task_type": "regression",
+    "output_kind": "score",
+    "lexical_score": 0.111,
+    "advisory_only": true
+   }
+  ],
+  "task_feedback": []
+ },
+ "intelligence": {
+  "context": {
+   "portfolio_id": "core.context.practitioner.general",
+   "version": "1.0.0",
+   "persona": {
+    "persona_id": "core.persona.task_interpreter",
+    "version": "1.0.0",
+    "instruction": "You are a careful task interpreter and systems analyst. Preserve the request, identify the intended outcome, separate facts from assumptions, detect material ambiguity, identify expected inputs and outputs, and propose only the next useful action. Do not solve the domain task unless the current work directive explicitly asks you to do so. Do not assume a domain, dataset, file layout, tool, implementation, or answer that the task and observed evidence do not establish."
+   },
+   "selected_refs": []
+  },
+  "option_selection": {
+   "record_type": "option_selection_tally/v1",
+   "perspectives": {},
+   "question_refs": {},
+   "guidance_refs": {},
+   "steps_reported": {},
+   "steps_offered": {
+    "act": 2,
+    "decide_next": 1,
+    "how": 1,
+    "orient": 1,
+    "route": 1,
+    "verify": 1
+   },
+   "wanted_but_absent": [],
+   "operator_gaps": [],
+   "named_but_not_offered": [],
+   "other_observations": [],
+   "reports": 0,
+   "calls": 7
+  },
+  "semantic_autonomy": {
+   "record_type": "semantic_autonomy_coverage/v1",
+   "semantic_autonomy_coverage": 1.0,
+   "decisions_recorded": 2,
+   "attributable_to_reasoning": 2,
+   "by_owner": {
+    "llm": 2,
+    "user": 0,
+    "deterministic": 0
+   },
+   "by_decision_kind": {
+    "interpret_task": 1,
+    "select_next_operation": 1
+   },
+   "unattributed_by_kind": {},
+   "uncontested_decisions": 2,
+   "decision_kinds_not_anticipated": [],
+   "reading": "all 2 decisions were reasoned, but none had a second alternative open, so the coverage figure is weak evidence on its own"
+  },
+  "decision_outcomes": {
+   "record_type": "decision_outcome_ledger/v1",
+   "decisions_followed": 2,
+   "reached_an_observation": 2,
+   "outcome_known": 2,
+   "helped": 2,
+   "by_stage": {
+    "proposed": 0,
+    "admitted": 0,
+    "executed": 0,
+    "observed": 0,
+    "verified": 0,
+    "contributed": 2
+   },
+   "by_decision_kind": {
+    "interpret_task": {
+     "helped": 1,
+     "hurt": 0,
+     "unknown": 0
+    },
+    "select_next_operation": {
+     "helped": 1,
+     "hurt": 0,
+     "unknown": 0
+    }
+   },
+   "invalidated_later": 0,
+   "verification_granularity": "run",
+   "reading": "2 of 2 decisions have a known outcome, of which 2 helped"
+  },
+  "search_candidates": [],
+  "fetched_sources": [],
+  "extensions": {},
+  "region_evidence": {},
+  "stage_assistance": {
+   "mode": "fresh",
+   "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+   "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+   "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+   "control_manifest_recorded": true,
+   "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+   "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+   "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+   "control_evidence_class": "mechanism_only",
+   "control_blocking_unknowns": [
+    "dirty_runtime_build_digest",
+    "arm_specific_injected_response_queue",
+    "project_executor_implementation_digest",
+    "independent_evaluator_identity",
+    "initial_workspace_content_digest",
+    "progress_callback_implementation_digest"
+   ],
+   "stage_arms": {
+    "stage-occurrence:sha256:4ec3516ed967f8423f97f8bf392359e87795ed9e4248434eefe0eb10dfb9e6bc": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "orient",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:7da96c3ba4cd409f312285c8d23687c3",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:5e32df264e8a11cbff77d16edc3bf3fb08ee55a13008bc72ff7da657cc81e7cf",
+      "packet_digest": "9bc029e5f61d0c20306db1b11c409fedaffb56c803f791bf8fc1e9685f94a163",
+      "prompt_digest": "9c4fb656ed7786c2af54bab8fca9e08d37e02f33c9884763a5d9e0f1d7f5ad7d",
+      "prompt_assembly_id": "assembly.sha256_9c4fb656ed7786c2af54bab8fca9e08d37e02f33c9884763a5d9e0f1d7f5ad7d",
+      "gateway_request_digest": "35c625ad30000095c72771ce7db36b7072eaf9e335b6d99c88c4b0db1134a410",
+      "provider_request_digests": [
+       "bb9f7629fc1127171deef8a60dbf213efe90388ba77e393bea9550165b4c872a"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop7"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:a3b46dad76cc921c77d0fa7ba420d47fb47b7e38eeccdb390f8f4114e9f0d011": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "decide_next",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:7cc4a5dca6038ceeb83772e0718ef013",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:951beb14c60583e495c32c67f89f0c2f2ec781926498a2a44ae4223097386d1a",
+      "packet_digest": "0949ac1f00adad30a065c6cd0ab0bfce2fa59d396a395a5fae6edfc7b30807ba",
+      "prompt_digest": "15a2737b47ab60dfacf098707007045e3b6f42f3f0162320da1d3f98c73bffc7",
+      "prompt_assembly_id": "assembly.sha256_15a2737b47ab60dfacf098707007045e3b6f42f3f0162320da1d3f98c73bffc7",
+      "gateway_request_digest": "d0b320219dcc6e4808a21e85b8fdd5fe61f425138cfc5e395756c481e7f317b3",
+      "provider_request_digests": [
+       "54aef82a50b825a4cfe9eb738b12e17c561e2d0e9a2aa0d0db5774414812b26f"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop14"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:9cadea9f90627d8e05947bf729f125470a5b99e13982368fa67b5d5b90571cd7": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "how",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:b9dbbaf794ee05a64b440da4d0237a03",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:acf1185ab0d8c4a66e44856b6dacf25884d9c71feb91e9d3a9ae1cff02478202",
+      "packet_digest": "f73bed3e6515491a47c46718e315685985c805279563613505041f7a2f6ee43c",
+      "prompt_digest": "bf7c913c2425d55fdcd96258aa1ca23038d10181a0bdf77849f7d72ec96b0517",
+      "prompt_assembly_id": "assembly.sha256_bf7c913c2425d55fdcd96258aa1ca23038d10181a0bdf77849f7d72ec96b0517",
+      "gateway_request_digest": "3bfe33650adb58da04c7a81a69aabfec2597206632cbfc51a4715891d83f7338",
+      "provider_request_digests": [
+       "2d207bce5167cde47b42bd0cc86e5d9ecd404cbd5f2642e54a1f51669e471354"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop21"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:d1384458389bc5025cba165dff5bdb09e84c9189154fb8f68959c13dde63a059": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "act",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:105fc8361f67a44df9e53ee855d91d75",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:577192114727438724894f6cff671868af58eef87e992a584a9ea9b423b75c0a",
+      "packet_digest": "b7b2b971bcd3fcd582cf8e8bb0e35bac0302176fd88f941d3a2b6e308981c1c4",
+      "prompt_digest": "0e78426d51d17224c0fe268c660070db060e6ca5611169539502669d77764c1d",
+      "prompt_assembly_id": "assembly.sha256_0e78426d51d17224c0fe268c660070db060e6ca5611169539502669d77764c1d",
+      "gateway_request_digest": "21ed9fb0409fe05d83b7c15af0ea75e82c55b15f10d1941979205e0fed10e308",
+      "provider_request_digests": [
+       "784c3582d7cf56b7958e685a5d246bb9e927e92d168d2ecb13794152de0c6091"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop28"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:36d856a3711851a29acea49d4150b49d5f2e19aca113f6d9d25040457d27c2f5": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "act",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:78a84b02ff42517b1a4a239b8f4fb18d",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:254b20c7b7af29e5b9659f3227ed9668b929fb54c4bdd28cb14492911e3f3939",
+      "packet_digest": "5b613b6b49818a30d5e6771a940f095ccf964476774d3a5e35c2f0ba2b83aa75",
+      "prompt_digest": "d3c8045e7519ad0abfa2efcb27b5c26c1a6cda2b80040c822c35c2e8dfa45c66",
+      "prompt_assembly_id": "assembly.sha256_d3c8045e7519ad0abfa2efcb27b5c26c1a6cda2b80040c822c35c2e8dfa45c66",
+      "gateway_request_digest": "b433957eef2c74bbbf23cf1b6383bc4543aa99cfef966fb5e74fe104856f7b7c",
+      "provider_request_digests": [
+       "cd66d2502497a56547d4f5175e7ec1e03bcfde2201d2383d7f8edfda58051ba9"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop35"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:52d7a3b83fff15e2e9d146a1447294df261a07ea1d046009992929fa9f1ae97c": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "verify",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:c397f308bebcb975c35bc583a4152eb8",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:509ccfc23a4e332156863705dce7c6573272d6810a6ba6bb4c6febd756fd78c0",
+      "packet_digest": "306c4732d4391c01fc9b30440ee0101f42c5386f575fc999915d0198ecb46a0c",
+      "prompt_digest": "3f919bf30f1d6ba2629e9a2b4c12926f9164b7bc822e9d4f45022ec1171254a5",
+      "prompt_assembly_id": "assembly.sha256_3f919bf30f1d6ba2629e9a2b4c12926f9164b7bc822e9d4f45022ec1171254a5",
+      "gateway_request_digest": "5e041622c7d3cb8ea0a13545aa64677cbf8ece61fe2f6a85886b3579ed90c0f8",
+      "provider_request_digests": [
+       "d84c7c32b04a6b1d101fee48367c86ec003ff5f56576f8af66327b1e6ba74f47"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop45"
+      ]
+     }
+    },
+    "stage-occurrence:sha256:7eb46ab0327bd32a4a1b62cebe3bb2bda36332f353974af548a7c0fb7dbd2728": {
+     "experiment": "cache_assist",
+     "cognitive_phase": "route",
+     "assigned_arm": "fresh",
+     "exposure_applied": false,
+     "retrieval_performed": false,
+     "retrieved_prior_refs": [],
+     "exposed_prior_refs": [],
+     "exposed_material_refs": [],
+     "exposed_material_digests": [],
+     "semantic_signature": "stage:sha256:fb4d56ea64ae2abe345d46d08a3a3e60",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "source_state_digest": "f640b7d7f243d424d8ce2f6f29c99a3bd6752e5cd7d9efbfe40253ce91355617",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "active_exposure": {
+      "exposure_ref": "stage-exposure:sha256:833b6d1d1eea5448b02e9b8a661ededbd46fe5e965990417756b93072a60e7eb",
+      "packet_digest": "283924f526745d3067923c8fdea00222c8386f2679d993a058789cfaf7e38e61",
+      "prompt_digest": "c20b1b150d5be4972cb925673a21e51d75999528fc1d1f26a880f6dd4fde996a",
+      "prompt_assembly_id": "assembly.sha256_c20b1b150d5be4972cb925673a21e51d75999528fc1d1f26a880f6dd4fde996a",
+      "gateway_request_digest": "0ea30be5d0969554edeebb11a1ec48e2aa5942ec5c0e26e6837da0af4c8c0a94",
+      "provider_request_digests": [
+       "30b6511ad2f618458388732012616ff112746dba74b903ee7b4bfed71c803f32"
+      ],
+      "format_attempt": 1,
+      "transport_attempt": 1,
+      "physical_attempt_loop_ids": [
+       "loop52"
+      ]
+     }
+    }
+   },
+   "decisions": [
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:4ec3516ed967f8423f97f8bf392359e87795ed9e4248434eefe0eb10dfb9e6bc",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:5e32df264e8a11cbff77d16edc3bf3fb08ee55a13008bc72ff7da657cc81e7cf",
+     "packet_digest": "9bc029e5f61d0c20306db1b11c409fedaffb56c803f791bf8fc1e9685f94a163",
+     "prompt_digest": "9c4fb656ed7786c2af54bab8fca9e08d37e02f33c9884763a5d9e0f1d7f5ad7d",
+     "prompt_assembly_id": "assembly.sha256_9c4fb656ed7786c2af54bab8fca9e08d37e02f33c9884763a5d9e0f1d7f5ad7d",
+     "gateway_request_digest": "35c625ad30000095c72771ce7db36b7072eaf9e335b6d99c88c4b0db1134a410",
+     "provider_request_digests": [
+      "bb9f7629fc1127171deef8a60dbf213efe90388ba77e393bea9550165b4c872a"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop7"
+     ],
+     "admitted_response_digest": "64995fdde43e5dcd0484af618656a53010b50bacbd6a572ae2b4a915b68631f5",
+     "admission_loop_id": "loop8",
+     "semantic_payload_digest": "91b469801c629ede65d9063e106982450fdce454c49f5f2abaef00049ff18f30",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:a3b46dad76cc921c77d0fa7ba420d47fb47b7e38eeccdb390f8f4114e9f0d011",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:951beb14c60583e495c32c67f89f0c2f2ec781926498a2a44ae4223097386d1a",
+     "packet_digest": "0949ac1f00adad30a065c6cd0ab0bfce2fa59d396a395a5fae6edfc7b30807ba",
+     "prompt_digest": "15a2737b47ab60dfacf098707007045e3b6f42f3f0162320da1d3f98c73bffc7",
+     "prompt_assembly_id": "assembly.sha256_15a2737b47ab60dfacf098707007045e3b6f42f3f0162320da1d3f98c73bffc7",
+     "gateway_request_digest": "d0b320219dcc6e4808a21e85b8fdd5fe61f425138cfc5e395756c481e7f317b3",
+     "provider_request_digests": [
+      "54aef82a50b825a4cfe9eb738b12e17c561e2d0e9a2aa0d0db5774414812b26f"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop14"
+     ],
+     "admitted_response_digest": "2f4051e98c142be723a07a9755c614e88e2300f522089f8254a12d84f56988c1",
+     "admission_loop_id": "loop15",
+     "semantic_payload_digest": "27719685a0d29283a6c5cb9a01040fb25e9efeb039a49e753ecdc508578a8199",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:9cadea9f90627d8e05947bf729f125470a5b99e13982368fa67b5d5b90571cd7",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:acf1185ab0d8c4a66e44856b6dacf25884d9c71feb91e9d3a9ae1cff02478202",
+     "packet_digest": "f73bed3e6515491a47c46718e315685985c805279563613505041f7a2f6ee43c",
+     "prompt_digest": "bf7c913c2425d55fdcd96258aa1ca23038d10181a0bdf77849f7d72ec96b0517",
+     "prompt_assembly_id": "assembly.sha256_bf7c913c2425d55fdcd96258aa1ca23038d10181a0bdf77849f7d72ec96b0517",
+     "gateway_request_digest": "3bfe33650adb58da04c7a81a69aabfec2597206632cbfc51a4715891d83f7338",
+     "provider_request_digests": [
+      "2d207bce5167cde47b42bd0cc86e5d9ecd404cbd5f2642e54a1f51669e471354"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop21"
+     ],
+     "admitted_response_digest": "be077a9846e5ec71f99aa0259fe058c05ffb704f72f0816f89ccdcd6c28d62bd",
+     "admission_loop_id": "loop22",
+     "semantic_payload_digest": "6bd80df1cb66664b5a576bfe536a2b5badc496fffc36ba4b6b65f0de64b1fbcf",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:d1384458389bc5025cba165dff5bdb09e84c9189154fb8f68959c13dde63a059",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:577192114727438724894f6cff671868af58eef87e992a584a9ea9b423b75c0a",
+     "packet_digest": "b7b2b971bcd3fcd582cf8e8bb0e35bac0302176fd88f941d3a2b6e308981c1c4",
+     "prompt_digest": "0e78426d51d17224c0fe268c660070db060e6ca5611169539502669d77764c1d",
+     "prompt_assembly_id": "assembly.sha256_0e78426d51d17224c0fe268c660070db060e6ca5611169539502669d77764c1d",
+     "gateway_request_digest": "21ed9fb0409fe05d83b7c15af0ea75e82c55b15f10d1941979205e0fed10e308",
+     "provider_request_digests": [
+      "784c3582d7cf56b7958e685a5d246bb9e927e92d168d2ecb13794152de0c6091"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop28"
+     ],
+     "admitted_response_digest": "d91f97faec3be0968326f1385a0c0bfa0bf07b816eef05bff18cf9acdfe41d5b",
+     "admission_loop_id": "loop29",
+     "semantic_payload_digest": "ab6666282b9255cf6a1c107b1fd392d4a40386b5a7cf3e7b03a6f2848d0bc936",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:36d856a3711851a29acea49d4150b49d5f2e19aca113f6d9d25040457d27c2f5",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:254b20c7b7af29e5b9659f3227ed9668b929fb54c4bdd28cb14492911e3f3939",
+     "packet_digest": "5b613b6b49818a30d5e6771a940f095ccf964476774d3a5e35c2f0ba2b83aa75",
+     "prompt_digest": "d3c8045e7519ad0abfa2efcb27b5c26c1a6cda2b80040c822c35c2e8dfa45c66",
+     "prompt_assembly_id": "assembly.sha256_d3c8045e7519ad0abfa2efcb27b5c26c1a6cda2b80040c822c35c2e8dfa45c66",
+     "gateway_request_digest": "b433957eef2c74bbbf23cf1b6383bc4543aa99cfef966fb5e74fe104856f7b7c",
+     "provider_request_digests": [
+      "cd66d2502497a56547d4f5175e7ec1e03bcfde2201d2383d7f8edfda58051ba9"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop35"
+     ],
+     "admitted_response_digest": "29588fb0cf07eef5f84843aaf971c0ced119489b1b73f6b6091276b578d3a452",
+     "admission_loop_id": "loop36",
+     "semantic_payload_digest": "d3ac992e10a1be84256b7505c195cf7b448413338f68613d60a0e5a9cc46dfe6",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:52d7a3b83fff15e2e9d146a1447294df261a07ea1d046009992929fa9f1ae97c",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:509ccfc23a4e332156863705dce7c6573272d6810a6ba6bb4c6febd756fd78c0",
+     "packet_digest": "306c4732d4391c01fc9b30440ee0101f42c5386f575fc999915d0198ecb46a0c",
+     "prompt_digest": "3f919bf30f1d6ba2629e9a2b4c12926f9164b7bc822e9d4f45022ec1171254a5",
+     "prompt_assembly_id": "assembly.sha256_3f919bf30f1d6ba2629e9a2b4c12926f9164b7bc822e9d4f45022ec1171254a5",
+     "gateway_request_digest": "5e041622c7d3cb8ea0a13545aa64677cbf8ece61fe2f6a85886b3579ed90c0f8",
+     "provider_request_digests": [
+      "d84c7c32b04a6b1d101fee48367c86ec003ff5f56576f8af66327b1e6ba74f47"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop45"
+     ],
+     "admitted_response_digest": "c0704014b46aa38f28969bb876205d7681c10afe87e3be256a19d302e881fe0e",
+     "admission_loop_id": "loop46",
+     "semantic_payload_digest": "dc09685f4b88af75e084b40bb983f685a4c129bf23da06473137f3841737c543",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    },
+    {
+     "record_type": "stage_assistance_decision_observed/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:7eb46ab0327bd32a4a1b62cebe3bb2bda36332f353974af548a7c0fb7dbd2728",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_set_digest": "e69821a05e84d6e9eec2b0ea99e775a977cc4099100590ba49e5606a4e629267",
+     "control_evidence_class": "mechanism_only",
+     "assigned_arm": "fresh",
+     "exposure_ref": "stage-exposure:sha256:833b6d1d1eea5448b02e9b8a661ededbd46fe5e965990417756b93072a60e7eb",
+     "packet_digest": "283924f526745d3067923c8fdea00222c8386f2679d993a058789cfaf7e38e61",
+     "prompt_digest": "c20b1b150d5be4972cb925673a21e51d75999528fc1d1f26a880f6dd4fde996a",
+     "prompt_assembly_id": "assembly.sha256_c20b1b150d5be4972cb925673a21e51d75999528fc1d1f26a880f6dd4fde996a",
+     "gateway_request_digest": "0ea30be5d0969554edeebb11a1ec48e2aa5942ec5c0e26e6837da0af4c8c0a94",
+     "provider_request_digests": [
+      "30b6511ad2f618458388732012616ff112746dba74b903ee7b4bfed71c803f32"
+     ],
+     "physical_attempt_loop_ids": [
+      "loop52"
+     ],
+     "admitted_response_digest": "d41436a39f4c0fac2b63b8c7f69abb678974317e195ce46f868cc8ec6791d850",
+     "admission_loop_id": "loop53",
+     "semantic_payload_digest": "08ffa868e58485e9fbf6ec9fa153ac006e3e2266cc316beb5473d83b02a77ac5",
+     "disposition": "START_FRESH",
+     "selected_prior_refs": [],
+     "reason": "No prior-stage candidate was retrieved or exposed."
+    }
+   ],
+   "action_links": [
+    {
+     "record_type": "stage_selected_action_lineage/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:a3b46dad76cc921c77d0fa7ba420d47fb47b7e38eeccdb390f8f4114e9f0d011",
+     "semantic_call_id": "semantic-stage-88fb85b99d5b6961c03bc5d57bf7af124f7df01fe03a71c8",
+     "run_id": "adaptive-64dc506ed803819e6a38f992",
+     "owner_loop_id": "loop1",
+     "pass_number": 1,
+     "action_id": "action:3e4f1aaa8d6e4eba86c6",
+     "action_occurrence_ref": "action-occurrence:sha256:4eca472ffa057543c74b4ac52328474b49fe65ec4f73dd43bc53e96e9f4ca9f0",
+     "action_payload_digest": "3e4f1aaa8d6e4eba86c6a220f99dc0c8157c8951804a7226e74fd9323a8b87d3",
+     "experiment_ref": "stage-experiment:fixture:advisory-versus-fresh:v1",
+     "trial_ref": "stage-trial:fixture:CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT:v1",
+     "control_manifest_ref": "solve-control-manifest:sha256:e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "control_manifest_digest": "e3bac5c56fe9803f2c2233af0b0d10dfe7814cb2abab7216b35a7f2edf835db3",
+     "assistance_decision_digest": "e5639a84cee46ab0fbdf01fc2a4dc37caa3b5911fd5ff9b485d61f99698146aa",
+     "attribution_method": "EXACT_SELECTED_ACTION_IDENTITY"
+    }
+   ],
+   "execution_links": [
+    {
+     "record_type": "stage_action_execution_lineage/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:a3b46dad76cc921c77d0fa7ba420d47fb47b7e38eeccdb390f8f4114e9f0d011",
+     "action_occurrence_ref": "action-occurrence:sha256:4eca472ffa057543c74b4ac52328474b49fe65ec4f73dd43bc53e96e9f4ca9f0",
+     "execution_ref": "action-execution:sha256:907112eed07618158e9878bc25b1d888d74a2b87713782b3b2c92ffd0ff1275d",
+     "action_id": "action:3e4f1aaa8d6e4eba86c6",
+     "capability_ref": "core.generated_project",
+     "plan_digest": "4c4ec55039b5b2b9c6c9877e7a3e3888561fd5fc01ac3f823eac4e4373f616e0",
+     "result_digest": "cb0cefd7dac9f8abbdbf265d80101b7966dde799bc5bddec57d5ef9439c12f9d",
+     "execution_succeeded": true,
+     "downstream_use": true,
+     "attribution_method": "DIRECT_DOWNSTREAM_CONSUMPTION"
+    }
+   ],
+   "outcome_links": [
+    {
+     "record_type": "stage_action_verification_lineage/v1",
+     "stage_occurrence_id": "stage-occurrence:sha256:a3b46dad76cc921c77d0fa7ba420d47fb47b7e38eeccdb390f8f4114e9f0d011",
+     "stage_observation_ref": "stage-observation:sha256:98fafc71cd97fc522aa796c67c2639ffc351dd03c396e17253cbf251f469e5a4",
+     "action_occurrence_ref": "action-occurrence:sha256:4eca472ffa057543c74b4ac52328474b49fe65ec4f73dd43bc53e96e9f4ca9f0",
+     "execution_ref": "action-execution:sha256:907112eed07618158e9878bc25b1d888d74a2b87713782b3b2c92ffd0ff1275d",
+     "verification_ref": "action-verification:sha256:2c5d3436d5216acbaa7f76b8e23aa3785874fa363dcaa773e3ec87189cb58658",
+     "action_id": "action:3e4f1aaa8d6e4eba86c6",
+     "execution_result_digest": "cb0cefd7dac9f8abbdbf265d80101b7966dde799bc5bddec57d5ef9439c12f9d",
+     "verifier_stage_occurrence_id": "stage-occurrence:sha256:52d7a3b83fff15e2e9d146a1447294df261a07ea1d046009992929fa9f1ae97c",
+     "verifier_semantic_call_id": "semantic-stage-8f7af33abb3261e102617f88e043ad1f1f0082e229b8ea89",
+     "verification_verdict": "accept",
+     "deterministic_checks_passed": true,
+     "semantic_verification_observed": true,
+     "evaluation_record_digest": "1e1a0b721caa66b5ac366f007ab1f819ec86efc53dc31c544a1cc9b4602302d4",
+     "local_verification": true,
+     "outcome_after_verification": {
+      "record_type": "outcome_vector/v1",
+      "credit": "helped",
+      "granularity": "stage",
+      "known": [
+       "output_admitted",
+       "local_verification",
+       "downstream_use"
+      ],
+      "unknown": [
+       "branch_contribution",
+       "later_invalidated",
+       "task_outcome"
+      ],
+      "contradictions": [],
+      "reading": "helped on stage-local evidence: output_admitted, local_verification, downstream_use",
+      "output_admitted": true,
+      "local_verification": true,
+      "downstream_use": true,
+      "branch_contribution": null,
+      "later_invalidated": null,
+      "task_outcome": null
+     },
+     "attribution_method": "DIRECT_LOCAL_VERIFIER",
+     "attribution_confidence": null,
+     "verifier_independence": "same_practitioner_model_path"
+    }
+   ],
+   "stages": {
+    "record_type": "stage_store/v1",
+    "degraded": false,
+    "write_failures": 0,
+    "read_failures": 0,
+    "unreadable_rows": 0,
+    "last_storage_error": "",
+    "degradation_events": [],
+    "observations": 7,
+    "distinct_situations": 7,
+    "distinct_motifs": 6,
+    "distinct_shapes": 6,
+    "path": "/home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-exact-lineage-20260904/stages.jsonl"
+   },
+   "prior_stages_loaded": 0,
+   "attribution_boundaries": [
+    {
+     "record_type": "stage_attribution_boundary/v1",
+     "pass_number": 1,
+     "verification_verdict": "accept",
+     "stage_occurrence_ids": [
+      "stage-occurrence:sha256:4ec3516ed967f8423f97f8bf392359e87795ed9e4248434eefe0eb10dfb9e6bc",
+      "stage-occurrence:sha256:a3b46dad76cc921c77d0fa7ba420d47fb47b7e38eeccdb390f8f4114e9f0d011",
+      "stage-occurrence:sha256:9cadea9f90627d8e05947bf729f125470a5b99e13982368fa67b5d5b90571cd7",
+      "stage-occurrence:sha256:d1384458389bc5025cba165dff5bdb09e84c9189154fb8f68959c13dde63a059",
+      "stage-occurrence:sha256:36d856a3711851a29acea49d4150b49d5f2e19aca113f6d9d25040457d27c2f5",
+      "stage-occurrence:sha256:52d7a3b83fff15e2e9d146a1447294df261a07ea1d046009992929fa9f1ae97c"
+     ],
+     "local_stage_outcomes_changed": false,
+     "reason": "the pass verdict evaluates selected action results, not every semantic model call in the pass"
+    }
+   ],
+   "degradations": []
+  }
+ },
+ "selected_mode": "non_deterministic",
+ "requested_mode": "non_deterministic",
+ "selected_canvas": {
+  "candidate_id": "canvas:d98b5c833cf1dfda691d",
+  "selected": true,
+  "graph_digest": "450aa0fdfa3f4eef48c6d473ed80ed43506cc581323e052c1b4257171f92ce34",
+  "loop_graph": {
+   "record_type": "loop_graph_definition/v1",
+   "graph_id": "adaptive.action.d98b5c833cf1dfda691d",
+   "version": "1.0.0",
+   "permitted_vertex_modes": [
+    "deterministic"
+   ],
+   "input_ports": [
+    {
+     "name": "input",
+     "role": "generated_project_manifest/v1",
+     "targets": [
+      {
+       "vertex_id": "solution.controller",
+       "port_role": "generated_project_manifest/v1"
+      }
+     ]
+    }
+   ],
+   "output_ports": [
+    {
+     "name": "output",
+     "role": "generated_project_execution/v1",
+     "source": {
+      "vertex_id": "solution.stage1.component",
+      "port_role": "generated_project_execution/v1"
+     }
+    }
+   ],
+   "vertices": [
+    {
+     "vertex_id": "solution.controller",
+     "definition_ref": {
+      "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_controller",
+      "version": "1.0.0",
+      "content_digest": "5d14f99339b013f4033cc65265a2021a387c7049ca5d91f5b275f1aa6e811be4"
+     },
+     "definition": {
+      "record_type": "loop_definition/v1",
+      "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_controller",
+      "version": "1.0.0",
+      "role_profile": {
+       "profile_id": "solution.pipeline",
+       "version": "1.0.0"
+      },
+      "contract": {
+       "name": "adaptive.action.d98b5c833cf1dfda691d:solution.controller",
+       "execution_mode": "code_only",
+       "input_roles": [
+        "generated_project_manifest/v1"
+       ],
+       "output_roles": [
+        "generated_project_manifest/v1",
+        "generated_project_execution/v1"
+       ],
+       "effects": [
+        "pure"
+       ],
+       "locality": "local_machine",
+       "cost_class": "free",
+       "role": "solution"
+      },
+      "configuration_facts": {
+       "allowable_modes": [
+        "deterministic"
+       ],
+       "custom_steps": [
+        "act"
+       ],
+       "delegated_modes": [
+        "deterministic"
+       ],
+       "exit_condition": "accepted_success",
+       "framework": "custom",
+       "graph_id": "adaptive.action.d98b5c833cf1dfda691d",
+       "llm_thinking_power": "",
+       "logical_kind": "execution",
+       "loop_condition": "steps_remain",
+       "max_depth": 32,
+       "operation_ref": "",
+       "parameters": {
+        "logical_solution_id": "adaptive.action.d98b5c833cf1dfda691d",
+        "max_members": null
+       },
+       "power": "light",
+       "preferred_modes": [
+        "deterministic"
+       ],
+       "purpose": "controller",
+       "replay_guarantee": "event_equivalent",
+       "success_confidence_min": 0.5,
+       "vertex_id": "solution.controller"
+      },
+      "supported_modes": [
+       "deterministic"
+      ],
+      "installed_executor_modes": [
+       "deterministic"
+      ],
+      "step_profile": "compact_five_beat",
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "effects": [
+       "pure"
+      ],
+      "permissions": [],
+      "required_capabilities": [
+       "pipeline_execution",
+       "solution_canvas",
+       "typed_connection_check"
+      ],
+      "content_digest": "5d14f99339b013f4033cc65265a2021a387c7049ca5d91f5b275f1aa6e811be4"
+     },
+     "selected_mode": "deterministic",
+     "purpose": "controller",
+     "operation_ref": "",
+     "parameters": {
+      "logical_solution_id": "adaptive.action.d98b5c833cf1dfda691d",
+      "max_members": null
+     }
+    },
+    {
+     "vertex_id": "solution.stage1.component",
+     "definition_ref": {
+      "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_stage1_component",
+      "version": "1.0.0",
+      "content_digest": "6a6a77abef790a261174e271b63f20950dca7a0570183a112bee2c4b82c2b4bd"
+     },
+     "definition": {
+      "record_type": "loop_definition/v1",
+      "definition_id": "solution.graph.adaptive_action_d98b5c833cf1dfda691d.solution_stage1_component",
+      "version": "1.0.0",
+      "role_profile": {
+       "profile_id": "solution.atomic_component",
+       "version": "1.0.0"
+      },
+      "contract": {
+       "name": "adaptive.action.d98b5c833cf1dfda691d:solution.stage1.component",
+       "execution_mode": "code_only",
+       "input_roles": [
+        "generated_project_manifest/v1"
+       ],
+       "output_roles": [
+        "generated_project_execution/v1"
+       ],
+       "effects": [
+        "pure"
+       ],
+       "locality": "local_machine",
+       "cost_class": "free",
+       "role": "solution"
+      },
+      "configuration_facts": {
+       "allowable_modes": [
+        "deterministic"
+       ],
+       "custom_steps": [
+        "act"
+       ],
+       "delegated_modes": [
+        "deterministic"
+       ],
+       "exit_condition": "accepted_success",
+       "framework": "custom",
+       "graph_id": "adaptive.action.d98b5c833cf1dfda691d",
+       "llm_thinking_power": "",
+       "logical_kind": "execution",
+       "loop_condition": "steps_remain",
+       "max_depth": 32,
+       "operation_ref": "core.generated_project",
+       "parameters": {
+        "instruction": "Generate a bounded project.",
+        "plan_digest": "d98b5c833cf1dfda691d"
+       },
+       "power": "light",
+       "preferred_modes": [
+        "deterministic"
+       ],
+       "purpose": "component",
+       "replay_guarantee": "event_equivalent",
+       "success_confidence_min": 0.5,
+       "vertex_id": "solution.stage1.component"
+      },
+      "supported_modes": [
+       "deterministic"
+      ],
+      "installed_executor_modes": [
+       "deterministic"
+      ],
+      "step_profile": "atomic_code_only",
+      "loop_condition": "steps_remain",
+      "exit_condition": "accepted_success",
+      "effects": [
+       "pure"
+      ],
+      "permissions": [],
+      "required_capabilities": [
+       "component_execution",
+       "solution_canvas"
+      ],
+      "content_digest": "6a6a77abef790a261174e271b63f20950dca7a0570183a112bee2c4b82c2b4bd"
+     },
+     "selected_mode": "deterministic",
+     "purpose": "component",
+     "operation_ref": "core.generated_project",
+     "parameters": {
+      "instruction": "Generate a bounded project.",
+      "plan_digest": "d98b5c833cf1dfda691d"
+     }
+    }
+   ],
+   "edges": [
+    {
+     "edge_id": "edge:1",
+     "source": {
+      "vertex_id": "solution.controller",
+      "port_role": "generated_project_manifest/v1"
+     },
+     "target": {
+      "vertex_id": "solution.stage1.component",
+      "port_role": "generated_project_manifest/v1"
+     },
+     "relationship": "connected_from",
+     "order": 0,
+     "metadata": {}
+    }
+   ],
+   "groups": [
+    {
+     "group_id": "solution.group",
+     "controller_vertex_id": "solution.controller",
+     "stages": [
+      {
+       "stage_id": "execute_selected_capability",
+       "attempt_vertex_ids": [
+        "solution.stage1.component"
+       ],
+       "router_vertex_id": ""
+      }
+     ],
+     "member_group_ids": [],
+     "combination": "single",
+     "weights": [],
+     "route_vertex_id": "",
+     "evaluator_vertex_ids": []
+    }
+   ],
+   "starting_group_id": "solution.group",
+   "content_digest": "450aa0fdfa3f4eef48c6d473ed80ed43506cc581323e052c1b4257171f92ce34"
+  },
+  "mermaid": "flowchart TD\n  IN([inputs])\n  L1((\"solution.controller: single<br/>deterministic\"))\n  L2((\"solution.stage1.component: core.generated_project<br/>deterministic\"))\n  IN --> L1\n  L1 -->|connected_from: generated_project_manifest/v1| L2\n  OUT([output])\n  L2 --> OUT",
+  "runtime_trace": [
+   {
+    "runtime_event": "started",
+    "solution": "adaptive.action.d98b5c833cf1dfda691d",
+    "logical_loop_id": "adaptive.action.d98b5c833cf1dfda691d",
+    "mode": "deterministic",
+    "runtime_loop_id": "loop38",
+    "role": "solution",
+    "profile_id": "solution.pipeline",
+    "profile_version": "1.0.0",
+    "relationship_kind": "spawned_by",
+    "spawned_by_loop_id": "loop1"
+   },
+   {
+    "runtime_event": "started",
+    "solution": "adaptive.action.d98b5c833cf1dfda691d",
+    "logical_loop_id": "execute_selected_capability",
+    "mode": "deterministic",
+    "runtime_loop_id": "loop39",
+    "role": "solution",
+    "profile_id": "solution.atomic_component",
+    "profile_version": "1.0.0",
+    "relationship_kind": "connected_from",
+    "connected_from_loop_ids": [
+     "loop38"
+    ]
+   },
+   {
+    "solution_loop": "execute_selected_capability",
+    "operation": "core.generated_project",
+    "mode": "deterministic",
+    "component_loop_id": "loop39",
+    "input_role": "generated_project_manifest/v1",
+    "output_role": "generated_project_execution/v1",
+    "input_type": "dict",
+    "output_type": "dict",
+    "runtime_loop_id": "loop39",
+    "role": "solution",
+    "profile_id": "solution.atomic_component",
+    "profile_version": "1.0.0",
+    "relationship_kind": "connected_from",
+    "connected_from_loop_ids": [
+     "loop38"
+    ]
+   },
+   {
+    "runtime_event": "completed",
+    "solution": "adaptive.action.d98b5c833cf1dfda691d",
+    "logical_loop_id": "execute_selected_capability",
+    "status": "done",
+    "terminal_reason": "success_once",
+    "actual_modes": [
+     "deterministic"
+    ],
+    "runtime_loop_id": "loop39",
+    "role": "solution",
+    "profile_id": "solution.atomic_component",
+    "profile_version": "1.0.0",
+    "relationship_kind": "connected_from",
+    "connected_from_loop_ids": [
+     "loop38"
+    ]
+   },
+   {
+    "runtime_event": "completed",
+    "solution": "adaptive.action.d98b5c833cf1dfda691d",
+    "logical_loop_id": "adaptive.action.d98b5c833cf1dfda691d",
+    "status": "done",
+    "terminal_reason": "success_once",
+    "actual_modes": [
+     "deterministic"
+    ],
+    "runtime_loop_id": "loop38",
+    "role": "solution",
+    "profile_id": "solution.pipeline",
+    "profile_version": "1.0.0",
+    "relationship_kind": "spawned_by",
+    "spawned_by_loop_id": "loop1"
+   }
+  ]
+ },
+ "graph_digest": "450aa0fdfa3f4eef48c6d473ed80ed43506cc581323e052c1b4257171f92ce34",
+ "verification": {
+  "record_type": "adaptive_verification/v1",
+  "verdict": "accept",
+  "pass_number": 1,
+  "verifier_stage_occurrence_id": "stage-occurrence:sha256:52d7a3b83fff15e2e9d146a1447294df261a07ea1d046009992929fa9f1ae97c",
+  "verifier_semantic_call_id": "semantic-stage-8f7af33abb3261e102617f88e043ad1f1f0082e229b8ea89",
+  "semantic_verification_observed": true,
+  "deterministic_checks_passed": true,
+  "notes": "Deterministic checks passed.",
+  "remaining_gaps": [],
+  "gap_assessments": [],
+  "advisory_findings": [],
+  "new_requirement_proposals": [],
+  "registered_acceptance_criteria": [
+   {
+    "criterion_ref": "criterion:0",
+    "text": "test command passes"
+   },
+   {
+    "criterion_ref": "criterion:1",
+    "text": "output file exists"
+   }
+  ],
+  "passed": true
+ },
+ "run_history": {
+  "run_id": "adaptive-64dc506ed803819e6a38f992",
+  "events": 551,
+  "head_digest": "87c51bec606a85829309d30cb43945b8192d1282bab83428192b9cd933b29402",
+  "chain_intact": true,
+  "broken_at": [],
+  "path": "/home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-exact-lineage-20260904/adaptive-64dc506ed803819e6a38f992",
+  "product_outcome_bound": false,
+  "product_outcome_digest": "",
+  "terminal_code": ""
+ },
+ "artifacts": [
+  {
+   "path": "/home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-exact-lineage-20260904/adaptive-64dc506ed803819e6a38f992-workspace/attempt-1/output.txt",
+   "media_type": "text/plain",
+   "minimum_bytes": 1,
+   "present": true,
+   "byte_count": 5,
+   "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "error_code": "",
+   "verified": true
+  }
+ ],
+ "workspace": "/home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-exact-lineage-20260904/adaptive-64dc506ed803819e6a38f992-workspace/attempt-1",
+ "limitations": [],
+ "questions": [],
+ "next_action": "Inspect the verified artifacts and Run History.",
+ "inspect_commands": [
+  "loop-engine report adaptive-64dc506ed803819e6a38f992 --runs-dir /home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-exact-lineage-20260904",
+  "loop-engine studio --port 0 --runs-dir /home/username/loop-engine/docs/evidence/runs/stage-assistance-public-offline-exact-lineage-20260904"
+ ],
+ "model_calls": 7,
+ "tool_calls": 1,
+ "loop_count": 53,
+ "elapsed_seconds": 0.245,
+ "model_usage": [
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop7",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000664,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-648f0a2cc624f9a991151bdf2b02ffc1e83faa7aa971703f",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "9c4fb656ed7786c2af54bab8fca9e08d37e02f33c9884763a5d9e0f1d7f5ad7d",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "35c625ad30000095c72771ce7db36b7072eaf9e335b6d99c88c4b0db1134a410",
+     "provider_request_digest": "bb9f7629fc1127171deef8a60dbf213efe90388ba77e393bea9550165b4c872a"
+    }
+   ],
+   "gateway_loop_id": "loop6",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-648f0a2cc624f9a991151bdf2b02ffc1e83faa7aa971703f",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "9c4fb656ed7786c2af54bab8fca9e08d37e02f33c9884763a5d9e0f1d7f5ad7d",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "35c625ad30000095c72771ce7db36b7072eaf9e335b6d99c88c4b0db1134a410"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop14",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000608,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-88fb85b99d5b6961c03bc5d57bf7af124f7df01fe03a71c8",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "15a2737b47ab60dfacf098707007045e3b6f42f3f0162320da1d3f98c73bffc7",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "d0b320219dcc6e4808a21e85b8fdd5fe61f425138cfc5e395756c481e7f317b3",
+     "provider_request_digest": "54aef82a50b825a4cfe9eb738b12e17c561e2d0e9a2aa0d0db5774414812b26f"
+    }
+   ],
+   "gateway_loop_id": "loop13",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-88fb85b99d5b6961c03bc5d57bf7af124f7df01fe03a71c8",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "15a2737b47ab60dfacf098707007045e3b6f42f3f0162320da1d3f98c73bffc7",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "d0b320219dcc6e4808a21e85b8fdd5fe61f425138cfc5e395756c481e7f317b3"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop21",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000599,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-f0549f657fa9b650e1b1070293f7976aacef39825b932a21",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "bf7c913c2425d55fdcd96258aa1ca23038d10181a0bdf77849f7d72ec96b0517",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "3bfe33650adb58da04c7a81a69aabfec2597206632cbfc51a4715891d83f7338",
+     "provider_request_digest": "2d207bce5167cde47b42bd0cc86e5d9ecd404cbd5f2642e54a1f51669e471354"
+    }
+   ],
+   "gateway_loop_id": "loop20",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-f0549f657fa9b650e1b1070293f7976aacef39825b932a21",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "bf7c913c2425d55fdcd96258aa1ca23038d10181a0bdf77849f7d72ec96b0517",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "3bfe33650adb58da04c7a81a69aabfec2597206632cbfc51a4715891d83f7338"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop28",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000915,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-fe73fca08cb09913061b1ba99ccc35aecb808e882407ba00",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "0e78426d51d17224c0fe268c660070db060e6ca5611169539502669d77764c1d",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "21ed9fb0409fe05d83b7c15af0ea75e82c55b15f10d1941979205e0fed10e308",
+     "provider_request_digest": "784c3582d7cf56b7958e685a5d246bb9e927e92d168d2ecb13794152de0c6091"
+    }
+   ],
+   "gateway_loop_id": "loop27",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-fe73fca08cb09913061b1ba99ccc35aecb808e882407ba00",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "0e78426d51d17224c0fe268c660070db060e6ca5611169539502669d77764c1d",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "21ed9fb0409fe05d83b7c15af0ea75e82c55b15f10d1941979205e0fed10e308"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop35",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000598,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-bd1d2dc85970f250b1e4c6dfcd76964fad2213fd186b702e",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "d3c8045e7519ad0abfa2efcb27b5c26c1a6cda2b80040c822c35c2e8dfa45c66",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "b433957eef2c74bbbf23cf1b6383bc4543aa99cfef966fb5e74fe104856f7b7c",
+     "provider_request_digest": "cd66d2502497a56547d4f5175e7ec1e03bcfde2201d2383d7f8edfda58051ba9"
+    }
+   ],
+   "gateway_loop_id": "loop34",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-bd1d2dc85970f250b1e4c6dfcd76964fad2213fd186b702e",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "d3c8045e7519ad0abfa2efcb27b5c26c1a6cda2b80040c822c35c2e8dfa45c66",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "b433957eef2c74bbbf23cf1b6383bc4543aa99cfef966fb5e74fe104856f7b7c"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop45",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000605,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-8f7af33abb3261e102617f88e043ad1f1f0082e229b8ea89",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "3f919bf30f1d6ba2629e9a2b4c12926f9164b7bc822e9d4f45022ec1171254a5",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "5e041622c7d3cb8ea0a13545aa64677cbf8ece61fe2f6a85886b3579ed90c0f8",
+     "provider_request_digest": "d84c7c32b04a6b1d101fee48367c86ec003ff5f56576f8af66327b1e6ba74f47"
+    }
+   ],
+   "gateway_loop_id": "loop44",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-8f7af33abb3261e102617f88e043ad1f1f0082e229b8ea89",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "3f919bf30f1d6ba2629e9a2b4c12926f9164b7bc822e9d4f45022ec1171254a5",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "5e041622c7d3cb8ea0a13545aa64677cbf8ece61fe2f6a85886b3579ed90c0f8"
+  },
+  {
+   "record_type": "model_gateway_result/v1",
+   "ok": true,
+   "provider": "fixture",
+   "model": "fixture-model",
+   "route": "fixture.route",
+   "thinking_power": "medium",
+   "input_tokens": 2,
+   "output_tokens": 3,
+   "total_tokens": 5,
+   "accounting_complete": true,
+   "provider_responded": true,
+   "physical_model_calls": 1,
+   "attempts": [
+    {
+     "provider": "fixture",
+     "model": "fixture-model",
+     "route": "fixture.route",
+     "thinking_power": "medium",
+     "loop_id": "loop52",
+     "ok": true,
+     "provider_ok": true,
+     "input_tokens": 2,
+     "output_tokens": 3,
+     "validation_ok": true,
+     "error_code": "",
+     "error": "",
+     "elapsed_seconds": 0.000608,
+     "usage_diagnostic": null,
+     "maximum_output_tokens": 64,
+     "maximum_output_source": "offline fixture contract",
+     "expected_model": "fixture-model",
+     "reasoning_present": false,
+     "response_received": true,
+     "provider_done": null,
+     "provider_stop_reason": "",
+     "output_limit_reached": false,
+     "provider_status": "",
+     "provider_response_id": "",
+     "provider_service_tier": "",
+     "provider_incomplete_details": null,
+     "provider_usage": null,
+     "semantic_call_id": "semantic-stage-bfcd8336bb220d290a2d181b94ec141acc4d2b65da6c003d",
+     "owner_loop_id": "loop1",
+     "prompt_digest": "c20b1b150d5be4972cb925673a21e51d75999528fc1d1f26a880f6dd4fde996a",
+     "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "logical_request_digest": "0ea30be5d0969554edeebb11a1ec48e2aa5942ec5c0e26e6837da0af4c8c0a94",
+     "provider_request_digest": "30b6511ad2f618458388732012616ff112746dba74b903ee7b4bfed71c803f32"
+    }
+   ],
+   "gateway_loop_id": "loop51",
+   "error_code": "",
+   "error": "",
+   "reasoning_present": false,
+   "semantic_call_id": "semantic-stage-bfcd8336bb220d290a2d181b94ec141acc4d2b65da6c003d",
+   "owner_loop_id": "loop1",
+   "prompt_digest": "c20b1b150d5be4972cb925673a21e51d75999528fc1d1f26a880f6dd4fde996a",
+   "system_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "request_digest": "0ea30be5d0969554edeebb11a1ec48e2aa5942ec5c0e26e6837da0af4c8c0a94"
+  }
+ ]
+}
