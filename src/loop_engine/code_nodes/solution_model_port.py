@@ -13,6 +13,7 @@ connectivity or model quality.
 from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
+from threading import Lock
 from typing import Callable
 
 from ..core.model_gateway import (
@@ -21,6 +22,7 @@ from ..core.model_gateway import (
     ModelGatewayRequest,
     ModelGatewayResult,
 )
+from ..core.model_capabilities import ModelOutputAllocation
 from ..loop.recursive_loop import MODEL_THINKING_POWER_LEVELS
 
 MODEL_LEAF_MODES = ("hybrid", "non_deterministic")
@@ -43,8 +45,11 @@ class ModelInvocationRequest:
     model: str = ""
     temperature: float = 0.7
     semantic_call_id: str = ""
+    output_allocation: ModelOutputAllocation | None = None
 
     def __post_init__(self) -> None:
+        if self.output_allocation is not None and not isinstance(self.output_allocation, ModelOutputAllocation):
+            raise SolutionModelError("output allocation must be a typed Loop decision")
         if not isinstance(self.prompt, str) or not self.prompt.strip():
             raise SolutionModelError(
                 "ModelInvocationRequest.prompt must be non-empty text")
@@ -141,15 +146,30 @@ class ModelExecution:
 
 @dataclass
 class ModelExecutionSession:
-    """Mutable run-scoped accounting shared by every model-using leaf."""
+    """One in-process, single-flight budget owner; results are projections."""
 
     authority: ModelExecution
     results: list[ModelGatewayResult] = field(default_factory=list)
+    _calls_charged: int = field(default=0, init=False, repr=False)
+    _tokens_charged: int = field(default=0, init=False, repr=False)
+    _usage_complete: bool = field(default=True, init=False, repr=False)
+    _accounting_uncertain: bool = field(default=False, init=False, repr=False)
+    _invocation_lock: object = field(default_factory=Lock, init=False, repr=False)
+    _bound_authority: ModelExecution = field(init=False, repr=False)
+
+    def __post_init__(self):
+        if not isinstance(self.authority, ModelExecution) or self.results:
+            raise SolutionModelError("session requires authority and an empty result projection")
+        self._bound_authority = self.authority
 
     @property
     def calls_used(self) -> int:
-        """Physical provider attempts, excluding effect-free preflight rows."""
-        return sum(result.physical_model_calls for result in self.results)
+        """Known physical subtotal; accounting_uncertain flags missing outcomes."""
+        return self._calls_charged
+
+    @property
+    def accounting_uncertain(self) -> bool:
+        return self._accounting_uncertain
 
     @property
     def semantic_calls_used(self) -> int:
@@ -157,20 +177,30 @@ class ModelExecutionSession:
 
     @property
     def total_tokens_used(self) -> "int | None":
-        physical = sum(result.physical_model_calls for result in self.results)
-        if not physical:
-            return 0
-        totals = tuple(result.total_tokens for result in self.results
-                       if result.physical_model_calls)
-        if any(value is None for value in totals):
+        if not self._usage_complete or self._accounting_uncertain:
             return None
-        return sum(totals)  # type: ignore[arg-type]
+        return self._tokens_charged
 
     def invoke(self, request: ModelInvocationRequest, parent_loop) -> str:
         """Invoke the gateway for one typed request owned by ``parent_loop``."""
+        if not self._invocation_lock.acquire(blocking=False):
+            raise SolutionModelError("a bounded session already has an invocation in flight",
+                                     error_code="model_invocation_in_progress")
+        try:
+            return self._invoke_serial(request, parent_loop)
+        finally:
+            self._invocation_lock.release()
+
+    def _invoke_serial(self, request: ModelInvocationRequest, parent_loop) -> str:
         if not isinstance(request, ModelInvocationRequest):
             raise SolutionModelError(
                 "ModelExecutionSession.invoke requires ModelInvocationRequest")
+        if self.authority is not self._bound_authority:
+            raise SolutionModelError("session authority cannot be replaced",
+                                     error_code="model_authority_changed")
+        if self._accounting_uncertain:
+            raise SolutionModelError("a previous invocation has unresolved accounting",
+                                     error_code="token_accounting_unavailable")
         maximum_calls = self.authority.max_model_calls
         if maximum_calls is not None and self.calls_used >= maximum_calls:
             raise SolutionModelError(
@@ -200,15 +230,37 @@ class ModelExecutionSession:
                     error_code="token_budget_exhausted")
             config = replace(config, max_total_tokens=remaining_tokens)
         if request.model:
+            if config.allowed_models and request.model not in config.allowed_models:
+                raise SolutionModelError("requested model is outside the session authority",
+                                         error_code="model_not_authorized")
             config = replace(config, allowed_models=(request.model,))
+        if request.output_allocation is not None:
+            config = replace(config, output_allocation=request.output_allocation)
         gateway_request = ModelGatewayRequest(
             prompt=request.prompt, config=config, system=request.system,
             temperature=request.temperature,
             semantic_call_id=request.semantic_call_id)
-        result = self.authority.gateway.invoke(
-            gateway_request, validate=self.authority.validator,
-            parent=parent_loop)
-        self.results.append(result)
+        try:
+            result = self.authority.gateway.invoke(
+                gateway_request, validate=self.authority.validator,
+                parent=parent_loop)
+            self._calls_charged += result.physical_model_calls
+            if result.physical_model_calls:
+                if result.total_tokens is None:
+                    self._usage_complete = False
+                else:
+                    self._tokens_charged += result.total_tokens
+            if result.error_code in ("token_bound_violated", "provider_attempt_contract_violated"):
+                self._accounting_uncertain = True
+            self.results.append(result)
+        except BaseException as exc:
+            # An orchestration exception can occur after dispatch. Never refund
+            # authority based on a missing public result or reset through retry.
+            self._accounting_uncertain = True
+            if not isinstance(exc, Exception):
+                raise
+            raise SolutionModelError("gateway invocation ended with uncertain accounting",
+                                     error_code="token_accounting_unavailable") from None
         if maximum_calls is not None and self.calls_used > maximum_calls:
             raise SolutionModelError(
                 "ModelGateway exceeded the whole-Solution physical-call budget",

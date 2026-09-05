@@ -10,10 +10,9 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from .loop_control import LoopModePolicy, normalize_exit_condition
 from .loop_role import LOOP_RELATIONSHIP_KINDS
 from .recursive_loop import EXIT_CONDITIONS, LOGICAL_KINDS, MODES
-from .loop_control import normalize_exit_condition
-
 
 PROFILE_ONTOLOGY_VERSION = "1.0.0"
 PROFILE_FAMILIES = ("universal", "practitioner", "intelligence", "solution")
@@ -169,6 +168,10 @@ class LoopProfileSpec:
     @property
     def ref(self) -> LoopProfileRef:
         return LoopProfileRef(self.profile_id, self.version)
+
+    def mode_policy(self, *, preferred_modes=MODES) -> LoopModePolicy:
+        """Expose all three modes without assuming run authority or executors."""
+        return LoopModePolicy(preferred_modes, self.allowed_modes)
 
 
 def _spec(profile_id: str, title: str, family: str, purpose: str, *,
@@ -460,6 +463,7 @@ def profile_catalog(profiles=LOOP_PROFILE_ONTOLOGY) -> tuple[dict, ...]:
         "exit_condition": profile.exit_condition,
         "allowed_logical_kinds": list(profile.allowed_logical_kinds),
         "allowed_modes": list(profile.allowed_modes),
+        "mode_policy": profile.mode_policy().to_dict(),
         "required_fields": list(profile.required_fields),
         "required_capabilities": list(profile.required_capabilities),
         "thinking_power_policy": profile.thinking_power_policy,

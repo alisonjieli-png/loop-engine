@@ -6,7 +6,7 @@ and migration compatibility. Unknown compatibility fails closed.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 
 from .capabilities import StoreCapabilities
 
@@ -41,6 +41,8 @@ class StoreHandshake:
 
     def permits(self, operation: str) -> bool:
         """Whether this verdict allows one operation to proceed."""
+        if self.selected.get("operations", {}).get(operation) is not True:
+            return False
         if self.verdict == "compatible":
             return True
         if self.verdict == "compatible_read_only":
@@ -62,29 +64,45 @@ def negotiate(capabilities: StoreCapabilities, *,
     The verdict is computed, never guessed. Missing required operations or
     query features produce an explicit incompatible verdict with reasons.
     """
+    if not isinstance(capabilities, StoreCapabilities):
+        raise StoreHandshakeError("negotiation requires StoreCapabilities")
+    declared = capabilities.compatibility_verdict
+    if declared not in ("compatible", "compatible_read_only", "compatible_export_only"):
+        return StoreHandshake(
+            adapter_id=capabilities.adapter_id,
+            verdict=declared if declared in VERDICTS else "unknown",
+            reasons=("store compatibility is not established for use",))
+    allowed = {name: value is True for name, value in capabilities.operations.items()}
+    if declared == "compatible_read_only":
+        allowed = {name: value and name in ("get", "query", "stream", "export")
+                   for name, value in allowed.items()}
+    elif declared == "compatible_export_only":
+        allowed = {name: value and name == "export" for name, value in allowed.items()}
+    selected = {"authority": capabilities.authority, "operations": allowed}
     reasons: list[str] = []
-    disabled: list[str] = []
     for operation in required_operations:
-        if not capabilities.supports(operation):
+        if not allowed.get(operation):
             reasons.append(f"operation {operation!r} is not supported")
     for feature in required_query_features:
-        if not capabilities.query_capabilities.get(feature):
+        if capabilities.query_capabilities.get(feature) is not True:
             reasons.append(f"query feature {feature!r} is not supported")
-    if write_requested and not capabilities.supports("write"):
+    if write_requested and not allowed.get("write"):
         reasons.append("write was requested but the store is read-only")
     if reasons:
         return StoreHandshake(
             adapter_id=capabilities.adapter_id, verdict="incompatible",
             reasons=tuple(reasons))
-    if not capabilities.supports("write") and write_requested is False:
+    if declared == "compatible_export_only":
+        return StoreHandshake(capabilities.adapter_id, declared, selected=selected)
+    if not allowed.get("write") and write_requested is False:
         return StoreHandshake(
             adapter_id=capabilities.adapter_id,
             verdict="compatible_read_only",
-            selected={"authority": capabilities.authority},
+            selected=selected,
             reasons=("store is read-only; read operations are permitted",))
     return StoreHandshake(
         adapter_id=capabilities.adapter_id, verdict="compatible",
-        selected={"authority": capabilities.authority})
+        selected=selected)
 
 
 def self_test() -> dict:
@@ -126,4 +144,24 @@ def self_test() -> dict:
                      write_requested=True)
     check("writable_store_negotiates_full_verdict",
           full.verdict == "compatible" and full.permits("write"))
+    check("compatible_does_not_permit_undeclared_operations",
+          not full.permits("execute") and not full.permits("invented"))
+    from dataclasses import replace
+    for declared in ("unknown", "incompatible", "refused_by_policy",
+                     "compatible_with_migration", "compatible_with_degradation",
+                     "invented"):
+        unresolved = negotiate(replace(writable, compatibility_verdict=declared))
+        check("unresolved_compatibility_fails_closed:" + declared,
+              not unresolved.permits("query") and not unresolved.permits("write"))
+    restricted = replace(writable, compatibility_verdict="compatible_read_only")
+    check("declared_read_only_cannot_be_upgraded",
+          negotiate(restricted).permits("query")
+          and not negotiate(restricted).permits("write")
+          and negotiate(restricted, write_requested=True).verdict == "incompatible")
+    only_export = negotiate(replace(writable, compatibility_verdict="compatible_export_only"))
+    check("declared_export_only_stays_restricted",
+          only_export.permits("export") and not only_export.permits("query"))
+    ambiguous = negotiate(replace(writable, operations={"query": "true", "write": "false"}))
+    check("truthy_strings_do_not_grant_operations",
+          not ambiguous.permits("query") and not ambiguous.permits("write"))
     return {"tests": results}

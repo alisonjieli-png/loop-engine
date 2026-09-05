@@ -37,9 +37,9 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 
-from .choice import (CHOICE_RESPONSE_CONTRACT, ChoiceOption, ChoiceRequest,
-                     ChoiceResponse, ParameterSpec,
+from .choice import (ChoiceOption, ChoiceRequest, ChoiceResponse,
                      admitted_choice, render_choice)
+from .model_capabilities import ModelOutputAllocation
 
 RECOVERY_RECORD_TYPE = "recovery_decision/v1"
 
@@ -67,6 +67,7 @@ class RecoveryOutcome:
     exit_condition: str = ""
     blocker: str = ""
     refused: tuple[str, ...] = ()
+    output_allocation: ModelOutputAllocation | None = None
 
     @property
     def reasoned(self) -> bool:
@@ -84,57 +85,35 @@ class RecoveryOutcome:
             "exit_condition": self.exit_condition,
             "blocker": self.blocker,
             "refused": list(self.refused),
+            "output_allocation": (self.output_allocation.summary()
+                                  if self.output_allocation is not None else None),
         }
 
 
 def recovery_options(facts: dict) -> tuple[ChoiceOption, ...]:
     """The responses to this failure that are mechanically possible.
 
-    ``facts`` carries only what the runtime knows for certain: the error, how
-    many attempts have gone, what each route can hold, which providers have
-    credentials, and whether the packet can be made smaller. Nothing here
-    ranks the options or hints at a preference; an option that cannot be used
-    says why, so a reader does not keep reaching for it.
+    This caller currently implements exactly two outcomes: put the unchanged
+    authorized model plan through the same session again, or stop the step and
+    preserve its work. Route replacement, context recompilation, waiting, and
+    setting changes must not appear as selectable until their callers can
+    execute and verify them.
     """
     attempts = int(facts.get("attempts_so_far") or 0)
     error_code = str(facts.get("error_code") or "")
     responded = bool(facts.get("provider_responded"))
-    options = [
+    return (
         ChoiceOption(
             "retry_same_route",
-            "Put the same request to the same route again",
+            "Put the unchanged request through the same authorized model "
+            "plan again",
             facts={"attempts_so_far": attempts, "error_code": error_code,
                    "provider_responded": responded}),
-    ]
-    for route in facts.get("alternate_routes") or ():
-        usable = bool(route.get("eligible", True))
-        options.append(ChoiceOption(
-            f"route:{route.get('name')}",
-            f"{route.get('provider')} / {route.get('model')}",
-            eligible=usable,
-            ineligible_reason=str(route.get("ineligible_reason") or ""),
-            facts={key: route[key] for key in
-                   ("max_context", "max_output_tokens", "same_provider")
-                   if key in route}))
-    packet_tokens = facts.get("packet_estimated_tokens")
-    window = facts.get("route_context_window")
-    can_shrink = bool(facts.get("packet_can_be_rebuilt"))
-    options.append(ChoiceOption(
-        "compact_and_resubmit",
-        "Rebuild the request smaller and put the same logical call again",
-        eligible=can_shrink,
-        ineligible_reason="" if can_shrink else
-        "this caller cannot rebuild the request for this attempt",
-        facts={"packet_estimated_tokens": packet_tokens,
-               "route_context_window": window}))
-    options.append(ChoiceOption(
-        "wait_then_retry", "Wait, then put the same request again",
-        facts={"seconds_waited_so_far": facts.get("seconds_waited", 0)}))
-    options.append(ChoiceOption(
-        "abandon_step",
-        "Stop trying this step and report why, preserving completed work",
-        facts={"verified_work": facts.get("completed_work") or []}))
-    return tuple(options)
+        ChoiceOption(
+            "abandon_step",
+            "Stop trying this step and report why, preserving completed work",
+            facts={"completed_work": facts.get("completed_work") or []}),
+    )
 
 
 def _recovery_question(facts: dict) -> str:
@@ -147,8 +126,7 @@ def _recovery_question(facts: dict) -> str:
         + ". What should happen next?")
 
 
-def choose_recovery(facts: dict, ask, *, parameters=(),
-                    authority=()) -> RecoveryOutcome:
+def choose_recovery(facts: dict, ask, *, parameters=()) -> RecoveryOutcome:
     """Put the recovery decision to a reasoning route.
 
     ``ask`` is a callable taking one prompt and returning response text, or
@@ -161,11 +139,11 @@ def choose_recovery(facts: dict, ask, *, parameters=(),
         question=_recovery_question(facts),
         options=recovery_options(facts),
         evidence={key: facts[key] for key in (
+            "task", "responsibility", "response_contract_ref",
             "error_code", "attempts_so_far", "provider_responded",
-            "provider_stop_reason", "output_limit_reached", "step",
-            "completed_work") if key in facts},
-        parameters=tuple(parameters),
-        authority=tuple(authority))
+            "latest_model_failure", "history_refs", "context_policy",
+            "step", "completed_work", "output_capacity", "allocation_guidance") if key in facts},
+        parameters=tuple(parameters), authority=(), allow_multiple=False, allow_novel=False)
     try:
         text = ask(render_choice(request))
     except Exception as exc:                              # noqa: BLE001
@@ -185,7 +163,8 @@ def choose_recovery(facts: dict, ask, *, parameters=(),
             blocker=NO_REASONING_ROUTE_AVAILABLE,
             reason="the recovery answer could not be read")
     return RecoveryOutcome(
-        selected=answer.selected, adjustments=answer.adjustments,
+        selected=answer.selected, adjustments=(answer.adjustments
+            if answer.selected == ("retry_same_route",) else {}),
         novel=answer.novel, chosen_by=CHOSEN_BY_REASONING,
         reason=answer.reason,
         expected_observation=answer.expected_observation,
@@ -215,46 +194,39 @@ def self_test() -> dict:
         "error_code": "output_validation_failed",
         "attempts_so_far": 2,
         "provider_responded": True,
-        "provider_stop_reason": "stop",
-        "packet_can_be_rebuilt": False,
         "completed_work": ["dataset inventory"],
-        "alternate_routes": (
-            {"name": "cloud.hard", "provider": "ollama_cloud",
-             "model": "big", "same_provider": True, "max_context": 131072},
-            {"name": "cloud.mistral", "provider": "mistral", "model": "m",
-             "eligible": False,
-             "ineligible_reason": "no MISTRAL_API_KEY in environment"}),
+        "task": "Recover one bounded model-backed task.",
+        "responsibility": "produce the admitted response record",
+        "response_contract_ref": "inline:sha256:fixture",
+        "latest_model_failure": {
+            "route": "fixture.route", "maximum_output_tokens": 8192,
+            "error_code": "output_validation_failed"},
+        "history_refs": ["artifact:prior-attempt"],
+        "context_policy": {"policy_id": "fixture", "version": "1"},
     }
     options = recovery_options(facts)
     ids = {item.option_id for item in options}
-    check("the mechanically impossible option is offered with its reason",
-          any(item.option_id == "route:cloud.mistral" and not item.eligible
-              and "MISTRAL" in item.ineligible_reason for item in options))
-    check("an option the caller cannot perform is marked unavailable",
-          any(item.option_id == "compact_and_resubmit" and not item.eligible
-              for item in options))
-    check("abandoning the step is always on the table",
-          "abandon_step" in ids and "retry_same_route" in ids)
+    check("only executable recovery actions are offered",
+          ids == {"retry_same_route", "abandon_step"})
 
     reasoned = choose_recovery(
         facts,
         lambda _prompt: json.dumps({
-            "selected": ["route:cloud.hard"],
+            "selected": ["retry_same_route"],
             "adjustments": {"max_output_tokens": 4096},
             "reason": "the route answered but produced no answer twice",
-            "exit_condition": "stop after one changed attempt"}),
-        parameters=(ParameterSpec("p.out", "max_output_tokens", "integer",
-                                  8192, minimum=512, maximum=65536,
-                                  unit="tokens"),))
-    check("a reasoned recovery is attributed to reasoning",
-          reasoned.reasoned and reasoned.selected == ("route:cloud.hard",)
-          and reasoned.adjustments == {"max_output_tokens": 4096})
+            "exit_condition": "stop after one unchanged attempt"}))
+    check("a reasoned executable choice is admitted without a fake setting",
+          reasoned.reasoned
+          and reasoned.selected == ("retry_same_route",)
+          and not reasoned.adjustments
+          and "adjustment:max_output_tokens" in reasoned.refused)
 
     reaching = choose_recovery(
-        facts, lambda _p: json.dumps({"selected": ["route:cloud.mistral"]}))
-    check("an unavailable recovery is refused, not performed",
+        facts, lambda _p: json.dumps({"selected": ["route:unbound"]}))
+    check("an unimplemented route replacement is refused, not performed",
           reaching.selected == ()
-          and "route:cloud.mistral" in reaching.refused)
+          and "route:unbound" in reaching.refused)
 
     silent = choose_recovery(facts, lambda _p: "")
     check("no reasoning route yields a blocker, never a chosen recovery",
@@ -278,9 +250,8 @@ def self_test() -> dict:
         "selected": [],
         "novel": {"summary": "split the step into two smaller calls",
                   "why": "neither route can hold this request whole"}}))
-    check("a recovery nobody enumerated is carried, and is reasoned",
-          novel.reasoned
-          and novel.novel["summary"].startswith("split the step"))
+    check("an unimplemented novel recovery is refused, not advertised",
+          novel.reasoned and not novel.novel and "novel" in novel.refused)
 
     passed = sum(1 for item in tests if item["passed"])
     return {"record_type": "recovery_test/v1", "tests": tests,

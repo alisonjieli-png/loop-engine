@@ -25,57 +25,13 @@ from .external_harness import (
     HarnessAdapterInfo, HarnessError, HarnessModelCall, HarnessRunRequest,
     HarnessRunResult, HarnessRuntimeBinding, HarnessServices, ModelOutputLimit,
     resolve_harness_output_limit)
+from .harness_execution_contracts import (
+    SDK_FRAMEWORKS as _FRAMEWORKS,
+    HarnessExecutionCapabilities, plain_harness_json, unmet_harness_requirements,
+)
 
 RunnerFn = Callable[[HarnessRunRequest, HarnessServices], object]
 
-_FRAMEWORKS = {
-    "pydantic_ai": {
-        "module": "pydantic_ai", "package": "pydantic-ai",
-        "features": ("typed_request", "exact_output_limit",
-                     "request_limit", "usage_reporting"),
-        "output_limit_binding": "ModelSettings.max_tokens",
-        "limitations": (
-            "a provider-bound SDK model is required through HarnessServices",
-            "tools, multi-agent delegation, memory, MCP, sandbox, and approvals "
-            "are intentionally not exposed by this bounded adapter",
-        ),
-    },
-    "deep_agents": {
-        "module": "deepagents", "package": "deepagents",
-        "features": ("typed_request", "provider_bound_model",
-                     "exact_output_limit", "bounded_graph_recursion",
-                     "usage_reporting"),
-        "output_limit_binding": "HarnessRuntimeBinding.output_limit",
-        "limitations": (
-            "the supplied SDK model must already enforce the exact output maximum",
-            "host filesystem access, persistent memory, skills, MCP, subagents, "
-            "and approvals are intentionally not exposed by this bounded adapter",
-        ),
-    },
-    "openai_agents": {
-        "module": "agents", "package": "openai-agents",
-        "features": ("typed_request", "max_turns", "exact_output_limit",
-                     "usage_reporting", "tracing_disabled"),
-        "output_limit_binding": "ModelSettings.max_tokens",
-        "limitations": (
-            "a provider-bound SDK model is required through HarnessServices",
-            "handoffs, agents-as-tools, MCP, sandbox, and approvals are not "
-            "exposed by this bounded adapter",
-        ),
-    },
-    "microsoft_agent_framework": {
-        "module": "agent_framework", "package": "agent-framework-core",
-        "features": ("typed_request", "configured_chat_client",
-                     "physical_call_counting", "exact_output_limit",
-                     "web_search_disabled", "file_memory_disabled"),
-        "output_limit_binding": "create_harness_agent.max_output_tokens",
-        "limitations": (
-            "a provider-bound SDK client is required through HarnessServices",
-            "web search, file memory, compaction, todos, autonomous harness "
-            "looping, skills, and approvals are disabled at this boundary",
-        ),
-    },
-}
 
 @dataclass(frozen=True)
 class _AdapterExecution:
@@ -137,9 +93,8 @@ def _package_state(harness_id: str, injected: bool) -> tuple[bool, str, str]:
     return True, version, ""
 
 def _prompt(request: HarnessRunRequest) -> str:
-    payload = json.dumps(dict(request.input_data), sort_keys=True, default=str)
-    if len(payload) > 50_000:
-        payload = payload[:50_000] + "\n[bounded input preview]"
+    payload = json.dumps(plain_harness_json(request.input_data),
+                         sort_keys=True, allow_nan=False)
     return (
         f"Goal: {request.goal}\n"
         f"Input contract: {list(request.contract.input_roles)}\n"
@@ -413,10 +368,24 @@ class ConfiguredHarnessAdapter:
             package_name=facts["package"], package_version=package_version,
             features=features,
             limitations=tuple(limitations), available=available,
-            availability_reason=reason)
+            availability_reason=reason,
+            execution_capabilities=HarnessExecutionCapabilities(
+                supported_features=("context_refs",), isolation="none",
+                evidence_refs=("source:core.external_harness_adapters",)))
 
     def run(self, request: HarnessRunRequest,
             services: HarnessServices) -> HarnessRunResult:
+        if request.harness_id != self.harness_id:
+            raise HarnessError("adapter identity does not match request")
+        missing = unmet_harness_requirements(request, self.info().execution_capabilities)
+        if missing:
+            return HarnessRunResult(
+                request.request_id, request.harness_id, "refused",
+                error_code="harness_capability_requirement_unsatisfied",
+                provider_id=request.provider_id, model_id=request.model_id,
+                adapter_version=self.adapter_version,
+                capability_evaluation={"satisfied": False, "missing": list(missing),
+                                       "execution_started": False})
         request = _resolve_output_request(request, services)
         applied_output_limit = None
         prompt_resource = None

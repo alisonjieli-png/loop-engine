@@ -495,6 +495,9 @@ class ModelSettings:
         maximum_attempts = req.max_route_attempts
         selected_attempts = (len(route_plan) if maximum_attempts is None
                              else min(maximum_attempts, len(route_plan)))
+        # Output maxima remain attached to their exact route attempts. A
+        # gateway-wide maximum may only be an explicit exact common binding;
+        # taking the largest value here would apply one route's fact to others.
         return ModelGatewayConfig(
             purpose=req.purpose,
             thinking_power=tiers[0].name,
@@ -502,11 +505,6 @@ class ModelSettings:
             allow_failover=selected_attempts > 1,
             max_route_attempts=maximum_attempts,
             timeout_seconds=max(item.timeout_seconds for item in route_plan),
-            max_output_tokens=(max(
-                item.max_output_tokens for item in route_plan
-                if item.max_output_tokens is not None)
-                if any(item.max_output_tokens is not None
-                       for item in route_plan) else None),
             max_total_tokens=req.max_total_tokens,
             allow_power_escalation=len(tiers) > 1,
             max_power_escalations=max(0, len(tiers) - 1),

@@ -20,6 +20,10 @@ class UnsupportedOperationError(StoreError):
     """The store does not support the requested operation."""
 
 
+class PreconditionFailed(StoreError):
+    """The authoritative store refused an expected version or absence check."""
+
+
 @runtime_checkable
 class CatalogStore(Protocol):
     """Backend-neutral record store contract."""

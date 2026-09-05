@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import sqlite3
 from dataclasses import dataclass, field
 from enum import Enum
@@ -378,13 +379,64 @@ def _make_binding(
         media_type=request.media_type, size_bytes=size_bytes)
 
 
+def _inline_snapshot(value: object, reference: LoopValueRef) -> tuple[object, int]:
+    """Copy plain data without invoking opaque-object serialization hooks."""
+    active: set[int] = set()
+
+    def copy_data(item: object) -> object:
+        kind = type(item)
+        if item is None or kind in (str, bool, int):
+            return item
+        if kind is float and math.isfinite(item):
+            return item
+        if kind not in (dict, list, tuple) or id(item) in active:
+            raise InformationAccessError(
+                InformationAccessFailureCode.INVALID_REQUEST,
+                "inline information requires finite plain data without cycles")
+        active.add(id(item))
+        try:
+            if kind is dict:
+                if any(type(key) is not str for key in item):
+                    raise InformationAccessError(
+                        InformationAccessFailureCode.INVALID_REQUEST,
+                        "inline information mappings require plain string keys")
+                return {key: copy_data(body) for key, body in item.items()}
+            copied = [copy_data(body) for body in item]
+            return tuple(copied) if kind is tuple else copied
+        finally:
+            active.remove(id(item))
+
+    try:
+        snapshot = copy_data(value)
+        encoded = _canonical_json(snapshot).encode("utf-8")
+    except InformationAccessError:
+        raise
+    except (RecursionError, RuntimeError, UnicodeError) as exc:
+        raise InformationAccessError(
+            InformationAccessFailureCode.INVALID_REQUEST,
+            "inline information cannot be safely snapshotted") from exc
+    # For this admitted data domain, these bytes are the existing intrinsic
+    # digest representation. Tuples retain their Python type in the snapshot.
+    if hashlib.sha256(encoded).hexdigest() != reference.content_digest:
+        raise InformationAccessError(
+            InformationAccessFailureCode.INTEGRITY_VIOLATION,
+            "inline information content digest does not match its reference")
+    return snapshot, len(encoded)
+
+
 class InlineInformationAdapter:
-    """Process-local materialization for activation and run-scoped values."""
+    """Run-local snapshots of finite plain JSON data, with tuples retained.
+
+    This adapter admits exact built-in scalars, string-keyed dicts, lists and
+    tuples, not subclasses, cycles or opaque handles. Other LoopValue bodies
+    (such as binary buffers, Arrow data or services) need a qualified adapter;
+    this is not a restriction on the general LoopValue contract.
+    """
 
     adapter_id = "runtime.inline"
 
     def __init__(self) -> None:
-        self._values: dict[str, LoopValue] = {}
+        self._values: dict[str, tuple[LoopValueRef, object]] = {}
 
     def store(
             self, request: InformationPublicationRequest
@@ -398,12 +450,15 @@ class InlineInformationAdapter:
             raise InformationAccessError(
                 InformationAccessFailureCode.UNSUPPORTED_DURABILITY,
                 "inline values cannot claim series or persistent durability")
-        key = _digest_text(_ref_key(request.value.to_ref()))
-        self._values[key] = request.value
-        try:
-            size = len(_canonical_json(request.value.value).encode("utf-8"))
-        except InformationAccessError:
-            size = len(repr(request.value.value).encode("utf-8"))
+        reference = request.value.to_ref()
+        snapshot, size = _inline_snapshot(request.value.value, reference)
+        key = _digest_text(_ref_key(reference))
+        existing = self._values.get(key)
+        if existing is not None and existing != (reference, snapshot):
+            raise InformationAccessError(
+                InformationAccessFailureCode.INTEGRITY_VIOLATION,
+                "inline binding identity already names different content")
+        self._values[key] = (reference, snapshot)
         return _make_binding(request, key, size)
 
     def load(self, binding: InformationStorageBinding) -> object:
@@ -412,11 +467,13 @@ class InlineInformationAdapter:
             raise InformationAccessError(
                 InformationAccessFailureCode.ADAPTER_UNAVAILABLE,
                 "process-local value is no longer available")
-        if value.to_ref() != binding.value_ref:
+        reference, body = value
+        if reference != binding.value_ref:
             raise InformationAccessError(
                 InformationAccessFailureCode.INTEGRITY_VIOLATION,
                 "process-local value reference changed")
-        return value.value
+        snapshot, _ = _inline_snapshot(body, reference)
+        return snapshot
 
 
 class ContextArtifactInformationAdapter:

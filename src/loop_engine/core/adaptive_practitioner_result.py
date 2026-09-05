@@ -267,7 +267,10 @@ def failed_adaptive_output(
         "task_feedback": [item.to_dict()
                           for item in services.request.feedback],
         "deterministic_attempt": services.deterministic_attempt.to_dict(),
-        "model_calls": services.model_session.calls_used,
+        "model_calls": (None if services.model_session.accounting_uncertain
+                        else services.model_session.calls_used),
+        "model_call_accounting_complete": not services.model_session.accounting_uncertain,
+        "model_calls_known_subtotal": services.model_session.calls_used,
         "model_usage": safe_model_usage(services),
         "option_selection": services.selection_tally.to_dict(),
         "semantic_autonomy": services.semantic_decisions.to_dict(),

@@ -1,0 +1,24 @@
+{
+  "record_type": "record_operation_policy/v1",
+  "policy_id": "example.managed_notes.v1",
+  "scope": {
+    "namespace": "example.records",
+    "source_collection": "learned",
+    "intelligence_layer": "context_intelligence",
+    "artifact_kind": "intelligence_record",
+    "record_id_prefix": "note."
+  },
+  "document_schema": {
+    "type": "object",
+    "required": ["title", "body"],
+    "additionalProperties": false,
+    "properties": {
+      "title": {"type": "string", "minLength": 1, "maxLength": 160},
+      "body": {"type": "string", "maxLength": 16000}
+    }
+  },
+  "indexed_fields": ["title"],
+  "maximum_document_bytes": 32768,
+  "maximum_query_results": 50,
+  "maximum_history_depth": 50
+}

@@ -23,6 +23,7 @@ from typing import TYPE_CHECKING, Callable, Protocol
 
 from ..code_nodes.solution_model_port import (
     ModelExecution,
+    ModelExecutionSession,
     ModelInvocationRequest,
     SolutionModelError,
 )
@@ -34,8 +35,9 @@ from .adaptive_practitioner_prompting import (
     serialize_work_packet,
 )
 from .adaptive_practitioner_validation import _short_strings, _short_text
-from .choice import ParameterSpec
 from .context_artifacts import ContextArtifactManager
+from .choice import ParameterSpec
+from .model_capabilities import ModelOutputAllocation, ModelOutputCapability
 from .context_budget import ContextBudgetPolicy, bound_state_view
 from .context_pack_manifest import build_context_pack_manifest
 from .convergence import CACHE_ASSIST, ConvergenceMeasure, experiment_arm
@@ -272,6 +274,75 @@ def _note_recovery(services, owner, request, error_code: str,
             blocker=recovery.blocker, reason=recovery.reason[:300])
     except Exception:                                   # noqa: BLE001
         pass
+
+
+def _latest_model_failure(session) -> dict:
+    """Return structured facts from the last same-session result."""
+    results = getattr(session, "results", None)
+    if not isinstance(results, list) or not results:
+        return {"available": False}
+    result = results[-1]
+    attempts = []
+    for item in tuple(getattr(result, "attempts", ()) or ()):
+        attempts.append({
+            "provider": str(getattr(item, "provider", "") or ""),
+            "model": str(getattr(item, "model", "") or ""),
+            "route": str(getattr(item, "route", "") or ""),
+            "error_code": str(getattr(item, "error_code", "") or ""),
+            "transport_succeeded": getattr(item, "transport_succeeded", None),
+            "response_received": bool(getattr(item, "response_received", False)),
+            "provider_done": getattr(item, "provider_done", None),
+            "provider_stop_reason": str(getattr(
+                item, "provider_stop_reason", "") or ""),
+            "output_limit_reached": bool(getattr(
+                item, "output_limit_reached", False)),
+            "input_tokens": getattr(item, "input_tokens", None),
+            "output_tokens": getattr(item, "output_tokens", None),
+            "maximum_output_tokens": getattr(
+                item, "maximum_output_tokens", None),
+            "maximum_output_source": str(getattr(
+                item, "maximum_output_source", "") or ""),
+            "reservation_status": str(getattr(
+                item, "reservation_status", "") or ""),
+        })
+    return {
+        "available": True,
+        "semantic_call_id": str(getattr(
+            result, "semantic_call_id", "") or ""),
+        "request_digest": str(getattr(result, "request_digest", "") or ""),
+        "gateway_loop_id": str(getattr(result, "gateway_loop_id", "") or ""),
+        "error_code": str(getattr(result, "error_code", "") or ""),
+        "provider_responded": bool(getattr(result, "provider_responded", False)),
+        "transport_succeeded": getattr(result, "transport_succeeded", None),
+        "accounting_complete": bool(getattr(result, "accounting_complete", False)),
+        "input_tokens": getattr(result, "input_tokens", None),
+        "output_tokens": getattr(result, "output_tokens", None),
+        "total_tokens": getattr(result, "total_tokens", None),
+        "attempts": attempts,
+    }
+
+
+def _recovery_history_refs(services, failure: dict) -> tuple[str, ...]:
+    """References available to recovery, without copying artifact bodies."""
+    refs = [
+        *tuple(getattr(services, "selected_intelligence_refs", ()) or ()),
+        *tuple(getattr(services, "selected_memory_refs", ()) or ()),
+    ]
+    for snapshot in tuple(getattr(services, "context_snapshots", ()) or ()):
+        if not isinstance(snapshot, dict):
+            continue
+        for name in ("packet_artifact_ref", "context_pack_artifact_ref"):
+            value = snapshot.get(name)
+            if isinstance(value, dict) and value.get("object_key"):
+                refs.append(str(value["object_key"]))
+    for name, prefix in (
+            ("request_digest", "model-request:sha256:"),
+            ("gateway_loop_id", "loop:"),
+            ("semantic_call_id", "semantic-call:")):
+        if failure.get(name):
+            refs.append(prefix + str(failure[name]))
+    return tuple(dict.fromkeys(
+        item for item in refs if isinstance(item, str) and item.strip()))
 
 
 def _stage_for(services, request) -> SemanticStageFingerprint | None:
@@ -1639,74 +1710,103 @@ class AdaptiveRunServices:
 
     def _reasoned_recovery(self, request, error_code: str, attempt: int,
                            *, provider_responded: bool):
-        """Ask a reasoning route what to do, with the run otherwise lost.
+        """Ask the same governed model session what executable recovery to use.
 
-        The ask goes straight to the gateway rather than back through this
-        method, so a recovery decision can never recurse into another one. It
-        is bounded to a single small call: the run is already failing and the
-        decision is worth one call, not a second budget.
+        The recovery request uses ``ModelExecutionSession.invoke`` directly,
+        rather than this model-step method, so a failed recovery call cannot
+        recurse into another recovery decision. It is charged to the same
+        physical-call and token authority as the failed work.
 
         When nothing answers, the outcome carries NO_REASONING_ROUTE_AVAILABLE
         and the caller raises as before. That is the honest end of a run whose
         reasoning could not be reached — not a licence to finish the task some
         other way.
         """
+        from .recovery import NO_REASONING_ROUTE_AVAILABLE, RecoveryOutcome
+
+        session = self.model_session
+        owner = current_kernel_owner()
+        if not isinstance(session, ModelExecutionSession) or owner is None:
+            return RecoveryOutcome(
+                blocker=NO_REASONING_ROUTE_AVAILABLE,
+                reason="recovery reasoning needs the active typed model "
+                       "session and owning Practitioner Loop")
+        failure = _latest_model_failure(session)
+        attempts = tuple(session.results[-1].attempts) if session.results else ()
+        failed_attempt = attempts[-1] if attempts else None
+        capacity = getattr(failed_attempt, "output_capacity", None)
+        parameters = ()
+        if isinstance(capacity, ModelOutputCapability) and capacity.declared_maximum is not None:
+            parameters = (ParameterSpec(
+                "output.allocation", "requested_output_tokens", "integer",
+                minimum=1, maximum=capacity.declared_maximum, unit="tokens",
+                semantic_effect="Explicit output allowance for this complete response; not a guessed model capacity"),)
+        response_contract_ref = "inline:sha256:" + hashlib.sha256(
+            request.output_contract.encode("utf-8")).hexdigest()
         facts = {
+            "task": self.request.task,
+            "responsibility": request.objective,
+            "response_contract_ref": response_contract_ref,
             "error_code": error_code,
             "attempts_so_far": attempt,
             "provider_responded": provider_responded,
             "step": request.step_id,
-            "packet_can_be_rebuilt": False,
             "completed_work": [
                 f"{len(self.project_attempts)} project attempt(s)",
                 f"{len(self.source_inspections)} source inspection(s)"],
-            "alternate_routes": self._alternate_routes(),
+            "latest_model_failure": failure,
+            "history_refs": list(_recovery_history_refs(self, failure)),
+            "context_policy": self.request.context_budget.to_dict(),
+            "output_capacity": ({"maximum_output_tokens": capacity.declared_maximum,
+                "source_digest": hashlib.sha256(json.dumps(capacity.summary(), sort_keys=True).encode()).hexdigest()}
+                if parameters else {"maximum_output_tokens": None}),
+            "allocation_guidance": (
+                "Use task, contract and failure evidence to choose enough output for a complete answer. "
+                "No small default is imposed. Omit the adjustment to retain full known capacity. "
+                "A lower allowance needs a concrete reason; never truncate required work or expand authority."),
         }
+        bounded_facts, trims = bound_state_view(
+            facts, self.request.context_budget)
+        context_digest = hashlib.sha256(json.dumps(
+            bounded_facts, sort_keys=True, separators=(",", ":"),
+            ensure_ascii=True, allow_nan=False).encode("utf-8")).hexdigest()
+        semantic_call_id = f"recovery:{context_digest[:48]}"
 
         def ask(prompt: str) -> str:
-            session = self.model_session
-            invoke = getattr(session, "invoke_raw", None)
-            if invoke is None:
-                return ""
-            return invoke(prompt) or ""
+            owner.ledger.record(
+                loop_id=owner.loop_id, event="custom",
+                custom_kind="model_recovery_context_compiled",
+                recovery_semantic_call_id=semantic_call_id,
+                failed_semantic_call_id=str(
+                    failure.get("semantic_call_id") or ""),
+                recovery_context_digest=context_digest,
+                response_contract_ref=response_contract_ref,
+                history_ref_count=len(bounded_facts["history_refs"]),
+                context_trim_count=len(trims))
+            return session.invoke(ModelInvocationRequest(
+                prompt, semantic_call_id=semantic_call_id), owner)
 
         try:
-            return choose_recovery(
-                facts, ask,
-                parameters=(ParameterSpec(
-                    "p.out", "max_output_tokens", "integer",
-                    minimum=256, maximum=131072, unit="tokens",
-                    semantic_effect="how much room the answer may take"),),
-                authority=())
+            recovery = choose_recovery(bounded_facts, ask, parameters=parameters)
+            selected_tokens = recovery.adjustments.get("requested_output_tokens")
+            if (recovery.reasoned and recovery.selected == ("retry_same_route",)
+                    and selected_tokens is not None and parameters and failed_attempt is not None):
+                allocation = ModelOutputAllocation(
+                    capability=capacity, provider_id=failed_attempt.provider,
+                    model_id=failed_attempt.expected_model or failed_attempt.model,
+                    route_name=failed_attempt.route, requested_tokens=selected_tokens,
+                    decision_ref=semantic_call_id, reason=recovery.reason)
+                recovery = replace(recovery, output_allocation=allocation)
+            return recovery
         except Exception as exc:                        # noqa: BLE001
             # Interpreting a failure must never replace it. An earlier
             # version raised NameError from here and turned a clean
             # BUDGET_EXHAUSTED into NO_PROGRESS, hiding the real cause
             # behind the machinery meant to explain it.
-            from .recovery import NO_REASONING_ROUTE_AVAILABLE, RecoveryOutcome
             return RecoveryOutcome(
                 blocker=NO_REASONING_ROUTE_AVAILABLE,
                 reason=f"recovery reasoning was unavailable "
                        f"({type(exc).__name__})")
-
-    def _alternate_routes(self) -> tuple:
-        """Every other configured route, and what is mechanically true of it."""
-        gateway = getattr(self.model_session, "gateway", None)
-        registry = getattr(gateway, "registry", None)
-        if registry is None:
-            return ()
-        rows = []
-        for route in registry.all():
-            spec = (gateway.providers or {}).get(route.provider)
-            row = {"name": route.name, "provider": route.provider,
-                   "model": route.model,
-                   "max_context": int(getattr(
-                       route.capabilities, "max_context", 0) or 0)}
-            if spec is None:
-                row["eligible"] = False
-                row["ineligible_reason"] = "provider is not configured"
-            rows.append(row)
-        return tuple(rows[:8])
 
     def model(self, request: ModelStepRequest) -> dict:
         """Run one model step, grading the stage however it ends.
@@ -2191,6 +2291,7 @@ class AdaptiveRunServices:
                 deterministic_attempt_status=self.deterministic_attempt.status,
                 output_schema_digest=hashlib.sha256(
                     request.output_contract.encode("utf-8")).hexdigest())
+            pending_output_allocation = None
             for transport_attempt in range(
                     1, _MAXIMUM_ATTEMPTS_ANY_ERROR + 1):
                 trace_event = {
@@ -2215,6 +2316,7 @@ class AdaptiveRunServices:
                         ModelInvocationRequest(
                             assembled.prompt,
                             temperature=assembled.temperature,
+                            output_allocation=pending_output_allocation,
                             semantic_call_id=(
                                 observed.semantic_call_id
                                 if observed is not None else "")), owner)
@@ -2252,49 +2354,19 @@ class AdaptiveRunServices:
                         transport_attempt=transport_attempt,
                         error_code=error_code,
                         prompt_digest=snapshot["prompt_digest"])
-                    # The table below is continuity behaviour, not the
-                    # decision. It says what is cheap to try while a route is
-                    # merely busy. At the point where it would give up — the
-                    # moment the run is otherwise lost — the choice of what
-                    # to do next is task-conditioned, and goes to reasoning.
-                    retryable = error_code in _RETRYABLE_TRANSPORT_ERRORS
-                    final_attempt = transport_attempt >= _ATTEMPTS_FOR_ERROR.get(
-                        error_code, _MAXIMUM_TRANSPORT_ATTEMPTS)
-                    if not retryable or final_attempt:
-                        recovery = self._reasoned_recovery(
-                            request, error_code, transport_attempt,
-                            provider_responded=bool(
-                                getattr(exc, "provider_responded", False)))
-                        _note_recovery(self, owner, request, error_code,
-                                       transport_attempt, recovery)
-                        if "retry_same_route" not in recovery.selected:
-                            raise
-                        continue
-                    if error_code == "gateway_timeout" \
-                            and self.route_health_ledger is not None:
-                        for preference in (
-                                self.route_health_ledger
-                                .advise_route_preferences()):
-                            if (preference.get("prefer_failover")
-                                    and preference.get(
-                                        "gateway_timeout_walls")):
-                                self.publish(
-                                    "practitioner.diagnostic",
-                                    diagnostic_code=(
-                                        "route_ceiling_wall_detected"),
-                                    route_name=preference.get("route_name"),
-                                    prefer_failover=True,
-                                    reason=preference.get("reason"))
-                                break
-                    # Governed backoff: 1s, then 2s, or a longer wait when
-                    # the thing being waited on is a limit rather than a
-                    # connection. Every retry passes through
-                    # model_session.invoke again, so every physical request
-                    # stays visible and counted in the run record.
-                    if error_code in _SLOW_BACKOFF_ERRORS:
-                        time.sleep(_SLOW_BACKOFF_SECONDS * transport_attempt)
-                    else:
-                        time.sleep(2 ** (transport_attempt - 1))
+                    # The owning reasoning Loop chooses every semantic retry.
+                    # The outer iteration guard remains a safety limit, not
+                    # an error-table policy deciding whether to retry.
+                    recovery = self._reasoned_recovery(
+                        request, error_code, transport_attempt,
+                        provider_responded=bool(getattr(
+                            latest_result, "provider_responded", False)))
+                    _note_recovery(self, owner, request, error_code,
+                                   transport_attempt, recovery)
+                    if "retry_same_route" not in recovery.selected:
+                        raise
+                    pending_output_allocation = recovery.output_allocation
+                    continue
             contract_digest = hashlib.sha256(
                 request.output_contract.encode("utf-8")).hexdigest()
             if not self.request.quiet_model_io:

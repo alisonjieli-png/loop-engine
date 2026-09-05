@@ -1,0 +1,515 @@
+{
+  "all_required_commands_exited_zero": true,
+  "all_required_source_snapshots_stable": true,
+  "base_wheel_suite": {
+    "all_passed": true,
+    "captured_output_lines": 0,
+    "elapsed_seconds": 142.981,
+    "failures": [],
+    "missing_dependencies": [],
+    "optional_adapters_not_tested": [
+      "duckdb",
+      "mcp",
+      "model2vec",
+      "numpy",
+      "opentelemetry-sdk",
+      "pandas",
+      "sklearn"
+    ],
+    "passed": 2544,
+    "provider_calls_made": 0,
+    "record_type": "loop_engine_self_test_summary/v1",
+    "total": 2544
+  },
+  "created_at": "2026-09-05T02:33:05.501472+00:00",
+  "distribution_integrity": {
+    "all_passed": true,
+    "artifacts": [
+      {
+        "bytes": 2064764,
+        "path": "/tmp/loop-engine-records-final-pass.MXRkWa/dist/loop_engine-0.1.0-py3-none-any.whl",
+        "sha256": "6fd1d522992a961c905520f80d9bf365ef301eefcd92bd79e304ab56e6db8f4e"
+      },
+      {
+        "bytes": 1794121,
+        "path": "/tmp/loop-engine-records-final-pass.MXRkWa/dist/loop_engine-0.1.0.tar.gz",
+        "sha256": "561e78e8d489287cf87fdddeae2be3a99eeb028f7bd515b2dba286eb73a6640b"
+      }
+    ],
+    "passed": 4,
+    "record_type": "distribution_integrity/v1",
+    "source_file_count": 470,
+    "tests": [
+      {
+        "mismatched": [],
+        "missing": [],
+        "passed": true,
+        "test": "wheel_runtime_matches_frozen_source"
+      },
+      {
+        "passed": true,
+        "test": "wheel_excludes_private_runs_and_evaluators",
+        "unexpected_paths": []
+      },
+      {
+        "mismatched": [],
+        "missing": [],
+        "passed": true,
+        "test": "sdist_runtime_matches_frozen_source"
+      },
+      {
+        "passed": true,
+        "test": "sdist_excludes_private_runs_and_evaluators",
+        "unexpected_paths": []
+      }
+    ],
+    "total": 4
+  },
+  "earlier_failure_evidence": [
+    {
+      "path": "/tmp/loop-engine-records-final-verification.7NFkxr/base-source-catalog-after-fix-receipt.json",
+      "sha256": "2596964de8b3004b3ee18d8bae408336e282adee147dc74f8a4cee11fff5328f"
+    },
+    {
+      "path": "/tmp/loop-engine-records-final-verification.7NFkxr/build-receipt.json",
+      "sha256": "34aa2804125b4f641e4894a50898c8c9239940b317c169a46b21f17da6ee82aa"
+    },
+    {
+      "path": "/tmp/loop-engine-records-final-verification.7NFkxr/conformance-receipt.json",
+      "sha256": "91ed303ea5db558b665085122973247c03c654b294bc0cbb35d6be2c049c36d3"
+    },
+    {
+      "path": "/tmp/loop-engine-records-final-verification.7NFkxr/source-full-receipt.json",
+      "sha256": "c52bad82baa72f4d87e033c3b358fbb8eea34f239d4ec400d2284a2ff9c6fee9"
+    },
+    {
+      "path": "/tmp/loop-engine-records-final-verification.7NFkxr/venv-create-receipt.json",
+      "sha256": "d67d2448f562fdbcb970cdb59a91199c53eb5cd55507ad9be73a0ad181495c4d"
+    },
+    {
+      "path": "/tmp/loop-engine-records-final-verification.7NFkxr/wheel-catalog-receipt.json",
+      "sha256": "dd88ae47a0fc724480091c9a3bc36010ad698ae87e252408a06e33d471f9f16f"
+    },
+    {
+      "path": "/tmp/loop-engine-records-final-verification.7NFkxr/wheel-identity-receipt.json",
+      "sha256": "d0c3340d3a1afb6633194944024302177fce06a269df0f53a0b99f531cb63c0d"
+    },
+    {
+      "path": "/tmp/loop-engine-records-final-verification.7NFkxr/wheel-install-receipt.json",
+      "sha256": "b2c34b062f889e6168b549e41f30080e76e0cd710bfb23ec29333266c7e8c01e"
+    }
+  ],
+  "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+  "installed_wheel_integrity": {
+    "all_passed": true,
+    "installed_package": "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-env/lib/python3.14/site-packages/loop_engine",
+    "mismatched": [],
+    "missing": [],
+    "record_type": "installed_wheel_integrity/v1",
+    "source_file_count": 470
+  },
+  "limitations": [
+    "Offline source/base-wheel and fixture validation only; no provider, remote database or OpenCode runs.",
+    "Base wheel intentionally omits optional dependencies; explicit not-tested outcomes are retained.",
+    "Readiness does not establish model quality, arbitrary backend scale or full-system task success.",
+    "Prior source and clean-wheel failures remain preserved in the earlier private workspace."
+  ],
+  "receipts": {
+    "build": {
+      "command": [
+        "python3",
+        "-m",
+        "build",
+        "--no-isolation",
+        "--outdir",
+        "/tmp/loop-engine-records-final-pass.MXRkWa/dist"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 3.1817880938760936,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T02:28:32.736136+00:00",
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "phase": "build",
+      "pip_network_disabled": true,
+      "provider_credentials_removed_from_environment": true,
+      "record_type": "offline_verification_receipt/v1",
+      "scope": "Offline checks only; no live provider or remote-database requests authorized.",
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 470,
+      "started_at": "2026-09-05T02:28:29.554338+00:00",
+      "stderr": "/tmp/loop-engine-records-final-pass.MXRkWa/build-stderr.txt",
+      "stderr_sha256": "b181eea8a45f807f5fa1607f003eb1ae5363271ec186d4780a7fd3630cdea57e",
+      "stdout": "/tmp/loop-engine-records-final-pass.MXRkWa/build-stdout.txt",
+      "stdout_sha256": "09356371386671e3afc0cdf9355cf189b7d4f843f42bef48a393c7c1407544a7"
+    },
+    "conformance": {
+      "command": [
+        "python3",
+        "-m",
+        "loop_engine",
+        "--conformance"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 29.178775171982124,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T02:29:51.572033+00:00",
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "phase": "conformance",
+      "pip_network_disabled": true,
+      "provider_credentials_removed_from_environment": true,
+      "record_type": "offline_verification_receipt/v1",
+      "scope": "Offline checks only; no live provider or remote-database requests authorized.",
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 470,
+      "started_at": "2026-09-05T02:29:22.393245+00:00",
+      "stderr": "/tmp/loop-engine-records-final-pass.MXRkWa/conformance-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-records-final-pass.MXRkWa/conformance-stdout.txt",
+      "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+    },
+    "diff-check": {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 0.04513781494461,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T02:29:39.076760+00:00",
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "phase": "diff-check",
+      "pip_network_disabled": true,
+      "provider_credentials_removed_from_environment": true,
+      "record_type": "offline_verification_receipt/v1",
+      "scope": "Offline checks only; no live provider or remote-database requests authorized.",
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 470,
+      "started_at": "2026-09-05T02:29:39.031613+00:00",
+      "stderr": "/tmp/loop-engine-records-final-pass.MXRkWa/diff-check-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-records-final-pass.MXRkWa/diff-check-stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "distribution-integrity": {
+      "command": [
+        "python3",
+        "/tmp/loop-engine-records-final-pass.MXRkWa/check_distribution.py"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 0.21583248698152602,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T02:29:38.798118+00:00",
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "phase": "distribution-integrity",
+      "pip_network_disabled": true,
+      "provider_credentials_removed_from_environment": true,
+      "record_type": "offline_verification_receipt/v1",
+      "result_summary": {
+        "all_passed": true,
+        "passed": 4,
+        "record_type": "distribution_integrity/v1",
+        "total": 4
+      },
+      "scope": "Offline checks only; no live provider or remote-database requests authorized.",
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 470,
+      "started_at": "2026-09-05T02:29:38.582275+00:00",
+      "stderr": "/tmp/loop-engine-records-final-pass.MXRkWa/distribution-integrity-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-records-final-pass.MXRkWa/distribution-integrity-stdout.txt",
+      "stdout_sha256": "d805d461e3cdf4555643655ab46d41937edb9835284ce057d6b2a3725b181c07"
+    },
+    "source-full": {
+      "command": [
+        "python3",
+        "-m",
+        "loop_engine",
+        "--self-test",
+        "--format",
+        "json"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 169.6376753959339,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T02:31:16.914678+00:00",
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "phase": "source-full",
+      "pip_network_disabled": true,
+      "provider_credentials_removed_from_environment": true,
+      "record_type": "offline_verification_receipt/v1",
+      "result_summary": {
+        "all_passed": true,
+        "missing_dependencies": [],
+        "optional_adapters_not_tested": [],
+        "passed": 2589,
+        "record_type": "loop_engine_self_test_summary/v1",
+        "total": 2589
+      },
+      "scope": "Offline checks only; no live provider or remote-database requests authorized.",
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 470,
+      "started_at": "2026-09-05T02:28:27.277000+00:00",
+      "stderr": "/tmp/loop-engine-records-final-pass.MXRkWa/source-full-stderr.txt",
+      "stderr_sha256": "11f1c58c7dd8749bb6cc39853c847b9d23337399dee6bfee09f6a755000199f1",
+      "stdout": "/tmp/loop-engine-records-final-pass.MXRkWa/source-full-stdout.txt",
+      "stdout_sha256": "d0dcb12c5d6202c99c598a00fa8b660975f73ae83e461c67b0cb131776d3a436"
+    },
+    "source-targeted": {
+      "command": [
+        "python3",
+        "/tmp/loop-engine-records-final-pass.MXRkWa/targeted.py"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 0.8570535839535296,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T02:28:29.358424+00:00",
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "phase": "source-targeted",
+      "pip_network_disabled": true,
+      "provider_credentials_removed_from_environment": true,
+      "record_type": "offline_verification_receipt/v1",
+      "result_summary": {
+        "all_passed": true,
+        "passed": 107,
+        "record_type": "managed_records_targeted_checks/v1",
+        "total": 107
+      },
+      "scope": "Offline checks only; no live provider or remote-database requests authorized.",
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 470,
+      "started_at": "2026-09-05T02:28:28.501365+00:00",
+      "stderr": "/tmp/loop-engine-records-final-pass.MXRkWa/source-targeted-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-records-final-pass.MXRkWa/source-targeted-stdout.txt",
+      "stdout_sha256": "b020562ea46088c485f83f1f429fd5c0b5285264ce4f6aea1ca1a931310f1ce7"
+    },
+    "venv-create": {
+      "command": [
+        "python3",
+        "-m",
+        "venv",
+        "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-env"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 2.2723274051677436,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T02:28:33.042975+00:00",
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "phase": "venv-create",
+      "pip_network_disabled": true,
+      "provider_credentials_removed_from_environment": true,
+      "record_type": "offline_verification_receipt/v1",
+      "scope": "Offline checks only; no live provider or remote-database requests authorized.",
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 470,
+      "started_at": "2026-09-05T02:28:30.770638+00:00",
+      "stderr": "/tmp/loop-engine-records-final-pass.MXRkWa/venv-create-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-records-final-pass.MXRkWa/venv-create-stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "wheel-conformance": {
+      "command": [
+        "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-env/bin/python",
+        "-m",
+        "loop_engine",
+        "--conformance"
+      ],
+      "cwd": "/tmp/loop-engine-records-final-pass.MXRkWa/outside-repository",
+      "elapsed_seconds": 21.462923718849197,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T02:30:32.124120+00:00",
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "phase": "wheel-conformance",
+      "pip_network_disabled": true,
+      "provider_credentials_removed_from_environment": true,
+      "record_type": "offline_verification_receipt/v1",
+      "scope": "Offline checks only; no live provider or remote-database requests authorized.",
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 470,
+      "started_at": "2026-09-05T02:30:10.661187+00:00",
+      "stderr": "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-conformance-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-conformance-stdout.txt",
+      "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+    },
+    "wheel-full": {
+      "command": [
+        "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-env/bin/python",
+        "-m",
+        "loop_engine",
+        "--self-test",
+        "--format",
+        "json"
+      ],
+      "cwd": "/tmp/loop-engine-records-final-pass.MXRkWa/outside-repository",
+      "elapsed_seconds": 145.38789004599676,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T02:32:34.826386+00:00",
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "phase": "wheel-full",
+      "pip_network_disabled": true,
+      "provider_credentials_removed_from_environment": true,
+      "record_type": "offline_verification_receipt/v1",
+      "result_summary": {
+        "all_passed": true,
+        "missing_dependencies": [],
+        "optional_adapters_not_tested": [
+          "duckdb",
+          "mcp",
+          "model2vec",
+          "numpy",
+          "opentelemetry-sdk",
+          "pandas",
+          "sklearn"
+        ],
+        "passed": 2544,
+        "record_type": "loop_engine_self_test_summary/v1",
+        "total": 2544
+      },
+      "scope": "Offline checks only; no live provider or remote-database requests authorized.",
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 470,
+      "started_at": "2026-09-05T02:30:09.438484+00:00",
+      "stderr": "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-full-stderr.txt",
+      "stderr_sha256": "0cb20fced0316d3f245f44e20075956fb38a253b029975ba43012a6273d6a1f5",
+      "stdout": "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-full-stdout.txt",
+      "stdout_sha256": "d29a8276a982ddd97752fc2b576cad95858f9b104af99ba820781b3b55d24741"
+    },
+    "wheel-identity": {
+      "command": [
+        "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-env/bin/python",
+        "-c",
+        "import json,sys,loop_engine,importlib.metadata; print(json.dumps({\"import_file\":loop_engine.__file__,\"python\":sys.version,\"sys_prefix\":sys.prefix,\"packages\":{d.metadata[\"Name\"]:d.version for d in importlib.metadata.distributions()}},sort_keys=True))"
+      ],
+      "cwd": "/tmp/loop-engine-records-final-pass.MXRkWa/outside-repository",
+      "elapsed_seconds": 0.1029017441906035,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T02:30:08.666008+00:00",
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "phase": "wheel-identity",
+      "pip_network_disabled": true,
+      "provider_credentials_removed_from_environment": true,
+      "record_type": "offline_verification_receipt/v1",
+      "result_summary": {},
+      "scope": "Offline checks only; no live provider or remote-database requests authorized.",
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 470,
+      "started_at": "2026-09-05T02:30:08.563094+00:00",
+      "stderr": "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-identity-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-identity-stdout.txt",
+      "stdout_sha256": "ddb82e5d2f0785f74e90e354d45e3dad54dd850dc6fb62ff0e96a97fb2c7e175"
+    },
+    "wheel-install": {
+      "command": [
+        "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-env/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-index",
+        "--find-links",
+        "/tmp/loop-engine-final-verification.W0wq3F/dependency-wheelhouse",
+        "/tmp/loop-engine-records-final-pass.MXRkWa/dist/loop_engine-0.1.0-py3-none-any.whl"
+      ],
+      "cwd": "/tmp/loop-engine-records-final-pass.MXRkWa/outside-repository",
+      "elapsed_seconds": 1.9786303811706603,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T02:29:39.362642+00:00",
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "phase": "wheel-install",
+      "pip_network_disabled": true,
+      "provider_credentials_removed_from_environment": true,
+      "record_type": "offline_verification_receipt/v1",
+      "scope": "Offline checks only; no live provider or remote-database requests authorized.",
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 470,
+      "started_at": "2026-09-05T02:29:37.384001+00:00",
+      "stderr": "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-install-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-install-stdout.txt",
+      "stdout_sha256": "fed2b8cdf466715c776cd5c1ae7b7a4a8cbd9bb82841588d8453cc41340d72c4"
+    },
+    "wheel-installed-integrity": {
+      "command": [
+        "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-env/bin/python",
+        "/tmp/loop-engine-records-final-pass.MXRkWa/check_installed.py"
+      ],
+      "cwd": "/tmp/loop-engine-records-final-pass.MXRkWa/outside-repository",
+      "elapsed_seconds": 0.07115602819249034,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T02:33:05.306697+00:00",
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "phase": "wheel-installed-integrity",
+      "pip_network_disabled": true,
+      "provider_credentials_removed_from_environment": true,
+      "record_type": "offline_verification_receipt/v1",
+      "result_summary": {
+        "all_passed": true,
+        "record_type": "installed_wheel_integrity/v1"
+      },
+      "scope": "Offline checks only; no live provider or remote-database requests authorized.",
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 470,
+      "started_at": "2026-09-05T02:33:05.235531+00:00",
+      "stderr": "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-installed-integrity-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-installed-integrity-stdout.txt",
+      "stdout_sha256": "7538218bd8984ef6c59871ff4bbeb42291d38bec3f273b0c709a5ea687183100"
+    },
+    "wheel-pip-check": {
+      "command": [
+        "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-env/bin/python",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "cwd": "/tmp/loop-engine-records-final-pass.MXRkWa/outside-repository",
+      "elapsed_seconds": 0.2917819279246032,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T02:30:09.224177+00:00",
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "phase": "wheel-pip-check",
+      "pip_network_disabled": true,
+      "provider_credentials_removed_from_environment": true,
+      "record_type": "offline_verification_receipt/v1",
+      "scope": "Offline checks only; no live provider or remote-database requests authorized.",
+      "source_changes_during_check": [],
+      "source_changes_from_baseline": [],
+      "source_file_count": 470,
+      "started_at": "2026-09-05T02:30:08.932386+00:00",
+      "stderr": "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-pip-check-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-records-final-pass.MXRkWa/wheel-pip-check-stdout.txt",
+      "stdout_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+    }
+  },
+  "record_type": "final_managed_records_offline_verification/v1",
+  "source_changes_from_baseline": [],
+  "source_file_count": 470,
+  "source_suite": {
+    "all_passed": true,
+    "captured_output_lines": 208,
+    "elapsed_seconds": 166.512,
+    "failures": [],
+    "missing_dependencies": [],
+    "optional_adapters_not_tested": [],
+    "passed": 2589,
+    "provider_calls_made": 0,
+    "record_type": "loop_engine_self_test_summary/v1",
+    "total": 2589
+  }
+}

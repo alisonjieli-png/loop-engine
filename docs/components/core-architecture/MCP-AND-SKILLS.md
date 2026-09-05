@@ -5,6 +5,32 @@ adapters. MCP discovery never invokes a tool, but session initialization can
 still spawn a process or open a network connection. Every discovery, tool
 call, and skill load still runs through a Loop with its own effect policy.
 
+```text
+Operational runtime type
+└── Loop
+    ├── Operational relationship
+    │   ├── Starting
+    │   ├── Spawned by
+    │   ├── Queried by
+    │   ├── Retrieved by
+    │   └── Connected from
+    ├── Role: Practitioner, Intelligence, or Solution
+    ├── Versioned role profile
+    ├── Purpose and domain categories
+    ├── Run mode: deterministic, hybrid, or non-deterministic
+    ├── Step profile
+    ├── Typed input and output contract
+    ├── Loop condition
+    ├── Exit condition
+    ├── Graph relationships
+    ├── Budget, permissions, and effect policy
+    ├── Model settings when the mode permits a model
+    └── Run History records
+```
+
+Adapters, services, and contracts below are passive runtime mechanics. The
+operation that uses them belongs to a classified Loop.
+
 ## MCP services
 
 `McpRegistry` holds explicit server and tool registrations. A call accepts one
@@ -282,7 +308,63 @@ references through existing authoritative services and preserve the separate
 trust and privacy class of every part. See the dated
 [long-horizon research review](../../research/LONG-HORIZON-RECURRENT-SKILLS-AND-STATE-2026-09-04.md).
 
-## Shared observer
+## External harness boundary
+
+`HarnessRegistry` accepts explicitly supplied, versioned adapters under bounded
+identifiers. An identifier never causes a module import, installation, or domain
+route. `run_external_harness` resolves the requested exact Practitioner profile
+and invokes the adapter once inside the canonical Loop runtime.
+
+`HarnessExecutionRequirements` declares required mechanics, preemptive limits,
+and acceptable isolation. `HarnessExecutionCapabilities` describes what an
+adapter supports. The boundary also derives requirements from supplied tools,
+skills, context, workspace, approval policy, routes, and contract effects.
+An unsupported requirement is refused before adapter execution. Declarations
+are compatibility facts, not independent qualification or permission grants.
+
+For example, an effectful delegate can require this exact mechanics profile
+on its `HarnessRunRequest`:
+
+```python
+from loop_engine.core.harness_execution_contracts import HarnessExecutionRequirements
+
+requirements = HarnessExecutionRequirements(
+    required_features=("tool_refs", "skill_refs", "approval_policy"),
+    required_limits=("total_tokens", "cost"),
+    allowed_isolations=("container",),
+)
+```
+
+The current built-in adapters refuse this profile. Supplying a compatible host
+adapter does not grant tool or deployment authority; those permissions still
+need independent admission and enforcement. The profile contains no industry
+name or task-specific controller.
+
+The four optional SDK adapters expose a bounded text/model subset. A context
+reference in their prompt is not proof that its body was hydrated. Native tool,
+skill, MCP, and plugin discovery does not bypass Loop Engine admission. Internal
+subagents are not automatically canonical Spawned Loops.
+
+The OpenCode process adapter and deprecated client refuse execution. Discovery
+is passive and launches no version or model probe. The old raw-host path is
+quarantined until a pinned execution profile can enforce approved configuration,
+tools, environment, filesystem/network isolation, and cancellation. A working
+directory is not a sandbox.
+The removed path also exposed prompts in process arguments, inherited ambient
+credentials/configuration, and persisted raw NDJSON. A replacement must prove
+private prompt transport and raw-event handling, plus credential and
+configuration isolation.
+
+`HarnessBudget` retains post-run acceptance limits. A caller needing prevention
+before spending must require the corresponding `enforced_limits`; the current
+built-in declarations do not promise those guarantees. No live integration or
+generalized task-quality gain follows from the offline contract checks. The
+[storage, harness, and memory audit](../../research/STORAGE-PACKAGES-HARNESSES-AND-MEMORY-2026-09-04.md)
+compares alternatives and records remaining limits.
+The [architecture decision](../../architecture/ADR-EXTERNAL-HARNESS-REALIZATIONS.md)
+records why this remains one optional realization boundary.
+
+## Shared runtime observer
 
 `RuntimeObservationServices` resolves one supplied observer, Loop ledger, or
 spawning Loop. Without any of those, it uses a no-op observer. It never creates a

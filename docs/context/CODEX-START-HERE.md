@@ -91,6 +91,28 @@ When the target model is GPT-6 Astra, also read the dated
 [compatibility note](GPT-6-ASTRA-READINESS-2026-09-04.md). The architecture
 remains model-neutral, and access remains unproven until an authorized probe.
 
+For storage, structured notes, file/database queries, or memory-reference work,
+read [queryable records and storage](../guides/queryable-records-and-storage.md)
+and the [record-operation decision](../architecture/ADR-SCOPED-RECORD-OPERATIONS.md).
+The [verification report](../verification/RECORD-ACCESS-AND-MEMORY-AUDIT-2026-09-04.md)
+records the tested storage slice and open memory incidents. The
+[package, harness, and memory audit](../research/STORAGE-PACKAGES-HARNESSES-AND-MEMORY-2026-09-04.md)
+maps existing authorities before adding another abstraction. Its follow-up
+closes the reproduced alias/snapshot defects and compares harness alternatives.
+The [fresh hardening report](../verification/HARNESS-AND-MEMORY-HARDENING-2026-09-04.md)
+records full source/clean-wheel results and the typed session handoff.
+The later [output and mode-policy checkpoint](../verification/REASONED-OUTPUT-AND-MODE-POLICY-2026-09-05.md)
+adds reasoned output allocations, shared three-mode views, conservative frontier
+outcomes, and single-flight token accounting. Strict live requests still need a
+qualified exact-request token bound. Do not replace missing bounds with a
+character estimate or reuse archived live-run spending authority.
+OpenCode execution is quarantined; do not restore its old raw-host path to make
+a smoke test pass. The [harness boundary](../components/core-architecture/MCP-AND-SKILLS.md#external-harness-boundary)
+documents capability refusal, explicit registration, and post-run budget limits.
+Use the host-configured record tool for managed notes. Do not directly edit its
+database or immutable revisions. Existing authority Markdown and historical
+evidence have not been migrated, and generated session views remain planned.
+
 For the latest new-task attempt and generalization boundary, first read the
 [new-task diagnostic report](../verification/UNSEEN-TASK-DIAGNOSTIC-AND-GENERALIZATION-2026-09-04.md).
 Two real-provider attempts on one generated Kaggle-shaped case produced no

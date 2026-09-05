@@ -95,7 +95,7 @@ loop-engine solve --file task.txt --quickstart \
 Read [LLM-first universal solving](docs/guides/llm-first-universal-solver.md)
 for the model/runtime boundary.
 
-## It gets smarter over time
+## Reuse verified work
 
 A careful colleague takes notes and remembers. Loop Engine saves more than the
 final answer: verified code, reusable context, and complete solutions all
@@ -277,6 +277,21 @@ JSON mode emits one machine-readable solve result with the terminal code,
 artifact records, verification, model usage, tool count, workspace, and Run
 History location.
 
+## Query records and manage notes
+
+One typed catalog query can read canonical JSONL rows, SQLite records, or the
+optional DuckDB file adapter. Backend capabilities remain explicit. Readable
+files do not become writable tables merely because SQL can query them.
+
+`loop-engine records` manages scoped notes with schema validation, exact write
+approval, immutable revisions, and atomic expected-version updates. It does
+not expose raw SQL or let note content grant execution authority.
+See [queryable records and storage](docs/guides/queryable-records-and-storage.md)
+and the [managed-record example](examples/24_managed_records/).
+
+This is a first local tool path. Existing file writers, generated session
+Markdown, and a qualified PostgreSQL backend remain separate work.
+
 ## Solve from a task file
 
 You can also [download ready-to-run task files](examples/tasks/) from GitHub.
@@ -322,6 +337,24 @@ common dependency and version-control folders, and records input digests.
 Loop Engine does not yet claim arbitrary-domain execution, automatic
 deployment, unrestricted shell access, broad repository repair, or guaranteed
 model quality.
+
+Optional harnesses use the same Loop boundary through explicitly registered
+adapters. Missing tool, skill, isolation, or limit requirements cause refusal
+before execution. The OpenCode process adapter is quarantined pending a
+qualified execution profile. See the [harness boundary](docs/components/core-architecture/MCP-AND-SKILLS.md#external-harness-boundary)
+and [alternative harness review](docs/research/STORAGE-PACKAGES-HARNESSES-AND-MEMORY-2026-09-04.md#alternatives-to-opencode).
+This does not disable OpenCode Go or Zen provider endpoints, which are separate
+model adapters.
+
+Every Loop exposes the same three-mode policy view through typed configuration:
+deterministic, hybrid, and non-deterministic. Preferences and fallback order do
+not grant permissions or install missing executors. Output capacity is also
+separate from a chosen allowance. A reasoning Loop can use bounded failure and
+history context to select an explicit `ModelOutputAllocation` for a retry;
+without one, the request uses full known capacity. See
+[reasoned output and mode policies](docs/verification/REASONED-OUTPUT-AND-MODE-POLICY-2026-09-05.md).
+Strict total-token requests currently require a host-qualified exact-request
+bound; a production route without one refuses before dispatch.
 
 ## Task build is not solve
 

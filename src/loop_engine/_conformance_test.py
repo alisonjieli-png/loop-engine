@@ -179,6 +179,9 @@ def self_test() -> dict:
     # Adversarial: hidden semantic fallback — a failed semantic step may NOT
     # retry semantically inside the same iteration (§12).
     def semantic_flaky(loop, step, context):
+        if context.get("requested_mode"):
+            return StepOutcome(output="explicit fallback", mode=context["requested_mode"],
+                               model_calls=1)
         if step == "act" and "act" not in context:
             return StepOutcome(output="err", mode="hybrid", failed=True,
                                model_calls=1)

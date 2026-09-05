@@ -6,13 +6,18 @@ size cap. These checks use local protocol fixtures only.
 from __future__ import annotations
 
 from dataclasses import replace
+from operator import setitem
 
 from ..loop.loop_contract import LoopContract
 from .external_harness import (
     HarnessAdapterInfo, HarnessArtifactRef, HarnessBudget, HarnessError,
-    HarnessModelCall, HarnessRunRequest, HarnessRunResult, HarnessServices,
+    HarnessModelCall, HarnessRegistry, HarnessRunRequest, HarnessRunResult, HarnessServices,
     ModelOutputLimit, StaticModelOutputResolver, _budget_failure,
     resolve_harness_output_limit, run_external_harness,
+)
+from .harness_execution_contracts import (
+    HarnessExecutionCapabilities, HarnessExecutionRequirements,
+    harness_loop_identity, plain_harness_json,
 )
 
 
@@ -261,6 +266,275 @@ def run_checks() -> dict:
           forged.status == "failed"
           and forged.error_code == "output_capture_failed"
           and forged.output is None)
+
+    def rejects(action):
+        try:
+            action()
+        except (HarnessError, ValueError, TypeError):
+            return True
+        return False
+
+    class RegisteredAdapter(OutputProtocolAdapter):
+        """An explicitly supplied host fixture, not a discovered module."""
+
+        def __init__(self):
+            super().__init__({"answer": 42})
+            self.version = "protocol-fixture/v1"
+
+        def info(self):
+            return HarnessAdapterInfo(
+                "host_supplied_solver", self.version, "not-imported", available=True,
+                execution_capabilities=HarnessExecutionCapabilities())
+
+    custom = RegisteredAdapter()
+    custom_request = replace(one_call_request, harness_id="host_supplied_solver")
+    registry = HarnessRegistry((custom,))
+    check("arbitrary_adapter_identifier_requires_explicit_host_registration",
+          registry.get(custom_request.harness_id) is custom
+          and rejects(lambda: registry.get("not_registered"))
+          and rejects(lambda: registry.register(custom)))
+    custom.version = "protocol-fixture/v2"
+    check("registration_version_drift_requires_explicit_replacement",
+          rejects(lambda: registry.get(custom_request.harness_id)))
+    custom.version = "protocol-fixture/v1"
+    check("path_and_import_shaped_adapter_identifiers_are_refused",
+          all(rejects(lambda value=value: replace(custom_request, harness_id=value))
+              for value in ("../escape", "module:Class", "", "x" * 97)))
+
+    with tempfile.TemporaryDirectory(prefix="loop-engine-harness-contract-") as root:
+        manager = ContextArtifactManager(ContextArtifactStore(ContextArtifactStoreSpec(root)))
+        services = HarnessServices(artifact_store=manager)
+        custom_result = run_external_harness(registry.get(custom_request.harness_id),
+                                             custom_request, services=services)
+        check("new_host_adapter_executes_through_the_same_loop_runtime",
+              custom.calls == 1 and custom_result.completed
+              and bool(custom_result.loop_id)
+              and custom_result.safe_summary()["acceptance"] == "not_evaluated")
+        requirements = (
+            {"tool_refs": ("tool:read",)}, {"skill_refs": ("skill:review",)},
+            {"context_refs": ("context:source",)},
+            {"workspace_ref": "workspace:confined"},
+            {"approval_policy_ref": "policy:exact-effects"},
+            {"model_routes": ("route:one",)}, {"context_visibility": "fresh"},
+            {"context_visibility": "shared_runtime_memory"},
+            {"contract": replace(contract, effects=("writes_fs",))},
+            {"contract": replace(contract, effects=("spawns_process",))},
+            {"contract": replace(contract, effects=("network",))},
+            {"contract": replace(contract, effects=("reads_secret",))},
+            {"execution_requirements": HarnessExecutionRequirements(
+                required_features=("body_hydration",))},
+            {"execution_requirements": HarnessExecutionRequirements(
+                required_limits=("total_tokens", "cost"))},
+            {"execution_requirements": HarnessExecutionRequirements(
+                allowed_isolations=("container",))},
+        )
+        for index, changes in enumerate(requirements):
+            before = custom.calls
+            refused_result = run_external_harness(
+                custom, replace(custom_request, **changes), services=services)
+            check(f"unsupported_mechanic_{index}_refused_before_adapter_run",
+                  refused_result.status == "refused" and custom.calls == before
+                  and refused_result.capability_evaluation["execution_started"] is False)
+        before = custom.calls
+        check("unknown_profile_version_refused_without_dispatch",
+              rejects(lambda: run_external_harness(custom, replace(
+                  custom_request, profile_version="999.0.0"), services=services))
+              and custom.calls == before)
+        research = replace(custom_request, profile_id="practitioner.research")
+        identity = harness_loop_identity(research)
+        research_result = run_external_harness(custom, research, services=services)
+        check("requested_exact_practitioner_profile_is_resolved",
+              identity.profile_id == research.profile_id and research_result.completed)
+
+        class WrongModelAdapter(RegisteredAdapter):
+            def run(self, active_request, active_services):
+                result = super().run(active_request, active_services)
+                result.model_calls = (replace(result.model_calls[0], model="different"),)
+                return result
+
+        class WrongVersionAdapter(RegisteredAdapter):
+            def run(self, active_request, active_services):
+                result = super().run(active_request, active_services)
+                result.adapter_version = "changed-version"
+                return result
+
+        class ExceptionAdapter(RegisteredAdapter):
+            def run(self, active_request, active_services):
+                raise RuntimeError("SECRET_FIXTURE_NOT_FOR_HISTORY")
+
+        for variant in (WrongModelAdapter, WrongVersionAdapter):
+            check(f"{variant.__name__}_cannot_return_completion",
+                  rejects(lambda variant=variant: run_external_harness(
+                      variant(), custom_request, services=services)))
+        exception_result = run_external_harness(ExceptionAdapter(), custom_request,
+                                              services=services)
+        check("adapter_exception_text_not_published",
+              not exception_result.completed
+              and "SECRET_FIXTURE" not in str(exception_result.safe_summary())
+              and "SECRET_FIXTURE" not in exception_result.error)
+        shared = {"nested": [1]}
+        producer = RegisteredAdapter()
+        producer.output = shared
+        detached = run_external_harness(producer, custom_request, services=services)
+        shared["nested"].append(2)
+        check("small_harness_output_detached_from_producer",
+              detached.output == {"nested": [1]})
+        detached.output["nested"].append(3)
+        check("returned_output_mutation_cannot_change_producer",
+              shared == {"nested": [1, 2]})
+        private = HarnessRunResult(custom_request.request_id, custom_request.harness_id,
+                                   "failed", error="PRIVATE_FIXTURE", error_code="PRIVATE_FIXTURE")
+        check("unregistered_adapter_error_code_not_published",
+              "PRIVATE_FIXTURE" not in str(private.safe_summary()))
+
+        class RetainedResultAdapter(RegisteredAdapter):
+            def run(self, active_request, active_services):
+                self.returned = super().run(active_request, active_services)
+                return self.returned
+
+        retained_adapter = RetainedResultAdapter()
+        retained_adapter.output = {"nested": {"parts": [1]}}
+        owned = run_external_harness(retained_adapter, custom_request,
+                                     services=services)
+        captured_ref = owned.artifacts[0]
+        retained_adapter.returned.output["nested"]["parts"].append(2)
+        retained_adapter.returned.status = "failed"
+        check("result_envelope_and_nested_output_detached_from_retained_adapter_result",
+              owned is not retained_adapter.returned and owned.completed
+              and owned.output == {"nested": {"parts": [1]}}
+              and manager.store.get_text(ContextArtifactRef(
+                  captured_ref.digest, captured_ref.size_bytes or 0,
+                  media_type=captured_ref.media_type,
+                  artifact_kind="external_harness_output"))
+              == '{"nested":{"parts":[1]}}')
+        owned.output["nested"]["parts"].append(3)
+        check("consumer_result_mutation_cannot_change_retained_adapter_result",
+              retained_adapter.returned.output == {"nested": {"parts": [1, 2]}})
+
+        class ReturnedErrorAdapter(RegisteredAdapter):
+            def run(self, active_request, active_services):
+                result = super().run(active_request, active_services)
+                result.status = "failed"
+                result.error = "SYNTHETIC_PRIVATE_ERROR_FIXTURE"
+                result.error_code = "SYNTHETIC_PRIVATE_CODE_FIXTURE"
+                return result
+
+        from ..loop.recursive_loop import LoopLedger
+        error_ledger = LoopLedger()
+        returned_error = run_external_harness(
+            ReturnedErrorAdapter(), custom_request, services=services,
+            ledger=error_ledger)
+        check("returned_adapter_error_and_code_are_redacted_in_actual_result_and_history",
+              returned_error.status == "failed"
+              and returned_error.error_code == "adapter_reported_failure"
+              and "SYNTHETIC_PRIVATE" not in returned_error.error
+              and "SYNTHETIC_PRIVATE" not in str(returned_error.safe_summary())
+              and "SYNTHETIC_PRIVATE" not in str(error_ledger.events))
+        check("adapter_exception_retains_unknown_call_and_token_accounting",
+              not exception_result.call_count_complete
+              and exception_result.physical_model_calls is None
+              and exception_result.total_tokens is None
+              and exception_result.total_cost is None)
+
+        class MutatedAccountingAdapter(RegisteredAdapter):
+            def run(self, active_request, active_services):
+                result = super().run(active_request, active_services)
+                result.reported_model_call_count = -1
+                return result
+
+        malformed_adapter = MutatedAccountingAdapter()
+        malformed_result = run_external_harness(
+            malformed_adapter, custom_request, services=services)
+        check("postconstruction_invalid_accounting_is_revalidated_before_acceptance",
+              malformed_adapter.calls == 1 and not malformed_result.completed
+              and malformed_result.physical_model_calls is None
+              and not malformed_result.call_count_complete)
+
+    check("adapter_availability_requires_a_literal_boolean",
+          all(rejects(lambda value=value: HarnessAdapterInfo(
+              "host_supplied_solver", "1.0.0", "not-imported", available=value))
+              for value in ("false", 0, 1, None)))
+    features, limitations = ["typed_request"], ["local fixture only"]
+    info_snapshot = HarnessAdapterInfo(
+        "host_supplied_solver", "1.0.0", "not-imported", available=True,
+        features=features, limitations=limitations)
+    features.append("unqualified_feature")
+    limitations.clear()
+    check("adapter_description_sequences_are_detached_from_caller_aliases",
+          info_snapshot.features == ("typed_request",)
+          and info_snapshot.limitations == ("local fixture only",))
+
+    from .external_harness_adapters import ConfiguredHarnessAdapter
+    sdk_dispatches = []
+
+    def unexpected_sdk_runner(active_request, active_services):
+        sdk_dispatches.append(active_request.harness_id)
+        return {"output": "unexpected local fixture"}
+
+    sdk_refusals = []
+    for harness_id in ("pydantic_ai", "deep_agents", "openai_agents",
+                       "microsoft_agent_framework"):
+        sdk_adapter = ConfiguredHarnessAdapter(harness_id, runner=unexpected_sdk_runner)
+        sdk_result = sdk_adapter.run(replace(
+            custom_request, harness_id=harness_id,
+            contract=replace(contract, effects=("reads_secret",))), HarnessServices())
+        sdk_refusals.append(
+            sdk_result.status == "refused"
+            and sdk_result.capability_evaluation["execution_started"] is False
+            and "feature:secret_access" in sdk_result.capability_evaluation["missing"])
+    check("secret_access_is_refused_before_all_four_direct_sdk_runner_boundaries",
+          all(sdk_refusals) and not sdk_dispatches)
+
+    original = {"nested": {"values": [1, {"name": "original"}]}}
+    metadata = {"source": {"revision": "one"}}
+    snap = replace(custom_request, input_data=original, metadata=metadata)
+    snap_digest = snap.digest
+    original["nested"]["values"][1]["name"] = "changed"
+    metadata["source"]["revision"] = "two"
+    exposed = plain_harness_json(snap.input_data)
+    exposed["nested"]["values"].append(99)
+    check("nested_request_and_metadata_are_detached_and_digest_stable",
+          snap.digest == snap_digest
+          and plain_harness_json(snap.input_data) == {"nested": {"values": [1, {"name": "original"}]}}
+          and snap.metadata["source"]["revision"] == "one")
+    check("nested_request_cannot_be_mutated_in_place",
+          rejects(lambda: setitem(snap.input_data["nested"], "other", 1)))
+    check("identity_binds_full_contract_visibility_and_requirements",
+          len({custom_request.digest,
+               replace(custom_request, contract=replace(contract, output_roles=("other/v1",))).digest,
+               replace(custom_request, contract=replace(contract, effects=("writes_fs",))).digest,
+               replace(custom_request, context_visibility="fresh").digest,
+               replace(custom_request, execution_requirements=HarnessExecutionRequirements(
+                   required_features=("context_refs",))).digest}) == 5)
+    cycle = []
+    cycle.append(cycle)
+
+    class Opaque:
+        def __str__(self):
+            raise AssertionError("opaque conversion hook must not run")
+
+    for index, value in enumerate((object(), Opaque(), cycle, float("nan"), float("inf"), {1: "bad"})):
+        check(f"non_plain_input_{index}_is_refused",
+              rejects(lambda value=value: replace(custom_request, input_data={"value": value})))
+    check("nested_credential_metadata_is_refused",
+          rejects(lambda: replace(custom_request, metadata={"deep": [{"api_key": "fixture"}]})))
+    check("authority_requires_boolean_true_and_refs_are_sequences",
+          rejects(lambda: replace(custom_request, authorize_model_calls="false"))
+          and rejects(lambda: replace(custom_request, tool_refs="tool:one")))
+    from .external_harness_adapters import _prompt
+    large_input = {"nested": {"body": "a" * 60_000 + "END_MARKER"}}
+    prompt = _prompt(replace(custom_request, input_data=large_input))
+    check("sdk_prompt_preserves_nested_json_without_silent_truncation",
+          '"nested": {"body": "' in prompt and "END_MARKER" in prompt
+          and "mappingproxy" not in prompt)
+    check("negative_nonfinite_and_boolean_usage_are_refused",
+          all(rejects(lambda value=value: HarnessModelCall(
+              "provider", "model", True, input_tokens=value))
+              for value in (-1, True, 1.5, float("nan")))
+          and all(rejects(lambda value=value: HarnessBudget(1, max_cost=value))
+                  for value in (-1, True, float("inf"), float("nan"))))
+    check("post_run_budget_assessment_does_not_claim_preemptive_enforcement",
+          "post_run_acceptance" in custom_result.safe_summary()["budget_assessment"])
 
     passed = sum(item["passed"] for item in tests)
     return {"tests": tests, "passed": passed, "total": len(tests),

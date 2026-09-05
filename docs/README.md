@@ -53,6 +53,7 @@ slide deck, browser player, and exported video.
 | [Runtime settings and model tiers](guides/settings.md) | Typed YAML settings, environment precedence, providers, model tiers, and escalation. |
 | [Custom endpoints](guides/custom-endpoints.md) | Connect a server you control. |
 | [Reports](guides/reports.md) | Read, export, watch, and play back a run. |
+| [Queryable records and storage](guides/queryable-records-and-storage.md) | Typed file/database queries, approved managed-note revisions, authority boundaries, and remaining migration work. |
 
 ## Architecture detail
 
@@ -62,6 +63,10 @@ starting point.
 | Page | Purpose |
 |---|---|
 | [Learning integrity and research implementation](verification/LEARNING-INTEGRITY-AND-RESEARCH-2026-09-04.md) | Current subject-bound acceptance, accepted/candidate state separation, bootstrap model evidence, proper forecast scoring, exact offline checks, and the remaining paired gate. |
+| [Record access implementation and memory audit](verification/RECORD-ACCESS-AND-MEMORY-AUDIT-2026-09-04.md) | Cross-adapter corrections, actual record-tool use, 100k-row diagnostic, final checks, and open memory/harness incidents. |
+| [Harness and memory hardening](verification/HARNESS-AND-MEMORY-HARDENING-2026-09-04.md) | Open-ended host adapters, capability refusals, OpenCode quarantine, memory snapshot repairs, and offline proof limits. |
+| [Reasoned output and shared mode policies](verification/REASONED-OUTPUT-AND-MODE-POLICY-2026-09-05.md) | History-aware allocation/recovery, class-object settings, three-mode availability, strict accounting, and unresolved live gates. |
+| [Adaptive questions, compilation and capability research](research/ADAPTIVE-QUESTIONS-COMPILATION-AND-CAPABILITY-RESEARCH-2026-09-05.md) | Question value, subtask granularity, iterative prompting, compilation, information measurements, reuse and controlled evolution experiments. Research only. |
 | [Generated architecture map](../src/loop_engine/ARCHITECTURE-MAP.md) | Current module inventory generated from the package. |
 | [Architecture conformance](architecture/ARCHITECTURE_CONFORMANCE.md) | Automated architecture checks and their purpose. |
 | [Architecture mesh and corpus audit](verification/ARCHITECTURE-MESH-CORPUS-AUDIT-2026-09-04.md) | Current runtime, four intelligence layers, static infrastructure, full Markdown coverage, local commit inventory, and reproduced credit/state defects. Read this before relying on earlier exact-lineage claims. |

@@ -17,11 +17,18 @@ from dataclasses import asdict, dataclass, field, replace
 from typing import Mapping, Protocol, Sequence, TYPE_CHECKING
 
 from ..loop.loop_contract import LoopContract
+from .external_harness_output import _capture_harness_output
+from .harness_execution_contracts import (
+    HarnessExecutionCapabilities, HarnessExecutionRequirements,
+    credential_metadata_present, frozen_harness_mapping, harness_loop_identity, plain_harness_json,
+    freeze_adapter_info, safe_harness_error_code, unmet_harness_requirements, valid_harness_id, valid_number, validate_harness_strings,
+)
 
 if TYPE_CHECKING:
     from .context_artifacts import ContextArtifactManager
 
 
+# Built-in discovery names, not an exhaustive taxonomy or execution authority.
 HARNESS_IDS = (
     "pydantic_ai", "deep_agents", "openai_agents",
     "microsoft_agent_framework", "opencode")
@@ -49,7 +56,7 @@ class ModelOutputLimit:
     route_id: str = ""
 
     def __post_init__(self) -> None:
-        if self.max_output_tokens < 1:
+        if not valid_number(self.max_output_tokens, integer=True, positive=True):
             raise HarnessError("resolved model output maximum must be positive")
         if self.source not in (
                 "provider_declared", "provider_catalog",
@@ -64,7 +71,7 @@ class ModelOutputLimit:
 
 @dataclass(frozen=True)
 class HarnessBudget:
-    """Hard physical limits declared before an external harness run."""
+    """Post-run acceptance bounds; preemptive controls must be required separately."""
 
     max_model_calls: int
     max_total_tokens: "int | None" = None
@@ -74,14 +81,15 @@ class HarnessBudget:
     output_limit: "ModelOutputLimit | None" = None
 
     def __post_init__(self) -> None:
-        if self.max_model_calls < 1:
+        if not valid_number(self.max_model_calls, integer=True, positive=True):
             raise HarnessError("max_model_calls must be positive")
         for field_name in ("max_total_tokens", "max_cost", "max_seconds"):
             value = getattr(self, field_name)
-            if value is not None and value <= 0:
+            if value is not None and not valid_number(
+                    value, integer=field_name == "max_total_tokens", positive=True):
                 raise HarnessError(f"{field_name} must be positive when set")
         if (self.max_spawned_tasks is not None
-                and self.max_spawned_tasks < 0):
+                and not valid_number(self.max_spawned_tasks, integer=True)):
             raise HarnessError("max_spawned_tasks cannot be negative")
         if (self.output_limit is not None
                 and not isinstance(self.output_limit, ModelOutputLimit)):
@@ -118,12 +126,15 @@ class HarnessRunRequest:
     approval_policy_ref: str = ""
     authorize_model_calls: bool = False
     metadata: Mapping[str, object] = field(default_factory=dict)
+    execution_requirements: HarnessExecutionRequirements = field(
+        default_factory=HarnessExecutionRequirements)
 
     def __post_init__(self) -> None:
-        if not self.request_id or not self.goal.strip():
-            raise HarnessError("a harness request needs request_id and goal")
-        if self.harness_id not in HARNESS_IDS:
-            raise HarnessError(f"harness_id must be one of {HARNESS_IDS}")
+        validate_harness_strings(self, ("request_id", "goal", "provider_id", "model_id", "profile_id", "profile_version"), ("workspace_ref", "approval_policy_ref"))
+        if not valid_harness_id(self.harness_id):
+            raise HarnessError("harness_id must be a bounded registered-adapter identifier")
+        if not isinstance(self.execution_requirements, HarnessExecutionRequirements):
+            raise HarnessError("typed harness execution requirements are required")
         if self.mode not in HARNESS_MODES:
             raise HarnessError(
                 "external LLM harnesses run only in hybrid or "
@@ -149,12 +160,15 @@ class HarnessRunRequest:
         if not self.provider_id.strip() or not self.model_id.strip():
             raise HarnessError(
                 "external harness requests need exact provider_id and model_id")
-        if not self.authorize_model_calls:
+        if self.authorize_model_calls is not True or not isinstance(self.budget, HarnessBudget):
             raise HarnessError(
                 "external harness requests require authorize_model_calls=True")
         for field_name in ("context_refs", "tool_refs", "skill_refs",
                            "model_routes"):
-            values = tuple(getattr(self, field_name))
+            raw = getattr(self, field_name)
+            if type(raw) not in (tuple, list):
+                raise HarnessError("reference collections must be explicit sequences")
+            values = tuple(raw)
             if any(not isinstance(value, str) or not value.strip()
                    for value in values):
                 raise HarnessError(
@@ -162,27 +176,24 @@ class HarnessRunRequest:
             if len(values) != len(set(values)):
                 raise HarnessError(f"{field_name} cannot contain duplicates")
             object.__setattr__(self, field_name, values)
-        credential_names = (
-            "api_key", "access_token", "bearer_token", "refresh_token",
-            "password", "secret", "client_secret", "token")
-        secret_keys = []
-        for key in self.metadata:
-            normalized = str(key).lower().replace("-", "_")
-            if any(normalized == name or normalized.endswith(f"_{name}")
-                   for name in credential_names):
-                secret_keys.append(key)
-        if secret_keys:
-            raise HarnessError(
-                f"metadata contains secret-shaped keys {secret_keys}; pass "
-                "credential references through configured services")
+        try:
+            object.__setattr__(self, "input_data", frozen_harness_mapping(self.input_data))
+            object.__setattr__(self, "metadata", frozen_harness_mapping(self.metadata))
+        except ValueError as exc:
+            raise HarnessError("harness input and metadata require finite JSON") from exc
+        if credential_metadata_present(self.metadata):
+            raise HarnessError("credentials must use configured services, not metadata")
 
     @property
     def digest(self) -> str:
         safe = {
+            "record_type": "harness_request_identity/v2",
             "request_id": self.request_id,
             "harness_id": self.harness_id,
             "goal": self.goal,
-            "contract": self.contract.name,
+            "contract": asdict(self.contract),
+            "context_visibility": self.context_visibility,
+            "authorize_model_calls": self.authorize_model_calls,
             "mode": self.mode,
             "thinking_power": self.llm_thinking_power,
             "profile": f"{self.profile_id}@{self.profile_version}",
@@ -195,11 +206,12 @@ class HarnessRunRequest:
             "workspace_ref": self.workspace_ref,
             "approval_policy_ref": self.approval_policy_ref,
             "budget": asdict(self.budget),
-            "input_data": dict(self.input_data),
-            "metadata": dict(self.metadata),
+            "input_data": plain_harness_json(self.input_data),
+            "metadata": plain_harness_json(self.metadata),
+            "execution_requirements": self.execution_requirements.to_dict(),
         }
         return hashlib.sha256(json.dumps(
-            safe, sort_keys=True, default=str).encode()).hexdigest()
+            safe, sort_keys=True, allow_nan=False).encode()).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -221,6 +233,11 @@ class HarnessModelCall:
         if self.provider in HARNESS_IDS:
             raise HarnessError(
                 "model-call provider must name the provider, not the harness")
+        if type(self.ok) is not bool or any(value is not None and not valid_number(
+                value, integer=True) for value in (self.input_tokens, self.output_tokens)):
+            raise HarnessError("invalid model-call counts or status")
+        if any(value is not None and not valid_number(value) for value in (self.cost, self.elapsed_seconds)):
+            raise HarnessError("invalid model-call cost or duration")
 
     @property
     def total_tokens(self) -> "int | None":
@@ -287,11 +304,12 @@ class HarnessRunResult:
     prompt_resource_digest: str = ""
     prompt_slot_schema_digest: str = ""
     prompt_render_digest: str = ""
+    capability_evaluation: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.status not in HARNESS_STATUSES:
             raise HarnessError(f"status must be one of {HARNESS_STATUSES}")
-        if not self.request_id or self.harness_id not in HARNESS_IDS:
+        if not self.request_id or not valid_harness_id(self.harness_id):
             raise HarnessError("result needs a valid request and harness id")
         if bool(self.provider_id) != bool(self.model_id):
             raise HarnessError(
@@ -303,6 +321,12 @@ class HarnessRunResult:
         self.tool_events = tuple(self.tool_events)
         self.artifacts = tuple(self.artifacts)
         self.spawned_task_ids = tuple(self.spawned_task_ids)
+        if (type(self.call_count_complete) is not bool or any(value is not None
+                and not valid_number(value, integer=True) for value in (
+                    self.reported_model_call_count, self.aggregate_input_tokens, self.aggregate_output_tokens))
+                or any(value is not None and not valid_number(value)
+                       for value in (self.aggregate_cost, self.elapsed_seconds))):
+            raise HarnessError("invalid harness accounting values")
         if self.reported_model_call_count is None and self.call_count_complete:
             self.reported_model_call_count = len(self.model_calls)
         if (self.reported_model_call_count is not None
@@ -379,8 +403,10 @@ class HarnessRunResult:
             "prompt_slot_schema_digest": self.prompt_slot_schema_digest,
             "prompt_render_digest": self.prompt_render_digest,
             "loop_id": self.loop_id,
-            "error_code": self.error_code,
-            "error": self.error[:200],
+            "error_code": safe_harness_error_code(self.error_code),
+            "error": "external harness reported an error" if self.error else "",
+            "budget_assessment": "post_run_acceptance_not_preemptive_enforcement",
+            "capability_evaluation": self.capability_evaluation,
         }
 
 
@@ -394,10 +420,16 @@ class HarnessAdapterInfo:
     limitations: tuple[str, ...] = ()
     available: bool = False
     availability_reason: str = ""
+    execution_capabilities: HarnessExecutionCapabilities | None = None
 
     def __post_init__(self) -> None:
-        if self.harness_id not in HARNESS_IDS:
-            raise HarnessError(f"harness_id must be one of {HARNESS_IDS}")
+        freeze_adapter_info(self)
+        if (not valid_harness_id(self.harness_id) or not isinstance(self.adapter_version, str)
+                or not self.adapter_version.strip() or len(self.adapter_version) > 128):
+            raise HarnessError("adapter needs a valid identifier and explicit version")
+        if (self.execution_capabilities is not None and not isinstance(
+                self.execution_capabilities, HarnessExecutionCapabilities)):
+            raise HarnessError("adapter execution capabilities must be typed")
 
 
 @dataclass(frozen=True)
@@ -551,26 +583,32 @@ class HarnessRegistry:
 
     def __init__(self, adapters: Sequence[ExternalHarnessAdapter] = ()):
         self._adapters: dict[str, ExternalHarnessAdapter] = {}
+        self._registrations: dict[str, HarnessAdapterInfo] = {}
         for adapter in adapters:
             self.register(adapter)
 
     def register(self, adapter: ExternalHarnessAdapter, *,
                  replace: bool = False) -> None:
         info = adapter.info()
+        if not isinstance(info, HarnessAdapterInfo) or not callable(getattr(adapter, "run", None)):
+            raise HarnessError("adapter must expose typed information and a run operation")
         if info.harness_id in self._adapters and not replace:
             raise HarnessError(
                 f"adapter {info.harness_id!r} is already registered")
         self._adapters[info.harness_id] = adapter
+        self._registrations[info.harness_id] = info
 
     def get(self, harness_id: str) -> ExternalHarnessAdapter:
         if harness_id not in self._adapters:
             raise HarnessError(
                 f"no adapter {harness_id!r}; have {sorted(self._adapters)}")
-        return self._adapters[harness_id]
+        adapter = self._adapters[harness_id]
+        if adapter.info() != self._registrations[harness_id]:
+            raise HarnessError("adapter registration changed; explicit re-registration required")
+        return adapter
 
     def inventory(self) -> tuple[HarnessAdapterInfo, ...]:
-        return tuple(self._adapters[name].info()
-                     for name in sorted(self._adapters))
+        return tuple(self._registrations[name] for name in sorted(self._registrations))
 
 
 def _budget_failure(request: HarnessRunRequest,
@@ -605,60 +643,6 @@ def _budget_failure(request: HarnessRunRequest,
             > request.budget.max_spawned_tasks):
         return "spawned_task_budget_exhausted"
     return None
-
-
-def _serialize_harness_output(value: object) -> tuple[str, str]:
-    """Return one deterministic text body for ContextArtifactManager."""
-    if isinstance(value, str):
-        return value, "text/plain"
-    model_dump = getattr(value, "model_dump", None)
-    if callable(model_dump):
-        value = model_dump(mode="json")
-    try:
-        text = json.dumps(
-            value, sort_keys=True, separators=(",", ":"),
-            ensure_ascii=False, allow_nan=False)
-    except (TypeError, ValueError) as exc:
-        raise HarnessError(
-            "external harness output is not text or JSON-compatible") from exc
-    return text, "application/json"
-
-
-def _capture_harness_output(
-        result: HarnessRunResult,
-        manager: "ContextArtifactManager") -> None:
-    """Store raw output first, then keep inline data or publish only its ref."""
-    if result.output is None:
-        return
-    if isinstance(result.output, HarnessArtifactRef):
-        from .context_artifacts import ContextArtifactRef
-        stored = ContextArtifactRef(
-            result.output.digest, result.output.size_bytes or 0,
-            media_type=result.output.media_type,
-            artifact_kind="external_harness_output")
-        manager.store.get(stored)
-        if result.output.uri != stored.object_key:
-            raise HarnessError(
-                "external harness artifact URI does not match its digest")
-        if result.output not in result.artifacts:
-            result.artifacts = (*result.artifacts, result.output)
-        return
-    body, media_type = _serialize_harness_output(result.output)
-    payload = manager.capture(
-        body, media_type=media_type,
-        artifact_kind="external_harness_output")
-    reference = HarnessArtifactRef(
-        artifact_id=f"context-output:{payload.raw.digest}",
-        uri=payload.raw.object_key,
-        digest=payload.raw.digest,
-        media_type=payload.raw.media_type,
-        size_bytes=payload.raw.byte_count)
-    if all(item.digest != reference.digest for item in result.artifacts):
-        result.artifacts = (*result.artifacts, reference)
-    if payload.offloaded:
-        result.output = reference
-
-
 def run_external_harness(
         adapter: ExternalHarnessAdapter, request: HarnessRunRequest, *,
         services: "HarnessServices | None" = None, parent=None, ledger=None
@@ -668,14 +652,25 @@ def run_external_harness(
 
     active_services = services or HarnessServices()
     info = adapter.info()
+    if not isinstance(info, HarnessAdapterInfo):
+        raise HarnessError("adapter information must be typed")
     if info.harness_id != request.harness_id:
         raise HarnessError(
             f"adapter {info.harness_id!r} cannot run {request.harness_id!r}")
+    missing = unmet_harness_requirements(request, info.execution_capabilities)
+    if missing:
+        return HarnessRunResult(
+            request.request_id, request.harness_id, "refused",
+            error_code="harness_capability_requirement_unsatisfied",
+            error="requested harness mechanics are not supported",
+            provider_id=request.provider_id, model_id=request.model_id,
+            adapter_version=info.adapter_version,
+            capability_evaluation={"satisfied": False, "missing": list(missing),
+                                   "execution_started": False})
     if not info.available:
         return HarnessRunResult(
             request.request_id, request.harness_id, "unavailable",
-            error_code="adapter_unavailable",
-            error=info.availability_reason,
+            error_code="adapter_unavailable", error="harness adapter is unavailable",
             adapter_version=info.adapter_version,
             provider_id=request.provider_id, model_id=request.model_id)
     if active_services.artifact_store is None:
@@ -695,21 +690,23 @@ def run_external_harness(
         delegated_modes=("deterministic", *HARNESS_MODES),
         power="standard", llm_thinking_power=request.llm_thinking_power,
         max_depth=3, exit_condition="accepted_success")
-    loop = (parent.spawn(request.goal, config, contract=request.contract)
+    identity = harness_loop_identity(request)
+    loop = (parent.spawn(request.goal, config, contract=request.contract, identity=identity)
             if parent is not None else Loop(
                 request.goal, config, ledger=ledger,
-                contract=request.contract))
+                contract=request.contract, identity=identity))
     holder: dict[str, HarnessRunResult] = {}
     started = time.monotonic()
 
     def handler(active_loop, step, context):
         try:
-            result = adapter.run(request, active_services)
-        except Exception as exc:
+            result = replace(adapter.run(request, active_services))
+        except Exception:
             result = HarnessRunResult(
                 request.request_id, request.harness_id, "failed",
                 error_code="adapter_exception",
-                error=f"{type(exc).__name__}: {str(exc)[:160]}",
+                error="external harness adapter failed",
+                call_count_complete=False,
                 adapter_version=info.adapter_version,
                 provider_id=request.provider_id, model_id=request.model_id)
         if result.request_id != request.request_id:
@@ -720,18 +717,27 @@ def run_external_harness(
             raise HarnessError("adapter changed provider_id")
         if result.model_id and result.model_id != request.model_id:
             raise HarnessError("adapter changed model_id")
+        if result.adapter_version and result.adapter_version != info.adapter_version:
+            raise HarnessError("adapter changed its execution version")
         result.provider_id = request.provider_id
         result.model_id = request.model_id
-        if any(call.provider != request.provider_id
+        result.error_code = safe_harness_error_code(result.error_code)
+        result.error = "external harness reported an error" if result.error else ""
+        if any(call.provider != request.provider_id or call.model != request.model_id
                for call in result.model_calls):
             raise HarnessError(
-                "adapter model-call provider does not match provider_id")
+                "adapter model-call identity does not match the request")
+        result.capability_evaluation = {
+            "satisfied": True, "requirements": request.execution_requirements.to_dict(),
+            "declared": (info.execution_capabilities.to_dict()
+                         if info.execution_capabilities is not None else None),
+            "independent_qualification": "not_established_by_declaration"}
         try:
             _capture_harness_output(result, active_services.artifact_store)
-        except Exception as exc:
+        except Exception:
             result.status = "failed"
             result.error_code = "output_capture_failed"
-            result.error = f"{type(exc).__name__}: {str(exc)[:160]}"
+            result.error = "external harness output capture failed"
             result.output = None
         elapsed = result.elapsed_seconds
         if elapsed is None:
@@ -741,7 +747,7 @@ def run_external_harness(
         if exceeded:
             result.status = "budget_exhausted"
             result.error_code = exceeded
-            result.error = "external harness exceeded a declared hard budget"
+            result.error = "external harness exceeded a post-run acceptance bound"
         holder["result"] = result
         for call in result.model_calls:
             event = {
@@ -784,9 +790,6 @@ def run_external_harness(
         provider_id=request.provider_id, model_id=request.model_id)
     result.loop_id = loop.loop_id
     return result
-
-
-
 def self_test() -> dict:
     """Run focused offline checks without a package or provider call."""
     from .external_harness_checks import run_checks

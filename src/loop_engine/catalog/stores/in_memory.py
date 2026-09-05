@@ -6,9 +6,11 @@ and the default store for tests and read-only demos.
 """
 from __future__ import annotations
 
+from copy import deepcopy
+
 from ..capabilities import StoreCapabilities
 from ..protocol import StoreError
-from ..query import IntelligenceQuery
+from ..query import IntelligenceQuery, iter_query_records
 
 
 class EphemeralRecordStore:
@@ -25,16 +27,16 @@ class EphemeralRecordStore:
             adapter_kind="in_memory", engine="python",
             operations={"get": True, "query": True, "stream": True,
                         "write": True, "export": True, "import": True},
-            query_capabilities={"projection": True, "filter": True,
+            query_capabilities={"projection": False, "filter": True,
                                "join": False, "aggregation": False,
                                "relationship_traversal": False,
                                "full_text_search": False,
                                "vector_search": False},
-            pushdown={"projection": True, "filter": True, "limit": True,
-                      "order": False},
-            transactions={"supported": False, "snapshot_reads": True},
+            pushdown={"projection": False, "filter": False, "attributes": False,
+                      "limit": False, "order": False},
+            transactions={"supported": False, "snapshot_reads": False},
             result_formats=("python_records",),
-            materializations=("jsonl",),
+            materializations=(),
             authority="authoritative")
 
     def get(self, record_id: str, version: str | None = None) -> dict | None:
@@ -43,17 +45,13 @@ class EphemeralRecordStore:
             return None
         if version is not None and record.get("record_version") != version:
             return None
-        return dict(record)
+        return deepcopy(record)
 
     def query(self, query: IntelligenceQuery) -> list[dict]:
-        matched = [dict(r) for r in self._records.values()
-                   if query.matches(r)]
-        stop = None if query.limit is None else query.offset + query.limit
-        return matched[query.offset:stop]
+        return list(self.stream(query))
 
     def stream(self, query: IntelligenceQuery):
-        for record in self.query(query):
-            yield record
+        return iter_query_records(self._records.values(), query)
 
     def put(self, record: dict, *, precondition: dict | None = None) -> dict:
         record_id = record.get("record_id")
@@ -65,11 +63,11 @@ class EphemeralRecordStore:
                     precondition.get("record_version"):
                 raise StoreError(
                     f"precondition failed for {record_id!r}")
-        self._records[record_id] = dict(record)
+        self._records[record_id] = deepcopy(record)
         return {"record_id": record_id, "stored": True}
 
     def export(self, selection: dict | None = None) -> dict:
-        records = [dict(r) for r in self._records.values()]
+        records = [deepcopy(r) for r in self._records.values()]
         return {"record_type": "catalog_export/v1", "records": records,
                 "count": len(records)}
 

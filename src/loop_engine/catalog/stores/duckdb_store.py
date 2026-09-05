@@ -10,7 +10,12 @@ import os
 
 from ..capabilities import StoreCapabilities
 from ..protocol import StoreError
-from ..query import IntelligenceQuery
+from ..query import (
+    IntelligenceQuery,
+    iter_query_records,
+    scalar_sql_predicates,
+    snapshot_query,
+)
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS records (
@@ -42,16 +47,16 @@ class DuckDBRecordStore:
             adapter_kind="embedded_database", engine="duckdb",
             operations={"get": True, "query": True, "stream": True,
                         "write": True, "export": True, "import": True},
-            query_capabilities={"projection": True, "filter": True,
-                               "join": True, "aggregation": True,
+            query_capabilities={"projection": False, "filter": True,
+                               "join": False, "aggregation": False,
                                "relationship_traversal": False,
                                "full_text_search": False,
                                "vector_search": False},
-            pushdown={"projection": True, "filter": True, "limit": True,
-                      "order": True},
+            pushdown={"projection": False, "filter": True, "attributes": False,
+                      "limit": False, "order": False},
             transactions={"supported": True, "snapshot_reads": True},
-            result_formats=("python_records", "arrow_table"),
-            materializations=("duckdb", "jsonl", "parquet"),
+            result_formats=("python_records",),
+            materializations=("duckdb",),
             authority="authoritative")
 
     def _connect(self):
@@ -88,40 +93,20 @@ class DuckDBRecordStore:
         return record
 
     def query(self, query: IntelligenceQuery) -> list[dict]:
-        con = self._connect()
-        sql = "SELECT * FROM records"
-        clauses = []
-        params: list = []
-        if query.layers:
-            clauses.append("intelligence_layer IN ("
-                           + ", ".join("?" for _ in query.layers) + ")")
-            params.extend(query.layers)
-        if query.source_collections:
-            clauses.append("source_collection IN ("
-                           + ", ".join("?" for _ in query.source_collections)
-                           + ")")
-            params.extend(query.source_collections)
-        if query.artifact_kinds:
-            clauses.append("artifact_kind IN ("
-                           + ", ".join("?" for _ in query.artifact_kinds)
-                           + ")")
-            params.extend(query.artifact_kinds)
-        if query.lifecycle:
-            clauses.append("lifecycle IN ("
-                           + ", ".join("?" for _ in query.lifecycle) + ")")
-            params.extend(query.lifecycle)
-        if clauses:
-            sql += " WHERE " + " AND ".join(clauses)
-        if query.limit is not None:
-            sql += f" LIMIT {int(query.limit)}"
-        if query.offset:
-            sql += f" OFFSET {int(query.offset)}"
-        rows = con.execute(sql, params).fetchall()
-        return [self._row_to_record(row) for row in rows]
+        return list(self.stream(query))
 
     def stream(self, query: IntelligenceQuery):
-        for record in self.query(query):
-            yield record
+        query = snapshot_query(query)
+        where, params = scalar_sql_predicates(query)
+        def records():
+            cursor = self._connect().cursor()
+            try:
+                cursor.execute("SELECT * FROM records" + where, params)
+                for row in iter(cursor.fetchone, None):
+                    yield self._row_to_record(row)
+            finally:
+                cursor.close()
+        return iter_query_records(records(), query)
 
     def put(self, record: dict, *, precondition: dict | None = None) -> dict:
         import json as _json

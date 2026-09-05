@@ -300,6 +300,66 @@ model_ladder_evidence:
     - causal_route_quality_and_total_cost_benefit
     - qualified_automatic_routing
 
+model_output_management:
+  operational_runtime_type: Loop
+  capacity_contract: loop_engine.core.model_capabilities.ModelOutputCapability
+  allocation_contract: loop_engine.core.model_capabilities.ModelOutputAllocation
+  token_bound_contract: loop_engine.core.model_token_preflight.ProviderTokenBound
+  semantic_recovery_owner: loop_engine.core.adaptive_practitioner_records.AdaptiveRunServices
+  shared_session: loop_engine.code_nodes.solution_model_port.ModelExecutionSession
+  maturity: implemented_offline
+  invariants:
+    - provider_capacity_and_explicit_output_allocation_are_distinct
+    - no_allocation_means_full_source_backed_output_capacity
+    - explicit_allocation_binds_exact_route_model_capacity_and_decision
+    - no_implicit_output_halving_or_small_default_in_gateway
+    - total_token_authority_does_not_filter_provider_output_capacity
+    - per_route_capacities_are_not_aggregated_into_one_global_limit
+    - strict_total_budget_requires_a_qualified_exact_request_token_bound
+    - shared_session_is_single_flight_and_results_cannot_refund_budget
+    - uncertain_or_interrupted_accounting_blocks_further_bounded_work
+    - incomplete_or_contradictory_provider_output_cannot_claim_completion
+    - recovery_uses_same_counted_model_session_and_relevant_history
+  unproven:
+    - production_exact_wire_token_bound_qualification
+    - live_assisted_fresh_pair_and_unseen_task_improvement
+    - arbitrary_historical_log_query_and_initial_allocation_learning
+    - concurrent_cross_process_reservations_and_durable_reconciliation
+
+loop_mode_interface:
+  runtime_type: Loop
+  policy_view: loop_engine.loop.loop_control.LoopModePolicy
+  modes: [deterministic, hybrid, non_deterministic]
+  preference_source: LoopConfig.preferred_modes
+  invariants:
+    - all_three_modes_are_visible_even_when_a_profile_permits_only_one
+    - preference_order_does_not_grant_model_or_effect_authority
+    - configured_profile_and_installed_executor_limits_remain_distinct
+    - unavailable_or_infeasible_execution_refuses_explicitly
+
+external_harness_execution:
+  operational_runtime_type: Loop
+  boundary: loop_engine.core.external_harness.run_external_harness
+  adapter_registry: loop_engine.core.external_harness.HarnessRegistry
+  capabilities: loop_engine.core.harness_execution_contracts.HarnessExecutionCapabilities
+  requirements: loop_engine.core.harness_execution_contracts.HarnessExecutionRequirements
+  maturity: implemented_offline
+  invariants:
+    - identifiers_select_only_explicitly_registered_host_adapters
+    - unsupported_required_mechanics_refuse_before_execution
+    - adapter_declarations_are_not_permission_or_independent_qualification
+    - exact_practitioner_profile_provider_model_and_contract_are_bound
+    - request_data_is_detached_finite_plain_data
+    - one_adapter_invocation_per_owning_loop
+    - post_run_budget_checks_do_not_claim_preemptive_enforcement
+    - opencode_raw_host_execution_is_quarantined
+    - harness_completion_is_not_task_acceptance
+  unproven:
+    - live_full_coding_harness_qualification
+    - automatic_harness_selection_and_cross_domain_quality
+    - hermetic_tools_skills_context_network_and_cancellation
+    - preemptive_total_token_and_spending_limits
+
 reactive_execution:
   operational_runtime_type: Loop
   series_definition: loop_engine.loop.reactive_activation.ReactiveSeriesDefinition
@@ -322,6 +382,7 @@ reactive_execution:
     - every_claimed_activation_starts_the_exact_loop_definition
     - process_local_information_never_claims_restart_durability
     - reference_possession_never_grants_access
+    - inline_values_are_owned_snapshots_not_shared_mutable_aliases
     - rank_belongs_to_one_policy_version_not_the_candidate
     - portfolio_reads_never_reactivate_the_producer
     - stale_fencing_tokens_cannot_commit
@@ -723,6 +784,38 @@ semantic_runtime:
     - materialized_code_uses_existing_code_intelligence_admission_and_promotion
     - unsupported_deterministic_regions_fall_back_to_an_eligible_semantic_realization
   verified_scope: offline_injected_interpreter_routing_vertical_slice
+record_access:
+  store_contract: loop_engine.catalog.protocol.CatalogStore
+  query_contract: loop_engine.catalog.query.IntelligenceQuery
+  managed_operations: loop_engine.core.record_operations.RecordOperationService
+  host_policy: loop_engine.core.record_operations_records.RecordOperationPolicy
+  request_contract: loop_engine.core.record_operations_records.RecordOperationRequest
+  cli: loop_engine.record_cli.record_command
+  operational_runtime_type: Loop
+  profile: practitioner.code_execution
+  local_write_backend: loop_engine.catalog.stores.sqlite_store.SQLiteRecordStore
+  immutable_revision_artifacts: loop_engine.core.context_artifacts.ContextArtifactStore
+  authority: host_scope_and_exact_effect_approval
+  verified_scope: offline_local_managed_records_and_catalog_query_parity
+  invariants:
+    - model_requests_cannot_supply_sql_paths_scope_schema_or_authority
+    - all_query_filters_apply_before_pagination
+    - unsupported_query_or_store_capabilities_fail_closed
+    - writes_require_atomic_authoritative_preconditions
+    - immutable_revision_artifact_precedes_compare_and_swap_head
+    - retirement_preserves_prior_revisions_and_never_deletes_run_history
+    - package_records_are_read_only
+    - candidate_record_contents_never_self_promote
+    - storage_failure_is_distinct_from_precondition_conflict
+  unproven:
+    - migration_of_all_existing_file_writers
+    - postgres_server_adapter
+    - cross_store_atomic_transactions
+    - million_record_operational_qualification
+    - automatic_product_model_tool_discovery
+    - persisted_cli_operation_run_history
+    - patched_wal_qualification_for_other_existing_stores
+
 parameter_and_prompt_governance:
   operational_runtime_type: Loop
   settings_authority: loop_engine.core.runtime_settings.RuntimeSettings

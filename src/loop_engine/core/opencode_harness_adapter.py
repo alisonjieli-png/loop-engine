@@ -1,20 +1,18 @@
-"""OpenCode as a Loop realization: one bounded headless run, normalized.
+"""OpenCode event normalization with raw host execution quarantined.
 
-Architectural role: the first process-level external harness adapter. The
-canonical ``Loop`` created by ``run_external_harness`` owns the goal,
-contract, budget, evidence, and terminal vocabulary; this adapter is the
-realization inside its one step. It performs a handshake (binary version and
-model listing), renders the default starting intelligence for the harness
-from the versioned prompt resource, runs ``opencode run --format json`` in an
-isolated working directory, normalizes the raw JSON events into the
-provider-neutral ``HarnessRunResult`` (model calls with tokens and cost, tool
-events without bodies, changed files as artifact references, the raw event
-stream stored by digest), and honors the request's wall-clock budget by
-interrupting the process. It claims nothing about acceptance: the spawning
-Loop verifies the result independently.
+The canonical ``Loop`` and external-harness contract retain ownership of the
+goal, authority, intelligence, budgets, and result. The old process path used
+``--auto``, inherited ambient credentials and configuration, placed the prompt
+in process arguments, treated a working directory as isolation, and recorded
+raw NDJSON. Those mechanics cannot satisfy the typed execution requirements.
+
+This module still renders a bounded work packet and normalizes saved offline
+OpenCode events. ``OpenCodeProcessAdapter`` is a refusal-only compatibility
+adapter until a separately reviewed execution profile can prove configuration,
+credential, prompt, tool, context, effect, cancellation, and limit controls.
 
 Owns:
-    - OpenCodeProcessAdapter: the ExternalHarnessAdapter for OpenCode.
+    - OpenCodeProcessAdapter: quarantined ExternalHarnessAdapter compatibility.
     - parse_opencode_events(): the deterministic event normalization.
     - render_opencode_message(): the packet-to-message rendering.
 
@@ -26,25 +24,31 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
-import shutil
-import signal
-import subprocess
-import time
 from dataclasses import dataclass, field
-from pathlib import Path
 
-from .external_harness import (HarnessAdapterInfo, HarnessArtifactRef,
-                               HarnessError, HarnessModelCall,
-                               HarnessRunRequest, HarnessRunResult,
-                               HarnessServices, HarnessToolEvent)
+from .external_harness import (
+    HarnessAdapterInfo,
+    HarnessError,
+    HarnessModelCall,
+    HarnessRunRequest,
+    HarnessRunResult,
+    HarnessServices,
+    HarnessToolEvent,
+)
+from .harness_execution_contracts import (
+    HarnessExecutionCapabilities,
+    plain_harness_json,
+    unmet_harness_requirements,
+)
 
 OPENCODE_HARNESS_ID = "opencode"
-ADAPTER_VERSION = "1.0.0"
-_DEFAULT_MAX_SECONDS = 600.0
-_INTERRUPT_GRACE_SECONDS = 15.0
-_IGNORED_DIRECTORIES = frozenset({".git", "__pycache__", "node_modules",
-                                  ".opencode", ".venv"})
+ADAPTER_VERSION = "1.1.0"
+_UNQUALIFIED_REASON = "OpenCode host process execution profile is not qualified"
+_CAPABILITY_EVIDENCE = (
+    "https://dev.opencode.ai/docs/cli/",
+    "https://opencode.ai/docs/permissions",
+    "https://opencode.ai/v2/docs/config",
+)
 #: OpenCode tool names mapped to the LoopContract effect vocabulary.
 _TOOL_EFFECTS = {
     "write": "writes_fs", "edit": "writes_fs", "patch": "writes_fs",
@@ -63,21 +67,6 @@ def _digest_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def _snapshot(root: Path) -> dict:
-    """Relative path to content digest for every regular file under root."""
-    files = {}
-    for path in root.rglob("*"):
-        if any(part in _IGNORED_DIRECTORIES for part in path.parts):
-            continue
-        if path.is_file() and not path.is_symlink():
-            try:
-                files[str(path.relative_to(root))] = _digest_bytes(
-                    path.read_bytes())
-            except OSError:
-                continue
-    return files
-
-
 def render_opencode_message(request: HarnessRunRequest) -> str:
     """Compose the message: default instructions, goal, contract, inputs."""
     from ..strings.prompt_fragments import external_harness_instruction_bundle
@@ -94,7 +83,8 @@ def render_opencode_message(request: HarnessRunRequest) -> str:
     ]
     if request.input_data:
         lines.append("Inputs (JSON): " + json.dumps(
-            dict(request.input_data), sort_keys=True, default=str))
+            plain_harness_json(request.input_data), sort_keys=True,
+            ensure_ascii=False, allow_nan=False))
     return "\n".join(lines)
 
 
@@ -108,10 +98,10 @@ class ParsedOpenCodeEvents:
     session_id: str
     event_count: int
     unmapped_types: tuple
-    final_json: "dict | None"
+    final_json: dict | None
 
 
-def _int(value) -> "int | None":
+def _int(value) -> int | None:
     return value if isinstance(value, int) and not isinstance(value, bool) else None
 
 
@@ -196,197 +186,112 @@ def parse_opencode_events(lines, *, provider_id: str, model_id: str
 
 @dataclass
 class OpenCodeProcessAdapter:
-    """Run OpenCode headlessly for one bounded request."""
+    """Refuse raw host execution until a governed profile is qualified."""
 
+    # Constructor fields remain for import compatibility. They are never used
+    # to discover a binary, select a model, or grant execution authority.
     binary: str = "opencode"
-    auto_approve: bool = True
-    listed_models: "tuple | None" = None
+    auto_approve: bool = False
+    listed_models: tuple | None = None
     version_timeout_seconds: float = 20.0
     _version: str = field(default="", init=False, repr=False)
 
-    def _binary_path(self) -> "str | None":
-        return shutil.which(self.binary) if not os.path.isabs(
-            self.binary) else (self.binary if os.path.exists(self.binary)
-                               else None)
-
-    def _read_version(self) -> str:
-        if self._version:
-            return self._version
-        path = self._binary_path()
-        if path is None:
-            return ""
-        try:
-            completed = subprocess.run(
-                [path, "--version"], capture_output=True, text=True,
-                timeout=self.version_timeout_seconds)
-        except (OSError, subprocess.TimeoutExpired):
-            return ""
-        self._version = (completed.stdout.strip().splitlines() or [""])[-1]
-        return self._version
-
-    def _models(self) -> tuple:
-        if self.listed_models is not None:
-            return tuple(self.listed_models)
-        path = self._binary_path()
-        if path is None:
-            return ()
-        try:
-            completed = subprocess.run(
-                [path, "models"], capture_output=True, text=True, timeout=90)
-        except (OSError, subprocess.TimeoutExpired):
-            return ()
-        return tuple(line.strip() for line in completed.stdout.splitlines()
-                     if "/" in line and not line.startswith(" "))
-
     def info(self) -> HarnessAdapterInfo:
-        path = self._binary_path()
-        version = self._read_version() if path else ""
+        """Return passive facts without starting or interrogating a process."""
         return HarnessAdapterInfo(
             harness_id=OPENCODE_HARNESS_ID, adapter_version=ADAPTER_VERSION,
-            package_name="opencode", package_version=version,
-            features=("headless_json_events", "isolated_directory",
-                      "model_listing_handshake", "wall_clock_cancellation",
-                      "changed_file_artifacts"),
+            package_name="opencode", package_version="",
+            features=("offline_event_normalization", "offline_message_rendering"),
             limitations=(
-                "tool events carry names, states, and input digests, not "
-                "bodies",
-                "permissions inside the isolated directory are "
-                "auto-approved when auto_approve is set",
-                "the harness's own model turns cannot be capped from outside; "
-                "the Loop budget marks an overrun after the fact",
-                "session resume and fork are not exercised"),
-            available=path is not None and bool(version),
-            availability_reason=("" if path and version
-                                 else f"{self.binary} binary not found or "
-                                      "did not report a version"))
+                "raw host process execution is quarantined",
+                "a working directory is not a sandbox",
+                "ambient configuration and credentials are not isolated",
+                (
+                    "tool, skill, context, effect, and preemptive budget "
+                    "controls are not qualified"
+                ),
+            ),
+            available=False,
+            availability_reason=_UNQUALIFIED_REASON,
+            execution_capabilities=HarnessExecutionCapabilities(
+                supported_features=(), enforced_limits=(),
+                isolation="cwd_only", evidence_refs=_CAPABILITY_EVIDENCE),
+        )
 
     def run(self, request: HarnessRunRequest,
             services: HarnessServices) -> HarnessRunResult:
+        """Return a fixed pre-execution refusal and disclose no request body."""
+        del services
         info = self.info()
-        base = dict(request_id=request.request_id,
-                    harness_id=OPENCODE_HARNESS_ID,
-                    adapter_version=ADAPTER_VERSION,
-                    provider_id=request.provider_id, model_id=request.model_id)
-        if not info.available:
-            return HarnessRunResult(status="unavailable",
-                                    error_code="binary_unavailable",
-                                    error=info.availability_reason, **base)
-        if not request.provider_id or not request.model_id:
-            return HarnessRunResult(status="refused",
-                                    error_code="model_required",
-                                    error="an OpenCode run needs provider_id "
-                                          "and model_id", **base)
-        model = f"{request.provider_id}/{request.model_id}"
-        listed = self._models()
-        if model not in listed:
+        base = {
+            "request_id": request.request_id,
+            "harness_id": OPENCODE_HARNESS_ID,
+            "adapter_version": ADAPTER_VERSION,
+            "provider_id": request.provider_id,
+            "model_id": request.model_id,
+        }
+        missing = unmet_harness_requirements(
+            request, info.execution_capabilities)
+        if missing:
             return HarnessRunResult(
-                status="refused", error_code="model_not_listed",
-                error=f"{model} is not in the harness model listing "
-                      f"({len(listed)} models listed)", **base)
-        workspace = Path(request.workspace_ref) if request.workspace_ref else None
-        if workspace is None or not workspace.is_dir():
-            return HarnessRunResult(
-                status="refused", error_code="workspace_required",
-                error="workspace_ref must name an existing isolated "
-                      "directory", **base)
-        before = _snapshot(workspace)
-        message = render_opencode_message(request)
-        command = [self._binary_path(), "run", "--format", "json",
-                   "--dir", str(workspace), "-m", model,
-                   "--title", request.request_id[:48]]
-        if self.auto_approve:
-            command.append("--auto")
-        command.append(message)
-        deadline = float(request.budget.max_seconds or _DEFAULT_MAX_SECONDS)
-        started = time.monotonic()
-        process = subprocess.Popen(
-            command, cwd=str(workspace), stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, text=True)
-        status = "completed"
-        error_code = ""
-        error = ""
-        try:
-            stdout, stderr = process.communicate(timeout=deadline)
-        except subprocess.TimeoutExpired:
-            process.send_signal(signal.SIGINT)
-            try:
-                stdout, stderr = process.communicate(
-                    timeout=_INTERRUPT_GRACE_SECONDS)
-            except subprocess.TimeoutExpired:
-                process.kill()
-                stdout, stderr = process.communicate()
-            status, error_code = "cancelled", "deadline_exceeded"
-            error = (f"opencode did not finish within {deadline:.0f} s; "
-                     "interrupted")
-        elapsed = round(time.monotonic() - started, 3)
-        parsed = parse_opencode_events(
-            stdout.splitlines(), provider_id=request.provider_id,
-            model_id=request.model_id)
-        if status == "completed" and process.returncode != 0:
-            status, error_code = "failed", "harness_exit_nonzero"
-            error = (stderr.strip().splitlines() or [f"exit {process.returncode}"])[-1][:200]
-        if status == "completed" and not parsed.model_calls:
-            status, error_code = "failed", "no_model_turn_reported"
-            error = "the harness reported no completed model turn"
-        raw_ref = ""
-        if services.artifact_store is not None and stdout:
-            stored = services.artifact_store.store.put(
-                stdout.encode("utf-8"), media_type="application/x-ndjson",
-                encoding="utf-8", artifact_kind="external_harness_raw_events")
-            raw_ref = stored.object_key
-        after = _snapshot(workspace)
-        artifacts = tuple(
-            HarnessArtifactRef(
-                artifact_id=relative, uri=(workspace / relative).resolve().as_uri(),
-                digest=digest, media_type="text/plain",
-                size_bytes=(workspace / relative).stat().st_size)
-            for relative, digest in sorted(after.items())
-            if before.get(relative) != digest)
-        inputs = [c.input_tokens for c in parsed.model_calls]
-        outputs = [c.output_tokens for c in parsed.model_calls]
-        costs = [c.cost for c in parsed.model_calls]
+                status="refused",
+                error_code="harness_capability_requirement_unsatisfied",
+                error="requested harness mechanics are not supported",
+                capability_evaluation={
+                    "satisfied": False,
+                    "missing": list(missing),
+                    "execution_started": False,
+                },
+                **base,
+            )
         return HarnessRunResult(
-            status=status, error_code=error_code, error=error,
-            output={"session_id": parsed.session_id,
-                    "text": "\n".join(parsed.texts)[-4000:],
-                    "final_json": parsed.final_json,
-                    "unmapped_event_types": list(parsed.unmapped_types),
-                    "changed_files": [item.artifact_id for item in artifacts]},
-            model_calls=parsed.model_calls, tool_events=parsed.tool_events,
-            artifacts=artifacts, raw_events_ref=raw_ref,
-            elapsed_seconds=elapsed, call_count_complete=True,
-            reported_model_call_count=len(parsed.model_calls),
-            aggregate_input_tokens=(sum(inputs) if inputs and all(
-                v is not None for v in inputs) else None),
-            aggregate_output_tokens=(sum(outputs) if outputs and all(
-                v is not None for v in outputs) else None),
-            aggregate_cost=(sum(costs) if costs and all(
-                v is not None for v in costs) else None),
-            **base)
+            status="refused",
+            error_code="opencode_execution_profile_unqualified",
+            error=_UNQUALIFIED_REASON,
+            capability_evaluation={
+                "satisfied": True,
+                "missing": [],
+                "execution_started": False,
+            },
+            **base,
+        )
 
 
 _FIXTURE_EVENTS = (
-    '{"type":"step_start","timestamp":1,"sessionID":"ses_fixture","part":'
-    '{"id":"prt_1","messageID":"msg_1","sessionID":"ses_fixture",'
-    '"type":"step-start"}}',
-    '{"type":"tool","timestamp":2,"sessionID":"ses_fixture","part":'
-    '{"id":"prt_2","type":"tool","tool":"write","state":{"status":"completed",'
-    '"input":{"filePath":"tiny_math.py"}}}}',
-    '{"type":"text","timestamp":3,"sessionID":"ses_fixture","part":'
-    '{"id":"prt_3","type":"text","text":"Done.\\n{\\"status\\": \\"ok\\", '
-    '\\"summary\\": \\"implemented clamp\\", \\"files\\": [\\"tiny_math.py\\"]}"}}',
-    '{"type":"step_finish","timestamp":4,"sessionID":"ses_fixture","part":'
-    '{"id":"prt_4","reason":"stop","type":"step-finish","tokens":{"input":120,'
-    '"output":30,"reasoning":5,"cache":{"read":40,"write":0}},"cost":0.0012}}',
+    (
+        '{"type":"step_start","timestamp":1,"sessionID":"ses_fixture","part":'
+        '{"id":"prt_1","messageID":"msg_1","sessionID":"ses_fixture",'
+        '"type":"step-start"}}'
+    ),
+    (
+        '{"type":"tool","timestamp":2,"sessionID":"ses_fixture","part":'
+        '{"id":"prt_2","type":"tool","tool":"write","state":'
+        '{"status":"completed","input":{"filePath":"tiny_math.py"}}}}'
+    ),
+    (
+        '{"type":"text","timestamp":3,"sessionID":"ses_fixture","part":'
+        '{"id":"prt_3","type":"text","text":"Done.\\n{\\"status\\": '
+        '\\"ok\\", \\"summary\\": \\"implemented clamp\\", \\"files\\": '
+        '[\\"tiny_math.py\\"]}"}}'
+    ),
+    (
+        '{"type":"step_finish","timestamp":4,"sessionID":"ses_fixture",'
+        '"part":{"id":"prt_4","reason":"stop","type":"step-finish",'
+        '"tokens":{"input":120,"output":30,"reasoning":5,"cache":'
+        '{"read":40,"write":0}},"cost":0.0012}}'
+    ),
     '{"type":"mystery","timestamp":5,"sessionID":"ses_fixture","part":{}}',
 )
 
 
 def self_test() -> dict:
-    """Prove normalization, the message contract, and fail-closed refusals."""
-    import tempfile
+    """Prove offline normalization and pre-execution quarantine."""
+    from dataclasses import replace
+    from unittest.mock import patch
+
     from ..loop.loop_contract import LoopContract
-    from .external_harness import HarnessBudget
+    from .external_harness import HarnessBudget, run_external_harness
+    from .harness_execution_contracts import HarnessExecutionRequirements
 
     parsed = parse_opencode_events(
         _FIXTURE_EVENTS, provider_id="ollama-cloud", model_id="deepseek-v4-flash")
@@ -402,19 +307,47 @@ def self_test() -> dict:
         input_data={"tests": "test_tiny_math.py"}, workspace_ref="/nonexistent",
         authorize_model_calls=True)
     message = render_opencode_message(request)
-    missing_binary = OpenCodeProcessAdapter(binary="/nonexistent/opencode")
-    unavailable = missing_binary.run(request, HarnessServices())
-    fake = OpenCodeProcessAdapter(listed_models=("ollama-cloud/other",))
-    fake._version = "0.0.0-test"
-    fake._binary_path = lambda: "/bin/true"  # handshake only; never run
-    unlisted = fake.run(request, HarnessServices())
-    listed = OpenCodeProcessAdapter(listed_models=("ollama-cloud/deepseek-v4-flash",))
-    listed._version = "0.0.0-test"
-    listed._binary_path = lambda: "/bin/true"
-    no_workspace = listed.run(request, HarnessServices())
-    with tempfile.TemporaryDirectory() as root:
-        (Path(root) / "a.py").write_text("x = 1\n")
-        snapshot = _snapshot(Path(root))
+    nested_message = render_opencode_message(replace(
+        request, input_data={"nested": {"a": 1},
+                             "sequence": [{"b": 2}]}))
+    nested_payload = json.loads(nested_message.split("Inputs (JSON): ", 1)[1])
+    private_marker = "PRIVATE_OPENCODE_PROCESS_MARKER"
+    adapter = OpenCodeProcessAdapter(
+        binary=private_marker, auto_approve=True,
+        listed_models=(private_marker,))
+    with patch("subprocess.run") as process_run, patch(
+            "subprocess.Popen") as process_open:
+        info = adapter.info()
+        effect_refusal = adapter.run(request, HarnessServices())
+        product_refusal = run_external_harness(adapter, request)
+        explicit = replace(
+            request,
+            goal=private_marker,
+            contract=LoopContract(
+                name="pure fixture", execution_mode="model_led",
+                output_roles=("answer",), role="solution"),
+            context_refs=("context.fixture",),
+            tool_refs=("tool.fixture",),
+            skill_refs=("skill.fixture",),
+            context_visibility="shared_runtime_memory",
+            approval_policy_ref="approval.fixture",
+            execution_requirements=HarnessExecutionRequirements(
+                required_features=(
+                    "configuration_isolation", "credential_isolation",
+                    "private_prompt_channel", "private_raw_events",
+                    "process_tree_cancellation"),
+                required_limits=("model_calls", "total_tokens", "cost",
+                                 "wall_time", "maximum_output"),
+                allowed_isolations=("os_sandbox", "container"),
+            ),
+        )
+        explicit_refusal = adapter.run(explicit, HarnessServices())
+        pure_refusal = adapter.run(replace(
+            explicit, context_refs=(), tool_refs=(), skill_refs=(),
+            context_visibility="selected_refs", approval_policy_ref="",
+            workspace_ref="",
+            execution_requirements=HarnessExecutionRequirements()),
+            HarnessServices())
     tests = [{
         "test": "step_finish_becomes_one_model_call_with_tokens_cost_and_cache_reads",
         "passed": (len(parsed.model_calls) == 1 and call.ok
@@ -443,17 +376,75 @@ def self_test() -> dict:
                    and "Do not claim verification" in message),
         "detail": message[:120],
     }, {
-        "test": "missing_binary_unlisted_model_and_missing_workspace_fail_closed",
-        "passed": (unavailable.status == "unavailable"
-                   and unlisted.status == "refused"
-                   and unlisted.error_code == "model_not_listed"
-                   and no_workspace.status == "refused"
-                   and no_workspace.error_code == "workspace_required"),
-        "detail": f"{unavailable.status} {unlisted.error_code} {no_workspace.error_code}",
+        "test": "nested_frozen_inputs_render_as_json_objects_not_strings",
+        "passed": (nested_payload["nested"] == {"a": 1}
+                   and nested_payload["sequence"] == [{"b": 2}]),
+        "detail": str(nested_payload),
     }, {
-        "test": "workspace_snapshot_digests_regular_files_only",
-        "passed": list(snapshot) == ["a.py"] and len(snapshot["a.py"]) == 64,
-        "detail": str(list(snapshot)),
+        "test": "adapter_information_is_passive_and_execution_is_quarantined",
+        "passed": (not info.available
+                   and info.availability_reason == _UNQUALIFIED_REASON
+                   and info.execution_capabilities is not None
+                   and info.execution_capabilities.supported_features == ()
+                   and info.execution_capabilities.enforced_limits == ()
+                   and info.execution_capabilities.isolation == "cwd_only"
+                   and not process_run.called and not process_open.called),
+        "detail": info.availability_reason,
+    }, {
+        "test": "effectful_contract_is_refused_before_execution",
+        "passed": (effect_refusal.status == "refused"
+                   and effect_refusal.error_code
+                   == "harness_capability_requirement_unsatisfied"
+                   and effect_refusal.capability_evaluation.get(
+                       "execution_started") is False
+                   and effect_refusal.capability_evaluation.get("missing")
+                   == ["feature:filesystem_effects", "feature:process_effects",
+                       "feature:workspace_binding"]),
+        "detail": str(effect_refusal.capability_evaluation),
+    }, {
+        "test": "product_path_checks_capabilities_before_availability",
+        "passed": (product_refusal.status == "refused"
+                   and product_refusal.error_code
+                   == "harness_capability_requirement_unsatisfied"
+                   and product_refusal.capability_evaluation
+                   == effect_refusal.capability_evaluation
+                   and not process_run.called and not process_open.called),
+        "detail": str(product_refusal.capability_evaluation),
+    }, {
+        "test": "all_explicit_mechanics_and_preemptive_limits_fail_closed",
+        "passed": (explicit_refusal.status == "refused"
+                   and explicit_refusal.error_code
+                   == "harness_capability_requirement_unsatisfied"
+                   and "feature:context_refs" in explicit_refusal.capability_evaluation["missing"]
+                   and "feature:tool_refs" in explicit_refusal.capability_evaluation["missing"]
+                   and "feature:skill_refs" in explicit_refusal.capability_evaluation["missing"]
+                   and "feature:configuration_isolation"
+                   in explicit_refusal.capability_evaluation["missing"]
+                   and "preemptive_limit:model_calls"
+                   in explicit_refusal.capability_evaluation["missing"]
+                   and "isolation" in explicit_refusal.capability_evaluation["missing"]),
+        "detail": str(explicit_refusal.capability_evaluation),
+    }, {
+        "test": "even_a_pure_empty_request_needs_a_qualified_process_profile",
+        "passed": (pure_refusal.status == "refused"
+                   and pure_refusal.error_code
+                   == "opencode_execution_profile_unqualified"
+                   and pure_refusal.capability_evaluation
+                   == {"satisfied": True, "missing": [],
+                       "execution_started": False}),
+        "detail": pure_refusal.error_code,
+    }, {
+        "test": "refusals_disclose_no_private_constructor_or_request_values",
+        "passed": (private_marker not in json.dumps(info.__dict__, default=str)
+                   and private_marker not in json.dumps(
+                       effect_refusal.safe_summary(), default=str)
+                   and private_marker not in json.dumps(
+                       explicit_refusal.safe_summary(), default=str)
+                   and private_marker not in json.dumps(
+                       product_refusal.safe_summary(), default=str)
+                   and not effect_refusal.raw_events_ref
+                   and not explicit_refusal.raw_events_ref),
+        "detail": "fixed diagnostics only",
     }]
     return {"module": "core.opencode_harness_adapter",
             "passed": all(item["passed"] for item in tests), "tests": tests}

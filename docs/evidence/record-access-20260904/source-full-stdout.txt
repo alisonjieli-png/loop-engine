@@ -1,0 +1,12 @@
+{
+ "record_type": "loop_engine_self_test_summary/v1",
+ "passed": 2589,
+ "total": 2589,
+ "all_passed": true,
+ "missing_dependencies": [],
+ "optional_adapters_not_tested": [],
+ "captured_output_lines": 208,
+ "elapsed_seconds": 166.512,
+ "provider_calls_made": 0,
+ "failures": []
+}

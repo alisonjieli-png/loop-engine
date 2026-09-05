@@ -21,6 +21,11 @@ establish that any implementation can solve every representable problem.
 
 ## Reading map
 
+The [September 5 research follow-up](ADAPTIVE-QUESTIONS-COMPILATION-AND-CAPABILITY-RESEARCH-2026-09-05.md)
+adds question selection, adaptive decomposition, compiler preservation tests,
+capability meanings, and a staged experiment program. It also records why the
+current frontier projection cannot substitute for verified question outcomes.
+
 Read this page for computation selection, distillation economics, and the
 proposed cognitive mesh. Use the
 [template catalog](COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json) for

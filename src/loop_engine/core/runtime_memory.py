@@ -41,11 +41,15 @@ from __future__ import annotations
 
 import time
 
+from ..memory.working.state import snapshot_json_value
+
 
 class RunNoteBoard:
     """The one note board for one run."""
 
     def __init__(self, run_id: str, ledger=None):
+        if type(run_id) is not str or not run_id.strip():
+            raise ValueError("runtime memory needs a non-empty run identity")
         self.run_id = run_id
         self._ledger = ledger
         self._notes: list = []
@@ -57,6 +61,8 @@ class RunNoteBoard:
         loop.  This is the envelope — deterministic, one accepted success —
         so a note reaching the board is a recorded crossing, not a method
         call that happens to log."""
+        if type(note) is not str or not note.strip():
+            raise ValueError("empty runtime-memory note refused")
         from ..loop.encapsulate import as_practitioner_loop
         return as_practitioner_loop(f"runtime memory write: {note[:40]}",
                                     lambda: self.write(note, **kw),
@@ -71,20 +77,26 @@ class RunNoteBoard:
 
     def write(self, note: str, *, loop_id: str, topic: str = "general",
               refs: tuple = ()) -> dict:
-        if not str(note).strip():
+        if type(note) is not str or not note.strip():
             raise ValueError("empty runtime-memory note refused")
+        if (type(loop_id) is not str or not loop_id.strip()
+                or type(topic) is not str or not topic.strip()
+                or type(refs) not in (tuple, list)):
+            raise ValueError("runtime-memory note metadata is invalid")
+        detached_refs = snapshot_json_value(refs)
         rec = {"note_id": f"rm-{len(self._notes) + 1}", "run_id": self.run_id,
-               "note": str(note).strip(), "loop_id": loop_id, "topic": topic,
-               "refs": list(refs), "ts": time.time()}
+               "note": note.strip(), "loop_id": loop_id, "topic": topic,
+               "refs": detached_refs, "ts": time.time()}
+        rec = snapshot_json_value(rec)
         self._notes.append(rec)
         if self._ledger is not None:
             self._ledger.record(loop_id=loop_id,
                                 event="runtime_memory.message_written",
                                 note_id=rec["note_id"], topic=topic,
                                 preview=rec["note"][:80])
-        return rec
+        return snapshot_json_value(rec)
 
-    def read(self, *, topic: "str | None" = None, since: int = 0,
+    def read(self, *, topic: str | None = None, since: int = 0,
              loop_id: str = "") -> list:
         hits = [n for n in self._notes[since:]
                 if topic is None or n["topic"] == topic]
@@ -92,12 +104,12 @@ class RunNoteBoard:
             self._ledger.record(loop_id=loop_id,
                                 event="runtime_memory.message_read",
                                 count=len(hits), topic=topic or "all")
-        return hits
+        return snapshot_json_value(hits)
 
     def search(self, query: str) -> list:
         toks = [t for t in str(query).lower().split() if t]
-        return [n for n in self._notes
-                if all(t in n["note"].lower() for t in toks)]
+        return snapshot_json_value([n for n in self._notes
+                if all(t in n["note"].lower() for t in toks)])
 
     def to_curation_candidates(self) -> list:
         """Notes as candidate Strings for LATER curation into a
@@ -151,6 +163,54 @@ def self_test() -> dict:
     check("curation_candidates_carry_provenance_and_stay_candidates",
           len(cands) == 1 and cands[0]["maturity"] == "candidate"
           and "runtime_memory run-1" in cands[0]["provenance"])
+
+    refs = [{"source": {"parts": ["original"]}}]
+    alias_ledger = LoopLedger()
+    alias_board = RunNoteBoard("run-alias", ledger=alias_ledger)
+    write_result = alias_board.write("original note", loop_id="producer", refs=refs)
+    refs[0]["source"]["parts"].append("input mutation")
+    write_result["note"] = "write mutation"
+    write_result["refs"][0]["source"]["parts"].append("write mutation")
+    read_result = alias_board.read(loop_id="consumer")
+    read_result[0]["note"] = "read mutation"
+    read_result[0]["refs"][0]["source"]["parts"].append("read mutation")
+    search_result = alias_board.search("original")
+    search_result[0]["note"] = "search mutation"
+    search_result[0]["refs"][0]["source"]["parts"].append("search mutation")
+    actual = alias_board.read(loop_id="consumer")[0]
+    check("nested_note_input_write_read_and_search_aliases_are_detached",
+          actual["note"] == "original note"
+          and actual["refs"] == [{"source": {"parts": ["original"]}}]
+          and sum(event.get("event") == "runtime_memory.message_written"
+                  for event in alias_ledger.events) == 1)
+    proposed = alias_board.to_curation_candidates()
+    proposed[0]["text"] = "curation mutation"
+    check("curation_candidate_mutation_cannot_change_run_memory",
+          alias_board.read()[0]["note"] == "original note")
+
+    hooks = []
+
+    class OpaqueHandle:
+        def __str__(self):
+            hooks.append("str")
+            return "opaque"
+
+        def __deepcopy__(self, memo):
+            hooks.append("deepcopy")
+            return self
+
+    before = len(alias_board._notes), len(alias_ledger.events)
+    refusals = []
+    for unsafe_refs in ((OpaqueHandle(),), ({"nested": OpaqueHandle()},), (float("nan"),)):
+        try:
+            alias_board.write("invalid refs", loop_id="producer", refs=unsafe_refs)
+        except ValueError:
+            refusals.append(True)
+        else:
+            refusals.append(False)
+    check("unsupported_note_references_fail_without_hooks_or_partial_append",
+          all(refusals) and not hooks
+          and before == (len(alias_board._notes), len(alias_ledger.events)))
 
     passed = sum(1 for t in results if t["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

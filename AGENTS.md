@@ -256,16 +256,33 @@ Code Intelligence must include an immutable source identity, provenance,
 license state, version, dependency information, typed contract, effects,
 tests, independent verification, and a digest before it is active.
 
+## Managed notes and records
+
+For a host-configured managed note or report collection, use
+`loop-engine records` or `RecordOperationService`. Do not directly rewrite its
+database rows, current-reference metadata, immutable revision artifacts, or a
+future generated view. Preserve schema, namespace, expected revision, and exact
+write approval. Unknown commits are not successes.
+
+Ordinary source-code, schema, test, and hand-authored documentation edits remain
+permitted within the task. This does not migrate Run History or historical
+reports. Reuse the existing catalog/artifact contracts rather than creating a
+parallel store. See `docs/guides/queryable-records-and-storage.md` and
+`examples/24_managed_records/` for the current bounded tool.
+
 ## Models and providers
 
 - Use real configured providers for provider integration and performance
   claims. A stub or injected transport may test a local contract, but it does
   not prove provider integration or model quality.
 - Never silently replace a failed model call with canned or synthetic output.
-- Request the exact provider-supported maximum output for the selected model.
-  Do not invent a smaller default. If the maximum cannot be established from
-  a source-backed capability record or provider response, fail with an
-  explicit unknown state.
+- Resolve output capacity from a source-backed record for the exact provider
+  and model. Without an explicit allocation, request that full capacity, not
+  an invented smaller default. A reasoning Loop or user may supply a typed
+  `ModelOutputAllocation` within the known capacity, bound to the route and
+  decision evidence. Capacity, selected allowance, and total-run authority
+  are separate. Unknown capacity requires an explicit unknown result; do not
+  turn a total budget or semantic size estimate into a provider limit.
 - Keep retry, same-provider fallback, cross-provider failover, formatting
   repair, evaluator-triggered repair, and task replanning distinct.
 - Do not enable failover unless the run contract explicitly permits it.

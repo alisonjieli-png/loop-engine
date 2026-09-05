@@ -1,0 +1,336 @@
+{
+  "all_final_commands_passed": true,
+  "all_runtime_bodies_match": true,
+  "archives": [
+    {
+      "bytes": 2103557,
+      "path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/dist-output-mode-final/loop_engine-0.1.0-py3-none-any.whl",
+      "sha256": "1c24e1d2acf988c2b471b3b6738fa4ed2ba9ddf558bec9804dc623cb1cd17171"
+    },
+    {
+      "bytes": 1829024,
+      "path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/dist-output-mode-final/loop_engine-0.1.0.tar.gz",
+      "sha256": "bbd6a983add872c6d09d12c4dd82ac129b2f39f5bae6b346c87c68eb38c25392"
+    }
+  ],
+  "commands": {
+    "build-output-mode-final": {
+      "command": [
+        "python3",
+        "-m",
+        "build",
+        "--no-isolation",
+        "--outdir",
+        "/tmp/loop-engine-harness-memory-verification.ZybX3K/dist-output-mode-final"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 2.8002178398892283,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T18:22:23.106347+00:00",
+      "generated_manifest_changes": [],
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "other_source_changes": [],
+      "package_network_disabled": true,
+      "phase": "build-output-mode-final",
+      "provider_credentials_removed": true,
+      "record_type": "verification_command/v1",
+      "source_after": "/tmp/loop-engine-harness-memory-verification.ZybX3K/build-output-mode-final-source-after.json",
+      "source_before": "/tmp/loop-engine-harness-memory-verification.ZybX3K/build-output-mode-final-source-before.json",
+      "source_changes": [],
+      "source_file_count": 475,
+      "started_at": "2026-09-05T18:22:20.306121+00:00",
+      "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/build-output-mode-final-stderr.txt",
+      "stderr_sha256": "b181eea8a45f807f5fa1607f003eb1ae5363271ec186d4780a7fd3630cdea57e",
+      "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/build-output-mode-final-stdout.txt",
+      "stdout_sha256": "9c57c1edc9e8e949c73647e9324c486a97a9dc686ae002a42c487022ab499e6c"
+    },
+    "source-output-mode-conformance-final": {
+      "command": [
+        "python3",
+        "-m",
+        "loop_engine",
+        "--conformance"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 25.26691515208222,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T18:22:46.757089+00:00",
+      "generated_manifest_changes": [],
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "other_source_changes": [],
+      "package_network_disabled": true,
+      "phase": "source-output-mode-conformance-final",
+      "provider_credentials_removed": true,
+      "record_type": "verification_command/v1",
+      "source_after": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-conformance-final-source-after.json",
+      "source_before": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-conformance-final-source-before.json",
+      "source_changes": [],
+      "source_file_count": 475,
+      "started_at": "2026-09-05T18:22:21.490165+00:00",
+      "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-conformance-final-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-conformance-final-stdout.txt",
+      "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+    },
+    "source-output-mode-verified": {
+      "command": [
+        "python3",
+        "-m",
+        "loop_engine",
+        "--self-test",
+        "--format",
+        "json"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 141.90172372409143,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T18:18:32.166408+00:00",
+      "generated_manifest_changes": [
+        "src/loop_engine/architecture_conformance.json"
+      ],
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "other_source_changes": [],
+      "package_network_disabled": true,
+      "phase": "source-output-mode-verified",
+      "provider_credentials_removed": true,
+      "record_type": "verification_command/v1",
+      "result_summary": {
+        "all_passed": true,
+        "failures": [],
+        "optional_adapters_not_tested": [],
+        "passed": 2805,
+        "provider_calls_made": 0,
+        "total": 2805
+      },
+      "source_after": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-verified-source-after.json",
+      "source_before": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-verified-source-before.json",
+      "source_changes": [
+        "src/loop_engine/architecture_conformance.json"
+      ],
+      "source_file_count": 475,
+      "started_at": "2026-09-05T18:16:10.264672+00:00",
+      "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-verified-stderr.txt",
+      "stderr_sha256": "3d27aed1b9a4b8a22d659a1e10553d8f25cc44efb3a1f9a9a2383f7f2064b1fc",
+      "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-verified-stdout.txt",
+      "stdout_sha256": "88ad8ea30c1da448b08b40ccaee2846d02ea9e70016174281d7e24d02f2b8d1c"
+    },
+    "wheel-output-mode-conformance": {
+      "command": [
+        "/tmp/loop-engine-harness-memory-verification.ZybX3K/output-mode-wheel-env/bin/python",
+        "-m",
+        "loop_engine",
+        "--conformance"
+      ],
+      "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+      "elapsed_seconds": 19.923043210990727,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T18:28:58.873775+00:00",
+      "generated_manifest_changes": [],
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "other_source_changes": [],
+      "package_network_disabled": true,
+      "phase": "wheel-output-mode-conformance",
+      "provider_credentials_removed": true,
+      "record_type": "verification_command/v1",
+      "source_after": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-output-mode-conformance-source-after.json",
+      "source_before": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-output-mode-conformance-source-before.json",
+      "source_changes": [],
+      "source_file_count": 475,
+      "started_at": "2026-09-05T18:28:38.950722+00:00",
+      "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-output-mode-conformance-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-output-mode-conformance-stdout.txt",
+      "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+    },
+    "wheel-output-mode-full": {
+      "command": [
+        "/tmp/loop-engine-harness-memory-verification.ZybX3K/output-mode-wheel-env/bin/python",
+        "-m",
+        "loop_engine",
+        "--self-test",
+        "--format",
+        "json"
+      ],
+      "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+      "elapsed_seconds": 133.0882523751352,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T18:30:50.808475+00:00",
+      "generated_manifest_changes": [],
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "other_source_changes": [],
+      "package_network_disabled": true,
+      "phase": "wheel-output-mode-full",
+      "provider_credentials_removed": true,
+      "record_type": "verification_command/v1",
+      "result_summary": {
+        "all_passed": true,
+        "failures": [],
+        "optional_adapters_not_tested": [
+          "duckdb",
+          "mcp",
+          "model2vec",
+          "numpy",
+          "opentelemetry-sdk",
+          "pandas",
+          "sklearn"
+        ],
+        "passed": 2760,
+        "provider_calls_made": 0,
+        "total": 2760
+      },
+      "source_after": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-output-mode-full-source-after.json",
+      "source_before": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-output-mode-full-source-before.json",
+      "source_changes": [],
+      "source_file_count": 475,
+      "started_at": "2026-09-05T18:28:37.720195+00:00",
+      "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-output-mode-full-stderr.txt",
+      "stderr_sha256": "3d27aed1b9a4b8a22d659a1e10553d8f25cc44efb3a1f9a9a2383f7f2064b1fc",
+      "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-output-mode-full-stdout.txt",
+      "stdout_sha256": "f5fd1d5cfac401914e4939dd2bfb102b7620fb18ba9d609e1689e4099b8ee27f"
+    },
+    "wheel-output-mode-install-final": {
+      "command": [
+        "/tmp/loop-engine-harness-memory-verification.ZybX3K/output-mode-wheel-env/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-index",
+        "--no-deps",
+        "--force-reinstall",
+        "/tmp/loop-engine-harness-memory-verification.ZybX3K/dist-output-mode-final/loop_engine-0.1.0-py3-none-any.whl"
+      ],
+      "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+      "elapsed_seconds": 1.5357210331130773,
+      "exit_code": 0,
+      "finished_at": "2026-09-05T18:26:20.507727+00:00",
+      "generated_manifest_changes": [],
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "other_source_changes": [],
+      "package_network_disabled": true,
+      "phase": "wheel-output-mode-install-final",
+      "provider_credentials_removed": true,
+      "record_type": "verification_command/v1",
+      "source_after": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-output-mode-install-final-source-after.json",
+      "source_before": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-output-mode-install-final-source-before.json",
+      "source_changes": [],
+      "source_file_count": 475,
+      "started_at": "2026-09-05T18:26:18.971998+00:00",
+      "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-output-mode-install-final-stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-output-mode-install-final-stdout.txt",
+      "stdout_sha256": "2a001d4aeb414cea9931a6e87eaedb3e6d289115c57bb3abfeadf29b2e4e3389"
+    }
+  },
+  "conformance": {
+    "source_passed": 27,
+    "source_total": 27,
+    "wheel_passed": 27,
+    "wheel_total": 27
+  },
+  "documentation_finalized_separately": true,
+  "earlier_failed_runs": {
+    "source-output-mode": {
+      "command": [
+        "python3",
+        "-m",
+        "loop_engine",
+        "--self-test",
+        "--format",
+        "json"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 25.752981349127367,
+      "exit_code": 1,
+      "finished_at": "2026-09-05T18:04:58.526012+00:00",
+      "generated_manifest_changes": [
+        "src/loop_engine/architecture_conformance.json"
+      ],
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "other_source_changes": [],
+      "package_network_disabled": true,
+      "phase": "source-output-mode",
+      "provider_credentials_removed": true,
+      "record_type": "verification_command/v1",
+      "source_after": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-source-after.json",
+      "source_before": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-source-before.json",
+      "source_changes": [
+        "src/loop_engine/architecture_conformance.json"
+      ],
+      "source_file_count": 475,
+      "started_at": "2026-09-05T18:04:32.773022+00:00",
+      "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-stderr.txt",
+      "stderr_sha256": "8497f222264b1450345913bbe489347f5ad803867fbdf3b5ff04d9dfa6d24995",
+      "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source-output-mode-final": {
+      "command": [
+        "python3",
+        "-m",
+        "loop_engine",
+        "--self-test",
+        "--format",
+        "json"
+      ],
+      "cwd": "/home/username/loop-engine",
+      "elapsed_seconds": 61.39791953889653,
+      "exit_code": 1,
+      "finished_at": "2026-09-05T18:08:35.699302+00:00",
+      "generated_manifest_changes": [],
+      "head": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+      "other_source_changes": [],
+      "package_network_disabled": true,
+      "phase": "source-output-mode-final",
+      "provider_credentials_removed": true,
+      "record_type": "verification_command/v1",
+      "source_after": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-final-source-after.json",
+      "source_before": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-final-source-before.json",
+      "source_changes": [],
+      "source_file_count": 475,
+      "started_at": "2026-09-05T18:07:34.301377+00:00",
+      "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-final-stderr.txt",
+      "stderr_sha256": "313a855f5405553e0ce89b200ea2e3ececee340be57cb2dc71226b7bf31984ab",
+      "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/source-output-mode-final-stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "failure_resolution": "Two offline handlers were updated to honor explicitly requested fallback modes. One retired word in a helper docstring was corrected. No failing check was excluded.",
+  "head_before_commit": "d121379773e46a1255fd3e86436d907dc2a0b4d0",
+  "record_type": "loop_reasoned_output_verification/v1",
+  "runtime_body_mismatches": {
+    "installed": [],
+    "sdist": [],
+    "wheel": []
+  },
+  "scope": "Offline code and native request-builder verification; no live provider or unseen-task quality evidence.",
+  "source_file_count": 475,
+  "source_snapshot": {
+    "bytes": 55914,
+    "path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/build-output-mode-final-source-after.json",
+    "sha256": "f7f9dd4ef7111c2c581f5fb2b8568952159475593455e7bda51e6369a1657b1c"
+  },
+  "source_suite": {
+    "all_passed": true,
+    "failures": [],
+    "optional_adapters_not_tested": [],
+    "passed": 2805,
+    "provider_calls_made": 0,
+    "total": 2805
+  },
+  "wheel_suite": {
+    "all_passed": true,
+    "failures": [],
+    "optional_adapters_not_tested": [
+      "duckdb",
+      "mcp",
+      "model2vec",
+      "numpy",
+      "opentelemetry-sdk",
+      "pandas",
+      "sklearn"
+    ],
+    "passed": 2760,
+    "provider_calls_made": 0,
+    "total": 2760
+  }
+}

@@ -14,18 +14,32 @@ import weakref
 from dataclasses import dataclass, field
 
 from ..loop.kernel import KERNEL_NODES
-from .loop_definition import (LoopDefinition, LoopDefinitionError,
-                              LoopDefinitionRef, LoopStartRequest)
-from .loop_control import (EXIT_CONDITIONS, FRAMEWORKS, LOOP_CONDITIONS,
-                           default_loop_condition, normalize_exit_condition)
 from .loop_contract import LoopContract
-from .supervision_policy import (DEFAULT_SUPERVISION_POLICY,
-                                 SupervisionPolicy)
-from .loop_role import (LoopRelationship, LoopRelationshipKind, LoopRole,
-                        LoopRoleIdentity)
+from .loop_control import (
+    EXIT_CONDITIONS,  # noqa: F401 - backward-compatible public vocabulary export
+    FRAMEWORKS,
+    LOOP_CONDITIONS,
+    MODES,
+    LoopModePolicy,
+    LoopModeUnavailableError,
+    default_loop_condition,
+    normalize_exit_condition,
+)
+from .loop_definition import (
+    LoopDefinition,
+    LoopDefinitionError,
+    LoopDefinitionRef,
+    LoopStartRequest,
+)
+from .loop_role import (
+    LoopRelationship,
+    LoopRelationshipKind,
+    LoopRole,
+    LoopRoleIdentity,
+)
 from .runtime_context import LoopRuntimeContext
+from .supervision_policy import DEFAULT_SUPERVISION_POLICY, SupervisionPolicy
 
-MODES = ("deterministic", "hybrid", "non_deterministic")
 # Precise internal names for the same three modes (user-facing stays simple):
 # embeddings / trained models / seeded search are machine-run CODE, not strictly
 # deterministic — the real distinction is whether a semantic LLM call happens.
@@ -175,10 +189,10 @@ class LoopConfig:
         if self.power not in POWER_LEVELS:
             raise ValueError(f"power must be one of {POWER_LEVELS} "
                              f"(aliases: {_POWER_ALIASES})")
-        for m in (tuple(self.allowable_modes) + tuple(self.preferred_modes)
-                  + tuple(self.delegated_modes)):
-            if m not in MODES:
-                raise ValueError(f"mode {m!r} must be one of {MODES}")
+        mode_policy = self.mode_policy()
+        self.allowable_modes = mode_policy.allowable_modes
+        self.preferred_modes = mode_policy.preferred_modes
+        self.delegated_modes = mode_policy.delegated_modes
         uses_model = any(mode in self.allowable_modes
                          for mode in ("hybrid", "non_deterministic"))
         if uses_model and not self.llm_thinking_power:
@@ -226,6 +240,14 @@ class LoopConfig:
                 f"framework {self.framework!r} requires loop_condition "
                 f"{expected_loop_condition!r}")
         self.exit_condition = normalize_exit_condition(self.exit_condition)
+
+    def mode_policy(self, *, preferred_modes=None, profile_modes=MODES,
+                    installed_executor_modes=None) -> LoopModePolicy:
+        """Inspect every mode without widening this config's authority."""
+        return LoopModePolicy(
+            self.preferred_modes if preferred_modes is None else preferred_modes,
+            profile_modes, self.allowable_modes, self.delegated_modes,
+            installed_executor_modes)
 
     @property
     def settings(self) -> dict:
@@ -574,34 +596,40 @@ class Loop(metaclass=_LoopMeta):
 
     # --- the mode waterfall ------------------------------------------------
 
+    def mode_policy(self, *, preferred_modes=None) -> LoopModePolicy:
+        """Inspect the common interface against this exact bound definition.
+
+        An optional ordering changes this returned view only. Reconfiguring a
+        live Loop still requires its normal definition/configuration boundary.
+        """
+        from .loop_profile_catalog import LoopProfileRef
+        from .loop_profile_ontology import resolve_profile
+
+        profile = resolve_profile(LoopProfileRef(
+            self.definition.role_profile_id, self.definition.role_profile_version))
+        return self.config.mode_policy(
+            preferred_modes=preferred_modes, profile_modes=profile.allowed_modes,
+            installed_executor_modes=self.definition.installed_executor_modes)
+
     def choose_mode(self, *, deterministic_available: bool = True,
                     needs_judgement: bool = False) -> str:
-        """Pick the mode for a step: the first PREFERRED mode that is ALLOWABLE and
-        feasible.  Deterministic is skipped when no code path exists or the step
-        needs open-ended judgement; a deterministic-only loop then does its best
-        deterministically (or abstains)."""
-        for m in self.config.preferred_modes:
-            if m not in self.config.allowable_modes:
-                continue
-            if m == "deterministic" and (not deterministic_available
-                                         or needs_judgement):
-                continue
-            return m
-        allow = [m for m in self.config.preferred_modes
-                 if m in self.config.allowable_modes]
-        return allow[-1] if allow else "abstain"
+        """Select a feasible configured preference with an installed executor."""
+        try:
+            return self.mode_policy().choose(
+                deterministic_available=deterministic_available,
+                needs_judgement=needs_judgement)
+        except LoopModeUnavailableError as exc:
+            raise LoopExecutorUnavailableError(str(exc)) from exc
 
     def fallback_mode(self, current: str) -> str:
-        """The next mode in the waterfall when ``current`` fails (deterministic →
-        hybrid → non_deterministic → abstain)."""
-        seq = [m for m in self.config.preferred_modes
-               if m in self.config.allowable_modes]
-        if current in seq and seq.index(current) + 1 < len(seq):
-            return seq[seq.index(current) + 1]
-        return "abstain"
+        """The next configured permitted mode; unavailable executors refuse."""
+        try:
+            return self.mode_policy().fallback(current)
+        except LoopModeUnavailableError as exc:
+            raise LoopExecutorUnavailableError(str(exc)) from exc
 
     def _require_allowed_outcome_mode(self, outcome: StepOutcome,
-                                      step: str) -> None:
+                                      step: str, requested_mode: str = "") -> None:
         """Refuse a handler that reports a mode this loop cannot use."""
         if outcome.mode not in self.config.allowable_modes:
             self.ledger.record(
@@ -623,6 +651,14 @@ class Loop(metaclass=_LoopMeta):
                 f"step {step!r} needs mode {outcome.mode!r}, but Loop "
                 f"{self.loop_id} has installed executors only for "
                 f"{self.definition.installed_executor_modes}")
+        if requested_mode and outcome.mode != requested_mode:
+            self.ledger.record(
+                loop_id=self.loop_id, event="failure.detected",
+                failure_kind="mode_executor_mismatch", step=step,
+                requested_mode=requested_mode, reported_mode=outcome.mode)
+            raise LoopExecutorUnavailableError(
+                f"step {step!r} requested {requested_mode!r}, but its executor "
+                f"reported {outcome.mode!r}")
 
     # --- recursion: one loop initializes another ---------------------------
 
@@ -1227,7 +1263,7 @@ class Loop(metaclass=_LoopMeta):
                 outcome = self._run_handler(handler, step, it)
             finally:
                 it["context"].pop("requested_mode", None)
-            self._require_allowed_outcome_mode(outcome, step)
+            self._require_allowed_outcome_mode(outcome, step, forced_mode)
             self.ledger.record(loop_id=self.loop_id, event="fallback",
                               step=step, from_mode="deferred",
                               to_mode=forced_mode)
@@ -1309,7 +1345,7 @@ class Loop(metaclass=_LoopMeta):
                     outcome = self._run_handler(handler, step, it)
                 finally:
                     it["context"].pop("requested_mode", None)
-                self._require_allowed_outcome_mode(outcome, step)
+                self._require_allowed_outcome_mode(outcome, step, fb)
                 attempts += 1
         if outcome.spawn_goal and (
                 self.config.max_depth is None
@@ -1501,9 +1537,14 @@ def self_test() -> dict:
     # prefers non-deterministic model-led work.
     det_only = Loop("g", LoopConfig(allowable_modes=("deterministic",)))
     balanced = Loop("g", LoopConfig())
+    unavailable_judgement = False
+    try:
+        det_only.choose_mode(needs_judgement=True)
+    except LoopExecutorUnavailableError:
+        unavailable_judgement = True
     check("mode_waterfall_respects_allowable_and_preferred",
           balanced.choose_mode() == "deterministic"
-          and det_only.choose_mode(needs_judgement=True) == "deterministic"
+          and unavailable_judgement
           and balanced.choose_mode(deterministic_available=False) == "hybrid",
           "base structural default is deterministic; explicit profiles choose "
           "their own order")

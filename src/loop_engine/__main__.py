@@ -117,6 +117,9 @@ def main(argv=None) -> int:
     if focused_help:
         print(focused_help)
         return 0
+    if raw_argv[:1] == ["records"]:
+        from .record_cli import record_command
+        return record_command(raw_argv[1:])
     parser = argparse.ArgumentParser(
         prog="loop-engine",
         description=__doc__.splitlines()[0],

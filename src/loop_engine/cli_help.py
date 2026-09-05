@@ -14,6 +14,7 @@ Start here:
   solve           perform and verify a task
   runs            list saved product outcomes
   report          render one saved run
+  records         query or revise scoped notes through a typed tool
   studio          inspect results and playback locally
 
 Other commands:
@@ -24,6 +25,9 @@ Run `loop-engine COMMAND --help` for focused help."""
 
 COMMAND_HELP = {
     "--help": ROOT_HELP, "-h": ROOT_HELP,
+    "records": """usage: loop-engine records --policy HOST_POLICY --backend sqlite|package-jsonl --artifact-root PATH [--database PATH | --shard PATH] [--approve-effect-digest DIGEST]
+
+Read one JSON request from stdin: create, get, query, update, or retire. Host configuration fixes storage and scope. Mutations first return an exact effect plan and require matching explicit approval. No raw SQL, direct Markdown edits, or promotion authority.""",
     "configure": """usage: loop-engine configure [--format text|json]
 
 Inspect provider key references and print the exact next probe. No provider is called.""",

@@ -507,6 +507,9 @@ def self_test() -> dict:
 
     # A real run with a semantic step, a fallback, and a spawned Loop.
     def handler(loop, step, context):
+        if context.get("requested_mode"):
+            return StepOutcome(output="explicit fallback", mode=context["requested_mode"],
+                               model_calls=1)
         if step == "research" and loop.depth == 0:
             if f"{step}:spawned" not in context:
                 return StepOutcome(output="need spawned", mode="deterministic",

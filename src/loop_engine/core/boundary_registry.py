@@ -289,6 +289,15 @@ BOUNDARIES = (
      "envelope": "core.workspace_operations"
                  ".WorkspaceOperationService.command",
      "test": "workspace_operations.self_test"},
+    {"boundary": "managed record operation",
+     "crosses": "a scoped typed request queries or revises a managed record",
+     "binding": "native_loop",
+     "envelope": "core.record_operations.RecordOperationService.execute",
+     "test": "record_operations_checks.self_test"},
+    {"boundary": "record tool dispatch",
+     "crosses": "host policy and a JSON request enter the record tool",
+     "binding": "native_loop", "envelope": "record_cli.record_command",
+     "test": "record_cli.self_test"},
     {"boundary": "spawned checkpoint restore", "crosses": "saved task metadata rejoins its owning manager", "binding": "native_loop", "envelope": "loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin.restore_checkpoint", "test": "delegation_checkpoint_checks.self_test"},
     {"boundary": "spawned task join", "crosses": "an owner waits within a bound for spawned results", "binding": "native_loop", "envelope": "loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin.join", "test": "delegation_checkpoint_checks.self_test"},
     {"boundary": "spawned task state persistence", "crosses": "task lifecycle metadata enters durable state", "binding": "native_loop", "envelope": "loop.spawned_task_state_store.LocalJsonSpawnedTaskStateStore", "test": "spawned_task_state_store.self_test"},
@@ -438,6 +447,11 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
     "workspace command": _exact(
         "practitioner", "practitioner.code_execution@1.0.0",
         "starting", "spawned_by"),
+    "managed record operation": _exact(
+        "practitioner", "practitioner.code_execution@1.0.0",
+        "starting", "spawned_by"),
+    "record tool dispatch": _exact(
+        "practitioner", "practitioner.code_execution@1.0.0", "starting"),
     "spawned checkpoint restore": _dynamic_spawned("loop.spawned_task_checkpoint.SpawnedTaskCheckpoint.spec", "loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin.restore_checkpoint"),
     "spawned task join": _dynamic_spawned("loop.delegation_runtime.DelegationSpec.profile", "loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin.join"),
     "spawned task state persistence": _dynamic_spawned("loop.delegation_runtime.DelegationSpec.profile", "loop.spawned_task_state_store.LocalJsonSpawnedTaskStateStore.compare_and_swap"),
@@ -489,15 +503,18 @@ def _profile_ref(value: str) -> LoopProfileRef:
 
 def _mapped_symbol_exists(reference: str) -> bool:
     """Resolve a mapped module symbol without importing or running it."""
-    from ..architecture_map import MODULE_MAP
-    parts = reference.split(".")
-    if len(parts) < 3 or parts[0] not in MODULE_MAP:
+    from ..architecture_map import MODULE_MAP, ROOT_MODULES
+    known_modules = set(ROOT_MODULES) | {
+        f"{package}.{module}" for package, modules in MODULE_MAP.items()
+        for module in modules}
+    prefixes = [module for module in known_modules
+                if reference.startswith(module + ".")]
+    if not prefixes:
         return False
-    subpackage, module = parts[:2]
-    if module not in MODULE_MAP[subpackage]:
-        return False
+    module = max(prefixes, key=len)
+    parts = reference[len(module) + 1:].split(".")
     package_root = os.path.dirname(os.path.dirname(__file__))
-    path = os.path.join(package_root, subpackage, module) + ".py"
+    path = os.path.join(package_root, *module.split(".")) + ".py"
     try:
         tree = ast.parse(open(path, encoding="utf-8").read())
     except (OSError, SyntaxError):
@@ -505,8 +522,8 @@ def _mapped_symbol_exists(reference: str) -> bool:
     candidates = {getattr(node, "name", ""): node for node in tree.body
                   if isinstance(node, (ast.FunctionDef,
                                        ast.AsyncFunctionDef, ast.ClassDef))}
-    current = candidates.get(parts[2])
-    for name in parts[3:]:
+    current = candidates.get(parts[0])
+    for name in parts[1:]:
         if not isinstance(current, ast.ClassDef):
             return False
         nested = {}
@@ -730,6 +747,11 @@ def self_test() -> dict:
     check("every_claimed_envelope_resolves_to_real_code", not unresolved,
           f"unresolved: {unresolved}" if unresolved
           else "all dotted envelopes resolve through the architecture map")
+    check("registered_root_and_nested_module_envelopes_resolve_without_import",
+          _mapped_symbol_exists("record_cli.record_command")
+          and _mapped_symbol_exists("catalog.stores.sqlite_store.SQLiteRecordStore.put")
+          and not _mapped_symbol_exists("record_cli.missing_operation")
+          and not _mapped_symbol_exists("unregistered_module.record_command"))
 
     from ..loop.loop_templates import TEMPLATE_LIBRARY
     registered = {t["template_id"] for t in TEMPLATE_LIBRARY

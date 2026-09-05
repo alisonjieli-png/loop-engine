@@ -21,16 +21,19 @@ import math
 import time
 import uuid
 from dataclasses import asdict, dataclass, field
+from types import SimpleNamespace
 from typing import Callable, Protocol, Sequence
 
 from .context_budget import estimate_tokens
 from .model_capabilities import (
+    ModelOutputAllocation,
     ModelOutputCapability,
     ModelOutputLimitMismatch,
     UnknownModelOutputLimit,
     require_declared_maximum,
 )
 from .model_gateway_accounting import complete_attempt_sum, reported_token
+from .model_token_preflight import TokenBoundError, TokenBoundRequest, prepare_token_reservation
 from .model_response_text import extract_final_answer
 from .model_routes import (
     LOCALITIES,
@@ -188,6 +191,13 @@ class ModelRouteAttemptSpec:
     def __post_init__(self):
         if not self.route_name:
             raise ValueError("a model route attempt needs route_name")
+        if (self.max_output_tokens is not None
+                and (type(self.max_output_tokens) is not int or self.max_output_tokens < 1)):
+            raise ValueError("route output limit must be a positive integer")
+        if (self.timeout_seconds is not None and (
+                type(self.timeout_seconds) not in (int, float)
+                or not math.isfinite(self.timeout_seconds) or self.timeout_seconds <= 0)):
+            raise ValueError("route timeout must be positive and finite")
         if self.thinking_power not in (
                 "small", "medium", "high", "max", "specialized"):
             raise ValueError(
@@ -197,12 +207,6 @@ class ModelRouteAttemptSpec:
             raise ValueError("attempt max_output_tokens must be positive")
         if self.timeout_seconds is not None and self.timeout_seconds <= 0:
             raise ValueError("attempt timeout_seconds must be positive")
-
-
-#: The smallest output worth asking a provider for. Below this a route has
-#: no usable room left for the prompt it was given, and shrinking the ceiling
-#: further would buy an answer too short to be one.
-_LEAST_USEFUL_OUTPUT_TOKENS = 512
 
 
 @dataclass(frozen=True)
@@ -222,8 +226,26 @@ class ModelGatewayConfig:
     allow_power_escalation: bool = False
     max_power_escalations: int = 0
     escalate_on: tuple[str, ...] = ("output_validation_failed",)
+    output_allocation: ModelOutputAllocation | None = None
 
     def __post_init__(self):
+        if self.output_allocation is not None and not isinstance(self.output_allocation, ModelOutputAllocation):
+            raise ValueError("output allocation must be a typed Loop decision")
+        for name in ("max_route_attempts", "max_output_tokens", "max_total_tokens"):
+            value = getattr(self, name)
+            if value is not None and (type(value) is not int or value < 1):
+                raise ValueError(f"{name} must be a positive integer when set")
+        if (type(self.timeout_seconds) not in (int, float)
+                or not math.isfinite(self.timeout_seconds) or self.timeout_seconds <= 0):
+            raise ValueError("timeout_seconds must be positive and finite")
+        if (type(self.max_power_escalations) is not int or self.max_power_escalations < 0
+                or type(self.allow_failover) is not bool or type(self.allow_power_escalation) is not bool):
+            raise ValueError("invalid gateway escalation or failover authority")
+        for name in ("route_names", "route_plan", "allowed_models", "allowed_localities", "escalate_on"):
+            values = getattr(self, name)
+            if type(values) not in (tuple, list):
+                raise ValueError("gateway collection settings require explicit sequences")
+            object.__setattr__(self, name, tuple(values))
         if self.purpose not in PURPOSES:
             raise ValueError("unknown model gateway purpose")
         if (self.max_route_attempts is not None
@@ -286,6 +308,8 @@ class ModelGatewayRequest:
     def __post_init__(self):
         if not isinstance(self.prompt, str) or not self.prompt.strip():
             raise ValueError("a model gateway request needs a prompt")
+        if not isinstance(self.config, ModelGatewayConfig):
+            raise ValueError("a model gateway request needs typed configuration")
         if any(not isinstance(value, str) for value in (
                 self.system, self.output_contract, self.trace_id)):
             raise ValueError("model gateway text fields must be text")
@@ -368,6 +392,12 @@ class GatewayAttempt:
     provider_request_digest: str = ""
     transport_succeeded: "bool | None" = None
     transport_error_code: str = ""
+    reserved_input_tokens: int | None = None
+    reserved_total_tokens: int | None = None
+    token_bound_digest: str = ""
+    reservation_status: str = ""
+    reported_provider_attempts: int | None = None
+    output_capacity: ModelOutputCapability | None = field(default=None, repr=False)
 
     @property
     def transport_error(self) -> str:
@@ -412,6 +442,15 @@ class GatewayAttempt:
             "transport_succeeded": self.transport_succeeded,
             "transport_error_code": self.transport_error_code,
             "transport_error": self.transport_error,
+            "reserved_input_tokens": self.reserved_input_tokens,
+            "reserved_total_tokens": self.reserved_total_tokens,
+            "token_bound_digest": self.token_bound_digest,
+            "reservation_status": self.reservation_status,
+            "reported_provider_attempts": self.reported_provider_attempts,
+            "model_call_accounting_complete": self.reported_provider_attempts in (None, 1),
+            "output_capacity_digest": (hashlib.sha256(json.dumps(
+                self.output_capacity.summary(), sort_keys=True).encode()).hexdigest()
+                if self.output_capacity is not None else ""),
         }
 
 
@@ -500,6 +539,10 @@ class ModelGatewayResult:
 
 def _error_code(error: str) -> str:
     low = str(error).lower()
+    if "provider_attempt_contract_violated" in low:
+        return "provider_attempt_contract_violated"
+    if "model_output_limit_mismatch" in low:
+        return "model_output_limit_mismatch"
     # Abrupt TLS termination: the endpoint, a reverse proxy, or an
     # intervening network closed the connection before a complete
     # HTTP/model response arrived. Transport-level, so retryable.
@@ -612,11 +655,12 @@ class ModelGateway:
 
     def __init__(self, *, providers: "Sequence[ProviderSpec] | None" = None,
                  routes: "Sequence[ModelRoute] | None" = None,
-                 policy: "RoutePolicy | None" = None):
+                 policy: "RoutePolicy | None" = None, token_bound_resolver=None):
         specs = tuple(providers or builtin_provider_specs())
         self.providers = {spec.provider_id: spec for spec in specs}
         self.registry = RouteRegistry(routes)
         self.policy = policy or RoutePolicy()
+        self.token_bound_resolver = token_bound_resolver
 
     def _routes(self, config: ModelGatewayConfig
                 ) -> list[tuple[ModelRoute, ModelRouteAttemptSpec]]:
@@ -644,9 +688,13 @@ class ModelGateway:
                 route.name, config.thinking_power))
                         for route in first_by_provider + remaining]
         if config.allowed_models:
-            selected = [(route, attempt) for route, attempt in selected if any(
-                route.model.startswith(model) or model in route.model
-                for model in config.allowed_models)]
+            selected = [(route, attempt) for route, attempt in selected
+                        if route.model in config.allowed_models]
+        if config.output_allocation is not None:
+            allocation = config.output_allocation
+            selected = [(route, attempt) for route, attempt in selected
+                        if (route.provider, route.model, route.name) == (
+                            allocation.provider_id, allocation.model_id, allocation.route_name)]
         selected = [(route, attempt) for route, attempt in selected
                     if route.locality in config.allowed_localities]
         if not explicit:
@@ -754,7 +802,7 @@ class ModelGateway:
                 requested_outputs = tuple(value for value in (
                     request.config.max_output_tokens,
                     attempt_spec.max_output_tokens) if value is not None)
-                if len(set(requested_outputs)) > 1:
+                if len(set(requested_outputs)) > 1 and request.config.output_allocation is None:
                     error = (
                         "model_output_limit_mismatch: gateway and route "
                         "declare different output maxima")
@@ -769,8 +817,25 @@ class ModelGateway:
                                     if requested_outputs else None)
                 try:
                     output_capability = spec.output_capability_for(route.model)
-                    attempt_output = require_declared_maximum(
-                        requested_output, output_capability)
+                    allocation = request.config.output_allocation
+                    if allocation is not None:
+                        if allocation.capability != output_capability:
+                            raise ModelOutputLimitMismatch(
+                                "model_output_limit_mismatch: selected allocation has stale capacity evidence")
+                        if any(value not in (allocation.requested_tokens, output_capability.declared_maximum)
+                               for value in requested_outputs):
+                            raise ModelOutputLimitMismatch(
+                                "model_output_limit_mismatch: scalar output hint contradicts the typed allocation")
+                        output_capability = allocation
+                        attempt_output = require_declared_maximum(
+                            allocation.requested_tokens, allocation)
+                    else:
+                        attempt_output = require_declared_maximum(
+                            requested_output, output_capability)
+                    if (request.config.max_total_tokens is not None
+                            and output_capability.declared_maximum is None):
+                        raise UnknownModelOutputLimit(
+                            "unknown_model_output_limit: a strict token budget needs a source-backed maximum")
                 except (UnknownModelOutputLimit,
                         ModelOutputLimitMismatch) as exc:
                     result.attempts.append(GatewayAttempt(
@@ -790,21 +855,6 @@ class ModelGateway:
                     route.capabilities, "max_context", 0) or 0)
                 estimated_input = estimate_tokens(
                     request.prompt, request.system)
-                # A ceiling nobody asked for is ours, and ours has to fit.
-                # Defaulting to the model's declared maximum made one route
-                # permanently unusable: it declares a million output tokens
-                # against a context window an eighth that size, so every
-                # request through it was refused before the provider was
-                # ever contacted. An explicit caller ceiling that does not
-                # fit is still refused below — that is the caller's number
-                # and silently shrinking it would be the truncation this
-                # preflight exists to prevent.
-                if (requested_output is None and declared_context
-                        and estimated_input + attempt_output
-                        > declared_context):
-                    room = declared_context - estimated_input
-                    if room >= _LEAST_USEFUL_OUTPUT_TOKENS:
-                        attempt_output = room
                 if (declared_context
                         and estimated_input + attempt_output > declared_context):
                     error = (
@@ -857,19 +907,67 @@ class ModelGateway:
                 provider_request_digest = hashlib.sha256(
                     provider_request.encode("utf-8")
                 ).hexdigest()
+                reservation = None
+                reservation_digest = ""
+                if request.config.max_total_tokens is not None:
+                    try:
+                        reservation = prepare_token_reservation(
+                            TokenBoundRequest(
+                                route.provider, route.model, route.name,
+                                provider_request_digest, request.prompt,
+                                request.system, attempt_output),
+                            self.token_bound_resolver,
+                            request.config.max_total_tokens - known_tokens)
+                    except TokenBoundError as exc:
+                        result.attempts.append(GatewayAttempt(
+                            route.provider, route.model, route.name, "", False,
+                            error_code=exc.code, error=str(exc),
+                            semantic_call_id=semantic_call_id, owner_loop_id=owner_loop_id,
+                            provider_request_digest=provider_request_digest,
+                            maximum_output_tokens=attempt_output,
+                            reservation_status="refused"))
+                        loop.ledger.record(loop_id=loop.loop_id, event="custom",
+                            action="token_reservation_refused", route=route.name,
+                            error_code=exc.code, provider_request_digest=provider_request_digest)
+                        continue
+                    if (declared_context and reservation.maximum_total_tokens > declared_context):
+                        result.attempts.append(GatewayAttempt(
+                            route.provider, route.model, route.name, "", False,
+                            error_code="context_window_exceeded",
+                            error="source-backed input and exact output bounds exceed route context",
+                            semantic_call_id=semantic_call_id, owner_loop_id=owner_loop_id,
+                            provider_request_digest=provider_request_digest,
+                            maximum_output_tokens=attempt_output, reservation_status="refused"))
+                        continue
+                    reservation_digest = hashlib.sha256(json.dumps(
+                        reservation.safe_summary(), sort_keys=True, allow_nan=False).encode()).hexdigest()
+                    loop.ledger.record(loop_id=loop.loop_id, event="custom",
+                        action="token_reservation_prepared", route=route.name,
+                        token_bound_digest=reservation_digest,
+                        reserved_total_tokens=reservation.maximum_total_tokens,
+                        known_tokens_before=known_tokens,
+                        provider_request_digest=provider_request_digest)
 
                 def invoke_provider(spec=spec, route=route,
                                     attempt_timeout=attempt_timeout,
                                     attempt_output=attempt_output,
                                     output_capability=output_capability):
-                    value = spec.adapter.chat_maxout(
-                        request.prompt, model=route.model,
-                        system=request.system,
-                        temperature=request.temperature,
-                        timeout=attempt_timeout,
-                        max_attempts=1,
-                        max_output_tokens=attempt_output,
-                        output_capability=output_capability)
+                    try:
+                        value = spec.adapter.chat_maxout(
+                            request.prompt, model=route.model,
+                            system=request.system,
+                            temperature=request.temperature,
+                            timeout=attempt_timeout,
+                            max_attempts=1,
+                            max_output_tokens=attempt_output,
+                            output_capability=output_capability)
+                    except Exception:
+                        # A dispatched callback may have spent tokens before raising.
+                        # Preserve its physical occurrence and unknown usage.
+                        value = SimpleNamespace(
+                            text="", model=route.model, ok=False,
+                            error="provider invocation failed", response_received=False,
+                            prompt_tokens=None, eval_tokens=None)
                     try:
                         value.provider = route.provider
                     except (AttributeError, TypeError):
@@ -916,13 +1014,22 @@ class ModelGateway:
                     or getattr(provider_result, "prompt_tokens", 0)
                     or getattr(provider_result, "eval_tokens", 0)
                     or provider_done is not None)
-                transport_succeeded = bool(
-                    getattr(provider_result, "ok", False))
+                transport_succeeded = getattr(provider_result, "ok", False) is True
                 transport_ok = bool(transport_succeeded and raw_text.strip())
                 reported_model = str(
                     getattr(provider_result, "model", "") or route.model)
                 identity_ok = reported_model == route.model
-                provider_ok = bool(transport_ok and text.strip() and identity_ok)
+                provider_error = str(getattr(provider_result, "error", "") or "")
+                declared_attempts = getattr(provider_result, "attempts", 1)
+                multiplicity_invalid = type(declared_attempts) is not int or declared_attempts != 1
+                completion_invalid = bool(
+                    provider_done is False or output_limit_reached
+                    or provider_stop_reason in ("length", "max_tokens", "max_output_tokens")
+                    or provider_status in ("failed", "incomplete", "cancelled")
+                    or (provider_done is not None and type(provider_done) is not bool))
+                provider_ok = bool(transport_ok and text.strip() and identity_ok
+                                   and not provider_error and not completion_invalid
+                                   and not multiplicity_invalid)
                 validation_error = ""
                 try:
                     validation_ok = (
@@ -962,8 +1069,6 @@ class ModelGateway:
                             "not provider accounting and never reported as "
                             "usage"),
                     }
-                provider_error = str(
-                    getattr(provider_result, "error", "") or "")
                 error = provider_error
                 if output_limit_reached:
                     error = error or (
@@ -972,6 +1077,8 @@ class ModelGateway:
                 elif response_received and provider_done is False:
                     error = error or (
                         "incomplete_response: provider response did not finish")
+                elif completion_invalid:
+                    error = error or "incomplete_response: contradictory completion metadata"
                 elif transport_ok and not identity_ok:
                     error = (
                         "model_identity_mismatch: requested exact model "
@@ -982,6 +1089,8 @@ class ModelGateway:
                         "final answer outside private reasoning")
                 if provider_ok and not validation_ok:
                     error = validation_error or "output failed validation"
+                if multiplicity_invalid:
+                    error = "provider_attempt_contract_violated: adapter did not report exactly one attempt"
                 pre_accounting_error_code = _error_code(error)
                 transport_error_code = ""
                 if not transport_succeeded and error:
@@ -995,22 +1104,27 @@ class ModelGateway:
                 accounting_blocks = bool(
                     request.config.max_total_tokens is not None
                     and not usage_complete)
+                bound_violated = bool(reservation is not None and usage_complete and (
+                    input_tokens > reservation.maximum_input_tokens
+                    or output_tokens > reservation.maximum_output_tokens))
                 if accounting_blocks:
                     error = (
                         "token_accounting_unavailable: provider usage is "
                         "incomplete, so the total-token ceiling cannot be "
                         "enforced")
+                if bound_violated:
+                    error = "provider-reported usage violated its declared bound"
                 attempt = GatewayAttempt(
                     provider=route.provider,
                     model=reported_model,
                     route=route.name,
                     loop_id=call["loop_id"],
                     ok=bool(provider_ok and validation_ok
-                            and not accounting_blocks),
+                            and not accounting_blocks and not bound_violated),
                     input_tokens=input_tokens,
                     output_tokens=output_tokens,
                     validation_ok=validation_ok if provider_ok else None,
-                    error_code="" if (provider_ok and validation_ok
+                    error_code="token_bound_violated" if bound_violated else "" if (provider_ok and validation_ok
                                       and not accounting_blocks)
                     else ("token_accounting_unavailable"
                           if accounting_blocks
@@ -1041,8 +1155,29 @@ class ModelGateway:
                     provider_request_digest=provider_request_digest,
                     transport_succeeded=transport_succeeded,
                     transport_error_code=transport_error_code,
+                    reserved_input_tokens=(reservation.maximum_input_tokens if reservation else None),
+                    reserved_total_tokens=(reservation.maximum_total_tokens if reservation else None),
+                    token_bound_digest=reservation_digest,
+                    reservation_status=("violated" if bound_violated else "unresolved"
+                                        if reservation and not usage_complete else "reconciled"
+                                        if reservation else ""),
+                    reported_provider_attempts=(declared_attempts if type(declared_attempts) is int else 0),
+                    output_capacity=(output_capability.capability
+                                     if isinstance(output_capability, ModelOutputAllocation)
+                                     else output_capability),
                 )
                 result.attempts.append(attempt)
+                if multiplicity_invalid:
+                    result.error_code = "provider_attempt_contract_violated"
+                    result.error = "provider attempt multiplicity is outside the invocation contract"
+                    return StepOutcome(output="route:provider_attempt_contract_violated",
+                                       mode="deterministic", confidence=0.1, failed=True)
+                if bound_violated:
+                    result.error_code = "token_bound_violated"
+                    result.error = "provider-reported usage violated its declared bound"
+                    result.ok = False
+                    return StepOutcome(output="route:token_bound_violated",
+                                       mode="deterministic", confidence=0.1, failed=True)
                 if (not attempt.ok
                         and attempt.error_code in _FAILOVER_FORBIDDEN_ERRORS):
                     result.error_code = attempt.error_code
@@ -1100,6 +1235,8 @@ class ModelGateway:
             result.attempts, "input_tokens")
         result.output_tokens = complete_attempt_sum(
             result.attempts, "output_tokens")
+        if any(attempt.reported_provider_attempts not in (None, 1) for attempt in result.attempts):
+            result.input_tokens = result.output_tokens = None
         return result
 
 
@@ -1202,13 +1339,21 @@ def self_test() -> dict:
           and "exceed the route context window" in oversized.attempts[0].error,
           "an explicit caller ceiling that cannot fit is refused rather "
           "than quietly shrunk; max_context=100")
-    # A ceiling nobody asked for is the gateway's own, and it has to fit the
-    # window. One configured route declares a million output tokens against a
-    # 131072 context, so defaulting to the declared maximum refused every
-    # request through it before the provider was ever contacted.
-    check("a defaulted ceiling leaves usable room in the context window",
-          0 < _LEAST_USEFUL_OUTPUT_TOKENS < 4096,
-          f"floor of {_LEAST_USEFUL_OUTPUT_TOKENS} output tokens")
+    class LargeOutputBoundary(ContextBoundary):
+        def output_capability_for(self, model):
+            return ModelOutputCapability(2000, "offline exact maximum")
+
+    large_boundary = LargeOutputBoundary()
+    large_gateway = ModelGateway(
+        providers=(ProviderSpec("ctx_only", large_boundary, "fixture", "none"),),
+        routes=(ModelRoute("ctx.large", "ctx_only", "small-model",
+            capabilities=ModelProviderCapabilities("ctx_only", "cloud", True, max_context=1000)),))
+    no_clamp = large_gateway.invoke(ModelGatewayRequest("small prompt",
+        ModelGatewayConfig(route_names=("ctx.large",), allow_failover=False)))
+    check("default_output_maximum_is_never_reduced_to_context_room",
+          no_clamp.error_code == "context_window_exceeded"
+          and no_clamp.attempts[0].maximum_output_tokens == 2000
+          and not large_boundary.chat_attempted)
     check("missing_credential_is_not_an_authentication_failure",
           _error_code("no MISTRAL_API_KEY in environment or .env")
           == "missing_credential"

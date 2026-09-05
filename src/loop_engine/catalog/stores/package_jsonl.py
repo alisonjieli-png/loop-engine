@@ -9,8 +9,8 @@ import json
 import os
 
 from ..capabilities import StoreCapabilities
-from ..protocol import StoreError
-from ..query import IntelligenceQuery
+from ..protocol import StoreError, UnsupportedOperationError
+from ..query import IntelligenceQuery, iter_query_records
 
 
 class PackageJsonlStore:
@@ -29,15 +29,15 @@ class PackageJsonlStore:
             source_collections=("core",),
             operations={"get": True, "query": True, "stream": True,
                         "write": False, "export": True, "import": False},
-            query_capabilities={"projection": True, "filter": True,
+            query_capabilities={"projection": False, "filter": True,
                                "join": False, "aggregation": False,
                                "relationship_traversal": False,
                                "full_text_search": False,
                                "vector_search": False},
-            pushdown={"projection": False, "filter": False, "limit": True,
-                      "order": False},
-            transactions={"supported": False, "snapshot_reads": True},
-            result_formats=("python_records", "jsonl"),
+            pushdown={"projection": False, "filter": False, "attributes": False,
+                      "limit": False, "order": False},
+            transactions={"supported": False, "snapshot_reads": False},
+            result_formats=("python_records",),
             materializations=("jsonl",),
             authority="authoritative")
 
@@ -49,10 +49,13 @@ class PackageJsonlStore:
                     if not line:
                         continue
                     try:
-                        yield json.loads(line)
+                        record = json.loads(line)
                     except json.JSONDecodeError as exc:
                         raise StoreError(
                             f"corrupt JSONL line in {shard}: {exc}") from exc
+                    if not isinstance(record, dict):
+                        raise StoreError("catalog JSONL records must be objects")
+                    yield record
 
     def get(self, record_id: str, version: str | None = None) -> dict | None:
         for record in self._iter_records():
@@ -62,23 +65,16 @@ class PackageJsonlStore:
         return None
 
     def query(self, query: IntelligenceQuery) -> list[dict]:
-        matched = [r for r in self._iter_records() if query.matches(r)]
-        stop = None if query.limit is None else query.offset + query.limit
-        return matched[query.offset:stop]
+        return list(self.stream(query))
 
     def stream(self, query: IntelligenceQuery):
-        count = 0
-        for record in self._iter_records():
-            if not query.matches(record):
-                continue
-            if count < query.offset:
-                count += 1
-                continue
-            if (query.limit is not None
-                    and count >= query.offset + query.limit):
-                return
-            count += 1
-            yield record
+        return iter_query_records(self._iter_records(), query)
+
+    def put(self, record: dict, *, precondition: dict | None = None) -> dict:
+        raise UnsupportedOperationError("package JSONL store is read-only")
+
+    def import_bundle(self, bundle: dict) -> dict:
+        raise UnsupportedOperationError("package JSONL store is read-only")
 
     def export(self, selection: dict | None = None) -> dict:
         records = list(self._iter_records())

@@ -14,7 +14,7 @@ authoritative those inventions become requirements nobody agreed to.
 Owns:
     - Element, Relationship: the typed model and explicit evidence state.
     - Context, container, component, dynamic, and identity-lattice views.
-    - render_mermaid(), render_c4_dsl(): two renderings, neither canonical.
+    - render_mermaid(), render_c4_dsl(): Mermaid and C4-PlantUML projections.
 
 The architecture authority remains architecture_map and architecture.yaml.
 """
@@ -28,6 +28,8 @@ from .architecture_diagram_text import (
     DIAGRAM_PREAMBLE,
     LOOP_CLASSIFICATION_TREE,
     ROLE_PROFILE_TREE,
+    record_access_model,
+    render_c4_plantuml,
 )
 
 DIAGRAM_RECORD_TYPE = "architecture_diagram/v1"
@@ -582,10 +584,12 @@ DEPLOYMENT_VIEW = DiagramModel(
                      carries="shared query projection, never runtime authority"),
     ))
 
+RECORD_ACCESS = record_access_model(DiagramModel, Element, Relationship)
+
 DIAGRAMS = (
     RUNTIME_CONTEXT, SOLVER_CONTAINERS, LEARNING_FABRIC,
     ATOMIC_LOOP_SEQUENCE, FINGERPRINT_LATTICE,
-    STAGE_ASSISTANCE_TRIAL, DEPLOYMENT_VIEW)
+    STAGE_ASSISTANCE_TRIAL, DEPLOYMENT_VIEW, RECORD_ACCESS)
 
 _MERMAID_SHAPES = {
     PERSON: ("([", "])"), SYSTEM: ("[", "]"), EXTERNAL: ("[/", "/]"),
@@ -618,29 +622,9 @@ def render_mermaid(model: DiagramModel) -> str:
     return "\n".join(lines)
 
 
-_C4_KINDS = {PERSON: "Person", SYSTEM: "System", EXTERNAL: "System_Ext",
-             CONTAINER_KIND: "Container", STORE: "ContainerDb",
-             COMPONENT_KIND: "Component"}
-
-
 def render_c4_dsl(model: DiagramModel) -> str:
-    """A Structurizr-flavoured DSL rendering. Also not the record."""
-    lines = [f"# {model.title}", f"# level: {model.level}",
-             "# Generated from the typed model; do not edit by hand.",
-             "workspace {", "    model {"]
-    for item in model.elements:
-        kind = _C4_KINDS.get(item.kind, "Component")
-        description = (f"[{item.evidence_state}] {item.description}"
-                       if item.description else f"[{item.evidence_state}]")
-        lines.append(f"        {item.key} = {kind.lower()} \"{item.name}\" "
-                     f"\"{description}\"")
-    lines.append("")
-    for edge in model.relationships:
-        label = edge.label or "uses"
-        lines.append(f"        {edge.source} -> {edge.target} \"{label}\"")
-    lines += ["    }", "}"]
-    return "\n".join(lines)
-
+    """Compatibility name for the C4-PlantUML projection, not Structurizr."""
+    return render_c4_plantuml(model)
 
 #: Where the rendered document lives, relative to the repository root. The
 #: file is a projection; this module is the record.
@@ -662,11 +646,13 @@ def render_document(models=DIAGRAMS) -> str:
         lines += [f"## {model.title}", "",
                   f"*{model.level} level.* {model.note}", "",
                   "```mermaid", render_mermaid(model), "```", ""]
-    lines += ["## The same models as C4 DSL", "",
-              "Rendered for a Structurizr-style tool.", ""]
+    lines += ["## The same models as C4-PlantUML", "",
+              "Generated using C4-PlantUML standard-library macros. These "
+              "blocks are not Structurizr DSL. Pin and verify the rendering "
+              "tool before publication.", ""]
     for model in models:
         lines += [f"### {model.title} (DSL)", "",
-                  "```text", render_c4_dsl(model), "```", ""]
+                  "```plantuml", render_c4_dsl(model), "```", ""]
     return "\n".join(lines).rstrip("\n") + "\n"
 
 
@@ -734,7 +720,15 @@ def self_test() -> dict:
 
     dsl = render_c4_dsl(RUNTIME_CONTEXT)
     check("the C4 rendering distinguishes external systems",
-          "system_ext" in dsl and "person" in dsl)
+          "System_Ext(" in dsl and "Person(" in dsl
+          and dsl.startswith("@startuml") and dsl.endswith("@enduml")
+          and "workspace {" not in dsl)
+    check("record storage authorities and future backends stay distinct",
+          any(item.module == "catalog.stores.sqlite_store"
+              for item in RECORD_ACCESS.elements)
+          and next(item for item in RECORD_ACCESS.elements
+                   if item.key == "postgres").evidence_state == TARGET
+          and all(edge.carries for edge in RECORD_ACCESS.relationships))
 
     check("edges say what travels along them, not merely that they exist",
           all(edge.carries for edge in LEARNING_FABRIC.relationships),

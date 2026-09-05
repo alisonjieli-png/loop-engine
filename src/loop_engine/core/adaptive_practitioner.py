@@ -740,7 +740,10 @@ def run_adaptive_practitioner(
         "recovery_directives": services.recovery_directives,
         "generated_file_checkpoints":
             services.generated_file_checkpoint_summaries(),
-        "model_calls": services.model_session.calls_used,
+        "model_calls": (None if services.model_session.accounting_uncertain
+                        else services.model_session.calls_used),
+        "model_call_accounting_complete": not services.model_session.accounting_uncertain,
+        "model_calls_known_subtotal": services.model_session.calls_used,
         "model_usage": safe_model_usage(services),
         "option_selection": services.selection_tally.to_dict(),
         # Who decided what this run did, saved beside what it chose from.
