@@ -87,12 +87,12 @@ universal value estimator for open-ended research or planning.
 
 Research questions:
 
-1. Which answer could change the next action, its authority, or acceptance?
-2. Can the engine inspect an available source instead of interrupting the user?
-3. When should independent questions be batched, and when would the first answer
+- Question 1: Which answer could change the next action, its authority, or acceptance?
+- Question 2: Can the engine inspect an available source instead of interrupting the user?
+- Question 3: When should independent questions be batched, and when would the first answer
    make later questions unnecessary?
-4. Can redundant questions be merged without merging distinct constraints?
-5. What exact answer/evidence resolves a question, and what later event reopens it?
+- Question 4: Can redundant questions be merged without merging distinct constraints?
+- Question 5: What exact answer/evidence resolves a question, and what later event reopens it?
 
 Candidate records should identify the affected decision, alternative hypotheses,
 answer source, predicted observations, dependencies, burden, and unresolved
@@ -114,11 +114,11 @@ decomposition, while false failure creates unnecessary work.
 
 Research questions:
 
-6. Is this responsibility coherent enough to solve directly?
-7. Which boundary needs a separate observation, verifier, authority, or checkpoint?
-8. Are subtasks independent, conditional, or coupled by shared constraints?
-9. Can a failed subtask be replaced while preserving verified neighboring work?
-10. Can decomposition discover a missing capability rather than silently assume it?
+- Question 6: Is this responsibility coherent enough to solve directly?
+- Question 7: Which boundary needs a separate observation, verifier, authority, or checkpoint?
+- Question 8: Are subtasks independent, conditional, or coupled by shared constraints?
+- Question 9: Can a failed subtask be replaced while preserving verified neighboring work?
+- Question 10: Can decomposition discover a missing capability rather than silently assume it?
 
 Generate several possible decompositions as candidates, not several mandatory
 executions. Each selected subtask needs a goal, typed inputs/outputs, exact
@@ -135,12 +135,12 @@ irrelevant material. The useful size is a measured property of the responsibilit
 
 Research questions:
 
-11. Which facts must remain exact across every iteration?
-12. Does an iteration obtain evidence, test a hypothesis, repair a failure, or only
+- Question 11: Which facts must remain exact across every iteration?
+- Question 12: Does an iteration obtain evidence, test a hypothesis, repair a failure, or only
     restate the preceding answer?
-13. When can compatible logical steps share one physical call without hiding
+- Question 13: When can compatible logical steps share one physical call without hiding
     their outputs, verification, or attribution?
-14. Can a verified incumbent survive a misleading critique or new speculative branch?
+- Question 14: Can a verified incumbent survive a misleading critique or new speculative branch?
 
 [Intrinsic self-correction experiments](https://proceedings.iclr.cc/paper_files/paper/2024/hash/8b4add8b0aa8749d80a34ca5d941c355-Abstract-Conference.html)
 (ICLR 2024) found failures and degradation without external feedback on the
@@ -163,12 +163,12 @@ interfaces rather than behavior; behavioral obligations remain necessary.
 
 Research questions:
 
-15. What observable behavior must each compiler preserve, including units and errors?
-16. Can capsules support useful composition without full source hydration?
-17. Which reads can run concurrently without changing snapshot semantics?
-18. Does fusion or compilation preserve exact effects, failure boundaries,
+- Question 15: What observable behavior must each compiler preserve, including units and errors?
+- Question 16: Can capsules support useful composition without full source hydration?
+- Question 17: Which reads can run concurrently without changing snapshot semantics?
+- Question 18: Does fusion or compilation preserve exact effects, failure boundaries,
     cancellation, budget accounting, and treatment isolation?
-19. Can deployment change through capability/environment bindings rather than core edits?
+- Question 19: Can deployment change through capability/environment bindings rather than core edits?
 
 Use differential and metamorphic checks between interpreted and compiled
 realizations. A type-correct graph can still compute the wrong thing. Generated
@@ -217,11 +217,11 @@ compression alone.
 
 Research questions:
 
-20. Which unknowns affect the decision, rather than merely having high entropy?
-21. Do question pairs have value that a one-step score misses?
-22. Does compressed state retain late-relevant facts, counterevidence, and source identity?
-23. Is the cost of selecting a computation greater than the computation it saves?
-24. Does estimated progress predict independent verified progress on held-out work?
+- Question 20: Which unknowns affect the decision, rather than merely having high entropy?
+- Question 21: Do question pairs have value that a one-step score misses?
+- Question 22: Does compressed state retain late-relevant facts, counterevidence, and source identity?
+- Question 23: Is the cost of selecting a computation greater than the computation it saves?
+- Question 24: Does estimated progress predict independent verified progress on held-out work?
 
 ## 6. Capability theory with explicit meanings
 
@@ -248,10 +248,10 @@ separate properties.
 
 Research questions:
 
-25. What input region, environment, budget and verifier qualify this capability?
-26. Do composition errors share causes, making independent-success products invalid?
-27. Can a failed composition reveal a missing adapter, observation, permission, or skill?
-28. Does a capability detect changed goals, units, tools or data distributions and abstain?
+- Question 25: What input region, environment, budget and verifier qualify this capability?
+- Question 26: Do composition errors share causes, making independent-success products invalid?
+- Question 27: Can a failed composition reveal a missing adapter, observation, permission, or skill?
+- Question 28: Does a capability detect changed goals, units, tools or data distributions and abstain?
 
 [Successor features and generalized policy improvement](https://papers.nips.cc/paper/2017/hash/350db081a661525235354dd3e19b8c05-Abstract.html)
 (NeurIPS 2017) offer a transfer mechanism that separates dynamics from rewards.
@@ -280,12 +280,12 @@ changes in values, names, context and environment.
 
 Research questions:
 
-29. Which repeated structure is stable, and which detail was accidental?
-30. Should experience become an example, context policy, response program, code,
+- Question 29: Which repeated structure is stable, and which detail was accidental?
+- Question 30: Should experience become an example, context policy, response program, code,
     subgraph, ranker or tuned model?
-31. Are teacher labels independently supported, or is the student learning errors?
-32. Does the shortcut preserve abstention, failure detection, and a qualified escape?
-33. How many uses repay creation, qualification and maintenance costs?
+- Question 31: Are teacher labels independently supported, or is the student learning errors?
+- Question 32: Does the shortcut preserve abstention, failure detection, and a qualified escape?
+- Question 33: How many uses repay creation, qualification and maintenance costs?
 
 For equal verified quality, a simple accounting check is:
 
@@ -313,10 +313,10 @@ candidates and negative transfer as well as successful candidates.
 
 Research questions:
 
-34. Does a diverse archive improve search at matched total experiment cost?
-35. Can a candidate change the evaluator, its permissions, or the acceptance population?
-36. Does repeated testing accumulate false promotions?
-37. Can a regression be invalidated and rolled back without erasing its history?
+- Question 34: Does a diverse archive improve search at matched total experiment cost?
+- Question 35: Can a candidate change the evaluator, its permissions, or the acceptance population?
+- Question 36: Does repeated testing accumulate false promotions?
+- Question 37: Can a regression be invalidated and rolled back without erasing its history?
 
 Separate proposer, evaluator and promoter. Untouched holdouts are not tuning
 data, even when only aggregate scores are returned. Evidence from different
