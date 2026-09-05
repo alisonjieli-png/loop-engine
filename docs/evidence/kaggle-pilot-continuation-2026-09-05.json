@@ -1,0 +1,868 @@
+{
+  "ci_state": {
+    "allowlist_weakened": false,
+    "audit_artifact_ref": "artifact://sha256/3630778aeab4b676d356248173ff3eb7cfd112f48d47d62aff3cfebb39203657",
+    "baseline_replaced": false,
+    "green": false,
+    "markdown_files_checked": 235,
+    "markdown_issues": 0,
+    "retired_term_matches_after_correction": 0,
+    "untriaged_high_audit_findings": 187
+  },
+  "competition_results": {
+    "downloads": 0,
+    "hundred_plus_goal_complete": false,
+    "scores": 0,
+    "submissions": 0
+  },
+  "independent_original_tool_review": {
+    "file_sha256": "bb5ae9585efc3eff7a97bad4c056fabcb488ffafa33ae988cbcc42efa51e5770",
+    "record": {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--pull",
+        "never",
+        "--name",
+        "loop-tool-review-5f7bfda21eb4",
+        "--network",
+        "none",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--pids-limit",
+        "128",
+        "--memory",
+        "2g",
+        "--cpus",
+        "2",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev,size=268435456",
+        "--env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "--env",
+        "OMP_NUM_THREADS=1",
+        "--env",
+        "OPENBLAS_NUM_THREADS=1",
+        "--env",
+        "MKL_NUM_THREADS=1",
+        "--volume",
+        "/home/username/loop-engine/.loop-engine-dev/kaggle-campaign-20260905.3Vmzbq/public-tool-workspace/attempt-1:/home/username/loop-engine/.loop-engine-dev/kaggle-campaign-20260905.3Vmzbq/public-tool-workspace/attempt-1:ro",
+        "--volume",
+        "/home/username/loop-engine/.loop-engine-dev/kaggle-campaign-20260905.3Vmzbq/independent-tool-review/probe_tool.py:/review/probe.py:ro",
+        "--workdir",
+        "/home/username/loop-engine/.loop-engine-dev/kaggle-campaign-20260905.3Vmzbq/public-tool-workspace/attempt-1",
+        "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+        "/home/username/loop-engine/.loop-engine-dev/kaggle-campaign-20260905.3Vmzbq/public-tool-workspace/attempt-1/.venv/bin/python",
+        "-B",
+        "/review/probe.py",
+        "--project-root",
+        "/home/username/loop-engine/.loop-engine-dev/kaggle-campaign-20260905.3Vmzbq/public-tool-workspace/attempt-1"
+      ],
+      "container_exit_code": 0,
+      "driver_sha256": "42145838a5316c640e92a257d6479605e023d00b6dcb4557524a6f0aa107cb0d",
+      "findings": {
+        "all_passed": false,
+        "baseline_metrics_synthetic_field": true,
+        "checks": [
+          {
+            "check": "numeric_binary_baseline_completes",
+            "observed": {
+              "error": "",
+              "exit_code": 0,
+              "output_rows": 4
+            },
+            "passed": true
+          },
+          {
+            "check": "cross_validation_fits_preprocessing_on_fold_training_rows",
+            "observed": {
+              "imputer_fit_rows": [
+                120
+              ],
+              "limitation": "fit-size instrumentation is not a complete dataflow leakage proof",
+              "requested_folds": 2,
+              "training_rows": 120
+            },
+            "passed": false
+          },
+          {
+            "check": "sample_id_reordering_preserves_prediction_mapping",
+            "observed": {
+              "error": "",
+              "exit_code": 0,
+              "keyed_predictions_equal": false,
+              "sample_order_preserved": true
+            },
+            "passed": false
+          },
+          {
+            "check": "same_length_wrong_sample_id_set_is_refused",
+            "observed": {
+              "error": "",
+              "exit_code": 0,
+              "output_created": true
+            },
+            "passed": false
+          },
+          {
+            "check": "identifier_lexical_values_preserve_leading_zeros",
+            "observed": {
+              "error": "",
+              "exit_code": 0,
+              "literal_identifiers_equal": false
+            },
+            "passed": false
+          },
+          {
+            "check": "bounded_high_cardinality_categorical_input_completes",
+            "observed": {
+              "error": "Unexpected error: Sparse data was passed for X, but dense data is required. Use '.toarray()' to convert to a dense numpy array.\n",
+              "exit_code": 1,
+              "training_rows": 120,
+              "unique_training_categories": 120
+            },
+            "passed": false
+          }
+        ],
+        "passed": 1,
+        "record_type": "independent_generated_tabular_review/v1",
+        "scope": "synthetic_offline_adversarial_checks_only",
+        "source_review_limits": [
+          "No competition data was read.",
+          "No model or Kaggle call was made.",
+          "No generated source was repaired.",
+          "This is independent source testing, not promotion or source qualification."
+        ],
+        "total": 6
+      },
+      "generated_source_edits": 0,
+      "image": "python@sha256:2407c61b1a18067393fecd8a22cf6fceede893b6aaca817bf9fbfe65e33614a3",
+      "kaggle_calls": 0,
+      "model_calls": 0,
+      "probe_sha256": "3d83c84ac44427cbd802a7ec562746ef5940daea4fdd6ef22000ff898d427bdc",
+      "project_root": "/home/username/loop-engine/.loop-engine-dev/kaggle-campaign-20260905.3Vmzbq/public-tool-workspace/attempt-1",
+      "record_type": "independent_tool_review_execution/v1",
+      "source_files": [
+        {
+          "bytes": 3986,
+          "path": "README.md",
+          "sha256": "327c864cb82653112ea0c93f795ac29786e7e38a327ad895ef2d356fc5f45401"
+        },
+        {
+          "bytes": 73,
+          "path": "requirements.txt",
+          "sha256": "54c2ae2f1021cecca77de68b1b35f26bb329372acb3413545d0e6cc18ce37270"
+        },
+        {
+          "bytes": 89,
+          "path": "synthetic/__init__.py",
+          "sha256": "0e4ebde92e3cae0826ea78f199b242035d539516d7dff8e62dcc73f4d4a65092"
+        },
+        {
+          "bytes": 7344,
+          "path": "synthetic/generate_fixtures.py",
+          "sha256": "95d8692f6ec62cba99f6aac17c87a11046503300e8d360516518025689792663"
+        },
+        {
+          "bytes": 95,
+          "path": "tabular_cli/__init__.py",
+          "sha256": "e46771045594987dc6e824e8e01179bc840855c0d158893d8a9f9329548168cd"
+        },
+        {
+          "bytes": 148,
+          "path": "tabular_cli/__main__.py",
+          "sha256": "bf416eafa326671351d21e5e436e683ca475cb5ad78c480b0a57461e63c8ff86"
+        },
+        {
+          "bytes": 6451,
+          "path": "tabular_cli/cli.py",
+          "sha256": "b3853b4e2d639ba277add656ffdc547e03338a5225d7f02af2f42d2679cbe6b4"
+        },
+        {
+          "bytes": 4239,
+          "path": "tabular_cli/data.py",
+          "sha256": "ba8de078d9acbaa65d556495cd412a5c00f36b728e0d14945df0a4f9faf03339"
+        },
+        {
+          "bytes": 3258,
+          "path": "tabular_cli/evaluate.py",
+          "sha256": "4d0ac3b95710b9d68b288493b5c7fedaee56f5b1350b75c5dc759b5c495bb6a9"
+        },
+        {
+          "bytes": 2105,
+          "path": "tabular_cli/model.py",
+          "sha256": "caab65c5517d09068c461d51a7ed2f63f06c35f27f9b857e601863c3e41f5326"
+        },
+        {
+          "bytes": 3307,
+          "path": "tabular_cli/preprocess.py",
+          "sha256": "10c6262cfa0aee56f173b754df506e9d34af4a55f77dcec8168f33cb4605a963"
+        },
+        {
+          "bytes": 59,
+          "path": "tests/__init__.py",
+          "sha256": "54b9af2762ff3d27e8551b5a93dee54cbfb43f238d1bcb4ebcb8aa1c512d7e23"
+        },
+        {
+          "bytes": 3031,
+          "path": "tests/run_tests.py",
+          "sha256": "444cd79ca30efb51df05d706993bf43d7859560515685fc258fed0de90b388a7"
+        },
+        {
+          "bytes": 4872,
+          "path": "tests/test_categorical_missing_unseen.py",
+          "sha256": "cbeff7cb7a0a50ad7634fad0836d3ebbe658497ac8153a6d39662840ea28804b"
+        },
+        {
+          "bytes": 3071,
+          "path": "tests/test_positive.py",
+          "sha256": "77a3b12b51e0ab60ee5f1dcfb36a28026d7a831a309b2cbe8b08c4c208f17e7f"
+        },
+        {
+          "bytes": 3653,
+          "path": "tests/test_probabilities.py",
+          "sha256": "ca340417134ba003514c0bef226e236b45b0c6cf6948e6576a6b2949759cfcff"
+        },
+        {
+          "bytes": 4774,
+          "path": "tests/test_schema_rejection.py",
+          "sha256": "056d8fc36aa563836b709da158cc58bf43fd09de603a48bb7bf9104c752ddf4a"
+        }
+      ],
+      "source_hashes_unchanged": true,
+      "source_manifest_digest": "9f384aaf6fe3ef181154fc6caf48d4a6408055c94539ba1a794a163ea70fa7e0"
+    }
+  },
+  "launch_policy_correction": {
+    "agent_imposed_call_ceiling": 50,
+    "default_contract_fields": [
+      "ModelExecution.max_model_calls",
+      "SolveRequest.max_passes"
+    ],
+    "future_model_call_ceiling_unless_user_specifies": null,
+    "future_pass_ceiling_unless_user_specifies": null,
+    "monetary_ceiling": null,
+    "original_stopped_run_preserved": true,
+    "real_provider_calls_in_regression": 0,
+    "regression_scope": "51 offline fixture calls with unset ceiling; explicit-budget refusal remains tested",
+    "user_requested_that_ceiling": false
+  },
+  "limitations": [
+    "The initial model-produced tests missed five independent counterexamples.",
+    "The repaired candidate is not independently accepted or executed.",
+    "Static source binding cannot prove behavior or grant effects.",
+    "Source qualification and data-use approval remain unresolved.",
+    "No universal solving, assistance benefit, or 100-task grading claim."
+  ],
+  "managed_handoff": {
+    "artifact_digest": "746972d63d45a1bcf5966a0244eee5bbf4efa4ebb80b44efa56bdd3f63095a1b",
+    "record_id": "session.kaggle-pilot-20260905",
+    "revision": "2"
+  },
+  "record_type": "kaggle_pilot_continuation_checkpoint/v1",
+  "scope": "Independent rejection, stopped repair, and offline continuation-boundary correction. No resumed tool execution or Kaggle score is claimed.",
+  "source_head_before_correction": "7d624665435a893564638b7294b46bf559e48f00",
+  "static_screen_correction": {
+    "assessment": "unresolved",
+    "checkpoint_replay_scope": "16 digest-verified generated file bodies plus 13 path-only input placeholders; no generated code execution",
+    "focused_checks": {
+      "passed": 34,
+      "total": 34
+    },
+    "runtime_use_verified": false,
+    "source_path": "src/loop_engine/core/generated_project.py",
+    "source_sha256": "5fcfd1b9d05a83f27ce3f1909851c7183a6cf08c869c51793f5a59908ae53174",
+    "task_acceptance": "not_evaluated"
+  },
+  "stopped_repair": {
+    "accounting_complete": true,
+    "checkpoints": [
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 9555,
+          "digest": "8177d2fe62f041156988b8ff3507363a09d9358c6112c9cb6a4aa6bd26de374b",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/81/8177d2fe62f041156988b8ff3507363a09d9358c6112c9cb6a4aa6bd26de374b"
+        },
+        "byte_count": 9555,
+        "contract_digest": "b57ca3bd1e69ac19d4687bbbbf800be5ae20cc682750b83822fdc95a397fedc7",
+        "digest": "8177d2fe62f041156988b8ff3507363a09d9358c6112c9cb6a4aa6bd26de374b",
+        "path": "tabular_cli/cli.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 5402,
+          "digest": "5bf777b3fadb3df44a70ef507ddf9762b52a5468b303c1c58066446759e36178",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/5b/5bf777b3fadb3df44a70ef507ddf9762b52a5468b303c1c58066446759e36178"
+        },
+        "byte_count": 5402,
+        "contract_digest": "49e5d5eddac8a972f303ebabd39444e2c9fe5009edbd95843fad2c17d876962c",
+        "digest": "5bf777b3fadb3df44a70ef507ddf9762b52a5468b303c1c58066446759e36178",
+        "path": "tabular_cli/data.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 3785,
+          "digest": "565326e83ce09c56ee9f451e876dc8402bd66e38dc14888c55709d2075a172c7",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/56/565326e83ce09c56ee9f451e876dc8402bd66e38dc14888c55709d2075a172c7"
+        },
+        "byte_count": 3785,
+        "contract_digest": "587f0fbdeadaf5a478322a4aa9648993341b10502e26b28382c0f0e14dd0d908",
+        "digest": "565326e83ce09c56ee9f451e876dc8402bd66e38dc14888c55709d2075a172c7",
+        "path": "tabular_cli/preprocess.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 2432,
+          "digest": "5f315a7fbd5a560bb128a40143774fd4a6b0da80b8102c280bf246987ef7d2f5",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/5f/5f315a7fbd5a560bb128a40143774fd4a6b0da80b8102c280bf246987ef7d2f5"
+        },
+        "byte_count": 2432,
+        "contract_digest": "4dcea76897dde95cefe21f061337938e6b57dd2a54f50db7b6fe18cab908e871",
+        "digest": "5f315a7fbd5a560bb128a40143774fd4a6b0da80b8102c280bf246987ef7d2f5",
+        "path": "tabular_cli/model.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 4951,
+          "digest": "d26c49b2dbb43d3313c41136b09a1344c2af8c700c678c29e4bc254f57860dca",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/d2/d26c49b2dbb43d3313c41136b09a1344c2af8c700c678c29e4bc254f57860dca"
+        },
+        "byte_count": 4951,
+        "contract_digest": "0ee95c41e44f9aaba90fbb54f9389442f3be3e2a6a3a17edd585de7586ff6bac",
+        "digest": "d26c49b2dbb43d3313c41136b09a1344c2af8c700c678c29e4bc254f57860dca",
+        "path": "tabular_cli/evaluate.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 3161,
+          "digest": "9c7c8546175519d7d6c3a58e65b1484854e75fca200f23c3b7294762107e9f55",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/9c/9c7c8546175519d7d6c3a58e65b1484854e75fca200f23c3b7294762107e9f55"
+        },
+        "byte_count": 3161,
+        "contract_digest": "90edb9c8b7579e9bc6467f20aa15b2441c2468e2d56777cb7ac08b0cc0fc52e2",
+        "digest": "9c7c8546175519d7d6c3a58e65b1484854e75fca200f23c3b7294762107e9f55",
+        "path": "tests/run_tests.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 4151,
+          "digest": "43eada8f3fe1a2deaf014434aedaedc86cf274bf96186ca7d85861bef2837e4b",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/43/43eada8f3fe1a2deaf014434aedaedc86cf274bf96186ca7d85861bef2837e4b"
+        },
+        "byte_count": 4151,
+        "contract_digest": "8f00353106bfc3f3cdbaebc206cee57cf4bfa7b5383b190b465aa17fceec7b5e",
+        "digest": "43eada8f3fe1a2deaf014434aedaedc86cf274bf96186ca7d85861bef2837e4b",
+        "path": "tests/test_cv_leak_row_identity.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 6845,
+          "digest": "dc0ee589d6299cc6a35aff2eaa6e853be123fa69823f6d59f5764f78c6646162",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/dc/dc0ee589d6299cc6a35aff2eaa6e853be123fa69823f6d59f5764f78c6646162"
+        },
+        "byte_count": 6845,
+        "contract_digest": "51d2408d3fba0dec66d62a290194e4884a163de010b49141d52b87bfa5bdad74",
+        "digest": "dc0ee589d6299cc6a35aff2eaa6e853be123fa69823f6d59f5764f78c6646162",
+        "path": "tests/test_submission_alignment.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 4569,
+          "digest": "3575ba92506d0f13175463c7ef670315d14bc30aa7f7e5a84727ae65eec2351f",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/35/3575ba92506d0f13175463c7ef670315d14bc30aa7f7e5a84727ae65eec2351f"
+        },
+        "byte_count": 4569,
+        "contract_digest": "29bccca72f7ca53fee2b3467b5a14b74b1f0b43f98256a61ea6f44981d2a1d1e",
+        "digest": "3575ba92506d0f13175463c7ef670315d14bc30aa7f7e5a84727ae65eec2351f",
+        "path": "tests/test_high_cardinality_sparse.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 4998,
+          "digest": "7702f34ee2e3c97c5a65d5454e8cb605fa7be7b05af8aac1c66a622c4501d5b1",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/77/7702f34ee2e3c97c5a65d5454e8cb605fa7be7b05af8aac1c66a622c4501d5b1"
+        },
+        "byte_count": 4998,
+        "contract_digest": "5b6f7ac382d1b26e6a2a5988fd6404ab2a4483e08cf7c6ec24c5e2750f7802b5",
+        "digest": "7702f34ee2e3c97c5a65d5454e8cb605fa7be7b05af8aac1c66a622c4501d5b1",
+        "path": "tests/test_provenance_labeling.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 78,
+          "digest": "530d312a8aea757c540e8188d9f25e87853f0ef4ae9d4518969a3a0cc58e48ee",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/53/530d312a8aea757c540e8188d9f25e87853f0ef4ae9d4518969a3a0cc58e48ee"
+        },
+        "byte_count": 78,
+        "contract_digest": "e6c17ea0318778769bdd00ea1c78d4813bbabc020424bb0f57224d9f9189aa50",
+        "digest": "530d312a8aea757c540e8188d9f25e87853f0ef4ae9d4518969a3a0cc58e48ee",
+        "path": "synthetic/__init__.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 5548,
+          "digest": "6087170f99503e7787f89b09d0e09ed79e4658cb2952fa184d85efa4e9229a30",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/60/6087170f99503e7787f89b09d0e09ed79e4658cb2952fa184d85efa4e9229a30"
+        },
+        "byte_count": 5548,
+        "contract_digest": "d81eab1719334fed483939e0ae3ee4168694ec921889387377f781086ef1fd66",
+        "digest": "6087170f99503e7787f89b09d0e09ed79e4658cb2952fa184d85efa4e9229a30",
+        "path": "synthetic/generate_fixtures.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 2113,
+          "digest": "1af70ca7175c7e6335686ad46b351db396bd66e522e025874a88bc0ff8eefb7f",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/1a/1af70ca7175c7e6335686ad46b351db396bd66e522e025874a88bc0ff8eefb7f"
+        },
+        "byte_count": 2113,
+        "contract_digest": "56b13aeaec53e8e1cf7bbc04c9849447d1f2f5db0c4ae3a56ad7bf06ec4b9122",
+        "digest": "1af70ca7175c7e6335686ad46b351db396bd66e522e025874a88bc0ff8eefb7f",
+        "path": "scripts/prepare_workspace.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 2343,
+          "digest": "61d4713f154e496309f727063815ef101e4868892208f1d114076dbbba28f13a",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/61/61d4713f154e496309f727063815ef101e4868892208f1d114076dbbba28f13a"
+        },
+        "byte_count": 2343,
+        "contract_digest": "97461bb72e81bfd5ede8a86891473ed8c639d86568d9a5f0ecf756b391ce3b7d",
+        "digest": "61d4713f154e496309f727063815ef101e4868892208f1d114076dbbba28f13a",
+        "path": "scripts/run_synthetic.py"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 73,
+          "digest": "54c2ae2f1021cecca77de68b1b35f26bb329372acb3413545d0e6cc18ce37270",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/54/54c2ae2f1021cecca77de68b1b35f26bb329372acb3413545d0e6cc18ce37270"
+        },
+        "byte_count": 73,
+        "contract_digest": "67f8189588091f41f497fd7c89509f2a9a5197e8bcccb9f0ce7896369303aac1",
+        "digest": "54c2ae2f1021cecca77de68b1b35f26bb329372acb3413545d0e6cc18ce37270",
+        "path": "requirements.txt"
+      },
+      {
+        "artifact_ref": {
+          "artifact_kind": "generated_project_file_checkpoint",
+          "byte_count": 6243,
+          "digest": "cc046e3d93ba7b54eb85e5aaec14e95c09f0be3db0ba5cc7980bd864d21cc17d",
+          "encoding": "utf-8",
+          "media_type": "text/plain",
+          "object_key": "sha256/cc/cc046e3d93ba7b54eb85e5aaec14e95c09f0be3db0ba5cc7980bd864d21cc17d"
+        },
+        "byte_count": 6243,
+        "contract_digest": "bab7daa6723534d3e32b2649bfae6714300b91d3ec4d3e4b10ae9bd0fec1bd73",
+        "digest": "cc046e3d93ba7b54eb85e5aaec14e95c09f0be3db0ba5cc7980bd864d21cc17d",
+        "path": "README.md"
+      }
+    ],
+    "elapsed_seconds": 823.166,
+    "input_tokens": 1764229,
+    "invoiced_cost": null,
+    "output_tokens": 211958,
+    "physical_model_calls": 50,
+    "project_attempts_executed": 0,
+    "remaining_binding_gaps": [
+      "tabular_cli/__init__.py",
+      "tests/__init__.py"
+    ],
+    "run_history": {
+      "broken_at": [],
+      "chain_intact": true,
+      "events": 3507,
+      "head_digest": "7fcd2edfcaf7f55383a11625c869d929f41663a80688864265297f3bcc18eb82",
+      "path": "/home/username/loop-engine/.loop-engine-dev/kaggle-campaign-20260905.3Vmzbq/repair-runs/adaptive-bae025a8a2bb9c6dc9ab00a6",
+      "product_outcome_bound": true,
+      "product_outcome_digest": "dc87bf43dfc005112863e2a458ae80f86d087140d67f4fc4e9d12d788ba67a4d",
+      "run_id": "adaptive-bae025a8a2bb9c6dc9ab00a6",
+      "terminal_code": "BUDGET_EXHAUSTED"
+    },
+    "run_id": "adaptive-bae025a8a2bb9c6dc9ab00a6",
+    "runtime_terminal": "BUDGET_EXHAUSTED",
+    "task_sha256": "2713c314b6cad680bb49895b50efa550122951cf17c0637455523c826f5d131c"
+  },
+  "offline_verification": {
+    "all_passed": true,
+    "command_count": 10,
+    "commands": [
+      {
+        "command": [
+          "python3",
+          "-m",
+          "loop_engine",
+          "--self-test",
+          "--format",
+          "json"
+        ],
+        "cwd": "/home/username/loop-engine",
+        "elapsed_seconds": 177.20212048804387,
+        "exit_code": 0,
+        "phase": "cap-continuation-source-selftest",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/cap-continuation-source-selftest-record.json",
+        "record_sha256": "6a54dcfe4e56100d51da7b89359302ab2b3914e382fc57f31de9264b1c03116b",
+        "result_summary": {
+          "all_passed": true,
+          "failures": [],
+          "optional_adapters_not_tested": [],
+          "passed": 2838,
+          "provider_calls_made": 0,
+          "total": 2838
+        },
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/cap-continuation-source-selftest-stderr.txt",
+        "stderr_sha256": "1b0f033140599f719faae89f690997f280ac680b665b11e0dab5cf874c9a1a4f",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/cap-continuation-source-selftest-stdout.txt",
+        "stdout_sha256": "cfc26400eb48a63fbc2fa85ad1a1cca7662651a6851303b91a3e22606b3b0a2f"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "loop_engine",
+          "--conformance"
+        ],
+        "conformance_passed": 27,
+        "cwd": "/home/username/loop-engine",
+        "elapsed_seconds": 33.01607125205919,
+        "exit_code": 0,
+        "phase": "cap-continuation-conformance",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/cap-continuation-conformance-record.json",
+        "record_sha256": "611f0547e52a2a322fd135e5dc71bb7fb21ae121eab0e60da48b0421c9bf4436",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/cap-continuation-conformance-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/cap-continuation-conformance-stdout.txt",
+        "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "build",
+          "--no-isolation",
+          "--outdir",
+          "/tmp/loop-engine-cap-continuation-package.PIS1i6/dist"
+        ],
+        "cwd": "/home/username/loop-engine",
+        "elapsed_seconds": 3.59245152072981,
+        "exit_code": 0,
+        "phase": "cap-continuation-build",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/cap-continuation-build-record.json",
+        "record_sha256": "00f1d8532b2671c0e5dccf5419a6499cbb41c61cb456961a51bff97b04f3e24a",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/cap-continuation-build-stderr.txt",
+        "stderr_sha256": "b181eea8a45f807f5fa1607f003eb1ae5363271ec186d4780a7fd3630cdea57e",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/cap-continuation-build-stdout.txt",
+        "stdout_sha256": "2aff758b06b2801a1567a6d84b8f515545d8eb96d188cefa07f3df0a0ce910c0"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "venv",
+          "/tmp/loop-engine-cap-continuation-package.PIS1i6/wheel-env"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 2.484155248850584,
+        "exit_code": 0,
+        "phase": "wheel-cap-continuation-venv",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-venv-record.json",
+        "record_sha256": "93e28d85016ce23f2b0a560000f75fb29d2b0896e06169a09581d8c5962693f9",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-venv-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-venv-stdout.txt",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-cap-continuation-package.PIS1i6/wheel-env/bin/python",
+          "-m",
+          "pip",
+          "install",
+          "--no-index",
+          "--find-links",
+          "/tmp/loop-engine-final-verification.W0wq3F/dependency-wheelhouse",
+          "/tmp/loop-engine-cap-continuation-package.PIS1i6/dist/loop_engine-0.1.0-py3-none-any.whl"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 1.97924988809973,
+        "exit_code": 0,
+        "phase": "wheel-cap-continuation-install",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-install-record.json",
+        "record_sha256": "6a3944546081b66c0f9e16bebb2f413fcd4e101a5b8f7a06fd76b88bfacddeb5",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-install-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-install-stdout.txt",
+        "stdout_sha256": "30f7e63cbee7c8165500c61fff08ae9615c66748d17737155561f7fe2cd2c0f0"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-cap-continuation-package.PIS1i6/wheel-env/bin/python",
+          "-m",
+          "loop_engine",
+          "--self-test",
+          "--format",
+          "json"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 148.22353210859,
+        "exit_code": 0,
+        "phase": "wheel-cap-continuation-selftest",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-selftest-record.json",
+        "record_sha256": "564f2cd76e1a5f48fedcb0affe129e0e7ef774f44dbf1041860d13e89c6d816e",
+        "result_summary": {
+          "all_passed": true,
+          "failures": [],
+          "optional_adapters_not_tested": [
+            "duckdb",
+            "mcp",
+            "model2vec",
+            "numpy",
+            "opentelemetry-sdk",
+            "pandas",
+            "sklearn"
+          ],
+          "passed": 2793,
+          "provider_calls_made": 0,
+          "total": 2793
+        },
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-selftest-stderr.txt",
+        "stderr_sha256": "0cb20fced0316d3f245f44e20075956fb38a253b029975ba43012a6273d6a1f5",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-selftest-stdout.txt",
+        "stdout_sha256": "f9a91cac1d27f1bbaafad2634dead8895c6c33cb4cb958eac46f359d4b23c734"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-cap-continuation-package.PIS1i6/wheel-env/bin/python",
+          "-m",
+          "loop_engine",
+          "--conformance"
+        ],
+        "conformance_passed": 27,
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 21.8009777572006,
+        "exit_code": 0,
+        "phase": "wheel-cap-continuation-conformance",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-conformance-record.json",
+        "record_sha256": "8f5ec2057f0faa320d2cf78b8c4695355c6677620c3481b084c29765946cd236",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-conformance-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-conformance-stdout.txt",
+        "stdout_sha256": "86162ce7b71588537a69f202f6d389c6824872853b19d292361dee887fedf1c5"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-cap-continuation-package.PIS1i6/wheel-env/bin/python",
+          "/tmp/loop-engine-cap-continuation-package.PIS1i6/package_integrity.py"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 0.2862841612659395,
+        "exit_code": 0,
+        "phase": "wheel-cap-continuation-parity",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-parity-record.json",
+        "record_sha256": "b0388fe9e375f6617d424d879f18295d3c7bbb72a23c217ea4700e29d999ef8d",
+        "result_summary": {
+          "all_passed": true
+        },
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-parity-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-parity-stdout.txt",
+        "stdout_sha256": "c80a7834a5758c027be38dbba7e290ea78bd59ebd3491b25662ac89637ab833f"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-cap-continuation-package.PIS1i6/wheel-env/bin/python",
+          "-m",
+          "pip",
+          "check"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 0.27874205773696303,
+        "exit_code": 0,
+        "phase": "wheel-cap-continuation-pip-check",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-pip-check-record.json",
+        "record_sha256": "80a7fb16803654274364d944638a19ba285d0a71397785d5db71648a2412c718",
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-pip-check-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-pip-check-stdout.txt",
+        "stdout_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+      },
+      {
+        "command": [
+          "/tmp/loop-engine-cap-continuation-package.PIS1i6/wheel-env/bin/python",
+          "/tmp/loop-engine-cap-continuation-package.PIS1i6/package_integrity.py"
+        ],
+        "cwd": "/tmp/loop-engine-harness-memory-verification.ZybX3K/outside-repository",
+        "elapsed_seconds": 0.27274968894198537,
+        "exit_code": 0,
+        "phase": "wheel-cap-continuation-final-parity",
+        "record_path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-final-parity-record.json",
+        "record_sha256": "4b4f962e1cf6076ef608baf84dbb7c92aad5bf78417dae12d1f6f8e4b24e3836",
+        "result_summary": {
+          "all_passed": true
+        },
+        "source_changes": [],
+        "source_file_count": 475,
+        "stderr": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-final-parity-stderr.txt",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "/tmp/loop-engine-harness-memory-verification.ZybX3K/wheel-cap-continuation-final-parity-stdout.txt",
+        "stdout_sha256": "c80a7834a5758c027be38dbba7e290ea78bd59ebd3491b25662ac89637ab833f"
+      }
+    ],
+    "driver": {
+      "os_network_sandbox_claimed": false,
+      "path": "/tmp/loop-engine-harness-memory-verification.ZybX3K/verify.py",
+      "pip_network_disabled": true,
+      "provider_credentials_stripped": true,
+      "sha256": "c4d06c6cb48f2146692318046bc4732fed3a3265c1e1625d3d676c7110331a8a"
+    },
+    "head_at_driver_completion": "7d624665435a893564638b7294b46bf559e48f00",
+    "integrity_checker": {
+      "path": "/tmp/loop-engine-cap-continuation-package.PIS1i6/package_integrity.py",
+      "sha256": "17576c6fa228e105e14d3e026325ff3d7eec39f283ef95b63c7706780b16d489"
+    },
+    "known_separate_failures": {
+      "ci_green_claimed": false,
+      "hardcoding_semantic_triage_complete": false,
+      "note": "Earlier exact-SHA CI failures remain separate; this verification neither refreshed the baseline nor reran or cleared that audit gate.",
+      "prior_audit_artifact_digest": "3630778aeab4b676d356248173ff3eb7cfd112f48d47d62aff3cfebb39203657",
+      "prior_new_high_finding_count": 187
+    },
+    "limitations": [
+      "Python 3.14.4 executed; Python 3.10 was not run in this clean environment.",
+      "Clean wheel installs base dependencies only; optional adapter omissions remain explicit.",
+      "No live provider/Kaggle calls, downloads, submissions, or task acceptance are established by these offline checks."
+    ],
+    "package_directory": "/tmp/loop-engine-cap-continuation-package.PIS1i6",
+    "record_type": "cap_continuation_offline_verification/v1",
+    "runtime_changes_since_previous_verified_snapshot": {
+      "src/loop_engine/code_nodes/solution_model_port.py": {
+        "after": "494fd995f14036ecc91885a9f860401955393d4465daed0dde24a4ee65e6edd6",
+        "before": "553e795881752212b8eff40feed1668815353187dc83f9d86f2190cfd65e74f3"
+      },
+      "src/loop_engine/core/generated_project.py": {
+        "after": "5fcfd1b9d05a83f27ce3f1909851c7183a6cf08c869c51793f5a59908ae53174",
+        "before": "cdeef326b56495ea1e15bbef1497d0b91e39cff0fb8775f39fbf76be6af6306b"
+      }
+    },
+    "runtime_parity": {
+      "all_passed": true,
+      "differences": {
+        "source_vs_installed": [],
+        "source_vs_sdist": [],
+        "source_vs_tested": [],
+        "source_vs_wheel": []
+      },
+      "installed_root": "/tmp/loop-engine-cap-continuation-package.PIS1i6/wheel-env/lib/python3.14/site-packages/loop_engine",
+      "network_calls": 0,
+      "provider_calls": 0,
+      "python": "3.14.4 (main, Jun 18 2026, 14:25:02) [GCC 15.2.0]",
+      "record_type": "package_runtime_integrity/v1",
+      "runtime_file_counts": {
+        "installed": 475,
+        "sdist": 475,
+        "source": 475,
+        "tested": 475,
+        "wheel": 475
+      },
+      "sdist_sha256": "8a613c59537482b06d14c672460f15afa745c8a158a7ffd5667171f267358fed",
+      "source_map_sha256": "92373d5c283038d76d0dd43ba00b4002b5db006eeb920b03b8c18e437fcefed2",
+      "tested_snapshot_sha256": "15f8e6364e90e519f228a318e2aa41a42cc7a2e77d933aa87a3fe442e3121f20",
+      "wheel_sha256": "a13e6779bb99c78ebb98eb10dfd0cdad34ea86a070a146a05ab9bf1dbcd6b531"
+    },
+    "scope": "Only the listed offline source/package commands; not a CI-green or task-completion claim.",
+    "source_conformance": 27,
+    "source_self_test": {
+      "all_passed": true,
+      "failures": [],
+      "optional_adapters_not_tested": [],
+      "passed": 2838,
+      "provider_calls_made": 0,
+      "total": 2838
+    },
+    "wheel_conformance": 27,
+    "wheel_self_test": {
+      "all_passed": true,
+      "failures": [],
+      "optional_adapters_not_tested": [
+        "duckdb",
+        "mcp",
+        "model2vec",
+        "numpy",
+        "opentelemetry-sdk",
+        "pandas",
+        "sklearn"
+      ],
+      "passed": 2793,
+      "provider_calls_made": 0,
+      "total": 2793
+    }
+  }
+}

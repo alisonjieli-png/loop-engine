@@ -162,7 +162,7 @@ The candidate needs seven independent behavioral probe kinds:
 |---|---|
 | Initiation | It starts inside the declared region and abstains outside it. |
 | Termination | It stops at the exact verified condition. |
-| Interruption | Cancellation or pause preserves valid state and receipts. |
+| Interruption | Cancellation or pause preserves valid state and records. |
 | Outcome devaluation | A changed goal, reward, or cost can make the old procedure inapplicable. |
 | Negative transfer | A surface-similar but incompatible case is refused or escalated. |
 | Fresh control | The procedure is compared with a branch that receives no derived assistance. |

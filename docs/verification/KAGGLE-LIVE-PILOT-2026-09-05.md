@@ -148,3 +148,61 @@ Then resolve the recorded source and evaluator gates, run on approved local
 competition data, and bind one submission to its returned Kaggle score. Only
 after that result should the campaign expand. The 100+ graded-task target,
 unseen-task generalization, and assisted-versus-fresh benefit remain unproven.
+
+## Follow-up: withdrawn launch cap and preserved repair
+
+The independent Docker probes passed 1 of 6 checks. They reproduced leakage,
+prediction/ID misalignment, acceptance of a wrong ID set, loss of leading zeros
+in identifiers, and a sparse-input failure. The original source hashes did not
+change. Passing the eight generated tests was a false acceptance for the broader
+task contract.
+
+The repair run `adaptive-bae025a8a2bb9c6dc9ab00a6` made 50 physical calls and
+stopped at an agent-imposed launch ceiling. The user did not request that
+ceiling and explicitly rejected it. This was an operator mistake, not a
+provider requirement or product default. `ModelExecution.max_model_calls` and
+`SolveRequest.max_passes` already default to `None`. Future launches for this
+work must leave them unset unless the user supplies a ceiling. Explicit user
+budgets, effect permissions, and provider capacity remain separate contracts.
+
+An offline regression executes 51 fixture calls through an uncapped model
+session. The separate explicit-budget test still refuses an overrun. No real
+provider was called by these tests, and they do not prove an optimal stopping
+policy.
+
+The stopped repair used 1,764,229 input and 211,958 output tokens in 823.166
+seconds, with complete provider accounting. It executed no project. Its
+3,507-event history and 16 digest-bound generated-file checkpoints remain
+intact. The original `BUDGET_EXHAUSTED` outcome has not been rewritten.
+
+Inspection found a second error: the static input-use screen treated ordinary
+string literals as evidence of file access. It rejected valid composed paths
+in the saved workspace-preparation script. The corrected screen distinguishes
+simple bindings from unresolved computed paths. It retains syntax, network,
+and effect checks; it never certifies runtime input consumption or task
+acceptance. All 34 focused checks pass. A path-only replay of the 16 generated
+files and 13 selected input bindings receives an unresolved assessment instead
+of the false rejection. This replay did not execute the generated code.
+
+The candidate also needs two omitted package-marker input bindings before
+execution. Static-screen admission does not repair those missing inputs or
+qualify the candidate. Continuation should reuse the saved files, resolve the
+bindings, and evaluate the result independently.
+
+GitHub CI exposed older documentation failures. Question IDs were preserved
+while correcting Markdown lists, and nine retired-term matches were corrected.
+The local Markdown check covers 235 files with no issues. CI is still not
+green: 187 high-severity audit findings across 37 paths require semantic review.
+They are findings, not 187 confirmed defects. Neither the baseline nor the
+allowlist was replaced to hide them.
+
+The [continuation evidence](../evidence/kaggle-pilot-continuation-2026-09-05.json)
+preserves the independent counterexamples, stopped-run identity, checkpoints,
+offline verification, and remaining limits. The structured handoff is revision
+2 of `session.kaggle-pilot-20260905`, written through the managed-record tool.
+No competition data, submission, or Kaggle score was added by this follow-up.
+
+The follow-up source suite passed 2,838/2,838 and the clean base wheel passed
+2,793/2,793. Both conformance runs passed 27/27. All 475 runtime file bodies
+matched source, wheel, sdist, and installation. These offline checks made no
+provider calls and do not clear the separate CI audit findings.

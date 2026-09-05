@@ -563,28 +563,65 @@ def workspace_file_byte_limit(
 def validate_generated_project_input_use(
         manifest: GeneratedProjectManifest,
         inputs: tuple[GeneratedProjectInputArtifact, ...]) -> dict:
-    """Reject offline source code that ignores supplied researched inputs."""
+    """Screen static bindings, never certify that an input was consumed.
+
+    Computed paths, helpers and control flow are unresolved, not evidence of
+    an absent input. Only simple direct mismatches or trivial no-input code
+    are rejected here. Sandbox policy, approvals and independent evaluation
+    remain separate requirements for every project admitted by this screen.
+    """
     if not isinstance(manifest, GeneratedProjectManifest):
         raise GeneratedProjectError("input-use validation needs a manifest")
     supplied = tuple(inputs)
+    if any(not isinstance(item, GeneratedProjectInputArtifact) for item in supplied):
+        raise GeneratedProjectError("input-use validation needs typed input artifacts")
+    supplied_paths = {item.path for item in supplied}
+    generated_paths = {item.path for item in manifest.files}
     referenced = set()
     forbidden_imports = set()
     near_misses: set[tuple[str, str]] = set()
+    reader_seen = False
+    unresolved = False
+    indirect = not any(item.path.endswith(".py") for item in manifest.files)
     network_roots = {
         "aiohttp", "ftplib", "http.client", "httpx", "requests", "socket",
         "urllib", "urllib3"}
+    read_methods = {"read_text", "read_bytes", "read", "readline", "readlines"}
+    read_functions = {"open", "read_csv", "read_table", "read_json",
+                      "read_parquet", "read_excel", "load", "copy", "copy2",
+                      "copyfile", "copytree"}
 
-    def note(value: str) -> None:
-        """Record whether one literal reaches a supplied input, or nearly."""
-        for supplied_item in supplied:
-            if supplied_item.path in value:
-                referenced.add(supplied_item.path)
-            elif value and (
-                    supplied_item.path.endswith("/" + value)
-                    or (PurePosixPath(value).name
-                        and PurePosixPath(supplied_item.path).name
-                        == PurePosixPath(value).name)):
-                near_misses.add((value, supplied_item.path))
+    def call_name(node):
+        return (node.id if isinstance(node, ast.Name) else
+                node.attr if isinstance(node, ast.Attribute) else "")
+
+    def literal_path(node):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return node.value
+        if (isinstance(node, ast.Call) and call_name(node.func) in ("Path", "open")
+                and len(node.args) == 1 and not node.keywords):
+            return literal_path(node.args[0])
+        return None
+
+    def note_read(value):
+        nonlocal unresolved
+        if value is None:
+            unresolved = True
+            return
+        value = PurePosixPath(value).as_posix()
+        if value in generated_paths:
+            # Reading a generated requirements file or module is not a bad
+            # reference to an original source with the same basename.
+            unresolved = True
+        elif value in supplied_paths:
+            referenced.add(value)
+        else:
+            matches = {path for path in supplied_paths
+                       if path.endswith("/" + value)
+                       or PurePosixPath(path).name == PurePosixPath(value).name}
+            near_misses.update((value, path) for path in matches)
+            if not matches:
+                unresolved = True
 
     for item in manifest.files:
         if not item.path.endswith(".py"):
@@ -595,45 +632,87 @@ def validate_generated_project_input_use(
             raise GeneratedProjectError(
                 f"generated Python file {item.path!r} does not parse") from exc
         for node in ast.walk(tree):
-            if isinstance(node, ast.Constant) and isinstance(node.value, str):
-                note(node.value)
+            if isinstance(node, (ast.If, ast.For, ast.While, ast.Try,
+                                 ast.FunctionDef, ast.AsyncFunctionDef,
+                                 ast.ClassDef, ast.Lambda, ast.With, ast.AsyncWith)):
+                indirect = True
+            if isinstance(node, ast.Call):
+                name = call_name(node.func)
+                if name == "open":
+                    is_path_method = (isinstance(node.func, ast.Attribute)
+                                      and isinstance(node.func.value, ast.Call)
+                                      and call_name(node.func.value.func) == "Path")
+                    operand = (node.func.value if is_path_method else
+                               node.args[0] if node.args else None)
+                    mode_position = 0 if is_path_method else 1
+                    mode_node = next((item.value for item in node.keywords
+                                      if item.arg == "mode"), None)
+                    if mode_node is None and len(node.args) > mode_position:
+                        mode_node = node.args[mode_position]
+                    mode = "r" if mode_node is None else literal_path(mode_node)
+                    if mode not in ("r", "rt", "rb"):
+                        # Write/update modes are not read evidence. An unknown
+                        # mode or user-defined open method is unresolved too.
+                        indirect = True
+                        continue
+                    if isinstance(node.func, ast.Attribute) and not is_path_method:
+                        indirect = True
+                    reader_seen = True
+                    note_read(literal_path(operand))
+                elif name in read_methods and isinstance(node.func, ast.Attribute):
+                    reader_seen = True
+                    note_read(literal_path(node.func.value))
+                elif name in read_functions:
+                    reader_seen = True
+                    note_read(literal_path(node.args[0]) if node.args else None)
+                elif name == "Path":
+                    indirect = indirect or literal_path(node) is None
+                elif name != "print" or any(not isinstance(arg, ast.Constant)
+                                           for arg in node.args) or node.keywords:
+                    indirect = True
             names = []
             if isinstance(node, ast.Import):
                 names = [entry.name for entry in node.names]
             elif isinstance(node, ast.ImportFrom) and node.module:
                 names = [node.module]
             for name in names:
+                if name not in ("__future__", "pathlib"):
+                    indirect = True
                 if any(name == root or name.startswith(root + ".")
                        for root in network_roots):
                     forbidden_imports.add(name)
     for command in manifest.commands:
         for argument in command.argv:
-            note(argument)
+            if argument in supplied_paths:
+                referenced.add(argument)
+                unresolved = True  # argv binding does not prove the program reads it
     if forbidden_imports:
         raise GeneratedProjectError(
             "offline execute or verify source imports network clients: "
             + ", ".join(sorted(forbidden_imports)))
-    if supplied and not referenced:
-        # Saying only "you ignored the inputs" leaves the model nothing to
-        # act on, and it re-reads the manifest, which states a different path
-        # space and fails again. A live run spent 226 model calls and 32
-        # passes in exactly that circle. So name the literal it used, the
-        # path that literal should have been, and the whole admitted set.
-        detail = ""
-        if near_misses:
-            detail = "; it opens " + ", ".join(
-                f"{value!r}, which is supplied at {path!r}"
-                for value, path in sorted(near_misses)[:6])
+    if supplied and near_misses and not indirect and not unresolved:
+        detail = ", ".join(f"{value!r} differs from supplied {path!r}"
+                           for value, path in sorted(near_misses)[:6])
+        raise GeneratedProjectError("simple direct input binding mismatch: " + detail)
+    if supplied and not reader_seen and not indirect and not unresolved:
         raise GeneratedProjectError(
-            "project ignores every supplied researched input artifact"
-            + detail
-            + ". Read each input at its exact supplied path. Supplied paths: "
-            + str([item.path for item in supplied][:16]))
+            "trivial generated program has no input operation; documentation "
+            "or literal mentions are not input-consumption evidence")
+    assessment = ("not_applicable" if not supplied else "unresolved"
+                  if indirect or unresolved or not referenced else "static_binding_match")
     return {
         "record_type": "generated_project_input_use_validation/v1",
         "supplied_paths": [item.path for item in supplied],
         "referenced_paths": sorted(referenced),
         "offline_network_imports": [],
+        "scope": "static_binding_screen_only",
+        "assessment": assessment,
+        "runtime_use_verified": False,
+        "task_acceptance": "not_evaluated",
+        "verification_required": "sandbox execution and independent evaluator",
+        "unresolved_path_candidates": [
+            {"literal": value, "supplied_path": path}
+            for value, path in sorted(near_misses)[:16]],
         "passed": True,
     }
 
@@ -971,8 +1050,10 @@ def self_test() -> dict:
     tests.append({
         "test": "generated_project_uses_exact_supplied_input_path",
         "passed": input_validation["referenced_paths"]
-        == ["inputs/source-1.csv"],
-        "detail": "researched input is consumed without runtime network",
+        == ["inputs/source-1.csv"]
+        and input_validation["assessment"] == "static_binding_match"
+        and input_validation["runtime_use_verified"] is False,
+        "detail": "static path binding only, not proof of runtime consumption",
     })
     for label, project in (
             ("ignored_input", valid),
@@ -1001,6 +1082,79 @@ def self_test() -> dict:
             "passed": refused,
             "detail": "refused before workspace or command effects",
         })
+    def screen(source, additional_files=(), artifacts=supplied):
+        project = GeneratedProjectManifest.from_mapping({
+            **valid.to_dict(), "files": [
+                {"path": "main.py", "content": source}, *additional_files]})
+        return validate_generated_project_input_use(project, artifacts)
+
+    composed = screen(
+        "from pathlib import Path\nimport shutil\n"
+        "PROJECT_ROOT = Path(__file__).resolve().parents[1]\n"
+        "INPUT_ROOT = PROJECT_ROOT / 'inputs' / 'attempt-1'\n"
+        "EVIDENCE_ROOT = PROJECT_ROOT / 'evidence' / 'original'\n"
+        "shutil.copytree(INPUT_ROOT, EVIDENCE_ROOT)\n"
+        "for relative in ('module.py', 'requirements.txt'):\n"
+        "    (EVIDENCE_ROOT / relative).read_text()\n",
+        ({"path": "requirements.txt", "content": "numpy\n"},),
+        (GeneratedProjectInputArtifact("inputs/attempt-1/module.py", b"original"),
+         GeneratedProjectInputArtifact("inputs/attempt-1/requirements.txt", b"numpy")))
+    tests.append({
+        "test": "composed_input_copytree_and_relative_reads_are_unresolved_not_rejected",
+        "passed": composed["passed"] and composed["assessment"] == "unresolved"
+        and not composed["runtime_use_verified"]
+        and composed["task_acceptance"] == "not_evaluated",
+        "detail": "reconstructed workspace preparation pattern; no symbolic execution",
+    })
+    for label, source in (
+            ("simple_wrong_direct_binding", "from pathlib import Path\nPath('source-1.csv').read_text()\n"),
+            ("unused_path_literal", "value = 'inputs/source-1.csv'\nprint('ok')\n"),
+            ("path_only_in_docstring", "'''inputs/source-1.csv'''\nprint('ok')\n")):
+        try:
+            screen(source)
+            refused = False
+        except GeneratedProjectError:
+            refused = True
+        tests.append({"test": "generated_project_refuses_" + label,
+                      "passed": refused, "detail": "simple static refusal, not inferred runtime behavior"})
+    for label, source in (
+            ("composed_path", "from pathlib import Path\n(Path('inputs') / 'source-1.csv').read_text()\n"),
+            ("cwd_change", "import os\nos.chdir('inputs')\nopen('source-1.csv').read()\n"),
+            ("imported_helper", "from helper import consume\nconsume('source-1.csv')\n"),
+            ("unrecognized_call", "consume_inputs(configuration)\n"),
+            ("dynamic_open_mode", "open('source-1.csv', mode=selected_mode)\n")):
+        assessment = screen(source)
+        tests.append({"test": "generated_project_keeps_" + label + "_unresolved",
+                      "passed": assessment["assessment"] == "unresolved"
+                      and not assessment["runtime_use_verified"],
+                      "detail": "unknown behavior requires execution and independent evaluation"})
+    collision = screen("from pathlib import Path\nPath('requirements.txt').read_text()\n",
+        ({"path": "requirements.txt", "content": "numpy\n"},),
+        (GeneratedProjectInputArtifact("inputs/original/requirements.txt", b"numpy"),))
+    tests.append({"test": "generated_owned_file_is_not_a_wrong_supplied_basename",
+                  "passed": collision["assessment"] == "unresolved"
+                  and not collision["unresolved_path_candidates"],
+                  "detail": "generated requirements have their own path identity"})
+    write_modes = [screen(f"open('source-1.csv', {mode!r})\n")
+                   for mode in ("w", "a", "x", "w+", "r+")]
+    tests.append({"test": "write_or_update_open_modes_are_not_source_read_evidence",
+                  "passed": all(item["assessment"] == "unresolved"
+                                and not item["referenced_paths"]
+                                and not item["unresolved_path_candidates"] for item in write_modes),
+                  "detail": "no source mismatch inferred from an output/update operand"})
+    from types import SimpleNamespace
+    try:
+        _approve_exact(None, SimpleNamespace(request=FileRequest(
+            FileOperation.WRITE, "output.txt", content=b"test")),
+            GeneratedProjectAuthority("test", False, False, False))
+        authority_refused = False
+    except PermissionError:
+        authority_refused = True
+    tests.append({"test": "static_screen_does_not_grant_effects_or_task_acceptance",
+                  "passed": authority_refused and composed["passed"]
+                  and composed["task_acceptance"] == "not_evaluated"
+                  and not composed.get("deterministic_checks_passed", False),
+                  "detail": "consumer stores the screen; effects and task verification remain separate"})
     unsafe = (
         ("path_escape", {**valid.to_dict(), "files": [
             {"path": "../escape.py", "content": ""}]}),

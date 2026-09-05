@@ -64,7 +64,7 @@ First public release.
   solving. An adversarial review found and fixed pagination parsing, authority
   bypass, secret-preview retention, effect ownership, path confinement, and
   result-to-history binding defects. A fresh three-competition canary then
-  recorded four exact approvals, tool receipts, and retrievals in an intact
+  recorded four exact approvals, tool records, and retrievals in an intact
   151-event Run History. No dataset, model call, or submission was used.
 
 - **A fail-closed Kaggle source-qualification layer.** An exact preflight and

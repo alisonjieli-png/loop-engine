@@ -442,7 +442,7 @@ class PageCommandResult:
 
 @dataclass(frozen=True)
 class QualificationRunResult:
-    """Saved campaign record plus its independent Run History receipt."""
+    """Saved campaign record plus its independent Run History report."""
 
     record: dict
     run_history_path: str

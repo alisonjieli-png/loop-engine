@@ -10,7 +10,7 @@ Do not combine it with historical prompts.
 Volatile state belongs in an immutable generated packet that conforms to
 [`session_handoff/v1`](../contracts/session-handoff.schema.json). A packet must
 record the full source revision, worktree digests, explicit ownership claims,
-test receipts, evidence limits, active objective, and next work. It is stale
+test records, evidence limits, active objective, and next work. It is stale
 when its HEAD or worktree snapshot no longer matches. This page does not claim
 that such a packet has been generated.
 

@@ -47,7 +47,7 @@ acquisition therefore needs an explicit selection and storage plan.
 
 The corrected continuation's canonical Run History contains 308 events. It
 includes 49 Intelligence retrieval events, and its digest chain verifies as
-intact. That saved run predates the stricter effect receipts now in the
+intact. That saved run predates the stricter effect records now in the
 preflight source, so it is partial ownership evidence rather than a complete
 network-effect trace. The detailed
 [preflight report](../../docs/verification/KAGGLE-120-ACCESS-PREFLIGHT-2026-09-04.md)

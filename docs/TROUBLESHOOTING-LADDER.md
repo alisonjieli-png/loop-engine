@@ -18,7 +18,7 @@ answer when the cheap explanation is not available.
    tasks?
 3. **Can a better serial order of steps, or more flexible templates, solve
    it** without regressing other tasks?
-4. **Could a Loop-node, mode, step order, receipt, plane, subnode, supervisor,
+4. **Could a Loop, mode, step order, record, plane, subnode, supervisor,
    or other object solve it** without regressing other tasks?
 5. **What is the most generalizable fix** that addresses this instance and any
    unseen task that could reasonably be imagined?
@@ -114,7 +114,7 @@ These are real errors from live runs, put through the ladder.
    changes a terminal code computed after the run.
 3. **Step order or templates?** No. The sequence was correct; it never got to
    run.
-4. **Loop-node, mode, receipt, supervisor?** No. Nothing was missing from the
+4. **Loop, mode, record, supervisor?** No. Nothing was missing from the
    architecture. The runtime already held the evidence — it simply did not
    consult it before naming the failure.
 5. **Most generalizable fix.** A terminal code may name only a layer the run
@@ -163,7 +163,7 @@ These are real errors from live runs, put through the ladder.
    model's reasoning was correct throughout.
 3. **Step order or templates?** No. More steps would have produced more
    passes of the same correct conclusion.
-4. **Loop-node, mode, receipt?** No new plane was needed.
+4. **Loop, mode, record?** No new plane was needed.
 5. **Most generalizable fix.** `core.workspace.read`: a run may read back
    anything it produced, with interpreter line numbers so a reported line can
    be looked up directly, bounded by the measured evidence allowance, refusing

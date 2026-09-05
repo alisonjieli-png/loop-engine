@@ -452,6 +452,23 @@ def self_test() -> dict:
     check("whole_solution_budget_is_fail_closed",
           refused and session.calls_used == 2)
 
+    # Fifty was an operator-imposed pilot guard, not a product default. This
+    # finite fixture checks that omitting a ceiling actually permits later
+    # calls, while the explicit-budget check above still refuses overrun.
+    unlimited_fixture = fixture_model_execution()
+    unlimited = ModelExecution(
+        unlimited_fixture.gateway, unlimited_fixture.config).start_session()
+    unlimited_owner = Loop("uncapped offline Solution owner")
+    unlimited_port = ModelInvocationPort(
+        unlimited, "non_deterministic", unlimited_owner)
+    answers = [unlimited_port(ModelInvocationRequest(f"offline call {index}"))
+               for index in range(51)]
+    check("an_unset_call_ceiling_does_not_stop_at_fifty",
+          len(answers) == 51 and unlimited.calls_used == 51
+          and unlimited.total_tokens_used == 255
+          and all(answer == "fixture answer" for answer in answers),
+          "offline gateway fixture only; no live provider calls")
+
     mismatch_session = fixture_model_execution(FixtureModelExecutionRequest(
         answers=("wrong deployment",), reported_model="unexpected-model",
         max_model_calls=1)).start_session()

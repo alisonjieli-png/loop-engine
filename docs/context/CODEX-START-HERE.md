@@ -118,7 +118,11 @@ For the latest new-task attempt and generalization boundary, first read the
 It records a real provider probe, explicit no-total-token-ceiling authorization,
 source-integrity fixes, and a model-generated tool whose own passing tests missed
 defects found by independent review. No Kaggle score exists in that checkpoint.
-The later repair and source/data-use gates remain separate work. The user's
+Its follow-up preserves the stopped repair and withdraws the agent-imposed
+50-call ceiling. Call and pass limits already support `None`; do not invent a
+replacement ceiling. The static path screen was corrected, but the saved
+candidate still needs input bindings and independent execution checks. CI's
+hardcoding audit also remains unresolved. The user's
 no-monetary-ceiling instruction does not qualify strict token bounds or approve
 raw competition-data export.
 
