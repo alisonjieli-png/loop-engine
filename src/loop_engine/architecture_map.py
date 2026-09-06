@@ -198,7 +198,7 @@ MODULE_MAP = {
         "opencode_step_composition",
         "opencode_step_composition_checks",
         "opencode_step_guard",
-        "opencode_step_layers", "facets",
+        "opencode_step_layers", "step_content", "facets",
         "harness_intelligence_bridge", "intelligence_layers",
         "intelligence_query_contracts",
         "intelligence_portfolio", "intelligence_portfolio_checks",
