@@ -35,6 +35,16 @@ class ActivationStatus(str, Enum):
         }
 
 
+class ActivationHistoryDisposition(str, Enum):
+    """Persistence evidence, independent of an activation's execution status."""
+
+    NOT_PERSISTED = "not_persisted"
+    PERSISTED = "persisted"
+    PERSISTENCE_FAILED = "persistence_failed"
+    UNAVAILABLE = "unavailable"
+    LEGACY_UNRECORDED = "legacy_unrecorded"
+
+
 def _canonical(value: object) -> str:
     return json.dumps(
         value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
@@ -237,6 +247,75 @@ class TriggerEnvelope:
 
 
 @dataclass(frozen=True)
+class ActivationHistoryRef:
+    """An exact attempt's canonical history, not a grant or cached verdict."""
+
+    run_id: str
+    head_digest: str
+    event_count: int
+    activation_id: str
+    attempt: int
+    fencing_token: int
+    loop_id: str
+    definition_ref: LoopDefinitionRef
+    input_ref: LoopValueRef
+    series_digest: str
+    trigger_digest: str
+    terminal_code: str
+    approval_request_id: str
+    approval_record_digest: str
+
+    def __post_init__(self) -> None:
+        for label in ("run_id", "activation_id", "loop_id", "terminal_code",
+                      "approval_request_id"):
+            _identity(label, getattr(self, label))
+        for label in ("head_digest", "series_digest", "trigger_digest",
+                      "approval_record_digest"):
+            _digest(label, getattr(self, label))
+        if any(type(value) is not int or value < 1 for value in (
+                self.event_count, self.attempt, self.fencing_token)):
+            raise ReactiveContractError(
+                "history reference counters must be positive integers")
+        if (not isinstance(self.definition_ref, LoopDefinitionRef)
+                or not isinstance(self.input_ref, LoopValueRef)):
+            raise ReactiveContractError(
+                "history reference needs exact definition and input references")
+
+    def to_dict(self) -> dict:
+        return {
+            "record_type": "activation_history_ref/v1",
+            "run_id": self.run_id, "head_digest": self.head_digest,
+            "event_count": self.event_count,
+            "activation_id": self.activation_id, "attempt": self.attempt,
+            "fencing_token": self.fencing_token, "loop_id": self.loop_id,
+            "definition_ref": self.definition_ref.to_dict(),
+            "input_ref": self.input_ref.to_dict(),
+            "series_digest": self.series_digest,
+            "trigger_digest": self.trigger_digest,
+            "terminal_code": self.terminal_code,
+            "approval_request_id": self.approval_request_id,
+            "approval_record_digest": self.approval_record_digest,
+        }
+
+    @classmethod
+    def from_dict(cls, value: dict) -> "ActivationHistoryRef":
+        expected = {
+            "record_type", "run_id", "head_digest", "event_count",
+            "activation_id", "attempt", "fencing_token", "loop_id",
+            "definition_ref", "input_ref", "series_digest", "trigger_digest",
+            "terminal_code", "approval_request_id", "approval_record_digest",
+        }
+        if (not isinstance(value, dict) or set(value) != expected
+                or value.get("record_type") != "activation_history_ref/v1"):
+            raise ReactiveContractError("history reference has an invalid shape")
+        body = dict(value)
+        body.pop("record_type")
+        body["definition_ref"] = LoopDefinitionRef.from_dict(body["definition_ref"])
+        body["input_ref"] = LoopValueRef.from_dict(body["input_ref"])
+        return cls(**body)
+
+
+@dataclass(frozen=True)
 class ActivationRecord:
     """Current durable projection of one finite activation lifecycle."""
 
@@ -258,6 +337,9 @@ class ActivationRecord:
     terminal_code: str = ""
     failure_code: str = ""
     candidate_refs: tuple[str, ...] = ()
+    history_ref: ActivationHistoryRef | None = None
+    history_disposition: ActivationHistoryDisposition | str = (
+        ActivationHistoryDisposition.NOT_PERSISTED)
 
     def __post_init__(self) -> None:
         for label, value in (("activation_id", self.activation_id),
@@ -289,10 +371,34 @@ class ActivationRecord:
                 and (not self.loop_id or not self.terminal_code):
             raise ReactiveContractError(
                 "completed activation requires Loop and terminal identity")
+        object.__setattr__(self, "history_disposition", _enum(
+            self.history_disposition, ActivationHistoryDisposition,
+            "activation history disposition"))
+        if self.history_ref is not None:
+            if (not isinstance(self.history_ref, ActivationHistoryRef)
+                    or self.history_disposition is not ActivationHistoryDisposition.PERSISTED
+                    or not self.status.terminal
+                    or self.history_ref.activation_id != self.activation_id
+                    or self.history_ref.attempt != self.attempt
+                    or self.history_ref.fencing_token != self.fencing_token
+                    or self.history_ref.loop_id != self.loop_id
+                    or self.history_ref.definition_ref != self.loop_definition_ref
+                    or self.history_ref.input_ref != self.input_ref
+                    or self.history_ref.terminal_code != self.terminal_code):
+                raise ReactiveContractError(
+                    "history reference does not bind this terminal activation")
+        elif self.history_disposition is ActivationHistoryDisposition.PERSISTED:
+            raise ReactiveContractError("persisted history needs an exact reference")
+        if (self.status is ActivationStatus.COMPLETED
+                and self.history_disposition in {
+                    ActivationHistoryDisposition.PERSISTENCE_FAILED,
+                    ActivationHistoryDisposition.UNAVAILABLE}):
+            raise ReactiveContractError(
+                "required history failure cannot publish completed activation")
 
     def to_dict(self) -> dict:
         return {
-            "record_type": "activation_record/v1",
+            "record_type": "activation_record/v2",
             "activation_id": self.activation_id,
             "series_id": self.series_id, "trigger_id": self.trigger_id,
             "input_ref": self.input_ref.to_dict(),
@@ -305,6 +411,8 @@ class ActivationRecord:
             "terminal_code": self.terminal_code,
             "failure_code": self.failure_code,
             "candidate_refs": list(self.candidate_refs),
+            "history_ref": self.history_ref.to_dict() if self.history_ref else None,
+            "history_disposition": self.history_disposition.value,
         }
 
     @classmethod
@@ -316,8 +424,13 @@ class ActivationRecord:
             "worker_id", "loop_id", "started_at", "terminal_at",
             "terminal_code", "failure_code", "candidate_refs",
         }
-        if (not isinstance(value, dict) or set(value) != expected
-                or value.get("record_type") != "activation_record/v1"):
+        if not isinstance(value, dict):
+            raise ReactiveContractError("activation record has an invalid shape")
+        legacy = value.get("record_type") == "activation_record/v1"
+        if not legacy:
+            expected |= {"history_ref", "history_disposition"}
+        if (set(value) != expected or value.get("record_type") not in {
+                "activation_record/v1", "activation_record/v2"}):
             raise ReactiveContractError("activation record has an invalid shape")
         body = dict(value)
         body.pop("record_type")
@@ -325,6 +438,10 @@ class ActivationRecord:
         body["loop_definition_ref"] = LoopDefinitionRef.from_dict(
             body["loop_definition_ref"])
         body["candidate_refs"] = tuple(body["candidate_refs"])
+        if legacy:
+            body["history_disposition"] = ActivationHistoryDisposition.LEGACY_UNRECORDED
+        elif body["history_ref"] is not None:
+            body["history_ref"] = ActivationHistoryRef.from_dict(body["history_ref"])
         return cls(**body)
 
 
@@ -452,6 +569,9 @@ class ActivationTerminalRequest:
     terminal_code: str = ""
     failure_code: str = ""
     candidate_refs: tuple[str, ...] = ()
+    history_ref: ActivationHistoryRef | None = None
+    history_disposition: ActivationHistoryDisposition | str = (
+        ActivationHistoryDisposition.NOT_PERSISTED)
 
     def __post_init__(self) -> None:
         for label, value in (("activation_id", self.activation_id),
@@ -481,10 +601,20 @@ class ActivationTerminalRequest:
                 and not self.failure_code:
             raise ReactiveContractError(
                 "failed activation needs a failure code")
+        object.__setattr__(self, "history_disposition", _enum(
+            self.history_disposition, ActivationHistoryDisposition,
+            "terminal history disposition"))
+        if ((self.history_ref is not None and not isinstance(
+                self.history_ref, ActivationHistoryRef))
+                or (self.history_ref is not None) != (
+                    self.history_disposition is ActivationHistoryDisposition.PERSISTED)):
+            raise ReactiveContractError(
+                "terminal history disposition and reference disagree")
 
 
 __all__ = (
-    "ActivationClaimRequest", "ActivationRecord", "ActivationStartRequest",
+    "ActivationClaimRequest", "ActivationHistoryDisposition",
+    "ActivationHistoryRef", "ActivationRecord", "ActivationStartRequest",
     "ActivationStatus", "ActivationTerminalRequest", "LeaseHeartbeatRequest",
     "ReactiveSeriesDefinition", "TriggerEnvelope", "WorkLease",
 )

@@ -1,6 +1,8 @@
 """Public-solve advisory-versus-fresh offline product-path fixture.
 Both arms use the canonical gateway and one frozen task state. Advisory gets
 hydrated prior material; fresh gets none. No live provider is contacted.
+Fixed independent oracles compare actual trusted-fixture Python output; their
+execution metadata is injected and does not qualify Docker isolation.
 The fixture proves bounded wiring, not assistance quality or causal benefit."""
 from __future__ import annotations
 
@@ -9,6 +11,7 @@ import json
 import tempfile
 from dataclasses import replace
 from pathlib import Path
+from unittest.mock import patch
 
 if __package__:
     from . import stage_assistance_fixture_material as _fixture_support
@@ -36,7 +39,9 @@ from loop_engine.core.stage_evidence_records import StageRetrievalCandidate
 from loop_engine.core.stage_store import StageStore
 from loop_engine.templates.intake import TaskIntakeRequest, intake_task
 
-TASK = "Create one verified text artifact from the supplied task."
+TASK = (
+    "Create output.txt containing exactly done followed by a newline, and "
+    "main.py that can regenerate that output in an empty working directory.")
 CANDIDATE_REF_PREFIX = "prior-stage:fixture:verified-text-artifact"
 EXPERIMENT_REF = "stage-experiment:fixture:advisory-versus-fresh:v1"
 TRIAL_REF = (
@@ -94,7 +99,8 @@ def _answers(mode: str, candidate_refs: tuple[str, ...] = ()) -> tuple[str, ...]
         "candidate_profiles": ["practitioner.solver"],
         "candidate_capabilities": ["core.generated_project"],
         "verification_obligations": [
-            "test command passes", "output file exists"],
+            "main.py exits successfully when run in an empty directory",
+            "delivered and regenerated output.txt both contain exactly done followed by a newline"],
         "confidence_profile": {"overall": 0.95},
         "proposed_next_action": "Build the project.",
     }
@@ -142,7 +148,7 @@ def _answers(mode: str, candidate_refs: tuple[str, ...] = ()) -> tuple[str, ...]
                                 "media_type": "text/plain",
                                 "minimum_bytes": 1}],
     }
-    generated_file = {"path": "main.py", "content": "print('done')\n"}
+    generated_file = {"path": "main.py", "content": _fixture_support.PROJECT_SOURCE}
     verification = {
         "verdict": "accept",
         "best_index": 0,
@@ -171,27 +177,7 @@ def _answers(mode: str, candidate_refs: tuple[str, ...] = ()) -> tuple[str, ...]
 
 
 def _project_fixture(request, _context):
-    path = Path(request.workspace_root)
-    path.mkdir(parents=True, exist_ok=True)
-    (path / "main.py").write_text("print('done')\n", encoding="utf-8")
-    (path / "output.txt").write_text("done\n", encoding="utf-8")
-    return {
-        "record_type": "generated_project_execution/v1",
-        "manifest_digest": request.manifest.digest,
-        "workspace": {"workspace_id": "fixture", "backend_kind": "fixture",
-                      "root": str(path)},
-        "sandbox": {"backend_kind": "fixture", "network_reads": False},
-        "writes": [],
-        "commands": [{"purpose": "run", "ok": True, "exit_code": 0,
-                      "stdout": "done\n", "stderr": "", "error_code": ""}],
-        "artifacts": [{"path": "output.txt", "media_type": "text/plain",
-                       "minimum_bytes": 1, "present": True,
-                       "byte_count": 5, "digest": "a" * 64,
-                       "error_code": "", "verified": True}],
-        "snapshot": {"digest": "b" * 64, "file_count": 2,
-                     "total_bytes": 19},
-        "deterministic_checks_passed": True,
-    }
+    return _fixture_support.fixture_execute(request, _context)
 
 
 def _candidate(semantic_signature: str,
@@ -239,6 +225,7 @@ def _run_arm(
     *,
     answers: tuple[str, ...] | None = None,
     context_budget: ContextBudgetPolicy | None = None,
+    project_executor=None,
 ) -> tuple[dict, list[dict], str]:
     progress: list[dict] = []
     prior_fragments = (
@@ -256,7 +243,7 @@ def _run_arm(
                     mode, tuple(item.candidate_ref for item in candidates)
                 )
             ),
-            max_model_calls=7,
+            max_model_calls=9,
             required_prompt_fragments=(
                 prior_fragments if mode == "advisory" else ()
             ),
@@ -274,16 +261,39 @@ def _run_arm(
         allow_sandbox_commands=True,
         quiet_model_io=False,
         context_budget=(context_budget or ContextBudgetPolicy()),
-        project_executor=_project_fixture,
+        project_executor=project_executor or _project_fixture,
         progress=progress.append,
     )
     source_state_digest = stage_assistance_source_state_digest(base_request)
-    outcome = solve_task(
-        replace(
-            base_request,
-            stage_assistance=_binding(mode, source_state_digest, candidates),
-        )
-    )
+    # Independent packets receive the same frozen oracle in both arms, through
+    # the counted gateway. Their isolated context must never receive assistance.
+    verification_packets = []
+    adapter = execution.gateway.providers["fixture"].adapter
+    original_chat = adapter.chat_maxout
+
+    def fixture_chat(prompt, **kwargs):
+        response = _fixture_support.fixture_verification_response(prompt)
+        if response is None:
+            return original_chat(prompt, **kwargs)
+        from loop_engine.core.ollama_client import ChatResult
+        clean = not any(part in prompt for part in (
+            *prior_fragments, _fixture_support.CONTROL_HISTORY_PROBE))
+        verification_packets.append({
+            "record_type": json.loads(prompt)["record_type"],
+            "prompt_digest": hashlib.sha256(prompt.encode()).hexdigest(),
+            "prior_clean": clean,
+        })
+        if not clean:
+            return ChatResult("", "fixture-model", ok=False,
+                              error="fixture_independent_context_contaminated")
+        return ChatResult(response, "fixture-model", prompt_tokens=2,
+                          eval_tokens=3, ok=True)
+
+    with patch.object(adapter, "chat_maxout", side_effect=fixture_chat), patch(
+            "loop_engine.core.independent_verification.execute_generated_project",
+            side_effect=_fixture_support.fixture_execute):
+        outcome = solve_task(
+            replace(base_request, stage_assistance=_binding(mode, source_state_digest, candidates)))
     result = outcome.to_dict()
     stage = outcome.intelligence["stage_assistance"]
     result.update(
@@ -297,6 +307,7 @@ def _run_arm(
             "stage_outcome_links": stage["outcome_links"],
             "stage_attribution_events": stage["attribution_boundaries"],
             "stage_evidence_degradations": stage["degradations"],
+            "independent_fixture_packets": verification_packets,
         }
     )
     return result, progress, source_state_digest
@@ -362,7 +373,7 @@ def run_fixture(root: str) -> dict:
         mode: _stage_events(history, "stage_attribution_boundary")
         for mode, history in histories.items()}
     return {
-        "record_type": "stage_assistance_public_solve_fixture/v2",
+        "record_type": "stage_assistance_public_solve_fixture/v3",
         "evidence_class": "offline_public_solve_mechanism_only_injected_provider",
         "limitations": [
             "injected responses do not establish live model quality",
@@ -373,6 +384,8 @@ def run_fixture(root: str) -> dict:
             "no causal assistance effect or canonical paired outcome is claimed",
             "full non-treatment variable and provider request freezing is unproven",
             "retrieval candidates are injected rather than queried from Run History",
+            "independent design and review are fixed fixture responses shared by both arms",
+            "trusted fixture programs run locally; Docker contract metadata is injected and not isolation evidence",
         ],
         "source_state_digest": advisory_state,
         "candidate_refs": [item.candidate_ref for item in candidates],
@@ -390,6 +403,7 @@ def run_fixture(root: str) -> dict:
                 "run_id": result["run_id"],
                 "solved": bool(result["solved"]),
                 "model_calls": int(result["model_calls"]),
+                "terminal_code": result["terminal_code"],
                 "prior_stages_loaded": int(result["prior_stages_loaded"]),
                 "run_history_events": len(histories[mode].event_log),
                 "run_history_intact": histories[mode].verify_chain()["intact"],
@@ -400,6 +414,18 @@ def run_fixture(root: str) -> dict:
                 "exposure_records": len(exposure[mode]),
                 "assistance_decisions": len(decisions[mode]),
                 "local_outcome_records": len(local_outcomes[mode]),
+                "independent_verification_required": result["verification"][
+                    "independent_verification_policy"]["required"],
+                "independent_verification_statuses": [
+                    item["status"] for item in result["verification"][
+                        "independent_verification_records"]],
+                "independent_verifier_calls": sum(
+                    item["model_calls_known_subtotal"] for item in result["verification"][
+                        "independent_verification_records"]),
+                "independent_fixture_packets": result["independent_fixture_packets"],
+                "independent_execution_evidence_states": [
+                    item["execution"].get("sandbox", {}).get("execution_evidence_state")
+                    for item in result["verification"]["independent_verification_records"]],
                 "attribution_boundary_records": len(
                     attribution_boundaries[mode]),
                 **_fixture_support.fixture_lineage_summary(result),
@@ -501,20 +527,19 @@ def run_fixture(root: str) -> dict:
                     str(event.detail.get("semantic_call_id") or "")
                     for event in histories[mode].event_log
                     if event.event_type == "model_invocation"})),
-                "physical_attempts": sum(item.model_calls
-                                         for item in by_run[mode]),
+                "physical_attempts": int(result["model_calls"]),
+                "stage_physical_attempts": sum(item.model_calls for item in by_run[mode]),
                 "elapsed_seconds_known": all(
                     item.elapsed_seconds is not None
                     and item.elapsed_seconds >= 0
                     for item in by_run[mode]),
-                "input_tokens": sum(item.input_tokens or 0
-                                    for item in by_run[mode]),
-                "output_tokens": sum(item.output_tokens or 0
-                                     for item in by_run[mode]),
+                "input_tokens": sum(item["input_tokens"] for item in result["model_usage"]),
+                "output_tokens": sum(item["output_tokens"] for item in result["model_usage"]),
                 "usage_complete": all(
-                    item.input_tokens is not None
-                    and item.output_tokens is not None
-                    for item in by_run[mode]),
+                    item["accounting_complete"] is True
+                    and item["input_tokens"] is not None
+                    and item["output_tokens"] is not None
+                    for item in result["model_usage"]),
             }
             for mode, result in (("advisory", advisory), ("fresh", fresh))
         },
@@ -524,17 +549,25 @@ def run_fixture(root: str) -> dict:
             "calibration_runs": 1,
             "independent_arms": 2,
             "paired_logical_semantic_calls": sum(
+                len({item["semantic_call_id"] for item in result["model_usage"]})
+                for result in (advisory, fresh)),
+            "paired_stage_semantic_calls": sum(
                 len(occurrences[mode]) for mode in histories),
-            "logical_semantic_calls_total": (
+            "logical_semantic_calls_total": sum(
+                len({item["semantic_call_id"] for item in result["model_usage"]})
+                for result in (calibration, advisory, fresh)),
+            "stage_semantic_calls_total": (
                 len(calibration_occurrences)
                 + sum(len(occurrences[mode]) for mode in histories)),
             "paired_offline_fixture_physical_attempts": sum(
-                sum(item.model_calls for item in by_run[mode])
-                for mode in histories),
+                int(result["model_calls"]) for result in (advisory, fresh)),
+            "paired_stage_physical_attempts": sum(
+                sum(item.model_calls for item in by_run[mode]) for mode in histories),
+            "paired_independent_verifier_calls": sum(
+                len(result["independent_fixture_packets"]) for result in (advisory, fresh)),
             "offline_fixture_physical_attempts_total": (
                 int(calibration["model_calls"])
-                + sum(sum(item.model_calls for item in by_run[mode])
-                      for mode in histories)),
+                + sum(int(result["model_calls"]) for result in (advisory, fresh))),
             "live_provider_calls": 0,
             "stored_stage_rows": stored_rows,
         },
@@ -615,6 +648,18 @@ def self_test() -> dict:
         drift = run_adaptive_practitioner(
             drift_request, AdaptivePractitionerDependencies(
                 drift_execution, project_executor=_project_fixture))
+        wrong_answers = list(_answers("fresh"))
+        wrong_file = json.loads(wrong_answers[4])
+        wrong_file["content"] = _fixture_support.REJECTED_PROJECT_SOURCE
+        wrong_answers[4] = json.dumps(wrong_file, sort_keys=True, separators=(",", ":"))
+        wrong, _, _ = _run_arm("fresh", Path(root), answers=tuple(wrong_answers))
+
+        def forged_artifact(request, context):
+            result = _project_fixture(request, context)
+            result["artifacts"][0]["digest"] = "a" * 64
+            return result
+
+        forged, _, _ = _run_arm("fresh", Path(root), project_executor=forged_artifact)
     advisory = report["arms"]["advisory"]
     fresh = report["arms"]["fresh"]
 
@@ -669,6 +714,28 @@ def self_test() -> dict:
          and fresh["stage_occurrences"] == 7
          and advisory["public_product_outcome_bound"]
          and fresh["public_product_outcome_bound"]),
+        ("required_independent_verification_uses_frozen_oracles_and_real_observations",
+         all(arm["independent_verification_required"] is True
+             and arm["independent_verification_statuses"] == ["passed"]
+             and arm["independent_verifier_calls"] == 2
+             and arm["independent_execution_evidence_states"] == ["INJECTED_CONTRACT_FIXTURE_ONLY"]
+             for arm in (advisory, fresh))),
+        ("independent_verifier_packets_are_prior_clean_in_both_arms",
+         all([item["record_type"] for item in arm["independent_fixture_packets"]]
+             == ["independent_probe_design/v1", "independent_probe_review/v1"]
+             and all(item["prior_clean"] for item in arm["independent_fixture_packets"])
+             for arm in (advisory, fresh))),
+        ("producer_accept_cannot_certify_wrong_delivered_or_regenerated_output",
+         not wrong["solved"] and wrong["terminal_code"] == "VERIFICATION_FAILED"
+         and wrong["verification"]["independent_verification_records"][0]["status"] == "failed"
+         and wrong["verification"]["independent_verification_records"][0]["checks"][0]["observed"]
+         == {"exit_code": 0, "regenerated": "wrong\n", "delivered": "wrong\n"}),
+        ("invented_artifact_digest_is_refused_before_independent_model_calls",
+         not forged["solved"] and forged["terminal_code"] == "VERIFICATION_FAILED"
+         and forged["independent_fixture_packets"] == []
+         and forged["verification"]["independent_verification_records"][0]["status"] == "unavailable"
+         and "independent source digest changed" in
+             forged["verification"]["independent_verification_records"][0]["notes"]),
         ("comparison_fresh_arm_skips_a_nonempty_prior_store",
          fresh["prior_stages_loaded"] >= 14
          and not fresh["retrieval_performed"]),
@@ -750,8 +817,10 @@ def self_test() -> dict:
         ("real_fixture_route_attempt_and_usage_values_are_joined",
          advisory["routes"] == ["fixture.route"]
          and fresh["routes"] == ["fixture.route"]
-         and advisory["physical_attempts"] == 7
-         and fresh["physical_attempts"] == 7
+         and advisory["physical_attempts"] == 9
+         and fresh["physical_attempts"] == 9
+         and advisory["stage_physical_attempts"] == 7
+         and fresh["stage_physical_attempts"] == 7
          and len(advisory["semantic_call_ids"]) == 7
          and len(fresh["semantic_call_ids"]) == 7
          and len(advisory["physical_attempt_loop_ids"]) == 7
@@ -760,10 +829,10 @@ def self_test() -> dict:
          and fresh["semantic_call_correlation_complete"]
          and advisory["elapsed_seconds_known"]
          and fresh["elapsed_seconds_known"]
-         and advisory["input_tokens"] == 14
-         and advisory["output_tokens"] == 21
-         and fresh["input_tokens"] == 14
-         and fresh["output_tokens"] == 21
+         and advisory["input_tokens"] == 18
+         and advisory["output_tokens"] == 27
+         and fresh["input_tokens"] == 18
+         and fresh["output_tokens"] == 27
          and advisory["usage_complete"] and fresh["usage_complete"]),
         ("run_histories_are_intact",
          advisory["run_history_intact"] and fresh["run_history_intact"]
@@ -774,10 +843,14 @@ def self_test() -> dict:
              "product_runs_total": 3,
              "calibration_runs": 1,
              "independent_arms": 2,
-             "paired_logical_semantic_calls": 14,
-             "logical_semantic_calls_total": 21,
-             "paired_offline_fixture_physical_attempts": 14,
-             "offline_fixture_physical_attempts_total": 21,
+             "paired_logical_semantic_calls": 18,
+             "paired_stage_semantic_calls": 14,
+             "logical_semantic_calls_total": 27,
+             "stage_semantic_calls_total": 21,
+             "paired_offline_fixture_physical_attempts": 18,
+             "paired_stage_physical_attempts": 14,
+             "paired_independent_verifier_calls": 4,
+             "offline_fixture_physical_attempts_total": 27,
              "live_provider_calls": 0,
              "stored_stage_rows": 21,
          }),

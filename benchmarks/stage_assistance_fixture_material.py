@@ -7,6 +7,11 @@ authority or acting as an instruction.
 
 from __future__ import annotations
 
+import hashlib
+import json
+import sys
+from pathlib import Path
+
 from loop_engine.core.solve_control_manifest import (
     CONTROL_COMPONENT_IDS,
     ControlComponentRecord,
@@ -19,6 +24,132 @@ from loop_engine.core.stage_assistance_material import (
 from loop_engine.core.stage_evidence_records import StageRetrievalCandidate
 
 CONTROL_HISTORY_PROBE = "CONTROL_MANIFEST_PRIOR_TEXT_MUST_NOT_ENTER_PROMPT"
+PROJECT_SOURCE = (
+    "from pathlib import Path\n"
+    "Path('output.txt').write_text('done\\n', encoding='utf-8')\n"
+)
+REJECTED_PROJECT_SOURCE = PROJECT_SOURCE.replace("'done\\n'", "'wrong\\n'")
+INDEPENDENT_PROBE_SOURCE = (
+    "import json, subprocess, sys, tempfile\n"
+    "from pathlib import Path\n"
+    "subject = Path('subject').resolve()\n"
+    "def text_or_none(path):\n"
+    "    return path.read_text(encoding='utf-8') if path.is_file() else None\n"
+    "with tempfile.TemporaryDirectory(prefix='paired-oracle-') as root:\n"
+    "    result = subprocess.run([sys.executable, str(subject / 'main.py')],\n"
+    "        cwd=root, capture_output=True, text=True, timeout=10)\n"
+    "    print(json.dumps({'exit_code': result.returncode,\n"
+    "        'regenerated': text_or_none(Path(root) / 'output.txt'),\n"
+    "        'delivered': text_or_none(subject / 'output.txt')}))\n"
+)
+
+
+def fixture_verification_response(prompt: str) -> str | None:
+    """Fixed independent oracle data, not an answer chosen from task results."""
+    try:
+        packet = json.loads(prompt)
+    except (TypeError, ValueError):
+        return None
+    if not isinstance(packet, dict):
+        return None
+    kind = packet.get("record_type")
+    if kind == "independent_probe_design/v1":
+        value = {
+            "status": "ready", "notes": "Observe delivery and regeneration independently.",
+            "files": [{"path": "checks/probe.py", "content": INDEPENDENT_PROBE_SOURCE}],
+            "cases": [{
+                "case_id": "delivery_and_regeneration",
+                "criterion_refs": ["criterion:0", "criterion:1"],
+                "purpose": "Read the frozen output and regenerate it in an empty directory.",
+                "argv": ["python", "checks/probe.py"], "timeout_seconds": 15,
+                "comparison": "json_equal",
+                "expected": {"exit_code": 0, "regenerated": "done\n", "delivered": "done\n"},
+            }],
+        }
+    elif kind == "independent_probe_review/v1":
+        value = {
+            "valid": True, "criterion_refs": ["criterion:0", "criterion:1"],
+            "issues": [],
+            "notes": "Fixed fixture oracle checks exact task text and fresh execution.",
+        }
+    else:
+        return None
+    return json.dumps(value, sort_keys=True, separators=(",", ":"))
+
+
+def fixture_execute(request, _context) -> dict:
+    """Execute only these authored fixtures; Docker metadata is injected.
+
+    This exercises frozen-subject reading and controller comparisons with real
+    local Python output. It is not a sandbox qualification or a general host
+    executor. Unknown code and command shapes are refused before execution.
+    """
+    from loop_engine.core.workspace_backends import RestrictedLocalWorkspace
+    from loop_engine.core.workspace_contracts import CommandRequest, WorkspaceSpec
+
+    files = tuple((item.path, item.content) for item in request.manifest.files)
+    if request.read_only_execution:
+        expected_files = (("checks/probe.py", INDEPENDENT_PROBE_SOURCE),)
+        if files != expected_files:
+            raise ValueError("unknown independent fixture source")
+        supplied = {item.path: item.content for item in request.input_artifacts}
+        if (set(supplied) != {"subject/main.py", "subject/output.txt"}
+                or supplied["subject/main.py"] not in (
+                    PROJECT_SOURCE.encode(), REJECTED_PROJECT_SOURCE.encode())):
+            raise ValueError("unknown independent fixture subject")
+        expected_command = ("python", "checks/probe.py")
+    else:
+        if (len(files) != 1 or files[0][0] != "main.py"
+                or files[0][1] not in (PROJECT_SOURCE, REJECTED_PROJECT_SOURCE)
+                or request.input_artifacts):
+            raise ValueError("unknown generated fixture source")
+        expected_command = ("python", "main.py")
+    if (len(request.manifest.commands) != 1
+            or request.manifest.commands[0].argv != expected_command):
+        raise ValueError("unknown fixture command")
+    root = Path(request.workspace_root)
+    root.mkdir(parents=True, exist_ok=False)
+    for item in request.input_artifacts:
+        path = root / item.path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(item.content)
+    for item in request.manifest.files:
+        path = root / item.path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(item.content, encoding="utf-8")
+    workspace = RestrictedLocalWorkspace(WorkspaceSpec(
+        "trusted_stage_assistance_fixture", str(root), execution_enabled=True,
+        allowed_commands=(sys.executable,)))
+    command = request.manifest.commands[0]
+    result = workspace.command(CommandRequest(
+        (sys.executable, *command.argv[1:]),
+        timeout_seconds=command.timeout_seconds, execution_authorized=True))
+    commands = [{"argv": list(command.argv), "purpose": command.purpose,
+                 "ok": result.ok, "exit_code": result.exit_code,
+                 "stdout": result.stdout, "stderr": result.stderr,
+                 "output_truncated": result.output_truncated,
+                 "error_code": result.error_code}]
+    artifacts = []
+    for artifact in request.manifest.expected_artifacts:
+        path = root / artifact.path
+        raw = path.read_bytes() if path.is_file() else b""
+        artifacts.append({
+            "path": artifact.path, "media_type": artifact.media_type,
+            "minimum_bytes": artifact.minimum_bytes, "present": path.is_file(),
+            "byte_count": len(raw), "digest": hashlib.sha256(raw).hexdigest(),
+            "error_code": "", "verified": path.is_file() and len(raw) >= artifact.minimum_bytes,
+        })
+    return {
+        "record_type": "generated_project_execution/v1",
+        "manifest_digest": request.manifest.digest, "workspace_path": str(root),
+        "workspace": {"workspace_id": "fixture", "backend_kind": "restricted_local", "root": str(root)},
+        "sandbox": {"backend_kind": "docker", "workspace_read_only": request.read_only_execution,
+                    "network_policy": "none", "image": request.image,
+                    "execution_evidence_state": "INJECTED_CONTRACT_FIXTURE_ONLY",
+                    "actual_backend": "restricted_local_trusted_fixture"},
+        "writes": [], "commands": commands, "artifacts": artifacts,
+        "deterministic_checks_passed": result.ok and all(item["verified"] for item in artifacts),
+    }
 
 
 def fixture_control_manifest(

@@ -6,6 +6,7 @@ an accepted observation does not imply that the user's task is complete.
 """
 from __future__ import annotations
 
+import json
 from dataclasses import replace
 
 
@@ -51,11 +52,18 @@ def validate_action_permissions(decision, services):
     selected = tuple(decision.required_capabilities)
     if selected and host is not None and all(host.supports(ref) for ref in selected):
         granted = {name for ref in selected for name in host.permissions_for(ref)}
+        scope = "selected host capabilities"
     else:
         from .practitioner_runtime_facts import granted_permissions
         granted = set(granted_permissions(services.request))
-    if set(decision.permissions) - granted:
-        raise PermissionError("NextActionDecision requests permission outside selected capability authority")
+        scope = "current core grants"
+    invalid = set(decision.permissions) - granted
+    if invalid:
+        raise PermissionError(
+            f"NextActionDecision allowed permission names for {scope}: "
+            f"{json.dumps(sorted(granted))}. "
+            "These names do not replace exact effect approval. "
+            f"Proposed names outside this scope: {json.dumps(sorted(invalid))}.")
 
 
 def _host_results(results):

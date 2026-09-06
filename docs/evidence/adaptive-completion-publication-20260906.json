@@ -1,0 +1,296 @@
+{
+  "document": {
+    "arithmetic_gate": {
+      "evidence_digest": "7e5035cec14edc594c7ad8c7dc91b6c219ccf35fbe2f8714ae3eed3beccfc754",
+      "later_terminology_only_generator_revision": true,
+      "original_source_unchanged": true,
+      "outcomes": [
+        {
+          "execution": "real_pinned_read_only_network_disabled_docker",
+          "extra_cases": 18,
+          "extra_passed": 12,
+          "history_events": 198,
+          "primary_case_count": 32,
+          "primary_passed": true,
+          "source_digest": "ac537109caf6f9ed391b64bc006108359ff1407a4be8086766cbde86a18d4488",
+          "subject": "saved_incorrect",
+          "task_complete": false
+        },
+        {
+          "execution": "real_pinned_read_only_network_disabled_docker",
+          "extra_cases": 18,
+          "extra_passed": 18,
+          "history_events": 198,
+          "primary_case_count": 32,
+          "primary_passed": true,
+          "source_digest": "33c57911ec7e8e581f140659a2de1e1ceeec22b8a457f6e8612a3766858de5e7",
+          "subject": "authored_reference",
+          "task_complete": true
+        }
+      ],
+      "policy_digest": "4d99891f9e463937c06fac8df18e25d2adce6425089c7de7c414478a765334e3",
+      "seed": 928381
+    },
+    "base_revision": "1ea13357c9d46d261fa4164fced0ef0b0249a36e",
+    "browser_checks": {
+      "console_errors": 0,
+      "horizontal_overflow": 0,
+      "media_digest_and_stream_checks_passed": true,
+      "pdf_or_powerpoint_visual_review": false,
+      "player_controls_passed": true,
+      "recording": "summary of executed browser test output",
+      "scene_views": 52,
+      "scenes": 26,
+      "text_clipping": 0,
+      "viewports": [
+        "1920x1080",
+        "1280x720"
+      ]
+    },
+    "clean_wheel": {
+      "all_passed": true,
+      "checked_at": "2026-09-06T18:27:59.277390+00:00",
+      "elapsed_seconds": 521.7931667780504,
+      "passed": 3318,
+      "raw_result_digest": "06eaf58b826457366665e48327f02d25f50d3445282d459cc829551db5a5c7ee",
+      "runtime_files": 447,
+      "runtime_snapshot_digest": "6beee941d0e1f666d2bfb3b4ca157ad9edae1f48c117dc7abadd940428016759",
+      "runtime_sources_changed": false,
+      "total": 3318
+    },
+    "distributions": {
+      ".gitignore": {
+        "bytes": 1,
+        "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1"
+      },
+      "loop_engine-0.1.0-py3-none-any.whl": {
+        "bytes": 2235855,
+        "sha256": "5d2dc9e1e81755efe41821b6e30f3d5383f344be1f671125b2558f5075b8310d"
+      },
+      "loop_engine-0.1.0.tar.gz": {
+        "bytes": 1945541,
+        "sha256": "4811d7cd23c8769ecf266a7645db6b1f5b95a6524918f2d9e567cf3cd0023422"
+      }
+    },
+    "documentation": {
+      "audit_sha256": "a1b5cdb1ef2e286f64c5d135b4d251e41c908323b176d1ad8d212809bedd2ea8",
+      "checked_at": "2026-09-06T18:45:05.370593+00:00",
+      "documentation_count": 322,
+      "link_issues": [],
+      "link_kinds": {
+        "external_not_network_checked": 433,
+        "local": 684
+      },
+      "links_checked": 1117,
+      "secret_match_review": "One existing truncated private-key-header fixture; no configured secret match.",
+      "text_files_secret_scanned": 1543,
+      "total_document_bytes": 2587337
+    },
+    "full_system_benchmark": false,
+    "hardcoding_delta": {
+      "baseline_changed": false,
+      "new_findings": 2958,
+      "new_high": 258,
+      "new_medium": 2700,
+      "passed": false,
+      "raw_audit_sha256": "1b03dcbf9bc4847a168d22fc44ef3d2291ffb7dff288fcb9ea8bd075ba485e9c",
+      "resolved": 164,
+      "scope": "Delta against checked-in baseline, spanning earlier work and this update."
+    },
+    "jira_mutations": 0,
+    "kaggle_submissions": 0,
+    "limits": [
+      "No live repair or assistance benefit is proved.",
+      "No production Overnight/Jira integration is proved.",
+      "Native macOS and Windows installation was not run.",
+      "Text scans and local-link checks do not prove every historical claim or remote URL.",
+      "Old showcase worktree is preserved and excluded from current publication.",
+      "Raw provider histories, private competition inventories, credentials, and datasets are not published.",
+      "Finite regression cases do not prove universal correctness."
+    ],
+    "nonfinal_attempts": [
+      {
+        "counted_as_final_pass": false,
+        "kind": "interrupted_source_suite",
+        "passed": 3355,
+        "result_digest": "9712a2f01638f6d41a3e04b2a1063b9c6440b54a41e8af311757dabac5b5fece",
+        "total": 3363
+      },
+      {
+        "counted_as_final_pass": false,
+        "kind": "clean_environment_reinstallation_overlap",
+        "tests_started": false
+      },
+      {
+        "kind": "ticket_gate_proof_import_error",
+        "resolved_before_recorded_container_runs": true,
+        "tests_started": false
+      }
+    ],
+    "publication_branch": "codex/generalized-adaptive-work-20260906",
+    "python_version": "3.14.4",
+    "real_model_calls": 0,
+    "record_type": "adaptive_completion_publication_evidence/v1",
+    "release_checks": {
+      "checked_at": "2026-09-06T18:41:33.659748+00:00",
+      "checks": [
+        {
+          "check": "conformance-source",
+          "elapsed_seconds": 118.56909071467817,
+          "output_bytes": 1564,
+          "output_sha256": "f71743266c6853dc189b131a65b597055a7a20651a3957c21baee6de4a2145c5",
+          "returncode": 0
+        },
+        {
+          "check": "conformance-wheel",
+          "elapsed_seconds": 82.78525752574205,
+          "output_bytes": 1564,
+          "output_sha256": "f71743266c6853dc189b131a65b597055a7a20651a3957c21baee6de4a2145c5",
+          "returncode": 0
+        },
+        {
+          "check": "installed-cli-help",
+          "elapsed_seconds": 0.2591953310184181,
+          "output_bytes": 578,
+          "output_sha256": "d2c2e53c1c076cb69ce8e5d92dfe3a0aa4f5e333c5704d5fca0f09936d404c2b",
+          "returncode": 0
+        },
+        {
+          "check": "wheel-dependencies",
+          "elapsed_seconds": 0.25668437173590064,
+          "output_bytes": 151,
+          "output_sha256": "56dd949bd496095e8b3e7199dd685f94f4d4e4c4c57b447cecb96797716377fa",
+          "returncode": 0
+        },
+        {
+          "check": "host-examples",
+          "elapsed_seconds": 92.28235154272988,
+          "output_bytes": 185,
+          "output_sha256": "b8cce71fc4e767fd5b6a69276e98deb62d1ca803b2ddf767bf4b859adc8b72c6",
+          "returncode": 0
+        },
+        {
+          "check": "ticket-plan",
+          "elapsed_seconds": 1.5920774419791996,
+          "output_bytes": 2267,
+          "output_sha256": "d0ced16f36be91b868fa783b16da159c79268157cb6bc5942992d41163a401a7",
+          "returncode": 0
+        },
+        {
+          "check": "generalization-plan",
+          "elapsed_seconds": 1.245111407712102,
+          "output_bytes": 90305,
+          "output_sha256": "394b702b259ad2e4a6b08a8abc6c61f5be0d3a8f63e4c2269a04141249e13aef",
+          "returncode": 0
+        },
+        {
+          "check": "kaggle-preparation-help",
+          "elapsed_seconds": 0.21004737494513392,
+          "output_bytes": 810,
+          "output_sha256": "66243d99a110f690ac474e0575e4f2ed64ce24a4acafd111c5f71c5e2e01ab50",
+          "returncode": 0
+        },
+        {
+          "check": "competition-prediction-help",
+          "elapsed_seconds": 0.1576683479361236,
+          "output_bytes": 729,
+          "output_sha256": "4a0fdb1c4fc83f611b59a60f3f91adc1a5539f05254a4b1bcfea3ce97608a490",
+          "returncode": 0
+        }
+      ],
+      "real_provider_calls": 0
+    },
+    "source": {
+      "all_passed": true,
+      "checked_at": "2026-09-06T18:24:38.661066+00:00",
+      "elapsed_seconds": 675.3306194152683,
+      "passed": 3363,
+      "raw_result_digest": "42446c5e660f9daade8bd93854b5686e8723c8af52098ed3d3782e2905620ea7",
+      "runtime_files": 447,
+      "runtime_snapshot_digest": "6beee941d0e1f666d2bfb3b4ca157ad9edae1f48c117dc7abadd940428016759",
+      "runtime_sources_changed": false,
+      "total": 3363
+    },
+    "ticket_gate": [
+      {
+        "execution": "real_pinned_node_docker",
+        "extra_passed": 12,
+        "extra_total": 16,
+        "full_solver_run": false,
+        "host_report_digest": "6c6bd53274bcb82ff9f68a850849ef0c8f04b6a2c9010eae3f1909da53286d27",
+        "primary": {
+          "fail": 0,
+          "pass": 3,
+          "skipped": 0,
+          "tests": 3
+        },
+        "source_digest": "ad665197205c6e7ee512e15ec99b271ad974d2556cb21b913440420a3d7546ef",
+        "subject": "coercing",
+        "task_complete": false
+      },
+      {
+        "execution": "real_pinned_node_docker",
+        "extra_passed": 16,
+        "extra_total": 16,
+        "full_solver_run": false,
+        "host_report_digest": "d7b061fd26710e4ca78aff0b4b8375549a36086ab52b189b9549850c1a2c3819",
+        "primary": {
+          "fail": 0,
+          "pass": 3,
+          "skipped": 0,
+          "tests": 3
+        },
+        "source_digest": "4a2ddc10152b69973bcb8eaab996e80578f6eb91da80c655f9315a982277ef75",
+        "subject": "reference",
+        "task_complete": true
+      }
+    ],
+    "trafficflow_access": {
+      "already_entered": true,
+      "competition": "2026-ieee-big-data-traffic-flow-bench",
+      "downloads": 0,
+      "files": 9698,
+      "history_chain_valid": {
+        "broken_at": [],
+        "events": 1706,
+        "intact": true
+      },
+      "history_events": 1706,
+      "inventory_complete": true,
+      "model_calls": 0,
+      "pages": 49,
+      "submissions": 0,
+      "summary_digest": "2ad340f3de12010e80d7023ba6e6167309b59b21853a96027d5256a0d3e293d6",
+      "total_bytes": 13749291172
+    },
+    "trafficflow_comparison": "NOT_EXECUTED"
+  },
+  "document_digest": "72f4279d824a096d3e6c508bccd050ee403f63081b6a565a1076ecc22fa703ba",
+  "edit_policy": "Update through loop-engine records and regenerate this export.",
+  "generated_at": "2026-09-06T19:00:00Z",
+  "generated_view": true,
+  "grants_authority": false,
+  "promotes_intelligence": false,
+  "record_type": "managed_record_export/v1",
+  "renderer_source_digest": "c568f4876cac8604db4bd2cb120c51451fec986ef926ab746c9b3648ea01741f",
+  "renderer_version": "managed_record_json_export/v1",
+  "source_policy_digest": "c71eddd253023f23da6a1805b9754f2ee0a96449c5805696d172f4c76c161e81",
+  "source_record": {
+    "artifact_kind": "intelligence_record",
+    "lifecycle": "candidate",
+    "managed": true,
+    "namespace": "development.publication_evidence",
+    "previous": null,
+    "record_id": "publication.adaptive-completion-20260906",
+    "record_version": "1",
+    "revision_ref": {
+      "artifact_kind": "managed_record_revision",
+      "byte_count": 7878,
+      "digest": "e3b82c4817f270b13ec590b2c4677dd53be40f70f39003ed9a26279d7665389e",
+      "encoding": "utf-8",
+      "media_type": "application/json",
+      "object_key": "sha256/e3/e3b82c4817f270b13ec590b2c4677dd53be40f70f39003ed9a26279d7665389e"
+    }
+  },
+  "view_digest": "dac0c8197419fcd82aca9c1b45dd7dd1c383b81998ef05bdc4bbd65a49cbb062"
+}

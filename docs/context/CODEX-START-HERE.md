@@ -126,7 +126,42 @@ were host preparation, not autonomous engine retrieval. Source rows and model
 binaries remain local. Do not rerun or tune against these holdouts as though
 they remain untouched.
 
-For host embedding or source admission, read the
+For continued testing and publication, read the
+[adaptive completion checkpoint](../verification/ADAPTIVE-COMPLETION-AND-PUBLICATION-2026-09-06.md).
+The frozen package passed 3,363 source and 3,318 clean-wheel checks. Optional
+host completion gates, typed serial dependency bindings, and explicit reactive
+history persistence have offline coverage. Real pinned-container checks reject
+known incorrect sources that smaller primary suites accepted. They do not
+prove a live repair or general task quality. The exported-ticket fixture does
+not connect to Jira or publish a branch.
+
+The current capstone is the
+[TrafficFlowBench native/OpenCode comparison](../benchmarks/TRAFFICFLOWBENCH-NATIVE-OPENCODE-PLAN.md).
+Account entry is verified. Do not report a plan, file inventory, or unavailable
+OpenCode arm as a completed comparison. The raw-host adapter remains
+quarantined. Local scoring lacks official queue truth, physics boundary flows,
+and most ODME terms. Preserve the queue forecast-origin information boundary.
+
+For the preceding host embedding and source admission evidence, read the
+[adaptive host generalization report](../verification/ADAPTIVE-HOST-GENERALIZATION-2026-09-06.md)
+and [five-shape reproduction guide](../../examples/25_host_runtime/GENERALIZATION-PROBE.md).
+This checkpoint separates spawned task contexts and verification, refuses
+unsupported plan fields, repairs mixed source/output delivery, and retains
+invalidated live results. Source checks passed 3,246/3,246 and clean-wheel
+checks passed 3,201/3,201. That checkpoint predates typed dependency-output
+bindings. Adaptive spawning remains serial; a live paired-assistance comparison
+and production Overnight/Jira integration remain open. Do not treat final repaired artifacts as first-try
+successes or reuse the audit cases as untouched holdouts.
+
+Its final live artifact review passes 84/84 saved cases but independently
+invalidates the latest Sales source for wrong exact totals. Keep that known
+failure visible. The later completion checkpoint rejects this source with
+additional source-bound counterexamples; no new live repair is claimed there.
+The [history review](../verification/HISTORY-AND-OVERNIGHT-REVIEW-2026-09-06.md)
+records log coverage and configured Kaggle account access separately from
+task completion.
+
+For the preceding host boundary, read the
 [host adoption checkpoint](../verification/HOST-ADOPTION-AND-GENERALIZATION-2026-09-05.md),
 [embedding guide](../guides/embedding-loop-engine.md), and
 [host execution decision](../architecture/ADR-HOST-OWNED-EXECUTION.md).

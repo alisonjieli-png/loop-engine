@@ -156,6 +156,8 @@ def _execute_project_attempt(manifest, input_artifacts, input_validation,
     if hasattr(services, "task_results"):
         services.task_results.append(record)
     try:
+        from .adaptive_practitioner_scope import validate_scope_workspace
+        validate_scope_workspace(services, workspace)
         result = dict(services.dependencies.project_executor(execution_request, context))
         completed = result.get("deterministic_checks_passed") is True
         if not completed:

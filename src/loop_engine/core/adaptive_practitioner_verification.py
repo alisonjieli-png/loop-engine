@@ -410,6 +410,12 @@ def verify_adaptive_results(
         tuple(orientation.verification_obligations)
         if orientation and orientation.verification_obligations
         else (services.request.task,))
+    # A decomposition's admitted obligations do not disappear when a spawned
+    # orientation omits them or proposes a shorter task description.
+    criterion_texts = tuple(dict.fromkeys((
+        *request.state.spec.success_criteria,
+        *request.state.spec.constraints,
+        *criterion_texts)))
     criteria = [{"criterion_ref": f"criterion:{index}", "text": text}
                 for index, text in enumerate(criterion_texts)]
     criterion_refs = {item["criterion_ref"] for item in criteria}

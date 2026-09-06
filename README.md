@@ -360,6 +360,14 @@ pipelines with separately scored holdouts. These are familiar-dataset local
 evaluations, not unseen-task or Kaggle leaderboard results. See the
 [complete model comparison](docs/verification/TABULAR-MODEL-PORTFOLIO-2026-09-06.md).
 
+The [adaptive completion checkpoint](docs/verification/ADAPTIVE-COMPLETION-AND-PUBLICATION-2026-09-06.md)
+tests optional host completion gates, typed serial dependency inputs, and
+restart behavior that refuses to replay an unknown running effect. The
+[exported-ticket example](examples/25_host_runtime/EXPORTED-TICKET-PILOT.md)
+produces local review material; production Overnight/Jira integration remains
+unproven. The [TrafficFlowBench capstone](docs/benchmarks/TRAFFICFLOWBENCH-NATIVE-OPENCODE-PLAN.md)
+sets out the native/OpenCode comparison and its independent scoring boundary.
+
 Optional harnesses use the same Loop boundary through explicitly registered
 adapters. Missing tool, skill, isolation, or limit requirements cause refusal
 before execution. The OpenCode process adapter is quarantined pending a

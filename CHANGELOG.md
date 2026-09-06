@@ -9,6 +9,17 @@ First public release.
 
 ### Added
 
+- [Adaptive completion, dependencies, and restart checks](docs/verification/ADAPTIVE-COMPLETION-AND-PUBLICATION-2026-09-06.md).
+  Hosts can require additional independent completion gates. Spawned
+  Practitioner assignments can bind typed prerequisite outputs while retaining
+  separate task acceptance. Reactive work distinguishes an unstarted expired
+  lease from an unknown running effect, and can require durable canonical Run
+  History before successful publication. Cancellation cannot become later
+  acceptance. Examples include selected failure evidence, an exported-ticket
+  review pilot, and local CSV competition preparation. Source and clean-wheel
+  checks pass; broad unattended solving and the TrafficFlowBench harness
+  comparison remain separate proof obligations.
+
 - [Live tabular model portfolios](docs/verification/TABULAR-MODEL-PORTFOLIO-2026-09-06.md).
   One configurable host adapter trained engine-selected scikit-learn recipes
   on Titanic, house prices, and Iris. The three completed runs used 33 real

@@ -14,6 +14,15 @@ For a different use of the same binding, see the
 [tabular model portfolio](TABULAR-PORTFOLIO.md). It trains and evaluates
 engine-selected model configurations on supplied datasets.
 
+The [five-shape regression probe](GENERALIZATION-PROBE.md) uses one host
+interface for utilities, CSV aggregation, scheduling, HTML delivery, and
+existing-source repair. It preserves failed attempts and later invalidations.
+
+The [exported-ticket pilot](EXPORTED-TICKET-PILOT.md) adds an immutable local
+ticket, an independent completion audit, and a review bundle. It does not
+connect to Jira or publish a branch. The [competition preparation guide](COMPETITION-PREDICTION.md)
+covers the narrower CSV download, refit, and submission-file helpers.
+
 ## Run
 
 From the repository root, install Loop Engine and Docker, configure the chosen

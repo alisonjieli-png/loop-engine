@@ -1,0 +1,9 @@
+{
+  "record_type": "exported_ticket/v1",
+  "ticket_id": "fixture-clamp-001",
+  "source_kind": "authored_fixture",
+  "source_ref": "local:exported-ticket.fixture.json",
+  "contract_ref": "example.clamp_api/v1",
+  "title": "Repair the staged clamp API",
+  "description": "Repair clamp(value, minimum, maximum) in the staged clamp.mjs without changing its exported API. All three arguments must be finite JavaScript numbers. Preserve TypeError for other argument types or nonfinite values and RangeError for reversed bounds. Return the input value inside inclusive bounds, the nearest bound outside them, and the shared bound when both bounds are equal. Produce a local reviewable diff and verification evidence. Do not change tests or package configuration, execute outside the declared sandbox, publish, commit, push, or update an external ticket."
+}

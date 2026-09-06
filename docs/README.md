@@ -10,6 +10,12 @@ system, container, and component views.
 The [architecture showcase](../showcase/) explains the same system as a linear
 slide deck, browser player, and exported video.
 
+The latest [adaptive completion and publication review](verification/ADAPTIVE-COMPLETION-AND-PUBLICATION-2026-09-06.md)
+records current source, clean-install, example, and browser checks. It separates
+implemented host and restart behavior from unproven live learning and
+Overnight integration. The [TrafficFlowBench capstone plan](benchmarks/TRAFFICFLOWBENCH-NATIVE-OPENCODE-PLAN.md)
+defines the native/OpenCode experiment; it is not a score report.
+
 ## Learn the system in order
 
 | Order | Page | What it explains |
@@ -53,6 +59,8 @@ slide deck, browser player, and exported video.
 | [Runtime settings and model tiers](guides/settings.md) | Typed YAML settings, environment precedence, providers, model tiers, and escalation. |
 | [Custom endpoints](guides/custom-endpoints.md) | Connect a server you control. |
 | [Reports](guides/reports.md) | Read, export, watch, and play back a run. |
+| [Embedding in a host](guides/embedding-loop-engine.md) | Host-owned operations, completion gates, scoped authority, and typed dependency results. |
+| [Exported ticket review](../examples/25_host_runtime/EXPORTED-TICKET-PILOT.md) | Local authored ticket fixture, protected gates, diff, and review report. |
 | [Queryable records and storage](guides/queryable-records-and-storage.md) | Typed file/database queries, approved managed-note revisions, authority boundaries, and remaining migration work. |
 
 ## Architecture detail

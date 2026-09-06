@@ -278,7 +278,7 @@ def run_configure(args) -> int:
             "loop-engine models probe ollama_cloud --model-route "
             "cloud.default --model-id deepseek-v4-flash:0731 "
             "--authorize-model-calls --max-model-calls 1 "
-            "--max-total-tokens 70000")
+            "--allow-unbounded-total-tokens")
     elif len(present) == 1 and present[0]["provider_id"] == "openrouter":
         next_action = (
             "Use --openrouter-api-key on solve to select a current exact "
@@ -359,7 +359,7 @@ def run_doctor(args) -> int:
                 "loop-engine models probe ollama_cloud --model-route "
                 "cloud.default --model-id deepseek-v4-flash:0731 "
                 "--authorize-model-calls --max-model-calls 1 "
-                "--max-total-tokens 70000"),
+                "--allow-unbounded-total-tokens"),
         },
     }
     _emit_cli_result(args, report, [

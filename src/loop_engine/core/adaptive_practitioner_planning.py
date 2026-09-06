@@ -7,7 +7,7 @@ spawned assignment that was absent from the selected action contract.
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 
 from ..code_nodes.solution_model_port import SolutionModelError
 from ..loop.kernel import (
@@ -23,6 +23,10 @@ from .adaptive_practitioner_records import (
     ModelStepRequest,
 )
 from .adaptive_practitioner_validation import _short_strings, _short_text
+from .adaptive_practitioner_bindings import (
+    ASSIGNMENT_KEY, ASSIGNMENT_RECORD_TYPE, BASE_ASSIGNMENT_FIELDS,
+    EXTENDED_ASSIGNMENT_FIELDS, SpawnedAssignment, assignment_task_view,
+    compile_assignments)
 
 
 @dataclass(frozen=True)
@@ -34,64 +38,145 @@ class AdaptivePlanningRequest:
     chosen: CandidateAction
 
 
-def _planning_schema(action_id: str) -> str:
+_PLAN_FIELDS = frozenset({
+    "action_id", "how_mode", "act_mode", "capability_ref", "arguments",
+    "steps", "spawned_tasks", "rationale"})
+_SPAWNED_FIELDS = frozenset({"objective", "constraints", "success_criteria"})
+_PARALLEL_UNAVAILABLE = (
+    "RUN_PARALLEL requires an installed concurrent execution contract; "
+    "select SPAWN_LOOP for serial governed spawned_tasks, or select an explicitly "
+    "registered concurrent host operation")
+
+
+def _planning_schema(action_id: str, *, spawning: bool = False) -> str:
     return json.dumps({
         "action_id": action_id,
         "how_mode": (
             "use|configure|compose|modify|mutate|research|generate|delegate"),
-        "act_mode": "run_direct|run_dag|spawn_practitioners",
-        "capability_ref": "registered capability or empty",
+        "act_mode": "spawn_practitioners" if spawning else "run_direct|run_dag",
+        "capability_ref": "" if spawning else "selected registered capability",
         "arguments": {}, "steps": ["string"],
-        "spawned_tasks": [{
+        "spawned_tasks": ([{
+            "record_type": ASSIGNMENT_RECORD_TYPE,
+            "task_id": "unique-task-id", "depends_on": [], "inputs": [],
             "objective": "string", "constraints": ["string"],
-            "success_criteria": ["string"]}],
+            "success_criteria": ["string"], "output_contract": None}] if spawning else []),
         "rationale": "string",
     }, separators=(",", ":"))
+
+
+def _require_fields(value, required, location: str) -> None:
+    if type(value) is not dict:
+        raise AdaptivePractitionerError(f"{location}: expected_object")
+    missing = required - set(value)
+    if missing:
+        raise AdaptivePractitionerError(
+            f"{location}: missing_fields=" + ",".join(sorted(missing)))
+    extra = set(value) - required
+    if extra:
+        raise AdaptivePractitionerError(
+            f"{location}: unexpected_fields_count={len(extra)}; use only "
+            + ",".join(sorted(required))
+            + ". Use the versioned spawned assignment for dependency fields; "
+            "parallel scheduling still requires a registered concurrent capability")
 
 
 def _validate_plan_response(value, request, services) -> ExecutionPlan:
     chosen = request.chosen
     state = request.state
     action = services.action_details[chosen.action]
-    if str(value.get("action_id")) != chosen.action:
+    if action.action_kind == "RUN_PARALLEL":
+        raise AdaptivePractitionerError(_PARALLEL_UNAVAILABLE)
+    _require_fields(value, _PLAN_FIELDS, "plan")
+    if type(value["action_id"]) is not str or value["action_id"] != chosen.action:
         raise AdaptivePractitionerError("how response targets another action")
-    capability_ref = str(value.get("capability_ref") or "")
-    spawning = action.action_kind in ("SPAWN_LOOP", "RUN_PARALLEL")
-    if (not spawning
-            and capability_ref not in set(action.required_capabilities)):
+    capability_ref = value["capability_ref"]
+    if type(capability_ref) is not str:
+        raise AdaptivePractitionerError("plan.capability_ref: expected_text")
+    spawning = action.action_kind == "SPAWN_LOOP"
+    act_mode = _short_text(value["act_mode"], "plan.act_mode")
+    if spawning and act_mode != "spawn_practitioners":
+        raise AdaptivePractitionerError(
+            "SPAWN_LOOP requires act_mode spawn_practitioners")
+    if not spawning and act_mode == "spawn_practitioners":
+        raise AdaptivePractitionerError(
+            "only a selected SPAWN_LOOP action may use spawn_practitioners; "
+            "keep the selected capability in run_direct or run_dag")
+    if spawning and capability_ref:
+        raise AdaptivePractitionerError(
+            "SPAWN_LOOP requires an empty capability_ref; its spawned tasks "
+            "select capabilities through their own governed decisions")
+    if not spawning and capability_ref not in set(action.required_capabilities):
         raise AdaptivePractitionerError(
             "how selected a capability outside NextActionDecision")
-    spawned_values = value.get("spawned_tasks") or []
-    if not isinstance(spawned_values, list):
-        raise AdaptivePractitionerError("spawned_tasks has an invalid shape")
-    spawned = tuple(ProblemSpec(
-        _short_text(item.get("objective"), "spawn objective"),
-        constraints=_short_strings(item.get("constraints") or [], "constraints"),
-        success_criteria=_short_strings(
-            item.get("success_criteria") or [], "success_criteria"),
-        budget_passes=(
-            None if services.request.max_passes is None
-            else max(1, services.request.max_passes - 1)),
-        depth=state.spec.depth + 1)
-        for item in spawned_values if isinstance(item, dict))
-    arguments = value.get("arguments") or {}
-    if not isinstance(arguments, dict):
-        raise AdaptivePractitionerError("how arguments must be an object")
-    steps = _short_strings(value.get("steps") or [], "steps")
+    spawned_values = value["spawned_tasks"]
+    if type(spawned_values) is not list:
+        raise AdaptivePractitionerError("plan.spawned_tasks: expected_array")
+    if spawning and not spawned_values:
+        raise AdaptivePractitionerError(
+            "SPAWN_LOOP requires at least one spawned task with its own "
+            "objective and success_criteria")
+    if not spawning and spawned_values:
+        raise AdaptivePractitionerError(
+            "a capability action requires spawned_tasks []; select "
+            "SPAWN_LOOP separately when delegation is needed")
+    spawned = []
+    for index, item in enumerate(spawned_values):
+        location = f"plan.spawned_tasks[{index}]"
+        extended = type(item) is dict and bool(set(item) - BASE_ASSIGNMENT_FIELDS)
+        _require_fields(item, EXTENDED_ASSIGNMENT_FIELDS if extended else _SPAWNED_FIELDS, location)
+        assignment = SpawnedAssignment.from_mapping(item) if extended else None
+        criteria = _short_strings(item["success_criteria"], location + ".success_criteria")
+        if not criteria:
+            raise AdaptivePractitionerError(
+                f"{location}.success_criteria: a spawned needs at least one "
+                "checkable completion condition")
+        spawned.append(ProblemSpec(
+            _short_text(item["objective"], location + ".objective"),
+            constraints=_short_strings(item["constraints"], location + ".constraints"),
+            success_criteria=criteria,
+            budget_passes=(
+                None if services.request.max_passes is None
+                else max(1, services.request.max_passes - 1)),
+            depth=state.spec.depth + 1,
+            seed_facts=({ASSIGNMENT_KEY: assignment} if assignment is not None else {})))
+    if spawned:
+        compile_assignments(tuple(spawned), state.spec.objective)
+    if type(value["arguments"]) is not dict:
+        raise AdaptivePractitionerError("plan.arguments: expected_object")
+    if spawning and value["arguments"]:
+        raise AdaptivePractitionerError(
+            "SPAWN_LOOP requires arguments {}; spawned input bindings are not "
+            "supported by this method contract")
+    try:
+        arguments = json.loads(json.dumps(value["arguments"], allow_nan=False))
+    except (TypeError, ValueError):
+        raise AdaptivePractitionerError("plan.arguments: expected_strict_json") from None
+    steps = _short_strings(value["steps"], "plan.steps")
+    plan = ExecutionPlan(
+        _short_text(value["how_mode"], "plan.how_mode"), act_mode,
+        handle=capability_ref, steps=steps, spawned_loops=tuple(spawned),
+        experiment={"arguments": arguments, "action_id": chosen.action},
+        rationale=_short_text(value["rationale"], "plan.rationale"))
+    # Publish only the fully admitted plan. Rejected modes and spawned records
+    # must not overwrite the previous method or mark its canvas selected.
+    serialized_spawned = []
+    for spec in spawned:
+        seed = dict(spec.seed_facts)
+        assignment = assignment_task_view(spec)
+        if assignment is not None:
+            seed[ASSIGNMENT_KEY] = assignment
+        serialized_spawned.append(asdict(replace(spec, seed_facts=seed)))
     services.plan_details[chosen.action] = {
         "capability_ref": capability_ref, "arguments": arguments,
-        "spawned_tasks": [asdict(item) for item in spawned],
+        "spawned_tasks": serialized_spawned,
         "steps": list(steps),
     }
     for candidate in services.plan_details.get(
             "current_candidate_canvases", []):
         candidate["selected"] = candidate["candidate_id"] == (
             f"canvas:{chosen.action}")
-    return ExecutionPlan(
-        str(value.get("how_mode")), str(value.get("act_mode")),
-        handle=capability_ref, steps=steps, spawned_loops=spawned,
-        experiment={"arguments": arguments, "action_id": chosen.action},
-        rationale=_short_text(value.get("rationale"), "plan rationale"))
+    return plan
 
 
 def build_execution_plan(
@@ -100,6 +185,14 @@ def build_execution_plan(
     """Select, validate, and if needed repair one execution method."""
     chosen = request.chosen
     action = services.action_details[chosen.action]
+    if action.action_kind == "RUN_PARALLEL":
+        services.plan_details[chosen.action] = {
+            "arguments": {}, "spawned_tasks": [],
+            "validation_failure": _PARALLEL_UNAVAILABLE}
+        return ExecutionPlan(
+            "use", "run_direct", handle="core.invalid",
+            experiment={"action_id": chosen.action},
+            rationale=_PARALLEL_UNAVAILABLE)
     terminal_handles = {
         "RETURN_RESULT": "core.finish", "STOP": "core.abstain",
         "ASK_USER": "core.ask", "ABSTAIN": "core.abstain",
@@ -141,7 +234,19 @@ def build_execution_plan(
                     "orientation": request.situation.knowns[
                         "orientation"].to_dict(),
                     "method_validation_failure": failure,
-                }, _planning_schema(chosen.action)))
+                    **({"dependency_binding_contract": {
+                        "scope": "same admitted serial plan only",
+                        "legacy_independent_assignments": "objective, constraints, success_criteria remain supported",
+                        "inputs": [{"role": "result/v1", "source_task_id": "producer-task-id",
+                                    "source_role": "result/v1", "value_contract_ref": "value/v1",
+                                    "delivery": "value|reference"}],
+                        "output_contract": {"role": "result/v1", "value_contract_ref": "value/v1",
+                                            "schema": {}, "result_path": ["value"]},
+                        "output_path_origin": "the accepted result envelope, not the full private spawned-task state",
+                        "barrier_only_output": None,
+                    }} if action.action_kind == "SPAWN_LOOP" else {}),
+                }, _planning_schema(
+                    chosen.action, spawning=action.action_kind == "SPAWN_LOOP")))
             return _validate_plan_response(value, request, services)
         except (AdaptivePractitionerError, SolutionModelError,
                 TypeError, ValueError) as exc:
@@ -159,10 +264,6 @@ def build_execution_plan(
 
 
 def self_test() -> dict:
-    """Static check; adaptive acceptance tests exercise the repair path."""
-    source = __file__
-    passed = bool(source.endswith("adaptive_practitioner_planning.py"))
-    return {"record_type": "adaptive_planning_test/v1", "tests": [{
-        "test": "adaptive_method_planning_has_one_typed_module",
-        "passed": passed, "detail": source}], "passed": int(passed),
-        "total": 1, "all_passed": passed}
+    """Exercise admission and repair without model calls or effects."""
+    from .adaptive_practitioner_planning_checks import run_checks
+    return run_checks()

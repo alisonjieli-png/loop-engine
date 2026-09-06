@@ -266,6 +266,10 @@ def _refuse_pre_authored_artifacts(file_paths, artifacts) -> None:
     passed on all four. Authored files remain fully evidenced by the write
     record; they simply do not count as the output of an execution.
     """
+    artifact_paths = tuple(item.path for item in artifacts)
+    if len(artifact_paths) != len(set(artifact_paths)):
+        raise GeneratedProjectError(
+            "expected_artifacts: duplicate_path; declare each output path once")
     positions = {path: index for index, path in enumerate(file_paths)}
     overlaps = [(index, positions[item.path]) for index, item in enumerate(artifacts)
                 if item.path in positions]
@@ -279,6 +283,16 @@ def _refuse_pre_authored_artifacts(file_paths, artifacts) -> None:
             "typed. Author the code that produces each of these and remove "
             "the output itself from files, or drop it from expected_artifacts "
             "if it is an input rather than a result")
+    declared = {PurePosixPath(path): f"files[{index}].path"
+                for index, path in enumerate(file_paths)}
+    declared.update({PurePosixPath(path): f"expected_artifacts[{index}].path"
+                     for index, path in enumerate(artifact_paths)})
+    for path, field_name in declared.items():
+        for parent_path in path.parents:
+            if parent_path in declared:
+                raise GeneratedProjectError(
+                    f"{declared[parent_path]} overlaps {field_name}: file_directory_collision; "
+                    "declared files need distinct paths with directory-only parents")
 
 
 def _require_project_work(files, commands, artifacts, *, prefix: str) -> None:
@@ -632,24 +646,26 @@ def workspace_file_byte_limit(
 
 
 def validate_generated_project_input_paths(project, inputs) -> None:
-    """Refuse authored paths that overwrite or structurally block an input.
+    """Refuse delivery paths that overwrite or structurally block an input.
 
     This effect-free check accepts candidate specifications or a complete
     manifest. Supplied inputs keep their admitted names; generated outputs
     must use distinct paths rather than an overwrite permission.
     """
-    for file_index, authored in enumerate(project.files):
-        authored_path = PurePosixPath(authored.path)
-        for input_index, supplied in enumerate(inputs):
-            input_path = PurePosixPath(supplied.path)
-            if (authored_path == input_path
-                    or authored_path in input_path.parents
-                    or input_path in authored_path.parents):
-                raise GeneratedProjectError(
-                    f"files[{file_index}].path collides with "
-                    f"input_artifacts[{input_index}].path; supplied inputs "
-                    "are read-only source material. Choose distinct authored "
-                    "and output paths; do not recreate or overwrite inputs")
+    for field_name, files in (("files", project.files),
+                              ("expected_artifacts", project.expected_artifacts)):
+        for file_index, delivered in enumerate(files):
+            delivered_path = PurePosixPath(delivered.path)
+            for input_index, supplied in enumerate(inputs):
+                input_path = PurePosixPath(supplied.path)
+                if (delivered_path == input_path
+                        or delivered_path in input_path.parents
+                        or input_path in delivered_path.parents):
+                    raise GeneratedProjectError(
+                        f"{field_name}[{file_index}].path collides with "
+                        f"input_artifacts[{input_index}].path; supplied inputs "
+                        "are read-only source material. Choose distinct authored "
+                        "and output paths; do not recreate or overwrite inputs")
 
 
 def validate_generated_project_input_use(
@@ -830,11 +846,17 @@ def _approve_exact(operations, plan, authority) -> str:
 
 def _authored_source_artifacts(manifest, operations, commands) -> list[dict]:
     """Expose authored deliverables without pretending commands produced them."""
-    verified_run = bool(
+    commands_passed = bool(
         len(commands) == len(manifest.commands)
-        and all(item.get("ok") is True and item.get("exit_code") == 0
-                and item.get("expectation_met") is True for item in commands)
-        and any(item.get("command_kind") == "verify" for item in commands))
+        and all(item.get("expectation_met") is True for item in commands))
+    verify_command_passed = bool(commands_passed and any(
+        item.get("command_kind") == "verify" and item.get("ok") is True
+        and item.get("exit_code") == 0 for item in commands))
+    # Code-only delivery needs an actual verification command. A task that
+    # produces data may instead use its declared command/output checks; do
+    # not turn source inclusion into a new global test-command requirement.
+    verified_run = commands_passed and (
+        bool(manifest.expected_artifacts) or verify_command_passed)
     records = []
     for file in manifest.files:
         result = operations.file(FileRequest(FileOperation.READ, file.path))
@@ -852,6 +874,17 @@ def _authored_source_artifacts(manifest, operations, commands) -> list[dict]:
                     format_valid, error = True, ""
                 except (SyntaxError, UnicodeError, ValueError, RecursionError):
                     error = "python_source_syntax_invalid"
+            elif manifest.expected_artifacts and media_type in (
+                    "text/html", "application/xhtml+xml"):
+                # Mixed delivery can use markup fragments as source for a
+                # separately declared rendered document. Check source bytes
+                # and encoding here; final outputs keep their format checks.
+                method = "utf8_source"
+                try:
+                    result.content.decode("utf-8")
+                    format_valid, error = True, ""
+                except UnicodeDecodeError:
+                    error = "source_utf8_invalid"
             elif not result.content and media_type.startswith("text/") and media_type != "text/html":
                 format_valid, method, error = True, "utf8_decode", ""
             else:
@@ -864,8 +897,11 @@ def _authored_source_artifacts(manifest, operations, commands) -> list[dict]:
             "source_digest_matches": bool(digest_matches),
             "format_valid": format_valid, "format_error": error,
             "error_code": result.error_code,
-            "verification_method": "post_run_authored_digest_" + method + "_and_verify_command",
-            "verification_command_passed": verified_run,
+            "verification_method": ("post_run_authored_digest_" + method
+                + ("_and_verify_command" if verify_command_passed
+                   else "_and_command_expectations")),
+            "command_expectations_met": commands_passed,
+            "verification_command_passed": verify_command_passed,
             "verified": bool(verified_run and digest_matches and format_valid),
         })
     if any(not item["source_digest_matches"] or not item["format_valid"] for item in records):
@@ -981,6 +1017,16 @@ def execute_generated_project(
             f"sandbox unavailable: {availability.reason_code}: "
             f"{availability.detail}")
 
+    for index, expected in enumerate(request.manifest.expected_artifacts):
+        existing = operations.file(FileRequest(FileOperation.STAT, expected.path))
+        if existing.ok:
+            raise GeneratedProjectError(
+                f"expected_artifacts[{index}].path: output_already_present; "
+                "use a fresh output path so execution evidence cannot reuse old bytes")
+        if existing.error_code != "path_unavailable":
+            raise GeneratedProjectError(
+                f"expected_artifacts[{index}].path: output_preflight_unavailable")
+
     writes = []
     for input_artifact in request.input_artifacts:
         input_request = FileRequest(
@@ -1073,24 +1119,33 @@ def execute_generated_project(
         format_valid, method, format_error = verify_artifact_content(
             expected.media_type,
             content_result.content if content_result.ok else b"")
+        observed_digest = (hashlib.sha256(content_result.content).hexdigest()
+                           if content_result.ok else "")
+        content_matches = bool(
+            result.ok and content_result.ok
+            and result.digest == content_result.digest == observed_digest
+            and result.byte_count == len(content_result.content))
         artifacts.append({
             **expected.to_dict(),
+            "artifact_origin": "command_output",
+            "command_produced": bool(content_result.ok),
             "present": result.ok,
             "byte_count": result.byte_count,
-            "digest": result.digest,
+            "digest": observed_digest,
+            "content_digest_matches": content_matches,
             "error_code": result.error_code,
             "format_valid": format_valid,
             "verification_method": method,
             "format_error": format_error,
-            "verified": (result.ok
+            "verified": (content_matches
                          and result.byte_count >= expected.minimum_bytes
                          and format_valid),
         })
-    if not request.manifest.expected_artifacts:
-        artifacts = _authored_source_artifacts(request.manifest, operations, commands)
+    artifacts.extend(_authored_source_artifacts(request.manifest, operations, commands))
     snapshot = operations.snapshot(SnapshotRequest(include_hidden=False))
     deterministic_pass = bool(
-        commands and all(item["expectation_met"] for item in commands)
+        commands and len(commands) == len(request.manifest.commands)
+        and all(item["expectation_met"] for item in commands)
         and all(item["verified"] for item in artifacts))
     record = {
         "record_type": "generated_project_execution/v1",
@@ -1597,7 +1652,7 @@ def _read_only_execution_checks(context, authority) -> list[dict]:
 
 
 def _input_path_collision_checks() -> list[dict]:
-    """Inputs cannot collide with authored files before any workspace effect."""
+    """Inputs cannot become authored or command-produced deliverables."""
     import tempfile
     from types import SimpleNamespace
     from unittest.mock import patch
@@ -1634,6 +1689,21 @@ def _input_path_collision_checks() -> list[dict]:
         tests.append({"test": "similar_prefix_is_not_a_path_collision",
                       "passed": good.manifest.files[0].path == "inputs/data.txt.py"
                       and not root.exists(), "detail": "path components, not string prefixes"})
+        for label, path in (("same_path", "inputs/data.txt"),
+                            ("output_parent", "inputs"),
+                            ("output_nested", "inputs/data.txt/result.txt"),
+                            ("normalized_backslash", "inputs\\data.txt")):
+            aliased = replace(manifest("main.py"), expected_artifacts=(
+                ExpectedProjectArtifact(path, "text/plain"),))
+            try:
+                GeneratedProjectExecutionRequest(aliased, str(root), authority,
+                                                 input_artifacts=supplied)
+                refused = False
+            except GeneratedProjectError as exc:
+                refused = "expected_artifacts[0].path collides" in str(exc)
+            tests.append({"test": "command_output_input_collision_refuses_" + label,
+                          "passed": refused and not root.exists(),
+                          "detail": "supplied input cannot count as command output"})
         # A forged frozen object must still meet the same effect preflight.
         object.__setattr__(good, "manifest", manifest("inputs/data.txt"))
         context = GeneratedProjectExecutionContext(SimpleNamespace(loop_id="fixture", ledger=object()))
@@ -1647,11 +1717,22 @@ def _input_path_collision_checks() -> list[dict]:
                       "passed": refused and not mkdir.called and not availability.called
                       and supplied[0].content == b"original fixture",
                       "detail": "defensive effect-boundary validation; original input unchanged"})
+        object.__setattr__(good, "manifest", replace(manifest("main.py"),
+            expected_artifacts=(ExpectedProjectArtifact("inputs/data.txt", "text/plain"),)))
+        with patch.object(Path, "mkdir") as mkdir, patch.object(DockerWorkspace, "availability") as availability:
+            try:
+                execute_generated_project(good, context)
+                refused = False
+            except GeneratedProjectError:
+                refused = True
+        tests.append({"test": "executor_rechecks_output_input_alias_before_effects",
+                      "passed": refused and not mkdir.called and not availability.called,
+                      "detail": "construction bypass cannot relabel an input as output"})
     return tests
 
 
 def _code_only_project_checks() -> list[dict]:
-    """Generic authored-code delivery and strict admission, without models."""
+    """Generic complete delivery and strict admission, without models."""
     import tempfile
     from unittest.mock import patch
 
@@ -1734,6 +1815,19 @@ def _code_only_project_checks() -> list[dict]:
     check("authored_and_command_produced_artifacts_still_cannot_overlap",
           bool(invalid(lambda body: body.update(expected_artifacts=[{
               "path": "library.py", "media_type": "text/x-python"}]))))
+    check("normalized_authored_and_command_output_aliases_are_refused",
+          "authored_artifact_overlap" in invalid(lambda body: body.update(
+              expected_artifacts=[{"path": "./library.py", "media_type": "text/plain"}]))
+          and "file_directory_collision" in invalid(lambda body: body.update(
+              expected_artifacts=[{"path": "library.py/result.txt", "media_type": "text/plain"}])))
+    check("duplicate_normalized_expected_output_paths_are_refused",
+          "duplicate_path" in invalid(lambda body: body.update(expected_artifacts=[
+              {"path": "output.txt", "media_type": "text/plain"},
+              {"path": "./output.txt", "media_type": "application/json"}])))
+    check("output_file_cannot_also_be_another_output_directory",
+          "file_directory_collision" in invalid(lambda body: body.update(expected_artifacts=[
+              {"path": "outputs", "media_type": "text/plain"},
+              {"path": "outputs/report.txt", "media_type": "text/plain"}])))
     bad_manifest = {**manifest_body, "files": [{"path": "library.py", "content": None}]}
     try:
         GeneratedProjectManifest.from_mapping(bad_manifest)
@@ -1798,4 +1892,170 @@ def _code_only_project_checks() -> list[dict]:
               result["commands"][0]["exit_code"] == 0
               and not result["deterministic_checks_passed"]
               and all(not item["verified"] for item in result["artifacts"]))
+
+    writer = GeneratedProjectFile("write_output.py",
+        "from pathlib import Path\nPath('output.txt').write_text('computed result\\n')\n")
+    write_command = GeneratedProjectCommand(("python", writer.path), "Produce output")
+    output = ExpectedProjectArtifact("output.txt", "text/plain")
+    mixed = replace(manifest, files=(*manifest.files, writer),
+                    commands=(*manifest.commands, write_command), expected_artifacts=(output,))
+    with tempfile.TemporaryDirectory(prefix="mixed-delivery-") as root:
+        result = execute(mixed, root)
+        artifacts = {item["path"]: item for item in result["artifacts"]}
+        check("mixed_delivery_reports_and_verifies_both_complete_file_sets",
+              result["deterministic_checks_passed"]
+              and set(artifacts) == {"library.py", "test_library.py", "write_output.py", "output.txt"}
+              and all(item["verified"] for item in artifacts.values())
+              and artifacts["output.txt"]["artifact_origin"] == "command_output"
+              and artifacts["output.txt"]["command_produced"] is True
+              and all(artifacts[item.path]["artifact_origin"] == "authored_source"
+                      and artifacts[item.path]["command_produced"] is False
+                      and artifacts[item.path]["source_digest_matches"]
+                      for item in mixed.files))
+        public = _product_result({"project_attempts": [{
+            **result, "workspace_path": root, "manifest": mixed.to_dict()}]}, True)
+        check("public_product_projection_preserves_mixed_delivery_completeness",
+              len(public["artifacts"]) == len(artifacts)
+              and {Path(item["path"]).name for item in public["artifacts"]} == set(artifacts))
+
+    data_only = replace(manifest, files=(writer,), commands=(write_command,),
+                        expected_artifacts=(output,))
+    with tempfile.TemporaryDirectory(prefix="data-output-delivery-") as root:
+        result = execute(data_only, root)
+        sources = [item for item in result["artifacts"]
+                   if item["artifact_origin"] == "authored_source"]
+        check("data_output_without_a_verify_command_remains_supported",
+              result["deterministic_checks_passed"] and len(sources) == 1
+              and sources[0]["command_expectations_met"] is True
+              and sources[0]["verification_command_passed"] is False
+              and sources[0]["verified"] is True)
+
+    fragment = GeneratedProjectFile("template.html", "<span>{{ label }}</span>")
+    renderer = GeneratedProjectFile("render.py",
+        "from pathlib import Path\n"
+        "fragment = Path('template.html').read_text().replace('{{ label }}', 'ready')\n"
+        "Path('output.html').write_text('<html><body>' + fragment + '</body></html>')\n")
+    render_command = GeneratedProjectCommand(("python", renderer.path), "Render document")
+    markup_project = replace(data_only, files=(fragment, renderer),
+        commands=(render_command,),
+        expected_artifacts=(ExpectedProjectArtifact("output.html", "text/html"),))
+    with tempfile.TemporaryDirectory(prefix="markup-source-fragment-") as root:
+        result = execute(markup_project, root)
+        artifacts = {item["path"]: item for item in result["artifacts"]}
+        check("mixed_markup_source_fragment_keeps_exact_bytes_without_document_root",
+              result["deterministic_checks_passed"]
+              and (Path(root) / fragment.path).read_text() == fragment.content
+              and artifacts[fragment.path]["verified"]
+              and artifacts[fragment.path]["source_digest_matches"]
+              and "utf8_source" in artifacts[fragment.path]["verification_method"]
+              and artifacts["output.html"]["verification_method"] == "html_parse")
+
+    incomplete_output = replace(markup_project, files=(fragment, replace(renderer,
+        content="from pathlib import Path\nPath('output.html').write_text('<span>fragment</span>')\n")))
+    with tempfile.TemporaryDirectory(prefix="markup-final-document-") as root:
+        result = execute(incomplete_output, root)
+        final = next(item for item in result["artifacts"] if item["path"] == "output.html")
+        check("declared_final_html_still_requires_complete_document",
+              not result["deterministic_checks_passed"] and not final["verified"]
+              and final["format_error"] == "HTML root is missing")
+
+    for label, change in (
+            ("changed", "Path('template.html').write_text('<b>changed</b>')"),
+            ("missing", "Path('template.html').unlink()")):
+        changed_markup = replace(markup_project, files=(
+            fragment, replace(renderer, content=renderer.content + change + "\n")))
+        with tempfile.TemporaryDirectory(prefix="markup-source-integrity-") as root:
+            result = execute(changed_markup, root)
+            artifacts = {item["path"]: item for item in result["artifacts"]}
+            check("mixed_markup_refuses_" + label + "_source_despite_valid_document",
+                  not result["deterministic_checks_passed"]
+                  and not artifacts[fragment.path]["verified"]
+                  and not artifacts[fragment.path]["source_digest_matches"]
+                  and artifacts["output.html"]["verified"])
+
+    for label, content, valid in (
+            ("fragment", fragment.content, False),
+            ("complete", "<html><body>complete</body></html>", True)):
+        direct_markup = replace(markup_project,
+            files=(replace(fragment, content=content), renderer), expected_artifacts=(),
+            commands=(replace(render_command, command_kind="verify"),))
+        with tempfile.TemporaryDirectory(prefix="direct-markup-delivery-") as root:
+            result = execute(direct_markup, root)
+            check("code_only_html_retains_document_validation_" + label,
+                  result["deterministic_checks_passed"] is valid)
+
+    for label, mutation in (
+            ("changed", "Path('library.py').write_text('replacement = True\\n')"),
+            ("missing", "Path('library.py').unlink()")):
+        changed = replace(mixed, files=(*mixed.files, GeneratedProjectFile(
+            "alter.py", "from pathlib import Path\n" + mutation + "\n")),
+            commands=(*mixed.commands, GeneratedProjectCommand(
+                ("python", "alter.py"), "Change authored source after verification")))
+        with tempfile.TemporaryDirectory(prefix="mixed-source-integrity-") as root:
+            result = execute(changed, root)
+            sources = [item for item in result["artifacts"]
+                       if item["artifact_origin"] == "authored_source"]
+            outputs = [item for item in result["artifacts"]
+                       if item["artifact_origin"] == "command_output"]
+            check("mixed_delivery_rejects_" + label + "_authored_bytes_despite_valid_output",
+                  not result["deterministic_checks_passed"]
+                  and len(sources) == len(changed.files)
+                  and all(not item["verified"] for item in sources)
+                  and outputs[0]["verified"]
+                  and all(item["exit_code"] == 0 for item in result["commands"]))
+
+    invalid_mixed = replace(mixed, files=(*mixed.files, GeneratedProjectFile(
+        "unused.py", "def incomplete(\n")))
+    with tempfile.TemporaryDirectory(prefix="mixed-source-syntax-") as root:
+        result = execute(invalid_mixed, root)
+        check("mixed_output_cannot_hide_unimported_invalid_source",
+              not result["deterministic_checks_passed"]
+              and any(item.get("format_error") == "python_source_syntax_invalid"
+                      for item in result["artifacts"])
+              and all(item["exit_code"] == 0 for item in result["commands"]))
+
+    missing_output = replace(mixed, files=manifest.files, commands=manifest.commands)
+    with tempfile.TemporaryDirectory(prefix="mixed-output-missing-") as root:
+        result = execute(missing_output, root)
+        check("verified_sources_do_not_hide_a_missing_command_output",
+              not result["deterministic_checks_passed"]
+              and len(result["artifacts"]) == len(missing_output.files) + 1
+              and any(item["artifact_origin"] == "command_output" and not item["present"]
+                      and not item["verified"] for item in result["artifacts"]))
+
+    with tempfile.TemporaryDirectory(prefix="old-output-refused-") as root:
+        previous = Path(root) / "output.txt"
+        previous.write_text("preserved old output\n", encoding="utf-8")
+        try:
+            execute(data_only, root)
+            refused = False
+        except GeneratedProjectError as exc:
+            refused = "output_already_present" in str(exc)
+        check("preexisting_output_is_preserved_and_cannot_supply_execution_evidence",
+              refused and previous.read_text() == "preserved old output\n"
+              and not (Path(root) / writer.path).exists())
+
+    generator = replace(data_only, files=(GeneratedProjectFile("generate_project.py",
+        "from pathlib import Path\nPath('generated').mkdir()\n"
+        "Path('generated/library.py').write_text('def answer():\\n    return 42\\n')\n"),),
+        commands=(GeneratedProjectCommand(("python", "generate_project.py"), "Generate code"),),
+        expected_artifacts=(ExpectedProjectArtifact("generated/library.py", "text/x-python"),))
+    with tempfile.TemporaryDirectory(prefix="declared-code-generation-") as root:
+        result = execute(generator, root)
+        check("declared_code_generator_is_not_refused_by_its_filename_or_output_type",
+              result["deterministic_checks_passed"]
+              and {item["path"] for item in result["artifacts"]}
+              == {"generate_project.py", "generated/library.py"})
+
+    expected_error = replace(manifest, files=(*manifest.files, GeneratedProjectFile(
+        "expected_error.py", "raise ValueError('declared failure')\n")),
+        commands=(GeneratedProjectCommand(("python", "expected_error.py"),
+            "Observe expected rejection", expected_exit_codes=(1,)), *manifest.commands))
+    with tempfile.TemporaryDirectory(prefix="expected-command-rejection-") as root:
+        result = execute(expected_error, root)
+        check("declared_error_case_and_successful_verify_command_preserve_code_delivery",
+              result["deterministic_checks_passed"]
+              and result["commands"][0]["exit_code"] == 1
+              and result["commands"][0]["expectation_met"] is True
+              and all(item["verification_command_passed"] for item in result["artifacts"]))
     return tests

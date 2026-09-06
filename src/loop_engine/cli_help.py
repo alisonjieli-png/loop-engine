@@ -57,7 +57,9 @@ Orient and plan work. This command does not execute the requested product.""",
 Compile task intake deterministically without solving it.""",
     "models": """usage: loop-engine models {inventory|routes|explain|benchmark|probe} [options]
 
-Inspect routes without calls, or probe one exact route with explicit authority.""",
+Inspect routes without calls, or probe one exact route with explicit authority.
+Probe flags: --authorize-model-calls --max-model-calls 1
+Choose --allow-unbounded-total-tokens explicitly, or a qualified --max-total-tokens policy.""",
     "extensions": """usage: loop-engine extensions {discover|providers|capabilities|intelligence|plugins|skills} [options]
 
 Inspect added files without executing them.""",

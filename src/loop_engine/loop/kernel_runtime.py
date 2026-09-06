@@ -8,18 +8,20 @@ Loop to a terminal state before returning a typed value.
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from contextvars import ContextVar
 from dataclasses import dataclass, replace
-from typing import Any
+import hashlib
+import json
+from typing import Any, Callable
 
 from .kernel import (KERNEL_NODES, MAX_SPAWN_DEPTH, KernelRunRequest,
                      ProblemSpec, _calculate_kernel_passes)
-from .loop_contract import LoopContract
+from .loop_contract import LoopContract, execution_mode_for_runtime_mode
 from .loop_definition import LoopDefinition, LoopStartRequest
 from .loop_role import (LoopRelationship, LoopRelationshipKind, LoopRole,
                         LoopRoleIdentity)
-from .recursive_loop import (INTERNAL_MODE_NAMES, MODES, Loop, LoopConfig,
-                             LoopLedger, StepOutcome)
+from .recursive_loop import MODES, Loop, LoopConfig, LoopLedger, StepOutcome
 from .runtime_context import (InternalRuntimeBinding, InternalRuntimeMechanics,
                               LoopRuntimeContext)
 
@@ -97,7 +99,7 @@ def _definition_for(request: KernelRunRequest) -> LoopDefinition:
         LoopRole.PRACTITIONER, "practitioner.reference_nine_step")
     contract = LoopContract(
         name="run Practitioner kernel passes",
-        execution_mode=INTERNAL_MODE_NAMES[request.selected_mode],
+        execution_mode=execution_mode_for_runtime_mode(request.selected_mode),
         input_roles=("problem_spec",), output_roles=("kernel_run",),
         effects=("pure",), role="practitioner")
     return LoopDefinition.from_runtime(
@@ -218,7 +220,13 @@ def execute_kernel_run(request: KernelRunRequest) -> dict:
         loop_result = owner.result()
     else:
         run, loop_result = _run_owner(owner, request)
-    run.update({
+    run.update(_kernel_metadata(owner, loop_result))
+    return run
+
+
+def _kernel_metadata(owner: Loop, loop_result) -> dict:
+    """Project owner identity and closure from the canonical Loop itself."""
+    return {
         "loop_id": owner.loop_id,
         "loop_definition_id": owner.definition_ref.definition_id,
         "loop_definition_version": owner.definition_ref.version,
@@ -227,23 +235,142 @@ def execute_kernel_run(request: KernelRunRequest) -> dict:
         "loop_terminal": owner.is_terminal,
         "loop_terminal_code": (
             loop_result.terminal_code if owner.is_terminal else ""),
-    })
-    return run
+    }
+
+
+def _prepare_spawned_kernel(
+        owner: Loop, parent: Loop,
+        prepare: Callable[[Loop], SpawnedKernelRun | None]) -> SpawnedKernelRun | None:
+    """Validate a trusted preparation against the exact newly allocated owner.
+
+    This checks identity and execution evidence. The installed preparation is
+    responsible for the task's semantic verification; it is not model input
+    or an execution sandbox for an untrusted callable.
+    """
+    original = {name: getattr(owner, name) for name in (
+        "loop_id", "goal", "depth", "definition", "definition_ref", "identity",
+        "relationship", "runtime_context", "config", "parent", "ledger")}
+    original_ref = owner.definition_ref.to_dict()
+    original_relationship = owner.relationship.to_dict()
+    original_config = deepcopy(owner.config)
+    parent_id, ledger = parent.loop_id, parent.ledger
+    token = _ACTIVE_KERNEL_OWNER.set(owner)
+    try:
+        prepared = prepare(owner)
+        stable_references = (
+            "definition", "definition_ref", "identity", "relationship",
+            "runtime_context", "config", "parent", "ledger")
+        if (any(getattr(owner, name) is not original[name]
+                for name in stable_references)
+                or any(getattr(owner, name) != original[name]
+                       for name in ("loop_id", "goal", "depth"))
+                or owner.definition.ref.to_dict() != original_ref
+                or owner.definition_ref.to_dict() != original_ref
+                or owner.relationship.to_dict() != original_relationship
+                or owner.config != original_config
+                or parent.loop_id != parent_id or parent.ledger is not ledger):
+            raise KernelRuntimeError("kernel preparation changed its bound owner")
+        if prepared is None:
+            if owner.is_terminal or getattr(owner, "_it", None) is not None:
+                raise KernelRuntimeError(
+                    "continuing preparation must leave its owner unstarted")
+            return None
+        if type(prepared) is not SpawnedKernelRun:
+            raise KernelRuntimeError(
+                "completed preparation must return SpawnedKernelRun")
+        if not owner.is_terminal:
+            raise KernelRuntimeError(
+                "completed preparation requires its exact owner to be terminal")
+        actual = owner.result()
+        claims = {
+            "loop_id": owner.loop_id,
+            "definition_id": owner.definition_ref.definition_id,
+            "definition_version": owner.definition_ref.version,
+            "definition_digest": owner.definition_ref.content_digest,
+            "relationship": owner.relationship,
+            "terminal_code": actual.terminal_code,
+        }
+        if any(getattr(prepared, name) != value for name, value in claims.items()):
+            raise KernelRuntimeError(
+                "prepared result does not match its exact terminal Loop")
+        metadata = _kernel_metadata(owner, actual)
+        terminals = [event for event in ledger.events
+                     if event.get("event") == "terminal"
+                     and event.get("loop_id") == owner.loop_id]
+        if (actual.terminal_code != "ACCEPTED" or len(terminals) != 1
+                or terminals[0].get("reason") != actual.stopped
+                or any(terminals[0].get(name) != metadata[name] for name in (
+                    "loop_definition_id", "loop_definition_version",
+                    "loop_definition_digest"))):
+            raise KernelRuntimeError(
+                "completed preparation requires recorded accepted owner closure")
+        run = prepared.run
+        if (type(run) is not dict or run.get("final_route") != "stop_success"
+                or type(run.get("passes")) is not int or run["passes"] < 1
+                or ("solved" in run and run["solved"] is not True)
+                or run.get("failure_code") or run.get("failures")):
+            raise KernelRuntimeError("prepared kernel projection is not completed")
+        if any(name in run and run[name] != value for name, value in metadata.items()):
+            raise KernelRuntimeError("prepared kernel projection has conflicting owner metadata")
+        try:
+            # Detach the returned value without changing Python types that
+            # the exact resolver and its verification trace still preserve.
+            run = deepcopy({**run, **metadata})
+            encoded = json.dumps(
+                run, sort_keys=True, separators=(",", ":"),
+                allow_nan=False)
+        except (TypeError, ValueError) as exc:
+            raise KernelRuntimeError(
+                "prepared kernel projection must contain exact JSON values") from exc
+        ledger.record(
+            loop_id=owner.loop_id, event="custom",
+            custom_kind="kernel_preparation_completed",
+            output_role="kernel_run", final_route=run["final_route"],
+            passes=run["passes"],
+            projection_digest=hashlib.sha256(encoded.encode()).hexdigest())
+        return SpawnedKernelRun(**claims, run=run)
+    except (Exception, KeyboardInterrupt):
+        # The preparation owns only this newly allocated Loop. Restore its
+        # bound identity before recording rejection and closing it on failure.
+        for name, value in original.items():
+            setattr(owner, name, value)
+        if owner.config != original_config:
+            owner.config = original_config
+        ledger.record(loop_id=original["loop_id"], event="custom",
+                      custom_kind="kernel_preparation_rejected")
+        owner.cancel("kernel_preparation_rejected")
+        raise
+    finally:
+        _ACTIVE_KERNEL_OWNER.reset(token)
 
 
 def run_spawned_kernel(spec: ProblemSpec, impls: dict, *,
-                       selected_mode: str = "deterministic") -> SpawnedKernelRun:
-    """Spawn, run, and type the result of one recursive Practitioner Loop."""
+                       selected_mode: str = "deterministic",
+                       prepare: Callable[[Loop], SpawnedKernelRun | None] | None = None,
+                       ) -> SpawnedKernelRun:
+    """Spawn and run a canonical Practitioner, with optional trusted preparation.
+
+    Preparation is installed by the caller. It may complete an exact qualified
+    task through that same Loop, or leave it unstarted for the usual kernel.
+    A model response cannot select or supply this callback.
+    """
     parent = current_kernel_owner()
     if parent is None:
         raise KernelRuntimeError(
             "recursive kernel work requires an active Practitioner Loop owner")
     request = KernelRunRequest(
         spec=spec, impls=impls, selected_mode=selected_mode)
+    _validate_request(request)
+    if prepare is not None and not callable(prepare):
+        raise KernelRuntimeError("kernel preparation must be callable")
     definition = _definition_for(request)
     relationship = LoopRelationship.spawned_by(parent.loop_id)
     spawned = parent.spawn(
         spec.objective, definition=definition, relationship=relationship)
+    if prepare is not None:
+        prepared = _prepare_spawned_kernel(spawned, parent, prepare)
+        if prepared is not None:
+            return prepared
     run = execute_kernel_run(replace(request, owner_loop=spawned))
     result = spawned.result()
     if (spawned.ledger is not parent.ledger
@@ -262,6 +389,216 @@ def run_spawned_kernel(spec: ProblemSpec, impls: dict, *,
         run=run)
 
 
+def _preparation_checks() -> list[dict]:
+    """Exercise trusted preparation through active canonical parent Loops."""
+    from .kernel import ResultPacket, default_impls
+
+    tests = []
+
+    def close(owner):
+        owner.run(handler=lambda _owner, step, _context: StepOutcome(
+            "prepared:" + step, "deterministic", 1.0),
+            max_steps=len(owner.steps()) + 1)
+
+    def projection(owner):
+        return SpawnedKernelRun(
+            owner.loop_id, owner.definition_ref.definition_id,
+            owner.definition_ref.version, owner.definition_ref.content_digest,
+            owner.relationship, "ACCEPTED", {
+                "final_route": "stop_success", "passes": 1,
+                "facts": {"exact_value": 7}, "failures": []})
+
+    def exercise(callback, mode="hybrid", *, parent_owner=None):
+        captured = {"kernel_calls": 0}
+        implementations = default_impls()
+        original_orient = implementations["orient"]
+
+        def orient(state):
+            captured["kernel_calls"] += 1
+            return original_orient(state)
+
+        implementations["orient"] = orient
+
+        def prepare(owner):
+            captured["owner"] = owner
+            captured["callback_owner_matches"] = current_kernel_owner() is owner
+            return callback(owner)
+
+        def act(_state, _plan):
+            parent = current_kernel_owner()
+            try:
+                captured["result"] = run_spawned_kernel(
+                    ProblemSpec("prepared subproblem", budget_passes=1, depth=1),
+                    implementations, selected_mode=mode, prepare=prepare)
+            except Exception as exc:
+                captured["error"] = exc
+            captured["parent_context_restored"] = current_kernel_owner() is parent
+            return [ResultPacket("preparation fixture", result="observed")]
+
+        parent_impls = default_impls()
+        parent_impls["act"] = act
+        execute_kernel_run(KernelRunRequest(
+            ProblemSpec("preparation owner", budget_passes=1), parent_impls,
+            max_passes=1, selected_mode=mode, owner_loop=parent_owner))
+        return captured
+
+    emitted = []
+
+    def complete(owner):
+        close(owner)
+        value = projection(owner)
+        emitted.append(value)
+        return value
+
+    for mode in MODES:
+        result = exercise(complete, mode)
+        typed = result.get("result")
+        owner = result["owner"]
+        passed = bool(
+            typed and typed.loop_id == owner.loop_id
+            and typed.terminal_code == owner.result().terminal_code == "ACCEPTED"
+            and typed.run["loop_terminal"] is True
+            and typed.run["loop_definition_digest"] == owner.definition_ref.content_digest
+            and typed.run["loop_relationship"] == owner.relationship.to_dict()
+            and result["kernel_calls"] == 0
+            and result["callback_owner_matches"] and result["parent_context_restored"]
+            and any(event.get("custom_kind") == "kernel_preparation_completed"
+                    and event.get("projection_digest") for event in owner.ledger.events))
+        emitted[-1].run["facts"]["exact_value"] = 99
+        tests.append({"test": "prepared_exact_owner_completion_" + mode,
+                      "passed": passed and typed.run["facts"]["exact_value"] == 7,
+                      "detail": "real Loop closure with fixture work; zero provider calls"})
+
+    continued = exercise(lambda _owner: None)
+    tests.append({"test": "unresolved_preparation_continues_same_kernel_owner",
+                  "passed": "error" not in continued
+                  and continued["kernel_calls"] == 1
+                  and continued["result"].loop_id == continued["owner"].loop_id
+                  and continued["parent_context_restored"],
+                  "detail": "None runs the supplied implementations"})
+
+    def different_owner(owner):
+        close(owner)
+        other = _starting_loop(KernelRunRequest(ProblemSpec("different owner"), {}))
+        close(other)
+        return projection(other)
+
+    def bad_metadata(owner):
+        value = complete(owner)
+        value.run["loop_id"] = "different-owner"
+        return value
+
+    def closed_without_result(owner):
+        close(owner)
+        return None
+
+    def cancelled_completion(owner):
+        owner.cancel("fixture cancellation")
+        return projection(owner)
+
+    def changed_identity(owner):
+        owner.goal = "different goal"
+        return None
+
+    def changed_ledger(owner):
+        owner.ledger = LoopLedger()
+        return None
+
+    def wrong_passes(owner):
+        value = complete(owner)
+        value.run["passes"] = True
+        return value
+
+    def wrong_definition(owner):
+        return replace(complete(owner), definition_digest="0" * 64)
+
+    def raised_preparation(_owner):
+        raise RuntimeError("fixture preparation failure")
+
+    for label, callback in (
+            ("active_owner", projection), ("different_owner", different_owner),
+            ("conflicting_metadata", bad_metadata),
+            ("closed_none", closed_without_result),
+            ("cancelled_completion", cancelled_completion),
+            ("changed_identity", changed_identity), ("changed_ledger", changed_ledger),
+            ("invalid_passes", wrong_passes), ("wrong_definition", wrong_definition),
+            ("untyped_completion", lambda owner: (close(owner), {"solved": True})[1]),
+            ("raised_preparation", raised_preparation)):
+        result = exercise(callback)
+        owner = result["owner"]
+        completed_first = label in {
+            "different_owner", "conflicting_metadata", "closed_none", "invalid_passes",
+            "wrong_definition", "untyped_completion"}
+        expected_terminal = "ACCEPTED" if completed_first else "CANCELED"
+        tests.append({"test": "kernel_preparation_refuses_" + label,
+                      "passed": "result" not in result and "error" in result
+                      and result["kernel_calls"] == 0
+                      and owner.result().terminal_code == expected_terminal
+                      and len([event for event in owner.ledger.events
+                               if event.get("event") == "terminal"
+                               and event.get("loop_id") == owner.loop_id]) == 1
+                      and result["parent_context_restored"]
+                      and any(event.get("custom_kind") == "kernel_preparation_rejected"
+                              for event in owner.ledger.events),
+                      "detail": type(result.get("error")).__name__})
+
+    from pathlib import Path
+    from types import SimpleNamespace
+    from ..core.adaptive_practitioner_records import (
+        AdaptivePractitionerDependencies, AdaptivePractitionerRequest,
+        AdaptiveRunServices)
+    from ..core.adaptive_practitioner_scope import (
+        delegated_task_text, prepare_exact_result, spawned_summary)
+
+    original_value = {"verified": True, "value": ({"members": [1, 2]}, 3)}
+    assignment = ProblemSpec("prepared subproblem", success_criteria=("retain exact value",))
+    task_text = delegated_task_text(assignment)
+    resolver_calls = []
+
+    class ExactValueResolver:
+        resolver_id = "fixture.exact_prepared_value"
+
+        def supports(self, task):
+            return task == task_text
+
+        def execute(self, task):
+            resolver_calls.append(task)
+            return original_value
+
+    services = AdaptiveRunServices(
+        AdaptivePractitionerRequest(task_text, mode="hybrid"),
+        AdaptivePractitionerDependencies(deterministic_resolvers=(ExactValueResolver(),)),
+        "prepared-value-fixture", Path("."), None, None,
+        model_session=SimpleNamespace(calls_used=0, accounting_uncertain=False))
+    parent_owner = Loop("preparation owner", LoopConfig(
+        allowable_modes=("deterministic", "hybrid"),
+        preferred_modes=("hybrid", "deterministic"), delegated_modes=MODES,
+        llm_thinking_power="medium"))
+    exact = exercise(lambda owner: prepare_exact_result(services, owner),
+                     parent_owner=parent_owner)
+    prepared = exact.get("result")
+    summary = (spawned_summary(prepared, services, spec=assignment, calls_before=0)
+               if prepared is not None else {})
+    exact_types = bool(
+        summary.get("task_complete") is True and exact["kernel_calls"] == 0
+        and resolver_calls == [task_text]
+        and prepared.run["result"] == original_value
+        and type(prepared.run["result"]["value"]) is tuple
+        and summary["accepted_result"]["result"] == original_value
+        and type(summary["accepted_result"]["result"]["value"]) is tuple)
+    isolated = False
+    if exact_types:
+        summary["accepted_result"]["result"]["value"][0]["members"].append(99)
+        summary_isolated = prepared.run["result"]["value"][0]["members"] == [1, 2]
+        prepared.run["result"]["value"][0]["members"].append(88)
+        isolated = (summary_isolated and original_value["value"][0]["members"] == [1, 2]
+                    and dict(services.deterministic_attempt.outputs)["result"] == original_value)
+    tests.append({"test": "prepared_exact_value_preserves_tuple_and_nested_alias_isolation",
+                  "passed": exact_types and isolated,
+                  "detail": "registered fixture resolver through spawned_summary; zero model calls"})
+    return tests
+
+
 def self_test() -> dict:
     """Adversarial checks for the kernel's one-runtime ownership boundary."""
     from .kernel import (PractitionerState, _calculate_kernel_pass,
@@ -271,6 +608,32 @@ def self_test() -> dict:
 
     def check(name: str, passed: bool, detail: str) -> None:
         tests.append({"test": name, "passed": bool(passed), "detail": detail})
+
+    for mode in MODES:
+        mode_request = KernelRunRequest(
+            ProblemSpec("mode binding test", success_criteria=("done",)),
+            default_impls(), max_passes=1, selected_mode=mode)
+        mode_owner = _starting_loop(mode_request)
+        mode_run = execute_kernel_run(replace(mode_request, owner_loop=mode_owner))
+        check(
+            "kernel_runtime_preserves_selected_mode_" + mode,
+            mode_owner.contract.runtime_mode == mode
+            and mode_owner.is_terminal
+            and mode_run["loop_id"] == mode_owner.loop_id
+            and any(event.get("event") == "run_step"
+                    and event.get("loop_id") == mode_owner.loop_id
+                    and event.get("step") == "act"
+                    and event.get("mode") == mode
+                    for event in mode_owner.ledger.events),
+            "classified kernel fixture only; no provider invocation")
+    rejected_mode = False
+    try:
+        execute_kernel_run(KernelRunRequest(
+            ProblemSpec("invalid mode"), default_impls(), selected_mode="unknown"))
+    except KernelRuntimeError:
+        rejected_mode = True
+    check("kernel_runtime_refuses_unknown_selected_mode", rejected_mode,
+          "invalid modes are refused before definition or execution")
 
     spec = ProblemSpec("kernel ownership test",
                        success_criteria=("understanding",))
@@ -371,6 +734,7 @@ def self_test() -> dict:
                 for item in owner_outputs) == len(KERNEL_NODES) - 1,
         f"{len(owner_outputs)} owner step outputs recorded")
 
+    tests.extend(_preparation_checks())
     passed = sum(1 for test in tests if test["passed"])
     return {"record_type": "kernel_runtime_self_test", "tests": tests,
             "passed": passed, "total": len(tests),

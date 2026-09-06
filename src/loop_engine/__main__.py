@@ -407,6 +407,8 @@ def main(argv=None) -> int:
                         help="optional physical model-call ceiling")
     parser.add_argument("--max-total-tokens", type=int,
                         help="optional provider-reported token ceiling")
+    parser.add_argument("--allow-unbounded-total-tokens", action="store_true",
+                        help="explicitly allow the single models probe without a total-token ceiling")
     parser.add_argument("--watch", action="store_true",
                         help="print campaign events while arms run")
     if raw_argv[:1] == ["setup"]:
@@ -472,6 +474,8 @@ def main(argv=None) -> int:
             parser.error("plugin requires discover, resolve, or inspect")
         raw_argv[:2] = ["--plugin-action", raw_argv[1]]
     args = parser.parse_args(raw_argv)
+    if args.allow_unbounded_total_tokens and not args.verify_live_model:
+        parser.error("--allow-unbounded-total-tokens applies only to models probe")
     if args.unattended:
         args.interaction_mode = "autonomous"
     if args.doctor:
@@ -504,13 +508,15 @@ def main(argv=None) -> int:
                 max_physical_model_calls=args.max_model_calls or 0,
                 max_total_tokens=args.max_total_tokens,
                 timeout_seconds=args.live_timeout,
-                evidence_path=args.live_evidence_out)
+                evidence_path=args.live_evidence_out,
+                allow_unbounded_total_tokens=args.allow_unbounded_total_tokens)
             if not args.authorize_model_calls:
                 planned = plan_live_model_verification(request).safe_summary()
                 planned["status"] = "NOT_RUN"
                 planned["reason"] = (
-                    "add --authorize-model-calls, --max-model-calls 1, and "
-                    "an adequate --max-total-tokens value to make the call")
+                    "add --authorize-model-calls and --max-model-calls 1; "
+                    "choose an explicit --allow-unbounded-total-tokens grant "
+                    "or a qualified --max-total-tokens policy")
                 print(json.dumps(planned, indent=1))
                 return 2
             result = run_live_model_verification(request)

@@ -1040,6 +1040,8 @@ class Loop(metaclass=_LoopMeta):
     def _terminate(self, it: dict, reason: str) -> None:
         """The ONE terminal transition: every stop is recorded on the ledger,
         so closure can be audited (no silent ends, no orphan ambiguity)."""
+        if it.get("stopped"):
+            return
         it["stopped"] = reason
         self.ledger.record(loop_id=self.loop_id, event="terminal",
                             reason=reason,
@@ -1264,6 +1266,8 @@ class Loop(metaclass=_LoopMeta):
             finally:
                 it["context"].pop("requested_mode", None)
             self._require_allowed_outcome_mode(outcome, step, forced_mode)
+            if self._observe_terminal_return(outcome, step, it, rec):
+                return rec
             self.ledger.record(loop_id=self.loop_id, event="fallback",
                               step=step, from_mode="deferred",
                               to_mode=forced_mode)
@@ -1316,6 +1320,8 @@ class Loop(metaclass=_LoopMeta):
                                step=step, iteration=it["steps_run"] + 1)
             outcome = self._run_handler(handler, step, it)
             self._require_allowed_outcome_mode(outcome, step)
+            if self._observe_terminal_return(outcome, step, it, rec):
+                return rec
             attempts = 0
             while outcome.failed and attempts < 3:  # the mode fallback, live
                 fb = self.fallback_mode(outcome.mode)
@@ -1346,6 +1352,8 @@ class Loop(metaclass=_LoopMeta):
                 finally:
                     it["context"].pop("requested_mode", None)
                 self._require_allowed_outcome_mode(outcome, step, fb)
+                if self._observe_terminal_return(outcome, step, it, rec):
+                    return rec
                 attempts += 1
         if outcome.spawn_goal and (
                 self.config.max_depth is None
@@ -1425,6 +1433,22 @@ class Loop(metaclass=_LoopMeta):
             rec.update(terminal=True, note="first accepted success reached")
             return rec
         return rec
+
+    def _observe_terminal_return(self, outcome, step, it, rec) -> bool:
+        """Keep cooperative cancellation terminal while retaining reported work."""
+        if not it.get("stopped"):
+            return False
+        calls = max(0, int(outcome.model_calls))
+        if calls > 1:
+            raise LoopError("one loop iteration may report at most one physical model call")
+        it["model_calls"] += calls
+        self.ledger.record(loop_id=self.loop_id, event="custom",
+                           custom_kind="terminal_handler_return", step=step,
+                           reported_model_calls=calls, accepted=False,
+                           output_digest=hashlib.sha256(str(outcome.output).encode()).hexdigest())
+        rec.update(terminal=True, semantic_calls=calls, accepted=False,
+                   note="handler returned after terminal state; output was not admitted")
+        return True
 
     def run(self, *, handler=None, chooser=None,
             max_steps: "int | None" = None) -> "LoopResult":
@@ -2133,6 +2157,29 @@ def self_test() -> dict:
     except KeyError as exc:
         propagated = str(exc)
     raising_result = raising.result()
+    for return_failed in (False, True):
+        cancelled = Loop("cooperative cancellation", LoopConfig(
+            framework="custom", custom_steps=("act",),
+            allowable_modes=("deterministic", "hybrid"),
+            preferred_modes=("deterministic",), exit_condition="accepted_success"))
+
+        def cancel_then_return(active, step, context):
+            active.cancel("explicit fixture cancellation")
+            return StepOutcome("unadmitted result", "hybrid", 1.0,
+                               failed=return_failed, model_calls=1, spawn_goal="must not start")
+
+        cancelled_result = cancelled.run(handler=cancel_then_return)
+        cancelled.cancel("duplicate cancellation")
+        check("cooperative_cancellation_cannot_be_overwritten_" + str(return_failed),
+              cancelled_result.terminal_code == "CANCELED"
+              and cancelled_result.accepted_successes == 0
+              and cancelled_result.model_calls == 1
+              and cancelled_result.spawned == 0
+              and len([e for e in cancelled.ledger.events if e.get("event") == "terminal"]) == 1
+              and any(e.get("custom_kind") == "terminal_handler_return"
+                      and e.get("reported_model_calls") == 1 and e.get("accepted") is False
+                      for e in cancelled.ledger.events),
+              "Returned work is observed without admitting output or spawning after cancellation.")
     check("a_raising_handler_terminates_the_loop_honestly_and_propagates",
           "missing column" in propagated
           and raising_result.stopped == "handler_exception"

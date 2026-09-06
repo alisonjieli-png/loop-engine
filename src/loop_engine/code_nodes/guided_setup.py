@@ -227,7 +227,9 @@ def run_setup(*, interactive: bool = True, knowledge_path: str = "",
         _say("      No provider call was made. Test one exact route with:")
         _say("      loop-engine models probe PROVIDER --model-route ROUTE \\")
         _say("        --model-id MODEL --authorize-model-calls \\")
-        _say("        --max-model-calls 1 --max-total-tokens LIMIT")
+        _say("        --max-model-calls 1 --allow-unbounded-total-tokens")
+        _say("      This permits one call at full known output capacity, without a total-token ceiling.")
+        _say("      A strict --max-total-tokens limit needs a qualified exact-request bound.")
         step.ran, step.ok = True, True
         step.detail = "configured but not tested: " + ", ".join(present)
         step.fix = "run one exact bounded models probe before solve"
