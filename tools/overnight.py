@@ -88,11 +88,22 @@ def attempt(plan: dict, model: str, attempts: int) -> dict:
         return {"status": "skipped",
                 "why": f"{workspace} is not a git repository; this run only "
                        "works on branches and will not edit an unversioned tree"}
-    dirty = _git(["status", "--porcelain"], workspace).stdout.strip()
+    # TRACKED modifications only. Untracked files are deliberately not a
+    # blocker: git carries them across a branch switch untouched, so they
+    # are not what risks losing the engineer's work -- tracked edits are.
+    #
+    # Checking all files was self-disabling. Running the gate creates
+    # __pycache__/ and .pytest_cache/, which made the tree "dirty", which
+    # blocked the next night. A guard that the system trips by doing its
+    # own job stops the system rather than protecting anything.
+    dirty = _git(["status", "--porcelain", "--untracked-files=no"],
+                 workspace).stdout.strip()
     if dirty:
         return {"status": "skipped",
-                "why": ("the engineer's working tree has uncommitted changes; "
-                        "refusing to branch from it so nothing of theirs moves")}
+                "why": ("the engineer has uncommitted changes to tracked "
+                        "files; refusing to branch from them so nothing of "
+                        "theirs moves"),
+                "tracked_changes": [l[3:] for l in dirty.splitlines()][:10]}
 
     head = _git(["rev-parse", "--short", "HEAD"], workspace).stdout.strip()
     branch = f"overnight/{time.strftime('%Y%m%d')}-{abs(hash(plan['gate_command'])) % 10000:04d}"
@@ -208,10 +219,24 @@ def main() -> int:
     ap.add_argument("--model", default="ollama-cloud/gemma4:31b")
     ap.add_argument("--dry-run", action="store_true",
                     help="intake and gameplan only; no model call, no branch")
+    ap.add_argument("--gate", default="",
+                    help="skip intake and attempt this exact gate command")
+    ap.add_argument("--workspace", default="",
+                    help="repository the --gate command runs in")
     args = ap.parse_args()
 
+    if args.gate:
+        if not args.workspace:
+            raise SystemExit("--gate requires --workspace naming the repository")
+        seeded = [{
+            "kind": "failing_gate", "confidence": "seeded",
+            "attempts": 1, "command": args.gate, "cwd": args.workspace,
+            "branch": "", "last_error": "(supplied directly, not from a transcript)",
+            "evidence": "supplied on the command line rather than discovered",
+        }]
+
     started = time.strftime("%Y-%m-%d %H:%M")
-    found = collect(args.since, args.max_tasks)
+    found = seeded if args.gate else collect(args.since, args.max_tasks)
     print(f"overnight run {started} — {len(found)} candidate(s)\n")
     if not found:
         print("  Nothing unresolved was observed today. Reporting that,")

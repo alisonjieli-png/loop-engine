@@ -66,7 +66,7 @@ def self_test() -> dict:
         "kaggle_report",
         "core.self_tuning",
         "core.opencode_harness_adapter", "core.opencode_step_session",
-        "core.opencode_step_composition",
+        "core.opencode_step_composition", "core.opencode_step_guard",
         "code_nodes.solve_region_evidence",
         "code_nodes.material_questions",
         "loop.supervision_policy", "loop.checklist_loop", "loop.loop_handoff",
