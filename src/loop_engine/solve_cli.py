@@ -90,6 +90,41 @@ def _solve_progress(event: dict) -> None:
         value, sort_keys=True, separators=(",", ":"),
         ensure_ascii=False), file=sys.stderr, flush=True)
 
+#: An unattended run has nobody to notice it looping.  Every ceiling below
+#: defaults to None elsewhere in the runtime, deliberately — the settings
+#: loader asserts "default_runtime_limits_are_unset_not_arbitrary_numbers", and
+#: that is right for an attended run where a person is watching the spend.
+#: It is wrong for a run started at midnight against a metered provider: with
+#: no ceiling, no wall-clock deadline, and a non-progress guard keyed on
+#: model-authored free text (loop/kernel.py:574-590, defeated by paraphrase),
+#: the only thing that ends a bad overnight run is the morning.
+#:
+#: These are ceilings, not targets — a run that finishes in eight calls still
+#: finishes in eight calls.  An explicit flag always wins, so this adds a floor
+#: of safety without removing any control.
+#: max_total_tokens is deliberately ABSENT.  Setting it makes the runtime
+#: demand a pre-dispatch token resolver, and the Ollama route supplies none:
+#: model_token_preflight.py:196 raises token_bound_unavailable when
+#: ``resolver is None``, so the very first model call dies and the run reports
+#: PROVIDER_UNAVAILABLE with zero calls made.  Verified 2026-09-05 by
+#: bisection: --max-passes and --max-model-calls both run clean; adding
+#: --max-total-tokens alone reproduces the failure every time.  Until a
+#: resolver exists for the configured route, a call ceiling is the honest
+#: spend bound -- and at roughly 24k tokens per call it is a real one.
+UNATTENDED_CEILINGS = {
+    "max_passes": 6,
+    "max_model_calls": 150,
+}
+
+
+def apply_unattended_ceilings(args) -> None:
+    """Materialise spend ceilings for a run with no human present."""
+    for name, ceiling in UNATTENDED_CEILINGS.items():
+        if getattr(args, name, None) is None:
+            setattr(args, name, ceiling)
+
+
+
 
 def _apply_quickstart(args) -> None:
     """Apply one explicit LLM-first onboarding authority profile."""
@@ -128,6 +163,23 @@ def _context_budget_from_args(args):
     from .core.context_budget import ContextBudgetPolicy
     return ContextBudgetPolicy(packet_estimated_tokens_max=int(tokens))
 
+def _write_run_checkpoint(args, value: dict, *, reason: str) -> str:
+    """Record which attempts exist and which one the others agree with."""
+    from .core.run_checkpoint import RunCheckpoint
+
+    workspace = str(getattr(args, "workspace", "") or "")
+    history = (value.get("run_history") or {}).get("path") or ""
+    if not workspace or not history:
+        return ""
+    checkpoint = RunCheckpoint(
+        run_id=str(value.get("run_id") or ""),
+        workspace_base=workspace, checkpoint_dir=str(history),
+        task=str(getattr(args, "text", "") or ""),
+        model_calls=int(value.get("model_calls") or 0),
+        reason=reason)
+    return checkpoint.write()
+
+
 
 def run_solve(args) -> int:
     """Perform and verify real work through the canonical Practitioner."""
@@ -135,6 +187,17 @@ def run_solve(args) -> int:
     from pathlib import Path
 
     from .code_nodes.solve_runtime import SolveRequest, solve_task
+    from .core.run_checkpoint import RunCheckpoint, install_signal_checkpoint
+
+    # An unattended run is the one most likely to be killed and the least
+    # likely to be noticed: install the handler before any model call, so a
+    # SIGTERM at 3am still leaves the artifacts and their ranking on disk.
+    _interrupt_checkpoint = RunCheckpoint(
+        run_id="", workspace_base=str(getattr(args, "workspace", "") or ""),
+        checkpoint_dir=str(getattr(args, "runs_dir", "") or ""),
+        task=str(getattr(args, "text", "") or ""))
+    if _interrupt_checkpoint.workspace_base and _interrupt_checkpoint.checkpoint_dir:
+        install_signal_checkpoint(_interrupt_checkpoint)
     from .code_nodes.solution_model_port import ModelExecution
     from .core.runtime_settings import ModelPolicyRequest, ModelTask
     from .core.settings_loader import load_runtime_settings
@@ -246,6 +309,11 @@ def run_solve(args) -> int:
             outcome = execute_with_gateway()
 
         value = outcome.to_dict()
+        # Write the surviving work once the run ends normally too, so the
+        # checkpoint is a complete record rather than only an interruption
+        # artifact.  The signal handler installed before the run covers the
+        # abnormal case; this covers the ordinary one.
+        _write_run_checkpoint(args, value, reason="run completed")
         if args.format == "json":
             print(json.dumps(value, indent=1))
         else:
@@ -278,6 +346,34 @@ def run_solve(args) -> int:
                 lines.extend(
                     f"  [{item['answer_slot']}] {item['question']}"
                     for item in value["questions"])
+            best = value.get("best_retained_attempt") or {}
+            if best.get("retained"):
+                # A failed run is not necessarily an empty one.  Measured
+                # 2026-09-05: a run produced a fully correct artifact on its
+                # first attempt, regressed by its third, and reported
+                # NO_PROGRESS -- the working code was on disk the whole time
+                # and nothing said so.  Overnight, nobody is watching the
+                # passes; the morning has to show the best work that survived.
+                scores = best.get("scores") or []
+                lines.extend(("", "Best attempt retained (ranked by "
+                                  "cross-attempt agreement, not by any value "
+                                  "the model supplied):"))
+                lines.append(f"  {best['retained']}")
+                lines.append(
+                    f"  entry point: {best.get('entry_point', '?')}   "
+                    f"inputs compared: {best.get('inputs_harvested', 0)}")
+                for item in sorted(scores,
+                                   key=lambda s: (-s.get("majority_agreements", 0),
+                                                  s.get("dissents", 0))):
+                    mark = "  <- retained" if item.get(
+                        "attempt") == best["retained"] else ""
+                    lines.append(
+                        f"    {item.get('attempt', '?').rsplit('/', 1)[-1]}: "
+                        f"agrees {item.get('majority_agreements', 0)}/"
+                        f"{item.get('total', 0)}, "
+                        f"dissents {item.get('dissents', 0)}{mark}")
+                lines.append("  This ranking is evidence, not certification: "
+                             "it says which attempt the others agree with.")
             if value["limitations"]:
                 lines.extend(("", "Limitations:"))
                 lines.extend(f"  {item}" for item in value["limitations"])

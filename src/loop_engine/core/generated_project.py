@@ -20,6 +20,9 @@ from pathlib import Path, PurePosixPath
 from ..loop.effect_approval import (
     ApprovalDecision, EffectApprovalService)
 from .runtime_observer import RuntimeObservationServices
+from .artifact_constraints import (
+    CHECK_MEDIA_TYPES, CONSTRAINT_CHECKS, check_accepts_media_type,
+    checks_for_media_type, verify_constraint)
 from .generated_project_artifact_validation import verify_artifact_content
 from .runtime_capacity import supplied_input_ceiling
 from .workspace_backends import (
@@ -44,6 +47,37 @@ def sandbox_image(environ=None) -> str:
     source = os.environ if environ is None else environ
     named = str(source.get(SANDBOX_IMAGE_VARIABLE, "") or "").strip()
     return named or DEFAULT_GENERATED_PROJECT_IMAGE
+
+#: Operators widen the executable allowlist through the environment, the same
+#: way they name the sandbox image.  The default stays Python-only, so nothing
+#: changes for an existing caller.
+EXECUTABLE_ALLOWLIST_VARIABLE = "LOOP_ENGINE_ALLOWED_EXECUTABLES"
+
+
+def allowed_executables(environ=None) -> tuple[str, ...]:
+    """Executables a generated command may invoke inside the sandbox.
+
+    The hardcoded Python-only tuple made this engine structurally unable to
+    verify any repository whose own gates are `npm test`, `tsc`, `cargo test`
+    or `go test` — the check sits in ``GeneratedProjectCommand.__post_init__``,
+    which runs at manifest construction, ABOVE the pluggable executor seam, so
+    no custom executor could widen it either.  Nothing in config, CLI, JSON,
+    TOML or YAML exposed it.
+
+    Widening the allowlist does not weaken confinement: the container still
+    runs ``--read-only --cap-drop ALL --security-opt no-new-privileges``, as a
+    non-root user, with ``--network none`` and a ``noexec`` tmpfs, against a
+    digest-pinned image.  The ban on ``-c``/``--command`` is independent of
+    this list and is deliberately NOT configurable — a generated command must
+    execute a reviewed file, never inline code, whatever the interpreter.
+    """
+    source = os.environ if environ is None else environ
+    named = str(source.get(EXECUTABLE_ALLOWLIST_VARIABLE, "") or "").strip()
+    if not named:
+        return ALLOWED_PYTHON_EXECUTABLES
+    extra = tuple(item.strip() for item in named.split(",") if item.strip())
+    return tuple(dict.fromkeys(ALLOWED_PYTHON_EXECUTABLES + extra))
+
 
 
 def selected_execution_backend(
@@ -77,7 +111,7 @@ def _docker_available(image: str) -> bool:
     spec = WorkspaceSpec(
         workspace_id="generated-availability-probe", root="/",
         backend_kind="docker", execution_enabled=True,
-        allowed_commands=ALLOWED_PYTHON_EXECUTABLES)
+        allowed_commands=allowed_executables())
     return bool(DockerWorkspace(spec, declaration).availability().available)
 GENERATED_PROJECT_RECORD_TYPE = "generated_project_manifest/v1"
 GENERATED_PROJECT_CANDIDATE_TYPE = "generated_project_candidate/v1"
@@ -147,12 +181,20 @@ class GeneratedProjectCommand:
                             for item in argv)):
             raise GeneratedProjectError(
                 "generated project command needs non-empty argv")
-        if argv[0] not in ALLOWED_PYTHON_EXECUTABLES:
+        permitted = allowed_executables()
+        if argv[0] not in permitted:
             raise GeneratedProjectError(
-                "generated commands must use the registered Python executable")
+                "generated commands must use a registered executable; "
+                f"{argv[0]!r} is not in {list(permitted)}. Widen the "
+                f"allowlist with {EXECUTABLE_ALLOWLIST_VARIABLE} if this "
+                "interpreter is intended.")
         if any(item in ("-c", "--command") for item in argv[1:]):
             raise GeneratedProjectError(
-                "generated commands must execute reviewed files, not inline code")
+                "generated commands must execute reviewed files, not inline "
+                "code. Put the logic in a file listed in 'files' and invoke "
+                "THAT: ['python3', '-m', 'unittest'] or "
+                "['python3', 'run_<name>.py']. A runner script that imports "
+                "your module and writes its output is the admitted shape.")
         if not self.purpose.strip() or self.timeout_seconds <= 0:
             raise GeneratedProjectError(
                 "generated command needs a purpose and positive timeout")
@@ -209,6 +251,12 @@ class ExpectedProjectArtifact:
     path: str
     media_type: str
     minimum_bytes: int = 1
+    #: Optional NAME of an engine-owned constraint check (see
+    #: core.artifact_constraints).  A manifest may reference a check; it may
+    #: never supply the predicate.  Presence + parse answers "a file appeared";
+    #: measured 2026-09-05, a schedule whose only task ended four days before
+    #: it started and depended on itself was fully verified by that standard.
+    constraint: str = ""
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "path", _relative_path(self.path))
@@ -216,12 +264,30 @@ class ExpectedProjectArtifact:
             raise GeneratedProjectError(
                 "generated artifact minimum_bytes must be the framework "
                 "nonempty value 1; a model cannot invent acceptance thresholds")
+        named = str(self.constraint or "").strip()
+        object.__setattr__(self, "constraint", named)
+        if named and named not in CONSTRAINT_CHECKS:
+            raise GeneratedProjectError(
+                f"unknown artifact constraint {named!r}; the engine owns this "
+                f"set and it holds {list(sorted(CONSTRAINT_CHECKS))}")
+        if named and not check_accepts_media_type(named, self.media_type):
+            # Refuse the category error where it is declared. Allowing it lets
+            # a check that cannot read the artifact report a violation that
+            # looks real and fails a correct file.
+            usable = checks_for_media_type(self.media_type)
+            raise GeneratedProjectError(
+                f"constraint {named!r} cannot read {self.media_type!r}; "
+                + (f"checks available for that type: {list(usable)}"
+                   if usable else
+                   "no constraint check reads that media type, so omit the "
+                   "constraint for this artifact"))
 
     def to_dict(self) -> dict:
         return {
             "path": self.path,
             "media_type": self.media_type,
             "minimum_bytes": self.minimum_bytes,
+            "constraint": self.constraint,
         }
 
 
@@ -295,9 +361,29 @@ class GeneratedProjectCandidate:
         files = tuple(self.files)
         commands = tuple(self.commands)
         artifacts = tuple(self.expected_artifacts)
-        if (not self.summary.strip() or not files
-                or not commands or not artifacts):
-            raise GeneratedProjectError("project candidate is incomplete")
+        # Four distinct requirements collapsed into one word. A model that is
+        # told "incomplete" cannot tell which of summary, files, commands or
+        # expected_artifacts it omitted, so it re-proposes and is refused
+        # again: measured 2026-09-06, 34 model calls and zero files on a
+        # two-line task, the model's own note reading "'incomplete' is
+        # ambiguous. The exact missing component is not specified."
+        # A refusal that does not name the requirement cannot be repaired.
+        missing = [name for name, empty in (
+            ("summary", not self.summary.strip()),
+            ("files", not files),
+            ("commands", not commands),
+            ("expected_artifacts", not artifacts),
+        ) if empty]
+        if missing:
+            raise GeneratedProjectError(
+                "project candidate is missing required field(s): "
+                + ", ".join(missing)
+                + ". Every one is required and non-empty: 'files' holds the "
+                "source you author, 'commands' the reviewed files to run, and "
+                "'expected_artifacts' at least one file a command produces at "
+                "run time (a test log, a report, or an output your program "
+                "writes) -- it may not be empty and may not name a path that "
+                "already appears in 'files'.")
         paths = tuple(item.path for item in files)
         if len(paths) != len(set(paths)):
             raise GeneratedProjectError("project candidate file paths repeat")
@@ -341,7 +427,8 @@ class GeneratedProjectCandidate:
                 for item in commands if isinstance(item, dict)),
             expected_artifacts=tuple(ExpectedProjectArtifact(
                 str(item.get("path", "")), str(item.get("media_type", "")),
-                int(item.get("minimum_bytes", 1)))
+                int(item.get("minimum_bytes", 1)),
+                str(item.get("constraint", "")))
                 for item in artifacts if isinstance(item, dict)),
             record_type=str(value["record_type"]),
         )
@@ -685,7 +772,7 @@ def execute_generated_project(
     docker_spec = WorkspaceSpec(
         workspace_id=f"generated-{request.manifest.project_id}",
         root=str(root), backend_kind="docker", execution_enabled=True,
-        allowed_commands=ALLOWED_PYTHON_EXECUTABLES,
+        allowed_commands=allowed_executables(),
         max_file_bytes=file_byte_limit)
     docker_backend = DockerWorkspace(docker_spec, declaration)
     docker_availability = docker_backend.availability()
@@ -695,7 +782,7 @@ def execute_generated_project(
             spec = WorkspaceSpec(
                 workspace_id=docker_spec.workspace_id,
                 root=str(root), backend_kind="docker", execution_enabled=True,
-                allowed_commands=ALLOWED_PYTHON_EXECUTABLES,
+                allowed_commands=allowed_executables(),
                 max_file_bytes=file_byte_limit,
                 network_access=network_access)
             backend_value = DockerWorkspace(spec, declaration)
@@ -722,7 +809,7 @@ def execute_generated_project(
                 workspace_id=docker_spec.workspace_id,
                 root=str(root), backend_kind="restricted_local",
                 execution_enabled=True,
-                allowed_commands=ALLOWED_PYTHON_EXECUTABLES,
+                allowed_commands=allowed_executables(),
                 max_file_bytes=file_byte_limit,
                 network_access=False)
             backend_value = RestrictedLocalWorkspace(spec)
@@ -842,6 +929,16 @@ def execute_generated_project(
         format_valid, method, format_error = verify_artifact_content(
             expected.media_type,
             content_result.content if content_result.ok else b"")
+        # An artifact that parses is not an artifact that means anything.
+        # When the manifest names an engine-owned check, its verdict is a
+        # conjunct of `verified` -- so a coherent-looking but unexecutable
+        # plan fails the deterministic gate rather than passing it.
+        constraint_result = None
+        if expected.constraint:
+            constraint_result = verify_constraint(
+                expected.constraint,
+                content_result.content if content_result.ok else b"")
+        constraint_ok = constraint_result is None or constraint_result.satisfied
         artifacts.append({
             **expected.to_dict(),
             "present": result.ok,
@@ -851,9 +948,14 @@ def execute_generated_project(
             "format_valid": format_valid,
             "verification_method": method,
             "format_error": format_error,
+            "constraint_satisfied": constraint_ok,
+            "constraint_violations": (
+                list(constraint_result.violations) if constraint_result
+                else []),
             "verified": (result.ok
                          and result.byte_count >= expected.minimum_bytes
-                         and format_valid),
+                         and format_valid
+                         and constraint_ok),
         })
     snapshot = operations.snapshot(SnapshotRequest(include_hidden=False))
     deterministic_pass = bool(

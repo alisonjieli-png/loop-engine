@@ -584,10 +584,48 @@ def _pass_progress_key(rec, state) -> tuple:
         len(getattr(state, "facts", {}) or {}),
         tuple(sorted((getattr(state, "artifacts", {}) or {}).keys())),
         len(getattr(rec, "results", ()) or ()),
-        tuple(sorted(set(
-            str(item) for item in _result_objective_keys(rec)))),
+        # Typed error codes only -- NOT the objective text.  Most objectives
+        # are engine-authored step prompts, but a generated project's
+        # objective is manifest.summary, written by the model: a model that
+        # paraphrased its own summary reset this guard every pass and churned
+        # until morning.  Prose cannot enter a progress measure.
+        tuple(sorted(set(_result_error_keys(rec)))),
+        # Structural identity, so rewording cannot manufacture progress.
+        # Most objectives above are engine-authored step prompts and are
+        # stable, but a generated project's objective is manifest.summary --
+        # written by the model. A model that paraphrases its own summary would
+        # otherwise reset this guard every pass and churn until morning.
+        # Lineage carries the compiled-plan and manifest digests, which change
+        # only when the actual work changes.
+        tuple(sorted(set(_result_lineage_keys(rec)))),
         rec.route.route if rec.route else "stop_unprofitable",
     )
+
+
+def _result_error_keys(rec) -> list:
+    """Typed error codes of one pass's capability results, without prose."""
+    keys = []
+    for item in getattr(rec, "results", ()) or ():
+        errors = (item.get("errors") if isinstance(item, dict)
+                  else getattr(item, "errors", ())) or ()
+        for entry in errors:
+            text = str(entry).strip()
+            if text:
+                keys.append(text)
+    return keys
+
+
+def _result_lineage_keys(rec) -> list:
+    """Digests of the work one pass actually compiled, free of model prose."""
+    keys = []
+    for item in getattr(rec, "results", ()) or ():
+        lineage = (item.get("lineage") if isinstance(item, dict)
+                   else getattr(item, "lineage", ()))
+        for entry in (lineage or ()):
+            text = str(entry).strip()
+            if text:
+                keys.append(text)
+    return keys
 
 
 def _result_objective_keys(rec) -> list:

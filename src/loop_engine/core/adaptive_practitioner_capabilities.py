@@ -12,6 +12,9 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from .differential_verification import (
+    verify_differential, verify_metamorphic)
+
 from ..code_nodes.solution_canvas import SolutionLoopSpec, SolutionSpec
 from ..code_nodes.solution_compiler import (
     compile_solution, render_canvas, run_compiled)
@@ -125,6 +128,51 @@ def _search_operation(arguments, services, owner):
         WebSearchContext(owner))
 
 
+def _differential_verification_operation(arguments, services):
+    """Verify a workspace artifact without consulting model-authored values.
+
+    Two oracles, neither of which needs an expected constant: ``differential``
+    compares independently produced implementations against each other, and
+    ``metamorphic`` asserts relations between calls.  Both exist because the
+    generated-project path grades an artifact against tests the same model
+    wrote, which was measured inverting on 2026-09-05 — correct code condemned
+    by wrong constants.
+    """
+    oracle = str(arguments.get("oracle") or "differential")
+    entry_point = str(arguments.get("entry_point") or "")
+    if not entry_point:
+        return {"record_type": "differential_verification/v1",
+                "verdict": "UNVERIFIED",
+                "errors": ["entry_point is required"]}
+    root = Path(services.workspace_base) if getattr(
+        services, "workspace_base", None) else Path(".")
+
+    def _confined(candidate: str) -> str:
+        """Keep every path inside the run's own workspace."""
+        resolved = (root / candidate).resolve() if not Path(
+            candidate).is_absolute() else Path(candidate).resolve()
+        if root.resolve() not in resolved.parents and resolved != root.resolve():
+            raise PermissionError(f"path outside workspace: {candidate}")
+        return str(resolved)
+
+    try:
+        if oracle == "metamorphic":
+            relations = [tuple(r) for r in (arguments.get("relations") or [])
+                         if isinstance(r, (list, tuple)) and len(r) == 2]
+            report = verify_metamorphic(
+                _confined(str(arguments.get("implementation") or "")),
+                entry_point, relations)
+        else:
+            paths = [_confined(str(item)) for item
+                     in (arguments.get("implementations") or [])]
+            report = verify_differential(
+                paths, entry_point, list(arguments.get("arguments") or []))
+    except (PermissionError, OSError) as exc:
+        return {"record_type": "differential_verification/v1",
+                "verdict": "UNVERIFIED", "errors": [str(exc)]}
+    return report.to_dict()
+
+
 def execute_adaptive_capability(
         request: AdaptiveCapabilityExecutionRequest,
         services: AdaptiveRunServices) -> ResultPacket:
@@ -168,6 +216,12 @@ def execute_adaptive_capability(
         input_value = arguments
         input_role = "next_action_decision/v1"
         output_role = "web_fetch_result/v1"
+    elif plan.handle == "core.verify.differential":
+        operation = lambda _value, _params: _differential_verification_operation(
+            arguments, services)
+        input_value = arguments
+        input_role = "next_action_decision/v1"
+        output_role = "differential_verification/v1"
     elif plan.handle == "core.workspace.read":
         operation = lambda _value, _params: workspace_read_operation(
             arguments, services)
@@ -465,6 +519,30 @@ def execute_adaptive_capability(
             artifact_refs=(output["artifact_ref"]["object_key"],),
             confidence=1.0,
             lineage=(compiled["digest"],))
+    if plan.handle == "core.verify.differential":
+        # An oracle report is NOT a project attempt.  Falling through to the
+        # generated-project tail below would append it to services.
+        # project_attempts, whose last element is read as the run's product by
+        # core.finish, as deterministic_project_passed by route_adaptive_result,
+        # and fingerprinted by manifest_digest for progress — so a 16/16 PASS
+        # would be recorded as a failed build and poison routing for the rest
+        # of the run.
+        verdict = str(output.get("verdict") or "UNVERIFIED")
+        detail = "; ".join(
+            list(output.get("errors") or ())
+            or [d["argument"] for d in (output.get("divergences") or ())][:5])
+        return ResultPacket(
+            objective=(f"verify {arguments.get('entry_point') or 'artifact'} "
+                       f"by the {output.get('oracle') or 'differential'} oracle"),
+            result=output,
+            confidence=(1.0 if verdict == "PASS" else 0.0),
+            errors=(() if verdict == "PASS"
+                    else (f"{verdict}: {detail}" if detail else verdict,)),
+            lineage=(compiled["digest"],),
+            limitations=(() if verdict != "UNVERIFIED" else (
+                "UNVERIFIED is not success: the oracle could not decide. "
+                "Supply two implementations for the differential oracle, or "
+                "relations for the metamorphic one.",)))
     output["context_evidence_count"] = len(services.web_results)
     services.project_attempts.append(output)
     errors = (() if output.get("deterministic_checks_passed") else (

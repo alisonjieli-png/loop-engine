@@ -20,6 +20,8 @@ from ..loop.kernel import (
     RouteDecision,
 )
 from ..loop.kernel_runtime import current_kernel_owner
+from .independent_evidence import (
+    independent_support, newest_attempt_dissents)
 from .adaptive_practitioner_records import (
     AdaptivePractitionerError,
     AdaptiveRunServices,
@@ -363,6 +365,41 @@ def verify_adaptive_results(
                 f"admitted verdicts are {list(admitted_verdicts)}")
         if verdict == "accept" and not deterministic_pass:
             verdict = "repair"
+        # Independent cross-attempt evidence may only TIGHTEN this verdict.
+        # If the attempts this run produced disagree with each other and the
+        # newest one is the dissenter, accepting it would ship the regression
+        # measured on 2026-09-05: attempts 1 and 2 were correct, attempt 3 was
+        # broken, and the model's own verdict could not tell them apart.
+        # Deliberately one-directional -- agreement is NOT used to promote a
+        # repair into a success, because attempts drawn from one model share
+        # its misconceptions and can agree while all being wrong.
+        # Promotion runs AFTER the demotion above, because that line exists
+        # to stop the model accepting its own failing tests -- and the whole
+        # point here is that the failing tests may be the wrong artifact.  It
+        # fires only with an engine-owned anchor, and it is recorded as
+        # agreement-backed so downstream can weigh it differently from a run
+        # whose own tests passed.
+        support = ({} if deterministic_pass or verdict == "accept"
+                   else independent_support(services))
+        if support:
+            verdict = "accept"
+            services.diagnostic("verdict_supported_by_independent_evidence", {
+                "note": ("the model's own tests failed but independent "
+                         "cross-attempt agreement is unanimous AND an "
+                         "engine-owned constraint is satisfied"),
+                "agreement": support["agreement"],
+                "anchor": support.get("anchor"),
+                "constraints": support.get("constraints") or [],
+                "certification": "agreement_backed_not_test_backed",
+            })
+        dissent = newest_attempt_dissents(services)
+        if verdict == "accept" and dissent:
+            verdict = "repair"
+            services.diagnostic("independent_cross_attempt_dissent", {
+                "note": ("the newest attempt disagrees with its peers on "
+                         "inputs harvested from the generated tests"),
+                "detail": dissent,
+            })
         notes = _short_text(value.get("notes"), "verification notes")
         gap_values = value.get("remaining_gaps") or []
         if not isinstance(gap_values, list):
@@ -445,7 +482,6 @@ def verify_adaptive_results(
     _record_attribution_boundary(services, verdict)
     return evaluation
 
-
 def route_adaptive_result(
         request: AdaptiveRouteRequest,
         services: AdaptiveRunServices) -> tuple:
@@ -454,6 +490,33 @@ def route_adaptive_result(
     deterministic_pass = bool(
         services.project_attempts
         and services.project_attempts[-1].get("deterministic_checks_passed"))
+    # A terminal intent must actually terminate.  ABSTAIN, ASK_USER and
+    # REQUEST_AUTHORITY all compile to a terminal handle, but routing then ran
+    # anyway: the pass spent a verify call and a route call, the loop
+    # continued, and the same block recurred next pass.  Measured cost is
+    # roughly four model calls per pass for a run that has already said it
+    # cannot proceed -- overnight, that is the whole night spent restating a
+    # blocker nobody is awake to answer.
+    # Reach for the handle defensively: the existing code only touches
+    # request.record.plan inside the stop_success branch, so callers and
+    # fixtures legitimately construct a record without one.  A guard that
+    # crashes on a well-formed record is worse than no guard.
+    terminal_handle = str(getattr(
+        getattr(request.record, "plan", None), "handle", "") or "")
+    if (terminal_handle in ("core.abstain", "core.ask", "core.authority")
+            and getattr(services.request, "interaction_mode", "")
+            == "autonomous"):
+        services.diagnostic("autonomous_terminal_intent", {
+            "handle": terminal_handle,
+            "note": ("an unattended run stops at a terminal intent rather "
+                     "than routing past it"),
+        })
+        stopped = ("stop_unprofitable",
+                   f"Unattended run stopped at {terminal_handle}: it reported "
+                   f"it cannot proceed and no operator is present to answer.")
+        return RouteDecision(*stopped), request.state.derive(
+            failures=tuple(getattr(request.state, "failures", ()) or ()),
+            last_route=stopped[0])
     try:
         value = services.model(ModelStepRequest(
             "route", "Choose the next pass or finish the verified task.",

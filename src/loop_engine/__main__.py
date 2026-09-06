@@ -106,7 +106,6 @@ def _read_task_file(path: str) -> str:
     with open(path, encoding="utf-8") as handle:
         return handle.read().strip()
 
-
 def main(argv=None) -> int:
     from .cli_help import ROOT_HELP, command_help
     raw_argv = list(sys.argv[1:] if argv is None else argv)
@@ -474,6 +473,8 @@ def main(argv=None) -> int:
     args = parser.parse_args(raw_argv)
     if args.unattended:
         args.interaction_mode = "autonomous"
+        from .solve_cli import apply_unattended_ceilings
+        apply_unattended_ceilings(args)
     if args.doctor:
         from .cli_operations import run_doctor
         return run_doctor(args)

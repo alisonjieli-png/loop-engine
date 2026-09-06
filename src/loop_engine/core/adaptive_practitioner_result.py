@@ -6,6 +6,10 @@ unverified attempts. It does not decide task semantics or execute tools.
 """
 from __future__ import annotations
 
+from pathlib import Path
+
+from .solution_ratchet import rank_attempts
+
 import json
 from collections.abc import Callable
 from copy import deepcopy
@@ -251,6 +255,34 @@ def finish_deterministic_attempt(
     save_adaptive_result(history, output)
     return output
 
+def best_retained_attempt(services) -> dict:
+    """Rank this run's attempts against each other and name the best one.
+
+    A failed run is not necessarily an empty one.  Measured on 2026-09-05
+    (run adaptive-c5800afdb0ce7b8525ecc2de): the engine produced a fully
+    correct artifact on attempt 1, regressed by attempt 3, and reported
+    NO_PROGRESS — discarding a solved task because its only signal was
+    constants it had written itself.
+
+    The ratchet judges attempts against each other on inputs harvested from
+    the generated tests, never reading their expected values, so a run that
+    cannot certify a result can still hand back its best work with the
+    evidence for that ranking.  This reports; it does not claim verification.
+    """
+    base = getattr(services, "workspace_base", None)
+    if not base:
+        return {}
+    attempts = sorted(
+        str(path) for path in Path(base).glob("attempt-*") if path.is_dir())
+    if len(attempts) < 2:
+        return {}
+    try:
+        return rank_attempts(attempts).to_dict()
+    except Exception:                                    # noqa: BLE001
+        # Reporting a best attempt must never turn a failed run into a crash.
+        return {}
+
+
 
 def failed_adaptive_output(
         owner: Loop, services: AdaptiveRunServices,
@@ -280,6 +312,9 @@ def failed_adaptive_output(
         "orientations": [item.to_dict()
                          for item in services.orientation_by_version.values()],
         "action_decisions": services.action_history,
+        # A failed run still reports its best attempt, ranked by cross-attempt
+        # agreement rather than by any value the model supplied.
+        "best_retained_attempt": best_retained_attempt(services),
         "context_snapshots": services.context_snapshots,
         "candidate_solution_canvases": services.candidate_canvases,
         "selected_solution_canvas": services.plan_details.get(

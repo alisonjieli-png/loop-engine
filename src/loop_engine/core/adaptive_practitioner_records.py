@@ -86,7 +86,7 @@ ADAPTIVE_CAPABILITIES = (
     {
         "capability_ref": "core.source.inspect",
         "purpose": (
-            "Inspect supplied local source manifests and selected text bodies "
+            "USE THIS FIRST whenever local sources were supplied: this runtime refuses to generate a project until supplied sources have been selected here. Inspect supplied local source manifests and selected text bodies "
             "before deciding how to solve or repair the task."),
         "arguments": {
             "paths": "optional exact relative source paths",
@@ -99,7 +99,7 @@ ADAPTIVE_CAPABILITIES = (
     {
         "capability_ref": "core.workspace.read",
         "purpose": (
-            "Read back a file this run produced, with interpreter line "
+            "USE THIS WHEN a command failed, a test failed, or a verification rejected your work -- read back what you ACTUALLY wrote before repairing, because repairing a file you have not looked at is guessing. Read back a file this run produced, with interpreter line "
             "numbers, so generated code can be repaired from what it "
             "actually says rather than from memory of what was intended. "
             "Reads only inside this run's workspace; supplied input files "
@@ -140,15 +140,62 @@ ADAPTIVE_CAPABILITIES = (
         "capability_ref": "core.generated_project",
         "purpose": (
             "Create files, execute Python commands in a confined Docker "
-            "workspace, run tests, and verify expected artifacts."),
-        "arguments": {},
+            "workspace, run tests, and verify expected artifacts. Put every "
+            "source file you want in 'files' with its real content; do not "
+            "author one script that writes the others as embedded strings "
+            "(that nests source inside a string and corrupts quotes and "
+            "escapes). A path in 'files' must not also appear in "
+            "'expected_artifacts', which must name at least one file a "
+            "command actually WRITES TO DISK. `python3 -m unittest` writes to "
+            "stdout and creates NO file, so do not declare its output: add a "
+            "command that writes a real file (for example a runner that calls "
+            "your module and writes a small result or summary file) and "
+            "declare THAT path. Declaring a file nothing writes fails the "
+            "run even when the code is correct. An expected artifact may name an "
+            "engine-owned 'constraint' check -- 'schedule/v1' (task ordering, "
+            "durations, dependencies, cycles) or 'json_collection/v1' -- "
+            "which is the only verification here you did not author."),
+        "arguments": {
+            "constraint": "optional engine-owned check named per expected "
+                          "artifact: 'schedule/v1' or 'json_collection/v1'",
+        },
         "required_permissions": ["workspace_write", "sandbox_command"],
         "effects": ["writes_fs", "spawns_process"],
     },
     {
+        "capability_ref": "core.verify.differential",
+        "purpose": (
+            "USE THIS WHEN your own tests pass but you are not certain the code is right, or when you have produced more than one implementation -- it is the only check here you did not author. Verify a produced module WITHOUT any expected value you supply. "
+            "Prefer this over asserting hand-computed constants: your code is "
+            "more reliable than your arithmetic, so an assertion you compute "
+            "by hand is the weakest link in your own work. Two oracles. "
+            "'differential' runs two or more independently written "
+            "implementations of the same contract over the same inputs and "
+            "reports any input where they disagree; agreement is the "
+            "evidence and no constant is consulted. 'metamorphic' asserts "
+            "relations between calls that hold by construction, such as "
+            "f(\'PT60S\') == f(\'PT1M\'), without knowing either answer. "
+            "Each candidate runs in its own process. A verdict of "
+            "UNVERIFIED means the oracle could not decide and is never "
+            "success."),
+        "arguments": {
+            "oracle": "'differential' (default) or 'metamorphic'",
+            "implementations": "differential: two or more workspace-relative "
+                               "paths to modules implementing the same "
+                               "contract",
+            "implementation": "metamorphic: one workspace-relative module path",
+            "entry_point": "required; the function name to call in each module",
+            "arguments": "differential: list of inputs to pass, one per call",
+            "relations": "metamorphic: list of [left, right] input pairs whose "
+                         "results must be equal",
+        },
+        "required_permissions": ["workspace_write", "sandbox_command"],
+        "effects": ["reads_fs", "spawns_process"],
+    },
+    {
         "capability_ref": "core.source.profile",
         "purpose": (
-            "Profile selected text sources deterministically: line counts, "
+            "USE THIS BEFORE designing around data you have not measured: it reports shape, columns and sample rows without spending a model call on reading the file. Profile selected text sources deterministically: line counts, "
             "column structure for CSV and JSON shapes, key fields, and "
             "sample rows, without sending any content to a model."),
         "arguments": {
@@ -162,7 +209,7 @@ ADAPTIVE_CAPABILITIES = (
     {
         "capability_ref": "core.environment.describe",
         "purpose": (
-            "Describe the current runtime environment deterministically: "
+            "USE THIS BEFORE assuming a package, tool or sandbox capability exists -- one call here is cheaper than a failed pass. Describe the current runtime environment deterministically: "
             "available execution capabilities, sandbox availability, "
             "configured providers without secrets, and task authority "
             "grants. Effect-free discovery for orientation."),
@@ -173,7 +220,7 @@ ADAPTIVE_CAPABILITIES = (
     {
         "capability_ref": "core.intelligence.search",
         "purpose": (
-            "Search the four persistent intelligence layers and prior Run "
+            "USE THIS WHEN a similar task may have been solved before, or when you are about to repeat work. Search the four persistent intelligence layers and prior Run "
             "History summaries through the existing retrieval projections. "
             "Results are references and candidates, never authority."),
         "arguments": {
@@ -1573,30 +1620,37 @@ class AdaptiveRunServices:
             }
 
     def available_capabilities(self) -> tuple[dict, ...]:
-        """Return only capabilities usable under this run's current authority."""
+        """Return only capabilities usable under this run's current authority.
+
+        Availability is DERIVED from each entry's declared
+        ``required_permissions`` rather than restated in a per-ref chain.  The
+        chain this replaced named five refs and ended ``else False``, so every
+        capability added to the catalogue afterwards was silently dropped:
+        core.source.profile, core.environment.describe and
+        core.intelligence.search were each in the catalogue, dispatchable, and
+        never once offered to a model.  Deriving from the declared contract
+        removes that drift class instead of adding a sixth branch to it.
+        """
+        granted = set()
+        if (self.request.allow_source_materialization_to_model
+                and bool(self.request.source_refs)):
+            granted.add("source_read")
+        if self.request.allow_workspace_writes:
+            granted.add("workspace_write")
+        if self.request.allow_network_reads:
+            granted.add("network_read")
+        if self.request.allow_sandbox_commands:
+            granted.add("sandbox_command")
         available = []
         for item in ADAPTIVE_CAPABILITIES:
-            ref = item["capability_ref"]
-            usable = (
-                bool(self.request.source_refs)
-                and self.request.allow_source_materialization_to_model
-                if ref == "core.source.inspect" else
-                self.request.allow_network_reads
-                if ref == "core.web.get" else
-                self.request.allow_network_reads
-                and bool(os.environ.get("OLLAMA_API_KEY", "").strip())
-                if ref == "core.web.search" else
-                self.request.allow_workspace_writes
-                and self.request.allow_sandbox_commands
-                if ref == "core.generated_project" else
-                # Available whenever the run may write a workspace, because
-                # a run that can produce a file must be able to read it back.
-                # Withholding this is what left a live run repairing code it
-                # could not see for twenty passes.
-                self.request.allow_workspace_writes
-                if ref == "core.workspace.read" else False)
-            if usable:
-                available.append(item)
+            if not set(item.get("required_permissions") or ()) <= granted:
+                continue
+            # Web search additionally needs a live provider credential; an
+            # offered search that cannot reach a provider wastes a selection.
+            if (item["capability_ref"] == "core.web.search"
+                    and not os.environ.get("OLLAMA_API_KEY", "").strip()):
+                continue
+            available.append(item)
         return tuple(available)
 
     def publish(self, event_type: str, **fields) -> None:
