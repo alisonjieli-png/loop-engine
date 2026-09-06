@@ -353,6 +353,13 @@ unrestricted shell access or install a remote host automatically. The
 [JavaScript repository example](examples/25_host_runtime/README.md) shows the
 boundary using a populated project and fixed `npm test` gates.
 
+The [tabular portfolio example](examples/25_host_runtime/TABULAR-PORTFOLIO.md)
+uses the same binding to train model configurations selected by the engine.
+Three live exercises on Titanic, house prices, and Iris produced 36 fitted
+pipelines with separately scored holdouts. These are familiar-dataset local
+evaluations, not unseen-task or Kaggle leaderboard results. See the
+[complete model comparison](docs/verification/TABULAR-MODEL-PORTFOLIO-2026-09-06.md).
+
 Optional harnesses use the same Loop boundary through explicitly registered
 adapters. Missing tool, skill, isolation, or limit requirements cause refusal
 before execution. The OpenCode process adapter is quarantined pending a

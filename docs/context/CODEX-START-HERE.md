@@ -113,6 +113,19 @@ Use the host-configured record tool for managed notes. Do not directly edit its
 database or immutable revisions. Existing authority Markdown and historical
 evidence have not been migrated, and generated session views remain planned.
 
+For the latest real model-training test, read the
+[tabular portfolio report](../verification/TABULAR-MODEL-PORTFOLIO-2026-09-06.md)
+and [reproduction guide](../../examples/25_host_runtime/TABULAR-PORTFOLIO.md).
+All three requested public datasets completed: 33 real model calls and
+36 fitted pipelines across three families plus a baseline per dataset.
+The same host adapter handled each manifest without core changes. Candidate
+selection used validation; separate containers predicted without test labels
+and scored against sealed labels afterward. These are familiar datasets and
+local scores, not unseen tasks or Kaggle leaderboard grades. Public downloads
+were host preparation, not autonomous engine retrieval. Source rows and model
+binaries remain local. Do not rerun or tune against these holdouts as though
+they remain untouched.
+
 For host embedding or source admission, read the
 [host adoption checkpoint](../verification/HOST-ADOPTION-AND-GENERALIZATION-2026-09-05.md),
 [embedding guide](../guides/embedding-loop-engine.md), and

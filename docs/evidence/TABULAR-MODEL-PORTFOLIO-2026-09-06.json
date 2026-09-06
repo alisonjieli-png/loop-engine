@@ -1,0 +1,705 @@
+{
+  "record_type": "tabular_model_portfolio_evidence/v1",
+  "runtime_revision": "a6bee5655d966c2f2ec9370dc0ff94371bb45733",
+  "scope": "Three familiar public datasets; hosted reasoning selects declared sklearn configurations; local Docker training and validation precede separate sealed-holdout evaluation.",
+  "population": {
+    "selection": "Iris, Titanic and house_prices were chosen as small demonstrations; all three launches and all fitted candidates are retained.",
+    "datasets": 3,
+    "dataset_candidate_pairs": 12,
+    "fitted_pipelines": 36,
+    "heldout_populations": 3,
+    "physical_model_calls": 33,
+    "input_tokens": 758565,
+    "output_tokens": 69651,
+    "test_selection_allowed": false
+  },
+  "reasoner": {
+    "provider": "ollama_cloud",
+    "route": "cloud.default",
+    "model": "deepseek-v4-flash:0731"
+  },
+  "worker": {
+    "path": "examples/25_host_runtime/tabular_portfolio.py",
+    "sha256": "87d084f6bf04ef5d04c70b2fce85f541bbf11a39c33a3c4a57eb8bd7c52854ef",
+    "image": "loop-engine-ds1000-runtime@sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d",
+    "versions": {
+      "joblib": "1.5.3",
+      "numpy": "1.26.4",
+      "pandas": "1.5.3",
+      "sklearn": "1.4.0"
+    },
+    "network": false,
+    "host_fallback": false
+  },
+  "source_preparation": {
+    "path": "examples/25_host_runtime/fetch_openml.py",
+    "sha256": "b23ed3cf80565f90716f40a42edf6749cfe8fd1f87b3211e20c56daaabfa653d",
+    "implementation_digest_scope": "current audited helper, after source downloads; original invocation source digest not recorded",
+    "downloads_preceded_redirect_fix": true,
+    "performed_by": "explicit_host_preparation",
+    "new_kaggle_downloads": 0,
+    "new_kaggle_submissions": 0,
+    "source_rows_published": false
+  },
+  "verification": {
+    "source_preparation_tests": {
+      "passed": 8,
+      "total": 8
+    },
+    "portfolio_tests": {
+      "passed": 5,
+      "total": 5,
+      "real_docker_training_and_scoring": true,
+      "model_calls": 0
+    },
+    "combined_example_suite": {
+      "passed": 13,
+      "total": 13,
+      "elapsed_seconds": 18.094,
+      "model_calls": 0,
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python -m unittest discover -s examples/25_host_runtime -p 'test_*.py' -v",
+      "source": "Parent task's recorded verification; independent review inspected the tests and saved live artifacts."
+    },
+    "independent_audit": {
+      "datasets_verified": 3,
+      "validation_prediction_sets": 36,
+      "test_prediction_sets": 36,
+      "metrics": "Separate direct arithmetic for log loss, accuracy, binary rank AUC, RMSE, MAE and R-squared; compared per-fit scores and arithmetic means at 1e-10 absolute/relative tolerance.",
+      "model_calls": 0,
+      "training_calls": 0,
+      "model_objects_loaded": 0
+    }
+  },
+  "runs": [
+    {
+      "dataset": "iris",
+      "source_record_type": "solve_outcome/v5",
+      "source_evaluation_record_type": "frozen_tabular_holdout_evaluation/v1",
+      "source": {
+        "dataset_id": 61,
+        "name": "iris",
+        "version": "1",
+        "metadata_url": "https://www.openml.org/api/v1/json/data/61",
+        "download_url": "https://data.openml.org/datasets/0000/0061/dataset_61.pq",
+        "license": "Public",
+        "retrieved_at": "2026-09-06T03:52:53.091508+00:00",
+        "rows": 150,
+        "columns": 5,
+        "metadata_sha256": "7e408fec68984cfcf25f360ca267e706bc5ef27284a17351f78429660c14acd0",
+        "parquet_sha256": "18762c5e9d663b42dbdb3f188a6ff687ade67c2a6d0d9d1e5763be835cb40e31",
+        "csv_sha256": "5c38242d49a8df86dbcc795ea8f58282b7ca93f8723261578b0a53a49bd5ba9f",
+        "unseen": false
+      },
+      "task": {
+        "problem_kind": "classification",
+        "target": "class",
+        "excluded_features": [],
+        "feature_count": 4
+      },
+      "split": {
+        "development_rows": 120,
+        "holdout_rows": 30,
+        "train_rows_per_repeat": 90,
+        "validation_rows_per_repeat": 30,
+        "seeds": [
+          1729,
+          1730,
+          1731
+        ],
+        "fractions": {
+          "test": 0.2,
+          "train": 0.6,
+          "validation": 0.2
+        },
+        "shared_holdout_across_repeats": true
+      },
+      "run": {
+        "run_id": "adaptive-d6a7613b660abf1aa12a5db6",
+        "terminal_code": "COMPLETED_VERIFIED",
+        "passes": 2,
+        "physical_model_calls": 12,
+        "input_tokens": 249667,
+        "output_tokens": 22644,
+        "total_tokens": 272311,
+        "usage_complete": true,
+        "elapsed_solve_seconds": 101.162,
+        "invoiced_cost": null,
+        "task_feedback_count": 0,
+        "generated_project_attempts": 0,
+        "host_operation_count": 2
+      },
+      "selected_candidate_id": "b9e59a353492bfe7cdee0d441f102880a04e93c8359de3975007e9d255093c38",
+      "primary_metric": "log_loss",
+      "selection_direction": "minimize",
+      "candidates": [
+        {
+          "candidate_id": "526ce2328118cd9a7d36e8da30549132a27e7385c4c65464aee77144ccb433c6",
+          "family": "logistic",
+          "parameters": {
+            "C": 1,
+            "class_weight": null,
+            "max_iter": 1000
+          },
+          "selected_by_validation": false,
+          "validation_mean": {
+            "accuracy": 0.9555555555555556,
+            "log_loss": 0.18553194664612238
+          },
+          "test_mean": {
+            "accuracy": 0.9444444444444445,
+            "log_loss": 0.1948665662630269
+          }
+        },
+        {
+          "candidate_id": "6ae13572e7be5b02b4880021fdaed68b51faac26187cb64cfca3a94b1a6a98f6",
+          "family": "hist_gradient_boosting",
+          "parameters": {
+            "l2_regularization": 0,
+            "learning_rate": 0.05,
+            "max_iter": 200,
+            "max_leaf_nodes": 15,
+            "min_samples_leaf": 5
+          },
+          "selected_by_validation": false,
+          "validation_mean": {
+            "accuracy": 0.9222222222222222,
+            "log_loss": 0.7409880616985253
+          },
+          "test_mean": {
+            "accuracy": 0.9,
+            "log_loss": 0.9807867601141211
+          }
+        },
+        {
+          "candidate_id": "7bd7cb7404ace3bb5a35674a8c36fa42ffa400952a40be401fbd204e66cea7ef",
+          "family": "dummy",
+          "parameters": {},
+          "selected_by_validation": false,
+          "validation_mean": {
+            "accuracy": 0.3333333333333333,
+            "log_loss": 1.09861228866811
+          },
+          "test_mean": {
+            "accuracy": 0.3333333333333333,
+            "log_loss": 1.09861228866811
+          }
+        },
+        {
+          "candidate_id": "b9e59a353492bfe7cdee0d441f102880a04e93c8359de3975007e9d255093c38",
+          "family": "random_forest",
+          "parameters": {
+            "max_depth": 4,
+            "max_features": "sqrt",
+            "min_samples_leaf": 2,
+            "n_estimators": 200
+          },
+          "selected_by_validation": true,
+          "validation_mean": {
+            "accuracy": 0.9222222222222222,
+            "log_loss": 0.17667607613234107
+          },
+          "test_mean": {
+            "accuracy": 0.9111111111111111,
+            "log_loss": 0.1699021734705203
+          }
+        }
+      ],
+      "failures": {
+        "model_attempts": [
+          {
+            "error_code": "output_validation_failed",
+            "semantic_call_id": "semantic-stage-583d72f96034a9bae080baf9e3feaa143d0a057ca9e9ad92"
+          }
+        ],
+        "fit_attempts": [],
+        "diagnostics": [
+          {
+            "sequence_number": 260,
+            "diagnostic_code": "stage_evidence_degraded",
+            "detail": {
+              "operation": "join_stage_model_execution",
+              "error_type": "AdaptivePractitionerError",
+              "error": "model execution identity differs from its stage occurrence",
+              "stage_occurrence_id": "stage-occurrence:sha256:ceb60a15862afb926af2d1c9198297050dfd4f3a560c93389f5465fb0a7f830c"
+            }
+          }
+        ]
+      },
+      "canonical_history": {
+        "run_id": "adaptive-d6a7613b660abf1aa12a5db6",
+        "events": 960,
+        "head_digest": "89efb6a03c878977832cabf994796aab97ffa6f118ddab603a7d64074aa1b2a3",
+        "chain_intact": true,
+        "broken_at": [],
+        "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/iris-live-v1/runs/adaptive-d6a7613b660abf1aa12a5db6",
+        "product_outcome_bound": true,
+        "product_outcome_digest": "162539358bfb94f2e258e966a8eb357161e4a37b7cc526380500d34cd1bf5fa9",
+        "terminal_code": "COMPLETED_VERIFIED"
+      },
+      "audit": {
+        "all_passed": true,
+        "fit_candidate_fold_pairs": 12,
+        "prediction_candidate_fold_pairs": 12,
+        "validation_and_test_metrics_recomputed": true,
+        "metric_absolute_relative_tolerance": 1e-10,
+        "no_model_unpickled_on_host": true,
+        "validation_selection_verified": true,
+        "observed_file_chronology_consistent": true,
+        "sealed_partitions_disjoint": true,
+        "predictor_has_test_labels": false,
+        "scorer_has_model_objects": false,
+        "unchanged_candidate_artifacts_rehashed": 32
+      },
+      "artifacts": [
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/iris-live-v1/input-manifest.json",
+          "sha256": "0d9ab352ebc714da1f2398042d586c1c44e283ca61269834db99e2b48d1a7f86"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/iris-live-v1/split-manifest.json",
+          "sha256": "6f7a6320772201af9761502176bdf97d1d6a744d40c070d805af50db44b399d4"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/iris-live-v1/portfolio-freeze.json",
+          "sha256": "2b39d921077fbd49f161a511b92d1d9efdef9d08465172ff5b03a227b5b1f05e"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/iris-live-v1/final-evaluation.json",
+          "sha256": "0dd8592eda8ba9dd8de835866abdf358e2937924a6e2f099c775e48d1376495c"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/iris-live-v1/solve-outcome.json",
+          "sha256": "073f99ff9a1bc85e8d95d5fb21bc1eac296f5dff485e9f9f059ec0700c708a64"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/iris-live-v1/final-predictor/predictions.json",
+          "sha256": "09cebdee29e8cb4212f8cd9cbf107b41209f16372d1144121775976c5d3be725"
+        }
+      ]
+    },
+    {
+      "dataset": "titanic",
+      "source_record_type": "solve_outcome/v5",
+      "source_evaluation_record_type": "frozen_tabular_holdout_evaluation/v1",
+      "source": {
+        "dataset_id": 40945,
+        "name": "Titanic",
+        "version": "1",
+        "metadata_url": "https://www.openml.org/api/v1/json/data/40945",
+        "download_url": "https://data.openml.org/datasets/0004/40945/dataset_40945.pq",
+        "license": "Public",
+        "retrieved_at": "2026-09-06T03:52:48.859542+00:00",
+        "rows": 1309,
+        "columns": 14,
+        "metadata_sha256": "47e3f8d8e67bbd4af64cabb6955c0ad57a885bf05826cad16a8674b125823aaf",
+        "parquet_sha256": "4d90e8113109d4cb6e765285f49fa0867006e38e6e848478384291c9036b8bb3",
+        "csv_sha256": "b83ab0b5169ceb660a97f1157bde0951fa7bedfe492ae6686ce8e80a3ff94877",
+        "unseen": false
+      },
+      "task": {
+        "problem_kind": "classification",
+        "target": "survived",
+        "excluded_features": [
+          "boat",
+          "body",
+          "name",
+          "ticket",
+          "home.dest"
+        ],
+        "feature_count": 8
+      },
+      "split": {
+        "development_rows": 1047,
+        "holdout_rows": 262,
+        "train_rows_per_repeat": 785,
+        "validation_rows_per_repeat": 262,
+        "seeds": [
+          1729,
+          1730,
+          1731
+        ],
+        "fractions": {
+          "test": 0.2,
+          "train": 0.6,
+          "validation": 0.2
+        },
+        "shared_holdout_across_repeats": true
+      },
+      "run": {
+        "run_id": "adaptive-3a491e46dabb9be6499a2f96",
+        "terminal_code": "COMPLETED_VERIFIED",
+        "passes": 2,
+        "physical_model_calls": 10,
+        "input_tokens": 233193,
+        "output_tokens": 19864,
+        "total_tokens": 253057,
+        "usage_complete": true,
+        "elapsed_solve_seconds": 97.414,
+        "invoiced_cost": null,
+        "task_feedback_count": 0,
+        "generated_project_attempts": 0,
+        "host_operation_count": 2
+      },
+      "selected_candidate_id": "526ce2328118cd9a7d36e8da30549132a27e7385c4c65464aee77144ccb433c6",
+      "primary_metric": "log_loss",
+      "selection_direction": "minimize",
+      "candidates": [
+        {
+          "candidate_id": "4953773d642a19c1dcb142877c3b2df18860e7a077ac8a00bca395d9b4180a91",
+          "family": "random_forest",
+          "parameters": {
+            "max_depth": 6,
+            "max_features": "sqrt",
+            "min_samples_leaf": 4,
+            "n_estimators": 200
+          },
+          "selected_by_validation": false,
+          "validation_mean": {
+            "accuracy": 0.767175572519084,
+            "log_loss": 0.5574415656849491,
+            "roc_auc": 0.8307510288065844
+          },
+          "test_mean": {
+            "accuracy": 0.8091603053435114,
+            "log_loss": 0.5462813192735169,
+            "roc_auc": 0.8516666666666666
+          }
+        },
+        {
+          "candidate_id": "526ce2328118cd9a7d36e8da30549132a27e7385c4c65464aee77144ccb433c6",
+          "family": "logistic",
+          "parameters": {
+            "C": 1,
+            "class_weight": null,
+            "max_iter": 1000
+          },
+          "selected_by_validation": true,
+          "validation_mean": {
+            "accuracy": 0.7722646310432569,
+            "log_loss": 0.4790557063739674,
+            "roc_auc": 0.8343827160493826
+          },
+          "test_mean": {
+            "accuracy": 0.7798982188295165,
+            "log_loss": 0.46349270191790226,
+            "roc_auc": 0.8398662551440328
+          }
+        },
+        {
+          "candidate_id": "6d68ff0022fb0138faa2e2a15436a9409d0852afb5a4556cc0d86744b4c5e7db",
+          "family": "hist_gradient_boosting",
+          "parameters": {
+            "l2_regularization": 0,
+            "learning_rate": 0.05,
+            "max_iter": 200,
+            "max_leaf_nodes": 31,
+            "min_samples_leaf": 20
+          },
+          "selected_by_validation": false,
+          "validation_mean": {
+            "accuracy": 0.7824427480916031,
+            "log_loss": 0.5354739588958216,
+            "roc_auc": 0.8418724279835391
+          },
+          "test_mean": {
+            "accuracy": 0.8117048346055978,
+            "log_loss": 0.5021423585166138,
+            "roc_auc": 0.8559053497942387
+          }
+        },
+        {
+          "candidate_id": "7bd7cb7404ace3bb5a35674a8c36fa42ffa400952a40be401fbd204e66cea7ef",
+          "family": "dummy",
+          "parameters": {},
+          "selected_by_validation": false,
+          "validation_mean": {
+            "accuracy": 0.6183206106870229,
+            "log_loss": 0.6648807872576282,
+            "roc_auc": 0.5
+          },
+          "test_mean": {
+            "accuracy": 0.6183206106870229,
+            "log_loss": 0.6648807872576283,
+            "roc_auc": 0.5
+          }
+        }
+      ],
+      "failures": {
+        "model_attempts": [],
+        "fit_attempts": [],
+        "diagnostics": []
+      },
+      "canonical_history": {
+        "run_id": "adaptive-3a491e46dabb9be6499a2f96",
+        "events": 923,
+        "head_digest": "6fefedfcdda0c8b8f95c6522106018d10da292e575fe5dd05c5296ba91fc7b7e",
+        "chain_intact": true,
+        "broken_at": [],
+        "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/titanic-live-v1/runs/adaptive-3a491e46dabb9be6499a2f96",
+        "product_outcome_bound": true,
+        "product_outcome_digest": "a48ee7fbe07605e0322e8f8460974494714dbc6b2a8809a9165a68e0c8068e93",
+        "terminal_code": "COMPLETED_VERIFIED"
+      },
+      "audit": {
+        "all_passed": true,
+        "fit_candidate_fold_pairs": 12,
+        "prediction_candidate_fold_pairs": 12,
+        "validation_and_test_metrics_recomputed": true,
+        "metric_absolute_relative_tolerance": 1e-10,
+        "no_model_unpickled_on_host": true,
+        "validation_selection_verified": true,
+        "observed_file_chronology_consistent": true,
+        "sealed_partitions_disjoint": true,
+        "predictor_has_test_labels": false,
+        "scorer_has_model_objects": false,
+        "unchanged_candidate_artifacts_rehashed": 32
+      },
+      "artifacts": [
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/titanic-live-v1/input-manifest.json",
+          "sha256": "50582e3fc91cdad7508889bd24aa2a13f79792aaaca24840c8663ebba1328f86"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/titanic-live-v1/split-manifest.json",
+          "sha256": "cf6b9df67a182b250768c52f471b126ac343346b154fb47cf827277c8f21b47a"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/titanic-live-v1/portfolio-freeze.json",
+          "sha256": "a9a1cf53e780a20ea7e512e0de5062a0839904ad990cddc3f0577a15d38a4a66"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/titanic-live-v1/final-evaluation.json",
+          "sha256": "91b8f664d6dbfc3994ee76ccc254c65b65f6ea86d30afb7193e7c21d3591e467"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/titanic-live-v1/solve-outcome.json",
+          "sha256": "314557ce913c2332f462321240616c29159d3470865318c1cd2bbb9b4f1072c1"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/titanic-live-v1/final-predictor/predictions.json",
+          "sha256": "ea529d2555c50868283a0a981b6f46466a98999d78ca8ba96042263bc21bba2c"
+        }
+      ]
+    },
+    {
+      "dataset": "housing",
+      "source_record_type": "solve_outcome/v5",
+      "source_evaluation_record_type": "frozen_tabular_holdout_evaluation/v1",
+      "source": {
+        "dataset_id": 42165,
+        "name": "house_prices",
+        "version": "1",
+        "metadata_url": "https://www.openml.org/api/v1/json/data/42165",
+        "download_url": "https://data.openml.org/datasets/0004/42165/dataset_42165.pq",
+        "license": "NA",
+        "retrieved_at": "2026-09-06T03:52:51.361228+00:00",
+        "rows": 1460,
+        "columns": 81,
+        "metadata_sha256": "dc98867580a0db7933ebb74573287a60585fc709b3b6537778f4c32556d1af30",
+        "parquet_sha256": "e7cdf23062e5b9e7c75b084936d40c26a6cd490081ebd66d4df17512368f5338",
+        "csv_sha256": "06b4acbf769dab2e6b5851fe11e3fb716394535313cd269f157b817463c51ee2",
+        "unseen": false
+      },
+      "task": {
+        "problem_kind": "regression",
+        "target": "SalePrice",
+        "excluded_features": [
+          "Id"
+        ],
+        "feature_count": 79
+      },
+      "split": {
+        "development_rows": 1168,
+        "holdout_rows": 292,
+        "train_rows_per_repeat": 876,
+        "validation_rows_per_repeat": 292,
+        "seeds": [
+          1729,
+          1730,
+          1731
+        ],
+        "fractions": {
+          "test": 0.2,
+          "train": 0.6,
+          "validation": 0.2
+        },
+        "shared_holdout_across_repeats": true
+      },
+      "run": {
+        "run_id": "adaptive-89e165fd6d65b40ecc2d36d2",
+        "terminal_code": "COMPLETED_VERIFIED",
+        "passes": 2,
+        "physical_model_calls": 11,
+        "input_tokens": 275705,
+        "output_tokens": 27143,
+        "total_tokens": 302848,
+        "usage_complete": true,
+        "elapsed_solve_seconds": 122.003,
+        "invoiced_cost": null,
+        "task_feedback_count": 0,
+        "generated_project_attempts": 0,
+        "host_operation_count": 2
+      },
+      "selected_candidate_id": "a69993a1e3527cd2b35a4561684c4cfae07fb4a1dfeaaf928cdbb42cd2d807ff",
+      "primary_metric": "rmse",
+      "selection_direction": "minimize",
+      "candidates": [
+        {
+          "candidate_id": "41a6633d8bd1615d8cb98685d41e923cf670673dcc312e366e64830001a58c72",
+          "family": "ridge",
+          "parameters": {
+            "alpha": 1
+          },
+          "selected_by_validation": false,
+          "validation_mean": {
+            "mae": 18761.372159338265,
+            "r2": 0.7969797843682221,
+            "rmse": 34704.03161439181
+          },
+          "test_mean": {
+            "mae": 19367.507763916536,
+            "r2": 0.8574696072514233,
+            "rmse": 33605.18117143421
+          }
+        },
+        {
+          "candidate_id": "69e48741cd52b4d1a1d8871692ebaa652fbfc8c7acef122f0cfebc6a9b23e8d2",
+          "family": "random_forest",
+          "parameters": {
+            "max_depth": null,
+            "max_features": "sqrt",
+            "min_samples_leaf": 2,
+            "n_estimators": 200
+          },
+          "selected_by_validation": false,
+          "validation_mean": {
+            "mae": 18149.523798555805,
+            "r2": 0.8227368921528239,
+            "rmse": 33169.99240975461
+          },
+          "test_mean": {
+            "mae": 21286.62009107139,
+            "r2": 0.7988511976288373,
+            "rmse": 39941.65063649041
+          }
+        },
+        {
+          "candidate_id": "7bd7cb7404ace3bb5a35674a8c36fa42ffa400952a40be401fbd204e66cea7ef",
+          "family": "dummy",
+          "parameters": {},
+          "selected_by_validation": false,
+          "validation_mean": {
+            "mae": 57291.01125914805,
+            "r2": -0.0005915352260430495,
+            "rmse": 79009.92850134145
+          },
+          "test_mean": {
+            "mae": 61014.38694981339,
+            "r2": -0.0009621873025047467,
+            "rmse": 89116.27293291345
+          }
+        },
+        {
+          "candidate_id": "a69993a1e3527cd2b35a4561684c4cfae07fb4a1dfeaaf928cdbb42cd2d807ff",
+          "family": "hist_gradient_boosting",
+          "parameters": {
+            "l2_regularization": 0,
+            "learning_rate": 0.1,
+            "max_iter": 200,
+            "max_leaf_nodes": 31,
+            "min_samples_leaf": 20
+          },
+          "selected_by_validation": true,
+          "validation_mean": {
+            "mae": 16394.294178381835,
+            "r2": 0.866463423465138,
+            "rmse": 28812.217884549555
+          },
+          "test_mean": {
+            "mae": 18681.62924867764,
+            "r2": 0.8464101223140634,
+            "rmse": 34881.35804273708
+          }
+        }
+      ],
+      "failures": {
+        "model_attempts": [],
+        "fit_attempts": [],
+        "diagnostics": [
+          {
+            "sequence_number": 599,
+            "diagnostic_code": "next_action_invalid",
+            "detail": {
+              "attempt": 1,
+              "error": "NextActionDecision selected unknown capabilities ['host:tabular_verifier:validate']"
+            }
+          }
+        ]
+      },
+      "canonical_history": {
+        "run_id": "adaptive-89e165fd6d65b40ecc2d36d2",
+        "events": 990,
+        "head_digest": "4dfaac9db2a218d4c84fa996e07401d3cdb31a12d464657b503d72d54750cf24",
+        "chain_intact": true,
+        "broken_at": [],
+        "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/housing-live-v1/runs/adaptive-89e165fd6d65b40ecc2d36d2",
+        "product_outcome_bound": true,
+        "product_outcome_digest": "8bb76f2ce80908c58ae463b317b2297a36388e4566071fee35748f49cc1167f4",
+        "terminal_code": "COMPLETED_VERIFIED"
+      },
+      "audit": {
+        "all_passed": true,
+        "fit_candidate_fold_pairs": 12,
+        "prediction_candidate_fold_pairs": 12,
+        "validation_and_test_metrics_recomputed": true,
+        "metric_absolute_relative_tolerance": 1e-10,
+        "no_model_unpickled_on_host": true,
+        "validation_selection_verified": true,
+        "observed_file_chronology_consistent": true,
+        "sealed_partitions_disjoint": true,
+        "predictor_has_test_labels": false,
+        "scorer_has_model_objects": false,
+        "unchanged_candidate_artifacts_rehashed": 32
+      },
+      "artifacts": [
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/housing-live-v1/input-manifest.json",
+          "sha256": "aec9293cfa7d3ce74a5dfa21aad596fe803e9f2b3b053f728129ce1c6a15b86d"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/housing-live-v1/split-manifest.json",
+          "sha256": "b53694c78270a6550428baaafbb7cdee256fb547db37fc17ae8a08656a7041f8"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/housing-live-v1/portfolio-freeze.json",
+          "sha256": "a32b10959c96fb0075c785cf693d872e29a488b707b7d73078277f879b2935d0"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/housing-live-v1/final-evaluation.json",
+          "sha256": "24d7e830d1c35af2dbcfe419c0eb046a362eab3474ee601319736d9f3f0cc95a"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/housing-live-v1/solve-outcome.json",
+          "sha256": "3c9a3d3ccf2aa955f8c37604fae68f3f838c16c1bfcc213a5c6f13d050a52456"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/tabular-portfolio-20260906.YxTECo/housing-live-v1/final-predictor/predictions.json",
+          "sha256": "2d69e42d7a02115f32318ab595e59a206f4233103adbc8949750598cf4744bf3"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "This is not an unseen-task population, Kaggle submission, leaderboard grade, or comparison of different language models.",
+    "The host implements preprocessing, training, splits, scoring and the allowed families. The reasoner selects their exposed hyperparameters, not arbitrary worker code.",
+    "Completion verifies required model-family fits and artifacts; it does not require a minimum predictive score.",
+    "Each candidate's scores average three separately fitted pipelines on one shared test partition. They are not ensemble scores or three independent test populations.",
+    "The winner was frozen from mean validation log loss or RMSE before test prediction/scoring. All candidate test results are descriptive; no test-based replacement winner is reported.",
+    "The house-price metric is RMSE in original price units, not Kaggle log-price error. Its source license metadata is NA.",
+    "Titanic excludes outcome-related boat/body and declared identifier/availability fields; row-random splitting is not family-held-out evaluation.",
+    "The 64 MiB download allowance bounds transfer bytes, not decompressed Parquet/dataframe memory.",
+    "Solve elapsed times exclude source preparation and final evaluation; runs overlapped, so summed solve times are not campaign wall time.",
+    "Iris retains one recovered output-validation failure and degraded stage-execution attribution. Housing retains a rejected model attempt to select the hidden host verifier.",
+    "No raw datasets, fitted model files, private prompts or complete trajectories are included in this evidence projection."
+  ]
+}

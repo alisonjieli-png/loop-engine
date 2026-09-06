@@ -9,6 +9,15 @@ First public release.
 
 ### Added
 
+- [Live tabular model portfolios](docs/verification/TABULAR-MODEL-PORTFOLIO-2026-09-06.md).
+  One configurable host adapter trained engine-selected scikit-learn recipes
+  on Titanic, house prices, and Iris. The three completed runs used 33 real
+  model calls and produced 36 fitted pipelines. Validation selected candidates
+  before separate sealed-holdout scoring. Downloads are explicit host
+  preparation; these familiar-data local scores are not Kaggle submissions
+  or unseen-task evidence. The example includes source digests, saved models,
+  predictions, failure checks, and reproducible recipe records.
+
 - [Host execution and source admission](docs/verification/HOST-ADOPTION-AND-GENERALIZATION-2026-09-05.md).
   Applications can pass a typed host binding to `SolveRequest` and use their
   registered operations and verification gates. Host results retain their

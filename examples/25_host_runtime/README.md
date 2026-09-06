@@ -10,6 +10,10 @@ The source begins with a deliberate bug. The task and tests are example data,
 not a special solver route. See [the embedding API](../../docs/guides/embedding-loop-engine.md)
 for the general contract and host responsibilities.
 
+For a different use of the same binding, see the
+[tabular model portfolio](TABULAR-PORTFOLIO.md). It trains and evaluates
+engine-selected model configurations on supplied datasets.
+
 ## Run
 
 From the repository root, install Loop Engine and Docker, configure the chosen
