@@ -1238,8 +1238,16 @@ class AdaptivePractitionerRequest:
     instruction_provenance: CapturedInstructionProvenance | None = None
     independent_verification_policy: IndependentVerificationPolicy = field(
         default_factory=IndependentVerificationPolicy)
+    host_runtime_manifest: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
+        if not isinstance(self.host_runtime_manifest, dict):
+            raise AdaptivePractitionerError("host runtime manifest must be a mapping")
+        try:
+            host_manifest = json.loads(json.dumps(self.host_runtime_manifest, allow_nan=False))
+        except (TypeError, ValueError) as exc:
+            raise AdaptivePractitionerError("host runtime manifest must be strict JSON") from exc
+        object.__setattr__(self, "host_runtime_manifest", host_manifest)
         if not isinstance(self.independent_verification_policy,
                           IndependentVerificationPolicy):
             raise AdaptivePractitionerError(
@@ -1351,6 +1359,7 @@ class AdaptivePractitionerRequest:
             "granularity_profile": self.granularity_profile,
             "context_budget": asdict(self.context_budget),
             "prior_region_evidence": self.prior_region_evidence,
+            "host_runtime_manifest": self.host_runtime_manifest,
         }
         if self.instruction_provenance is not None:
             value["instruction_provenance"] = self.instruction_provenance.to_dict()
@@ -1381,8 +1390,13 @@ class AdaptivePractitionerDependencies:
     reuse_observation_port: "ReuseObservationPort | None" = field(
         default=None, repr=False, compare=False)
     extension_snapshot: dict = field(default_factory=dict)
+    host_runtime: object | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
+        if self.host_runtime is not None:
+            from .host_runtime import HostRuntimeBinding
+            if not isinstance(self.host_runtime, HostRuntimeBinding):
+                raise AdaptivePractitionerError("host_runtime must use its typed binding")
         if self.model_execution is not None and not isinstance(
                 self.model_execution, ModelExecution):
             raise AdaptivePractitionerError(
@@ -1515,6 +1529,9 @@ class AdaptiveRunServices:
     #: core.source_role_orientation and stated on every later call.
     source_roles: dict | None = None
     project_attempts: list[dict] = field(default_factory=list)
+    host_results: list[dict] = field(default_factory=list)
+    task_results: list[dict] = field(default_factory=list)
+    host_verification_records: list[dict] = field(default_factory=list)
     verification_records: list[dict] = field(default_factory=list)
     independent_verification_records: list[dict] = field(default_factory=list)
     independent_probe_cache: dict = field(default_factory=dict)
@@ -1621,6 +1638,16 @@ class AdaptiveRunServices:
                 if ref == "core.workspace.read" else False)
             if usable:
                 available.append(item)
+        host = getattr(self.dependencies, "host_runtime", None)
+        if host is not None:
+            if host.summary() != self.request.host_runtime_manifest:
+                raise AdaptivePractitionerError("host runtime binding changed after admission")
+            known = {item["capability_ref"] for item in ADAPTIVE_CAPABILITIES}
+            for descriptor in host.descriptors():
+                if descriptor["capability_ref"] in known:
+                    raise AdaptivePractitionerError("host capability conflicts with a built-in capability")
+                known.add(descriptor["capability_ref"])
+                available.append(descriptor)
         return tuple(available)
 
     def publish(self, event_type: str, **fields) -> None:

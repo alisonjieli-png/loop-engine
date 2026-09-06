@@ -1,7 +1,7 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 417,
+ "files_scanned": 422,
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "reachable_legacy_flat_paths": 0,
@@ -37,13 +37,13 @@
   "stale_current_architecture_documents": [],
   "operational_boundary_ontology": {
    "record_type": "operational_boundary_report/v2",
-   "total": 72,
-   "bound": 72,
+   "total": 74,
+   "bound": 74,
    "unbound": 0,
-   "ontology_conforming": 72,
+   "ontology_conforming": 74,
    "coverage": 1.0,
    "by_binding_kind": {
-    "native_loop": 31,
+    "native_loop": 33,
     "stage_loop_tree": 1,
     "practitioner_loop": 30,
     "api_dispatch": 1,
@@ -51,12 +51,12 @@
     "component_loop": 4
    },
    "by_role": {
-    "practitioner": 40,
-    "intelligence": 15,
+    "practitioner": 41,
+    "intelligence": 16,
     "solution": 10
    },
    "by_profile": {
-    "intelligence.code.invoke@1.0.0": 4,
+    "intelligence.code.invoke@1.0.0": 5,
     "intelligence.code.resolve@1.0.0": 3,
     "intelligence.context.frame@1.0.0": 1,
     "intelligence.context.serve@1.0.0": 1,
@@ -68,7 +68,7 @@
     "practitioner.reference_nine_step@1.0.0": 2,
     "practitioner.self_improvement@1.0.0": 5,
     "practitioner.solver@1.0.0": 7,
-    "practitioner.verifier@1.0.0": 9,
+    "practitioner.verifier@1.0.0": 10,
     "solution.atomic_component@1.0.0": 4,
     "solution.ensemble@1.0.0": 1,
     "solution.pipeline@1.0.0": 2,
@@ -76,10 +76,10 @@
     "solution.validator@1.0.0": 2
    },
    "by_relationship_kind": {
-    "starting": 36,
-    "spawned_by": 47,
+    "starting": 37,
+    "spawned_by": 48,
     "queried_by": 7,
-    "retrieved_by": 9,
+    "retrieved_by": 10,
     "connected_from": 5
    },
    "dynamic_profile_sources": {
@@ -87,7 +87,7 @@
     "practitioner|intelligence|solution:loop.spawned_task_checkpoint.SpawnedTaskCheckpoint.spec": 2,
     "practitioner|intelligence|solution:loop.delegation_runtime.DelegationSpec.profile": 4
    },
-   "exact_profile_boundaries": 65,
+   "exact_profile_boundaries": 67,
    "dynamic_profile_boundaries": 7,
    "invalid_rows": [],
    "invalid_relationship_rows": [],

@@ -20,6 +20,7 @@ from ..loop.kernel import (
     RouteDecision,
 )
 from ..loop.kernel_runtime import current_kernel_owner
+from .adaptive_host_verification import require_host_checks, verify_host_results
 from .adaptive_practitioner_records import (
     AdaptivePractitionerError,
     AdaptiveRunServices,
@@ -29,6 +30,7 @@ from .adaptive_practitioner_recovery import (
     RecoveryPanelRequest,
     resolve_stall_with_panel,
 )
+from .adaptive_practitioner_result import latest_task_result, task_result_succeeded
 from .adaptive_practitioner_source import source_inspection_model_view
 from .adaptive_practitioner_supervision import detect_stall
 from .adaptive_practitioner_validation import (
@@ -218,6 +220,8 @@ def validate_adaptive_evaluation(
         _require_independent_checks(
             record, request.results, services,
             owner_loop or current_kernel_owner())
+        require_host_checks(record, request.results, services,
+                            owner_loop or current_kernel_owner())
     return record
 
 
@@ -412,6 +416,7 @@ def verify_adaptive_results(
     policy = _independent_policy(services)
     independent_checks = _run_independent_checks(
         services, results, criteria, current_kernel_owner())
+    host_checks = verify_host_results(results, services, current_kernel_owner())
     deterministic_pass = bool(
         results and not any(item.errors for item in results)
         and all(item.result is not None for item in results))
@@ -434,6 +439,7 @@ def verify_adaptive_results(
              "deterministic_checks_passed": deterministic_pass,
              "independent_verification_policy": policy.to_dict(),
              "independent_checks": independent_checks,
+             "host_checks": host_checks,
              "registered_acceptance_criteria": criteria,
              "verification_scope_rule": (
                  "Task gaps require observed evidence and a registered acceptance "
@@ -443,7 +449,9 @@ def verify_adaptive_results(
                  "project. Keep operational failures separate from task gaps; "
                  "retry verification of the existing project when it is the "
                  "remaining work. Put optional improvements or new requirements "
-                 "in their separate advisory fields; they cannot block." )},
+                 "in their separate advisory fields; they cannot block. A passed "
+                 "host check may accept an intermediate observation. Host "
+                 "task_complete must also be true before final success." )},
             json.dumps({
                 "verdict": (
                     "accept|accept_provisional|repair|research_more|"
@@ -536,6 +544,15 @@ def verify_adaptive_results(
         operational_failures.append({
             "source": "independent_verification", "status": "unsatisfied",
             "reason": finding})
+    try:
+        require_host_checks({"host_checks": host_checks}, results, services,
+                            current_kernel_owner())
+    except Exception as exc:  # noqa: BLE001 - host evidence failures must block acceptance
+        verdict = "repair"
+        finding = f"Host verification remains unsatisfied: {str(exc)[:1000]}"
+        notes = notes + " " + finding
+        operational_failures.append({
+            "source": "host_verification", "status": "unsatisfied", "reason": finding})
     verifier_stage = getattr(services, "_graded_stage", None)
     suffix = (" Remaining: " + "; ".join(gaps)) if gaps else ""
     evaluation = EvaluationPacket(
@@ -559,6 +576,7 @@ def verify_adaptive_results(
         "registered_acceptance_criteria": criteria,
         "independent_verification_policy": policy.to_dict(),
         "independent_checks": independent_checks,
+        "host_checks": host_checks,
     }
     _append_verification_record(services, record, current_kernel_owner())
     _record_attribution_boundary(services, verdict)
@@ -570,9 +588,8 @@ def route_adaptive_result(
         services: AdaptiveRunServices) -> tuple:
     """Choose continuation or success after verification, with safe fallback."""
     evaluation = request.record.evaluation
-    deterministic_pass = bool(
-        services.project_attempts
-        and services.project_attempts[-1].get("deterministic_checks_passed"))
+    final_result = latest_task_result(services)
+    deterministic_pass = task_result_succeeded(final_result)
     try:
         value = services.model(ModelStepRequest(
             "route", "Choose the next pass or finish the verified task.",
@@ -606,8 +623,10 @@ def route_adaptive_result(
                 request.record.plan, tuple(request.record.results), evaluation),
                 services)
             if not selected_project_matches(
-                    request.record, services.project_attempts[-1]):
-                raise ValueError("verified result is not the emitted project")
+                    request.record, final_result):
+                raise ValueError("verified result is not the emitted task result")
+            require_host_checks(services.verification_records[-1], request.record.results,
+                                services, current_kernel_owner(), task_complete=True)
         except (AttributeError, TypeError, ValueError) as exc:
             selected = "repair"
             reason = "Final success requires exact recorded verification of this result."

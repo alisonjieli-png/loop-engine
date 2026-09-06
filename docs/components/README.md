@@ -43,7 +43,7 @@ One authoritative static DAG
 
 A Starting Practitioner may spawn a Practitioner subproblem Loop and query an
 Intelligence Query Loop. The Query Loop retrieves Intelligence Item Loops. A
-Starting Solution connects to deterministic Solution pipeline Loops and only
+Starting Solution connects to Solution pipeline Loops and only
 spawns a Solution Loop for real dynamic work. Every Loop keeps its own mode,
 step profile, budget, and contract.
 

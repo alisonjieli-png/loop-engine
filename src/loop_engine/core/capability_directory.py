@@ -14,9 +14,10 @@ inside ``loop.capability_loops``.
 from __future__ import annotations
 
 import hashlib
-import json
 from dataclasses import dataclass, field, asdict
 from typing import Callable, Sequence
+
+from .capability_invocation import CapabilityInvocationPolicy, capability_handshake_digest
 
 SURFACE_KINDS = ("string_store", "code_node_registry", "static_component")
 OPERATIONS = ("search", "get", "list", "invoke", "validate", "compose",
@@ -236,9 +237,7 @@ class CapabilityDirectory:
             score = len(terms & tokens)
             if score <= 0:
                 continue
-            digest = hashlib.sha256(json.dumps(
-                handshake.describe(), sort_keys=True, default=str).encode()
-                                    ).hexdigest()
+            digest = capability_handshake_digest(handshake)
             item_handshake = IntelligenceItemHandshake(
                 item_id=handshake.surface, layer="code_intelligence",
                 supported_modes=("deterministic",),
@@ -296,14 +295,13 @@ class CapabilityDirectory:
         return "semantic"                   # a materially different method
 
     def call(self, surface: str, operation: str, *, ledger=None,
+             policy: CapabilityInvocationPolicy | None = None,
              **kwargs) -> CallResult:
-        """Invoke an endpoint uniformly.  On a missing operation or an error,
-        follow the declared fallback (a bias) rather than crashing — recording
-        WHICH of the three fallback layers was crossed.
-
-        With a ``ledger`` the invocation lands on the run's timeline as
-        ``tool.invocation.started`` and then ``.completed`` or ``.failed`` —
-        a tool call is an operational boundary and should not be invisible."""
+        """Invoke a bound callable; optional policy pins identity and blocks fallback.
+        Ledger events retain start, completion, failure, and fallback identity."""
+        if policy is not None and type(policy) is not CapabilityInvocationPolicy:
+            raise TypeError("capability invocation policy must use its typed contract")
+        policy = CapabilityInvocationPolicy() if policy is None else policy
         if ledger is not None:
             ledger.record(loop_id="", event="tool_invocation_started",
                           surface=surface, operation=operation)
@@ -314,8 +312,10 @@ class CapabilityDirectory:
                               reason="no such surface")
             raise HandshakeError(f"no surface {surface!r}")
         ep = self._ep.get((surface, operation))
+        function = ep.fn if ep is not None else None
+        allow_fallback = policy.bind(self._hs[surface], function)
         if ep is None:
-            fb = self._fallback_for(surface, operation)
+            fb = self._fallback_for(surface, operation) if allow_fallback else None
             if fb:
                 r = self.call(fb[0], fb[1], ledger=ledger, **kwargs)
                 return CallResult(surface, operation, r.ok, r.value, True,
@@ -329,7 +329,7 @@ class CapabilityDirectory:
             return CallResult(surface, operation, False, None, False,
                               "unsupported and no fallback declared")
         try:
-            value = ep.fn(**kwargs)
+            value = function(**kwargs)
             value_ok = (value.get("ok", True) if isinstance(value, dict)
                         else getattr(value, "ok", True))
             if not value_ok:
@@ -347,7 +347,7 @@ class CapabilityDirectory:
                               surface=surface, operation=operation)
             return CallResult(surface, operation, True, value)
         except Exception as e:
-            fb = ep.fallback or self._default_fallback.get(surface)
+            fb = (ep.fallback or self._default_fallback.get(surface)) if allow_fallback else None
             if fb:
                 r = self.call(fb[0], fb[1], ledger=ledger, **kwargs)
                 return CallResult(surface, operation, r.ok, r.value, True,
@@ -360,8 +360,6 @@ class CapabilityDirectory:
                               reason=type(e).__name__)
             return CallResult(surface, operation, False, None, False,
                               f"error: {e}")
-
-    # --- the compact snapshot + search-by-need ------------------------------
 
     def snapshot(self, *, gaps: "Sequence[str]" = (),
                  ledger=None) -> CapabilitySnapshot:

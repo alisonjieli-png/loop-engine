@@ -89,11 +89,11 @@ execution order. It accepts all three mode names only when the referenced
 definition, graph policy, and installed executor permit them. This does not
 assign one mode to the whole Canvas or pipeline.
 
-Execution-adapter coverage is a separate preflight. The current in-process adapter can
-execute deterministic leaves only. If any leaf declares `hybrid` or
-`non_deterministic`, `run_solution()` refuses the run before it initializes a
-runtime Solution loop or calls an operation. Separate hybrid and
-non-deterministic Canvas execution adapters are not implemented yet.
+Execution-adapter coverage is a separate preflight. The in-process runner
+supports deterministic, hybrid, and non-deterministic members when compatible
+executors are installed. Model-using members also require exact model authority
+and a governed model invocation port. Missing authority or an unavailable
+executor is refused before the member executes.
 
 This separation preserves a valid portable declaration without pretending the
 installed adapter can execute a mode it does not implement.

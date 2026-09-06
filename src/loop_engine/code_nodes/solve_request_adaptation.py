@@ -64,6 +64,8 @@ def build_adaptive_request(
         prior_region_evidence=specification.region_evidence,
         stage_assistance=request.stage_assistance,
         independent_verification_policy=request.independent_verification_policy,
+        host_runtime_manifest=(request.host_runtime.summary()
+                               if request.host_runtime is not None else {}),
         **budget,
     )
 
@@ -342,7 +344,8 @@ def _instruction_adaptation_checks() -> list[dict]:
         path.write_text("different filesystem text", encoding="utf-8")
         services = SimpleNamespace(
             request=request, workspace_base=Path(directory) / "workspace",
-            action_fence=ActionFenceLedger(), source_inspections=[])
+            action_fence=ActionFenceLedger(), source_inspections=[],
+            dependencies=SimpleNamespace(host_runtime=None))
         facts = runtime_facts(services)
         unchanged_request = build_adaptive_request(SolveAdaptationRequest(
             public, "non_deterministic", {}, None))
@@ -350,7 +353,8 @@ def _instruction_adaptation_checks() -> list[dict]:
             dataset=str(path), goal="Use explicitly supplied data.")))
         data_request = build_adaptive_request(SolveAdaptationRequest(
             data, "non_deterministic", {}, None))
-        data_services = SimpleNamespace(request=data_request)
+        data_services = SimpleNamespace(
+            request=data_request, dependencies=SimpleNamespace(host_runtime=None))
         data_without_grant = not any(item["capability_ref"] == "core.source.inspect"
             for item in AdaptiveRunServices.available_capabilities(data_services))
         data_services.request = replace(data_request, allow_source_materialization_to_model=True)

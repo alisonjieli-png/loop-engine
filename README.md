@@ -1,13 +1,20 @@
 # Building with Loops
 
-Loop Engine works like a careful, curious colleague. Give it a task, and it
-performs real work in a confined workspace, verifies the result, and saves an
-inspectable Run History.
+Loop Engine coordinates tasks through one shared Loop runtime. Given configured
+capabilities and authority, it attempts the work, checks the results, and saves
+completed work and failures in an inspectable Run History.
 
 It takes small steps and selects the next concrete action itself. It records
 typed model decisions and material actions, then checks its work before
 claiming success. Verified code, context, and solutions can become candidates
 for governed reuse.
+
+The built-in quickstart builds small Python projects. Other applications can
+supply their own operations and verification through the
+[host integration API](docs/guides/embedding-loop-engine.md). The host controls
+its files, commands, repository, and acceptance gates; the Loop reasons over
+the available capabilities and their observations. This interface is not a
+claim that arbitrary unseen tasks are already solved.
 
 ## Solve with human-like loops
 
@@ -329,6 +336,8 @@ common dependency and version-control folders, and records input digests.
 | Small Python utilities | Model proposes typed files and commands. Docker executes and verifies them. |
 | Local data transforms | Selected CSV, JSON, text, and related inputs can be copied into the workspace. |
 | Document and repository analysis | Model-selected text files can be materialized with explicit source-to-model authority. |
+| Source formats | Readable UTF-8 source is admitted by bounded content inspection, not a programming-language suffix list. Exclusions have explicit reasons. |
+| Host-owned work | Python embedding API accepts registered host operations, scoped permissions, and a separate host verifier. Results need not be generated projects. |
 | Small Python package repair | The run can reproduce a nonzero exit, apply a changed source artifact, and rerun verification. |
 | Providers | Ollama Cloud, Mistral, OpenRouter, OpenCode Go, and typed custom endpoints. Availability must be probed. |
 | Effects | Workspace writes and commands require configured sandbox authority and exact per-effect approval. |
@@ -337,6 +346,12 @@ common dependency and version-control folders, and records input digests.
 Loop Engine does not yet claim arbitrary-domain execution, automatic
 deployment, unrestricted shell access, broad repository repair, or guaranteed
 model quality.
+
+Host integration requires trusted adapter code, explicit permission to share
+host output with a model, and host-enforced execution policy. It does not expose
+unrestricted shell access or install a remote host automatically. The
+[JavaScript repository example](examples/25_host_runtime/README.md) shows the
+boundary using a populated project and fixed `npm test` gates.
 
 Optional harnesses use the same Loop boundary through explicitly registered
 adapters. Missing tool, skill, isolation, or limit requirements cause refusal

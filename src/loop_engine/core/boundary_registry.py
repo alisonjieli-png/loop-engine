@@ -113,6 +113,14 @@ BOUNDARIES = (
      "binding": "native_loop",
      "envelope": "core.independent_verification.run_independent_verification",
      "test": "independent_verification.self_test"},
+    {"boundary": "host-owned capability invocation",
+     "crosses": "an approved typed action reaches an explicitly registered host endpoint",
+     "binding": "native_loop", "envelope": "core.host_runtime.invoke_host_operation",
+     "test": "host_runtime.self_test"},
+    {"boundary": "host-owned task verification",
+     "crosses": "host observations are checked against independently registered host gates",
+     "binding": "native_loop", "envelope": "core.host_runtime.verify_host_result",
+     "test": "host_runtime.self_test"},
     {"boundary": "solution component",
      "crosses": "a Solution Canvas box executes",
      "binding": "native_loop",
@@ -362,6 +370,10 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
         "starting"),
     "independent executable task verification": _exact(
         "practitioner", "practitioner.verifier@1.0.0", "spawned_by"),
+    "host-owned capability invocation": _exact(
+        "intelligence", "intelligence.code.invoke@1.0.0", "retrieved_by"),
+    "host-owned task verification": _exact(
+        "practitioner", "practitioner.verifier@1.0.0", "spawned_by"),
     "solution component": _exact(
         "solution", "solution.atomic_component@1.0.0", "connected_from"),
     "api endpoint": _exact(
@@ -406,7 +418,7 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
     "loop reference invocation": _exact(
         "intelligence", "intelligence.materialize@1.0.0", "retrieved_by"),
     "custom plugin invocation": _exact(
-        "intelligence", "intelligence.code.invoke@1.0.0", "retrieved_by"),
+        "intelligence", "intelligence.code.invoke@1.0.0", "starting", "retrieved_by"),
     "Code Intelligence entry point": _exact(
         "intelligence", "intelligence.code.invoke@1.0.0", "retrieved_by"),
     "solution graph adapter": _exact(

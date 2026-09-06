@@ -1,0 +1,5 @@
+{
+  "name": "host-owned-verification-example",
+  "private": true,
+  "scripts": {"test": "node --test test.mjs"}
+}

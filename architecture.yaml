@@ -47,6 +47,53 @@ component_architecture:
     - example
   physical_fusion_requires_logical_history: true
 
+host_task_execution:
+  operational_runtime_type: Loop
+  public_port: CustomPluginsPort
+  directory: loop_engine.core.capability_directory.CapabilityDirectory
+  binding: loop_engine.core.host_runtime.HostRuntimeBinding
+  operation_binding: loop_engine.core.host_runtime.HostOperationBinding
+  request: loop_engine.core.host_runtime.HostOperationRequest
+  invocation: loop_engine.core.host_runtime.invoke_host_operation
+  verifier: loop_engine.core.host_runtime.verify_host_result
+  invariants:
+    - python_project_generation_is_one_capability_not_the_universal_action_contract
+    - host_registrations_are_explicit_authority_not_model_generated_promotion
+    - schemas_handshakes_callback_bindings_and_scope_are_frozen
+    - permission_declarations_are_scoped_to_selected_host_operations
+    - host_permission_requests_never_expand_global_core_grants
+    - each_host_effect_requires_exact_external_host_approval
+    - implicit_fallback_is_not_a_host_execution_authority
+    - host_owned_verification_cannot_be_selected_or_rewritten_by_the_producer
+    - observed_progress_and_task_completion_are_separate
+    - final_success_requires_issued_current_state_bound_host_verification
+    - host_results_keep_their_own_contract_without_fake_python_project_artifacts
+    - unknown_effect_outcomes_require_reconciliation_before_further_mutation
+  trust_boundary:
+    host_callbacks: trusted_embedding_application
+    sandbox_and_gate_implementation: host_owned
+    external_state_snapshots: host_attested
+  unproven:
+    - arbitrary_host_adapter_security_or_semantic_correctness
+    - remote_registration_authentication_and_transport_sdk
+    - cross_process_exactly_once_effects_or_automatic_reconciliation
+    - broad_unseen_task_quality
+
+source_admission:
+  authority: loop_engine.core.adaptive_practitioner_source.inventory_source_files
+  policy: bounded_utf8_content_inspection_not_language_suffix_routing
+  invariants:
+    - existing_source_to_model_authority_remains_required
+    - unknown_text_extensions_are_not_silently_excluded
+    - exclusions_have_explicit_metadata_and_no_protected_bodies
+    - supplied_symlink_roots_are_refused_and_ancestor_aliases_are_canonicalized
+    - canonical_reads_do_not_follow_nested_symlinks
+    - complete_selected_text_is_revalidated_before_exposure
+  limitations:
+    - unsupported_encodings_are_reported_not_guessed
+    - pruned_subtrees_have_directory_exclusions_not_full_descendant_inventories
+    - secret_screening_does_not_replace_host_privacy_policy
+
 independent_task_verification:
   operational_runtime_type: Loop
   owner_profile: practitioner.verifier@1.0.0

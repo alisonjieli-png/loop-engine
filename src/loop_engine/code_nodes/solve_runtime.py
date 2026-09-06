@@ -115,8 +115,13 @@ class SolveRequest:
     )
     independent_verification_policy: IndependentVerificationPolicy = field(
         default_factory=IndependentVerificationPolicy)
+    host_runtime: object | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
+        if self.host_runtime is not None:
+            from ..core.host_runtime import HostRuntimeBinding
+            if not isinstance(self.host_runtime, HostRuntimeBinding):
+                raise SolveError("host_runtime must use its typed binding")
         if not isinstance(self.independent_verification_policy,
                           IndependentVerificationPolicy):
             raise SolveError(
@@ -400,8 +405,17 @@ def _model_usage(adaptive: dict) -> tuple[dict, ...]:
 
 
 def _product_result(adaptive: dict, solved: bool) -> dict:
-    attempt = ((adaptive.get("project_attempts") or [])[-1]
-               if adaptive.get("project_attempts") else None)
+    from ..core.adaptive_practitioner_result import latest_task_result
+    attempt = latest_task_result(adaptive)
+    if attempt and attempt.get("record_type") == "host_operation_result/v1":
+        return {
+            "result": attempt,
+            "summary": ("Completed the task through verified host operations."
+                        if solved else "Host observations are available; the task is incomplete."),
+            "artifacts": tuple({"artifact_ref": ref, "verified": solved}
+                               for ref in attempt.get("artifact_refs", ())),
+            "workspace": "", "tool_calls": len(adaptive.get("host_results", ())),
+        }
     if not attempt:
         return {
             "result": adaptive.get("result"), "summary": (
@@ -478,7 +492,8 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             reuse_observation_port=request.reuse_observation_port,
             project_executor=(request.project_executor
                               or execute_generated_project),
-            extension_snapshot=request.extension_snapshot))
+            extension_snapshot=request.extension_snapshot,
+            host_runtime=request.host_runtime))
     solved = bool(adaptive.get("solved"))
     product = _product_result(adaptive, solved)
     selected = adaptive.get("selected_solution_canvas") or {}
@@ -497,6 +512,8 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             request.independent_verification_policy.to_dict(),
         "independent_verification_records":
             adaptive.get("independent_verification_records", []),
+        "host_verification_records": adaptive.get("host_verification_records", []),
+        "host_runtime_manifest": adaptive.get("host_runtime_manifest", {}),
     }
     questions, open_questions = _terminal_questions(adaptive, solved)
     terminal = (SolveTerminalCode.COMPLETED_VERIFIED.value if solved

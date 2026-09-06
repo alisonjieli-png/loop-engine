@@ -113,7 +113,20 @@ Use the host-configured record tool for managed notes. Do not directly edit its
 database or immutable revisions. Existing authority Markdown and historical
 evidence have not been migrated, and generated session views remain planned.
 
-For autonomous feedback work, first read the
+For host embedding or source admission, read the
+[host adoption checkpoint](../verification/HOST-ADOPTION-AND-GENERALIZATION-2026-09-05.md),
+[embedding guide](../guides/embedding-loop-engine.md), and
+[host execution decision](../architecture/ADR-HOST-OWNED-EXECUTION.md).
+The public host binding uses the existing Capability Directory and canonical
+Loops. Host disclosure and exact effect approvals are explicit; host permission
+names do not enable core file or command permissions. A seeded JavaScript
+repair completed in two passes and 11 model calls after host tests exposed
+the defect. The failed permission launch remains recorded. This is not an
+unseen-task population or automatic persistent promotion. Final frozen checks
+passed 3,120 source tests, 3,075 base-wheel tests, and 27 conformance gates in
+each environment. Subsequent dataset/model evaluations need separate evidence.
+
+For the preceding autonomous feedback work, read the
 [current task-feedback report](../verification/AUTONOMOUS-TASK-FEEDBACK-2026-09-05.md)
 and [architecture decision](../architecture/ADR-INDEPENDENT-TASK-FEEDBACK.md).
 Generated projects require independent executable feedback by default.

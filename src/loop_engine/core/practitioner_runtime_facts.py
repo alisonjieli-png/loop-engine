@@ -145,6 +145,11 @@ def runtime_facts(services) -> dict:
             bool(request.allow_local_execution)),
         "granted_permissions": list(granted_permissions(request)),
         "interaction_mode": str(request.interaction_mode),
+        "host_runtime": getattr(request, "host_runtime_manifest", {}),
+        "host_permission_scope": (
+            "Host descriptor permissions apply only to the selected host operations. "
+            "They do not grant core capabilities or bypass exact host approval."),
+        "execution_isolation_scope": "core.generated_project; registered hosts declare their own isolation",
         **_verification_facts(services),
         **({"captured_instruction": captured_instruction}
            if captured_instruction is not None else {}),
@@ -160,7 +165,8 @@ def _verification_facts(services) -> dict:
                      IndependentVerificationPolicy())
     if not isinstance(policy, IndependentVerificationPolicy):
         raise TypeError("verification policy must use its typed contract")
-    attempts = getattr(services, "project_attempts", ())
+    from .adaptive_practitioner_result import latest_task_result
+    latest = latest_task_result(services)
     return {
         "independent_verification": {
             **policy.to_dict(), "authority": "runtime", "advisory": False,
@@ -174,12 +180,12 @@ def _verification_facts(services) -> dict:
         },
         "control_actions": [{
             "action_kind": "RETURN_RESULT", "authority": "runtime",
-            "available": bool(attempts), "required_capabilities": [],
-            "permissions": [], "result_source": "latest_project_attempt",
+            "available": latest is not None, "required_capabilities": [],
+            "permissions": [], "result_source": "latest_task_result",
             "runs_verification": True, "regenerates_project": False,
             "interpretation": (
                 "Select RETURN_RESULT without capability requirements to submit "
-                "the existing project for independent and semantic verification "
+                "the existing task result for host or independent and semantic verification "
                 "again. This action cannot bypass required acceptance gates."),
         }],
     }

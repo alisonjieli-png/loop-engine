@@ -153,6 +153,8 @@ def _execute_project_attempt(manifest, input_artifacts, input_validation,
         "commands": [], "artifacts": [], "effects_complete": False,
     }
     services.project_attempts.append(record)
+    if hasattr(services, "task_results"):
+        services.task_results.append(record)
     try:
         result = dict(services.dependencies.project_executor(execution_request, context))
         completed = result.get("deterministic_checks_passed") is True
@@ -186,11 +188,19 @@ def execute_adaptive_capability(
     plan = request.plan
     owner = request.owner_loop
     arguments = dict(plan.experiment.get("arguments") or {})
+    host = getattr(services.dependencies, "host_runtime", None)
+    host_selected = host is not None and host.supports(plan.handle)
+    observed_hosts = getattr(services, "host_results", ())
+    fence_arguments = ({
+        "arguments": arguments,
+        "observed_host_state": (observed_hosts[-1].get("state_after") if observed_hosts else None),
+        "host_binding_digest": host.summary()["binding_digest"],
+    } if host_selected else arguments)
     manifest = None
     fence_policy = DEFAULT_SUPERVISION_POLICY.action_fence
-    if services.action_fence.is_fenced(plan.handle, arguments, fence_policy):
+    if services.action_fence.is_fenced(plan.handle, fence_arguments, fence_policy):
         refusal = services.action_fence.refusal(
-            plan.handle, arguments, fence_policy,
+            plan.handle, fence_arguments, fence_policy,
             pass_number=services.active_pass_number)
         services.action_history.append({
             "capability_ref": plan.handle, "fenced": True,
@@ -332,6 +342,13 @@ def execute_adaptive_capability(
         input_value = manifest.to_dict()
         input_role = "generated_project_manifest/v1"
         output_role = "generated_project_execution/v1"
+    elif host_selected:
+        from .host_runtime import HostOperationRequest, invoke_host_operation
+        operation = lambda _value, _params: invoke_host_operation(
+            HostOperationRequest(plan.handle, arguments), services, owner)
+        input_value = arguments
+        input_role = "host_operation_request/v1"
+        output_role = "host_operation_result/v1"
     else:
         return ResultPacket(
             objective=plan.handle or "unresolved action",
@@ -373,7 +390,7 @@ def execute_adaptive_capability(
         rejection = rejection_from_exception(
             plan.handle, exc, pass_number=services.active_pass_number)
         services.action_fence.note_failure(
-            plan.handle, arguments,
+            plan.handle, fence_arguments,
             error=rejection.message,
             rejection=rejection.to_dict(),
             pass_number=services.active_pass_number)
@@ -396,7 +413,8 @@ def execute_adaptive_capability(
             confidence=0.0,
             limitations=limitations,
             lineage=(compiled["digest"],))
-    services.action_fence.note_success(plan.handle, arguments)
+    if not host_selected or output.get("ok") is True:
+        services.action_fence.note_success(plan.handle, fence_arguments)
     if manifest is not None:
         # Executing is not passing. A project that ran and failed its own
         # checks has told the run everything an identical rerun would, so the
@@ -420,6 +438,22 @@ def execute_adaptive_capability(
         "mermaid": canvas["mermaid"],
         "runtime_trace": trace,
     }
+    if output.get("record_type") == "host_operation_result/v1":
+        if not any(item is output or item == output for item in services.host_results):
+            services.host_results.append(output)
+        services.task_results.append(output)
+        succeeded = output.get("ok") is True
+        if not succeeded:
+            services.action_fence.note_failure(
+                plan.handle, fence_arguments,
+                error="registered host operation returned a failed observation",
+                pass_number=services.active_pass_number)
+        return ResultPacket(
+            objective=plan.rationale or plan.handle, result=output,
+            artifact_refs=tuple(output.get("artifact_refs", ())),
+            confidence=1.0 if succeeded else 0.0,
+            errors=() if succeeded else ("host operation failed",),
+            lineage=(compiled["digest"],))
     if plan.handle == "core.source.inspect":
         services.source_inspections.append(output)
         services.selected_intelligence_refs.extend(

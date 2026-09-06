@@ -9,6 +9,19 @@ First public release.
 
 ### Added
 
+- [Host execution and source admission](docs/verification/HOST-ADOPTION-AND-GENERALIZATION-2026-09-05.md).
+  Applications can pass a typed host binding to `SolveRequest` and use their
+  registered operations and verification gates. Host results retain their
+  own contract; final acceptance requires current host verification and task
+  completion. Scoped permissions, explicit model disclosure, and exact effect
+  approval remain separate. A seeded JavaScript project was repaired in two
+  passes and 11 real model calls after protected tests exposed its defect.
+  The earlier permission-refused attempt remains recorded. Source inspection
+  admits UTF-8 text by content and records exclusions. Frozen verification
+  passed 3,120 source tests, 3,075 applicable base-wheel tests, and 27
+  conformance gates in each environment. Broad unseen-task reliability and
+  automatic persistent promotion remain unproven.
+
 - [Independent executable task feedback](docs/architecture/ADR-INDEPENDENT-TASK-FEEDBACK.md).
   Generated-project acceptance requires engine-created checks by default.
   Separate verifier Loops generate and review probes, compare actual output

@@ -136,6 +136,27 @@ def _reported_artifact_refs(results) -> set[str]:
     return refs
 
 
+def latest_task_result(source) -> dict | None:
+    """The latest actual host or project observation, preserving execution order."""
+    def records(name):
+        return source.get(name, ()) if isinstance(source, dict) else getattr(source, name, ())
+    ordered = records("task_results")
+    if ordered:
+        return ordered[-1]
+    # Older saved project runs and narrow component fixtures have no combined log.
+    hosts, projects = records("host_results"), records("project_attempts")
+    return hosts[-1] if hosts else projects[-1] if projects else None
+
+
+def task_result_succeeded(result) -> bool:
+    """Operational success is separate from task-complete host verification."""
+    if not isinstance(result, dict):
+        return False
+    if result.get("record_type") == "host_operation_result/v1":
+        return result.get("ok") is True
+    return result.get("deterministic_checks_passed") is True
+
+
 def has_bound_accepted_incumbent(run: dict, final_attempt: dict) -> bool:
     """Require current integrated acceptance before public success projection."""
     from ..loop.kernel import ResultPacket
@@ -144,7 +165,7 @@ def has_bound_accepted_incumbent(run: dict, final_attempt: dict) -> bool:
 
     facts = run.get("facts", {})
     incumbent, attempt = facts.get("accepted_incumbent", {}), facts.get("last_attempt", {})
-    emitted = safe_result(ResultPacket("emitted project", result=final_attempt))["result"]
+    emitted = safe_result(ResultPacket("emitted task result", result=final_attempt))["result"]
     return bool(incumbent.get("status") == attempt.get("status") == "ACCEPTED_LOCAL"
                 and incumbent.get("verification_bound") is True
                 and attempt.get("verification_bound") is True
@@ -244,6 +265,10 @@ def finish_deterministic_attempt(
         "independent_verification_policy":
             services.request.independent_verification_policy.to_dict(),
         "independent_verification_records": services.independent_verification_records,
+        "host_runtime_manifest": services.request.host_runtime_manifest,
+        "host_results": services.host_results,
+        "host_verification_records": services.host_verification_records,
+        "task_results": services.task_results,
         "mode": services.request.mode,
         "deterministic_attempt": trace.to_dict(), "passes": 1,
         "final_route": "stop_success" if resolved else "stop_unprofitable",
@@ -296,6 +321,10 @@ def failed_adaptive_output(
         "independent_verification_policy":
             services.request.independent_verification_policy.to_dict(),
         "independent_verification_records": services.independent_verification_records,
+        "host_runtime_manifest": services.request.host_runtime_manifest,
+        "host_results": services.host_results,
+        "host_verification_records": services.host_verification_records,
+        "task_results": services.task_results,
         "supervision": services.supervision_findings,
         "recovery_directives": services.recovery_directives,
         "generated_file_checkpoints":

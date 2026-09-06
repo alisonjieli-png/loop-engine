@@ -21,7 +21,6 @@ from ..loop.kernel import (
     Situation, run_kernel_passes,
 )
 from ..loop.kernel_runtime import current_kernel_owner
-from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
 from ..loop.recursive_loop import Loop, LoopConfig, LoopLedger
 from . import stage_action_lineage as _lineage
 from .adaptive_practitioner_capabilities import (
@@ -41,8 +40,8 @@ from .adaptive_practitioner_records import (
 )
 from .adaptive_practitioner_result import (
     failed_adaptive_output, finish_deterministic_attempt, has_bound_accepted_incumbent,
-    integrate_adaptive_state,
-    loop_details, safe_model_usage, save_adaptive_result,
+    integrate_adaptive_state, latest_task_result, loop_details, safe_model_usage,
+    save_adaptive_result, task_result_succeeded,
 )
 from .adaptive_practitioner_reuse import observe_generated_project_reuse
 from .adaptive_practitioner_source import source_inspection_model_view
@@ -98,6 +97,9 @@ def _model_state(state: PractitionerState,
         "facts": state.facts,
         "independent_verification_policy":
             services.request.independent_verification_policy.to_dict(),
+        "host_runtime_manifest": services.request.host_runtime_manifest,
+        "host_results": services.host_results,
+        "host_verification_records": services.host_verification_records,
         "artifact_refs": state.artifacts,
         "open_questions": list(state.open_questions),
         "failures": list(state.failures),
@@ -389,20 +391,8 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                         raise AdaptivePractitionerError(
                             "NextActionDecision selected unknown capabilities "
                             f"{sorted(unknown)}")
-                    granted = {name for name, allowed in (
-                        ("source_read",
-                         services.request.allow_source_materialization_to_model
-                         and bool(services.request.source_refs)),
-                        ("network_read", services.request.allow_network_reads),
-                        ("workspace_write",
-                         services.request.allow_workspace_writes),
-                        ("sandbox_command",
-                         services.request.allow_sandbox_commands)) if allowed}
-                    if (decision.action_kind != "REQUEST_AUTHORITY"
-                            and set(decision.permissions) - granted):
-                        raise PermissionError(
-                            "NextActionDecision requests permission outside "
-                            "run authority")
+                    from .adaptive_host_verification import validate_action_permissions
+                    validate_action_permissions(decision, services)
                     validate_progressing_action(decision, services)
                     budget = dict(decision.budget)
                     for key in ("information_gain", "estimated_cost", "risk",
@@ -527,11 +517,11 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                 AdaptiveCapabilityExecutionRequest(state, plan, owner), services)
             _lineage._try_execution(services, owner, plan, result)
             return [result]
-        if plan.handle == "core.finish" and services.project_attempts:
-            result = services.project_attempts[-1]
+        if plan.handle == "core.finish" and latest_task_result(services) is not None:
+            result = latest_task_result(services)
             return [ResultPacket(
-                objective="return verified project", result=result,
-                confidence=(1.0 if result.get("deterministic_checks_passed")
+                objective="return task result", result=result,
+                confidence=(1.0 if task_result_succeeded(result)
                             else 0.0))]
         if plan.handle in ("core.ask", "core.authority", "core.abstain"):
             decision = next(reversed(services.action_details.values()))
@@ -595,6 +585,8 @@ def run_adaptive_practitioner(
     if not isinstance(dependencies, AdaptivePractitionerDependencies):
         raise AdaptivePractitionerError(
             "run_adaptive_practitioner needs AdaptivePractitionerDependencies")
+    from .adaptive_host_verification import bind_host_request, create_adaptive_owner
+    request = bind_host_request(request, dependencies)
     run_id = "adaptive-" + hashlib.sha256(
         f"{request.task}\0{time.time_ns()}".encode()).hexdigest()[:24]
     runs_dir = Path(default_runs_dir(request.runs_dir))
@@ -631,11 +623,7 @@ def run_adaptive_practitioner(
             "" if request.mode == "deterministic" else "medium"),
         max_depth=None,
         loop_condition="steps_remain", exit_condition="steps_complete")
-    owner = Loop(
-        request.task, config, ledger=ledger,
-        identity=LoopRoleIdentity(
-            LoopRole.PRACTITIONER, "practitioner.reference_nine_step"),
-        relationship=LoopRelationship.starting())
+    owner = create_adaptive_owner(request, dependencies, config, ledger)
     if request.persist_run_history:
         owner.enable_run_history(run_id, root_dir=str(runs_dir))
     if request.stage_assistance.control_manifest is not None:
@@ -691,18 +679,17 @@ def run_adaptive_practitioner(
             owner, services, failure_code, str(exc),
             lambda: _history_record(owner, services, runs_dir))
     history = _history_record(owner, services, runs_dir)
-    final_attempt = services.project_attempts[-1] \
-        if services.project_attempts else None
+    final_attempt = latest_task_result(services)
     solved = bool(
         run.get("final_route") == "stop_success" and final_attempt
-        and final_attempt.get("deterministic_checks_passed")
+        and task_result_succeeded(final_attempt)
         and has_bound_accepted_incumbent(run, final_attempt))
     # A run that failed casts its result over every choice that led there.
     close_stages(services, runs_dir, helped=solved)
     services.decision_outcomes.close_run(
         task_succeeded=solved,
         verification_passed=(
-            bool(final_attempt.get("deterministic_checks_passed"))
+            task_result_succeeded(final_attempt)
             if final_attempt else None))
     output = {
         "record_type": ADAPTIVE_PRACTITIONER_RECORD_TYPE,
@@ -737,6 +724,10 @@ def run_adaptive_practitioner(
         "source_inspections": services.source_inspections,
         "source_roles": services.source_roles,
         "project_attempts": services.project_attempts,
+        "host_runtime_manifest": request.host_runtime_manifest,
+        "host_results": services.host_results,
+        "task_results": services.task_results,
+        "host_verification_records": services.host_verification_records,
         "verification": services.verification_records,
         "independent_verification_policy":
             request.independent_verification_policy.to_dict(),

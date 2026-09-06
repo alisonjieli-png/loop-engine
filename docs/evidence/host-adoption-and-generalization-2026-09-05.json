@@ -1,0 +1,349 @@
+{
+  "record_type": "host_adoption_and_generalization_evidence/v1",
+  "base_revision": "cb4c5f90b09d4fae17f6d27c7e3843d4f3efb886",
+  "scope": "One seeded JavaScript repository adoption example, scoped source-admission changes, and offline runtime/package verification. Not a held-out task population.",
+  "selection": {
+    "task_population": "The deliberately defective examples/25_host_runtime/project fixture",
+    "distinct_tasks": 1,
+    "launches": 2,
+    "verified_completions": 1,
+    "rule": "Both saved launches under the named host-adoption directory are retained; no excluded launch is counted as a success."
+  },
+  "live_runs": [
+    {
+      "run_id": "adaptive-7da6dce947a06efcb2bace8a",
+      "source_record_type": "solve_outcome/v5",
+      "terminal_code": "AUTHORITY_REQUIRED",
+      "solved": false,
+      "failure_code": "AUTHORITY_REQUIRED",
+      "elapsed_seconds": 24.134,
+      "model_calls": 2,
+      "model_calls_known_subtotal": 2,
+      "model_call_accounting_complete": true,
+      "passes": null,
+      "task_feedback_count": 0,
+      "generated_project_attempts": 0,
+      "host_operations": [],
+      "host_verification": [],
+      "input_tokens": 29985,
+      "output_tokens": 5924,
+      "usage_complete": true,
+      "model_routes": [
+        {
+          "provider": "ollama_cloud",
+          "model": "deepseek-v4-flash:0731",
+          "route": "cloud.default"
+        }
+      ],
+      "provider_failures": [],
+      "total_tokens": 35909,
+      "invoiced_cost": null,
+      "local_record_directory": "/home/username/loop-engine/.loop-engine-dev/host-adoption-20260905.0d5GK8/javascript/runs/adaptive-7da6dce947a06efcb2bace8a",
+      "canonical_history": {
+        "run_id": "adaptive-7da6dce947a06efcb2bace8a",
+        "events": 157,
+        "head_digest": "8013ecaa67764747f9f861376bc234a4a440c018790f3103e775a883c46db4c3",
+        "chain_intact": true,
+        "broken_at": [],
+        "path": "/home/username/loop-engine/.loop-engine-dev/host-adoption-20260905.0d5GK8/javascript/runs/adaptive-7da6dce947a06efcb2bace8a",
+        "product_outcome_bound": true,
+        "product_outcome_digest": "bbd475110906713e8b2778aed8b68a1d312a445ab52acee447b1e84cb314a286",
+        "terminal_code": "AUTHORITY_REQUIRED"
+      },
+      "record_files": [
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/host-adoption-20260905.0d5GK8/javascript/runs/adaptive-7da6dce947a06efcb2bace8a/outcome.json",
+          "sha256": "01ab91293302682e12576a374472333a39a45364c7b2223048875db2c615f557"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/host-adoption-20260905.0d5GK8/javascript/runs/adaptive-7da6dce947a06efcb2bace8a/adaptive-result.json",
+          "sha256": "29c2684c3a15056d1ab78338c24e739955287bf9e73618e6fd4d393ad8148149"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/host-adoption-20260905.0d5GK8/javascript/runs/adaptive-7da6dce947a06efcb2bace8a/events.jsonl",
+          "sha256": "4e250be14e84cac7461dd981a7dd7634a1389eacea879482084fcbef3d85e464"
+        }
+      ]
+    },
+    {
+      "run_id": "adaptive-b7e5a405ca3892000d7ddb05",
+      "source_record_type": "solve_outcome/v5",
+      "terminal_code": "COMPLETED_VERIFIED",
+      "solved": true,
+      "failure_code": "",
+      "elapsed_seconds": 130.651,
+      "model_calls": 11,
+      "model_calls_known_subtotal": 11,
+      "model_call_accounting_complete": true,
+      "passes": 2,
+      "task_feedback_count": 0,
+      "generated_project_attempts": 0,
+      "host_operations": [
+        {
+          "capability_ref": "host:project_inspection:invoke",
+          "result_digest": "40bacad117d60179cf35eae250b05f0cfcb980042df20e95750a2c5600c03b24",
+          "ok": true,
+          "state_before": "8a832b8e3504d880d31bf192e771af63214a2190f39d9c6b48d53438becae47f",
+          "state_after": "8a832b8e3504d880d31bf192e771af63214a2190f39d9c6b48d53438becae47f"
+        },
+        {
+          "capability_ref": "host:project_replacement:invoke",
+          "result_digest": "3e6394dcac016077c64d8b13484769110bad8716f49a3d0c7c217dfdae272a2a",
+          "ok": true,
+          "state_before": "8a832b8e3504d880d31bf192e771af63214a2190f39d9c6b48d53438becae47f",
+          "state_after": "f875c4f84a7eb7535bc42dfd5f77832727ee6a0a6139a9176d1c014305be6637"
+        }
+      ],
+      "host_verification": [
+        {
+          "source_record_type": "host_verification_report/v1",
+          "status": "failed",
+          "task_complete": false,
+          "subject_digest": "40bacad117d60179cf35eae250b05f0cfcb980042df20e95750a2c5600c03b24",
+          "state_ref": "8a832b8e3504d880d31bf192e771af63214a2190f39d9c6b48d53438becae47f",
+          "report_digest": "af589b744ce67e3c6f0029cefb343a58ae3ed4d86dec4a93b84604f23c1b1948",
+          "observed_test_counts": {
+            "tests": 3,
+            "pass": 1,
+            "fail": 2,
+            "skipped": 0
+          },
+          "gate_hashes": {
+            "test.mjs": "62f9099ef17667642b74f24e7771fa82892ae550ffe1f59561e20d9f2164f4f9",
+            "package.json": "f654fc7287ab0458252efefac32b59e9b07ce1060b75425ea2f21c3039e085ab"
+          },
+          "image": "node@sha256:4d676821dff059fd00d277ee4261ef34ea712317fed0737c03941481b5760c96",
+          "workspace_read_only": true,
+          "network": false
+        },
+        {
+          "source_record_type": "host_verification_report/v1",
+          "status": "passed",
+          "task_complete": true,
+          "subject_digest": "3e6394dcac016077c64d8b13484769110bad8716f49a3d0c7c217dfdae272a2a",
+          "state_ref": "f875c4f84a7eb7535bc42dfd5f77832727ee6a0a6139a9176d1c014305be6637",
+          "report_digest": "291763d5c607124d5071b27204ffc16286940c8724642959177153abc1ab157e",
+          "observed_test_counts": {
+            "tests": 3,
+            "pass": 3,
+            "fail": 0,
+            "skipped": 0
+          },
+          "gate_hashes": {
+            "test.mjs": "62f9099ef17667642b74f24e7771fa82892ae550ffe1f59561e20d9f2164f4f9",
+            "package.json": "f654fc7287ab0458252efefac32b59e9b07ce1060b75425ea2f21c3039e085ab"
+          },
+          "image": "node@sha256:4d676821dff059fd00d277ee4261ef34ea712317fed0737c03941481b5760c96",
+          "workspace_read_only": true,
+          "network": false
+        }
+      ],
+      "input_tokens": 217833,
+      "output_tokens": 28610,
+      "usage_complete": true,
+      "model_routes": [
+        {
+          "provider": "ollama_cloud",
+          "model": "deepseek-v4-flash:0731",
+          "route": "cloud.default"
+        }
+      ],
+      "provider_failures": [],
+      "total_tokens": 246443,
+      "invoiced_cost": null,
+      "local_record_directory": "/home/username/loop-engine/.loop-engine-dev/host-adoption-20260905.0d5GK8/javascript-v2/runs/adaptive-b7e5a405ca3892000d7ddb05",
+      "canonical_history": {
+        "run_id": "adaptive-b7e5a405ca3892000d7ddb05",
+        "events": 995,
+        "head_digest": "576aa39f93356b3c4dc4003adfb9319f8b55cd9a2d37967ec995c787e1cd78ab",
+        "chain_intact": true,
+        "broken_at": [],
+        "path": "/home/username/loop-engine/.loop-engine-dev/host-adoption-20260905.0d5GK8/javascript-v2/runs/adaptive-b7e5a405ca3892000d7ddb05",
+        "product_outcome_bound": true,
+        "product_outcome_digest": "91e938f5c42efc73e2d69319a02f8a9a48757acd0da23b8feabe1f73c6df79ea",
+        "terminal_code": "COMPLETED_VERIFIED"
+      },
+      "record_files": [
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/host-adoption-20260905.0d5GK8/javascript-v2/runs/adaptive-b7e5a405ca3892000d7ddb05/outcome.json",
+          "sha256": "165f21159332c803dcebe556eafb0fc08219003811b4daf614ff67800f93e27d"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/host-adoption-20260905.0d5GK8/javascript-v2/runs/adaptive-b7e5a405ca3892000d7ddb05/adaptive-result.json",
+          "sha256": "b423e7d5897840d8d033493dbbd7c7e2989e9b3b3a4feccae35874ea72fa39e9"
+        },
+        {
+          "path": "/home/username/loop-engine/.loop-engine-dev/host-adoption-20260905.0d5GK8/javascript-v2/runs/adaptive-b7e5a405ca3892000d7ddb05/events.jsonl",
+          "sha256": "42a1a33da89431f1f94442e3ede4c3475b58ee2dca7cd3d469774b75d7c59c01"
+        }
+      ]
+    }
+  ],
+  "example_files": [
+    {
+      "sha256": "79b68eca064a0c10f87b955718a1da056a03d48da8f4962a74a9db890921cf9d",
+      "path": "examples/25_host_runtime/run.py"
+    },
+    {
+      "sha256": "0e27ed0022ce7c2b1071cb2f317fc2c8ed525f66578f869e73158b4486814271",
+      "path": "examples/25_host_runtime/project/clamp.mjs"
+    },
+    {
+      "sha256": "62f9099ef17667642b74f24e7771fa82892ae550ffe1f59561e20d9f2164f4f9",
+      "path": "examples/25_host_runtime/project/test.mjs"
+    },
+    {
+      "sha256": "f654fc7287ab0458252efefac32b59e9b07ce1060b75425ea2f21c3039e085ab",
+      "path": "examples/25_host_runtime/project/package.json"
+    }
+  ],
+  "completed_project_files": [
+    {
+      "sha256": "cc0c72d08fe855b2bec2ae68cb2cb66a3688b028e23784265d3cfac1d127f52d",
+      "path": ".loop-engine-dev/host-adoption-20260905.0d5GK8/javascript-v2/project/clamp.mjs"
+    },
+    {
+      "sha256": "62f9099ef17667642b74f24e7771fa82892ae550ffe1f59561e20d9f2164f4f9",
+      "path": ".loop-engine-dev/host-adoption-20260905.0d5GK8/javascript-v2/project/test.mjs"
+    },
+    {
+      "sha256": "f654fc7287ab0458252efefac32b59e9b07ce1060b75425ea2f21c3039e085ab",
+      "path": ".loop-engine-dev/host-adoption-20260905.0d5GK8/javascript-v2/project/package.json"
+    }
+  ],
+  "repair": {
+    "path": "clamp.mjs",
+    "before": "return Math.max(minimum, Math.min(minimum, value));",
+    "after": "return Math.max(minimum, Math.min(maximum, value));",
+    "protected_gate_files_unchanged": true,
+    "host_test_groups": 3,
+    "passing_suite_assertion_evaluations": 12,
+    "feedback_delivery": {
+      "source_report_digest": "af589b744ce67e3c6f0029cefb343a58ae3ed4d86dec4a93b84604f23c1b1948",
+      "repair_work_packet_digest": "3401d8ea38cb760d5b30345a3b564aa6106e55e7ebfc4d4dd7a83121e0aeea6f",
+      "location": "task_context.current_state.facts.last_verification.host_checks[0].report",
+      "raw_work_packet_published": false
+    }
+  },
+  "offline_verification": {
+    "summary_ref": "/tmp/loop-engine-host-runtime-final.9J3Asf/verification-summary.json",
+    "summary_sha256": "4170afd9d026b095d82db898a287d6490df418c9d4498a34c5b81d96ddd79898",
+    "source_record_type": "offline_current_runtime_verification/v1",
+    "scope": "FROZEN_RUNTIME_SOURCE_WHEEL_SDIST_AND_CLEAN_BASE_INSTALL",
+    "all_passed": true,
+    "provider_calls": 0,
+    "source_suite": {
+      "all_passed": true,
+      "passed": 3120,
+      "total": 3120
+    },
+    "base_wheel_suite": {
+      "all_passed": true,
+      "optional_adapters_not_tested": [
+        "duckdb",
+        "mcp",
+        "model2vec",
+        "numpy",
+        "opentelemetry-sdk",
+        "pandas",
+        "sklearn"
+      ],
+      "passed": 3075,
+      "total": 3075
+    },
+    "source_conformance_passed": 27,
+    "source_conformance_total": 27,
+    "wheel_conformance_passed": 27,
+    "wheel_conformance_total": 27,
+    "runtime_integrity": {
+      "all_passed": true,
+      "differences": {
+        "source_vs_installed": [],
+        "source_vs_sdist": [],
+        "source_vs_tested": [],
+        "source_vs_wheel": []
+      },
+      "installed_root": "/tmp/loop-engine-host-runtime-final.9J3Asf/wheel-env/lib/python3.14/site-packages/loop_engine",
+      "network_calls": 0,
+      "provider_calls": 0,
+      "python": "3.14.4 (main, Jun 18 2026, 14:25:02) [GCC 15.2.0]",
+      "record_type": "package_runtime_integrity/v1",
+      "runtime_file_counts": {
+        "installed": 483,
+        "sdist": 483,
+        "source": 483,
+        "tested": 483,
+        "wheel": 483
+      },
+      "sdist_sha256": "e9ae163791dc35665b0fb58b5d9a379e4f00b83697a22123f5be80c616152138",
+      "source_map_sha256": "2dd7a302b275aac69a0e1aa9352fce02dd92a0590fa2afc65213302b72ceabd7",
+      "source_test_changes": [],
+      "tested_snapshot_sha256": "0a63cff6c48b508ee60c6a737cc4322b9211851f3f243d0bf2c1a71e3d3e52c1",
+      "unapproved_source_test_changes": [],
+      "wheel_sha256": "15a5ae3cd6c17129ab41f8f0b36c5ef4029c51920a9c8eb400bcb408b832738d"
+    },
+    "source_changes_by_phase": {
+      "build": [],
+      "source-conformance": [
+        "src/loop_engine/architecture_conformance.json"
+      ],
+      "source-full": [],
+      "wheel-cli-help": [],
+      "wheel-conformance": [],
+      "wheel-full": [],
+      "wheel-install": [],
+      "wheel-parity-final": [],
+      "wheel-pip-check": []
+    },
+    "live_task_quality_claim": false,
+    "receipts": [
+      {
+        "path": "source-conformance-record.json",
+        "sha256": "25c777f3c823abbb60c0e75ece3541ac94993eb7206cd36da4f86797512075c8"
+      },
+      {
+        "path": "source-full-record.json",
+        "sha256": "f473cdc65cecec38a2bfc2f833065bdd47b5451d01cc154ff3c2921fa6ee8c36"
+      },
+      {
+        "path": "build-record.json",
+        "sha256": "f532ec793692f4a3c2133ac95e05020b0d8b27a954bfa8b261e68ac563baf8df"
+      },
+      {
+        "path": "wheel-install-record.json",
+        "sha256": "7ccd357b8cf9f812445567eedb2351ae1fb13cc024d70b787949a66ed3ddca08"
+      },
+      {
+        "path": "wheel-pip-check-record.json",
+        "sha256": "89fce02ba2a1f8fb45552e3b74cb6094bb21608bb0c88389cc5152db1980d64f"
+      },
+      {
+        "path": "wheel-cli-help-record.json",
+        "sha256": "561f1f8c4118b8a26af9e74f64e2365b61e9e69aca8a2db158e7151e8516d83f"
+      },
+      {
+        "path": "wheel-full-record.json",
+        "sha256": "7958b39c11c65807ac9f63dcd0fc36e2b94361769db6776dd5c173aae161ce78"
+      },
+      {
+        "path": "wheel-conformance-record.json",
+        "sha256": "27526f8f886fbf966945c533c9d25e14a7518074807f961b5551553fe3990b93"
+      },
+      {
+        "path": "wheel-parity-final-record.json",
+        "sha256": "473932a173e240aa4562b3cd74ad863d61eb92298e973135e18ff20657037c5a"
+      }
+    ]
+  },
+  "limits": {
+    "host_trust": "Callbacks, snapshot coverage, sandbox behavior, and gate semantics are host-attested. Explicit registration and disclosure permission do not prove arbitrary host code safe.",
+    "generalization": "A populated seeded fixture and fixed host-written tests demonstrate this embedding path. No unseen-task success rate, local-model solve quality, or causal comparison is established.",
+    "effects": "The example authorizes inspection, exact source replacement, and protected Node tests. It does not create a Git branch, commit, deploy, or publish. Unknown host effects cannot be replayed as known failures; automatic reconciliation is not implemented.",
+    "persistence": "No autonomous capability qualification/promotion or cross-process exactly-once recovery is established.",
+    "source_admission": "UTF-8 text admission removes programming-language suffix exclusions while preserving selection, disclosure checks, exclusion records, and full selected-body validation. It does not provide executors for every format or language.",
+    "history_projection": "Canonical saved-run verification confirms outcome binding. Embedded pre-final-binding history snapshots remain stale.",
+    "offline": "The clean base installation ran Python 3.14.4 and explicitly omitted seven optional adapter families. Offline verification makes no live task-quality claim.",
+    "kaggle": "Zero new Kaggle downloads, submissions, or grades in this host/source checkpoint. Separate campaigns and later dataset/model evaluations are outside this report.",
+    "publication": "This is a historical evidence projection. Source record tags identify the originals; full runtime hash maps, raw private prompts, and credentials are not exported."
+  }
+}
