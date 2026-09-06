@@ -558,6 +558,162 @@ def default_catalogue() -> StepLayerCatalogue:
     ))
 
 
+def inventory_step_layer(library: "SkillLibrary", catalogue: "StepLayerCatalogue"
+                        ) -> StepLayer:
+    """A step that establishes what this run actually has before using it.
+
+    A run that never asks what it has tends to use the first capability it
+    thinks of. Measured in this codebase: across a day of runs the model
+    used 2 of 9 available capabilities, and rewording the prompt to advertise
+    the others changed nothing. Naming the inventory as its own step, with
+    its own output contract, is the structural version of that fix.
+
+    It is read-only on purpose. An inventory step that could also act would
+    stop being an inventory step at the first opportunity to make progress.
+    """
+    available_skills = ", ".join(library.available()) or "(none registered)"
+    available_steps = ", ".join(catalogue.registered()) or "(none registered)"
+    return StepLayer(
+        step_id="inventory",
+        description="Establish what tools, files and skills this run has.",
+        system_prompt=(
+            "You are the inventory step. Establish what is actually here "
+            "before anything is decided.\n\n"
+            "Look at the workspace: list the files, find the project's own "
+            "test, lint and build commands by reading its config (package"
+            ".json scripts, pyproject, Makefile, CI workflow). Report the "
+            "commands you FOUND, quoted from the file you found them in. Do "
+            "not report a command you assume is conventional.\n\n"
+            f"Skills this runtime can admit: {available_skills}\n"
+            f"Steps this runtime can compose: {available_steps}\n"
+            "Your own tools this step: read, grep, glob, list.\n\n"
+            "You may not edit, write, or run commands. Report only what you "
+            "observed. A capability you could not confirm is reported as "
+            "absent, not assumed present: a run that believes it has a test "
+            "command it does not have will report a pass it never ran."),
+        tools={"read": True, "grep": True, "glob": True, "list": True,
+               "edit": False, "write": False, "bash": False},
+        permission={"edit": "deny", "bash": "deny"},
+    )
+
+
+def requirements_step_layer(library: "SkillLibrary") -> StepLayer:
+    """A step that names what THIS task needs, from a closed vocabulary.
+
+    The model requests; it does not grant. That distinction is the whole
+    safety property: a step that could add its own skills could add the one
+    that tells it edit permission is fine, so requests are answered by
+    ``admit_requests`` on the engine side against a registered catalogue.
+
+    The closed vocabulary is stated in the prompt rather than left to be
+    guessed, because a closed vocabulary that does not state itself makes
+    the next attempt guess again -- the failure mode this codebase already
+    paid for once.
+    """
+    offered = ", ".join(library.available()) or "(none registered)"
+    return StepLayer(
+        step_id="requirements",
+        description="Name what this specific task needs, and what is missing.",
+        system_prompt=(
+            "You are the requirements step. Say what this task needs.\n\n"
+            "You may request skills only from this exact list:\n"
+            f"  {offered}\n"
+            "Requesting anything outside it is refused, so name what you "
+            "need from the list and describe anything missing in prose "
+            "instead of inventing a name for it.\n\n"
+            "For each request, say what you would do with it. A request "
+            "with no stated use is dropped -- asking for everything "
+            "available costs prompt budget on every later call and is the "
+            "same as asking for nothing.\n\n"
+            "If the task cannot be done with what exists, say so plainly "
+            "and name the missing capability. An honest gap is a usable "
+            "answer; an attempt that pretends the gap is not there is not."),
+        tools={"read": True, "grep": True, "glob": True, "list": True,
+               "edit": False, "write": False, "bash": False},
+        permission={"edit": "deny", "bash": "deny"},
+    )
+
+
+@dataclass(frozen=True)
+class AdmissionOutcome:
+    """What the engine granted, refused, and why -- for the run record."""
+
+    granted: dict
+    refused: tuple
+    dropped_without_use: tuple
+    available: tuple
+
+    def refusal_message(self) -> str:
+        """A refusal that states the legal set rather than only the error.
+
+        The rule this obeys was already written in this codebase and applied
+        once: a closed vocabulary refused without stating itself leaves the
+        next attempt to guess again. Every refusal built here names what
+        WOULD have been accepted.
+        """
+        if not self.refused and not self.dropped_without_use:
+            return ""
+        parts = []
+        if self.refused:
+            parts.append(
+                f"not registered: {', '.join(self.refused)}; "
+                f"available skills are {', '.join(self.available) or '(none)'}")
+        if self.dropped_without_use:
+            parts.append(
+                "requested without saying what it would be used for, so "
+                f"dropped: {', '.join(self.dropped_without_use)}")
+        return "; ".join(parts)
+
+
+def admit_requests(requests, library: "SkillLibrary") -> AdmissionOutcome:
+    """Engine-side answer to a requirements step. The model never grants.
+
+    ``requests`` is what the model returned: either a list of names, or a
+    mapping of name -> stated use. A name with no stated use is dropped
+    rather than granted, because a request for everything costs budget on
+    every later call and carries no information about the task.
+    """
+    if isinstance(requests, dict):
+        pairs = [(str(k), str(v or "")) for k, v in requests.items()]
+    else:
+        pairs = [(str(item), "") for item in (requests or ())]
+    available = library.available()
+    granted, refused, dropped = {}, [], []
+    for name, use in pairs:
+        cleaned = name.strip()
+        if not cleaned:
+            continue
+        if cleaned not in available:
+            refused.append(cleaned)
+            continue
+        if not use.strip():
+            dropped.append(cleaned)
+            continue
+        candidate = library._candidates[cleaned]   # noqa: SLF001
+        granted[cleaned] = candidate.body
+    return AdmissionOutcome(
+        granted=granted, refused=tuple(sorted(set(refused))),
+        dropped_without_use=tuple(sorted(set(dropped))), available=available)
+
+
+def provisioned_step_layer(base: StepLayer, outcome: AdmissionOutcome) -> StepLayer:
+    """Fold an admission outcome into the next step's layer.
+
+    The base layer's own skills still win a name collision, for the same
+    reason a task-triggered skill does not displace them: a step's fixed
+    skills are part of what that step is.
+    """
+    merged = dict(base.skills)
+    for name, body in outcome.granted.items():
+        merged.setdefault(name, body)
+    return StepLayer(
+        step_id=base.step_id, description=base.description,
+        system_prompt=base.system_prompt, tools=dict(base.tools),
+        permission=dict(base.permission), skills=merged,
+        context_files=dict(base.context_files), model=base.model,
+        unattended=base.unattended)
+
+
 #: The skill an observation step always carries. It is core to that step
 #: rather than task-triggered: a step that exists to observe cannot have
 #: observing be optional.

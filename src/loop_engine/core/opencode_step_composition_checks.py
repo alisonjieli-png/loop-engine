@@ -12,9 +12,10 @@ import tempfile
 from pathlib import Path
 
 from .opencode_step_composition import (
-    OpenCodeCompositionError, SkillCandidate, StepLayer, compose_instance,
-    default_catalogue, default_core, default_skill_library,
-    dynamic_step_layer, observation_step_layer)
+    OpenCodeCompositionError, SkillCandidate, StepLayer, admit_requests,
+    compose_instance, default_catalogue, default_core, default_skill_library,
+    dynamic_step_layer, inventory_step_layer, observation_step_layer,
+    provisioned_step_layer, requirements_step_layer)
 
 
 def run_checks() -> dict:
@@ -137,6 +138,57 @@ def run_checks() -> dict:
           sorted(once.skills) == sorted(twice.skills)
           and sorted(once.skills) == ["dataset-discipline"],
           str(sorted(once.skills)))
+
+    # --- inventory and requirements: what do I have, what do I need ---
+    inv = inventory_step_layer(library, catalogue)
+    check("inventory_step_is_read_only",
+          inv.tools["edit"] is False and inv.tools["write"] is False
+          and inv.tools["bash"] is False,
+          "an inventory step that could act would stop inventorying")
+    check("inventory_states_the_admissible_skills_and_steps",
+          "reproduce-before-fix" in inv.system_prompt
+          and "implement" in inv.system_prompt)
+
+    req = requirements_step_layer(library)
+    check("requirements_states_the_closed_vocabulary",
+          all(name in req.system_prompt for name in library.available()),
+          "a closed vocabulary that does not state itself makes the next "
+          "attempt guess again")
+
+    outcome = admit_requests(
+        {"reproduce-before-fix": "to confirm the bug before editing",
+         "time-travel": "to undo the mistake",
+         "dataset-discipline": ""}, library)
+    check("engine_grants_only_registered_skills",
+          sorted(outcome.granted) == ["reproduce-before-fix"],
+          str(sorted(outcome.granted)))
+    check("an_unregistered_request_is_refused",
+          outcome.refused == ("time-travel",), str(outcome.refused))
+    check("a_request_without_a_stated_use_is_dropped",
+          outcome.dropped_without_use == ("dataset-discipline",),
+          "asking for everything costs budget and says nothing about the task")
+    check("the_refusal_names_what_would_have_been_accepted",
+          all(name in outcome.refusal_message()
+              for name in library.available()),
+          outcome.refusal_message()[:110])
+
+    # A bare list carries no stated use, so nothing is granted from one.
+    bare = admit_requests(["reproduce-before-fix"], library)
+    check("a_bare_name_list_grants_nothing",
+          bare.granted == {} and bare.dropped_without_use
+          == ("reproduce-before-fix",))
+
+    provisioned = provisioned_step_layer(catalogue.select("implement"), outcome)
+    check("granted_skills_reach_the_next_step",
+          "reproduce-before-fix" in provisioned.skills
+          and provisioned.step_id == "implement",
+          str(sorted(provisioned.skills)))
+    fixed = StepLayer(step_id="implement", description="d",
+                      system_prompt="p",
+                      skills={"reproduce-before-fix": "THE STEP OWN BODY"})
+    kept = provisioned_step_layer(fixed, outcome)
+    check("a_granted_skill_cannot_displace_a_steps_own",
+          kept.skills["reproduce-before-fix"] == "THE STEP OWN BODY")
 
     # --- forced observation after a failure ---
     obs = observation_step_layer(

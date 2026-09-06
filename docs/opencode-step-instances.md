@@ -251,3 +251,60 @@ and separately under an adversarial prompt that ordered an edit twice
 The skill also tells the step not to propose a fix, because a fix proposed
 in the same breath as an observation tends to bend the observation toward
 the fix. It complied.
+
+## Inventory and requirements: what do I have, what do I need
+
+Two steps that run before the work, and one engine-side function that
+answers them.
+
+`inventory_step_layer(library, catalogue)` establishes what is actually
+present. It is read-only: an inventory step that could also act would stop
+being an inventory step at the first opportunity to make progress. Its
+prompt names the skills and steps this runtime can admit, so the inventory
+is of real capabilities rather than imagined ones.
+
+The instruction that carries the weight is *report the commands you FOUND,
+quoted from the file you found them in; do not report a command you assume
+is conventional*. A run that believes it has a test command it does not have
+will report a pass it never ran.
+
+`requirements_step_layer(library)` asks what **this** task needs, from a
+**closed vocabulary stated in the prompt**. Requesting outside the list is
+refused, and each request must say what it would be used for — a request
+with no stated use is dropped, because asking for everything available
+costs prompt budget on every later call and says nothing about the task.
+
+### The model requests; the engine grants
+
+`admit_requests(requests, library)` is the whole safety property. A step
+that could add its own skills could add the one that says edit permission is
+fine. So requests are answered on the engine side against the registered
+catalogue, and `provisioned_step_layer` folds the grants into the next step.
+A step's own fixed skills still win a name collision.
+
+Refusals name the legal set. That rule was already written in this codebase
+— *a closed vocabulary refused without stating itself leaves the next
+attempt to guess again* — and had been applied exactly once.
+
+### Why this step exists at all
+
+Measured across a day of runs: the model used **2 of 9** available
+capabilities, and rewording the prompt to advertise the others changed
+nothing. Naming the inventory as its own step, with its own output contract
+and its own denied tools, is the structural version of that fix.
+
+### Live result
+
+A workspace with deliberately unconventional commands, so a *found* answer
+is distinguishable from an *assumed* one — the real gate lives in a Makefile
+and is pointed at by `[tool.custom].verify_command` in `pyproject.toml`.
+
+| field | returned |
+|---|---|
+| `commands_found` | `python3 -m pytest -q --tb=short tests/`, `python3 -m ruff check src/`, `make check` |
+| `where_each_command_came_from` | attributed each to the file and key it came from |
+| `absent` | `build command` — reported missing rather than invented |
+
+It did not answer "pytest" by convention. The requirements step then
+requested one skill with a specific stated use, and the engine granted it
+with nothing refused or dropped.
