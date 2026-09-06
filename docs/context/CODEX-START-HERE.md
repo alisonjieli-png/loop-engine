@@ -113,7 +113,15 @@ Use the host-configured record tool for managed notes. Do not directly edit its
 database or immutable revisions. Existing authority Markdown and historical
 evidence have not been migrated, and generated session views remain planned.
 
-For the latest new-task attempt and generalization boundary, first read the
+For autonomous feedback work, first read the
+[current task-feedback report](../verification/AUTONOMOUS-TASK-FEEDBACK-2026-09-05.md)
+and [architecture decision](../architecture/ADR-INDEPENDENT-TASK-FEEDBACK.md).
+Generated projects require independent executable feedback by default.
+One live task recovered a provider failure and passed engine-generated checks
+without supplied feedback. Three canceled diagnostics remain explicit.
+Task-local repair is not automatic persistent promotion or core self-modification.
+
+For the preceding new-task attempt and generalization boundary, read the
 [external-caller and code-only repair report](../verification/BRAIN-INTEGRATION-CODE-ONLY-2026-09-05.md).
 It traces the actual duration-parser failure, fixes source-only artifact
 delivery and captured instructions, and records real creation and repair

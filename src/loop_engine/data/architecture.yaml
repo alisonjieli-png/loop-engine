@@ -47,6 +47,32 @@ component_architecture:
     - example
   physical_fusion_requires_logical_history: true
 
+independent_task_verification:
+  operational_runtime_type: Loop
+  owner_profile: practitioner.verifier@1.0.0
+  policy: loop_engine.core.independent_verification.IndependentVerificationPolicy
+  boundary: loop_engine.core.independent_verification.run_independent_verification
+  required_for_generated_project_acceptance_by_default: true
+  feedback_owner: existing_adaptive_verification_and_repair
+  invariants:
+    - original_task_and_exact_criteria_are_bound_to_frozen_subject_bytes
+    - verifier_packets_exclude_producer_plan_and_event_history
+    - model_generated_oracles_remain_fallible_scoped_evidence
+    - expected_value_comparisons_execute_outside_candidate_processes
+    - check_workspace_is_read_only_and_network_disabled_in_docker
+    - unavailable_or_failed_checks_cannot_be_overridden_by_producer_acceptance
+    - retained_regression_code_and_expectations_cannot_change_silently
+    - criterion_rebinding_does_not_change_test_inputs_or_programs
+    - renamed_subject_interfaces_do_not_discard_regressions
+    - physical_calls_share_the_existing_session_accounting_authority
+    - negative_observation_completion_does_not_replay_verifier_effects
+    - task_acceptance_grants_no_persistent_promotion_or_core_modification
+  unproven:
+    - universal_oracle_correctness_or_completeness
+    - adversarial_independence_of_same_model_reasoning
+    - fully_automatic_requalification_of_wrong_oracles_and_changed_interfaces
+    - autonomous_cross_process_resume_and_persistent_self_improvement
+
 adaptive_recovery:
   stall_detector_authority: signal_only
   semantic_panel_steps:

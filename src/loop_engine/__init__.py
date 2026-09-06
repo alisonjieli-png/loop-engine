@@ -87,6 +87,7 @@ _PUBLIC: dict[str, tuple[str, str]] = {
         "MaterialQuestion",
         "solve_task",
     ),
+    **_names("core.independent_verification", "IndependentVerificationPolicy"),
     **_names(
         "templates.intake",
         "TaskIntake", "TaskIntakeRequest", "TaskIntakeError", "intake_task",

@@ -36,6 +36,12 @@ from .adaptive_practitioner_validation import (
     _short_strings,
     _short_text,
 )
+from .independent_verification import (
+    IndependentVerificationPolicy,
+    IndependentVerificationRequest,
+    run_independent_verification,
+    validate_independent_verification,
+)
 
 
 @dataclass(frozen=True)
@@ -208,7 +214,93 @@ def validate_adaptive_evaluation(
     if (record["subject"] != subject.to_dict()
             or record.get("evaluation") != asdict(request.evaluation)):
         raise ValueError("integration differs from the evaluated subject or verdict")
+    if request.evaluation.verdict == "accept":
+        _require_independent_checks(
+            record, request.results, services,
+            owner_loop or current_kernel_owner())
     return record
+
+
+def _independent_policy(services) -> IndependentVerificationPolicy:
+    policy = getattr(services.request, "independent_verification_policy",
+                     IndependentVerificationPolicy())
+    if not isinstance(policy, IndependentVerificationPolicy):
+        raise TypeError("independent verification requires its typed policy")
+    return policy
+
+
+def _project_results(results):
+    return tuple((index, item.result) for index, item in enumerate(results)
+                 if isinstance(item.result, dict)
+                 and item.result.get("record_type")
+                 == "generated_project_execution/v1")
+
+
+def _independent_request(services, criteria, project):
+    return IndependentVerificationRequest(
+        task=services.request.task,
+        criteria=tuple((item["criterion_ref"], item["text"])
+                       for item in criteria),
+        project=project)
+
+
+def _run_independent_checks(services, results, criteria, owner_loop):
+    """Obtain executable feedback before the producing Loop adjudicates it."""
+    checks = []
+    if not _independent_policy(services).required:
+        return checks
+    for index, project in _project_results(results):
+        entry = {"result_index": index, "report": None}
+        if project.get("deterministic_checks_passed") is not True:
+            entry["error"] = "Project execution checks have not passed."
+        else:
+            try:
+                entry["report"] = run_independent_verification(
+                    _independent_request(services, criteria, project),
+                    services, owner_loop)
+            except Exception as exc:  # noqa: BLE001
+                entry["error"] = (
+                    f"Independent verification was unavailable: "
+                    f"{type(exc).__name__}: {str(exc)[:300]}")
+                services.diagnostic("independent_verification_unavailable", {
+                    "result_index": index, "error_type": type(exc).__name__})
+        checks.append(entry)
+    return checks
+
+
+def _require_independent_checks(record, results, services, owner_loop):
+    """Refuse acceptance without issued evidence for the current artifact bytes."""
+    policy = _independent_policy(services)
+    if not policy.required:
+        return
+    projects = _project_results(results)
+    if not projects:
+        return
+    if record.get("independent_verification_policy") != policy.to_dict():
+        raise ValueError("verification policy differs from the run contract")
+    checks = record.get("independent_checks")
+    if not isinstance(checks, list) or len(checks) != len(projects):
+        raise ValueError("every generated project requires independent checks")
+    criteria = record.get("registered_acceptance_criteria")
+    if not isinstance(criteria, list) or not criteria:
+        raise ValueError("independent checks require registered acceptance criteria")
+    for index, project in projects:
+        matches = [item for item in checks if isinstance(item, dict)
+                   and type(item.get("result_index")) is int
+                   and item["result_index"] == index]
+        if len(matches) != 1:
+            raise ValueError("independent check result selection is ambiguous")
+        entry = matches[0]
+        report = entry.get("report")
+        if (entry.get("error") or not isinstance(report, dict)
+                or report.get("status") != "passed"):
+            detail = (entry.get("error")
+                      or (report.get("notes") if isinstance(report, dict) else None)
+                      or "Independent executable checks have not passed.")
+            raise ValueError(str(detail)[:1000])
+        validate_independent_verification(
+            report, _independent_request(services, criteria, project),
+            services, owner_loop)
 
 
 @dataclass(frozen=True)
@@ -317,10 +409,14 @@ def verify_adaptive_results(
     criteria = [{"criterion_ref": f"criterion:{index}", "text": text}
                 for index, text in enumerate(criterion_texts)]
     criterion_refs = {item["criterion_ref"] for item in criteria}
+    policy = _independent_policy(services)
+    independent_checks = _run_independent_checks(
+        services, results, criteria, current_kernel_owner())
     deterministic_pass = bool(
         results and not any(item.errors for item in results)
         and all(item.result is not None for item in results))
     semantic_verification_observed = False
+    operational_failures = []
     subject = None
     try:
         from .stage_action_lineage import _result_payload
@@ -336,11 +432,18 @@ def verify_adaptive_results(
             {**request.model_state, "plan": plan_payload,
              "results": model_results,
              "deterministic_checks_passed": deterministic_pass,
+             "independent_verification_policy": policy.to_dict(),
+             "independent_checks": independent_checks,
              "registered_acceptance_criteria": criteria,
              "verification_scope_rule": (
-                 "Every blocking gap must reference one registered acceptance "
-                 "criterion. Put optional improvements or new requirements in "
-                 "their separate advisory fields; they cannot block." )},
+                 "Task gaps require observed evidence and a registered acceptance "
+                 "criterion. Required independent verification is a mandatory "
+                 "runtime acceptance policy, never an advisory or a new task "
+                 "criterion. Unavailable checking establishes no defect in the "
+                 "project. Keep operational failures separate from task gaps; "
+                 "retry verification of the existing project when it is the "
+                 "remaining work. Put optional improvements or new requirements "
+                 "in their separate advisory fields; they cannot block." )},
             json.dumps({
                 "verdict": (
                     "accept|accept_provisional|repair|research_more|"
@@ -412,14 +515,27 @@ def verify_adaptive_results(
         notes = (
             "Semantic verifier was unavailable; deterministic checks do not "
             "grant final semantic acceptance.")
-        gaps = ("semantic verification remains required",)
-        gap_assessments = [{
-            "criterion_ref": criteria[0]["criterion_ref"],
-            "gap": gaps[0]}]
+        gaps = ()
+        gap_assessments = []
+        operational_failures.append({
+            "source": "semantic_verifier", "status": "unavailable", "reason": notes})
         advisory = ()
         new_requirements = ()
         best_index = 0
         scores = (1.0 if deterministic_pass else 0.0,)
+    try:
+        _require_independent_checks({
+            "independent_verification_policy": policy.to_dict(),
+            "independent_checks": independent_checks,
+            "registered_acceptance_criteria": criteria,
+        }, results, services, current_kernel_owner())
+    except Exception as exc:  # noqa: BLE001
+        verdict = "repair"
+        finding = f"Independent verification remains unsatisfied: {str(exc)[:1000]}"
+        notes = notes + " " + finding
+        operational_failures.append({
+            "source": "independent_verification", "status": "unsatisfied",
+            "reason": finding})
     verifier_stage = getattr(services, "_graded_stage", None)
     suffix = (" Remaining: " + "; ".join(gaps)) if gaps else ""
     evaluation = EvaluationPacket(
@@ -437,9 +553,12 @@ def verify_adaptive_results(
         "deterministic_checks_passed": deterministic_pass, "notes": notes,
         "remaining_gaps": list(gaps),
         "gap_assessments": gap_assessments,
+        "operational_failures": operational_failures,
         "advisory_findings": list(advisory),
         "new_requirement_proposals": list(new_requirements),
         "registered_acceptance_criteria": criteria,
+        "independent_verification_policy": policy.to_dict(),
+        "independent_checks": independent_checks,
     }
     _append_verification_record(services, record, current_kernel_owner())
     _record_attribution_boundary(services, verdict)
@@ -555,6 +674,10 @@ def self_test() -> dict:
             fallback.verdict == "repair"
             and fallback_services.verification_records[-1]["verdict"]
                 == "repair"
+            and not fallback_services.verification_records[-1]["remaining_gaps"]
+            and not fallback_services.verification_records[-1]["gap_assessments"]
+            and fallback_services.verification_records[-1]["operational_failures"][0][
+                "source"] == "semantic_verifier"
             and diagnostics[0][0] == "verification_model_unavailable"),
         "detail": "fallback verdict is repair and success still needs accept",
     }]
@@ -613,6 +736,8 @@ def self_test() -> dict:
         "passed": reframed.route == "reframe",
         "detail": "verification blocks false success but does not choose repair",
     })
+    from .adaptive_practitioner_feedback_checks import verification_operational_checks
+    tests.extend(verification_operational_checks())
     passed = sum(item["passed"] for item in tests)
     return {"record_type": "adaptive_verification_test/v1", "tests": tests,
             "passed": passed, "total": len(tests),

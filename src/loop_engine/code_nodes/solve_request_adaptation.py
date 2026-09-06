@@ -63,6 +63,7 @@ def build_adaptive_request(
         allow_local_execution=request.allow_local_execution,
         prior_region_evidence=specification.region_evidence,
         stage_assistance=request.stage_assistance,
+        independent_verification_policy=request.independent_verification_policy,
         **budget,
     )
 

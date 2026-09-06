@@ -1,0 +1,642 @@
+{
+  "record_type": "autonomous_task_feedback_evidence/v1",
+  "base_revision": "b9b7d859b564c0bfb680ad831b3d7108977b6a00",
+  "scope": "Diagnostic generated-project feedback and recovery; not general AGI or unseen-task evidence",
+  "live_runs": [
+    {
+      "run_id": "adaptive-4afc171da4600f462bf191ef",
+      "outcome_record_type": "solve_outcome/v5",
+      "terminal_code": "CANCELLED",
+      "solved": false,
+      "elapsed_seconds": 608.77,
+      "model_calls": null,
+      "model_calls_known_subtotal": 24,
+      "model_call_accounting_complete": false,
+      "verification_policy": {
+        "record_type": "independent_verification_policy/v1",
+        "required": true
+      },
+      "independent_reports": [
+        {
+          "status": "unavailable",
+          "notes": "Independent checking unavailable: ModelGateway failed with output_limit_reached: provider attempt failed with classified code output_limit_reached",
+          "report_digest": "4511ef098887c2adc768850b99ada8c9bae0f5f9b32ee20fc17d527dee0d3bdf",
+          "probe_ref": null,
+          "model_calls_known_subtotal": 1,
+          "source_unchanged": false,
+          "checks": []
+        },
+        {
+          "status": "unavailable",
+          "notes": "Independent checking was interrupted; outcome is unknown.",
+          "report_digest": "48937f55ce4d6b28efab56257a7ce7c9f8e3dfab05c2b8a8b350ee13a69825b3",
+          "probe_ref": null,
+          "model_calls_known_subtotal": 0,
+          "source_unchanged": false,
+          "checks": []
+        }
+      ],
+      "observations": {
+        "feedback": [],
+        "project_attempts": 3,
+        "known_input_tokens": 432684,
+        "known_output_tokens": 136093,
+        "model_failures": [
+          {
+            "semantic_call_id": "independent.loop62.design.8afc3003e41878fe",
+            "error_code": "output_limit_reached",
+            "input_tokens": 2055,
+            "output_tokens": 65536,
+            "allocations": [
+              65536
+            ]
+          }
+        ],
+        "call_allocations": [
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536
+        ],
+        "usage_is_partial": true
+      },
+      "file_sha256": [
+        {
+          "digest": "92669cf5253b8eb4a5c12a2f282a8bd8ef744206a5ab5a73a9bed4fd96f713d0",
+          "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-4afc171da4600f462bf191ef/outcome.json"
+        },
+        {
+          "digest": "462e35370aa09973d60de0b5090cc19eb0ad4d9e08cb95a3c753bf364055be86",
+          "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-4afc171da4600f462bf191ef/adaptive-result.json"
+        },
+        {
+          "digest": "cf40d2487f8b6e30beea6cf0025644f3f7331be807a0110fce7c2eb8b0c1bbab",
+          "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-4afc171da4600f462bf191ef/events.jsonl"
+        }
+      ],
+      "canonical_history": {
+        "run_id": "adaptive-4afc171da4600f462bf191ef",
+        "events": 2111,
+        "head_digest": "60fe83de38bd09143337fa31381a941a70a93d3e6bc2fe957d865384f4f71e10",
+        "chain_intact": true,
+        "broken_at": [],
+        "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-4afc171da4600f462bf191ef",
+        "product_outcome_bound": true,
+        "product_outcome_digest": "510bff0087b9c0969075705f3d4260f9a8fabac440f478bfa61574ebdda34e88",
+        "terminal_code": "CANCELLED"
+      },
+      "invoiced_cost": null
+    },
+    {
+      "run_id": "adaptive-170c7c8259626a67e57f7e98",
+      "outcome_record_type": "solve_outcome/v5",
+      "terminal_code": "CANCELLED",
+      "solved": false,
+      "elapsed_seconds": 621.674,
+      "model_calls": null,
+      "model_calls_known_subtotal": 21,
+      "model_call_accounting_complete": false,
+      "verification_policy": {
+        "record_type": "independent_verification_policy/v1",
+        "required": true
+      },
+      "independent_reports": [
+        {
+          "status": "unavailable",
+          "notes": "Independent checking unavailable: ModelGateway failed with output_limit_reached: provider attempt failed with classified code output_limit_reached",
+          "report_digest": "629c417a36e47d3c7d7654df6656b22bf463cff6cf33dd76b63bb4df4d817bd8",
+          "probe_ref": null,
+          "model_calls_known_subtotal": 2,
+          "source_unchanged": false,
+          "checks": []
+        },
+        {
+          "status": "unavailable",
+          "notes": "Independent checking unavailable: ModelGateway failed with output_limit_reached: provider attempt failed with classified code output_limit_reached",
+          "report_digest": "71d391fbba8980a7109419dbf1efc45056ee1d2e20778c850f2286f262b76ce4",
+          "probe_ref": null,
+          "model_calls_known_subtotal": 2,
+          "source_unchanged": false,
+          "checks": []
+        },
+        {
+          "status": "unavailable",
+          "notes": "Independent checking unavailable: ModelGateway failed with output_limit_reached: provider attempt failed with classified code output_limit_reached",
+          "report_digest": "4f5397e65de1836646c8e2c897c6637a687909e62ac17ae68730b57962dee116",
+          "probe_ref": null,
+          "model_calls_known_subtotal": 2,
+          "source_unchanged": false,
+          "checks": []
+        }
+      ],
+      "observations": {
+        "feedback": [],
+        "project_attempts": 1,
+        "known_input_tokens": 273663,
+        "known_output_tokens": 240293,
+        "model_failures": [
+          {
+            "semantic_call_id": "independent.loop62.design.3d2bffe44a7c0a2d",
+            "error_code": "output_limit_reached",
+            "input_tokens": 2411,
+            "output_tokens": 65536,
+            "allocations": [
+              65536
+            ]
+          },
+          {
+            "semantic_call_id": "independent.loop95.design.3d2bffe44a7c0a2d",
+            "error_code": "output_limit_reached",
+            "input_tokens": 2411,
+            "output_tokens": 65536,
+            "allocations": [
+              65536
+            ]
+          },
+          {
+            "semantic_call_id": "independent.loop128.design.4cbfc2edcbe5e989",
+            "error_code": "output_limit_reached",
+            "input_tokens": 2445,
+            "output_tokens": 65536,
+            "allocations": [
+              65536
+            ]
+          }
+        ],
+        "call_allocations": [
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536
+        ],
+        "usage_is_partial": true
+      },
+      "file_sha256": [
+        {
+          "digest": "238faeac75f26702ed945356908218967b7382ebd3adc398dab210dae5bcbcc4",
+          "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-170c7c8259626a67e57f7e98/outcome.json"
+        },
+        {
+          "digest": "2e34e7e783a7ac5a269c2d35f9b50628ecae633b7b72fcc94379a8986f5af22e",
+          "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-170c7c8259626a67e57f7e98/adaptive-result.json"
+        },
+        {
+          "digest": "12184f9df7f48f21069f7a7750ff437bb44df9593c818aa28806fd935bdbdbb4",
+          "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-170c7c8259626a67e57f7e98/events.jsonl"
+        }
+      ],
+      "canonical_history": {
+        "run_id": "adaptive-170c7c8259626a67e57f7e98",
+        "events": 1400,
+        "head_digest": "1b9b264cacb28ced8913c63908b75ff55d4e85af3ca00f46b693449e8c6a7561",
+        "chain_intact": true,
+        "broken_at": [],
+        "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-170c7c8259626a67e57f7e98",
+        "product_outcome_bound": true,
+        "product_outcome_digest": "ba61d3a2d89e6864ddcb887cf79112413a68d94df40bd55a3c7075ae4c5d2174",
+        "terminal_code": "CANCELLED"
+      },
+      "invoiced_cost": null
+    },
+    {
+      "run_id": "adaptive-c5daa1227334a792a0a454c3",
+      "outcome_record_type": "solve_outcome/v5",
+      "terminal_code": "CANCELLED",
+      "solved": false,
+      "elapsed_seconds": 848.885,
+      "model_calls": null,
+      "model_calls_known_subtotal": 30,
+      "model_call_accounting_complete": false,
+      "verification_policy": {
+        "record_type": "independent_verification_policy/v1",
+        "required": true
+      },
+      "independent_reports": [
+        {
+          "status": "unavailable",
+          "notes": "Independent checking unavailable: independent verifier response was not admitted",
+          "report_digest": "7d0d8d21bab64921b60fc5ec687ece647cc6af7307a8a4cb081371dedc4565dc",
+          "probe_ref": null,
+          "model_calls_known_subtotal": 2,
+          "source_unchanged": false,
+          "checks": []
+        },
+        {
+          "status": "unavailable",
+          "notes": "Independent checking unavailable: ModelGateway failed with output_limit_reached: provider attempt failed with classified code output_limit_reached",
+          "report_digest": "c13171d6e7d367dff1d1578c254b056f45e662ab2af38ce3ad39c8079e37d492",
+          "probe_ref": null,
+          "model_calls_known_subtotal": 4,
+          "source_unchanged": false,
+          "checks": []
+        },
+        {
+          "status": "unavailable",
+          "notes": "Independent checking unavailable: ModelGateway failed with output_limit_reached: provider attempt failed with classified code output_limit_reached",
+          "report_digest": "a2a95e8c0486f7adf0b9450c32f9864e9a8b026146b9723a662144713aa74ded",
+          "probe_ref": null,
+          "model_calls_known_subtotal": 3,
+          "source_unchanged": false,
+          "checks": []
+        },
+        {
+          "status": "unavailable",
+          "notes": "Independent checking was interrupted; outcome is unknown.",
+          "report_digest": "79a8d96808867eb48fc2ae3ef8382c371db455c6ed13d52e343b4ece7483ced3",
+          "probe_ref": null,
+          "model_calls_known_subtotal": 1,
+          "source_unchanged": false,
+          "checks": []
+        }
+      ],
+      "observations": {
+        "feedback": [],
+        "project_attempts": 1,
+        "known_input_tokens": 357710,
+        "known_output_tokens": 287936,
+        "model_failures": [
+          {
+            "semantic_call_id": "semantic-stage-73101179d1ce740531892d2be43100bf25733217990ebbf0",
+            "error_code": "output_limit_reached",
+            "input_tokens": 15784,
+            "output_tokens": 65536,
+            "allocations": [
+              65536
+            ]
+          },
+          {
+            "semantic_call_id": "independent.loop105.design.a32bc0a1d57c7787",
+            "error_code": "output_limit_reached",
+            "input_tokens": 3177,
+            "output_tokens": 65536,
+            "allocations": [
+              65536
+            ]
+          },
+          {
+            "semantic_call_id": "independent.loop105.design.a32bc0a1d57c7787",
+            "error_code": "output_limit_reached",
+            "input_tokens": 3177,
+            "output_tokens": 4000,
+            "allocations": [
+              4000
+            ]
+          },
+          {
+            "semantic_call_id": "independent.loop142.file.28d6d548a5e85bf3.b272cd5d2004100f",
+            "error_code": "output_limit_reached",
+            "input_tokens": 3337,
+            "output_tokens": 65536,
+            "allocations": [
+              65536
+            ]
+          }
+        ],
+        "call_allocations": [
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          4000,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536
+        ],
+        "usage_is_partial": true
+      },
+      "file_sha256": [
+        {
+          "digest": "64154df635235d2a4dae87a7d4d507a92e06ba1b1bad347b13bc689a8dcc34bf",
+          "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-c5daa1227334a792a0a454c3/outcome.json"
+        },
+        {
+          "digest": "9c02f45f937d55ba29110b01dd3c06ef774e74be924843eeb46e0362e1f4352e",
+          "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-c5daa1227334a792a0a454c3/adaptive-result.json"
+        },
+        {
+          "digest": "606166675093d806ac90928fb564304dad03efc3ffa042772978cc1b6706d1e2",
+          "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-c5daa1227334a792a0a454c3/events.jsonl"
+        }
+      ],
+      "canonical_history": {
+        "run_id": "adaptive-c5daa1227334a792a0a454c3",
+        "events": 1760,
+        "head_digest": "1f49076481d5d7a67012a99f26182efd9f78a3612d3f590c99523307d16a056e",
+        "chain_intact": true,
+        "broken_at": [],
+        "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-c5daa1227334a792a0a454c3",
+        "product_outcome_bound": true,
+        "product_outcome_digest": "66bf2409a6afbfd48395b92650b8aba4d918c57e2ea453555bd9ba63ada27df6",
+        "terminal_code": "CANCELLED"
+      },
+      "invoiced_cost": null
+    },
+    {
+      "run_id": "adaptive-b3adcefbff5a2c0f8f7bc5c0",
+      "outcome_record_type": "solve_outcome/v5",
+      "terminal_code": "COMPLETED_VERIFIED",
+      "solved": true,
+      "elapsed_seconds": 231.192,
+      "model_calls": 13,
+      "model_calls_known_subtotal": 13,
+      "model_call_accounting_complete": true,
+      "verification_policy": {
+        "record_type": "independent_verification_policy/v1",
+        "required": true
+      },
+      "independent_reports": [
+        {
+          "status": "passed",
+          "notes": "Controller comparisons of model-proposed contract checks passed; this is scoped evidence, not proof of complete correctness.",
+          "report_digest": "4cbd78041a482bd69ebe66793d837c5aa10fb2dae3093ecd7df0079a0835a2ee",
+          "probe_ref": {
+            "digest": "6fc9b375f156d9b1249b608b305b1ac5a4f28cc822e3dfc5a44198506128c623",
+            "byte_count": 5765,
+            "media_type": "application/json",
+            "encoding": "utf-8",
+            "artifact_kind": "independent_probe_bundle",
+            "object_key": "sha256/6f/6fc9b375f156d9b1249b608b305b1ac5a4f28cc822e3dfc5a44198506128c623"
+          },
+          "model_calls_known_subtotal": 5,
+          "source_unchanged": true,
+          "checks": [
+            {
+              "case_id": "probe_all_criteria",
+              "criterion_refs": [
+                "criterion:0",
+                "criterion:1",
+                "criterion:2"
+              ],
+              "completed": true,
+              "passed": true,
+              "expected": {
+                "to_seconds_values": {
+                  "0,0": 0,
+                  "1,0": 3600,
+                  "1,30": 5400,
+                  "2,15": 8100
+                },
+                "seconds_file_exists": true,
+                "test_file_exists": true,
+                "test_assertion_count": 3,
+                "unittest_returncode": 0
+              },
+              "observed": {
+                "seconds_file_exists": true,
+                "test_assertion_count": 3,
+                "test_file_exists": true,
+                "to_seconds_values": {
+                  "0,0": 0,
+                  "1,0": 3600,
+                  "1,30": 5400,
+                  "2,15": 8100
+                },
+                "unittest_returncode": 0
+              },
+              "stderr": "",
+              "error_code": ""
+            }
+          ]
+        }
+      ],
+      "observations": {
+        "feedback": [],
+        "project_attempts": 1,
+        "known_input_tokens": 121034,
+        "known_output_tokens": 84269,
+        "model_failures": [
+          {
+            "semantic_call_id": "independent.loop62.design.2c76b4245bcd5280",
+            "error_code": "output_limit_reached",
+            "input_tokens": 1160,
+            "output_tokens": 65536,
+            "allocations": [
+              65536
+            ]
+          }
+        ],
+        "call_allocations": [
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536,
+          65536
+        ],
+        "usage_is_partial": false
+      },
+      "file_sha256": [
+        {
+          "digest": "0e44e99ef5ac00219596079c1928e4eecbe0a92208427bcdd47335fc769b4f85",
+          "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-b3adcefbff5a2c0f8f7bc5c0/outcome.json"
+        },
+        {
+          "digest": "f5ebedc42a7b59d38b691cec6c4ea054ad751357947cada9ade8c3e0d5f40f55",
+          "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-b3adcefbff5a2c0f8f7bc5c0/adaptive-result.json"
+        },
+        {
+          "digest": "0de1311e537bd4ae09e7996b6c3bfec1abc1a6b589f2ab70d544c748ee430786",
+          "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-b3adcefbff5a2c0f8f7bc5c0/events.jsonl"
+        }
+      ],
+      "canonical_history": {
+        "run_id": "adaptive-b3adcefbff5a2c0f8f7bc5c0",
+        "events": 1017,
+        "head_digest": "2ff12e833801d5361e800e40c34df260aaa82ead43e9ab8b5d6dc3a2f7652895",
+        "chain_intact": true,
+        "broken_at": [],
+        "path": "/home/username/loop-engine/.loop-engine-dev/autonomous-feedback-20260905.ElTjEl/runs/adaptive-b3adcefbff5a2c0f8f7bc5c0",
+        "product_outcome_bound": true,
+        "product_outcome_digest": "3a4fcfbfceee8cea535c3749ca4fe9a908a9dd3aa8395cb52fa4c9ba1f2a2754",
+        "terminal_code": "COMPLETED_VERIFIED"
+      },
+      "invoiced_cost": null
+    }
+  ],
+  "offline_verification": {
+    "summary_ref": "/tmp/loop-engine-independent-current-final.AU1MfU/verification-summary.json",
+    "summary_sha256": "6fe196249ab8fd1ad0ee4d5418701a6120e9bd1188735d883a23389b6f9d8bc3",
+    "source_record_type": "offline_current_runtime_verification/v1",
+    "scope": "FROZEN_RUNTIME_SOURCE_WHEEL_SDIST_AND_CLEAN_BASE_INSTALL",
+    "all_passed": true,
+    "provider_calls": 0,
+    "source_suite": {
+      "all_passed": true,
+      "passed": 3043,
+      "total": 3043
+    },
+    "base_wheel_suite": {
+      "all_passed": true,
+      "optional_adapters_not_tested": [
+        "duckdb",
+        "mcp",
+        "model2vec",
+        "numpy",
+        "opentelemetry-sdk",
+        "pandas",
+        "sklearn"
+      ],
+      "passed": 2998,
+      "total": 2998
+    },
+    "source_conformance": {
+      "architecture_map_freshness": 0,
+      "conformance_test_skip_markers": 0,
+      "direct_model_or_network_calls_outside_gateway": 0,
+      "direct_resource_access_above_baseline": 0,
+      "dynamic_import_registration_bypasses": 0,
+      "empty_placeholder_modules": 0,
+      "envelope_owning_modules_missing_from_the_register": 0,
+      "eval_or_exec_anywhere": 0,
+      "forbidden_model_mentions_outside_guards": 0,
+      "legacy_flat_imports_on_live_paths": 0,
+      "modules_missing_llm_context_docstring": 0,
+      "modules_over_size_cap_without_declared_exception": 0,
+      "modules_whose_self_test_the_suite_never_runs": 0,
+      "operational_boundaries_outside_loop_ontology": 0,
+      "operational_boundary_relationship_kind_violations": 0,
+      "operational_graph_vertex_types_outside_canonical_loop": 0,
+      "public_interfaces_over_parameter_cap_without_declared_exception": 0,
+      "public_parallel_runtime_surfaces": 0,
+      "reachable_legacy_flat_paths": 0,
+      "retired_decision_spine_terms": 0,
+      "runtime_event_kinds_outside_the_canonical_vocabulary": 0,
+      "secret_shaped_literals_in_code_or_run_records": 0,
+      "semantic_identities_without_one_meaning_and_authority": 0,
+      "stale_current_architecture_documents": 0,
+      "subprocess_outside_declared_adapters": 0,
+      "syntax_newer_than_the_declared_minimum_python": 0,
+      "unclassified_files": 0
+    },
+    "wheel_conformance": {
+      "architecture_map_freshness": 0,
+      "conformance_test_skip_markers": 0,
+      "direct_model_or_network_calls_outside_gateway": 0,
+      "direct_resource_access_above_baseline": 0,
+      "dynamic_import_registration_bypasses": 0,
+      "empty_placeholder_modules": 0,
+      "envelope_owning_modules_missing_from_the_register": 0,
+      "eval_or_exec_anywhere": 0,
+      "forbidden_model_mentions_outside_guards": 0,
+      "legacy_flat_imports_on_live_paths": 0,
+      "modules_missing_llm_context_docstring": 0,
+      "modules_over_size_cap_without_declared_exception": 0,
+      "modules_whose_self_test_the_suite_never_runs": 0,
+      "operational_boundaries_outside_loop_ontology": 0,
+      "operational_boundary_relationship_kind_violations": 0,
+      "operational_graph_vertex_types_outside_canonical_loop": 0,
+      "public_interfaces_over_parameter_cap_without_declared_exception": 0,
+      "public_parallel_runtime_surfaces": 0,
+      "reachable_legacy_flat_paths": 0,
+      "retired_decision_spine_terms": 0,
+      "runtime_event_kinds_outside_the_canonical_vocabulary": 0,
+      "secret_shaped_literals_in_code_or_run_records": 0,
+      "semantic_identities_without_one_meaning_and_authority": 0,
+      "stale_current_architecture_documents": 0,
+      "subprocess_outside_declared_adapters": 0,
+      "syntax_newer_than_the_declared_minimum_python": 0,
+      "unclassified_files": 0
+    },
+    "runtime_integrity": {
+      "all_passed": true,
+      "differences": {
+        "source_vs_installed": [],
+        "source_vs_sdist": [],
+        "source_vs_tested": [],
+        "source_vs_wheel": []
+      },
+      "installed_root": "/tmp/loop-engine-independent-current-final.AU1MfU/wheel-env/lib/python3.14/site-packages/loop_engine",
+      "network_calls": 0,
+      "provider_calls": 0,
+      "python": "3.14.4 (main, Jun 18 2026, 14:25:02) [GCC 15.2.0]",
+      "record_type": "package_runtime_integrity/v1",
+      "runtime_file_counts": {
+        "installed": 478,
+        "sdist": 478,
+        "source": 478,
+        "tested": 478,
+        "wheel": 478
+      },
+      "sdist_sha256": "8e262d26d2c0968aef53a4e359327f4156bef2ddc85dcb356ca408516419b0ab",
+      "source_map_sha256": "a21c49617e67f0758d6cda8c39569658e2c9c8c78359839f2c0229e8a5f3269b",
+      "source_test_changes": [],
+      "tested_snapshot_sha256": "eac4deaa3d432977d8584645823748c5a6b0befac075d085e721fb8b444bd635",
+      "unapproved_source_test_changes": [],
+      "wheel_sha256": "3d6bf85c1c45641835f066186657c9fcf0634780de3b959227653a00b8ee1846"
+    }
+  },
+  "limits": {
+    "human_intervention": "Three duration diagnostics were operator-cancelled while runtime fixes were developed. They are not autonomous completions.",
+    "source_freeze": "The successful seconds run loaded the prior unbounded read() implementation; the final stat-sized read guard and test additions were verified separately in the final frozen checkout. No generated task/checker source was manually edited.",
+    "oracle_scope": "One live batched comparison: four function inputs, file presence, lexical assertion count and unittest exit. Not exhaustive or statistically independent across models.",
+    "persistent_self_improvement": "Automatic qualification/promotion, core self-modification, cross-process continuation and broad held-out improvement remain unproven.",
+    "ci": "The separate hardcoding CI audit remains unresolved; no baseline reset.",
+    "kaggle": "No Kaggle downloads, submissions or grades in this work."
+  }
+}

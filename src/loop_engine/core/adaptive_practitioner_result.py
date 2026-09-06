@@ -241,6 +241,9 @@ def finish_deterministic_attempt(
         "result": result_value, "original_task": services.request.task,
         "task_feedback": [item.to_dict()
                           for item in services.request.feedback],
+        "independent_verification_policy":
+            services.request.independent_verification_policy.to_dict(),
+        "independent_verification_records": services.independent_verification_records,
         "mode": services.request.mode,
         "deterministic_attempt": trace.to_dict(), "passes": 1,
         "final_route": "stop_success" if resolved else "stop_unprofitable",
@@ -290,6 +293,9 @@ def failed_adaptive_output(
             services.source_inspections),
         "project_attempts": services.project_attempts,
         "verification": services.verification_records,
+        "independent_verification_policy":
+            services.request.independent_verification_policy.to_dict(),
+        "independent_verification_records": services.independent_verification_records,
         "supervision": services.supervision_findings,
         "recovery_directives": services.recovery_directives,
         "generated_file_checkpoints":

@@ -108,6 +108,11 @@ BOUNDARIES = (
      "binding": "practitioner_loop",
      "envelope": "core.component_inventory.run_component_inventory",
      "test": "component_inventory:component_inventory_runs_through_practitioner_loop"},
+    {"boundary": "independent executable task verification",
+     "crosses": "a frozen generated project receives isolated model-proposed executable checks",
+     "binding": "native_loop",
+     "envelope": "core.independent_verification.run_independent_verification",
+     "test": "independent_verification.self_test"},
     {"boundary": "solution component",
      "crosses": "a Solution Canvas box executes",
      "binding": "native_loop",
@@ -355,6 +360,8 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
     "repository component inventory": _exact(
         "practitioner", "practitioner.code_execution@1.0.0",
         "starting"),
+    "independent executable task verification": _exact(
+        "practitioner", "practitioner.verifier@1.0.0", "spawned_by"),
     "solution component": _exact(
         "solution", "solution.atomic_component@1.0.0", "connected_from"),
     "api endpoint": _exact(

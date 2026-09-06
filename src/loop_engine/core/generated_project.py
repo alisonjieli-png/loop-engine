@@ -554,6 +554,7 @@ class GeneratedProjectExecutionRequest:
     authority: GeneratedProjectAuthority
     image: str = DEFAULT_GENERATED_PROJECT_IMAGE
     input_artifacts: tuple[GeneratedProjectInputArtifact, ...] = ()
+    read_only_execution: bool = False
 
     def __post_init__(self) -> None:
         if not isinstance(self.manifest, GeneratedProjectManifest):
@@ -570,6 +571,21 @@ class GeneratedProjectExecutionRequest:
                 "project input artifacts must be unique")
         object.__setattr__(self, "input_artifacts", inputs)
         validate_generated_project_input_paths(self.manifest, inputs)
+        _validate_read_only_execution(self)
+
+
+def _validate_read_only_execution(request) -> None:
+    """Read-only execution is a Docker command posture, not host immutability."""
+    if type(request.read_only_execution) is not bool:
+        raise GeneratedProjectError("read_only_execution must be a boolean")
+    if request.read_only_execution:
+        if (request.authority.allow_workspace_writes is not True
+                or request.authority.allow_sandbox_commands is not True):
+            raise GeneratedProjectError(
+                "read-only execution requires explicit workspace preparation "
+                "and sandbox command authority")
+        if any(command.network_access is not False for command in request.manifest.commands):
+            raise GeneratedProjectError("read-only execution refuses network-enabled commands")
 
 
 @dataclass(frozen=True)
@@ -872,7 +888,13 @@ def execute_generated_project(
     network-policy rule stays stronger, not weaker.
     """
     # Repeat at the effect boundary, even if a caller bypassed construction.
+    _validate_read_only_execution(request)
     validate_generated_project_input_paths(request.manifest, request.input_artifacts)
+    if request.read_only_execution:
+        import shutil
+        if shutil.which("docker") is None:
+            raise GeneratedProjectError(
+                "read-only execution requires Docker; host fallback is forbidden")
     root = Path(request.workspace_root).expanduser().resolve()
     root.mkdir(parents=True, exist_ok=True)
     parent = context.parent_loop
@@ -880,6 +902,7 @@ def execute_generated_project(
     approvals = EffectApprovalService(runtime=runtime)
     declaration = DockerWorkspaceDeclaration(
             image=request.image,
+            workspace_read_only=request.read_only_execution,
             limits=DockerResourceLimits(
                 memory="4g", cpus=2.0, pids=256,
                 temporary_bytes=1024 * 1024 * 1024))
@@ -907,10 +930,15 @@ def execute_generated_project(
         sandbox_record = {
             "backend_kind": "docker",
             "image": request.image,
-            "network_policy": "dependency_setup_only",
+            "network_policy": ("none" if request.read_only_execution
+                               else "dependency_setup_only"),
+            "workspace_read_only": request.read_only_execution,
         }
         fallback_note = None
     else:
+        if request.read_only_execution:
+            raise GeneratedProjectError(
+                "read-only execution requires Docker; host fallback is forbidden")
         if not request.authority.allow_local_execution:
             raise GeneratedProjectError(
                 "sandbox unavailable: docker_unavailable: the Docker command "
@@ -1452,6 +1480,7 @@ def self_test() -> dict:
         "detail": "allow_local_execution defaults to False"})
     tests.extend(_code_only_project_checks())
     tests.extend(_input_path_collision_checks())
+    tests.extend(_read_only_execution_checks(context, authority))
     passed = sum(item["passed"] for item in tests)
     return {
         "record_type": "generated_project_test/v1",
@@ -1460,6 +1489,111 @@ def self_test() -> dict:
         "total": len(tests),
         "all_passed": passed == len(tests),
     }
+
+
+def _read_only_execution_checks(context, authority) -> list[dict]:
+    """Offline read-only request, early refusal, and executor wiring checks."""
+    import shutil
+    import tempfile
+    from unittest.mock import patch
+
+    from .workspace_contracts import BackendAvailability, CommandResult
+
+    tests = []
+
+    def check(name, passed):
+        tests.append({"test": name, "passed": bool(passed),
+                      "detail": "offline executor contract; no container/model/network calls"})
+
+    manifest = GeneratedProjectManifest.from_mapping({
+        "record_type": GENERATED_PROJECT_RECORD_TYPE, "project_id": "read_only_fixture",
+        "summary": "Independently check frozen source.",
+        "files": [{"path": "check.py", "content": "print('checked')\n"}],
+        "commands": [{"argv": ["python", "check.py"], "purpose": "Verify source.",
+                      "command_kind": "verify"}], "expected_artifacts": []})
+    supplied = (GeneratedProjectInputArtifact("inputs/source.py", b"original = True\n"),)
+    with tempfile.TemporaryDirectory(prefix="loop-engine-read-only-project-") as directory:
+        root = Path(directory) / "workspace"
+
+        def request(**changes):
+            return GeneratedProjectExecutionRequest(
+                changes.pop("manifest", manifest), str(root),
+                changes.pop("authority", authority), input_artifacts=supplied,
+                **changes)
+
+        check("normal_project_execution_keeps_writable_default", not request().read_only_execution)
+        refused = 0
+        for value in (None, 0, 1, "true", [], {}):
+            try:
+                request(read_only_execution=value)
+            except GeneratedProjectError:
+                refused += 1
+        check("read_only_execution_rejects_non_boolean_flags", refused == 6 and not root.exists())
+        refused = 0
+        for changes in ({"allow_workspace_writes": False}, {"allow_sandbox_commands": False},
+                        {"allow_workspace_writes": 1}, {"allow_sandbox_commands": "true"}):
+            try:
+                request(read_only_execution=True, authority=replace(authority, **changes))
+            except GeneratedProjectError:
+                refused += 1
+        check("read_only_preparation_and_command_authority_are_literal_and_required",
+              refused == 4 and not root.exists())
+        network = replace(manifest, commands=(GeneratedProjectCommand(
+            ("python", "-m", "pip", "install", "requests"), "Setup dependencies.",
+            command_kind="setup", network_access=True), *manifest.commands))
+        try:
+            request(manifest=network, read_only_execution=True)
+            network_refused = False
+        except GeneratedProjectError:
+            network_refused = True
+        check("read_only_execution_refuses_network_setup_before_workspace_writes",
+              network_refused and not root.exists())
+        frozen = request(read_only_execution=True)
+        object.__setattr__(frozen, "read_only_execution", "true")
+        with patch.object(Path, "mkdir") as mkdir:
+            try:
+                execute_generated_project(frozen, context)
+                flag_refused = False
+            except GeneratedProjectError:
+                flag_refused = True
+        check("read_only_flag_is_revalidated_before_effects", flag_refused and not mkdir.called)
+        frozen = request(read_only_execution=True)
+        object.__setattr__(frozen, "manifest", network)
+        with patch.object(Path, "mkdir") as mkdir:
+            try:
+                execute_generated_project(frozen, context)
+                drift_refused = False
+            except GeneratedProjectError:
+                drift_refused = True
+        check("read_only_network_policy_is_revalidated_before_effects",
+              drift_refused and not mkdir.called)
+        frozen = request(read_only_execution=True)
+        with patch.object(shutil, "which", return_value=None), patch.object(Path, "mkdir") as mkdir:
+            try:
+                execute_generated_project(frozen, context)
+                fallback_refused = False
+            except GeneratedProjectError as exc:
+                fallback_refused = "host fallback is forbidden" in str(exc)
+        check("read_only_execution_refuses_missing_docker_even_with_host_authority",
+              authority.allow_local_execution is True and fallback_refused and not mkdir.called)
+        declarations = []
+
+        def command(backend, command_request):
+            declarations.append(backend.declaration)
+            return CommandResult(True, command_request.argv, 0, stdout="checked")
+
+        with patch.object(shutil, "which", return_value="/fixture/docker"), \
+                patch.object(DockerWorkspace, "availability", return_value=BackendAvailability(
+                    True, "docker", "fixture")), patch.object(DockerWorkspace, "command", command):
+            result = execute_generated_project(request(read_only_execution=True), context)
+        check("read_only_project_prepares_governed_files_then_uses_read_only_declaration",
+              result["deterministic_checks_passed"]
+              and len(declarations) == 1 and declarations[0].workspace_read_only is True
+              and result["sandbox"]["workspace_read_only"] is True
+              and result["sandbox"]["network_policy"] == "none"
+              and (root / "inputs/source.py").read_bytes() == supplied[0].content
+              and (root / "check.py").read_text() == manifest.files[0].content)
+    return tests
 
 
 def _input_path_collision_checks() -> list[dict]:

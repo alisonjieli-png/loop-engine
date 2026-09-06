@@ -44,6 +44,7 @@ from .context_pack_manifest import build_context_pack_manifest
 from .convergence import CACHE_ASSIST, ConvergenceMeasure, experiment_arm
 from .decision_outcome import OutcomeLedger
 from .generated_project import execute_generated_project
+from .independent_verification import IndependentVerificationPolicy
 from .llm_work_packet import LLMContextBlock, LLMWorkPacket, WorkDirective
 from .model_demand import ladder_from_observations
 from .model_response_admission import (
@@ -1235,8 +1236,14 @@ class AdaptivePractitionerRequest:
     stage_assistance: StageAssistanceRuntimeBinding = field(
         default_factory=StageAssistanceRuntimeBinding)
     instruction_provenance: CapturedInstructionProvenance | None = None
+    independent_verification_policy: IndependentVerificationPolicy = field(
+        default_factory=IndependentVerificationPolicy)
 
     def __post_init__(self) -> None:
+        if not isinstance(self.independent_verification_policy,
+                          IndependentVerificationPolicy):
+            raise AdaptivePractitionerError(
+                "independent_verification_policy must use its typed contract")
         if not isinstance(self.prior_region_evidence, dict):
             raise AdaptivePractitionerError(
                 "prior_region_evidence must be a mapping")
@@ -1327,6 +1334,8 @@ class AdaptivePractitionerRequest:
             "mode": self.mode,
             "max_passes": self.max_passes,
             "interaction_mode": self.interaction_mode,
+            "independent_verification_policy":
+                self.independent_verification_policy.to_dict(),
             "authority": {
                 "network_reads": self.allow_network_reads,
                 "workspace_writes": self.allow_workspace_writes,
@@ -1507,6 +1516,8 @@ class AdaptiveRunServices:
     source_roles: dict | None = None
     project_attempts: list[dict] = field(default_factory=list)
     verification_records: list[dict] = field(default_factory=list)
+    independent_verification_records: list[dict] = field(default_factory=list)
+    independent_probe_cache: dict = field(default_factory=dict)
     context_snapshots: list[dict] = field(default_factory=list)
     #: What this run drew on from the portfolio it was offered, counted
     #: per option and saved with the result. Evidence for judging the

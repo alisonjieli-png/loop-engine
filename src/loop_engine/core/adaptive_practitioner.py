@@ -96,6 +96,8 @@ def _model_state(state: PractitionerState,
     view = {
         "state_version": state.version,
         "facts": state.facts,
+        "independent_verification_policy":
+            services.request.independent_verification_policy.to_dict(),
         "artifact_refs": state.artifacts,
         "open_questions": list(state.open_questions),
         "failures": list(state.failures),
@@ -736,6 +738,9 @@ def run_adaptive_practitioner(
         "source_roles": services.source_roles,
         "project_attempts": services.project_attempts,
         "verification": services.verification_records,
+        "independent_verification_policy":
+            request.independent_verification_policy.to_dict(),
+        "independent_verification_records": services.independent_verification_records,
         "supervision": services.supervision_findings,
         "recovery_directives": services.recovery_directives,
         "generated_file_checkpoints":
@@ -781,18 +786,5 @@ def run_adaptive_practitioner(
     return output
 def self_test() -> dict:
     """Run focused task-agnostic adaptive Practitioner checks."""
-    from .adaptive_practitioner_acceptance_checks import (
-        run_checks as run_acceptance_checks,
-    )
-    from .adaptive_practitioner_checks import run_checks
-    focused = run_checks()
-    acceptance = run_acceptance_checks()
-    from .practitioner_contract_guards import contract_guard_checks
-    tests = [*focused["tests"], *acceptance["tests"],
-             *contract_guard_checks()]
-    passed = sum(item["passed"] for item in tests)
-    return {
-        "record_type": "adaptive_practitioner_complete_test/v1",
-        "tests": tests, "passed": passed, "total": len(tests),
-        "all_passed": passed == len(tests),
-    }
+    from .adaptive_practitioner_checks import complete_checks
+    return complete_checks()

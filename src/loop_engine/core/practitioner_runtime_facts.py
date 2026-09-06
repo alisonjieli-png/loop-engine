@@ -30,6 +30,7 @@ from .adaptive_practitioner_records import AdaptivePractitionerError
 from .adaptive_practitioner_source import inspectable_source_files, project_input_path
 from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
 from .generated_project import selected_execution_backend
+from .independent_verification import IndependentVerificationPolicy
 from .runtime_capacity import (
     model_evidence_bytes,
     paths_within_allowance,
@@ -144,11 +145,43 @@ def runtime_facts(services) -> dict:
             bool(request.allow_local_execution)),
         "granted_permissions": list(granted_permissions(request)),
         "interaction_mode": str(request.interaction_mode),
+        **_verification_facts(services),
         **({"captured_instruction": captured_instruction}
            if captured_instruction is not None else {}),
         "source_manifest": _source_manifest(services),
         "source_roles": _source_roles(services),
         "action_fence": services.action_fence.model_view(policy),
+    }
+
+
+def _verification_facts(services) -> dict:
+    """Acceptance gates and control actions never add user task criteria."""
+    policy = getattr(services.request, "independent_verification_policy",
+                     IndependentVerificationPolicy())
+    if not isinstance(policy, IndependentVerificationPolicy):
+        raise TypeError("verification policy must use its typed contract")
+    attempts = getattr(services, "project_attempts", ())
+    return {
+        "independent_verification": {
+            **policy.to_dict(), "authority": "runtime", "advisory": False,
+            "adds_task_criteria": False,
+            "unavailable_establishes_subject_failure": False,
+            "interpretation": (
+                "When required is true, this acceptance gate is runtime policy. Do not copy "
+                "it into user verification_obligations. A provider or checker "
+                "failure leaves checking incomplete; it does not require "
+                "regenerating an otherwise unchanged project."),
+        },
+        "control_actions": [{
+            "action_kind": "RETURN_RESULT", "authority": "runtime",
+            "available": bool(attempts), "required_capabilities": [],
+            "permissions": [], "result_source": "latest_project_attempt",
+            "runs_verification": True, "regenerates_project": False,
+            "interpretation": (
+                "Select RETURN_RESULT without capability requirements to submit "
+                "the existing project for independent and semantic verification "
+                "again. This action cannot bypass required acceptance gates."),
+        }],
     }
 
 
@@ -252,6 +285,22 @@ def self_test() -> dict:
                    and "captured_instruction" not in facts
                    and invalid_capture_refused),
         "detail": "unknown provenance stays absent; changed text is refused",
+    }, {
+        "test": "verification_policy_is_runtime_authority_without_new_task_criteria",
+        "passed": (facts["independent_verification"]["required"] is True
+                   and facts["independent_verification"]["authority"] == "runtime"
+                   and facts["independent_verification"]["advisory"] is False
+                   and facts["independent_verification"]["adds_task_criteria"] is False
+                   and facts["independent_verification"][
+                       "unavailable_establishes_subject_failure"] is False),
+        "detail": "provider failure leaves evaluation incomplete",
+    }, {
+        "test": "return_result_describes_reverification_without_regeneration",
+        "passed": (facts["control_actions"][0]["action_kind"] == "RETURN_RESULT"
+                   and facts["control_actions"][0]["runs_verification"] is True
+                   and facts["control_actions"][0]["regenerates_project"] is False
+                   and facts["control_actions"][0]["required_capabilities"] == []),
+        "detail": "the existing control action preserves mandatory verification",
     }, {
         "test": "no_source_authority_means_no_manifest_and_no_error",
         "passed": (closed_facts["source_manifest"] is None

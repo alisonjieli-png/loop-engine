@@ -158,6 +158,8 @@ MODULE_MAP = {
         "adaptive_practitioner_supervision",
         "adaptive_practitioner_validation",
         "adaptive_practitioner_verification",
+        "adaptive_practitioner_feedback_checks",
+        "independent_verification", "independent_verification_checks",
         "api_quality", "asset_class", "component_contracts",
         "component_inventory",
         "asset_lifecycle", "brave_search",

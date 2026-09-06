@@ -20,6 +20,7 @@ from ..core.adaptive_practitioner_records import (
     StageAssistanceRuntimeBinding,
 )
 from ..core.generated_project import execute_generated_project
+from ..core.independent_verification import IndependentVerificationPolicy
 from ..templates.compiler import TaskCompileRequest, compile_task_value
 from ..templates.intake import TaskIntake
 from ..templates.model import InteractionMode, TaskFeedback
@@ -112,8 +113,14 @@ class SolveRequest:
         default_factory=StageAssistanceRuntimeBinding,
         repr=False,
     )
+    independent_verification_policy: IndependentVerificationPolicy = field(
+        default_factory=IndependentVerificationPolicy)
 
     def __post_init__(self) -> None:
+        if not isinstance(self.independent_verification_policy,
+                          IndependentVerificationPolicy):
+            raise SolveError(
+                "independent_verification_policy must use its typed contract")
         mode = self.interaction_mode
         if not isinstance(mode, InteractionMode):
             try:
@@ -484,6 +491,13 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
     if "passed" not in verification:
         verification = {**verification, "passed": bool(
             solved or verification.get("verdict") == "accept")}
+    verification = {
+        **verification,
+        "independent_verification_policy":
+            request.independent_verification_policy.to_dict(),
+        "independent_verification_records":
+            adaptive.get("independent_verification_records", []),
+    }
     questions, open_questions = _terminal_questions(adaptive, solved)
     terminal = (SolveTerminalCode.COMPLETED_VERIFIED.value if solved
                 else SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value
@@ -589,7 +603,6 @@ def _next_recovery(terminal: str) -> str:
 
 def self_test() -> dict:
     import tempfile
-    from unittest.mock import patch
 
     from ..templates.intake import TaskIntakeRequest, intake_task
     from .solution_model_port import (
@@ -602,45 +615,8 @@ def self_test() -> dict:
     def check(name, ok, note=""):
         results.append({"name": name, "passed": bool(ok), "note": note})
 
-    class NonMatchingResolver:
-        """Registered exact resolver that correctly declines this task."""
-
-        resolver_id = "fixture.non_matching@1"
-
-        def supports(self, _task):
-            return False
-
-        def execute(self, _task):
-            raise AssertionError("a non-matching resolver must not execute")
-
-    observed_pass_limits = []
-
-    def capture_adaptive_request(adaptive_request, _dependencies):
-        observed_pass_limits.append(adaptive_request.max_passes)
-        return {
-            "run_id": "fixture-no-injected-pass-ceiling",
-            "solved": False,
-            "failure_code": "NO_VERIFIED_CAPABILITY",
-            "deterministic_attempt": {
-                "status": "NO_VERIFIED_CAPABILITY",
-                "diagnostics": ["fixture stopped before semantic work"],
-            },
-            "run_history": {},
-            "loop_details": [],
-        }
-
-    with patch(
-            "loop_engine.code_nodes.solve_runtime.run_adaptive_practitioner",
-            side_effect=capture_adaptive_request):
-        solve_task(SolveRequest(
-            intake_task(TaskIntakeRequest(
-                text="Solve work not covered by the exact resolver.")),
-            deterministic_resolvers=(NonMatchingResolver(),),
-            save_run_history=False))
-    check(
-        "registered_resolver_does_not_inject_a_practitioner_pass_ceiling",
-        observed_pass_limits == [None],
-        "resolver presence changes eligibility, not semantic stopping")
+    from ..core.adaptive_practitioner_feedback_checks import request_policy_checks
+    results.extend(request_policy_checks())
 
     with tempfile.TemporaryDirectory() as root:
         data = Path(root) / "rows.csv"

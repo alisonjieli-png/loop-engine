@@ -6,11 +6,13 @@ this module does not probe a daemon, load an SDK, or contact a service.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 import shutil
 import subprocess
 import tempfile
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path, PurePosixPath
 
 from .workspace_contracts import (
@@ -55,8 +57,11 @@ class DockerWorkspaceDeclaration:
     docker_binary: str = "docker"
     limits: DockerResourceLimits = DockerResourceLimits()
     require_image_digest: bool = True
+    workspace_read_only: bool = False
 
     def __post_init__(self):
+        if type(self.workspace_read_only) is not bool:
+            raise TypeError("Docker workspace_read_only must be a boolean")
         if not self.image:
             raise ValueError("Docker workspace needs an image")
         if not self.container_root.startswith("/"):
@@ -94,6 +99,19 @@ class DockerWorkspace:
         return WorkspaceRef(
             self.spec.workspace_id, self.spec.backend_kind, str(self._host_root))
 
+    def command_policy_digest(self) -> str:
+        """Bind command approval to the exact container declaration.
+
+        Workspace identity does not include image, mount posture, or resource
+        limits. These settings must not change under an existing approval.
+        """
+        if not isinstance(self.declaration, DockerWorkspaceDeclaration):
+            raise TypeError("Docker command needs its typed declaration")
+        self.declaration.__post_init__()
+        body = json.dumps(asdict(self.declaration), sort_keys=True,
+                          separators=(",", ":"), allow_nan=False)
+        return hashlib.sha256(body.encode("utf-8")).hexdigest()
+
     def availability(self) -> BackendAvailability:
         binary = shutil.which(self.declaration.docker_binary)
         if binary is None:
@@ -119,6 +137,13 @@ class DockerWorkspace:
         return self._files.file(request)
 
     def command(self, request: CommandRequest) -> CommandResult:
+        # Revalidate even when the backend is invoked without an operation
+        # service, or a caller has bypassed the frozen declaration boundary.
+        try:
+            self.command_policy_digest()
+        except (TypeError, ValueError):
+            return _command_error(request, "invalid_docker_declaration",
+                                  "Docker execution declaration is invalid")
         availability = self.availability()
         if not availability.available:
             return _command_error(
@@ -153,7 +178,8 @@ class DockerWorkspace:
             f"{self.declaration.limits.temporary_bytes}", "--network",
             "bridge" if self.spec.network_access else "none", "--workdir",
             container_cwd, "--volume",
-            f"{self._host_root}:{self.declaration.container_root}:rw",
+            f"{self._host_root}:{self.declaration.container_root}:"
+            + ("ro" if self.declaration.workspace_read_only else "rw"),
         ]
         for key in request.environment_keys:
             docker_argv.extend(("--env", key))
@@ -207,7 +233,8 @@ class DockerWorkspace:
 
 
 def verify_live_docker_workspace(
-        image: str, *, docker_binary: str = "docker") -> dict:
+        image: str, *, docker_binary: str = "docker",
+        workspace_read_only: bool = False) -> dict:
     """Exercise the real Docker backend with one immutable local image.
 
     This function contacts the local Docker daemon and starts one confined
@@ -226,7 +253,8 @@ def verify_live_docker_workspace(
             network_access=False)
         workspace = DockerWorkspace(
             spec, DockerWorkspaceDeclaration(
-                image=image, docker_binary=docker_binary))
+                image=image, docker_binary=docker_binary,
+                workspace_read_only=workspace_read_only))
         prepared = workspace.file(FileRequest(
             operation=FileOperation.WRITE,
             path="input.txt", content=b"inside docker workspace"))
@@ -252,11 +280,29 @@ def verify_live_docker_workspace(
         check("runtime_used_an_immutable_image_and_no_pull",
               "@sha256:" in image,
               image)
+        if workspace_read_only:
+            mutation = workspace.command(CommandRequest(
+                ("python3", "-c", ("from pathlib import Path\n"
+                 "try:\n Path('input.txt').write_text('changed')\n"
+                 "except OSError as exc:\n print('refused', exc.errno)\n"
+                 "Path('/tmp/check.txt').write_text('temporary')\n"
+                 "print(Path('/tmp/check.txt').read_text())\n")),
+                execution_authorized=True, timeout_seconds=30,
+                max_output_bytes=4096))
+            unchanged = workspace.snapshot(SnapshotRequest(include_hidden=True))
+            check("read_only_mount_refuses_workspace_mutation",
+                  mutation.ok and "refused 30" in mutation.stdout
+                  and unchanged.digest == before.digest,
+                  "EROFS from the bind mount; exact source snapshot unchanged")
+            check("read_only_mount_keeps_declared_tmpfs_writable",
+                  mutation.ok and "temporary" in mutation.stdout,
+                  "temporary data is confined to the disposable /tmp tmpfs")
     passed = sum(item["passed"] for item in tests)
     return {
         "record_type": "docker_workspace_live_verification/v1",
         "image": image,
         "network_access": False,
+        "workspace_read_only": workspace_read_only,
         "tests": tests,
         "passed": passed,
         "total": len(tests),
@@ -394,4 +440,88 @@ def _optional_test_cases() -> list[dict]:
           and e2b.availability().reason_code == "adapter_not_registered"
           and modal.availability().reason_code == "adapter_not_registered",
           "E2B and Modal need no import, credential, or network call")
+    results.extend(_docker_read_only_test_cases())
+    return results
+
+
+def _docker_read_only_test_cases() -> list[dict]:
+    """No Docker process: inspect wire arguments and exact approval binding."""
+    from dataclasses import replace
+    from types import SimpleNamespace
+    from unittest.mock import patch
+
+    from ..loop.effect_approval import ApprovalDecision, EffectApprovalService
+    from .workspace_operations import WorkspaceOperationError, WorkspaceOperationService
+
+    results = []
+
+    def check(name, passed):
+        results.append({"test": name, "passed": bool(passed),
+                        "detail": "offline Docker argv and effect fixture"})
+
+    image = "python@sha256:" + "0" * 64
+    refused = 0
+    for value in (None, 0, 1, "false", [], {}):
+        try:
+            DockerWorkspaceDeclaration(image, workspace_read_only=value)
+        except TypeError:
+            refused += 1
+    check("docker_read_only_posture_requires_literal_boolean", refused == 6)
+    with tempfile.TemporaryDirectory(prefix="loop-engine-docker-policy-") as root:
+        spec = WorkspaceSpec("policy_fixture", root, backend_kind="docker",
+                             execution_enabled=True, allowed_commands=("python",))
+        declaration = DockerWorkspaceDeclaration(image)
+        workspace = DockerWorkspace(spec, declaration)
+        command = CommandRequest(("python", "check.py"), execution_authorized=True)
+        wire = []
+
+        def run(argv, **_kwargs):
+            wire.append(argv)
+            return SimpleNamespace(returncode=0, stdout="fixture", stderr="")
+
+        with patch.object(shutil, "which", return_value="/fixture/docker"), \
+                patch.object(subprocess, "run", side_effect=run):
+            workspace.command(command)
+            workspace.declaration = replace(declaration, workspace_read_only=True)
+            workspace.command(command)
+        check("docker_default_mount_remains_writable_and_explicit_posture_mounts_read_only",
+              wire[0][wire[0].index("--volume") + 1].endswith(":rw")
+              and wire[1][wire[1].index("--volume") + 1].endswith(":ro")
+              and wire[1][wire[1].index("--network") + 1] == "none"
+              and wire[1][wire[1].index("--tmpfs") + 1].startswith("/tmp:rw,"))
+        approvals = EffectApprovalService()
+        operations = WorkspaceOperationService(workspace, approvals=approvals)
+        plan = operations.plan_command(command, loop_id="policy_fixture", reason="Run read-only check.")
+        checkpoint = approvals.create(plan.approval)
+        approvals.resume(checkpoint.pending, checkpoint.resume_token,
+                         ApprovalDecision.approve(plan.approval.request_id, "fixture_reviewer"))
+        workspace.declaration = declaration
+        with patch.object(workspace, "command") as invoked:
+            changed = operations.command(command, approval_id=plan.approval.request_id)
+        check("changing_mount_posture_invalidates_existing_command_approval",
+              changed.error_code == "approval_not_usable" and not invoked.called)
+        baseline = operations.command_effect(command)
+        digests = []
+        for alternate in (replace(declaration, image="python@sha256:" + "1" * 64),
+                          replace(declaration, container_root="/different"),
+                          replace(declaration, docker_binary="alternate-docker"),
+                          replace(declaration, limits=replace(declaration.limits, pids=128)),
+                          replace(declaration, workspace_read_only=True)):
+            workspace.declaration = alternate
+            digests.append(operations.command_effect(command) != baseline)
+        check("command_approval_binds_full_docker_declaration", all(digests) and len(digests) == 5)
+        object.__setattr__(workspace.declaration, "workspace_read_only", "false")
+        with patch.object(subprocess, "run") as invoked:
+            malformed = workspace.command(command)
+        check("mutated_invalid_mount_flag_refuses_before_docker_process",
+              malformed.error_code == "invalid_docker_declaration" and not invoked.called)
+        workspace.declaration = declaration
+        for bad in ("not-a-callable", lambda: "bad-digest"):
+            with patch.object(workspace, "command_policy_digest", bad):
+                try:
+                    operations.command_effect(command)
+                    invalid = False
+                except WorkspaceOperationError:
+                    invalid = True
+            check("invalid_optional_command_policy_is_refused_" + str(len(results)), invalid)
     return results

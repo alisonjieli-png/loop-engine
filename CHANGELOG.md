@@ -9,6 +9,15 @@ First public release.
 
 ### Added
 
+- [Independent executable task feedback](docs/architecture/ADR-INDEPENDENT-TASK-FEEDBACK.md).
+  Generated-project acceptance requires engine-created checks by default.
+  Separate verifier Loops generate and review probes, compare actual output
+  outside the candidate process, and feed failures into the existing repair
+  loop without user feedback. Read-only Docker mounts protect the subject and
+  checker. Operational failures can recheck unchanged artifacts; they do not
+  invent new task criteria. Persistent self-modification and unrestricted
+  general-purpose reliability are not established by this change.
+
 - [External-caller and code-only delivery repairs](docs/verification/BRAIN-INTEGRATION-CODE-ONLY-2026-09-05.md).
   Code-only tasks can return verified modules and tests without inventing an
   extra command-produced file. Task-file text carries captured provenance,

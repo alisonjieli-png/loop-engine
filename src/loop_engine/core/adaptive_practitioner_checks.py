@@ -16,6 +16,7 @@ from .adaptive_practitioner_records import (
 from .adaptive_practitioner_recovery import (
     RecoveryPanelRequest, resolve_stall_with_panel)
 from .adaptive_practitioner_supervision import detect_stall
+from .independent_verification import IndependentVerificationPolicy
 from ..loop.kernel import PractitionerState, ProblemSpec
 
 def run_checks() -> dict:
@@ -129,7 +130,9 @@ def run_checks() -> dict:
             result = run_adaptive_practitioner(
                 AdaptivePractitionerRequest(
                     task, runs_dir=root, max_passes=1,
-                    allow_network_reads=False),
+                    allow_network_reads=False,
+                    independent_verification_policy=IndependentVerificationPolicy(
+                        required=False)),
                 AdaptivePractitionerDependencies(
                     execution, project_executor=project_fixture))
             results.append({
@@ -239,4 +242,22 @@ def run_checks() -> dict:
         "record_type": "adaptive_practitioner_test/v1",
         "tests": results, "passed": passed, "total": len(results),
         "all_passed": passed == len(results),
+    }
+
+
+def complete_checks() -> dict:
+    """Run focused task-agnostic adaptive Practitioner checks."""
+    from .adaptive_practitioner_acceptance_checks import (
+        run_checks as run_acceptance_checks,
+    )
+    focused = run_checks()
+    acceptance = run_acceptance_checks()
+    from .practitioner_contract_guards import contract_guard_checks
+    tests = [*focused["tests"], *acceptance["tests"],
+             *contract_guard_checks()]
+    passed = sum(item["passed"] for item in tests)
+    return {
+        "record_type": "adaptive_practitioner_complete_test/v1",
+        "tests": tests, "passed": passed, "total": len(tests),
+        "all_passed": passed == len(tests),
     }

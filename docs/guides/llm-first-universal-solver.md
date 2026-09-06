@@ -1,5 +1,13 @@
 # LLM-first universal solving
 
+Generated projects require independent executable checks by default. A
+separate verifier Loop proposes and reviews checks from the original task,
+runs them in a read-only Docker workspace, and returns observed failures to
+the existing repair loop. No manual `TaskFeedback` is needed for this cycle.
+An unavailable checker cannot become acceptance. Required independent
+verification still needs Docker when weaker host execution is authorized for
+the producer. See [the contract and limits](../architecture/ADR-INDEPENDENT-TASK-FEEDBACK.md).
+
 Loop Engine treats the task domain as unbounded. A new task does not need a
 prewritten domain branch before the Practitioner can begin reasoning about it.
 

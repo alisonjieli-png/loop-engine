@@ -15,6 +15,7 @@ from ..code_nodes.solution_model_port import (
     FixtureModelExecutionRequest, fixture_model_execution)
 from .adaptive_practitioner import run_adaptive_practitioner
 from .source_role_orientation import manifest_digest
+from .independent_verification import IndependentVerificationPolicy
 from .adaptive_practitioner_records import (
     AdaptivePractitionerDependencies, AdaptivePractitionerRequest,
     NextActionDecision)
@@ -175,7 +176,9 @@ def _run(task: str, answers: tuple[str, ...], root: str,
         AdaptivePractitionerRequest(
             task, mode=mode, runs_dir=root, max_passes=1,
             interaction_mode=interaction_mode,
-            allow_network_reads=False),
+            allow_network_reads=False,
+            independent_verification_policy=IndependentVerificationPolicy(
+                required=False)),
         AdaptivePractitionerDependencies(
             execution, project_executor=_project_fixture))
 
@@ -562,7 +565,9 @@ def run_checks() -> dict:
                 mode="non_deterministic", runs_dir=root, max_passes=2,
                 source_kind="repository", source_refs=(str(source_root),),
                 allow_source_materialization_to_model=True,
-                allow_network_reads=False),
+                allow_network_reads=False,
+                independent_verification_policy=IndependentVerificationPolicy(
+                    required=False)),
             AdaptivePractitionerDependencies(
                 execution, project_executor=source_project_fixture))
         selected = source_led["source_inspections"][0]["selected"]
@@ -743,6 +748,9 @@ def run_checks() -> dict:
     clean, detail = _hardcoding_scan()
     check("generic_solver_source_contains_no_acceptance_example_leakage",
           clean, detail or "no prohibited source phrases")
+
+    from .adaptive_practitioner_feedback_checks import run_checks as feedback_checks
+    tests.extend(feedback_checks())
 
     passed = sum(item["passed"] for item in tests)
     return {
