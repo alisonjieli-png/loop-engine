@@ -135,6 +135,19 @@ known incorrect sources that smaller primary suites accepted. They do not
 prove a live repair or general task quality. The exported-ticket fixture does
 not connect to Jira or publish a branch.
 
+For the unseen-task question, read the
+[novel-task campaign report](../verification/UNSEEN-NOVEL-TASK-CAMPAIGN-2026-09-06.md).
+Ten sealed novel tasks each completed on the first autonomous attempt
+(283 real model calls, complete token accounting); an independent seeded
+audit then invalidated one accepted solution, so post-audit survival is
+9/10 and the false-acceptance rate on that population is 10 percent. The
+campaign's task population is burned as evidence: never reuse those ten
+tasks, their cases, or the audit seeds as unseen evidence. The next steps,
+in order, are the pre-acceptance counterexample gate, repair-loop failure
+classification, and a fresh sealed population for any new claim; the
+[unseen-task handoff brief](../prompts/UNSEEN-TASK-WORK-HANDOFF.md) is the
+sole continuation prompt for that work.
+
 The current capstone is the
 [TrafficFlowBench native/OpenCode comparison](../benchmarks/TRAFFICFLOWBENCH-NATIVE-OPENCODE-PLAN.md).
 Account entry is verified. Do not report a plan, file inventory, or unavailable
