@@ -232,7 +232,10 @@ whether it behaved.
 | **thinking budget** | 9,853 chars of thinking vs 8,018 of content | `think: false` on structured calls |
 | **62 MB per step, and the real cause of the "timeout"** | a task ran **18+ minutes unfinished**; the observation step was composed with bash enabled, so OpenCode npm-installed `@opencode-ai/plugin` into the instance directory | wire the engine-observed variant, which needs no shell. Same task: **39 seconds, verified** — `orient` 17.7s, `implement` 20.6s, gate 1.0s |
 | **orphaned worktrees** | a killed run left a 62 MB worktree; nothing removed it. 22 GB/year at one a night, on a disk with 66 GB free | prune worktrees older than 3 days, and their branches |
-| **built but not wired, twice** | the engine-observed observation variant and structured state both existed unused while the slow, unsafe paths ran | wired; the lesson is that building a safer variant is half the work |
+| **the cron runner was 8 commits stale** | its venv lacked 5 modules; a 5pm fire would have run code from before worktrees, the budget, state, or the ladder | launcher does `git fetch` + `reset --hard` and reinstalls before every run; a mirror, not a workspace |
+| **result projection missing stage identity** | every OpenCode step logged `stage_evidence_degraded` ×2 (48 in 24 steps); the recorder compares `semantic_call_id`/`owner_loop_id` on result and attempts, and the session set neither | stamp both, derived as the gateway does |
+| **CPU-time oracle fooled by swap** | passed at load 31.7, failed "21.5×" at load 48 with swap at 37/39 GB — page-fault handling is charged as system CPU | user CPU only via `getrusage`; 13/13 ×3 while swapping |
+| **built but not wired, three times** | the engine-observed observation variant and structured state both existed unused while the slow, unsafe paths ran | wired; the lesson is that building a safer variant is half the work |
 
 ### State between steps
 
@@ -253,6 +256,94 @@ The prompt now goes in a mode-600 file passed with `--file`, and argv
 carries one constant sentence. An 84,000-byte prompt puts **53 bytes** in
 argv, and `ps` shows the same harmless line for every step of every run.
 Verified live end to end.
+
+### Hybrid, multi-path — measured
+
+Three independent paths, three models, each in its own worktree, gate-verified,
+engine-selected:
+
+```
+3 path(s): p1=gemma4:31b, p2=kimi-k3, p3=glm-5.3
+[p1] -> verified  (98s,  1 file, 3 lines)
+[p2] -> verified  (135s, 1 file, 2 lines)
+[p3] -> verified  (141s, 1 file, 3 lines)
+chose p2: 3 of 3 paths passed the gate; one file changed
+```
+
+Selection never reads a path's self-report: rung from the gate, then fewest
+files, then fewest lines. A path that passed by editing only tests loses to
+one that fixed source, whatever their diff sizes. All branches are kept.
+
+Two bugs it took a live run to find: `git worktree add` **races** when two
+paths create worktrees at the same instant (the second failed with
+`failed to read .git/worktrees/<first>/commondir`) — creation is now
+serialised, solving stays parallel; and a same-day rerun on the same repo
+reused branch names and every path silently failed to start — the stamp now
+includes the start time, and a path that cannot start says so immediately.
+
+### The provisioning architecture — measured
+
+The alternative to static skill selection: a read-only provisioning step
+between cognitive steps decides the **next step**, its **skills**, and its
+**context files**; the engine admits the request. Live, with the full
+repertoire available:
+
+```
+provision -> reproduce (plan said orient), skills=['quote-command-output']
+reproduce  10.8s
+provision -> implement, skills=['fix-the-cause-not-the-symptom'],
+             context=['config.py', 'settings.json', 'test_config.py']
+implement  15.6s
+-> verified  (44s, 1 file, 6 lines)
+```
+
+It **overrode the plan to reproduce first** — the move the earlier A/B showed
+a small model does not make unprompted — and asked for exactly the three
+relevant files. With only the four base steps available it asked for
+`reproduce` and was refused by name; that refusal is how the gap between the
+18-step catalog and the run's actual catalogue was found.
+
+### Test-neutralising, and the fix that held first try
+
+Given a test it could not make pass by changing code, the model changed the
+test — once correcting a wrong expectation, once **mocking `urlopen`** so an
+integration test tested nothing. The gate went green both times. OpenCode
+permissions accept `{glob: verb}`, so `implement` now ships
+`edit: {"**/tests/**": "deny", "**/test_*": "deny", ..., "*": "allow"}`.
+Adversarially: source edit allowed, test edit denied, **`write` of a new
+test file denied**, model reported it honestly. The identical mock-the-test
+task then landed on `blocked_named` in 47s: *"the test requires a running
+inventory service at INVENTORY_SERVICE_URL..."* — the answer an engineer
+clears in thirty seconds.
+
+### The real Practitioner, every step in OpenCode
+
+`ModelExecution.session_factory` is one optional field. Set, it redirects
+`run_adaptive_practitioner` — the engine's own loop. `loop-engine task build
+--step-executor opencode --step-model ollama-cloud/gemma4:31b` with a
+24-call ceiling ran **24 of 24 model steps as OpenCode processes** (`orient,
+decide_next, how, act, route, verify` and repeats); Run History 1508 events,
+chain intact; one step's prompt file was **52,126 bytes at mode 0600** —
+40% of the argv wall, carried by file.
+
+**It did not reach a verified terminal.** `Final route: none`, with
+`project_candidate_invalid` ×3: the Practitioner's `act` step generates a
+whole project candidate and the engine refused three of them — the same
+refusal the direct gateway path hit on day one. The executor changed;
+that bottleneck did not. The overnight chain (§8.2) verifies real gates in
+40–140 s because it runs the project's own command against a real repo
+instead of asking the model to author a project from nothing. Both facts
+belong in the report: the seam works, and it is not a shortcut past the
+Practitioner's hardest step.
+
+The engine first recorded `stage_evidence_degraded` **×48** — two per step —
+because the OpenCode result carried neither the stage identities
+(`semantic_call_id`, `owner_loop_id`) nor the digests
+(`prompt_digest`, `request_digest`, per-attempt `provider_request_digest`)
+that the Practitioner's stage recorder verifies. Stamping the identities cut
+it to **4** (one per step); stamping the digests, each a real digest of bytes
+this session saw or sent, cut it to **0**. The stage evidence for an OpenCode
+step is now indistinguishable to the recorder from a gateway step's.
 
 ### Cost
 

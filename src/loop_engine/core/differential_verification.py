@@ -293,20 +293,23 @@ for size in sizes:
     span = max(1, int(size * distinct_ratio))
     data = [random.randint(0, span) for _ in range(size)]
     best = None
-    # CPU time of THIS process, not wall clock. A complexity oracle timed
-    # on the wall measures the machine's load as much as the algorithm:
-    # this check failed at "10x input cost 30.6x time" on a correct linear
-    # implementation while the host sat at load average 18, and passed
-    # 13/13 alone minutes later. An overnight verdict that changes with
-    # what else is running is not a verdict.
+    # USER CPU time of this process -- not wall clock, and not process_time.
+    # Wall clock measured the machine's load: "10x input cost 30.6x time" on
+    # a correct linear implementation at load average 18. process_time fixed
+    # that and held 13/13 at load 31.7 -- then failed again, "21.5x", at load
+    # 48 with swap at 37 of 39 GB. process_time includes SYSTEM time, and
+    # page-fault handling for a swapped process is charged there. User time
+    # is the algorithm's own instructions and nothing else. An overnight
+    # verdict that changes with what else is running is not a verdict.
+    import resource
     for _ in range(5):
-        began = time.process_time()
+        began = resource.getrusage(resource.RUSAGE_SELF).ru_utime
         try:
             function(list(data))
         except Exception as exc:
             print(json.dumps({"call_error": type(exc).__name__ + ": " + str(exc)[:120]}))
             raise SystemExit(0)
-        elapsed = time.process_time() - began
+        elapsed = resource.getrusage(resource.RUSAGE_SELF).ru_utime - began
         best = elapsed if best is None else min(best, elapsed)
     timings.append({"size": size, "seconds": best})
 print(json.dumps({"timings": timings}))

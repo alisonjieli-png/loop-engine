@@ -13,6 +13,7 @@ from pathlib import Path
 
 from .opencode_step_composition import (
     OpenCodeCompositionError, SkillCandidate, StepLayer, admit_requests,
+    source_only_edit_permission,
     compose_instance, default_catalogue, default_core, default_skill_library,
     dynamic_step_layer, inventory_step_layer, observation_step_layer,
     provisioned_step_layer, requirements_step_layer)
@@ -189,6 +190,39 @@ def run_checks() -> dict:
     kept = provisioned_step_layer(fixed, outcome)
     check("a_granted_skill_cannot_displace_a_steps_own",
           kept.skills["reproduce-before-fix"] == "THE STEP OWN BODY")
+
+    # --- path-scoped permissions: source yes, tests no ---
+    rule = source_only_edit_permission()
+    check("source_only_rule_denies_every_test_layout_and_allows_the_rest",
+          rule.get("*") == "allow"
+          and all(rule.get(g) == "deny" for g in
+                  ("**/test_*", "**/tests/**", "**/*.spec.*", "**/conftest.py")),
+          f"{sum(v == 'deny' for v in rule.values())} deny patterns")
+    scoped = StepLayer(step_id="s", description="d", system_prompt="p",
+                       permission={"edit": rule, "bash": "allow"})
+    rendered = scoped.agent_markdown()
+    check("pattern_permissions_render_as_nested_yaml",
+          '  edit:\n' in rendered and '    "**/tests/**": deny' in rendered
+          and '    "*": allow' in rendered,
+          rendered.split("permission:")[1][:80].replace("\n", " | "))
+    imp = catalogue.select("implement")
+    check("implement_ships_source_only_edits_by_default",
+          isinstance(imp.permission.get("edit"), dict)
+          and imp.permission["edit"].get("**/tests/**") == "deny",
+          "found live: a step with unrestricted edit mocked urlopen so an "
+          "integration test tested nothing, and the gate went green")
+    for bad, why, frag in (
+            ({"edit": {}}, "an_empty_pattern_object", "at least one pattern"),
+            ({"edit": {"*": "sometimes"}}, "an_unknown_verb_inside_a_pattern",
+             "must be one of"),
+            ({"edit": {"tests/**": "ask"}}, "ask_inside_a_pattern_when_unattended",
+             "hangs the run")):
+        try:
+            StepLayer(step_id="s", description="d", system_prompt="p",
+                      permission=bad)
+            check(f"refuses_{why}", False, "accepted")
+        except OpenCodeCompositionError as exc:
+            check(f"refuses_{why}", frag in str(exc), str(exc)[:90])
 
     # --- forced observation after a failure ---
     obs = observation_step_layer(

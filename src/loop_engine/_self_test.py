@@ -67,6 +67,7 @@ def self_test() -> dict:
         "core.self_tuning",
         "core.opencode_harness_adapter", "core.opencode_step_session",
         "core.opencode_step_composition", "core.opencode_step_guard", "core.step_content", "core.night_budget", "core.step_state", "core.overnight_outcome",
+        "core.multipath_select", "core.opencode_step_provision",
         "code_nodes.solve_region_evidence",
         "code_nodes.material_questions",
         "loop.supervision_policy", "loop.checklist_loop", "loop.loop_handoff",

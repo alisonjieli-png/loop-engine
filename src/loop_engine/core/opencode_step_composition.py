@@ -82,6 +82,27 @@ def read_only_tools(**allow) -> dict:
     return tools
 
 
+#: Paths an implement step may not edit unless a caller says otherwise.
+#: Found live, twice: given a test it could not make pass by changing the
+#: code, the model changed the test -- once by correcting an expectation
+#: that was genuinely wrong, once by mocking `urlopen` so an integration
+#: test no longer tested the integration. The gate went green both times.
+#: Denying edits to test paths turns the second case into the honest
+#: answer: the step cannot make the gate pass and must say what it is
+#: blocked on. Correcting a wrong expectation becomes a decision a human
+#: makes in the morning, with the evidence in front of them.
+TEST_PATH_GLOBS = ("**/test_*", "**/*_test.*", "**/tests/**", "**/test/**",
+                   "**/*.test.*", "**/*.spec.*", "**/spec/**",
+                   "**/__tests__/**", "**/conftest.py")
+
+
+def source_only_edit_permission() -> dict:
+    """An edit rule that allows source and denies tests."""
+    rule = {glob: "deny" for glob in TEST_PATH_GLOBS}
+    rule["*"] = "allow"
+    return rule
+
+
 #: Permission verbs OpenCode accepts. "ask" is refused for unattended steps
 #: by ``StepLayer.__post_init__`` -- a prompt nobody is awake to answer is a
 #: hang, not a safeguard.
@@ -174,16 +195,26 @@ class StepLayer:
                 raise OpenCodeCompositionError(
                     f"step {self.step_id!r} names unknown tool {name!r}; "
                     f"known tools are {', '.join(KNOWN_TOOLS)}")
-        for klass, verb in self.permission.items():
-            if verb not in PERMISSION_VERBS:
+        for klass, rule in self.permission.items():
+            # A rule is one verb, or a {glob: verb} object. The object form
+            # is what lets a step edit source but not tests: OpenCode
+            # resolves patterns per path, so "tests/**": "deny" holds at
+            # the tool layer, which is the layer observed to hold.
+            verbs = (rule.values() if isinstance(rule, dict) else (rule,))
+            if isinstance(rule, dict) and not rule:
                 raise OpenCodeCompositionError(
-                    f"step {self.step_id!r} permission {klass!r} is {verb!r}; "
-                    f"must be one of {', '.join(PERMISSION_VERBS)}")
-            if verb == "ask" and self.unattended:
-                raise OpenCodeCompositionError(
-                    f"step {self.step_id!r} sets {klass!r} to 'ask' while "
-                    "unattended; nobody is awake to answer, so this hangs "
-                    "the run -- use 'allow' or 'deny'")
+                    f"step {self.step_id!r} permission {klass!r} is an empty "
+                    "object; name at least one pattern")
+            for verb in verbs:
+                if verb not in PERMISSION_VERBS:
+                    raise OpenCodeCompositionError(
+                        f"step {self.step_id!r} permission {klass!r} is "
+                        f"{verb!r}; must be one of {', '.join(PERMISSION_VERBS)}")
+                if verb == "ask" and self.unattended:
+                    raise OpenCodeCompositionError(
+                        f"step {self.step_id!r} sets {klass!r} to 'ask' while "
+                        "unattended; nobody is awake to answer, so this hangs "
+                        "the run -- use 'allow' or 'deny'")
 
     def agent_markdown(self) -> str:
         """Render the agent file OpenCode reads for this step."""
@@ -197,7 +228,13 @@ class StepLayer:
         if self.permission:
             lines.append("permission:")
             for klass in sorted(self.permission):
-                lines.append(f"  {klass}: {self.permission[klass]}")
+                rule = self.permission[klass]
+                if isinstance(rule, dict):
+                    lines.append(f"  {klass}:")
+                    for pattern in sorted(rule):
+                        lines.append(f'    "{pattern}": {rule[pattern]}')
+                else:
+                    lines.append(f"  {klass}: {rule}")
         lines += ["---", "", self.system_prompt.strip(), ""]
         return "\n".join(lines)
 
@@ -554,7 +591,21 @@ def self_test() -> dict:
 # The concrete layers, skills and core files live in ``opencode_step_layers``
 # and are re-exported here so existing imports keep working. The split is
 # machinery vs content, not a change to the public surface.
-from .opencode_step_layers import (          # noqa: E402,F401
-    DEFAULT_CORE_FILES, DEFAULT_SKILL_LIBRARY, OBSERVATION_SKILL,
-    default_catalogue, default_core, default_skill_library,
-    inventory_step_layer, observation_step_layer, requirements_step_layer)
+#
+# Resolved LAZILY (PEP 562). An eager import here formed a cycle: layers
+# imports this module at its top, so importing layers first ran this
+# module to its bottom, which imported layers while layers was still
+# half-initialised, and DEFAULT_CORE_FILES did not exist yet. It worked
+# only when callers happened to import this module first.
+_LAYER_EXPORTS = frozenset({
+    "DEFAULT_CORE_FILES", "DEFAULT_SKILL_LIBRARY", "OBSERVATION_SKILL",
+    "default_catalogue", "default_core", "default_skill_library",
+    "inventory_step_layer", "observation_step_layer",
+    "requirements_step_layer"})
+
+
+def __getattr__(name: str):
+    if name in _LAYER_EXPORTS:
+        from . import opencode_step_layers as _layers
+        return getattr(_layers, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -78,6 +78,36 @@ def _task_build_lines(result: dict) -> list[str]:
     return lines
 
 
+def _step_session_factory(args):
+    """The opt-in that puts every Practitioner step in its own OpenCode process.
+
+    Returns None for the default gateway executor, so ModelExecution behaves
+    exactly as before. For opencode it returns a factory the authority calls
+    from start_session(); the Practitioner itself is unchanged -- every step
+    still goes through services.model_session.invoke(), which is the whole
+    point of having one seam.
+    """
+    if getattr(args, "step_executor", "gateway") != "opencode":
+        return None
+    model = getattr(args, "step_model", "") or ""
+    if "/" not in model:
+        raise ValueError(
+            "--step-executor opencode needs --step-model as provider/model, "
+            "for example ollama-cloud/gemma4:31b")
+    from pathlib import Path
+    from .core.opencode_step_session import (
+        OpenCodeStepProfile, OpenCodeStepSession)
+
+    profile = OpenCodeStepProfile(
+        model=model, workspace=Path.cwd(),
+        additional_environment=("OLLAMA_API_KEY", "XDG_DATA_HOME"))
+
+    def factory(authority):
+        return OpenCodeStepSession(authority=authority, profile=profile)
+
+    return factory
+
+
 def run_task_build(args) -> int:
     """Run a freeform task through the complete adaptive Practitioner."""
     from .code_nodes.solution_model_port import ModelExecution
@@ -148,7 +178,8 @@ def run_task_build(args) -> int:
                         max_total_tokens=args.max_total_tokens,
                         thinking_power=args.thinking_power or "medium"),
                     max_model_calls=maximum_model_calls,
-                    llm_thinking_power=args.thinking_power or "medium")
+                    llm_thinking_power=args.thinking_power or "medium",
+                    session_factory=_step_session_factory(args))
                 result = run_adaptive_practitioner(
                     AdaptivePractitionerRequest(
                         intake.original_input,

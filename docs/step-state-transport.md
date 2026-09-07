@@ -154,6 +154,9 @@ real `orient` step ran to a correct answer through this path.
 | visible in `ps` | the entire prompt | one constant sentence, identical every step |
 | file mode | n/a | `0600`, opened `O_CREAT` at 0600 so it is never briefly world-readable |
 
+Proven at scale by the real Practitioner: a single step's prompt file was
+**52,126 bytes** — 40% of the argv wall — carried without incident.
+
 One detail that cost a debugging round: `--file` is an **array** flag, so a
 trailing positional message is consumed as another filename and OpenCode
 exits with `File not found: <the whole message>`. The message must come

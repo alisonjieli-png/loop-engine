@@ -305,16 +305,15 @@ class OpenCodeStepSession:
 
     def invoke(self, request, parent_loop) -> str:
         """Run one cognitive step inside an OpenCode session."""
-        del parent_loop  # Ownership is recorded by the caller's ledger.
         if not self._lock.acquire(blocking=False):
             raise OpenCodeStepError(
                 "an OpenCode session already has a step in flight")
         try:
-            return self._invoke_serial(request)
+            return self._invoke_serial(request, parent_loop)
         finally:
             self._lock.release()
 
-    def _invoke_serial(self, request) -> str:
+    def _invoke_serial(self, request, parent_loop=None) -> str:
         prompt = getattr(request, "prompt", None)
         if not isinstance(prompt, str) or not prompt.strip():
             raise OpenCodeStepError("invoke requires a request carrying a prompt")
@@ -325,6 +324,38 @@ class OpenCodeStepSession:
                 f"{self.calls_used}/{maximum}")
         message = f"{prompt}\n\n{JSON_ONLY_DIRECTIVE}"
         provider, _, model_id = self.profile.model.partition("/")
+        # The two identities the Practitioner's stage recorder compares
+        # against its stage occurrence, on the result AND on every attempt.
+        # The first version set neither, so the recorder saw "" against a
+        # real id on every step and logged stage_evidence_degraded 48 times
+        # in a 24-step run -- the instrumentation was degraded, not the run,
+        # but a reviewer cannot tell those apart from the log. Same derivation
+        # as the gateway: the request's id, else a fresh one; the owner Loop's
+        # id, else empty.
+        import uuid as _uuid
+        semantic_call_id = str(
+            getattr(request, "semantic_call_id", "") or "").strip() or (
+            f"semantic-call:{_uuid.uuid4().hex}")
+        owner_loop_id = str(getattr(parent_loop, "loop_id", "") or "")
+        # The digests the stage recorder verifies. Each is a real digest of
+        # what this session actually saw or sent -- never a filler string
+        # that happens to be 64 characters. prompt_digest is sha256 of the
+        # prompt exactly as the gateway computes it, so it equals the
+        # recorder's snapshot digest of the same rendered prompt.
+        # provider_request_digest covers the exact argv that reached
+        # OpenCode, which is this session's provider request.
+        prompt_digest = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+        system_digest = hashlib.sha256(
+            str(getattr(request, "system", "") or "").encode("utf-8")).hexdigest()
+        request_digest = hashlib.sha256(json.dumps({
+            "prompt_digest": prompt_digest, "system_digest": system_digest,
+            "temperature": getattr(request, "temperature", None),
+            "semantic_call_id": semantic_call_id,
+            "provider": provider, "model": model_id,
+            "pure": self.profile.pure, "agent": self.profile.agent,
+        }, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+        provider_request_digest = hashlib.sha256(
+            "\0".join(self.profile.command(message)).encode("utf-8")).hexdigest()
         lines, stderr_tail = self.transport(self.profile, message)
         parsed = parse_opencode_events(
             lines, provider_id=provider, model_id=model_id)
@@ -341,11 +372,19 @@ class OpenCodeStepSession:
                 parsed.session_id or "opencode", ok,
                 self._sum_tokens(parsed, "input_tokens") or 0,
                 self._sum_tokens(parsed, "output_tokens") or 0,
-                True, provider_ok=ok)],
+                True, provider_ok=ok,
+                semantic_call_id=semantic_call_id,
+                owner_loop_id=owner_loop_id,
+                prompt_digest=prompt_digest, system_digest=system_digest,
+                provider_request_digest=provider_request_digest)],
             error_code="" if ok else "opencode_no_text",
             error="" if ok else f"no assistant text in events; {stderr_tail}",
-            prompt_digest=hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
-            transport_succeeded=True)
+            prompt_digest=prompt_digest, system_digest=system_digest,
+            request_digest=request_digest,
+            transport_succeeded=True,
+            semantic_call_id=semantic_call_id,
+            owner_loop_id=owner_loop_id,
+            gateway_loop_id=parsed.session_id or "opencode")
         self.results.append(result)
         if not ok:
             raise OpenCodeStepError(
@@ -490,6 +529,44 @@ def self_test() -> dict:
     # folds cache reads into input and reasoning into output, which is what
     # the provider actually billed. Asserting the raw fields here would
     # have encoded a token count no invoice would match.
+    class _Owner:
+        loop_id = "loop:practitioner-42"
+
+    class _IdRequest:
+        prompt = "Orient on the task."
+        semantic_call_id = "semantic-call:abc123"
+
+    ident = OpenCodeStepSession(
+        authority=_Authority(), profile=profile, transport=fixture_transport)
+    ident.invoke(_IdRequest(), _Owner())
+    res = ident.results[-1]
+    check("stage_identity_is_stamped_on_the_result_and_every_attempt",
+          res.semantic_call_id == "semantic-call:abc123"
+          and res.owner_loop_id == "loop:practitioner-42"
+          and all(a.semantic_call_id == "semantic-call:abc123"
+                  and a.owner_loop_id == "loop:practitioner-42"
+                  for a in res.attempts),
+          "the Practitioner's stage recorder compares both against its "
+          "occurrence; missing either logs stage_evidence_degraded per step")
+    anon = OpenCodeStepSession(
+        authority=_Authority(), profile=profile, transport=fixture_transport)
+    anon.invoke(_Request(), None)
+    import re as _re
+    hex64 = _re.compile(r"^[0-9a-f]{64}$")
+    check("every_digest_the_stage_recorder_verifies_is_present_and_real",
+          res.prompt_digest == hashlib.sha256(
+              _IdRequest.prompt.encode("utf-8")).hexdigest()
+          and hex64.match(res.request_digest) is not None
+          and all(a.prompt_digest == res.prompt_digest
+                  and hex64.match(a.provider_request_digest) is not None
+                  for a in res.attempts),
+          "the recorder rejects a result whose digests do not match the "
+          "rendered prompt or are not 64 hex chars; each here digests real "
+          "bytes this session saw or sent")
+    check("a_request_without_an_id_gets_a_fresh_one_not_an_empty_string",
+          anon.results[-1].semantic_call_id.startswith("semantic-call:")
+          and anon.results[-1].owner_loop_id == "")
+
     check("tokens_are_read_from_step_finish_not_guessed",
           session.results[-1].input_tokens == 160
           and session.results[-1].output_tokens == 35,

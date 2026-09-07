@@ -130,11 +130,18 @@ def load_catalog(path: str = "") -> dict:
 
 
 def _as_layer(entry: dict) -> StepLayer:
+    permission = dict(entry.get("permission") or {})
+    tools = {k: bool(v) for k, v in (entry.get("tools") or {}).items()}
+    if permission.get("edit") == "allow" or tools.get("edit") or tools.get("write"):
+        # A generated layer that may edit gets the same rule the hand-written
+        # implement step has: source yes, tests no. The catalog was written
+        # before that rule existed, and a step that can edit tests can make
+        # any gate green (found live, twice).
+        from .opencode_step_composition import source_only_edit_permission
+        permission["edit"] = source_only_edit_permission()
     return StepLayer(
         step_id=entry["step_id"], description=entry["description"],
-        system_prompt=entry["system_prompt"],
-        tools={k: bool(v) for k, v in (entry.get("tools") or {}).items()},
-        permission=dict(entry.get("permission") or {}))
+        system_prompt=entry["system_prompt"], tools=tools, permission=permission)
 
 
 def _as_skill(entry: dict) -> SkillCandidate:

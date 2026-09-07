@@ -246,7 +246,27 @@ Three consequences you must implement, not merely understand:
 - **§2.2.3** A metric-improvement task ("improve macro-F1") has **no free
   oracle**. See §2.4.
 
-## §2.3 The loop
+## §2.3 Two architectures, one seam
+
+Both run on the same layers, catalogue, admission code and session seam; a
+flag chooses.
+
+**Static** (default): a step's skills come from trigger words in the task
+text; the step order is fixed. Cheap, predictable.
+
+**Provisioned**: between every two cognitive steps runs a **read-only
+provisioning step** whose only job is to decide what the next step needs —
+which step it should even be, which skills, which files as context. It
+returns a *request*; the engine admits it against the registered catalogue
+and library, reads any context file itself under a size cap, and refuses
+what is not registered by name (§1.6, §1.9). Cost: one extra call per step
+at the per-instance overhead (§3.7).
+
+Measured live (§8.5): the provisioner **overrode the plan to reproduce
+first**, then asked for exactly the three relevant source files. That is the
+human move the static architecture had to be told to make.
+
+## §2.3.1 The loop
 
 ```
 intake  →  gameplan  →  [ inventory → requirements → orient → plan →
@@ -927,6 +947,51 @@ The observation step ran `python3 -m pytest test_clamp.py`, quoted
 return 11, but the function returned 10"*, **changed no files**, and proposed
 no fix.
 
+## §8.5 The provisioner choosing the step
+
+```
+provision -> reproduce (plan said orient), skills=['quote-command-output']  8.4s
+reproduce  10.8s
+provision -> implement, skills=['fix-the-cause-not-the-symptom'],
+             context=['config.py','settings.json','test_config.py']       7.6s
+implement  15.6s
+-> verified  44s
+```
+
+With only four base steps available the same provisioner asked for
+`reproduce` and was **refused by name**. That refusal is how the gap between
+the 18-step catalog and what the run actually had was found — the trust
+direction (§1.6) doing its job.
+
+## §8.6 The real Practitioner, every step in OpenCode
+
+`ModelExecution.session_factory` is one optional field. Set, it redirects
+`run_adaptive_practitioner` — the engine's own loop. `loop-engine task build
+--step-executor opencode --step-model ollama-cloud/gemma4:31b` with a
+24-call ceiling ran **24 of 24 model steps as OpenCode processes** (`orient,
+decide_next, how, act, route, verify` and repeats); Run History 1508 events,
+chain intact; one step's prompt file was **52,126 bytes at mode 0600** —
+40% of the argv wall, carried by file.
+
+**It did not reach a verified terminal.** `Final route: none`, with
+`project_candidate_invalid` ×3: the Practitioner's `act` step generates a
+whole project candidate and the engine refused three of them — the same
+refusal the direct gateway path hit on day one. The executor changed;
+that bottleneck did not. The overnight chain (§8.2) verifies real gates in
+40–140 s because it runs the project's own command against a real repo
+instead of asking the model to author a project from nothing. Both facts
+belong in the report: the seam works, and it is not a shortcut past the
+Practitioner's hardest step.
+
+The engine first recorded `stage_evidence_degraded` **×48** — two per step —
+because the OpenCode result carried neither the stage identities
+(`semantic_call_id`, `owner_loop_id`) nor the digests
+(`prompt_digest`, `request_digest`, per-attempt `provider_request_digest`)
+that the Practitioner's stage recorder verifies. Stamping the identities cut
+it to **4** (one per step); stamping the digests, each a real digest of bytes
+this session saw or sent, cut it to **0**. The stage evidence for an OpenCode
+step is now indistinguishable to the recorder from a gateway step's.
+
 ## §8.4 An admission refusal (§1.9, §6.2.6)
 
 Requested: `reproduce-before-fix` (with a use), `time-travel`,
@@ -1012,10 +1077,40 @@ plain `verified`. The expectation was genuinely wrong, so the change was
 right — and the report still gave a reviewer no reason to look. **Fix:**
 §6.10.4, with the changed-file list taken from `git`, not from the step.
 
-### §9.14 Built but not wired — twice
+### §9.14 The deploy clone was eight commits stale
+The cron runner's clone sat 8 commits behind with 5 modules missing from its
+venv; a 5pm fire would have run code from before worktrees, the budget, state
+or the ladder existed. Then updating it failed because docs I had copied in
+by hand blocked the merge. **Fix:** the launcher does `git fetch` + `reset
+--hard origin/<branch>` and reinstalls before every run. A deploy clone is a
+mirror, not a workspace.
+
+### §9.15 Built but not wired — three times
 The engine-supplied observation variant and bounded state both existed,
 unused, while the slow and unsafe paths ran. Building a safer variant is half
 the work; **the other half is deleting the path it replaces.**
+
+### §9.16 A result projection missing its stage identity
+The Practitioner's stage recorder compares `semantic_call_id` and
+`owner_loop_id` on a gateway result **and on every attempt** against its
+stage occurrence. The OpenCode session set neither, so every step logged
+`stage_evidence_degraded` twice — 48 in a 24-step run. The run was fine; the
+instrumentation was blind, and a reviewer cannot tell those apart from a
+log. **Fix:** derive both exactly as the gateway does — the request's id or
+a fresh one; the owner Loop's id — and stamp result and attempts. That
+halved it (4 in 4 steps). The other half was digests: the recorder also
+requires `prompt_digest` to equal its snapshot's, a 64-hex `request_digest`,
+and a 64-hex `provider_request_digest` on every attempt. Each is now a real
+digest — the prompt as sent, the request as this session saw it, the exact
+argv that reached OpenCode. **0 in 3 steps.** A filler string of the right
+length would have passed the length check and lied about everything else.
+
+### §9.17 A CPU-time oracle that swap could still fool
+`process_time()` held 13/13 at load 31.7 (CPU contention) and failed again
+at load 48 with swap at 37 of 39 GB, because page-fault handling for a
+swapped process is charged as **system** CPU. **Fix:** user CPU only, via
+`getrusage(RUSAGE_SELF).ru_utime` — the algorithm's own instructions and
+nothing else. 13/13 ×3 at load 43–45 while swapping.
 
 ---
 
@@ -1039,6 +1134,10 @@ Answer each with pasted command output, not prose.
 - [ ] A refusal names the legal set (§1.9)
 - [ ] A middle-rung case is graded as such, not as success or nothing (§6.10)
 - [ ] The morning summary leads with what is actionable
+- [ ] `--paths 3` runs three models in parallel and the gate chooses; all branches kept
+- [ ] `--provisioning model` can override the planned step and is refused by name for an unregistered one
+- [ ] `implement` cannot edit or create a test file; the mock-the-test case lands on `blocked_named`
+- [ ] The deploy clone is reset to origin before every scheduled run
 
 **Finally:** state plainly what you did **not** build, and what you could not
 verify. A build report that claims everything works is the one failure mode

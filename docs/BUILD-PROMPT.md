@@ -227,6 +227,27 @@ tests changed. Take the changed-file list from `git`, never from the step.
 **GATE 8.5:** build a failing test whose expectation is wrong. The run must
 not report a plain `verified`. Paste the graded output and the diff.
 
+### Phase 8.7 — Multi-path, and a provisioner between steps
+
+Run K attempts per candidate with **different models**, each in its own
+worktree; the gate picks, ranked by outcome then fewest files then fewest
+lines; keep every branch. Create worktrees **sequentially** (concurrent
+`worktree add` races) and stamp branch names with the start time.
+
+Offer a second architecture behind a flag: a **read-only provisioning step**
+between cognitive steps that returns `{next_step, skills, context_files}`;
+the engine admits it — unknown step falls back to the plan and is named,
+skill without a stated use is dropped, context files read by the engine
+under a cap, never from outside the workspace or the instance directory.
+Measured: it overrode the plan to reproduce first.
+
+Deny `edit` on test globs for `implement` (`"**/tests/**": deny, "*":
+allow`); verify `write` of a new test file is denied too.
+
+**GATE 8.7:** 3 paths, 3 models, all branches present, one recommended with
+reasons. Provisioner refused by name when it asks for an unregistered step.
+Test-edit denial holds under an instruction to edit a test.
+
 ### Phase 9 — Morning report
 
 Verified / attempted / skipped / nothing-found. Each with the **real** gate

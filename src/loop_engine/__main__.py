@@ -283,6 +283,15 @@ def main(argv=None) -> int:
         default="non_deterministic",
         help=argparse.SUPPRESS)
     parser.add_argument(
+        "--step-executor", choices=("gateway", "opencode"), default="gateway",
+        help="how each Practitioner cognitive step reaches a model: the "
+             "in-process provider gateway (default), or one OpenCode process "
+             "per step carrying that step's own tools, skills and permissions")
+    parser.add_argument(
+        "--step-model", default="",
+        help="provider/model for --step-executor opencode, e.g. "
+             "ollama-cloud/gemma4:31b; required when opencode is selected")
+    parser.add_argument(
         "--max-passes", type=int,
         help="optional ceiling for complete Practitioner passes; omitted "
              "means no product-imposed pass ceiling")

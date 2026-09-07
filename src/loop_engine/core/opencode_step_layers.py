@@ -11,7 +11,8 @@ from __future__ import annotations
 
 from .opencode_step_composition import (
     OpenCodeCompositionError, SkillCandidate, SkillLibrary, StepLayer,
-    StepLayerCatalogue, CoreLayer, read_only_tools)
+    StepLayerCatalogue, CoreLayer, read_only_tools,
+    source_only_edit_permission)
 
 
 #: Skills a practitioner run can pick up from the task text. Deliberately
@@ -127,10 +128,17 @@ def default_catalogue() -> StepLayerCatalogue:
                 "You are the implementation step. Make the change the plan "
                 "calls for, in files, using the tools you have.\n\n"
                 "Prefer the smallest change that satisfies the step. When "
-                "you finish, report exactly the paths you wrote."),
+                "you finish, report exactly the paths you wrote.\n\n"
+                "You cannot edit test files; that is deliberate. If the gate "
+                "can only pass by changing a test -- because the expectation "
+                "is wrong, or because the test needs a service that is not "
+                "here -- do not work around it. Set blocked_on to say exactly "
+                "what a person would have to decide or provide, and stop. "
+                "That is a complete answer."),
             tools=read_only_tools(bash=True, write=True, edit=True,
                                   patch=True),
-            permission={"edit": "allow", "bash": "allow"},
+            permission={"edit": source_only_edit_permission(),
+                        "bash": "allow"},
         ),
         StepLayer(
             step_id="verify",
