@@ -140,12 +140,45 @@ class RunHistoryEvent:
 class RunHistory:
     """Append-only, hash-chained, persistable event history for one run."""
 
-    def __init__(self, run_id: str, *, parent_run_id: str = ""):
+    def __init__(self, run_id: str, *, parent_run_id: str = "",
+                 authority_key=None):
         self.run_id = validated_run_id(run_id)
         self.parent_run_id = (
             validated_run_id(parent_run_id) if parent_run_id else "")
         self.event_log: list[RunHistoryEvent] = []
         self._committed = False
+        # Authorship. With a key, every append must carry a tag that
+        # verifies under it, so a handler that reaches append() directly
+        # cannot forge a verify, a model_invocation, or a terminal for a
+        # Loop it does not own. Without a key nothing changes, and the
+        # manifest says so: "unverified" is a statement, not an omission.
+        self._authority_key = authority_key
+
+    @property
+    def authorship(self) -> str:
+        return "verified" if self._authority_key is not None else "unverified"
+
+    def _envelope_shape(self, body: dict) -> dict:
+        """What a facade's fields look like once the ledger has stored them."""
+        fields = dict(body)
+        event_type = fields.pop("event_type")
+        if event_type == "model_invocation":
+            prepare_model_event(fields)
+        fields.pop("ts", None)
+        return RunHistoryEvent(event_type=event_type, run_id=self.run_id,
+                               sequence_number=0, ts=0.0, prev_digest="",
+                               **fields).body()
+
+    def recorder_for(self, loop_id: str, allowed_event_types):
+        """The only thing a handler should be handed. See run_history_authorship."""
+        from .run_history_authorship import RecorderFacade, RunAuthorshipError
+        if self._authority_key is None:
+            raise RunAuthorshipError(
+                "this history has no authority key, so it cannot issue a "
+                "recorder facade; build it with authority_key=")
+        return RecorderFacade(self._authority_key, loop_id,
+                              frozenset(allowed_event_types),
+                              normalize=self._envelope_shape)
 
     # --- append / commit ---------------------------------------------------
 
@@ -157,14 +190,37 @@ class RunHistory:
             raise ValueError(f"unknown event_type {event_type!r}")
         if event_type == "model_invocation":
             prepare_model_event(kw)
+        from .run_history_authorship import AUTHORSHIP_TAG_FIELD, RunAuthorshipError
+        tag = kw.pop(AUTHORSHIP_TAG_FIELD, None)
         prev = self.event_log[-1].event_digest if self.event_log else ""
         ev = RunHistoryEvent(event_type=event_type, run_id=self.run_id,
                             sequence_number=len(self.event_log),
                             ts=kw.pop("ts", time.time()),
                             prev_digest=prev, **kw)
+        if self._authority_key is not None:
+            if tag is None:
+                raise RunAuthorshipError(
+                    f"{event_type!r} for loop {ev.loop_id!r} carries no "
+                    "authorship tag; on a keyed history every event is "
+                    "recorded through a RecorderFacade, never appended directly")
+            if not self._authority_key.verify(ev.body(), tag):
+                raise RunAuthorshipError(
+                    f"{event_type!r} for loop {ev.loop_id!r} carries an "
+                    "authorship tag that does not verify under this run's key")
+        if tag is not None:
+            ev.detail = {**ev.detail, AUTHORSHIP_TAG_FIELD: tag}
         ev.event_digest = _digest(ev.body())
         self.event_log.append(ev)
         return ev
+
+    def verify_authorship(self) -> dict:
+        """Every event's tag checked under this history's key."""
+        from .run_history_authorship import verify_authorship
+        if self._authority_key is None:
+            return {"ok": False, "authorship": "unverified",
+                    "reason": "no authority key on this history"}
+        return {"authorship": "verified", **verify_authorship(
+            self.event_log, self._authority_key)}
 
     def commit(self) -> str:
         self._committed = True
@@ -789,5 +845,40 @@ def self_test() -> dict:
         check(item["test"], item["passed"], item.get("detail", ""))
 
     passed = sum(1 for r in results if r["passed"])
+    # W1, recorded by three consecutive reviews: the digest chain proves
+    # order, not authorship. With a key, a direct append of an event that
+    # no facade signed is refused, whatever its type; a facade can emit only
+    # the kinds its Loop registered; a history without a key is unchanged
+    # and says so.
+    from .run_history_authorship import RunAuthorityKey, RunAuthorshipError
+    _key = RunAuthorityKey.create("run-authorship-check")
+    _keyed = RunHistory("run-authorship-check", authority_key=_key)
+    _facade = _keyed.recorder_for("loop-a", {"iteration", "run_started"})
+    _signed = _keyed.append(**_facade.record("iteration", step="act", status="ok"))
+    _refused = []
+    for _forged in ({"event_type": "iteration", "loop_id": "loop-a", "step": "verify",
+                     "detail": {"output": "FORGED: independent verification passed"}},
+                    {"event_type": "model_invocation", "loop_id": "loop-a", "model": "phantom",
+                     "prompt_tokens": 12345, "eval_tokens": 678},
+                    {"event_type": "terminal", "loop_id": "loop-phantom",
+                     "detail": {"reason": "done"}}):
+        try:
+            _keyed.append(**_forged); _refused.append(False)
+        except RunAuthorshipError:
+            _refused.append(True)
+    check("keyed_history_refuses_a_forged_verify_model_invocation_and_terminal",
+          all(_refused) and len(_refused) == 3 and len(_keyed.event_log) == 1,
+          f"refused={_refused}; a handler that reaches append() directly gets nothing in")
+    try:
+        _facade.record("terminal", detail={"reason": "done"}); _fac_ok = False
+    except RunAuthorshipError:
+        _fac_ok = True
+    check("a_facade_cannot_emit_an_event_kind_its_loop_did_not_register", _fac_ok)
+    check("verify_authorship_passes_on_a_clean_keyed_history",
+          _keyed.verify_authorship().get("ok") is True and "authorship_tag" in _signed.detail)
+    _plain = RunHistory("run-unkeyed-check"); _plain.append("iteration", loop_id="x", step="act")
+    check("an_unkeyed_history_is_unchanged_and_labelled_unverified",
+          len(_plain.event_log) == 1 and _plain.authorship == "unverified")
+
     return {"tests": results, "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}
