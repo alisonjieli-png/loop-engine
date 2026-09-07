@@ -10,7 +10,11 @@ import ast
 from dataclasses import dataclass
 import hashlib
 from pathlib import Path, PurePosixPath
-import tomllib
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10 package dependency
+    import tomli as tomllib
 
 from loop_engine.core.record_operations_records import content_digest
 
