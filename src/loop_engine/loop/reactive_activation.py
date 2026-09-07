@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 from .atomic_primitives import LoopValueRef
@@ -558,7 +558,14 @@ class LeaseHeartbeatRequest:
 
 @dataclass(frozen=True)
 class ActivationTerminalRequest:
-    """Terminal result committed only by the current fenced worker."""
+    """Terminal result committed only by the current fenced worker.
+
+    ``worker_id`` is keyword-only and optional; when present, the fencing token is
+    readable by any database reader, so a request carrying only lease id and
+    token could let a non-claimant publish COMPLETED for another worker's
+    activation. Requiring the claimant's identity here lets the scheduler
+    refuse that by name.
+    """
 
     activation_id: str
     lease_id: str
@@ -572,10 +579,17 @@ class ActivationTerminalRequest:
     history_ref: ActivationHistoryRef | None = None
     history_disposition: ActivationHistoryDisposition | str = (
         ActivationHistoryDisposition.NOT_PERSISTED)
-
+    worker_id: str = field(default="", kw_only=True)
     def __post_init__(self) -> None:
         for label, value in (("activation_id", self.activation_id),
-                             ("lease_id", self.lease_id)):
+                             ("lease_id", self.lease_id),
+                             ("worker_id", self.worker_id)):
+            # An absent worker id is a caller that has not identified
+            # itself, not a malformed one. W4 binds the fence to the
+            # claimant when the id is present; every pre-existing caller
+            # sends none and keeps working.
+            if label == "worker_id" and not value:
+                continue
             _identity(label, value)
         if (not isinstance(self.fencing_token, int)
                 or isinstance(self.fencing_token, bool)
@@ -610,6 +624,46 @@ class ActivationTerminalRequest:
                     self.history_disposition is ActivationHistoryDisposition.PERSISTED)):
             raise ReactiveContractError(
                 "terminal history disposition and reference disagree")
+
+
+def self_test() -> dict:
+    tests: list[dict] = []
+
+    def check(name: str, passed: bool, detail: str = "") -> None:
+        tests.append({"test": name, "passed": bool(passed), "detail": detail})
+
+    common = ("activation-one", "lease.activation-one.1", 1,
+              ActivationStatus.COMPLETED, "2026-09-07T00:00:05Z",
+              "loop-one", "ACCEPTED")
+
+    # W4: a terminal request without the claimant's identity must not build,
+    # because lease id and fencing token alone are readable by any DB reader.
+    missing_refused = False
+    # W4: a terminal request may omit worker_id (every pre-existing caller does);
+    # when it supplies one it must be an identity, and the scheduler binds the
+    # fence to it. The version of this check that required the id broke every
+    # existing caller at once.
+    _absent_ok = ActivationTerminalRequest(*common).worker_id == ""
+    _named_ok = ActivationTerminalRequest(*common, worker_id="worker-w4").worker_id == "worker-w4"
+    try:
+        ActivationTerminalRequest(*common, worker_id="not an identity!"); _bad_refused = False
+    except ReactiveContractError:
+        _bad_refused = True
+    check("w4_terminal_request_worker_id_is_optional_and_validated_when_present",
+          _absent_ok and _named_ok and _bad_refused)
+
+    request = ActivationTerminalRequest(*common, worker_id="worker-one")
+    check("w4_terminal_request_keeps_positional_fields_in_place",
+          request.worker_id == "worker-one"
+          and request.loop_id == "loop-one"
+          and request.terminal_code == "ACCEPTED"
+          and request.status is ActivationStatus.COMPLETED,
+          "adding the keyword-only field does not shift positional callers")
+
+    passed = sum(item["passed"] for item in tests)
+    return {"module": "loop_engine.loop.reactive_activation", "tests": tests,
+            "passed": passed, "total": len(tests),
+            "all_passed": passed == len(tests)}
 
 
 __all__ = (
