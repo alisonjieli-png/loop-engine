@@ -1,0 +1,71 @@
+{
+ "E1_direct_runhistory_forgery": {
+  "append_refused": false,
+  "chain_intact": true,
+  "verify_saved_run": true,
+  "canonical_types": [
+   "run.started",
+   "loop.initialized",
+   "loop.iteration.completed",
+   "model.invocation.completed",
+   "loop.completed"
+  ],
+  "model_tokens_recorded": [
+   [
+    "phantom-model",
+    12345,
+    678
+   ]
+  ],
+  "any_author_or_signature_field": []
+ },
+ "E2_forgery_through_reactive_handler": {
+  "activation_status": "completed",
+  "history_disposition": "persisted",
+  "load_verified_history": "ACCEPTED",
+  "persisted_iterations": [
+   [
+    "verify",
+    "FORGED: independent verification passed"
+   ],
+   [
+    "act",
+    "real work"
+   ]
+  ],
+  "persisted_model_invocations": [
+   [
+    "phantom-model",
+    12345,
+    678
+   ]
+  ],
+  "persisted_terminals": [
+   [
+    "reactive-230e06a8a2530733a8e9204a8c698f4c1406d5fd3fe775041d618369707f4c0f.loop1.phantom",
+    "done"
+   ],
+   [
+    "reactive-230e06a8a2530733a8e9204a8c698f4c1406d5fd3fe775041d618369707f4c0f.loop1",
+    "success_once"
+   ]
+  ],
+  "real_steps_in_definition": "act only (fixture definition custom_steps=(\"act\",))"
+ },
+ "E3_partial_mitigations": {
+  "same_loop_terminal": {
+   "status": "failed",
+   "failure_code": "HISTORY_PERSISTENCE_FAILED",
+   "terminal_code": "ACCEPTED",
+   "history_disposition": "persistence_failed",
+   "outcome_error": "HISTORY_PERSISTENCE_FAILED"
+  },
+  "wrong_definition_init": {
+   "status": "failed",
+   "failure_code": "INTERNAL_PROTOCOL_ERROR",
+   "terminal_code": "INTERNAL_PROTOCOL_ERROR",
+   "history_disposition": "persisted",
+   "outcome_error": "INTERNAL_PROTOCOL_ERROR"
+  }
+ }
+}

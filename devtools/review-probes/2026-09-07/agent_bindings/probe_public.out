@@ -1,0 +1,32 @@
+===== canonical fixture [consumer, producer] =====
+0.9s
+observed task order: ['source', 'consumer']
+{"status": "NOT_YET_PROVEN", "solved": false, "failure_code": null, "final_route": "repair", "model_calls": 5, "task_results": [], "failures": ["Deterministic route policy used after semantic route failure; final success still requires accepted verification."], "spawned": [{"task_complete": true, "completes_spawning_task": false, "accepted_result": {"objective": "Resolve source", "result": {"verified": true, "value": [2, 3]}}, "verification_kind": "registered_exact_resolver", "task_id": "source"}, {"task_complete": true, "completes_spawning_task": false, "accepted_result": {"objective": "Resolve consumer", "result": {"verified": true, "value": 5}}, "verification_kind": "registered_exact_resolver", "task_id": "consumer"}]}
+chain intact: True
+dependency kinds: ['adaptive_dependency_plan_admitted', 'adaptive_dependency_inputs_bound', 'adaptive_spawned_result_returned', 'adaptive_dependency_inputs_bound', 'adaptive_spawned_result_returned']
+loops: {}
+parent loop: None | parent-level accepted/verification events mentioning spawned: [(None, 'adaptive_spawned_result_returned'), (None, 'adaptive_spawned_result_returned')]
+terminal events: []
+
+===== reference delivery: history honesty =====
+consumer received: [{"delivery": "reference", "role": "values/v1", "schema_digest": "0128ef9bd2206166dfd5663833068e0b35bbaa0b71fd9d1e0518523721a86902", "source_task_id": "source", "value_ref": {"content_digest": "18b058689d010062a25cd7fb949b2abfea1757d2de45ca3abdda17db956e506b", "producer_definition_ref": "{\"content_
+information events: [(None, None, 'published'), (None, None, 'materialized')]
+{"status": "NOT_YET_PROVEN", "solved": false, "failure_code": null, "final_route": "repair", "model_calls": 5, "task_results": [], "failures": ["Deterministic route policy used after semantic route failure; final success still requires accepted verification."], "spawned": [{"task_complete": true, "completes_spawning_task": false, "accepted_result": {"objective": "Resolve source", "result": {"verified": true, "value": [2, 3]}}, "verification_kind": "registered_exact_resolver", "task_id": "source"}, {"task_complete": true, "completes_spawning_task": false, "accepted_result": {"objective": "Resol
+
+===== cyclic / self-dependent plans through the public planning gate =====
+[self_dependency] {"status": "NOT_YET_PROVEN", "solved": false, "failure_code": null, "final_route": "repair", "model_calls": 6, "task_results": [], "failures": ["The subproblems returned."], "spawned": []}
+   diagnostics: [('adaptive_diagnostic', ''), ('adaptive_diagnostic', '')]
+[three_cycle] {"status": "NOT_YET_PROVEN", "solved": false, "failure_code": null, "final_route": "repair", "model_calls": 6, "task_results": [], "failures": ["The subproblems returned."], "spawned": []}
+   diagnostics: [('adaptive_diagnostic', ''), ('adaptive_diagnostic', '')]
+
+===== deeply nested schema in a model plan (RecursionError surface) =====
+{"status": "NOT_YET_PROVEN", "solved": false, "failure_code": "RecursionError", "final_route": null, "model_calls": 3, "task_results": [], "failures": [], "spawned": []}
+
+===== NaN / Infinity / huge / big values from the producer =====
+[nan] 1.3s observed=['source'] {"status": "NOT_YET_PROVEN", "solved": false, "failure_code": null, "final_route": "repair", "model_calls": 5, "task_results": [], "failures": ["Deterministic route policy used after semantic route failure; final success still requires accepted verification."], "spawned": [{"task_complete": false, "completes_spawning_task": false, "error_type": "KernelRuntimeError", "task_id": "source"}, {"task_complete": false, "completes_spawning_task": false, "error_type": "DependencyBindingError", "task_id": "consumer", "binding_disposition": "blocked"}]}
+[inf] 0.8s observed=['source'] {"status": "NOT_YET_PROVEN", "solved": false, "failure_code": null, "final_route": "repair", "model_calls": 5, "task_results": [], "failures": ["Deterministic route policy used after semantic route failure; final success still requires accepted verification."], "spawned": [{"task_complete": false, "completes_spawning_task": false, "error_type": "KernelRuntimeError", "task_id": "source"}, {"task_complete": false, "completes_spawning_task": false, "error_type": "DependencyBindingError", "task_id": "consumer", "binding_disposition": "blocked"}]}
+[huge_int] 0.8s observed=['source'] {"status": "NOT_YET_PROVEN", "solved": false, "failure_code": null, "final_route": "repair", "model_calls": 5, "task_results": [], "failures": ["Deterministic route policy used after semantic route failure; final success still requires accepted verification."], "spawned": [{"task_complete": false, "completes_spawning_task": false, "error_type": "KernelRuntimeError", "task_id": "source"}, {"task_complete": false, "completes_spawning_task": false, "error_type": "DependencyBindingError", "task_id": "consumer", "binding_disposition": "blocked"}]}
+[big_list_200k] 18.9s observed=['source', 'consumer'] {"status": "NOT_YET_PROVEN", "solved": false, "failure_code": null, "final_route": "repair", "model_calls": 5, "task_results": [], "failures": ["Deterministic route policy used after semantic route failure; final success still requires accepted verification."], "spawned": [{"task_complete": true, "completes_spawning_task": false, "accepted_result": "{'objective': 'Resolve source', 'result': {'verified': True, 'value': [0, 1, 2, ", "verification_kind": "registered_exact_resolver", "task_id": "source"}, {"task_complete": true, "completes_spawning_task": false, "accepted_result": "{'objective': 'Resolve consumer', 'result': {'verified': True, 'value': 19999900", "verification_kind": "registered_exact_resolver", "task_id": "consumer"}]}
+
+===== consumer output that violates nothing but is not what the parent needs: parent certification =====
+parent says stop_success right after spawn -> solved: False status: NOT_YET_PROVEN failure_code: None | task_results: []

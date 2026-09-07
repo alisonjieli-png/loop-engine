@@ -1,0 +1,21 @@
+===== claim 5: model response admission =====
+surplus field, no schema: admitted=True failure='' strategy=strict_json value_keys=['a', 'surplus']
+surplus field, schema w/o additionalProperties: admitted=True failure='' strategy=strict_json value_keys=['a', 'surplus']
+surplus field, schema additionalProperties=false: admitted=False failure='schema_validation_failed' strategy=strict_json value_keys=None
+duplicate keys: admitted=False failure='invalid_json_value' strategy=strict_json value_keys=None
+NaN: admitted=False failure='invalid_json_value' strategy=strict_json value_keys=None
+1e999: admitted=False failure='invalid_json_value' strategy=strict_json value_keys=None
+wrong record_type version (valid JSON): admitted=True failure='' strategy=strict_json value_keys=['record_type', 'task_id']
+nested 1500 deep object: RAISED RecursionError: maximum recursion depth exceeded while decoding a JSON object from a unicode string
+nested 1500 deep array in object: RAISED RecursionError: maximum recursion depth exceeded while decoding a JSON array from a unicode string
+nested 900 deep object: admitted=True failure='' strategy=strict_json value_keys=['a']
+
+===== Part 2(e): kernel step events =====
+final_route: stop_success passes: 3 terminal: ACCEPTED
+could not locate owner loop instance
+
+===== Part 2(d) addendum: duck-typed legacy contract object =====
+bound contract: code_only practitioner ('legacy_out',) | coercion recorded on init? NO
+
+===== Part 2(d) addendum: strict LoopStartRequest path refuses mode mismatch? =====
+strict path REFUSED: contract mode 'hybrid' is not in supported_modes ('deterministic',)

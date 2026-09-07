@@ -1,0 +1,33 @@
+{
+ "B1_recovery_loses_pk_race_to_late_terminal": {
+  "recover_raised": "IntegrityError: UNIQUE constraint failed: reactive_activation_revisions.activation_id, reactive_activation_revisions.revision",
+  "B_connection_in_transaction_after": true,
+  "next_claim_raised": "OperationalError: cannot start a transaction within a transaction",
+  "second_next_claim_raised": "OperationalError: cannot start a transaction within a transaction",
+  "durable_final_status": "completed"
+ },
+ "B2_worker_terminal_loses_pk_race_to_peer_recovery": {
+  "run_once_outcome": {
+   "claimed": true,
+   "terminal_code": "",
+   "error_code": "INTEGRITYERROR",
+   "loop_id": ""
+  },
+  "A_connection_in_transaction_after": true,
+  "next_claim_on_A_raised": "OperationalError: cannot start a transaction within a transaction",
+  "durable_final": {
+   "status": "dead_letter",
+   "failure_code": "RUNNING_OUTCOME_UNKNOWN_RECONCILIATION_REQUIRED",
+   "loop_id": ""
+  },
+  "loop_actually_terminal_code": "success_once"
+ },
+ "B3_stale_fence_at_start_escapes_run_once_and_run_many": {
+  "run_many_raised": "ReactiveSchedulerError: stale or foreign work lease cannot change activation",
+  "durable_statuses": {
+   "1": "leased",
+   "2": "completed",
+   "3": "running"
+  }
+ }
+}

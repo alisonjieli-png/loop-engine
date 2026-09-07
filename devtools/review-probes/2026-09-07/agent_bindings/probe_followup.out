@@ -1,0 +1,43 @@
+===== RunHistory event shape + step events in the adaptive flow =====
+event object type: RunHistoryEvent | attrs: ['body', 'consumed_refs', 'detail', 'eval_tokens', 'event_digest', 'event_type', 'iteration', 'loop_id', 'mode', 'model', 'prev_digest', 'produced_refs', 'prompt_tokens', 'run_id', 'sequence_number', 'spawning_loop_id', 'status', 'step', 'ts']
+sample event: {'loop_id': ''} | detail keys: ['source']
+event kind histogram: {None: 491, 'context_loop': 5}
+inits: []
+terminals: []
+consumer task packet bytes: 864
+
+===== nested schema depths that pass admission: does the run still abort? =====
+[depth=300] status=NOT_YET_PROVEN solved=False failure_code=None final_route=repair model_calls=6 spawned=0 failures=['The subproblems returned.']
+     plan diagnostics: [('adaptive_diagnostic', "{'attempt': 1, 'error': 'output.schema: invalid self-contained JSON Schema', 'selected_action_id': 'action:3599d48b59802de5cd8e'}"), ('adaptive_diagnostic', "{'attempt': 2, 'error': 'output.schema: invalid self-contained JSON Schema', 'selected_action_id': 'action:3599d48b59802de5cd8e'}")]
+[depth=600] status=NOT_YET_PROVEN solved=False failure_code=None final_route=repair model_calls=6 spawned=0 failures=['The subproblems returned.']
+     plan diagnostics: [('adaptive_diagnostic', "{'attempt': 1, 'error': 'output.schema: invalid self-contained JSON Schema', 'selected_action_id': 'action:3599d48b59802de5cd8e'}"), ('adaptive_diagnostic', "{'attempt': 2, 'error': 'output.schema: invalid self-contained JSON Schema', 'selected_action_id': 'action:3599d48b59802de5cd8e'}")]
+[depth=900] status=NOT_YET_PROVEN solved=False failure_code=None final_route=repair model_calls=6 spawned=0 failures=['The subproblems returned.']
+     plan diagnostics: [('adaptive_diagnostic', "{'attempt': 1, 'error': 'output.schema: invalid self-contained JSON Schema', 'selected_action_id': 'action:3599d48b59802de5cd8e'}"), ('adaptive_diagnostic', "{'attempt': 2, 'error': 'output.schema: invalid self-contained JSON Schema', 'selected_action_id': 'action:3599d48b59802de5cd8e'}")]
+
+===== task text size for a big value delivered by value =====
+consumer task packet bytes (this is the delegated task text handed to the consumer, i.e. model prompt material): 1489748
+
+===== distinct-role diamond compiles? =====
+[diamond_distinct_roles_reverse_listed] ADMITTED order=(3, 1, 2, 0) -> ['a', 'c', 'b', 'd']
+[diamond_distinct_roles_forward] ADMITTED order=(0, 1, 2, 3) -> ['a', 'b', 'c', 'd']
+
+===== Part 2(e): kernel step events with an explicit owner =====
+final_route: stop_success passes: 3 terminal: ACCEPTED
+run_step events on owner: n=13
+    ('orient', 'kernel:orient:structural_boundary', True, 'deterministic')
+    ('standardize_task', 'kernel:standardize_task:structural_boundary', True, 'deterministic')
+    ('frame_alternatives', 'kernel:frame_alternatives:structural_boundary', True, 'deterministic')
+    ('reconcile_horizon', 'kernel:reconcile_horizon:structural_boundary', True, 'deterministic')
+    ('assess_prepare', 'kernel:assess_prepare:structural_boundary', True, 'deterministic')
+    ('decide_next', 'kernel:decide_next:structural_boundary', True, 'deterministic')
+    ('how', 'kernel:how:structural_boundary', True, 'deterministic')
+    ('forecast_outcome', 'kernel:forecast_outcome:structural_boundary', True, 'deterministic')
+    ('act', 'stop_success', True, 'deterministic')
+    ('verify', 'kernel:verify:structural_boundary', True, 'deterministic')
+    ('calibrate', 'kernel:calibrate:structural_boundary', True, 'deterministic')
+    ('integrate_commit', 'kernel:integrate_commit:structural_boundary', True, 'deterministic')
+    ('route', 'kernel:route:structural_boundary', True, 'deterministic')
+owner custom kinds: ['kernel_input_bound', 'kernel_passes_completed', 'kernel_output_bound']
+owner terminal: ['done']
+iteration_started count: 13
+all loop ids on ledger: ['loop1', 'loop2']

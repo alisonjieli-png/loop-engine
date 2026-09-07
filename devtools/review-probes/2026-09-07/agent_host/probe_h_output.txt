@@ -1,0 +1,5 @@
+inspect.visibility = {"source": "model_visible", "oracle_definition": "host_only", "probe_arguments": "tool_only", "actual_observation_feedback": "model_visible_after_execution"}
+primary passed: False | model-visible result bytes: 58313
+case arguments of ALL cases present in model-visible run record: 10 of 10 ['minutes', 'hours', 'trimmed', 'bad_minutes'] ...
+largest observed value bytes: 5528
+expected key present anywhere: False
