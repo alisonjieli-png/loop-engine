@@ -99,21 +99,24 @@ class ParsedOpenCodeEvents:
     event_count: int
     unmapped_types: tuple
     final_json: dict | None
+    final_json_admission: dict | None = None
 
 
 def _int(value) -> int | None:
     return value if isinstance(value, int) and not isinstance(value, bool) else None
 
 
-def parse_opencode_events(lines, *, provider_id: str, model_id: str
+def parse_opencode_events(lines, *, provider_id: str, model_id: str,
+                          admission_parent=None, admission_ledger=None
                           ) -> ParsedOpenCodeEvents:
     """Normalize raw ``opencode run --format json`` lines.
 
     A ``step_finish`` part is one physical model turn; its ``tokens`` object
     carries input, output, reasoning, and cache counts, and ``cost`` the
     provider-reported cost when known. ``text`` parts accumulate the model's
-    visible output; the last text line that parses as a JSON object becomes
-    ``final_json``. Tool parts become tool events with the effect class of
+    visible output. The final nonempty text part may contain a complete bare
+    or JSON-fenced object. Earlier objects cannot replace an invalid final
+    answer. Tool parts become tool events with the effect class of
     the tool name and no bodies. Unknown event types are counted, never
     dropped silently.
     """
@@ -168,20 +171,26 @@ def parse_opencode_events(lines, *, provider_id: str, model_id: str
             continue
         else:
             unmapped[kind or "untyped"] = unmapped.get(kind or "untyped", 0) + 1
-    final_json = None
-    for text in reversed(texts):
-        candidate = text.strip().splitlines()[-1] if text.strip() else ""
-        if candidate.startswith("{") and candidate.endswith("}"):
-            try:
-                parsed = json.loads(candidate)
-            except ValueError:
-                continue
-            if isinstance(parsed, dict):
-                final_json = parsed
-                break
+    from .model_response_admission import (
+        ModelResponseAdmissionPolicy, ModelResponseAdmissionRequest,
+        admit_model_response_as_loop)
+
+    final_json, admission = None, None
+    final_text = next((text for text in reversed(texts) if text.strip()), "")
+    if final_text:
+        request = ModelResponseAdmissionRequest(
+            final_text, "opencode_final_object/v1",
+            _digest_bytes(b'{"type":"object"}'), schema={"type": "object"},
+            policy=ModelResponseAdmissionPolicy(allowed_strategies=(
+                "strict_json", "json_markdown_fence_removed")))
+        admitted = admit_model_response_as_loop(
+            request, parent=admission_parent, ledger=admission_ledger)
+        admission = admitted.to_dict()
+        if admitted.admitted:
+            final_json = admitted.value
     return ParsedOpenCodeEvents(
         tuple(texts), tuple(calls), tuple(tools), session_id, count,
-        tuple(sorted(unmapped.items())), final_json)
+        tuple(sorted(unmapped.items())), final_json, admission)
 
 
 @dataclass
@@ -364,10 +373,9 @@ def self_test() -> dict:
                    and parsed.event_count == 5),
         "detail": str(parsed.unmapped_types),
     }, {
-        "test": "final_json_line_is_extracted_from_the_visible_text",
-        "passed": (parsed.final_json or {}).get("status") == "ok"
-        and (parsed.final_json or {}).get("files") == ["tiny_math.py"],
-        "detail": str(parsed.final_json),
+        "test": "prose_wrapped_object_is_not_guessed_from_its_last_line",
+        "passed": parsed.final_json is None,
+        "detail": "Only a complete bare or JSON-fenced final object is admitted.",
     }, {
         "test": "message_carries_default_instructions_goal_contract_and_inputs",
         "passed": ("bounded coding task" in message and "Task: Implement clamp"
@@ -446,5 +454,34 @@ def self_test() -> dict:
                    and not explicit_refusal.raw_events_ref),
         "detail": "fixed diagnostics only",
     }]
+    good_outputs = (
+        ('{"value":3}', "strict_json"),
+        ('{\n  "value": 3\n}', "strict_json"),
+        ('```json\n{"value":3}\n```', "json_markdown_fence_removed"),
+        ('```JSON\r\n{\r\n"value":3\r\n}\r\n```', "json_markdown_fence_removed"),
+        ('```\n{"value":3}\n```', "json_markdown_fence_removed"),
+    )
+    for index, (body, strategy) in enumerate(good_outputs):
+        observed = parse_opencode_events((json.dumps({"type": "text", "part": {"text": body}}),),
+            provider_id="fixture", model_id="fixture")
+        tests.append({"test": f"complete_final_object_envelope_{index}",
+            "passed": observed.final_json == {"value": 3}
+            and observed.texts == (body,)
+            and observed.final_json_admission["strategy"] == strategy
+            and observed.final_json_admission["model_calls"] == 0,
+            "detail": "Exact envelope recovery only; raw text and admission identity retained."})
+    invalid_outputs = (
+        '{"value":3}\nUnverified commentary.',
+        '{"value":3}\n{"value":4}',
+        '```json\n{"value":3}\n```\n```json\n{"value":4}\n```',
+        '```json\n{"value":3', '[]', 'null', '{"value":NaN}',
+        '{"value":3,"value":4}', '```json\n{"value":3,"value":4}\n```',
+    )
+    for index, body in enumerate(invalid_outputs):
+        observed = parse_opencode_events((json.dumps({"type": "text", "part": {"text": text}})
+            for text in ('{"old_result":true}', body)), provider_id="fixture", model_id="fixture")
+        tests.append({"test": f"invalid_final_object_cannot_reuse_prior_answer_{index}",
+            "passed": observed.final_json is None,
+            "detail": "Malformed, ambiguous, nonfinite, or duplicate-key final output is not admitted."})
     return {"module": "core.opencode_harness_adapter",
             "passed": all(item["passed"] for item in tests), "tests": tests}

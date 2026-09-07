@@ -257,6 +257,16 @@ def _admit(request: ModelResponseAdmissionRequest) \
         if not isinstance(value, dict):
             saw_non_object = True
             continue
+        # JSON syntax can be valid while duplicate keys make the value
+        # ambiguous. Reuse the existing finite, unique-key record decoder;
+        # this is a value check, not an invented syntax-error location.
+        from .record_operations_records import RecordOperationError, parse_json
+        try:
+            value = parse_json(candidate)
+        except RecordOperationError:
+            return ModelResponseAdmissionResult(
+                False, None, strategy, "invalid_json_value", request.raw_digest,
+                syntax_diagnostics=tuple(diagnostics))
         errors = ()
         if request.schema is not None:
             validator = Draft202012Validator(dict(request.schema))
@@ -363,6 +373,16 @@ def self_test() -> dict:
     }]
     tests.extend(_syntax_diagnostic_checks())
     tests.extend(_schema_diagnostic_checks())
+    for index, body in enumerate((
+            '{"value":1,"value":2}', '{"nested":{"value":1,"value":2}}',
+            '{"value":NaN}', '{"value":Infinity}', '{"value":1e999}',
+            '```json\n{"value":1,"value":2}\n```',
+            json.dumps('{"value":1,"value":2}'))):
+        rejected = admit(body)
+        tests.append({"test": f"ambiguous_or_nonfinite_object_{index}_refused",
+            "passed": not rejected.admitted and rejected.failure_code == "invalid_json_value"
+            and rejected.value is None and not rejected.normalized_digest,
+            "detail": "Syntax validity does not admit ambiguous keys or nonfinite values."})
     tests.append(_format_repair_feedback_check())
     return {"record_type": "model_response_admission_test/v1",
             "tests": tests, "passed": sum(item["passed"] for item in tests),
