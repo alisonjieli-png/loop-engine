@@ -236,7 +236,7 @@ def _candidate_texts(request: ModelResponseAdmissionRequest):
     if "double_encoded_json_unwrapped" in allowed:
         try:
             outer = json.loads(raw)
-        except (TypeError, json.JSONDecodeError):
+        except (TypeError, json.JSONDecodeError, RecursionError):
             outer = None
         if isinstance(outer, str):
             yield ("double_encoded_json_unwrapped", outer,
@@ -250,6 +250,18 @@ def _admit(request: ModelResponseAdmissionRequest) \
     for strategy, candidate, trace in _candidate_texts(request):
         try:
             value = json.loads(candidate)
+        except RecursionError:
+            # A response nested a thousand levels deep is not a JSON syntax
+            # error to the decoder; it is a C-stack limit, and it used to
+            # escape admission, the session, and the planning repair loop,
+            # ending the run as failure_code RecursionError after three
+            # calls with no repair attempted. It is still an invalid value,
+            # so it becomes the same typed syntax diagnostic every other
+            # unparseable candidate gets, and the repair path runs.
+            exc = json.JSONDecodeError(
+                "nesting exceeds the decoder's recursion limit", candidate, 0)
+            diagnostics.append(_syntax_diagnostic(strategy, candidate, exc))
+            continue
         except json.JSONDecodeError as exc:
             diagnostics.append(_syntax_diagnostic(strategy, candidate, exc))
             continue
@@ -372,6 +384,7 @@ def self_test() -> dict:
         "detail": preamble.raw_digest,
     }]
     tests.extend(_syntax_diagnostic_checks())
+    tests.extend(_recursion_limit_checks())
     tests.extend(_schema_diagnostic_checks())
     for index, body in enumerate((
             '{"value":1,"value":2}', '{"nested":{"value":1,"value":2}}',
@@ -388,6 +401,36 @@ def self_test() -> dict:
             "tests": tests, "passed": sum(item["passed"] for item in tests),
             "total": len(tests),
             "all_passed": all(item["passed"] for item in tests)}
+
+
+def _recursion_limit_checks() -> list[dict]:
+    """A response nested past the decoder's recursion limit is refused typed.
+
+    Before this check, RecursionError escaped admission, the session, and the
+    planning repair loop: the run ended as failure_code RecursionError after
+    three calls with no repair attempted. Depth alone is not the defect (the
+    plan gate refuses deep values typed); an exception class escaping the
+    admission boundary is. The depth here is chosen to exceed the C decoder
+    limit on interpreters that have one; on interpreters that parse it, the
+    value is admitted and the plan gate remains the depth authority.
+    """
+    digest = hashlib.sha256(b"recursion-contract").hexdigest()
+    deep = "[" * 5000 + "]" * 5000
+    try:
+        result = admit_model_response_as_loop(ModelResponseAdmissionRequest(
+            deep, "fixture.deep/v1", digest))
+        escaped = ""
+    except RecursionError:
+        result, escaped = None, "RecursionError"
+    return [{
+        "test": "recursion_error_never_escapes_admission",
+        "passed": escaped == "" and result is not None and (
+            not result.admitted
+            or isinstance(getattr(result, "syntax_diagnostics", ()), (list, tuple))),
+        "detail": (f"escaped={escaped or 'no'}; admitted="
+                   f"{getattr(result, 'admitted', None)}; diagnostics="
+                   f"{len(getattr(result, 'syntax_diagnostics', []) or [])}"),
+    }]
 
 
 def _syntax_diagnostic_checks() -> list[dict]:

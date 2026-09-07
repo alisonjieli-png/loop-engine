@@ -175,6 +175,13 @@ class LoopConfig:
     custom_steps: tuple[str, ...] = ()
     max_depth: "int | None" = None
     max_iterations: "int | None" = None
+    #: Ceiling on iterations under ``accepted_success`` that did NOT produce
+    #: an accepted success, whatever their output text. ``identical_failures_
+    #: before_stop`` stops churn only when a failure repeats byte for byte; a
+    #: counter or timestamp in the output defeats it, and a probe drove 3,001
+    #: iterations that way with max_iterations at its default of None. This
+    #: counts the thing the exit condition is about. None must be asked for.
+    max_non_accepted_iterations: "int | None" = 25
     max_model_calls: "int | None" = None
     loop_condition: str = ""
     exit_condition: str = ""
@@ -213,7 +220,8 @@ class LoopConfig:
                      or isinstance(self.max_depth, bool)
                      or self.max_depth < 0)):
             raise ValueError("max_depth must be non-negative when provided")
-        for name in ("max_iterations", "max_model_calls"):
+        for name in ("max_iterations", "max_non_accepted_iterations",
+                     "max_model_calls"):
             value = getattr(self, name)
             if (value is not None
                     and (not isinstance(value, int)
@@ -253,6 +261,7 @@ class LoopConfig:
     def settings(self) -> dict:
         return {**POWER_SETTINGS[self.power],
                 "max_iterations": self.max_iterations,
+                "max_non_accepted_iterations": self.max_non_accepted_iterations,
                 "max_model_calls": self.max_model_calls}
 
 
@@ -728,6 +737,8 @@ class Loop(metaclass=_LoopMeta):
                     custom_steps=config.custom_steps,
                     max_depth=config.max_depth,
                     max_iterations=config.max_iterations,
+                    max_non_accepted_iterations=(
+                        config.max_non_accepted_iterations),
                     max_model_calls=config.max_model_calls,
                     loop_condition=config.loop_condition,
                     exit_condition=config.exit_condition,
@@ -911,6 +922,10 @@ class Loop(metaclass=_LoopMeta):
             max_iterations=(
                 None if limits.get("maximum_iterations") is None
                 else int(limits["maximum_iterations"])),
+            max_non_accepted_iterations=(
+                25 if "maximum_non_accepted_iterations" not in limits
+                else None if limits["maximum_non_accepted_iterations"] is None
+                else int(limits["maximum_non_accepted_iterations"])),
             max_model_calls=(
                 None if limits.get("maximum_model_calls") is None
                 else int(limits["maximum_model_calls"])),
@@ -995,7 +1010,8 @@ class Loop(metaclass=_LoopMeta):
                         "steps_run": 0, "conf_sum": 0.0,
                         "last": "", "stopped": "", "seq": list(self.steps()),
                         "i": 0, "limit": limit, "pending": None,
-                        "attempts": 0, "accepted_successes": 0}
+                        "attempts": 0, "accepted_successes": 0,
+                        "non_accepted_iterations": 0}
         return self._it
 
     @property
@@ -1132,6 +1148,8 @@ class Loop(metaclass=_LoopMeta):
                            "custom_steps": list(self.config.custom_steps),
                            "max_depth": self.config.max_depth,
                            "max_iterations": self.config.max_iterations,
+                           "max_non_accepted_iterations":
+                               self.config.max_non_accepted_iterations,
                            "max_model_calls": self.config.max_model_calls,
                            "loop_condition": self.config.loop_condition,
                            "exit_condition": self.config.exit_condition,
@@ -1157,7 +1175,7 @@ class Loop(metaclass=_LoopMeta):
             "framework", "logical_kind", "replay_guarantee",
             "allowable_modes", "preferred_modes", "delegated_modes",
             "power", "llm_thinking_power", "custom_steps", "max_depth",
-            "max_iterations", "max_model_calls",
+            "max_iterations", "max_non_accepted_iterations", "max_model_calls",
             "loop_condition", "exit_condition", "success_confidence_min",
         }
         unknown = set(c) - current_keys
@@ -1187,6 +1205,8 @@ class Loop(metaclass=_LoopMeta):
             custom_steps=tuple(c["custom_steps"]),
             max_depth=c["max_depth"],
             max_iterations=c.get("max_iterations"),
+            max_non_accepted_iterations=c.get(
+                "max_non_accepted_iterations", 25),
             max_model_calls=c.get("max_model_calls"),
             loop_condition=c.get("loop_condition", ""),
             exit_condition=c.get("exit_condition", ""),
@@ -1394,6 +1414,9 @@ class Loop(metaclass=_LoopMeta):
                     and outcome.confidence >= self.config.success_confidence_min)
         if accepted:
             it["accepted_successes"] += 1
+        else:
+            it["non_accepted_iterations"] = it.get(
+                "non_accepted_iterations", 0) + 1
         # Identical-state detection: the same step failing with the same
         # output, over and over, is churn. Any new output, any accepted
         # work, or any different step resets the count.
@@ -1426,6 +1449,27 @@ class Loop(metaclass=_LoopMeta):
             self._terminate(it, "no_progress")
             rec.update(terminal=True,
                        note="identical failed outcome repeated without progress")
+            return rec
+        ceiling = self.config.max_non_accepted_iterations
+        non_accepted = it.get("non_accepted_iterations", 0)
+        if (self.config.exit_condition == "accepted_success"
+                and ceiling is not None and non_accepted >= ceiling):
+            # Both numbers are named so a reader can tell "stuck repeating
+            # one failure" from "kept trying different things and none
+            # worked". Only the first is what the identical-failure stop
+            # above catches.
+            self.ledger.record(
+                loop_id=self.loop_id, event="custom",
+                custom_kind="non_accepted_ceiling_stop", step=step,
+                non_accepted_iterations=non_accepted, ceiling=ceiling,
+                identical_failures=it.get("identical_failures", 0),
+                supervision_policy_id=self.config.supervision.policy_id)
+            self._terminate(it, "no_progress")
+            rec.update(terminal=True,
+                       note=f"{non_accepted} iterations without an accepted "
+                            f"success reached the ceiling of {ceiling}; "
+                            f"identical failures seen: "
+                            f"{it.get('identical_failures', 0)}")
             return rec
         if (self.config.exit_condition == "accepted_success" and
                 it["accepted_successes"] >= 1):
@@ -1993,6 +2037,14 @@ def self_test() -> dict:
     third_tries, third = _succeeds_on_nth(3)
     never_tries, never = _succeeds_on_nth(
         10 ** 6, max_iterations=8, distinct_failures=True)
+    # No explicit max_iterations, failure text different every time: before
+    # the non-accepted ceiling this ran until the probe killed it at 3,001.
+    ceiling_tries, ceiling_result = _succeeds_on_nth(
+        10 ** 6, distinct_failures=True)
+    check("varying_failures_under_accepted_success_stop_at_the_default_ceiling",
+          ceiling_tries == 25 and ceiling_result.stopped == "no_progress",
+          f"tries={ceiling_tries} stopped={ceiling_result.stopped}; the "
+          "identical-failure stop cannot see a failure whose text changes")
     churn_tries, churn_never = _succeeds_on_nth(10 ** 6)
     first_tries, first = _succeeds_on_nth(1)
     check("success_once_retries_and_honors_an_explicit_limit",
