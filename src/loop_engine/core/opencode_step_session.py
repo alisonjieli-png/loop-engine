@@ -64,7 +64,12 @@ JSON_ONLY_DIRECTIVE = (
     "Return exactly one JSON object matching the stated contract as your "
     "final message. Emit no prose before or after it.")
 
-DEFAULT_TIMEOUT_SECONDS = 900.0
+#: Only a backstop for a caller that supplied no budget. Real runs pass a
+#: grant from core.night_budget, which divides the night rather than
+#: guessing at a step. A fixed number here decides in advance that a step
+#: needing longer fails, which is how an 880-second wrapper killed a run
+#: that had eleven hours of night left.
+DEFAULT_TIMEOUT_SECONDS = 3600.0
 
 
 class OpenCodeStepError(RuntimeError):

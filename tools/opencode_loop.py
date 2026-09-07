@@ -30,6 +30,7 @@ from loop_engine.core.opencode_step_composition import (   # noqa: E402
     dynamic_step_layer, observation_step_layer)
 from loop_engine.core.opencode_step_session import (        # noqa: E402
     OpenCodeStepProfile, OpenCodeStepSession)
+from loop_engine.core.night_budget import NightBudget       # noqa: E402
 
 SCHEMAS = {
     "orient": ('{"task_summary": string, "immediate_goal": string, '
@@ -55,11 +56,11 @@ def run_step(layer, workspace, model, schema, body, budget):
     """Compose an instance for one step and run it."""
     instance = compose_instance(default_core(), layer, workspace)
     profile = OpenCodeStepProfile(
-        model=model, workspace=workspace, timeout_seconds=420.0,
+        model=model, workspace=workspace, timeout_seconds=budget.grant(),
         agent=instance.agent_name,
         additional_environment=("OLLAMA_API_KEY", "XDG_DATA_HOME"))
     session = OpenCodeStepSession(
-        authority=_Authority(budget), profile=profile)
+        authority=_Authority(4), profile=profile)
     prompt = f"{body}\n\nReturn one JSON object with keys: {schema}"
     text = session.invoke(_Request(prompt), None)
     result = session.results[-1]
@@ -85,11 +86,14 @@ def main() -> int:
                     help="the project's own command; its exit code decides")
     ap.add_argument("--model", default="ollama-cloud/gemma4:31b")
     ap.add_argument("--attempts", type=int, default=2)
+    ap.add_argument("--hours", type=float, default=12.0,
+                    help="wall-clock budget; steps take a share of what remains")
     args = ap.parse_args()
 
     workspace = Path(args.workspace)
     workspace.mkdir(parents=True, exist_ok=True)
     catalogue, library = default_catalogue(), default_skill_library()
+    budget = NightBudget(hours=args.hours, expected_steps=6)
     transcript, carried = [], ""
 
     for name in ("orient", "plan"):
@@ -97,7 +101,7 @@ def main() -> int:
             catalogue.select(name), args.task, library)
         body = args.task + (f"\n\nPrevious step:\n{carried}" if carried else "")
         value, result = run_step(layer, workspace, args.model,
-                                 SCHEMAS[name], body, 2)
+                                 SCHEMAS[name], body, budget)
         carried = json.dumps(value)[:1200]
         transcript.append({"step": name, "skills": sorted(layer.skills),
                            "why": provenance, "value": value})
@@ -114,7 +118,7 @@ def main() -> int:
                 + (f"\n\nObserved on the previous attempt:\n{observation}"
                    if observation else ""))
         value, result = run_step(layer, workspace, args.model,
-                                 SCHEMAS["implement"], body, 3)
+                                 SCHEMAS["implement"], body, budget)
         print(f"\n── implement (attempt {attempt})  "
               f"in={result.input_tokens} out={result.output_tokens}")
         for key, item in value.items():
@@ -135,7 +139,7 @@ def main() -> int:
             # The failure changes the SHAPE of the next step, not its wording.
             obs_layer = observation_step_layer("verify", output)
             obs_value, _ = run_step(obs_layer, workspace, args.model,
-                                    OBSERVE_SCHEMA, args.task, 2)
+                                    OBSERVE_SCHEMA, args.task, budget)
             observation = json.dumps(obs_value)[:1000]
             print(f"\n── observe (no edit tool)  "
                   f"skills={sorted(obs_layer.skills)}")

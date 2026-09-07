@@ -63,7 +63,18 @@ _GATE = re.compile(
     r"biome|eslint|ruff|flake8|pylint|clippy|"
     r"tsc|mypy|pyright|typecheck|type-check|"
     r"npm run build|yarn build|pnpm build|make build|cargo build|"
-    r"docker build|terraform (plan|validate))\b", re.IGNORECASE)
+    r"docker build|terraform (plan|validate)|"
+    # The data stack. An analytics or pipeline engineer's gate is a dbt
+    # test or a schema check, not pytest, and intake that does not know
+    # these words silently reports "nothing unresolved" to exactly the
+    # people whose work it was meant to find.
+    r"dbt (test|build|run|compile|snapshot)|sqlfluff|"
+    r"great_expectations|great-expectations|pandera|soda scan|"
+    r"airflow (dags |tasks )?test|dagster (job|asset) |prefect deployment|"
+    r"dvc (repro|exp run)|kedro run|mlflow run|"
+    r"papermill|nbconvert --execute|nbmake|pytest --nbmake|"
+    r"alembic (upgrade|check)|sqlmesh (plan|audit)|"
+    r"spark-submit|pyspark)\b", re.IGNORECASE)
 
 #: A timeout says the command was slow, not that the code is wrong, and a
 #: night spent on one is a night spent on a timeout.

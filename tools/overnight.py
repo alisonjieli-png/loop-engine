@@ -40,8 +40,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from session_intake import candidates, scan                # noqa: E402
+from loop_engine.core.night_budget import NightBudget      # noqa: E402
 
 REPORT_ROOT = Path(os.path.expanduser("~/.loop-engine/overnight"))
+#: Worktrees live here, not inside the engineer's repository.
+WORKTREE_ROOT = Path(os.path.expanduser("~/.loop-engine/worktrees"))
 
 
 def _git(args, cwd, timeout=120):
@@ -81,68 +84,106 @@ def gameplan(item: dict) -> dict:
     }
 
 
-def attempt(plan: dict, model: str, attempts: int) -> dict:
-    """Run one candidate on its own branch; the gate decides the outcome."""
+def attempt(plan: dict, model: str, attempts: int, budget) -> dict:
+    """Run one candidate in its OWN WORKTREE; the gate decides the outcome.
+
+    Not a branch switch in the engineer's checkout. An earlier version did
+    that, and when the run was killed on a timeout the `finally: git
+    checkout -` never ran, leaving the repository sitting on an overnight
+    branch. An unattended process that can leave someone's checkout
+    somewhere they did not put it is not one they will run again.
+
+    A worktree is a separate directory sharing the same object store. The
+    engineer's checkout, index, and current branch are never touched, which
+    also makes their uncommitted work a non-issue rather than a reason to
+    skip the candidate.
+    """
     workspace = Path(plan["workspace"] or ".")
     if not (workspace / ".git").is_dir():
         return {"status": "skipped",
                 "why": f"{workspace} is not a git repository; this run only "
-                       "works on branches and will not edit an unversioned tree"}
-    # TRACKED modifications only. Untracked files are deliberately not a
-    # blocker: git carries them across a branch switch untouched, so they
-    # are not what risks losing the engineer's work -- tracked edits are.
-    #
-    # Checking all files was self-disabling. Running the gate creates
-    # __pycache__/ and .pytest_cache/, which made the tree "dirty", which
-    # blocked the next night. A guard that the system trips by doing its
-    # own job stops the system rather than protecting anything.
-    dirty = _git(["status", "--porcelain", "--untracked-files=no"],
-                 workspace).stdout.strip()
-    if dirty:
-        return {"status": "skipped",
-                "why": ("the engineer has uncommitted changes to tracked "
-                        "files; refusing to branch from them so nothing of "
-                        "theirs moves"),
-                "tracked_changes": [l[3:] for l in dirty.splitlines()][:10]}
-
+                       "works in worktrees and will not edit an unversioned "
+                       "tree"}
+    # The engineer's HEAD, read but never moved.
     head = _git(["rev-parse", "--short", "HEAD"], workspace).stdout.strip()
-    branch = f"overnight/{time.strftime('%Y%m%d')}-{abs(hash(plan['gate_command'])) % 10000:04d}"
-    made = _git(["checkout", "-b", branch], workspace)
+    stamp = f"{time.strftime('%Y%m%d')}-{abs(hash(plan['gate_command'])) % 10000:04d}"
+    branch = f"overnight/{stamp}"
+    tree = WORKTREE_ROOT / stamp
+    WORKTREE_ROOT.mkdir(parents=True, exist_ok=True)
+    if tree.exists():
+        _git(["worktree", "remove", "--force", str(tree)], workspace)
+    made = _git(["worktree", "add", "-b", branch, str(tree), "HEAD"], workspace)
     if made.returncode != 0:
         return {"status": "skipped",
-                "why": f"could not create {branch}: {made.stderr.strip()[:200]}"}
-    try:
-        before_ok, before_out = run_gate(plan["gate_command"], workspace)
-        if before_ok:
-            return {"status": "already_green", "branch": branch,
-                    "why": "the gate passes now; the failure the transcript "
-                           "recorded is no longer reproducible",
-                    "gate_output": before_out[-600:]}
-        result = solve(plan, workspace, model, attempts)
-        after_ok, after_out = run_gate(plan["gate_command"], workspace)
-        changed = _git(["status", "--porcelain"], workspace).stdout.strip()
-        return {"status": "verified" if after_ok else "attempted",
-                "branch": branch, "from_commit": head,
-                "files_touched": [l[3:] for l in changed.splitlines()][:20],
-                "gate_before": before_out[-400:],
-                "gate_after": after_out[-600:],
-                "steps": result}
-    finally:
-        _git(["checkout", "-"], workspace)
+                "why": f"could not create a worktree at {tree}: "
+                       f"{made.stderr.strip()[:200]}"}
+
+    # Everything below runs in `tree`. Nothing touches `workspace`, so a
+    # kill at any point leaves the engineer's checkout exactly as it was.
+    before_ok, before_out = run_gate(plan["gate_command"], tree, budget)
+    if before_ok:
+        return {"status": "already_green", "branch": branch,
+                "worktree": str(tree),
+                "why": "the gate passes now; the failure the transcript "
+                       "recorded is no longer reproducible",
+                "gate_output": before_out[-600:]}
+    result = solve(plan, tree, model, attempts, budget)
+    after_ok, after_out = run_gate(plan["gate_command"], tree, budget)
+    changed = _git(["status", "--porcelain", "--untracked-files=no"],
+                   tree).stdout.strip()
+    return {"status": "verified" if after_ok else "attempted",
+            "branch": branch, "worktree": str(tree), "from_commit": head,
+            "files_touched": _porcelain_paths(changed)[:20],
+            "gate_before": before_out[-400:],
+            "gate_after": after_out[-600:],
+            "steps": result}
 
 
-def run_gate(command: str, workspace: Path):
+def _porcelain_paths(text: str) -> list:
+    """Read filenames out of `git status --porcelain` without slicing.
+
+    `line[3:]` is wrong the moment the status field is not exactly two
+    characters plus a space, and it silently returns a filename that is
+    almost right: a real run reported the fix it had just verified as
+    touching "alc.py". A morning report naming a file that does not exist
+    is worse than one naming none, because the reader stops trusting the
+    rest of it.
+    """
+    paths = []
+    for line in text.splitlines():
+        body = line[2:].strip() if len(line) > 2 else ""
+        if not body:
+            continue
+        # Renames and copies are recorded as "old -> new"; the new path is
+        # the one a reader wants.
+        paths.append(body.split(" -> ")[-1].strip().strip('"'))
+    return paths
+
+
+def run_gate(command: str, workspace: Path, budget=None):
+    """Run the project's own gate. Its allowance comes from the night."""
     if not command:
         return False, "(no gate command)"
+    began = time.time()
+    # Not a fixed number. A gate that needs twenty minutes on a big test
+    # suite is normal; capping it at fifteen decides in advance that such
+    # a project cannot be worked on.
+    allowance = budget.grant("gate") if budget is not None else 3600.0
     try:
         done = subprocess.run(command, shell=True, cwd=str(workspace),
-                              capture_output=True, text=True, timeout=900)
+                              capture_output=True, text=True,
+                              timeout=allowance)
     except subprocess.TimeoutExpired:
-        return False, "gate timed out"
+        print(f"      gate exceeded its {allowance / 60:.0f} min allowance",
+              flush=True)
+        return False, (f"the gate did not finish within {allowance / 60:.0f} "
+                       "minutes of the night's remaining budget")
+    print(f"      gate exited {done.returncode} in "
+          f"{time.time() - began:.1f}s", flush=True)
     return done.returncode == 0, (done.stdout + done.stderr).strip()
 
 
-def solve(plan, workspace, model, attempts) -> list:
+def solve(plan, workspace, model, attempts, budget) -> list:
     """Drive the composed steps. Import is local so --dry-run needs no key."""
     from loop_engine.core.opencode_step_composition import (
         compose_instance, default_catalogue, default_core,
@@ -169,23 +210,36 @@ def solve(plan, workspace, model, attempts) -> list:
             layer, _ = dynamic_step_layer(catalogue.select(name), task, library)
             instance = compose_instance(core, layer, workspace)
             profile = OpenCodeStepProfile(
-                model=model, workspace=workspace, timeout_seconds=600.0,
+                model=model, workspace=workspace,
+                timeout_seconds=budget.grant(name),
                 agent=instance.agent_name,
                 additional_environment=("OLLAMA_API_KEY", "XDG_DATA_HOME"))
             session = OpenCodeStepSession(
                 authority=_Authority(), profile=profile)
             body = task + (f"\n\nObserved previously:\n{observation}"
                            if observation else "")
+            began = time.time()
+            print(f"      [{time.strftime('%H:%M:%S')}] {name} "
+                  f"(attempt {index}) started", flush=True)
             try:
                 text = session.invoke(
                     _Req(f"{body}\n\nReturn one JSON object with keys: {schema}"),
                     None)
+                elapsed = time.time() - began
                 steps.append({"step": name, "attempt": index,
+                              "seconds": round(elapsed, 1),
                               "value": json.loads(text)})
             except Exception as exc:                        # noqa: BLE001
+                elapsed = time.time() - began
                 steps.append({"step": name, "attempt": index,
+                              "seconds": round(elapsed, 1),
                               "error": f"{type(exc).__name__}: {exc}"[:300]})
-        ok, output = run_gate(plan["gate_command"], workspace)
+            # Printed and flushed per step, not collected for the end. A
+            # run killed on a timeout previously produced no partial output
+            # at all, so "where did the time go" had no answer but a guess.
+            print(f"      [{time.strftime('%H:%M:%S')}] {name} "
+                  f"(attempt {index}) took {elapsed:.1f}s", flush=True)
+        ok, output = run_gate(plan["gate_command"], workspace, budget)
         if ok:
             return steps
         if index < attempts:
@@ -193,7 +247,8 @@ def solve(plan, workspace, model, attempts) -> list:
             obs = observation_step_layer("gate", output)
             instance = compose_instance(core, obs, workspace)
             profile = OpenCodeStepProfile(
-                model=model, workspace=workspace, timeout_seconds=600.0,
+                model=model, workspace=workspace,
+                timeout_seconds=budget.grant("observe"),
                 agent=instance.agent_name,
                 additional_environment=("OLLAMA_API_KEY", "XDG_DATA_HOME"))
             session = OpenCodeStepSession(
@@ -223,6 +278,8 @@ def main() -> int:
                     help="skip intake and attempt this exact gate command")
     ap.add_argument("--workspace", default="",
                     help="repository the --gate command runs in")
+    ap.add_argument("--hours", type=float, default=12.0,
+                    help="the night's total wall-clock budget (default 12)")
     args = ap.parse_args()
 
     if args.gate:
@@ -236,8 +293,11 @@ def main() -> int:
         }]
 
     started = time.strftime("%Y-%m-%d %H:%M")
+    budget = NightBudget(hours=args.hours,
+                         expected_steps=max(4, args.max_tasks * 3))
     found = seeded if args.gate else collect(args.since, args.max_tasks)
-    print(f"overnight run {started} — {len(found)} candidate(s)\n")
+    print(f"overnight run {started} — {len(found)} candidate(s); "
+          f"{args.hours:.0f}h budget\n", flush=True)
     if not found:
         print("  Nothing unresolved was observed today. Reporting that,")
         print("  rather than inventing work to look busy.")
@@ -253,7 +313,7 @@ def main() -> int:
         print(f"   workspace: {plan['workspace']}")
         entry = {"plan": plan}
         if not args.dry_run and plan["verifiable"]:
-            outcome = attempt(plan, args.model, args.attempts)
+            outcome = attempt(plan, args.model, args.attempts, budget)
             entry["outcome"] = outcome
             print(f"   -> {outcome['status']}"
                   + (f": {outcome.get('why','')[:110]}" if outcome.get("why") else ""))
@@ -270,7 +330,12 @@ def main() -> int:
     path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     verified = sum(1 for t in report["tasks"]
                    if t.get("outcome", {}).get("status") == "verified")
-    print(f"  {verified}/{len(report['tasks'])} reached a passing gate")
+    report["time_spent"] = budget.spent()
+    report["hours_used"] = round(budget.elapsed() / 3600, 2)
+    print(f"  {verified}/{len(report['tasks'])} reached a passing gate "
+          f"in {budget.elapsed() / 3600:.1f}h of {args.hours:.0f}h")
+    if budget.spent():
+        print(f"  time went to: {budget.spent()}")
     print(f"  report: {path}")
     return 0
 
