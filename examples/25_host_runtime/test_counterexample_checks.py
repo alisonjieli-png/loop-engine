@@ -112,7 +112,8 @@ class CounterexampleChecks(unittest.TestCase):
         from loop_engine.core.host_runtime import verify_host_result
         with tempfile.TemporaryDirectory(prefix='completion-drift-') as directory:
             _, host, state, owner, result, report = self.exercise(directory, SOLUTIONS[1])
-            record = Path(report['completion_checks'][0]['observations']['receipt_ref'])
+            record = Path(directory) / report['completion_checks'][0]['observations']['receipt_ref']
+            self.assertFalse(Path(report['completion_checks'][0]['observations']['receipt_ref']).is_absolute())
             record.write_text('{}')
             failed = verify_host_result(state.request.task, result, state, owner)
             self.assertEqual(failed['status'], 'unavailable')

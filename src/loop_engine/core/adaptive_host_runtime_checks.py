@@ -16,8 +16,8 @@ from types import SimpleNamespace
 
 
 def _fixture(*, passed=True, complete=True, fail_operation=False, fail_verifier=False,
-             complete_after=0, mutating=False, fail_on_calls=(), effect_hook=None,
-             authorize_hook=None, approved=True, permission_names=()):
+             complete_after=0, mutating=False, fail_on_calls=(), mutate_on_calls=(),
+             effect_hook=None, authorize_hook=None, approved=True, permission_names=()):
     from ..loop.effect_approval import ApprovalDecision, EffectClass, EffectSpec
     from .capability_directory import CapabilityDirectory, CapabilityHandshake, Endpoint
     from .host_runtime import HostOperationBinding, HostRuntimeBinding
@@ -31,7 +31,12 @@ def _fixture(*, passed=True, complete=True, fail_operation=False, fail_verifier=
 
     def operation(*, request):
         calls.append(("operation", request))
-        if fail_operation or sum(kind == "operation" for kind, _ in calls) in fail_on_calls:
+        count = sum(kind == "operation" for kind, _ in calls)
+        if count in mutate_on_calls:
+            # A real effect happened before the failure below: the host's
+            # snapshot changes, so the outcome is unknown, not "nothing".
+            state["revision"] += 1
+        if fail_operation or count in fail_on_calls:
             raise ValueError("fixture operation unavailable")
         return {"answer": state["answer"]}
 
@@ -336,7 +341,7 @@ def _unknown_effect_checks():
     from .host_runtime import HostOperationRequest, invoke_host_operation
 
     with tempfile.TemporaryDirectory(prefix="loop-host-unknown-check-") as directory:
-        fixture = _fixture(mutating=True, fail_on_calls=(2,))
+        fixture = _fixture(mutating=True, fail_on_calls=(2,), mutate_on_calls=(2,))
         services, owner = _services(directory, fixture)
         request = HostOperationRequest(fixture.action.capability_ref, {})
         first = invoke_host_operation(request, services, owner)
@@ -348,10 +353,39 @@ def _unknown_effect_checks():
             refused = True
         distinct = first["invocation_id"] != second["invocation_id"]
         halted = refused and len(fixture.calls) == 2
+        unknown_recorded = any(
+            event.get("custom_kind") == "host_invocation_finished"
+            and event.get("outcome_known") is False
+            and event.get("effect_observed") is True
+            and bool(event.get("error_type"))
+            for event in owner.ledger.events)
+    with tempfile.TemporaryDirectory(prefix="loop-host-no-effect-check-") as directory:
+        # The same failure with an unchanged host snapshot is a known
+        # outcome: nothing happened, so the next operation is not blocked.
+        fixture = _fixture(mutating=True, fail_on_calls=(2,))
+        services, owner = _services(directory, fixture)
+        request = HostOperationRequest(fixture.action.capability_ref, {})
+        invoke_host_operation(request, services, owner)
+        invoke_host_operation(request, services, owner)
+        try:
+            third = invoke_host_operation(request, services, owner)
+            proceeded = third["ok"] is True and len(fixture.calls) == 3
+        except ValueError:
+            proceeded = False
+        no_effect_recorded = any(
+            event.get("custom_kind") == "host_invocation_finished"
+            and event.get("outcome_known") is True
+            and event.get("effect_observed") is False
+            and bool(event.get("error_type"))
+            for event in owner.ledger.events)
     return [{"test": "identical_host_arguments_still_name_distinct_physical_attempts",
              "passed": distinct, "detail": "physical occurrence identity is not an idempotency key"},
             {"test": "prior_known_success_cannot_hide_later_unknown_host_effect",
-             "passed": halted, "detail": "no third callback before explicit reconciliation"}]
+             "passed": halted and unknown_recorded,
+             "detail": "no third callback before explicit reconciliation when the snapshot changed"},
+            {"test": "raising_callback_with_unchanged_snapshot_is_a_known_no_effect_outcome",
+             "passed": proceeded and no_effect_recorded,
+             "detail": "the host snapshot is the authority; unchanged means no reconciliation is owed"}]
 
 
 def _projection_checks() -> list[dict]:

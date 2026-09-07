@@ -524,13 +524,31 @@ def evaluate(task, execution):
         return {'passed': False, 'checks': [], 'failure_kind': 'invalid_observation'}
 
 
+OBSERVED_VALUE_VISIBLE_BYTES = 1024
+
+
 def feedback(comparison):
-    """Model-visible observations without the host's expected-answer values."""
+    """Model-visible observations without the host's expected-answer values.
+
+    A large observed value travels as its digest and a summary; the exact
+    value stays in the host record. Candidate code can read the probe input
+    it runs against, so an unbounded relay would let it return that input as
+    its value and hand every case argument to the model.
+    """
+    checks = []
+    for item in comparison['checks']:
+        visible = {key: value for key, value in item.items()
+                   if key not in ('expected', 'expected_error', 'observed')
+                   and (key != 'failure_note' or item.get('passed') is False)}
+        observed = item.get('observed')
+        visible['observed_digest'] = digest(observed)
+        if len(canonical(observed).encode('utf-8')) <= OBSERVED_VALUE_VISIBLE_BYTES:
+            visible['observed'] = observed
+        else:
+            visible['observed_summary'] = 'Large observed value retained in the exact host record.'
+        checks.append(visible)
     return {'passed': comparison['passed'], 'failure_kind': comparison['failure_kind'],
-            'checks': [{key: value for key, value in item.items()
-                        if key not in ('expected', 'expected_error')
-                        and (key != 'failure_note' or item.get('passed') is False)}
-                       for item in comparison['checks']]}
+            'checks': checks}
 
 
 def model_usage_summary(outcome):
@@ -793,7 +811,12 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None,
         checked = []
         for saved in records.values():
             for artifact in json.loads(saved)['artifacts']:
+                # Records name artifacts relative to the task root so no
+                # model-visible record carries the host's absolute layout;
+                # older records with absolute paths still resolve.
                 path = Path(artifact['path'])
+                if not path.is_absolute():
+                    path = root / path
                 if (not path.is_relative_to(root) or any(item.is_symlink() for item in (path, *path.parents))
                         or not path.is_file() or path.stat().st_size != artifact['byte_count']
                         or hashlib.sha256(path.read_bytes()).hexdigest() != artifact['digest']):
@@ -849,7 +872,8 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None,
                                        'source_digest': seed_record['snapshot_digest']}
                                       if seed_record is not None else None),
                     'visibility': {'source': 'model_visible', 'oracle_definition': 'host_only',
-                                   'probe_arguments': 'tool_only', 'actual_observation_feedback': 'model_visible_after_execution'}}
+                                   'probe_arguments': 'readable_by_candidate_code_at_execution',
+                                   'actual_observation_feedback': 'model_visible_after_execution_bounded'}}
             if repair_evidence:
                 observation['repair_evidence'] = [item.validate_for(task) for item in repair_evidence]
             return observation
@@ -872,8 +896,17 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None,
         with lock:
             require_state(request)
             value = request.arguments
-            if value['path'] != 'solution.py' or len(value['content'].encode()) > 65536:
-                raise ValueError('source path or byte allowance refused')
+            if value['path'] != 'solution.py':
+                raise ValueError('source path refused')
+            if len(value['content'].encode('utf-8')) > 65536:
+                # The schema bounds characters; the workspace bounds bytes. A
+                # multibyte string can pass one and not the other, so this is
+                # a typed refusal the model can repair, never an exception
+                # that leaves the run with an unknown host outcome.
+                return {'kind': 'source_replacement_refused', 'write_applied': False,
+                        'error_code': 'source_byte_allowance_exceeded',
+                        'reason': 'solution.py must be at most 65536 bytes when encoded as UTF-8; '
+                                  'the schema limit counts characters, this limit counts bytes'}
             result = backend.file(FileRequest(
                 FileOperation.WRITE, 'solution.py', content=value['content'].encode(),
                 replace_existing=True, expected_digest=value['expected_digest']))
@@ -900,7 +933,8 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None,
                         with artifact.open('x', encoding='utf-8') as stream:
                             stream.write(observed['value'])
                         raw = artifact.read_bytes()
-                        artifacts.append({'path': str(artifact), 'digest': hashlib.sha256(raw).hexdigest(),
+                        artifacts.append({'path': str(artifact.relative_to(root)),
+                                          'digest': hashlib.sha256(raw).hexdigest(),
                                           'byte_count': len(raw)})
             record = {'record_type': 'generalization_probe_observation/v1', 'source_digest': selected.digest,
                       'task_digest': task.content_digest, 'execution': execution, 'comparison': comparison,
@@ -964,19 +998,10 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None,
             comparison = evaluate(completion_task, record['execution'])
             if comparison != record['comparison'] or record['source_digest'] != selected.digest:
                 raise ValueError('completion record does not reproduce its comparisons')
-            checks = []
-            for item in feedback(comparison)['checks']:
-                observed = item.get('observed')
-                visible = {key: value for key, value in item.items() if key != 'observed'}
-                visible['observed_digest'] = digest(observed)
-                if len(canonical(observed).encode()) <= 1024:
-                    visible['observed'] = observed
-                else:
-                    visible['observed_summary'] = 'Large observed value retained in the exact host record.'
-                checks.append(visible)
+            checks = feedback(comparison)['checks']
             return {'passed': comparison['passed'], 'task_complete': comparison['passed'],
                     'observations': {'policy_digest': completion_policy.content_digest,
-                        'receipt_ref': str(path), 'receipt_digest': expected_digest,
+                        'receipt_ref': str(path.relative_to(root)), 'receipt_digest': expected_digest,
                         'source_digest': selected.digest, 'case_count': len(completion_task.cases),
                         'passed_cases': sum(item['passed'] for item in comparison['checks']),
                         'failure_kind': comparison['failure_kind'], 'checks': checks,
@@ -1002,9 +1027,14 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None,
             input_schema='host_arguments/v1', output_schema='host_observation/v1', max_response_bytes=1048576),
             [Endpoint('invoke', completion_verify)])
 
+    # A stable opaque identity for this host root. Model-visible records,
+    # permission scopes, and effect targets carry it instead of the absolute
+    # directory, which is the host's business.
+    root_ref = hashlib.sha256(str(root).encode('utf-8')).hexdigest()[:16]
+
     def binding(name, kind, permissions, inputs):
         return HostOperationBinding(name, 'invoke', inputs, {'type': 'object'},
-            lambda request: EffectSpec(kind, name, 'managed-probe:' + str(root),
+            lambda request: EffectSpec(kind, name, 'managed-probe:' + root_ref,
                                       (('state', request.state_ref), ('task_digest', task.content_digest))),
             'generalization_probe.' + name + '@1.0.0', permission_names=permissions)
 
@@ -1031,7 +1061,7 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None,
         'workspace_completion', EffectClass.COMMAND_EXECUTION, ('sandbox_command', 'workspace_write'),
         verifier_inputs),))
     return HostRuntimeBinding(directory, operations, verifier, authorize, snapshot,
-                              'generalization-probe:' + str(root), share_outputs_with_model=True,
+                              'generalization-probe:' + root_ref, share_outputs_with_model=True,
                               completion_verifiers=completion_verifiers)
 
 

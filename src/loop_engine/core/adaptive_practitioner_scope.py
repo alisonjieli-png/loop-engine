@@ -250,7 +250,9 @@ def run_spawned_tasks(state, plan, services, implementations):
                         task_id=assignment.task_id, input_roles=list(delegation.contract.input_roles),
                         value_refs=[item.reference.to_dict() for item in bound],
                         schema_digests=[item.schema_digest for item in bound],
-                        deliveries=[item.delivery for item in bound])
+                        deliveries=[item.delivery for item in bound],
+                        value_bytes=[item.value_bytes for item in bound],
+                        maximum_value_bytes=frame.policy.maximum_value_bytes)
                 return prepare_exact_result(spawned_service, active)
 
             spawned = run_spawned_kernel(

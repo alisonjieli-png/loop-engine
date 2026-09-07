@@ -11,14 +11,16 @@ import hashlib
 import json
 import random
 import sqlite3
+from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from ..loop.reactive_activation import (
-    ActivationClaimRequest, ActivationRecord, ActivationStartRequest,
-    ActivationStatus, ActivationTerminalRequest, LeaseHeartbeatRequest,
-    ReactiveSeriesDefinition, TriggerEnvelope, WorkLease)
+    ActivationClaimRequest, ActivationHistoryDisposition, ActivationRecord,
+    ActivationStartRequest, ActivationStatus, ActivationTerminalRequest,
+    LeaseHeartbeatRequest, ReactiveSeriesDefinition, TriggerEnvelope,
+    WorkLease)
 from ..loop.reactive_contracts import (
     InputOrdering, ReactiveLoopProfile)
 
@@ -279,21 +281,49 @@ class SQLiteReactiveScheduler:
             self._connection.rollback()
             raise
 
+    @contextmanager
+    def _write_transaction(self):
+        """One serialized writer: read the current revision and append the
+        next one inside ``BEGIN IMMEDIATE``.
+
+        Two connections that both read revision N and both insert N+1 used to
+        leave the loser inside SQLite's implicit transaction with a raw
+        ``IntegrityError``; every later ``BEGIN`` on that connection then
+        failed. The loser now rolls back and receives a typed revision
+        conflict, and its connection stays usable.
+        """
+        self._connection.execute("BEGIN IMMEDIATE")
+        try:
+            yield
+        except sqlite3.IntegrityError as exc:
+            self._connection.rollback()
+            raise ReactiveSchedulerError(
+                "activation revision conflict: another worker advanced this "
+                "record") from exc
+        except BaseException:
+            self._connection.rollback()
+            raise
+        self._connection.commit()
+
+    def profile_for(self, series: ReactiveSeriesDefinition) -> ReactiveLoopProfile:
+        """The exact registered profile a series names, or a typed error."""
+        return self._profile_for(series)
+
     def start(self, request: ActivationStartRequest) -> ActivationRecord:
         if not isinstance(request, ActivationStartRequest):
             raise ReactiveSchedulerError(
                 "start requires ActivationStartRequest")
-        current = self._require_current(request.activation_id)
-        self._require_fence(
-            current, request.lease_id, request.fencing_token)
-        if current.status is not ActivationStatus.LEASED:
-            raise ReactiveSchedulerError(
-                "only a leased activation can start")
-        started = replace(
-            current, status=ActivationStatus.RUNNING,
-            revision=current.revision + 1, started_at=request.started_at)
-        self._append_activation(started)
-        self._connection.commit()
+        with self._write_transaction():
+            current = self._require_current(request.activation_id)
+            self._require_fence(
+                current, request.lease_id, request.fencing_token)
+            if current.status is not ActivationStatus.LEASED:
+                raise ReactiveSchedulerError(
+                    "only a leased activation can start")
+            started = replace(
+                current, status=ActivationStatus.RUNNING,
+                revision=current.revision + 1, started_at=request.started_at)
+            self._append_activation(started)
         from .runtime_observer import RuntimeObservation
         self._observations.emit(RuntimeObservation(
             "reactive_activation_started", {
@@ -310,25 +340,25 @@ class SQLiteReactiveScheduler:
         if not isinstance(request, LeaseHeartbeatRequest):
             raise ReactiveSchedulerError(
                 "heartbeat requires LeaseHeartbeatRequest")
-        current = self._require_current(request.activation_id)
-        self._require_fence(
-            current, request.lease_id, request.fencing_token)
-        if current.status not in {
-                ActivationStatus.LEASED, ActivationStatus.RUNNING}:
-            raise ReactiveSchedulerError(
-                "terminal or admitted activation cannot heartbeat")
-        previous = self._require_lease(request.lease_id)
-        if (_instant(request.heartbeat_at) < _instant(previous.heartbeat_at)
-                or _instant(request.expires_at)
-                <= _instant(request.heartbeat_at)):
-            raise ReactiveSchedulerError(
-                "heartbeat time and expiry must move forward")
-        renewed = WorkLease(
-            previous.lease_id, previous.activation_id, previous.worker_id,
-            previous.fencing_token, previous.acquired_at,
-            request.heartbeat_at, request.expires_at)
-        self._append_lease(renewed)
-        self._connection.commit()
+        with self._write_transaction():
+            current = self._require_current(request.activation_id)
+            self._require_fence(
+                current, request.lease_id, request.fencing_token)
+            if current.status not in {
+                    ActivationStatus.LEASED, ActivationStatus.RUNNING}:
+                raise ReactiveSchedulerError(
+                    "terminal or admitted activation cannot heartbeat")
+            previous = self._require_lease(request.lease_id)
+            if (_instant(request.heartbeat_at) < _instant(previous.heartbeat_at)
+                    or _instant(request.expires_at)
+                    <= _instant(request.heartbeat_at)):
+                raise ReactiveSchedulerError(
+                    "heartbeat time and expiry must move forward")
+            renewed = WorkLease(
+                previous.lease_id, previous.activation_id, previous.worker_id,
+                previous.fencing_token, previous.acquired_at,
+                request.heartbeat_at, request.expires_at)
+            self._append_lease(renewed)
         from .runtime_observer import RuntimeObservation
         self._observations.emit(RuntimeObservation(
             "reactive_lease_heartbeat", {
@@ -345,23 +375,33 @@ class SQLiteReactiveScheduler:
         if not isinstance(request, ActivationTerminalRequest):
             raise ReactiveSchedulerError(
                 "terminal requires ActivationTerminalRequest")
-        current = self._require_current(request.activation_id)
-        self._require_fence(
-            current, request.lease_id, request.fencing_token)
-        if current.status not in {
-                ActivationStatus.LEASED, ActivationStatus.RUNNING}:
+        if not request.worker_id:
             raise ReactiveSchedulerError(
-                "only active leased work can become terminal")
-        terminal = replace(
-            current, status=request.status, revision=current.revision + 1,
-            loop_id=request.loop_id, terminal_at=request.terminal_at,
-            terminal_code=request.terminal_code,
-            failure_code=request.failure_code,
-            candidate_refs=request.candidate_refs,
-            history_ref=request.history_ref,
-            history_disposition=request.history_disposition)
-        self._append_activation(terminal)
-        self._connection.commit()
+                "terminal request must name the worker holding the lease")
+        with self._write_transaction():
+            current = self._require_current(request.activation_id)
+            self._require_fence(
+                current, request.lease_id, request.fencing_token)
+            if current.status not in {
+                    ActivationStatus.LEASED, ActivationStatus.RUNNING}:
+                raise ReactiveSchedulerError(
+                    "only active leased work can become terminal")
+            lease = self._require_lease(current.lease_id)
+            if lease.worker_id != request.worker_id:
+                # Possessing a readable token is not holding the lease. The
+                # terminal must come from the worker the lease was issued to,
+                # so a peer cannot publish an outcome under another's name.
+                raise ReactiveSchedulerError(
+                    "terminal must come from the worker holding the lease")
+            terminal = replace(
+                current, status=request.status, revision=current.revision + 1,
+                loop_id=request.loop_id, terminal_at=request.terminal_at,
+                terminal_code=request.terminal_code,
+                failure_code=request.failure_code,
+                candidate_refs=request.candidate_refs,
+                history_ref=request.history_ref,
+                history_disposition=request.history_disposition)
+            self._append_activation(terminal)
         from .runtime_observer import RuntimeObservation
         observation_kind = (
             "reactive_activation_completed"
@@ -370,8 +410,11 @@ class SQLiteReactiveScheduler:
         fields = {
             "series_id": terminal.series_id,
             "activation_id": terminal.activation_id,
-            "status": ("completed" if terminal.status
-                       is ActivationStatus.COMPLETED else "failed"),
+            "status": {
+                ActivationStatus.COMPLETED: "completed",
+                ActivationStatus.CANCELED: "canceled",
+                ActivationStatus.DEAD_LETTER: "dead_letter",
+            }.get(terminal.status, "failed"),
             "fencing_token": terminal.fencing_token,
             "candidate_count": len(terminal.candidate_refs),
         }
@@ -392,30 +435,36 @@ class SQLiteReactiveScheduler:
         """
         now = _instant(as_of)
         recovered = []
-        for record in self._active_records():
-            lease = self._require_lease(record.lease_id)
-            if _instant(lease.expires_at) > now:
-                continue
-            series = self._require_series(record.series_id)
-            if record.status is ActivationStatus.RUNNING:
-                updated = replace(
-                    record, status=ActivationStatus.DEAD_LETTER,
-                    revision=record.revision + 1, terminal_at=as_of,
-                    failure_code="RUNNING_OUTCOME_UNKNOWN_RECONCILIATION_REQUIRED")
-            elif record.attempt >= series.maximum_attempts_per_trigger:
-                updated = replace(
-                    record, status=ActivationStatus.DEAD_LETTER,
-                    revision=record.revision + 1, terminal_at=as_of,
-                    failure_code="LEASE_EXPIRED_ATTEMPTS_EXHAUSTED")
-            else:
-                updated = replace(
-                    record, status=ActivationStatus.ADMITTED,
-                    revision=record.revision + 1, lease_id="", worker_id="",
-                    loop_id="", started_at="", terminal_at="",
-                    terminal_code="", failure_code="", candidate_refs=())
-            self._append_activation(updated)
-            recovered.append(updated)
-            from .runtime_observer import RuntimeObservation
+        with self._write_transaction():
+            for record in self._active_records():
+                lease = self._require_lease(record.lease_id)
+                if _instant(lease.expires_at) > now:
+                    continue
+                series = self._require_series(record.series_id)
+                if record.status is ActivationStatus.RUNNING:
+                    # The handler's history, if any, is not reachable from
+                    # here, so the disposition says so instead of inheriting
+                    # the lease-time value.
+                    updated = replace(
+                        record, status=ActivationStatus.DEAD_LETTER,
+                        revision=record.revision + 1, terminal_at=as_of,
+                        failure_code="RUNNING_OUTCOME_UNKNOWN_RECONCILIATION_REQUIRED",
+                        history_disposition=ActivationHistoryDisposition.UNAVAILABLE)
+                elif record.attempt >= series.maximum_attempts_per_trigger:
+                    updated = replace(
+                        record, status=ActivationStatus.DEAD_LETTER,
+                        revision=record.revision + 1, terminal_at=as_of,
+                        failure_code="LEASE_EXPIRED_ATTEMPTS_EXHAUSTED")
+                else:
+                    updated = replace(
+                        record, status=ActivationStatus.ADMITTED,
+                        revision=record.revision + 1, lease_id="", worker_id="",
+                        loop_id="", started_at="", terminal_at="",
+                        terminal_code="", failure_code="", candidate_refs=())
+                self._append_activation(updated)
+                recovered.append(updated)
+        from .runtime_observer import RuntimeObservation
+        for updated in recovered:
             self._observations.emit(RuntimeObservation(
                 "reactive_activation_recovered", {
                     "series_id": updated.series_id,
@@ -427,8 +476,6 @@ class SQLiteReactiveScheduler:
                     "attempt": updated.attempt,
                     "failure_code": updated.failure_code,
                 }))
-        if recovered:
-            self._connection.commit()
         return tuple(recovered)
 
     def get_activation(self, activation_id: str) -> ActivationRecord | None:

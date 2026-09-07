@@ -572,11 +572,17 @@ class ActivationTerminalRequest:
     history_ref: ActivationHistoryRef | None = None
     history_disposition: ActivationHistoryDisposition | str = (
         ActivationHistoryDisposition.NOT_PERSISTED)
+    #: The worker that holds the lease. The scheduler refuses a terminal
+    #: whose worker is not the lease holder, so a readable fencing token alone
+    #: cannot publish an outcome under another worker's name.
+    worker_id: str = ""
 
     def __post_init__(self) -> None:
         for label, value in (("activation_id", self.activation_id),
                              ("lease_id", self.lease_id)):
             _identity(label, value)
+        if self.worker_id:
+            _identity("worker_id", self.worker_id)
         if (not isinstance(self.fencing_token, int)
                 or isinstance(self.fencing_token, bool)
                 or self.fencing_token < 1):
@@ -604,6 +610,12 @@ class ActivationTerminalRequest:
         object.__setattr__(self, "history_disposition", _enum(
             self.history_disposition, ActivationHistoryDisposition,
             "terminal history disposition"))
+        if (self.history_disposition
+                is ActivationHistoryDisposition.LEGACY_UNRECORDED):
+            # Only the version 1 record reader may say a record predates
+            # history dispositions. A new terminal cannot claim to be old.
+            raise ReactiveContractError(
+                "legacy_unrecorded is a reader disposition, not a terminal request")
         if ((self.history_ref is not None and not isinstance(
                 self.history_ref, ActivationHistoryRef))
                 or (self.history_ref is not None) != (

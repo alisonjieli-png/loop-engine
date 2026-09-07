@@ -242,6 +242,13 @@ class RunHistory:
             for event in ledger_events)
         for e in ledger_events:
             et = cls._LEDGER_MAP.get(e.get("event", ""), "custom")
+            if (et == "custom"
+                    and e.get("custom_kind") == "terminal_handler_return"
+                    and e.get("reported_model_calls")):
+                # Work a handler reports after cancellation is never admitted
+                # as output, but the model calls it made were real; the
+                # canonical history counts them instead of showing zero.
+                et = "model_invocation"
             e = _normalize_runtime_relationship(dict(e))
             kw = {"loop_id": str(e.get("loop_id", "")),
                   "spawning_loop_id": str(

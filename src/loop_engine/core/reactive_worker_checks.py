@@ -36,7 +36,8 @@ from ..loop.runtime_context import LoopRuntimeContext
 from .reactive_scheduler import ReactiveSchedulerError, SQLiteReactiveScheduler
 from .reactive_worker import (
     AsyncReactiveWorker, CanonicalReactiveExecutor, ReactiveHandlerBinding,
-    ReactiveHistoryPolicy, ReactiveWorkerError, ReactiveWorkerRequest)
+    ReactiveHistoryPolicy, ReactiveWorkerError, ReactiveWorkerHeartbeatPolicy,
+    ReactiveWorkerRequest)
 
 
 def _definition() -> LoopDefinition:
@@ -57,13 +58,14 @@ def _definition() -> LoopDefinition:
         installed_executor_modes=("deterministic",))
 
 
-def _profile() -> ReactiveLoopProfile:
+def _profile(persistence: PersistenceMode = PersistenceMode.DURABLE_SERIES
+             ) -> ReactiveLoopProfile:
     return ReactiveLoopProfile(
         "profile-worker", "1.0.0",
         ActivationPolicy(
             (TriggerKind.PUSH_EVENT,), reactivation_enabled=True),
         AdmissionPolicy(10), InputSchedulingPolicy(),
-        PersistenceMode.DURABLE_SERIES, ExplorationPolicy(),
+        persistence, ExplorationPolicy(),
         (OutputPortDefinition("result", "answer", "answer/v1"),),
         PortfolioPolicy(
             "policy-worker", "1.0.0", PortfolioView.VERIFIED_TOP_K,
@@ -93,7 +95,7 @@ def _restart_definition() -> LoopDefinition:
 
 
 def _restart_scheduler(root: Path):
-    definition, profile = _restart_definition(), _profile()
+    definition, profile = _restart_definition(), _profile(PersistenceMode.EPHEMERAL)
     scheduler = SQLiteReactiveScheduler(str(root / "scheduler.sqlite"))
     scheduler.register_profile(profile)
     series = ReactiveSeriesDefinition(
@@ -231,7 +233,8 @@ def run_restart_proof(directory: str) -> dict:
     stale_refused = False
     try:
         scheduler.terminal(ActivationTerminalRequest(before.activation_id, before.lease_id,
-            before.fencing_token, ActivationStatus.COMPLETED, "2026-09-06T00:00:11Z", "stale-loop", "ACCEPTED"))
+            before.fencing_token, ActivationStatus.COMPLETED, "2026-09-06T00:00:11Z", "stale-loop", "ACCEPTED",
+            worker_id=before.worker_id))
     except ReactiveSchedulerError:
         stale_refused = True
     check("expired_running_worker_cannot_overwrite_unknown_outcome_with_completion", stale_refused)
@@ -259,7 +262,8 @@ def run_restart_proof(directory: str) -> dict:
     try:
         scheduler.terminal(ActivationTerminalRequest(leased["activation"]["activation_id"],
             leased["lease"]["lease_id"], leased["lease"]["fencing_token"], ActivationStatus.COMPLETED,
-            "2026-09-06T00:00:11Z", "expired-worker", "ACCEPTED"))
+            "2026-09-06T00:00:11Z", "expired-worker", "ACCEPTED",
+            worker_id=leased["lease"]["worker_id"]))
     except ReactiveSchedulerError:
         stale_refused = True
     check("old_process_fencing_token_cannot_replace_new_attempt_result", stale_refused)
@@ -285,7 +289,7 @@ def run_restart_proof(directory: str) -> dict:
     cancellation = scheduler.terminal(ActivationTerminalRequest(
         canceled_claim["activation"]["activation_id"], canceled_claim["lease"]["lease_id"],
         canceled_claim["lease"]["fencing_token"], ActivationStatus.CANCELED, "2026-09-06T00:00:01Z",
-        terminal_code="CANCELED"))
+        terminal_code="CANCELED", worker_id=canceled_claim["lease"]["worker_id"]))
     scheduler.close()
     canceled = process("complete", canceled_root)
     check("confirmed_prestart_cancellation_is_distinct_from_running_outcome_unknown",
@@ -302,7 +306,7 @@ def run_restart_proof(directory: str) -> dict:
 def _cancellation_checks() -> list[dict]:
     """Cancel the awaiting coroutine while its thread still owns running work."""
     started, release = Event(), Event()
-    definition, profile = _definition(), _profile()
+    definition, profile = _definition(), _profile(PersistenceMode.EPHEMERAL)
     series = ReactiveSeriesDefinition("series-worker", "Await a bounded private fixture.", definition.ref,
         profile.profile_id, profile.version, profile.content_digest, "trigger/v1", ("result",), 2, 1)
     with tempfile.TemporaryDirectory(prefix="reactive-cancel-") as root:
@@ -356,14 +360,15 @@ def _cancellation_checks() -> list[dict]:
 
 
 def _history_fixture(root: Path, *, behavior: str = "success", authorize=None,
-                     required: bool = True):
+                     required: bool = True,
+                     persistence: PersistenceMode = PersistenceMode.DURABLE_SERIES):
     """Host preparation and explicit fixture authority, never a provider call."""
     from ..loop.effect_approval import ApprovalDecision
     root.mkdir(parents=True, exist_ok=True)
     history_root = root / "runs"
     if required:
         history_root.mkdir(exist_ok=True)
-    definition, profile = _definition(), _profile()
+    definition, profile = _definition(), _profile(persistence)
     series = ReactiveSeriesDefinition("series-worker", "Verify a durable private fixture.",
         definition.ref, profile.profile_id, profile.version, profile.content_digest,
         "trigger/v1", ("result",), 2, 1)
@@ -573,7 +578,20 @@ def run_history_proof(directory: str) -> dict:
               terminal.status is status and terminal.terminal_code == code and valid
               and terminal.history_disposition is ActivationHistoryDisposition.PERSISTED)
         scheduler.close()
-    scheduler, executor, series, trigger, _, approvals = _history_fixture(root / "ephemeral", required=False)
+    scheduler, executor, series, trigger, calls, approvals = _history_fixture(
+        root / "durable-without-policy", required=False)
+    missing = _history_run(scheduler, executor, series)
+    refused_durable = scheduler.get_activation(trigger.activation_id)
+    check("durable_series_refuses_a_binding_without_history_authority_before_the_handler",
+          refused_durable.status is ActivationStatus.FAILED
+          and refused_durable.failure_code == "HISTORY_POLICY_MISSING_FOR_DURABLE_SERIES"
+          and missing.error_code == "HISTORY_POLICY_MISSING_FOR_DURABLE_SERIES"
+          and refused_durable.history_disposition is ActivationHistoryDisposition.UNAVAILABLE
+          and not calls and not approvals
+          and not (root / "durable-without-policy" / "runs").exists())
+    scheduler.close()
+    scheduler, executor, series, trigger, _, approvals = _history_fixture(
+        root / "ephemeral", required=False, persistence=PersistenceMode.EPHEMERAL)
     _history_run(scheduler, executor, series)
     ephemeral = scheduler.get_activation(trigger.activation_id)
     check("default_binding_is_explicitly_nonpersistent_and_makes_no_history_writes",
@@ -606,7 +624,9 @@ def self_test() -> dict:
         tests.append({"test": name, "passed": bool(passed), "detail": detail})
 
     definition = _definition()
-    profile = _profile()
+    # Default bindings carry no history authority, so the profile they run
+    # under is ephemeral; a durable profile refuses them (checked below).
+    profile = _profile(PersistenceMode.EPHEMERAL)
     series = ReactiveSeriesDefinition(
         "series-worker", "Run one bounded reactive fixture activation.",
         definition.ref, profile.profile_id, profile.version,
@@ -669,6 +689,83 @@ def self_test() -> dict:
                   and item.loop_id in {outcome.loop_id for outcome in outcomes}
                   and item.loop_definition_ref == definition.ref
                   for item in terminal))
+        scheduler.close()
+
+    with tempfile.TemporaryDirectory() as temporary:
+        # A handler that outlives one heartbeat interval keeps its lease
+        # under a heartbeat policy: the renewed lease moves its expiry and
+        # the outcome counts the renewals.
+        scheduler = SQLiteReactiveScheduler(os.path.join(
+            temporary, "heartbeat.sqlite"))
+        scheduler.register_profile(profile)
+        scheduler.register_series(series)
+        admission = scheduler.admit(_trigger(7, definition))
+        ticks = {"count": 0}
+
+        def clock() -> str:
+            ticks["count"] += 1
+            return f"2026-08-29T17:02:{min(ticks['count'], 59):02d}Z"
+
+        def slow_handler(_loop, _step: str, _trigger_value) -> StepOutcome:
+            time.sleep(0.3)
+            return StepOutcome("reactive:slow", "deterministic", 1.0)
+
+        slow_executor = CanonicalReactiveExecutor(
+            LoopDefinitionRegistry((definition,)), context,
+            (ReactiveHandlerBinding(definition.ref, slow_handler),))
+        beating = AsyncReactiveWorker(
+            scheduler, slow_executor,
+            ReactiveWorkerHeartbeatPolicy(0.05, clock))
+        renewed = asyncio.run(beating.run_once(ReactiveWorkerRequest(
+            ActivationClaimRequest(
+                "worker-beat", "2026-08-29T17:02:00Z", 60, series.series_id),
+            "2026-08-29T17:02:00Z", "2026-08-29T17:03:30Z")))
+        record = scheduler.get_activation(admission.activation.activation_id)
+        lease = scheduler._require_lease(record.lease_id)
+        check("heartbeat_policy_renews_the_held_lease_while_the_handler_runs",
+              renewed.claimed and renewed.terminal_code == "ACCEPTED"
+              and renewed.heartbeats_sent >= 1
+              and lease.expires_at > "2026-08-29T17:03:00Z"
+              and record.status is ActivationStatus.COMPLETED,
+              f"heartbeats={renewed.heartbeats_sent} expires_at={lease.expires_at}")
+        refused_policy = False
+        try:
+            ReactiveWorkerHeartbeatPolicy(0, clock)
+        except ReactiveWorkerError:
+            refused_policy = True
+        check("heartbeat_policy_refuses_a_nonpositive_interval", refused_policy)
+
+        # One sibling whose start fails on a stale fence becomes its own
+        # typed outcome; the other sibling's result survives.
+        scheduler.admit(_trigger(8, definition))
+        scheduler.admit(_trigger(9, definition))
+        original_start = scheduler.start
+        stale = {"remaining": 1}
+
+        def failing_start(request):
+            if stale["remaining"]:
+                stale["remaining"] -= 1
+                raise ReactiveSchedulerError(
+                    "stale or foreign work lease cannot change activation")
+            return original_start(request)
+
+        scheduler.start = failing_start
+        try:
+            pair = asyncio.run(AsyncReactiveWorker(scheduler, slow_executor).run_many((
+                ReactiveWorkerRequest(ActivationClaimRequest(
+                    "worker-left", "2026-08-29T17:04:00Z", 60, series.series_id),
+                    "2026-08-29T17:04:01Z", "2026-08-29T17:04:02Z"),
+                ReactiveWorkerRequest(ActivationClaimRequest(
+                    "worker-right", "2026-08-29T17:04:00Z", 60, series.series_id),
+                    "2026-08-29T17:04:01Z", "2026-08-29T17:04:02Z"))))
+        finally:
+            scheduler.start = original_start
+        check("one_stale_start_does_not_discard_the_sibling_outcome",
+              len(pair) == 2
+              and sorted(item.terminal_code for item in pair) == ["", "ACCEPTED"]
+              and any(item.error_code == "REACTIVESCHEDULERERROR" for item in pair)
+              and all(item.claimed for item in pair),
+              str(pair))
         scheduler.close()
 
     with tempfile.TemporaryDirectory(prefix="reactive-process-proof-") as root:

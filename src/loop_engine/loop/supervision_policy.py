@@ -46,9 +46,14 @@ class SupervisionPolicy:
     """Typed non-progress and depth limits for one Loop and its kernel passes."""
 
     policy_id: str = "loop.supervision"
-    version: str = "1.0.0"
+    version: str = "1.1.0"
     identical_failures_before_stop: int = 3
     non_progress_passes_before_escalation: int = 3
+    #: A Loop whose exit condition is ``accepted_success`` and that declares
+    #: no ``max_iterations`` stops as ``no_progress`` after this many complete
+    #: passes without one accepted success, however the failure text varies.
+    #: The default equals the kernel ladder: three escalations of three passes.
+    unaccepted_passes_before_stop: int = 9
     escalation_ladder: tuple[str, ...] = ESCALATION_RUNGS
     spawn_depth_guard: int = 128
 
@@ -57,6 +62,7 @@ class SupervisionPolicy:
             raise SupervisionPolicyError("policy identity must be non-empty")
         for name in ("identical_failures_before_stop",
                      "non_progress_passes_before_escalation",
+                     "unaccepted_passes_before_stop",
                      "spawn_depth_guard"):
             value = getattr(self, name)
             if (isinstance(value, bool) or not isinstance(value, int)
@@ -91,6 +97,7 @@ class SupervisionPolicy:
             "identical_failures_before_stop": self.identical_failures_before_stop,
             "non_progress_passes_before_escalation":
                 self.non_progress_passes_before_escalation,
+            "unaccepted_passes_before_stop": self.unaccepted_passes_before_stop,
             "escalation_ladder": list(self.escalation_ladder),
             "spawn_depth_guard": self.spawn_depth_guard,
         }

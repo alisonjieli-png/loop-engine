@@ -164,8 +164,12 @@ def run_checks():
           compile_assignments(independent, "root")[0] == (0, 1))
     other = deepcopy(consumer)
     other["inputs"][0]["delivery"] = "reference"
-    check("delivery_policy_changes_the_admitted_plan_digest",
-          compile_assignments((spec_from(other), specs[1]), "root task")[1] != plan_digest)
+    check("reference_delivery_is_refused_at_admission_until_a_consumer_can_materialize",
+          refused(lambda: compile_assignments((spec_from(other), specs[1]), "root task")))
+    unknown_delivery = deepcopy(consumer)
+    unknown_delivery["inputs"][0]["delivery"] = "stream"
+    check("unknown_delivery_kinds_are_refused_at_admission",
+          refused(lambda: compile_assignments((spec_from(unknown_delivery), specs[1]), "root task")))
     legacy = ProblemSpec("legacy", constraints=("constraint",), success_criteria=("criterion",))
     check("legacy_independent_assignment_and_task_packet_stay_unchanged",
           compile_assignments((legacy,), "root") == ((0,), "")
@@ -234,6 +238,17 @@ def run_checks():
                     replace(reference, producer_loop_id="other"))))
     check("dependency_delegation_does_not_add_call_or_iteration_ceilings",
           delegation.budget.max_model_calls is None and delegation.budget.max_iterations is None)
+    from .adaptive_practitioner_bindings import DependencyValuePolicy
+    check("bound_dependency_input_measures_its_delivered_bytes",
+          bound[0].value_bytes == len(json.dumps([2, 3], separators=(",", ":")).encode("utf-8"))
+          and bound[0].to_dict()["value_bytes"] == bound[0].value_bytes)
+    bounded_frame, bounded_producer, _bounded_consumer, bounded_summary = frame_fixture()
+    bounded_frame.policy = DependencyValuePolicy(maximum_value_bytes=4)
+    check("dependency_value_over_the_delivery_bound_is_refused_as_incompatible",
+          refused(lambda: bounded_frame.register(bounded_producer, bounded_summary))
+          and DependencyValuePolicy().maximum_value_bytes == 262144
+          and refused(lambda: DependencyValuePolicy(0))
+          and refused(lambda: DependencyValuePolicy(True)))
 
     for label, mutate in (
             ("stale_source", lambda f, s: s["accepted_result"]["result"]["value"].append(4)),
@@ -286,11 +301,10 @@ def run_checks():
     reference_consumer = deepcopy(consumer)
     reference_consumer["inputs"][0]["delivery"] = "reference"
     output, observed, _intact, _kinds = public_run([producer, reference_consumer])
-    handed = next((item for item in observed if item["task_id"] == "consumer"), {}).get("dependency_inputs", [])
-    check("public_reference_handoff_keeps_body_private_and_exact_identity_visible",
-          len(handed) == 1 and "value" not in handed[0]
-          and handed[0]["delivery"] == "reference"
-          and output["spawned_results"][1]["accepted_result"]["result"]["value"] == handed[0]["value_ref"])
+    check("public_reference_delivery_is_refused_before_any_consumer_dispatch",
+          not any(item.get("task_id") == "consumer" for item in observed)
+          and not any(item.get("task_id") == "consumer" and item.get("task_complete") is True
+                      for item in output.get("spawned_results", [])))
     unicode_source = deepcopy(producer)
     unicode_source["objective"] = "Préparer les valeurs de 東京"
     unicode_output, _observed, unicode_intact, _kinds = public_run([unicode_source, consumer])

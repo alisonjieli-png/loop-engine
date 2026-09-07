@@ -3,11 +3,21 @@ import unittest
 from dataclasses import replace
 from types import SimpleNamespace
 
-from opencode_gateway_bridge import BridgeRequest, validate_model_request, validate_message, normalize_tool_envelope, bridge_loop_config
+from opencode_gateway_bridge import (BridgeRequest, validate_model_request, validate_message, normalize_tool_envelope,
+                                     bridge_loop_config, record_side_frame)
 from opencode_instance import CompiledInstance
 
 
 class BridgeChecks(unittest.TestCase):
+    def test_harness_text_and_unknown_frames_are_counted_not_dropped(self):
+        harness_text, unknown = [], []
+        self.assertTrue(record_side_frame({'bridge_record': 'harness_text', 'text_digest': 'a' * 64}, harness_text, unknown))
+        self.assertTrue(record_side_frame({'bridge_record': 'later_protocol_addition'}, harness_text, unknown))
+        self.assertFalse(record_side_frame({'bridge_record': 'harness_event', 'value': {}}, harness_text, unknown))
+        self.assertFalse(record_side_frame({'bridge_record': 'finished'}, harness_text, unknown))
+        self.assertEqual(harness_text, ['a' * 64])
+        self.assertEqual(unknown, ['later_protocol_addition'])
+
     def setUp(self):
         self.manifest = {'tools': ['read', 'skill']}
         self.body = {'model': 'loop-model', 'messages': [{'role': 'user', 'content': 'data'}],

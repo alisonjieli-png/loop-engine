@@ -228,7 +228,9 @@ class ProbeChecks(unittest.TestCase):
                                     for item in execution_input['cases']))
                 if task.shape == 'structured_data_to_safe_document':
                     self.assertEqual(len(result['value']['artifacts']), 1)
-                    self.assertTrue(Path(result['value']['artifacts'][0]['path']).is_file())
+                    self.assertFalse(Path(result['value']['artifacts'][0]['path']).is_absolute())
+                    self.assertTrue((root / result['value']['artifacts'][0]['path']).is_file())
+                    self.assertNotIn(str(root), json.dumps(result))
 
     def test_delivered_artifact_mutation_invalidates_snapshot_and_verification(self):
         from loop_engine.core.host_runtime import verify_host_result
@@ -241,7 +243,7 @@ class ProbeChecks(unittest.TestCase):
             invoke(host, state, owner, 1, {'path': 'solution.py', 'content': SOLUTIONS[3],
                                          'expected_digest': initial['value']['digest']})
             result = invoke(host, state, owner, 2, {})
-            artifact = Path(result['value']['artifacts'][0]['path'])
+            artifact = root / result['value']['artifacts'][0]['path']
             original = artifact.read_bytes()
             self.assertIn(b'Review', original)
             artifact.write_bytes(original.replace(b'Review', b'Change'))

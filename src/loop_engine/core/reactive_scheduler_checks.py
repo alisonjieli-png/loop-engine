@@ -14,9 +14,9 @@ from ..loop.atomic_primitives import LoopValue, LoopValueCreateRequest
 from ..loop.loop_definition import LoopDefinitionRef
 from ..loop.recursive_loop import LoopLedger
 from ..loop.reactive_activation import (
-    ActivationClaimRequest, ActivationStartRequest, ActivationStatus,
-    ActivationTerminalRequest, LeaseHeartbeatRequest,
-    ReactiveSeriesDefinition, TriggerEnvelope)
+    ActivationClaimRequest, ActivationHistoryDisposition,
+    ActivationStartRequest, ActivationStatus, ActivationTerminalRequest,
+    LeaseHeartbeatRequest, ReactiveSeriesDefinition, TriggerEnvelope)
 from ..loop.reactive_contracts import (
     ActivationPolicy, AdmissionPolicy, EmissionPolicy, ExplorationPolicy,
     InputSchedulingPolicy, MetricDirection, OutputPortDefinition,
@@ -132,11 +132,16 @@ def self_test() -> dict:
             scheduler.terminal(ActivationTerminalRequest(
                 started.activation_id, claim.lease.lease_id,
                 claim.lease.fencing_token, ActivationStatus.COMPLETED,
-                "2026-08-29T14:06:01Z", "loop-stale", "ACCEPTED"))
+                "2026-08-29T14:06:01Z", "loop-stale", "ACCEPTED",
+                worker_id="worker-one"))
         except ReactiveSchedulerError:
             stale_refused = True
         check("expired_worker_cannot_commit_with_stale_fencing_token",
               stale_refused)
+        check("stale_fence_leaves_the_connection_usable_for_the_next_claim",
+              scheduler.claim(ActivationClaimRequest(
+                  "worker-one", "2026-08-29T14:06:01Z", 60,
+                  "series-without-work")) is None)
 
         unstarted = scheduler.claim(ActivationClaimRequest(
             "worker-two", "2026-08-29T14:06:02Z", 1,
@@ -152,11 +157,48 @@ def self_test() -> dict:
         scheduler.start(ActivationStartRequest(
             reclaimed.activation.activation_id, reclaimed.lease.lease_id,
             reclaimed.lease.fencing_token, "2026-08-29T14:06:06Z"))
+        foreign_refused = False
+        try:
+            # The token is readable by any database reader; holding the
+            # lease is not. A terminal from another worker name is refused
+            # and the record stays attributed to its real holder.
+            scheduler.terminal(ActivationTerminalRequest(
+                reclaimed.activation.activation_id, reclaimed.lease.lease_id,
+                reclaimed.lease.fencing_token, ActivationStatus.COMPLETED,
+                "2026-08-29T14:06:07Z", "loop-forged", "ACCEPTED",
+                worker_id="worker-impostor"))
+        except ReactiveSchedulerError:
+            foreign_refused = True
+        unnamed_refused = False
+        try:
+            scheduler.terminal(ActivationTerminalRequest(
+                reclaimed.activation.activation_id, reclaimed.lease.lease_id,
+                reclaimed.lease.fencing_token, ActivationStatus.COMPLETED,
+                "2026-08-29T14:06:07Z", "loop-unnamed", "ACCEPTED"))
+        except ReactiveSchedulerError:
+            unnamed_refused = True
+        check("terminal_must_come_from_the_worker_holding_the_lease",
+              foreign_refused and unnamed_refused
+              and scheduler.get_activation(
+                  reclaimed.activation.activation_id).status
+              is ActivationStatus.RUNNING)
+        legacy_refused = False
+        try:
+            ActivationTerminalRequest(
+                reclaimed.activation.activation_id, reclaimed.lease.lease_id,
+                reclaimed.lease.fencing_token, ActivationStatus.COMPLETED,
+                "2026-08-29T14:06:07Z", "loop-legacy", "ACCEPTED",
+                history_disposition="legacy_unrecorded",
+                worker_id="worker-three")
+        except ValueError:
+            legacy_refused = True
+        check("legacy_unrecorded_is_a_reader_disposition_not_a_terminal_request",
+              legacy_refused)
         completed = scheduler.terminal(ActivationTerminalRequest(
             reclaimed.activation.activation_id, reclaimed.lease.lease_id,
             reclaimed.lease.fencing_token, ActivationStatus.COMPLETED,
             "2026-08-29T14:06:07Z", "loop-completed", "ACCEPTED",
-            ("candidate-final",)))
+            ("candidate-final",), worker_id="worker-three"))
         history = scheduler.activation_history(completed.activation_id)
         check("recovered_activation_completes_under_new_fence",
               completed.fencing_token == 2
@@ -262,6 +304,47 @@ def self_test() -> dict:
               len(claimed) == 1
               and claimed[0].activation.activation_id
               == concurrency_trigger.activation.activation_id)
+
+        # Two connections on one database: the peer recovers an expired
+        # running lease first; the late holder's terminal is a typed refusal
+        # and its connection is still able to claim afterwards.
+        conflict_path = os.path.join(temporary, "conflict.sqlite")
+        holder = SQLiteReactiveScheduler(conflict_path)
+        holder.register_profile(profile)
+        holder.register_series(series)
+        peer = SQLiteReactiveScheduler(conflict_path)
+        peer.register_profile(profile)
+        peer.register_series(series)
+        holder.admit(_trigger(
+            "trigger-conflict", series.series_id, 13,
+            received_at="2026-08-29T18:00:00Z"))
+        held = holder.claim(ActivationClaimRequest(
+            "worker-holder", "2026-08-29T18:00:01Z", 1, series.series_id))
+        holder.start(ActivationStartRequest(
+            held.activation.activation_id, held.lease.lease_id,
+            held.lease.fencing_token, "2026-08-29T18:00:01Z"))
+        recovered_by_peer = peer.recover_expired("2026-08-29T18:00:03Z")
+        late_typed = False
+        try:
+            holder.terminal(ActivationTerminalRequest(
+                held.activation.activation_id, held.lease.lease_id,
+                held.lease.fencing_token, ActivationStatus.COMPLETED,
+                "2026-08-29T18:00:04Z", "loop-late", "ACCEPTED",
+                worker_id="worker-holder"))
+        except ReactiveSchedulerError:
+            late_typed = True
+        check("late_terminal_after_peer_recovery_is_typed_and_leaves_the_connection_usable",
+              len(recovered_by_peer) == 1
+              and recovered_by_peer[0].status is ActivationStatus.DEAD_LETTER
+              and recovered_by_peer[0].history_disposition
+              is ActivationHistoryDisposition.UNAVAILABLE
+              and late_typed
+              and not holder._connection.in_transaction
+              and holder.claim(ActivationClaimRequest(
+                  "worker-holder", "2026-08-29T18:00:05Z", 60,
+                  series.series_id)) is None)
+        holder.close()
+        peer.close()
 
     passed = sum(item["passed"] for item in tests)
     return {"record_type": "reactive_scheduler_self_test/v1", "tests": tests,

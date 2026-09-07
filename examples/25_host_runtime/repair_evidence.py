@@ -64,6 +64,19 @@ class ProbeRepairEvidence:
         return hashlib.sha256(self.view_json.encode()).hexdigest()
 
 
+def _same_record_path(recorded, requested):
+    """A model-visible record names its file relative to the task root; the
+    operator's request names it absolutely. Both must name one file, and the
+    digest comparison beside this check binds its bytes."""
+    if not isinstance(recorded, str) or not recorded:
+        return False
+    absolute = Path(requested).absolute()
+    recorded_path = Path(recorded)
+    if recorded_path.is_absolute():
+        return recorded_path == absolute
+    return absolute.parts[-len(recorded_path.parts):] == recorded_path.parts
+
+
 def load_repair_evidence(task, request):
     """Select one observed failure through Runtime History and Solution Intelligence."""
     from generalization_probe import canonical, digest, ordinary_file, task_semantics
@@ -133,7 +146,7 @@ def load_repair_evidence(task, request):
                 continue
             matching = [item for item in report.get('completion_checks', ())
                         if item.get('passed') is False
-                        and item.get('observations', {}).get('receipt_ref') == str(Path(request.receipt_path).absolute())
+                        and _same_record_path(item.get('observations', {}).get('receipt_ref'), request.receipt_path)
                         and item.get('observations', {}).get('receipt_digest') == receipt_sha]
             if not matching:
                 continue

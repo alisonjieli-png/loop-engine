@@ -191,7 +191,9 @@ def _reactive_profile() -> ReactiveLoopProfile:
         ActivationPolicy(
             (TriggerKind.PUSH_EVENT,), reactivation_enabled=True),
         AdmissionPolicy(4), InputSchedulingPolicy(),
-        PersistenceMode.DURABLE_SERIES, ExplorationPolicy(),
+        # The harvest fixture binds no history policy, so its series is
+        # ephemeral; a durable series refuses such a binding before the handler.
+        PersistenceMode.EPHEMERAL, ExplorationPolicy(),
         (OutputPortDefinition(
             "candidate", "capability_candidate_ref",
             "capability_candidate_ref/v1"),),

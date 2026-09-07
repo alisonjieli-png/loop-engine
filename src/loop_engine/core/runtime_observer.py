@@ -173,12 +173,16 @@ class RuntimeObservation:
         if (self.kind == "skill_load_terminal"
                 and status not in ("completed", "failed")):
             raise RuntimeObservationError("unknown skill load status")
-        if self.kind.startswith("reactive_") \
-                and status not in {
-                    "admitted", "deduplicated", "leased", "running",
-                    "heartbeat", "completed", "failed", "recovered", "dead_letter",
-                    "stored"}:
-            raise RuntimeObservationError("unknown reactive observation status")
+        if self.kind.startswith("reactive_"):
+            # Activation statuses are owned by the activation record's enum;
+            # the lease and store transitions below are the observer's own.
+            from ..loop.reactive_activation import ActivationStatus
+            allowed = {item.value for item in ActivationStatus} | {
+                "admitted", "deduplicated", "leased", "running",
+                "heartbeat", "completed", "failed", "recovered", "dead_letter",
+                "stored"}
+            if status not in allowed:
+                raise RuntimeObservationError("unknown reactive observation status")
         if self.kind.startswith("information_") \
                 and status not in {"published", "materialized"}:
             raise RuntimeObservationError(

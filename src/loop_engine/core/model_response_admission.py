@@ -30,7 +30,11 @@ _APPROVED_PREAMBLE = re.compile(
 _JSON_FENCE = re.compile(
     r"\s*```(?:json)?\s*\n?(?P<body>.*?)\n?```\s*",
     flags=re.IGNORECASE | re.DOTALL)
+#: Reported when the JSON decoder exhausts the interpreter stack on a deeply
+#: nested candidate. It is a refusal of that text, never a run abort.
+_NESTING_DEPTH_MESSAGE = "Nesting depth exceeded"
 _JSON_DECODER_MESSAGES = frozenset((
+    _NESTING_DEPTH_MESSAGE,
     "Expecting value", "Extra data",
     "Expecting property name enclosed in double quotes",
     "Expecting ':' delimiter", "Expecting ',' delimiter",
@@ -98,7 +102,7 @@ class ResponseJSONSyntaxDiagnostic:
 
 
 def _syntax_diagnostic(strategy: str, candidate: str,
-                       error: json.JSONDecodeError | None
+                       error: json.JSONDecodeError | RecursionError | None
                        ) -> ResponseJSONSyntaxDiagnostic:
     first = candidate.lstrip()[:1]
     root_hint = ({"{": "object", "[": "array", '"': "string",
@@ -111,6 +115,14 @@ def _syntax_diagnostic(strategy: str, candidate: str,
         # A decoded outer JSON string can contain an unpaired surrogate.
         # Reporting diagnostics must not introduce a new parse failure.
         byte_count = None
+    if isinstance(error, RecursionError):
+        # The decoder ran out of stack before it could judge the syntax. The
+        # text is refused as unparseable from its root value, offset zero.
+        return ResponseJSONSyntaxDiagnostic(
+            strategy=strategy, syntax_valid=False,
+            decoder_message=_NESTING_DEPTH_MESSAGE, position=0, line=1,
+            column=1, candidate_char_count=len(candidate),
+            candidate_byte_count=byte_count, root_hint=root_hint)
     message = (error.msg if error is not None
                and error.msg in _JSON_DECODER_MESSAGES else "JSON syntax error")
     return ResponseJSONSyntaxDiagnostic(
@@ -236,7 +248,7 @@ def _candidate_texts(request: ModelResponseAdmissionRequest):
     if "double_encoded_json_unwrapped" in allowed:
         try:
             outer = json.loads(raw)
-        except (TypeError, json.JSONDecodeError):
+        except (TypeError, json.JSONDecodeError, RecursionError):
             outer = None
         if isinstance(outer, str):
             yield ("double_encoded_json_unwrapped", outer,
@@ -250,7 +262,7 @@ def _admit(request: ModelResponseAdmissionRequest) \
     for strategy, candidate, trace in _candidate_texts(request):
         try:
             value = json.loads(candidate)
-        except json.JSONDecodeError as exc:
+        except (json.JSONDecodeError, RecursionError) as exc:
             diagnostics.append(_syntax_diagnostic(strategy, candidate, exc))
             continue
         diagnostics.append(_syntax_diagnostic(strategy, candidate, None))
@@ -263,7 +275,7 @@ def _admit(request: ModelResponseAdmissionRequest) \
         from .record_operations_records import RecordOperationError, parse_json
         try:
             value = parse_json(candidate)
-        except RecordOperationError:
+        except (RecordOperationError, RecursionError):
             return ModelResponseAdmissionResult(
                 False, None, strategy, "invalid_json_value", request.raw_digest,
                 syntax_diagnostics=tuple(diagnostics))
@@ -373,6 +385,7 @@ def self_test() -> dict:
     }]
     tests.extend(_syntax_diagnostic_checks())
     tests.extend(_schema_diagnostic_checks())
+    tests.extend(_nesting_depth_checks())
     for index, body in enumerate((
             '{"value":1,"value":2}', '{"nested":{"value":1,"value":2}}',
             '{"value":NaN}', '{"value":Infinity}', '{"value":1e999}',
@@ -388,6 +401,34 @@ def self_test() -> dict:
             "tests": tests, "passed": sum(item["passed"] for item in tests),
             "total": len(tests),
             "all_passed": all(item["passed"] for item in tests)}
+
+
+def _nesting_depth_checks() -> list[dict]:
+    """A response nested past the decoder's stack is refused, not fatal."""
+    digest = hashlib.sha256(b"depth-contract").hexdigest()
+    depth = 1500
+    deep_object = '{"a":' * depth + "1" + "}" * depth
+    deep_array = "[" * depth + "]" * depth
+    outcomes = {}
+    for label, text in (("object", deep_object), ("array", deep_array),
+                        ("double_encoded", json.dumps(deep_object))):
+        try:
+            result = admit_model_response_as_loop(ModelResponseAdmissionRequest(
+                text, "fixture.response/v1", digest))
+            outcomes[label] = (
+                result.admitted is False
+                and result.failure_code in (
+                    "invalid_json", "invalid_json_value", "root_not_object")
+                and any(item.decoder_message == _NESTING_DEPTH_MESSAGE
+                        and item.syntax_valid is False
+                        for item in result.syntax_diagnostics))
+        except RecursionError:
+            outcomes[label] = False
+    return [{
+        "test": "nesting_depth_beyond_the_decoder_is_a_typed_refusal_not_an_abort",
+        "passed": all(outcomes.values()),
+        "detail": ", ".join(f"{label}={ok}" for label, ok in outcomes.items()),
+    }]
 
 
 def _syntax_diagnostic_checks() -> list[dict]:

@@ -10,6 +10,7 @@ import hashlib
 import json
 import time
 from dataclasses import dataclass, field
+from datetime import timedelta
 from pathlib import Path
 from typing import Callable
 
@@ -22,10 +23,13 @@ from ..loop.effect_approval import (
 from ..loop.reactive_activation import (
     ActivationClaimRequest, ActivationHistoryDisposition, ActivationHistoryRef,
     ActivationRecord, ActivationStartRequest, ActivationStatus,
-    ActivationTerminalRequest, ReactiveSeriesDefinition, TriggerEnvelope)
+    ActivationTerminalRequest, LeaseHeartbeatRequest, ReactiveSeriesDefinition,
+    TriggerEnvelope)
+from ..loop.reactive_contracts import PersistenceMode, ReactiveLoopProfile
 from ..loop.recursive_loop import Loop, LoopLedger, StepOutcome, terminal_code
 from .reactive_scheduler import (
-    ActivationClaimResult, ReactiveSchedulerError, SQLiteReactiveScheduler)
+    ActivationClaimResult, ReactiveSchedulerError, SQLiteReactiveScheduler,
+    _instant, _iso)
 
 
 class ReactiveWorkerError(RuntimeError):
@@ -138,6 +142,40 @@ class ReactiveHandlerBinding:
             raise ReactiveWorkerError("reactive handler needs a typed history policy")
 
 
+class ReactiveWorkerRefusal(ReactiveWorkerError):
+    """A typed refusal to run: the activation fails with this exact code."""
+
+    def __init__(self, failure_code: str, message: str,
+                 history_disposition: ActivationHistoryDisposition = (
+                     ActivationHistoryDisposition.UNAVAILABLE)) -> None:
+        super().__init__(message)
+        self.failure_code = failure_code
+        self.history_disposition = history_disposition
+
+
+@dataclass(frozen=True)
+class ReactiveWorkerHeartbeatPolicy:
+    """Renew the held lease while a handler runs.
+
+    ``clock`` returns the current instant as an ISO-8601 UTC string, the same
+    shape as every other timestamp the scheduler stores, so a fixture can
+    drive it. Without a policy the worker never renews, and the lease must
+    outlast the handler.
+    """
+
+    interval_seconds: float
+    clock: Callable[[], str] = field(repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        if (isinstance(self.interval_seconds, bool)
+                or not isinstance(self.interval_seconds, (int, float))
+                or self.interval_seconds <= 0):
+            raise ReactiveWorkerError(
+                "heartbeat interval must be a positive number of seconds")
+        if not callable(self.clock):
+            raise ReactiveWorkerError("heartbeat policy needs a clock callable")
+
+
 @dataclass(frozen=True)
 class ReactiveExecutionRequest:
     """Exact series, trigger, and claim passed to one Loop executor."""
@@ -145,6 +183,9 @@ class ReactiveExecutionRequest:
     series: ReactiveSeriesDefinition
     trigger: TriggerEnvelope
     claim: ActivationClaimResult
+    #: The exact registered profile the series names. When present, its
+    #: persistence mode is enforced against the handler's history policy.
+    profile: ReactiveLoopProfile | None = None
 
 
 @dataclass(frozen=True)
@@ -198,6 +239,17 @@ class CanonicalReactiveExecutor:
         if binding is None:
             raise ReactiveWorkerError(
                 "no installed handler matches the exact Loop definition")
+        if (request.profile is not None
+                and PersistenceMode(request.profile.persistence)
+                is PersistenceMode.DURABLE_SERIES
+                and not binding.history_policy.required):
+            # The series declares durable history; the binding brings no
+            # write authority. Running anyway would publish COMPLETED with
+            # nothing persisted, so the activation fails before the handler.
+            raise ReactiveWorkerRefusal(
+                "HISTORY_POLICY_MISSING_FOR_DURABLE_SERIES",
+                "a durable series requires a required history policy on its "
+                "handler binding")
         activation = request.claim.activation
         if (request.trigger.activation_id != activation.activation_id
                 or request.trigger.trigger_id != activation.trigger_id
@@ -433,43 +485,89 @@ class ReactiveWorkerOutcome:
     terminal_code: str = ""
     error_code: str = ""
     elapsed_seconds: float = 0.0
+    #: Lease renewals sent while the handler ran; zero without a policy.
+    heartbeats_sent: int = 0
+    #: The exception type name when history persistence failed after the
+    #: Loop finished, so the cause is not reduced to one generic code.
+    history_error_code: str = ""
 
 
 class AsyncReactiveWorker:
     """Claim work, execute canonical Loops in threads, and commit by fence."""
 
     def __init__(self, scheduler: SQLiteReactiveScheduler,
-                 executor: CanonicalReactiveExecutor) -> None:
+                 executor: CanonicalReactiveExecutor,
+                 heartbeat: ReactiveWorkerHeartbeatPolicy | None = None) -> None:
         if not isinstance(scheduler, SQLiteReactiveScheduler):
             raise ReactiveWorkerError(
                 "async reactive worker needs SQLiteReactiveScheduler")
         if not isinstance(executor, CanonicalReactiveExecutor):
             raise ReactiveWorkerError(
                 "async reactive worker needs CanonicalReactiveExecutor")
+        if heartbeat is not None and not isinstance(
+                heartbeat, ReactiveWorkerHeartbeatPolicy):
+            raise ReactiveWorkerError(
+                "async reactive worker heartbeat needs ReactiveWorkerHeartbeatPolicy")
         self._scheduler = scheduler
         self._executor = executor
+        self._heartbeat = heartbeat
+
+    def _renewals(self, request: ReactiveWorkerRequest,
+                  claim: ActivationClaimResult):
+        """A background renewal task and its counter, or None without a policy."""
+        policy = self._heartbeat
+        if policy is None:
+            return None, None
+        counter = {"sent": 0}
+
+        async def renew() -> None:
+            while True:
+                await asyncio.sleep(policy.interval_seconds)
+                now = policy.clock()
+                expires = _iso(_instant(now) + timedelta(
+                    seconds=float(request.claim.lease_seconds)))
+                self._scheduler.heartbeat(LeaseHeartbeatRequest(
+                    claim.activation.activation_id, claim.lease.lease_id,
+                    claim.lease.fencing_token, now, expires))
+                counter["sent"] += 1
+
+        return asyncio.create_task(renew()), counter
 
     async def run_once(self, request: ReactiveWorkerRequest) \
             -> ReactiveWorkerOutcome:
         if not isinstance(request, ReactiveWorkerRequest):
             raise ReactiveWorkerError(
                 "run_once requires ReactiveWorkerRequest")
-        claim = self._scheduler.claim(request.claim)
-        if claim is None:
-            return ReactiveWorkerOutcome(request.claim.worker_id, False)
-        activation = claim.activation
-        self._scheduler.start(ActivationStartRequest(
-            activation.activation_id, claim.lease.lease_id,
-            claim.lease.fencing_token, request.started_at))
-        series = self._scheduler.get_series(activation.series_id)
-        trigger = self._scheduler.get_trigger(activation.trigger_id)
-        if series is None or trigger is None:
-            raise ReactiveWorkerError(
-                "claimed activation lost its series or trigger")
+        claim = None
+        activation = None
+        heartbeats = 0
         try:
-            result = await asyncio.to_thread(
-                self._executor.execute,
-                ReactiveExecutionRequest(series, trigger, claim))
+            claim = self._scheduler.claim(request.claim)
+            if claim is None:
+                return ReactiveWorkerOutcome(request.claim.worker_id, False)
+            activation = claim.activation
+            # Everything after the claim is guarded: a stale fence at start,
+            # a lost series, or a refusal becomes a typed outcome for this
+            # activation instead of an exception that discards its siblings.
+            self._scheduler.start(ActivationStartRequest(
+                activation.activation_id, claim.lease.lease_id,
+                claim.lease.fencing_token, request.started_at))
+            series = self._scheduler.get_series(activation.series_id)
+            trigger = self._scheduler.get_trigger(activation.trigger_id)
+            if series is None or trigger is None:
+                raise ReactiveWorkerError(
+                    "claimed activation lost its series or trigger")
+            profile = self._scheduler.profile_for(series)
+            renewal, counter = self._renewals(request, claim)
+            try:
+                result = await asyncio.to_thread(
+                    self._executor.execute,
+                    ReactiveExecutionRequest(series, trigger, claim, profile))
+            finally:
+                if renewal is not None:
+                    renewal.cancel()
+                    await asyncio.gather(renewal, return_exceptions=True)
+                    heartbeats = counter["sent"]
             if result.history_disposition is ActivationHistoryDisposition.PERSISTENCE_FAILED:
                 status, error_code = ActivationStatus.FAILED, "HISTORY_PERSISTENCE_FAILED"
             elif result.terminal_code == "ACCEPTED":
@@ -483,26 +581,35 @@ class AsyncReactiveWorker:
                 claim.lease.fencing_token, status, request.terminal_at,
                 result.loop_id, result.terminal_code, error_code,
                 history_ref=result.history_ref,
-                history_disposition=result.history_disposition))
+                history_disposition=result.history_disposition,
+                worker_id=request.claim.worker_id))
             return ReactiveWorkerOutcome(
                 request.claim.worker_id, True, activation.activation_id,
                 result.loop_id, result.terminal_code, error_code,
-                result.elapsed_seconds)
+                result.elapsed_seconds, heartbeats_sent=heartbeats,
+                history_error_code=result.history_error_code)
         except Exception as exc:
-            error_code = type(exc).__name__.upper()
+            error_code = (getattr(exc, "failure_code", "")
+                          or type(exc).__name__.upper())
+            if activation is None:
+                return ReactiveWorkerOutcome(
+                    request.claim.worker_id, False, error_code=error_code)
+            disposition = getattr(exc, "history_disposition", None) or (
+                ActivationHistoryDisposition.UNAVAILABLE
+                if self._executor.history_required(activation.loop_definition_ref)
+                else ActivationHistoryDisposition.NOT_PERSISTED)
             try:
                 self._scheduler.terminal(ActivationTerminalRequest(
                     activation.activation_id, claim.lease.lease_id,
                     claim.lease.fencing_token, ActivationStatus.FAILED,
                     request.terminal_at, failure_code=error_code,
-                    history_disposition=(ActivationHistoryDisposition.UNAVAILABLE
-                        if self._executor.history_required(activation.loop_definition_ref)
-                        else ActivationHistoryDisposition.NOT_PERSISTED)))
+                    history_disposition=disposition,
+                    worker_id=request.claim.worker_id))
             except ReactiveSchedulerError:
                 pass
             return ReactiveWorkerOutcome(
                 request.claim.worker_id, True, activation.activation_id,
-                error_code=error_code)
+                error_code=error_code, heartbeats_sent=heartbeats)
 
     async def run_many(
             self, requests: tuple[ReactiveWorkerRequest, ...]
@@ -511,8 +618,19 @@ class AsyncReactiveWorker:
                for item in requests):
             raise ReactiveWorkerError(
                 "run_many requires ReactiveWorkerRequest records")
-        return tuple(await asyncio.gather(*(
-            self.run_once(item) for item in requests)))
+        gathered = await asyncio.gather(*(
+            self.run_once(item) for item in requests), return_exceptions=True)
+        outcomes = []
+        for item, value in zip(requests, gathered):
+            if isinstance(value, BaseException):
+                # One sibling's exception is its own outcome, never the loss
+                # of every other sibling's result.
+                outcomes.append(ReactiveWorkerOutcome(
+                    item.claim.worker_id, False,
+                    error_code=type(value).__name__.upper()))
+            else:
+                outcomes.append(value)
+        return tuple(outcomes)
 
 
 __all__ = (

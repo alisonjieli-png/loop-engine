@@ -191,8 +191,16 @@ class SpawnedInputBinding:
         _task_id(self.source_task_id)
         _versioned(self.source_role, "input.source_role")
         _versioned(self.value_contract_ref, "input.value_contract_ref")
-        if self.delivery not in ("value", "reference"):
-            raise DependencyBindingError("input.delivery: expected value or reference")
+        if self.delivery == "reference":
+            # A consumer Loop has no capability that materializes an admitted
+            # reference under its own grant, so a reference would reach it
+            # body-free. Refusing here is honest; delivering it empty is not.
+            raise DependencyBindingError(
+                "input.delivery: reference delivery is not deliverable to a "
+                "consumer in this runtime; use value",
+                ResolutionDisposition.INCOMPATIBLE)
+        if self.delivery != "value":
+            raise DependencyBindingError("input.delivery: expected value")
 
     @classmethod
     def from_mapping(cls, value):
@@ -327,17 +335,36 @@ def compile_assignments(specs, goal):
 
 
 @dataclass(frozen=True)
+class DependencyValuePolicy:
+    """Bound on one delivered dependency value, measured as canonical JSON bytes.
+
+    A producer result over the bound is refused when it is registered, so a
+    consumer packet (model prompt material) never carries an unbounded body.
+    """
+
+    maximum_value_bytes: int = 262144
+
+    def __post_init__(self):
+        if type(self.maximum_value_bytes) is not int or self.maximum_value_bytes < 1:
+            raise DependencyBindingError("maximum_value_bytes must be a positive integer")
+
+    def to_dict(self):
+        return {"maximum_value_bytes": self.maximum_value_bytes}
+
+
+@dataclass(frozen=True)
 class BoundDependencyInput:
     port: LoopPortValue
     reference: LoopValueRef
     source_task_id: str
     schema_digest: str
     delivery: str
+    value_bytes: int = 0
 
     def to_dict(self):
         result = {"role": self.port.role, "source_task_id": self.source_task_id,
                   "schema_digest": self.schema_digest, "delivery": self.delivery,
-                  "value_ref": self.reference.to_dict()}
+                  "value_ref": self.reference.to_dict(), "value_bytes": self.value_bytes}
         if self.delivery == "value":
             result["value"] = deepcopy(self.port.value)
         return result
@@ -354,7 +381,7 @@ class SpawnedDependencyFrame:
     starts: dict = field(default_factory=dict)
     results: dict = field(default_factory=dict)
     outputs: dict = field(default_factory=dict)
-    resolvers: dict = field(default_factory=dict, repr=False)
+    policy: DependencyValuePolicy = field(default_factory=DependencyValuePolicy)
 
     def start(self, assignment, owner):
         if (self.assignments.get(assignment.task_id) != assignment
@@ -380,6 +407,12 @@ class SpawnedDependencyFrame:
             return
         contract = assignment.output_contract
         value = contract.select(summary["accepted_result"]["result"])
+        value_bytes = len(_json(value).encode("utf-8"))
+        if value_bytes > self.policy.maximum_value_bytes:
+            raise DependencyBindingError(
+                f"dependency value of {value_bytes} bytes exceeds the delivery bound "
+                f"of {self.policy.maximum_value_bytes} bytes",
+                ResolutionDisposition.INCOMPATIBLE)
         wrapped = LoopValue.create(deepcopy(value), LoopValueCreateRequest(
             contract.bound_contract_ref, contract.role, summary["loop_id"], _json(definition),
             source_refs=("run:" + self.run_id,), transformation_lineage=(summary["verification_record_digest"],)))
@@ -443,9 +476,10 @@ class SpawnedDependencyFrame:
                 purpose="consume an admitted dependency", requester_run_id=self.run_id)
             materialized = resolver.materialize(access)
             _validate(json.loads(output.schema_json), materialized.value, "dependency input")
-            value = materialized.value if binding.delivery == "value" else wrapped.to_ref()
-            bound.append(BoundDependencyInput(LoopPortValue(binding.role, value), wrapped.to_ref(),
-                                             binding.source_task_id, schema_digest, binding.delivery))
+            bound.append(BoundDependencyInput(
+                LoopPortValue(binding.role, materialized.value), wrapped.to_ref(),
+                binding.source_task_id, schema_digest, binding.delivery,
+                value_bytes=len(_json(materialized.value).encode("utf-8"))))
         delegation = DelegationSpec(
             goal=spec.objective, profile=LoopProfileRef("practitioner.reference_nine_step"),
             contract=LoopContract("typed adaptive dependency inputs", execution_mode_for_runtime_mode(request.mode),
@@ -453,7 +487,6 @@ class SpawnedDependencyFrame:
             inputs=tuple(item.port for item in bound), mode=request.mode,
             budget=DelegationBudget(),
             context=ContextVisibilityPolicy(selected_refs=tuple(_json(item.reference.to_dict()) for item in bound)))
-        self.resolvers[consumer.loop_id] = resolver
         return tuple(bound), delegation, resolver
 
 

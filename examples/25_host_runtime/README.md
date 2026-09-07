@@ -27,6 +27,21 @@ The [optional OpenCode instance experiment](OPENCODE-INSTANCES.md) keeps native
 execution unchanged while testing pinned core resources, per-step grants,
 model-led selection, and a read-only harness behind ModelGateway.
 
+The novel-task campaign has two versions. Version 1 (`novel_task_population.py`,
+`novel_task_offline_check.py`, `novel_task_campaign.py`, `novel_task_audit.py`)
+is the sealed record of the 2026-09-06 run and its
+[report](../../docs/verification/UNSEEN-NOVEL-TASK-CAMPAIGN-2026-09-06.md),
+including the corrections recorded on 2026-09-07. Version 2
+(`novel_task_population_v2.py`, `novel_task_offline_check_v2.py`,
+`novel_task_campaign_v2.py`, `novel_task_audit_v2.py`, `test_novel_task_v2.py`)
+repairs the prompts that contradicted their cases, makes the evaluator
+order-sensitive where it was not, binds every source by digest, and adds
+`--shared-runs-dir`, `--passes`, and `--evidence-out` so a run can learn
+across tasks and passes and keep its evidence off tmpfs. Its audit executes
+candidates only inside the pinned container. `python novel_task_campaign_v2.py`
+prints the frozen plan with zero model calls; the same grant flags as version
+1 are required for a live run.
+
 ## Run
 
 From the repository root, install Loop Engine and Docker, configure the chosen

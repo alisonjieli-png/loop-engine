@@ -192,6 +192,8 @@ def _run_owner(owner: Loop, request: KernelRunRequest) -> tuple[dict, Any]:
             # claim that the named kernel work happened at this position.
             output = f"kernel:{step}:structural_boundary"
             mode = "deterministic"
+            return StepOutcome(output=output, mode=mode, confidence=1.0,
+                               structural_boundary=True)
         return StepOutcome(
             output=output, mode=mode, confidence=1.0)
 

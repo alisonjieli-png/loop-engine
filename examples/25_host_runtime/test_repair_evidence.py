@@ -36,7 +36,7 @@ def fixture(directory):
     history.save(str(root / 'history'))
     request = ProbeRepairRequest(str(root / 'history'), history.run_id,
         ContextArtifactStoreSpec(str(root / 'evidence/artifacts')), host.scope_ref,
-        observed['receipt_ref'], observed['receipt_digest'])
+        str(root / observed['receipt_ref']), observed['receipt_digest'])
     return task, request
 
 

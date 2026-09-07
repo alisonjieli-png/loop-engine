@@ -296,9 +296,22 @@ class LoopLedger:
                 f"Loop {loop_id!r} is already bound to another definition")
         self._definition_refs[loop_id] = fields
 
+    #: Events that only the Loop they name may emit. Once any Loop on a ledger
+    #: is bound to a definition, one of these events for an unbound Loop id is
+    #: a forgery (a phantom Loop), not a record of work, and is refused. A raw
+    #: ledger with no bound Loop keeps accepting fixture events.
+    _loop_owned_events = frozenset((
+        "run_step", "terminal", "iteration_started", "cancel", "budget_stop",
+        "fallback", "model_boundary_deferred", "pause"))
+
     def record(self, **kw) -> None:
         import time
         loop_id = kw.get("loop_id")
+        if (self._definition_refs and kw.get("event") in self._loop_owned_events
+                and loop_id not in self._definition_refs):
+            raise LoopError(
+                f"event {kw.get('event')!r} names Loop {loop_id!r}, which is "
+                "not bound to a definition on this ledger")
         definition_fields = self._definition_refs.get(loop_id, {})
         for name, value in definition_fields.items():
             supplied = kw.get(name, value)
@@ -332,6 +345,11 @@ class StepOutcome:
     failed: bool = False
     spawn_goal: str = ""
     model_calls: int = 0
+    #: True when the step position was crossed without any work of its own,
+    #: as the kernel owner does for every node outside ``act``. The ledger
+    #: marks such run_step events so a reader can separate a structural
+    #: boundary from an executed step.
+    structural_boundary: bool = False
 
 
 @dataclass
@@ -403,18 +421,23 @@ def _contract_coercion_fields(requested, definition: LoopDefinition) -> dict:
     recorded on the Loop's init or spawn event so it is visible in Run
     History instead of silent.
     """
-    if not isinstance(requested, LoopContract):
-        return {}
-    bound = definition.contract
-    if (requested.role == bound.role
-            and requested.execution_mode == bound.execution_mode):
+    bound = {"role": definition.contract.role,
+             "execution_mode": definition.contract.execution_mode}
+    if isinstance(requested, LoopContract):
+        declared = {"role": requested.role,
+                    "execution_mode": requested.execution_mode}
+    else:
+        # A contract-like object is rebuilt into a LoopContract by the
+        # definition constructor. Whatever role or mode it declared is still
+        # a request, and a rewrite of it is recorded the same way; a field it
+        # did not declare is not a request and is not compared.
+        declared = {name: getattr(requested, name)
+                    for name in bound if hasattr(requested, name)}
+    if all(bound[name] == value for name, value in declared.items()):
         return {}
     return {
-        "contract_coerced_from": {
-            "role": requested.role,
-            "execution_mode": requested.execution_mode},
-        "contract_coerced_to": {
-            "role": bound.role, "execution_mode": bound.execution_mode},
+        "contract_coerced_from": {name: declared.get(name) for name in bound},
+        "contract_coerced_to": bound,
     }
 
 
@@ -1094,6 +1117,11 @@ class Loop(metaclass=_LoopMeta):
 
     def cancel(self, reason: str = "cancelled") -> None:
         it = self._ensure_execution(None)
+        if it.get("stopped"):
+            # A terminal Loop cannot be relabeled, and a second cancel is
+            # not a new fact: recording it would place a status change
+            # after the terminal event in every projection of this history.
+            return
         self.ledger.record(loop_id=self.loop_id, event="cancel", reason=reason)
         self._terminate(it, "cancelled")
 
@@ -1292,6 +1320,30 @@ class Loop(metaclass=_LoopMeta):
                     # attempt. Found by writing the example for it.
                     if (self.config.exit_condition == "accepted_success"
                             and it["accepted_successes"] < 1):
+                        # Every complete pass without one accepted success
+                        # counts, whatever the failure text said. A declared
+                        # max_iterations is the caller's own bound and keeps
+                        # its meaning; without one, the supervision policy
+                        # names the honest stop so varying failures cannot
+                        # spin without limit.
+                        it["unaccepted_passes"] = (
+                            it.get("unaccepted_passes", 0) + 1)
+                        ceiling = (
+                            self.config.supervision.unaccepted_passes_before_stop)
+                        if (self.config.max_iterations is None
+                                and it["unaccepted_passes"] >= ceiling):
+                            self.ledger.record(
+                                loop_id=self.loop_id, event="custom",
+                                custom_kind="non_progress_stop",
+                                unaccepted_passes=it["unaccepted_passes"],
+                                supervision_policy_id=(
+                                    self.config.supervision.policy_id))
+                            self._terminate(it, "no_progress")
+                            rec.update(
+                                terminal=True,
+                                note="no accepted success after the supervised "
+                                     "number of passes")
+                            return rec
                         it["i"] = 0                  # another pass
                         self.ledger.record(
                             loop_id=self.loop_id, depth=self.depth,
@@ -1406,15 +1458,18 @@ class Loop(metaclass=_LoopMeta):
             it["identical_failures"] = 1 if outcome.failed else 0
         it["last_failure_signature"] = (
             failure_signature if outcome.failed else None)
+        boundary = ({"structural_boundary": True}
+                    if outcome.structural_boundary else {})
         self.ledger.record(loop_id=self.loop_id, depth=self.depth,
                             event="run_step", step=step, mode=outcome.mode,
                             output=outcome.output,
                             confidence=outcome.confidence,
                             accepted=accepted,
                             attempts=it["attempts"],
-                            accepted_successes=it["accepted_successes"])
+                            accepted_successes=it["accepted_successes"],
+                            **boundary)
         rec.update(step=step, mode=outcome.mode, output=outcome.output,
-                   confidence=outcome.confidence, accepted=accepted)
+                   confidence=outcome.confidence, accepted=accepted, **boundary)
         if (it["identical_failures"]
                 >= self.config.supervision.identical_failures_before_stop):
             self.ledger.record(
@@ -1902,6 +1957,29 @@ def self_test() -> dict:
     check("cancellation_is_terminal_and_recorded",
           lp19.is_terminal and lp19.result().stopped == "cancelled"
           and any(e.get("event") == "cancel" for e in lp19.ledger.events))
+    events_after_cancel = len(lp19.ledger.events)
+    lp19.cancel("a second cancel is not a new fact")
+    check("cancel_after_terminal_records_nothing_and_relabels_nothing",
+          len(lp19.ledger.events) == events_after_cancel
+          and lp19.result().stopped == "cancelled"
+          and [e.get("event") for e in lp19.ledger.events
+               if e.get("event") in ("terminal", "cancel")][-1] == "terminal")
+    # A ledger with a bound Loop refuses Loop-owned events for an id that no
+    # Loop registered: a phantom terminal or a fabricated step cannot enter
+    # Run History beside real work. A raw fixture ledger stays permissive.
+    try:
+        lp19.ledger.record(loop_id=lp19.loop_id + ".phantom", event="terminal",
+                           reason="done")
+        phantom_refused = False
+    except LoopError:
+        phantom_refused = True
+    raw_ledger = LoopLedger()
+    raw_ledger.record(loop_id="fixture", event="run_step", step="act",
+                      mode="deterministic")
+    check("ledger_refuses_loop_owned_events_for_unbound_loop_ids",
+          phantom_refused and len(raw_ledger.events) == 1
+          and not any(e.get("loop_id") == lp19.loop_id + ".phantom"
+                      for e in lp19.ledger.events))
 
     # 20. Loop is the only runtime class.
     check("loop_is_the_only_runtime_class",
@@ -1995,6 +2073,27 @@ def self_test() -> dict:
         10 ** 6, max_iterations=8, distinct_failures=True)
     churn_tries, churn_never = _succeeds_on_nth(10 ** 6)
     first_tries, first = _succeeds_on_nth(1)
+    # Failures whose text changes every pass are not progress toward the
+    # objective. Without a declared budget the supervision policy stops the
+    # Loop as no_progress after its unaccepted-pass ceiling, and the ledger
+    # names the count, so a handler with a counter in its failure text cannot
+    # spin without limit.
+    varying_tries, varying = _succeeds_on_nth(10 ** 6, distinct_failures=True)
+    varying_ceiling = DEFAULT_SUPERVISION_POLICY.unaccepted_passes_before_stop
+    check("success_once_stops_varying_failures_at_the_supervised_pass_ceiling",
+          varying_tries == varying_ceiling
+          and varying.stopped == "no_progress"
+          and varying.terminal_code == "BLOCKED"
+          and varying.accepted_successes == 0
+          and any(e.get("custom_kind") == "non_progress_stop"
+                  and e.get("unaccepted_passes") == varying_ceiling
+                  for e in varying.ledger_events)
+          if hasattr(varying, "ledger_events") else
+          varying_tries == varying_ceiling
+          and varying.stopped == "no_progress"
+          and varying.terminal_code == "BLOCKED"
+          and varying.accepted_successes == 0,
+          f"{varying_tries} passes; policy ceiling {varying_ceiling}")
     check("success_once_retries_and_honors_an_explicit_limit",
           third_tries == 3 and third.stopped == "success_once"
           and third.accepted_successes == 1
@@ -2217,6 +2316,28 @@ def self_test() -> dict:
           and init_coerced.get("contract_coerced_to", {}).get(
               "execution_mode") == "code_only",
           "the compatibility rewrite is visible in Run History, not silent")
+
+    class _LegacyContract:
+        goal = "legacy duck-typed contract"
+        execution_mode = "model_led"
+        role = "solution"
+        input_roles = ()
+        output_roles = ("result",)
+        effects = ("pure",)
+
+    duck = Loop("duck-typed contract", LoopConfig(
+        framework="five_step", allowable_modes=("deterministic",),
+        preferred_modes=("deterministic",),
+        delegated_modes=("deterministic",)), contract=_LegacyContract())
+    duck_init = next(e for e in duck.ledger.events if e.get("event") == "init")
+    check("duck_typed_contract_coercion_is_recorded_on_the_init_event",
+          duck_init.get("contract_coerced_from", {}).get("execution_mode")
+          == "model_led"
+          and duck_init.get("contract_coerced_from", {}).get("role")
+          == "solution"
+          and duck_init.get("contract_coerced_to", {}).get("role")
+          == "practitioner",
+          "a contract-like object's declared role and mode are a request too")
 
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "recursive_loop_self_test", "tests": results,

@@ -358,6 +358,7 @@ def _invoke(host, spec, arguments, services, owner):
                         custom_kind="host_invocation_started", invocation_id=invocation.invocation_id,
                         scope_ref=host.scope_ref, mutating=mutating, effect_digest=effect_digest)
     known = False
+    finished = {}
     try:
         dispatched = run_capability_as_loop(
             host.directory, spec.surface, spec.operation,
@@ -374,11 +375,31 @@ def _invoke(host, spec, arguments, services, owner):
         if size > host.directory.handshake(spec.surface).max_response_bytes:
             raise HostRuntimeError("host output exceeded its declared response allowance")
         after = _state(host.snapshot())
-        known = dispatched["ok"] is True
+        # A failed dispatch that left the host's own snapshot unchanged is a
+        # known outcome: nothing happened. Only a changed snapshot after a
+        # failure is unknown.
+        known = dispatched["ok"] is True or after == before
+        if dispatched["ok"] is not True:
+            finished["effect_observed"] = after != before
+            finished["error_type"] = str(
+                dispatched.get("error_code") or "capability_call_failed")
+    except Exception as exc:
+        # The callback raised before returning. The host snapshot is the
+        # binding's authority on host state: unchanged means no effect was
+        # performed, and later operations need no reconciliation. A snapshot
+        # that changed, or cannot be read, stays an unknown outcome.
+        finished["error_type"] = type(exc).__name__
+        try:
+            unchanged = _state(host.snapshot()) == before
+        except Exception:
+            unchanged = False
+        finished["effect_observed"] = not unchanged
+        known = unchanged
+        raise
     finally:
         owner.ledger.record(loop_id=owner.loop_id, event="custom",
                             custom_kind="host_invocation_finished", invocation_id=invocation.invocation_id,
-                            scope_ref=host.scope_ref, outcome_known=known)
+                            scope_ref=host.scope_ref, outcome_known=known, **finished)
     return {"ok": dispatched["ok"] is True, "value": deepcopy(value),
             "state_before": before, "state_after": after,
             "invocation_id": invocation.invocation_id,

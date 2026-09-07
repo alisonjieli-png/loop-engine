@@ -87,3 +87,50 @@ The population, campaign, and audit modules are
 (report, per-task outcomes, frozen population) and
 `/tmp/novel-campaign-audit.json`. The tasks in this population must not be
 reused as untouched evidence for future runs.
+
+## Corrections recorded on 2026-09-07
+
+The execution-verified review in
+[`CODE-REVIEW-2026-09-07.md`](CODE-REVIEW-2026-09-07.md) rechecked this
+campaign. Everything above is left as written; the following corrects it.
+
+Three prompts contradicted their own hidden cases. The `grid_path_cost`
+prompt said period-separated cells while every case used commas; the model
+failed five observations parsing on periods and succeeded on the sixth after
+switching to commas, at a cost of 106 calls. The `calendar_slots` prompt
+bounded the day at minute 1439 and required an error for times outside it,
+while two cases required `24:00` to be accepted; one failed observation. The
+`state_machine` prompt allowed any optionally signed integer while one case
+required an error for a leading zero; one failed observation. Together these
+three tasks took 172 of the campaign's 283 calls. Their accepted solutions
+satisfy the cases by contradicting the prompt text, so by the standard this
+report applies to `word_square` they are not correct for their exact prompts
+either; here the defect is on the case side.
+
+The offline references were not independent of the cases: they split on
+commas, accepted `24:00`, and refused a leading zero, so the check could not
+have caught the three contradictions.
+
+The `word_square` invalidation rests on an order-dependent reference:
+`ref_is_word_square(['ab', 'a'])` returns `False` while
+`ref_is_word_square(['aa', 'a'])` raises `ValueError`, the same shape with two
+verdicts. The nine audit mismatches in `audit.json` (60 cases per task) are
+the inputs where an early column mismatch preempts the short-word check. No
+saved record holds a 500-input stress or 109 mismatches. The 10 percent
+false-acceptance figure is therefore not established by this evidence; the
+prompt was ambiguous and the reference inconsistent.
+
+Each task ran with its own runs directory, so no task could see another's
+stage records or region evidence; the campaign measured solving without
+cross-task learning by construction.
+
+The version 2 variation lives beside these modules:
+`novel_task_population_v2.py`, `novel_task_offline_check_v2.py`,
+`novel_task_campaign_v2.py`, `novel_task_audit_v2.py`, and
+`test_novel_task_v2.py`. It repairs the prompts, replaces the spiral sum with
+an order-sensitive weighted sum, tests a real non-ASCII code point, records
+every prompt-versus-case resolution, runs the campaign evaluator against a
+wrong solution per task as its control, binds the population and runner
+sources by digest, offers a shared runs directory and repeated passes for a
+learning arm, copies evidence off tmpfs, and audits candidates only inside
+the pinned container. No version 2 campaign has run yet.

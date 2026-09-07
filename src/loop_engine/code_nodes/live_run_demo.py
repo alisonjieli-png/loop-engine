@@ -130,7 +130,7 @@ function sendAdvice(){var v=document.getElementById('adv').value;
 </script>"""
 
 
-def _wait_for(condition, seconds: float = 180.0) -> bool:
+def _wait_for(condition, seconds: float = 600.0) -> bool:
     """Wait for a real run to finish, and say plainly whether it did.
 
     The demo performs an actual solve — around fifteen seconds on an idle

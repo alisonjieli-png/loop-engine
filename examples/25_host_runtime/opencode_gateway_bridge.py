@@ -26,6 +26,24 @@ from loop_engine.core.context_artifacts import ContextArtifactStore
 from loop_engine.core.host_runtime import _schema
 from loop_engine.core.model_response_admission import ModelResponseAdmissionRequest, admit_model_response_as_loop
 from loop_engine.core.opencode_harness_adapter import parse_opencode_events
+
+
+def record_side_frame(frame, harness_text, unknown_frames):
+    """Count every frame the bridge does not act on; nothing is dropped silently.
+
+    The Node side emits ``harness_text`` with a digest for each stdout line
+    that is not JSON. Those digests and any frame kind the bridge does not
+    know reach the evidence record, matching the adapter rule that unknown
+    event types are counted, never dropped.
+    """
+    kind = frame.get('bridge_record') if isinstance(frame, dict) else None
+    if kind == 'harness_text':
+        harness_text.append(str(frame.get('text_digest', '')))
+        return True
+    if kind in ('model_request', 'harness_event', 'finished', 'protocol_error'):
+        return False
+    unknown_frames.append(str(kind))
+    return True
 from loop_engine.core.record_operations_records import canonical_json, parse_json, content_digest
 from loop_engine.core.runtime_observer import RuntimeObservationServices
 from loop_engine.loop.effect_approval import ApprovalRequest, ApprovalDecision, EffectApprovalService, EffectClass, EffectSpec
@@ -276,6 +294,7 @@ def run_bridge(request, model, artifact_store, authorize, *, parent=None, ledger
         def send(value):
             process.stdin.write((canonical_json(value) + '\n').encode()); process.stdin.flush()
         events, model_requests, errors, captured, finished = [], [], [], 0, None
+        harness_text, unknown_frames = [], []
         started = time.monotonic()
         readable = {path for path, _body in request.instance.files if path.startswith('context/')}
         readable |= {'/workspace/' + path for path in readable}
@@ -346,6 +365,7 @@ def run_bridge(request, model, artifact_store, authorize, *, parent=None, ledger
                 elif frame.get('bridge_record') == 'harness_event': events.append(canonical_json(frame['value']))
                 elif frame.get('bridge_record') == 'finished': finished = frame
                 elif frame.get('bridge_record') == 'protocol_error': raise ValueError('harness protocol error')
+                elif record_side_frame(frame, harness_text, unknown_frames): pass
         finally:
             if finished is not None:
                 try: process.wait(timeout=5)
@@ -377,6 +397,8 @@ def run_bridge(request, model, artifact_store, authorize, *, parent=None, ledger
             events_ref = artifact_store.put_text('\n'.join(events), artifact_kind='private_opencode_events')
             holder['evidence'] = {'instance_digest': request.instance.digest, 'events_ref': events_ref.to_dict(),
                 'model_requests': model_requests, 'stderr_chunk_digests': errors,
+                'harness_text_line_count': len(harness_text), 'harness_text_digests': harness_text,
+                'unknown_frame_kinds': unknown_frames,
                 'gateway_results': [{key: value for key, value in item.to_dict().items() if key != 'text'} for item in session.results],
                 'process_exit_code': process.returncode,
                 'container_cleanup': cleanup,
