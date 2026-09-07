@@ -14,6 +14,10 @@ For a different use of the same binding, see the
 [tabular model portfolio](TABULAR-PORTFOLIO.md). It trains and evaluates
 engine-selected model configurations on supplied datasets.
 
+The [five-shape regression probe](GENERALIZATION-PROBE.md) uses one host
+interface for utilities, CSV aggregation, scheduling, HTML delivery, and
+existing-source repair. It preserves failed attempts and later invalidations.
+
 ## Run
 
 From the repository root, install Loop Engine and Docker, configure the chosen

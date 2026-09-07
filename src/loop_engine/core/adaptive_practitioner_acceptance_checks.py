@@ -183,6 +183,54 @@ def _run(task: str, answers: tuple[str, ...], root: str,
             execution, project_executor=_project_fixture))
 
 
+def _permission_repair_acceptance_check() -> dict:
+    """Repeated invalid proposals stop without turning intent into authority."""
+    from .run_history import RunHistory
+    from ..loop.intelligence_loops import serve_historical_intelligence
+
+    proposed = _decision(permissions=["deployment"],
+                         required_capabilities=["core.generated_project"])
+    verification = {
+        "verdict": "stop", "best_index": 0, "scores": [0.0],
+        "notes": "No authorized action or artifact was produced.",
+        "remaining_gaps": [{"criterion_ref": "criterion:0",
+                            "gap": "No executable authorized proposal was admitted."}],
+        "advisory_findings": [], "new_requirement_proposals": [],
+    }
+    answers = tuple(json.dumps(value) for value in (
+        _orientation(), {"actions": [proposed]}, {"actions": [proposed]},
+        verification, {"route": "stop_unprofitable",
+                       "reason": "Both proposed actions requested unavailable scope; no effects may execute."}))
+    with tempfile.TemporaryDirectory(prefix="permission-proposal-acceptance-") as root:
+        with patch(__name__ + "._project_fixture") as project_executor:
+            blocked = _run("Build something that requests unavailable authority.", answers, root)
+        history = serve_historical_intelligence(
+            "permission-proposal-acceptance-history",
+            lambda: RunHistory.load(root, blocked["run_id"]))["value"]
+        rejections = [event.detail["diagnostic"] for event in history.event_log
+                      if event.detail.get("custom_kind") == "adaptive_diagnostic"
+                      and event.detail.get("diagnostic_code") == "next_action_invalid"]
+        effects = [event for event in history.event_log
+                   if event.detail.get("custom_kind") == "host_invocation_started"
+                   or str(event.detail.get("_ledger_event", "")).startswith("effect_approval_")]
+        decisions = blocked.get("action_decisions", [])
+        passed = (
+            not blocked["solved"] and blocked["status"] == "NOT_YET_PROVEN"
+            and blocked["final_route"] == "stop_unprofitable"
+            and blocked["model_calls"] == 5 and blocked["run_history"]["chain_intact"]
+            and len(rejections) == 2 and all(
+                "allowed permission names for current core grants" in item["error"]
+                and '"deployment"' in item["error"] for item in rejections)
+            and not project_executor.called and not effects
+            and not blocked.get("project_attempts") and not blocked.get("host_results")
+            and len(decisions) == 1 and decisions[0]["action_kind"] == "REPAIR"
+            and decisions[0]["permissions"] == [] and decisions[0]["required_capabilities"] == [])
+        return {"test": "invalid_permission_proposals_stop_after_bounded_repair_without_effects",
+                "passed": bool(passed), "detail": (
+                    f"{blocked['model_calls']} fixture calls; {len(rejections)} proposal rejections; "
+                    f"terminal route {blocked.get('final_route')}; project calls {project_executor.call_count}")}
+
+
 def _paraphrases() -> tuple[str, ...]:
     verbs = ("Create", "Build", "Produce", "Make", "Generate",
              "Construct", "Prepare", "Develop", "Assemble", "Deliver")
@@ -610,19 +658,7 @@ def run_checks() -> dict:
               and incomplete["status"] == "NOT_YET_PROVEN",
               incomplete["final_route"])
 
-    permission_decision = _decision(
-        permissions=["deployment"],
-        required_capabilities=["core.generated_project"])
-    with tempfile.TemporaryDirectory() as root:
-        blocked = _run(
-            "Build something that requests unavailable authority.",
-            (json.dumps(_orientation()),
-             json.dumps({"actions": [permission_decision]})), root)
-        check("permission_uncertainty_blocks_before_execution",
-              not blocked["solved"]
-              and blocked["failure_code"] == "PermissionError"
-              and blocked["run_history"]["chain_intact"],
-              blocked.get("failure", ""))
+    tests.append(_permission_repair_acceptance_check())
 
     with tempfile.TemporaryDirectory() as root:
         execution = fixture_model_execution(FixtureModelExecutionRequest(

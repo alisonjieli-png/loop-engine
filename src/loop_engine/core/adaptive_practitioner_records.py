@@ -14,12 +14,13 @@ runtime.
 from __future__ import annotations
 
 import hashlib
+from itertools import count
 import json
 import os
 import time
 from dataclasses import asdict, dataclass, field, fields, replace
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Protocol
+from typing import TYPE_CHECKING, Callable, Iterator, Protocol
 
 from ..code_nodes.solution_model_port import (
     ModelExecution,
@@ -1531,6 +1532,10 @@ class AdaptiveRunServices:
     project_attempts: list[dict] = field(default_factory=list)
     host_results: list[dict] = field(default_factory=list)
     task_results: list[dict] = field(default_factory=list)
+    spawned_results: list[dict] = field(default_factory=list)
+    context_owner_loop_id: str = ""
+    spawning_context_loop_id: str = ""
+    workspace_scope_root: Path | None = None
     host_verification_records: list[dict] = field(default_factory=list)
     verification_records: list[dict] = field(default_factory=list)
     independent_verification_records: list[dict] = field(default_factory=list)
@@ -1596,6 +1601,7 @@ class AdaptiveRunServices:
     route_health_ledger: "object | None" = field(
         default=None, repr=False, compare=False)
     progress_sequence: int = 0
+    progress_sequence_source: Iterator[int] = field(default_factory=lambda: count(1), repr=False)
     active_pass_number: int = 0
     started_monotonic: float = field(
         default_factory=time.monotonic, repr=False, compare=False)
@@ -1651,7 +1657,7 @@ class AdaptiveRunServices:
         return tuple(available)
 
     def publish(self, event_type: str, **fields) -> None:
-        self.progress_sequence += 1
+        self.progress_sequence = next(self.progress_sequence_source)
         owner = current_kernel_owner()
         loop_count = 0
         if owner is not None:
@@ -1664,6 +1670,7 @@ class AdaptiveRunServices:
             "event_type": event_type,
             "run_id": self.run_id,
             "progress_sequence": self.progress_sequence,
+            "context_loop_id": self.context_owner_loop_id,
             "pass_number": self.active_pass_number,
             "loop_count": loop_count,
             "model_calls_completed": model_calls,
@@ -1923,7 +1930,10 @@ class AdaptiveRunServices:
                 "selection_authority": "model",
             }, parent=owner, profile_id="intelligence.context.serve")
         context_value = selected_context["value"]
-        prior_events = list(semantic_event_history(owner.ledger.events))
+        from .adaptive_practitioner_scope import begin_scope, scoped_history
+        begin_scope(self, owner)
+        prior_events = list(semantic_event_history(scoped_history(
+            owner.ledger.events, self.context_owner_loop_id)))
         capability_descriptors = self.available_capabilities()
         from ..templates.library import TemplateLibrary
         template_candidates = [{
@@ -2023,7 +2033,7 @@ class AdaptiveRunServices:
                  "added_file_candidates": extension_candidates}),
             LLMContextBlock.create(
                 "deterministic_event_history", "attempt_event_history", "1.0.0",
-                "canonical Loop event log", "complete prior event history", 8,
+                "canonical Loop event log", "scoped prior structural events", 8,
                 prior_events),
         )
         stage_facts = (self.stage_arms.get(observed.occurrence_id, {})

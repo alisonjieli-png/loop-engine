@@ -20,6 +20,27 @@ ROW = '__loop_row_id__'
 TARGET = '__loop_target__'
 SEEDS = (1729, 1730, 1731)
 FRACTIONS = {'train': 0.6, 'validation': 0.2, 'test': 0.2}
+METRICS = {'classification': {'log_loss': 'minimize', 'accuracy': 'maximize', 'roc_auc': 'maximize'},
+           'regression': {'rmse': 'minimize', 'mae': 'minimize', 'r2': 'maximize'}}
+
+
+def selection_policy(problem, metric=None, direction=None, class_count=None):
+    metric = metric if metric is not None else ('log_loss' if problem == 'classification' else 'rmse')
+    if not isinstance(metric, str) or metric not in METRICS.get(problem, {}):
+        raise ValueError('selection metric is unsupported for this problem kind')
+    expected = METRICS[problem][metric]
+    if direction is not None and direction != expected:
+        raise ValueError('selection direction contradicts the declared measured metric')
+    if metric == 'roc_auc' and class_count is not None and class_count != 2:
+        raise ValueError('ROC-AUC selection currently requires binary classification')
+    return metric, expected
+
+
+def select_candidate(registry, profile):
+    if profile['direction'] not in ('minimize', 'maximize'):
+        raise ValueError('unknown selection direction')
+    chooser = min if profile['direction'] == 'minimize' else max
+    return chooser(registry, key=lambda key: registry[key]['validation_mean'][profile['primary_metric']])
 
 
 def encoded(value):
@@ -102,7 +123,10 @@ def load_manifest(path):
             or any(type(x) not in (int, float) or not math.isfinite(x) or not 0 < x < 1
                    for x in fractions.values()) or not math.isclose(sum(fractions.values()), 1.0)):
         raise ValueError('train/validation/test fractions must be positive and sum to one')
+    metric, direction = selection_policy(value['problem_kind'], value.get('selection_metric'),
+                                         value.get('selection_direction'))
     return {**value, 'dataset_csv': str(source.resolve()), 'dataset_digest': file_digest(source),
+            'selection_metric': metric, 'selection_direction': direction,
             'split_seeds': seeds, 'split_fractions': fractions}
 
 
@@ -156,6 +180,8 @@ def _prepare_worker():
                            'validation_row_ids': dev.iloc[validation][ROW].tolist()})
     write_json('development_splits.json', partitions)
     classes = sorted(dev[TARGET].unique().tolist()) if config['problem_kind'] == 'classification' else []
+    metric, direction = selection_policy(config['problem_kind'], config.get('selection_metric'),
+                                         config.get('selection_direction'), len(classes))
     profile = {'record_type': 'tabular_development_profile/v1', 'problem_kind': config['problem_kind'],
                'development_rows': len(dev), 'holdout_rows': len(test), 'feature_count': len(features.columns) - 1,
                'features': [{'name': name, 'dtype': str(dev[name].dtype),
@@ -163,7 +189,7 @@ def _prepare_worker():
                             for name in features.columns if name != ROW],
                'classes': classes, 'excluded_features': config['excluded_features'],
                'target': config['target'], 'versions': _versions(),
-               'primary_metric': 'log_loss' if classes else 'rmse', 'direction': 'minimize',
+               'primary_metric': metric, 'direction': direction,
                'split_seeds': config['split_seeds'], 'split_fractions': config['split_fractions']}
     write_json('profile.json', profile)
     write_json('split_manifest.json', {'dataset_digest': config['dataset_digest'],
@@ -517,10 +543,10 @@ def final_evaluate(root, registry, profile, image):
     if any(file_digest(root / name) != sha for name, sha in sealed.items()):
         raise ValueError('sealed holdout or split provenance changed before evaluation')
     primary = profile['primary_metric']
-    selected = min(registry, key=lambda key: registry[key]['validation_mean'][primary])
+    selected = select_candidate(registry, profile)
     frozen = {'record_type': 'tabular_portfolio_freeze/v1', 'candidates': registry,
               'selected_candidate_id': selected, 'selection_metric': primary,
-              'selection_direction': 'minimize', 'test_results_used_for_selection': False}
+              'selection_direction': profile['direction'], 'test_results_used_for_selection': False}
     write_json(root / 'portfolio-freeze.json', frozen)
     predictor, scorer = root / 'final-predictor', root / 'final-scorer'
     predictor.mkdir(mode=0o700)

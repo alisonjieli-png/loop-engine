@@ -541,6 +541,10 @@ def _permission_checks():
         validate_action_permissions(decision((fixture.action.capability_ref,), ("source_read",)), services)
         check("declared_host_permission_is_admitted_without_exercising_it",
               not fixture.calls and not fixture.approvals and not any(core_flags(request)))
+        validate_action_permissions(NextActionDecision.from_mapping(_decision(
+            "REQUEST_AUTHORITY", permissions=["new_explicit_scope"], required_capabilities=[])), services)
+        check("explicit_authority_request_remains_a_request_without_grant_or_effect",
+              not fixture.calls and not fixture.approvals and not any(core_flags(request)))
         for label, selected, permissions in (
                 ("undeclared_host", (fixture.action.capability_ref,), ("network_read",)),
                 ("core_source", ("core.source.inspect",), ("source_read",)),
@@ -553,6 +557,17 @@ def _permission_checks():
             except PermissionError:
                 refused = True
             check(label + "_selection_cannot_borrow_host_permission", refused)
+
+        try:
+            validate_action_permissions(decision((fixture.action.capability_ref,), ("undeclared_scope",)), services)
+        except PermissionError as exc:
+            detail = str(exc)
+        else:
+            detail = ""
+        check("invalid_permission_feedback_names_exact_selected_scope_without_granting_it",
+              'selected host capabilities: ["source_read"]' in detail
+              and 'outside this scope: ["undeclared_scope"]' in detail
+              and "exact effect approval" in detail and not fixture.calls and not fixture.approvals)
 
         directory_store = fixture.binding.directory
         directory_store.register(CapabilityHandshake(
@@ -592,6 +607,53 @@ def _permission_checks():
                   and (len(fixture.approvals) == 2 and len(fixture.calls) == 2 if label == "declared"
                        else not fixture.calls and (bool(fixture.approvals) if label == "denied"
                                                   else not fixture.approvals)))
+
+    from unittest.mock import patch
+    original_model = AdaptiveRunServices.model
+    for approved in (True, False):
+        with tempfile.TemporaryDirectory(prefix="loop-host-permission-repair-") as directory:
+            fixture = _fixture(permission_names=("source_read",), approved=approved)
+            valid = _answers(fixture)
+            invalid = _answers(fixture, permissions=("undeclared_scope",))
+            correction_contexts = []
+
+            def capture_model(services, request):
+                if (request.step_id == "decide_next"
+                        and request.state.get("next_action_validation_failure")):
+                    correction_contexts.append({
+                        "failure": request.state["next_action_validation_failure"],
+                        "calls_before_correction": len(fixture.calls),
+                        "approvals_before_correction": len(fixture.approvals)})
+                return original_model(services, request)
+
+            request = SolveRequest(
+                intake_task(TaskIntakeRequest(text="Return the verified host answer.")),
+                model_execution=fixture_model_execution(FixtureModelExecutionRequest(
+                    answers=(valid[0], invalid[1], *valid[1:]), max_model_calls=6)),
+                host_runtime=fixture.binding, runs_dir=directory, max_passes=1,
+                quiet_model_io=True, allow_source_materialization_to_model=False,
+                allow_workspace_writes=False, allow_sandbox_commands=False,
+                allow_network_reads=False, allow_local_execution=False)
+            before = core_flags(request)
+            with patch.object(AdaptiveRunServices, "model", capture_model):
+                outcome = solve_task(request)
+            check("public_permission_proposal_repair_precedes_effects_" + str(approved).lower(),
+                  len(correction_contexts) == 1
+                  and 'selected host capabilities: ["source_read"]' in correction_contexts[0]["failure"]
+                  and 'outside this scope: ["undeclared_scope"]' in correction_contexts[0]["failure"]
+                  and correction_contexts[0]["calls_before_correction"] == 0
+                  and correction_contexts[0]["approvals_before_correction"] == 0
+                  and core_flags(request) == before and not any(core_flags(request)))
+            if approved:
+                check("corrected_permission_proposal_executes_host_and_counts_correction_call",
+                      outcome.solved and outcome.model_calls == 6
+                      and outcome.model_calls_known_subtotal == 6
+                      and outcome.model_call_accounting_complete is True
+                      and [kind for kind, _ in fixture.calls] == ["operation", "verifier"]
+                      and len(fixture.approvals) == 2 and outcome.run_history["chain_intact"])
+            else:
+                check("corrected_proposal_cannot_override_an_actual_host_approval_denial",
+                      not outcome.solved and not fixture.calls and len(fixture.approvals) == 1)
     return tests
 
 

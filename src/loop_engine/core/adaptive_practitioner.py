@@ -94,12 +94,18 @@ def _model_state(state: PractitionerState,
                  services: AdaptiveRunServices) -> dict:
     view = {
         "state_version": state.version,
+        "active_problem": {
+            "objective": state.spec.objective,
+            "constraints": list(state.spec.constraints),
+            "success_criteria": list(state.spec.success_criteria),
+        },
         "facts": state.facts,
         "independent_verification_policy":
             services.request.independent_verification_policy.to_dict(),
         "host_runtime_manifest": services.request.host_runtime_manifest,
         "host_results": services.host_results,
         "host_verification_records": services.host_verification_records,
+        "spawned_results": services.spawned_results,
         "artifact_refs": state.artifacts,
         "open_questions": list(state.open_questions),
         "failures": list(state.failures),
@@ -143,6 +149,19 @@ def _model_state(state: PractitionerState,
     return view
 def _adaptive_impls(services: AdaptiveRunServices) -> dict:
     def orient(state: PractitionerState) -> Situation:
+        from .adaptive_practitioner_scope import begin_scope
+        owner = current_kernel_owner()
+        if owner is None:
+            raise AdaptivePractitionerError("orientation has no active owner Loop")
+        begin_scope(services, owner)
+        if services.deterministic_attempt is None:
+            services.deterministic_attempt = (
+                DeterministicAttemptTrace(
+                    hashlib.sha256(services.request.task.encode()).hexdigest(),
+                    services.request.task, "SKIPPED_LLM_LED",
+                    diagnostics=("LLM-led spawned starts with semantic orientation",))
+                if services.request.mode == "non_deterministic" else
+                run_deterministic_attempt(services.request.task, services, owner))
         services.active_pass_number += 1
         services.publish("practitioner.step.started", step="orient",
                          state_version=state.version)
@@ -392,7 +411,13 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                             "NextActionDecision selected unknown capabilities "
                             f"{sorted(unknown)}")
                     from .adaptive_host_verification import validate_action_permissions
-                    validate_action_permissions(decision, services)
+                    try:
+                        validate_action_permissions(decision, services)
+                    except PermissionError as exc:
+                        # This rejects a proposed field before effects. Actual
+                        # approval denials occur during execution, outside this
+                        # existing response-repair boundary.
+                        raise AdaptivePractitionerError(str(exc)) from exc
                     validate_progressing_action(decision, services)
                     budget = dict(decision.budget)
                     for key in ("information_gain", "estimated_cost", "risk",
@@ -485,32 +510,16 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
             services.plan_details.get("active_action_occurrence_ref") or "")
         return plan
     def act(state: PractitionerState, plan: ExecutionPlan) -> list[ResultPacket]:
+        from .adaptive_practitioner_scope import validate_scope_workspace
+        validate_scope_workspace(services)
         owner = current_kernel_owner()
         if owner is None:
             raise AdaptivePractitionerError("act has no active owner Loop")
         services.publish("practitioner.step.started", step="act",
                          capability_ref=plan.handle)
         if plan.act_mode == "spawn_practitioners":
-            from ..loop.kernel_runtime import run_spawned_kernel
-            results = []
-            for spec in plan.spawned_loops:
-                try:
-                    spawned = run_spawned_kernel(
-                        spec, _adaptive_impls(services),
-                        selected_mode=services.request.mode)
-                    results.append(ResultPacket(
-                        objective=spec.objective,
-                        result=spawned.run,
-                        confidence=0.7,
-                        lineage=(spawned.loop_id,),
-                        errors=(() if spawned.terminal_code == "ACCEPTED"
-                                else (spawned.terminal_code,))))
-                except Exception as exc:
-                    results.append(ResultPacket(
-                        objective=spec.objective,
-                        errors=(f"{type(exc).__name__}: {str(exc)[:300]}",),
-                        confidence=0.0))
-            return results
+            from .adaptive_practitioner_scope import run_spawned_tasks
+            return run_spawned_tasks(state, plan, services, _adaptive_impls)
         if plan.handle in {item["capability_ref"]
                            for item in services.available_capabilities()}:
             result = execute_adaptive_capability(
@@ -727,6 +736,7 @@ def run_adaptive_practitioner(
         "host_runtime_manifest": request.host_runtime_manifest,
         "host_results": services.host_results,
         "task_results": services.task_results,
+        "spawned_results": services.spawned_results,
         "host_verification_records": services.host_verification_records,
         "verification": services.verification_records,
         "independent_verification_policy":

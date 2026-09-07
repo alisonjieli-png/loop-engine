@@ -11,14 +11,13 @@ inputs and outputs, set up a standard loop class that everything inherits
 or uses as a baseline template."  This module is that baseline made ONE
 named object.
 
-The insight to preserve, not blur: the RUNTIME mode vocabulary
+The runtime mode vocabulary
 (``recursive_loop.MODES``: deterministic / hybrid / non_deterministic) and
-the EXECUTION vocabulary (``core.facets.EXECUTION_MODES``:
-code_only / hybrid / model_led) are two projections of the SAME three modes
-— ``recursive_loop.INTERNAL_MODE_NAMES`` already states this.  The contract
-declares the loop's mode in the INTERNAL execution names (that is what a
-capability search filters on) and DERIVES the runtime mode from it, so the
-two never drift and neither is silently re-typed.
+the contract execution vocabulary (``core.facets.EXECUTION_MODES``:
+code_only / hybrid / model_led) are related by this module's
+``_EXECUTION_TO_RUNTIME_MODE`` map. The inverse conversion uses the same map.
+``recursive_loop.INTERNAL_MODE_NAMES`` serves a separate compatibility
+vocabulary and cannot supply contract execution names for every mode.
 
 What a loop declares here, fail-closed, in one place:
 
@@ -85,6 +84,17 @@ _MODE_WATERFALL = {"code_only": ("code_only",),
 
 class LoopContractError(ValueError):
     """A loop contract is misconfigured or a composability check failed closed."""
+
+
+def execution_mode_for_runtime_mode(runtime_mode: str) -> str:
+    """Convert one runtime mode using the authoritative contract mode map."""
+    if isinstance(runtime_mode, str):
+        for execution_mode, candidate in _EXECUTION_TO_RUNTIME_MODE.items():
+            if candidate == runtime_mode:
+                return execution_mode
+    raise LoopContractError(
+        "runtime_mode must be one of "
+        f"{tuple(_EXECUTION_TO_RUNTIME_MODE.values())}")
 
 
 @dataclass(frozen=True)
@@ -347,6 +357,26 @@ def self_test() -> dict:
           and ml.runtime_mode == "non_deterministic"
           and ml.mode_waterfall[0] == "code_only",
           "hybrid -> hybrid; model_led -> non_deterministic; cheapest-first")
+
+    for runtime_mode, execution_mode in (
+            ("deterministic", "code_only"), ("hybrid", "hybrid"),
+            ("non_deterministic", "model_led")):
+        converted = LoopContract(
+            name="runtime mode conversion",
+            execution_mode=execution_mode_for_runtime_mode(runtime_mode),
+            output_roles=("result",))
+        check("runtime_contract_conversion_round_trips_" + runtime_mode,
+              converted.execution_mode == execution_mode
+              and converted.runtime_mode == runtime_mode)
+    refused_modes = []
+    for value in ("unknown", "code_with_model_assistance", "model_led", "",
+                  None, True, []):
+        try:
+            execution_mode_for_runtime_mode(value)
+        except LoopContractError:
+            refused_modes.append(value)
+    check("runtime_contract_conversion_refuses_other_vocabularies_and_types",
+          len(refused_modes) == 7)
 
     # 3. ADVERSARIAL — a bad execution_mode is refused at construction.
     refused = False

@@ -149,6 +149,25 @@ useful evidence, not proof that all possible inputs are correct.
 
 ## Failures and retries
 
+A selected `SPAWN_LOOP` action creates separately scoped Practitioner work.
+Each assignment has its own objective, constraints, and completion criteria.
+It receives fresh task state, context history, generated-project workspace,
+and verification state. Model usage, effect reconciliation, and progress
+ordering remain shared across the run. A verified subproblem result is an
+input to further work; the spawning task still needs its own acceptance.
+
+Direct capability execution remains available. A task does not have to
+decompose. The model may reconsider its approach after observations or
+failures; a failed network request does not automatically require subdivision.
+
+The adaptive spawn path executes serially. Its planner refuses `RUN_PARALLEL`
+and unsupported dependency fields in a spawned assignment. Dependent work can
+continue after observing its prerequisites. Concurrent work needs an explicitly
+registered capability with its own execution contract. The
+existing graph compiler and typed delegation services remain the extension
+points for dependency bindings and concurrency. Runtime supervision and host
+resources still limit physical recursion.
+
 Host invocation pins the selected handshake and callable. It disables implicit
 directory fallback, including fallback installed while an endpoint is running.
 The existing action fence uses arguments, binding identity, and the last

@@ -141,6 +141,31 @@ adaptive_recovery:
     proposed_new_requirement_blocks_completion: false
     semantic_step_contract_is_task_acceptance: false
 
+adaptive_delegation:
+  operational_runtime_type: Loop
+  role_profile: practitioner.reference_nine_step@1.0.0
+  plan_authority: loop_engine.core.adaptive_practitioner_planning.build_execution_plan
+  execution_authority: loop_engine.loop.kernel_runtime.run_spawned_kernel
+  scope_projection: loop_engine.core.adaptive_practitioner_scope
+  result_record: spawned_practitioner_result/v1
+  invariants:
+    - only_selected_spawn_actions_may_create_recursive_work
+    - malformed_or_unsupported_plan_fields_are_refused_without_partial_admission
+    - spawned_task_objectives_constraints_and_acceptance_are_explicit
+    - task_state_workspace_context_and_verification_are_scoped_to_the_owning_practitioner
+    - raw_spawning_and_sibling_context_is_not_inherited
+    - physical_model_accounting_effect_fences_and_progress_order_have_shared_authority
+    - spawned_completion_does_not_complete_the_spawning_task
+    - failures_and_cancellation_preserve_returned_spawned_results
+    - scoped_workspaces_are_rechecked_before_execution
+    - hybrid_mode_uses_the_contract_mode_vocabulary
+    - new_scope_does_not_invent_a_model_call_or_pass_ceiling
+  current_limits:
+    - adaptive_spawned_work_is_serial
+    - unsupported_parallel_and_dependency_bindings_require_explicit_alternatives
+    - paired_experiments_require_separate_exact_assignments_before_spawning
+    - recursion_remains_subject_to_runtime_supervision_and_host_resources
+
 state_centric_skill_context:
   operational_runtime_type: Loop
   current_maturity: offline_passive_context_candidate

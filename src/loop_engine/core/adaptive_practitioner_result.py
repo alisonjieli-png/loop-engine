@@ -269,6 +269,7 @@ def finish_deterministic_attempt(
         "host_results": services.host_results,
         "host_verification_records": services.host_verification_records,
         "task_results": services.task_results,
+        "spawned_results": getattr(services, "spawned_results", []),
         "mode": services.request.mode,
         "deterministic_attempt": trace.to_dict(), "passes": 1,
         "final_route": "stop_success" if resolved else "stop_unprofitable",
@@ -325,6 +326,7 @@ def failed_adaptive_output(
         "host_results": services.host_results,
         "host_verification_records": services.host_verification_records,
         "task_results": services.task_results,
+        "spawned_results": getattr(services, "spawned_results", []),
         "supervision": services.supervision_findings,
         "recovery_directives": services.recovery_directives,
         "generated_file_checkpoints":

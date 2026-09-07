@@ -127,6 +127,25 @@ binaries remain local. Do not rerun or tune against these holdouts as though
 they remain untouched.
 
 For host embedding or source admission, read the
+[adaptive host generalization report](../verification/ADAPTIVE-HOST-GENERALIZATION-2026-09-06.md)
+and [five-shape reproduction guide](../../examples/25_host_runtime/GENERALIZATION-PROBE.md).
+This checkpoint separates spawned task contexts and verification, refuses
+unsupported plan fields, repairs mixed source/output delivery, and retains
+invalidated live results. Source checks passed 3,246/3,246 and clean-wheel
+checks passed 3,201/3,201. Adaptive spawning remains serial; dependency-output
+bindings, a live paired-assistance comparison, and production Overnight/Jira
+integration remain open. Do not treat final repaired artifacts as first-try
+successes or reuse the audit cases as untouched holdouts.
+
+Its final live artifact review passes 84/84 saved cases but independently
+invalidates the latest Sales source for wrong exact totals. Keep that known
+failure visible. The next gate is stronger source-bound counterexample
+evaluation, not another claim that all five tasks are generally solved.
+The [history review](../verification/HISTORY-AND-OVERNIGHT-REVIEW-2026-09-06.md)
+records log coverage and configured Kaggle account access separately from
+task completion.
+
+For the preceding host boundary, read the
 [host adoption checkpoint](../verification/HOST-ADOPTION-AND-GENERALIZATION-2026-09-05.md),
 [embedding guide](../guides/embedding-loop-engine.md), and
 [host execution decision](../architecture/ADR-HOST-OWNED-EXECUTION.md).

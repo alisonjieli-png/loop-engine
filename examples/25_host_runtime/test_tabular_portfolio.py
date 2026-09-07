@@ -55,6 +55,22 @@ def train(root):
 
 
 class PortfolioChecks(unittest.TestCase):
+    def test_selection_metric_direction_is_explicit_and_supported(self):
+        self.assertEqual(portfolio.selection_policy('classification'), ('log_loss', 'minimize'))
+        self.assertEqual(portfolio.selection_policy('regression'), ('rmse', 'minimize'))
+        self.assertEqual(portfolio.selection_policy('classification', 'roc_auc', 'maximize', 2),
+                         ('roc_auc', 'maximize'))
+        for args in (('regression', 'accuracy'), ('classification', 'roc_auc', 'maximize', 3),
+                     ('regression', 'rmse', 'maximize'), ('regression', 'log_rmse')):
+            with self.assertRaises(ValueError):
+                portfolio.selection_policy(*args)
+        candidates = {'first': {'validation_mean': {'accuracy': 0.8, 'rmse': 1}},
+                      'second': {'validation_mean': {'accuracy': 0.9, 'rmse': 2}}}
+        self.assertEqual(portfolio.select_candidate(candidates, {'direction': 'maximize', 'primary_metric': 'accuracy'}),
+                         'second')
+        self.assertEqual(portfolio.select_candidate(candidates, {'direction': 'minimize', 'primary_metric': 'rmse'}),
+                         'first')
+
     def test_unknown_worker_exit_does_not_become_known_completion(self):
         failure = portfolio.WorkerFailure('fit', SimpleNamespace(
             exit_code=None, error_code='command_timeout', stderr='fixture'))

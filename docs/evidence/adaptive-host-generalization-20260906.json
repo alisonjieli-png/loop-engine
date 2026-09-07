@@ -1,0 +1,630 @@
+{
+  "attempts": [
+    {
+      "campaign": "live-generalization-20260906",
+      "elapsed_seconds": 248.023,
+      "fixed_case_count": 9,
+      "history_events": 648,
+      "history_head_digest": "5c54ab1f2ddd7fda4a3b616280bea5cb382f032ffa66e2cf8640fd46dae11403",
+      "initial_engine_verified": false,
+      "later_invalidated": false,
+      "model_call_accounting_complete": true,
+      "model_calls": 10,
+      "model_calls_known_subtotal": 10,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": 151632,
+        "known_input_tokens_subtotal": 151632,
+        "known_output_tokens_subtotal": 88712,
+        "output_tokens": 88712,
+        "token_accounting_complete": true
+      },
+      "public_outcome_sha256": "3ef98ac2a8fabd196141e781748980ea7b007b7c32cf272e226217d5ee8cb5d7",
+      "run_id": "adaptive-2e99f44650287cd566ea112d",
+      "source_sha256": "d6a917bf0cbaca0793e7552eea0a77db037270b0668156799407e4bf6a991271",
+      "task_digest": "c34293c4d762cd1be38a7a680b6ec737cbfc46da4f93e9c916cc2bfb4f38cb22",
+      "task_id": "duration_utility",
+      "terminal_code": "NO_PROGRESS"
+    },
+    {
+      "campaign": "live-generalization-20260906",
+      "elapsed_seconds": 142.35,
+      "fixed_case_count": 10,
+      "history_events": 1368,
+      "history_head_digest": "203279f1e81e46909eacc47aabab5bf6080d5350507af0151f6bc98a0d8d0755",
+      "initial_engine_verified": true,
+      "later_invalidated": true,
+      "model_call_accounting_complete": true,
+      "model_calls": 15,
+      "model_calls_known_subtotal": 15,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": 304910,
+        "known_input_tokens_subtotal": 304910,
+        "known_output_tokens_subtotal": 31028,
+        "output_tokens": 31028,
+        "token_accounting_complete": true
+      },
+      "public_outcome_sha256": "8a7c799aebb7014cf5e23357e865bc4295681cf9f07791d2896d96af20677dd2",
+      "run_id": "adaptive-a2f7ae797ec022b8dea65371",
+      "source_sha256": "200d0ee82f85a0e4854b183f15c8a7b350d413bc68dc3b235830953b1cc98690",
+      "task_digest": "b1f013aed100cf25a610d1c0f9a125370fa33791b443e96f37b90c67c8fd1906",
+      "task_id": "sales_aggregation",
+      "terminal_code": "COMPLETED_VERIFIED"
+    },
+    {
+      "campaign": "live-generalization-20260906",
+      "elapsed_seconds": 186.588,
+      "fixed_case_count": 11,
+      "history_events": 1512,
+      "history_head_digest": "f375dc86bb7520d3898f0adc3c8e3b6b5975976345c4e9579fe79997c6b69cfd",
+      "initial_engine_verified": true,
+      "later_invalidated": true,
+      "model_call_accounting_complete": true,
+      "model_calls": 20,
+      "model_calls_known_subtotal": 20,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": 367274,
+        "known_input_tokens_subtotal": 367274,
+        "known_output_tokens_subtotal": 43751,
+        "output_tokens": 43751,
+        "token_accounting_complete": true
+      },
+      "public_outcome_sha256": "36d18c953f179d70188566c54beb45a764ac660992f6750c3fbd2401568b24dc",
+      "run_id": "adaptive-8a840fd1a812c5e0a87ce562",
+      "source_sha256": "2a158e5c159a176b9d3f6ac32d131a311924c372c717048037bd3c3180982971",
+      "task_digest": "07b30f831bcfb33ad3481e4039c797b0da9fb9862e85f1da2cbb57b832805d51",
+      "task_id": "dependency_schedule",
+      "terminal_code": "COMPLETED_VERIFIED"
+    },
+    {
+      "campaign": "live-generalization-20260906",
+      "elapsed_seconds": 1170.752,
+      "fixed_case_count": 5,
+      "history_events": 1972,
+      "history_head_digest": "b812e01ed64840163c5f7283d85eb975dba2ffa302207b74048b33e0ec88d91b",
+      "initial_engine_verified": false,
+      "later_invalidated": false,
+      "model_call_accounting_complete": false,
+      "model_calls": null,
+      "model_calls_known_subtotal": 29,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": null,
+        "known_input_tokens_subtotal": 526560,
+        "known_output_tokens_subtotal": 329417,
+        "output_tokens": null,
+        "token_accounting_complete": false
+      },
+      "public_outcome_sha256": "e82ff95670c230bb7e925136d7b263a620350162f84f376e3414de87cc9e99c8",
+      "run_id": "adaptive-e61c79aac3dd05c188ca2fd1",
+      "source_sha256": "7f3902fb13e58fe0358a57b9e6cb31af782c02b6ffd9f8f9c8b6f43ad88d1887",
+      "task_digest": "929247b93fd343fd757ee3b3e5b15a1c333e5a5cbb8d161f2afda4c6d261bc03",
+      "task_id": "schedule_html",
+      "terminal_code": "CANCELLED"
+    },
+    {
+      "campaign": "live-generalization-20260906",
+      "elapsed_seconds": 161.995,
+      "fixed_case_count": 7,
+      "history_events": 1407,
+      "history_head_digest": "1055a77a777ba54b2f8a4f70d3546a52ac69e64aa53f453f5912171f7b2868bb",
+      "initial_engine_verified": true,
+      "later_invalidated": true,
+      "model_call_accounting_complete": true,
+      "model_calls": 17,
+      "model_calls_known_subtotal": 17,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": 328502,
+        "known_input_tokens_subtotal": 328502,
+        "known_output_tokens_subtotal": 37662,
+        "output_tokens": 37662,
+        "token_accounting_complete": true
+      },
+      "public_outcome_sha256": "1d3fd79343bac597f8bd3bb844241c2531d74f6ba8819eb2579b5d037fa2e1fc",
+      "run_id": "adaptive-c0743164aae477c64abf0f90",
+      "source_sha256": "4057c46096129bbc24e068ca9e026b61790ed860c2ea25f68be9ff0d85d2a5f6",
+      "task_digest": "5837547d017e23afedf161a3295d7c14ef1f45a7ae2c65432f0e4e6b5e59b90f",
+      "task_id": "interval_repair",
+      "terminal_code": "COMPLETED_VERIFIED"
+    },
+    {
+      "campaign": "live-contract-followup-20260906",
+      "elapsed_seconds": 119.778,
+      "fixed_case_count": 9,
+      "history_events": 1048,
+      "history_head_digest": "93395d6c2ab5893b03409475246af472ca0bb0cc0cadc6f6664d90f45762de68",
+      "initial_engine_verified": false,
+      "later_invalidated": false,
+      "model_call_accounting_complete": true,
+      "model_calls": 12,
+      "model_calls_known_subtotal": 12,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": 237745,
+        "known_input_tokens_subtotal": 237745,
+        "known_output_tokens_subtotal": 30165,
+        "output_tokens": 30165,
+        "token_accounting_complete": true
+      },
+      "public_outcome_sha256": "29dac5d6e46fc2456b34ac94432dafe585e9a4546208c9e48c20199ae2f9398a",
+      "run_id": "adaptive-62b743ebcbb9e28dd8329d14",
+      "source_sha256": "796a32aa71cfb58aebdeebf49e49e53396ab1774e1737af142c49cd508ccf4a3",
+      "task_digest": "c34293c4d762cd1be38a7a680b6ec737cbfc46da4f93e9c916cc2bfb4f38cb22",
+      "task_id": "duration_utility",
+      "terminal_code": "AUTHORITY_REQUIRED"
+    },
+    {
+      "campaign": "live-contract-followup-20260906",
+      "elapsed_seconds": 167.96,
+      "fixed_case_count": 5,
+      "history_events": 1435,
+      "history_head_digest": "f45ccd4b5046aa07cd0750b2de6907be41d2aeaafb1afd72185162eff36d7876",
+      "initial_engine_verified": true,
+      "later_invalidated": false,
+      "model_call_accounting_complete": true,
+      "model_calls": 16,
+      "model_calls_known_subtotal": 16,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": 338633,
+        "known_input_tokens_subtotal": 338633,
+        "known_output_tokens_subtotal": 38078,
+        "output_tokens": 38078,
+        "token_accounting_complete": true
+      },
+      "public_outcome_sha256": "d1b43bbad5677ee5014f0fdf5fc649c064969756d9a50f67c0dbc1741f159b82",
+      "run_id": "adaptive-74cb016bd40f5008d29df6a2",
+      "source_sha256": "25859e18f263596ba55a70201ce1dcb71e50933297e0256961257eb132f5dbf1",
+      "task_digest": "929247b93fd343fd757ee3b3e5b15a1c333e5a5cbb8d161f2afda4c6d261bc03",
+      "task_id": "schedule_html",
+      "terminal_code": "COMPLETED_VERIFIED"
+    },
+    {
+      "campaign": "live-duration-repair-20260906",
+      "elapsed_seconds": 77.234,
+      "fixed_case_count": 9,
+      "history_events": 926,
+      "history_head_digest": "baa203e037a3a3b7a0bf7aa289b03615abd686b43ec0f4cd3a4bbc1c3e204d9b",
+      "initial_engine_verified": true,
+      "later_invalidated": true,
+      "model_call_accounting_complete": true,
+      "model_calls": 10,
+      "model_calls_known_subtotal": 10,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": 198621,
+        "known_input_tokens_subtotal": 198621,
+        "known_output_tokens_subtotal": 19175,
+        "output_tokens": 19175,
+        "token_accounting_complete": true
+      },
+      "public_outcome_sha256": "070d2aea75356ddf3b71cb29f46d164f4b6b194c425af4725704737c13ff32ec",
+      "run_id": "adaptive-45c9079eeb0b0f63885ddc2b",
+      "source_sha256": "796a32aa71cfb58aebdeebf49e49e53396ab1774e1737af142c49cd508ccf4a3",
+      "task_digest": "a5fc4e9d952a4ce7dcff4cbd72434514d379628206af3ed4d4f6821b29b10951",
+      "task_id": "duration_utility",
+      "terminal_code": "COMPLETED_VERIFIED"
+    },
+    {
+      "campaign": "live-audited-repairs-20260906",
+      "elapsed_seconds": 231.91,
+      "fixed_case_count": 18,
+      "history_events": 1884,
+      "history_head_digest": "2ef2cc3b0f13d99ad97e03de735c6b288f053a8ac1166ec7901f5d53346e07dc",
+      "initial_engine_verified": true,
+      "later_invalidated": true,
+      "model_call_accounting_complete": true,
+      "model_calls": 21,
+      "model_calls_known_subtotal": 21,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": 523677,
+        "known_input_tokens_subtotal": 523677,
+        "known_output_tokens_subtotal": 56147,
+        "output_tokens": 56147,
+        "token_accounting_complete": true
+      },
+      "public_outcome_sha256": "84592ba141495455bc993e068471bc05279b5a8cc24017c6f4de0f6750755dec",
+      "run_id": "adaptive-f3a1d1bc6b2ef32f52a9eabe",
+      "source_sha256": "a4ad844fdf0c077663d4b02430042fce9ebaceb6e98aa4fa931ce6f6d271c91c",
+      "task_digest": "0881aad57a62aebe8641f62a2a98fd1291ebf5960e563601c122503bdd68bcb8",
+      "task_id": "sales_aggregation",
+      "terminal_code": "COMPLETED_VERIFIED"
+    },
+    {
+      "campaign": "live-audited-repairs-20260906",
+      "elapsed_seconds": 238.22,
+      "fixed_case_count": 19,
+      "history_events": 2004,
+      "history_head_digest": "5ac853b9c4dc965bbf7045a8eb63c7e95f46d74bad640f87266fe3a720943a71",
+      "initial_engine_verified": true,
+      "later_invalidated": false,
+      "model_call_accounting_complete": true,
+      "model_calls": 23,
+      "model_calls_known_subtotal": 23,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": 582736,
+        "known_input_tokens_subtotal": 582736,
+        "known_output_tokens_subtotal": 56145,
+        "output_tokens": 56145,
+        "token_accounting_complete": true
+      },
+      "public_outcome_sha256": "dc8e5be716f1bdaa08e2e5ea295f99d28cbb069d88e0cba6bcff6801c2a31c3f",
+      "run_id": "adaptive-215417d26d9caa66a173ee51",
+      "source_sha256": "7438e0698b3db5173d75335ae2fd40d71f65732c575e9e83b59d8ac2fc0d3469",
+      "task_digest": "3280f436b532be8d02b6b0215dc5e3a5fd735b1aba03490273d97a02a2b5099c",
+      "task_id": "dependency_schedule",
+      "terminal_code": "COMPLETED_VERIFIED"
+    },
+    {
+      "campaign": "live-audited-repairs-20260906",
+      "elapsed_seconds": 232.765,
+      "fixed_case_count": 18,
+      "history_events": 1816,
+      "history_head_digest": "4de7f01bc406be91fa22689c4a658f9b9b571a97f3d41359d5306ece601f4fa0",
+      "initial_engine_verified": true,
+      "later_invalidated": false,
+      "model_call_accounting_complete": true,
+      "model_calls": 20,
+      "model_calls_known_subtotal": 20,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": 479399,
+        "known_input_tokens_subtotal": 479399,
+        "known_output_tokens_subtotal": 53550,
+        "output_tokens": 53550,
+        "token_accounting_complete": true
+      },
+      "public_outcome_sha256": "830853530816d4349fd49c19d7ef484f8c814eed0d3728539c04aa0368c53169",
+      "run_id": "adaptive-779b21720113dd963a1e3baa",
+      "source_sha256": "8b924a1501570b6341922c3e31ffe8ffab4f1fa251d8ed5907aba87d6efae726",
+      "task_digest": "55b9301dba520be37c304ed165b14d28263b0e18f5a97fd14b121198cbe0a19d",
+      "task_id": "interval_repair",
+      "terminal_code": "COMPLETED_VERIFIED"
+    },
+    {
+      "campaign": "live-exact-sales-repair-20260906",
+      "elapsed_seconds": 533.403,
+      "fixed_case_count": 27,
+      "history_events": 4037,
+      "history_head_digest": "6c02fdb58bba9aa42c123affb088667b613bde7674f7aaaf04e10b1a9bbce485",
+      "initial_engine_verified": true,
+      "later_invalidated": true,
+      "model_call_accounting_complete": true,
+      "model_calls": 46,
+      "model_calls_known_subtotal": 46,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": 1425729,
+        "known_input_tokens_subtotal": 1425729,
+        "known_output_tokens_subtotal": 125283,
+        "output_tokens": 125283,
+        "token_accounting_complete": true
+      },
+      "public_outcome_sha256": "9be8452fa17f7d7e048b457408cccf7868f6dae2137019957a00eda8ae598e06",
+      "run_id": "adaptive-20a531b1d9febd25cab403ba",
+      "source_sha256": "fb94c9aa10033a5668b476f980b3dedb222ea0c3347a4a9e1fffb71f9a9bf0d9",
+      "task_digest": "f6a425cc88ec0024f1d286ae9e00eaba26e8243408e15bc91f6fc015e09cabc4",
+      "task_id": "sales_aggregation",
+      "terminal_code": "COMPLETED_VERIFIED"
+    },
+    {
+      "campaign": "live-duration-length-repair-20260906",
+      "elapsed_seconds": 240.524,
+      "fixed_case_count": 10,
+      "history_events": 1817,
+      "history_head_digest": "e29b92ae553a18c2cb333ec0115d540e53eeb51e503e2b0f595f6e05328e1448",
+      "initial_engine_verified": true,
+      "later_invalidated": false,
+      "model_call_accounting_complete": true,
+      "model_calls": 20,
+      "model_calls_known_subtotal": 20,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": 453077,
+        "known_input_tokens_subtotal": 453077,
+        "known_output_tokens_subtotal": 43336,
+        "output_tokens": 43336,
+        "token_accounting_complete": true
+      },
+      "public_outcome_sha256": "dfb491b2033b1fa6b86bc7a8e5a0f5536bb115db1f85bf5cc25a9024988ce49a",
+      "run_id": "adaptive-3dc1766738d952e057506346",
+      "source_sha256": "857fee5c2429b45ab49c0953d7e3570256d4b50a8edc6579b14a9e8a0226263e",
+      "task_digest": "48efb1010df7109a484e9ecd68d9adb30eb129a25c770640ce01cf899a94f804",
+      "task_id": "duration_utility",
+      "terminal_code": "COMPLETED_VERIFIED"
+    },
+    {
+      "campaign": "live-sales-length-repair-20260906",
+      "elapsed_seconds": 259.361,
+      "fixed_case_count": 32,
+      "history_events": 1821,
+      "history_head_digest": "dc734d9664df118de4c182a96128d5c3357eb2187508babbb6145e9da7cdeb63",
+      "initial_engine_verified": true,
+      "later_invalidated": true,
+      "model_call_accounting_complete": true,
+      "model_calls": 20,
+      "model_calls_known_subtotal": 20,
+      "model_usage": {
+        "cost_state": "unknown_no_qualified_price_accounting",
+        "cost_usd": null,
+        "input_tokens": 596896,
+        "known_input_tokens_subtotal": 596896,
+        "known_output_tokens_subtotal": 55715,
+        "output_tokens": 55715,
+        "token_accounting_complete": true
+      },
+      "public_outcome_sha256": "acc0c2bbbe88a313e5b7c8797288458ea31370d7aca2f089b2cb35f90e124bce",
+      "run_id": "adaptive-75a238fa0a302714bc5978bc",
+      "source_sha256": "ac537109caf6f9ed391b64bc006108359ff1407a4be8086766cbde86a18d4488",
+      "task_digest": "3960afa71053fe8e51dc400e67a87b6f4741beb1ef38a1bfc0154b675ed81f5f",
+      "task_id": "sales_aggregation",
+      "terminal_code": "COMPLETED_VERIFIED"
+    }
+  ],
+  "authority": "non-authoritative summary of saved verification and audit records",
+  "base_revision": "1ea13357c9d46d261fa4164fced0ef0b0249a36e",
+  "branch": "main",
+  "checkout": "/home/username/loop-engine",
+  "committed": false,
+  "core_status": "IMPLEMENTED_AND_TESTED",
+  "created_at": "2026-09-06T08:59:45.003850+00:00",
+  "duration_reuse_caveat": "Candidate import disables the process-global integer text-conversion guard in the sandbox; no production capability promotion.",
+  "evidence": {
+    "final-84-artifact-review.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/final-84-artifact-review.json",
+      "sha256": "580545aba2d6ce5b225b17dc30567fd6290f6780ff24e6b069b5463de74e95a7"
+    },
+    "clean-verification-v6.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/clean-verification-v6.json",
+      "sha256": "81f37e2a0134450dcd08a4202139ffb57d544470b78c0a86b02a797d429ea549"
+    },
+    "distribution-parity-v6.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/distribution-parity-v6.json",
+      "sha256": "3a72924f1bc460c40e88b971cda078091796d93b4f2a9ea52e50139f7f0dda75"
+    },
+    "duration-final-audit.NhypiM/report.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/duration-final-audit.NhypiM/report.json",
+      "sha256": "c11dfb9981421ca98ab8fae5bac473595c1db64d191de825c0b009eb81229f07"
+    },
+    "final-84-verification.OsnHPH/fixed-suite-report.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/final-84-verification.OsnHPH/fixed-suite-report.json",
+      "sha256": "6ae3eeb3a7e5ea1e0982ddd6ecf467eabf39f6c4d7a93106a3619b25a0afaf3a"
+    },
+    "final-independent-artifact-verification.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/final-independent-artifact-verification.json",
+      "sha256": "7f1d1a4e112efdfd6c3cca7fef7786d1b9c0dd43f5a4fb263bffbd65e04caaba"
+    },
+    "final-sales-audit.0fU5BD/audit.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/final-sales-audit.0fU5BD/audit.json",
+      "sha256": "60a09284085b8bb67ff0fe0bea44964deccd40054e0647d4070cf0c4a37b5824"
+    },
+    "history-findings.md": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/history-findings.md",
+      "sha256": "dd50ba2f3add2e3438733bcbbf3ae68fff95a7762e67ccae76d72617360b3f05"
+    },
+    "independent-artifact-audit.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/independent-artifact-audit.json",
+      "sha256": "fca13ea358d14a5a2ee7f39e6c47d66986399e90104b75c44b2ab6f745311410"
+    },
+    "kaggle-inventory-completion.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/kaggle-inventory-completion.json",
+      "sha256": "64729d1b7ae0fc023d3714eec09c1f7b1748b481ec82c8c6340c1ac741a01260"
+    },
+    "live-evidence-reconciliation-v2.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/live-evidence-reconciliation-v2.json",
+      "sha256": "c13351f689c9f80d66bbce89899b79877ad86c3d99225a1b63e1503c22d35677"
+    },
+    "log-inventory.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/log-inventory.json",
+      "sha256": "b0df2c21a1832a80a9bebcbd9f31914a2d73be59035c1e3687ce0f651d40cd62"
+    },
+    "main-integration.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/main-integration.json",
+      "sha256": "61b229400b566e3a690bdc1b58396c01b0ad6cb5179e9711703273a896245b95"
+    },
+    "sales-fixed-cap-followup.TGRznV/audit.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/sales-fixed-cap-followup.TGRznV/audit.json",
+      "sha256": "3511efe403e469f90700adb8c23bbd5ef25b7e1efcec15f2550acbaa65fb1719"
+    },
+    "sales-precision-audit.1JkpXA/audit.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/sales-precision-audit.1JkpXA/audit.json",
+      "sha256": "249dbe8bc465a0279537b2ca8560451b1b758abe3539c2a9310eafb7c576555c"
+    },
+    "source-verification-v6.json": {
+      "local_path": "/tmp/loop-engine-history-review.InZxfr/source-verification-v6.json",
+      "sha256": "1732a1144c5f8e69a627e94c66040b1e893cbcd829ec0a58b9cba06b2f7218a3"
+    }
+  },
+  "final_sales_audit": {
+    "denominator": {
+      "executed": 3,
+      "failed": 2,
+      "passed": 1,
+      "physical_container_runs": 1,
+      "physical_model_calls": 0,
+      "selected": 3
+    },
+    "failures": [
+      {
+        "case_id": "price_cancellation_20017_digits",
+        "expected": [
+          {
+            "department": "A",
+            "quantity": 0,
+            "total": "0.01"
+          }
+        ],
+        "input_bytes": 40082,
+        "input_sha256": "918d86e214dbde743687aa16e74ab9e0ebba117070ae05efbfa1e3ea9795285b",
+        "observed": [
+          {
+            "department": "A",
+            "quantity": 0,
+            "total": "0.00"
+          }
+        ]
+      },
+      {
+        "case_id": "quantity_cancellation_21031_digits",
+        "expected": [
+          {
+            "department": "A",
+            "quantity": 1,
+            "total": "0.01"
+          }
+        ],
+        "input_bytes": 42110,
+        "input_sha256": "454d094aceaca7eb35a78d156b593f4fe4a7c249a90f1208dbe8f6826824fee3",
+        "observed": [
+          {
+            "department": "A",
+            "quantity": 0,
+            "total": "0.00"
+          }
+        ]
+      }
+    ],
+    "source_sha256": "ac537109caf6f9ed391b64bc006108359ff1407a4be8086766cbde86a18d4488",
+    "verdict": "CONTRACT_VIOLATION_CONFIRMED"
+  },
+  "final_saved_cases": {
+    "full_task_correctness": false,
+    "passed": 84,
+    "selection": "latest repaired artifact per task, not first-try success",
+    "task_shapes": 5,
+    "total": 84
+  },
+  "history_review": {
+    "additional_retained_deleted_rollouts": 3,
+    "additional_retained_records": 8205,
+    "complete_semantic_review_of_every_record": false,
+    "current_history_chains_checked": 46,
+    "current_history_events_checked": 25595,
+    "legacy_events": 540,
+    "legacy_histories_inventoried": 17,
+    "matching_claude_transcripts": 55,
+    "named_codex_rollouts": 39,
+    "opencode_sessions_or_fragments": 19,
+    "selected_records": 142074,
+    "unavailable_remote_and_deleted_sources": "unknown"
+  },
+  "independent_final_assessment": {"all_tasks_fully_correct_claimed":false,"current_artifacts_without_identified_counterexample":4,"first_try_successes_claimed":false,"fixed_cases_passed":84,"fixed_cases_total":84,"known_current_original_contract_violations":1,"sales_independently_invalidated":true,"selected_current_artifacts":5},
+  "kaggle_access": {
+    "account_scope": "one configured account",
+    "listing_reads_including_confirmations": 56,
+    "membership_records_exported": false,
+    "new_downloads": 0,
+    "new_submissions": 0,
+    "unique_entered_competitions": 1049
+  },
+  "limitations": [
+    "Five authored shapes, operator-directed audits and repairs, no unseen-task or full-system benchmark claim.",
+    "Saved-case passes do not imply full-contract correctness; seven accepted attempts were later invalidated.",
+    "Canceled initial HTML call leaves call and token totals incomplete; costs remain unknown.",
+    "Live causal assistance, automatic persistent promotion, dependency-output bindings and adaptive parallel spawning remain unproven or unsupported.",
+    "No Jira connection, Overnight adapter deployment, scheduled daemon, external ticket mutation, push, or merge was performed.",
+    "Temporary local evidence paths are not a permanent archive. Raw conversations and provider bodies are not exported in this summary."
+  ],
+  "live": {
+    "all_history_chains_intact": true,
+    "attempt_count": 14,
+    "checked_parent_file_bindings": 31,
+    "cost_state": "unknown",
+    "cost_usd": null,
+    "history_events": 23695,
+    "initial_engine_verified": 11,
+    "input_tokens": null,
+    "known_input_tokens_subtotal": 6515391,
+    "known_model_calls_subtotal": 279,
+    "known_output_tokens_subtotal": 1008164,
+    "later_invalidated": 7,
+    "model_call_accounting_complete": false,
+    "model_calls": null,
+    "output_tokens": null,
+    "sum_attempt_elapsed_seconds": 4010.863,
+    "token_accounting_complete": false
+  },
+  "overnight_readiness": "UNPROVEN_WITH_KNOWN_SEMANTIC_FAILURE",
+  "pushed": false,
+  "record_type": "adaptive_host_checkpoint_summary/v1",
+  "selected_artifacts": {
+    "dependency_schedule": {
+      "fixed_case_count": 19,
+      "later_invalidated": false,
+      "run_id": "adaptive-215417d26d9caa66a173ee51",
+      "source_sha256": "7438e0698b3db5173d75335ae2fd40d71f65732c575e9e83b59d8ac2fc0d3469"
+    },
+    "duration_utility": {
+      "fixed_case_count": 10,
+      "later_invalidated": false,
+      "run_id": "adaptive-3dc1766738d952e057506346",
+      "source_sha256": "857fee5c2429b45ab49c0953d7e3570256d4b50a8edc6579b14a9e8a0226263e"
+    },
+    "interval_repair": {
+      "fixed_case_count": 18,
+      "later_invalidated": false,
+      "run_id": "adaptive-779b21720113dd963a1e3baa",
+      "source_sha256": "8b924a1501570b6341922c3e31ffe8ffab4f1fa251d8ed5907aba87d6efae726"
+    },
+    "sales_aggregation": {
+      "fixed_case_count": 32,
+      "later_invalidated": true,
+      "run_id": "adaptive-75a238fa0a302714bc5978bc",
+      "source_sha256": "ac537109caf6f9ed391b64bc006108359ff1407a4be8086766cbde86a18d4488"
+    },
+    "schedule_html": {
+      "fixed_case_count": 5,
+      "later_invalidated": false,
+      "run_id": "adaptive-74cb016bd40f5008d29df6a2",
+      "source_sha256": "25859e18f263596ba55a70201ce1dcb71e50933297e0256961257eb132f5dbf1"
+    }
+  },
+  "verification": {
+    "clean_installation": {
+      "passed": 3201,
+      "real_provider_calls": 0,
+      "runtime_sources_changed": false,
+      "total": 3201
+    },
+    "generated_conformance_manifest_excluded_from_byte_comparison": true,
+    "main_conformance": {
+      "passed": 27,
+      "total": 27
+    },
+    "main_package_matches_verified_wheel": true,
+    "packaged_file_count": 485,
+    "preexisting_files_unchanged_at_integration": true,
+    "probe_unit_tests": {
+      "passed": 29,
+      "real_provider_calls": 0,
+      "total": 29
+    },
+    "sdist_sha256": "f27f94b8aaf81b4a8f208086419fb834c07c5b809c06b87a870349da291cbdac",
+    "source": {
+      "passed": 3246,
+      "real_provider_calls": 0,
+      "runtime_sources_changed": false,
+      "total": 3246
+    },
+    "source_wheel_sdist_installation_match": true,
+    "wheel_sha256": "a8928729cd7c33530d2a73489f3b024f8abb073dcabf4d19d3a81ea45f663358"
+  }
+}
