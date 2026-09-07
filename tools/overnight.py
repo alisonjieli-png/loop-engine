@@ -31,6 +31,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -84,6 +85,43 @@ def gameplan(item: dict) -> dict:
     }
 
 
+#: How long a finished worktree is kept. Long enough that a morning
+#: reviewer can still open last night's attempt and the one before it;
+#: short enough that a run killed every night does not fill the disk. A
+#: killed run left a 62 MB worktree behind, and nothing removed it: at one
+#: a night that is 22 GB a year on a disk with 66 GB free.
+WORKTREE_KEEP_DAYS = 3
+
+
+def prune_worktrees(workspace) -> list:
+    """Remove worktrees older than the keep window, and their branches.
+
+    Registration is removed through git rather than by deleting the
+    directory, so the repository does not accumulate stale worktree records
+    pointing at paths that no longer exist.
+    """
+    if not WORKTREE_ROOT.is_dir():
+        return []
+    cutoff = time.time() - WORKTREE_KEEP_DAYS * 86400
+    removed = []
+    for tree in sorted(WORKTREE_ROOT.iterdir()):
+        if not tree.is_dir():
+            continue
+        try:
+            if tree.stat().st_mtime >= cutoff:
+                continue
+        except OSError:
+            continue
+        _git(["worktree", "remove", "--force", str(tree)], workspace)
+        if tree.exists():
+            shutil.rmtree(tree, ignore_errors=True)
+        _git(["branch", "-D", f"overnight/{tree.name}"], workspace)
+        removed.append(tree.name)
+    if removed:
+        _git(["worktree", "prune"], workspace)
+    return removed
+
+
 def attempt(plan: dict, model: str, attempts: int, budget) -> dict:
     """Run one candidate in its OWN WORKTREE; the gate decides the outcome.
 
@@ -110,6 +148,10 @@ def attempt(plan: dict, model: str, attempts: int, budget) -> dict:
     branch = f"overnight/{stamp}"
     tree = WORKTREE_ROOT / stamp
     WORKTREE_ROOT.mkdir(parents=True, exist_ok=True)
+    pruned = prune_worktrees(workspace)
+    if pruned:
+        print(f"      pruned {len(pruned)} stale worktree(s): "
+              f"{', '.join(pruned)}", flush=True)
     if tree.exists():
         _git(["worktree", "remove", "--force", str(tree)], workspace)
     made = _git(["worktree", "add", "-b", branch, str(tree), "HEAD"], workspace)
@@ -190,6 +232,8 @@ def solve(plan, workspace, model, attempts, budget) -> list:
         default_skill_library, dynamic_step_layer, observation_step_layer)
     from loop_engine.core.opencode_step_session import (
         OpenCodeStepProfile, OpenCodeStepSession)
+    from loop_engine.core.opencode_step_guard import engine_observed_output
+    from loop_engine.core.step_state import StepState, render_step_prompt
 
     class _Authority:
         max_model_calls = 4
@@ -197,16 +241,23 @@ def solve(plan, workspace, model, attempts, budget) -> list:
     class _Req:
         def __init__(self, prompt): self.prompt = prompt
 
-    task = (f"A project gate is failing.\n\nGate: {plan['gate_command']}\n\n"
-            f"Recorded output:\n{plan['observed_error']}\n\n"
-            "Make the gate pass. Change as little as possible.")
+    task = "A project gate is failing. Make it pass, changing as little as possible."
     core, catalogue, library = (default_core(), default_catalogue(),
                                 default_skill_library())
+    # Structured state, not an accumulating transcript. Each step receives
+    # the procedure, the current state and the latest observation, and
+    # returns a patch; the reasoning that produced it is discarded.
+    # Measured over 40 steps: an accumulating transcript grows 29.6x while
+    # this grows 1.3x -- a 5.8x reduction in cumulative characters. Over a
+    # twelve-hour run that is the difference between a loop that keeps
+    # working and one that runs out of context.
+    state = StepState.start(task, plan["gate_command"])
+    state = state.apply({"observed_failure": plan["observed_error"]})
     steps, observation = [], ""
+    PATCHABLE = ("hypothesis, ruled_out, files_examined, files_changed, "
+                 "commands_run, unknowns, blocked_on, observed_failure")
     for index in range(1, attempts + 1):
-        for name, schema in (
-                ("orient", '{"what_is_failing": string, "likely_cause": string}'),
-                ("implement", '{"files_written": [string], "what_changed": string}')):
+        for name, schema in (("orient", PATCHABLE), ("implement", PATCHABLE)):
             layer, _ = dynamic_step_layer(catalogue.select(name), task, library)
             instance = compose_instance(core, layer, workspace)
             profile = OpenCodeStepProfile(
@@ -216,19 +267,25 @@ def solve(plan, workspace, model, attempts, budget) -> list:
                 additional_environment=("OLLAMA_API_KEY", "XDG_DATA_HOME"))
             session = OpenCodeStepSession(
                 authority=_Authority(), profile=profile)
-            body = task + (f"\n\nObserved previously:\n{observation}"
-                           if observation else "")
             began = time.time()
             print(f"      [{time.strftime('%H:%M:%S')}] {name} "
                   f"(attempt {index}) started", flush=True)
             try:
-                text = session.invoke(
-                    _Req(f"{body}\n\nReturn one JSON object with keys: {schema}"),
-                    None)
+                text = session.invoke(_Req(render_step_prompt(
+                    state, layer.system_prompt, observation, schema)), None)
                 elapsed = time.time() - began
+                patch = json.loads(text)
+                try:
+                    state = state.apply(patch)
+                except Exception as exc:                    # noqa: BLE001
+                    # A rejected patch is recorded and the state kept.
+                    # Discarding the state because one step returned a bad
+                    # field would lose every earlier observation.
+                    steps.append({"step": name, "attempt": index,
+                                  "patch_rejected": str(exc)[:200]})
                 steps.append({"step": name, "attempt": index,
                               "seconds": round(elapsed, 1),
-                              "value": json.loads(text)})
+                              "state_chars": state.size(), "value": patch})
             except Exception as exc:                        # noqa: BLE001
                 elapsed = time.time() - began
                 steps.append({"step": name, "attempt": index,
@@ -241,10 +298,29 @@ def solve(plan, workspace, model, attempts, budget) -> list:
                   f"(attempt {index}) took {elapsed:.1f}s", flush=True)
         ok, output = run_gate(plan["gate_command"], workspace, budget)
         if ok:
+            steps.append({"step": "state", "final": state.for_prompt()[:800]})
+            return steps
+        if state.blocked():
+            # A run that knows it is blocked says so and stops, rather than
+            # spending the rest of the night proving it again.
+            steps.append({"step": "blocked", "attempt": index,
+                          "why": state.get("blocked_on")})
             return steps
         if index < attempts:
-            # The failure changes the shape of the next step, not its wording.
-            obs = observation_step_layer("gate", output)
+            # The failure changes the SHAPE of the next step, not its wording.
+            #
+            # The engine already ran the gate, so it hands the step the real
+            # output and composes it with no shell at all. Using the bash
+            # variant here was a live mistake with two costs: it left a write
+            # path open on a step that must not write, and OpenCode installed
+            # @opencode-ai/plugin into the instance directory -- 62 MB per
+            # worktree -- because a step that can run commands gets plugin
+            # support set up for it.
+            observed = engine_observed_output(
+                plan["gate_command"], workspace,
+                timeout=budget.grant("observe-gate"))
+            obs = observation_step_layer("gate", output,
+                                         engine_observed=observed)
             instance = compose_instance(core, obs, workspace)
             profile = OpenCodeStepProfile(
                 model=model, workspace=workspace,
@@ -254,15 +330,20 @@ def solve(plan, workspace, model, attempts, budget) -> list:
             session = OpenCodeStepSession(
                 authority=_Authority(), profile=profile)
             try:
-                observation = session.invoke(_Req(
-                    task + '\n\nReturn one JSON object with keys: '
-                    '{"command_run": string, "output_observed": string, '
-                    '"contradiction": string}'), None)[:1000]
+                observation = session.invoke(_Req(render_step_prompt(
+                    state, obs.system_prompt, observed.get("output", ""),
+                    "observed_failure, unknowns, blocked_on")), None)[:1000]
+                try:
+                    state = state.apply(json.loads(observation))
+                except Exception:                           # noqa: BLE001
+                    pass    # prose is acceptable from an observation step
                 steps.append({"step": "observe", "attempt": index,
+                              "state_chars": state.size(),
                               "value": observation[:400]})
             except Exception as exc:                        # noqa: BLE001
                 steps.append({"step": "observe", "attempt": index,
                               "error": str(exc)[:200]})
+    steps.append({"step": "state", "final": state.for_prompt()[:800]})
     return steps
 
 

@@ -230,6 +230,24 @@ whether it behaved.
 | **truncated filename** | report said the verified fix touched `alc.py` | parse porcelain properly; handles renames and quoted paths |
 | **833-line diff** | `json.dump(sort_keys=True)` on a 3-line policy change | `tools/policy_edit.py`: typed CRUD, byte-identical round trip |
 | **thinking budget** | 9,853 chars of thinking vs 8,018 of content | `think: false` on structured calls |
+| **62 MB per step, and the real cause of the "timeout"** | a task ran **18+ minutes unfinished**; the observation step was composed with bash enabled, so OpenCode npm-installed `@opencode-ai/plugin` into the instance directory | wire the engine-observed variant, which needs no shell. Same task: **39 seconds, verified** — `orient` 17.7s, `implement` 20.6s, gate 1.0s |
+| **orphaned worktrees** | a killed run left a 62 MB worktree; nothing removed it. 22 GB/year at one a night, on a disk with 66 GB free | prune worktrees older than 3 days, and their branches |
+| **built but not wired, twice** | the engine-observed observation variant and structured state both existed unused while the slow, unsafe paths ran | wired; the lesson is that building a safer variant is half the work |
+
+### State between steps
+
+Each step gets P (its procedure), S (structured state) and O (the latest
+real observation), and returns a patch. The reasoning that produced the
+patch is discarded. Measured over 40 steps: an accumulating transcript grows
+**29.6x**, bounded state **1.3x** — **5.8x fewer cumulative characters**,
+widening with every step. See `docs/step-state-transport.md`.
+
+Two measured limits on the current CLI transport:
+
+- **128 KB** per argv element (`MAX_ARG_STRLEN`). A real `orient` prompt was
+  17,722 tokens ~ 70 KB, already 55% of the wall.
+- `/proc/<pid>/cmdline` is mode **444**. Verified: prompt content is
+  readable by any local user via `ps`. Disqualifying on a shared host.
 
 ### Cost
 
