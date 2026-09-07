@@ -44,9 +44,13 @@ loop-engine models probe ollama_cloud \
   --model-id deepseek-v4-flash:0731 \
   --authorize-model-calls \
   --max-model-calls 1 \
-  --max-total-tokens 70000
+  --allow-unbounded-total-tokens
 ```
 
+This explicitly permits one call at the route's full known output capacity,
+without a total-token ceiling. It can incur provider charges. Use
+`--max-total-tokens` instead only when the route has a qualified exact-request
+token bound; an ordinary route without that bound refuses before dispatch.
 Stop if the probe fails.
 
 ## Solve and verify a task

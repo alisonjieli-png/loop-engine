@@ -1,0 +1,39 @@
+{
+  "record_type": "record_operation_policy/v1",
+  "policy_id": "development.publication_evidence.v1",
+  "scope": {
+    "namespace": "development.publication_evidence",
+    "source_collection": "learned",
+    "intelligence_layer": "runtime_history_solution_intelligence",
+    "artifact_kind": "intelligence_record",
+    "record_id_prefix": "publication."
+  },
+  "document_schema": {
+    "type": "object",
+    "required": ["record_type", "base_revision", "source", "clean_wheel", "real_model_calls", "limits"],
+    "properties": {
+      "record_type": {"const": "adaptive_completion_publication_evidence/v1"},
+      "base_revision": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+      "source": {"$ref": "#/$defs/test_summary"},
+      "clean_wheel": {"$ref": "#/$defs/test_summary"},
+      "real_model_calls": {"type": "integer", "minimum": 0},
+      "limits": {"type": "array", "items": {"type": "string"}}
+    },
+    "$defs": {
+      "test_summary": {
+        "type": "object",
+        "required": ["passed", "total", "all_passed", "raw_result_digest"],
+        "properties": {
+          "passed": {"type": "integer", "minimum": 0},
+          "total": {"type": "integer", "minimum": 0},
+          "all_passed": {"type": "boolean"},
+          "raw_result_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    }
+  },
+  "indexed_fields": ["base_revision"],
+  "maximum_document_bytes": 131072,
+  "maximum_query_results": 20,
+  "maximum_history_depth": 50
+}

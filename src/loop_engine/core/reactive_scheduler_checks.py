@@ -122,10 +122,11 @@ def self_test() -> dict:
               and not scheduler.recover_expired("2026-08-29T14:04:00Z"))
 
         recovered = scheduler.recover_expired("2026-08-29T14:06:00Z")
-        check("expired_lease_returns_bounded_work_to_admission",
+        check("expired_running_work_requires_reconciliation_before_replay",
               len(recovered) == 1
-              and recovered[0].status is ActivationStatus.ADMITTED
-              and recovered[0].attempt == 1)
+              and recovered[0].status is ActivationStatus.DEAD_LETTER
+              and recovered[0].attempt == 1
+              and recovered[0].failure_code == "RUNNING_OUTCOME_UNKNOWN_RECONCILIATION_REQUIRED")
         stale_refused = False
         try:
             scheduler.terminal(ActivationTerminalRequest(
@@ -137,16 +138,24 @@ def self_test() -> dict:
         check("expired_worker_cannot_commit_with_stale_fencing_token",
               stale_refused)
 
-        reclaimed = scheduler.claim(ActivationClaimRequest(
-            "worker-two", "2026-08-29T14:06:02Z", 60,
+        unstarted = scheduler.claim(ActivationClaimRequest(
+            "worker-two", "2026-08-29T14:06:02Z", 1,
             series.series_id))
+        recovered_unstarted = scheduler.recover_expired("2026-08-29T14:06:04Z")
+        check("expired_unstarted_lease_remains_retryable_within_attempt_budget",
+              unstarted.activation.activation_id == low_result.activation.activation_id
+              and len(recovered_unstarted) == 1
+              and recovered_unstarted[0].status is ActivationStatus.ADMITTED
+              and scheduler.get_activation(started.activation_id).status is ActivationStatus.DEAD_LETTER)
+        reclaimed = scheduler.claim(ActivationClaimRequest(
+            "worker-three", "2026-08-29T14:06:05Z", 60, series.series_id))
         scheduler.start(ActivationStartRequest(
             reclaimed.activation.activation_id, reclaimed.lease.lease_id,
-            reclaimed.lease.fencing_token, "2026-08-29T14:06:03Z"))
+            reclaimed.lease.fencing_token, "2026-08-29T14:06:06Z"))
         completed = scheduler.terminal(ActivationTerminalRequest(
             reclaimed.activation.activation_id, reclaimed.lease.lease_id,
             reclaimed.lease.fencing_token, ActivationStatus.COMPLETED,
-            "2026-08-29T14:06:04Z", "loop-completed", "ACCEPTED",
+            "2026-08-29T14:06:07Z", "loop-completed", "ACCEPTED",
             ("candidate-final",)))
         history = scheduler.activation_history(completed.activation_id)
         check("recovered_activation_completes_under_new_fence",
@@ -154,7 +163,7 @@ def self_test() -> dict:
               and completed.status is ActivationStatus.COMPLETED
               and [item.status for item in history] == [
                   ActivationStatus.ADMITTED, ActivationStatus.LEASED,
-                  ActivationStatus.RUNNING, ActivationStatus.ADMITTED,
+                  ActivationStatus.ADMITTED,
                   ActivationStatus.LEASED, ActivationStatus.RUNNING,
                   ActivationStatus.COMPLETED])
 
@@ -199,15 +208,10 @@ def self_test() -> dict:
         exhausted_claim = scheduler.claim(ActivationClaimRequest(
             "worker-exhausted", "2026-08-29T15:00:01Z", 1,
             exhausted_series.series_id))
-        scheduler.start(ActivationStartRequest(
-            exhausted_claim.activation.activation_id,
-            exhausted_claim.lease.lease_id,
-            exhausted_claim.lease.fencing_token,
-            "2026-08-29T15:00:01Z"))
         scheduler.recover_expired("2026-08-29T15:00:03Z")
         exhausted = scheduler.get_activation(
             exhausted_admission.activation.activation_id)
-        check("expired_final_attempt_dead_letters_honestly",
+        check("expired_unstarted_final_attempt_dead_letters_honestly",
               exhausted.status is ActivationStatus.DEAD_LETTER
               and exhausted.failure_code
               == "LEASE_EXPIRED_ATTEMPTS_EXHAUSTED")

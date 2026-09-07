@@ -739,11 +739,31 @@ def object_schema(properties=None, required=()):
             'additionalProperties': False}
 
 
-def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None):
+def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None, completion_policy=None,
+              repair_evidence=()):
     """One operation catalog for every manifest; host policy owns all paths and gates."""
     root = Path(root).absolute()
     if any(path.is_symlink() for path in (root, *root.parents)) or not root.is_dir():
         raise ValueError('host root must be an existing ordinary directory')
+    if not isinstance(repair_evidence, tuple):
+        raise TypeError('repair evidence must be an explicitly selected immutable tuple')
+    if repair_evidence:
+        from repair_evidence import ProbeRepairEvidence
+        if any(not isinstance(item, ProbeRepairEvidence) for item in repair_evidence):
+            raise TypeError('repair context requires source-linked historical evidence')
+        repair_views = [item.validate_for(task) for item in repair_evidence]
+        write_json(root / 'repair-evidence.json', repair_views)
+        (root / 'repair-evidence.json').chmod(0o444)
+        repair_file_digest = ordinary_file(root / 'repair-evidence.json')[2]
+    completion_task = None
+    if completion_policy is not None:
+        from counterexample_checks import ProbeCompletionPolicy
+        if not isinstance(completion_policy, ProbeCompletionPolicy):
+            raise TypeError('completion checks require a typed host policy')
+        completion_task = completion_policy.validate_for(task)
+        write_json(root / 'completion-policy.json', completion_policy.record())
+        (root / 'completion-policy.json').chmod(0o444)
+        completion_policy_file_digest = ordinary_file(root / 'completion-policy.json')[2]
     seed_record = None
     if seed_source is not None:
         if not isinstance(seed_source, ProbeSeedSource):
@@ -767,6 +787,7 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None)
     backend = RestrictedLocalWorkspace(WorkspaceSpec('generalization-source', str(project)))
     lock = threading.RLock()
     records = {}
+    completion_cache = {}  # Disposable cache of exact, immutable execution records.
 
     def checked_artifacts():
         checked = []
@@ -787,6 +808,15 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None)
         if seed_record is not None:
             require_file_bindings({str(root / 'seed-source.json'): seed_receipt_digest,
                                    seed_record['snapshot_ref']: seed_record['snapshot_digest']})
+        if completion_policy is not None:
+            require_file_bindings({str(root / 'completion-policy.json'): completion_policy_file_digest})
+            from counterexample_checks import __file__ as completion_source
+            if ordinary_file(completion_source)[2] != completion_policy.implementation_digest:
+                raise ValueError('completion generator or oracle source changed')
+        if repair_evidence:
+            require_file_bindings({str(root / 'repair-evidence.json'): repair_file_digest})
+            for item in repair_evidence:
+                item.validate_for(task)
         result = backend.file(FileRequest(FileOperation.READ, 'solution.py'))
         if not result.ok or result.byte_count > 65536:
             raise ValueError('managed source unavailable or too large')
@@ -794,8 +824,13 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None)
 
     def snapshot():
         with lock:
-            return digest({'source': source().digest, 'task': task.content_digest,
-                           'image': image, 'observations': sorted(records), 'artifacts': checked_artifacts()})
+            value = {'source': source().digest, 'task': task.content_digest,
+                     'image': image, 'observations': sorted(records), 'artifacts': checked_artifacts()}
+            if completion_policy is not None:
+                value['completion_policy'] = completion_policy.content_digest
+            if repair_evidence:
+                value['repair_evidence'] = [item.content_digest for item in repair_evidence]
+            return digest(value)
 
     def require_state(request):
         if request.state_ref != snapshot():
@@ -805,7 +840,7 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None)
         with lock:
             require_state(request)
             value = source()
-            return {'kind': 'source_inspection', 'path': 'solution.py', 'digest': value.digest,
+            observation = {'kind': 'source_inspection', 'path': 'solution.py', 'digest': value.digest,
                     'digest_purpose': SOURCE_DIGEST_PURPOSE,
                     'content': value.content.decode(), 'entrypoint': task.entrypoint,
                     'editable_files': ['solution.py'], 'verification_cases': len(task.cases),
@@ -815,6 +850,23 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None)
                                       if seed_record is not None else None),
                     'visibility': {'source': 'model_visible', 'oracle_definition': 'host_only',
                                    'probe_arguments': 'tool_only', 'actual_observation_feedback': 'model_visible_after_execution'}}
+            if repair_evidence:
+                observation['repair_evidence'] = [item.validate_for(task) for item in repair_evidence]
+            return observation
+
+    def execute_cases(run_root, selected, selected_task):
+        run_root.mkdir()
+        (run_root / 'solution.py').write_bytes(selected.content)
+        (run_root / 'probe.py').write_text(WORKER, encoding='utf-8')
+        write_json(run_root / 'probe-input.json', {'entrypoint': selected_task.entrypoint,
+            'cases': [{key: item[key] for key in ('case_id', 'arguments', 'python_constants')
+                       if key in item} for item in selected_task.cases]})
+        before = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in run_root.iterdir()}
+        execution = runner(run_root, image)
+        after = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in run_root.iterdir()}
+        if before != after or source().digest != selected.digest:
+            raise ValueError('candidate execution changed frozen subject or probes')
+        return execution, before
 
     def replace_source(request):
         with lock:
@@ -837,17 +889,7 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None)
             require_state(request)
             selected = source()
             run_root = root / f'observation-{len(records) + 1:04d}'
-            run_root.mkdir()
-            (run_root / 'solution.py').write_bytes(selected.content)
-            (run_root / 'probe.py').write_text(WORKER, encoding='utf-8')
-            write_json(run_root / 'probe-input.json', {'entrypoint': task.entrypoint,
-                'cases': [{key: item[key] for key in ('case_id', 'arguments', 'python_constants')
-                           if key in item} for item in task.cases]})
-            before = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in run_root.iterdir()}
-            execution = runner(run_root, image)
-            after = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in run_root.iterdir()}
-            if before != after or source().digest != selected.digest:
-                raise ValueError('candidate execution changed frozen subject or probes')
+            execution, _ = execute_cases(run_root, selected, task)
             comparison = evaluate(task, execution)
             artifacts = []
             if comparison['passed']:
@@ -889,6 +931,59 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None)
                     'observations': feedback(comparison), 'notes': 'Fixed independent host comparisons passed.'
                     if comparison['passed'] else 'Fixed independent host comparisons failed; repair from observations.'}
 
+    def completion_verify(request):
+        with lock:
+            require_state(request)
+            selected = source()
+            value = request.arguments['result']['value']
+            prior = json.loads(records.get(value.get('run_ref'), '{}'))
+            if (not prior or prior['source_digest'] != selected.digest
+                    or prior['task_digest'] != task.content_digest):
+                raise ValueError('completion verification requires the exact current primary observation')
+            identity = digest({'source': selected.digest, 'task': task.content_digest,
+                               'policy': completion_policy.content_digest, 'image': image})
+            if identity not in completion_cache:
+                execution, files = execute_cases(root / ('completion-' + identity), selected, completion_task)
+                record = {'record_type': 'generalization_completion_observation/v1',
+                          'task_digest': task.content_digest, 'task_semantic_digest': digest(task_semantics(task.manifest())),
+                          'source_digest': selected.digest, 'policy_digest': completion_policy.content_digest,
+                          'generator': completion_policy.describe()['generator'],
+                          'execution': execution, 'comparison': evaluate(completion_task, execution),
+                          'workspace_files': files, 'acceptance_inherited': False}
+                path = root / ('completion-' + identity + '.json')
+                write_json(path, record)
+                completion_cache[identity] = (path, ordinary_file(path)[2])
+            path, expected_digest = completion_cache[identity]
+            _, raw, actual_digest = ordinary_file(path)
+            if actual_digest != expected_digest:
+                raise ValueError('cached completion record changed')
+            record = json.loads(raw)
+            frozen_root = root / ('completion-' + identity)
+            require_file_bindings({str(frozen_root / name): value
+                                   for name, value in record['workspace_files'].items()})
+            comparison = evaluate(completion_task, record['execution'])
+            if comparison != record['comparison'] or record['source_digest'] != selected.digest:
+                raise ValueError('completion record does not reproduce its comparisons')
+            checks = []
+            for item in feedback(comparison)['checks']:
+                observed = item.get('observed')
+                visible = {key: value for key, value in item.items() if key != 'observed'}
+                visible['observed_digest'] = digest(observed)
+                if len(canonical(observed).encode()) <= 1024:
+                    visible['observed'] = observed
+                else:
+                    visible['observed_summary'] = 'Large observed value retained in the exact host record.'
+                checks.append(visible)
+            return {'passed': comparison['passed'], 'task_complete': comparison['passed'],
+                    'observations': {'policy_digest': completion_policy.content_digest,
+                        'receipt_ref': str(path), 'receipt_digest': expected_digest,
+                        'source_digest': selected.digest, 'case_count': len(completion_task.cases),
+                        'passed_cases': sum(item['passed'] for item in comparison['checks']),
+                        'failure_kind': comparison['failure_kind'], 'checks': checks,
+                        'coverage': 'finite generated counterexamples; no promotion authority'},
+                    'notes': ('Independent generated counterexample checks passed.' if comparison['passed'] else
+                              'Independent generated checks refuted the candidate; repair the original contract.')}
+
     directory = CapabilityDirectory()
     descriptions = (
         ('workspace_inspect', inspect, 'Read the host-managed implementation and current digest.', ('reads_fs',)),
@@ -900,6 +995,12 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None)
         directory.register(CapabilityHandshake(name, 'static_component', purpose, ('invoke',), effects=effects,
             input_schema='host_arguments/v1', output_schema='host_observation/v1', max_response_bytes=1048576),
             [Endpoint('invoke', callback)])
+    if completion_policy is not None:
+        directory.register(CapabilityHandshake(
+            'workspace_completion', 'static_component', 'Run the independent frozen completion test plan.',
+            ('invoke',), effects=('reads_fs', 'writes_fs', 'spawns_process'),
+            input_schema='host_arguments/v1', output_schema='host_observation/v1', max_response_bytes=1048576),
+            [Endpoint('invoke', completion_verify)])
 
     def binding(name, kind, permissions, inputs):
         return HostOperationBinding(name, 'invoke', inputs, {'type': 'object'},
@@ -916,14 +1017,22 @@ def make_host(root, task, *, image=IMAGE, runner=docker_probe, seed_source=None)
                                 'description': SOURCE_DIGEST_PURPOSE}}, ('path', 'content', 'expected_digest'))),
         binding('workspace_run', EffectClass.COMMAND_EXECUTION, ('sandbox_command', 'workspace_write'), object_schema()),
     )
-    verifier = binding('workspace_verifier', EffectClass.LOCAL_READ, ('source_read',), {'type': 'object'})
+    verifier_inputs = object_schema({
+        'task': {'enum': [task.prompt, task.prompt + HOST_INSTRUCTIONS]},
+        'result': {'type': 'object'}, 'state_ref': {'type': 'string', 'pattern': '^[a-f0-9]{64}$'},
+    }, ('task', 'result', 'state_ref'))
+    verifier = binding('workspace_verifier', EffectClass.LOCAL_READ, ('source_read',), verifier_inputs)
 
     def authorize(request):
         return ApprovalDecision.approve(request.request_id, 'frozen_probe_host_policy',
             reason='Exact registered operation within the declared isolated probe workspace.')
 
+    completion_verifiers = (() if completion_policy is None else (binding(
+        'workspace_completion', EffectClass.COMMAND_EXECUTION, ('sandbox_command', 'workspace_write'),
+        verifier_inputs),))
     return HostRuntimeBinding(directory, operations, verifier, authorize, snapshot,
-                              'generalization-probe:' + str(root), share_outputs_with_model=True)
+                              'generalization-probe:' + str(root), share_outputs_with_model=True,
+                              completion_verifiers=completion_verifiers)
 
 
 def population_manifest(tasks, *, model_route='cloud.default', model_id='deepseek-v4-flash:0731'):
@@ -958,6 +1067,11 @@ def main(argv=None):
     parser.add_argument('--allow-evaluator-revision', action='store_true')
     parser.add_argument('--evaluation-revision-reason', default='')
     parser.add_argument('--reuse-parent-source', action='store_true')
+    parser.add_argument('--counterexample-seed', type=int,
+                        help='Explicitly add the host-owned exact-aggregation completion policy for one selected task.')
+    parser.add_argument('--repair-bundle', action='append', default=[],
+                        help='Exact host-selected Run History and counterexample record request.')
+    parser.add_argument('--allow-repair-evidence-to-model', action='store_true')
     args = parser.parse_args(argv)
     if args.task and len(args.task) != len(set(args.task)):
         parser.error('--task entries must be unique.')
@@ -965,6 +1079,32 @@ def main(argv=None):
     manifest = population_manifest(tasks, model_route=args.model_route, model_id=args.model_id)
     manifest['selection_reason'] = args.selection_reason
     manifest['requested_task_ids'] = args.task or [task.task_id for task in all_tasks]
+    repair_contexts = {}
+    if args.repair_bundle:
+        if len(tasks) != 1 or len(args.repair_bundle) != len(set(args.repair_bundle)):
+            parser.error('Repair context requires one selected task and unique explicit bundles.')
+        if args.authorize_model_calls and not args.allow_repair_evidence_to_model:
+            parser.error('Repair context disclosure requires --allow-repair-evidence-to-model.')
+        from repair_evidence import load_repair_bundle
+        try:
+            repair_contexts[tasks[0].task_id] = tuple(load_repair_bundle(tasks[0], path) for path in args.repair_bundle)
+        except (ValueError, TypeError, OSError, KeyError) as exc:
+            parser.error('Repair context refused: ' + str(exc))
+        manifest['repair_evidence'] = {key: [{'view_digest': item.content_digest,
+            'historical_source_digest': json.loads(item.view_json)['historical_source_digest'],
+            'acceptance_inherited': False, 'delivery': 'selected workspace_inspect response only'}
+            for item in values] for key, values in repair_contexts.items()}
+    completion_policies = {}
+    if args.counterexample_seed is not None:
+        if len(tasks) != 1:
+            parser.error('A counterexample policy requires one explicitly selected compatible task.')
+        from counterexample_checks import ExactAggregationProbeConfig, exact_aggregation_policy
+        try:
+            completion_policies[tasks[0].task_id] = exact_aggregation_policy(
+                tasks[0], ExactAggregationProbeConfig(args.counterexample_seed))
+        except (TypeError, ValueError) as exc:
+            parser.error('Counterexample policy refused: ' + str(exc))
+        manifest['completion_checks'] = {key: value.describe() for key, value in completion_policies.items()}
     seeds = {}
     if (args.allow_evaluator_revision or args.evaluation_revision_reason or args.reuse_parent_source) and not args.parent_report:
         parser.error('Evaluator revision and source reuse require --parent-report.')
@@ -1026,7 +1166,9 @@ def main(argv=None):
             if hashlib.sha256(Path(__file__).read_bytes()).hexdigest() != manifest['source_digest']:
                 raise ValueError('frozen runner source changed')
             require_file_bindings(manifest.get('parent_report', {}).get('file_hashes', {}))
-            host = make_host(task_root, task, seed_source=seeds.get(task.task_id))
+            host = make_host(task_root, task, seed_source=seeds.get(task.task_id),
+                             completion_policy=completion_policies.get(task.task_id),
+                             repair_evidence=repair_contexts.get(task.task_id, ()))
             if not docker_workspace(task_root / 'source', IMAGE).availability().available:
                 raise RuntimeError('pinned sandbox unavailable before model dispatch')
             model = ModelExecution(gateway, ModelGatewayConfig(

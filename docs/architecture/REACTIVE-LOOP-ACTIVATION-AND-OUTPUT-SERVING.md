@@ -125,9 +125,12 @@ TriggerEnvelope
 → result remains queryable
 ```
 
-An expired lease returns work to admission while attempts remain. The next
-claim gets a higher fencing token. The old worker cannot commit. Exhausted work
-enters `DEAD_LETTER` with an explicit failure code.
+An expired, unstarted `LEASED` activation returns to admission while attempts
+remain. The next claim receives a higher fencing token, so the old worker
+cannot commit. An expired `RUNNING` activation instead enters `DEAD_LETTER`
+with `RUNNING_OUTCOME_UNKNOWN_RECONCILIATION_REQUIRED`. The scheduler cannot
+know whether the interrupted handler already performed an effect. It does not
+replay that work or infer retry safety from a task label.
 
 Scheduler state uses SQLite WAL and append-only activation revisions. Live
 Python coroutines are never serialized.
@@ -197,6 +200,24 @@ output.portfolio.stored
 
 SQLite state supports restart and efficient lookup. It does not replace Run
 History as the canonical runtime event evidence.
+
+`ReactiveHandlerBinding` can supply a `ReactiveHistoryPolicy`. The default
+does not persist Run History and records `NOT_PERSISTED`. A required policy
+names an existing, confined history root and an exact write authorizer. The
+executor commits, saves, and reopens the existing Run History before publishing
+a successful terminal activation. Persistence failure cannot become success.
+
+`ActivationHistoryRef` binds the series, trigger, definition, input, attempt,
+fencing token, canonical terminal event, history head, and consumed approval
+record. `CanonicalReactiveExecutor.load_verified_history(...)` checks those
+identities on reopen. `activation_record/v2` records persistence disposition;
+the exact version 1 reader reports old records as `LEGACY_UNRECORDED`, not as
+newly verified histories. No second event store is introduced.
+
+Cancellation is terminal in the canonical runtime. A handler returning after
+cancellation cannot trigger fallback, spawning, or acceptance. Reported model
+usage remains recorded. Cross-process cancellation delivery and general effect
+reconciliation still need separate implementation and tests.
 
 ## Exact remaining work
 

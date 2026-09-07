@@ -4,6 +4,20 @@ A Spawned task is still a Loop. `SpawnedTaskManager` adds task controls around t
 existing Loop runtime. It does not create a second agent or execution engine.
 
 ```text
+Operational runtime type
+└── Loop
+    ├── Relationship: Starting, Spawned by, Queried by, Retrieved by, Connected from
+    ├── Role: Practitioner, Intelligence, or Solution
+    ├── Versioned role profile
+    ├── Purpose and domain categories
+    ├── Mode: deterministic, hybrid, or non-deterministic
+    ├── Step profile and typed input/output contract
+    ├── Loop and exit conditions
+    ├── Graph relationships
+    ├── Budget, permissions, and effect policy
+    ├── Model settings when authorized
+    └── Run History
+
 Spawning Loop, with any role
 ├── Spawned Practitioner
 ├── Spawned Intelligence

@@ -1,6 +1,6 @@
 # Examples
 
-Install the complete package directly from GitHub:
+Install the base package directly from GitHub:
 
 ```bash
 python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/refs/heads/main.zip"
@@ -8,6 +8,9 @@ python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/re
 
 Each numbered folder has a runnable `run.py` and its own `README.md` with
 network, model, file, cost, and external-effect notes.
+Source examples require a repository checkout or downloaded source tree.
+Data examples can require the optional `data` dependencies; follow their own
+installation instructions before running them.
 
 ## Useful work
 
@@ -21,6 +24,8 @@ network, model, file, cost, and external-effect notes.
 | [20 inspect five text requests](20_compile_text_tasks/) | Checks five task-intake records without claiming that their solutions ran. |
 | [22 product quickstart](22_product_quickstart/) | Builds, transforms, indexes, and repairs through the public solver and real Docker effects. |
 | [23 drop-in extensions](23_drop_in_extensions/) | Discovers provider routes, capability candidates, skills, plugins, and intelligence from added files without calling or executing them. |
+| [24 managed records](24_managed_records/) | Queries and changes host-configured records through exact schema, revision, and approval checks. |
+| [25 host-owned work](25_host_runtime/) | Repairs staged source, checks generated counterexamples, reuses scoped failure evidence, and produces review-only exported-ticket results. |
 | [Downloadable tasks](tasks/) | Plain text tasks and matching sample inputs for the GitHub quickstart. |
 
 ## Models and intelligence

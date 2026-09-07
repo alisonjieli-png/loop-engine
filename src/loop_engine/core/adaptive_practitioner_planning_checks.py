@@ -119,6 +119,34 @@ def run_checks() -> dict:
           and spawn_schema["act_mode"] == "spawn_practitioners"
           and spawn_schema["capability_ref"] == "")
 
+    from .adaptive_practitioner_bindings import ASSIGNMENT_KEY, SpawnedAssignment, compile_assignments
+    from .adaptive_practitioner_bindings_checks import assignment, input_binding
+    source = assignment("source")
+    target = assignment("consumer", dependencies=("source",), inputs=(input_binding(),), output=None)
+    named_services = _services("SPAWN_LOOP")
+    named = _validate_plan_response(_plan(spawning=True, spawned_tasks=[target, source]), request, named_services)
+    check("named_dependency_plan_admits_typed_metadata_and_complete_serial_order",
+          all(type(spec.seed_facts[ASSIGNMENT_KEY]) is SpawnedAssignment for spec in named.spawned_loops)
+          and compile_assignments(named.spawned_loops, request.state.spec.objective)[0] == (1, 0)
+          and json.loads(json.dumps(named_services.plan_details["selected"]))["spawned_tasks"][0]["seed_facts"]
+          [ASSIGNMENT_KEY]["task_id"] == "consumer")
+    source["output_contract"]["schema"]["items"]["type"] = "string"
+    check("caller_schema_mutation_cannot_change_admitted_dependency_metadata",
+          json.loads(named.spawned_loops[1].seed_facts[ASSIGNMENT_KEY].output_contract.schema_json)
+          ["items"]["type"] == "integer")
+    invalid_dependencies = deepcopy(target)
+    invalid_dependencies["depends_on"] = ["not_declared"]
+    rejected_services = _services("SPAWN_LOOP")
+    original_details = deepcopy(rejected_services.plan_details)
+    try:
+        _validate_plan_response(_plan(spawning=True, spawned_tasks=[assignment("source"), invalid_dependencies]),
+                                request, rejected_services)
+        invalid_refused = False
+    except ValueError:
+        invalid_refused = True
+    check("a_late_dependency_error_cannot_partially_publish_the_plan",
+          invalid_refused and rejected_services.plan_details == original_details)
+
     malformed = [
         ("capability_cannot_switch_to_spawning", "GENERATE_CODE",
          _plan(act_mode="spawn_practitioners", spawned_tasks=[_spawned()]),
@@ -141,16 +169,16 @@ def run_checks() -> dict:
          _plan(spawning=True, spawned_tasks=False), "expected_array"),
         ("spawned_dependencies_cannot_be_discarded", "SPAWN_LOOP",
          _plan(spawning=True, spawned_tasks=[_spawned(depends_on=["prior"])]),
-         "not supported"),
+         "missing_fields"),
         ("spawned_identity_cannot_be_discarded", "SPAWN_LOOP",
          _plan(spawning=True, spawned_tasks=[_spawned(task_id="spawned")]),
-         "unexpected_fields"),
+         "missing_fields"),
         ("spawned_input_bindings_cannot_be_discarded", "SPAWN_LOOP",
          _plan(spawning=True, spawned_tasks=[_spawned(inputs={"data": "ref"})]),
-         "input-binding"),
+         "missing_fields"),
         ("spawned_permission_fields_cannot_grant_authority", "SPAWN_LOOP",
          _plan(spawning=True, spawned_tasks=[_spawned(permissions=["network_write"])]),
-         "unexpected_fields"),
+         "missing_fields"),
         ("spawned_requires_checkable_completion", "SPAWN_LOOP",
          _plan(spawning=True, spawned_tasks=[_spawned(success_criteria=[])]),
          "completion condition"),

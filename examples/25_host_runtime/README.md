@@ -18,6 +18,15 @@ The [five-shape regression probe](GENERALIZATION-PROBE.md) uses one host
 interface for utilities, CSV aggregation, scheduling, HTML delivery, and
 existing-source repair. It preserves failed attempts and later invalidations.
 
+The [exported-ticket pilot](EXPORTED-TICKET-PILOT.md) adds an immutable local
+ticket, an independent completion audit, and a review bundle. It does not
+connect to Jira or publish a branch. The [competition preparation guide](COMPETITION-PREDICTION.md)
+covers the narrower CSV download, refit, and submission-file helpers.
+
+The [optional OpenCode instance experiment](OPENCODE-INSTANCES.md) keeps native
+execution unchanged while testing pinned core resources, per-step grants,
+model-led selection, and a read-only harness behind ModelGateway.
+
 ## Run
 
 From the repository root, install Loop Engine and Docker, configure the chosen

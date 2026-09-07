@@ -526,10 +526,17 @@ def _preparation_checks() -> list[dict]:
             ("raised_preparation", raised_preparation)):
         result = exercise(callback)
         owner = result["owner"]
+        completed_first = label in {
+            "different_owner", "conflicting_metadata", "closed_none", "invalid_passes",
+            "wrong_definition", "untyped_completion"}
+        expected_terminal = "ACCEPTED" if completed_first else "CANCELED"
         tests.append({"test": "kernel_preparation_refuses_" + label,
                       "passed": "result" not in result and "error" in result
                       and result["kernel_calls"] == 0
-                      and owner.result().terminal_code == "CANCELED"
+                      and owner.result().terminal_code == expected_terminal
+                      and len([event for event in owner.ledger.events
+                               if event.get("event") == "terminal"
+                               and event.get("loop_id") == owner.loop_id]) == 1
                       and result["parent_context_restored"]
                       and any(event.get("custom_kind") == "kernel_preparation_rejected"
                               for event in owner.ledger.events),

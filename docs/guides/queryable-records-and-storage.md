@@ -151,6 +151,16 @@ renderer version, output digest, and an approved output target. Keep existing
 authority files intact during migration and compare old/new reads before a
 writer cutover.
 
+An exact JSON export is available through
+[`tools/export_managed_record.py`](../../tools/export_managed_record.py).
+It materializes a selected managed revision through `RecordOperationService`
+and writes a generated view through `WorkspaceOperationService` after exact
+approval. The view records source revision, policy, document and renderer
+digests. Updating the managed source remains record CRUD; exporting is a
+separate file effect. It does not migrate historical Run History or make a
+database transaction span reasoning and file rendering. Generated session
+Markdown and a complete managed-writer cutover remain open.
+
 Still open: full managed-writer migration, relational schema mappings for
 heterogeneous legacy files, server adapters, snapshot-aware federation,
 retention/purge, generated session views, million-record qualification, and

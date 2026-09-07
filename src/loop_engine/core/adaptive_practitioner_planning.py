@@ -7,7 +7,7 @@ spawned assignment that was absent from the selected action contract.
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 
 from ..code_nodes.solution_model_port import SolutionModelError
 from ..loop.kernel import (
@@ -23,6 +23,10 @@ from .adaptive_practitioner_records import (
     ModelStepRequest,
 )
 from .adaptive_practitioner_validation import _short_strings, _short_text
+from .adaptive_practitioner_bindings import (
+    ASSIGNMENT_KEY, ASSIGNMENT_RECORD_TYPE, BASE_ASSIGNMENT_FIELDS,
+    EXTENDED_ASSIGNMENT_FIELDS, SpawnedAssignment, assignment_task_view,
+    compile_assignments)
 
 
 @dataclass(frozen=True)
@@ -53,8 +57,10 @@ def _planning_schema(action_id: str, *, spawning: bool = False) -> str:
         "capability_ref": "" if spawning else "selected registered capability",
         "arguments": {}, "steps": ["string"],
         "spawned_tasks": ([{
+            "record_type": ASSIGNMENT_RECORD_TYPE,
+            "task_id": "unique-task-id", "depends_on": [], "inputs": [],
             "objective": "string", "constraints": ["string"],
-            "success_criteria": ["string"]}] if spawning else []),
+            "success_criteria": ["string"], "output_contract": None}] if spawning else []),
         "rationale": "string",
     }, separators=(",", ":"))
 
@@ -71,9 +77,8 @@ def _require_fields(value, required, location: str) -> None:
         raise AdaptivePractitionerError(
             f"{location}: unexpected_fields_count={len(extra)}; use only "
             + ",".join(sorted(required))
-            + ". Spawned dependency, input-binding, and scheduling fields are "
-            "not supported by this method contract; perform dependent work "
-            "after observing its prerequisites, or use a registered graph capability")
+            + ". Use the versioned spawned assignment for dependency fields; "
+            "parallel scheduling still requires a registered concurrent capability")
 
 
 def _validate_plan_response(value, request, services) -> ExecutionPlan:
@@ -118,7 +123,9 @@ def _validate_plan_response(value, request, services) -> ExecutionPlan:
     spawned = []
     for index, item in enumerate(spawned_values):
         location = f"plan.spawned_tasks[{index}]"
-        _require_fields(item, _SPAWNED_FIELDS, location)
+        extended = type(item) is dict and bool(set(item) - BASE_ASSIGNMENT_FIELDS)
+        _require_fields(item, EXTENDED_ASSIGNMENT_FIELDS if extended else _SPAWNED_FIELDS, location)
+        assignment = SpawnedAssignment.from_mapping(item) if extended else None
         criteria = _short_strings(item["success_criteria"], location + ".success_criteria")
         if not criteria:
             raise AdaptivePractitionerError(
@@ -131,7 +138,10 @@ def _validate_plan_response(value, request, services) -> ExecutionPlan:
             budget_passes=(
                 None if services.request.max_passes is None
                 else max(1, services.request.max_passes - 1)),
-            depth=state.spec.depth + 1))
+            depth=state.spec.depth + 1,
+            seed_facts=({ASSIGNMENT_KEY: assignment} if assignment is not None else {})))
+    if spawned:
+        compile_assignments(tuple(spawned), state.spec.objective)
     if type(value["arguments"]) is not dict:
         raise AdaptivePractitionerError("plan.arguments: expected_object")
     if spawning and value["arguments"]:
@@ -150,9 +160,16 @@ def _validate_plan_response(value, request, services) -> ExecutionPlan:
         rationale=_short_text(value["rationale"], "plan.rationale"))
     # Publish only the fully admitted plan. Rejected modes and spawned records
     # must not overwrite the previous method or mark its canvas selected.
+    serialized_spawned = []
+    for spec in spawned:
+        seed = dict(spec.seed_facts)
+        assignment = assignment_task_view(spec)
+        if assignment is not None:
+            seed[ASSIGNMENT_KEY] = assignment
+        serialized_spawned.append(asdict(replace(spec, seed_facts=seed)))
     services.plan_details[chosen.action] = {
         "capability_ref": capability_ref, "arguments": arguments,
-        "spawned_tasks": [asdict(item) for item in spawned],
+        "spawned_tasks": serialized_spawned,
         "steps": list(steps),
     }
     for candidate in services.plan_details.get(
@@ -217,6 +234,17 @@ def build_execution_plan(
                     "orientation": request.situation.knowns[
                         "orientation"].to_dict(),
                     "method_validation_failure": failure,
+                    **({"dependency_binding_contract": {
+                        "scope": "same admitted serial plan only",
+                        "legacy_independent_assignments": "objective, constraints, success_criteria remain supported",
+                        "inputs": [{"role": "result/v1", "source_task_id": "producer-task-id",
+                                    "source_role": "result/v1", "value_contract_ref": "value/v1",
+                                    "delivery": "value|reference"}],
+                        "output_contract": {"role": "result/v1", "value_contract_ref": "value/v1",
+                                            "schema": {}, "result_path": ["value"]},
+                        "output_path_origin": "the accepted result envelope, not the full private spawned-task state",
+                        "barrier_only_output": None,
+                    }} if action.action_kind == "SPAWN_LOOP" else {}),
                 }, _planning_schema(
                     chosen.action, spawning=action.action_kind == "SPAWN_LOOP")))
             return _validate_plan_response(value, request, services)

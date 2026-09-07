@@ -304,7 +304,8 @@ class RunHistory:
     def load(cls, root: str, run_id: str) -> "RunHistory":
         run_id = validated_run_id(run_id)
         d = os.path.join(root, run_id)
-        man = json.load(open(os.path.join(d, "manifest.json")))
+        with open(os.path.join(d, "manifest.json"), encoding="utf-8") as stream:
+            man = json.load(stream)
         if man.get("record_type") != "run_history_manifest/v1":
             raise RunHistoryIntegrityError(
                 "manifest is not a run_history_manifest/v1 record")
@@ -312,14 +313,15 @@ class RunHistory:
             raise RunHistoryIntegrityError(
                 "manifest run_id does not match the requested run")
         ch = cls(run_id, parent_run_id=man.get("parent_run_id", ""))
-        for line in open(os.path.join(d, "events.jsonl")):
-            row = json.loads(line)
-            dig = row.pop("event_digest")
-            row["consumed_refs"] = tuple(row.get("consumed_refs", ()))
-            row["produced_refs"] = tuple(row.get("produced_refs", ()))
-            ev = RunHistoryEvent(**row)
-            ev.event_digest = dig
-            ch.event_log.append(ev)
+        with open(os.path.join(d, "events.jsonl"), encoding="utf-8") as stream:
+            for line in stream:
+                row = json.loads(line)
+                dig = row.pop("event_digest")
+                row["consumed_refs"] = tuple(row.get("consumed_refs", ()))
+                row["produced_refs"] = tuple(row.get("produced_refs", ()))
+                ev = RunHistoryEvent(**row)
+                ev.event_digest = dig
+                ch.event_log.append(ev)
         ch._committed = man.get("committed", False)
         verification = ch.verify_chain()
         expected_head = str(man.get("head_digest", ""))

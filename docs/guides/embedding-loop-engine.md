@@ -84,6 +84,7 @@ reference, and scoped permission names.
 | `directory` | Existing registry of explicitly installed endpoints. Discovery does not invoke them. |
 | `operations` | Operations available for model selection. Each has an exact schema and registration identity. |
 | `verifier` | Separate, pre-registered host verification endpoint. It is not offered as a model-selectable tool. |
+| `completion_verifiers` | Optional frozen tuple of additional host gates. Every gate must confirm completion after the primary verifier does. These endpoints are not model-selectable. |
 | `authorize` | Trusted callback receiving an exact `ApprovalRequest` and returning an `ApprovalDecision`. |
 | `snapshot` | Trusted host read returning the SHA-256 identity of the current subject, including relevant gate and dependency state. |
 | `scope_ref` | Stable identity of the host-controlled resource scope. |
@@ -147,6 +148,21 @@ freshness; the host is responsible for what the snapshot covers and whether
 its verifier genuinely checks the contract. A passing repository suite is
 useful evidence, not proof that all possible inputs are correct.
 
+For stricter acceptance, configure `completion_verifiers` before the run.
+The primary verifier first validates the result. Only a primary completion
+starts the additional gates, each through the existing capability invocation
+and exact-effect approval path. A failed, unavailable, malformed, or stale gate
+prevents completion. Gates must use endpoints and callbacks distinct from the
+producer operations and primary verifier. This separation does not prove that
+their test cases are sufficient; the host still owns evaluator quality.
+
+Without additional gates, the binding and report retain their version 1
+format and make no extra verification calls. With them, the binding and
+`host_verification_report/v2` bind the configured gate set and each result.
+The [counterexample probe](../../examples/25_host_runtime/GENERALIZATION-PROBE.md#additional-completion-checks)
+demonstrates a source-bound arithmetic gate without adding a task-specific
+condition to the core.
+
 ## Failures and retries
 
 A selected `SPAWN_LOOP` action creates separately scoped Practitioner work.
@@ -160,13 +176,22 @@ Direct capability execution remains available. A task does not have to
 decompose. The model may reconsider its approach after observations or
 failures; a failed network request does not automatically require subdivision.
 
-The adaptive spawn path executes serially. Its planner refuses `RUN_PARALLEL`
-and unsupported dependency fields in a spawned assignment. Dependent work can
-continue after observing its prerequisites. Concurrent work needs an explicitly
-registered capability with its own execution contract. The
-existing graph compiler and typed delegation services remain the extension
-points for dependency bindings and concurrency. Runtime supervision and host
-resources still limit physical recursion.
+The adaptive spawn path executes serially. Extended assignments use
+`adaptive_spawned_assignment/v1`: a stable task ID, declared dependencies,
+typed input bindings, and an optional output contract. The planner validates
+the entire assignment set before execution and orders it through the existing
+plan dependency compiler. Unknown dependencies, cycles, incompatible contracts,
+duplicate bindings, and unsupported fields are refused.
+
+Only completed, unchanged producer results can supply dependent inputs.
+Delivery is either a finite JSON value or a body-free reference through the
+existing Information Resolver, scoped to the receiving Loop. References do
+not authorize implicit artifact loading. A failed producer blocks its
+consumers, and successful subproblems never imply parent-task completion.
+Legacy independent assignments remain supported. `RUN_PARALLEL` remains
+unsupported on this path; concurrency requires a registered execution
+capability with its own contract. Runtime supervision and host resources
+still limit physical recursion.
 
 Host invocation pins the selected handshake and callable. It disables implicit
 directory fallback, including fallback installed while an endpoint is running.

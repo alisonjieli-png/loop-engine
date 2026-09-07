@@ -171,6 +171,7 @@ def self_test() -> dict:
         "core.adaptive_practitioner_source",
         "core.adaptive_practitioner_planning",
         "core.adaptive_practitioner_scope",
+        "core.adaptive_practitioner_bindings",
         "core.adaptive_practitioner_prompting",
         "core.adaptive_practitioner_verification",
         "core.independent_verification",

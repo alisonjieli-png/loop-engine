@@ -92,6 +92,38 @@ An interrupted provider call can leave unknown usage. Known subtotals are not
 complete totals. Failure-only diagnostic notes explain the violated contract
 without disclosing the host's expected answer; passing cases reveal no note.
 
+## Additional completion checks
+
+For the exact aggregation task, `--counterexample-seed 928381` enables a
+separate completion policy. Use it with the explicit subset
+`--task sales_aggregation`. The seed selects authored cancellation cases across
+several numeric lengths. Two independent reference calculations must agree
+before the host admits a case. The core sees an optional host gate, not a
+Sales-specific rule.
+
+The host freezes the policy and checks the exact source and state after the
+primary suite passes. A failed extra gate prevents `task_complete`. Large
+case bodies and complete outputs remain in local observations; model feedback
+contains bounded failure summaries. These generated cases are regression
+evidence, not a proof over arbitrary-length decimal inputs.
+
+## Selected failure history for repair
+
+`--repair-bundle /absolute/path/request.json` loads one explicitly selected
+failed completion observation from committed Run History and the existing
+artifact store. A request has record type `probe_repair_request/v1` and the
+fields `history_root`, `run_id`, `artifact_root`, `artifact_namespace`,
+`scope_ref`, `receipt_path`, and `receipt_digest`. All paths refer to the
+operator's local evidence. The loader does not discover private histories.
+
+The failed observation must match the exact task, source, scope, and stored
+artifact identity. Those bindings are rechecked before use. To expose its
+bounded summary to a model, also pass `--allow-repair-evidence-to-model`.
+Historical failure remains advisory: it cannot inherit acceptance, promote
+knowledge, or substitute for verification of the new source. The loader and
+disclosure checks have offline coverage; a live assisted-versus-fresh benefit
+has not been demonstrated.
+
 A passing result covers the saved cases. It does not establish arbitrary Jira
 ticket resolution, an unattended scheduler, general recursive planning,
 cross-task learning, or a full-system benchmark. An Overnight adapter must

@@ -133,6 +133,7 @@ class HostRuntimeBinding:
     snapshot: Callable = field(repr=False, compare=False)
     scope_ref: str
     share_outputs_with_model: bool = False
+    completion_verifiers: tuple[HostOperationBinding, ...] = ()
     _manifest: str = field(init=False, repr=False, compare=False)
     _endpoints: tuple = field(init=False, repr=False, compare=False)
     _controls: tuple = field(init=False, repr=False, compare=False)
@@ -147,7 +148,11 @@ class HostRuntimeBinding:
                 or any(not isinstance(item, HostOperationBinding) for item in self.operations)
                 or not isinstance(self.verifier, HostOperationBinding)):
             raise HostRuntimeError("host needs typed operations and a separate verifier")
-        specs = (*self.operations, self.verifier)
+        if (not isinstance(self.completion_verifiers, tuple)
+                or any(not isinstance(item, HostOperationBinding)
+                       for item in self.completion_verifiers)):
+            raise HostRuntimeError("completion verifiers must be typed host bindings")
+        specs = self._specifications()
         if len({item.capability_ref for item in specs}) != len(specs):
             raise HostRuntimeError("host operations and verifier cannot share an endpoint")
         if not callable(self.authorize) or not callable(self.snapshot) or not self.scope_ref.strip():
@@ -164,14 +169,20 @@ class HostRuntimeBinding:
             if handshake.max_response_bytes <= 0:
                 raise HostRuntimeError("host handshake must declare its response byte allowance")
             endpoints.append((endpoint, endpoint.fn, item.effect_factory))
-        if any(item[1] is endpoints[-1][1] for item in endpoints[:-1]):
+        producers, verifiers = endpoints[:len(self.operations)], endpoints[len(self.operations):]
+        if any(producer[1] is verifier[1] for producer in producers for verifier in verifiers):
             raise HostRuntimeError("host verifier must not be the action implementation")
+        if len({id(item[1]) for item in verifiers}) != len(verifiers):
+            raise HostRuntimeError("host verification gates must use distinct callbacks")
         object.__setattr__(self, "_endpoints", tuple(endpoints))
         object.__setattr__(self, "_controls", (self.authorize, self.snapshot))
         object.__setattr__(self, "_manifest", _json(self._description()))
 
+    def _specifications(self):
+        return (*self.operations, self.verifier, *self.completion_verifiers)
+
     def _description(self):
-        return {"record_type": "host_runtime_binding/v1", "scope_ref": self.scope_ref,
+        value = {"record_type": "host_runtime_binding/v1", "scope_ref": self.scope_ref,
                 "operations": [{**item.describe(), "handshake":
                     self.directory.handshake(item.surface).describe()}
                     for item in self.operations],
@@ -181,6 +192,11 @@ class HostRuntimeBinding:
                 "share_outputs_with_model": self.share_outputs_with_model,
                 "snapshot_authority": "host_attested",
                 "sandbox_authority": "host_owned"}
+        if self.completion_verifiers:
+            value.update(record_type="host_runtime_binding/v2", completion_verifiers=[
+                {**item.describe(), "handshake": self.directory.handshake(item.surface).describe()}
+                for item in self.completion_verifiers])
+        return value
 
     def validate(self):
         if (self.authorize is not self._controls[0]
@@ -189,7 +205,7 @@ class HostRuntimeBinding:
         if _json(self._description()) != self._manifest:
             raise HostRuntimeError("host registration changed after binding")
         for spec, (endpoint, function, factory) in zip(
-                (*self.operations, self.verifier), self._endpoints):
+                self._specifications(), self._endpoints):
             if (self.directory._ep.get((spec.surface, spec.operation)) is not endpoint
                     or endpoint.fn is not function or spec.effect_factory is not factory
                     or self.directory._fallback_for(spec.surface, spec.operation) is not None):
@@ -229,7 +245,7 @@ class HostRuntimeBinding:
         from dataclasses import replace
         return replace(base_context, custom_plugins=CustomPluginsPort(
             "host_runtime", self.directory,
-            tuple(item.capability_ref for item in (*self.operations, self.verifier))))
+            tuple(item.capability_ref for item in self._specifications())))
 
 
 @dataclass(frozen=True)
@@ -349,7 +365,7 @@ def _invoke(host, spec, arguments, services, owner):
             invocation_policy=CapabilityInvocationPolicy(
                 False, capability_handshake_digest(host.directory.handshake(spec.surface)),
                 next(function for bound, (_, function, _) in zip(
-                    (*host.operations, host.verifier), host._endpoints)
+                    host._specifications(), host._endpoints)
                     if bound.capability_ref == spec.capability_ref)))
         host.validate()
         value = dispatched["value"]
@@ -425,7 +441,8 @@ def verify_host_result(task, result, services, owner_loop):
     holder = {}
 
     def handler(active, _step, _context):
-        report = {"record_type": "host_verification_report/v1", "status": "unavailable",
+        report = {"record_type": ("host_verification_report/v2" if host.completion_verifiers
+                                  else "host_verification_report/v1"), "status": "unavailable",
                   "task_complete": False, "task_digest": hashlib.sha256(task.encode()).hexdigest(),
                   "subject_digest": result["result_digest"], "state_ref": result["state_after"],
                   "verifier_loop_id": active.loop_id, "producer_loop_id": owner_loop.loop_id,
@@ -435,23 +452,45 @@ def verify_host_result(task, result, services, owner_loop):
         try:
             if result["ok"] is not True or _state(host.snapshot()) != result["state_after"]:
                 raise HostRuntimeError("host result is failed or no longer the current subject")
-            execution = _invoke(host, host.verifier, {
-                "task": task, "result": deepcopy(result), "state_ref": result["state_after"]},
-                services, active)
-            value = execution["value"]
-            if (not isinstance(value, dict) or type(value.get("passed")) is not bool
-                    or type(value.get("task_complete")) is not bool
-                    or not isinstance(value.get("observations"), dict)
-                    or not isinstance(value.get("notes"), str)):
-                raise HostRuntimeError("host verifier must return explicit checks and completeness")
-            if execution["state_before"] != execution["state_after"]:
-                raise HostRuntimeError("host verifier changed the subject it evaluated")
-            report.update(status="passed" if value["passed"] and execution["ok"] else "failed",
-                          task_complete=value["task_complete"] and value["passed"] and execution["ok"],
-                          notes=value["notes"], observations=value["observations"],
-                          execution=execution)
+            arguments = {"task": task, "result": deepcopy(result), "state_ref": result["state_after"]}
+            execution = _invoke(host, host.verifier, arguments, services, active)
+            value = _verification_reply(execution, result["state_after"])
+            passed = value["passed"] and execution["ok"]
+            complete = value["task_complete"] and passed
+            completion_checks = []
+            if host.completion_verifiers:
+                report.update(execution=execution, completion_checks=completion_checks,
+                              observations={"primary": deepcopy(value["observations"]),
+                                            "completion_checks": []})
+            if complete:
+                for spec in host.completion_verifiers:
+                    checked = _invoke(host, spec, arguments, services, active)
+                    reply = _verification_reply(checked, result["state_after"])
+                    completion_checks.append({"capability_ref": spec.capability_ref,
+                        "passed": reply["passed"] and checked["ok"],
+                        "task_complete": reply["task_complete"] and reply["passed"] and checked["ok"],
+                        "notes": reply["notes"], "observations": deepcopy(reply["observations"]),
+                        "execution": checked})
+                    report["observations"]["completion_checks"] = [
+                        {key: item[key] for key in (
+                            "capability_ref", "passed", "task_complete", "notes", "observations")}
+                        for item in completion_checks]
+                passed = passed and all(item["passed"] for item in completion_checks)
+                complete = complete and all(item["task_complete"] for item in completion_checks)
+            report.update(status="passed" if passed else "failed", task_complete=complete,
+                          notes=value["notes"], observations=value["observations"], execution=execution)
+            if host.completion_verifiers:
+                report["completion_checks"] = completion_checks
+                if completion_checks:
+                    report["observations"] = {"primary": deepcopy(value["observations"]),
+                        "completion_checks": [{key: item[key] for key in (
+                            "capability_ref", "passed", "task_complete", "notes", "observations")}
+                            for item in completion_checks]}
+                    report["notes"] = ("All registered completion gates passed." if complete else
+                        "Registered completion gates did not establish task completion; inspect their observations.")
         except Exception as exc:
-            report.update(error_type=type(exc).__name__, notes=str(exc))
+            report.update(status="unavailable", task_complete=False,
+                          error_type=type(exc).__name__, notes=str(exc))
         holder["report"] = _issued(services, active, report,
                                     "host_verification_recorded", "report_digest")
         services.host_verification_records.append(deepcopy(holder["report"]))
@@ -459,6 +498,19 @@ def verify_host_result(task, result, services, owner_loop):
 
     loop.run(handler=handler, max_steps=len(loop.steps()) + 1)
     return holder["report"]
+
+
+def _verification_reply(execution, state_ref):
+    """Require explicit results from a registered gate, bound to unchanged state."""
+    value = execution["value"]
+    if (not isinstance(value, dict) or type(value.get("passed")) is not bool
+            or type(value.get("task_complete")) is not bool
+            or not isinstance(value.get("observations"), dict)
+            or not isinstance(value.get("notes"), str)):
+        raise HostRuntimeError("host verifier must return explicit checks and completeness")
+    if execution["state_before"] != state_ref or execution["state_after"] != state_ref:
+        raise HostRuntimeError("host verifier changed the subject it evaluated")
+    return value
 
 
 def validate_host_verification(report, task, result, services, owner_loop):
@@ -475,6 +527,20 @@ def validate_host_verification(report, task, result, services, owner_loop):
             or _state(host.snapshot()) != report.get("state_ref")
             or report["state_ref"] != result["state_after"]):
         raise HostRuntimeError("host verification does not bind the current task and result")
+    if report.get("task_complete") is True and host.completion_verifiers:
+        checks = report.get("completion_checks")
+        if (not isinstance(checks, list) or len(checks) != len(host.completion_verifiers)
+                or [item.get("capability_ref") for item in checks]
+                != [item.capability_ref for item in host.completion_verifiers]
+                or any(item.get("passed") is not True or item.get("task_complete") is not True
+                       for item in checks)):
+            raise HostRuntimeError("host completion requires every registered completion gate")
+        for item in checks:
+            reply = _verification_reply(item["execution"], report["state_ref"])
+            if (reply["passed"] is not True or reply["task_complete"] is not True
+                    or item["execution"]["ok"] is not True
+                    or item["execution"]["binding_digest"] != report["binding_digest"]):
+                raise HostRuntimeError("host completion gate is not current issued verification")
     initial = [item for item in owner_loop.ledger.events if item.get("event") == "init"
                and item.get("loop_id") == report["verifier_loop_id"]]
     if (len(initial) != 1 or initial[0].get("role") != "practitioner"
@@ -484,4 +550,10 @@ def validate_host_verification(report, task, result, services, owner_loop):
 
 def self_test():
     from .adaptive_host_runtime_checks import host_contract_checks
-    return host_contract_checks()
+    from .host_completion_checks import run_checks
+    report = host_contract_checks()
+    report["tests"].extend(run_checks())
+    report.update(total=len(report["tests"]),
+                  passed=sum(item["passed"] for item in report["tests"]),
+                  all_passed=all(item["passed"] for item in report["tests"]))
+    return report

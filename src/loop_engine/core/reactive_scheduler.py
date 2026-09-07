@@ -357,7 +357,9 @@ class SQLiteReactiveScheduler:
             loop_id=request.loop_id, terminal_at=request.terminal_at,
             terminal_code=request.terminal_code,
             failure_code=request.failure_code,
-            candidate_refs=request.candidate_refs)
+            candidate_refs=request.candidate_refs,
+            history_ref=request.history_ref,
+            history_disposition=request.history_disposition)
         self._append_activation(terminal)
         self._connection.commit()
         from .runtime_observer import RuntimeObservation
@@ -382,7 +384,12 @@ class SQLiteReactiveScheduler:
         return terminal
 
     def recover_expired(self, as_of: str) -> tuple[ActivationRecord, ...]:
-        """Return expired leases to admission or dead-letter exhausted work."""
+        """Retry unstarted work; retain started work for effect reconciliation.
+
+        Lease expiry does not establish that a running handler stopped or that
+        its effects did not commit. No replay-safety policy is installed at
+        this boundary, so attempts remaining cannot authorize its replay.
+        """
         now = _instant(as_of)
         recovered = []
         for record in self._active_records():
@@ -390,7 +397,12 @@ class SQLiteReactiveScheduler:
             if _instant(lease.expires_at) > now:
                 continue
             series = self._require_series(record.series_id)
-            if record.attempt >= series.maximum_attempts_per_trigger:
+            if record.status is ActivationStatus.RUNNING:
+                updated = replace(
+                    record, status=ActivationStatus.DEAD_LETTER,
+                    revision=record.revision + 1, terminal_at=as_of,
+                    failure_code="RUNNING_OUTCOME_UNKNOWN_RECONCILIATION_REQUIRED")
+            elif record.attempt >= series.maximum_attempts_per_trigger:
                 updated = replace(
                     record, status=ActivationStatus.DEAD_LETTER,
                     revision=record.revision + 1, terminal_at=as_of,

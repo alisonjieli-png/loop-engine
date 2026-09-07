@@ -62,14 +62,20 @@ def scoped_history(events, scope_loop_id: str) -> tuple[dict, ...]:
     return tuple(event for event in events if visible(event.get("loop_id", "")))
 
 
-def delegated_task_text(spec) -> str:
+def delegated_task_text(spec, *, assignment=None, inputs=()) -> str:
     """Expose the complete admitted assignment to models and host verifiers."""
-    return json.dumps({
+    value = {
         "record_type": "delegated_problem/v1",
         "objective": spec.objective,
         "constraints": list(spec.constraints),
         "success_criteria": list(spec.success_criteria),
-    }, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    }
+    if assignment is not None:
+        value.update(task_id=assignment.task_id,
+                     output_contract=assignment.output_contract.to_dict()
+                     if assignment.output_contract else None,
+                     dependency_inputs=[item.to_dict() for item in inputs])
+    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
 
 
 def fork_services(spawning_service, spec):
@@ -202,22 +208,68 @@ def run_spawned_tasks(state, plan, services, implementations):
     from ..loop.kernel_runtime import current_kernel_owner, run_spawned_kernel
     from .run_history import default_runs_dir
     from .run_stages import close_stages
+    from .adaptive_practitioner_bindings import (
+        ASSIGNMENT_KEY, DependencyBindingError, SpawnedDependencyFrame,
+        assignment_for, compile_assignments)
 
     owner = current_kernel_owner()
     if owner is None:
         raise ValueError("spawned work requires an active owning Loop")
+    specs = tuple(replace(deepcopy(spec), constraints=tuple(dict.fromkeys(
+        (*state.spec.constraints, *spec.constraints)))) for spec in plan.spawned_loops)
+    order, plan_digest = compile_assignments(specs, state.spec.objective)
+    frame = (SpawnedDependencyFrame(owner, services.run_id, plan_digest,
+             {assignment_for(spec).task_id: assignment_for(spec) for spec in specs})
+             if plan_digest else None)
+    if frame is not None:
+        owner.ledger.record(loop_id=owner.loop_id, event="custom",
+            custom_kind="adaptive_dependency_plan_admitted", plan_digest=plan_digest,
+            task_order=[assignment_for(specs[index]).task_id for index in order])
     results = []
-    for spec in plan.spawned_loops:
-        spec = replace(deepcopy(spec), constraints=tuple(dict.fromkeys(
-            (*state.spec.constraints, *spec.constraints))))
+    for index in order:
+        assignment = assignment_for(specs[index])
+        # Reserved metadata has been admitted and consumed by the controller.
+        # It is not a free-form seed that can become trusted task facts.
+        spec = replace(specs[index], seed_facts={
+            key: value for key, value in specs[index].seed_facts.items()
+            if key != ASSIGNMENT_KEY})
         spawned_service = None
         try:
             spawned_service = fork_services(services, spec)
             calls_before = services.model_session.calls_used
+
+            def prepare(active):
+                if frame is not None:
+                    bound, delegation, _resolver = frame.resolve(
+                        assignment, active, request=spawned_service.request, spec=spec)
+                    spawned_service.request = replace(spawned_service.request,
+                        task=delegated_task_text(spec, assignment=assignment, inputs=bound))
+                    spawned_service.plan_details["dependency_inputs"] = [item.to_dict() for item in bound]
+                    active.ledger.record(loop_id=active.loop_id, event="custom",
+                        custom_kind="adaptive_dependency_inputs_bound", plan_digest=plan_digest,
+                        task_id=assignment.task_id, input_roles=list(delegation.contract.input_roles),
+                        value_refs=[item.reference.to_dict() for item in bound],
+                        schema_digests=[item.schema_digest for item in bound],
+                        deliveries=[item.delivery for item in bound])
+                return prepare_exact_result(spawned_service, active)
+
             spawned = run_spawned_kernel(
                 spec, implementations(spawned_service), selected_mode=services.request.mode,
-                prepare=lambda active: prepare_exact_result(spawned_service, active))
+                prepare=prepare)
             summary = spawned_summary(spawned, spawned_service, spec=spec, calls_before=calls_before)
+            if frame is not None:
+                summary.update(task_id=assignment.task_id, dependency_plan_digest=plan_digest)
+                try:
+                    frame.register(assignment, summary)
+                except DependencyBindingError as exc:
+                    summary.update(task_complete=False, accepted_result=None,
+                                   binding_disposition=exc.disposition.value,
+                                   verification_kind="output_contract_rejected")
+                    frame.register(assignment, summary)
+                    owner.ledger.record(loop_id=owner.loop_id, event="custom",
+                        custom_kind="adaptive_dependency_output_rejected",
+                        task_id=assignment.task_id, spawned_loop_id=spawned.loop_id,
+                        disposition=exc.disposition.value)
             services.spawned_results.append(summary)
             owner.ledger.record(
                 loop_id=owner.loop_id, event="custom",
@@ -238,6 +290,9 @@ def run_spawned_tasks(state, plan, services, implementations):
                 "objective": spec.objective, "task_complete": False,
                 "completes_spawning_task": False,
                 "error_type": type(exc).__name__,
+                **({"task_id": assignment.task_id, "dependency_plan_digest": plan_digest}
+                   if assignment is not None else {}),
+                **({"binding_disposition": exc.disposition.value} if isinstance(exc, DependencyBindingError) else {}),
                 "workspace": str(spawned_service.workspace_base) if spawned_service else ""})
             if isinstance(exc, KeyboardInterrupt):
                 raise

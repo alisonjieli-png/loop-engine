@@ -491,6 +491,35 @@ def self_test() -> dict:
                   and not missing["usage_accounting_complete"]
                   and missing["input_tokens"] is None)
 
+    from contextlib import redirect_stdout, redirect_stderr
+    import io
+    from ..__main__ import main
+    base = ["models", "probe", "ollama_cloud", "--authorize-model-calls", "--max-model-calls", "1"]
+    captured = []
+    def accept_cli(value):
+        captured.append(value)
+        return {"provider_integration_proven": True, "evidence_class": "injected_cli_contract_fixture"}
+    with patch(__name__ + ".run_live_model_verification", side_effect=accept_cli), redirect_stdout(io.StringIO()):
+        code = main(base + ["--allow-unbounded-total-tokens"])
+    check("cli_exposes_the_explicit_single_probe_unbounded_grant",
+          code == 0 and len(captured) == 1 and captured[0].allow_unbounded_total_tokens
+          and captured[0].max_total_tokens is None and captured[0].max_physical_model_calls == 1)
+    captured.clear()
+    with patch(__name__ + ".run_live_model_verification", side_effect=accept_cli), redirect_stdout(io.StringIO()):
+        main(base + ["--max-total-tokens", "70000"])
+    check("cli_does_not_silently_demote_an_explicit_strict_budget",
+          len(captured) == 1 and captured[0].max_total_tokens == 70000
+          and not captured[0].allow_unbounded_total_tokens)
+    with patch(__name__ + ".run_live_model_verification") as invoke, redirect_stdout(io.StringIO()):
+        code = main(base + ["--max-total-tokens", "70000", "--allow-unbounded-total-tokens"])
+    check("cli_rejects_contradictory_budget_authority_before_dispatch", code == 2 and not invoke.called)
+    try:
+        with redirect_stderr(io.StringIO()):
+            main(["doctor", "--allow-unbounded-total-tokens"])
+        refused = False
+    except SystemExit as exc:
+        refused = exc.code == 2
+    check("single_probe_budget_grant_is_not_silently_reused_by_other_commands", refused)
     passed = sum(1 for test in results if test["passed"])
     return {"record_type": "live_model_verification_contract_test/v1",
             "scope": "offline_contract_only",

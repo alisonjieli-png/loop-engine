@@ -109,11 +109,17 @@ loop-engine models probe ollama_cloud \
   --model-id deepseek-v4-flash:0731 \
   --authorize-model-calls \
   --max-model-calls 1 \
-  --max-total-tokens 70000
+  --allow-unbounded-total-tokens
 ```
 
 `doctor` validates configuration without a provider call. `models probe`
 performs one real call. A solve should not continue when the probe fails.
+
+The example explicitly permits that one call without a total-token ceiling;
+the route's known output capacity and timeout still apply. It may incur
+charges. A strict `--max-total-tokens` policy requires a qualified exact-request
+bound. Missing qualification causes a pre-dispatch refusal; a larger guessed
+number does not supply the missing bound.
 
 ## CLI setup
 

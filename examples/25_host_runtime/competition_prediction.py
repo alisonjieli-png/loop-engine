@@ -308,7 +308,7 @@ def execute_prediction(config, root, image=portfolio.IMAGE):
         'feature_columns': config['feature_columns'], 'prediction_kind': config['prediction_kind']})
     prediction_execution = _execute(predict, image, 'predict')
     reading = format_submission(config, _json(predict / 'predictions.json'), training['classes'], root / 'submission.csv')
-    receipt = {'record_type': 'competition_prediction_receipt/v1', **reading,
+    record = {'record_type': 'competition_prediction_receipt/v1', **reading,
         'selected_candidate_id': config['selected_candidate_id'], 'selected_spec': config['selected_spec'],
         'source_hashes': config['source_hashes'], 'worker_hashes': worker_hashes,
         'training': training, 'training_execution': training_execution, 'prediction_execution': prediction_execution,
@@ -316,8 +316,8 @@ def execute_prediction(config, root, image=portfolio.IMAGE):
         'selection_uses_competition_test': False, 'model_calls': 0, 'network_calls': 0,
         'submitted_to_kaggle': False, 'prediction_workspace_has_training_labels': False,
         'controller_loaded_pickle': False}
-    portfolio.write_json(root / 'submission-receipt.json', receipt)
-    return receipt
+    portfolio.write_json(root / 'submission-record.json', record)
+    return record
 
 
 def main():
@@ -334,8 +334,8 @@ def main():
     args = parser.parse_args()
     if not args.authorize_local_compute:
         parser.error('--authorize-local-compute is required; no network submission is performed')
-    receipt = execute_prediction(load_request(args.manifest), Path(args.output_dir).resolve(), args.image)
-    print(json.dumps(receipt, indent=2))
+    record = execute_prediction(load_request(args.manifest), Path(args.output_dir).resolve(), args.image)
+    print(json.dumps(record, indent=2))
     return 0
 
 

@@ -5,18 +5,24 @@ architecture presentation. The browser player, video, captions, PowerPoint,
 and PDF read from the same slide data in `showcase-data.js`.
 
 The slides separate the architecture contract from current implementation
-status. The public Static Architecture view contains exactly three groups:
+status. The public Core Architecture view contains exactly three groups:
 Intelligence Search and Retrieval, Web Research, and Custom Plugins.
 Self-improvement appears only as a Practitioner task profile. Read the
 [architecture drift audit](../docs/architecture/LOOP-ENGINE-ARCHITECTURE-DRIFT-AUDIT-2026-08-25.md)
 before using the presentation as an implementation guide.
+
+The exported presentation is a dated architecture snapshot. It is not a
+current test report and does not demonstrate the newer completion gates,
+dependency bindings, or durable-history behavior. Use the
+[current component guide](../docs/components/) and [verification reports](../docs/verification/)
+for those claims. Browser/media checks validate the presentation itself.
 
 ## View the presentation
 
 Run this command from the repository root:
 
 ```bash
-python3 -m http.server 8082 --directory showcase
+python3 -m http.server 8082 --bind 127.0.0.1 --directory showcase
 ```
 
 Open <http://127.0.0.1:8082>. The player provides play, pause, previous,

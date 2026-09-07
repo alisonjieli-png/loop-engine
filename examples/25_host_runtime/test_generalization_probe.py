@@ -125,7 +125,9 @@ def fixture_runner(workspace, image):
 
 def services(root, host):
     from loop_engine.core.adaptive_host_runtime_checks import _services
-    return _services(root / 'evidence', SimpleNamespace(binding=host))
+    state, owner = _services(root / 'evidence', SimpleNamespace(binding=host))
+    state.request.task = host.verifier.input_schema['properties']['task']['enum'][0]
+    return state, owner
 
 
 def invoke(host, state, owner, index, arguments):
@@ -647,7 +649,7 @@ def summarize_sales(text):
         task = probe.task_population()[1]
         initial = 'def summarize_sales(text):\n    raise ValueError("unfinished")\n'
         with tempfile.TemporaryDirectory(prefix='probe-seed-parent-') as prior, \
-                tempfile.TemporaryDirectory(prefix='probe-seed-child-') as current:
+                tempfile.TemporaryDirectory(prefix='probe-seed-spawned-') as current:
             prior_root, root = Path(prior), Path(current)
             report = prior_run(prior_root, task, initial)
             metadata, seeds = probe.bind_parent_followup(report, (task,), reuse_source=True)
@@ -656,10 +658,10 @@ def summarize_sales(text):
             host = probe.make_host(root, task, runner=fixture_runner, seed_source=seed)
             self.assertEqual((root / 'seed-source.py').read_bytes(), initial.encode())
             self.assertEqual((root / 'source/solution.py').read_bytes(), initial.encode())
-            receipt = json.loads((root / 'seed-source.json').read_text())
-            self.assertEqual(receipt['status'], 'UNVERIFIED')
-            self.assertFalse(receipt['acceptance_inherited'])
-            self.assertEqual(receipt['snapshot_digest'], seed.source_digest)
+            record = json.loads((root / 'seed-source.json').read_text())
+            self.assertEqual(record['status'], 'UNVERIFIED')
+            self.assertFalse(record['acceptance_inherited'])
+            self.assertEqual(record['snapshot_digest'], seed.source_digest)
             self.assertEqual(json.loads((root / 'frozen-task.json').read_text()), task.manifest())
             self.assertEqual(task.manifest()['initial_source'], task.initial_source)
             state, owner = services(root, host)
@@ -731,7 +733,7 @@ def summarize_sales(text):
             with self.assertRaisesRegex(ValueError, 'ordinary file'):
                 probe.bind_parent_followup(report, (task,), reuse_source=True)
         with tempfile.TemporaryDirectory(prefix='probe-seed-snapshot-parent-') as prior, \
-                tempfile.TemporaryDirectory(prefix='probe-seed-snapshot-child-') as current:
+                tempfile.TemporaryDirectory(prefix='probe-seed-snapshot-spawned-') as current:
             root = Path(current)
             report = prior_run(Path(prior), task, SOLUTIONS[1])
             _, seeds = probe.bind_parent_followup(report, (task,), reuse_source=True)

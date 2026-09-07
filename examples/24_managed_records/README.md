@@ -75,3 +75,28 @@ chain is persisted.
 test records, unproven claims, and next actions. It uses the same implementation
 and command; only host policy changes. Its data remains reported candidate
 information, not independently verified truth or execution authority.
+
+## Export an exact JSON view
+
+`tools/export_managed_record.py` reads one explicit managed-record revision
+through `RecordOperationService` and renders a `managed_record_export/v1`
+file. It does not write database rows or immutable revisions directly. The
+export contains the source record, policy and document digests, renderer
+identity, generation time, and a generated-view marker.
+
+Use `--record-version` to select an exact revision. The default returns a
+write plan without creating the output. After reviewing the plan, repeat the
+same arguments with its `--approve-effect-digest`. Replacing an existing
+export also requires `--expected-output-digest`. File writes use the existing
+confined workspace and approval services; they are not another CRUD store.
+
+```bash
+python tools/export_managed_record.py --help
+python -m unittest discover -s tools -p test_export_managed_record.py
+```
+
+`publication-policy.json` is host-owned Git configuration for reported
+publication evidence. It checks the required test-summary fields and permits
+additional descriptive evidence. Storing a report does not independently
+verify its claims. Change its document with `loop-engine records`, then
+regenerate the export. Do not patch the generated JSON.

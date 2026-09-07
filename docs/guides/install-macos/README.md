@@ -36,7 +36,7 @@ export OLLAMA_API_KEY="your-key"
 loop-engine configure
 ```
 
-Make one bounded provider probe:
+Make one explicitly authorized provider probe:
 
 ```bash
 loop-engine models probe ollama_cloud \
@@ -44,9 +44,12 @@ loop-engine models probe ollama_cloud \
   --model-id deepseek-v4-flash:0731 \
   --authorize-model-calls \
   --max-model-calls 1 \
-  --max-total-tokens 70000
+  --allow-unbounded-total-tokens
 ```
 
+This permits one call at full known output capacity without a total-token
+ceiling and may incur charges. A strict `--max-total-tokens` value requires a
+qualified exact-request bound; otherwise the route refuses before dispatch.
 Stop if the probe fails. Then download and solve the first task:
 
 ```bash
@@ -65,7 +68,7 @@ Terminal to stop Studio.
 
 ## Run the full contributor checks
 
-The full self-test scans the installed package and can take about a minute.
+The full self-test scans the installed package and can take several minutes.
 It prints a progress message before the scan begins.
 
 ```bash

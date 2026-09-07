@@ -1,5 +1,11 @@
 # Benchmark registry
 
+The [TrafficFlowBench native/OpenCode plan](TRAFFICFLOWBENCH-NATIVE-OPENCODE-PLAN.md)
+defines a proposed capstone with matched execution arms and explicit local
+scoring limits. Account entry and file-list access were checked. The comparison
+has not run, and OpenCode execution remains quarantined pending containment
+and accounting qualification.
+
 Published harness results use a separate evidence catalog:
 
 - [`published-harness-evidence.json`](published-harness-evidence.json) stores
@@ -28,7 +34,7 @@ source that reported it.
 
 The registry contains 144 candidate tracks across ten families. A track may be
 one benchmark, one official subset, or one task inside a benchmark suite. This
-count is not 143 independent publications.
+count is not 144 independent publications.
 
 No registry entry has been promoted from `cataloged_not_run`, and every entry
 still has `eligible_for_comparison: false`. Two separately frozen full-system

@@ -20,7 +20,7 @@ historical instruction is current authority.
 | [markdown-semantic-coverage.json](markdown-semantic-coverage.json) | Full-text reading coverage of all 280 input Markdown files, with exact source hashes |
 | [external-prompts.json](external-prompts.json) | Four explicitly registered external prompt files, hashes, headings, and automated inspection |
 | [external-guidance-coverage.json](external-guidance-coverage.json) | Full semantic coverage of all four external files, including exact repeated-text and base-plus-diff mappings |
-| [registered-conversation-sources.json](registered-conversation-sources.json) | Eight registered sessions with 116 user-text parts, plus three exact registered fragments, counted and hashed without their bodies |
+| `registered-conversation-sources.json` (private local file, not published) | Eight registered sessions with 116 user-text parts, plus three exact registered fragments, counted and hashed without their bodies |
 | [source recheck](source-recheck-before-report-index-edits.json) | All 1,502 original input files unchanged before report-index edits |
 | [environment](environment-at-publication.json) | Branch, HEAD, worktrees, dirty paths, and process names/working directories; no process arguments or environment values |
 | [bundle-manifest.json](bundle-manifest.json) | Hashes of published evidence artifacts; excludes its own hash |
