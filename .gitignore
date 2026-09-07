@@ -43,3 +43,6 @@ artifacts/verification/kaggle_access_preflight_runs*/
 artifacts/verification/semantic_call_correlation_runs*/
 artifacts/verification/fresh-shaped-live-*/
 docs/evidence/architecture-mesh-audit-20260904/registered-conversation-sources.json
+
+# Local CodeGraph MCP index (57 MB, machine-specific)
+.codegraph/
