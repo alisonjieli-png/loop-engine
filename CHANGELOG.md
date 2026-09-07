@@ -10,16 +10,17 @@ First public release.
 ### Added
 
 - [Unseen novel-task campaign](docs/verification/UNSEEN-NOVEL-TASK-CAMPAIGN-2026-09-06.md).
-  Ten sealed novel tasks across ten domains each completed on the first
-  autonomous attempt through the frozen host machinery (283 real model
-  calls, complete token accounting, one attempt per task, no repairs). An
-  independent seeded random-input audit then invalidated one accepted
-  solution for a contract-boundary error, so post-audit survival is 9/10
-  and the population's false-acceptance rate is 10 percent. The campaign
-  task population is burned as evidence for future unseen-task claims; a
-  fresh sealed population is required for any new generalization claim.
-  The next steps are recorded in the
-  [unseen-task handoff](docs/prompts/UNSEEN-TASK-WORK-HANDOFF.md).
+  Ten sealed novel tasks each completed on the first autonomous attempt
+  through the frozen host machinery (283 real model calls, complete token
+  accounting, one attempt per task, no repairs). An independent seeded
+  random-input audit invalidated one accepted solution, and the later
+  [execution-verified review](docs/verification/CODE-REVIEW-2026-09-07.md)
+  confirmed three prompts contradicted their own oracles and the offline
+  check was circular, so the campaign's 10/10 and 9/10 figures overstate
+  correctness for the exact prompts. The population is burned as evidence;
+  the [version 2 repair set](docs/implementation/IMPROVEMENT-PLAN-2026-09-07.md)
+  and the [unseen-task handoff](docs/prompts/UNSEEN-TASK-WORK-HANDOFF.md)
+  define the corrected instrument and the next steps.
 
 - [Adaptive completion, dependencies, and restart checks](docs/verification/ADAPTIVE-COMPLETION-AND-PUBLICATION-2026-09-06.md).
   Hosts can require additional independent completion gates. Spawned
