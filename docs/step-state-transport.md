@@ -119,12 +119,13 @@ simplest; gives up isolation, per-step tool permissions, and crash
 containment. Still the right choice when a step is cheap and the isolation
 buys nothing.
 
-#### 2. argv — what runs today
+#### 2. argv — no longer the default
 
 Simple, synchronous, no extra dependency, and the natural fit for
-`opencode run "<prompt>"`. Both measurements above are against it: a 128 KB
-ceiling we are at 55% of, and world-readable content. **Adequate for a
-single-user machine, not for a shared or multi-tenant one.**
+`opencode run "<prompt>"`. Both measurements above are against it. Still
+available via `prompt_via_file=False`, and in that mode a prompt larger than
+the ceiling is now **refused by name** rather than failing the exec with an
+opaque `E2BIG` from inside `subprocess`.
 
 #### 3. Environment variable
 
@@ -139,14 +140,29 @@ having to read stdin — which `opencode run` does not do for its message.
 Worth requesting upstream; it is the smallest change that fixes both
 measured problems at once.
 
-#### 5. File + path pointer
+#### 5. File + path pointer — IMPLEMENTED, and now the default
 
-Write S to a file, pass the path. Unlimited size, survives a crash, and
-leaves an artifact a morning reviewer can read. Costs a filesystem round
-trip and needs cleanup — the same class of problem as the orphaned worktrees
-found here, where a killed run left 62 MB behind and nothing removed it.
-**This is the smallest change that fixes both measurements and needs no
-upstream support.**
+Write the prompt to a mode-**600** file inside the composed instance
+directory and pass `--file <path>`; argv carries only a constant sentence.
+
+`OpenCodeStepProfile.prompt_via_file` defaults to `True`. Verified live: a
+real `orient` step ran to a correct answer through this path.
+
+| | argv transport | file transport |
+|---|---|---|
+| 84,000-byte prompt | exceeds the 128 KB element ceiling as prompts grow | **53 bytes** in argv |
+| visible in `ps` | the entire prompt | one constant sentence, identical every step |
+| file mode | n/a | `0600`, opened `O_CREAT` at 0600 so it is never briefly world-readable |
+
+One detail that cost a debugging round: `--file` is an **array** flag, so a
+trailing positional message is consumed as another filename and OpenCode
+exits with `File not found: <the whole message>`. The message must come
+immediately after `run`.
+
+Cleanup is still owed — the prompt file lives in the instance directory,
+which is per-step and disposable, but nothing prunes it explicitly. Same
+class as the orphaned worktrees found here, where a killed run left 62 MB
+behind and nothing removed it.
 
 #### 6. Content-addressed blob + digest pointer
 
@@ -205,12 +221,11 @@ means a new way to fail at 3am with nobody watching.
 
 ### What to use
 
-1. **Now, single-user machine:** argv is adequate. It is 55% of the way to a
-   hard wall, so it should not be the last word.
-2. **Next, and small:** transport 5 or 6 — write S to a file (ideally
-   content-addressed) and pass the path. Fixes the 128 KB ceiling and the
-   `ps` exposure together, needs no upstream change, and produces an artifact
-   worth having in the morning report anyway.
+1. **Now: transport 5, and it is what runs.** Both measured problems are
+   closed. Nothing upstream was needed.
+2. **Next, small:** make it content-addressed (transport 6) so identical
+   state is stored once and a step's inputs are provably the bytes claimed —
+   the same digest discipline the core layer already uses.
 3. **For queryability:** transport 7, through the record layer that already
    exists. This is what makes "which runs were blocked on credentials" a
    query instead of a grep.

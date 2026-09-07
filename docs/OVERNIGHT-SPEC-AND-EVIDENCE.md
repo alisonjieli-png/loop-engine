@@ -242,12 +242,17 @@ patch is discarded. Measured over 40 steps: an accumulating transcript grows
 **29.6x**, bounded state **1.3x** — **5.8x fewer cumulative characters**,
 widening with every step. See `docs/step-state-transport.md`.
 
-Two measured limits on the current CLI transport:
+Two measured limits on the argv transport, **both now fixed**:
 
 - **128 KB** per argv element (`MAX_ARG_STRLEN`). A real `orient` prompt was
   17,722 tokens ~ 70 KB, already 55% of the wall.
-- `/proc/<pid>/cmdline` is mode **444**. Verified: prompt content is
-  readable by any local user via `ps`. Disqualifying on a shared host.
+- `/proc/<pid>/cmdline` is mode **444**. Verified: prompt content was
+  readable by any local user via `ps`.
+
+The prompt now goes in a mode-600 file passed with `--file`, and argv
+carries one constant sentence. An 84,000-byte prompt puts **53 bytes** in
+argv, and `ps` shows the same harmless line for every step of every run.
+Verified live end to end.
 
 ### Cost
 

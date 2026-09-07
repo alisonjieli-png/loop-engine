@@ -57,6 +57,15 @@ from .opencode_harness_adapter import parse_opencode_events
 #: reach the separate process by having been present in this one.
 INHERITABLE_ENVIRONMENT = ("PATH", "HOME", "LANG", "LC_ALL", "TERM", "TMPDIR")
 
+#: What travels in argv when the prompt goes through a file. Constant, so
+#: `ps` shows the same harmless sentence for every step of every run.
+PROMPT_POINTER_MESSAGE = (
+    "Follow the instructions in the attached file exactly.")
+
+#: Where a step's prompt is written when file transport is used. Inside the
+#: composed instance directory, which is already per-step and disposable.
+PROMPT_FILE_NAME = ".step-prompt.md"
+
 #: The engine states the response contract in the prompt and validates the
 #: parsed object itself. OpenCode is asked for one JSON object and nothing
 #: else; the parser already takes the last JSON-parsing text part.
@@ -69,6 +78,12 @@ JSON_ONLY_DIRECTIVE = (
 #: guessing at a step. A fixed number here decides in advance that a step
 #: needing longer fails, which is how an 880-second wrapper killed a run
 #: that had eleven hours of night left.
+#: MAX_ARG_STRLEN on Linux: 32 pages of 4096 bytes. Measured on this
+#: machine by bisection at 130,945 bytes. Exceeding it fails the exec with
+#: E2BIG, which surfaces as an opaque OSError rather than anything a
+#: reader would connect to prompt size.
+MAX_ARGV_ELEMENT_BYTES = 131_072
+
 DEFAULT_TIMEOUT_SECONDS = 3600.0
 
 
@@ -98,6 +113,18 @@ class OpenCodeStepProfile:
     #: the whole environment.
     additional_environment: tuple[str, ...] = ()
     requires_trusted_workspace: bool = True
+    #: Carry the prompt in a mode-600 file and put only a constant pointer
+    #: in argv. Two measured reasons, both of which argv fails:
+    #:
+    #:   * a single argv element caps at 130,945 bytes (MAX_ARG_STRLEN) and
+    #:     a real orient prompt measured ~70 KB -- 55% of the wall;
+    #:   * /proc/<pid>/cmdline is mode 444, verified, so every step's full
+    #:     prompt is readable by any local user through `ps`. On a shared
+    #:     build host that exposes source, customer data, and anything a
+    #:     failing command happened to print.
+    #:
+    #: Default on. `False` restores argv for a caller that needs it.
+    prompt_via_file: bool = True
 
     def __post_init__(self) -> None:
         if not str(self.model).strip():
@@ -123,9 +150,18 @@ class OpenCodeStepProfile:
             env["OPENCODE_CONFIG_DIR"] = str(self.config_directory)
         return env
 
-    def command(self, message: str) -> tuple:
-        """The exact argument vector, so a caller can log or review it."""
-        argv = [self.binary, "run", "--format", "json"]
+    def command(self, message: str, prompt_file: "Path | None" = None
+                ) -> tuple:
+        """The exact argument vector, so a caller can log or review it.
+
+        With ``prompt_file`` the message is a constant pointer and the real
+        text rides in the file, so argv is both unbounded and uninteresting
+        to anyone reading `ps`.
+        """
+        argv = [self.binary, "run"]
+        argv.append(PROMPT_POINTER_MESSAGE if prompt_file is not None
+                    else message)
+        argv += ["--format", "json"]
         if self.pure:
             argv.append("--pure")
         argv += ["-m", self.model]
@@ -135,8 +171,23 @@ class OpenCodeStepProfile:
             argv += ["--variant", self.variant]
         if self.workspace is not None:
             argv += ["--dir", str(self.workspace)]
-        argv.append(message)
+        if prompt_file is not None:
+            argv += ["--file", str(prompt_file)]
         return tuple(argv)
+
+
+def _write_prompt_file(profile: OpenCodeStepProfile, message: str) -> "Path | None":
+    """Write the prompt where only this user can read it."""
+    if not profile.prompt_via_file or profile.workspace is None:
+        return None
+    target = Path(profile.workspace) / PROMPT_FILE_NAME
+    target.parent.mkdir(parents=True, exist_ok=True)
+    # Created 0600 before any content is written, so the prompt is never
+    # briefly world-readable between creation and chmod.
+    handle = os.open(str(target), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(handle, "w", encoding="utf-8") as stream:
+        stream.write(message)
+    return target
 
 
 def subprocess_transport(profile: OpenCodeStepProfile, message: str) -> tuple:
@@ -146,7 +197,13 @@ def subprocess_transport(profile: OpenCodeStepProfile, message: str) -> tuple:
         raise OpenCodeStepError(
             f"OpenCode binary {profile.binary!r} is not on PATH; install it "
             "or name an absolute path in the profile")
-    argv = list(profile.command(message))
+    prompt_file = _write_prompt_file(profile, message)
+    if prompt_file is None and len(message) > MAX_ARGV_ELEMENT_BYTES:
+        raise OpenCodeStepError(
+            f"the prompt is {len(message):,} bytes and argv caps a single "
+            f"element at {MAX_ARGV_ELEMENT_BYTES:,}; enable prompt_via_file "
+            "rather than letting the exec fail with E2BIG")
+    argv = list(profile.command(message, prompt_file))
     argv[0] = binary
     try:
         completed = subprocess.run(
@@ -343,9 +400,13 @@ def self_test() -> dict:
 
     profile = OpenCodeStepProfile(model="ollama-cloud/gemma4:31b")
     argv = profile.command("hello")
+    # The message comes immediately after `run`, not last: `--file` is an
+    # array flag, so a trailing positional is consumed as another filename
+    # and OpenCode exits with "File not found: <the whole message>".
     check("command_is_headless_json_and_pure",
           "--format" in argv and "json" in argv and "--pure" in argv
-          and argv[-1] == "hello" and "-m" in argv,
+          and tuple(argv[:3]) == (profile.binary, "run", "hello")
+          and "-m" in argv,
           " ".join(argv))
 
     # The environment is built by allowlist: a secret present in this
@@ -364,6 +425,48 @@ def self_test() -> dict:
               == "must-not-travel")
     finally:
         os.environ.pop("OPENCODE_SELFTEST_SECRET", None)
+
+    # --- prompt transport: off argv, and out of `ps` ---
+    import tempfile as _tf
+    with _tf.TemporaryDirectory() as _tmp:
+        workspace = Path(_tmp)
+        filed = OpenCodeStepProfile(
+            model="ollama-cloud/gemma4:31b", workspace=workspace)
+        secret = "PROPRIETARY_SOURCE_LINE " * 5000
+        written = _write_prompt_file(filed, secret)
+        check("the_prompt_is_written_where_only_this_user_can_read_it",
+              written is not None and written.read_text() == secret
+              and oct(written.stat().st_mode)[-3:] == "600",
+              f"{len(secret):,} bytes, mode "
+              f"{oct(written.stat().st_mode)[-3:]}")
+        filed_argv = filed.command(secret, written)
+        joined = " ".join(filed_argv)
+        check("no_prompt_content_reaches_argv",
+              "PROPRIETARY_SOURCE_LINE" not in joined
+              and PROMPT_POINTER_MESSAGE in joined,
+              f"largest argv element {max(len(a) for a in filed_argv)} bytes "
+              f"for a {len(secret):,} byte prompt")
+        check("the_pointer_message_is_constant_across_steps",
+              filed.command("a different prompt entirely", written)
+              == filed_argv,
+              "`ps` shows the same harmless sentence for every step")
+
+        # With file transport off, an oversized prompt is refused with a
+        # message naming the cause, rather than failing the exec with an
+        # opaque E2BIG from deep inside subprocess.
+        inline = OpenCodeStepProfile(
+            model="ollama-cloud/gemma4:31b", workspace=workspace,
+            prompt_via_file=False)
+        check("argv_transport_still_available_when_asked",
+              _write_prompt_file(inline, "x") is None
+              and "x" in inline.command("x"))
+        try:
+            subprocess_transport(inline, "z" * (MAX_ARGV_ELEMENT_BYTES + 10))
+            check("an_oversized_argv_prompt_is_refused_by_name", False)
+        except OpenCodeStepError as exc:
+            check("an_oversized_argv_prompt_is_refused_by_name",
+                  "prompt_via_file" in str(exc) and "E2BIG" in str(exc),
+                  str(exc)[:110])
 
     class _Authority:
         max_model_calls = 2
