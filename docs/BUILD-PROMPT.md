@@ -209,6 +209,24 @@ orient may take 90 min: 12.0h of a 12h night remains, 8 step(s) expected
 smaller. Grep your code for hardcoded timeout numbers — there must be none
 except a documented backstop.
 
+### Phase 8.5 — Grade the night on what the engineer receives
+
+Binary verified/not-verified throws away most of the value. Rank outcomes:
+`verified`, `negative_result` ("this does not reproduce" — cheaper than a
+fix, because prevented work is the cheapest work), `verified_by_test_change`,
+`cause_localised`, `blocked_named`, `narrowed`, `no_progress`,
+`already_green`, `skipped`.
+
+**`verified_by_test_change` is the rung that matters.** An agent that can
+edit tests can make any gate green. Found live: a run made a failing test
+pass by changing `== 11` to `== 10` and reported plain `verified`. The
+expectation genuinely was wrong, so the edit was right — and the report gave
+a reviewer no reason to look. Do not forbid editing tests; flag when **only**
+tests changed. Take the changed-file list from `git`, never from the step.
+
+**GATE 8.5:** build a failing test whose expectation is wrong. The run must
+not report a plain `verified`. Paste the graded output and the diff.
+
 ### Phase 9 — Morning report
 
 Verified / attempted / skipped / nothing-found. Each with the **real** gate

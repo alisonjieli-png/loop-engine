@@ -17,6 +17,7 @@ system you are building, and for the same reason.
 
 ## Table of contents
 
+- §0 The value proposition — why anyone runs this
 - §1 The Constitution — invariants that cannot be violated
 - §2 What you are building and why it works
 - §3 Measured facts — do not re-derive these
@@ -27,6 +28,95 @@ system you are building, and for the same reason.
 - §8 Worked examples
 - §9 Failure catalog — every bug found here
 - §10 Self-audit before you claim done
+
+---
+
+# §0 The value proposition
+
+## §0.1 The thing being sold
+
+**An engineer goes home with a broken build and wakes up to a diagnosis.**
+
+Not necessarily a fix. A diagnosis. That distinction is the product, and
+building as though only fixes count will make you throw away most of what
+this system produces.
+
+## §0.2 Why the economics work even when the fix does not
+
+A senior engineer's morning currently starts by rebuilding context they lost
+yesterday: which command was failing, what the error actually said, which of
+three theories they had gotten to, whether it reproduces at all. That
+reconstruction costs twenty minutes to two hours before any new thinking
+happens, and it happens **every** morning after **every** unfinished thread.
+
+The night cannot always fix the bug. It can almost always do the
+reconstruction — and the reconstruction is the part that is pure toil.
+
+Three properties make this cheap to deliver:
+
+- **The oracle is free** (§2.2). The system never has to work out what
+  success means, so it never has to be trusted about that.
+- **The work is already scoped.** A failing gate command is a bounded task
+  with a binary end condition. No requirements gathering, no ambiguity.
+- **The downside is bounded by construction** (§1.2). Branch-only, worktree
+  isolated, never pushes. The worst night produces a branch nobody reads.
+
+## §0.3 A good night is not a fixed night
+
+This is the reframe that most determines whether you build the right thing.
+**Grade a night on what the engineer receives, not on whether the gate went
+green.** See §6.10 for the ladder you must implement.
+
+| what the night produced | what the morning costs | is this a win? |
+|---|---|---|
+| the gate passes on a branch | review a diff | **yes, the best case** |
+| the gate passes, but only tests changed | read the diff carefully (§6.10.4) | yes — **with a warning attached** |
+| *"this does not reproduce"* | nothing — the thread is closed | **yes, and it is cheaper than a fix** |
+| a reproduction plus a named cause in named files | start from a diagnosis | **yes, the common case** |
+| *"blocked: needs a staging DB credential"* | thirty seconds to unblock | **yes** |
+| a reproduction and nothing else | the flaky-or-real question is answered | partly |
+| nothing usable | ignore the branch | no, and say so plainly |
+
+**The second row deserves attention.** "The reported symptom did not occur"
+is a *better* outcome than a fix, because it prevents work rather than doing
+it, and prevented work is the cheapest work there is. A system that treats
+it as a failure will hide the most valuable thing it found. Rank it second
+(§6.10).
+
+## §0.4 What this is not
+
+Be honest about this in your build report, and design so the honesty is
+structural rather than remembered:
+
+- **Not autonomous merging.** It never commits, pushes, or merges (§1.2).
+  A human decides, every time.
+- **Not a replacement for the engineer.** It does the reconstruction, not
+  the judgement.
+- **Not a solver for open-ended modelling work.** "Improve macro-F1" has no
+  free oracle (§2.4). Report those as unverifiable rather than guessing.
+- **Not a system that should ever look busy.** A night with nothing to do
+  reports nothing (§1.3). Inventing work to appear productive is the single
+  fastest way to lose the engineer's trust, and trust is the whole asset.
+
+## §0.5 What has actually been achieved
+
+Measured, not projected. A full pipeline run on a real failing gate:
+
+```
+gate exited 1 in 1.1s
+[21:32:48] orient    took 17.7s
+[21:33:05] implement took 20.6s
+gate exited 0 in 1.0s
+-> verified   branch overnight/20260906-8631
+```
+
+A null-handling bug in a pandas transform, fixed minimally and correctly,
+verified by the project's own pytest, with the engineer's checkout untouched.
+**39 seconds, ~$0.01 of a small local model.**
+
+That is one candidate. A night has twelve hours. The constraint on how much
+a night gets through is not model capability — it is how many real failing
+gates the day left behind.
 
 ---
 
@@ -245,6 +335,7 @@ check on scope — not a target.
 | `core/step_content.json` + `.py` | §6.3 | generated steps and skills, validated on load | 290 |
 | `tools/session_intake.py` | §6.1 | find the day's unfinished work | 230 |
 | `tools/overnight.py` | §6.9 | the 5pm run | 380 |
+| `core/overnight_outcome.py` | §6.10 | grade the night on what was received | 200 |
 | `tools/policy_edit.py` | §9.9 | typed CRUD for policy JSON | 230 |
 
 ## §4.3 Dependency order
@@ -645,6 +736,89 @@ before** → solve → **gate after** → report.
 - Report: verified / attempted / skipped / nothing-found, each with the
   **real** gate output, the branch, and where the time went.
 
+## §6.10 `overnight_outcome` — grade the night on what was received
+
+A binary verified/not-verified verdict throws away most of what a night
+produces (§0.3). The first implementation here had a black hole called
+`attempted`, which meant both *"reproduced the failure, localised it to a
+function, and ruled out two explanations"* and *"did nothing"*. Those are not
+the same morning.
+
+### §6.10.1 The ladder, best first
+
+```python
+OUTCOME_ORDER = ("verified", "negative_result", "verified_by_test_change",
+                 "cause_localised", "blocked_named", "narrowed",
+                 "no_progress", "already_green", "skipped")
+ACTIONABLE = ("verified", "negative_result", "verified_by_test_change",
+              "cause_localised", "blocked_named")
+```
+
+The order **is** the product claim: a night ending at `cause_localised` is a
+good night, not a failed one.
+
+### §6.10.2 Classification rules
+
+Engine-owned, read from the gate's exit code and the structured state
+(§6.5). **It never asks a step how well it did** — a run that graded itself
+would grade itself generously, and the whole product is a verdict someone
+trusts.
+
+| rung | condition |
+|---|---|
+| `skipped` | a skip reason was supplied |
+| `already_green` | the gate passed **before** any work — the recorded failure no longer reproduces |
+| `verified` | the gate exits zero after work, and source files changed |
+| `verified_by_test_change` | the gate exits zero but **every changed file is a test** (§6.10.4) |
+| `blocked_named` | `blocked_on` is non-empty |
+| `negative_result` | `observed_failure` explicitly says the premise is wrong |
+| `cause_localised` | a reproduction **and** a hypothesis **and** named files |
+| `narrowed` | a reproduction, nothing more |
+| `no_progress` | none of the above |
+
+### §6.10.4 The rung that matters most — `verified_by_test_change`
+
+**An agent that can edit tests can make any gate green.** Found live on the
+§8.3 case: the run made the gate pass by changing `assert clamp(15,1,10)==11`
+to `==10` and reported plain `verified`.
+
+The expectation genuinely *was* wrong, so the edit was correct — and the
+report still gave no hint that the suite, not the code, had moved. A binary
+verdict hides this completely, which is on its own sufficient reason to
+build the ladder.
+
+Do **not** forbid editing tests: a wrong expectation is a real defect and
+correcting it is a real fix. **Flag it.** If every changed file matches a
+test-path marker (`test_`, `_test.`, `/tests/`, `.spec.`, `conftest.py`,
+`__tests__`), the rung is `verified_by_test_change`. If source changed too,
+it is an ordinary `verified`.
+
+**Derive the changed-file list from `git`, never from the step's report.**
+A step claiming it edited the source while git shows only a test file is
+precisely the case worth catching, and asking the step is asking the one
+party with a reason to be wrong (§1.1).
+
+Two more rules that are easy to get wrong:
+
+- **`already_green` is not a win.** Claiming credit for a failure that
+  stopped reproducing on its own is the easiest way to fake a good night.
+  It is ranked below every actionable rung and marked not-actionable.
+- **A negative result is only recognised from an explicit statement**, never
+  inferred from silence. Absence of a reproduction means the run did not
+  reproduce it, not that it is unreproducible.
+
+### §6.10.3 The morning summary
+
+Lead with what is usable. Rank best-first, mark actionable rows, and when
+there was nothing to do say so without apology:
+
+> *"Nothing unresolved was observed. No work was invented to fill the night."*
+
+> **GATE 10** — construct a failing test whose **expectation** is wrong
+> rather than the code. Whatever the run does, it must **not** report a plain
+> `verified`. If it changes only the test, the graded rung must be
+> `verified_by_test_change`. Paste the graded output and the diff.
+
 ---
 
 # §7 Data schemas
@@ -683,7 +857,17 @@ MAX_LIST_ITEMS = 12 ; MAX_TEXT_CHARS = 900
  "cwd":"/path/to/repo","evidence":"failed 3x and was never observed succeeding"}
 ```
 
-## §7.4 Agent file
+## §7.4 Outcome
+
+```json
+{"rung":"cause_localised","actionable":true,
+ "meaning":"a diagnosis to start from instead of a symptom",
+ "because":"the gate is still red, but there is a reproduction and a named cause in named files",
+ "evidence":{"hypothesis":"the denominator counts null rows",
+             "files_examined":["pipeline.py"],"ruled_out":["encoding"]}}
+```
+
+## §7.5 Agent file
 
 ```markdown
 ---
@@ -822,7 +1006,13 @@ that changes with what else is running is not a verdict.*
 naming a file that does not exist makes the reader distrust the rest. **Fix:**
 parse properly; handle renames and quoted paths.
 
-### §9.13 Built but not wired — twice
+### §9.13 A green gate that came from editing the test
+The run made a failing test pass by changing the expected value and reported
+plain `verified`. The expectation was genuinely wrong, so the change was
+right — and the report still gave a reviewer no reason to look. **Fix:**
+§6.10.4, with the changed-file list taken from `git`, not from the step.
+
+### §9.14 Built but not wired — twice
 The engine-supplied observation variant and bounded state both existed,
 unused, while the slow and unsafe paths ran. Building a safer variant is half
 the work; **the other half is deleting the path it replaces.**
@@ -847,6 +1037,8 @@ Answer each with pasted command output, not prose.
 - [ ] Every module's `self_test()` passes with zero network calls
 - [ ] Fenced JSON is accepted
 - [ ] A refusal names the legal set (§1.9)
+- [ ] A middle-rung case is graded as such, not as success or nothing (§6.10)
+- [ ] The morning summary leads with what is actionable
 
 **Finally:** state plainly what you did **not** build, and what you could not
 verify. A build report that claims everything works is the one failure mode

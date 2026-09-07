@@ -42,6 +42,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from session_intake import candidates, scan                # noqa: E402
 from loop_engine.core.night_budget import NightBudget      # noqa: E402
+from loop_engine.core.overnight_outcome import (          # noqa: E402
+    classify, rank, summarise)
 
 REPORT_ROOT = Path(os.path.expanduser("~/.loop-engine/overnight"))
 #: Worktrees live here, not inside the engineer's repository.
@@ -138,10 +140,11 @@ def attempt(plan: dict, model: str, attempts: int, budget) -> dict:
     """
     workspace = Path(plan["workspace"] or ".")
     if not (workspace / ".git").is_dir():
-        return {"status": "skipped",
-                "why": f"{workspace} is not a git repository; this run only "
-                       "works in worktrees and will not edit an unversioned "
-                       "tree"}
+        reason = (f"{workspace} is not a git repository; this run only "
+                  "works in worktrees and will not edit an unversioned tree")
+        return {"status": "skipped", "why": reason,
+                "outcome": classify(gate_passed=False,
+                                    skipped_reason=reason).to_dict()}
     # The engineer's HEAD, read but never moved.
     head = _git(["rev-parse", "--short", "HEAD"], workspace).stdout.strip()
     stamp = f"{time.strftime('%Y%m%d')}-{abs(hash(plan['gate_command'])) % 10000:04d}"
@@ -164,16 +167,23 @@ def attempt(plan: dict, model: str, attempts: int, budget) -> dict:
     # kill at any point leaves the engineer's checkout exactly as it was.
     before_ok, before_out = run_gate(plan["gate_command"], tree, budget)
     if before_ok:
-        return {"status": "already_green", "branch": branch,
-                "worktree": str(tree),
-                "why": "the gate passes now; the failure the transcript "
-                       "recorded is no longer reproducible",
-                "gate_output": before_out[-600:]}
-    result = solve(plan, tree, model, attempts, budget)
+        graded = classify(gate_passed=True, gate_before_failed=False)
+        return {"status": graded.rung, "outcome": graded.to_dict(),
+                "branch": branch, "worktree": str(tree),
+                "why": graded.because, "gate_output": before_out[-600:]}
+    result, final_state = solve(plan, tree, model, attempts, budget)
     after_ok, after_out = run_gate(plan["gate_command"], tree, budget)
     changed = _git(["status", "--porcelain", "--untracked-files=no"],
                    tree).stdout.strip()
-    return {"status": "verified" if after_ok else "attempted",
+    # What changed comes from git, never from the step's own report. A
+    # step that says it edited the source while git shows only a test file
+    # is exactly the case worth catching, and asking the step is asking the
+    # one party with a reason to be wrong.
+    if final_state is not None:
+        final_state = final_state.apply(
+            {"files_changed": _porcelain_paths(changed)})
+    graded = classify(gate_passed=after_ok, state=final_state)
+    return {"status": graded.rung, "outcome": graded.to_dict(),
             "branch": branch, "worktree": str(tree), "from_commit": head,
             "files_touched": _porcelain_paths(changed)[:20],
             "gate_before": before_out[-400:],
@@ -299,13 +309,13 @@ def solve(plan, workspace, model, attempts, budget) -> list:
         ok, output = run_gate(plan["gate_command"], workspace, budget)
         if ok:
             steps.append({"step": "state", "final": state.for_prompt()[:800]})
-            return steps
+            return steps, state
         if state.blocked():
             # A run that knows it is blocked says so and stops, rather than
             # spending the rest of the night proving it again.
             steps.append({"step": "blocked", "attempt": index,
                           "why": state.get("blocked_on")})
-            return steps
+            return steps, state
         if index < attempts:
             # The failure changes the SHAPE of the next step, not its wording.
             #
@@ -344,7 +354,7 @@ def solve(plan, workspace, model, attempts, budget) -> list:
                 steps.append({"step": "observe", "attempt": index,
                               "error": str(exc)[:200]})
     steps.append({"step": "state", "final": state.for_prompt()[:800]})
-    return steps
+    return steps, state
 
 
 def main() -> int:
@@ -409,12 +419,26 @@ def main() -> int:
     REPORT_ROOT.mkdir(parents=True, exist_ok=True)
     path = REPORT_ROOT / f"{time.strftime('%Y-%m-%d')}.json"
     path.write_text(json.dumps(report, indent=2), encoding="utf-8")
-    verified = sum(1 for t in report["tasks"]
-                   if t.get("outcome", {}).get("status") == "verified")
+    # entry["outcome"] is the attempt() result; the graded rung is nested
+    # inside it under the same name. Reading the outer one crashed with
+    # KeyError: 'rung' on the first real run.
+    graded = [t["outcome"]["outcome"] for t in report["tasks"]
+              if isinstance(t.get("outcome"), dict)
+              and isinstance(t["outcome"].get("outcome"), dict)]
     report["time_spent"] = budget.spent()
     report["hours_used"] = round(budget.elapsed() / 3600, 2)
-    print(f"  {verified}/{len(report['tasks'])} reached a passing gate "
-          f"in {budget.elapsed() / 3600:.1f}h of {args.hours:.0f}h")
+
+    from loop_engine.core.overnight_outcome import Outcome
+    outcomes = [Outcome(g["rung"], g["because"], g.get("evidence", {}))
+                for g in graded]
+    summary = summarise(outcomes)
+    report["summary"] = summary
+    print(f"\n  {summary['headline']}")
+    for item in rank(outcomes):
+        mark = "*" if item.actionable else " "
+        print(f"   {mark} {item.rung:16} {item.meaning}")
+        print(f"     {item.because[:150]}")
+    print(f"\n  {budget.elapsed() / 3600:.1f}h of {args.hours:.0f}h used")
     if budget.spent():
         print(f"  time went to: {budget.spent()}")
     print(f"  report: {path}")
