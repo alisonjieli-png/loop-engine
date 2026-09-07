@@ -38,6 +38,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import pickle
 import secrets
 from dataclasses import dataclass, field
 
@@ -231,7 +232,7 @@ def self_test() -> dict:
           and report["forged"] == [2] and not report["ok"], str(report))
 
     for attempt, label in ((lambda: key.to_dict(), "to_dict"),
-                           (lambda: __import__("pickle").dumps(key), "pickle")):
+                           (lambda: pickle.dumps(key), "pickle")):
         try:
             attempt(); check(f"key_refuses_to_leave_memory_via_{label}", False)
         except RunAuthorshipError:

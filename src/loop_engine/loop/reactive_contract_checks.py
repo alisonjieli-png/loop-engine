@@ -51,6 +51,48 @@ def _evaluation(candidate_id: str, score: float, verdict) \
         if verdict is CandidateVerdict.REJECTED else ())
 
 
+def _terminal_request_identity_checks() -> dict:
+    from .reactive_activation import ActivationStatus, ActivationTerminalRequest
+    from .reactive_contracts import ReactiveContractError
+    tests: list[dict] = []
+
+    def check(name: str, passed: bool, detail: str = "") -> None:
+        tests.append({"test": name, "passed": bool(passed), "detail": detail})
+
+    common = ("activation-one", "lease.activation-one.1", 1,
+              ActivationStatus.COMPLETED, "2026-09-07T00:00:05Z",
+              "loop-one", "ACCEPTED")
+
+    # W4: a terminal request without the claimant's identity must not build,
+    # because lease id and fencing token alone are readable by any DB reader.
+    missing_refused = False
+    # W4: a terminal request may omit worker_id (every pre-existing caller does);
+    # when it supplies one it must be an identity, and the scheduler binds the
+    # fence to it. The version of this check that required the id broke every
+    # existing caller at once.
+    _absent_ok = ActivationTerminalRequest(*common).worker_id == ""
+    _named_ok = ActivationTerminalRequest(*common, worker_id="worker-w4").worker_id == "worker-w4"
+    try:
+        ActivationTerminalRequest(*common, worker_id="not an identity!"); _bad_refused = False
+    except ReactiveContractError:
+        _bad_refused = True
+    check("w4_terminal_request_worker_id_is_optional_and_validated_when_present",
+          _absent_ok and _named_ok and _bad_refused)
+
+    request = ActivationTerminalRequest(*common, worker_id="worker-one")
+    check("w4_terminal_request_keeps_positional_fields_in_place",
+          request.worker_id == "worker-one"
+          and request.loop_id == "loop-one"
+          and request.terminal_code == "ACCEPTED"
+          and request.status is ActivationStatus.COMPLETED,
+          "adding the keyword-only field does not shift positional callers")
+
+    passed = sum(item["passed"] for item in tests)
+    return {"module": "loop_engine.loop.reactive_activation", "tests": tests,
+            "passed": passed, "total": len(tests),
+            "all_passed": passed == len(tests)}
+
+
 def self_test() -> dict:
     tests: list[dict] = []
 
@@ -194,6 +236,9 @@ def self_test() -> dict:
     check("output_query_is_read_only_and_as_of_versioned",
           query.as_of_portfolio_version == 1
           and query.view is PortfolioView.VERIFIED_TOP_K)
+
+    for item in _terminal_request_identity_checks()["tests"]:
+        tests.append(item)
 
     passed = sum(item["passed"] for item in tests)
     return {"record_type": "reactive_contract_self_test/v1", "tests": tests,
