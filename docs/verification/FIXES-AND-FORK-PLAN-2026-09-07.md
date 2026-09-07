@@ -162,3 +162,92 @@ six high probes once more on the integrated tip.
 - F3: run vale locally before every push; 43 of the 45 red pushes failed
   the documentation job, most on dashes.
 - F4: two extra branches on origin against the main-only rule (R2).
+
+## Status after the first pass (2026-09-07)
+
+The eight implementer agents and six verifiers all died on a session limit
+after 152 tool calls with no reports. Two worktrees held large unverified
+partial edits. One (reactive scheduler) was salvaged: the W2 mechanism was
+probe-green, the W4 change had made a field required and broke every caller,
+and W6 encoded behaviour the worker does not yet have. It took five small
+repairs, each re-verified against the pre-existing check suites (13 of 13,
+43 of 43), not against the agent's own self-test. The other (host boundary)
+broke an existing safety check without reaching its goal and was discarded.
+Everything else below was implemented serially by the coordinator.
+
+Every number is from running the review's own probe on the fork tip.
+
+| ID | Before | After | State |
+|---|---|---|---|
+| B1 | 3,001 iterations on all four probe variants | stops at 25, `no_progress`, event names both counts | landed |
+| B2 | `RecursionError` escapes admission | typed syntax diagnostic; 5,000-deep array refused; on Python 3.14 the decoder parses 1,500 deep and the plan gate stays the depth authority | landed |
+| W1 | forged verify, model call, and terminal accepted | refused by name on a keyed history; facade cannot emit unregistered kinds; unkeyed history unchanged and labelled `unverified` | landed at the history; two hooks outstanding (F5) |
+| W2 | loser connection wedged after 19 rounds | 99 rounds, no wedged connection | landed |
+| W4 | any reader could publish another worker's terminal | optional `worker_id`, fence bound to the claimant when present | landed |
+| W6 | `DURABLE_SERIES` never read | refusal implemented behind `enforce_durable_history`, default off | landed behind a flag (F6) |
+| C1 | three prompts contradict their cases | cases fixed, population version 2 sealed, version 1 kept | landed |
+| C2, C5 | references encode the contradictions; control tests a constant | references rewritten from the prompts; control runs a wrong solution; entrypoint check populated and in the exit code | landed |
+| C3 | spiral order untestable; `unicode` hashes ASCII; duplicate word-square case | real code point 233; duplicate renamed and a positive 3 by 3 added; spiral order recorded as needing a prompt change (version 3) | landed except spiral |
+| C4 | order-dependent reference | one literal rule decided first | landed; report text still to correct |
+| R1 | 260 blocking new high findings | 217; 52 allowlisted by id with reasons | partial |
+
+Offline check: version 2 passes 110 cases with the control and entrypoint
+checks populated; version 1 fails on exactly `calendar_slots`,
+`grid_path_cost`, `state_machine`.
+
+### Deferred, with the reason
+
+- F5, W1 hooks: `LoopLedger.record` must hand handlers a `RecorderFacade`
+  and the reactive worker's verified reader must call `verify_authorship`.
+  Both live in files another group owned; the history now refuses, the run
+  does not yet.
+- F6, W6 pairing: the worker must persist history for durable series before
+  the scheduler flag is turned on; five worker checks assert the current
+  behaviour and will change with it.
+- W3, W5, W7 to W10 (worker), B3 to B7 (bindings and runtime), H1 to H4
+  (host), C6 to C10 (campaign provenance, sandboxing, durability, report
+  text): not started. The host-boundary partial edit is not a starting
+  point.
+- R1 remainder: 217 findings in the 2026-09-06 files, mostly
+  closed-vocabulary literals in `adaptive_practitioner_records` (24),
+  `stage_action_lineage` (23), `generated_project` (13),
+  `adaptive_practitioner_bindings` (12), `kernel_runtime` (12). Each wants a
+  reason or a move to configuration. Excluding a directory from the scan
+  destabilises every finding id and made the delta worse; allowlisting by
+  id did not.
+- F1, the overnight branch: seven conflicting files, unchanged.
+
+### Well-formedness after the first pass
+
+The behaviour fixes above left the tree ill-formed in four ways the
+conformance gates caught and the probes could not: the authorship module
+was not in the architecture map, its self-test used `__import__` (a
+dynamic import the registry gate refuses), two modules had grown past the
+800 line cap (`reactive_scheduler` 653 to 1008, `run_history` 793 to 884),
+and three new self-tests were not collected by the suite. The repair
+follows the repository's own precedent rather than declaring exceptions:
+
+- the scheduler's eight hardening checks and the activation's two moved
+  whole into the existing `reactive_scheduler_checks` (269 to 544 lines) and
+  `reactive_contract_checks` (201 to 246) modules, folded the way
+  `run_history` already folds its usage checks;
+- `run_history`'s 407 line self-test became `run_history_checks` (441
+  lines), leaving `run_history` at 477 with room for the two W1 hooks; the
+  25 check names are unchanged and in the same order;
+- `run_history_authorship` and `run_history_checks` joined the map and the
+  folded list; the map projection was regenerated;
+- one summary bug of my own surfaced in the move: the four W1 checks had
+  been appended below the `passed` sum, so the module reported 21 of 25
+  with no failing check. The sum now sits above the return.
+
+### Two things learned about the process itself
+
+Scripts that edit source must assert every anchor and report per-edit
+status. Three "nothing changed" runs tonight were scripts that failed an
+assertion after writing nothing, and one aborted after writing one file but
+not the second.
+
+Excluding `docs/research` from the hardcoding scan looked like the clean
+fix and was the wrong one: finding ids are stable under allowlisting and not
+under scope changes, so the verbose route (52 entries, each with its reason)
+is the one that leaves the baseline meaningful.
