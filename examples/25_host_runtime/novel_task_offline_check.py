@@ -8,6 +8,7 @@ is not an evaluator).
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -27,7 +28,9 @@ def ref_path_cost(text):
     lines = text.split('\n')
     if not text or not lines:
         raise ValueError('empty')
-    rows = [line.split(',') for line in lines]
+    # The prompt says period-separated cells. Version 1 of this reference split
+    # on commas, which is how it agreed with 109 of 109 cases and caught nothing.
+    rows = [line.split('.') for line in lines]
     width = len(rows[0])
     if any(len(row) != width for row in rows):
         raise ValueError('ragged')
@@ -159,14 +162,16 @@ def ref_free_minutes(text):
             raise ValueError('bad pair')
         values = []
         for value in pair:
-            if not isinstance(value, str) or not re.fullmatch(r'(?:[01]\d|2[0-3]):[0-5]\d|24:00', value):
+            if not isinstance(value, str) or not re.fullmatch(r'(?:[01]\d|2[0-3]):[0-5]\d', value):
                 raise ValueError('bad time')
             hour, minute = value.split(':')
             values.append(int(hour) * 60 + int(minute))
-        if values[1] <= values[0]:
+        # The prompt forbids an end BEFORE its start; a zero-length interval is
+        # allowed and covers nothing. Version 1 raised on it.
+        if values[1] < values[0]:
             raise ValueError('end before start')
         minutes.append(values)
-    covered = [False] * 1441
+    covered = [False] * 1440
     for start, end in minutes:
         for minute in range(start, end):
             covered[minute] = True
@@ -185,7 +190,7 @@ def ref_final_state(text):
             accumulator *= 2
         elif command == 'r':
             accumulator = 0
-        elif re.fullmatch(r'-?(0|[1-9][0-9]*)', command):
+        elif re.fullmatch(r'[+-]?[0-9]+', command):
             accumulator += int(command)
         else:
             raise ValueError('unknown command')
@@ -226,18 +231,30 @@ def ref_spiral_sum(matrix):
 
 
 def ref_is_word_square(words):
+    """One consistent rule, taken literally from the prompt.
+
+    The prompt raises ValueError for "lists whose lengths exceed every element
+    length": the list is longer than each of its words. Version 1 raised
+    "too short" only when its nested loop reached a missing character before
+    it found a mismatch, so ['ab','a'] returned False while ['aa','a'] raised:
+    same shape, different verdicts, and the campaign's one "invalidation"
+    rested on that. Here the error condition is decided first and once; a pair
+    that cannot be compared because one word is shorter (but not all are) is
+    simply not a square.
+    """
     if not isinstance(words, list) or not words:
         raise ValueError('not a list or empty')
     for word in words:
         if not isinstance(word, str) or not word:
             raise ValueError('bad element')
-    for index in range(len(words)):
-        for other in range(len(words)):
-            if index >= len(words[other]):
-                raise ValueError('too short')
-            if other >= len(words[index]):
-                raise ValueError('too short')
-            if words[index][other] != words[other][index]:
+    size = len(words)
+    if all(size > len(word) for word in words):
+        raise ValueError('list longer than every word')
+    for a in range(size):
+        for b in range(size):
+            if b >= len(words[a]) or a >= len(words[b]):
+                return False
+            if words[a][b] != words[b][a]:
                 return False
     return True
 
@@ -256,7 +273,7 @@ REFERENCES = {
 }
 
 WRONG_SOLUTIONS = {
-    'grid_path_cost': ('1,2,3\n4,5,6\n7,8,9', 22),
+    'grid_path_cost': ('1.2.3\n4.5.6\n7.8.9', 22),
     'run_length_decode': ('3[ab]', 'abab'),
     'ledger_reconcile': ('[{"account":"cash","side":"DR","amount":5},{"account":"cash","side":"CR","amount":5}]', None),
     'josephus_rank': ((7, 3), 2),
@@ -294,18 +311,42 @@ def main():
                 results['reference_mismatches'].append({
                     'task_id': task.task_id, 'case_id': item['case_id'],
                     'reference': probe_safe(value), 'expected': probe_safe(item['expected'])})
-        wrong_arguments, wrong_value = WRONG_SOLUTIONS[task.task_id]
-        if not isinstance(wrong_arguments, tuple):
-            wrong_arguments = (wrong_arguments,)
-        try:
-            actual = reference(*wrong_arguments)
-            failed_as_expected = not probe_equality(actual, wrong_value)
-        except ValueError:
-            failed_as_expected = True
-        if not failed_as_expected:
+        # The control the review asked for: a deliberately wrong SOLUTION, run
+        # through the same case loop the reference just passed. Version 1
+        # compared the reference against one wrong constant, which tests the
+        # reference's arithmetic and says nothing about whether the evaluator
+        # can reject a wrong program.
+        _, wrong_value = WRONG_SOLUTIONS[task.task_id]
+
+        def wrong_solution(*_arguments, _value=wrong_value):
+            return _value
+
+        rejected = 0
+        for item in task.cases:
+            try:
+                value = wrong_solution(*list(item['arguments']))
+                error = None
+            except ValueError:
+                value, error = None, 'ValueError'
+            if item['error'] == 'ValueError':
+                ok = error == 'ValueError'
+            else:
+                ok = error is None and probe_equality(value, item['expected'])
+            if not ok:
+                rejected += 1
+        if rejected == 0:
             results['evaluator_control_failures'].append(task.task_id)
+        # The prompt names the entry point ("Implement X(...) in solution.py"); it
+        # must be the one the case runner calls. Initialised and never populated
+        # in version 1, and not part of the exit code.
+        match = re.search(r'Implement (\w+)\(', task.prompt)
+        if not match or match.group(1) != task.entrypoint:
+            results['prompt_entrypoint_mismatches'].append({
+                'task_id': task.task_id, 'prompt': match.group(1) if match else None,
+                'entrypoint': task.entrypoint})
     print(probe.canonical(results))
-    return 0 if not results['reference_mismatches'] and not results['evaluator_control_failures'] else 1
+    return 0 if not (results['reference_mismatches'] or results['evaluator_control_failures']
+                     or results['prompt_entrypoint_mismatches']) else 1
 
 
 def probe_equality(observed, expected):

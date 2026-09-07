@@ -8,14 +8,6 @@ host machinery from the generalization probe and adds no new runtime type.
 
 This module makes no model call and writes no file. The campaign runner
 freezes the population digest before any dispatch.
-
-Version 2. Version 1 is kept byte for byte in novel_task_population_v1.py:
-the campaign of 2026-09-06 ran against it and its report must stay checkable.
-Version 2 changes three sets of cases, never a prompt, because the prompt is
-the contract the model reads: grid cells are period-separated as the prompt
-says; 24:00 is minute 1440 and outside a day of minutes 0 through 1439; and
-"01" is an optionally signed ASCII decimal integer, so it adds one. Six of the
-ten tasks are textbook problems with contract twists, not invented domains.
 """
 from __future__ import annotations
 
@@ -25,9 +17,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from generalization_probe import ProbeTask, case, canonical
-
-
-POPULATION_VERSION = 2
 
 
 def task(task_id, shape, prompt, entrypoint, cases, seed=None):
@@ -48,18 +37,18 @@ def task_population():
              'line and every line must have the same number of cells. Raise ValueError for nonstring '
              'input, empty grids, ragged grids, malformed cell values, negative integers, or a wall in '
              'both the top-left and bottom-right corners. Do not print from the function.', 'path_cost', [
-                 case('plain', ['1.2.3\n4.5.6\n7.8.9'], 21),
-                 case('cheaper_detour', ['1.100.1\n1.100.1\n1.1.1'], 5),
-                 case('wall_detour', ['1.X.9\n2.3.9\n9.9.1'], 16),
-                 case('blocked', ['1.X\nX.1'], None),
+                 case('plain', ['1,2,3\n4,5,6\n7,8,9'], 21),
+                 case('cheaper_detour', ['1,100,1\n1,100,1\n1,1,1'], 5),
+                 case('wall_detour', ['1,X,9\n2,3,9\n9,9,1'], 16),
+                 case('blocked', ['1,X\nX,1'], None),
                  case('single_cell', ['5'], 5),
-                 case('single_row', ['1.2.3.4'], 10),
-                 case('ragged', ['1.2\n1.2.3'], error='ValueError'),
-                 case('bad_cell', ['1.b\n2.3'], error='ValueError'),
-                 case('negative', ['1.-2\n3.4'], error='ValueError'),
+                 case('single_row', ['1,2,3,4'], 10),
+                 case('ragged', ['1,2\n1,2,3'], error='ValueError'),
+                 case('bad_cell', ['1,b\n2,3'], error='ValueError'),
+                 case('negative', ['1,-2\n3,4'], error='ValueError'),
                  case('nonstring', [None], error='ValueError'),
                  case('empty_grid', [''], error='ValueError'),
-                 case('wall_at_both_ends', ['X.1\n1.X'], error='ValueError'),
+                 case('wall_at_both_ends', ['X,1\n1,X'], error='ValueError'),
              ]),
         task('run_length_decode', 'encoded_text_transform',
              'Implement decode_runs(text) in solution.py. The input is a run-length encoding where each '
@@ -139,7 +128,7 @@ def task_population():
                   case('single_char', ['a', 97], 97 % 97),
                   case('two_chars', ['ab', 1000000007], (97 + 98 * 256) % 1000000007),
                   case('empty_string', ['', 13], 0),
-                  case('unicode', ['\u00e9', 97], 233 % 97),  # e-acute, code point 233; v1 hashed a six-character escape
+                  case('unicode', ['\\u00e9', 97], 2),
                  case('large_modulus', ['hello', 10**30],
                       sum(ord('hello'[i]) * 256**i for i in range(5)) % 10**30),
                  case('small_modulus', ['xyz', 2],
@@ -177,13 +166,12 @@ def task_population():
              'ValueError for nonstring input, malformed JSON, badly formatted times, end before '
              'start, or times outside the day. Do not print from the function.', 'free_minutes', [
                  case('empty_day', ['[]'], 1440),
-                 case('full_day_end_is_outside_the_day', ['[["00:00","24:00"]]'], error='ValueError'),
-                 case('until_last_minute', ['[["23:00","23:59"]]'], 1381),
+                 case('full_day', ['[["00:00","24:00"]]'], 0),
                  case('one_hour', ['[["09:00","10:00"]]'], 1380),
                  case('overlapping', ['[["09:00","10:30"],["10:00","11:00"]]'], 1320),
                  case('adjacent', ['[["08:00","09:00"],["09:00","10:00"]]'], 1320),
                  case('unsorted', ['[["14:00","15:00"],["08:00","09:00"]]'], 1320),
-                 case('end_midnight_is_outside_the_day', ['[["23:00","24:00"]]'], error='ValueError'),
+                 case('end_midnight', ['[["23:00","24:00"]]'], 1380),
                  case('bad_format', ['[["9:00","10:00"]]'], error='ValueError'),
                  case('end_before_start', ['[["10:00","09:00"]]'], error='ValueError'),
                  case('outside_day', ['[["00:00","25:00"]]'], error='ValueError'),
@@ -204,7 +192,7 @@ def task_population():
                  case('combined', ['2 3 d r 1 d'], 2),
                  case('negative', ['5 -3'], 2),
                  case('big_integers', ['99999999999999999999 1'], 100000000000000000000),
-                 case('leading_zero_is_a_decimal_integer', ['5 01'], 6),
+                 case('leading_zero', ['5 01'], error='ValueError'),
                  case('double_space', ['5  7'], error='ValueError'),
                  case('trailing_space', ['5 '], error='ValueError'),
                  case('unknown_command', ['5 x'], error='ValueError'),
@@ -218,10 +206,6 @@ def task_population():
              'return the sum of elements in the order visited. Return 0 for an empty list. Raise '
              'ValueError for non-list input, rows that are not lists, ragged matrices, or non-integer '
              'elements (bools count as non-integers). Do not print from the function.', 'spiral_sum', [
-                   # A sum is order-independent, so no case here can tell a spiral walk
-                   # from any other walk (a flat double loop passes all of them). Testing
-                   # the order requires the prompt to return the visited sequence: a
-                   # prompt change, therefore a version 3 task, not a version 2 case.
                  case('two_by_two', [[[1, 2], [3, 4]]], 10),
                  case('three_by_three', [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], 45),
                  case('single_row', [[[1, 2, 3]]], 6),
@@ -245,8 +229,8 @@ def task_population():
                   case('square', [['ball', 'area', 'lead', 'lady']], True),
                   case('single_word', [['a']], True),
                   case('two_words', [['ab', 'ba']], True),
-                  case('three_by_three_not_square', [['cat', 'art', 'tie']], False),
-                  case('three_by_three_square', [['cat', 'are', 'ted']], True),
+                  case('three_by_three_square', [['cat', 'art', 'tie']], False),
+                  case('false_case', [['cat', 'art', 'tie']], False),
                   case('empty_list', [[]], error='ValueError'),
                   case('empty_string_element', [['', 'a']], error='ValueError'),
                   case('nonstring_element', [['a', 5]], error='ValueError'),
