@@ -1,0 +1,124 @@
+{
+  "record_type": "novel_task_campaign_audit/v1",
+  "seed": 8675309,
+  "cases_per_task": 60,
+  "tasks_audited": 10,
+  "tasks_invalidated": 1,
+  "results": [
+    {
+      "task_id": "grid_path_cost",
+      "audit_cases": 60,
+      "failures": [],
+      "audit_passed": true
+    },
+    {
+      "task_id": "run_length_decode",
+      "audit_cases": 60,
+      "failures": [],
+      "audit_passed": true
+    },
+    {
+      "task_id": "ledger_reconcile",
+      "audit_cases": 60,
+      "failures": [],
+      "audit_passed": true
+    },
+    {
+      "task_id": "josephus_rank",
+      "audit_cases": 60,
+      "failures": [],
+      "audit_passed": true
+    },
+    {
+      "task_id": "poly_hash",
+      "audit_cases": 60,
+      "failures": [],
+      "audit_passed": true
+    },
+    {
+      "task_id": "markdown_outline",
+      "audit_cases": 60,
+      "failures": [],
+      "audit_passed": true
+    },
+    {
+      "task_id": "calendar_slots",
+      "audit_cases": 60,
+      "failures": [],
+      "audit_passed": true
+    },
+    {
+      "task_id": "state_machine",
+      "audit_cases": 60,
+      "failures": [],
+      "audit_passed": true
+    },
+    {
+      "task_id": "matrix_spiral",
+      "audit_cases": 60,
+      "failures": [],
+      "audit_passed": true
+    },
+    {
+      "task_id": "word_square",
+      "audit_cases": 60,
+      "failures": [
+        {
+          "index": 7,
+          "arguments": "[[\"bbab\", \"a\"]]",
+          "expected": "False",
+          "actual": "None E:ValueError"
+        },
+        {
+          "index": 11,
+          "arguments": "[[\"bbb\", \"abaa\", \"aa\"]]",
+          "expected": "False",
+          "actual": "None E:ValueError"
+        },
+        {
+          "index": 27,
+          "arguments": "[[\"bbb\", \"a\", \"b\"]]",
+          "expected": "False",
+          "actual": "None E:ValueError"
+        },
+        {
+          "index": 29,
+          "arguments": "[[\"aa\", \"b\", \"b\"]]",
+          "expected": "False",
+          "actual": "None E:ValueError"
+        },
+        {
+          "index": 30,
+          "arguments": "[[\"baaa\", \"bb\", \"aaa\"]]",
+          "expected": "False",
+          "actual": "None E:ValueError"
+        },
+        {
+          "index": 31,
+          "arguments": "[[\"bab\", \"b\"]]",
+          "expected": "False",
+          "actual": "None E:ValueError"
+        },
+        {
+          "index": 42,
+          "arguments": "[[\"bbb\", \"a\", \"aaab\"]]",
+          "expected": "False",
+          "actual": "None E:ValueError"
+        },
+        {
+          "index": 48,
+          "arguments": "[[\"baaa\", \"ba\", \"abb\"]]",
+          "expected": "False",
+          "actual": "None E:ValueError"
+        },
+        {
+          "index": 53,
+          "arguments": "[[\"babb\", \"bab\", \"ba\"]]",
+          "expected": "False",
+          "actual": "None E:ValueError"
+        }
+      ],
+      "audit_passed": false
+    }
+  ]
+}
