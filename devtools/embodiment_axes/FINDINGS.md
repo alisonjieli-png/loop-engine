@@ -1,4 +1,4 @@
-# Twenty-two embodiments on five axes: what the measurements say
+# Thirty embodiments on seven axes: what the measurements say
 
 Date: 2026-09-08. Every number below came from running the code in this
 folder. No model was called; the reason is in the method section, and the live
@@ -17,6 +17,8 @@ gives you and what it costs you next to each other.
 | verification | How does an answer get accepted? | 3 |
 | memory | What does an earlier run contribute to a later one? | 4 |
 | control-flow | Who picks the next unit of work, and how much per call? | 4 |
+| failure-handling | What does the loop do when a step fails? | 4 |
+| decomposition | How is the work divided before any of it is done? | 4 |
 
 The claim that makes this a catalogue rather than a list: **these are
 independent axes.** A design is one choice from each, and the choices compose.
@@ -211,7 +213,77 @@ reviewer re-derives it, and only a promoted record is ever served. With no
 reviewer configured it serves nothing at all, which is the correct default for
 a design whose rule is that nothing promotes itself.
 
-## Three defects the measurements found in this folder
+## Failure handling
+
+Five failure shapes and a clean control, with every arm given the same
+four-attempt budget so the policy is what varies rather than how many tries it
+was handed.
+
+| Policy | Recovered | Cost of the failure nothing fixes | Answered anyway |
+|---|---:|---|---|
+| stop on first | 0 of 4 | stopped after 4 calls | no |
+| retry the same request | 3 of 4 | exhausted after 4 calls | no |
+| retry then escalate | 4 of 4 | exhausted after 4 calls | no |
+| skip and continue | 3 of 4 | 12 calls | **yes, and wrongly** |
+
+**Retrying and escalating are different mechanisms, and one shape separates
+them.** Most failures clear on their own, and plain retry handles those. A
+failure whose cause is the request itself never clears, however many identical
+attempts are sent, and a retry policy spends its whole budget discovering
+that. The ladder recovered every recoverable shape and spent zero escalations
+on the ones a plain retry already fixed, because it only escalates after the
+plain budget runs out.
+
+**An unparseable reply is a failure, and the arms that treat it as one are the
+arms that survive it.** A step that raises is easy to see. A step that returns
+confident prose looks like a completed step to anything checking only for
+exceptions, and the run then carries on having folded nothing.
+
+**Skipping converts a visible failure into an invisible one.** It is the only
+policy that finished a run containing a failure nothing could fix, and the
+answer it returned did not match the truth. That is not a reason to reject it,
+because partial results are the right answer for plenty of work. It is a
+reason to pair it with the recompute verifier: together they give a finished
+run and an honest refusal, where either alone gives one or the other. This is
+the clearest case in the catalogue of two axes only being safe in combination.
+
+## Decomposition
+
+| Design | Calls at 256 | Longest chain | Parallel factor |
+|---|---:|---:|---:|
+| single pass | 257 | 257 | 1.0 |
+| fixed split, 4 groups | 260 | 65 | 4.0 |
+| recursive split, leaf 8 | 288 | 9 | 32.0 |
+| portfolio, 3 candidates | 382 | 382 | 1.0 |
+
+The longest chain is serial depth: what the run still costs if every group has
+its own worker. It is a lower bound on wall time, not a measurement of one.
+
+**Splitting adds calls and removes serial time, and the two columns have to be
+read together.** Every group pays its own final call, so the total goes up. At
+256 units the recursive split cost 12 percent more calls and cut serial depth
+by 32 times.
+
+**A threshold about the work beats a count about the machine.** Both split
+arms reached the same 4x at 24 units. At 256 the fixed split was still at 4x,
+because someone had set the group count to four, while the recursive split
+reached 32x without anyone changing anything. The fixed count is a statement
+about how many workers exist; the leaf threshold is a statement about how big
+a piece should be, and only the second one still means the same thing when the
+input grows.
+
+**A portfolio splits the design rather than the work, and it is the only arm
+that survives being wrong about the input.** At 24 units it cost a single call,
+because the cheapest candidate verified immediately. At 256, where two of its
+three candidates hit their horizon, it still answered correctly. When no
+candidate verifies it refuses rather than publishing the least bad one.
+
+That arm also tests the catalogue's own central claim. It implements nothing:
+its candidates are the context-transport folders and its checker is the
+verification folder, loaded as they are. The axes compose, and this is them
+composing.
+
+## Four defects the measurements found in this folder
 
 Worth listing, because each was invisible to reading the code that contained
 it.
@@ -232,7 +304,15 @@ advisory against that.
 **A fault written to be hard that was easy.** Described above under
 verification.
 
-An earlier round of this work found a fourth: identifiers three digits wide
+**A slicer that returned six groups when seven were asked for.** The fixed
+split rounded the group size up, so the group count came out below what the
+caller requested. Nothing about the answer was wrong, which is why it survived
+review: a caller sizing a worker pool to the number it asked for would simply
+have been quietly wrong about how much parallelism it had. The remainder is
+now spread one unit at a time, and there is a check that the requested count
+is what comes back.
+
+An earlier round of this work found another: identifiers three digits wide
 meant `s1000` matched the pattern written for `s100` at 1,024 units, and 3,000
 of 4,000 reads were repeats. Identifier width now scales with the population.
 

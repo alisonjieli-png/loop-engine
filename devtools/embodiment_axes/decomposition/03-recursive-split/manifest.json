@@ -1,0 +1,53 @@
+{
+ "id": "decomposition/03-recursive-split",
+ "family": "decomposition",
+ "name": "recursive_split",
+ "status": "measured",
+ "one_line": "Keep halving until a piece is small enough, then merge back up.",
+ "how_it_works": [
+  "Split a piece larger than a threshold into halves.",
+  "Handle each half the same way.",
+  "Combine partial results pairwise on the way back up."
+ ],
+ "pros": [
+  "The threshold is about the work, not about the machine, so the same setting travels between deployments.",
+  "The tree shape follows the input size without anyone choosing a group count.",
+  "A depth guard bounds the tree even at a threshold that asks for an unbounded one."
+ ],
+ "cons": [
+  "Combines pairwise up the tree, so the merge must be associative and not merely correct once at the end.",
+  "Deeper than a flat split for the same number of leaves, and depth is coordination.",
+  "Same per-leaf call overhead as the fixed split, plus a tree to reason about."
+ ],
+ "pick_this_when": [
+  "Input size varies a lot between runs.",
+  "You want one threshold that means the same thing everywhere."
+ ],
+ "avoid_when": [
+  "The merge is not associative. Then the tree is unsafe in a way a flat split is not."
+ ],
+ "evidence": {
+  "leaf_size": 8,
+  "calls": {
+   "24": 28,
+   "256": 288
+  },
+  "longest_chain": {
+   "24": 7,
+   "256": 9
+  },
+  "serial_depth_ratio": {
+   "24": 4.0,
+   "256": 32.0
+  },
+  "leaves": {
+   "24": 4,
+   "256": 32
+  },
+  "tree_depth": {
+   "24": 2,
+   "256": 5
+  },
+  "finding": "at 24 units it matches the fixed split; at 256 it reaches 32 times the parallelism for 12 percent more calls, because the threshold is about the work"
+ }
+}

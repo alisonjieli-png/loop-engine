@@ -20,7 +20,7 @@ python3 registry.py run --family memory   # one family
 python3 registry.py catalog               # regenerate this file
 ```
 
-22 embodiments across 5 families.
+30 embodiments across 7 families.
 
 ## context-transport
 
@@ -299,6 +299,106 @@ Read first: calls against peak bytes; they trade directly and the adaptive arm f
 
 **Avoid it when** You need a fixed, auditable prompt size per call.
 
+## decomposition
+
+**How is the work divided before any of it is done?**
+
+Varies: what gets split, and what has to be put back together.  
+Held constant: the world, the reader, the window and the state schema.  
+Decides: what splitting costs in total calls and what it buys in serial depth, which move in opposite directions.  
+Read first: calls and longest_chain_calls together; reading either one alone tells you whatever you already believed.
+
+| # | Embodiment | In one line | Status |
+|---|---|---|---|
+| 01 | [`single_pass`](decomposition/01-single-pass/README.md) | Do not decompose. One pass over everything. | measured |
+| 02 | [`fixed_split`](decomposition/02-fixed-split/README.md) | Cut the work into a fixed number of independent groups. | measured |
+| 03 | [`recursive_split`](decomposition/03-recursive-split/README.md) | Keep halving until a piece is small enough, then merge back up. | measured |
+| 04 | [`portfolio`](decomposition/04-portfolio/README.md) | Split by approach, not by work: run several, publish the first that verifies. | measured |
+
+### single_pass
+
+*Do not decompose. One pass over everything.*
+
+**Gives you**
+
+- Fewest total calls of any arm here, because nothing pays a per-group final call.
+- No merge, so no chance of a merge being wrong.
+- Nothing to size, nothing to tune, nothing to schedule.
+
+**Costs you**
+
+- Serial depth equals the work. Nothing can run at the same time as anything else.
+- One failure is the whole run's failure; there are no independent domains.
+- Cannot use more than one worker even when they are free.
+
+**Pick it when** Work is small, or strictly ordered, or you have one worker.; You want the cheapest total and do not care about latency.
+
+**Avoid it when** Latency matters and workers are available.
+
+### fixed_split
+
+*Cut the work into a fixed number of independent groups.*
+
+**Gives you**
+
+- Serial depth falls by roughly the group count, which is what wall time follows when groups run at once.
+- Groups are independent, so one failing costs that group and not the run.
+- The group count is a direct handle on how many workers get used.
+- Contiguous slices keep a group's identifiers adjacent, so a ledger reader can tell which slice a call belonged to.
+
+**Costs you**
+
+- More total calls, not fewer: every group pays its own final call.
+- The right group count depends on the machine, not on the work, so it has to be set by someone who knows the machine.
+- Needs a merge that is associative and gets the task's tie-breaks right, which is a real piece of code that can be wrong.
+- This folder shipped a slicer that returned six groups when seven were asked for, which would have silently mis-sized a worker pool.
+
+**Pick it when** Units are independent and workers are available.; You know how many workers you have.
+
+**Avoid it when** Units depend on each other, or the merge cannot be made associative.
+
+### recursive_split
+
+*Keep halving until a piece is small enough, then merge back up.*
+
+**Gives you**
+
+- The threshold is about the work, not about the machine, so the same setting travels between deployments.
+- The tree shape follows the input size without anyone choosing a group count.
+- A depth guard bounds the tree even at a threshold that asks for an unbounded one.
+
+**Costs you**
+
+- Combines pairwise up the tree, so the merge must be associative and not merely correct once at the end.
+- Deeper than a flat split for the same number of leaves, and depth is coordination.
+- Same per-leaf call overhead as the fixed split, plus a tree to reason about.
+
+**Pick it when** Input size varies a lot between runs.; You want one threshold that means the same thing everywhere.
+
+**Avoid it when** The merge is not associative. Then the tree is unsafe in a way a flat split is not.
+
+### portfolio
+
+*Split by approach, not by work: run several, publish the first that verifies.*
+
+**Gives you**
+
+- The only arm in the catalogue that survives one of its designs being wrong for the input. At 256 units two candidates hit their horizon and it still answered correctly.
+- Refuses when no candidate verifies, rather than publishing the least bad one.
+- Stops as soon as one is accepted, so the cheap candidate costs nothing extra when it works.
+- Builds nothing of its own: the candidates and the checker are other folders in this catalogue, loaded as they are. It is the composability claim actually executing.
+
+**Costs you**
+
+- Pays for every candidate it runs before one verifies, and it cannot know in advance which that is.
+- Needs a verifier good enough to tell the candidates apart. With a weak checker it publishes the first plausible answer rather than the first correct one.
+- A portfolio of similar designs buys nothing but cost; the candidates have to fail differently to be worth running.
+- Ordering the candidates is a real decision, because it decides what the common case costs.
+
+**Pick it when** No single design covers the whole input range you see.; You have an independent checker and being wrong is expensive.
+
+**Avoid it when** One design covers the range, or you cannot verify a result independently.
+
 ## execution-placement
 
 **Where does a step physically run?**
@@ -373,6 +473,103 @@ Read first: seconds_per_call; the isolation column is what you are buying with i
 **Pick it when** The step body is generated or untrusted.; A step may run commands, and you need it to fail closed.
 
 **Avoid it when** Steps are short and numerous, and the body is your own code. Then the start cost is the whole run.
+
+## failure-handling
+
+**What does the loop do when a step fails?**
+
+Varies: the recovery policy, and what it spends before giving up.  
+Held constant: the loop, the transport, the world, and the five failure shapes every arm is shown.  
+Decides: which failures each policy actually survives, and what a futile recovery costs.  
+Read first: permanent_answered_wrongly; a policy that finishes a run it could not complete is the one that needs verification beside it.
+
+| # | Embodiment | In one line | Status |
+|---|---|---|---|
+| 01 | [`stop_on_first`](failure-handling/01-stop-on-first/README.md) | The first failed step ends the run. | measured |
+| 02 | [`retry_same`](failure-handling/02-retry-same/README.md) | Send the same request again, up to a budget. | measured |
+| 03 | [`retry_with_escalation`](failure-handling/03-retry-with-escalation/README.md) | Retry plainly first; when that stops helping, change the request. | measured |
+| 04 | [`skip_and_continue`](failure-handling/04-skip-and-continue/README.md) | Record the failure, skip the unit, finish the run. | measured |
+
+### stop_on_first
+
+*The first failed step ends the run.*
+
+**Gives you**
+
+- Spends nothing on a failure it cannot fix, which is the right answer when the failure is permanent.
+- Never returns a partial result dressed as a complete one.
+- Counts a reply that does not parse as a failure, so confident prose cannot pass as a completed step.
+- Simplest possible policy; nothing to tune.
+
+**Costs you**
+
+- Loses the whole run to a failure that would have cleared on the next attempt, which is the most common kind.
+- Wastes all the work already done, unless a checkpoint store is paired with it.
+- Turns a rate limit into an outage.
+
+**Pick it when** Failures are rare and meaningful, and a human is watching.; Partial results are worse than no result.
+
+**Avoid it when** The transport or the provider is flaky, which is most of the time.
+
+### retry_same
+
+*Send the same request again, up to a budget.*
+
+**Gives you**
+
+- Handles the most common real failure: one that goes away.
+- One number to set, and its meaning is obvious.
+- No change to the request, so nothing about the run's semantics shifts when it retries.
+
+**Costs you**
+
+- Cannot fix a failure whose cause is the request itself. Against that shape it spends the entire budget learning nothing.
+- Multiplies cost on exactly the runs that were already going badly.
+- A budget large enough to ride out a real outage is a budget large enough to hide one.
+
+**Pick it when** Failures are transient and independent.; A retry is cheap relative to losing the run.
+
+**Avoid it when** The failure is deterministic in the request. Escalate instead.
+
+### retry_with_escalation
+
+*Retry plainly first; when that stops helping, change the request.*
+
+**Gives you**
+
+- The only policy here that recovers a failure caused by the request itself, which no amount of retrying can fix.
+- Escalates only after plain retries fail, so a transient failure costs zero escalations.
+- The ladder is a field, not a subclass, which is the same shape as this runtime's own escalation ladder.
+
+**Costs you**
+
+- More expensive than plain retry on every failure it does not fix, because it pays the plain budget and then the escalated one.
+- Escalating changes the request, so the successful attempt is not the attempt that was specified. That has to be recorded or the run is not reproducible.
+- Two budgets to set instead of one.
+
+**Pick it when** Failures have more than one cause and some are request-shaped.; You can express a stronger version of the same request.
+
+**Avoid it when** Every failure is transient. The ladder is then pure overhead.
+
+### skip_and_continue
+
+*Record the failure, skip the unit, finish the run.*
+
+**Gives you**
+
+- The only policy here that finishes a run containing a failure nothing could fix.
+- Partial results are the right answer for plenty of work, and this is the only arm that can produce one.
+- Returns the lost units as a field rather than a log line, so a caller can decide rather than discover.
+
+**Costs you**
+
+- Returns an answer that is quietly wrong. In the permanent-failure scenario it answered rather than stopping, and the answer did not match the truth.
+- The wrongness is proportional to what was skipped and there is nothing in the answer itself that shows it.
+- Needs a verifier beside it to be safe. Alone it converts a visible failure into an invisible one.
+
+**Pick it when** Partial results have value and the caller can see what was lost.; You are pairing it with independent verification, which together give a finished run and an honest refusal.
+
+**Avoid it when** Anything consumes the answer without reading the lost list.
 
 ## memory
 

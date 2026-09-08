@@ -1,0 +1,17 @@
+{
+ "family": "decomposition",
+ "question": "How is the work divided before any of it is done?",
+ "varies": "what gets split, and what has to be put back together",
+ "held_constant": "the world, the reader, the window and the state schema",
+ "measures": [
+  "solved",
+  "calls",
+  "longest_chain_calls",
+  "serial_depth_ratio",
+  "groups",
+  "candidates"
+ ],
+ "decides": "what splitting costs in total calls and what it buys in serial depth, which move in opposite directions",
+ "harness": "harness.py",
+ "read_first": "calls and longest_chain_calls together; reading either one alone tells you whatever you already believed"
+}

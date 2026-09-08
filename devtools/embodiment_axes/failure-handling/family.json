@@ -1,0 +1,16 @@
+{
+ "family": "failure-handling",
+ "question": "What does the loop do when a step fails?",
+ "varies": "the recovery policy, and what it spends before giving up",
+ "held_constant": "the loop, the transport, the world, and the five failure shapes every arm is shown",
+ "measures": [
+  "survived",
+  "clean_calls",
+  "permanent_stopped",
+  "permanent_calls",
+  "permanent_answered_wrongly"
+ ],
+ "decides": "which failures each policy actually survives, and what a futile recovery costs",
+ "harness": "harness.py",
+ "read_first": "permanent_answered_wrongly; a policy that finishes a run it could not complete is the one that needs verification beside it"
+}

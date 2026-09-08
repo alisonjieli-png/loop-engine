@@ -4,7 +4,7 @@ This folder answers one question: if someone does not want the design this
 project happens to have shipped, what are their options, and what does each
 one actually cost?
 
-Twenty-two runnable embodiments across five independent axes. Every one has a
+Thirty runnable embodiments across seven independent axes. Every one has a
 manifest that states what it gives you and what it costs you next to each
 other, a self-check that runs in under a second, and where a measurement is
 possible, numbers from having run it.
@@ -30,9 +30,14 @@ folder's own code.
 | `verification/` | How does an answer get accepted? | 3 |
 | `memory/` | What does an earlier run contribute to a later one? | 4 |
 | `control-flow/` | Who picks the next unit of work, and how much per call? | 4 |
+| `failure-handling/` | What does the loop do when a step fails? | 4 |
+| `decomposition/` | How is the work divided before any of it is done? | 4 |
 
 They are independent, and that is the point. A design is one choice from each,
-and the choices compose without a bundle being forced on anyone.
+and the choices compose without a bundle being forced on anyone. The portfolio
+embodiment under `decomposition/` is that claim executing rather than asserted:
+it implements nothing of its own, and runs the context-transport folders
+against the verification folder as its checker.
 
 ## How this relates to the rest of the repository
 

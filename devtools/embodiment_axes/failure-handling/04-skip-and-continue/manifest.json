@@ -1,0 +1,39 @@
+{
+ "id": "failure-handling/04-skip-and-continue",
+ "family": "failure-handling",
+ "name": "skip_and_continue",
+ "status": "measured",
+ "one_line": "Record the failure, skip the unit, finish the run.",
+ "how_it_works": [
+  "Attempt each unit a small number of times.",
+  "On exhaustion, record the unit as lost and move past it.",
+  "Answer from the units that worked, and return the lost ones as a field."
+ ],
+ "pros": [
+  "The only policy here that finishes a run containing a failure nothing could fix.",
+  "Partial results are the right answer for plenty of work, and this is the only arm that can produce one.",
+  "Returns the lost units as a field rather than a log line, so a caller can decide rather than discover."
+ ],
+ "cons": [
+  "Returns an answer that is quietly wrong. In the permanent-failure scenario it answered rather than stopping, and the answer did not match the truth.",
+  "The wrongness is proportional to what was skipped and there is nothing in the answer itself that shows it.",
+  "Needs a verifier beside it to be safe. Alone it converts a visible failure into an invisible one."
+ ],
+ "pick_this_when": [
+  "Partial results have value and the caller can see what was lost.",
+  "You are pairing it with independent verification, which together give a finished run and an honest refusal."
+ ],
+ "avoid_when": [
+  "Anything consumes the answer without reading the lost list."
+ ],
+ "evidence": {
+  "survived": 3,
+  "of_recoverable": 4,
+  "lost_to": [
+   "needs_escalation"
+  ],
+  "permanent_failure": "answered, and the answer was wrong",
+  "permanent_calls": 12,
+  "note": "the only arm that returned an answer for a run it could not complete; pair it with a verifier"
+ }
+}

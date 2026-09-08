@@ -1,0 +1,46 @@
+{
+ "id": "decomposition/04-portfolio",
+ "family": "decomposition",
+ "name": "portfolio",
+ "status": "measured",
+ "one_line": "Split by approach, not by work: run several, publish the first that verifies.",
+ "how_it_works": [
+  "Run the whole task through several different designs.",
+  "Verify each result independently.",
+  "Publish the first that passes and stop the rest."
+ ],
+ "pros": [
+  "The only arm in the catalogue that survives one of its designs being wrong for the input. At 256 units two candidates hit their horizon and it still answered correctly.",
+  "Refuses when no candidate verifies, rather than publishing the least bad one.",
+  "Stops as soon as one is accepted, so the cheap candidate costs nothing extra when it works.",
+  "Builds nothing of its own: the candidates and the checker are other folders in this catalogue, loaded as they are. It is the composability claim actually executing."
+ ],
+ "cons": [
+  "Pays for every candidate it runs before one verifies, and it cannot know in advance which that is.",
+  "Needs a verifier good enough to tell the candidates apart. With a weak checker it publishes the first plausible answer rather than the first correct one.",
+  "A portfolio of similar designs buys nothing but cost; the candidates have to fail differently to be worth running.",
+  "Ordering the candidates is a real decision, because it decides what the common case costs."
+ ],
+ "pick_this_when": [
+  "No single design covers the whole input range you see.",
+  "You have an independent checker and being wrong is expensive."
+ ],
+ "avoid_when": [
+  "One design covers the range, or you cannot verify a result independently."
+ ],
+ "evidence": {
+  "calls": {
+   "24": 1,
+   "256": 382
+  },
+  "published": {
+   "24": "monolith",
+   "256": "bounded_state"
+  },
+  "candidates_run": {
+   "24": 1,
+   "256": 3
+  },
+  "finding": "one call when the cheapest candidate works, and a correct answer at a size where two of its three candidates hit their horizon"
+ }
+}

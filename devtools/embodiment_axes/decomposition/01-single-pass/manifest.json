@@ -1,0 +1,39 @@
+{
+ "id": "decomposition/01-single-pass",
+ "family": "decomposition",
+ "name": "single_pass",
+ "status": "measured",
+ "one_line": "Do not decompose. One pass over everything.",
+ "how_it_works": [
+  "One state, one cursor, one order.",
+  "Every unit folds into the same accumulator."
+ ],
+ "pros": [
+  "Fewest total calls of any arm here, because nothing pays a per-group final call.",
+  "No merge, so no chance of a merge being wrong.",
+  "Nothing to size, nothing to tune, nothing to schedule."
+ ],
+ "cons": [
+  "Serial depth equals the work. Nothing can run at the same time as anything else.",
+  "One failure is the whole run's failure; there are no independent domains.",
+  "Cannot use more than one worker even when they are free."
+ ],
+ "pick_this_when": [
+  "Work is small, or strictly ordered, or you have one worker.",
+  "You want the cheapest total and do not care about latency."
+ ],
+ "avoid_when": [
+  "Latency matters and workers are available."
+ ],
+ "evidence": {
+  "calls": {
+   "24": 25,
+   "256": 257
+  },
+  "longest_chain": {
+   "24": 25,
+   "256": 257
+  },
+  "serial_depth_ratio": 1.0
+ }
+}

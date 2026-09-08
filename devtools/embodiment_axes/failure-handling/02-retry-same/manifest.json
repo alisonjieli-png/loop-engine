@@ -1,0 +1,37 @@
+{
+ "id": "failure-handling/02-retry-same",
+ "family": "failure-handling",
+ "name": "retry_same",
+ "status": "measured",
+ "one_line": "Send the same request again, up to a budget.",
+ "how_it_works": [
+  "Attempt each step up to a fixed number of times.",
+  "Any usable reply ends the retries.",
+  "Exhausting the budget stops the run."
+ ],
+ "pros": [
+  "Handles the most common real failure: one that goes away.",
+  "One number to set, and its meaning is obvious.",
+  "No change to the request, so nothing about the run's semantics shifts when it retries."
+ ],
+ "cons": [
+  "Cannot fix a failure whose cause is the request itself. Against that shape it spends the entire budget learning nothing.",
+  "Multiplies cost on exactly the runs that were already going badly.",
+  "A budget large enough to ride out a real outage is a budget large enough to hide one."
+ ],
+ "pick_this_when": [
+  "Failures are transient and independent.",
+  "A retry is cheap relative to losing the run."
+ ],
+ "avoid_when": [
+  "The failure is deterministic in the request. Escalate instead."
+ ],
+ "evidence": {
+  "survived": 3,
+  "of_recoverable": 4,
+  "lost_to": [
+   "needs_escalation"
+  ],
+  "permanent_failure": "attempts_exhausted after 4 calls"
+ }
+}

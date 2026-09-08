@@ -1,0 +1,35 @@
+{
+ "id": "failure-handling/03-retry-with-escalation",
+ "family": "failure-handling",
+ "name": "retry_with_escalation",
+ "status": "measured",
+ "one_line": "Retry plainly first; when that stops helping, change the request.",
+ "how_it_works": [
+  "Spend a plain retry budget first, because most failures clear on their own and escalation costs more.",
+  "When it runs out, mark the request escalated and try again.",
+  "Exhausting the ladder stops the run."
+ ],
+ "pros": [
+  "The only policy here that recovers a failure caused by the request itself, which no amount of retrying can fix.",
+  "Escalates only after plain retries fail, so a transient failure costs zero escalations.",
+  "The ladder is a field, not a subclass, which is the same shape as this runtime's own escalation ladder."
+ ],
+ "cons": [
+  "More expensive than plain retry on every failure it does not fix, because it pays the plain budget and then the escalated one.",
+  "Escalating changes the request, so the successful attempt is not the attempt that was specified. That has to be recorded or the run is not reproducible.",
+  "Two budgets to set instead of one."
+ ],
+ "pick_this_when": [
+  "Failures have more than one cause and some are request-shaped.",
+  "You can express a stronger version of the same request."
+ ],
+ "avoid_when": [
+  "Every failure is transient. The ladder is then pure overhead."
+ ],
+ "evidence": {
+  "survived": 4,
+  "of_recoverable": 4,
+  "permanent_failure": "ladder_exhausted after 4 calls",
+  "note": "the only arm that recovered every recoverable shape, and it spent zero escalations on the shapes a plain retry already fixed"
+ }
+}

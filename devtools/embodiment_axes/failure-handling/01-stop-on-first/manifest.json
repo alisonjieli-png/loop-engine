@@ -1,0 +1,36 @@
+{
+ "id": "failure-handling/01-stop-on-first",
+ "family": "failure-handling",
+ "name": "stop_on_first",
+ "status": "measured",
+ "one_line": "The first failed step ends the run.",
+ "how_it_works": [
+  "Attempt each step once.",
+  "Treat a raised error and an unparseable reply alike.",
+  "Stop, and say which unit it stopped on."
+ ],
+ "pros": [
+  "Spends nothing on a failure it cannot fix, which is the right answer when the failure is permanent.",
+  "Never returns a partial result dressed as a complete one.",
+  "Counts a reply that does not parse as a failure, so confident prose cannot pass as a completed step.",
+  "Simplest possible policy; nothing to tune."
+ ],
+ "cons": [
+  "Loses the whole run to a failure that would have cleared on the next attempt, which is the most common kind.",
+  "Wastes all the work already done, unless a checkpoint store is paired with it.",
+  "Turns a rate limit into an outage."
+ ],
+ "pick_this_when": [
+  "Failures are rare and meaningful, and a human is watching.",
+  "Partial results are worse than no result."
+ ],
+ "avoid_when": [
+  "The transport or the provider is flaky, which is most of the time."
+ ],
+ "evidence": {
+  "survived": 0,
+  "of_recoverable": 4,
+  "permanent_failure": "stopped after 4 calls, the cheapest correct refusal of any arm",
+  "note": "every arm was given the same 4-attempt budget except this one, whose policy is to have none"
+ }
+}

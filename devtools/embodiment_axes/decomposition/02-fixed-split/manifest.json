@@ -1,0 +1,44 @@
+{
+ "id": "decomposition/02-fixed-split",
+ "family": "decomposition",
+ "name": "fixed_split",
+ "status": "measured",
+ "one_line": "Cut the work into a fixed number of independent groups.",
+ "how_it_works": [
+  "Slice the units into contiguous groups.",
+  "Give each its own accumulator and its own pass.",
+  "Merge the partial results at the end."
+ ],
+ "pros": [
+  "Serial depth falls by roughly the group count, which is what wall time follows when groups run at once.",
+  "Groups are independent, so one failing costs that group and not the run.",
+  "The group count is a direct handle on how many workers get used.",
+  "Contiguous slices keep a group's identifiers adjacent, so a ledger reader can tell which slice a call belonged to."
+ ],
+ "cons": [
+  "More total calls, not fewer: every group pays its own final call.",
+  "The right group count depends on the machine, not on the work, so it has to be set by someone who knows the machine.",
+  "Needs a merge that is associative and gets the task's tie-breaks right, which is a real piece of code that can be wrong.",
+  "This folder shipped a slicer that returned six groups when seven were asked for, which would have silently mis-sized a worker pool."
+ ],
+ "pick_this_when": [
+  "Units are independent and workers are available.",
+  "You know how many workers you have."
+ ],
+ "avoid_when": [
+  "Units depend on each other, or the merge cannot be made associative."
+ ],
+ "evidence": {
+  "groups": 4,
+  "calls": {
+   "24": 28,
+   "256": 260
+  },
+  "longest_chain": {
+   "24": 7,
+   "256": 65
+  },
+  "serial_depth_ratio": 4.0,
+  "note": "the ratio stays at the group count whatever the input size, because the knob is about the machine"
+ }
+}
