@@ -197,6 +197,48 @@ listed below as configurations to add; none replaces an existing path.
 | Intake from CI logs, JUnit, Actions runs, and agent transcripts | the runner branch (`overnight/opencode-step-instances`), `templates/intake.py` | Land the runner branch's intake on main as an intake template family after the R2 decision, so main carries every intake path | decision |
 | Secret redaction at intake with a tested rule set | `core/brave_search.py` secret providers, the hardcoding audit | A redaction step in `TaskIntakeRequest` admission with a rule set and positive tests, applied before any packet is rendered | proposed |
 
+## 8d. The reachability finding, and the test that would catch it
+
+Observed on 2026-09-07 by running the repository's own end-to-end fixture
+solve (`public_run` in `adaptive_practitioner_bindings_checks`, zero provider
+calls) and counting which shipped modules were imported, lazy imports
+included:
+
+| Measure | Count |
+|---|---:|
+| Shipped modules under `src/loop_engine` | 406 |
+| Reached by a real adaptive solve | 129 (31 percent) |
+| Memory modules reached, of 20 | 1 |
+
+The one memory module reached is `memory.model.memory_type`, imported by
+`intelligence_layers`. The episodic, semantic, procedural, working, storage,
+lifecycle and query modules are never imported by a solve. They hold typed
+records and passing self-tests, so the self-test total stays green while
+nothing on the solve path calls them.
+
+Inferred. This is the difference between capability and wiring, and it is a
+better explanation of "the most capable engine is not the one producing
+results" than any defect in the modules themselves. A module with tests and
+no caller is proven correct and inert.
+
+Not established. Reachability from one adaptive solve is not the whole story:
+the command line interface, the studio, the record tooling and the benchmarks
+are separate entry points with their own legitimate module sets. The sharp
+result is the memory layer, because memory is supposed to be on the learning
+path and is not.
+
+The sibling overnight repository has the test this repository lacks. Its
+`tests/test_wiring.py` holds an inventory of capability modules with a
+sentence each on what they contribute, asserts that every one is imported by
+a named live path, and fails with the module named when it is not: "core.
+context_budget is DARK: imported only by nothing". It caught a real unwired
+module in that session.
+
+| Change | Files | Check | Status |
+|---|---|---|---|
+| A reachability check that names the live entry points, holds an inventory of the modules each is expected to reach, and fails naming any module in the inventory that no live path imports | a new `core` check module folded into the self-test aggregator | the check itself; the first run's dark list becomes the backlog, not an allowlist | proposed |
+| Wire the memory layer to the solve path, one type at a time, each with the reachability check as its proof | `core/adaptive_practitioner_*.py`, `memory/*` | the reachability check plus a solve that records and reads back one episode | proposed |
+
 ## 9. Order of work
 
 1. Sections 1 to 4 landed in this pass with their checks; the full local
