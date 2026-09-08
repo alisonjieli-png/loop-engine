@@ -67,6 +67,25 @@ reason when none is present.
 proxies on this machine, so that run spends money and should be asked for
 rather than assumed.
 
+## Axes not yet cut
+
+Named here so the menu is honest about its own edges. Each is a question this
+project answers today by default rather than by choice, and none has arms in
+this folder yet.
+
+- **Which model runs a step.** One fixed model, a ladder that escalates on
+  failure, or an ensemble whose disagreement is the signal. The failure family
+  escalates the request; it does not escalate the model.
+- **What a step is allowed to do.** Authority is a separate axis from
+  placement: a container decides what a step *can* reach, a grant decides what
+  it *may*. This folder varies only the first.
+- **What gets recorded.** Everything, sampled, or only what a later run can
+  use. The memory family varies what is kept between runs, not what is written
+  during one.
+
+A folder with no arms would be worse than this list, because the catalogue
+would then claim coverage it does not have.
+
 ## Adding one
 
 1. Make `<family>/<NN-name>/`. A new question is a new family, which needs its
