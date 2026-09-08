@@ -8,6 +8,10 @@ work. Two companion pages carry the detail:
   and the mistakes that have already cost real time here.
 - [Ways of running](WAYS-OF-RUNNING.md): every setting that exists today, what
   it changes, and how to add another without removing one.
+- [Everything learned, 2026-09-08](EVERYTHING-LEARNED-2026-09-08.md): what the
+  last round of work measured, the defects only running found, what this
+  project's real problem turned out to be, and what is still unknown. Start
+  here if you want the numbers rather than the rules.
 
 The longer orientation, reading order, and component map stay in
 [CODEX-START-HERE.md](CODEX-START-HERE.md). Read that when you need depth.
