@@ -41,7 +41,7 @@ specified in section 7.
 |---|---|---|---|---|---|
 | B3 | Reference delivery is body-inaccessible; `frame.resolvers` is written and never read | `delivery: reference` is refused at plan admission with `binding_disposition: incompatible` and a reason, until a consumer-side materialization capability exists (section 7); the dead `resolvers` field is gone; `value` delivery is unchanged | `core/adaptive_practitioner_bindings.py`, bindings checks | bindings self-test 50 of 50: reference delivery refused before dispatch; an unknown delivery kind refused; the public run dispatches no consumer | done |
 | B5 | No size bound on dependency values | `DependencyValuePolicy` (default 262,144 canonical JSON bytes) applied when a producer result is registered; over the bound is `incompatible`; `BoundDependencyInput.value_bytes` and the frame's bound are recorded on the `adaptive_dependency_inputs_bound` event | `core/adaptive_practitioner_bindings.py`, `core/adaptive_practitioner_scope.py`, bindings checks | bindings self-test: a four-byte bound refuses the fixture result; the default bound admits it; the event carries `value_bytes` and `maximum_value_bytes`; scope self-test 36 of 36; planning 40 of 40 | done |
-| B7 | A non-binding error from `frame.register` replaces a successful summary with a generic record | Catch `InformationAccessError` beside `DependencyBindingError` in the spawned scope and give it `binding_disposition: incompatible` plus the `adaptive_dependency_output_rejected` event | `core/adaptive_practitioner_scope.py` | scope checks: a producer result with non-string keys yields a typed rejected summary | proposed |
+| B7 | A non-binding error from `frame.register` replaces a successful summary with a generic record | The spawned scope catches `InformationAccessError` beside `DependencyBindingError`, keeps the typed rejection, and gives an access failure `binding_disposition: incompatible`; the outer error record carries a disposition for both | `core/adaptive_practitioner_scope.py` | scope checks 36 of 36, bindings 50 of 50 | done |
 
 ## 3. Reactive worker and scheduler
 
@@ -96,7 +96,8 @@ spend.
 
 | ID | Finding | Change | Status |
 |---|---|---|---|
-| R1 | CI red on main since 2026-09-02; hardcoding delta at 2,980 new findings | Triage the blocking new high findings in this order: the credential reference in `openai_responses_client.py` (declare the provider in `ModelSettings.providers` with `credential_env`, the audit's named authority, and read the key through that declaration); the 51 URL literals in `docs/research/*.json` (classifier scope or an owned allowlist entry per file); the findings in files from the 2026-09-06 work, by module. Do not weaken the gate or refresh the baseline silently. Add the vale rules to the pre-push routine | proposed |
+| R1 | The public documentation job failed on 43 of the 45 red pushes | Every violation in the checks' own scope is cleared: 88 dashes replaced line by line so no line was joined and no meaning changed, one retired term reworded in the architecture map, and the vale configuration made to agree with the retired-language check that already exempts dated verification reports, per rule rather than wholesale so dashes are still refused there. Simulating all three checks over their exact CI file sets now reports nothing, and markdownlint passes on 261 files | done |
+| R1 | The suite job fails the hardcoding delta gate on 260 blocking findings | Characterized rather than cleared, because clearing it honestly is a project and not an edit. Of the 260: 163 are in `src/loop_engine/core`, 51 are URL literals inside two generated research JSON files, 20 sit inside test fixture bodies the audit's exemption did not catch, and the rest are scattered. The dominant shape is a literal record type or status compared inline, which is the hand-spelled schema version problem the 2026-09-01 review already recorded. The fix is a schema version registry and enum references at the comparison sites, not an allowlist. The gate was not weakened and the baseline was not refreshed | decision |
 | R1 | Verification reports cite local counts while CI is red | Every future report cites the CI run for its commit | proposed |
 | R2 | Two extra branches on origin | Delete `codex/generalized-adaptive-work-20260906` and `overnight/opencode-step-instances` after confirming nothing on them is missing from main (`git log main..branch`) | decision |
 
@@ -236,8 +237,26 @@ module in that session.
 
 | Change | Files | Check | Status |
 |---|---|---|---|
-| A reachability check that names the live entry points, holds an inventory of the modules each is expected to reach, and fails naming any module in the inventory that no live path imports | a new `core` check module folded into the self-test aggregator | the check itself; the first run's dark list becomes the backlog, not an allowlist | proposed |
-| Wire the memory layer to the solve path, one type at a time, each with the reachability check as its proof | `core/adaptive_practitioner_*.py`, `memory/*` | the reachability check plus a solve that records and reads back one episode | proposed |
+| A reachability check that names the live entry points, holds an inventory of the modules each is expected to reach, and fails naming any module in the inventory that no live path reaches | `reachability_report.py`, folded into the self-test aggregator | its own self-test, including a control proving it separates a reached module from a dark one | done |
+| Wire the governed learning journal to the solve path so a run reads what an independent review already approved | `code_nodes/solve_learned_memory.py`, `code_nodes/solve_runtime.py` | six checks including a real staged, reviewed and promoted record, a chain that does not validate, and an unreadable journal | done |
+| Wire the remaining memory types (episodic capture, procedural patterns, working state) and the staging half, so verified runs record candidates | `core/adaptive_practitioner.py` near the terminal at line 697, `memory/*` | the reachability inventory grows with each one | proposed |
+
+Measured after the wiring, by static import closure from the solve entry
+module (the generous reading, since it follows imports written inside
+functions):
+
+| Measure | Before | After |
+|---|---:|---:|
+| Memory modules reachable from the solve path, of 20 | 0 | 12 |
+| Modules imported by a real end to end solve | 129 | 138 |
+
+The staging half needs the solving Practitioner Loop at an accepted terminal,
+because `loop_evidence(producer_loop, require_accepted=True)` refuses anything
+else, and that Loop is available only inside the adaptive practitioner. Until
+it is wired, the journal is an operator channel: records staged, reviewed and
+promoted through the existing governed transitions reach every later run in
+the same runs directory. A campaign started with `--shared-runs-dir` therefore
+shares one journal across its tasks and passes without further configuration.
 
 ## 9. Order of work
 

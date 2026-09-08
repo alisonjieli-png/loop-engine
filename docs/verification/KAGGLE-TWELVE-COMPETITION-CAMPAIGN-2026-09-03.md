@@ -20,8 +20,8 @@ and write a submission matching a contract it had inferred.
 Twelve of twelve reached `COMPLETED_VERIFIED`.
 
 An independent rubric in `benchmarks/kaggle_competitions/contract.py` derives
-the true contract from the data alone — the target is the column present in
-train and absent from test, confirmed against the sample submission — and
+the true contract from the data alone, the target is the column present in
+train and absent from test, confirmed against the sample submission, and
 grades the produced `submission.csv`, not the run's own report of what it did.
 
 | Competition | Target | Shape | Rows | Rubric |
@@ -45,13 +45,13 @@ Twelve of twelve correct on target, identifier, column order and row count.
 
 Four competitions carry a trap the rubric knows about independently.
 
-- **s6e7** — the target is column 2 of 15 in train, not the last, and the last
+- **s6e7**, the target is column 2 of 15 in train, not the last, and the last
   column is a feature that also appears in test. Navigated: the run predicted
   `health_condition` and wrote its three text labels.
-- **s6e8** — the sample submission holds a value the target never takes, because
+- **s6e8**, the sample submission holds a value the target never takes, because
   the contract asks for a score rather than a label. Navigated: the run wrote
   continuous scores, 201 distinct values in the first 4,000 rows.
-- **s6e2 and s6e3** — training labels are text, the submission asks for a
+- **s6e2 and s6e3**, training labels are text, the submission asks for a
   number, and the contract asks for a score. Half navigated: both converted
   text to numeric correctly and produced contract-valid files, but wrote hard
   `0`/`1` labels where the metric wants probabilities. The file passes every
@@ -66,13 +66,13 @@ value type was wrong.
 Three non-ML families ran from the same engine with no configuration change,
 graded by `benchmarks/task_families/rubric.py`, which never reads the run.
 
-- **jira** — a ticket blames `format_window`; the defect is the exclusive end
+- **jira**, a ticket blames `format_window`; the defect is the exclusive end
   returned by `window_bounds`. The run fixed `window_bounds` and its stated
   root cause names the boundary.
-- **email** — a third message reverses the first: the deliverable becomes a
+- **email**, a third message reverses the first: the deliverable becomes a
   spreadsheet and the state breakdown must be dropped. The run produced a
   spreadsheet and did not promise state figures.
-- **todo** — one item is already done, two sentences are one task, and one task
+- **todo**, one item is already done, two sentences are one task, and one task
   depends on another. The run emitted four tasks, dropped the done item, merged
   the pair, and recorded the dependency.
 
@@ -85,7 +85,7 @@ Three of three answered; three of three avoided the trap.
 failures. All twelve are eligible for infrastructure analysis and for semantic
 analysis. **One of twelve is eligible for comparison.** These runs cannot
 support any claim that one prompt, context shape or cycle profile beats
-another — the contamination differs between them, so a comparison would
+another, the contamination differs between them, so a comparison would
 measure the contamination. Twelve runs would be far too few for such a claim
 even if every one were clean.
 
@@ -123,7 +123,7 @@ before the campaign was rerun.
    code for a host that had pandas and ran it in a container that did not,
    learning otherwise from an import error several passes later. The fact is
    now decided the way execution decides it, and the self-test compares the two
-   — the old assertion pinned the defect in place, which is why no gate saw it.
+   the old assertion pinned the defect in place, which is why no gate saw it.
 
 The sandbox image was a hardcoded bare-interpreter digest with no pandas,
 numpy or scikit-learn, so no modelling task could ever complete in it.

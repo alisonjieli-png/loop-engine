@@ -272,9 +272,9 @@ First public release.
   response should contain: one competition holds inferring an output
   contract, testing for leakage, comparing candidates and diagnosing a failed
   command, which share a task and almost nothing else.
-  `core.stage_fingerprint` names the smaller unit — what this call is
+  `core.stage_fingerprint` names the smaller unit, what this call is
   responsible for, where it sits between the ultimate goal and the immediate
-  step, what it knows and does not, what its answer is for — with a digest
+  step, what it knows and does not, what its answer is for, with a digest
   that deliberately excludes run, loop and branch references so the same
   situation in another run is the same situation. Its coarser `motif` is the
   cross-domain shape derived from the phase and populated situation fields.
@@ -293,8 +293,8 @@ First public release.
   effect.
 
 - **Decisions are joined forward to what became of them.** A decision record
-  says what was chosen and who chose it, which supports one finding — how
-  often something was picked — and not the one that matters. A corpus of
+  says what was chosen and who chose it, which supports one finding, how
+  often something was picked, and not the one that matters. A corpus of
   choices without outcomes teaches that models compacted context 63% of the
   time; a corpus with outcomes teaches that compaction succeeded 72% of the
   time here and cost rework 31% of the time there. Only the second can become
@@ -335,7 +335,7 @@ First public release.
 
 - **Recovery is chosen by reasoning, with the table demoted to continuity
   behaviour.** The retry policy added earlier the same day decided which
-  failures were worth another attempt, how many, and how long to wait —
+  failures were worth another attempt, how many, and how long to wait,
   task-conditioned choices frozen from a handful of runs. It now says only
   what is cheap to try while a route is merely busy. At the point where it
   would give up, which is the moment the run is otherwise lost,
@@ -349,15 +349,15 @@ First public release.
   must decide what to do when the thing that decides is what failed, so the
   ask goes straight to the gateway and can never recurse into another recovery
   decision. When nothing answers, the result is
-  `NO_REASONING_ROUTE_AVAILABLE` and the caller raises as before — the honest
+  `NO_REASONING_ROUTE_AVAILABLE` and the caller raises as before, the honest
   end of a run whose reasoning could not be reached, not a licence to finish
   the task another way. Every recovery is recorded with its true owner, so a
   choice made by the table when no reasoner could be reached is never counted
   as a reasoned one.
 
 - **One shape for every task-conditioned choice, and a count of who made
-  them.** `core.choice` is a single typed interface — standardised input,
-  standardised output — for any decision the runtime puts to a model: choose
+  them.** `core.choice` is a single typed interface, standardised input,
+  standardised output, for any decision the runtime puts to a model: choose
   among options, adjust named settings within stated bounds, or propose
   something nobody enumerated. The runtime supplies only mechanical facts
   (this route has no credential, that window cannot hold the request) and the
@@ -376,8 +376,8 @@ First public release.
   what reasoning actually did rather than what someone guessed it would do.
 
   Measured against the retry tables added earlier the same day: given the real
-  failure those tables were written for — a provider finishing normally and
-  returning only private reasoning — the table says retry the same route six
+  failure those tables were written for, a provider finishing normally and
+  returning only private reasoning, the table says retry the same route six
   times. Asked the same question through this interface with the same
   mechanical facts, the model selected a different model on the same provider,
   lowered temperature, named an exit condition, and kept compaction in
@@ -395,9 +395,9 @@ First public release.
   fixed cases can only measure three things, and they measure them
   repeatedly: the same trap, in the same words, in the same file, so a run
   that does well on them has been shown to do well on them.
-  `benchmarks/task_families/generator.py` describes the *shape* of each trap —
+  `benchmarks/task_families/generator.py` describes the *shape* of each trap,
   a misattribution, a quietly superseded instruction, a list whose structure
-  is not what it looks like — and asks a model to invent the particulars,
+  is not what it looks like, and asks a model to invent the particulars,
   through a Loop. Each case carries its own judging criterion, so a generated
   trap is gradeable by the same observation judge as a written one.
   Generation is not trusted: structural checks reject a case with no real
@@ -410,22 +410,22 @@ First public release.
   `grade_jira` accepted a root cause only if it contained "exclusive",
   "inclusive", "off-by-one", "end" or "last", so a run writing "the upper
   limit is one too small" was marked wrong for saying the right thing in
-  unenumerated words — and it read the run's own `answer.json`, never the
+  unenumerated words, and it read the run's own `answer.json`, never the
   code, grading a claim rather than a change. `benchmarks/task_families/judge.py`
   reads the artifacts and reasons about them through a Loop, never seeing the
   run's case for itself, with deterministic facts handed to it as findings it
   may not contradict.
 
   Building it surfaced something worth recording. Asked outright whether a
-  criterion was met, the judge described a patch that *concealed* a defect —
-  accurately, in its own evidence — and then answered that the criterion was
+  criterion was met, the judge described a patch that *concealed* a defect,
+  accurately, in its own evidence, and then answered that the criterion was
   met. Asked whether that evidence supported that conclusion, it explained
   that it did not and answered that it did. The prose was right both times
   and the boolean wrong both times: a judgement field invites agreement. So
   it is no longer asked for one. It reports which of several neutrally worded
   options matches what it read, and the verdict is derived from the letter.
-  On two adversarial cases — a correct fix described in unusual words, and a
-  wrong fix described in the right vocabulary — the keyword grader scores
+  On two adversarial cases, a correct fix described in unusual words, and a
+  wrong fix described in the right vocabulary, the keyword grader scores
   0 of 2 and the observation judge 2 of 2, with an independent second reading
   agreeing on both.
 
@@ -460,9 +460,9 @@ First public release.
   failure was transport, and zero model calls completed. The two states are
   different work for whoever reads the code next, and the runtime already held
   the evidence to tell them apart. `core.terminal_layer` derives the deepest
-  layer a run reached from its own record — orientations and decisions mean
+  layer a run reached from its own record, orientations and decisions mean
   semantic work, project attempts mean execution, a verdict or a completed
-  method means verification — and absent all of it the run reached transport
+  method means verification, and absent all of it the run reached transport
   and the code says `PROVIDER_UNAVAILABLE`. An explicit failure code still
   wins; this is the fallback that decides what to say when nothing else did.
 
@@ -487,8 +487,8 @@ First public release.
   and maps all 28 transitions a Loop network would need: 18 realized, each
   naming its mechanism, and 13 not, each with the reason. Naming a transition
   realizes nothing, and the map says so. A caller may now report an
-  `operator_gap` — what it needed, what it tried, what the runtime refused
-  with — which is admitted, marked with whether it names an operator that
+  `operator_gap`, what it needed, what it tried, what the runtime refused
+  with, which is admitted, marked with whether it names an operator that
   already exists, counted apart from a missing portfolio option, and carried
   into saved history. That is the record a live run could not make while it
   restated the same correct repair for twenty passes. Measured: skipping four
@@ -500,8 +500,8 @@ First public release.
 - **The Kaggle working root holds the submission and nothing to search.**
   A submission that verified was reachable only at
   `loop-engine-solutions/attempt-<stamp>/submission.csv`, beside five other
-  root entries — a source checkout, a logs tree, a solutions tree, a settings
-  file and a task file — none of which a person submitting a competition
+  root entries, a source checkout, a logs tree, a solutions tree, a settings
+  file and a task file, none of which a person submitting a competition
   entry needs. Everything a cell writes now lives under one `loop-engine/`
   directory, leaving the root with `submission.csv` and that directory. A
   self-test asserts the root holds nothing else, because this is the
@@ -523,7 +523,7 @@ First public release.
   always takes it, an unverified run takes it only while no verified run has.
   The reports state a submission's rows, distinct values and range rather
   than calling it good, and a submission whose predictions never vary is
-  published with that named — this repository has shipped that exact failure,
+  published with that named, this repository has shipped that exact failure,
   and a reader needs to see it rather than be reassured. The offline harness
   gained a static name check across each whole cell, because the publishing
   code runs only at the end of a live run: a cell referring to a name it does
@@ -548,7 +548,7 @@ First public release.
 
 - **A much larger universe of options, and three more steps to reason in.**
   The portfolio grew from 17 perspectives to 42 and from 14 guidance records
-  to 30, and every step now carries persona affinities — `orient` previously
+  to 30, and every step now carries persona affinities, `orient` previously
   had none, so all 42 perspectives read as unmatched on the first call of
   every run. Nothing was removed and nothing was gated: affinity is advisory
   metadata, and every perspective, question set and guidance record still
@@ -558,7 +558,7 @@ First public release.
   `forecast_outcome` states what the chosen method will cost and produce
   before it runs, and `calibrate` compares that forecast against what
   happened. Each is skippable per pass, and each default reports absence
-  rather than agreement — a run that never predicted anything has not shown
+  rather than agreement, a run that never predicted anything has not shown
   good judgement, it has shown none. `_CORE_STEP_IDS` is now derived from
   `KERNEL_NODES` instead of restating it, so a node can no longer be added to
   the kernel and silently arrive with no questions, no contract, and an empty
@@ -629,9 +629,9 @@ First public release.
 - **Durable rules moved out of the Kaggle task text and into the runtime.**
   The cells no longer explain the manifest, the sandbox paths, the difference
   between a header and a value, or which files may be authored. Every one of
-  those is now stated by the runtime that enforces it — `sandbox_paths_usage`
+  those is now stated by the runtime that enforces it, `sandbox_paths_usage`
   and `byte_counts` in runtime facts, `usage` on the source profile, the
-  project contract on authored files against expected artifacts — so an
+  project contract on authored files against expected artifacts, so an
   unfamiliar task inherits them instead of needing them written down again.
   What a task text explains, the next task will not.
 
@@ -647,8 +647,8 @@ First public release.
 - **A control arm that controlled for nothing.** Arms were assigned from the
   stage signature alone, so a region landed in the same arm forever: the
   treated and control arms could never contain the same kind of work, and the
-  one question worth asking — what happens to *this* region with help and
-  without — was unanswerable by construction. `experiment_arm()` now hashes
+  one question worth asking, what happens to *this* region with help and
+  without, was unanswerable by construction. `experiment_arm()` now hashes
   the experiment, the signature, the occurrence and a campaign seed together.
   Independent occurrences of one region fall on both sides (measured: 51
   control of 400), while every retry of a single occurrence stays put, so a
@@ -671,19 +671,19 @@ First public release.
 
 - **Motifs were four rules I wrote from no data.** The vocabulary was
   whatever their author had thought of, asked in order so the first match
-  won, with everything unanticipated collapsing into `unclassified` — a
+  won, with everything unanticipated collapsing into `unclassified`, a
   closed taxonomy presented as an open one, deciding cross-domain retrieval.
   Motifs are now derived from which of the record's own fields are engaged:
   every combination is named, including ones nobody anticipated, and adding a
   situational field widens the vocabulary with no list to update. The
-  cross-domain matches this was built for survive the change — a provider
+  cross-domain matches this was built for survive the change, a provider
   failover and a non-reproducing test still meet at
   `failure_diagnosis/incoming_observation+unknowns`.
 
 - **A run that fails hard no longer loses its stages.** Stage persistence was
   wired into the normal completion path only, and three failure exits return
-  before it. Those are the runs most worth learning from — where recovery,
-  model demand and response shape are actually tested — and an email run that
+  before it. Those are the runs most worth learning from, where recovery,
+  model demand and response shape are actually tested, and an email run that
   died with nine transport failures and zero completed model steps wrote
   nothing at all. Every exit now closes the stage record with the outcome it
   actually had: a cancelled run leaves them unknown rather than failed,
@@ -693,15 +693,15 @@ First public release.
 
 - **A bound the model is shown is now a bound admission enforces.** The choice
   interface rendered "SETTINGS YOU MAY ADJUST (bounds are enforced)" above
-  ranges written as prose — `"between 512 and 65536"` — while admission checked
+  ranges written as prose, `"between 512 and 65536"`, while admission checked
   only that the setting's name had been offered. Any value at all was
   admitted, and the sentence promising otherwise was false. `ParameterSpec`
   carries the bound as a value: type, minimum, maximum, enum members, unit,
   and whether the setting may change for this call at all. A proposal outside
   it is refused with the reason, never clamped, and the refusal is counted
-  rather than dropped. Nine cases are held by test — above maximum, below
+  rather than dropped. Nine cases are held by test, above maximum, below
   minimum, wrong type, a float where an integer was asked for, a boolean
-  where a number was, outside the enum, an immutable setting — and removing
+  where a number was, outside the enum, an immutable setting, and removing
   the enforcement fails them. Settings still described in prose are rendered
   as explicitly unenforced instead of borrowing the language of a bound.
 
@@ -709,7 +709,7 @@ First public release.
   asked for.** When a caller names no output ceiling the gateway defaults to
   the model's declared maximum. One configured route declares 1,048,576
   output tokens against a 131,072 context window, so every request through it
-  was refused by the context preflight before the provider was contacted —
+  was refused by the context preflight before the provider was contacted,
   the route could never succeed. A ceiling the gateway chose for itself now
   fits the window it is aimed at. A ceiling the *caller* named is still
   refused when it does not fit, because that number is the caller's and
@@ -719,7 +719,7 @@ First public release.
 
 - **A run that was asked to reason and could not now says so.** When no model
   execution is configured the solve silently became a deterministic run, and
-  the outcome recorded only the mode it used — so a demoted run and a run
+  the outcome recorded only the mode it used, so a demoted run and a run
   nobody ever asked to reason produced identical records. The outcome now
   carries `requested_mode` beside `selected_mode`, and a demotion carries the
   reason it happened. This does not prevent the demotion, which is correct
@@ -734,7 +734,7 @@ First public release.
   publish the run's outputs. Installing with pip makes that second import work
   as a side effect; the `pythonpath` fallback did not, so a solve that reached
   `COMPLETED_VERIFIED` ended with `ModuleNotFoundError` at the publish step and
-  no `submission.csv` at the working root — the one file the submit dialog
+  no `submission.csv` at the working root, the one file the submit dialog
   looks for. That fallback exists so the cell stays testable outside Kaggle,
   which means the solve-stage harness could never reach the publishing path it
   is there to check. All three cells now put the source tree on `sys.path` as
@@ -743,7 +743,7 @@ First public release.
 - **Every record parsed from a model now treats surplus as information.** The
   same exact-set validation that ended runs on `selection_report` also guarded
   the model's statement of which supplied file plays which role, every file it
-  generates for a project, and its review of a compiled task — all three on the
+  generates for a project, and its review of a compiled task, all three on the
   path a competition run takes. A caller with more to say than the schema names
   had its whole reply discarded, orientation and work together. Absence is now
   the defect in each, the refusal names the missing fields, and a guard holds
@@ -756,7 +756,7 @@ First public release.
   layers each kept only what they already knew about, and the loss compounded
   in silence. The progress writer was a permission list, so
   `practitioner.options.selected` travelled across whole campaigns with every
-  field of its content stripped — 219 events over twelve competitions saying a
+  field of its content stripped, 219 events over twelve competitions saying a
   choice had been made and never what it was. It is now a denial: credential-
   shaped names and raw payload carriers are withheld, values are bounded, and
   everything else travels, so a field nobody wrote down in advance still
@@ -766,7 +766,7 @@ First public release.
   offer is the most useful thing the report can carry. The typed records
   rejected any answer with an extra field: absence is now the defect, extras
   are information, and the caller reports them rather than refusing the work
-  that came with them. The tally reaches the caller too — `option_selection`
+  that came with them. The tally reaches the caller too, `option_selection`
   was built every run and left inside run history, where the cross-run
   question it exists to answer could not reach it.
 
@@ -774,7 +774,7 @@ First public release.
   budget.** They say opposite things. A network error says the provider could
   not be reached, and a fourth call into a dark socket is waste. A response
   that arrived carrying no answer says it was reached, answered on time and
-  under its ceiling, and spent the whole budget on private reasoning — so the
+  under its ceiling, and spent the whole budget on private reasoning, so the
   next sample is likely to answer. One shared count of three served the first
   case and starved the second: on a twelve-competition campaign one run saw
   five empty answers in ten calls and never got past orientation. Empty
@@ -789,12 +789,12 @@ First public release.
   process while its code ran in a container, and learned otherwise from an
   import error several minutes later. The fact is now decided the way
   execution decides it, and the self-test compares the two rather than
-  asserting a written-down answer — the old check asserted `host_process`,
+  asserting a written-down answer, the old check asserted `host_process`,
   which is to say it pinned the defect in place.
 
 - **A finished record no longer archives whole datasets.** One competition run
   wrote a 113 MB `adaptive-result.json`, of which 80 MB was the verbatim
-  content of the `train.csv` it had inspected — beside the `path`,
+  content of the `train.csv` it had inspected, beside the `path`,
   `byte_count` and `digest` that already identify that file, which is
   read-only and still on disk. Three such runs writing into a RAM-backed
   temporary filesystem exhausted the machine, and every reader of run history,
@@ -805,8 +805,8 @@ First public release.
   is, so a later reader can tell that apart from a file that was empty.
 
 - **A response that arrived carrying no answer is now tried again.** The
-  provider finished normally — `stop`, under its output ceiling, no transport
-  error — and returned only private reasoning with no final answer. The
+  provider finished normally, `stop`, under its output ceiling, no transport
+  error, and returned only private reasoning with no final answer. The
   gateway rightly refused it, but `output_validation_failed` was outside the
   retryable set, so the refusal escaped as fatal and ended whole runs at their
   first step over a single unlucky sample. Nothing about the request was
@@ -818,13 +818,13 @@ First public release.
   clearing rather than a connection settling. Two self-tests hold the line in
   both directions, since a fatal code discards a run and a retryable one
   spends three calls to earn the same refusal, and neither shows up in any
-  other gate — both merely produce a run that ends.
+  other gate, both merely produce a run that ends.
 
 - **An optional record no longer kills the run it was attached to.** Packets
   ask every call to report what it drew on, presented as
   `selection_report: {keys: {...}}`. Models answered in both shapes the
-  contract invites — the five keys flat, or one object under the container
-  name — but only the flat keys were stripped before typed validation, so a
+  contract invites, the five keys flat, or one object under the container
+  name, but only the flat keys were stripped before typed validation, so a
   nested answer reached `TaskOrientationResult.from_mapping`, failed its
   exact-set field check, and ended the run at orientation with nothing
   produced. Four of the first competition runs in a twelve-competition
@@ -836,7 +836,7 @@ First public release.
 - **A refusal now names the fields it refused.** `TaskOrientationResult fields
   do not match version 1` told a reader that something was wrong and nothing
   about what, and it was fed verbatim to the repair attempt as the whole of
-  its guidance — so the second attempt was as blind as the first. The message
+  its guidance, so the second attempt was as blind as the first. The message
   now names the unexpected and missing fields, which is how the cause above
   was found rather than guessed.
 
@@ -845,7 +845,7 @@ First public release.
   selection keys stripped before it were each hand-maintained. `required` is
   now derived from the record's own dataclass fields (as is
   `NextActionDecision`'s), and a self-test parses the schema literal shown to
-  the model and fails if it drifts from the record enforced on it — the one
+  the model and fails if it drifts from the record enforced on it, the one
   copy that must stay hand-written because it documents a type per field.
 
 - **A diagnostic now arrives saying what it found.** The solve progress writer
@@ -861,14 +861,14 @@ First public release.
 - **A Python exception class name is not a failure layer.** The terminal-code
   mapping sent `AdaptivePractitionerError` straight to `VERIFICATION_FAILED`,
   so a live run that produced two invalid orientations and verified nothing
-  still reported a verification failure — the same defect the layer inference
+  still reported a verification failure, the same defect the layer inference
   was built to remove, surviving one level up. A class name says which module
   raised, not which layer failed, so generic names now defer to the evidence.
 
 - **A provider that answered proves transport succeeded.** The layer inference
   read only admitted orientations and decisions, so a run whose every
   orientation was rejected left no record and looked identical to one the
-  provider never reached — two failures needing entirely different repairs.
+  provider never reached, two failures needing entirely different repairs.
   `model_usage` carries typed `provider_responded` and `ok` fields; a recorded
   response now establishes the semantic layer whether or not anything the
   model said was admitted. The live run this was found on now reports
@@ -901,7 +901,7 @@ First public release.
   it derives each from something real: memory and disk this machine reports,
   the byte allowance this run's own context budget already declares, or the
   length of the paths actually present. The declared figures it replaced are
-  gone — the supplied-input ceiling, the sixty-four-path manifest cut, the
+  gone, the supplied-input ceiling, the sixty-four-path manifest cut, the
   orientation's evidence and role budgets, the two-hundred-row profile sample,
   the selected-content byte caps. Each answer carries its measurement, so a
   refusal quotes the number that caused it instead of asserting a rule, and a
@@ -919,9 +919,9 @@ First public release.
   real playground-series-s6e9 files a live run placed only the 7.7 MB
   submission template and refused the 18.3 MB prediction rows and the 44.7 MB
   training rows, so no amount of model reasoning could reach a result. The
-  limit now grows to the largest input the runtime itself admitted — refusing
+  limit now grows to the largest input the runtime itself admitted, refusing
   to place a file the runtime chose to supply is the runtime contradicting its
-  own decision — with a stated ceiling that bounds one read, checked by size
+  own decision, with a stated ceiling that bounds one read, checked by size
   during selection rather than discovered halfway through a copy. Runtime
   facts state `byte_counts` and `placement_limit_bytes` beside the paths, so
   a size refusal is foreseeable rather than surprising.

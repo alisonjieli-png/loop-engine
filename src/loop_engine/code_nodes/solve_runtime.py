@@ -26,6 +26,7 @@ from ..templates.intake import TaskIntake
 from ..templates.model import InteractionMode, TaskFeedback
 from .material_questions import screen_material_questions
 from .solution_model_port import ModelExecution
+from .solve_learned_memory import learned_memory_for_solve
 from .solve_region_evidence import region_evidence_for_solve
 from .solve_request_adaptation import (
     SolveAdaptationRequest,
@@ -480,6 +481,12 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         region_evidence, tuned_budget = {}, None
     else:
         region_evidence, tuned_budget = region_evidence_for_solve(request)
+        # What earlier runs in this region measured, and what an independent
+        # review already approved, are both advisory evidence from the past.
+        # The approved records travel inside the same mapping so they reach
+        # the Practitioner through the block that already carries it, and a
+        # run with no learned memory records that plainly.
+        region_evidence["learned_memory"] = learned_memory_for_solve(request)
     adaptive_request = build_adaptive_request(
         SolveAdaptationRequest(request, mode, region_evidence, tuned_budget)
     )

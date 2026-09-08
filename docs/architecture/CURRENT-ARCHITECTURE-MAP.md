@@ -157,7 +157,7 @@ src/loop_engine/
 │   ├── knowledge.py          Knowledge, AskFrame
 │   ├── context.py            CONTEXT_POLICIES, build_view
 │   ├── question_engine.py    question forms
-│   ├── intelligence_strings.py string intelligence
+│   ├── intelligence_strings.py layer prose and labels
 │   └── ...                   templates, notes, packs
 │
 ├── intelligence/              four layers at rest

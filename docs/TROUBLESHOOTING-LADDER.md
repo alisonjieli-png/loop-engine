@@ -37,7 +37,7 @@ That is the honest answer to "why are we having issues": some of the issues
 were real defects, and some were conclusions drawn from runs that were never
 eligible to support them. Nothing recorded said so, so nothing stopped it.
 
-An invalid run is not worthless — it is first-class evidence about
+An invalid run is not worthless, it is first-class evidence about
 infrastructure. It is excluded only from the questions it cannot answer, and
 every exclusion is recorded with its reason, because a filter nobody can see
 is how a corpus quietly becomes the runs that happened to agree.
@@ -115,7 +115,7 @@ These are real errors from live runs, put through the ladder.
 3. **Step order or templates?** No. The sequence was correct; it never got to
    run.
 4. **Loop, mode, record, supervisor?** No. Nothing was missing from the
-   architecture. The runtime already held the evidence — it simply did not
+   architecture. The runtime already held the evidence, it simply did not
    consult it before naming the failure.
 5. **Most generalizable fix.** A terminal code may name only a layer the run
    has evidence of having reached. `core.terminal_layer` derives that from the
@@ -126,7 +126,7 @@ These are real errors from live runs, put through the ladder.
    model, and an explicit failure code still wins over the inference.
 6. **Avoided.** Special-casing the three observed error strings; adding a
    `TRANSPORT_FAILED` code when `PROVIDER_UNAVAILABLE` already existed;
-   taking a size-cap exception when the module went over — the logic was
+   taking a size-cap exception when the module went over, the logic was
    extracted to its own module with its tests instead.
 7. **Fabric.** The runtime describes itself more accurately, which is the
    property every later diagnosis depends on.
@@ -138,7 +138,7 @@ These are real errors from live runs, put through the ladder.
    calls.
 2. **Prompting/context/tools?** No.
 3. **Step order or templates?** No.
-4. **Loop-node, mode, supervisor?** Possibly — a supervisor that observed
+4. **Loop-node, mode, supervisor?** Possibly, a supervisor that observed
    transport failures and reduced concurrency would address it. Not yet
    built, and not yet justified by evidence about where the real limit is.
 5. **Most generalizable fix.** Unknown, and deliberately left unfixed. The
@@ -158,7 +158,7 @@ These are real errors from live runs, put through the ladder.
    `core.source.inspect` refused (not in the supplied manifest);
    `core.generated_project` refused a `cat` (commands must run the registered
    Python executable over reviewed files). Twenty passes, same conclusion.
-2. **Prompting/context/tools?** Yes, in part — but not prompting. The gap was
+2. **Prompting/context/tools?** Yes, in part, but not prompting. The gap was
    a missing capability, which question 2 covers under "tool calling". The
    model's reasoning was correct throughout.
 3. **Step order or templates?** No. More steps would have produced more

@@ -75,7 +75,7 @@ Counted from the live sources, not from documentation.
 - **Transitions.** Nine routes. The full algebra a Loop network would need is
   28; see §C.
 - **State objects.** Orientations, action decisions, verification records,
-  failures, recovery directives, and a `FrontierSnapshot` — but the frontier
+  failures, recovery directives, and a `FrontierSnapshot`, but the frontier
   is a **read-only projection rebuilt from the finished result**, not a living
   structure the model updates during the run.
 - **Logical steps versus physical calls.** Not separated. One model-calling
@@ -93,17 +93,17 @@ Counted from the live sources, not from documentation.
 
 `core.cognitive_grammar` was added. It names, and never gates.
 
-- **Operator catalog — implemented.** 45 operators, *derived on call* from the
+- **Operator catalog, implemented.** 45 operators, *derived on call* from the
   kernel nodes, action kinds and capabilities. It is not a second list,
   because a second list drifts and the drift is silent. This is the same rule
   that `_CORE_STEP_IDS` now follows after it was found restating the kernel's
   node list by hand.
-- **Cycle profiles — implemented as vocabulary, not as a default.** Five named
+- **Cycle profiles, implemented as vocabulary, not as a default.** Five named
   versioned profiles (`full`, `compact_action`, `experiment`, `repair`,
   `orientation`), each a skip set over optional nodes only. A profile naming a
   required node is refused by name. Only `full` is in use; see §E for why the
   rest are not yet worth adopting.
-- **Transition algebra — mapped, mostly not realized.** All 28 transitions are
+- **Transition algebra, mapped, mostly not realized.** All 28 transitions are
   named with their state. **18 are realized** and each names its mechanism.
   **13 are not**, each with the reason: `GOTO` and `REVISIT` (a pass is
   acyclic), `BACKTRACK` and `ROLLBACK` (no named checkpoint the model may
@@ -112,13 +112,13 @@ Counted from the live sources, not from documentation.
   ask for recompilation and retry the same operator), `DEESCALATE`,
   `TOURNAMENT`, `VOTE`, `ENSEMBLE`, `RETURN_INCUMBENT`, `TERMINATE_BRANCH`,
   `REPLAN`. Naming a transition realizes nothing, and the map says so.
-- **Operator gap channel — implemented.** A caller may report `operator_gap`
+- **Operator gap channel, implemented.** A caller may report `operator_gap`
   with what it `needed`, what it `tried`, and what the runtime `said`. It is
   admitted, marked with whether it names an operator that already exists (a
   caller that missed a present operator is a finding about the prompt, not the
   catalog), counted apart from a missing portfolio option, and carried into
   saved history. This is precisely the record the failing run could not make.
-- **Situation snapshot, living frontier, graph mutation proposal — not
+- **Situation snapshot, living frontier, graph mutation proposal, not
   implemented.** Hypothesis only. The existing frontier projection is not a
   substitute and should not be described as one.
 
@@ -190,7 +190,7 @@ run hit, verified against a reproduction of that exact file.
 **Partially proven.** Cycle profiles are safe and inert; whether any of them
 helps on a harder task is untested. Option selection is recorded and
 aggregated, but no run has yet accumulated enough reports for
-`option_evidence()` to say anything — it reports fewer than three reporting
+`option_evidence()` to say anything, it reports fewer than three reporting
 runs as thin evidence, and every region is currently below that.
 
 **Implemented but untested live.** The gap channel has never been exercised by
@@ -211,5 +211,5 @@ across spawned Loops, or protocol evolution. The repository runs one process.
 **Next smallest experiment with the highest information value.** Ask a live
 model, on the 15:08 task with `core.workspace.read` available, to solve it
 again. That single run tests the closed gap, exercises the gap channel on a
-real model, and produces the first option-selection tally from live work —
+real model, and produces the first option-selection tally from live work,
 three unknowns for one run.

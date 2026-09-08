@@ -18,7 +18,7 @@ this repository.
 | 1 | Two path spaces for one file | Runtime facts stated the bare admitted path and called it the only admitted path; `core.generated_project` materialized the same file under an `inputs/` prefix. The model used what the runtime told it, and the input-use check refused it. |
 | 2 | Refusals carried no reason | `as_practitioner_loop` wraps a failing deterministic check, and the untyped fallback described the wrapper. The model read "deterministic check validate generated project input use raised inside loop 1470 (evidence on the ledger)" about twenty times while the sentence naming the wrong path sat two links down `__cause__`. |
 | 3 | The action fence was blind | Three `core.generated_project` refusal paths returned a result packet without calling `note_failure`, so the model-visible view read `recent_failures: []`, `refusals_issued: 0` throughout. |
-| 4 | Typed outputs counted as produced | The candidate declared `submission.csv`, `metrics.json`, `report.md` and `verification.json` as both authored files and expected artifacts. The model typed them — a standard deviation of exactly zero, a mean equal to the sample submission's constant, a 6009-byte submission that cannot hold 286,571 rows — and the artifact check passed on all four. |
+| 4 | Typed outputs counted as produced | The candidate declared `submission.csv`, `metrics.json`, `report.md` and `verification.json` as both authored files and expected artifacts. The model typed them, a standard deviation of exactly zero, a mean equal to the sample submission's constant, a 6009-byte submission that cannot hold 286,571 rows, and the artifact check passed on all four. |
 | 5 | A real competition could not be placed at all | The workspace capped every file at a flat 16 MB. The real files are 7.7 MB, 18.3 MB and 44.7 MB, so only the submission template was placed. No model reasoning could have reached a result. |
 
 Defects 1 and 5 are the runtime misdescribing itself. Defect 2 is why the run
@@ -136,7 +136,7 @@ first attempt produced every artifact and read every source at its sandbox
 path, but `verify.py` exited 1 because it could not independently confirm the
 input directory had not been written to. The loop diagnosed that specific
 check and changed the design: a `snapshot_input.py` step now records the input
-tree — paths, sizes, mtimes, and content hashes — before `solution.py` runs,
+tree, paths, sizes, mtimes, and content hashes, before `solution.py` runs,
 so `verify.py` can compare against it and prove the read-only guarantee. The
 next attempt exited 0 with "Verification passed: all checks succeeded", and
 `deterministic_checks_passed` is true.
@@ -167,8 +167,8 @@ itself, so a model that must repair its own code has to do it blind.
 The record shows the loop working correctly against that wall rather than
 failing to notice it. The action fence recorded every refusal with its exact
 cause, fenced `core.generated_project` after five failures, and the model
-worked out the right workaround by pass 11 — "use `core.generated_project`
-with a `cat` command" — which was then refused for a different and also
+worked out the right workaround by pass 11, "use `core.generated_project`
+with a `cat` command", which was then refused for a different and also
 correct reason. Soft reset fired at pass 16, cold restart at pass 19, and
 twenty passes carried the same sentence because the missing observation was
 never obtainable. More steps, more perspectives, and more recovery machinery

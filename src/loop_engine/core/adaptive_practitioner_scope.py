@@ -208,6 +208,8 @@ def run_spawned_tasks(state, plan, services, implementations):
     from ..loop.kernel_runtime import current_kernel_owner, run_spawned_kernel
     from .run_history import default_runs_dir
     from .run_stages import close_stages
+    from .development_planning import ResolutionDisposition
+    from .information_access import InformationAccessError
     from .adaptive_practitioner_bindings import (
         ASSIGNMENT_KEY, DependencyBindingError, SpawnedDependencyFrame,
         assignment_for, compile_assignments)
@@ -263,9 +265,16 @@ def run_spawned_tasks(state, plan, services, implementations):
                 summary.update(task_id=assignment.task_id, dependency_plan_digest=plan_digest)
                 try:
                     frame.register(assignment, summary)
-                except DependencyBindingError as exc:
+                except (DependencyBindingError, InformationAccessError) as exc:
+                    # An access failure refuses the output for the same reason
+                    # a binding failure does: the consumer cannot be given it.
+                    # Both keep the typed rejection rather than discarding a
+                    # completed run's summary for a generic error record.
+                    disposition = getattr(exc, "disposition", None)
                     summary.update(task_complete=False, accepted_result=None,
-                                   binding_disposition=exc.disposition.value,
+                                   binding_disposition=(
+                                       disposition.value if disposition is not None
+                                       else ResolutionDisposition.INCOMPATIBLE.value),
                                    verification_kind="output_contract_rejected")
                     frame.register(assignment, summary)
                     owner.ledger.record(loop_id=owner.loop_id, event="custom",
@@ -294,7 +303,10 @@ def run_spawned_tasks(state, plan, services, implementations):
                 "error_type": type(exc).__name__,
                 **({"task_id": assignment.task_id, "dependency_plan_digest": plan_digest}
                    if assignment is not None else {}),
-                **({"binding_disposition": exc.disposition.value} if isinstance(exc, DependencyBindingError) else {}),
+                **({"binding_disposition": exc.disposition.value}
+                   if isinstance(exc, DependencyBindingError)
+                   else {"binding_disposition": ResolutionDisposition.INCOMPATIBLE.value}
+                   if isinstance(exc, InformationAccessError) else {}),
                 "workspace": str(spawned_service.workspace_base) if spawned_service else ""})
             if isinstance(exc, KeyboardInterrupt):
                 raise
