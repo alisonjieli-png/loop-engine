@@ -9,7 +9,8 @@ goes stale first, and a stale list is how an option quietly stops existing.
 Subcommands:
 
   list      every embodiment, grouped by family
-  check     manifests are complete, modules import, self-checks pass
+  check     manifests are complete, modules import, self-checks pass, and
+            every rule in choose.py names a folder that exists
   run       run one or more families through their own harness
   catalog   regenerate CATALOG.md and each embodiment's README.md
 """
@@ -125,6 +126,16 @@ def check(family_filter=None) -> int:
         if not body["harness_path"].exists():
             problems.append(f"{body['family']}: no harness at "
                             f"{body['harness_path'].name}")
+    # The chooser names folders. A rule that outlives its folder would quietly
+    # recommend something that is not there, so it is checked here rather than
+    # only when someone happens to run the chooser.
+    if not family_filter:
+        try:
+            import choose                      # imported late; choose imports us
+            problems.extend(choose.check_rules_against_disk())
+        except Exception as exc:
+            problems.append(f"choose.py did not load: "
+                            f"{type(exc).__name__}: {exc}")
     print(f"\n{len(entries)} embodiments in "
           f"{len({e['family'] for e in entries})} families")
     for problem in problems:

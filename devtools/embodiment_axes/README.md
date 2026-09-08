@@ -11,11 +11,19 @@ possible, numbers from having run it.
 
 ```bash
 cd devtools/embodiment_axes
+python3 choose.py --units 5000 --workers 8 --untrusted-steps --stakes high
 python3 registry.py list        # every embodiment, by family
-python3 registry.py check       # manifests, imports, self-checks
-python3 registry.py run         # all five families through their harnesses
+python3 registry.py check       # manifests, imports, self-checks, chooser rules
+python3 registry.py run         # all seven families through their harnesses
 python3 registry.py catalog     # regenerate CATALOG.md and every README
 ```
+
+`choose.py` is the fastest way in. Describe the situation and it names one
+embodiment per axis with the measurement behind each choice, what it would
+have picked instead, and which pairs are only safe together. `--explain`
+prints the whole rule table instead of one path through it. Every rule it can
+return is checked against what is on disk, so a rule cannot outlive its
+folder.
 
 Read [CATALOG.md](CATALOG.md) to choose. Read [FINDINGS.md](FINDINGS.md) for
 what the measurements said, including the three defects they found in this
