@@ -1,0 +1,41 @@
+{
+ "oversized_replace": {
+  "ok": false,
+  "value": {
+   "ok": false,
+   "error_code": "capability_call_failed"
+  }
+ },
+ "solution_unchanged_on_disk": true,
+ "ledger_tail": [
+  [
+   "host_invocation_started",
+   true,
+   null
+  ],
+  [
+   "host_invocation_finished",
+   null,
+   false
+  ]
+ ],
+ "subsequent_valid_replace": {
+  "raised": "HostRuntimeError: an earlier host effect has unknown outcome; reconciliation is required"
+ },
+ "subsequent_run": {
+  "raised": "HostRuntimeError: an earlier host effect has unknown outcome; reconciliation is required"
+ },
+ "subsequent_inspect_read_only": {
+  "ok": true,
+  "kind": "source_inspection"
+ },
+ "note": "after one host-refused oversized write the run can never write, run, or complete again; no reconciliation API exists",
+ "control_digest_mismatch_refusal": {
+  "ok": true,
+  "kind": "source_replacement_refused"
+ },
+ "control_subsequent_valid_replace": {
+  "ok": true,
+  "kind": "source_replacement"
+ }
+}

@@ -302,7 +302,14 @@ class LoopLedger:
     #: ledger with no bound Loop keeps accepting fixture events.
     _loop_owned_events = frozenset((
         "run_step", "terminal", "iteration_started", "cancel", "budget_stop",
-        "fallback", "model_boundary_deferred", "pause"))
+        "fallback", "model_boundary_deferred", "pause",
+        # A phantom Loop refused a terminal and a step could still write its
+        # own beginning: init, spawn and the spawned-return pair all name a
+        # Loop id, and a canonical projection built from them shows a Loop
+        # that was never bound. Refusing the whole set is what makes the
+        # projection trustworthy rather than merely incomplete.
+        "init", "spawn", "spawned_requested", "spawned_return",
+        "resume", "step", "spec"))
 
     def record(self, **kw) -> None:
         import time
@@ -1446,6 +1453,9 @@ class Loop(metaclass=_LoopMeta):
                     and outcome.confidence >= self.config.success_confidence_min)
         if accepted:
             it["accepted_successes"] += 1
+        else:
+            it["non_accepted_iterations"] = it.get(
+                "non_accepted_iterations", 0) + 1
         # Identical-state detection: the same step failing with the same
         # output, over and over, is churn. Any new output, any accepted
         # work, or any different step resets the count.
@@ -1481,6 +1491,33 @@ class Loop(metaclass=_LoopMeta):
             self._terminate(it, "no_progress")
             rec.update(terminal=True,
                        note="identical failed outcome repeated without progress")
+            return rec
+        # B1 backstop. The pass ceiling above lives inside the
+        # sequence branch and is disabled by a declared max_iterations, so
+        # it cannot fire for an `open` framework or for a Loop that named a
+        # huge budget -- the two shapes that still ran unbounded. This
+        # counts iterations rather than passes, applies in exactly those
+        # two cases, and names its own stop so a ledger reader can tell it
+        # from the pass stop and from the identical-failure stop.
+        ceiling = self.config.supervision.non_accepted_iterations_before_stop
+        non_accepted = it.get("non_accepted_iterations", 0)
+        pass_ceiling_can_fire = (self.config.framework != "open"
+                                 and self.config.max_iterations is None)
+        if (self.config.exit_condition == "accepted_success"
+                and not pass_ceiling_can_fire
+                and non_accepted >= ceiling):
+            self.ledger.record(
+                loop_id=self.loop_id, event="custom",
+                custom_kind="non_accepted_ceiling_stop", step=step,
+                non_accepted_iterations=non_accepted, ceiling=ceiling,
+                identical_failures=it.get("identical_failures", 0),
+                supervision_policy_id=self.config.supervision.policy_id)
+            self._terminate(it, "no_progress")
+            rec.update(terminal=True,
+                       note=f"{non_accepted} iterations without an accepted "
+                            f"success reached the ceiling of {ceiling}; "
+                            f"identical failures seen: "
+                            f"{it.get('identical_failures', 0)}")
             return rec
         if (self.config.exit_condition == "accepted_success" and
                 it["accepted_successes"] >= 1):
@@ -2071,6 +2108,54 @@ def self_test() -> dict:
     third_tries, third = _succeeds_on_nth(3)
     never_tries, never = _succeeds_on_nth(
         10 ** 6, max_iterations=8, distinct_failures=True)
+    def _unbounded_shape(framework, max_iterations, cap=400):
+        """The two shapes whose pass ceiling can never fire. Returns the
+        number of handler calls, capped, so a regression reports a number
+        instead of hanging the suite."""
+        st = {"tries": 0}
+
+        def handler(loop, step, context):
+            st["tries"] += 1
+            if st["tries"] > cap:
+                raise LoopError("uncapped")
+            return StepOutcome(output=f"timed out (attempt {st['tries']})",
+                               mode="deterministic", confidence=0.0,
+                               failed=True)
+        kw = dict(framework=framework, allowable_modes=("deterministic",),
+                  preferred_modes=("deterministic",),
+                  exit_condition="accepted_success", power="light",
+                  max_iterations=max_iterations)
+        if framework == "custom":
+            kw["custom_steps"] = ("attempt",)
+        lp = Loop("retry until it works", LoopConfig(**kw))
+        chooser = (lambda ctx: "attempt") if framework == "open" else None
+        try:
+            while not lp.is_terminal:
+                if chooser is not None:
+                    lp.run_next_iteration(handler=handler, chooser=chooser)
+                else:
+                    lp.run_next_iteration(handler=handler)
+        except LoopError:
+            return cap + 1, None
+        return st["tries"], lp.result()
+
+    # B1. The pass ceiling sits inside the sequence branch and is disabled by
+    # a declared max_iterations, so these two shapes ran without any bound.
+    # The assertion is a plain upper bound, NOT the configured ceiling:
+    # comparing against the constant under test would pass just as happily
+    # if someone raised that constant to a million.
+    open_tries, open_result = _unbounded_shape("open", None)
+    check("an_open_framework_under_accepted_success_is_bounded",
+          open_tries <= 60 and open_result is not None
+          and open_result.stopped == "no_progress",
+          f"calls={open_tries}; an open framework has no passes, so the "
+          "pass ceiling can never see it")
+    huge_tries, huge_result = _unbounded_shape("custom", 10 ** 9)
+    check("a_declared_but_absurd_budget_is_still_bounded",
+          huge_tries <= 60 and huge_result is not None
+          and huge_result.stopped == "no_progress",
+          f"calls={huge_tries}; declaring a budget disables the pass "
+          "ceiling, so the iteration backstop is the only bound left")
     churn_tries, churn_never = _succeeds_on_nth(10 ** 6)
     first_tries, first = _succeeds_on_nth(1)
     # Failures whose text changes every pass are not progress toward the

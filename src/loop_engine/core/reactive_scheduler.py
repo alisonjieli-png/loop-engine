@@ -208,18 +208,19 @@ class SQLiteReactiveScheduler:
             raise ReactiveSchedulerError(
                 "reactive series pending-input limit is reached")
         trigger_body = _canonical(trigger.to_dict())
-        self._connection.execute(
-            "INSERT INTO reactive_triggers VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (trigger.trigger_id, trigger.series_id, trigger.subject_ref,
-             trigger.input_ref.content_digest, trigger.deduplication_key,
-             trigger.priority, trigger.deadline, trigger.received_at,
-             _digest(trigger_body), trigger_body))
-        activation = ActivationRecord(
-            trigger.activation_id, trigger.series_id, trigger.trigger_id,
-            trigger.input_ref, series.loop_definition_ref,
-            ActivationStatus.ADMITTED, 0, 0, 0, trigger.received_at)
-        self._append_activation(activation)
-        self._connection.commit()
+        with self._write_transaction(trigger.activation_id):
+            self._connection.execute(
+                "INSERT INTO reactive_triggers "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (trigger.trigger_id, trigger.series_id, trigger.subject_ref,
+                 trigger.input_ref.content_digest, trigger.deduplication_key,
+                 trigger.priority, trigger.deadline, trigger.received_at,
+                 _digest(trigger_body), trigger_body))
+            activation = ActivationRecord(
+                trigger.activation_id, trigger.series_id, trigger.trigger_id,
+                trigger.input_ref, series.loop_definition_ref,
+                ActivationStatus.ADMITTED, 0, 0, 0, trigger.received_at)
+            self._append_activation(activation)
         self._emit_trigger(trigger, activation, True)
         return TriggerAdmissionResult(trigger, activation, True, "admitted")
 
@@ -231,8 +232,7 @@ class SQLiteReactiveScheduler:
             raise ReactiveSchedulerError(
                 "claim requires ActivationClaimRequest")
         self.recover_expired(request.as_of)
-        self._connection.execute("BEGIN IMMEDIATE")
-        try:
+        with self._write_transaction() as scope:
             rows = self._admitted_rows(request.series_id)
             record = self._select(rows, request)
             if record is None:
@@ -276,13 +276,11 @@ class SQLiteReactiveScheduler:
                     "fencing_token": leased.fencing_token,
                     "attempt": leased.attempt,
                 }))
+            scope["activation_id"] = leased.activation_id
             return ActivationClaimResult(leased, lease)
-        except Exception:
-            self._connection.rollback()
-            raise
 
     @contextmanager
-    def _write_transaction(self):
+    def _write_transaction(self, activation_id: str = ""):
         """One serialized writer: read the current revision and append the
         next one inside ``BEGIN IMMEDIATE``.
 
@@ -291,18 +289,31 @@ class SQLiteReactiveScheduler:
         ``IntegrityError``; every later ``BEGIN`` on that connection then
         failed. The loser now rolls back and receives a typed revision
         conflict, and its connection stays usable.
+
+        The block also COMMITS when it ends without an exception. Leaving
+        that out is the same wedge by another route: a body that writes and
+        does not commit itself (``recover_expired``) returns with the
+        transaction still open, so the next ``BEGIN IMMEDIATE`` on that
+        connection fails exactly as the lost race used to. A second commit
+        from a body that already committed is a no-op, so both shapes are
+        safe.
         """
+        scope = {"activation_id": activation_id}
         self._connection.execute("BEGIN IMMEDIATE")
         try:
-            yield
+            yield scope
         except sqlite3.IntegrityError as exc:
             self._connection.rollback()
+            subject = (f"activation {scope['activation_id']}"
+                       if scope["activation_id"] else "this record")
             raise ReactiveSchedulerError(
-                "activation revision conflict: another worker advanced this "
-                "record") from exc
+                f"activation revision conflict: another worker advanced "
+                f"{subject}; reread it before retrying") from exc
         except BaseException:
             self._connection.rollback()
             raise
+        else:
+            self._connection.commit()
         self._connection.commit()
 
     def profile_for(self, series: ReactiveSeriesDefinition) -> ReactiveLoopProfile:

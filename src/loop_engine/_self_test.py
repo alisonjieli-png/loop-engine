@@ -96,7 +96,7 @@ def self_test() -> dict:
         "code_nodes.solution_graph_checks",
         "code_nodes.ascii_views_checks",
         "code_nodes.run_analytics", "code_nodes.run_playback",
-        "core.run_history", "core.run_history_usage_checks",
+        "core.run_history_checks", "core.run_history_authorship", "core.run_history_usage_checks",
         "core.record_operations_checks", "record_cli",
         "code_nodes.run_quality",
         "core.intelligence_layers",

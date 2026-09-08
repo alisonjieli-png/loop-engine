@@ -125,10 +125,20 @@ def pass_report(outcomes, pass_index):
     return {'pass_index': pass_index, 'attempted': len(selected),
             'verified_completed': sum(1 for item in selected if item['solved']),
             'model_calls': sum(item['model_calls'] for item in selected) if calls_complete else None,
-            'model_calls_known_subtotal': sum(item['model_calls_known_subtotal'] for item in selected),
-            'input_tokens': (sum(item['model_usage']['known_input_tokens_subtotal'] for item in selected)
+            'model_calls_known_subtotal': sum(
+                item.get('model_calls_known_subtotal', 0) for item in selected),
+            # A pre-dispatch failure entry sets token_accounting_complete
+            # True (nothing was spent, so nothing is unknown) but carries no
+            # known_*_subtotal keys, so indexing them raised KeyError and
+            # destroyed report.json for the whole campaign -- including the
+            # digest refusal this version added, which is the one failure
+            # that most needs to be reported. campaign_report already reads
+            # the same fields defensively; this matches it.
+            'input_tokens': (sum(item['model_usage'].get('known_input_tokens_subtotal', 0)
+                                 for item in selected)
                              if tokens_complete else None),
-            'output_tokens': (sum(item['model_usage']['known_output_tokens_subtotal'] for item in selected)
+            'output_tokens': (sum(item['model_usage'].get('known_output_tokens_subtotal', 0)
+                                  for item in selected)
                               if tokens_complete else None),
             'per_task': [{key: item.get(key) for key in (
                 'task_id', 'terminal_code', 'solved', 'model_calls', 'observations', 'elapsed_seconds',

@@ -1,0 +1,45 @@
+===== claim 2: only completed, unchanged producer results satisfy inputs =====
+[mutated_result_after_register] REFUSED DependencyBindingError: prerequisite result changed disposition=stale
+[mutated_metadata_after_register] REFUSED DependencyBindingError: prerequisite result changed disposition=stale
+[stored_body_replaced] REFUSED InformationAccessError: inline information content digest does not match its reference disposition=None
+outputs still holds stale wrapped value after failed re-register: True
+[failed_after_complete_reregister] REFUSED DependencyBindingError: prerequisite has not completed with verification disposition=blocked
+[issued_event_says_incomplete] REFUSED DependencyBindingError: prerequisite lacks its issued completion disposition=unauthorized
+[issued_event_from_other_loop] REFUSED DependencyBindingError: prerequisite lacks its issued completion disposition=unauthorized
+[different_plan_digest_register] REFUSED DependencyBindingError: dependency producer identity changed disposition=unauthorized
+[assignment_schema_swapped_after_admission] REFUSED DependencyBindingError: dependency source or contract changed disposition=stale
+[prerequisite_never_registered] REFUSED DependencyBindingError: prerequisite has not completed with verification disposition=blocked
+
+===== scope of start(): who may consume =====
+[solution_role_consumer] REFUSED DependencyBindingError: dependency execution crossed its owning scope disposition=unauthorized
+[terminal_consumer] REFUSED DependencyBindingError: dependency execution crossed its owning scope disposition=unauthorized
+[consumer_from_other_ledger] REFUSED DependencyBindingError: dependency execution crossed its owning scope disposition=unauthorized
+[grandchild_consumer] REFUSED DependencyBindingError: dependency execution crossed its owning scope disposition=unauthorized
+[first_start] RESOLVED value=[2, 3]
+[second_start_same_task] REFUSED DependencyBindingError: dependency execution crossed its owning scope disposition=unauthorized
+
+===== claim 4: delivery values =====
+    (nan_empty_schema) register REFUSED DependencyBindingError: dependency output does not satisfy its declared path and schema disp=incompatible; resolved=no; 0.00s
+    (inf_number_schema) register REFUSED DependencyBindingError: dependency output does not satisfy its declared path and schema disp=incompatible; resolved=no; 0.00s
+    (nan_nested_dict) register REFUSED DependencyBindingError: dependency output does not satisfy its declared path and schema disp=incompatible; resolved=no; 0.00s
+    (bool_as_integer) register REFUSED DependencyBindingError: dependency output does not satisfy its declared path and schema disp=incompatible; resolved=no; 0.00s
+    (huge_int) register REFUSED DependencyBindingError: dependency output does not satisfy its declared path and schema disp=incompatible; resolved=no; 0.00s
+[deliver:big_list_300k] RESOLVED value=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42
+    (big_list_300k) registered; resolved=yes; 23.17s
+[deliver:tuple_value] RESOLVED value=(1, 2)
+    (tuple_value) registered; resolved=yes; 0.02s
+    (nonstring_key) register REFUSED InformationAccessError: inline information mappings require plain string keys disp=None; resolved=no; 0.00s
+
+===== claim 4: references =====
+[reference_baseline] RESOLVED value=[2, 3]
+materialized observation events on consumer ledger: ['information_materialized']
+[materialize:other_run_same_loop] OK value=[2, 3]
+[materialize:same_run_other_loop] REFUSED InformationAccessError: no storage binding is accessible to the requesting Loop
+[materialize:no_run_id] OK value=[2, 3]
+[materialize:consumer_itself] OK value=[2, 3]
+[materialize after producer body mutated] OK value= [2, 3]
+[second_consumer_after_body_mutation] REFUSED DependencyBindingError: dependency execution crossed its owning scope disposition=unauthorized
+[delivery_reference] RESOLVED value=LoopValueRef(content_digest='18b058689d010062a25cd7fb949b2abfea1757d2de45ca3abdda17db956e506b', value_contract_ref='integer_sequence/v1#sha256:0128ef9bd2206166dfd56
+reference delivery port value type: LoopValueRef | to_dict keys: ['delivery', 'role', 'schema_digest', 'source_task_id', 'value_ref']
+frame.resolvers keys: ['loop3'] | consumer has any attribute exposing resolver? False
+ledger events with loop_id==consumer mentioning information: [('information_materialized', None, None)]

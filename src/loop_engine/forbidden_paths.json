@@ -392,7 +392,7 @@
  ],
  "suite_collection_exceptions": {
   "code_nodes/complex_task_published_evidence.py": "the public complex_task_benchmark facade calls this helper self_test and adds validation of the current reviewed catalog; folding both modules would count the same contract checks twice.",
-  "core/event_vocabulary.py": "no self_test of its own: it was split out of run_history.py at the size cap and every one of its behaviours is exercised by run_history.self_test (closed vocabulary, total projection, coverage honesty, adversarial undeclared-family refusal). A duplicate suite would test the same code twice and drift.",
+  "core/event_vocabulary.py": "no self_test of its own: it was split out of run_history.py at the size cap and every one of its behaviours is exercised by run_history_checks.self_test (closed vocabulary, total projection, coverage honesty, adversarial undeclared-family refusal). A duplicate suite would test the same code twice and drift.",
   "core/ollama_client.py": "its self_test makes LIVE provider calls; folding it would make the suite non-deterministic and bill a provider on every run. Exercised by the dated live-mode canary record instead."
  },
  "unset_default_ceiling_fields": [

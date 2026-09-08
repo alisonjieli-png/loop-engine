@@ -1,0 +1,45 @@
+===== (a) no fabricated recovered outcomes =====
+handler invocations (requested_mode): [None, 'deterministic']
+result: {'terminal_code': 'VERIFICATION_REJECTED', 'stopped': 'done_failed', 'accepted': False, 'accepted_successes': 0, 'output': 'attempt failed (deterministic)'}
+   {'event': 'iteration_started', 'step': 'act', 'iteration': 1}
+   {'event': 'fallback', 'step': 'act', 'from_mode': 'hybrid', 'to_mode': 'deterministic'}
+   {'event': 'run_step', 'step': 'act', 'mode': 'deterministic', 'output': 'attempt failed (deterministic)', 'accepted': False}
+   {'event': 'terminal', 'reason': 'done_failed'}
+any run_step accepted=True? False
+any 'recovered' text? False
+
+--- (a2) deterministic fails first, semantic fallback deferred, still fails ---
+handler invocations: [None, 'hybrid']
+result: {'terminal_code': 'VERIFICATION_REJECTED', 'stopped': 'done_failed', 'accepted': False, 'accepted_successes': 0, 'output': 'fail@hybrid', 'steps_run': 2}
+   {'event': 'iteration_started', 'step': 'act', 'iteration': 1}
+   {'event': 'model_boundary_deferred', 'step': 'act', 'from_mode': 'deterministic', 'to_mode': 'hybrid'}
+   {'event': 'fallback', 'step': 'act', 'from_mode': 'deferred', 'to_mode': 'hybrid'}
+   {'event': 'run_step', 'step': 'act', 'mode': 'hybrid', 'output': 'fail@hybrid', 'accepted': False}
+   {'event': 'terminal', 'reason': 'done_failed'}
+
+===== (b) bounded iteration under accepted_success =====
+--- (b1) identical failure ---
+result: {'terminal_code': 'BLOCKED', 'stopped': 'no_progress', 'steps_run': 3}
+--- (b2:varying_output_failed) NO CEILING: handler invoked 3001 times without a runtime stop; is_terminal=True; supervision={'policy_id': 'loop.supervision', 'version': '1.0.0', 'identical_failures_before_stop': 3, 'non_progress_passes_before_escalation': 3, 'escalation_ladder': ['soft_reset', 'cold_restart', 'stop_unprofitable'], 'spawn_depth_guard': 128}; max_iterations=None
+--- (b2:not_failed_low_confidence) NO CEILING: handler invoked 3001 times without a runtime stop; is_terminal=True; supervision={'policy_id': 'loop.supervision', 'version': '1.0.0', 'identical_failures_before_stop': 3, 'non_progress_passes_before_escalation': 3, 'escalation_ladder': ['soft_reset', 'cold_restart', 'stop_unprofitable'], 'spawn_depth_guard': 128}; max_iterations=None
+--- (b2:not_failed_low_confidence_varying) NO CEILING: handler invoked 3001 times without a runtime stop; is_terminal=True; supervision={'policy_id': 'loop.supervision', 'version': '1.0.0', 'identical_failures_before_stop': 3, 'non_progress_passes_before_escalation': 3, 'escalation_ladder': ['soft_reset', 'cold_restart', 'stop_unprofitable'], 'spawn_depth_guard': 128}; max_iterations=None
+--- (b2:alternating_failures) NO CEILING: handler invoked 3001 times without a runtime stop; is_terminal=True; supervision={'policy_id': 'loop.supervision', 'version': '1.0.0', 'identical_failures_before_stop': 3, 'non_progress_passes_before_escalation': 3, 'escalation_ladder': ['soft_reset', 'cold_restart', 'stop_unprofitable'], 'spawn_depth_guard': 128}; max_iterations=None
+
+--- (b3) same with power=standard nine_step (default LoopConfig) + accepted_success ---
+NO CEILING: handler invoked 3001 times
+
+===== (c) RecursionError is not masked =====
+RecursionError PROPAGATED with its own type: synthetic recursion in profile resolution
+deep spawn -> typed LoopError: spawn depth 129 exceeds the runtime safety guard of 128 nested Loops; declare max_depth explicitly when deeper recursion is intended
+
+===== (d) contract coercion on compatibility constructor =====
+execution_mode_for_runtime_mode('code_with_model_assistance') REFUSED: runtime_mode must be one of ('deterministic', 'hybrid', 'non_deterministic')
+execution_mode_for_runtime_mode('model_led') REFUSED: runtime_mode must be one of ('deterministic', 'hybrid', 'non_deterministic')
+execution_mode_for_runtime_mode('') REFUSED: runtime_mode must be one of ('deterministic', 'hybrid', 'non_deterministic')
+execution_mode_for_runtime_mode(None) REFUSED: runtime_mode must be one of ('deterministic', 'hybrid', 'non_deterministic')
+execution_mode_for_runtime_mode('deterministic') -> code_only
+compat Loop built; contract.execution_mode: code_only output_roles: ('thing/v1',) | init coercion fields: {'baseline_terminal_mode': 'code_only', 'output_roles': ('thing/v1',), 'compatibility_composition': True, 'contract_coerced_from': {'role': '', 'execution_mode': 'hybrid'}, 'contract_coerced_to': {'role': 'practitioner', 'execution_mode': 'code_only'}}
+role compat Loop built; contract.role: 'practitioner' identity: practitioner | init coercion fields: {'contract_coerced_from': {'role': 'solution', 'execution_mode': 'code_only'}, 'contract_coerced_to': {'role': 'practitioner', 'execution_mode': 'code_only'}}
+mismatched ports without adapter -> compatible: False | 'a/v1' cannot feed 'b/v1' without an Adapter Loop
+mismatched ports, implicit same-name bindings -> compatible: False | producer 'p' does not declare output 'b/v1'
+matching ports -> compatible: True

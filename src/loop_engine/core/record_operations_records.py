@@ -56,7 +56,10 @@ def parse_json(text: str) -> object:
         value = json.loads(text, object_pairs_hook=_pairs)
         canonical_json(value)
         return value
-    except (ValueError, TypeError, UnicodeError) as exc:
+    except (ValueError, TypeError, UnicodeError, RecursionError) as exc:
+        # The second decoder surface refuses at its own boundary too, so a
+        # deeply nested value cannot escape as an untyped RecursionError
+        # from canonical_json's encode pass.
         raise RecordOperationError("invalid_json") from exc
 
 

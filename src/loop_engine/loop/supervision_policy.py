@@ -29,7 +29,7 @@ reactive scheduler's leases.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 
 
 class SupervisionPolicyError(ValueError):
@@ -46,7 +46,7 @@ class SupervisionPolicy:
     """Typed non-progress and depth limits for one Loop and its kernel passes."""
 
     policy_id: str = "loop.supervision"
-    version: str = "1.1.0"
+    version: str = "1.2.0"
     identical_failures_before_stop: int = 3
     non_progress_passes_before_escalation: int = 3
     #: A Loop whose exit condition is ``accepted_success`` and that declares
@@ -54,6 +54,13 @@ class SupervisionPolicy:
     #: passes without one accepted success, however the failure text varies.
     #: The default equals the kernel ladder: three escalations of three passes.
     unaccepted_passes_before_stop: int = 9
+    #: The pass ceiling above can only fire at the END of a step
+    #: sequence and only when no ``max_iterations`` is declared, so it
+    #: never sees an ``open`` framework (which has no passes) or a Loop
+    #: that declared an enormous budget. This backstop counts single
+    #: iterations that ended without an accepted success and stops the
+    #: Loop in exactly those two cases, whatever the failure text says.
+    non_accepted_iterations_before_stop: int = 25
     escalation_ladder: tuple[str, ...] = ESCALATION_RUNGS
     spawn_depth_guard: int = 128
 
@@ -63,6 +70,7 @@ class SupervisionPolicy:
         for name in ("identical_failures_before_stop",
                      "non_progress_passes_before_escalation",
                      "unaccepted_passes_before_stop",
+                     "non_accepted_iterations_before_stop",
                      "spawn_depth_guard"):
             value = getattr(self, name)
             if (isinstance(value, bool) or not isinstance(value, int)
@@ -98,6 +106,8 @@ class SupervisionPolicy:
             "non_progress_passes_before_escalation":
                 self.non_progress_passes_before_escalation,
             "unaccepted_passes_before_stop": self.unaccepted_passes_before_stop,
+            "non_accepted_iterations_before_stop":
+                self.non_accepted_iterations_before_stop,
             "escalation_ladder": list(self.escalation_ladder),
             "spawn_depth_guard": self.spawn_depth_guard,
         }
@@ -155,6 +165,27 @@ def self_test() -> dict:
         "passed": not any(name in dir(SupervisionPolicy) for name in (
             "run", "execute", "apply", "dispatch", "restart", "supervise")),
         "detail": "no executing methods",
+    }, {
+        # A field a policy declares but to_dict() drops is a knob that
+        # silently does nothing: a caller sets it, LoopDefinition round
+        # trips the policy, and the default comes back. Two independent
+        # 2026-09-07 implementations each shipped that bug on a different
+        # field, so the round trip is asserted over EVERY declared field
+        # rather than the ones someone remembered to list.
+        "test": "every_declared_policy_field_survives_to_dict",
+        "passed": ({f.name for f in fields(SupervisionPolicy)}
+                   == set(SupervisionPolicy().to_dict())),
+        "detail": "declared but not serialised: " + str(sorted(
+            {f.name for f in fields(SupervisionPolicy)}
+            - set(SupervisionPolicy().to_dict()))),
+    }, {
+        "test": "a_raised_iteration_ceiling_survives_the_round_trip",
+        "passed": (SupervisionPolicy(**{
+            k: (tuple(v) if k == "escalation_ladder" else v)
+            for k, v in SupervisionPolicy(
+                non_accepted_iterations_before_stop=200
+            ).to_dict().items()}).non_accepted_iterations_before_stop == 200),
+        "detail": "the ceiling a caller raises must reach the runtime",
     }]
     return {"module": "loop.supervision_policy",
             "passed": all(item["passed"] for item in tests),

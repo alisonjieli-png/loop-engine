@@ -1,0 +1,2 @@
+opencode adapter self_test passed: True n= 25 failed: []
+host_runtime self_test all_passed: True total= 44 failed: []

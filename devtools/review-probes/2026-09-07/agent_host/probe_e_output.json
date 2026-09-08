@@ -1,0 +1,282 @@
+{
+ "E1_honest": {
+  "terminal_code": "ACCEPTED",
+  "diagnostic": null,
+  "error_stage": null,
+  "error_class": null,
+  "output": {
+   "status": "candidate",
+   "answer": 5
+  },
+  "model_calls": 2,
+  "cleanup": "removed",
+  "workspace_unchanged": true,
+  "argv_has_goal_text": false,
+  "argv_fixed_flags": true,
+  "argv_tail": [
+   "probe-image@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "node",
+   "opencode_stdio_bridge.mjs"
+  ],
+  "goal_delivered_via_initialize_frame": true,
+  "model_responses_reaching_container": [
+   {
+    "content": null,
+    "tool_calls": [
+     {
+      "arguments": {
+       "filePath": "/workspace/context/step.txt"
+      },
+      "id": "model-1-tool-0",
+      "name": "read"
+     }
+    ]
+   },
+   {
+    "content": "{\"status\": \"candidate\", \"answer\": 5}",
+    "tool_calls": []
+   }
+  ],
+  "approval_effect_params": [
+   "cleanup",
+   "command_digest",
+   "instance_digest",
+   "model_route"
+  ],
+  "approval_effect_has_goal": false,
+  "harness_text_recorded_anywhere": false,
+  "events_recorded": 3,
+  "stderr_digests": 0
+ },
+ "E2_model_requests_bash": {
+  "terminal_code": "HARNESS_FAILED",
+  "diagnostic": "unapproved tool call",
+  "error_stage": "tool_message_validation",
+  "error_class": "ValueError",
+  "output": null,
+  "model_calls": 1,
+  "cleanup": "removed",
+  "workspace_unchanged": true,
+  "argv_has_goal_text": false,
+  "argv_fixed_flags": true,
+  "argv_tail": [
+   "probe-image@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "node",
+   "opencode_stdio_bridge.mjs"
+  ],
+  "goal_delivered_via_initialize_frame": true,
+  "model_responses_reaching_container": [],
+  "approval_effect_params": [
+   "cleanup",
+   "command_digest",
+   "instance_digest",
+   "model_route"
+  ],
+  "approval_effect_has_goal": false,
+  "harness_text_recorded_anywhere": false,
+  "events_recorded": 0,
+  "stderr_digests": 0
+ },
+ "E3_harness_advertises_bash": {
+  "terminal_code": "HARNESS_FAILED",
+  "diagnostic": null,
+  "error_stage": "model_request_validation",
+  "error_class": "ValueError",
+  "output": null,
+  "model_calls": 0,
+  "cleanup": "removed",
+  "workspace_unchanged": true,
+  "argv_has_goal_text": false,
+  "argv_fixed_flags": true,
+  "argv_tail": [
+   "probe-image@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "node",
+   "opencode_stdio_bridge.mjs"
+  ],
+  "goal_delivered_via_initialize_frame": true,
+  "model_responses_reaching_container": [],
+  "approval_effect_params": [
+   "cleanup",
+   "command_digest",
+   "instance_digest",
+   "model_route"
+  ],
+  "approval_effect_has_goal": false,
+  "harness_text_recorded_anywhere": false,
+  "events_recorded": 0,
+  "stderr_digests": 0
+ },
+ "E4_model_reads_outside": {
+  "terminal_code": "HARNESS_FAILED",
+  "diagnostic": "read is outside the selected resource set",
+  "error_stage": "tool_message_validation",
+  "error_class": "ValueError",
+  "output": null,
+  "model_calls": 1,
+  "cleanup": "removed",
+  "workspace_unchanged": true,
+  "argv_has_goal_text": false,
+  "argv_fixed_flags": true,
+  "argv_tail": [
+   "probe-image@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "node",
+   "opencode_stdio_bridge.mjs"
+  ],
+  "goal_delivered_via_initialize_frame": true,
+  "model_responses_reaching_container": [],
+  "approval_effect_params": [
+   "cleanup",
+   "command_digest",
+   "instance_digest",
+   "model_route"
+  ],
+  "approval_effect_has_goal": false,
+  "harness_text_recorded_anywhere": false,
+  "events_recorded": 0,
+  "stderr_digests": 0
+ },
+ "E5_core_context_omitted": {
+  "terminal_code": "HARNESS_FAILED",
+  "diagnostic": "mandatory core context missing from model request",
+  "error_stage": "model_request_validation",
+  "error_class": "ValueError",
+  "output": null,
+  "model_calls": 0,
+  "cleanup": "removed",
+  "workspace_unchanged": true,
+  "argv_has_goal_text": false,
+  "argv_fixed_flags": true,
+  "argv_tail": [
+   "probe-image@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "node",
+   "opencode_stdio_bridge.mjs"
+  ],
+  "goal_delivered_via_initialize_frame": true,
+  "model_responses_reaching_container": [],
+  "approval_effect_params": [
+   "cleanup",
+   "command_digest",
+   "instance_digest",
+   "model_route"
+  ],
+  "approval_effect_has_goal": false,
+  "harness_text_recorded_anywhere": false,
+  "events_recorded": 0,
+  "stderr_digests": 0
+ },
+ "E6_harness_text_frames": {
+  "terminal_code": "ACCEPTED",
+  "diagnostic": null,
+  "error_stage": null,
+  "error_class": null,
+  "output": {
+   "status": "candidate",
+   "answer": 5
+  },
+  "model_calls": 1,
+  "cleanup": "removed",
+  "workspace_unchanged": true,
+  "argv_has_goal_text": false,
+  "argv_fixed_flags": true,
+  "argv_tail": [
+   "probe-image@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "node",
+   "opencode_stdio_bridge.mjs"
+  ],
+  "goal_delivered_via_initialize_frame": true,
+  "model_responses_reaching_container": [
+   {
+    "content": "{\"status\": \"candidate\", \"answer\": 5}",
+    "tool_calls": []
+   }
+  ],
+  "approval_effect_params": [
+   "cleanup",
+   "command_digest",
+   "instance_digest",
+   "model_route"
+  ],
+  "approval_effect_has_goal": false,
+  "harness_text_recorded_anywhere": false,
+  "events_recorded": 2,
+  "stderr_digests": 0
+ },
+ "E7_oversize_model_request_frame": {
+  "terminal_code": "HARNESS_FAILED",
+  "diagnostic": "bridge capture allowance exceeded",
+  "error_stage": "container_preparation",
+  "error_class": "ValueError",
+  "output": null,
+  "model_calls": 0,
+  "cleanup": "removed",
+  "workspace_unchanged": true,
+  "argv_has_goal_text": false,
+  "argv_fixed_flags": true,
+  "argv_tail": [
+   "probe-image@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "node",
+   "opencode_stdio_bridge.mjs"
+  ],
+  "goal_delivered_via_initialize_frame": true,
+  "model_responses_reaching_container": [],
+  "approval_effect_params": [
+   "cleanup",
+   "command_digest",
+   "instance_digest",
+   "model_route"
+  ],
+  "approval_effect_has_goal": false,
+  "harness_text_recorded_anywhere": false,
+  "events_recorded": 0,
+  "stderr_digests": 0
+ },
+ "E8_xml_envelope_reply": {
+  "terminal_code": "ACCEPTED",
+  "diagnostic": null,
+  "error_stage": null,
+  "error_class": null,
+  "output": {
+   "status": "candidate",
+   "answer": 5
+  },
+  "model_calls": 2,
+  "cleanup": "removed",
+  "workspace_unchanged": true,
+  "argv_has_goal_text": false,
+  "argv_fixed_flags": true,
+  "argv_tail": [
+   "probe-image@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "node",
+   "opencode_stdio_bridge.mjs"
+  ],
+  "goal_delivered_via_initialize_frame": true,
+  "model_responses_reaching_container": [
+   {
+    "content": null,
+    "tool_calls": [
+     {
+      "arguments": {
+       "filePath": "/workspace/context/step.txt"
+      },
+      "id": "model-1-tool-0",
+      "name": "read"
+     }
+    ]
+   },
+   {
+    "content": "{\"status\": \"candidate\", \"answer\": 5}",
+    "tool_calls": []
+   }
+  ],
+  "approval_effect_params": [
+   "cleanup",
+   "command_digest",
+   "instance_digest",
+   "model_route"
+  ],
+  "approval_effect_has_goal": false,
+  "harness_text_recorded_anywhere": false,
+  "events_recorded": 3,
+  "stderr_digests": 0
+ }
+}
