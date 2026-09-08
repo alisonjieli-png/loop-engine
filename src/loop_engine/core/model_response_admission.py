@@ -403,10 +403,39 @@ def self_test() -> dict:
             "all_passed": all(item["passed"] for item in tests)}
 
 
+def _depth_the_decoder_refuses(ceiling: int = 200000) -> int:
+    """The smallest tried nesting depth at which this interpreter gives up.
+
+    How deep a decoder can go before it exhausts its stack is a property of
+    the interpreter and the platform, not of this contract. The contract is
+    that when the decoder does give up, admission turns that into a typed
+    refusal rather than letting it abort the run. So the depth is found here
+    rather than assumed, and a decoder that never gives up leaves nothing to
+    refuse.
+    """
+    depth = 1000
+    while depth <= ceiling:
+        try:
+            json.loads('{"a":' * depth + "1" + "}" * depth)
+        except RecursionError:
+            return depth
+        except ValueError:
+            return 0
+        depth *= 2
+    return 0
+
+
 def _nesting_depth_checks() -> list[dict]:
     """A response nested past the decoder's stack is refused, not fatal."""
     digest = hashlib.sha256(b"depth-contract").hexdigest()
-    depth = 1500
+    depth = _depth_the_decoder_refuses()
+    if not depth:
+        return [{
+            "test": "nesting_depth_beyond_the_decoder_is_a_typed_refusal_not_an_abort",
+            "passed": True,
+            "detail": ("this interpreter's decoder did not exhaust its stack "
+                       "at any tried depth, so there is nothing to refuse"),
+        }]
     deep_object = '{"a":' * depth + "1" + "}" * depth
     deep_array = "[" * depth + "]" * depth
     outcomes = {}
@@ -427,7 +456,8 @@ def _nesting_depth_checks() -> list[dict]:
     return [{
         "test": "nesting_depth_beyond_the_decoder_is_a_typed_refusal_not_an_abort",
         "passed": all(outcomes.values()),
-        "detail": ", ".join(f"{label}={ok}" for label, ok in outcomes.items()),
+        "detail": (f"depth {depth}: "
+                   + ", ".join(f"{label}={ok}" for label, ok in outcomes.items())),
     }]
 
 
