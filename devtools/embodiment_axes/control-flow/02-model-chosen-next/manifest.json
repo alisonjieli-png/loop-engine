@@ -1,0 +1,42 @@
+{
+ "id": "control-flow/02-model-chosen-next",
+ "family": "control-flow",
+ "name": "model_chosen_next",
+ "status": "measured",
+ "one_line": "The reply picks the next unit from a list of what is left.",
+ "how_it_works": [
+  "Send the list of remaining units.",
+  "The reply names one.",
+  "Remove it and repeat."
+ ],
+ "pros": [
+  "Order can react to what was just seen, which a cursor cannot.",
+  "Natural fit when units are not interchangeable.",
+  "The chosen order is itself a record of what the run thought mattered."
+ ],
+ "cons": [
+  "The remaining list has one entry per unit, so the prompt is proportional to the horizon and the arm inherits a wall.",
+  "Nothing stops a repeat request, so the loop needs its own guard.",
+  "Pays for flexibility on every call, including the calls that would have taken the cursor's answer anyway."
+ ],
+ "pick_this_when": [
+  "Order genuinely depends on content.",
+  "The horizon is small enough that the list is cheap."
+ ],
+ "avoid_when": [
+  "Units are interchangeable. Then this is a cursor with a bill attached."
+ ],
+ "evidence": {
+  "calls": {
+   "16": 17,
+   "64": 65,
+   "256": 257
+  },
+  "peak_prompt_bytes": {
+   "16": 998,
+   "64": 1382,
+   "256": 2919
+  },
+  "finding": "the peak triples from 16 to 256 units while the cursor arm's moves by 14 bytes; the remaining list is the whole difference"
+ }
+}

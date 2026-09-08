@@ -1,0 +1,16 @@
+{
+ "family": "execution-placement",
+ "question": "Where does a step physically run?",
+ "varies": "the boundary a step body is executed behind",
+ "held_constant": "the loop, the transport, the reader and the task; every arm runs the same bounded-state loop",
+ "measures": [
+  "solved",
+  "seconds",
+  "seconds_per_call",
+  "isolation",
+  "available"
+ ],
+ "decides": "what containment costs per step, in wall time, so the price is a number rather than an argument",
+ "harness": "harness.py",
+ "read_first": "seconds_per_call; the isolation column is what you are buying with it"
+}

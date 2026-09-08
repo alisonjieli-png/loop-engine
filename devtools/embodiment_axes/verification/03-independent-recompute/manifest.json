@@ -1,0 +1,36 @@
+{
+ "id": "verification/03-independent-recompute",
+ "family": "verification",
+ "name": "independent_recompute",
+ "status": "measured",
+ "one_line": "A second implementation reads the world again and recomputes.",
+ "how_it_works": [
+  "Read every unit again through the tool.",
+  "Compute the answer with arithmetic written from the task text, not shared with the run.",
+  "Compare, and refuse on any disagreement."
+ ],
+ "pros": [
+  "Caught all five faults, including the internally consistent one that the structural gate cannot see.",
+  "Shares no work with the run, so a defect cannot propagate into its own check.",
+  "Rejected nothing on the clean control."
+ ],
+ "cons": [
+  "Costs a full second pass over the world, one read per unit, and the harness records exactly that.",
+  "Needs a second implementation, which is real work and can itself be wrong.",
+  "Only applies where the answer can be recomputed at all."
+ ],
+ "pick_this_when": [
+  "Something acts on the answer automatically.",
+  "The answer is cheap to recompute relative to its cost being wrong."
+ ],
+ "avoid_when": [
+  "Recomputation is as expensive as the original run and the answer is low stakes."
+ ],
+ "evidence": {
+  "caught": 5,
+  "of": 5,
+  "verifier_reads": 96,
+  "false_positive": false,
+  "note": "96 reads to verify 5 runs over a 16-shard world; the price is one full pass per run"
+ }
+}

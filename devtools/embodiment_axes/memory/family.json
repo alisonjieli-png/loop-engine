@@ -1,0 +1,16 @@
+{
+ "family": "memory",
+ "question": "What does an earlier run contribute to a later one?",
+ "varies": "what survives between runs and what has to happen before it is believed",
+ "held_constant": "the loop, the transport and the world",
+ "measures": [
+  "cold_calls",
+  "warm_calls",
+  "resumed",
+  "poison_served",
+  "poison_answer_wrong"
+ ],
+ "decides": "the savings each design buys and the blast radius it opens",
+ "harness": "harness.py",
+ "read_first": "poison_served next to warm_calls; they move together, and that is the trade"
+}

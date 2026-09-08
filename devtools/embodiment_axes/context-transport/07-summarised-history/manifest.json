@@ -1,0 +1,39 @@
+{
+ "id": "context-transport/07-summarised-history",
+ "family": "context-transport",
+ "name": "summarised_history",
+ "status": "measured",
+ "one_line": "Keep the transcript, but compact the oldest part once it crosses a threshold.",
+ "how_it_works": [
+  "Append raw observations like full_history.",
+  "When the rendered history crosses a byte threshold, fold the oldest entries into a summary line and drop their raw text.",
+  "Recent observations stay raw, so the newest facts are never lossy."
+ ],
+ "pros": [
+  "Removes the transcript arm's wall without asking anyone to design a state schema.",
+  "The recent window stays verbatim, which is where a reader usually looks.",
+  "One knob. The threshold trades fidelity against bytes directly."
+ ],
+ "cons": [
+  "Summarising is where facts get silently dropped. Here the fold is arithmetic and lossless; with a model writing the summary it is not.",
+  "Peak is set by the threshold, not by the task, so it wastes bytes at small horizons and only saves at large ones.",
+  "Two representations of the same history exist at once."
+ ],
+ "pick_this_when": [
+  "You have an existing transcript loop hitting a wall and cannot restructure it into a state schema.",
+  "The task genuinely needs recent raw detail."
+ ],
+ "avoid_when": [
+  "The summary would be model-written and correctness is required. Measure what the fold loses before trusting it."
+ ],
+ "evidence": {
+  "peak_prompt_bytes": {
+   "4": 1308,
+   "16": 1454,
+   "64": 1468,
+   "256": 1474
+  },
+  "finding": "flat, and set by the tail budget rather than by the horizon; 166 bytes of movement across a 64-fold increase",
+  "defect_found": "the first version dropped the observation that had just arrived when the budget was smaller than one observation, and answered confidently without it; compaction now refuses to drop anything not yet folded"
+ }
+}

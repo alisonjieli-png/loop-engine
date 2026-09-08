@@ -1,0 +1,40 @@
+{
+ "id": "control-flow/01-one-at-a-time",
+ "family": "control-flow",
+ "name": "one_at_a_time",
+ "status": "measured",
+ "one_line": "One unit of work per call, in an order code decides.",
+ "how_it_works": [
+  "Hold a cursor.",
+  "Read the unit it names.",
+  "Send one observation per call."
+ ],
+ "pros": [
+  "Smallest possible prompt per call.",
+  "The order costs nothing to communicate, because it is never sent.",
+  "A failure loses one unit of work."
+ ],
+ "cons": [
+  "Call count equals the horizon. This is the dominant cost at scale.",
+  "The order is fixed, so it cannot react to what a unit contained.",
+  "Per-call overhead is paid the maximum number of times."
+ ],
+ "pick_this_when": [
+  "Per-call cost is low and prompt size is the constraint.",
+  "Units are independent and order does not matter."
+ ],
+ "avoid_when": [
+  "Calls are the expensive thing. Batch instead."
+ ],
+ "evidence": {
+  "calls": {
+   "16": 17,
+   "64": 65,
+   "256": 257
+  },
+  "peak_prompt_bytes": {
+   "16": 946,
+   "256": 960
+  }
+ }
+}

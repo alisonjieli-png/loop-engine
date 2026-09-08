@@ -1,0 +1,35 @@
+{
+ "id": "memory/03-cross-run-cache",
+ "family": "memory",
+ "name": "cross_run_cache",
+ "status": "measured",
+ "one_line": "Remember the answer and serve it whenever the task matches.",
+ "how_it_works": [
+  "Store the final answer under a task key.",
+  "Serve it on a later match without any calls."
+ ],
+ "pros": [
+  "The largest possible saving: a repeat costs zero calls.",
+  "Trivial to implement and to reason about.",
+  "Latency on a hit is a lookup."
+ ],
+ "cons": [
+  "Anything that can write decides what later runs believe. An outsider's record was served unchanged and the run returned it as its answer.",
+  "The margin it buys over a checkpoint store is one call out of seventeen, and it pays for that margin with total exposure.",
+  "No provenance, no review, no re-derivation.",
+  "A wrong answer, once written, is served forever and looks authoritative because it is fast."
+ ],
+ "pick_this_when": [
+  "The store is trusted end to end and answers are genuinely deterministic in the key."
+ ],
+ "avoid_when": [
+  "Anything other than the run can write, or the key does not fully determine the answer."
+ ],
+ "evidence": {
+  "cold_calls": 17,
+  "warm_calls": 0,
+  "poison_served": true,
+  "poison_answer_wrong": true,
+  "note": "the only arm here that served an outsider's record"
+ }
+}

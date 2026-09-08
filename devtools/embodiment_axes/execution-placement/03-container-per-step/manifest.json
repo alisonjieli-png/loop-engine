@@ -1,0 +1,36 @@
+{
+ "id": "execution-placement/03-container-per-step",
+ "family": "execution-placement",
+ "name": "container_per_step",
+ "status": "measured",
+ "one_line": "Each step runs in a container with no network and no writes.",
+ "how_it_works": [
+  "Start a container per step with the network off, the mount read-only and every capability dropped.",
+  "Apply memory and process limits.",
+  "Remove the container when the step ends."
+ ],
+ "pros": [
+  "The only arm here that contains a hostile step: no network, no host filesystem, no capabilities, bounded memory and processes.",
+  "Leaves nothing behind, so one step cannot set a trap for the next.",
+  "Refuses when no runtime is present rather than falling back to a weaker placement, so the containment claim stays true."
+ ],
+ "cons": [
+  "Container start dominates everything else, by two to three orders of magnitude over a function call.",
+  "Needs a runtime and an image, which is operational weight.",
+  "Image pinning is a real obligation; a tag is not a pin."
+ ],
+ "pick_this_when": [
+  "The step body is generated or untrusted.",
+  "A step may run commands, and you need it to fail closed."
+ ],
+ "avoid_when": [
+  "Steps are short and numerous, and the body is your own code. Then the start cost is the whole run."
+ ],
+ "evidence": {
+  "ms_per_call": 1413.4,
+  "seconds_for_13_calls": 18.374,
+  "against_in_process": "about 14,000 times the per-call cost",
+  "against_subprocess": "about 5 times the per-call cost",
+  "runtime": "docker 29.5.2"
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "family": "control-flow",
+ "question": "How does the loop decide what to do next, and how much per call?",
+ "varies": "who picks the next unit of work and how many units one call carries",
+ "held_constant": "the world, the reader, the window and the state schema",
+ "measures": [
+  "solved",
+  "calls",
+  "peak_prompt_bytes",
+  "prompt_bytes_total",
+  "refused_calls"
+ ],
+ "decides": "the call-count against prompt-size curve, and whether an arm can recover from a window refusal",
+ "harness": "harness.py",
+ "read_first": "calls against peak bytes; they trade directly and the adaptive arm finds the knee without being told the window"
+}

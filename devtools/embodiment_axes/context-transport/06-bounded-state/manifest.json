@@ -1,0 +1,39 @@
+{
+ "id": "context-transport/06-bounded-state",
+ "family": "context-transport",
+ "name": "bounded_state",
+ "status": "measured",
+ "one_line": "A state schema with no field proportional to the horizon.",
+ "how_it_works": [
+  "Carry five scalars, a mapping over a fixed account vocabulary, and a cursor naming the next shard.",
+  "The cursor replaces the list of what is left; the count replaces the list of what is done.",
+  "Everything else is identical to state_patch."
+ ],
+ "pros": [
+  "Peak prompt moves from 949 bytes at 4 shards to 986 at 1,024. That is 37 bytes across a 256-fold increase in horizon.",
+  "One tenth the total bytes of state_patch at 1,024 shards: 1,000,925 against 10,409,501, for identical answers.",
+  "No horizon in reach. Nothing in the record grows with the input."
+ ],
+ "cons": [
+  "Requires a closed vocabulary. The account mapping is bounded only because the accounts are known in advance.",
+  "The cursor imposes an order, so it cannot express work that jumps around or runs out of order.",
+  "Still one call per shard; it fixes bytes, not call count."
+ ],
+ "pick_this_when": [
+  "The horizon is large or unbounded.",
+  "You can name a closed schema and prove no field grows with input."
+ ],
+ "avoid_when": [
+  "You cannot bound the vocabulary. Then measure rather than assume."
+ ],
+ "evidence": {
+  "peak_prompt_bytes": {
+   "4": 949,
+   "256": 979,
+   "1024": 986
+  },
+  "total_bytes_at_1024": 1000925,
+  "finding": "constant context is a property of the schema, not of the architecture",
+  "source": "peak_sweep.json, comparison_1024.json"
+ }
+}

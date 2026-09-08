@@ -1,0 +1,40 @@
+{
+ "id": "context-transport/01-monolith",
+ "family": "context-transport",
+ "name": "monolith",
+ "status": "measured",
+ "one_line": "Put the whole world in one prompt and take one answer.",
+ "how_it_works": [
+  "Read every shard up front through the tool.",
+  "Inline all of it into a single prompt.",
+  "Make exactly one model call and grade what comes back."
+ ],
+ "pros": [
+  "One call. No state, no protocol, no partial failure to reason about.",
+  "Cheapest per unit of work below its horizon: 1,023 bytes at 4 shards, the second lowest of the eight arms.",
+  "Nothing can be lost between steps because there are no steps."
+ ],
+ "cons": [
+  "Prompt grows about 117 bytes per shard, so a 16,000-byte window puts the wall near 136 shards. Measured: fine at 128, refused at 256.",
+  "No intermediate result survives a failure. The run is all or nothing.",
+  "Cannot use a tool result to decide what to read next."
+ ],
+ "pick_this_when": [
+  "The whole input provably fits the window with room to spare.",
+  "The task is one shot and latency matters more than anything else.",
+  "You want a baseline the other arms have to beat."
+ ],
+ "avoid_when": [
+  "Input size is unbounded or set by a user.",
+  "You need progress to survive a crash."
+ ],
+ "evidence": {
+  "peak_prompt_bytes": {
+   "4": 1023,
+   "128": 15508,
+   "256": "refused"
+  },
+  "wall_shards": "between 128 and 256 at a 16,000-byte window",
+  "source": "peak_sweep.json, comparison_walls.json"
+ }
+}

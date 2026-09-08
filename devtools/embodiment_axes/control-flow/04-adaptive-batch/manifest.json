@@ -1,0 +1,36 @@
+{
+ "id": "control-flow/04-adaptive-batch",
+ "family": "control-flow",
+ "name": "adaptive_batch",
+ "status": "measured",
+ "one_line": "Grow the batch until the window pushes back, then hold.",
+ "how_it_works": [
+  "Double the batch while the last prompt used less than a target share of the window.",
+  "Halve it on a refusal and retry the same units.",
+  "Never needs to be told the window size."
+ ],
+ "pros": [
+  "Collapsed 256 units into 10 calls with no knob set by anyone.",
+  "A window refusal is recoverable rather than fatal. It is the only arm here with that property.",
+  "At a half-window target it never overshot at all, so a careful target buys a run with zero refusals.",
+  "Adapts to a window it was not told about, which is what makes it portable across models."
+ ],
+ "cons": [
+  "Peak prompt is deliberately near the target share, so it uses most of the window by design.",
+  "A greedy target trades refusals for speed: at 0.99 it absorbed five refusals on a run that had none at 0.5.",
+  "More moving parts than a fixed K, and the batch history is another thing to record and read."
+ ],
+ "pick_this_when": [
+  "The window, the model or the unit size can change.",
+  "You want the call saving without owning the tuning."
+ ],
+ "avoid_when": [
+  "You need a fixed, auditable prompt size per call."
+ ],
+ "evidence": {
+  "calls_at_256": 10,
+  "peak_prompt_bytes_at_256": 8298,
+  "against_fixed_batch": "10 calls against 32, for 4.7 times the peak prompt",
+  "measured": "256 units in 10 calls; 0 refusals at a 0.5 target and 5 absorbed at 0.99, both correct"
+ }
+}

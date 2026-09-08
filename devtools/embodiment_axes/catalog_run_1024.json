@@ -1,0 +1,320 @@
+{
+ "record_type": "embodiment_catalog_run/v1",
+ "families": [
+  "context-transport",
+  "control-flow"
+ ],
+ "spec": {
+  "context-transport": {
+   "horizons": [
+    1024
+   ]
+  },
+  "control-flow": {
+   "horizons": [
+    1024
+   ]
+  },
+  "execution-placement": {
+   "horizons": [
+    1024
+   ]
+  },
+  "memory": {
+   "horizons": [
+    1024
+   ]
+  },
+  "verification": {
+   "horizons": [
+    1024
+   ]
+  }
+ },
+ "rows": [
+  {
+   "family": "context-transport",
+   "id": "context-transport/01-monolith",
+   "arm": "monolith",
+   "horizon": 1024,
+   "seed": 11,
+   "solved": false,
+   "why_not": "answer was not an object",
+   "stopped": "context_window_exceeded",
+   "calls": 1,
+   "refused_calls": 1,
+   "prompt_bytes_total": 120898,
+   "peak_prompt_bytes": 120898,
+   "tool_reads": 1024,
+   "repeat_reads": 0,
+   "pulls": 0,
+   "seconds": 0.005,
+   "error": "",
+   "detail": "only: prompt is 120898 bytes, window is 16000",
+   "world": "0e4d54f88e9502b9",
+   "truth": {
+    "net": -14211,
+    "unbalanced": 5,
+    "largest": "s0689"
+   }
+  },
+  {
+   "family": "context-transport",
+   "id": "context-transport/02-full-history",
+   "arm": "full_history",
+   "horizon": 1024,
+   "seed": 11,
+   "solved": false,
+   "why_not": "answer was not an object",
+   "stopped": "context_window_exceeded",
+   "calls": 58,
+   "refused_calls": 1,
+   "prompt_bytes_total": 749460,
+   "peak_prompt_bytes": 16019,
+   "tool_reads": 57,
+   "repeat_reads": 0,
+   "pulls": 0,
+   "seconds": 0.091,
+   "error": "",
+   "detail": "step57: prompt is 16019 bytes, window is 16000",
+   "world": "0e4d54f88e9502b9",
+   "truth": {
+    "net": -14211,
+    "unbalanced": 5,
+    "largest": "s0689"
+   }
+  },
+  {
+   "family": "context-transport",
+   "id": "context-transport/03-state-patch",
+   "arm": "state_patch",
+   "horizon": 1024,
+   "seed": 11,
+   "solved": true,
+   "why_not": "",
+   "stopped": "answered",
+   "calls": 1025,
+   "refused_calls": 0,
+   "prompt_bytes_total": 10409501,
+   "peak_prompt_bytes": 10165,
+   "tool_reads": 1024,
+   "repeat_reads": 0,
+   "pulls": 0,
+   "seconds": 1.555,
+   "error": "",
+   "detail": "",
+   "world": "0e4d54f88e9502b9",
+   "truth": {
+    "net": -14211,
+    "unbalanced": 5,
+    "largest": "s0689"
+   }
+  },
+  {
+   "family": "context-transport",
+   "id": "context-transport/04-horizon-state",
+   "arm": "horizon_state",
+   "horizon": 1024,
+   "seed": 11,
+   "solved": true,
+   "why_not": "",
+   "stopped": "answered",
+   "calls": 1025,
+   "refused_calls": 0,
+   "prompt_bytes_total": 10475013,
+   "peak_prompt_bytes": 10229,
+   "tool_reads": 1024,
+   "repeat_reads": 0,
+   "pulls": 0,
+   "seconds": 1.09,
+   "error": "",
+   "detail": "",
+   "world": "0e4d54f88e9502b9",
+   "truth": {
+    "net": -14211,
+    "unbalanced": 5,
+    "largest": "s0689"
+   }
+  },
+  {
+   "family": "context-transport",
+   "id": "context-transport/05-pull-reference",
+   "arm": "pull_reference",
+   "horizon": 1024,
+   "seed": 11,
+   "solved": true,
+   "why_not": "",
+   "stopped": "answered",
+   "calls": 2050,
+   "refused_calls": 0,
+   "prompt_bytes_total": 10880374,
+   "peak_prompt_bytes": 10275,
+   "tool_reads": 1024,
+   "repeat_reads": 0,
+   "pulls": 3075,
+   "seconds": 1.283,
+   "error": "",
+   "detail": "3075 pulls",
+   "world": "0e4d54f88e9502b9",
+   "truth": {
+    "net": -14211,
+    "unbalanced": 5,
+    "largest": "s0689"
+   }
+  },
+  {
+   "family": "context-transport",
+   "id": "context-transport/06-bounded-state",
+   "arm": "bounded_state",
+   "horizon": 1024,
+   "seed": 11,
+   "solved": true,
+   "why_not": "",
+   "stopped": "answered",
+   "calls": 1025,
+   "refused_calls": 0,
+   "prompt_bytes_total": 1000925,
+   "peak_prompt_bytes": 986,
+   "tool_reads": 1024,
+   "repeat_reads": 0,
+   "pulls": 0,
+   "seconds": 0.175,
+   "error": "",
+   "detail": "cursor 1024 of 1024",
+   "world": "0e4d54f88e9502b9",
+   "truth": {
+    "net": -14211,
+    "unbalanced": 5,
+    "largest": "s0689"
+   }
+  },
+  {
+   "family": "context-transport",
+   "id": "context-transport/07-summarised-history",
+   "arm": "summarised_history",
+   "horizon": 1024,
+   "seed": 11,
+   "solved": true,
+   "why_not": "",
+   "stopped": "answered",
+   "calls": 1025,
+   "refused_calls": 0,
+   "prompt_bytes_total": 1504060,
+   "peak_prompt_bytes": 1487,
+   "tool_reads": 1024,
+   "repeat_reads": 0,
+   "pulls": 0,
+   "seconds": 0.147,
+   "error": "",
+   "detail": "1007 compactions, tail 5",
+   "world": "0e4d54f88e9502b9",
+   "truth": {
+    "net": -14211,
+    "unbalanced": 5,
+    "largest": "s0689"
+   }
+  },
+  {
+   "family": "context-transport",
+   "id": "context-transport/08-hybrid-push-pull",
+   "arm": "hybrid_push_pull",
+   "horizon": 1024,
+   "seed": 11,
+   "solved": true,
+   "why_not": "",
+   "stopped": "answered",
+   "calls": 1025,
+   "refused_calls": 0,
+   "prompt_bytes_total": 971285,
+   "peak_prompt_bytes": 957,
+   "tool_reads": 1024,
+   "repeat_reads": 0,
+   "pulls": 0,
+   "seconds": 0.146,
+   "error": "",
+   "detail": "1025 pushed, 0 fetched, 0 keys served",
+   "world": "0e4d54f88e9502b9",
+   "truth": {
+    "net": -14211,
+    "unbalanced": 5,
+    "largest": "s0689"
+   }
+  },
+  {
+   "family": "control-flow",
+   "id": "control-flow/01-one-at-a-time",
+   "arm": "one_at_a_time",
+   "horizon": 1024,
+   "solved": true,
+   "why_not": "",
+   "stopped": "answered",
+   "decides_next": "a code-held cursor",
+   "calls": 1025,
+   "refused_calls": 0,
+   "prompt_bytes_total": 981450,
+   "peak_prompt_bytes": 967,
+   "tool_reads": 1024,
+   "repeat_reads": 0,
+   "seconds": 0.202,
+   "error": "",
+   "detail": "cursor 1024"
+  },
+  {
+   "family": "control-flow",
+   "id": "control-flow/02-model-chosen-next",
+   "arm": "model_chosen_next",
+   "horizon": 1024,
+   "solved": true,
+   "why_not": "",
+   "stopped": "answered",
+   "decides_next": "the reply, from a list",
+   "calls": 1025,
+   "refused_calls": 0,
+   "prompt_bytes_total": 5668863,
+   "peak_prompt_bytes": 10085,
+   "tool_reads": 1024,
+   "repeat_reads": 0,
+   "seconds": 0.536,
+   "error": "",
+   "detail": "0 left unread"
+  },
+  {
+   "family": "control-flow",
+   "id": "control-flow/03-fixed-batch",
+   "arm": "fixed_batch",
+   "horizon": 1024,
+   "solved": true,
+   "why_not": "",
+   "stopped": "answered",
+   "decides_next": "a code-held cursor, K at a time",
+   "calls": 128,
+   "refused_calls": 0,
+   "prompt_bytes_total": 224585,
+   "peak_prompt_bytes": 1771,
+   "tool_reads": 1024,
+   "repeat_reads": 0,
+   "seconds": 0.154,
+   "error": "",
+   "detail": "batch 8"
+  },
+  {
+   "family": "control-flow",
+   "id": "control-flow/04-adaptive-batch",
+   "arm": "adaptive_batch",
+   "horizon": 1024,
+   "solved": true,
+   "why_not": "",
+   "stopped": "answered",
+   "decides_next": "a cursor with a batch size the window sets",
+   "calls": 22,
+   "refused_calls": 0,
+   "prompt_bytes_total": 138096,
+   "peak_prompt_bytes": 8380,
+   "tool_reads": 1024,
+   "repeat_reads": 0,
+   "seconds": 0.115,
+   "error": "",
+   "detail": "batch reached 64, 0 refusals absorbed"
+  }
+ ]
+}

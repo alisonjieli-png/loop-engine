@@ -1,0 +1,38 @@
+{
+ "id": "context-transport/03-state-patch",
+ "family": "context-transport",
+ "name": "state_patch",
+ "status": "measured",
+ "one_line": "Send the procedure, one closed state record, and the latest observation.",
+ "how_it_works": [
+  "Hold an accumulator with a fixed set of keys.",
+  "Each step sends the procedure, the accumulator, and only the observation that just arrived.",
+  "The reply may patch the accumulator; keys outside the schema are refused rather than merged."
+ ],
+ "pros": [
+  "Solves every horizon tried, up to 1,024 shards.",
+  "The closed schema means a reply cannot widen what travels forward.",
+  "History is not resent, so the per-step cost does not depend on how many steps came before."
+ ],
+ "cons": [
+  "Its state is not actually constant. Two fields are lists with one entry per shard, so the prompt goes from 950 bytes at 4 shards to 10,165 at 1,024. Ten times larger than the arm that fixed this.",
+  "The word 'compact' in the design description was not true and reading the description would never have revealed it.",
+  "One call per shard: 1,025 calls at 1,024 shards."
+ ],
+ "pick_this_when": [
+  "You want the standard SKILL.state shape and horizons are moderate.",
+  "You need refusal of out-of-schema fields more than minimum bytes."
+ ],
+ "avoid_when": [
+  "The horizon is large. Audit the schema first, then use bounded_state."
+ ],
+ "evidence": {
+  "peak_prompt_bytes": {
+   "4": 950,
+   "256": 2993,
+   "1024": 10165
+  },
+  "growth_cause": "REMAINING list and shards_folded list, both O(shards)",
+  "source": "peak_sweep.json, comparison_1024.json"
+ }
+}

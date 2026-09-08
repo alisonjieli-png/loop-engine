@@ -1,0 +1,15 @@
+{
+ "family": "verification",
+ "question": "How does an answer get accepted?",
+ "varies": "what has to pass before a run is called finished",
+ "held_constant": "the loop, the transport and the world; faults are injected identically into every arm",
+ "measures": [
+  "caught",
+  "missed",
+  "false_positive",
+  "verifier_reads"
+ ],
+ "decides": "which wrong answers each policy actually stops, and what the strongest one costs",
+ "harness": "harness.py",
+ "read_first": "the missed column; a policy that misses the internally consistent fault is the common case in production"
+}

@@ -1,0 +1,32 @@
+{
+ "id": "execution-placement/01-in-process",
+ "family": "execution-placement",
+ "name": "in_process",
+ "status": "measured",
+ "one_line": "The step runs inside the calling process.",
+ "how_it_works": [
+  "Call the step body as a function.",
+  "There is no boundary."
+ ],
+ "pros": [
+  "Nothing to pay. The fastest possible placement.",
+  "Simplest to debug: one stack, one process, one log.",
+  "No serialisation, so a step can be handed any Python object."
+ ],
+ "cons": [
+  "No containment at all. A step that exits, exhausts memory or writes a file takes the host with it.",
+  "A step can reach anything the host process can reach, including credentials in the environment.",
+  "Hidden shared state makes a broken transport look like it works."
+ ],
+ "pick_this_when": [
+  "The step body is your own trusted code.",
+  "You are measuring something else and want no noise."
+ ],
+ "avoid_when": [
+  "The step body is generated, or comes from a model, or touches anything you would not run as yourself."
+ ],
+ "evidence": {
+  "ms_per_call": 0.1,
+  "seconds_for_13_calls": 0.001
+ }
+}

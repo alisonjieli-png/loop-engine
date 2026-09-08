@@ -1,0 +1,38 @@
+{
+ "id": "context-transport/04-horizon-state",
+ "family": "context-transport",
+ "name": "horizon_state",
+ "status": "measured",
+ "one_line": "The same state fields, labelled long, medium and short horizon.",
+ "how_it_works": [
+  "Carry exactly what state_patch carries.",
+  "Render it in three labelled blocks: what holds for the whole run, what holds for this phase, and what just happened.",
+  "Nothing else differs, which makes this the clean presentation test."
+ ],
+ "pros": [
+  "Costs 60 to 65 bytes more per prompt than state_patch at every horizon tried, so the price of the labels is known and small.",
+  "The three blocks give a human reader a place to look.",
+  "Differs from state_patch in presentation only, so a live run prices the labels against nothing else."
+ ],
+ "cons": [
+  "Against a perfect reader its correctness is identical by construction, so this harness can price the labels and cannot value them.",
+  "Inherits the horizon-proportional fields from state_patch, and the same 10 kilobyte prompt at 1,024 shards."
+ ],
+ "pick_this_when": [
+  "A person reads the prompts and needs the structure.",
+  "You are running the live A/B against state_patch."
+ ],
+ "avoid_when": [
+  "Bytes are the binding constraint and no one reads the prompts."
+ ],
+ "evidence": {
+  "peak_prompt_bytes": {
+   "4": 1012,
+   "256": 3057,
+   "1024": 10229
+  },
+  "label_cost_bytes": "60 to 65 per prompt, every horizon",
+  "open_question": "whether a real model uses labelled state better; only a live arm answers it",
+  "source": "peak_sweep.json, comparison_1024.json"
+ }
+}

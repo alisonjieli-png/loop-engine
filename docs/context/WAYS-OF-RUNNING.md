@@ -150,6 +150,41 @@ never written into source, events, reports or exported traces.
    `REQUIRED_REACHABLE` in `reachability_report.py`.
 7. Add a row to this page.
 
+## Choosing between designs rather than settings
+
+The table above lists the settings this runtime has. It does not tell you
+whether the design behind a setting is the right one, because every row is a
+choice someone already made.
+
+`devtools/embodiment_axes/` holds the alternatives, built from scratch and
+measured against each other: twenty-two embodiments on five independent axes,
+each with what it gives you and what it costs you stated next to each other.
+The axes are how information reaches a step, where a step runs, how an answer
+gets accepted, what an earlier run contributes to a later one, and who picks
+the next unit of work.
+
+Start at `devtools/embodiment_axes/CATALOG.md` to choose one, and
+`FINDINGS.md` for what the measurements said. Three results bear directly on
+the settings above.
+
+- Constant context is a property of the schema, not of the architecture. A
+  record everyone would describe as compact reached ten kilobytes at 1,024
+  units because two of its fields held one entry per unit.
+- Folding several units into one call cut both the call count and the total
+  bytes, by 47 times and 7 times respectively. Bounding the schema and then
+  batching are separate wins, and doing only one leaves most of it unclaimed.
+- A cross-run answer cache bought one call out of seventeen over a checkpoint
+  store, and served an outsider's staged answer as its own. The governed
+  journal reached the same saving and refused it.
+
+That folder does not run this runtime and grants no authority. It is a
+measured menu, and it is deliberately independent: when the last check here
+shared assumptions with what it was checking, it could not see three
+contradictions.
+
+See also `embodiments/`, which holds runnable launch surfaces for this
+runtime, one folder per execution mechanism.
+
 ## Proposed, not built
 
 The improvement plan holds the configurations that are specified and not yet

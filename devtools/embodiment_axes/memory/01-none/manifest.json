@@ -1,0 +1,35 @@
+{
+ "id": "memory/01-none",
+ "family": "memory",
+ "name": "none",
+ "status": "measured",
+ "one_line": "Nothing survives a run.",
+ "how_it_works": [
+  "Start from an empty state.",
+  "Keep nothing at the end."
+ ],
+ "pros": [
+  "Cannot be poisoned. There is nothing to write to.",
+  "Every run is reproducible from its inputs alone.",
+  "No storage, no keys, no eviction, no staleness."
+ ],
+ "cons": [
+  "Identical work is redone in full every time.",
+  "A run that stops loses everything it had done.",
+  "Nothing improves with experience."
+ ],
+ "pick_this_when": [
+  "Runs are cheap, or inputs never repeat.",
+  "You need every run to be independently reproducible."
+ ],
+ "avoid_when": [
+  "Runs are expensive and inputs repeat."
+ ],
+ "evidence": {
+  "cold_calls": 17,
+  "warm_calls": 17,
+  "resumed": false,
+  "poison_served": false,
+  "note": "control arm; the only one with nothing to poison"
+ }
+}

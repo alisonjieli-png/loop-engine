@@ -1,0 +1,17 @@
+{
+ "family": "context-transport",
+ "question": "If a step runs somewhere else, how does the information it needs get there?",
+ "varies": "what travels from one step to the next",
+ "held_constant": "the world, the task, the reader of the prompt, the context window, and the grader",
+ "measures": [
+  "solved",
+  "calls",
+  "prompt_bytes_total",
+  "peak_prompt_bytes",
+  "repeat_reads",
+  "pulls"
+ ],
+ "decides": "whether an embodiment has a horizon it cannot pass, and where that horizon is",
+ "harness": "harness.py",
+ "read_first": "the peak prompt column; an arm whose peak grows with the horizon has a wall, and the wall is computable before you hit it"
+}

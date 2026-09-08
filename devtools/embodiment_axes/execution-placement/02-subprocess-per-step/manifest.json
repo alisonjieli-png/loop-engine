@@ -1,0 +1,34 @@
+{
+ "id": "execution-placement/02-subprocess-per-step",
+ "family": "execution-placement",
+ "name": "subprocess_per_step",
+ "status": "measured",
+ "one_line": "Each step runs in a fresh interpreter, talking over pipes.",
+ "how_it_works": [
+  "Spawn an interpreter per step.",
+  "Send the prompt on standard input, read the reply on standard output.",
+  "Nothing survives the step but what was sent back."
+ ],
+ "pros": [
+  "A step cannot accumulate hidden state, so a transport defect shows up instead of being masked by shared memory.",
+  "A crashing step is a non-zero exit code, not a dead run.",
+  "Costs milliseconds, not the hundreds a container costs."
+ ],
+ "cons": [
+  "Same filesystem, same network, same user. This is a memory boundary and nothing more.",
+  "Everything crossing it has to serialise.",
+  "Spawn cost is paid on every step, so it multiplies by the horizon."
+ ],
+ "pick_this_when": [
+  "You want the transport boundary to be real without paying for containment.",
+  "Steps are long enough that spawn cost disappears."
+ ],
+ "avoid_when": [
+  "The step body is untrusted. This stops nothing it does to the filesystem or the network."
+ ],
+ "evidence": {
+  "ms_per_call": 274.5,
+  "seconds_for_13_calls": 3.569,
+  "against_in_process": "about 2,700 times the per-call cost"
+ }
+}
