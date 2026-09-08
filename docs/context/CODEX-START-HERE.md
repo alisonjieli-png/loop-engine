@@ -1,5 +1,11 @@
 # Start a coding-agent session in Loop Engine
 
+Read [START-HERE.md](START-HERE.md) first. It is one page: what is green
+today, what is not, the commands, and the rule that shapes every change. Its
+two companions are [Invariants and traps](INVARIANTS-AND-TRAPS.md) and
+[Ways of running](WAYS-OF-RUNNING.md). This page is the deeper orientation:
+the first message for a new session, the reading order, and the component map.
+
 This page applies to Codex and other coding agents working in the repository.
 
 Use `/home/username/loop-engine` as the workspace directory for Loop Engine work.
