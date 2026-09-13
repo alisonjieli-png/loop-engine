@@ -180,6 +180,16 @@ First public release.
   own view, and a joined record that keeps the declared-but-unexecutable
   remainder visible. Ten checks, including a space the outer policy refuses
   everywhere reporting unavailable with no allowed values.
+- Search records read back, and a cursor that knows where it belongs. The
+  two items the wide-search review left open are closed: every search
+  record (`ConfigurationAxis`, `ConfigurationSpace`, `SearchObjective`,
+  `SearchTask`, `SearchObservation`, `SearchRequest`, and the new
+  `SearchCursor`) has a `from_dict` reader that rebuilds it with the same
+  digest and refuses unknown or missing fields or another record type; a
+  proposal batch carries a `SearchCursor` bound to the space digest and the
+  shard, and a request given one as `cursor_record` resumes exactly there
+  and refuses a cursor from another space or shard or one disagreeing with
+  an integer cursor beside it. Thirteen new search checks.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback

@@ -9,7 +9,8 @@ from dataclasses import replace
 
 from .model.fragments import GenerationError
 from .search import GridSearchAdapter, RandomSearchAdapter, VectorWarmStartAdapter, propose_configurations
-from .search_records import SearchObjective, SearchObservation, SearchRequest, SearchServices, SearchTask
+from .search_records import (SearchCursor, SearchObjective, SearchObservation, SearchRequest,
+                             SearchServices, SearchTask)
 from .space import ConfigurationAxis, ConfigurationSpace, content_digest
 
 
@@ -178,4 +179,64 @@ def run_checks():
         shard_count=3, shard_index=2), random)["value"]
     check("an_empty_shard_is_reported_exhausted_by_seeded_exploration",
           empty["proposals"] == [] and empty["search_exhausted"] is True)
+
+    # A cursor is bound to the space and shard that produced it.
+    sharded = propose_configurations(replace(request, shard_count=3, shard_index=1), grid)["value"]
+    cursor = SearchCursor.from_dict(sharded["cursor_record"])
+    check("the_batch_names_its_cursor_with_space_and_shard",
+          cursor.space_digest == request.space.digest and (cursor.shard_count, cursor.shard_index) == (3, 1)
+          and cursor.next_index == sharded["next_cursor"] and cursor.exhausted is False)
+    resumed = propose_configurations(replace(request, shard_count=3, shard_index=1, cursor_record=cursor), grid)["value"]
+    check("a_bound_cursor_resumes_exactly_where_its_shard_stopped",
+          [v["configuration_index"] for v in resumed["proposals"]] == [10, 13, 16]
+          and resumed["request"]["cursor"] == cursor.next_index)
+    for name, bad in (("another_shard", dict(shard_count=2, shard_index=0)),
+                      ("another_space", dict(space=ConfigurationSpace("other", "1.0.0", (
+                          ConfigurationAxis("x", "integer_range", minimum=0, maximum=99),)),
+                          shard_count=3, shard_index=1)),
+                      ("a_disagreeing_integer_cursor", dict(shard_count=3, shard_index=1, cursor=5))):
+        try:
+            replace(request, cursor_record=cursor, **bad)
+            check(f"a_cursor_handed_to_{name}_is_refused", False)
+        except GenerationError:
+            check(f"a_cursor_handed_to_{name}_is_refused", True)
+    finished = SearchCursor(request.space.digest, 1, 1 - 1, None, True)
+    ended = propose_configurations(replace(request, cursor_record=finished), grid)["value"]
+    check("an_exhausted_cursor_resumes_at_the_end_and_proposes_nothing",
+          ended["proposals"] == [] and ended["search_exhausted"] is True
+          and ended["request"]["cursor"] == request.space.cardinality)
+    check("a_random_batch_carries_no_cursor_record",
+          propose_configurations(request, random)["value"]["cursor_record"] is None)
+    try:
+        SearchCursor(request.space.digest, 1, 0, None, False)
+        check("a_cursor_without_a_next_index_must_be_exhausted", False)
+    except GenerationError:
+        check("a_cursor_without_a_next_index_must_be_exhausted", True)
+
+    # Every record has a typed reader that refuses unknown or missing fields.
+    full = replace(request, observations=(original, legitimate), cursor_record=cursor,
+                   shard_count=3, shard_index=1)
+    rebuilt = SearchRequest.from_dict(full.to_dict())
+    check("records_round_trip_through_their_typed_readers_with_equal_digests",
+          rebuilt.digest == full.digest and rebuilt.space.digest == full.space.digest
+          and rebuilt.task == full.task and rebuilt.observations == full.observations
+          and rebuilt.cursor == full.cursor and rebuilt.cursor_record == cursor
+          and ConfigurationSpace.from_dict(request.space.to_dict()).digest == request.space.digest
+          and SearchObservation.from_dict(original.to_dict()).digest == original.digest
+          and SearchTask.from_dict(replace(request.task, evaluator_digest=content_digest("j")).__dict__
+                                   | {"features": list(request.task.features)}).evaluator_digest
+          == content_digest("j"))
+    for name, broken in (("an_unknown_field", {**original.to_dict(), "extra": 1}),
+                         ("a_missing_field", {k: v for k, v in original.to_dict().items() if k != "state"}),
+                         ("another_record_type", {**original.to_dict(), "record_type": "configuration_search_batch/v1"})):
+        try:
+            SearchObservation.from_dict(broken)
+            check(f"{name}_is_refused_by_the_observation_reader", False)
+        except GenerationError:
+            check(f"{name}_is_refused_by_the_observation_reader", True)
+    try:
+        ConfigurationSpace.from_dict({**request.space.to_dict(), "record_type": "configuration_axis/v1"})
+        check("a_space_record_of_another_type_is_refused", False)
+    except GenerationError:
+        check("a_space_record_of_another_type_is_refused", True)
     return {"tests": tests}

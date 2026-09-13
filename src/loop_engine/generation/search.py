@@ -13,7 +13,7 @@ import random
 
 from ..loop.recursive_loop import LoopError
 from .model.fragments import GenerationError
-from .search_records import COMPLETED, SearchRequest, SearchServices
+from .search_records import COMPLETED, SearchCursor, SearchRequest, SearchServices
 from .space import content_digest
 
 
@@ -111,6 +111,9 @@ def _assemble(request, services):
             "observations_validated": [v.trial_id for v in observations],
             "excluded_observations": excluded, "proposals": proposals,
             "refused_proposals": refused, "draws": drawn, **state,
+            "cursor_record": (SearchCursor(request.space.digest, request.shard_count, request.shard_index,
+                                           state["next_cursor"], state["search_exhausted"]).to_dict()
+                              if state["next_cursor"] is not None or state["search_exhausted"] else None),
             "exhaustion_scope": "declared_cursor_and_shard_only",
             "task_execution_performed": False, "promotion_performed": False}
 

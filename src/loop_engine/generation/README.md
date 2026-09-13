@@ -74,10 +74,15 @@ context can take; a rule that could never match, or would exclude every
 address it matches, is refused when the space is built. Exact enumeration
 records a cursor for one declared shard, and the batch names its seed,
 cursor, shard, batch size, and draw allowance in plain fields beside the
-request digest. A cursor is an integer the caller pairs with the same space
-and shard it came from; the request does not yet refuse a cursor from
-another shard. Exhausting a cursor does not prove completion of other
-shards or earlier addresses. The legacy `expand_variation_space` still returns a tuple; use
+request digest. The batch also carries a `SearchCursor` record bound to the
+space digest and the shard; a request that receives it as `cursor_record`
+resumes exactly there and refuses a cursor from another space or shard, or
+one that disagrees with an integer cursor given beside it. Exhausting a
+cursor does not prove completion of other shards or earlier addresses.
+Every record (`ConfigurationAxis`, `ConfigurationSpace`, `SearchObjective`,
+`SearchTask`, `SearchObservation`, `SearchCursor`, `SearchRequest`) has a
+`from_dict` reader that rebuilds it with the same digest and refuses a
+record with unknown or missing fields or of another type. The legacy `expand_variation_space` still returns a tuple; use
 the indexed or lazy interfaces for large spaces.
 
 ## Proposal methods

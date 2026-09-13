@@ -7,7 +7,7 @@ and artifact contracts before an optimizer can consume it.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field, asdict, fields
 import math
 import re
 
@@ -36,6 +36,25 @@ def versioned_ref(value, name):
         raise GenerationError(name + " must include an explicit version")
 
 
+OBSERVATION_RECORD_TYPE = "configuration_search_observation/v1"
+CURSOR_RECORD_TYPE = "configuration_search_cursor/v1"
+REQUEST_RECORD_TYPE = "configuration_search_request/v1"
+
+
+def _exact_record(record, cls, name, *, record_type=None):
+    """The record's fields must be exactly the dataclass's fields (plus the
+    record type when one is written); an unknown field is refused rather
+    than dropped, since a dropped field would silently change the record."""
+    expected = {item.name for item in fields(cls)}
+    if record_type is not None:
+        expected.add("record_type")
+    if not isinstance(record, dict) or set(record) != expected:
+        raise GenerationError(name + " record has unexpected or missing fields")
+    if record_type is not None and record["record_type"] != record_type:
+        raise GenerationError(name + " record is of another type")
+    return {key: value for key, value in record.items() if key != "record_type"}
+
+
 @dataclass(frozen=True)
 class SearchObjective:
     """One versioned metric, direction, and comparable value definition."""
@@ -47,6 +66,10 @@ class SearchObjective:
         versioned_ref(self.metric_ref, "metric reference")
         if self.direction not in ("minimize", "maximize"):
             raise GenerationError("objective direction must be explicit")
+
+    @classmethod
+    def from_dict(cls, record) -> "SearchObjective":
+        return cls(**_exact_record(record, cls, "search objective"))
 
 
 @dataclass(frozen=True)
@@ -87,6 +110,13 @@ class SearchTask:
         if not record["evaluator_digest"]:
             del record["evaluator_digest"]
         return content_digest(record)
+
+    @classmethod
+    def from_dict(cls, record) -> "SearchTask":
+        values = _exact_record(record, cls, "search task")
+        if not isinstance(values["features"], (list, tuple)):
+            raise GenerationError("search task features must be a list")
+        return cls(**{**values, "features": tuple(values["features"])})
 
     @property
     def identity_digest(self):
@@ -148,7 +178,50 @@ class SearchObservation:
         return content_digest(asdict(self))
 
     def to_dict(self):
-        return {"record_type": "configuration_search_observation/v1", **asdict(self)}
+        return {"record_type": OBSERVATION_RECORD_TYPE, **asdict(self)}
+
+    @classmethod
+    def from_dict(cls, record) -> "SearchObservation":
+        values = _exact_record(record, cls, "search observation", record_type=OBSERVATION_RECORD_TYPE)
+        if not isinstance(values["objectives"], (list, tuple)) or not isinstance(values["values"], (list, tuple)):
+            raise GenerationError("search observation objectives and values must be lists")
+        return cls(**{**values, "task": SearchTask.from_dict(values["task"]),
+                      "objectives": tuple(SearchObjective.from_dict(v) for v in values["objectives"]),
+                      "values": tuple(values["values"])})
+
+
+@dataclass(frozen=True)
+class SearchCursor:
+    """Where exact enumeration stops in one space and shard, bound to both.
+
+    A bare integer resumes anywhere it is handed; this record refuses a
+    request whose space or shard differs from the one that produced it."""
+
+    space_digest: str
+    shard_count: int
+    shard_index: int
+    next_index: int | None
+    exhausted: bool
+
+    def __post_init__(self):
+        exact_digest(self.space_digest, "cursor space digest")
+        if (type(self.shard_count) is not int or self.shard_count < 1
+                or type(self.shard_index) is not int or not 0 <= self.shard_index < self.shard_count):
+            raise GenerationError("cursor shard must be an explicit index within its count")
+        if type(self.exhausted) is not bool:
+            raise GenerationError("cursor exhaustion must be a Boolean")
+        if self.next_index is None:
+            if not self.exhausted:
+                raise GenerationError("a cursor without a next index must be exhausted")
+        elif type(self.next_index) is not int or isinstance(self.next_index, bool) or self.next_index < 0:
+            raise GenerationError("cursor next index must be a nonnegative integer")
+
+    def to_dict(self):
+        return {"record_type": CURSOR_RECORD_TYPE, **asdict(self)}
+
+    @classmethod
+    def from_dict(cls, record) -> "SearchCursor":
+        return cls(**_exact_record(record, cls, "search cursor", record_type=CURSOR_RECORD_TYPE))
 
 
 @dataclass(frozen=True)
@@ -166,10 +239,26 @@ class SearchRequest:
     shard_count: int = 1
     shard_index: int = 0
     allow_repeated_configurations: bool = False
+    cursor_record: SearchCursor | None = None
 
     def __post_init__(self):
         if not isinstance(self.space, ConfigurationSpace) or not isinstance(self.task, SearchTask):
             raise GenerationError("search requires a typed configuration space and task")
+        if self.cursor_record is not None:
+            # A bound cursor sets the integer cursor; it cannot be handed to
+            # another space or shard, and cannot disagree with a cursor also
+            # given as an integer.
+            if not isinstance(self.cursor_record, SearchCursor):
+                raise GenerationError("cursor record must be a typed SearchCursor")
+            if (self.cursor_record.space_digest != self.space.digest
+                    or self.cursor_record.shard_count != self.shard_count
+                    or self.cursor_record.shard_index != self.shard_index):
+                raise GenerationError("cursor belongs to another space or shard")
+            resumed = (self.space.cardinality if self.cursor_record.next_index is None
+                       else self.cursor_record.next_index)
+            if self.cursor not in (0, resumed):
+                raise GenerationError("an integer cursor disagrees with the bound cursor record")
+            object.__setattr__(self, "cursor", resumed)
         for name in ("batch_size", "draw_limit", "shard_count"):
             if type(getattr(self, name)) is not int or getattr(self, name) < 1:
                 raise GenerationError(name + " must be an explicit positive integer")
@@ -196,6 +285,27 @@ class SearchRequest:
             "cursor": self.cursor, "shard_count": self.shard_count, "shard_index": self.shard_index,
             "allow_repeated_configurations": self.allow_repeated_configurations,
             "observations": [v.digest for v in self.observations]})
+
+    def to_dict(self):
+        return {"record_type": REQUEST_RECORD_TYPE, "space": self.space.to_dict(),
+                "task": asdict(self.task), "objectives": [asdict(v) for v in self.objectives],
+                "batch_size": self.batch_size, "draw_limit": self.draw_limit, "seed": self.seed,
+                "observations": [v.to_dict() for v in self.observations], "cursor": self.cursor,
+                "shard_count": self.shard_count, "shard_index": self.shard_index,
+                "allow_repeated_configurations": self.allow_repeated_configurations,
+                "cursor_record": self.cursor_record.to_dict() if self.cursor_record else None}
+
+    @classmethod
+    def from_dict(cls, record) -> "SearchRequest":
+        values = _exact_record(record, cls, "search request", record_type=REQUEST_RECORD_TYPE)
+        if not isinstance(values["objectives"], (list, tuple)) or not isinstance(values["observations"], (list, tuple)):
+            raise GenerationError("search request objectives and observations must be lists")
+        return cls(**{**values, "space": ConfigurationSpace.from_dict(values["space"]),
+                      "task": SearchTask.from_dict(values["task"]),
+                      "objectives": tuple(SearchObjective.from_dict(v) for v in values["objectives"]),
+                      "observations": tuple(SearchObservation.from_dict(v) for v in values["observations"]),
+                      "cursor_record": (SearchCursor.from_dict(values["cursor_record"])
+                                        if values["cursor_record"] is not None else None)})
 
 
 @dataclass(frozen=True)

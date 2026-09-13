@@ -17,6 +17,9 @@ from .model.fragments import GenerationError
 from ..core.record_operations_records import parse_json
 
 
+SPACE_RECORD_TYPE = "configuration_space/v1"
+
+
 def canonical(value) -> str:
     """Strict JSON identity; no repr conversion or non-finite numbers."""
     try:
@@ -83,6 +86,17 @@ class ConfigurationAxis:
         return {"dimension_id": self.dimension_id, "value_kind": self.value_kind,
                 "values": [json.loads(value) for value in self.encoded_values],
                 "minimum": self.minimum, "maximum": self.maximum}
+
+    @classmethod
+    def from_dict(cls, record) -> "ConfigurationAxis":
+        """Rebuild an axis from its record; a field the record lacks or adds
+        is a refusal, since an unread field would silently change a space."""
+        expected = {"dimension_id", "value_kind", "values", "minimum", "maximum"}
+        if not isinstance(record, dict) or set(record) != expected or not isinstance(record["values"], (list, tuple)):
+            raise GenerationError("axis record has unexpected or missing fields")
+        return cls(record["dimension_id"], record["value_kind"],
+                   tuple(canonical(value) for value in record["values"]),
+                   record["minimum"], record["maximum"])
 
 
 @dataclass(frozen=True)
@@ -217,10 +231,22 @@ class ConfigurationSpace:
                 yield index, self.configuration_at(index)
 
     def to_dict(self) -> dict:
-        return {"record_type": "configuration_space/v1", "space_id": self.space_id,
+        return {"record_type": SPACE_RECORD_TYPE, "space_id": self.space_id,
                 "version": self.version, "axes": [axis.to_dict() for axis in self.axes],
                 "fixed_context": json.loads(self.context_json),
                 "conditional_rules": json.loads(self.rules_json)}
+
+    @classmethod
+    def from_dict(cls, record) -> "ConfigurationSpace":
+        """Rebuild a space from its record with the same digest, or refuse a
+        record of another type or with fields this reader does not know."""
+        expected = {"record_type", "space_id", "version", "axes", "fixed_context", "conditional_rules"}
+        if (not isinstance(record, dict) or set(record) != expected
+                or record["record_type"] != SPACE_RECORD_TYPE or not isinstance(record["axes"], (list, tuple))):
+            raise GenerationError("configuration space record has unexpected or missing fields")
+        return cls(record["space_id"], record["version"],
+                   tuple(ConfigurationAxis.from_dict(axis) for axis in record["axes"]),
+                   canonical(record["fixed_context"]), canonical(record["conditional_rules"]))
 
 
 def self_test() -> dict:
