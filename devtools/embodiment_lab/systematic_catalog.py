@@ -10,6 +10,7 @@ import argparse
 from dataclasses import dataclass
 import hashlib
 import json
+import os
 from pathlib import Path
 import zipfile
 
@@ -17,7 +18,16 @@ from .systematic_records import CampaignProjection, canonical, digest
 
 
 ROOT = Path(__file__).resolve().parents[2]
-TASK_ROOT = Path('/home/username/task_database/kaggle_tasks')
+#: The task folders and the earlier campaign cells live outside the
+#: repository. Both locations are machine facts, so they come from the
+#: environment; the defaults name the owner's layout under the home
+#: directory rather than one account's absolute path.
+TASK_ROOT = Path(os.environ.get(
+    'LOOP_ENGINE_TASK_DATABASE',
+    str(Path.home() / 'task_database' / 'kaggle_tasks')))
+PRIOR_CAMPAIGN_RUNS_GLOB = os.environ.get(
+    'LOOP_ENGINE_PRIOR_CAMPAIGN_RUNS_GLOB',
+    str(Path.home() / 'task-campaign-runs' / '*' / 'cells' / '*' / 'cell.json'))
 
 
 @dataclass(frozen=True)
@@ -83,7 +93,9 @@ def prepare(root: Path):
     c.executemany('INSERT INTO factor_levels VALUES (?,?,?::JSON,?,?) ON CONFLICT DO NOTHING',
                   [(v.factor, v.level_id, v.parameters_json, v.implementation, v.maturity) for v in frozen_levels])
     c.execute('CREATE TABLE IF NOT EXISTS task_catalog(task_id VARCHAR PRIMARY KEY, source_directory VARCHAR, descriptor_digest VARCHAR, previously_attempted BOOLEAN, archive_count INTEGER, declared_uncompressed_bytes BIGINT, admission_status VARCHAR, descriptor JSON)')
-    prior = {row[0] for row in c.execute("SELECT DISTINCT task FROM read_json_auto('/home/username/task-campaign-runs/*/cells/*/cell.json',union_by_name=true)").fetchall()}
+    prior = {row[0] for row in c.execute(
+        "SELECT DISTINCT task FROM read_json_auto(?, union_by_name=true)",
+        [PRIOR_CAMPAIGN_RUNS_GLOB]).fetchall()}
     for folder in sorted(TASK_ROOT.iterdir()):
         if not folder.is_dir():
             continue

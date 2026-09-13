@@ -1,0 +1,82 @@
+{
+ "D1_effects_presented_to_authorize": [
+  {
+   "operation": "workspace_inspect",
+   "effect_class": "local_read",
+   "target": "managed-probe:/tmp/claude-1000/-home-use",
+   "parameter_keys": [
+    "host_binding_digest",
+    "host_invocation_digest",
+    "state",
+    "task_digest"
+   ],
+   "state": "1e96d9285c",
+   "host_invocation_digest": "3d543c3363",
+   "request_id": "approval_85a90"
+  },
+  {
+   "operation": "workspace_replace",
+   "effect_class": "local_write",
+   "target": "managed-probe:/tmp/claude-1000/-home-use",
+   "parameter_keys": [
+    "host_binding_digest",
+    "host_invocation_digest",
+    "state",
+    "task_digest"
+   ],
+   "state": "1e96d9285c",
+   "host_invocation_digest": "36b412c106",
+   "request_id": "approval_cc5d9"
+  },
+  {
+   "operation": "workspace_replace",
+   "effect_class": "local_write",
+   "target": "managed-probe:/tmp/claude-1000/-home-use",
+   "parameter_keys": [
+    "host_binding_digest",
+    "host_invocation_digest",
+    "state",
+    "task_digest"
+   ],
+   "state": "b8c0c0ffb8",
+   "host_invocation_digest": "c6a7335014",
+   "request_id": "approval_1bd69"
+  }
+ ],
+ "D1_all_request_ids_and_invocation_digests_distinct": true,
+ "D4_verifier_direct": "refused:HostRuntimeError:host operation is not available to the model",
+ "D4b_unknown_ref": "refused:HostRuntimeError:host operation is not available to the model",
+ "D7_plugin_port_lists": [
+  "host:workspace_inspect:invoke",
+  "host:workspace_replace:invoke",
+  "host:workspace_run:invoke",
+  "host:workspace_verifier:invoke"
+ ],
+ "D7_supports": {
+  "host:workspace_inspect:invoke": true,
+  "host:workspace_verifier:invoke": false
+ },
+ "D2_stale_request_id_decision": {
+  "result": "refused:PermissionError:host refused the exact operation",
+  "host_callback_ran": false,
+  "invocation_started_events": 1
+ },
+ "D3_edit_decision": {
+  "result": "refused:PermissionError:host refused the exact operation",
+  "host_callback_ran": false,
+  "invocation_started_events": 1
+ },
+ "D3b_wrong_action_reject_object": {
+  "result": "refused:PermissionError:host refused the exact operation",
+  "host_callback_ran": false,
+  "invocation_started_events": 1
+ },
+ "D4c_completion_gate_direct": "refused:HostRuntimeError:host operation is not available to the model",
+ "D5_adaptive_dispatch_to_gate": {
+  "errors": [
+   "action has no registered capability executor"
+  ],
+  "result": null,
+  "gate_callback_ran": false
+ }
+}

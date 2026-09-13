@@ -1,0 +1,314 @@
+{
+ "B1_task_complete_string_yes": {
+  "status": "unavailable",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "host verifier must return explicit checks and completeness",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": []
+ },
+ "B2_task_complete_None": {
+  "status": "unavailable",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "host verifier must return explicit checks and completeness",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": []
+ },
+ "B2b_observations_missing": {
+  "status": "unavailable",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "host verifier must return explicit checks and completeness",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": []
+ },
+ "B3_typed_failure_ok_false_with_passing_flags": {
+  "status": "failed",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "Registered completion gates did not establish task completion; inspect their observations.",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": [
+   [
+    "host:gate_0:validate",
+    false,
+    false
+   ]
+  ]
+ },
+ "B4_gate_raises": {
+  "status": "unavailable",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "host verifier must return explicit checks and completeness",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": []
+ },
+ "B7_extra_keys_tolerated": {
+  "status": "passed",
+  "task_complete": true,
+  "acceptance": "ACCEPTED",
+  "notes": "All registered completion gates passed.",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": [
+   [
+    "host:gate_0:validate",
+    true,
+    true
+   ]
+  ]
+ },
+ "B5_state_drift_between_primary_and_gate": {
+  "status": "unavailable",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "host verifier changed the subject it evaluated",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": [],
+  "gate_ran": true
+ },
+ "B5b_state_drift_during_gate_approval": {
+  "status": "unavailable",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "host state changed before the approved invocation",
+  "callbacks": [
+   "operation",
+   "verifier"
+  ],
+  "completion_checks": [],
+  "gate_ran": false
+ },
+ "B6_two_gates_baseline": {
+  "status": "passed",
+  "task_complete": true,
+  "acceptance": "ACCEPTED",
+  "notes": "All registered completion gates passed.",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0",
+   "gate_1"
+  ],
+  "completion_checks": [
+   [
+    "host:gate_0:validate",
+    true,
+    true
+   ],
+   [
+    "host:gate_1:validate",
+    true,
+    true
+   ]
+  ],
+  "swapped_order": "refused:issued host record changed",
+  "duplicated_gate": "refused:issued host record changed"
+ },
+ "B6c_failed_gate_report_reissued_as_passing": {
+  "status": "failed",
+  "task_complete": false,
+  "acceptance": "n/a",
+  "notes": "Registered completion gates did not establish task completion; inspect their observations.",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": [
+   [
+    "host:gate_0:validate",
+    false,
+    false
+   ]
+  ],
+  "validate_host_verification": "refused:host record is not bound to one issued event",
+  "require_host_checks": "refused:HostRuntimeError:host record is not bound to one issued event"
+ }
+}
+{
+ "B1_task_complete_string_yes": {
+  "status": "unavailable",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "host verifier must return explicit checks and completeness",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": []
+ },
+ "B2_task_complete_None": {
+  "status": "unavailable",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "host verifier must return explicit checks and completeness",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": []
+ },
+ "B2b_observations_missing": {
+  "status": "unavailable",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "host verifier must return explicit checks and completeness",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": []
+ },
+ "B3_typed_failure_ok_false_with_passing_flags": {
+  "status": "failed",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "Registered completion gates did not establish task completion; inspect their observations.",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": [
+   [
+    "host:gate_0:validate",
+    false,
+    false
+   ]
+  ]
+ },
+ "B4_gate_raises": {
+  "status": "unavailable",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "host verifier must return explicit checks and completeness",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": []
+ },
+ "B7_extra_keys_tolerated": {
+  "status": "passed",
+  "task_complete": true,
+  "acceptance": "ACCEPTED",
+  "notes": "All registered completion gates passed.",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": [
+   [
+    "host:gate_0:validate",
+    true,
+    true
+   ]
+  ]
+ },
+ "B5_state_drift_between_primary_and_gate": {
+  "status": "unavailable",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "host verifier changed the subject it evaluated",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": [],
+  "gate_ran": true
+ },
+ "B5b_state_drift_during_gate_approval": {
+  "status": "unavailable",
+  "task_complete": false,
+  "acceptance": "refused:ValueError:host observation verification has not passed",
+  "notes": "host state changed before the approved invocation",
+  "callbacks": [
+   "operation",
+   "verifier"
+  ],
+  "completion_checks": [],
+  "gate_ran": false
+ },
+ "B6_two_gates_baseline": {
+  "status": "passed",
+  "task_complete": true,
+  "acceptance": "ACCEPTED",
+  "notes": "All registered completion gates passed.",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0",
+   "gate_1"
+  ],
+  "completion_checks": [
+   [
+    "host:gate_0:validate",
+    true,
+    true
+   ],
+   [
+    "host:gate_1:validate",
+    true,
+    true
+   ]
+  ],
+  "swapped_order": "refused:issued host record changed",
+  "duplicated_gate": "refused:issued host record changed"
+ },
+ "B6c_failed_gate_report_reissued_as_passing": {
+  "status": "failed",
+  "task_complete": false,
+  "acceptance": "n/a",
+  "notes": "Registered completion gates did not establish task completion; inspect their observations.",
+  "callbacks": [
+   "operation",
+   "verifier",
+   "gate_0"
+  ],
+  "completion_checks": [
+   [
+    "host:gate_0:validate",
+    false,
+    false
+   ]
+  ],
+  "validate_host_verification": "refused:host record is not bound to one issued event",
+  "require_host_checks": "refused:HostRuntimeError:host record is not bound to one issued event"
+ }
+}

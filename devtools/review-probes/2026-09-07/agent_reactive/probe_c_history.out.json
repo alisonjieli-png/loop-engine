@@ -1,0 +1,39 @@
+{
+ "C1_durable_series_profile_default_binding": {
+  "profile_persistence": "durable_series",
+  "status": "completed",
+  "history_disposition": "not_persisted",
+  "history_ref": null,
+  "worker_reads_profile_persistence": false
+ },
+ "C2_failure_after_save": {
+  "status": "failed",
+  "failure_code": "HISTORY_PERSISTENCE_FAILED",
+  "terminal_code": "ACCEPTED",
+  "history_disposition": "persistence_failed",
+  "outcome_error_code": "HISTORY_PERSISTENCE_FAILED",
+  "orphan_run_dirs_on_disk": [
+   "reactive-230e06a8a2530733a8e9204a8c698f4c1406d5fd3fe775041d618369707f4c0f"
+  ],
+  "orphan_manifest_committed": true,
+  "attempt": 1,
+  "max_attempts": 2,
+  "retry_claim": null,
+  "exception_type_lost_in_durable_record": true
+ },
+ "C3_redigested_tamper_reopen": {
+  "RunHistory.load_alone_accepts_redigested_file": true,
+  "executor.load_verified_history": "refused: ReactiveWorkerError: reactive history could not be read and verified"
+ },
+ "C4_asyncio_cancel_required_history": {
+  "status_after_cancel": "running",
+  "status_after_recover": "dead_letter",
+  "failure_code": "RUNNING_OUTCOME_UNKNOWN_RECONCILIATION_REQUIRED",
+  "history_disposition_on_dead_letter": "not_persisted",
+  "history_ref_on_dead_letter": null,
+  "persisted_run_dirs": [
+   "reactive-230e06a8a2530733a8e9204a8c698f4c1406d5fd3fe775041d618369707f4c0f"
+  ],
+  "persisted_manifest_committed": true
+ }
+}

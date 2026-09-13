@@ -1,0 +1,18 @@
+kernel owner loop ids (kernel_input_bound): {'loop1'}
+persisted 'iteration' events for kernel owner loop1: n=13, accepted=13
+      ('orient', 'kernel:orient:structural_boundary', True, 'ok', 'deterministic')
+      ('standardize_task', 'kernel:standardize_task:structural_b', True, 'ok', 'deterministic')
+      ('frame_alternatives', 'kernel:frame_alternatives:structural', True, 'ok', 'deterministic')
+      ('reconcile_horizon', 'kernel:reconcile_horizon:structural_', True, 'ok', 'deterministic')
+      ('assess_prepare', 'kernel:assess_prepare:structural_bou', True, 'ok', 'deterministic')
+      ('decide_next', 'kernel:decide_next:structural_bounda', True, 'ok', 'deterministic')
+      ('how', 'kernel:how:structural_boundary', True, 'ok', 'deterministic')
+      ('forecast_outcome', 'kernel:forecast_outcome:structural_b', True, 'ok', 'deterministic')
+      ('act', 'repair', True, 'ok', 'hybrid')
+      ('verify', 'kernel:verify:structural_boundary', True, 'ok', 'deterministic')
+      ('calibrate', 'kernel:calibrate:structural_boundary', True, 'ok', 'deterministic')
+      ('integrate_commit', 'kernel:integrate_commit:structural_b', True, 'ok', 'deterministic')
+      ('route', 'kernel:route:structural_boundary', True, 'ok', 'deterministic')
+spawned kernel loops completed via preparation (no 13-step walk): [('loop24', 'kernel_preparation_completed'), ('loop26', 'kernel_preparation_completed')]
+   iteration events for spawned loop24: n=13 [('orient', 'orient:trace_preserved', True), ('standardize_task', 'standardize_task:trace_preserv', True), ('frame_alternatives', 'frame_alternatives:trace_prese', True)]
+   iteration events for spawned loop26: n=13 [('orient', 'orient:trace_preserved', True), ('standardize_task', 'standardize_task:trace_preserv', True), ('frame_alternatives', 'frame_alternatives:trace_prese', True)]

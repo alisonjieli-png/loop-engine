@@ -1,0 +1,65 @@
+{
+ "baseline_r1": {
+  "status": "passed",
+  "task_complete": true
+ },
+ "A1_forged_run_ref_recomputed_digest": {
+  "raised_before_report": "HostRuntimeError: host record is not bound to one issued event"
+ },
+ "A1b_forged_run_ref_original_digest": {
+  "raised_before_report": "HostRuntimeError: issued host record changed"
+ },
+ "A2_extra_field_recomputed_digest": {
+  "raised_before_report": "HostRuntimeError: host record is not bound to one issued event"
+ },
+ "A5_source_replacement_record_presented_for_completion": {
+  "status": "unavailable",
+  "task_complete": false,
+  "notes": "host result is failed or no longer the current subject",
+  "acceptance": "refused: ValueError: host observation verification has not passed"
+ },
+ "A6_model_composed_lookalike_record": {
+  "raised_before_report": "HostRuntimeError: host record is not bound to one issued event"
+ },
+ "r2_broken_source_passed": false,
+ "A3_replay_passing_r1_after_source_changed": {
+  "status": "unavailable",
+  "task_complete": false,
+  "notes": "host result is failed or no longer the current subject",
+  "acceptance": "refused: ValueError: host observation verification has not passed"
+ },
+ "A4_replay_r1_after_restoring_source_but_new_observations_exist": {
+  "status": "unavailable",
+  "task_complete": false,
+  "notes": "host result is failed or no longer the current subject",
+  "acceptance": "refused: ValueError: host observation verification has not passed"
+ },
+ "A4b_fresh_run_on_restored_source": {
+  "status": "passed",
+  "task_complete": true,
+  "notes": "Fixed independent host comparisons passed.",
+  "acceptance": "ACCEPTED"
+ },
+ "A7_flip_comparison_passed_on_failed_run": {
+  "raised_before_report": "HostRuntimeError: host record is not bound to one issued event"
+ },
+ "A8_task_text_changed_for_passing_result": {
+  "status": "unavailable",
+  "task_complete": false,
+  "notes": "host input does not match the registered schema",
+  "acceptance": "refused: ValueError: host observation verification has not passed"
+ },
+ "A9a_r3_while_source_is_broken": {
+  "status": "unavailable",
+  "task_complete": false,
+  "notes": "host result is failed or no longer the current subject",
+  "acceptance": "refused: ValueError: host observation verification has not passed"
+ },
+ "A9b_r3_after_restoring_identical_bytes_no_new_run": {
+  "status": "passed",
+  "task_complete": true,
+  "notes": "Fixed independent host comparisons passed.",
+  "acceptance": "ACCEPTED"
+ },
+ "A9b_note": "state is content-addressed: identical source bytes + identical observation set == identical state_ref; acceptance here evaluates the exact current source"
+}

@@ -1,0 +1,73 @@
+{
+ "F1_reader_shapes": {
+  "v1_exact": {
+   "accepted": true,
+   "disposition": "legacy_unrecorded",
+   "history_ref": null
+  },
+  "v1_plus_history_keys": {
+   "accepted": false,
+   "error": "activation record has an invalid shape"
+  },
+  "v2_missing_history_keys": {
+   "accepted": false,
+   "error": "activation record has an invalid shape"
+  },
+  "v2_with_legacy_unrecorded_label": {
+   "accepted": true,
+   "disposition": "legacy_unrecorded",
+   "history_ref": null
+  },
+  "v3_unknown": {
+   "accepted": false,
+   "error": "activation record has an invalid shape"
+  }
+ },
+ "F2_new_record_labelled_legacy": {
+  "accepted": true,
+  "reader_disposition": "legacy_unrecorded",
+  "stored_record_type": "activation_record/v2"
+ },
+ "F3_v1_row_recovered_and_rerun": {
+  "v1_row_reads_as": "legacy_unrecorded",
+  "revisions": [
+   [
+    0,
+    "admitted",
+    "not_persisted",
+    "activation_record/v2"
+   ],
+   [
+    1,
+    "leased",
+    "legacy_unrecorded",
+    "activation_record/v1"
+   ],
+   [
+    2,
+    "admitted",
+    "legacy_unrecorded",
+    "activation_record/v2"
+   ],
+   [
+    3,
+    "leased",
+    "legacy_unrecorded",
+    "activation_record/v2"
+   ],
+   [
+    4,
+    "running",
+    "legacy_unrecorded",
+    "activation_record/v2"
+   ],
+   [
+    5,
+    "completed",
+    "not_persisted",
+    "activation_record/v2"
+   ]
+  ],
+  "final_terminal_code": "ACCEPTED"
+ }
+}

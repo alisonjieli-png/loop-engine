@@ -1,0 +1,45 @@
+{
+ "D1_late_return_usage": {
+  "terminal_code": "CANCELED",
+  "result_model_calls": 1,
+  "spawned": 0,
+  "ledger_reported_model_calls": [
+   1
+  ],
+  "run_history_model_invocation_events": 0,
+  "run_history_event_types": [
+   "run_started",
+   "loop_init",
+   "loop_init",
+   "custom",
+   "cancel",
+   "terminal",
+   "custom"
+  ],
+  "otel_model_spans": 0,
+  "late_output_retained_anywhere": false,
+  "result_final_output": ""
+ },
+ "D2_overreported_usage_after_cancel": {
+  "raised": "one loop iteration may report at most one physical model call",
+  "terminal_code": "CANCELED",
+  "model_calls_recorded": 0,
+  "any_usage_event": []
+ },
+ "D3_cancel_after_accepted": {
+  "terminal_code_after_cancel": "ACCEPTED",
+  "terminal_events": 1,
+  "cancel_events": 1,
+  "ledger_tail": [
+   "run_step",
+   "terminal",
+   "cancel"
+  ],
+  "canonical_tail": [
+   "loop.iteration.completed",
+   "loop.completed",
+   "run.status_changed"
+  ],
+  "cancel_event_position_after_terminal": true
+ }
+}

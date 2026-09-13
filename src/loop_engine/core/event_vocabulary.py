@@ -23,7 +23,7 @@ Key invariants:
     - a projection may only produce a declared family; anything else raises;
     - declaring a family is not claiming it — coverage separates the two.
 
-Verification: exercised by run_history.self_test() and the vocabulary gate.
+Verification: exercised by run_history_checks.self_test() and the vocabulary gate.
 """
 from __future__ import annotations
 

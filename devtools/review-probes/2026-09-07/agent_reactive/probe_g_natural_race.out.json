@@ -1,0 +1,17 @@
+{
+ "G1_natural_race": {
+  "rounds_driven": 19,
+  "error_counts": {
+   "A:ReactiveSchedulerError": 10,
+   "B:IntegrityError": 1
+  },
+  "main_errors": [],
+  "wedged_connections": {
+   "B": [
+    18,
+    "cannot start a transaction within a transaction"
+   ]
+  },
+  "note": "IntegrityError = lost the PK race on (activation_id, revision); wedged = the losing connection can no longer BEGIN IMMEDIATE"
+ }
+}

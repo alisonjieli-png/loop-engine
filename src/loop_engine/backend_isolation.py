@@ -18,7 +18,7 @@ PROVIDER_ISOLATION = {
         "catalog/stores/duckdb_store.py",
         "catalog/stores/duckdb_files.py",
         "core/duckdb_catalog.py",
-        "core/run_history.py",
+        "core/run_history_checks.py",
         "code_nodes/guided_setup.py",
     }),
     "sqlalchemy": frozenset(),

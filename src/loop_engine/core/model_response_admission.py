@@ -33,6 +33,13 @@ _JSON_FENCE = re.compile(
 #: Reported when the JSON decoder exhausts the interpreter stack on a deeply
 #: nested candidate. It is a refusal of that text, never a run abort.
 _NESTING_DEPTH_MESSAGE = "Nesting depth exceeded"
+#: Deep nesting was refused only because the decoder ran out of stack, which
+#: makes the refusal a property of the interpreter rather than of this
+#: boundary: CPython 3.10 raises at about 1,000 levels and 3.12 and 3.14 parse
+#: far deeper, so the same response was refused on one CI leg and admitted on
+#: another. The boundary declares its own limit instead. Nothing a model is
+#: asked to return here is nested anywhere near this deep.
+MAXIMUM_NESTING_DEPTH = 200
 _JSON_DECODER_MESSAGES = frozenset((
     _NESTING_DEPTH_MESSAGE,
     "Expecting value", "Extra data",
@@ -306,11 +313,49 @@ def _candidate_texts(request: ModelResponseAdmissionRequest):
                    ("unwrapped_one_json_string_layer",))
 
 
+def _nesting_depth(text: str) -> int:
+    """Maximum bracket nesting in a candidate, counted without decoding.
+
+    Brackets inside string literals are not structure, so the scan tracks
+    string state and backslash escapes. Cheap, total, and identical on
+    every interpreter -- which is the whole point.
+    """
+    depth = 0
+    deepest = 0
+    in_string = False
+    escaped = False
+    for character in text:
+        if in_string:
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif character == '"':
+                in_string = False
+            continue
+        if character == '"':
+            in_string = True
+        elif character in "{[":
+            depth += 1
+            if depth > deepest:
+                deepest = depth
+        elif character in "}]":
+            depth -= 1
+    return deepest
+
+
 def _admit(request: ModelResponseAdmissionRequest) \
         -> ModelResponseAdmissionResult:
     saw_non_object = False
     diagnostics = []
     for strategy, candidate, trace in _candidate_texts(request):
+        if _nesting_depth(candidate) > MAXIMUM_NESTING_DEPTH:
+            # Refused by the declared limit, before the decoder is asked --
+            # so the verdict is the same whether or not this interpreter
+            # would have run out of stack.
+            diagnostics.append(_syntax_diagnostic(
+                strategy, candidate, RecursionError(_NESTING_DEPTH_MESSAGE)))
+            continue
         try:
             value = json.loads(candidate)
         except (json.JSONDecodeError, RecursionError) as exc:
@@ -484,17 +529,10 @@ def _depth_the_decoder_refuses(ceiling: int = 200000) -> int:
     return 0
 
 
-def _nesting_depth_checks() -> list[dict]:
-    """A response nested past the decoder's stack is refused, not fatal."""
-    digest = hashlib.sha256(b"depth-contract").hexdigest()
-    depth = _depth_the_decoder_refuses()
-    if not depth:
-        return [{
-            "test": "nesting_depth_beyond_the_decoder_is_a_typed_refusal_not_an_abort",
-            "passed": True,
-            "detail": ("this interpreter's decoder did not exhaust its stack "
-                       "at any tried depth, so there is nothing to refuse"),
-        }]
+def _refusals_at_depth(depth: int, digest: str) -> dict[str, bool]:
+    """Admit an object, an array, and a double-encoded object nested `depth`
+    levels deep, and report whether each became a typed refusal that names
+    the nesting message rather than an abort."""
     deep_object = '{"a":' * depth + "1" + "}" * depth
     deep_array = "[" * depth + "]" * depth
     outcomes = {}
@@ -512,12 +550,63 @@ def _nesting_depth_checks() -> list[dict]:
                         for item in result.syntax_diagnostics))
         except RecursionError:
             outcomes[label] = False
-    return [{
-        "test": "nesting_depth_beyond_the_decoder_is_a_typed_refusal_not_an_abort",
-        "passed": all(outcomes.values()),
-        "detail": (f"depth {depth}: "
-                   + ", ".join(f"{label}={ok}" for label, ok in outcomes.items())),
+    return outcomes
+
+
+def _nesting_depth_checks() -> list[dict]:
+    """Nesting past the declared limit is a typed refusal on EVERY
+    interpreter, text within the limit still parses, and a decoder that
+    gives up on its own is still turned into a typed refusal.
+
+    The earlier form of this check drove 1,500 levels and relied on the
+    decoder raising RecursionError. CPython 3.10 does; 3.12 and 3.14 do
+    not, so the check failed on two of the three CI legs while the
+    boundary itself was behaving reasonably. Asserting the declared limit
+    tests the contract instead of the interpreter. The depth at which this
+    interpreter's decoder exhausts its stack, where it has one, is found
+    rather than assumed and exercised as well, so a stack exhaustion can
+    never abort a run whatever the declared limit is set to.
+    """
+    digest = hashlib.sha256(b"depth-contract").hexdigest()
+    declared = _refusals_at_depth(MAXIMUM_NESTING_DEPTH + 1, digest)
+    # The limit must refuse deep text WITHOUT refusing ordinary replies: a
+    # cap that rejected everything would pass the assertions above.
+    under = MAXIMUM_NESTING_DEPTH - 1
+    nested_but_legal = '{"a":' * under + "1" + "}" * under
+    admitted = admit_model_response_as_loop(ModelResponseAdmissionRequest(
+        nested_but_legal, "fixture.response/v1", digest))
+    # A bracket inside a string is text, not structure, and must not count.
+    bracketed = json.dumps({"note": "[" * 5000})
+    string_ok = admit_model_response_as_loop(ModelResponseAdmissionRequest(
+        bracketed, "fixture.response/v1", digest))
+    tests = [{
+        "test": "nesting_depth_beyond_the_declared_limit_is_a_typed_refusal",
+        "passed": all(declared.values()),
+        "detail": (f"declared limit {MAXIMUM_NESTING_DEPTH}: "
+                   + ", ".join(f"{label}={ok}" for label, ok in declared.items())),
+    }, {
+        "test": "nesting_within_the_declared_limit_is_still_admitted",
+        "passed": admitted.admitted is True and string_ok.admitted is True,
+        "detail": f"under-limit admitted={admitted.admitted}, "
+                  f"brackets-in-a-string admitted={string_ok.admitted}",
     }]
+    depth = _depth_the_decoder_refuses()
+    if not depth:
+        tests.append({
+            "test": "nesting_depth_beyond_the_decoder_is_a_typed_refusal_not_an_abort",
+            "passed": True,
+            "detail": ("this interpreter's decoder did not exhaust its stack "
+                       "at any tried depth, so there is nothing to refuse"),
+        })
+    else:
+        decoder = _refusals_at_depth(depth, digest)
+        tests.append({
+            "test": "nesting_depth_beyond_the_decoder_is_a_typed_refusal_not_an_abort",
+            "passed": all(decoder.values()),
+            "detail": (f"depth {depth}: "
+                       + ", ".join(f"{label}={ok}" for label, ok in decoder.items())),
+        })
+    return tests
 
 
 def _syntax_diagnostic_checks() -> list[dict]:

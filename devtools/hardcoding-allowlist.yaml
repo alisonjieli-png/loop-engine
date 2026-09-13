@@ -199,3 +199,367 @@ entries:
     classification: CLOSED_CONTROLLED_VOCABULARY
     created_on: 2026-09-02
     expires_on: 2027-09-02
+  - finding_id: hardcoding.0078e02a55936e1b53389898
+    owner: docs.research.COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json:templates[9].suggested_payload_schema.$schema
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.0b2957d922dcda10aeed1b1a
+    owner: docs.research.COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json:common_envelope_schema.$schema
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.0e26e4d6f8cd7d91a86699b5
+    owner: docs.research.COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json:templates[2].suggested_payload_schema.$schema
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.1f722308f29354267d50d158
+    owner: docs.research.COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json:templates[7].suggested_payload_schema.$schema
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.42c3cd97f6f52f0b3648cf29
+    owner: docs.research.COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json:templates[10].suggested_payload_schema.$schema
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.59b7c173165e6424353c7582
+    owner: docs.research.COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json:templates[8].suggested_payload_schema.$schema
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.6c992f430df94ff478b4b424
+    owner: docs.research.COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json:templates[1].suggested_payload_schema.$schema
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.8bfeee2930fe1a51ba1a4781
+    owner: docs.research.COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json:templates[6].suggested_payload_schema.$schema
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.a0bc11134ad94ec482166cc3
+    owner: docs.research.COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json:templates[3].suggested_payload_schema.$schema
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.b875d226af15543e424eaefc
+    owner: docs.research.COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json:templates[4].suggested_payload_schema.$schema
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.b99056296b1f49819985d6be
+    owner: docs.research.COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json:templates[11].suggested_payload_schema.$schema
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.e53506c57e9aa3f411d144d1
+    owner: docs.research.COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json:templates[0].suggested_payload_schema.$schema
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.fc7404b552d5573bdaf25b6a
+    owner: docs.research.COGNITIVE-LOOP-TEMPLATE-CANDIDATES-2026-09-04.json:templates[5].suggested_payload_schema.$schema
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.10c412784fc2cbf2198119ab
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[31].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.19f8445c8e1ced1b74164c2c
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[13].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.1ae0e726f2f54746e28ad384
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[30].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.2438d43a44a7384fadfc8da8
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[1].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.2e8f6d94223f45ea0671562f
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[37].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.314b524396f6ec02483f2262
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[21].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.33e95d8b6e8ee3394a3be39e
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[9].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.62a54f3800ec8e2a851d2c76
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[26].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.64973c14f3bde5006ceaa55d
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[15].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.6ffaaea95b71274489fc55a2
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[16].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.7780448d265920ef3cf6fc44
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[33].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.7cbda86dc506a88ee19d3b11
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[24].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.7f2e49821a878980c237879b
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[23].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.879fe338ef5ed51467102242
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[3].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.8a5503e47647224f6776abb4
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[20].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.8f0bedd00705a609ad9d4798
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[19].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.92764b9f49ab256c0e8089e0
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[32].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.9f6389eaf7f6b25f6c152e27
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[17].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.a58a27575c6089fc43af571b
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[12].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.aac25ff7c4b66a647d064ed8
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[36].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.afe83e7ce712380a2165db69
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[0].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.b0769280ab8085497eb4974d
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[4].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.b55b8f7e961a166c714e8565
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[10].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.badea951ad83a279da568d37
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[11].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.bdbf308d44a61081c2634d15
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[28].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.c2943b21e0a52d6980097590
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[18].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.c4dae8a8125d386dcb76a4b0
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[27].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.c609ac691539b11884611c86
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[22].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.cb0b34fdf777b87a3803efcc
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[25].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.d5acedd75efdc08136ae3a0a
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[14].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.d9b225ac5e25d6f44222d8eb
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[7].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.dd1cfa4e2aa436b965e4cb29
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[35].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.e134acec5bb08a07113b091c
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[2].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.e8606b4120d35918b11d032b
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[29].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.e9513a1769bc7cf4b00df29b
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[6].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.edd4b860d6a946e6b275c74b
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[5].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.f51733646c92563680f27abf
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[8].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.f5c4143cf3b78d491d48e7f7
+    owner: docs.research.MODEL-ARCHITECTURES-COMPOSITION-SOURCE-MATRIX-2026-09-04.json:rows[34].source.url
+    rationale: >-
+      Research note serialized as JSON under docs/research: the literal is a cited URL, dataset or model name in reference material, not a code path. It selects no runtime behavior and has no caller override, policy, or deployment lifecycle. Allowlisted by id rather than by excluding the directory from the scan, because excluding it moved every other finding id and made the delta gate worse.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-07
+    expires_on: 2027-09-07
+  - finding_id: hardcoding.3c37f9cda23273c25f0f333c
+    owner: loop_engine.core.openai_responses_client:OpenAIResponsesAdapter.__init__
+    rationale: >-
+      The literal is the NAME of an environment variable, read with os.environ.get exactly as mistral_client.py reads MISTRAL_API_KEY; the secret itself never appears in source. The name is the provider's documented convention and has no caller override.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-07
+    expires_on: 2027-09-07

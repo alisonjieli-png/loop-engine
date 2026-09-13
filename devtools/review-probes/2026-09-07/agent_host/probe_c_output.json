@@ -1,0 +1,86 @@
+{
+ "sales_partial_with_completion": {
+  "keys_expected_or_expected_error": [],
+  "failure_note_on_passing_check": [],
+  "arguments_key_inside_observations": [],
+  "case_arguments_in_visible_text": [],
+  "expected_values_of_failing_cases_in_visible_text": [],
+  "generated_expected_values_in_visible_text": [],
+  "generated_arguments_in_visible_text": [],
+  "host_absolute_root_path_in_visible_text": true,
+  "paths_carrying_host_root": [
+   "/descriptors[0]/permission_scope",
+   "/descriptors[1]/permission_scope",
+   "/descriptors[2]/permission_scope",
+   "/inspect/scope_ref",
+   "/manifest/scope_ref",
+   "/replace/scope_ref",
+   "/run/scope_ref",
+   "/safe_results[0]/scope_ref"
+  ],
+  "primary_passed": false,
+  "report": [
+   "failed",
+   false
+  ],
+  "failing_case_ids_shown_to_model": [
+   "columns",
+   "empty_department",
+   "exact_magnitude_price_1021_digits",
+   "exact_magnitude_price_231_digits",
+   "exact_magnitude_price_517_digits",
+   "exact_price_cancellation_1021_digits"
+  ],
+  "visible_bytes": 104752
+ },
+ "duration_reference": {
+  "keys_expected_or_expected_error": [],
+  "failure_note_on_passing_check": [],
+  "arguments_key_inside_observations": [],
+  "case_arguments_in_visible_text": [],
+  "expected_values_of_failing_cases_in_visible_text": [],
+  "host_absolute_root_path_in_visible_text": true,
+  "paths_carrying_host_root": [
+   "/descriptors[0]/permission_scope",
+   "/descriptors[1]/permission_scope",
+   "/descriptors[2]/permission_scope",
+   "/inspect/scope_ref",
+   "/manifest/scope_ref",
+   "/replace/scope_ref",
+   "/run/scope_ref",
+   "/safe_results[0]/scope_ref"
+  ],
+  "primary_passed": true,
+  "report": [
+   "passed",
+   true
+  ],
+  "failing_case_ids_shown_to_model": [],
+  "visible_bytes": 24636
+ },
+ "schedule_html_reference": {
+  "keys_expected_or_expected_error": [],
+  "failure_note_on_passing_check": [],
+  "arguments_key_inside_observations": [],
+  "case_arguments_in_visible_text": [],
+  "expected_values_of_failing_cases_in_visible_text": [],
+  "host_absolute_root_path_in_visible_text": true,
+  "paths_carrying_host_root": [
+   "/descriptors[0]/permission_scope",
+   "/descriptors[1]/permission_scope",
+   "/descriptors[2]/permission_scope",
+   "/inspect/scope_ref",
+   "/manifest/scope_ref",
+   "/replace/scope_ref",
+   "/run/scope_ref",
+   "/run/value/artifacts[0]/path"
+  ],
+  "primary_passed": true,
+  "report": [
+   "passed",
+   true
+  ],
+  "failing_case_ids_shown_to_model": [],
+  "visible_bytes": 24246
+ }
+}

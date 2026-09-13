@@ -1,0 +1,47 @@
+[self_dependency_barrier] REFUSED DevelopmentPlanError: task dependency cycle or blocked graph disposition=None
+[self_dependency_with_self_input] REFUSED DevelopmentPlanError: task dependency cycle or blocked graph disposition=None
+[three_cycle] REFUSED DevelopmentPlanError: task dependency cycle or blocked graph disposition=None
+[three_cycle_typed] REFUSED DevelopmentPlanError: task dependency cycle or blocked graph disposition=None
+[diamond_listed_reverse] REFUSED DependencyBindingError: dependency roles require an explicit compatible connection disposition=incompatible
+[diamond_duplicate_consumer_role] REFUSED DependencyBindingError: inputs: each consumer role must be bound once disposition=malformed
+[missing_producer] REFUSED DependencyBindingError: depends_on names an unknown task disposition=malformed
+[input_from_unlisted_producer] REFUSED DependencyBindingError: each input must name an explicit same-plan dependency disposition=malformed
+[dup_case] ADMITTED order=(0, 1) digest=856d5332e95e
+[dup_trailing_space] REFUSED DependencyBindingError: task_id: invalid planned task identity disposition=malformed
+[dup_leading_space] REFUSED DependencyBindingError: task_id: invalid planned task identity disposition=malformed
+[dup_nfkc] REFUSED DependencyBindingError: task_id: invalid planned task identity disposition=malformed
+[consumer_depends_on_case_variant] ADMITTED order=(1, 2, 0) digest=9857ebbf026d
+[task_id=''] REFUSED DependencyBindingError: task_id: invalid planned task identity disposition=malformed
+[task_id=' '] REFUSED DependencyBindingError: task_id: invalid planned task identity disposition=malformed
+[task_id='a b'] REFUSED DependencyBindingError: task_id: invalid planned task identity disposition=malformed
+[task_id='a/b'] REFUSED DependencyBindingError: task_id: invalid planned task identity disposition=malformed
+[task_id='a\nb'] REFUSED DependencyBindingError: task_id: invalid planned task identity disposition=malformed
+[task_id='../x'] REFUSED DependencyBindingError: task_id: invalid planned task identity disposition=malformed
+[task_id='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx] REFUSED DependencyBindingError: task_id: invalid planned task identity disposition=malformed
+[task_id='🚀'] REFUSED DependencyBindingError: task_id: invalid planned task identity disposition=malformed
+[task_id='task:evil'] ADMITTED order=(0,) digest=bf1734f13578
+[task_id='slot.00000000'] ADMITTED order=(0,) digest=7185529f6760
+[bind_to_barrier_producer_without_output] REFUSED DependencyBindingError: input does not match its producer's exact output contract disposition=incompatible
+[bind_to_nonexistent_output_port] REFUSED DependencyBindingError: input does not match its producer's exact output contract disposition=incompatible
+[schema_items_not_schema] REFUSED DependencyBindingError: output.schema: invalid self-contained JSON Schema disposition=malformed
+[schema_minimum_string] REFUSED DependencyBindingError: output.schema: invalid self-contained JSON Schema disposition=malformed
+[schema_enum_not_list] REFUSED DependencyBindingError: output.schema: invalid self-contained JSON Schema disposition=malformed
+[schema_required_dup] REFUSED DependencyBindingError: output.schema: invalid self-contained JSON Schema disposition=malformed
+[schema_type_list_bad] REFUSED DependencyBindingError: output.schema: invalid self-contained JSON Schema disposition=malformed
+[schema_bool_true_schema] REFUSED DependencyBindingError: output.schema: invalid self-contained JSON Schema disposition=malformed
+[schema_bool_false_schema] REFUSED DependencyBindingError: output.schema: invalid self-contained JSON Schema disposition=malformed
+[schema_empty_schema] ADMITTED order=(1, 0) digest=8d5c9adc005d
+[schema_nan_default] REFUSED ValueError: Out of range float values are not JSON compliant disposition=None
+[schema_pattern] REFUSED DependencyBindingError: output.schema: invalid self-contained JSON Schema disposition=malformed
+[schema_format] REFUSED DependencyBindingError: output.schema: invalid self-contained JSON Schema disposition=malformed
+[schema_defs] REFUSED DependencyBindingError: output.schema: invalid self-contained JSON Schema disposition=malformed
+[schema_properties_list] REFUSED DependencyBindingError: output.schema: invalid self-contained JSON Schema disposition=malformed
+[schema_allOf_not_list] REFUSED DependencyBindingError: output.schema: invalid self-contained JSON Schema disposition=malformed
+[schema_nested_3000] REFUSED RecursionError: maximum recursion depth exceeded in comparison disposition=None
+[prereq_without_binding_barrier] ADMITTED order=(1, 0) digest=e5b5dfe0f2ea
+[binding_without_prereq] REFUSED DependencyBindingError: each input must name an explicit same-plan dependency disposition=malformed
+mixed REFUSED DependencyBindingError one dependency plan cannot mix named and legacy assignments
+[record_v2] REFUSED DependencyBindingError: spawned assignment version is unsupported
+[record_v01] REFUSED DependencyBindingError: spawned assignment version is unsupported
+[record_surplus_field] REFUSED AdaptivePractitionerError: plan.spawned_tasks[0]: unexpected_fields_count=1; use only constraints,depends_on,inputs,objective,output_contract,record_type,success_crite
+[record_surplus_underscore] REFUSED AdaptivePractitionerError: plan.spawned_tasks[0]: unexpected_fields_count=1; use only constraints,depends_on,inputs,objective,output_contract,record_type,success_crite

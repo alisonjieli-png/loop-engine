@@ -1,0 +1,60 @@
+#!/home/username/loop-engine/.venv/bin/python
+"""Fake docker for offline bridge probing: plays the container-side Node bridge role per a scenario file."""
+import sys, json, os, hashlib
+S = '/tmp/claude-1000/-home-username-loop-engine/6d8b36e1-c0bf-4f98-a765-7be966b7d9c2/scratchpad/agent_host'
+cfg = json.load(open(S + '/fake_docker_scenario.json'))
+log_path = S + '/fake_docker_log_' + cfg['name'] + '.jsonl'
+def log(kind, value):
+    with open(log_path, 'a') as f:
+        f.write(json.dumps({'kind': kind, 'value': value}) + '\n')
+argv = sys.argv[1:]
+log('argv', argv)
+if argv[:1] == ['stop']:
+    sys.exit(0)
+if argv[:1] == ['inspect']:
+    sys.stderr.write('Error: No such object: ' + argv[-1] + '\n'); sys.exit(1)
+if argv[:1] != ['run']:
+    sys.stderr.write('unexpected\n'); sys.exit(2)
+workspace = next(a for a in argv if a.endswith(':/workspace:ro')).split(':/workspace:ro')[0]
+def emit(value):
+    sys.stdout.write(json.dumps(value) + '\n'); sys.stdout.flush()
+def read_frame():
+    line = sys.stdin.readline()
+    if not line:
+        return None
+    frame = json.loads(line); log('stdin_frame', frame); return frame
+init = read_frame()
+assert init['bridge_record'] == 'initialize'
+manifest = json.load(open(os.path.join(workspace, 'instance-plan.json')))
+core_text = '\n'.join(open(os.path.join(workspace, item['relative_path'])).read().strip()
+                      for item in manifest['core_resources'] if item['kind'] == 'context')
+system = '' if cfg.get('omit_core') else core_text
+if cfg.get('harness_text_lines'):
+    for text in cfg['harness_text_lines']:
+        emit({'bridge_record': 'harness_text', 'text_digest': hashlib.sha256(text.encode()).hexdigest()})
+messages = [{'role': 'system', 'content': system}, {'role': 'user', 'content': init['goal']}]
+events = []
+for turn in range(cfg.get('max_turns', 3)):
+    body = {'model': cfg.get('model', 'loop-model'), 'messages': messages, 'tools': cfg['tools'], 'stream': False, 'max_tokens': 64}
+    if cfg.get('oversize'):
+        body['padding'] = 'x' * cfg['oversize']
+    emit({'bridge_record': 'model_request', 'request_id': 'model-%d' % (turn + 1), 'body': body,
+          'request_digest': hashlib.sha256(json.dumps(body).encode()).hexdigest()})
+    reply = read_frame()
+    if reply is None or reply.get('bridge_record') != 'model_response':
+        break
+    message = reply['message']
+    if message['tool_calls']:
+        for call in message['tool_calls']:
+            events.append({'type': 'tool_use', 'sessionID': 'ses_fake', 'part': {'type': 'tool', 'tool': call['name'],
+                           'state': {'status': 'completed', 'input': call['arguments']}}})
+            emit({'bridge_record': 'harness_event', 'value': events[-1]})
+            messages.append({'role': 'assistant', 'content': None, 'tool_calls': [call]})
+            messages.append({'role': 'tool', 'content': 'TOOL_RESULT_FOR_' + call['name'], 'tool_call_id': call['id']})
+        continue
+    text = message['content'] or ''
+    emit({'bridge_record': 'harness_event', 'value': {'type': 'text', 'sessionID': 'ses_fake', 'part': {'type': 'text', 'text': text}}})
+    emit({'bridge_record': 'harness_event', 'value': {'type': 'step_finish', 'sessionID': 'ses_fake', 'part': {'reason': 'stop', 'tokens': {'input': 10, 'output': 5}}}})
+    break
+emit({'bridge_record': 'finished', 'exit_code': 0, 'signal': None, 'model_requests': turn + 1})
+sys.exit(0)

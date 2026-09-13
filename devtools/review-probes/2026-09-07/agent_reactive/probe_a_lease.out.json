@@ -1,0 +1,49 @@
+{
+ "boundary_recover_at_exact_expires_at": {
+  "expires_at": "2026-09-07T00:00:01Z",
+  "recovered": [
+   "admitted"
+  ],
+  "note": "expires_at > now is the validity test, so a lease is treated as expired at the exact instant expires_at"
+ },
+ "attempt_counting": {
+  "max_attempts": 2,
+  "leases_granted": [
+   [
+    1,
+    1,
+    "2026-09-07T00:00:01Z"
+   ],
+   [
+    2,
+    2,
+    "2026-09-07T00:00:03Z"
+   ]
+  ],
+  "third_claim": null,
+  "final_status": "dead_letter",
+  "final_failure_code": "LEASE_EXPIRED_ATTEMPTS_EXHAUSTED",
+  "final_attempt": 2,
+  "revision_statuses": [
+   "admitted",
+   "leased",
+   "admitted",
+   "leased",
+   "dead_letter"
+  ]
+ },
+ "foreign_publish_with_readable_fence": {
+  "B_claim_while_A_holds_lease": null,
+  "fence_readable_by_B": {
+   "lease_id": "lease.activation.38dbb58799f6d3db825cb899.1",
+   "fencing_token": 1,
+   "worker_id": "worker-A"
+  },
+  "B_terminal_accepted": true,
+  "B_terminal_error": null,
+  "published_loop_id": "forged-loop-by-B",
+  "published_worker_id_field": "worker-A",
+  "A_owner_terminal_error": "ReactiveSchedulerError: only active leased work can become terminal",
+  "request_has_worker_id_field": false
+ }
+}
