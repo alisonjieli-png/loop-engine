@@ -20,8 +20,10 @@ First public release.
 - A provider's stated wait is honoured. A refusal that carries
   `Retry-After` is waited for before the same route is retried, up to a
   sixty-second ceiling, and the ledger records what was stated, what was
-  waited, and whether the ceiling cut it; the recovery reasoner now sees
-  the failure's class and the stated wait as facts beside the code. The
+  waited, and whether the ceiling cut it; a throttle that states no wait
+  gets the fifteen-second backoff the Practitioner had documented but never
+  applied, recorded as unstated; the recovery reasoner now sees the
+  failure's class and the stated wait as facts beside the code. The
   guided setup asks the wire format instead of inferring it from port
   11434, suggesting one from the URL's path, so a hosted Ollama at
   `https://ollama.com` is not offered the OpenAI path. The campaign's

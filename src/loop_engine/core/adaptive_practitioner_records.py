@@ -321,23 +321,36 @@ def _stated_wait_seconds(result) -> "float | None":
 
 def _honour_stated_wait(owner, request, result, error_code: str,
                         attempt: int, *, sleep=time.sleep) -> float:
-    """Wait the provider's stated time, bounded, before a same-route retry,
-    and record what was stated and what was waited. Returns the seconds
-    waited; zero when nothing was stated."""
+    """Wait before a same-route retry: the provider's stated time when it
+    stated one, bounded by the ceiling; otherwise the slow backoff for a
+    throttle that stated none, so the retry does not return straight into
+    the same refusal. Both are recorded with what was stated and what was
+    waited, so run data can judge the starting point. Returns the seconds
+    waited; zero when neither applies."""
     stated = _stated_wait_seconds(result)
-    if stated is None or stated <= 0:
-        return 0.0
-    waited = min(stated, float(_MAXIMUM_STATED_WAIT_SECONDS))
-    owner.ledger.record(
-        loop_id=owner.loop_id, event="custom",
-        custom_kind="provider_stated_wait_honoured",
-        procedure_step=request.step_id, error_code=error_code,
-        transport_attempt=attempt, stated_wait_seconds=stated,
-        waited_seconds=waited,
-        wait_ceiling_seconds=_MAXIMUM_STATED_WAIT_SECONDS,
-        cut_at_ceiling=waited < stated)
-    sleep(waited)
-    return waited
+    if stated is not None and stated > 0:
+        waited = min(stated, float(_MAXIMUM_STATED_WAIT_SECONDS))
+        owner.ledger.record(
+            loop_id=owner.loop_id, event="custom",
+            custom_kind="provider_stated_wait_honoured",
+            procedure_step=request.step_id, error_code=error_code,
+            transport_attempt=attempt, stated_wait_seconds=stated,
+            waited_seconds=waited,
+            wait_ceiling_seconds=_MAXIMUM_STATED_WAIT_SECONDS,
+            cut_at_ceiling=waited < stated)
+        sleep(waited)
+        return waited
+    if error_code in _SLOW_BACKOFF_ERRORS:
+        waited = float(_SLOW_BACKOFF_SECONDS)
+        owner.ledger.record(
+            loop_id=owner.loop_id, event="custom",
+            custom_kind="throttle_backoff_applied",
+            procedure_step=request.step_id, error_code=error_code,
+            transport_attempt=attempt, stated_wait_seconds=None,
+            waited_seconds=waited, basis="unstated throttle; starting point, not measured")
+        sleep(waited)
+        return waited
+    return 0.0
 
 #: Attempts for a response that arrived carrying no answer. Kept apart from
 #: the transport count because the two say opposite things about the

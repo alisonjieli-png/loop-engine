@@ -156,7 +156,9 @@ def stated_wait_is_honoured_and_bounded() -> list:
     short = _honour_stated_wait(owner, request, result(7), "rate_limited", 1, sleep=slept.append)
     long = _honour_stated_wait(owner, request, result(7200), "usage_limit_reached", 2,
                                sleep=slept.append)
-    none = _honour_stated_wait(owner, request, result(None), "rate_limited", 1, sleep=slept.append)
+    throttled = _honour_stated_wait(owner, request, result(None), "rate_limited", 1,
+                                    sleep=slept.append)
+    none = _honour_stated_wait(owner, request, result(None), "timeout", 1, sleep=slept.append)
     empty = _honour_stated_wait(owner, request, SimpleNamespace(attempts=()), "timeout", 1,
                                 sleep=slept.append)
     return [
@@ -166,11 +168,16 @@ def stated_wait_is_honoured_and_bounded() -> list:
          and events[0]["stated_wait_seconds"] == 7.0 and events[0]["cut_at_ceiling"] is False,
          "detail": str(events[:1])[:160]},
         {"test": "a long stated wait is cut at the ceiling and the record says so",
-         "passed": long == float(_MAXIMUM_STATED_WAIT_SECONDS) and len(events) == 2
+         "passed": long == float(_MAXIMUM_STATED_WAIT_SECONDS) and len(events) >= 2
          and events[1]["cut_at_ceiling"] is True and events[1]["stated_wait_seconds"] == 7200.0,
          "detail": str(events[1:2])[:160]},
-        {"test": "no stated wait means no wait and no record",
-         "passed": none == 0.0 and empty == 0.0 and len(slept) == 2 and len(events) == 2
+        {"test": "an unstated throttle gets the slow backoff and the record says it is unstated",
+         "passed": throttled == 15.0 and len(events) == 3
+         and events[2]["custom_kind"] == "throttle_backoff_applied"
+         and events[2]["stated_wait_seconds"] is None and events[2]["waited_seconds"] == 15.0,
+         "detail": str(events[2:3])[:160]},
+        {"test": "no stated wait and no throttle means no wait and no record",
+         "passed": none == 0.0 and empty == 0.0 and len(slept) == 3 and len(events) == 3
          and _stated_wait_seconds(result(True)) is None and _stated_wait_seconds(None) is None,
          "detail": ""},
     ]
