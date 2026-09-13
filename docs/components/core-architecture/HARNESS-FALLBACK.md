@@ -358,6 +358,27 @@ executor is always `direct_adapter` today. A binding without a layering
 record reports an empty digest and the same executor, so an undeclared
 attempt is distinguishable from a declared direct one.
 
+Both dimensions are enumerable and indexable for a configuration search
+through `core.harness_layering_space`. A `ControlPolicySpace` for one
+adapter holds every complete control policy the adapter can honor (a
+declared control may be owned by the Loop, delegated, supervised, or
+disabled; an undeclared one only owned by the Loop or disabled; completion
+never delegated), decodes any policy from an integer index with mixed
+radix, and returns a policy's index or refuses one outside the space. A
+`CompositionSpace` holds every valid ordered selection of catalogue layers
+around one harness up to the depth the caller states (dependencies
+earlier, single owners for transport and accounting), with the direct
+adapter at index 0 and the sequences produced one at a time, so no size
+ceiling is invented and a large catalogue costs time per lookup rather than
+memory. A
+`LayeringSpace` is their product for one assignment and yields validated
+bindings by index, reporting an index inadmissible when the outer policy
+would refuse it (a natively owned retry without `allow_native_retry`).
+Sizes are exact: an adapter declaring nothing has 256 control policies,
+one declaring every control 49,152, and a four-layer catalogue to depth
+three has 20 compositions. Nothing is materialized beyond the candidate
+asked for.
+
 The records are declarations. The proposal's comparison controls
 (continuation owner, retained versus fresh session, wrapper order,
 concurrent native and outer retry, cancellation in flight, native counter

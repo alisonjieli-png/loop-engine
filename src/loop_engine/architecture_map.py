@@ -217,6 +217,7 @@ MODULE_MAP = {
         "harness_configuration", "harness_semantic", "harness_semantic_checks",
         "harness_fallback", "harness_fallback_checks", "harness_layering",
         "harness_selection_records", "harness_selection", "harness_selection_checks",
+        "harness_layering_space",
         "harness_response_evaluation",
         "harness_additional_recipes", "harness_additional_recipe_checks",
         "harness_cline_kilo_recipes", "harness_cline_kilo_recipe_checks",

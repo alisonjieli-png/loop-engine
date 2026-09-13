@@ -124,7 +124,7 @@ def self_test() -> dict:
         "core.external_harness_adapters",
         "core.harness_process_checks",
         "core.harness_semantic",
-        "core.harness_fallback", "core.harness_layering",
+        "core.harness_fallback", "core.harness_layering", "core.harness_layering_space",
         "core.harness_selection", "core.harness_response_evaluation",
         "core.harness_additional_recipe_checks",
         "core.harness_cline_kilo_recipe_checks",
