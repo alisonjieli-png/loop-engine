@@ -215,7 +215,7 @@ MODULE_MAP = {
         "harness_model_authority", "harness_process", "harness_process_relay",
         "harness_process_checks",
         "harness_configuration", "harness_semantic", "harness_semantic_checks",
-        "harness_fallback", "harness_fallback_checks",
+        "harness_fallback", "harness_fallback_checks", "harness_layering",
         "harness_selection_records", "harness_selection", "harness_selection_checks",
         "harness_response_evaluation",
         "harness_additional_recipes", "harness_additional_recipe_checks",

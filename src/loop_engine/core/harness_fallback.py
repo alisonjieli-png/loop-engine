@@ -33,10 +33,18 @@ class HarnessFallbackPolicy:
     harness_ids: tuple[str, ...]
     switch_on: tuple[HarnessFailureKind, ...]
     version: str = "1.0.0"
+    #: Explicit permission for a native harness layer to own retry. Off, a
+    #: layered binding that delegates retry to the harness is refused, so a
+    #: native transport retry can never bypass this policy's own restriction
+    #: on semantic recovery. The field enters the record only when set, so
+    #: every existing policy digest is unchanged.
+    allow_native_retry: bool = False
 
     def __post_init__(self):
         if self.version != "1.0.0":
             raise ValueError("unsupported harness fallback policy version")
+        if type(self.allow_native_retry) is not bool:
+            raise TypeError("allow_native_retry must be an explicit Boolean")
         if type(self.harness_ids) not in (tuple, list) or not self.harness_ids:
             raise ValueError("fallback needs an explicit nonempty adapter order")
         ids = tuple(self.harness_ids)
@@ -55,9 +63,13 @@ class HarnessFallbackPolicy:
     def to_dict(self):
         encoding = ('harness_fallback_policy/v2' if HarnessFailureKind.SEMANTIC_REJECTED in self.switch_on
                     else 'harness_fallback_policy/v1')
-        return {"record_type": encoding, "version": self.version,
-                "harness_ids": list(self.harness_ids),
-                "switch_on": [item.value for item in self.switch_on]}
+        record = {"record_type": encoding, "version": self.version,
+                  "harness_ids": list(self.harness_ids),
+                  "switch_on": [item.value for item in self.switch_on]}
+        if self.allow_native_retry:
+            record["record_type"] = 'harness_fallback_policy/v3'
+            record["allow_native_retry"] = True
+        return record
 
     @property
     def content_digest(self):

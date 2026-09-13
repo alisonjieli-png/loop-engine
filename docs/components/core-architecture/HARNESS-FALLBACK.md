@@ -268,8 +268,80 @@ comparison must include fixed-harness controls, failure rates, verified task
 quality, latency, physical calls, token-accounting completeness, and unknown
 costs. A recovery smoke test is not a full-system benchmark.
 
+## Declare wrapper layers and native control ownership
+
+The [layered harness proposal](../../architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
+asks for two more configuration dimensions: which wrappers compose one
+harness implementation, and who owns each native control of the harness.
+`core.harness_layering` records both as passive, digested declarations that
+are bound to one assignment before execution. Nothing in the module launches
+a process, enables a native goal, or grants tool, effect, or spending
+authority. A binding without a layering record means the direct adapter,
+which is what every current recipe runs.
+
+```python
+from loop_engine.core.harness_fallback import HarnessFailureKind, HarnessFallbackPolicy
+from loop_engine.core.harness_layering import (
+    CompositionFallback, ControlOwnership, LayeredHarnessBinding,
+    NativeControl, NativeControlPolicy, WrapperComposition, WrapperLayer,
+)
+
+outer = HarnessFallbackPolicy(("codex", "opencode"), (HarnessFailureKind.UNAVAILABLE,))
+preparation = WrapperLayer("instruction-prep", "1.2.0", ("instruction_preparation",),
+                           inspects=("instructions",), transforms=("instructions",))
+bridge = WrapperLayer("session-bridge", "0.4", ("native_session_bridge", "accounting"),
+                      depends_on=("instruction-prep",))
+composition = WrapperComposition("prepared-bridge", "codex", (preparation, bridge))
+controls = NativeControlPolicy.owning_loop_for_everything()
+binding = LayeredHarnessBinding(
+    "assignment:orient-42", composition, controls,
+    (CompositionFallback((HarnessFailureKind.UNAVAILABLE,), "different_harness",
+                         "opencode is the registered alternative", harness_id="opencode"),),
+    outer)
+print(binding.content_digest)
+```
+
+A `WrapperLayer` names its identity, version, responsibilities from a closed
+vocabulary, what it may inspect or transform, its settings as plain data, and
+the wrappers it depends on. A `WrapperComposition` orders the layers around
+one registered harness; order is part of the digest, a dependency must sit
+earlier, and transport and accounting each have at most one owner because
+physical calls and effects are counted once. An empty composition is the
+direct adapter and the comparison baseline.
+
+A `NativeControlPolicy` resolves every native control (goal management,
+planning and continuation, tool and resource use, retry and fallback,
+context and session state, steering and queued work, pause and cancellation,
+completion and output publication) to `owning_loop`,
+`delegated_within_authority`, `supervised_native`, `disabled`,
+`unsupported`, or `unknown`. The matrix must be complete, `unsupported` and
+`unknown` need a written reason, and completion can never be delegated: a
+native completion claim is a candidate the owning Loop checks, never its
+result.
+
+A `LayeredHarnessBinding` checks the coordination rules against the outer
+`HarnessFallbackPolicy`: exactly one fallback decides each failure kind; a
+fallback to another harness must name an alternative the outer policy lists,
+for a failure the outer policy permits; a wrapper or order fallback must
+differ from the initial composition; and a native retry owner needs the
+outer policy's new `allow_native_retry` permission, which is off by default
+and enters the policy record only when set (`harness_fallback_policy/v3`),
+so every existing policy digest is unchanged. That rule is the proposal's
+requirement that a native transport retry cannot bypass an outer
+semantic-recovery restriction.
+
+The records are declarations. No adapter executes a composition yet, and
+the proposal's comparison controls (continuation owner, retained versus
+fresh session, wrapper order, concurrent native and outer retry,
+cancellation in flight, native counter resets, rejected native completion,
+unavailable native features, and fallback to Loop Engine control) remain
+the qualification work before any layered profile is used for a run.
+
 ## Verification
 
+`core.harness_layering.self_test()` proves the declarations, the order
+sensitivity of the composition digest, the complete control matrix, and
+each coordination rule with a fixture outer policy.
 `core.harness_selection.self_test()` and
 `core.harness_response_evaluation.self_test()` exercise typed policy parsing,
 matched and unmatched evidence, actual model-session dispatch, distinct

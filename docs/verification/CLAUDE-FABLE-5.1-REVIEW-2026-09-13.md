@@ -547,6 +547,50 @@ for selection, evaluation, fallback, semantic binding, verifier, information
 access, definitions, and checkpoints. The two tool repairs pass 42 unit tests
 together with the six existing `tools` tests (48 in the discover run).
 
+## Repository alignment and merges on 2026-09-13
+
+The owner then asked for the repository to be aligned, every branch merged
+into `main`, and `main` pushed. The result is four commits on `main`:
+
+| Commit | Content | Gates on that tree |
+|---|---|---|
+| `19001d1` | The fixes above, the previously untracked harness subsystem (46 core modules), the embodiment lab, the authored embodiment files, dated evidence summaries, the September 11 to 13 documents, and an extended `.gitignore` that keeps copied sibling repositories, embodiment runtimes, databases, archives, and run workspaces out of the history (390 files). Eight documentation links into git-ignored local trees were relinked or replaced; three small study summaries were copied into `artifacts/configuration-study-20260912-KRiBSo/`. | self-test 3,953 of 3,953; conformance all gates pass; repository conformance passed; embodiment lab 42 of 42; devtools self-test pass; qualification lab 3 of 3; tools tests 48 of 48 |
+| `6aec2e2` | Merge of `origin/fork/reconciled`: Run History authorship and its check module, the reactive scheduler's transactional revisions, the archived 2026-09-07 review probes, allowlist entries with written reasons, and the reconciliation record. The admission module keeps both nesting-depth contracts (the branch's declared limit and main's discovered decoder limit). | self-test 3,974 of 3,974; conformance all gates pass; repository conformance passed; embodiment lab 42 of 42; tools 48 of 48 |
+| `6bc1840` | `origin/fork/hardened-learning` recorded with the `ours` strategy: its ten commits were the fork's first pass, and the reconciled branch already chose one implementation per review item. | unchanged tree |
+| the overnight merge | Merge of `origin/overnight/opencode-step-instances`: composed OpenCode step instances, typed step state, the night budget, multi-path solving, the step and skill catalog, the overnight tools, and seven documents. Conflicting hunks in the five Practitioner modules that main rewrote took main's side; the auto-merge then dropped four definitions the branch's surviving hunks still used (an import in verification, the differential-verification operation, the artifact constraint block, and the `session_factory` seam on `ModelExecution`), which were restored by hand, and the eleven new modules were registered in the module map and the suite. The step-session self-test received its own JSON-only fixture because main's event parser no longer guesses a prose-wrapped object. The seven documents were brought to the CI language and structure rules (228 dash replacements, one retired term, fence languages, heading levels). | self-test, conformance, repository conformance, embodiment lab, tools, devtools self-test, qualification lab, and the twenty CI example scripts all pass; the numbers are in the merge commit's message |
+
+Lessons that a later merge should apply: `forbidden_paths.json` on `main` is
+compact single-line JSON, so a branch's change to it must be applied
+semantically (load, change the key, dump in the same format), never by
+textual merge; after any merge that favors one side for conflicting hunks,
+run an undefined-name scan over every conflicted file, because the surviving
+hunks of the other side may reference definitions the resolution dropped;
+and the machine's temporary directory must sit outside the repository,
+because the embodiment lab's reference preparer refuses a destination inside
+the checkout and `/tmp` is quota-limited here.
+
+CI on GitHub after `19001d1` and `6bc1840`: the documentation job (structure,
+language, retired terms, local links, diagrams, showcase) passed for the
+first time since the job was added, and the build job passed. The three
+test jobs pass the self-test, the conformance gates, and the embodiment lab
+and fail at the hardcoding delta gate, which was already red before this
+session (3,641 new findings at `c259d86`). Measured on a clean export of
+`19001d1` with the CI command: 713 new high or critical findings above the
+2026-09-02 baseline, 343 of them in `src/loop_engine`, 229 in the copied
+release record `embodiments/openinterpreter_rust/latest-release.json`, 51 in
+research matrices under `docs/research`, 68 in `devtools`, and the one
+critical finding an absolute home-directory path in
+`devtools/embodiment_lab/systematic_catalog.py`, which now comes from the
+environment. The entry page forbids refreshing that baseline to make the
+gate pass; the repository's own route is a written-reason allowlist entry
+per finding, or the abstraction the finding asks for. That triage is the
+remaining required work for a green `main`.
+
+Four evidence files stay untracked and unignored because they exceed the
+size rule the alignment plan applied (a 700 KB hardcoding summary, a 2.4 MB
+component inventory, a 550 KB temporary-directory check record, and a
+250 KB diagnostics archive); a later decision can add or ignore them.
+
 ## Addendum written while Codex evaluated the findings
 
 Added on 2026-09-13 after 12:00 local time, while the live Codex session
