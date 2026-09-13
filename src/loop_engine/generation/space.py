@@ -128,6 +128,25 @@ class ConfigurationSpace:
                     or any(not isinstance(v, list) or not v for v in rule["require"].values())
                     or any(type(v) is not bool for v in rule["prohibit"].values())):
                 raise GenerationError("conditional rule references or values are invalid")
+            # A value no axis takes makes a rule dead (never matches) or
+            # impossible (excludes every matching address); both are refused
+            # at construction instead of silently shaping the search.
+            by_name = {axis.dimension_id: axis for axis in axes}
+            for clause in ("when", "require"):
+                for key, wanted in rule[clause].items():
+                    candidates = wanted if clause == "require" else [wanted]
+                    for value in candidates:
+                        if key in by_name:
+                            try:
+                                by_name[key].offset_of(value)
+                            except GenerationError as exc:
+                                raise GenerationError(
+                                    f"rule {rule['rule_id']!r} names a value axis {key!r} "
+                                    "never takes") from exc
+                        elif canonical(value) != canonical(context[key]):
+                            raise GenerationError(
+                                f"rule {rule['rule_id']!r} names a value fixed context "
+                                f"{key!r} never takes")
         object.__setattr__(self, "axes", axes)
         object.__setattr__(self, "context_json", canonical(context))
         object.__setattr__(self, "rules_json", canonical(rules))

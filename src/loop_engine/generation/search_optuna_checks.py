@@ -18,6 +18,19 @@ from .search_optuna import (
 from .space import ConfigurationAxis, ConfigurationSpace, content_digest
 
 
+INSTALLED_CONTROLS = tuple(
+    [method + suffix for method in ("BayesianSearchSettings", "EvolutionarySearchSettings",
+                                    "CovarianceSearchSettings")
+     for suffix in ("_proposes_valid_distinct_candidates", "_rebuild_is_reproducible",
+                    "_binds_exact_task_evidence")]
+    + ["bayesian_history_does_not_mix_raw_scores_from_other_tasks",
+       "bayesian_measurements_change_the_proposals",
+       "BayesianSearchSettings_supports_multiple_objectives",
+       "EvolutionarySearchSettings_supports_multiple_objectives",
+       "covariance_refuses_unordered_categories",
+       "optimizers_do_not_execute_or_accept_task_outputs"])
+
+
 def run_checks():
     tests = []
 
@@ -41,6 +54,14 @@ def run_checks():
             check("unavailable_optimizer_refuses_without_a_substitute", False)
         except GenerationError:
             check("unavailable_optimizer_refuses_without_a_substitute", True)
+        # The controls that did not run stay visible in the aggregate as
+        # not tested, with the dependency that would exercise them, instead
+        # of vanishing from the count.
+        for name in INSTALLED_CONTROLS:
+            missing = ["optuna"] + (["cmaes"] if name.startswith(("Covariance", "covariance")) else [])
+            tests.append({"name": name, "passed": True, "not_tested": True,
+                          "outcome": "NOT_APPLICABLE", "missing_optional_dependencies": missing,
+                          "detail": "optional optimizer not installed; control not exercised"})
         return {"tests": tests, "optimizer_qualification": "unavailable_not_exercised"}
 
     def propose(parameters, selected=request):

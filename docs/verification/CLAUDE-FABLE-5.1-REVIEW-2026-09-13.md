@@ -664,6 +664,32 @@ say "this harness can own goal management natively" declares it there,
 and the projection moves that policy from `adapter_does_not_declare` to
 `declared_without_executor` until an executor exists.
 
+### Review of the wide-search modules, and what was fixed
+
+A read-only review agent probed `generation/space.py`, `search.py`,
+`search_records.py`, `search_optuna.py`, and the embodiment laboratory's
+wide-search control at `3907107` with executed probes (saved under
+`.loop-engine-dev/fable-review-probe-20260913/agent-review-search/`).
+It found the index arithmetic, laziness, shard partitioning, seeded
+determinism, evidence refusals, record detachment, and authority boundary
+sound, and thirteen defects, twelve of them fixed the same afternoon:
+
+| Finding | Severity | Status |
+|---|---|---|
+| Exact-task identity keyed on the feature vector, so features attached later disconnected prior evidence and re-proposed observed addresses | high | fixed: `SearchTask.identity_digest` |
+| One evaluation artifact counted as two trials under different ids | medium | fixed: `duplicate_evaluation_artifact` |
+| Vector warm start spent its draws on the target task's own measurements | medium | fixed |
+| The public entry point wrapped the typed refusal in a `LoopError` | medium | fixed |
+| The aggregate gate hid the fifteen optimizer controls when Optuna is absent | medium | fixed: reported as not tested with the dependency named |
+| The batch record did not carry seed, cursor, shard, batch size, draw limit | medium | fixed: `request` sub-record |
+| The cursor is a bare integer, bound to neither space nor shard | medium | open; the batch now names the shard |
+| The 120-Canvas control crashed mid-run without Optuna and wrote no summary | low | fixed: recorded status |
+| No evaluator digest in the records | low | fixed: optional `evaluator_digest` |
+| No typed readers for the search records | low | open |
+| Dead or impossible conditional rules accepted silently | low | fixed: refused at construction |
+| Empty-shard exhaustion inconsistent between adapters | low | fixed |
+| Documentation claims partly unmet | low | fixed where behaviour changed |
+
 ## Addendum written while Codex evaluated the findings
 
 Added on 2026-09-13 after 12:00 local time, while the live Codex session

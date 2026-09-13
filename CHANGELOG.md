@@ -9,6 +9,33 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- Wide configuration search, after a same-day execution-verified review of
+  the modules that reached `main` in `d8caea2` (probes under
+  `.loop-engine-dev/fable-review-probe-20260913/agent-review-search/`).
+  Exact-task identity for no-repeat, dominance, and optimizer history is now
+  `SearchTask.identity_digest` (task, digest, contract, evaluator), so
+  attaching or re-versioning task features no longer disconnects prior
+  evidence and re-proposes observed addresses; `SearchTask.digest` still
+  covers every field. One evaluation artifact counts once: the same
+  evaluation reference, or byte-identical history and evaluation digests
+  under other references, is excluded as `duplicate_evaluation_artifact`.
+  An optional `SearchTask.evaluator_digest` is compared when both sides
+  state it (`evaluator_implementation_changed`) and is left out of the task
+  digest when absent, so earlier digests hold. The vector warm start skips
+  the target task's own measurements, which could fill the draw allowance
+  and starve related tasks. `propose_configurations` raises the typed
+  `GenerationError` again instead of the Loop wrapper that hid it in
+  `__cause__`. The batch record names its seed, cursor, shard, batch size,
+  and draw allowance in plain fields beside the request digest. Seeded
+  exploration reports an empty shard as exhausted. A conditional rule
+  naming a value its axis or fixed context never takes is refused at
+  construction instead of being dead or excluding every matching address.
+  When Optuna or cmaes is absent, the fifteen optimizer controls appear in
+  the aggregate self-test as not tested with the missing dependency named,
+  and the 120-Canvas control records `optimizer_unavailable_not_exercised`
+  for those methods and still writes its summary. Still open from the same
+  review: a cursor is a bare integer the request does not bind to its space
+  and shard, and the search records have no typed readers.
 - [Claude Fable 5.1 review of 2026-09-13](docs/verification/CLAUDE-FABLE-5.1-REVIEW-2026-09-13.md),
   fixes applied the same day. A registered evaluator's verdict
   (`semantic_response_rejected` or `response_evaluation_inconclusive`) is

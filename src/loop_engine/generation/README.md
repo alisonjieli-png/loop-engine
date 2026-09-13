@@ -69,9 +69,15 @@ space that way without walking its compositions.
 
 `ConfigurationSpace.cardinality` is the raw product of the axes, before
 conditional and runtime qualification. It is not the number of viable
-configurations. Exact enumeration records a cursor for one declared shard.
-Exhausting that cursor does not prove completion of other shards or earlier
-addresses. The legacy `expand_variation_space` still returns a tuple; use
+configurations. A conditional rule must name values its axis or fixed
+context can take; a rule that could never match, or would exclude every
+address it matches, is refused when the space is built. Exact enumeration
+records a cursor for one declared shard, and the batch names its seed,
+cursor, shard, batch size, and draw allowance in plain fields beside the
+request digest. A cursor is an integer the caller pairs with the same space
+and shard it came from; the request does not yet refuse a cursor from
+another shard. Exhausting a cursor does not prove completion of other
+shards or earlier addresses. The legacy `expand_variation_space` still returns a tuple; use
 the indexed or lazy interfaces for large spaces.
 
 ## Proposal methods
@@ -117,9 +123,14 @@ Every observation names its task, space, metric definitions, configuration
 address, exact trial occurrence, Run History, evaluation, and evaluation
 partition. The host must resolve those references before use. Distinct
 occurrences may share one Run History and may repeat a configuration.
-Repeated trial or exact occurrence identities,
-changed spaces, incompatible metrics, unresolved evidence, and sealed final
-evaluation are excluded with a recorded reason. Missing values remain
+Repeated trial or exact occurrence identities, a repeated evaluation
+artifact under another trial id, changed spaces, incompatible metrics, a
+changed evaluator implementation when both sides state its digest,
+unresolved evidence, and sealed final evaluation are excluded with a
+recorded reason. Exact-task identity is the task, its digest, its contract,
+and its evaluator; attaching features to a task does not make it another
+task, and the warm start never spends its draws on the target task's own
+measurements. Missing values remain
 unknown. The optimizer cannot turn a failed trial into a successful one.
 
 A batch's size and draw allowance govern only that proposal computation.

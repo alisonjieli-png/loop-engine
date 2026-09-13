@@ -11,6 +11,7 @@ from dataclasses import dataclass
 import math
 import random
 
+from ..loop.recursive_loop import LoopError
 from .model.fragments import GenerationError
 from .search_records import SearchRequest, SearchServices
 from .space import content_digest
@@ -18,12 +19,19 @@ from .space import content_digest
 
 def _eligible_evidence(request, services):
     accepted, excluded = [], []
-    ids, occurrences = set(), set()
+    ids, occurrences, artifacts = set(), set(), set()
     for observation in request.observations:
         reason = ""
         occurrence = (observation.history_ref, observation.trial_occurrence_ref)
+        # One evaluation artifact is one measurement, whatever trial ids it
+        # is filed under: the same evaluation reference, or byte-identical
+        # history and evaluation records under other references.
+        artifact_keys = (("evaluation", observation.evaluation_ref),
+                         ("digests", observation.history_digest, observation.evaluation_digest))
         if observation.trial_id in ids or occurrence in occurrences:
             reason = "duplicate_trial_or_evidence"
+        elif any(key in artifacts for key in artifact_keys):
+            reason = "duplicate_evaluation_artifact"
         elif observation.space_digest != request.space.digest:
             reason = "configuration_space_changed"
         elif observation.configuration_index >= request.space.cardinality:
@@ -35,6 +43,9 @@ def _eligible_evidence(request, services):
         elif (observation.task.contract_ref != request.task.contract_ref
               or observation.task.evaluator_ref != request.task.evaluator_ref):
             reason = "task_contract_or_evaluator_not_comparable"
+        elif (observation.task.evaluator_digest and request.task.evaluator_digest
+              and observation.task.evaluator_digest != request.task.evaluator_digest):
+            reason = "evaluator_implementation_changed"
         elif services.resolve_evidence is None:
             reason = "evidence_resolver_unavailable"
         else:
@@ -45,6 +56,7 @@ def _eligible_evidence(request, services):
                 reason = "evidence_resolution_failed"
         ids.add(observation.trial_id)
         occurrences.add(occurrence)
+        artifacts.update(artifact_keys)
         if reason:
             excluded.append({"trial_id": observation.trial_id, "reason": reason})
         else:
@@ -58,7 +70,7 @@ def _assemble(request, services):
     seen = set()
     if not request.allow_repeated_configurations:
         seen.update(v.configuration_index for v in observations
-                    if v.task.digest == request.task.digest)
+                    if v.task.identity_digest == request.task.identity_digest)
     settings = services.adapter.settings()
     state = {"next_cursor": None, "search_exhausted": False}
     for proposal in services.adapter.propose(request, observations, state):
@@ -88,6 +100,10 @@ def _assemble(request, services):
         if len(proposals) >= request.batch_size:
             break
     return {"record_type": "configuration_search_batch/v1", "request_digest": request.digest,
+            "request": {"seed": request.seed, "cursor": request.cursor,
+                        "shard_count": request.shard_count, "shard_index": request.shard_index,
+                        "batch_size": request.batch_size, "draw_limit": request.draw_limit,
+                        "allow_repeated_configurations": request.allow_repeated_configurations},
             "space_digest": request.space.digest, "raw_cardinality_decimal": str(request.space.cardinality),
             "valid_cardinality": None, "adapter_ref": services.adapter.adapter_ref,
             "adapter_settings": settings, "task_digest": request.task.digest,
@@ -104,8 +120,15 @@ def propose_configurations(request: SearchRequest, services: SearchServices, *, 
     from ..loop.encapsulate import as_practitioner_loop
     if not isinstance(request, SearchRequest) or not isinstance(services, SearchServices):
         raise GenerationError("proposal work requires typed request and services")
-    return as_practitioner_loop("propose task-conditioned configurations",
-                                lambda: _assemble(request, services), parent=parent)
+    try:
+        return as_practitioner_loop("propose task-conditioned configurations",
+                                    lambda: _assemble(request, services), parent=parent)
+    except LoopError as exc:
+        # The Loop records the failure on its ledger; the caller still gets
+        # the typed refusal, not a wrapper that hides it in __cause__.
+        if isinstance(exc.__cause__, GenerationError):
+            raise GenerationError(str(exc.__cause__)) from exc
+        raise
 
 
 @dataclass(frozen=True)
@@ -144,6 +167,7 @@ class RandomSearchAdapter:
         generator = random.Random(request.seed)
         size = (request.space.cardinality + request.shard_count - 1 - request.shard_index) // request.shard_count
         if size <= 0:
+            state["search_exhausted"] = True
             return
         for _ in range(request.draw_limit):
             index = request.shard_index + request.shard_count * generator.randrange(size)
@@ -184,7 +208,7 @@ class VectorWarmStartAdapter:
         # Prefer non-dominated measurements within each source task. Scores
         # from different tasks are not pooled into a fictitious common label.
         def dominates(left, right):
-            if left.task.digest != right.task.digest:
+            if left.task.identity_digest != right.task.identity_digest:
                 return False
             comparisons = [((a <= b, a < b) if objective.direction == "minimize"
                             else (a >= b, a > b))
@@ -198,6 +222,12 @@ class VectorWarmStartAdapter:
             if (observation.state != "completed" or any(v is None for v in observation.values)
                     or source.feature_space_ref != target.feature_space_ref
                     or len(source.features) != len(target.features)):
+                continue
+            # The target task's own measurements rank first (cosine 1) and
+            # can never be proposed under the no-repeat policy; spending the
+            # draw allowance on them would starve the related tasks.
+            if (source.identity_digest == target.identity_digest
+                    and not request.allow_repeated_configurations):
                 continue
             if any(dominates(other, observation) for other in measured):
                 continue

@@ -55,6 +55,7 @@ class SearchTask:
     evaluator_ref: str
     feature_space_ref: str = ""
     features: tuple[float, ...] = ()
+    evaluator_digest: str = ""
 
     def __post_init__(self):
         for name in ("task_id", "contract_ref", "evaluator_ref"):
@@ -62,6 +63,8 @@ class SearchTask:
         for name in ("contract_ref", "evaluator_ref"):
             versioned_ref(getattr(self, name), name)
         exact_digest(self.task_digest, "task digest")
+        if self.evaluator_digest != "":
+            exact_digest(self.evaluator_digest, "evaluator digest")
         values = tuple(self.features)
         if any(type(v) not in (int, float) or not math.isfinite(v) for v in values):
             raise GenerationError("task features must be finite numbers")
@@ -73,7 +76,22 @@ class SearchTask:
 
     @property
     def digest(self):
-        return content_digest(asdict(self))
+        """Record identity: every field, including the optional feature
+        encoding. An absent evaluator digest is left out so records written
+        before the field existed keep their digests."""
+        record = asdict(self)
+        if not record["evaluator_digest"]:
+            del record["evaluator_digest"]
+        return content_digest(record)
+
+    @property
+    def identity_digest(self):
+        """Exact-task identity: what makes two observations belong to the
+        same task for no-repeat, dominance, and optimizer history. Attaching
+        or re-versioning task features does not create another task."""
+        return content_digest({"task_id": self.task_id, "task_digest": self.task_digest,
+                               "contract_ref": self.contract_ref,
+                               "evaluator_ref": self.evaluator_ref})
 
 
 @dataclass(frozen=True)

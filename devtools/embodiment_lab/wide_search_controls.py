@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+from importlib.metadata import PackageNotFoundError, version as installed_version
 import json
 from pathlib import Path
 import random
@@ -159,7 +160,22 @@ def run(args):
             OptunaSearchAdapter(EvolutionarySearchSettings(4, 0.9, 0.2)),
             OptunaSearchAdapter(CovarianceSearchSettings(4, None)))
         summaries = []
+        missing = []
+        for package in ("optuna", "cmaes"):
+            try:
+                installed_version(package)
+            except PackageNotFoundError:
+                missing.append(package)
+        requires = {2: ["optuna"], 3: ["optuna"], 4: ["optuna", "cmaes"]}
         for method, adapter in enumerate(adapters):
+            absent = [package for package in requires.get(method, []) if package in missing]
+            if absent:
+                # An optimizer that is not installed is a recorded outcome of
+                # this control, not a crash that loses the summary.
+                summaries.append({"method": adapter.adapter_ref,
+                                  "status": "optimizer_unavailable_not_exercised",
+                                  "missing_optional_dependencies": absent, "trials": 0})
+                continue
             observations, cursor, candidates = [], 0, []
             for number in range(args.trials_per_method):
                 request = SearchRequest(space, task, objectives, batch_size=1, draw_limit=100,

@@ -171,7 +171,7 @@ class OptunaSearchAdapter:
 
         used = []
         for observation in observations:
-            if observation.task.digest != request.task.digest:
+            if observation.task.identity_digest != request.task.identity_digest:
                 continue
             used.append(observation.trial_id)
             study.enqueue_trial(encode(observation.configuration_index))

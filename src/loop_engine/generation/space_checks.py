@@ -73,4 +73,18 @@ def run_checks():
         check("duplicate_json_fields_cannot_change_a_binding", True)
     changed_version = ConfigurationSpace.from_campaign(replace(campaign, version="2.0.0"))
     check("campaign_version_changes_space_identity", changed_version.digest != space.digest)
+    for name, rule in (("dead_when", ConditionalRule("dead", {"harness": "EXTERNAL"})),
+                       ("impossible_require", ConditionalRule("impossible", {"harness": "external"},
+                                                              require={"x": (1000000000,)})),
+                       ("context_never_taken", ConditionalRule("fixed", {"fixed": "other"}))):
+        try:
+            ConfigurationSpace.from_campaign(replace(campaign, context={"fixed": "value"},
+                                                     conditional_rules=(rule,)))
+            check(f"a_{name}_rule_is_refused_at_construction", False)
+        except GenerationError:
+            check(f"a_{name}_rule_is_refused_at_construction", True)
+    live = ConfigurationSpace.from_campaign(replace(campaign, context={"fixed": "value"},
+        conditional_rules=(ConditionalRule("fixed-ok", {"fixed": "value"}, require={"harness": ("native",)}),)))
+    check("a_rule_on_a_fixed_context_value_the_space_takes_is_accepted",
+          live.exclusions(1) == ("fixed-ok",) and live.exclusions(0) == ())
     return {"tests": tests}

@@ -117,4 +117,65 @@ def run_checks():
     wrong = propose_configurations(replace(request, observations=(
         observation(request, "wrong", 15, task=wrong_features),)), vector)["value"]
     check("incompatible_feature_encoders_are_not_mixed", not wrong["proposals"])
+
+    # Exact-task identity is the task, not its feature encoding: evidence
+    # recorded before features were attached still blocks a repeat.
+    featureless = replace(request.task, feature_space_ref="", features=())
+    unencoded = propose_configurations(replace(request, observations=(
+        observation(request, "nf", 0, task=featureless),)), trusted_fixture)["value"]
+    check("evidence_recorded_without_task_features_still_blocks_a_repeat",
+          unencoded["observations_validated"] == ["nf"]
+          and [v["configuration_index"] for v in unencoded["proposals"]] == [1, 2, 3]
+          and request.task.identity_digest == featureless.identity_digest
+          and request.task.digest != featureless.digest)
+    # One evaluation artifact is one measurement whatever trial id it carries.
+    refiled = replace(original, trial_id="refiled", trial_occurrence_ref="occurrence:refiled",
+                      history_ref="history:refiled", history_digest=content_digest("history:refiled"))
+    twice = propose_configurations(replace(request, observations=(original, refiled)), trusted_fixture)["value"]
+    same_bytes = replace(original, trial_id="bytes", trial_occurrence_ref="occurrence:bytes",
+                         evaluation_ref="evaluation:bytes")
+    identical = propose_configurations(replace(request, observations=(original, same_bytes)), trusted_fixture)["value"]
+    check("one_evaluation_artifact_counts_once",
+          twice["observations_validated"] == ["one"]
+          and twice["excluded_observations"][0]["reason"] == "duplicate_evaluation_artifact"
+          and identical["observations_validated"] == ["one"]
+          and identical["excluded_observations"][0]["reason"] == "duplicate_evaluation_artifact")
+    # A changed evaluator implementation under the same reference is excluded
+    # when both sides state their evaluator digest; an unstated one is not judged.
+    judged = replace(request, task=replace(request.task, evaluator_digest=content_digest("judge-2")))
+    stale = observation(judged, "stale", 4, task=replace(judged.task, evaluator_digest=content_digest("judge-1")))
+    unstated = observation(judged, "unstated", 5, task=replace(judged.task, evaluator_digest=""))
+    verdict = propose_configurations(replace(judged, observations=(stale, unstated)), trusted_fixture)["value"]
+    check("a_changed_evaluator_implementation_is_excluded_when_both_digests_are_stated",
+          verdict["observations_validated"] == ["unstated"]
+          and verdict["excluded_observations"][0]["reason"] == "evaluator_implementation_changed"
+          and judged.task.digest != request.task.digest)
+    try:
+        replace(request.task, evaluator_digest="not-a-digest")
+        check("an_evaluator_digest_must_be_a_digest", False)
+    except GenerationError:
+        check("an_evaluator_digest_must_be_a_digest", True)
+    # The target task's own measurements cannot crowd related tasks out of
+    # the warm start's draw allowance.
+    crowded = replace(warm, draw_limit=3, observations=tuple(
+        observation(request, f"own-{i}", i) for i in range(3)) + warm.observations)
+    surfaced = propose_configurations(crowded, vector)["value"]
+    check("exact_task_measurements_do_not_crowd_out_related_candidates",
+          [v["configuration_index"] for v in surfaced["proposals"]] == [15]
+          and surfaced["draws"] <= 3)
+    # The public entry point keeps the typed refusal.
+    try:
+        propose_configurations(replace(warm, task=replace(request.task, features=(0.0, 0.0))), vector)
+        check("the_public_entry_raises_the_typed_refusal", False)
+    except GenerationError as exc:
+        check("the_public_entry_raises_the_typed_refusal", "nonzero task feature vector" in str(exc))
+    check("the_batch_record_names_its_request_in_plain_fields",
+          batch["request"] == {"seed": 42, "cursor": 0, "shard_count": 1, "shard_index": 0,
+                               "batch_size": 3, "draw_limit": 10,
+                               "allow_repeated_configurations": False})
+    empty = propose_configurations(replace(request, space=ConfigurationSpace("tiny", "1.0.0", (
+        ConfigurationAxis("x", "integer_range", minimum=0, maximum=0),)),
+        shard_count=3, shard_index=2), random)["value"]
+    check("an_empty_shard_is_reported_exhausted_by_seeded_exploration",
+          empty["proposals"] == [] and empty["search_exhausted"] is True)
     return {"tests": tests}
