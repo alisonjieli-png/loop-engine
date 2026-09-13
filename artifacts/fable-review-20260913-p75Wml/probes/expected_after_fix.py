@@ -289,6 +289,29 @@ def _d4():
     return ok, " ".join(outcomes)
 
 
+@scenario("D9 information binding reader refuses a blank binding digest")
+def _d9():
+    from loop_engine.core.information_access import (
+        InformationStorageBinding, InformationPublicationRequest, InlineInformationAdapter,
+        InformationResolver, InformationAccessError)
+    from loop_engine.loop.atomic_primitives import LoopValue, LoopValueCreateRequest
+    value = LoopValue.create({"secret": "private"}, LoopValueCreateRequest(
+        value_contract_ref="result/v1", semantic_role="result", producer_loop_id="owner-loop",
+        producer_definition_ref="definition.fixture@1.0.0"))
+    adapter = InlineInformationAdapter()
+    resolver = InformationResolver()
+    resolver.register(adapter)
+    binding = resolver.publish(InformationPublicationRequest(value, adapter.adapter_id, "run", "private_loop", run_id="run-1"))
+    tampered = dict(binding.to_storage_dict())
+    tampered["scope"] = "public"
+    tampered["binding_digest"] = ""
+    try:
+        loaded = InformationStorageBinding.from_storage_dict(tampered)
+        return False, "tampered binding with a blank digest loaded with scope %r" % loaded.scope.value
+    except (InformationAccessError, ValueError) as exc:
+        return True, "refused: " + str(exc)[:100]
+
+
 @scenario("D5 verifier timeout terminates descendants and carries the output tail")
 def _d5():
     from loop_engine.core.verifier_execute import verifier_execute_operation, VerifierError

@@ -572,15 +572,41 @@ confirmed by acceptance scenarios D1b and D3b:
    minimum-evidence gate. D3's severity is raised to high, and its body above
    is corrected.
 
+### D9. The information binding reader has the same blank-digest bypass
+
+- Location: `src/loop_engine/core/information_access.py`,
+  `InformationStorageBinding.__post_init__` line 198
+  (`if self.binding_digest and self.binding_digest != expected`) and
+  `from_storage_dict` line 259, which passes the stored digest through as
+  text. This is the reader documented for "a trusted binding store", the
+  path the owner's centralized-storage design depends on. Today its only
+  caller is a check, so the exposure is latent.
+- Condition: a stored binding whose `binding_digest` is an empty string and
+  whose `scope` was rewritten from `private_loop` to `public`.
+- Expected: a binding read from storage must carry a digest that matches
+  its body; scope, owner, authorized Loops, and required permissions are
+  exactly the fields the digest exists to protect.
+- Observed (probe `probe_binding_digest.py`): the tampered binding loaded
+  with scope `public` and a fresh digest, and a resolver that attached it
+  let an unrelated Loop materialize the private value. The same tampering
+  with the original digest was refused. The value's own content digest still
+  held, so integrity of the value is protected; access control is not.
+- Regression check: `blank_binding_digest_is_refused_on_read`; acceptance
+  scenario D9.
+- Candidate fix: the same as D4. Require a 64-character digest in
+  `from_storage_dict` and keep the blank digest only for in-process
+  construction. The pattern `if self.<digest> and ...` should be searched
+  for across every reader that accepts stored records.
+
 ### Acceptance probe
 
 `artifacts/fable-review-20260913-p75Wml/probes/expected_after_fix.py` encodes
-the expected post-fix behavior for D1 to D6 plus two controls and the two
-stronger cases. Against the reviewed tree it reports 1 of 9 scenarios passing
-(the control); the recorded output is `acceptance-baseline.txt` beside it. A
-candidate fix for one defect is verified when its scenario passes and no
-other scenario regresses. Run it with the same environment as the other
-probes.
+the expected post-fix behavior for D1 to D6 and D9 plus two controls and the
+two stronger cases. Against the reviewed tree it reports 1 of 10 scenarios
+passing (the control); the recorded output is `acceptance-baseline.txt`
+beside it. A candidate fix for one defect is verified when its scenario
+passes and no other scenario regresses. Run it with the same environment as
+the other probes.
 
 ### Further findings in the legacy campaign tool
 

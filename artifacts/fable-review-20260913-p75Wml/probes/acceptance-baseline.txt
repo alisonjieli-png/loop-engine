@@ -5,7 +5,8 @@ FAIL D3 selection: duplicate Run History references cannot satisfy minimum_recor
 FAIL D3b selection: duplicating one successful trial cannot change which harness ranks first :: honest=('second', 'first') inflated=('first', 'second')
 PASS D3 control: distinct repeated trials on the same subject still count :: reason='ranked_matched_reviewed_evidence' order=('first', 'second')
 FAIL D4 checkpoint reader refuses a blank digest and non-integer counters :: blank=loaded float_counter=loaded
+FAIL D9 information binding reader refuses a blank binding digest :: tampered binding with a blank digest loaded with scope 'public'
 FAIL D5 verifier timeout terminates descendants and carries the output tail :: marker_written=True survivors=1 tail=None
 FAIL D6 evaluation record binds the subject contract :: keys=['contract_ref', 'external_effect_authorized', 'finding_codes', 'implementation_digest', 'input_digest', 'qualification_digest', 'record_type', 'response_digest', 'semantic_call_id', 'status', 'task_accepted', 'verifier_loop_id']
 
-1/9 scenarios pass
+1/10 scenarios pass
