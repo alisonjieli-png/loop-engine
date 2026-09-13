@@ -563,6 +563,97 @@ entries:
     classification: SECRET_OR_CREDENTIAL_REFERENCE
     created_on: 2026-09-07
     expires_on: 2027-09-07
+  - finding_id: hardcoding.b14248fbfd25064dc86c14d9
+    owner: devtools.embodiment_axes.shared.port:_ollama
+    rationale: >-
+      The literal is the NAME of the environment variable OLLAMA_API_KEY, the provider's documented credential variable, read so the secret can be passed into a spawned process or client; the secret itself never appears in source, and the name selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (devtools/embodiment_axes/shared/port.py:104).
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.ac240cffbb7c5b56d4c7b2ae
+    owner: devtools.embodiment_lab.configuration_matrix:reference_consumer
+    rationale: >-
+      The literal is the NAME of the environment variable TACTICAL_API_KEY, the owner's declared Tactical endpoint credential variable, read so the secret can be passed into a spawned process or client; the secret itself never appears in source, and the name selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (devtools/embodiment_lab/configuration_matrix.py:131).
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.1f07517088623c7d9fa97720
+    owner: devtools.embodiment_lab.systematic_runtime:configure_environment
+    rationale: >-
+      The literal is the NAME of the environment variable TACTICAL_API_KEY, the owner's declared Tactical endpoint credential variable, read so the secret can be passed into a spawned process or client; the secret itself never appears in source, and the name selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (devtools/embodiment_lab/systematic_runtime.py:82).
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.39f2d3bcb7dd2ff8b3cf1f43
+    owner: devtools.embodiment_lab.systematic_runtime:configure_environment
+    rationale: >-
+      The literal is the NAME of the environment variable TACTICAL_API_KEY, the owner's declared Tactical endpoint credential variable, read so the secret can be passed into a spawned process or client; the secret itself never appears in source, and the name selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (devtools/embodiment_lab/systematic_runtime.py:94).
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.a49de9319258b2cdd179ff13
+    owner: devtools.embodiment_lab.systematic_runtime:configure_environment
+    rationale: >-
+      The literal is the NAME of the environment variable TACTICAL_API_KEY, the owner's declared Tactical endpoint credential variable, read so the secret can be passed into a spawned process or client; the secret itself never appears in source, and the name selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (devtools/embodiment_lab/systematic_runtime.py:89).
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.e85bef6b1815dccc0fecac09
+    owner: devtools.embodiment_lab.systematic_runtime:configure_environment
+    rationale: >-
+      The literal is the NAME of the environment variable TACTICAL_API_KEY, the owner's declared Tactical endpoint credential variable, read so the secret can be passed into a spawned process or client; the secret itself never appears in source, and the name selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (devtools/embodiment_lab/systematic_runtime.py:90).
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.fd202713424510622c9a11be
+    owner: devtools.embodiment_lab.systematic_runtime:configure_environment
+    rationale: >-
+      The literal is the NAME of the environment variable TACTICAL_API_KEY, the owner's declared Tactical endpoint credential variable, read so the secret can be passed into a spawned process or client; the secret itself never appears in source, and the name selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (devtools/embodiment_lab/systematic_runtime.py:93).
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.d827c524f6227154e3910f4d
+    owner: tools.opencode_loop:run_step
+    rationale: >-
+      The literal is the NAME of the environment variable OLLAMA_API_KEY, the provider's documented credential variable, read so the secret can be passed into a spawned process or client; the secret itself never appears in source, and the name selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (tools/opencode_loop.py:88).
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.59d63e2c0f13c0ea61ba5a6a
+    owner: tools.overnight:solve
+    rationale: >-
+      The literal is the NAME of the environment variable OLLAMA_API_KEY, the provider's documented credential variable, read so the secret can be passed into a spawned process or client; the secret itself never appears in source, and the name selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (tools/overnight.py:798).
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.efe0232bdabe08d0058b5d44
+    owner: tools.overnight:solve
+    rationale: >-
+      The literal is the NAME of the environment variable OLLAMA_API_KEY, the provider's documented credential variable, read so the secret can be passed into a spawned process or client; the secret itself never appears in source, and the name selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (tools/overnight.py:865).
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.a78e7b86059a8e5082ef6f39
+    owner: tools.overnight:solve.run_provisioner
+    rationale: >-
+      The literal is the NAME of the environment variable OLLAMA_API_KEY, the provider's documented credential variable, read so the secret can be passed into a spawned process or client; the secret itself never appears in source, and the name selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (tools/overnight.py:740).
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.80cc15c42e23278dca0d25c0
+    owner: tools.task_campaign:main
+    rationale: >-
+      The literal is the NAME of the environment variable TACTICAL_API_KEY, the owner's declared Tactical endpoint credential variable, read so the secret can be passed into a spawned process or client; the secret itself never appears in source, and the name selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (tools/task_campaign.py:661).
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.2c838df5a2ce272bcd1fd2e5
+    owner: tools.task_campaign:run_cell
+    rationale: >-
+      The literal is the NAME of the environment variable TACTICAL_API_KEY, the owner's declared Tactical endpoint credential variable, read so the secret can be passed into a spawned process or client; the secret itself never appears in source, and the name selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (tools/task_campaign.py:327).
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust

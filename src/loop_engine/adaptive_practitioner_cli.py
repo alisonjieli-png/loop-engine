@@ -78,6 +78,33 @@ def _task_build_lines(result: dict) -> list[str]:
     return lines
 
 
+def credential_environment_names(model: str, explicit=()) -> tuple:
+    """The environment names an OpenCode step may inherit for its provider.
+
+    The credential variable comes from the provider specification the model
+    gateway already owns (`credential_ref` of the form ``env:NAME``), looked
+    up by the model's provider prefix with OpenCode's hyphenated spelling
+    normalized to the engine's identifier. Nothing here names a variable by
+    hand: an unknown or custom provider contributes no name, and the caller
+    adds names explicitly through ``explicit`` (the ``--step-credential-env``
+    option), which is also how a custom endpoint's credential travels.
+    """
+    from .core.model_gateway import builtin_provider_specs
+    names = []
+    provider = model.partition("/")[0].strip().lower().replace("-", "_")
+    for spec in builtin_provider_specs():
+        if spec.provider_id == provider and spec.credential_ref.startswith("env:"):
+            names.append(spec.credential_ref[len("env:"):])
+    for name in explicit or ():
+        name = str(name).strip()
+        if not name or not name.replace("_", "").isalnum() or name != name.upper():
+            raise ValueError(f"credential environment name {name!r} must be an "
+                             "upper-case identifier")
+        if name not in names:
+            names.append(name)
+    return tuple(names)
+
+
 def _step_session_factory(args):
     """The opt-in that puts every Practitioner step in its own OpenCode process.
 
@@ -107,9 +134,11 @@ def _step_session_factory(args):
                           "timeout_seconds", None)
         usable = (isinstance(timeout, (int, float))
                   and not isinstance(timeout, bool) and timeout > 0)
+        credentials = credential_environment_names(
+            model, getattr(args, "step_credential_env", None) or ())
         profile = OpenCodeStepProfile(
             model=model, workspace=Path.cwd(),
-            additional_environment=("OLLAMA_API_KEY", "XDG_DATA_HOME"),
+            additional_environment=(*credentials, "XDG_DATA_HOME"),
             timeout_seconds=(float(timeout) if usable
                              else DEFAULT_TIMEOUT_SECONDS))
         return OpenCodeStepSession(authority=authority, profile=profile)

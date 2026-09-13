@@ -304,6 +304,11 @@ def main(argv=None) -> int:
         help="provider/model for --step-executor opencode, e.g. "
              "ollama-cloud/gemma4:31b; required when opencode is selected")
     parser.add_argument(
+        "--step-credential-env", action="append", default=[], metavar="NAME",
+        help="an environment variable name the OpenCode step may inherit in "
+             "addition to the credential variable the model's provider "
+             "specification names; repeatable, for custom providers")
+    parser.add_argument(
         "--max-passes", type=int,
         help="optional ceiling for complete Practitioner passes; omitted "
              "means no product-imposed pass ceiling")

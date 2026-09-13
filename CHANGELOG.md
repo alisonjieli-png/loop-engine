@@ -28,7 +28,10 @@ First public release.
   two-parameter callback receives the occurrence it is judging. The
   definition reader raises only `LoopDefinitionError` for stored contract
   faults. The adaptive Practitioner treats an evaluator verdict as response
-  repair work rather than a transport failure.
+  repair work rather than a transport failure. The Practitioner command line
+  derives the credential variable an OpenCode step may inherit from the
+  provider specification the gateway owns instead of naming it by hand, and
+  `--step-credential-env NAME` adds names explicitly for custom providers.
 
 ### Added
 
