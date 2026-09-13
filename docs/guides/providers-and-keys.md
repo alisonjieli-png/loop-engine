@@ -24,9 +24,12 @@ endpoint at its own URL, such as `http://127.0.0.1:11434`; `locality` is
 descriptive only and changes no behaviour. On the Ollama wire both paths send
 `think: false` unless the declaration says otherwise (`think: on`, or
 `think: model` to leave the model's default), because a reasoning model spends
-the output ceiling thinking before it answers. A custom provider whose
-`credential_env` variable is unset refuses before sending a request, as the
-built-in adapters do.
+the output ceiling thinking before it answers. A model that cannot run
+without thinking refuses `think: false` with HTTP 400, which the gateway
+classifies as `invalid_request` (a configuration fault that stops the route,
+naming the reason); declare `think: model` for such a model. A custom
+provider whose `credential_env` variable is unset refuses before sending a
+request, as the built-in adapters do.
 
 A model enters the universe only with a source-backed output maximum
 (`MODEL_OUTPUT_CAPABILITIES` in the built-in adapter, or `max_output` with
