@@ -1,0 +1,10 @@
+{
+  "id": "durable_reactive",
+  "folder": "durable_reactive",
+  "status": "mechanism_implemented",
+  "title": "Durable reactive activation",
+  "benefit": "Canonical SQLite scheduling, fencing, worker execution and persisted Run History.",
+  "limitations": "Pure deterministic activations only; external-effect resume needs additional qualification.",
+  "contract": "embodiment_work/v1",
+  "model_backend_qualified": false
+}

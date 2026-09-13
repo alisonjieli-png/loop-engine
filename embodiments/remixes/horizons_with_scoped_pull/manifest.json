@@ -1,0 +1,9 @@
+{
+  "record_type": "embodiment_remix/v1",
+  "id": "horizons_with_scoped_pull",
+  "status": "planned",
+  "sources": "overnight + Loop Engine information resolver",
+  "invariant": "Push explicit task and horizon slices; allow bounded reference resolution only for material omitted from the packet.",
+  "qualification": "Consumer payload digest; missing-grant refusal; no arbitrary SQL; cross-Loop read denial; actual pull attribution; measured latency and quality.",
+  "runtime_type": "Loop"
+}

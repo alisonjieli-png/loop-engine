@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "harness_id": "continue",
+  "package_version": "1.5.47",
+  "style": "continue",
+  "command_prefix": ["/usr/bin/node", "/home/username/loop-engine/embodiments/continue/runtime/cli/dist/cn.js"],
+  "read_only_paths": ["/home/username/loop-engine/embodiments/continue/runtime/cli"]
+}

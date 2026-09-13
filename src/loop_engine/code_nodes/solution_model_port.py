@@ -13,6 +13,8 @@ connectivity or model quality.
 from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
+import hashlib
+import json
 from threading import Lock
 from typing import Callable
 
@@ -23,7 +25,15 @@ from ..core.model_gateway import (
     ModelGatewayResult,
 )
 from ..core.model_capabilities import ModelOutputAllocation
+from ..core.observation_expectations import (
+    ObservationExpectation, ObservationBinding, ExpectationAssessment,
+    ExpectationDisposition, assess_observation,
+)
 from ..loop.recursive_loop import MODEL_THINKING_POWER_LEVELS
+from ..core.model_response_admission import ModelResponseAdmissionPolicy
+from ..core.harness_selection_records import HarnessSelectionScope, content_digest, response_contract_digest
+from ..core.harness_response_evaluation import (
+    HarnessResponseEvaluator, HarnessResponseEvaluationState, evaluate_response_as_loop)
 
 MODEL_LEAF_MODES = ("hybrid", "non_deterministic")
 
@@ -46,6 +56,16 @@ class ModelInvocationRequest:
     temperature: float = 0.7
     semantic_call_id: str = ""
     output_allocation: ModelOutputAllocation | None = None
+    response_expectation: ObservationExpectation | None = None
+    response_admission_policy: ModelResponseAdmissionPolicy | None = None
+    harness_selection_scope: HarnessSelectionScope | None = None
+    response_evaluation_ref: str = ''
+
+    @property
+    def exact_input_digest(self) -> str:
+        return hashlib.sha256(json.dumps(
+            {'prompt': self.prompt, 'system': self.system}, sort_keys=True,
+            separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()).hexdigest()
 
     def __post_init__(self) -> None:
         if self.output_allocation is not None and not isinstance(self.output_allocation, ModelOutputAllocation):
@@ -71,6 +91,26 @@ class ModelInvocationRequest:
             raise SolutionModelError(
                 "ModelInvocationRequest.semantic_call_id must be bounded text "
                 "without whitespace")
+        expected = self.response_expectation
+        if self.harness_selection_scope is not None and not isinstance(self.harness_selection_scope,HarnessSelectionScope):
+            raise SolutionModelError('harness selection scope must be a typed record')
+        if (type(self.response_evaluation_ref) is not str or len(self.response_evaluation_ref)>512
+                or any(ord(c)<32 for c in self.response_evaluation_ref)):
+            raise SolutionModelError('response evaluation reference must be bounded text')
+        if (self.harness_selection_scope is not None or self.response_evaluation_ref) and expected is None:
+            raise SolutionModelError('harness selection and response evaluation need a bound response contract')
+        if self.response_admission_policy is not None:
+            from ..core.model_response_admission import ModelResponseAdmissionPolicy
+            if not isinstance(self.response_admission_policy, ModelResponseAdmissionPolicy) or expected is None:
+                raise SolutionModelError('response normalization needs a typed policy and bound expectation')
+        if expected is not None:
+            if not isinstance(expected, ObservationExpectation):
+                raise SolutionModelError('response expectation must be typed')
+            if (not self.semantic_call_id or expected.operation_id != self.semantic_call_id
+                    or expected.input_digest != self.exact_input_digest):
+                raise SolutionModelError('response expectation does not bind this exact invocation')
+            if expected.semantic_questions:
+                raise SolutionModelError('unresolved semantic expectations need a separate verifier Loop')
 
 
 @dataclass(frozen=True)
@@ -119,6 +159,8 @@ class ModelExecution:
     llm_thinking_power: str = "medium"
     validator: "Callable[[str], bool] | None" = field(
         default=None, repr=False, compare=False)
+    harness: "object | None" = field(default=None, repr=False, compare=False)
+    response_evaluators: tuple[HarnessResponseEvaluator,...] = field(default=(),repr=False,compare=False)
 
     def __post_init__(self) -> None:
         if not isinstance(self.gateway, ModelGateway):
@@ -139,9 +181,24 @@ class ModelExecution:
                 f"{MODEL_THINKING_POWER_LEVELS}")
         if self.validator is not None and not callable(self.validator):
             raise SolutionModelError("ModelExecution.validator must be callable")
+        if (type(self.response_evaluators) not in (tuple,list)
+                or any(not isinstance(item,HarnessResponseEvaluator) for item in self.response_evaluators)):
+            raise SolutionModelError('response evaluators must be explicit typed host registrations')
+        bindings=tuple(self.response_evaluators)
+        if len({item.contract_ref for item in bindings})!=len(bindings):
+            raise SolutionModelError('response evaluator references must be unique')
+        object.__setattr__(self,'response_evaluators',bindings)
 
-    def start_session(self) -> "ModelExecutionSession":
-        return ModelExecutionSession(self)
+        if self.harness is not None:
+            from ..core.harness_semantic import HarnessSemanticBinding
+            if not isinstance(self.harness, HarnessSemanticBinding):
+                raise SolutionModelError("harness realization must be a typed binding")
+
+    def start_session(self, *, artifact_store=None) -> "ModelExecutionSession":
+        if self.harness is not None and artifact_store is None and self.harness.artifact_store is None:
+            raise SolutionModelError("harness execution needs a run-scoped artifact manager",
+                                     error_code="harness_artifacts_required")
+        return ModelExecutionSession(self, artifact_store=artifact_store)
 
 
 @dataclass
@@ -150,12 +207,19 @@ class ModelExecutionSession:
 
     authority: ModelExecution
     results: list[ModelGatewayResult] = field(default_factory=list)
+    artifact_store: object = field(default=None, repr=False, compare=False)
     _calls_charged: int = field(default=0, init=False, repr=False)
     _tokens_charged: int = field(default=0, init=False, repr=False)
     _usage_complete: bool = field(default=True, init=False, repr=False)
     _accounting_uncertain: bool = field(default=False, init=False, repr=False)
+    _effect_reconciliation_required: bool = field(default=False, init=False, repr=False)
     _invocation_lock: object = field(default_factory=Lock, init=False, repr=False)
     _bound_authority: ModelExecution = field(init=False, repr=False)
+    #: Consecutive failed-invocation error codes, oldest first. Observability
+    #: only: feeds the recurrence diagnostic, never alters routing or budgets.
+    #: A success resets the streak; only identical consecutive codes count.
+    _recent_failure_shapes: list = field(default_factory=list, init=False,
+                                         repr=False)
 
     def __post_init__(self):
         if not isinstance(self.authority, ModelExecution) or self.results:
@@ -170,6 +234,10 @@ class ModelExecutionSession:
     @property
     def accounting_uncertain(self) -> bool:
         return self._accounting_uncertain
+
+    @property
+    def effect_reconciliation_required(self) -> bool:
+        return self._effect_reconciliation_required
 
     @property
     def semantic_calls_used(self) -> int:
@@ -201,6 +269,9 @@ class ModelExecutionSession:
         if self._accounting_uncertain:
             raise SolutionModelError("a previous invocation has unresolved accounting",
                                      error_code="token_accounting_unavailable")
+        if self._effect_reconciliation_required:
+            raise SolutionModelError('a previous harness reported effects requiring reconciliation',
+                                     error_code='unexpected_effects_require_reconciliation')
         maximum_calls = self.authority.max_model_calls
         if maximum_calls is not None and self.calls_used >= maximum_calls:
             raise SolutionModelError(
@@ -240,10 +311,132 @@ class ModelExecutionSession:
             prompt=request.prompt, config=config, system=request.system,
             temperature=request.temperature,
             semantic_call_id=request.semantic_call_id)
+        validator = self.authority.validator
+        expected = request.response_expectation
+        evaluation_state=HarnessResponseEvaluationState()
+        evaluator=None
+        contract_digest=(response_contract_digest(expected,request.response_admission_policy)
+                         if expected is not None else '')
+        if request.response_evaluation_ref:
+            matches=[item for item in self.authority.response_evaluators
+                     if item.contract_ref==request.response_evaluation_ref]
+        else:
+            matches=[item for item in self.authority.response_evaluators
+                     if expected is not None and item.subject_contract_ref==expected.output_contract_ref
+                     and item.subject_contract_digest==contract_digest]
+        if len(matches)>1 or (request.response_evaluation_ref and not matches):
+            raise SolutionModelError('response evaluator registration is missing or ambiguous',
+                                     error_code='response_evaluator_unavailable')
+        if matches:
+            evaluator=matches[0]
+            if (expected is None or evaluator.subject_contract_ref!=expected.output_contract_ref
+                    or evaluator.subject_contract_digest!=contract_digest):
+                raise SolutionModelError('response evaluator does not bind the exact subject contract',
+                                         error_code='response_evaluator_contract_mismatch')
+        selection_scope=request.harness_selection_scope
+        harness=self.authority.harness
+        selection_policy=harness.selection_policy if harness is not None else None
+        if selection_scope is not None and selection_policy is None:
+            raise SolutionModelError('harness selection policy is not installed',error_code='harness_selection_unavailable')
+        if selection_policy is not None and expected is not None:
+            profile_ref=parent_loop.definition.role_profile_id+'@'+parent_loop.definition.role_profile_version
+            evaluation_ref=evaluator.contract_ref if evaluator is not None else 'response_admission/v1'
+            settings_digest=content_digest({'temperature':request.temperature,
+                'output_allowance':config.output_allocation.requested_tokens if config.output_allocation else None,
+                'gateway_thinking_power':config.thinking_power,'loop_thinking_power':self.authority.llm_thinking_power,
+                'evaluation_implementation':evaluator.implementation_digest if evaluator is not None else None,
+                'evaluation_qualification':evaluator.qualification_digest if evaluator is not None else None})
+            if selection_scope is None:
+                selection_scope=HarnessSelectionScope(operation_contract_ref=expected.output_contract_ref,
+                    response_contract_digest=contract_digest,profile_ref=profile_ref,
+                    resource_profile_digest=selection_policy.resource_profile_digest,
+                    execution_settings_digest=settings_digest,owning_definition_digest=parent_loop.definition.content_digest,
+                    evaluation_contract_ref=evaluation_ref)
+            elif (selection_scope.operation_contract_ref!=expected.output_contract_ref
+                    or selection_scope.response_contract_digest!=contract_digest
+                    or selection_scope.profile_ref!=profile_ref
+                    or selection_scope.execution_settings_digest!=settings_digest
+                    or selection_scope.owning_definition_digest!=parent_loop.definition.content_digest
+                    or selection_scope.evaluation_contract_ref!=evaluation_ref):
+                raise SolutionModelError('harness selection scope does not bind the actual assignment',
+                                         error_code='harness_selection_scope_mismatch')
+        response_admissions = []
+        if expected is not None:
+            parent_loop.ledger.record(loop_id=parent_loop.loop_id, event='custom',
+                action='model_response_expectation_bound',
+                semantic_call_id=request.semantic_call_id,
+                expectation_digest=expected.content_digest,
+                input_digest=request.exact_input_digest)
+            authority_validator = validator
+
+            def validator(text):
+                if request.response_admission_policy is not None:
+                    from ..core.model_response_admission import (
+                        ModelResponseAdmissionRequest, admit_model_response_as_loop)
+                    admitted = admit_model_response_as_loop(ModelResponseAdmissionRequest(
+                        text, expected.output_contract_ref, expected.content_digest,
+                        schema=json.loads(expected.schema_json), policy=request.response_admission_policy),
+                        parent=parent_loop)
+                    response_admissions.append(admitted)
+                    parent_loop.ledger.record(loop_id=parent_loop.loop_id, event='custom',
+                        action='model_response_expectation_assessed',
+                        semantic_call_id=request.semantic_call_id,
+                        expectation_digest=expected.content_digest,
+                        input_digest=expected.input_digest,
+                        admission=admitted.to_dict(), task_accepted=False)
+                    return (admitted.admitted and
+                            (authority_validator is None or bool(authority_validator(text))))
+                try:
+                    actual = ObservationBinding(expected.operation_id, expected.input_digest, text)
+                    assessment = assess_observation(expected, actual)
+                except (ValueError, TypeError, RecursionError):
+                    assessment = ExpectationAssessment(expected.content_digest,
+                        hashlib.sha256(text.encode()).hexdigest(),
+                        ExpectationDisposition.INCOMPATIBLE, False, False, ('invalid_json_response',))
+                parent_loop.ledger.record(loop_id=parent_loop.loop_id, event='custom',
+                    action='model_response_expectation_assessed',
+                    semantic_call_id=request.semantic_call_id, **assessment.to_dict())
+                return (assessment.handoff_ready and
+                        (authority_validator is None or bool(authority_validator(text))))
+        if evaluator is not None:
+            structural_validator=validator
+            def validator(text):
+                if structural_validator is not None and not structural_validator(text):
+                    return False
+                admitted_text=(json.dumps(response_admissions[-1].value,sort_keys=True,separators=(',',':'),
+                                         ensure_ascii=False,allow_nan=False)
+                               if response_admissions and response_admissions[-1].admitted else text)
+                evaluation=evaluate_response_as_loop(evaluator,admitted_text,
+                    semantic_call_id=request.semantic_call_id,input_digest=request.exact_input_digest,parent=parent_loop)
+                evaluation_state.evaluations.append(evaluation)
+                if evaluation.status=='passed':
+                    return True
+                # A verdict about meaning is typed so the gateway records it
+                # as such and does not treat it as a reason to try another route.
+                from ..core.model_gateway import ValidationVerdict
+                raise ValidationVerdict(
+                    'semantic_response_rejected' if evaluation.status=='rejected'
+                    else 'response_evaluation_inconclusive',
+                    'registered evaluator '+evaluator.contract_ref+' returned '+evaluation.status)
         try:
-            result = self.authority.gateway.invoke(
-                gateway_request, validate=self.authority.validator,
-                parent=parent_loop)
+            if self.authority.harness is None:
+                result = self.authority.gateway.invoke(
+                    gateway_request, validate=validator,
+                    parent=parent_loop)
+            else:
+                result = self.authority.harness.invoke(
+                    gateway_request, gateway=self.authority.gateway,
+                    validate=validator, parent=parent_loop,
+                    artifact_store=self.artifact_store,selection_scope=selection_scope,
+                    evaluation_state=evaluation_state)
+            if response_admissions:
+                result = replace(result, response_admissions=tuple(response_admissions))
+            if evaluation_state.evaluations:
+                result=replace(result,response_evaluations=tuple(evaluation_state.evaluations))
+                last=evaluation_state.evaluations[-1]
+                if result.error_code=='output_validation_failed' and last.status!='passed':
+                    result.error_code=('semantic_response_rejected' if last.status=='rejected'
+                                       else 'response_evaluation_inconclusive')
             self._calls_charged += result.physical_model_calls
             if result.physical_model_calls:
                 if result.total_tokens is None:
@@ -252,6 +445,8 @@ class ModelExecutionSession:
                     self._tokens_charged += result.total_tokens
             if result.error_code in ("token_bound_violated", "provider_attempt_contract_violated"):
                 self._accounting_uncertain = True
+            if result.error_code == 'unexpected_effects_require_reconciliation':
+                self._effect_reconciliation_required = True
             self.results.append(result)
         except BaseException as exc:
             # An orchestration exception can occur after dispatch. Never refund
@@ -266,11 +461,38 @@ class ModelExecutionSession:
                 "ModelGateway exceeded the whole-Solution physical-call budget",
                 error_code="model_call_budget_exhausted")
         if not result.ok:
+            self._note_failure_shape(
+                result.error_code or "model_gateway_failed", parent_loop)
             raise SolutionModelError(
                 f"ModelGateway failed with {result.error_code or 'unknown'}: "
                 f"{result.error[:200]}",
                 error_code=result.error_code or "model_gateway_failed")
+        self._recent_failure_shapes.clear()
         return result.text
+
+    def _note_failure_shape(self, error_code: str, parent_loop) -> None:
+        """Record one failed-invocation shape; announce a recurrence streak.
+
+        Three consecutive identical failure codes mean the run is repeating
+        itself, not exploring. The announcement is a ledger event only —
+        routing, budgets, and retry policy are untouched (a future policy
+        change can subscribe to it without touching this path).
+        """
+        self._recent_failure_shapes.append(str(error_code))
+        streak = 0
+        for code in reversed(self._recent_failure_shapes):
+            if code == error_code:
+                streak += 1
+            else:
+                break
+        if streak == 3:
+            try:
+                parent_loop.ledger.record(
+                    loop_id=getattr(parent_loop, "loop_id", ""),
+                    event="custom", action="model_recurrence_noticed",
+                    error_code=error_code, consecutive_failures=streak)
+            except (AttributeError, TypeError, ValueError):
+                pass
 
 
 @dataclass(frozen=True)
@@ -451,6 +673,36 @@ def self_test() -> dict:
         refused = True
     check("whole_solution_budget_is_fail_closed",
           refused and session.calls_used == 2)
+
+    class _Ledger:
+        def __init__(self):
+            self.events = []
+        def record(self, **fields):
+            self.events.append(fields)
+            return len(self.events)
+
+    class _Owner:
+        def __init__(self):
+            self.loop_id = "owner-recurrence-probe"
+            self.ledger = _Ledger()
+
+    probe_session = authority.start_session()
+    probe_owner = _Owner()
+    probe_session._note_failure_shape("model_gateway_failed", probe_owner)
+    probe_session._note_failure_shape("model_gateway_failed", probe_owner)
+    quiet = len(probe_owner.ledger.events)
+    probe_session._note_failure_shape("model_gateway_failed", probe_owner)
+    announced = [e for e in probe_owner.ledger.events
+                 if e.get("action") == "model_recurrence_noticed"]
+    check("third_consecutive_same_shape_failure_is_announced",
+          quiet == 0 and len(announced) == 1
+          and announced[0]["error_code"] == "model_gateway_failed"
+          and announced[0]["consecutive_failures"] == 3,
+          "observability only: routing and budgets untouched")
+    probe_session._note_failure_shape("timeout", probe_owner)
+    check("a_different_shape_breaks_the_streak",
+          len([e for e in probe_owner.ledger.events
+               if e.get("action") == "model_recurrence_noticed"]) == 1)
 
     # Fifty was an operator-imposed pilot guard, not a product default. This
     # finite fixture checks that omitting a ceiling actually permits later

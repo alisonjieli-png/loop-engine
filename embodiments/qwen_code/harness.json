@@ -1,0 +1,5 @@
+{
+  "schema_version": 1, "harness_id": "qwen_code", "package_version": "0.23.1", "style": "qwen_code",
+  "command_prefix": ["/usr/bin/node", "/home/username/loop-engine/embodiments/qwen_code/runtime/node_modules/@qwen-code/qwen-code/cli-entry.js"],
+  "read_only_paths": ["/home/username/loop-engine/embodiments/qwen_code/runtime/node_modules"]
+}

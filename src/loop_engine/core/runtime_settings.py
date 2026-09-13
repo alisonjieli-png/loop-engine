@@ -19,7 +19,8 @@ from typing import Mapping
 from ..loop.recursive_loop import (EXIT_CONDITIONS, FRAMEWORKS, MODES,
                                    POWER_LEVELS, LoopConfig,
                                    MODEL_THINKING_POWER_LEVELS)
-from .model_routes import PURPOSES, ModelRoute, RoutePolicy, default_routes
+from .model_routes import (PURPOSES, ModelProviderCapabilities, ModelRoute,
+                         RoutePolicy, default_routes)
 from .operating_profile import OperatingProfile
 from .component_contracts import (
     LoopComponentDraft, component_payload_digest, define_loop_component)
@@ -183,6 +184,7 @@ class ProviderSettings:
     counts_as_evidence: bool = False
     maximum_output_tokens: "int | str | None" = None
     maximum_output_source: str = ""
+    context_window: "int | None" = None
     purposes: tuple[str, ...] = ("counted_generation", "decide_label")
     headers: tuple[tuple[str, str], ...] = ()
     auth_scheme: str = "bearer"
@@ -245,6 +247,12 @@ class ProviderSettings:
                 and self.maximum_output_tokens < 1):
             raise SettingsError(
                 "provider.maximum_output_tokens must be positive")
+        if (self.context_window is not None
+                and (not isinstance(self.context_window, int)
+                     or isinstance(self.context_window, bool)
+                     or self.context_window < 1)):
+            raise SettingsError(
+                "provider.context_window must be a positive integer when set")
         if self.tls_verification not in ("default", "skip", "ca_file"):
             raise SettingsError(
                 "provider.tls_verification must be default, skip, or ca_file")
@@ -298,6 +306,7 @@ class ProviderSettings:
             "counts_as_evidence": self.counts_as_evidence,
             "maximum_output_tokens": self.maximum_output_tokens,
             "maximum_output_source": self.maximum_output_source,
+            "context_window": self.context_window,
             "header_names": [item[0] for item in self.headers],
             "auth_scheme": self.auth_scheme,
             "auth_header": self.auth_header,
@@ -770,7 +779,13 @@ class RuntimeSettings:
             routes.append(ModelRoute(
                 configured.route_name, configured.provider_id,
                 configured.model, configured.locality,
-                configured.purposes))
+                configured.purposes,
+                capabilities=ModelProviderCapabilities(
+                    provider=configured.provider_id,
+                    locality=configured.locality,
+                    tokens_provider_reported=bool(
+                        configured.counts_as_evidence),
+                    max_context=int(configured.context_window or 0))))
         policy = RoutePolicy(
             allow_local_counted_generation=
             self.models.allow_local_counted_generation)

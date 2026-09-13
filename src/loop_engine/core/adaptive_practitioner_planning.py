@@ -23,6 +23,9 @@ from .adaptive_practitioner_records import (
     ModelStepRequest,
 )
 from .adaptive_practitioner_validation import _short_strings, _short_text
+from .model_response_admission import (
+    ModelResponseContract, ModelResponseAdmissionPolicy, ModelResponseRepairStalled)
+from .option_selection import SELECTION_KEYS
 from .adaptive_practitioner_bindings import (
     ASSIGNMENT_KEY, ASSIGNMENT_RECORD_TYPE, BASE_ASSIGNMENT_FIELDS,
     EXTENDED_ASSIGNMENT_FIELDS, SpawnedAssignment, assignment_task_view,
@@ -46,6 +49,20 @@ _PARALLEL_UNAVAILABLE = (
     "RUN_PARALLEL requires an installed concurrent execution contract; "
     "select SPAWN_LOOP for serial governed spawned_tasks, or select an explicitly "
     "registered concurrent host operation")
+_TERMINAL_HANDLES = {
+    'RETURN_RESULT':'core.finish','STOP':'core.abstain','ASK_USER':'core.ask',
+    'ABSTAIN':'core.abstain','REQUEST_AUTHORITY':'core.authority'}
+_CAPABILITY_FREE_ACTIONS = frozenset((*_TERMINAL_HANDLES,'SPAWN_LOOP','RUN_PARALLEL'))
+
+
+def action_needs_execution_capability(action_kind: str) -> bool:
+    """Mechanical requirement of this installed planner, not every Loop body.
+
+    Terminal controls and explicit delegation have dedicated implementations.
+    Other selected actions require a registered executable capability. The
+    parallel action retains its existing explicit unavailable-path refusal.
+    """
+    return action_kind not in _CAPABILITY_FREE_ACTIONS
 
 
 def _planning_schema(action_id: str, *, spawning: bool = False) -> str:
@@ -63,6 +80,34 @@ def _planning_schema(action_id: str, *, spawning: bool = False) -> str:
             "success_criteria": ["string"], "output_contract": None}] if spawning else []),
         "rationale": "string",
     }, separators=(",", ":"))
+
+
+def _planning_response_contract(action_id, action):
+    """Bind a method response to the exact action that requested it."""
+    text={'type':'string','minLength':1}
+    spawning=action.action_kind=='SPAWN_LOOP'
+    properties={
+        'action_id':{'const':action_id}, 'how_mode':text,
+        'act_mode':({'const':'spawn_practitioners'} if spawning else
+                    {'type':'string','minLength':1,'not':{'const':'spawn_practitioners'}}),
+        'capability_ref':({'const':''} if spawning else
+                          {'enum':list(action.required_capabilities)} if action.required_capabilities else False),
+        'arguments':{'type':'object',**({'maxProperties':0} if spawning else {})},
+        'steps':{'type':'array','items':text},
+        'spawned_tasks':({'type':'array','minItems':1,'items':{'type':'object',
+            'required':sorted(_SPAWNED_FIELDS),'properties':{
+                'objective':text,'constraints':{'type':'array','items':text},
+                'success_criteria':{'type':'array','minItems':1,'items':text}}}}
+            if spawning else {'type':'array','maxItems':0}),
+        'rationale':text,
+        # These channels are advisory telemetry, stripped before the plan
+        # parser. Their values must not decide whether the method is valid.
+        **{key:{} for key in SELECTION_KEYS}, 'stage_assistance_decision':{},
+    }
+    return ModelResponseContract('execution_method_response/v1',json.dumps({
+        'type':'object','required':sorted(_PLAN_FIELDS),'properties':properties,
+        'additionalProperties':False},sort_keys=True),
+        policy=ModelResponseAdmissionPolicy(report_required_field_names=True))
 
 
 def _require_fields(value, required, location: str) -> None:
@@ -179,6 +224,38 @@ def _validate_plan_response(value, request, services) -> ExecutionPlan:
     return plan
 
 
+def record_plan_outline(plan, action_id: str, services) -> None:
+    """Save the admitted method as a readable outline artifact.
+
+    Auxiliary only: a failed write degrades to a diagnostic, never to
+    a failed step — the plan itself was already admitted.
+    """
+    lines = [f"# Plan outline: {action_id}",
+             f"- how: {plan.how_mode} / act: {plan.act_mode}",
+             f"- capability: {plan.handle or '(none)'}",
+             f"- rationale: {plan.rationale}"]
+    steps = list(plan.steps or ())
+    if steps:
+        lines.append("- steps:")
+        lines.extend(f"  {index}. {step}"
+                     for index, step in enumerate(steps, start=1))
+    spawned = list(plan.spawned_loops or ())
+    if spawned:
+        lines.append(f"- spawned subproblems: {len(spawned)}")
+        for spec in spawned:
+            lines.append(f"  - {getattr(spec, 'goal', spec)}")
+    try:
+        ref = services.artifacts.capture(
+            "\n".join(lines) + "\n", media_type="text/plain",
+            artifact_kind="plan_outline")
+        services.plan_details["plan_outline_ref"] = (
+            ref.to_dict() if hasattr(ref, "to_dict") else str(ref))
+    except OSError as exc:
+        services.publish("practitioner.diagnostic",
+                         diagnostic_code="plan_outline_unwritten",
+                         error_type=type(exc).__name__)
+
+
 def build_execution_plan(
         request: AdaptivePlanningRequest,
         services: AdaptiveRunServices) -> ExecutionPlan:
@@ -193,29 +270,25 @@ def build_execution_plan(
             "use", "run_direct", handle="core.invalid",
             experiment={"action_id": chosen.action},
             rationale=_PARALLEL_UNAVAILABLE)
-    terminal_handles = {
-        "RETURN_RESULT": "core.finish", "STOP": "core.abstain",
-        "ASK_USER": "core.ask", "ABSTAIN": "core.abstain",
-        "REQUEST_AUTHORITY": "core.authority"}
-    if action.action_kind in terminal_handles:
+    if action.action_kind in _TERMINAL_HANDLES:
         services.plan_details[chosen.action] = {
             "arguments": {}, "spawned_tasks": []}
         return ExecutionPlan(
             "use", "run_direct",
-            handle=terminal_handles[action.action_kind],
+            handle=_TERMINAL_HANDLES[action.action_kind],
             experiment={"action_id": chosen.action},
             rationale=action.reason)
-    if action.action_kind == "REPAIR" and not action.required_capabilities:
+    if action_needs_execution_capability(action.action_kind) and not action.required_capabilities:
         services.plan_details[chosen.action] = {
             "arguments": {}, "spawned_tasks": [],
             "validation_failure": (
-                "repair action did not bind an executable capability")}
+                "selected action did not bind an executable capability")}
         return ExecutionPlan(
             "use", "run_direct", handle="core.invalid",
             experiment={"action_id": chosen.action},
             rationale=(
-                "A repair proposal without a registered capability cannot "
-                "perform work."))
+                "This planner requires a registered execution capability for "
+                "the selected action; no method call was dispatched."))
     failure = ""
     for attempt in (1, 2):
         try:
@@ -246,8 +319,19 @@ def build_execution_plan(
                         "barrier_only_output": None,
                     }} if action.action_kind == "SPAWN_LOOP" else {}),
                 }, _planning_schema(
-                    chosen.action, spawning=action.action_kind == "SPAWN_LOOP")))
+                    chosen.action, spawning=action.action_kind == "SPAWN_LOOP"),
+                admission_contract=_planning_response_contract(chosen.action,action)))
             return _validate_plan_response(value, request, services)
+        except ModelResponseRepairStalled as exc:
+            from .adaptive_practitioner_recovery import recover_step_contract_failure
+            recover_step_contract_failure(exc,{
+                'state_version':request.state.version,'facts':request.state.facts,
+                'artifact_refs':request.state.artifacts,'failures':list(request.state.failures),
+                'selected_action_id':chosen.action,'selected_action':action.to_dict(),
+                'response_contract':_planning_response_contract(chosen.action,action).to_dict(),
+            },services)
+            failure = str(exc)[:500]
+            break
         except (AdaptivePractitionerError, SolutionModelError,
                 TypeError, ValueError) as exc:
             failure = str(exc)[:500]

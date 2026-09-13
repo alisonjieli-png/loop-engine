@@ -150,7 +150,11 @@ Provider failover tries another provider or model route in the same tier.
 Power escalation moves to another tier after an allowed typed failure. The
 gateway records these as separate decisions. Authentication failure does not
 trigger a stronger model because a stronger model cannot repair a rejected
-credential.
+credential. A registered evaluator's verdict about an admitted answer
+(`semantic_response_rejected` or `response_evaluation_inconclusive`) is
+recorded on the attempt and ends the invocation on that route; it moves to
+another route only when `allow_evaluator_route_failover` is set, which is a
+separate permission from `allow_failover`.
 
 Read [Runtime settings and model tiers](../../guides/settings.md).
 

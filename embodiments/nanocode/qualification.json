@@ -1,0 +1,117 @@
+{
+  "record_type": "harness_project_qualification/v1",
+  "harness_id": "nanocode",
+  "upstream": "https://github.com/1rgs/nanocode",
+  "source_revision": "b009d3dbedf14795a5c10804a5455386563f4b5b",
+  "license_evidence": "README declares MIT; standalone license absent; GitHub API license unrecognized",
+  "status": "qualified_offline_headless_text_adapter",
+  "manifest": {
+    "schema_version": 1,
+    "harness_id": "nanocode",
+    "package_version": "git-b009d3dbedf14795a5c10804a5455386563f4b5b",
+    "style": "nanocode",
+    "command_prefix": [
+      "/usr/bin/python3",
+      "/home/username/loop-engine/embodiments/nanocode/upstream/nanocode.py"
+    ],
+    "read_only_paths": [
+      "/home/username/loop-engine/embodiments/nanocode/upstream"
+    ]
+  },
+  "new_real_model_calls": 0,
+  "source_worktree_clean": true,
+  "probes": [
+    {
+      "style": "nanocode",
+      "mode": "request-tools",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 1,
+      "broker_callback_count": 0,
+      "refusals": [
+        "native_tools_not_authorized"
+      ],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/nanocode-request-tools-01/result.json",
+      "profile": "stock_cli_or_declared_headless_adapter",
+      "record_sha256": "54bc1b3286922a4e3663dd80a32a26416d9875ea57b394c28b44049e1aa630c6"
+    },
+    {
+      "style": "nanocode",
+      "mode": "response-command",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 1,
+      "broker_callback_count": 1,
+      "refusals": [],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/nanocode-response-command-01/result.json",
+      "profile": "stock_cli_or_declared_headless_adapter",
+      "record_sha256": "eca1e28f704c35220ce32da29f2d57fab16815fdacc1836b2125edd681dc97a8"
+    },
+    {
+      "style": "nanocode",
+      "mode": "response-tools",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 2,
+      "broker_callback_count": 1,
+      "refusals": [
+        "anthropic_nontext_content_refused"
+      ],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/nanocode-response-tools-01/result.json",
+      "profile": "stock_cli_or_declared_headless_adapter",
+      "record_sha256": "4c267aab798aac2ebfcde3f3de204a62711b2010f58f5e9be8d59fd22f2f7d33"
+    },
+    {
+      "style": "nanocode",
+      "mode": "text",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 1,
+      "broker_callback_count": 1,
+      "refusals": [],
+      "native_marker_created": false,
+      "text_transport_observed": true,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/nanocode-text-01/result.json",
+      "profile": "stock_cli_or_declared_headless_adapter",
+      "record_sha256": "5ebca7adb350254846ca3436a38821e91004101aa64404fd2c9e1d5072b8f269"
+    },
+    {
+      "style": "nanocode",
+      "mode": "version",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 0,
+      "broker_callback_count": 0,
+      "refusals": [],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/nanocode-version-01/result.json",
+      "profile": "stock_cli_or_declared_headless_adapter",
+      "record_sha256": "8c20d6010e230f720a3641475f06459463aaae6e488aa64911b820792fb0a754"
+    }
+  ],
+  "limits": [
+    "scripted_provider_only",
+    "no_task_quality_claim",
+    "no_full_system_benchmark",
+    "no_automatic_registration",
+    "real_model_dispatch_requires_OllamaCloud_broker"
+  ],
+  "source_file_sha256": "438c0a4d8281a4be3d91143e2689813f74ccda0079470a05417afaada15b91f5"
+}

@@ -102,7 +102,37 @@ loop-engine solve --file task.txt --quickstart \
 Read [LLM-first universal solving](docs/guides/llm-first-universal-solver.md)
 for the model/runtime boundary.
 
+## Compare experimental embodiments
+
+The [embodiment catalog](embodiments/README.md) preserves alternative ways to
+build and run Loop Engine applications. Each design has its own folder,
+launcher, manifest, tradeoffs, and qualification status. Current runnable
+experiments compare native execution, fresh processes, persistent sessions,
+session pools, parallel portfolios, and durable reactive work with a trusted
+deterministic backend. They do not claim live model or harness qualification.
+Additional designs remain explicitly planned. No single embodiment is selected
+as the winner for every project.
+
+Local `solver-lab` project copies have their own source, evaluators,
+dependencies, and run state. Their filesystem location is host-specific;
+they are not part of the Loop Engine distribution. Follow the
+[reference-source boundaries](docs/context/REFERENCE-SOURCES.md) before
+consulting an older copy. Experiments in this repository continue to share
+the canonical Loop runtime.
+
 ## Reuse verified work
+
+The [flexible cognitive and action composition direction](docs/architecture/FLEXIBLE-COGNITIVE-AND-ACTION-COMPOSITION.md)
+describes how the design can grow beyond current workflows. Additional steps,
+prompts, questions, intelligence, and action methods are valid extensions,
+alongside compact procedures. Fewer steps or model calls are not the
+universal objective.
+
+The [configuration grid search guide](docs/guides/configuration-grid-search-and-optimization.md)
+explains candidate enumeration, conditional combinations, evaluation,
+fallback-policy comparisons, and the current implementation limits. It
+includes a runnable zero-model-call enumeration example. This direction does
+not claim that Loop Engine has achieved artificial general intelligence.
 
 A careful colleague takes notes and remembers. Loop Engine saves more than the
 final answer: verified code, reusable context, and complete solutions all
@@ -370,8 +400,12 @@ sets out the native/OpenCode comparison and its independent scoring boundary.
 
 Optional harnesses use the same Loop boundary through explicitly registered
 adapters. Missing tool, skill, isolation, or limit requirements cause refusal
-before execution. The OpenCode process adapter is quarantined pending a
-qualified execution profile. See the [harness boundary](docs/components/core-architecture/MCP-AND-SKILLS.md#external-harness-boundary)
+before execution. The legacy OpenCode raw-host process adapter remains
+quarantined. Separate brokered text-proposal execution and experimental
+native Markdown loading have bounded evidence in the
+[configuration report](docs/verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md);
+that evidence does not qualify unrestricted native tools or host execution.
+See the [harness boundary](docs/components/core-architecture/MCP-AND-SKILLS.md#external-harness-boundary)
 and [alternative harness review](docs/research/STORAGE-PACKAGES-HARNESSES-AND-MEMORY-2026-09-04.md#alternatives-to-opencode).
 This does not disable OpenCode Go or Zen provider endpoints, which are separate
 model adapters.

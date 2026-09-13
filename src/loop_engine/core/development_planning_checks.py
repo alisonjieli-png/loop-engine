@@ -11,7 +11,8 @@ from .development_planning import (
     DevelopmentPlanError, PlanDefinition, PlanningAuthority,
     RequirementVerificationContract, RetryPolicy, TaskLoopBinding,
     TaskSliceDefinition, WorkerAssignmentEnvelope, assure_plan,
-    compile_execution_waves, compile_plan_to_loop_graph)
+    author_plan_from_subproblems, compile_execution_waves,
+    compile_plan_to_loop_graph)
 
 
 def _verification(name="criterion"):
@@ -103,6 +104,28 @@ def self_test():
     except DevelopmentPlanError:
         no_delta = True
     check("no_op_retry_policy_is_refused", no_delta)
+
+    authored = author_plan_from_subproblems(
+        ["Inspect the data", "", "Train a model", "  ", "Write predictions"],
+        goal="Solve the task.", task_ref="task-original",
+        task_digest="b" * 64)
+    waves = compile_execution_waves(authored)
+    check("subproblems_author_linear_sound_waves",
+          [task.objective for task in authored.task_slices]
+          == ["Inspect the data", "Train a model", "Write predictions"]
+          and waves.waves == (("task_1",), ("task_2",), ("task_3",))
+          and all(not task.verifications[0].independent_verification
+                  for task in authored.task_slices),
+          "blanks dropped; linear chain (sound default); attestation "
+          "marked practitioner-proposed, never self-certifying")
+    empty = False
+    try:
+        author_plan_from_subproblems(
+            ["  ", ""], goal="Solve.", task_ref="task-original",
+            task_digest="b" * 64)
+    except DevelopmentPlanError:
+        empty = True
+    check("empty_subproblems_are_refused", empty)
 
     passed = sum(item["passed"] for item in tests)
     return {"record_type": "development_planning_self_test/v1",

@@ -1,0 +1,10 @@
+{
+  "id": "adaptive_tree",
+  "folder": "adaptive_tree",
+  "status": "planned",
+  "title": "Adaptive decomposition",
+  "benefit": "Attempt first, then select a contract-bound decomposition after verified failure.",
+  "limitations": "Not connected to this lab yet; use the existing PoC only as design evidence.",
+  "contract": "embodiment_work/v1",
+  "model_backend_qualified": false
+}

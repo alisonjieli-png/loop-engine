@@ -58,6 +58,10 @@ LoopGraphDefinition
 | OpenTelemetry | [`RawLedgerEvents`, `OtelSpanRecord`, `OpenTelemetrySpanExporter`](../../src/loop_engine/core/otel_export.py) | Verified Run History projection, explicit unverified compatibility, parented spans, safe attributes, and refusal of non-recording tracers. |
 | External harness | [`HarnessRunRequest`, `HarnessRegistry`, `HarnessServices`](../../src/loop_engine/core/external_harness.py) | Explicit host adapters, exact profile/provider/model identity, provider-backed output maximum, post-run budget assessment, captured output and normalized usage. Completion is not acceptance. |
 | Harness mechanics | [`HarnessExecutionCapabilities`, `HarnessExecutionRequirements`](../../src/loop_engine/core/harness_execution_contracts.py) | Refuse missing mechanics, isolation, or requested preemptive limit support before execution. Declarations do not grant authority or qualification. |
+| Per-step harness recovery | [`HarnessFallbackPolicy`](../../src/loop_engine/core/harness_fallback.py), [`HarnessSemanticBinding`](../../src/loop_engine/core/harness_semantic.py) | Explicit ordered alternatives, fresh attempt Loops, shared authority and accounting, exact semantic-packet identity, and refusal to replay uncertain effects. Recovery stops at an admitted proposal, not task acceptance. |
+| Observation expectations | [`ObservationExpectation`, `ObservationBinding`](../../src/loop_engine/core/observation_expectations.py), [`ModelInvocationRequest`](../../src/loop_engine/code_nodes/solution_model_port.py) | Exact operation and input binding, structural response admission, and recorded mismatches. Semantic uncertainty still needs independent review. |
+| Cognitive response contract | [`ModelResponseContract`](../../src/loop_engine/core/model_response_admission.py), [`ModelStepRequest`](../../src/loop_engine/core/adaptive_practitioner_records.py) | Versioned schema and explicit normalization, bound before dispatch. Action and method constraints reach the actual response validator, and rejected-response feedback stays separate from transport recovery. |
+| Recovery learning capture | [`capture_recovery_learning`](../../src/loop_engine/core/recovery_learning.py) | Opt-in self-improvement Loop, shared model and harness authority, explicit task-local or candidate disposition, and an unvalidated LearningBundle in the existing artifact store. No active intelligence update or self-promotion. |
 | Shared mode policy | [`LoopModePolicy`](../../src/loop_engine/loop/loop_control.py) | All three modes, explicit preference/fallback order, profile/configuration restrictions and executor availability. No model or effect grant. |
 | Output capacity and allocation | [`ModelOutputCapability`, `ModelOutputAllocation`](../../src/loop_engine/core/model_capabilities.py) | Source-backed provider capacity stays separate from a typed user/reasoning decision. Unknown capacity and contradictory bindings refuse. |
 | Strict token preflight | [`TokenBoundRequest`, `ProviderTokenBound`](../../src/loop_engine/core/model_token_preflight.py) | Validate host-qualified exact-request bounds; no default estimator or independent qualification. Shared session owns accounting. |
@@ -93,6 +97,16 @@ Runtime Memory, event persistence, MCP, skills, reports, playback, and trace
 export. They are not additional public capability groups.
 
 ## Definition and graph identity
+
+The [record compatibility guide](../components/loop-object/RECORD-COMPATIBILITY.md)
+documents version 2 Loop definitions, version 3 Spawned task checkpoints,
+exact historical readers, and explicit per-input cardinality. The
+[harness recovery guide](../components/core-architecture/HARNESS-FALLBACK.md)
+documents optional reviewed-evidence selection and registered response
+evaluation. The complete initial and fallback configuration requirement is
+recorded in the
+[dimension inventory](../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md);
+that design inventory is not an executable configuration schema.
 
 A definition reference contains:
 

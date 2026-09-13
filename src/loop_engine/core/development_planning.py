@@ -346,6 +346,48 @@ def assure_plan(plan: PlanDefinition, reviewer_loop_id: str) -> PlanAssuranceRes
                                tuple(critical), tuple(important), (), (), verdict)
 
 
+def author_plan_from_subproblems(
+        subproblems, *, goal: str, task_ref: str, task_digest: str,
+        plan_id: str = "plan-authored") -> PlanDefinition:
+    """Compile practitioner orient subproblems into an executable plan.
+
+    The subproblems arrive as plain strings, so no independence can be
+    inferred: slices chain linearly (each depends on the previous), which
+    is always sound, never parallel. Verification is producer attestation
+    with independent_verification False — practitioner-proposed, still
+    subject to downstream verification, never self-certifying.
+    """
+    items = [str(item).strip() for item in (subproblems or [])]
+    items = [item for item in items if item]
+    if not items:
+        raise DevelopmentPlanError(
+            "plan authoring needs at least one subproblem")
+    if not goal.strip() or not task_ref.strip():
+        raise DevelopmentPlanError(
+            "plan authoring needs a goal and task reference")
+    slices = []
+    previous = None
+    for index, objective in enumerate(items, start=1):
+        task_id = f"task_{index}"
+        criterion = f"criterion-{task_id}"
+        slices.append(TaskSliceDefinition(
+            task_id, objective, ("input:task",),
+            (f"development.task.{task_id}.result/v1",),
+            (previous,) if previous is not None else (),
+            (RequirementVerificationContract(
+                criterion, f"{objective} completed and attested",
+                "producer_attestation", ("completion_record",),
+                "incomplete", False),),
+            ConcurrencyContract(reads=("workspace",),
+                                exclusive_resources=("adaptive_model_session",)),
+            ("registered capability", "typed invocation", "verification")))
+        previous = task_id
+    return PlanDefinition(
+        plan_id, task_ref, task_digest, goal, ("requested change",), (),
+        PlanningAuthority.PARENT_LOOP_AUTHORIZED, (),
+        tuple(slices))
+
+
 def compile_execution_waves(plan: PlanDefinition) -> TaskExecutionPlan:
     """Compile deterministic dependency and concurrency-safe task waves."""
     tasks = {item.task_id: item for item in plan.task_slices}

@@ -1,0 +1,10 @@
+{
+  "id": "pooled_sessions",
+  "folder": "session_pool",
+  "status": "mechanism_implemented",
+  "title": "Bounded pool of worker sessions",
+  "benefit": "Independent requests can overlap while each pipe is serialized.",
+  "limitations": "Pool capacity is explicit; failures and queue time remain part of the result.",
+  "contract": "embodiment_work/v1",
+  "model_backend_qualified": false
+}

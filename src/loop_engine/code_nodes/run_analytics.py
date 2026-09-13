@@ -39,6 +39,7 @@ Verification: self_test() (folded into the package suite).
 """
 from __future__ import annotations
 
+import json
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 
@@ -442,6 +443,46 @@ def analyze_run(events, usage_log=(), trace: "dict | None" = None) -> dict:
                                         for r in per_loop.values())}}
 
 
+def trajectory_reward(events, gate_score=None) -> dict:
+    """RLTR-style completeness reward from a run ledger, no training.
+
+    Scores the ACTION SEQUENCE rather than the final answer: did the run
+    act, produce artifacts, verify, and recover — or stall, repeat, and
+    abandon? Each component is 0/1 from ledger evidence; the total is a
+    small integer, never a calibrated probability. A future fine-tune
+    can consume this record directly; until then it ranks runs.
+    """
+    from ..core.run_history import as_ledger_events
+    events = list(as_ledger_events(events))
+    steps = [e.get("step", "") for e in events]
+    blob = "\n".join(json.dumps(e.get("detail") or {}) for e in events)
+    acted = any(e.get("event") == "run_step" and e.get("step") == "act"
+                and e.get("output") for e in events)
+    artifacts = ("artifact" in blob.lower())
+    verified = ("verify" in steps) or ("solution.validator" in blob)
+    recurrence = blob.count("model_recurrence_noticed")
+    stalled = ("ModelResponseRepairStalled" in blob
+               or "repair_exhausted" in blob)
+    abandoned = any("abandon" in str(e.get("step", "")).lower()
+                    for e in events)
+    components = {
+        "acted": 1 if acted else 0,
+        "artifacts": 1 if artifacts else 0,
+        "verified": 1 if verified else 0,
+        "no_recurrence": 0 if recurrence else 1,
+        "no_stall": 0 if stalled else 1,
+        "completed": 1 if not abandoned else 0,
+    }
+    total = sum(components.values())
+    record = {"record_type": "trajectory_reward/v1",
+              "components": components, "total": total,
+              "model_calls": sum(
+                  1 for e in events
+                  if e.get("event") == "model_invocation"),
+              "gate_score": gate_score}
+    return record
+
+
 def compare_run_records(pairs) -> dict:
     """Marginal value of calls across labeled arms of the SAME task:
     pairs = [(label, {"calls": n, "score": s, "wall": w}), ...].
@@ -683,6 +724,28 @@ def self_test() -> dict:
           and "not-observed[" not in adversarial_dag.mermaid()
           and any("diagnostics:" in line
                   for line in adversarial_dag.text_lines()))
+
+    acted = trajectory_reward([
+        {"event": "run_step", "step": "act", "output": "did work"},
+        {"event": "model_invocation", "loop_id": "loop1"},
+        {"event": "custom",
+         "detail": {"profile_id": "solution.validator"}},
+    ], gate_score=1.0)
+    stalled = trajectory_reward([
+        {"event": "model_invocation", "loop_id": "loop1"},
+        {"event": "custom",
+         "detail": {"action": "model_recurrence_noticed"}},
+        {"event": "custom",
+         "detail": {"step": "abandon"}},
+    ])
+    check("trajectory_reward_scores_sequence_not_just_outcome",
+          acted["total"] == 5 and acted["gate_score"] == 1.0
+          and acted["components"]["verified"] == 1
+          and stalled["total"] < acted["total"]
+          and stalled["components"]["no_recurrence"] == 0
+          and stalled["record_type"] == "trajectory_reward/v1",
+          "acted+artifacts+verified outranks recurrence+abandon "
+          "before any gate score is considered")
 
     passed = sum(1 for r in results if r["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

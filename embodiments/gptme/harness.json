@@ -1,0 +1,5 @@
+{
+  "schema_version":1,"harness_id":"gptme","package_version":"0.33.0","style":"gptme",
+  "command_prefix":["/home/username/loop-engine/embodiments/gptme/runtime/.venv/bin/gptme-util"],
+  "read_only_paths":["/home/username/loop-engine/embodiments/gptme/runtime/.venv","/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu","/home/username/.local/share/uv/python/cpython-3.10.20-linux-x86_64-gnu"]
+}

@@ -78,12 +78,22 @@ def physical_exposure(
         str(getattr(item, "provider_request_digest", "") or "")
         for item in physical
     )
+    from .model_prompt_envelope import ModelPromptEnvelopeBinding
+    envelopes = tuple(getattr(gateway_result, "prompt_envelopes", ()) or ())
+    if any(type(binding) is not ModelPromptEnvelopeBinding for binding in envelopes):
+        raise StageAssistanceRuntimeRecordError("prompt envelope identities must be typed")
+    if any(not any(binding.matches(gateway_result, attempt, prompt_digest,
+                                   semantic_call_id, owner_loop_id) for attempt in physical)
+           for binding in envelopes):
+        raise StageAssistanceRuntimeRecordError("prompt envelope does not bind a physical attempt")
+    def matches_prompt(attempt):
+        if attempt.prompt_digest == prompt_digest:
+            return True
+        return any(binding.matches(gateway_result, attempt, prompt_digest,
+                                   semantic_call_id, owner_loop_id) for binding in envelopes)
     if (
         gateway_prompt_digest != prompt_digest
-        or any(
-            str(getattr(item, "prompt_digest", "") or "") != prompt_digest
-            for item in physical
-        )
+        or any(not matches_prompt(item) for item in physical)
         or len(gateway_request_digest) != 64
         or any(len(item) != 64 for item in provider_request_digests)
     ):
@@ -99,6 +109,8 @@ def physical_exposure(
         "gateway_request_digest": gateway_request_digest,
         "provider_request_digests": provider_request_digests,
         "physical_attempt_loop_ids": physical_ids,
+        **({"prompt_envelopes": [binding.summary() for binding in envelopes]}
+           if envelopes else {}),
     }, sort_keys=True, separators=(",", ":"))
     return {
         "exposure_ref": "stage-exposure:sha256:" + hashlib.sha256(
@@ -110,6 +122,9 @@ def physical_exposure(
         "format_attempt": format_attempt,
         "transport_attempt": transport_attempt,
         "physical_attempt_loop_ids": physical_ids,
+        **({"prompt_envelopes": tuple(binding.summary() for binding in envelopes),
+            "physical_prompt_digests": tuple(item.prompt_digest for item in physical)}
+           if envelopes else {}),
     }
 
 

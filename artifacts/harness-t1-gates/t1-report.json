@@ -1,0 +1,655 @@
+{
+ "record_type": "harness_t1_gate_report/v1",
+ "results": [
+  {
+   "arm": "aider",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=aider version=0.86.2 digest=9e772c977dd3"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "Python 3.11.15"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 5.3s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "cline",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=cline version=3.0.61 digest=4f5a4da97b39"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "v22.22.1"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 3.4s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "codex",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=codex version=0.153.4 digest=08176bd02ef2"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "codex-cli 0.153.4"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 1.3s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "continue",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=continue version=1.5.47 digest=f87580a244d6"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "v22.22.1"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 2.3s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "forgecode",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=forgecode version=2.13.21 digest=a8722848b7e6"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "forge 2.13.21"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 0.7s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "freebuff",
+   "status": "T1-FAIL",
+   "gates": {
+    "t1_spec": {
+     "passed": false,
+     "detail": "spec rejected: exact harness identity and installed style are required"
+    }
+   },
+   "missing_gates": [
+    "t1_binary",
+    "t1_delivery",
+    "t1_events",
+    "t1_extraction",
+    "t1_usage",
+    "t1_exit"
+   ]
+  },
+  {
+   "arm": "gemini_cli",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=gemini_cli version=0.59.0 digest=721c06f95f36"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "v22.22.1"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 3.0s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "goose",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=goose version=1.50.0 digest=61dc1765e3c6"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "1.50.0"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 1.0s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "gptme",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=gptme version=0.33.0 digest=aa5f9a45d6d7"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "Usage: gptme-util llm [OPTIONS] COMMAND [ARGS]..."
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 3.6s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "hermes_agent",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=hermes_agent version=0.21.1 digest=71fa625e32e8"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "Python 3.12.13"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 8.2s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "kilo",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=kilo version=7.5.16 digest=dbdad5fc09f0"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "v22.22.1"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 10.3s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "mini_swe_agent",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=mini_swe_agent version=2.4.6 digest=293146694ce9"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "Python 3.11.15"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 7.6s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "mistral_vibe",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=mistral_vibe version=2.25.0 digest=2319bb65919b"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "vibe 2.25.0"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 4.3s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "nanocode",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=nanocode version=git-b009d3dbedf14795a5c10804a5455386563f4b5b digest=b42c9180279d"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "Python 3.14.4"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 0.7s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "opencode",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=opencode version=1.17.9 digest=41430196f847"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "1.17.9"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 3.1s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "openinterpreter_rust",
+   "status": "T1-FAIL",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=openinterpreter_rust version=0.0.42 digest=0709eb77b92d"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "interpreter 0.0.42"
+    },
+    "t1_delivery": {
+     "passed": false,
+     "detail": "0 broker call(s), task marker missing"
+    },
+    "t1_events": {
+     "passed": false,
+     "detail": "0/0 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": false,
+     "detail": "output ''; raw re-extract gave ''"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": false,
+     "detail": "process finished in 1.4s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "pi",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=pi version=0.85.1 digest=88d39948bab3"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "v22.22.1"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 2.4s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "qwen_code",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=qwen_code version=0.23.1 digest=cc4bfbd0916b"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "v22.22.1"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 3.3s"
+    }
+   },
+   "missing_gates": []
+  },
+  {
+   "arm": "trae_agent",
+   "status": "T1-PASS",
+   "gates": {
+    "t1_spec": {
+     "passed": true,
+     "detail": "style=trae_agent version=0.1.0 digest=117a24dcc2ac"
+    },
+    "t1_binary": {
+     "passed": true,
+     "detail": "Python 3.12.13"
+    },
+    "t1_delivery": {
+     "passed": true,
+     "detail": "1 broker call(s), task bytes survived"
+    },
+    "t1_events": {
+     "passed": true,
+     "detail": "0/1 JSON lines"
+    },
+    "t1_extraction": {
+     "passed": true,
+     "detail": "recipe output == stub answer"
+    },
+    "t1_usage": {
+     "passed": true,
+     "detail": "usage reported on stub exchange; live usage recorded by the gateway"
+    },
+    "t1_exit": {
+     "passed": true,
+     "detail": "process finished in 4.4s"
+    }
+   },
+   "missing_gates": []
+  }
+ ],
+ "passed": 17,
+ "total": 19
+}

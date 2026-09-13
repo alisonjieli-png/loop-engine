@@ -1,12 +1,61 @@
 # Start a coding-agent session in Loop Engine
 
-Read [START-HERE.md](START-HERE.md) first. It is one page: what is green
-today, what is not, the commands, and the rule that shapes every change. Its
+Read [START-HERE.md](START-HERE.md) first for the current requirements,
+dated evidence, safe checks, and change rules. Its
 two companions are [Invariants and traps](INVARIANTS-AND-TRAPS.md) and
 [Ways of running](WAYS-OF-RUNNING.md). This page is the deeper orientation:
 the first message for a new session, the reading order, and the component map.
 
 This page applies to Codex and other coding agents working in the repository.
+
+Before continuing after the September 12 account change, read the
+[discrete cognitive or act step Loop node complete explanation and session handoff](DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md)
+in full. Preserve the full phrase and the behavioral explanation. Do not
+replace either with shorthand or treat the documented design as proof that
+every behavior is implemented.
+
+For configuration, selection, fallback, and experiment work, also read the
+[complete configuration dimension requirement](../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md).
+The owner confirmed the full dimension set on September 13. Each dimension
+needs an initial choice and ordered fallback priorities, not only harness
+and model selection. The document separates this requirement from current
+implementation and measured evidence.
+
+The owner's subsequent clarification makes that inventory explicitly
+non-exhaustive. Read the
+[dimension discovery addendum](CONFIGURATION-DIMENSION-DISCOVERY-ADDENDUM-2026-09-13.md)
+for the proposed refinements, additional choices, and ongoing review questions.
+Protect the required baseline while continuing to discover dimensions; do not
+turn either list into a fixed maximum or permit unknown runtime fields.
+
+For the owner's request to promote broader cognitive steps, actions, prompts,
+intelligence, and optimization, read
+[flexible cognitive and action composition](../architecture/FLEXIBLE-COGNITIVE-AND-ACTION-COMPOSITION.md)
+and [configuration grid search](../guides/configuration-grid-search-and-optimization.md).
+Expansion and simplification are both permitted design directions. The
+documents preserve the research ambition without claiming an achieved
+artificial general intelligence system or a general optimizer.
+
+For the September 13 cleanup and independent review request, use the
+[Claude Fable 5.1 review handoff](CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md).
+It maps the uncommitted implementation, legacy compatibility, current versus
+historical context, verification failures and corrections, and priority
+review questions. It does not claim that Claude has reviewed the work.
+
+For the subsequent September 12 configuration experiments, read the
+[configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).
+It records 70 real Tactical calls, a forty-cell repair matrix with 159/160
+case checks passing, and nine native Markdown loading controls. The report
+separates engine-mediated resources from native harness loading, retains the
+failed cases, and preserves the complete terminology explanation. These are
+bounded component experiments, not a full-system benchmark or learning claim.
+
+For the September 12 work on the discrete cognitive or act step Loop node, read the
+[architecture and current-state checkpoint](../research/COGNITIVE-STEP-ARCHITECTURE-AND-STATE-2026-09-12.md).
+It separates the design, current implementation, live Tactical failures,
+verified harness handoffs, learning limits, and next proof sequence. Its dated
+evidence takes precedence over earlier status summaries for that work, not
+over the Constitution or typed contracts.
 
 Use `/home/username/loop-engine` as the workspace directory for Loop Engine work.
 This repository is separate from `/home/username/taedri.dev`.
@@ -61,8 +110,10 @@ copy files or create parallel registries. State a missing invariant, map it to
 an existing Loop Engine boundary, implement the smallest typed extension, and
 verify it inside Loop Engine.
 
-Do not commit, push, call a paid provider, rerun a completed benchmark, or
-perform external effects unless the current request authorizes that action.
+Commit and push verified changes to main in the same turn, as the owner's
+standing instruction requires, and keep another session's in-progress files
+out of your commit. Do not call a paid provider, rerun a completed benchmark,
+or perform external effects unless the current request authorizes that action.
 ```
 
 ## Reading order
@@ -112,8 +163,11 @@ adds reasoned output allocations, shared three-mode views, conservative frontier
 outcomes, and single-flight token accounting. Strict live requests still need a
 qualified exact-request token bound. Do not replace missing bounds with a
 character estimate or reuse archived live-run spending authority.
-OpenCode execution is quarantined; do not restore its old raw-host path to make
-a smoke test pass. The [harness boundary](../components/core-architecture/MCP-AND-SKILLS.md#external-harness-boundary)
+The legacy OpenCode raw-host execution path is quarantined; do not restore it
+to make a smoke test pass. Separate brokered text-proposal adapters and the
+experimental native Markdown loading controls have their own bounded evidence
+in the September 12 configuration report. They do not qualify unrestricted
+native tools or host execution. The [harness boundary](../components/core-architecture/MCP-AND-SKILLS.md#external-harness-boundary)
 documents capability refusal, explicit registration, and post-run budget limits.
 Use the host-configured record tool for managed notes. Do not directly edit its
 database or immutable revisions. Existing authority Markdown and historical
@@ -143,14 +197,15 @@ not connect to Jira or publish a branch.
 
 For the unseen-task question, read the
 [novel-task campaign report](../verification/UNSEEN-NOVEL-TASK-CAMPAIGN-2026-09-06.md).
-Ten sealed novel tasks each completed on the first autonomous attempt
-(283 real model calls, complete token accounting); an independent seeded
-audit then invalidated one accepted solution, so post-audit survival is
-9/10 and the false-acceptance rate on that population is 10 percent. The
-campaign's task population is burned as evidence: never reuse those ten
-tasks, their cases, or the audit seeds as unseen evidence. The next steps,
-in order, are the pre-acceptance counterexample gate, repair-loop failure
-classification, and a fresh sealed population for any new claim; the
+Read its September 7 corrections before citing the original conclusions.
+The campaign recorded 283 real model calls, but three prompts contradicted
+their hidden cases and the later reference evaluator was inconsistent.
+The original 9/10 survival and 10 percent false-acceptance claims are not
+established. Separate task histories also prevented cross-task learning by
+construction. Never reuse those ten tasks, their cases, or the audit seeds
+as unseen evidence. Future claims need qualified prompt-and-evaluator
+contracts, a pre-acceptance counterexample gate, explicit repair failure
+classification, and a fresh sealed population. The
 [unseen-task handoff brief](../prompts/UNSEEN-TASK-WORK-HANDOFF.md) is the
 sole continuation prompt for that work.
 

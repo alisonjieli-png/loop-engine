@@ -45,7 +45,7 @@ _PUBLIC: dict[str, tuple[str, str]] = {
     # Typed contracts, ports, and versioned profiles.
     **_names(
         "loop.loop_contract",
-        "LoopContract", "LoopContractError", "LoopPortBinding",
+        "LoopContract", "LoopContractError", "LoopPortBinding", "LoopInputCardinality",
         "LoopConnectionSpec", "LoopConnectionResult",
         "validate_loop_connection",
     ),

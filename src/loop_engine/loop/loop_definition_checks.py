@@ -5,6 +5,10 @@ services, role conflicts, strict starts, and semantic executor refusal.
 """
 from __future__ import annotations
 
+from dataclasses import replace
+import hashlib
+import json
+
 from .loop_contract import LoopContract
 from .loop_definition import (LoopDefinition, LoopDefinitionError,
                               LoopStartRequest)
@@ -54,6 +58,25 @@ def self_test() -> dict:
     restored = LoopDefinition.from_dict(definition.to_dict())
     check("definition_roundtrip_preserves_exact_digest",
           restored == definition and restored.ref == definition.ref)
+    check('new_definitions_emit_versioned_input_contract_encoding',definition.to_dict()['record_type']=='loop_definition/v2')
+    for label,with_outputs in (('original_v1',False),('expanded_v1',True)):
+        old=definition.to_dict();old['record_type']='loop_definition/v1'
+        old['contract'].pop('input_cardinalities')
+        if not with_outputs:
+            old['contract'].pop('output_type');old['contract'].pop('max_outputs')
+        old.pop('content_digest')
+        old['content_digest']=hashlib.sha256(json.dumps(old,sort_keys=True,separators=(',',':'),
+            ensure_ascii=False,allow_nan=False).encode()).hexdigest()
+        loaded=LoopDefinition.from_dict(old)
+        check(label+'_retains_original_digest_and_encoding',loaded.to_dict()==old and loaded.ref.content_digest==old['content_digest'])
+        revised=replace(loaded,version='1.0.1')
+        check(label+'_changed_definition_uses_new_encoding',revised.to_dict()['record_type']=='loop_definition/v2'
+              and revised.content_digest!=loaded.content_digest)
+        altered=json.loads(json.dumps(old));altered['contract']['name']='changed without authority'
+        try:LoopDefinition.from_dict(altered)
+        except LoopDefinitionError:refused=True
+        else:refused=False
+        check(label+'_changed_historical_content_is_refused',refused)
 
     tampered = definition.to_dict()
     tampered["configuration_facts"]["max_depth"] = 99
@@ -63,6 +86,25 @@ def self_test() -> dict:
     except LoopDefinitionError:
         digest_refused = True
     check("definition_digest_mismatch_is_refused", digest_refused)
+
+    reader_error_types = set()
+    for mutate in (
+            lambda v: v["contract"]["input_cardinalities"].append(
+                {"role": "absent", "cardinality": "multiple", "max_items": 2}),
+            lambda v: v["contract"]["input_cardinalities"].append(
+                {"role": "request", "cardinality": "multiple", "max_items": True})):
+        value = definition.to_dict()
+        mutate(value)
+        body = {key: item for key, item in value.items() if key != "content_digest"}
+        value["content_digest"] = hashlib.sha256(json.dumps(
+            body, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+            allow_nan=False).encode("utf-8")).hexdigest()
+        try:
+            LoopDefinition.from_dict(value)
+        except Exception as exc:
+            reader_error_types.add(type(exc))
+    check("stored_contract_faults_raise_only_definition_errors",
+          reader_error_types == {LoopDefinitionError})
 
     forged_profile = False
     try:

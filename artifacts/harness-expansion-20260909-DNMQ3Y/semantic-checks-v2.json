@@ -1,0 +1,67 @@
+{
+  "tests": [
+    {
+      "test": "missing_artifact_authority_refuses_before_a_session_starts",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "every_semantic_call_uses_selected_harness",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "harness_packet_preserves_original_system_and_prompt",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "shared_session_charges_actual_gateway_calls",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "brokered_gateway_events_are_not_double_imported",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "semantic_identities_survive_the_harness_boundary",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "stage_exposure_preserves_both_engine_and_actual_prompt_identities",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "envelope_missing_cannot_bypass_stage_identity",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "envelope_wrong_target_cannot_bypass_stage_identity",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "envelope_untyped_cannot_bypass_stage_identity",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "whole_run_budget_blocks_before_another_harness_dispatch",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "replacement_adapter_requires_a_new_binding",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "passed": 12,
+  "total": 12,
+  "all_passed": true
+}

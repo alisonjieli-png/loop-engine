@@ -98,32 +98,51 @@ def recovery_options(facts: dict) -> tuple[ChoiceOption, ...]:
     preserve its work. Route replacement, context recompilation, waiting, and
     setting changes must not appear as selectable until their callers can
     execute and verify them.
+
+    After three consecutive same-shape failures the retry is withdrawn:
+    repeating an identical failing shape is not exploration. The model
+    still decides among what remains (abandon, or a refused novel
+    proposal) — the policy only removes the option proven futile.
     """
     attempts = int(facts.get("attempts_so_far") or 0)
     error_code = str(facts.get("error_code") or "")
     responded = bool(facts.get("provider_responded"))
-    return (
-        ChoiceOption(
+    try:
+        repeats = int(facts.get("same_shape_repeats") or 0)
+    except (TypeError, ValueError):
+        repeats = 0
+    options = []
+    if repeats < 3:
+        options.append(ChoiceOption(
             "retry_same_route",
             "Put the unchanged request through the same authorized model "
             "plan again",
             facts={"attempts_so_far": attempts, "error_code": error_code,
-                   "provider_responded": responded}),
-        ChoiceOption(
-            "abandon_step",
-            "Stop trying this step and report why, preserving completed work",
-            facts={"completed_work": facts.get("completed_work") or []}),
-    )
+                   "provider_responded": responded}))
+    options.append(ChoiceOption(
+        "abandon_step",
+        "Stop trying this step and report why, preserving completed work",
+        facts={"completed_work": facts.get("completed_work") or []}))
+    return tuple(options)
 
 
 def _recovery_question(facts: dict) -> str:
     """State the failure without implying what it means."""
-    return (
+    base = (
         f"A model call failed with {facts.get('error_code')!r} after "
         f"{facts.get('attempts_so_far', 0)} attempt(s). The provider "
         + ("did respond" if facts.get("provider_responded")
            else "did not respond")
         + ". What should happen next?")
+    try:
+        repeats = int(facts.get("same_shape_repeats") or 0)
+    except (TypeError, ValueError):
+        repeats = 0
+    if repeats >= 3:
+        base += (f" This exact failure has recurred {repeats} times in a "
+                 "row; retrying it unchanged is withdrawn — abandon the "
+                 "step or propose a materially different recovery.")
+    return base
 
 
 def choose_recovery(facts: dict, ask, *, parameters=()) -> RecoveryOutcome:
@@ -208,6 +227,16 @@ def self_test() -> dict:
     ids = {item.option_id for item in options}
     check("only executable recovery actions are offered",
           ids == {"retry_same_route", "abandon_step"})
+    stale = dict(facts, same_shape_repeats=3)
+    stale_ids = {item.option_id for item in recovery_options(stale)}
+    check("third_same_shape_failure_withdraws_the_retry",
+          stale_ids == {"abandon_step"},
+          "the futile option is removed; the model still decides among "
+          "what remains")
+    fresh = dict(facts, same_shape_repeats=2)
+    check("fewer_repeats_keep_both_options",
+          {item.option_id for item in recovery_options(fresh)}
+          == {"retry_same_route", "abandon_step"})
 
     reasoned = choose_recovery(
         facts,

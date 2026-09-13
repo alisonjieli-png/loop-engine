@@ -1,0 +1,10 @@
+{
+  "id": "transactional_semantic",
+  "folder": "transactional_semantic",
+  "status": "planned",
+  "title": "Transactional semantic realization",
+  "benefit": "Interpret a versioned semantic contract, verify a candidate, then commit exact authorized effects.",
+  "limitations": "Existing core API foundation; no independently qualified lab runner yet.",
+  "contract": "embodiment_work/v1",
+  "model_backend_qualified": false
+}

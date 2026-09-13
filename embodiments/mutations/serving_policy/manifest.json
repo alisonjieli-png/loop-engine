@@ -1,0 +1,14 @@
+{
+  "record_type": "embodiment_mutation/v1",
+  "id": "serving_policy",
+  "status": "mechanism_available",
+  "arms": [
+    "best",
+    "all_verified",
+    "random",
+    "as_of"
+  ],
+  "control_rule": "Query the same verified portfolio without reactivating producers; record seed and version.",
+  "runtime_type": "Loop",
+  "automatic_application": false
+}

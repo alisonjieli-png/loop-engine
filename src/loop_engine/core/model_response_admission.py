@@ -136,7 +136,21 @@ def _syntax_diagnostic(strategy: str, candidate: str,
 
 
 class ModelResponseRepairStalled(RuntimeError):
-    """A response repair cycle repeated without semantic progress."""
+    """A response repair cycle repeated without semantic progress.
+
+    Carries the rejected shapes so recovery can forbid them instead of
+    re-deriving the failure: step that stalled, attempt count, the
+    failure code, and digests of every rejected output.
+    """
+
+    def __init__(self, message: str, *, step_id: str = "",
+                 attempts: int = 0, failure_code: str = "",
+                 rejected_digests=()) -> None:
+        super().__init__(message)
+        self.step_id = step_id
+        self.attempts = attempts
+        self.failure_code = failure_code
+        self.rejected_digests = tuple(rejected_digests)
 
 
 @dataclass(frozen=True)
@@ -145,6 +159,7 @@ class ModelResponseAdmissionPolicy:
 
     allowed_strategies: tuple[str, ...] = _NORMALIZATION_STRATEGIES
     expected_root_type: str = "object"
+    report_required_field_names: bool = False
 
     def __post_init__(self) -> None:
         strategies = tuple(self.allowed_strategies)
@@ -154,7 +169,43 @@ class ModelResponseAdmissionPolicy:
             raise ValueError("response admission strategies are invalid")
         if self.expected_root_type != "object":
             raise ValueError("version 1 response admission expects an object")
+        if type(self.report_required_field_names) is not bool:
+            raise TypeError('schema-field disclosure must be an explicit Boolean policy')
         object.__setattr__(self, "allowed_strategies", strategies)
+
+
+@dataclass(frozen=True)
+class ModelResponseContract:
+    """Reusable response schema and normalization policy, without invocation state.
+
+    This is the passive contract consumed by the existing admission Loop, not
+    another validator runtime. It is bound to exact input bytes at invocation.
+    """
+
+    contract_ref: str
+    schema_json: str
+    policy: ModelResponseAdmissionPolicy = field(default_factory=ModelResponseAdmissionPolicy)
+    version: str = "1.0.0"
+
+    def __post_init__(self):
+        from .observation_expectations import resolved_schema_json
+        if (type(self.contract_ref) is not str or not self.contract_ref.strip()
+                or len(self.contract_ref) > 512 or self.version != "1.0.0"):
+            raise ValueError('invalid response contract identity or version')
+        if not isinstance(self.policy, ModelResponseAdmissionPolicy):
+            raise TypeError('response normalization must use a typed policy')
+        object.__setattr__(self, 'schema_json', resolved_schema_json(self.schema_json))
+
+    def to_dict(self):
+        return {'record_type':'model_response_contract/v1', 'version':self.version,
+                'contract_ref':self.contract_ref, 'schema':json.loads(self.schema_json),
+                'normalization':{'allowed_strategies':list(self.policy.allowed_strategies),
+                                 'expected_root_type':self.policy.expected_root_type,
+                                 'report_required_field_names':self.policy.report_required_field_names}}
+
+    @property
+    def content_digest(self):
+        return _canonical_digest(self.to_dict())
 
 
 @dataclass(frozen=True)
@@ -282,9 +333,17 @@ def _admit(request: ModelResponseAdmissionRequest) \
         errors = ()
         if request.schema is not None:
             validator = Draft202012Validator(dict(request.schema))
-            errors = tuple(sorted(
-                _schema_error_category(error)
-                for error in validator.iter_errors(value)))
+            failures = list(validator.iter_errors(value))
+            categories = [_schema_error_category(error) for error in failures]
+            if request.policy.report_required_field_names:
+                # Only names explicitly declared by the trusted schema may
+                # enter this opt-in feedback. Never copy a candidate value or
+                # an unexpected property name into a diagnostic.
+                categories.extend('schema_required_field_missing:' + name
+                    for error in failures if error.validator == 'required'
+                    and isinstance(error.instance, dict)
+                    for name in error.validator_value if name not in error.instance)
+            errors = tuple(sorted(set(categories)))
         if errors:
             return ModelResponseAdmissionResult(
                 False, None, strategy, "schema_validation_failed",

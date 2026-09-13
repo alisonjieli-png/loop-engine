@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "harness_id": "openinterpreter_rust",
+  "package_version": "0.0.42",
+  "style": "openinterpreter_rust",
+  "command_prefix": ["/home/username/loop-engine/embodiments/openinterpreter_rust/runtime/bin/interpreter"],
+  "read_only_paths": ["/home/username/loop-engine/embodiments/openinterpreter_rust/runtime"]
+}

@@ -1,0 +1,5 @@
+{
+  "schema_version": 1, "harness_id": "opencode", "package_version": "1.17.9", "style": "opencode",
+  "command_prefix": ["/home/username/loop-engine/embodiments/opencode/runtime/opencode"],
+  "read_only_paths": ["/home/username/loop-engine/embodiments/opencode/runtime/opencode"]
+}

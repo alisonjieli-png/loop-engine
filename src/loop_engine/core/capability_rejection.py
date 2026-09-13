@@ -233,7 +233,7 @@ def self_test() -> dict:
         "test": "an_untyped_failure_becomes_an_executor_error_rejection",
         "passed": (fallback.reason_code == "executor_error"
                    and fallback.message.startswith("KeyError")
-                   and fallback.repair_hint),
+                   and bool(fallback.repair_hint)),
         "detail": fallback.message[:60],
     }]
     return {"module": "core.capability_rejection",

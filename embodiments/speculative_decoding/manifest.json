@@ -1,0 +1,10 @@
+{
+  "id": "speculative_decoding",
+  "folder": "speculative_decoding",
+  "status": "planned",
+  "title": "Provider-side speculative decoding",
+  "benefit": "Compare target/draft token verification beneath the model route.",
+  "limitations": "No local decoder implementation or qualified adapter was found. Hardware and sampling compatibility require testing.",
+  "contract": "embodiment_work/v1",
+  "model_backend_qualified": false
+}

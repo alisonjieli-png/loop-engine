@@ -198,6 +198,28 @@ def core_forms() -> dict:
           "comparison"),
         F("done_definition", "For {task}, state the exact observable condition "
           "that proves the work is complete — before starting.", "list"),
+        F("inventory_setting", "For {task}, list the folders, files, data, "
+          "and tools present in the setting. Mark each inspected or assumed, "
+          "and name what each one is for.", "list"),
+        F("workplace_setup", "For {task}, where should the work happen? Name "
+          "the working directory, what must be staged into it, and what "
+          "must be true of it before acting.", "list"),
+        F("format_conformance", "For {task}, the required output format is: "
+          "{options}. Does the artifact match it exactly — columns, schema, "
+          "file layout, interface signature? List every deviation.", "verdict"),
+        F("report_shaping", "For {task}, the consumer is described as: "
+          "{options}. How should the result be structured and worded so "
+          "that consumer can use it without rework?", "list"),
+        F("repetition_circuit_breaker", "For {task}, this approach has "
+          "failed {options} with the same signature. Name what must change "
+          "before any retry is allowed, or state why to stop instead.",
+          "verdict"),
+        F("sufficiency_check", "For {task}, an artifact already exists: "
+          "{options}. Does it satisfy the acceptance as written? If yes, "
+          "verify it and stop; if no, name the single gap.", "verdict"),
+        F("established_facts", "For {task}, this run already established: "
+          "{options}. Which planned probe or setup step does each item make "
+          "unnecessary?", "list"),
     ]
     return {f.name: f for f in forms}
 
@@ -350,10 +372,12 @@ def self_test() -> dict:
                    "option": "use xgboost", "a": "xgb", "b": "mlp"}
     v1 = multiply(forms, personas=("a skeptic", "an optimist"),
                   policies=("fully_informed", "goal_only"),
-                  seeds=(0, 3), slot_values=slot_values, limit=40)
+                  seeds=(0, 3), slot_values=slot_values,
+                  limit=len(forms) + 2)
     v2 = multiply(forms, personas=("a skeptic", "an optimist"),
                   policies=("fully_informed", "goal_only"),
-                  seeds=(0, 3), slot_values=slot_values, limit=40)
+                  seeds=(0, 3), slot_values=slot_values,
+                  limit=len(forms) + 2)
     first_forms = [v.form for v in v1[:len(forms)]]
     check("multiplication_is_deterministic_and_covers_all_forms_first",
           [ (v.form, v.persona, v.seed) for v in v1 ]

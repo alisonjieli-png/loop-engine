@@ -522,6 +522,31 @@ dimension test ran 10 tests and passed, and the 21 proposals in
 dimension document; the packaged copies of `architecture.yaml` and
 `terminology.yaml` are byte-identical to the root files.
 
+## Fixes applied on 2026-09-13
+
+After Codex's assessment the owner asked for the defects to be fixed. The
+fixes below follow Codex's guidance: each adds an explicit permission or a
+stricter reader; none removes a configurable option.
+
+| Defect | Fix | Regression checks |
+|---|---|---|
+| D1, D1b, D2 | `ModelGateway` records an evaluator's verdict on the attempt as `semantic_response_rejected` or `response_evaluation_inconclusive` (typed `ValidationVerdict` raised by the evaluator wrapper) and stops the invocation on that route. The new `ModelGatewayConfig.allow_evaluator_route_failover` permission, off by default, is the only way a verdict may move to another route. `assess_harness_attempt` classifies the verdict codes as evaluation outcomes, never as provider failures. | `evaluator_rejected_verdict_does_not_fail_over_to_another_route`, `evaluator_inconclusive_verdict_does_not_fail_over_to_another_route`, `explicit_permission_allows_evaluator_triggered_route_change`, `harness_attempt_cannot_change_provider_after_semantic_rejection` |
+| D3, D3b | `HarnessSelectionPolicy` refuses two records that cite one Run History reference; `select_harness` counts distinct references toward `minimum_records`. Repeated trials of one subject with their own histories still count. | `one_history_reference_cannot_count_as_several_trials`, `distinct_repeated_trials_of_one_subject_still_count` |
+| D4, D4b | `SpawnedTaskCheckpoint.from_dict` requires a stored SHA-256 digest and stored integer counters and text identities before any conversion; only in-process construction may leave the digest blank. | the extended `stale_version_tamper_and_invalid_state_fail_closed` case (five refusals) |
+| D5 | `verifier_execute` starts the script in its own process group, kills the group after the deadline and after completion, keeps a bounded rolling output tail, and raises `VerifierError` with `output_tail`, `timed_out`, and `output_bytes_total`. The record is `verifier_execution/v2` and names its containment as a raw-host process group. | `verifier_timeout_terminates_descendants`, `verifier_timeout_error_carries_output_tail`, `verifier_output_capture_is_bounded` |
+| D6 | `HarnessResponseEvaluation` carries `subject_contract_ref`, `subject_contract_digest`, and `context_aware` as `harness_response_evaluation/v2`; a two-parameter callback receives a `ResponseEvaluationContext` with the semantic call, input digest, and subject contract. | `evaluation_record_binds_the_subject_contract`, `context_aware_evaluator_receives_the_exact_occurrence` |
+| D7 | `LoopDefinition.from_dict` raises only `LoopDefinitionError` and names unsorted cardinalities as the reason instead of a digest mismatch. | `stored_contract_faults_raise_only_definition_errors` |
+| D9 | `InformationStorageBinding.from_storage_dict` requires a stored digest, an integer size, and list-typed collections. | `stored_binding_without_its_digest_is_refused` |
+| Latent Practitioner branch | `adaptive_practitioner_records` treats the verdict codes as response repair work with the evaluation's finding codes, not as a transport failure. | covered by the gateway checks; no product path registers an evaluator yet |
+| D8 | `tools/make_checkpoint.py` parses the JSON self-test summary from standard output and records a parse failure with the return code and output tails; keeps every command's return code, output, and launch error; refuses an existing target and an unconfined slug before any suite runs (exit code 2); writes `conformance.json` from the manifest produced during the run and refuses a stale one; lists untracked files. | `tools/test_make_checkpoint.py`, 20 tests |
+| Legacy campaign tool | `tools/task_campaign.py` renames an existing cell directory instead of deleting it, bridges the `solution.py` named in the outcome's artifact list before falling back to the newest file and records which rule applied, verifies the health probe's certificate unless `--insecure-health-probe` is given, accepts every `model_gateway_result/` record version, and reports deferred cells separately from attempted ones. | `tools/test_task_campaign.py`, 22 tests |
+
+The acceptance probe reports 11 of 11 scenarios passing after the fixes, and
+the owning suites rerun at 31, 22, 42, 15, 8, 33, 19, and 10 checks passing
+for selection, evaluation, fallback, semantic binding, verifier, information
+access, definitions, and checkpoints. The two tool repairs pass 42 unit tests
+together with the six existing `tools` tests (48 in the discover run).
+
 ## Addendum written while Codex evaluated the findings
 
 Added on 2026-09-13 after 12:00 local time, while the live Codex session

@@ -50,7 +50,8 @@ def as_practitioner_loop(objective: str, fn, *, inputs=None,
                          ledger: "LoopLedger | None" = None) -> dict:
     """Run ``fn`` as a full PractitionerLoop with deterministic-preferred
     settings.  Returns {"value", "loop_id", "steps_run", "model_calls",
-    "mode_counts", "confidence", "stopped"}.  ``inputs`` (if given) is
+    "mode_counts", "confidence", "stopped", "outputs", ...} where "outputs"
+    is the admitted portfolio (one item on acceptance).  ``inputs`` (if given) is
     passed to ``fn`` as its single argument.  With ``parent`` the check
     runs as a spawned Loop (permission clamp applies)."""
     cfg = LoopConfig(framework="five_step", power="small",
@@ -103,6 +104,7 @@ def as_practitioner_loop(objective: str, fn, *, inputs=None,
             "steps_run": res.steps_run, "model_calls": res.model_calls,
             "mode_counts": res.mode_counts, "confidence": res.confidence,
             "stopped": res.stopped,
+            "outputs": [item.to_dict() for item in res.outputs],
             "loop_definition_id": res.loop_definition_id,
             "loop_definition_version": res.loop_definition_version,
             "loop_definition_digest": res.loop_definition_digest}
@@ -422,6 +424,7 @@ def as_loop(objective: str, thing, *, kind: str | None = None, inputs=None,
            "value": holder.get("value"), "error": holder.get("error"),
            "stopped": res.stopped, "model_calls": res.model_calls,
            "accepted": res.accepted_successes, "attempts": res.attempts,
+           "outputs": [item.to_dict() for item in res.outputs],
            "loop_definition_id": res.loop_definition_id,
            "loop_definition_version": res.loop_definition_version,
            "loop_definition_digest": res.loop_definition_digest}

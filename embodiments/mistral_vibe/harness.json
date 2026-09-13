@@ -1,0 +1,5 @@
+{
+  "schema_version":1,"harness_id":"mistral_vibe","package_version":"2.25.0","style":"mistral_vibe",
+  "command_prefix":["/home/username/loop-engine/embodiments/mistral_vibe/runtime/.venv/bin/vibe"],
+  "read_only_paths":["/home/username/loop-engine/embodiments/mistral_vibe/runtime/.venv","/home/username/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu","/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu"]
+}

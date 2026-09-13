@@ -1,0 +1,10 @@
+{
+  "id": "fresh_process",
+  "folder": "process_per_step",
+  "status": "mechanism_implemented",
+  "title": "One process per packet",
+  "benefit": "Fresh process state and isolated worker lifetime.",
+  "limitations": "Python worker protocol today, not an OpenCode or OS-security qualification.",
+  "contract": "embodiment_work/v1",
+  "model_backend_qualified": false
+}

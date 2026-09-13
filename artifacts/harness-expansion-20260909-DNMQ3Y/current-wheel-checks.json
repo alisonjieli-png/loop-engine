@@ -1,0 +1,25 @@
+{
+  "installed_package": "/home/username/loop-engine/build/harness-validation/venv/lib/python3.10/site-packages/loop_engine/__init__.py",
+  "reports": [
+    {
+      "name": "harness_contracts",
+      "passed": 79,
+      "total": 79,
+      "failed": []
+    },
+    {
+      "name": "sdk_contracts",
+      "passed": 27,
+      "total": 27,
+      "failed": []
+    },
+    {
+      "name": "process_contracts",
+      "passed": 11,
+      "total": 11,
+      "failed": []
+    }
+  ],
+  "all_passed": true,
+  "live_provider_calls": 0
+}

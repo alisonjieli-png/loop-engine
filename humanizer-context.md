@@ -19,6 +19,28 @@ internal vocabulary to understand one page.
 - Keep claims narrow and testable.
 - State current behavior separately from planned behavior.
 
+## Full terms without shorthand
+
+Do not use shorthand or introduce abbreviated aliases in explanations,
+documentation, prompts, or handoffs. Repeat the full descriptive term even
+after defining it. Consistent repetition prevents meaning from drifting
+between language-model sessions. Do not replace an established term with a
+shorter synonym for style.
+
+Preserve the full phrase "discrete cognitive or act step Loop node" and its
+complete behavioral explanation. Do not shorten the phrase, remove "node,"
+substitute an acronym, or retain only a label. Read
+[the complete explanation and session handoff](docs/context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md).
+The explanation must retain the narrowly scoped assignment, selected context
+and resources, separately initialized harnesses, permitted harness changes,
+expectation checks, iteration until declared completion conditions, continued
+production of alternative outputs, and protection against repeated external
+effects. Publication of an output is separate from completion.
+
+The descriptive phrase does not introduce a runtime class, role, or mode.
+Preserve exact existing code identifiers, contract fields, product names, and
+historical source quotations. The canonical runtime identifier remains `Loop`.
+
 ## Product names
 
 - Product and repository: Loop Engine

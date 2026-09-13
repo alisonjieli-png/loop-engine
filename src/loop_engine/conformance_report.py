@@ -133,6 +133,11 @@ def _public_retired_nomenclature() -> list:
         term for term in policy.get("terms", ())
         if "what" in str(term).casefold())
     root, layout_exclusions = _nomenclature_scan_layout()
+    if os.path.abspath(root)!=os.path.abspath(_HERE):
+        included=policy.get('public_scan_paths')
+        if included is None:
+            raise ValueError('source checkout public-language scope must be explicitly declared')
+        policy['included_paths']=included
     policy["excluded_files"] = tuple(dict.fromkeys((
         *policy.get("excluded_files", ()), *layout_exclusions)))
     return retired_nomenclature_violations(root, policy)

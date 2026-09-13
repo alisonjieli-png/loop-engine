@@ -1,0 +1,13 @@
+{
+  "record_type": "embodiment_mutation/v1",
+  "id": "context_slicing",
+  "status": "planned",
+  "arms": [
+    "bounded_push",
+    "horizons",
+    "scoped_pull_on_miss"
+  ],
+  "control_rule": "Compare delivered context, omissions, latency and downstream correctness, using the same model and task.",
+  "runtime_type": "Loop",
+  "automatic_application": false
+}

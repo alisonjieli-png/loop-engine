@@ -1,6 +1,6 @@
 # Loop Engine guidance audit
 
-Read-only review of the dirty `/home/username/loop-engine` worktree on `main`, initially observed at `22ee44052b027ba96ce50c37e4cc6a659e1b91c8`. No repository files were edited, embedded historical instructions executed, external sources consulted, or behavioral/provider qualification runs performed. Files may include uncommitted concurrent work; this report is not a frozen-build receipt.
+Read-only review of the dirty `/home/username/loop-engine` worktree on `main`, initially observed at `22ee44052b027ba96ce50c37e4cc6a659e1b91c8`. No repository files were edited, embedded historical instructions executed, external sources consulted, or behavioral/provider qualification runs performed. Files may include uncommitted concurrent work; this report is not a frozen-build record.
 
 ## Prompt and reference findings
 
@@ -11,7 +11,7 @@ All 25 Markdown files in `docs/prompts/` and all four in `docs/reference/` were 
 | ID | Evidence | Finding and implication |
 |---|---|---|
 | G01 | `docs/prompts/UNIVERSAL-COMPONENT-IMPLEMENTATION-MANDATE.md:149`, `docs/prompts/ADVERSARIAL-COMPONENT-ARCHITECTURE-REVIEW.md:75`, `docs/prompts/CONTINUOUS-COMPONENT-CONFORMANCE.md:63` | All three require every semantic value exposure/transformation, including constants, formatting, JSON and paths, to become a logical Loop. This contradicts LE-NODE-008, which keeps low-level primitives inside an owning Loop unless independently governed. These are still routed component workflows, not merely archived files. |
-| G02 | `docs/prompts/UNIVERSAL-COMPONENT-PROMPT-SUITE.md:31` | The suite index explicitly removes the strict primitive mandate because it conflicts with LE-NODE-008, while its implementation/review/conformance children retain the same rule. |
+| G02 | `docs/prompts/UNIVERSAL-COMPONENT-PROMPT-SUITE.md:31` | The suite index explicitly removes the strict primitive mandate because it conflicts with LE-NODE-008, while its implementation/review/conformance member prompts retain the same rule. |
 | G03 | `docs/architecture/GLOSSARY.md:13`, `docs/architecture/COMPONENT-GLOSSARY.md:39` | Both preserve the strict every-value/transformation Loop rule and native-operation ban. `GLOSSARY.md:3` also claims normative authority alongside the Constitution. The generated semantic dictionary instead permits typed stateless functions and reserves another Loop for independently governed work. |
 | G04 | `docs/reference/PRODUCT-NOMENCLATURE.md:73`, `docs/reference/UNIVERSAL-LOOP-STANDARD.md:64` | Reference Practitioner is described as nine stages, with Standardize Task missing from the nomenclature list at line 78. Current reference profile has ten stages under a historical ID. The loop-object component README and implementation mandate correctly show ten. |
 | G05 | `docs/reference/UNIVERSAL-LOOP-STANDARD.md:85`, `docs/architecture/TAXONOMY-ONTOLOGY-AND-CLASS-MAP.md:301`, `docs/prompts/LOOP-ENGINE-ARCHITECTURE-VIDEO-BUILD-PROMPT.md:173` | Current reference/presentation guidance says only deterministic Solution leaves execute. Current authority permits hybrid and non-deterministic execution when a compatible executor and exact model authority are supplied; otherwise typed unavailable failure. |

@@ -271,6 +271,17 @@ def self_test() -> dict:
               restored == artifact_binding
               and LoopValueRef.from_dict(reference.to_dict()) == reference)
 
+        widened = dict(artifact_binding.to_storage_dict())
+        widened["scope"] = "public"
+        widened["binding_digest"] = ""
+        refused_blank = None
+        try:
+            InformationStorageBinding.from_storage_dict(widened)
+        except InformationAccessError as exc:
+            refused_blank = exc.code
+        check("stored_binding_without_its_digest_is_refused",
+              refused_blank is InformationAccessFailureCode.INTEGRITY_VIOLATION)
+
         restarted = InformationResolver()
         restarted.register(InlineInformationAdapter())
         restarted.attach(inline_binding)

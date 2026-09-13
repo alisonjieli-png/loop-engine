@@ -1,0 +1,198 @@
+{
+  "record_type": "harness_project_qualification/v1",
+  "harness_id": "trae_agent",
+  "upstream": "https://github.com/bytedance/trae-agent",
+  "source_revision": "e839e559ac61bdd0e057c375dd1dee391fee797d",
+  "license_evidence": "MIT main license; separately attributed Apache-2.0 source material",
+  "status": "qualified_offline_modified_sdk_text_submission_profile",
+  "manifest": {
+    "schema_version": 1,
+    "harness_id": "trae_agent",
+    "package_version": "0.1.0",
+    "style": "trae_agent",
+    "command_prefix": [
+      "/home/username/loop-engine/embodiments/trae_agent/runtime/.venv/bin/python"
+    ],
+    "read_only_paths": [
+      "/home/username/loop-engine/embodiments/trae_agent/runtime/.venv",
+      "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu"
+    ]
+  },
+  "new_real_model_calls": 0,
+  "source_worktree_clean": true,
+  "probes": [
+    {
+      "style": "trae_agent",
+      "mode": "request-tools",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 1,
+      "broker_callback_count": 0,
+      "refusals": [
+        "native_tools_not_authorized"
+      ],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/trae_agent-request-tools-01/result.json",
+      "profile": "stock_cli_or_declared_headless_adapter",
+      "record_sha256": "5fca6a482eb37ef042851e03570c1b0181b600cf05ba4223f571dbe65dcf8214"
+    },
+    {
+      "style": "trae_agent",
+      "mode": "request-tools",
+      "exit_code": 1,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 1,
+      "broker_callback_count": 0,
+      "refusals": [
+        "native_tools_not_authorized"
+      ],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/trae_agent-sdk-request-tools-01/result.json",
+      "profile": "trae_text_submission/v1",
+      "record_sha256": "21f89f7fdaf3ada063a1eaba8cfd720b24fffba84bd97ffa224232b6eb3ac021"
+    },
+    {
+      "style": "trae_agent",
+      "mode": "response-length",
+      "exit_code": 1,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 1,
+      "broker_callback_count": 1,
+      "refusals": [],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/trae_agent-sdk-response-length-01/result.json",
+      "profile": "trae_text_submission/v1",
+      "record_sha256": "5657f9204e1fcfc15a399278ad3f3c649908efcf23b75df6c31d4a72f02e23fe"
+    },
+    {
+      "style": "trae_agent",
+      "mode": "response-tools",
+      "exit_code": 1,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 1,
+      "broker_callback_count": 1,
+      "refusals": [],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/trae_agent-sdk-response-tools-01/result.json",
+      "profile": "trae_text_submission/v1",
+      "record_sha256": "e878768ae93a88b1ab78b1bcfb579a303c57fa8ebea04e6deb51da379b2a35b4"
+    },
+    {
+      "style": "trae_agent",
+      "mode": "response-tools",
+      "exit_code": 1,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 1,
+      "broker_callback_count": 1,
+      "refusals": [],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/trae_agent-sdk-response-tools-02/result.json",
+      "profile": "trae_text_submission/v1",
+      "record_sha256": "163a6a72c6bc1b424f43253d35863663c9bdd95bffa09a7acff05c0975804ce5"
+    },
+    {
+      "style": "trae_agent",
+      "mode": "text",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 1,
+      "broker_callback_count": 1,
+      "refusals": [],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/trae_agent-sdk-text-01/result.json",
+      "profile": "trae_text_submission/v1",
+      "record_sha256": "88a8f33be982b164e13cbb100cc77f8875aadea1957368028b14c4bbe8cea0e7"
+    },
+    {
+      "style": "trae_agent",
+      "mode": "text",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 1,
+      "broker_callback_count": 1,
+      "refusals": [],
+      "native_marker_created": false,
+      "text_transport_observed": true,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/trae_agent-sdk-text-02/result.json",
+      "profile": "trae_text_submission/v1",
+      "record_sha256": "9c007087f0352e2031f766edd95e767d2b9f3a04d5630a2f9f43b8e16d315c7f"
+    },
+    {
+      "style": "trae_agent",
+      "mode": "text",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": false,
+      "request_count": 1,
+      "broker_callback_count": 0,
+      "refusals": [
+        "native_tools_not_authorized"
+      ],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/trae_agent-text-01/result.json",
+      "profile": "stock_cli_or_declared_headless_adapter",
+      "record_sha256": "2060029eb9f4579d9aab5060b4fb969664d085f28026775dcd70b63525828948"
+    },
+    {
+      "style": "trae_agent",
+      "mode": "version",
+      "exit_code": 1,
+      "timed_out": false,
+      "ok": false,
+      "request_count": 0,
+      "broker_callback_count": 0,
+      "refusals": [],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/trae_agent-version-01/result.json",
+      "profile": "stock_cli_or_declared_headless_adapter",
+      "record_sha256": "35242a831fdc3a23b230f710d78deecd1ffaedebbb79f08d7662928d3f3f0b21"
+    },
+    {
+      "style": "trae_agent",
+      "mode": "version",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 0,
+      "broker_callback_count": 0,
+      "refusals": [],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/trae_agent-version-02/result.json",
+      "profile": "stock_cli_or_declared_headless_adapter",
+      "record_sha256": "36a2843adc2169ddb907fe2527f281e65e5d81fcf7f1734422b9079c1fa06be0"
+    }
+  ],
+  "limits": [
+    "scripted_provider_only",
+    "no_task_quality_claim",
+    "no_full_system_benchmark",
+    "no_automatic_registration",
+    "real_model_dispatch_requires_OllamaCloud_broker"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "record_type": "embodiment_mutation/v1",
+  "id": "decomposition_policy",
+  "status": "planned",
+  "arms": [
+    "single_attempt",
+    "adaptive_split",
+    "divide_first"
+  ],
+  "control_rule": "Use predeclared hard/easy strata and independent subtask output contracts.",
+  "runtime_type": "Loop",
+  "automatic_application": false
+}

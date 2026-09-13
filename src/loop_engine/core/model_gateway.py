@@ -227,10 +227,16 @@ class ModelGatewayConfig:
     max_power_escalations: int = 0
     escalate_on: tuple[str, ...] = ("output_validation_failed",)
     output_allocation: ModelOutputAllocation | None = None
+    #: Explicit permission for a registered evaluator's verdict to move the
+    #: invocation to the next route. Off by default: a rejected or
+    #: inconclusive answer ends the invocation on the route that produced it.
+    allow_evaluator_route_failover: bool = False
 
     def __post_init__(self):
         if self.output_allocation is not None and not isinstance(self.output_allocation, ModelOutputAllocation):
             raise ValueError("output allocation must be a typed Loop decision")
+        if type(self.allow_evaluator_route_failover) is not bool:
+            raise ValueError("evaluator route failover permission must be Boolean")
         for name in ("max_route_attempts", "max_output_tokens", "max_total_tokens"):
             value = getattr(self, name)
             if value is not None and (type(value) is not int or value < 1):
@@ -476,6 +482,9 @@ class ModelGatewayResult:
     request_digest: str = ""
     transport_succeeded: "bool | None" = None
     transport_error_code: str = ""
+    prompt_envelopes: tuple = field(default=(), repr=False)
+    response_admissions: tuple = field(default=(), repr=False)
+    response_evaluations: tuple = field(default=(), repr=False)
 
     @property
     def transport_error(self) -> str:
@@ -508,7 +517,7 @@ class ModelGatewayResult:
 
     def to_dict(self) -> dict:
         return {
-            "record_type": "model_gateway_result/v1",
+            "record_type": ("model_gateway_result/v2" if self.response_evaluations else "model_gateway_result/v1"),
             "ok": self.ok,
             "text": self.text,
             "provider": self.provider,
@@ -534,6 +543,12 @@ class ModelGatewayResult:
             "transport_succeeded": self.transport_succeeded,
             "transport_error_code": self.transport_error_code,
             "transport_error": self.transport_error,
+            **({"prompt_envelopes": [binding.summary() for binding in self.prompt_envelopes]}
+               if self.prompt_envelopes else {}),
+            **({'response_admissions':[item.to_dict() for item in self.response_admissions]}
+               if self.response_admissions else {}),
+            **({'response_evaluations':[item.to_dict() for item in self.response_evaluations]}
+               if self.response_evaluations else {}),
         }
 
 
@@ -628,6 +643,32 @@ _FAILOVER_FORBIDDEN_ERRORS = {
     "model_output_limit_mismatch", "model_identity_mismatch",
     "token_accounting_unavailable",
 }
+
+#: Attempt error codes that name an evaluator's verdict about an admitted
+#: response rather than a provider, transport, or structural failure. They
+#: never trigger another route unless the configuration explicitly permits
+#: evaluator-triggered route changes, and they are distinct from
+#: ``output_validation_failed`` so escalation policies can tell them apart.
+EVALUATOR_VERDICT_ERRORS = ("semantic_response_rejected",
+                            "response_evaluation_inconclusive")
+
+
+class ValidationVerdict(Exception):
+    """A typed verdict raised by a validate callback about an admitted response.
+
+    The gateway records ``error_code`` on the physical attempt. Because the
+    verdict concerns the answer's meaning and not the provider, the gateway
+    stops the invocation instead of trying another route, unless
+    ``ModelGatewayConfig.allow_evaluator_route_failover`` grants that. A plain
+    ``False`` from a validator remains a structural rejection and keeps the
+    existing route behavior.
+    """
+
+    def __init__(self, error_code: str, detail: str = ""):
+        if error_code not in EVALUATOR_VERDICT_ERRORS:
+            raise ValueError("unknown validation verdict code")
+        super().__init__(detail or error_code)
+        self.error_code = error_code
 
 
 def _gateway_orchestration_config(parent=None):
@@ -1031,10 +1072,17 @@ class ModelGateway:
                                    and not provider_error and not completion_invalid
                                    and not multiplicity_invalid)
                 validation_error = ""
+                verdict_code = ""
                 try:
                     validation_ok = (
                         validate(text) if provider_ok and validate is not None
                         else provider_ok)
+                except ValidationVerdict as verdict:
+                    # A registered evaluator judged the answer's meaning. The
+                    # code is recorded as such, never as a structural failure.
+                    validation_ok = False
+                    verdict_code = verdict.error_code
+                    validation_error = str(verdict)[:200]
                 except Exception as exc:
                     validation_ok = False
                     validation_error = (
@@ -1091,7 +1139,7 @@ class ModelGateway:
                     error = validation_error or "output failed validation"
                 if multiplicity_invalid:
                     error = "provider_attempt_contract_violated: adapter did not report exactly one attempt"
-                pre_accounting_error_code = _error_code(error)
+                pre_accounting_error_code = verdict_code or _error_code(error)
                 transport_error_code = ""
                 if not transport_succeeded and error:
                     transport_error_code = pre_accounting_error_code
@@ -1184,6 +1232,21 @@ class ModelGateway:
                     result.error = attempt.error
                     return StepOutcome(
                         output=f"route:refused:{attempt.error_code}",
+                        mode="deterministic", confidence=0.1, failed=True)
+                if (not attempt.ok
+                        and attempt.error_code in EVALUATOR_VERDICT_ERRORS
+                        and not request.config.allow_evaluator_route_failover):
+                    # The answer was judged, not the provider. Trying another
+                    # route would spend a call the recovery policy never saw.
+                    result.error_code = attempt.error_code
+                    result.error = attempt.error
+                    loop.ledger.record(
+                        loop_id=loop.loop_id, event="custom",
+                        action="evaluator_verdict_stops_route_failover",
+                        route=route.name, error_code=attempt.error_code,
+                        semantic_call_id=semantic_call_id)
+                    return StepOutcome(
+                        output=f"route:evaluator_verdict:{attempt.error_code}",
                         mode="deterministic", confidence=0.1, failed=True)
                 if (request.config.max_total_tokens is not None
                         and known_tokens > request.config.max_total_tokens):

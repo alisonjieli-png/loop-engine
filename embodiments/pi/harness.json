@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "harness_id": "pi",
+  "package_version": "0.85.1",
+  "style": "pi",
+  "command_prefix": ["/usr/bin/node", "/home/username/loop-engine/embodiments/pi/runtime/node_modules/@earendil-works/pi-coding-agent/dist/cli.js"],
+  "read_only_paths": ["/home/username/loop-engine/embodiments/pi/runtime/node_modules"]
+}

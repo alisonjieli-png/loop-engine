@@ -46,3 +46,79 @@ docs/evidence/architecture-mesh-audit-20260904/registered-conversation-sources.j
 
 # Local CodeGraph MCP index (57 MB, machine-specific)
 .codegraph/
+
+# Added 2026-09-13: sibling repositories, frozen snapshots, and scratch
+# checkouts copied into this working tree. They keep their own history and
+# are reference material, not Loop Engine source. Measured sizes are in the
+# review record docs/verification/CLAUDE-FABLE-5.1-REVIEW-2026-09-13.md.
+/taedri/
+/taedri.dev/
+/taedri-*/
+/solver-lab/
+/scratch-*/
+/new_overnight_build/
+/overnight/
+/overnight-docs/
+/speculative_prompting/
+/vigil/
+/this-already-exists-dont-rebuild-it/
+/loop-engine-quickstart/
+/loop-engine-runs/
+/loop-engine-showcase-v4-worktree/
+/loop-engine-local-runtime-evidence-*/
+/loop-engine-build*.*/
+/loop-engine-diagram.*/
+/loop-engine-legacy-audit.*/
+/loop-engine-release-audit*.*/
+
+# Embodiment runtimes, upstream clones, mirrors, and release archives.
+# The authored files (harness.json, manifest.json, README.md, run.py,
+# catalog.json, qualification.json) stay tracked.
+/embodiments/*/runtime/
+/embodiments/*/upstream/
+/embodiments/mirrors/
+/embodiments/**/*.tgz
+/embodiments/**/*.tar.zst
+/embodiments/**/SHA256SUMS
+
+# Third-party source copies, virtual environments, scratch trees, repository
+# snapshots, and harness fake-home state inside dated evidence trees.
+/artifacts/**/source/
+/artifacts/**/snapshot/
+/artifacts/**/tmp/
+/artifacts/**/home/
+/artifacts/**/evidence/*-env-*/
+/artifacts/**/evidence/base-venv/
+/artifacts/**/dist/
+/artifacts/**/prior-review-material/
+
+# Databases, write-ahead logs, archives, and other generated binaries inside
+# evidence trees. Summaries and reports next to them stay tracked.
+/artifacts/**/*.duckdb
+/artifacts/**/*.duckdb.wal
+/artifacts/**/*.sqlite
+/artifacts/**/*.sqlite-wal
+/artifacts/**/*.sqlite-shm
+/artifacts/**/*.db
+/artifacts/**/*.db-wal
+/artifacts/**/*.db-shm
+/artifacts/**/*.gz
+/artifacts/**/*.whl
+/artifacts/**/*.so
+/artifacts/**/*.tiktoken
+/artifacts/**/*.lance
+/artifacts/**/*.lock
+/artifacts/**/*.png
+node_modules/
+
+# Run workspaces and batch outputs inside dated evidence trees. The
+# summaries, reports, and manifests next to them are tracked and are what
+# the documentation links.
+/artifacts/harness-expansion-*/*/
+/artifacts/harness-t1-gates/work/
+/artifacts/embodiment-comparison-*/*/
+/artifacts/embodiment-study-*/case-*/
+/artifacts/project-review-*/base-cli-acceptance/
+/artifacts/project-review-*/product-acceptance/
+/artifacts/project-review-*/studio-runs/
+/artifacts/universal-compiler-audit-*/snapshot-*/

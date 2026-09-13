@@ -1,0 +1,26 @@
+{
+  "record_type": "frontier_boundary_probe/v1",
+  "source": "/home/username/new_overnight_build/poc/frontier.py",
+  "source_sha256": "9c17808e4a944fb7f8daa9fd9ddda17ad8610eae4e3ecea8004a0601accaa3ed",
+  "source_revision_observed": "ddfedccf4af205b0261941b2e0edf793864136a8",
+  "source_modified": false,
+  "model_calls": 0,
+  "findings": [
+    {
+      "case": "empty_reference_member",
+      "observed_status": "verified",
+      "finding": "A nonempty tuple containing an empty string satisfies evidence presence. Reference identity and verifier authority are not established."
+    },
+    {
+      "case": "unresolved_evidence_reference",
+      "observed_status": "answered",
+      "finding": "An arbitrary string changes status. No evidence resolver is consulted by this record mechanism."
+    },
+    {
+      "case": "last_snapshot_mutation",
+      "chain_intact": true,
+      "finding": "Adjacent parent hashes do not authenticate the mutable terminal snapshot; an independently anchored head and immutable history are needed."
+    }
+  ],
+  "interpretation": "These are record/admission limitations, not evidence of a production exploit. This module is not wired into the inspected solver."
+}

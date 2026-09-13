@@ -1,0 +1,252 @@
+{
+  "record_type": "harness_project_qualification/v1",
+  "harness_id": "openinterpreter_rust",
+  "package_version": "0.0.42",
+  "upstream": "https://github.com/openinterpreter/openinterpreter",
+  "source_revision": "67299aeb7c1089be425cb7809169747af1e61af5",
+  "license": "Apache-2.0",
+  "status": "qualified_offline_native_cli_text_profile",
+  "real_model_calls": 0,
+  "manifest": {
+    "schema_version": 1,
+    "harness_id": "openinterpreter_rust",
+    "package_version": "0.0.42",
+    "style": "openinterpreter_rust",
+    "command_prefix": [
+      "/home/username/loop-engine/embodiments/openinterpreter_rust/runtime/bin/interpreter"
+    ],
+    "read_only_paths": [
+      "/home/username/loop-engine/embodiments/openinterpreter_rust/runtime"
+    ]
+  },
+  "binary_sha256": "92935fc1d85d71a99f31af5f3cf67cf3218902f9729ee99f20f825036a898ff6",
+  "probes": [
+    {
+      "style": "openinterpreter_rust",
+      "mode": "request-tools",
+      "exit_code": 1,
+      "timed_out": false,
+      "ok": true,
+      "broker_callback_count": 0,
+      "refusals": [
+        "native_tools_not_authorized"
+      ],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/interpreter-request-tools-01/result.json",
+      "record_sha256": "e607db7826905ea0b8bec755287bdaa58cd6f2ad47566f0e794a022daf267324",
+      "exact_candidate_observed": false,
+      "wire_tool_schemas": [
+        [
+          {
+            "type": "function",
+            "name": "exec_command",
+            "description": "Runs a command in a PTY, returning output or a session ID for ongoing interaction.",
+            "strict": false,
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "cmd": {
+                  "type": "string",
+                  "description": "Shell command to execute."
+                },
+                "justification": {
+                  "type": "string",
+                  "description": "User-facing approval question for `require_escalated`; omit otherwise."
+                },
+                "login": {
+                  "type": "boolean",
+                  "description": "True runs the shell with -l/-i semantics; false disables them. Defaults to true."
+                },
+                "max_output_tokens": {
+                  "type": "number",
+                  "description": "Output token budget. Defaults to 10000 tokens; larger requests may be capped by policy."
+                },
+                "prefix_rule": {
+                  "type": "array",
+                  "description": "Reusable approval prefix for `cmd`, only with `sandbox_permissions: \"require_escalated\"`; for example [\"git\", \"pull\"].",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "sandbox_permissions": {
+                  "type": "string",
+                  "description": "Per-command sandbox override. Defaults to `use_default`; use `require_escalated` for unsandboxed execution.",
+                  "enum": [
+                    "use_default",
+                    "require_escalated"
+                  ]
+                },
+                "shell": {
+                  "type": "string",
+                  "description": "Shell binary to launch. Defaults to the user's default shell."
+                },
+                "tty": {
+                  "type": "boolean",
+                  "description": "True allocates a PTY for the command; false or omitted uses plain pipes."
+                },
+                "workdir": {
+                  "type": "string",
+                  "description": "Working directory for the command. Defaults to the turn cwd."
+                },
+                "yield_time_ms": {
+                  "type": "number",
+                  "description": "Wait before yielding output. Defaults to 10000 ms; effective range is 250-30000 ms."
+                }
+              },
+              "required": [
+                "cmd"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "type": "function",
+            "name": "write_stdin",
+            "description": "Writes characters to an existing unified exec session and returns recent output.",
+            "strict": false,
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "chars": {
+                  "type": "string",
+                  "description": "Bytes to write to stdin. Defaults to empty, which polls without writing."
+                },
+                "max_output_tokens": {
+                  "type": "number",
+                  "description": "Output token budget. Defaults to 10000 tokens; larger requests may be capped by policy."
+                },
+                "session_id": {
+                  "type": "number",
+                  "description": "Identifier of the running unified exec session."
+                },
+                "yield_time_ms": {
+                  "type": "number",
+                  "description": "Wait before yielding output. Non-empty writes default to 250 ms and cap at 30000 ms; empty polls wait 5000-300000 ms by default."
+                }
+              },
+              "required": [
+                "session_id"
+              ],
+              "additionalProperties": false
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "style": "openinterpreter_rust",
+      "mode": "response-tools",
+      "exit_code": 1,
+      "timed_out": false,
+      "ok": true,
+      "broker_callback_count": 1,
+      "refusals": [
+        "responses_native_or_nonmessage_item_refused"
+      ],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/interpreter-response-tools-01/result.json",
+      "record_sha256": "2df1a044aca1c20c85027613c3583b8fd60e0a6f9c48fa81b8638ec96188d8b9",
+      "exact_candidate_observed": false,
+      "wire_tool_schemas": [
+        [],
+        []
+      ]
+    },
+    {
+      "style": "openinterpreter_rust",
+      "mode": "text",
+      "exit_code": 1,
+      "timed_out": false,
+      "ok": false,
+      "broker_callback_count": 0,
+      "refusals": [],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/interpreter-text-01/result.json",
+      "record_sha256": "4c747dbdd50112741e9ff1faff216af243be0783cf4e8da61be3f88947843f90",
+      "exact_candidate_observed": false,
+      "wire_tool_schemas": []
+    },
+    {
+      "style": "openinterpreter_rust",
+      "mode": "text",
+      "exit_code": 1,
+      "timed_out": false,
+      "ok": false,
+      "broker_callback_count": 0,
+      "refusals": [
+        "responses_request_fields_refused"
+      ],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/interpreter-text-02/result.json",
+      "record_sha256": "0027aad62b89e89e273c691562913971e58f05a06c272aba501e06a54626ed2a",
+      "exact_candidate_observed": false,
+      "wire_tool_schemas": [
+        []
+      ]
+    },
+    {
+      "style": "openinterpreter_rust",
+      "mode": "text",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "broker_callback_count": 1,
+      "refusals": [],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/interpreter-text-03/result.json",
+      "record_sha256": "37d52a01e3429baab99154e66de2aa04ccf5601441da010bdc56d937e173bb49",
+      "exact_candidate_observed": true,
+      "wire_tool_schemas": [
+        []
+      ]
+    },
+    {
+      "style": "openinterpreter_rust",
+      "mode": "text",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "broker_callback_count": 1,
+      "refusals": [],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/interpreter-text-04/result.json",
+      "record_sha256": "24bc8323089517c915b1c90694b87fa4ac95e62fb12323a0b9531a4ef3927df6",
+      "exact_candidate_observed": true,
+      "wire_tool_schemas": [
+        []
+      ]
+    },
+    {
+      "style": "openinterpreter_rust",
+      "mode": "version",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "broker_callback_count": 0,
+      "refusals": [],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/interpreter-version-01/result.json",
+      "record_sha256": "1339268e333c9e69aab6bb3349ffd05a2a29362393ebbfcdcad4e36098ce8f54",
+      "exact_candidate_observed": false,
+      "wire_tool_schemas": []
+    }
+  ],
+  "limitations": [
+    "scripted_provider_only",
+    "no_task_quality_claim",
+    "no_full_system_benchmark",
+    "shared_process_relay_wiring_not_performed",
+    "real_calls_require_OllamaCloud_broker"
+  ],
+  "release_tag": "rust-v0.0.42",
+  "release_archive_sha256": "1ec1b5f1db983e29b0b83990ddfdcfde29455e3484c9728ae5075d0e8ff75e9f",
+  "published_checksum_matches": true,
+  "project_identity": "same OpenInterpreter project as legacy Python version"
+}

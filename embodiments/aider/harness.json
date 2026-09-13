@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "harness_id": "aider",
+  "package_version": "0.86.2",
+  "style": "aider",
+  "command_prefix": ["/home/username/loop-engine/embodiments/aider/runtime/.venv/bin/python", "-m", "aider"],
+  "read_only_paths": ["/home/username/loop-engine/embodiments/aider/runtime/.venv", "/home/username/loop-engine/embodiments/aider/runtime/python"]
+}

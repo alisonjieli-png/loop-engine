@@ -258,6 +258,18 @@ def main(argv=None) -> int:
         help="use the LLM-first onboarding profile: one detected provider, "
              "LLM-first reasoning, and material clarification questions")
     parser.add_argument(
+        "--embodiment", default="",
+        help="select an explicitly configured harness for canonical semantic steps")
+    parser.add_argument(
+        "--embodiment-config", default="",
+        help="absolute path to a typed harness embodiment configuration")
+    parser.add_argument(
+        "--harness-work-dir", default="",
+        help="absolute directory for private harness process artifacts")
+    parser.add_argument(
+        "--harness-socket-dir", default="",
+        help="absolute short directory for private local broker sockets")
+    parser.add_argument(
         "--allow-model-failover", action="store_true",
         help="permit the same solve to try other exact authorized routes "
              "after a retryable provider or response failure")
@@ -307,6 +319,8 @@ def main(argv=None) -> int:
                         help="solve a task from --text or --file")
     parser.add_argument("--workspace", default="",
                         help="empty or new directory for generated task artifacts")
+    parser.add_argument("--verifier", default="",
+                        help="explicit verifier script, run mid-solve as an observation")
     parser.add_argument(
         "--allow-source-to-model", action="store_true",
         help="allow supplied dataset or repository text to enter the selected "

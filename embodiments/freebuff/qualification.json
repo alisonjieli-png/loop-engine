@@ -1,0 +1,89 @@
+{
+  "record_type": "harness_project_qualification/v1",
+  "harness_id": "freebuff",
+  "upstream": "https://github.com/CodebuffAI/freebuff",
+  "source_revision": "cc9069e251e8fedd5784c688ce78ccfecd76815f",
+  "license_evidence": "public source Apache-2.0; npm wrapper MIT; release binary public-source mapping unverified",
+  "status": "unqualified_hosted_interactive_protocol",
+  "manifest": {
+    "schema_version": 1,
+    "harness_id": "freebuff",
+    "package_version": "0.0.172",
+    "style": "freebuff",
+    "command_prefix": [
+      "/home/username/loop-engine/embodiments/freebuff/runtime/freebuff"
+    ],
+    "read_only_paths": [
+      "/home/username/loop-engine/embodiments/freebuff/runtime"
+    ]
+  },
+  "new_real_model_calls": 0,
+  "source_worktree_clean": true,
+  "probes": [
+    {
+      "style": "freebuff",
+      "mode": "help",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 0,
+      "broker_callback_count": 0,
+      "refusals": [],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/freebuff-help-01/result.json",
+      "profile": "stock_cli_or_declared_headless_adapter",
+      "record_sha256": "4f9fff416586ec89345ac22d572d9a895d4bc11b61037ffc9dff4eecf9b20000"
+    },
+    {
+      "style": "freebuff",
+      "mode": "text",
+      "exit_code": -9,
+      "timed_out": true,
+      "ok": false,
+      "request_count": 0,
+      "broker_callback_count": 0,
+      "refusals": [],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/freebuff-startup-01/result.json",
+      "profile": "stock_cli_or_declared_headless_adapter",
+      "record_sha256": "1590e85df2af2e9699ce1de85b50ed7f577dfcb5e956054d8208340fbf0f97cb"
+    },
+    {
+      "style": "freebuff",
+      "mode": "version",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "request_count": 0,
+      "broker_callback_count": 0,
+      "refusals": [],
+      "native_marker_created": false,
+      "text_transport_observed": false,
+      "live_provider_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/freebuff-version-01/result.json",
+      "profile": "stock_cli_or_declared_headless_adapter",
+      "record_sha256": "b2534efc4b9e141600a38bbcb2f81aededd697f10760bd3e40c5b3d16c37de91"
+    }
+  ],
+  "limits": [
+    "scripted_provider_only",
+    "no_task_quality_claim",
+    "no_full_system_benchmark",
+    "no_automatic_registration",
+    "real_model_dispatch_requires_OllamaCloud_broker"
+  ],
+  "npm_metadata_repository": {
+    "url": "git+https://github.com/CodebuffAI/freebuff-private.git",
+    "type": "git"
+  },
+  "npm_integrity_matches": true,
+  "npm_package_sha256": "11a19aa77fb594c16de5cf2f0d6f3ed9468154b2c82741457509654467230926",
+  "release_archive_url": "https://codebuff.com/api/releases/download/0.0.172/freebuff-linux-x64-baseline.tar.gz",
+  "release_archive_sha256": "e1b3036c8a8e4ffa63650944331549c7b321584b87c92f804dfcf9906a558e83",
+  "binary_sha256": "9a5e4a30b63fd50068bf1918e5a87927d30e1c62d3dd48e5e68d7d758a840f6e",
+  "public_source_to_binary_revision": "unknown"
+}

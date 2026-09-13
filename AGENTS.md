@@ -342,6 +342,36 @@ differ.
 
 Follow `humanizer-context.md`.
 
+- Do not use shorthand or introduce abbreviated aliases in explanations,
+  documentation, prompts, or handoffs. Repeat the full descriptive term even
+  after defining it. Preserve exact existing code identifiers and contract
+  fields rather than renaming them through prose.
+- Preserve the full phrase "discrete cognitive or act step Loop node" and its
+  complete behavioral explanation. Do not shorten the phrase, remove "node,"
+  substitute an acronym, or replace the explanation with a label. Read
+  [the complete explanation and session handoff](docs/context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md).
+  This describes an executable graph vertex implemented by the canonical
+  `Loop`; it does not introduce a runtime class, role, or mode. Exact existing
+  code identifiers remain unchanged.
+- Preserve the complete initial configuration and ordered fallback priorities
+  for each dimension in
+  [the configuration dimension requirement](docs/architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md).
+  Read it before changing configuration, selection, recovery, or experiment
+  coverage. Do not reduce the requirement to harness and model choice or
+  mistake a documented requirement for implemented and qualified behavior.
+  The recorded dimensions are a required baseline, not an exhaustive list or
+  a maximum. Actively identify additional dimensions, refinements, and
+  interactions. Map each proposal to an existing owning boundary, state its
+  initial and fallback choices, and define a discriminating test. Keep
+  proposals distinct from approved contracts and qualified implementations.
+- Follow the [flexible cognitive and action composition direction](docs/architecture/FLEXIBLE-COGNITIVE-AND-ACTION-COMPOSITION.md)
+  and [configuration grid search guide](docs/guides/configuration-grid-search-and-optimization.md)
+  when extending behavior or designing comparisons. Support additional steps,
+  prompts, questions, intelligence, actions, and resource combinations as well
+  as compact procedures. Do not make minimal step count, prompt count, context,
+  or model use the universal objective. Preserve supported alternatives and
+  test both additions and removals. Artificial general intelligence is a
+  research ambition, not a new runtime, role, mode, or achieved capability claim.
 - Use plain English suitable for a reader using English as a second language.
 - Start at the highest level and move toward details.
 - Use direct statements, useful examples, and ordinary names.

@@ -208,6 +208,9 @@ jobs:
       - name: Conformance gates
         run: python -m loop_engine --conformance
 
+      - name: Experimental embodiment qualification
+        run: PYTHONPATH=src:devtools python -m unittest discover -s devtools/embodiment_lab/tests -v
+
       - name: Self-orientation and hardcoding delta gates
         run: |
           PYTHONPATH=devtools/src python -m loop_engine_devtools.cli --self-test

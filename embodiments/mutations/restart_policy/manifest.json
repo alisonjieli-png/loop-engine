@@ -1,0 +1,14 @@
+{
+  "record_type": "embodiment_mutation/v1",
+  "id": "restart_policy",
+  "status": "partially_available",
+  "arms": [
+    "new_run",
+    "durable_admission",
+    "lease_recovery",
+    "effect_reconciliation"
+  ],
+  "control_rule": "Persisted activations and history are available; complete external-effect restart qualification remains open.",
+  "runtime_type": "Loop",
+  "automatic_application": false
+}

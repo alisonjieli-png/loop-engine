@@ -13,7 +13,7 @@ import re
 from dataclasses import dataclass
 from typing import Any, TYPE_CHECKING
 
-from .loop_contract import LoopContract
+from .loop_contract import LoopContract, LoopInputCardinality
 from .loop_profile_catalog import LoopProfileRef
 from .loop_role import LoopRelationship, LoopRoleIdentity
 
@@ -26,10 +26,11 @@ if TYPE_CHECKING:
     )
 
 
-SPAWNED_TASK_CHECKPOINT_VERSION = "spawned_task_checkpoint/v2"
+SPAWNED_TASK_CHECKPOINT_VERSION = "spawned_task_checkpoint/v3"
 _SUPPORTED_SPAWNED_TASK_CHECKPOINT_VERSIONS = (
-    SPAWNED_TASK_CHECKPOINT_VERSION,)
+    "spawned_task_checkpoint/v2",SPAWNED_TASK_CHECKPOINT_VERSION)
 _UNSET = object()
+_STORED_DIGEST = re.compile(r"^[0-9a-f]{64}$")
 
 
 class SpawnedTaskCheckpointError(ValueError):
@@ -123,13 +124,18 @@ def _contract_to_dict(contract: LoopContract) -> dict:
         "locality": contract.locality,
         "cost_class": contract.cost_class,
         "role": contract.role,
+        "output_type": contract.output_type,
+        "max_outputs": contract.max_outputs,
+        "input_cardinalities": [{"role":item.role,"cardinality":item.cardinality,
+                                 "max_items":item.max_items} for item in contract.input_cardinalities],
     }
 
 
 def _contract_from_dict(value: dict) -> LoopContract:
     fields = ("name", "execution_mode", "input_roles", "output_roles",
               "effects", "locality", "cost_class", "role")
-    _known(value, fields, "Loop contract")
+    current_fields=(*fields,'output_type','max_outputs','input_cardinalities')
+    if set(value)!=set(fields):_known(value,current_fields,'Loop contract')
     return LoopContract(
         name=str(value["name"]),
         execution_mode=str(value["execution_mode"]),
@@ -139,6 +145,9 @@ def _contract_from_dict(value: dict) -> LoopContract:
         locality=str(value["locality"]),
         cost_class=str(value["cost_class"]),
         role=str(value["role"]),
+        output_type=value.get('output_type','single'),
+        max_outputs=value.get('max_outputs'),
+        input_cardinalities=tuple(LoopInputCardinality(**item) for item in value.get('input_cardinalities',())),
     )
 
 
@@ -244,26 +253,54 @@ def _result_to_dict(result: "SpawnedLoopResult | None") -> "dict | None":
     }
 
 
+def _require_stored_types(value: dict, label: str, *, integers=(), texts=()) -> None:
+    """Refuse a stored record whose fields need coercion to fit their types.
+
+    A digest is verified over the decoded body, so a value such as ``2.9``
+    that would be silently narrowed to ``2`` must be refused before any
+    conversion, otherwise the digest check verifies a record that was never
+    stored.
+    """
+    for name in integers:
+        item = value[name]
+        if type(item) is not int:
+            raise SpawnedTaskCheckpointError(
+                f"{label} field {name!r} must be a stored integer")
+    for name in texts:
+        if type(value[name]) is not str:
+            raise SpawnedTaskCheckpointError(
+                f"{label} field {name!r} must be stored text")
+
+
 def _result_from_dict(value: "dict | None") -> "SpawnedLoopResult | None":
     if value is None:
         return None
     fields = ("task_id", "status", "outputs", "summary", "terminal_code",
               "steps_run", "model_calls", "error_code", "error")
+    if not isinstance(value, dict):
+        raise SpawnedTaskCheckpointError("spawned Loop result must be an object")
     _known(value, fields, "spawned Loop result")
+    _require_stored_types(
+        value, "spawned Loop result",
+        integers=("steps_run", "model_calls"),
+        texts=("task_id", "status", "summary", "terminal_code",
+               "error_code", "error"))
+    if not isinstance(value["outputs"], list):
+        raise SpawnedTaskCheckpointError("spawned Loop result outputs must be a list")
     from .delegation_runtime import (
         LoopPortValue, SpawnedLoopResult, SpawnedTaskId, SpawnedTaskStatus)
     return SpawnedLoopResult(
-        task_id=SpawnedTaskId(str(value["task_id"])),
+        task_id=SpawnedTaskId(value["task_id"]),
         status=SpawnedTaskStatus(value["status"]),
         outputs=tuple(LoopPortValue(
             str(item["role"]), _decode_value(item["value"]))
             for item in value["outputs"]),
-        summary=str(value["summary"]),
-        terminal_code=str(value["terminal_code"]),
-        steps_run=int(value["steps_run"]),
-        model_calls=int(value["model_calls"]),
-        error_code=str(value["error_code"]),
-        error=str(value["error"]),
+        summary=value["summary"],
+        terminal_code=value["terminal_code"],
+        steps_run=value["steps_run"],
+        model_calls=value["model_calls"],
+        error_code=value["error_code"],
+        error=value["error"],
     )
 
 
@@ -296,6 +333,9 @@ class SpawnedTaskCheckpoint:
                 "checkpoint task_id is not typed")
         if not isinstance(self.spec, DelegationSpec):
             raise SpawnedTaskCheckpointError("checkpoint spec is not typed")
+        if self.schema_version=='spawned_task_checkpoint/v2' and (
+                self.spec.contract.output_type!='single' or self.spec.contract.input_cardinalities):
+            raise SpawnedTaskCheckpointError('version 2 cannot encode output or input cardinality extensions')
         if not isinstance(self.identity, LoopRoleIdentity):
             raise SpawnedTaskCheckpointError(
                 "checkpoint identity is not typed")
@@ -342,7 +382,7 @@ class SpawnedTaskCheckpoint:
         object.__setattr__(self, "checkpoint_digest", computed)
 
     def _body(self) -> dict:
-        return {
+        value = {
             "schema_version": self.schema_version,
             "task_id": str(self.task_id),
             "spec": _spec_to_dict(self.spec),
@@ -354,6 +394,10 @@ class SpawnedTaskCheckpoint:
             "model_calls": self.model_calls,
             "result": _result_to_dict(self.result),
         }
+        if self.schema_version=='spawned_task_checkpoint/v2':
+            for name in ('output_type','max_outputs','input_cardinalities'):
+                value['spec']['contract'].pop(name)
+        return value
 
     def to_dict(self) -> dict:
         return {**self._body(), "checkpoint_digest": self.checkpoint_digest}
@@ -363,32 +407,46 @@ class SpawnedTaskCheckpoint:
 
     @classmethod
     def from_dict(cls, value: dict) -> "SpawnedTaskCheckpoint":
+        """Read one stored checkpoint without coercing or trusting its fields.
+
+        A stored record must carry its SHA-256 digest; only in-process
+        construction may leave the digest blank for the record to compute.
+        Counters must already be integers and identities text, so the digest
+        verified in ``__post_init__`` is the digest of the stored bytes.
+        """
         from .delegation_runtime import SpawnedTaskId, SpawnedTaskStatus
-        schema_version = str(value["schema_version"])
+        if not isinstance(value, dict):
+            raise SpawnedTaskCheckpointError("checkpoint record must be an object")
         expected = {"schema_version", "task_id", "spec", "identity",
                     "relationship",
                        "status", "update_count", "steps_run", "model_calls",
                        "result", "checkpoint_digest"}
         _known(value, tuple(expected), "spawned task checkpoint")
-        if schema_version != SPAWNED_TASK_CHECKPOINT_VERSION:
+        _require_stored_types(
+            value, "spawned task checkpoint",
+            integers=("update_count", "steps_run", "model_calls"),
+            texts=("schema_version", "task_id", "status", "checkpoint_digest"))
+        schema_version = value["schema_version"]
+        if schema_version not in _SUPPORTED_SPAWNED_TASK_CHECKPOINT_VERSIONS:
             raise SpawnedTaskCheckpointError(
                 f"unsupported checkpoint schema {schema_version!r}")
+        if not _STORED_DIGEST.fullmatch(value["checkpoint_digest"]):
+            raise SpawnedTaskCheckpointError(
+                "a stored checkpoint must carry its SHA-256 digest")
         identity = LoopRoleIdentity.from_dict(value["identity"])
         relationship = LoopRelationship.from_dict(value["relationship"])
-        task_id_value = str(value["task_id"])
-        result_value = value["result"]
         return cls(
-            task_id=SpawnedTaskId(task_id_value),
+            task_id=SpawnedTaskId(value["task_id"]),
             spec=_spec_from_dict(value["spec"]),
             identity=identity,
             relationship=relationship,
             status=SpawnedTaskStatus(value["status"]),
-            update_count=int(value["update_count"]),
-            steps_run=int(value["steps_run"]),
-            model_calls=int(value["model_calls"]),
-            result=_result_from_dict(result_value),
-            schema_version=SPAWNED_TASK_CHECKPOINT_VERSION,
-            checkpoint_digest=str(value["checkpoint_digest"]),
+            update_count=value["update_count"],
+            steps_run=value["steps_run"],
+            model_calls=value["model_calls"],
+            result=_result_from_dict(value["result"]),
+            schema_version=schema_version,
+            checkpoint_digest=value["checkpoint_digest"],
         )
 
     @classmethod

@@ -1,0 +1,10 @@
+{
+  "id": "local_agent_host",
+  "folder": "local_agent_host",
+  "status": "planned",
+  "title": "Local agent under a governed host",
+  "benefit": "Retain vigil or TypeScript operator workflows with Loop Engine reasoning and acceptance.",
+  "limitations": "No repository merger or automatic publication. Needs an exact host adapter.",
+  "contract": "embodiment_work/v1",
+  "model_backend_qualified": false
+}

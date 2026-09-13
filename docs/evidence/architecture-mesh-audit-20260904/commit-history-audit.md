@@ -210,27 +210,27 @@ Findings:
 
 - The reflog retains three identical-tree versions of each of four early development stages: initial taedri-loop release, optional tabular dependencies, universal front door, and Python 3.10 syntax repair. They are 12 distinct commit objects but four distinct source snapshots. Count them individually for history coverage, not as independent engineering or benchmark replications.
 - The old universal-front-door message explicitly calls this repository a projection of a monorepo and advertises zero-call structural task interpretation. Those statements are historical, abandoned design context. Current AGENTS.md instead defines a standalone Loop Engine repository, and 5592006 makes the product solve path LLM-first. Do not reinstate the sync script or old inference authority on the strength of reflog history.
-- 2369c72 renames taedri_loop to loop_intelligence; 4e0789b, 0c045c6, and 702684e revise the README. The three modes-as-permission wording in 4e0789b is superseded by current explicit separation of run mode and effect authority.
+- 2369c72 renames `taedri_loop` to `loop_intelligence`; 4e0789b, 0c045c6, and 702684e revise the README. The three modes-as-permission wording in 4e0789b is superseded by current explicit separation of run mode and effect authority.
 - f30d698 is an abandoned version of a2afd14's product-solve commit. Direct tree comparison shows differences only under artifacts/product-proof, including retained raw runs and changed proof summaries. The runtime source is identical between these two versions. Its extra saved material is not a distinct implementation or independent benchmark success.
-- 8733fdb (On main: grading wiring) is a stash-like child of HEAD plus an index snapshot. Its full first-parent patch was read: it adds _grade_stage and sets local_verification=True after output-contract admission, and False for BaseException. That abandoned wiring concretely conflates output admission with correctness. It is not committed main; the current dirty implementation now separates output_admitted and local_verification. It helps explain why a later audit explicitly repaired this distinction.
+- 8733fdb (On main: grading wiring) is a stash-like commit whose parents are HEAD and an index snapshot. Its full first-parent patch was read: it adds _grade_stage and sets local_verification=True after output-contract admission, and False for BaseException. That abandoned wiring concretely conflates output admission with correctness. It is not committed main; the current dirty implementation now separates output_admitted and local_verification. It helps explain why a later audit explicitly repaired this distinction.
 - 0661ec0, 0d8491f, and a30c1a4 are abandoned WIP snapshots over already inventoried main commits, touching respectively seven semantic-decision plumbing files, 119 static-analysis/cleanup files, and 21 runtime/Kaggle/observability files. Their messages make no independent completed-feature claim.
 - 4010b11, 7472b0a, 93e394f, and f5c57d5 are index snapshots identical to their first-parent trees. bbf2a0d and 6e3d88d are empty-root commits with no message and the standard empty tree. These six objects contain no changed-file implementation to assess.
 
 | Commit | Reachability | First-parent/root path changes | Subject |
 |---|---|---:|---|
 | 0661ec08a17a745378640e8f2d3fbe319dbc9ae9 | unreachable-object | 7 | WIP on main: 8d9044f Fit the ceiling to the window, and make a budget that can ask for less |
-| 0c045c6adf7fe7295339ab89390c11546431622a | reflog-only | 1 | docs(readme): precise nomenclature — loop / run mode (deterministic·hybrid·non-deterministic) / profile (step template); rebuild diagrams |
+| 0c045c6adf7fe7295339ab89390c11546431622a | reflog-only | 1 | docs(readme): precise nomenclature: loop / run mode (deterministic·hybrid·non-deterministic) / profile (step template); rebuild diagrams |
 | 0d8491f9187829594bd59a6aa243d80d67ed556d | unreachable-object | 119 | WIP on main: 2895981 Repair the red CI gates and the pointers that had gone stale |
 | 1863f6b4527671e8040df2536f9201dd17ff310d | reflog-only | 10 | Make the core dependency-free and the tabular domain optional |
 | 195dacd60d0949544fa880aa9a31210ef445eec4 | reflog-only | 17 | A universal front door: say what you want, it works out the rest |
 | 1d38d53bb07fcd3ed2a18bd6e7809e9eb3d5ba86 | reflog-only | 10 | Make the core dependency-free and the tabular domain optional |
-| 2369c72eadea6ac3d8ae5f286a23bed89e0b0e91 | reflog-only | 391 | refactor: rename package to loop-intelligence (author Alie Jie Li); remove taedri identity |
+| 2369c72eadea6ac3d8ae5f286a23bed89e0b0e91 | reflog-only | 391 | refactor: rename package to `loop-intelligence` (author Alie Jie Li); remove taedri identity |
 | 26b437b9bc6bafe8f623e13cc578c7d772ffa75d | reflog-only | 17 | A universal front door: say what you want, it works out the rest |
 | 3ae718a0d093d07f26fe05655105280f737905f5 | reflog-only | 6 | fix: PEP 701 f-string broke Python 3.10/3.11, and add the gate for it |
 | 3ba4974f5c2af1470031b4a31dbc70559bbf2dc3 | reflog-only | 269 | Initial release: taedri-loop 0.1.0 |
 | 4010b1103d18d47851f51e37e9da95e2ec81345f | unreachable-object | 0 | index on main: d396728 Add the everything-is-a-Loop adversarial audit mandate, report, and scorecard |
 | 440919edd659ecd1cedf9c54d122378444191a29 | reflog-only | 6 | fix: PEP 701 f-string broke Python 3.10/3.11, and add the gate for it |
-| 4e0789b1dd0a895c9e162bd4f1697f7afe29d6eb | reflog-only | 1 | docs(readme): stronger diagrams and runnable examples — nine-step loop, three modes as permission, child spawning, capability search |
+| 4e0789b1dd0a895c9e162bd4f1697f7afe29d6eb | reflog-only | 1 | docs(readme): stronger diagrams and runnable examples: nine-step loop, three modes as permission, `child spawning`, capability search |
 | 6e3d88db30fc15f0f72a3a567dce6e18b668f6e3 | unreachable-object | 0 | (empty root; no message) |
 | 702684e80fe89f16740052e028700708100c03eb | reflog-only | 1 | docs(readme): rename and simplify Building with Loops |
 | 725f2ab8ebb5c2e7f18883d7fe443bfa213417c7 | reflog-only | 6 | fix: PEP 701 f-string broke Python 3.10/3.11, and add the gate for it |

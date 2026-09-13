@@ -14,7 +14,8 @@ import weakref
 from dataclasses import dataclass, field
 
 from ..loop.kernel import KERNEL_NODES
-from .loop_contract import LoopContract
+from .loop_contract import (OUTPUT_TYPES, LoopContract,
+                            normalize_output_type, validate_max_outputs)
 from .loop_control import (
     EXIT_CONDITIONS,  # noqa: F401 - backward-compatible public vocabulary export
     FRAMEWORKS,
@@ -78,6 +79,7 @@ TERMINAL_CODES = ("ACCEPTED", "INVALID_SPEC", "POLICY_DENIED", "BLOCKED",
 #: the runtime's own stop reasons -> their typed code.  Kept as a closed map
 #: so a new reason cannot appear without a code.
 _REASON_TO_CODE = {"done": "ACCEPTED", "success_once": "ACCEPTED",
+                   "quota": "ACCEPTED",
                    "done_failed": "VERIFICATION_REJECTED",
                    "handler_exception": "INTERNAL_PROTOCOL_ERROR",
                    "budget": "BUDGET_EXHAUSTED", "cancelled": "CANCELED",
@@ -180,6 +182,9 @@ class LoopConfig:
     exit_condition: str = ""
     success_confidence_min: float = 0.5
     supervision: SupervisionPolicy = DEFAULT_SUPERVISION_POLICY
+    output_type: str = "single"         # single | multiple: how many outputs
+                                        # this Loop emits before finishing
+    max_outputs: "int | None" = None    # required quota for multiple
     def __post_init__(self):
         if not isinstance(self.supervision, SupervisionPolicy):
             raise ValueError("supervision must be a SupervisionPolicy")
@@ -240,6 +245,8 @@ class LoopConfig:
                 f"framework {self.framework!r} requires loop_condition "
                 f"{expected_loop_condition!r}")
         self.exit_condition = normalize_exit_condition(self.exit_condition)
+        self.output_type = normalize_output_type(self.output_type)
+        validate_max_outputs(self.output_type, self.max_outputs)
 
     def mode_policy(self, *, preferred_modes=None, profile_modes=MODES,
                     installed_executor_modes=None) -> LoopModePolicy:
@@ -338,18 +345,56 @@ class LoopLedger:
 class StepOutcome:
     """What resolving one step produced. ``spawn_goal`` triggers a spawned Loop;
     ``failed`` triggers a mode fallback. ``model_calls`` counts physical
-    provider attempts, not semantic mode labels."""
+    provider attempts, not semantic mode labels. ``emit_output`` proposes
+    this step's output for the admitted portfolio — the Loop admits it only
+    when the output type is multiple and the step was accepted; a
+    single-output Loop ignores the flag."""
     output: str
     mode: str = "deterministic"
     confidence: float = 0.8
     failed: bool = False
     spawn_goal: str = ""
     model_calls: int = 0
+    emit_output: bool = False
     #: True when the step position was crossed without any work of its own,
     #: as the kernel owner does for every node outside ``act``. The ledger
     #: marks such run_step events so a reader can separate a structural
     #: boundary from an executed step.
     structural_boundary: bool = False
+
+
+@dataclass(frozen=True)
+class EmittedOutput:
+    """One admitted portfolio item from a multiple-output Loop.
+
+    Immutable: index is the admission order (0-based), output is the exact
+    admitted step output, and the remaining fields name where it came from.
+    A consumer reads items; it never reorders or edits them in place.
+    """
+    index: int
+    step: str
+    output: str
+    confidence: float
+    mode: str
+
+    def __post_init__(self) -> None:
+        if (not isinstance(self.index, int) or isinstance(self.index, bool)
+                or self.index < 0):
+            raise LoopError("emission index must be a non-negative integer")
+        if not isinstance(self.step, str) or not self.step.strip():
+            raise LoopError("emission step must be a non-empty string")
+        if not isinstance(self.output, str):
+            raise LoopError("emission output must be a string")
+        if (not isinstance(self.confidence, (int, float))
+                or isinstance(self.confidence, bool)):
+            raise LoopError("emission confidence must be numeric")
+        if not isinstance(self.mode, str) or not self.mode.strip():
+            raise LoopError("emission mode must be a non-empty string")
+
+    def to_dict(self) -> dict:
+        return {"index": self.index, "step": self.step,
+                "output": self.output, "confidence": self.confidence,
+                "mode": self.mode}
 
 
 @dataclass
@@ -369,6 +414,9 @@ class LoopResult:
     loop_definition_id: str = ""
     loop_definition_version: str = ""
     loop_definition_digest: str = ""
+    outputs: tuple = ()                 # admitted portfolio, in order; a
+                                        # single-output loop that accepted
+                                        # carries exactly its final output
 
     @property
     def terminal_code(self) -> str:
@@ -1018,7 +1066,8 @@ class Loop(metaclass=_LoopMeta):
                         "steps_run": 0, "conf_sum": 0.0,
                         "last": "", "stopped": "", "seq": list(self.steps()),
                         "i": 0, "limit": limit, "pending": None,
-                        "attempts": 0, "accepted_successes": 0}
+                        "attempts": 0, "accepted_successes": 0,
+                        "emissions": [], "last_step": ""}
         return self._it
 
     @property
@@ -1030,6 +1079,17 @@ class Loop(metaclass=_LoopMeta):
         """The result so far — partial until ``is_terminal`` (an honest partial
         return, never a fabricated completion)."""
         it = self._ensure_execution(None)
+        outputs = tuple(it["emissions"])
+        if (self.config.output_type == "single" and it["stopped"]
+                and terminal_code(it["stopped"]) == "ACCEPTED"
+                and not outputs and isinstance(it["last"], str)):
+            outputs = (EmittedOutput(
+                index=0, step=it["last_step"] or "(unknown)",
+                output=it["last"],
+                confidence=(round(it["conf_sum"] / max(1, it["steps_run"]), 3)
+                            if it["steps_run"] else 0.0),
+                mode=max(it["mode_counts"], key=it["mode_counts"].get)
+                if it["mode_counts"] else "deterministic"),)
         return LoopResult(self.loop_id, it["last"],
                           round(it["conf_sum"] / max(1, it["steps_run"]), 3),
                           it["steps_run"], it["mode_counts"], it["model_calls"],
@@ -1044,7 +1104,8 @@ class Loop(metaclass=_LoopMeta):
                           loop_definition_version=
                               self.definition_ref.version,
                           loop_definition_digest=
-                              self.definition_ref.content_digest)
+                              self.definition_ref.content_digest,
+                          outputs=outputs)
 
     def enable_run_history(self, run_id: str, *, root_dir: str,
                          usage_log: "list | None" = None) -> None:
@@ -1071,6 +1132,7 @@ class Loop(metaclass=_LoopMeta):
                             loop_condition=self.config.loop_condition,
                             exit_condition=self.config.exit_condition,
                             accepted_successes=it.get("accepted_successes", 0),
+                            emitted_outputs=len(it.get("emissions", ())),
                             attempts=it.get("attempts", 0))
         # A spawned that reached a terminal state RETURNS to its parent: the
         # return destination is recorded on the parent's own timeline, so
@@ -1437,6 +1499,7 @@ class Loop(metaclass=_LoopMeta):
         it["context"][step] = outcome.output
         it["conf_sum"] += outcome.confidence
         it["last"] = outcome.output
+        it["last_step"] = step
         it["steps_run"] += 1
         # --- acceptance-vs-attempt (Universal Loop Standard §7): every step is
         # one attempt; an accepted success is an attempt that did NOT fail and
@@ -1470,6 +1533,34 @@ class Loop(metaclass=_LoopMeta):
                             **boundary)
         rec.update(step=step, mode=outcome.mode, output=outcome.output,
                    confidence=outcome.confidence, accepted=accepted, **boundary)
+        # --- output admission: a multiple-output Loop banks accepted step
+        # outputs the handler flagged for emission, in admission order, up
+        # to its quota. The flag is advisory — the Loop admits, and only
+        # accepted (non-failed, above-bar) outputs join. A single-output
+        # Loop ignores the flag; its one admitted output is the final
+        # output, recorded at completion in result().
+        if (self.config.output_type == "multiple" and outcome.emit_output
+                and accepted):
+            emission = EmittedOutput(
+                index=len(it["emissions"]), step=step,
+                output=outcome.output, confidence=outcome.confidence,
+                mode=outcome.mode)
+            it["emissions"].append(emission)
+            self.ledger.record(
+                loop_id=self.loop_id, event="custom",
+                custom_kind="output_admitted", step=step,
+                emission_index=emission.index,
+                output_digest=hashlib.sha256(
+                    str(outcome.output).encode("utf-8")).hexdigest(),
+                confidence=outcome.confidence,
+                emissions=len(it["emissions"]),
+                quota=self.config.max_outputs)
+            if len(it["emissions"]) >= (self.config.max_outputs or 0):
+                self._terminate(it, "quota")
+                rec.update(terminal=True,
+                           note="output quota met "
+                                f"({len(it['emissions'])} admitted)")
+                return rec
         if (it["identical_failures"]
                 >= self.config.supervision.identical_failures_before_stop):
             self.ledger.record(
@@ -2338,6 +2429,136 @@ def self_test() -> dict:
           and duck_init.get("contract_coerced_to", {}).get("role")
           == "practitioner",
           "a contract-like object's declared role and mode are a request too")
+
+    # 24. OUTPUT TYPE — a multiple-output Loop admits a bounded portfolio
+    # and stops at quota; single loops echo one admitted output.
+    from .loop_contract import LoopContract as _LC
+
+    def _emit_each(text):
+        def handler(loop, step, context):
+            return StepOutcome(output=f"{step}:{text}", mode="deterministic",
+                               confidence=0.9, emit_output=True)
+        return handler
+
+    multi_cfg = LoopConfig(
+        framework="custom", custom_steps=("a", "b", "c"),
+        allowable_modes=("deterministic",),
+        preferred_modes=("deterministic",),
+        delegated_modes=("deterministic",),
+        output_type="multiple", max_outputs=2)
+    multi_contract = _LC(
+        name="emit two", execution_mode="code_only",
+        input_roles=(), output_roles=("result",),
+        output_type="multiple", max_outputs=2)
+    lp_multi = Loop("emit two items", multi_cfg, contract=multi_contract)
+    r_multi = lp_multi.run(handler=_emit_each("item"))
+    admitted = [e for e in lp_multi.ledger.events
+                if e.get("custom_kind") == "output_admitted"]
+    terminal = next(e for e in lp_multi.ledger.events
+                    if e.get("event") == "terminal")
+    check("multiple_output_loop_admits_bounded_portfolio_then_quota",
+          r_multi.stopped == "quota" and r_multi.terminal_code == "ACCEPTED"
+          and len(r_multi.outputs) == 2
+          and [item.index for item in r_multi.outputs] == [0, 1]
+          and [item.step for item in r_multi.outputs] == ["a", "b"]
+          and [item.output for item in r_multi.outputs] == ["a:item", "b:item"]
+          and len(admitted) == 2
+          and all(e.get("emission_index") == i for i, e in
+                  enumerate(sorted(admitted, key=lambda e: e["emission_index"])))
+          and terminal.get("emitted_outputs") == 2
+          and r_multi.output == "b:item",
+          f"stopped={r_multi.stopped} code={r_multi.terminal_code} "
+          f"outputs={len(r_multi.outputs)}")
+
+    # A single-output loop ignores the emit flag; its one admitted item is
+    # the final output, and only when the loop accepted.
+    lp_single = Loop("single ignores emit flag",
+                     LoopConfig(framework="custom",
+                                custom_steps=("a", "b"),
+                                allowable_modes=("deterministic",),
+                                preferred_modes=("deterministic",),
+                                delegated_modes=("deterministic",)))
+    r_single = lp_single.run(handler=_emit_each("solo"))
+    check("single_output_loop_echoes_one_admitted_output",
+          r_single.stopped == "done" and len(r_single.outputs) == 1
+          and r_single.outputs[0].output == r_single.output == "b:solo"
+          and r_single.outputs[0].index == 0
+          and not [e for e in lp_single.ledger.events
+                   if e.get("custom_kind") == "output_admitted"],
+          "the flag proposes; a single loop admits only its final output")
+
+    # Unflagged accepted steps never join the portfolio, even on a
+    # multiple-output loop; failed or under-bar flagged steps are refused.
+    def _plain(loop, step, context):
+        return StepOutcome(output=f"{step}:plain", mode="deterministic",
+                           confidence=0.9)
+    lp_quiet = Loop("unflagged emits nothing", multi_cfg,
+                    contract=multi_contract)
+    r_quiet = lp_quiet.run(handler=_plain)
+    def _failed_emit(loop, step, context):
+        return StepOutcome(output=f"{step}:bad", mode="deterministic",
+                           confidence=0.1, failed=True, emit_output=True)
+    lp_bad = Loop("failed emits refused", multi_cfg, contract=multi_contract)
+    r_bad = lp_bad.run(handler=_failed_emit)
+    check("only_flagged_accepted_steps_join_the_portfolio",
+          len(r_quiet.outputs) == 0 and r_quiet.stopped == "done"
+          and len(r_bad.outputs) == 0
+          and not [e for e in lp_bad.ledger.events
+                   if e.get("custom_kind") == "output_admitted"],
+          "no flag or no acceptance means no admission")
+
+    # Partial portfolios survive early stops honestly.
+    lp_short = Loop("quota before steps run out",
+                    LoopConfig(
+                        framework="custom",
+                        custom_steps=("a", "b", "c", "d", "e"),
+                        allowable_modes=("deterministic",),
+                        preferred_modes=("deterministic",),
+                        delegated_modes=("deterministic",),
+                        output_type="multiple", max_outputs=2),
+                    contract=_LC(
+                        name="emit two of five", execution_mode="code_only",
+                        input_roles=(), output_roles=("result",),
+                        output_type="multiple", max_outputs=2))
+    r_short = lp_short.run(handler=_emit_each("early"))
+    check("quota_stops_early_with_partial_allowed_portfolio",
+          r_short.stopped == "quota" and len(r_short.outputs) == 2
+          and r_short.steps_run == 2,
+          "the loop stops at quota, not at steps_complete")
+
+    # Config and contract must agree on output shape, both directions; a
+    # multiple config without a quota refuses everywhere.
+    mismatch_single_contract = False
+    try:
+        Loop("mismatch one way", multi_cfg,
+             contract=_LC(name="s", execution_mode="code_only",
+                          input_roles=(), output_roles=("result",)))
+    except (LoopError, ValueError):
+        mismatch_single_contract = True
+    mismatch_single_config = False
+    try:
+        Loop("mismatch other way",
+             LoopConfig(framework="custom", custom_steps=("a",),
+                        allowable_modes=("deterministic",),
+                        preferred_modes=("deterministic",),
+                        delegated_modes=("deterministic",)),
+             contract=multi_contract)
+    except (LoopError, ValueError):
+        mismatch_single_config = True
+    quota_everywhere = True
+    try:
+        LoopConfig(framework="custom", custom_steps=("a",),
+                   allowable_modes=("deterministic",),
+                   preferred_modes=("deterministic",),
+                   delegated_modes=("deterministic",),
+                   output_type="multiple")
+        quota_everywhere = False
+    except ValueError:
+        pass
+    check("config_and_contract_must_agree_on_output_shape",
+          mismatch_single_contract and mismatch_single_config
+          and quota_everywhere,
+          "a multiple on either side without its match refuses")
 
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "recursive_loop_self_test", "tests": results,

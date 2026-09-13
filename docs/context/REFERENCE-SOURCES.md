@@ -21,9 +21,11 @@ Loop Engine development context
 │   └── public writing rules
 ├── README.md and docs/components/
 │   └── current architecture from high level to component detail
-├── src/loop_engine/strings/core_seed_intelligence_v2.jsonl
-│   └── active seed Context Intelligence
-├── src/loop_engine/strings/generated_candidates.jsonl
+├── src/loop_engine/intelligence/context/core/manifest.yaml
+│   └── active Context Intelligence inventory and metadata
+├── src/loop_engine/intelligence/context/core/records/part-00000.jsonl
+│   └── seed Context Intelligence records
+├── src/loop_engine/governance/candidates/part-00000.jsonl
 │   └── candidate-only generated Context records
 ├── Intelligence Search and Retrieval
 │   └── classification, retrieval, materialization, and lifecycle rules

@@ -1,0 +1,33 @@
+{
+  "record_type": "mandate_delivery_audit/v1",
+  "mandate_complete": false,
+  "implementation_merger_authorized_by_this_report": false,
+  "deliverables": [
+    {"id": 1, "name": "Repository and ownership snapshot", "status": "produced_with_unknown_owners", "artifact": "snapshot-01/snapshot.json"},
+    {"id": 2, "name": "Folder and embodiment inventory", "status": "scoped_discovery_complete_semantic_review_incomplete", "artifact": "snapshot-01/folders.json"},
+    {"id": 3, "name": "Capability Preservation Ledger", "status": "initial_provisional_ledger", "artifact": "snapshot-01/capability-preservation-ledger.json"},
+    {"id": 4, "name": "Duplicate and overlap analysis", "status": "byte_identity_only_not_semantic_parity", "artifact": "snapshot-01/byte-overlaps.json"},
+    {"id": 5, "name": "Current-state architecture map", "status": "generated_from_existing_typed_model", "artifact": "CURRENT-GENERATED-VIEWS.md"},
+    {"id": 6, "name": "Ideal-state architecture map", "status": "design_synthesis_not_new_authority", "artifact": "REVIEW.md"},
+    {"id": 7, "name": "Three graph planes", "status": "explicit_in_review", "artifact": "REVIEW.md"},
+    {"id": 8, "name": "Intelligence and memory map", "status": "source_mapped_not_all_dynamic_paths_proven", "artifact": "REVIEW.md"},
+    {"id": 9, "name": "Information-transfer map", "status": "existing_interactions_exported_target_transfers_reviewed", "artifact": "snapshot-01/information-transfer.json"},
+    {"id": 10, "name": "Harness embodiment matrix", "status": "current_catalog_and_two_narrow_live_peers_not_full_benchmark", "artifact": "REVIEW.md"},
+    {"id": 11, "name": "Canvas contract and export map", "status": "source_review_and_two_peer_export_replays", "artifact": "cold-warm-proof.json"},
+    {"id": 12, "name": "Overnight MVP design", "status": "proposed_qualified_integration_sequence", "artifact": "REVIEW.md"},
+    {"id": 13, "name": "SaaS local/cloud boundary", "status": "design_constraint_only_no_deployment_proof", "artifact": "REVIEW.md"},
+    {"id": 14, "name": "Risk and security review", "status": "focused_boundary_findings_not_full_security_assessment", "artifact": "REVIEW.md"},
+    {"id": 15, "name": "Feature preservation checklist", "status": "all_families_retained_with_open_proofs", "artifact": "feature-preservation.json"},
+    {"id": 16, "name": "Gaps, contradictions, stale documents", "status": "source_and_probe_backed_findings", "artifact": "REVIEW.md"},
+    {"id": 17, "name": "Implementation plan", "status": "prioritized_existing_contract_connections", "artifact": "REVIEW.md"},
+    {"id": 18, "name": "First end-to-end proof", "status": "partial_peer_cold_warm_proof_not_full_canonical_system", "artifact": "cold-warm-proof.json"},
+    {"id": 19, "name": "Test and benchmark results", "status": "focused_249_and_full_3412_and_conformance_pass_first_infrastructure_failure_retained", "artifact": "full-workspace-tmp-checks.json"},
+    {"id": 20, "name": "Remaining unproven claims", "status": "explicit_not_closed", "artifact": "REVIEW.md"}
+  ],
+  "c4": {
+    "existing_generated_views": 8,
+    "all_requested_views_covered": false,
+    "all_edges_have_structured_protocol_timing_and_authority": false,
+    "visual_rendering_checked": false
+  }
+}

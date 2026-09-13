@@ -22,7 +22,7 @@ APPROVED_TOP_LEVEL = frozenset({
     "src", "tests", "docs", "examples", "benchmarks", "devtools",
     "migrations", "plugins", "runtime_plugins", "dev_plugins", "deploy",
     ".github", "case-studies", "showcase", "dist", "checkpoint",
-    "example-output", "tools",
+    "example-output", "tools", "embodiments",
 })
 
 #: Junk-drawer names that must never appear as architecture folders.

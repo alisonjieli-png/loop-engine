@@ -1,0 +1,23 @@
+{
+  "record_type": "readme_quickstart_check/v1",
+  "checks": {
+    "readme_fragments_present": true,
+    "quickstart_does_not_require_git": true,
+    "readme_uses_canonical_inspect_subcommands": true,
+    "cli_help_runs": true,
+    "doctor_runs_without_provider_calls": true,
+    "configure_runs_without_provider_calls": true,
+    "setup_works_on_the_default_install_without_provider_calls": true,
+    "no_key_solve_is_honest": true,
+    "no_key_run_history_exists": true,
+    "runs_json_contains_the_product_terminal": true,
+    "report_reconstructs_the_product_outcome": true,
+    "pinned_docker_image_present": true
+  },
+  "missing_fragments": [],
+  "provider_calls": 0,
+  "all_passed": true,
+  "limitations": [
+    "The external-provider step requires a separately authorized live run."
+  ]
+}

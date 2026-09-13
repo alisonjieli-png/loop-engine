@@ -1,0 +1,21 @@
+{
+  "record_type": "intermediate_source_self_test_checkpoint/v1",
+  "repository": "/home/username/loop-engine",
+  "head": "acfd826eeee3ea2c05b638031ff235b709a69eb2",
+  "source_state": "dirty, active integration; new modules were added by concurrent task agents during this suite",
+  "passed": 3619,
+  "total": 3621,
+  "all_passed": false,
+  "provider_calls_made_by_suite": 0,
+  "failed_checks": [
+    {
+      "name": "live_tree_scans_clean_for_every_zero_tolerance_rule",
+      "findings": {"subprocess_outside_declared": 1, "short_module_docstring": 5, "direct_resource_access": 1}
+    },
+    {
+      "name": "all_zero_tolerance_gates_pass_on_the_live_tree",
+      "findings": {"unclassified_files": 1, "retired_decision_spine_terms": 28, "subprocess_outside_declared_adapters": 1, "modules_missing_llm_context_docstring": 5, "direct_resource_access_above_baseline": 1}
+    }
+  ],
+  "interpretation": "An intermediate failure, not a passing release. Exact failed checks were returned by the source self-test command. Follow-up conformance logs retain later findings and corrections. New provider trials are separate from this offline suite."
+}

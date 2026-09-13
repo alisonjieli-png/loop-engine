@@ -385,6 +385,81 @@ def _chat_streamed(ep: CustomEndpoint, payload: dict, headers: dict,
     }
 
 
+def _call_spacing_secs() -> float:
+    """Operator-imposed minimum seconds between custom-endpoint calls.
+
+    A `spacing.override` file in the slot dir beats the env var, so the
+    pace can be tightened or released live across all running processes
+    without restarts; both are recorded per claim in the trace log.
+    Zero or absent means unpaced (historical behavior, unchanged).
+    """
+    try:
+        slot_dir = os.environ.get("LOOP_ENGINE_SLOT_DIR",
+                                  os.path.expanduser("~/.loop-engine-slots"))
+        with open(os.path.join(slot_dir, "spacing.override"),
+                  encoding="utf-8") as handle:
+            return max(0.0, float(handle.read().strip() or 0.0))
+    except (OSError, TypeError, ValueError):
+        pass
+    try:
+        return max(0.0, float(os.environ.get(
+            "LOOP_ENGINE_CALL_SPACING_SECS", "0") or 0.0))
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _claim_call_slot(endpoint_name: str) -> float:
+    """Block until this endpoint's shared slot is due; record the claim.
+
+    Cross-process mutual exclusion via a lock file, so parallel solves
+    and harnesses share one global pace per endpoint. Every claim is
+    appended to a trace log: timestamp, endpoint, seconds waited. Returns
+    the wait. Raises OSError if the slot directory is unusable — a pacing
+    failure must be loud, never a silent bypass.
+    """
+    import fcntl
+    import time
+    spacing = _call_spacing_secs()
+    if spacing <= 0:
+        return 0.0
+    safe = re.sub(r"[^A-Za-z0-9_.-]", "_", endpoint_name) or "endpoint"
+    slot_dir = os.environ.get("LOOP_ENGINE_SLOT_DIR",
+                              os.path.expanduser("~/.loop-engine-slots"))
+    os.makedirs(slot_dir, mode=0o700, exist_ok=True)
+    slot_path = os.path.join(slot_dir, safe + ".slot.json")
+    log_path = os.environ.get("LOOP_ENGINE_SLOT_LOG",
+                              os.path.join(slot_dir, "slot-trace.log"))
+    waited = 0.0
+    with open(slot_path, "a+b") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            handle.seek(0)
+            raw = handle.read().decode("utf-8", errors="replace").strip()
+            try:
+                last_start = float(json.loads(raw).get("last_start", 0.0))
+            except (ValueError, TypeError, AttributeError):
+                last_start = 0.0
+            now = time.time()
+            due_in = last_start + spacing - now
+            if due_in > 0:
+                time.sleep(due_in)
+                waited = due_in
+                now = time.time()
+            handle.seek(0)
+            handle.truncate()
+            handle.write(json.dumps(
+                {"last_start": now,
+                 "spacing_secs": spacing}).encode("utf-8"))
+            handle.flush()
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    with open(log_path, "a", encoding="utf-8") as log:
+        log.write(f"{time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime())} "
+                  f"endpoint={safe} waited_secs={waited:.1f} "
+                  f"spacing_secs={spacing:.0f}\n")
+    return waited
+
+
 def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                max_tokens: int, temperature: float,
                timeout: float) -> ChatResult:
@@ -399,6 +474,7 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
     """
     messages = ([{"role": "system", "content": system}] if system else []) \
         + [{"role": "user", "content": prompt}]
+    _claim_call_slot(ep.name)
     if ep.wire == "ollama":
         payload = {"model": ep.model, "messages": messages, "stream": False,
                    "options": {"num_predict": int(max_tokens),
@@ -854,6 +930,47 @@ def self_test() -> dict:
           lines == ['{"choices": [{"delta": {"content": "one"}}]}',
                     '{"choices": [{"delta": {"content": "two"}}]}',
                     '[DONE]'])
+
+    # 8. SHARED PACING: off by default (zero behavior change); when
+    # LOOP_ENGINE_CALL_SPACING_SECS is set, claims serialize across
+    # processes via the slot file and every claim is trace-logged.
+    import tempfile
+    import time as _time
+    with tempfile.TemporaryDirectory(prefix="pacing-") as slot_dir:
+        os.environ["LOOP_ENGINE_SLOT_DIR"] = slot_dir
+        os.environ["LOOP_ENGINE_CALL_SPACING_SECS"] = "2"
+        try:
+            first = _claim_call_slot("pace_probe")
+            start = _time.monotonic()
+            second = _claim_call_slot("pace_probe")
+            waited = _time.monotonic() - start
+            trace = open(os.path.join(
+                slot_dir, "slot-trace.log"), encoding="utf-8").read()
+            check("shared_slot_serializes_claims_and_logs_them",
+                  first == 0.0 and 1.5 < waited < 10
+                  and 1.5 < second < 10
+                  and trace.count("endpoint=pace_probe") == 2,
+                  "second claim waited out the spacing; both traced")
+        finally:
+            os.environ.pop("LOOP_ENGINE_SLOT_DIR", None)
+            os.environ.pop("LOOP_ENGINE_CALL_SPACING_SECS", None)
+    check("pacing_defaults_to_off",
+          _call_spacing_secs() == 0.0
+          and _claim_call_slot("pace_probe") == 0.0,
+          "unset means unpaced historical behavior")
+    with tempfile.TemporaryDirectory(prefix="pacing-override-") as slot_dir:
+        os.environ["LOOP_ENGINE_SLOT_DIR"] = slot_dir
+        os.environ["LOOP_ENGINE_CALL_SPACING_SECS"] = "300"
+        try:
+            with open(os.path.join(slot_dir, "spacing.override"),
+                      "w", encoding="utf-8") as handle:
+                handle.write("45\n")
+            check("slot_file_override_beats_env_live",
+                  _call_spacing_secs() == 45.0,
+                  "operators can retune running processes via one file")
+        finally:
+            os.environ.pop("LOOP_ENGINE_SLOT_DIR", None)
+            os.environ.pop("LOOP_ENGINE_CALL_SPACING_SECS", None)
 
     passed = sum(1 for t in results if t["passed"])
     return {"record_type": "custom_endpoint_contract_test/v2",

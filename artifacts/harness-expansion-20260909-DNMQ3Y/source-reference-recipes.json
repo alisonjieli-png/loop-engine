@@ -1,0 +1,120 @@
+{
+  "record_type": "harness_reference_recipe_review/v1",
+  "observed_date_utc": "2026-09-09",
+  "scope": "Reuse existing local recipes and tests as design/source input for the canonical Loop-owned process adapter. No sibling source edits, new live model calls or replacement benchmark harness were made.",
+  "sources": [
+    {
+      "repository_path": "/home/username/new_overnight_build",
+      "branch": "main",
+      "head": "2530a1520f15610e4383d4405585ccdb3628be8d",
+      "dirty_paths_at_review": ["poc/harnesses.py", "tests/test_harnesses.py"],
+      "ownership": "concurrent_writer_unknown",
+      "files": [
+        {"path": "/home/username/new_overnight_build/poc/harnesses.py", "sha256": "c8f0ca3105fb3acc8025cba3353bb9b68367bf739b2f217b8c31c3ce1de65d1a"},
+        {"path": "/home/username/new_overnight_build/tests/test_harnesses.py", "sha256": "cfdf1dde517e112294c1fb4ec5d26210516d49e100a1eb9ce482fedb2f57f970"}
+      ],
+      "recipes": [
+        {"source": "poc/harnesses.py:144", "invariant": "The exact Pi invocation distinguishes unspecified tools, an empty tool set, and an explicit allowlist; the prompt is a file reference.", "transplant": "Use pi -p --mode json --no-session, @prompt-file, --no-tools for an empty set, or --tools with explicit names. Add all discovery-suppression flags from the official upstream source for an isolated semantic step.", "existing_tests": ["tests/test_harnesses.py:59", "tests/test_harnesses.py:72", "tests/test_harnesses.py:81"]},
+        {"source": "poc/harnesses.py:187", "invariant": "Pi output parsing follows an actually captured assistant message envelope and preserves transport errors.", "transplant": "Read message_end.message when role=assistant, extract text content parts, read usage.input/output and surface errorMessage. The current dirty source improves on the older committed parser.", "existing_tests": ["tests/test_harnesses.py:137", "tests/test_harnesses.py:153", "tests/test_harnesses.py:162"]}
+      ],
+      "do_not_copy": [
+        "Pi usage defaults to zero when missing; canonical accounting must preserve null/unknown and known subtotals.",
+        "Deduplicating solely by timestamp can collapse distinct same-timestamp messages; use exact event identity when available.",
+        "splitlines treats Unicode separators as framing; Pi RPC documentation requires LF-only JSONL splitting.",
+        "The local_endpoint=unsupported assertion only tested OPENAI_BASE_URL. Pi supports custom endpoints through its isolated models.json provider registry.",
+        "REGISTRY contains OpenCode, Pi and Codex, not Aider despite the header's installed-binary list.",
+        "pure currently disables context files and extensions but does not explicitly disable skill/template/theme discovery.",
+        "Arbitrary extra_args are not an authority boundary. A canonical adapter must validate or own its exact argv."
+      ]
+    },
+    {
+      "repository_path": "/home/username/speculative_prompting",
+      "branch": "main",
+      "head": "86d857357a983a2dd0b7d0cc2ccb961b862ad290",
+      "reviewed_subtree": "/home/username/speculative_prompting/embodiments/harness",
+      "subtree_status": "untracked_concurrent_work_not_bound_by_head_alone",
+      "files": [
+        {"path": "/home/username/speculative_prompting/embodiments/harness/edits.py", "sha256": "9436b71ca99f45557d2f9499e6fbc14c32e9712c2c45cb9888d620ab96267db5"},
+        {"path": "/home/username/speculative_prompting/embodiments/harness/gate.py", "sha256": "1096e0f560d6f7bf2820e3ccbc6a547041ecff57f1dd619f5be033c9830e7e90"},
+        {"path": "/home/username/speculative_prompting/embodiments/harness/model.py", "sha256": "5f6196d11e27525c0395340fd00df98834f39f188beb8030b8adafbff4cf837f"},
+        {"path": "/home/username/speculative_prompting/embodiments/harness/contract.py", "sha256": "7a443b467126df71226d4dbf56a56c9101061298d358e0a8e8cc2cdaedd9801d"},
+        {"path": "/home/username/speculative_prompting/embodiments/harness/tests/test_harness.py", "sha256": "3f2aa1e8ad58ffd1e3e937373e9c6bdfc608735151aaf13b32ad826d395cfc32"}
+      ],
+      "recipes": [
+        {"source": "embodiments/harness/edits.py:58", "invariant": "Preserve mixed CREATE/EDIT order and validate the entire requested edit set before writing any member.", "transplant": "Add corresponding adversarial controls to the existing canonical workspace/artifact service; do not create a second write-authority service.", "existing_tests": ["test_edits_refuse_every_escape", "test_an_ambiguous_search_is_refused", "test_edits_are_all_or_nothing", "test_a_component_can_be_created", "test_creating_over_an_existing_file_is_refused", "test_create_blocks_are_still_all_or_nothing"]},
+        {"source": "embodiments/harness/gate.py:89", "invariant": "Freeze evaluator identity before candidate work and refuse acceptance if the evaluator changed even when its exit code is zero.", "transplant": "Bind canonical evaluator/source bytes before dispatch, then retain the existing changed-gate negative control at tests/test_harness.py:107.", "existing_tests": ["test_a_run_that_changes_the_check_is_void", "test_the_gate_decides_and_the_fix_flips_it"]},
+        {"source": "embodiments/harness/gate.py:122", "invariant": "A timeout owns and terminates the process group, then waits for output/drain.", "transplant": "Reuse the process-group cleanup sequence at the declared external-process adapter and add cancellation as a separate path.", "existing_tests": ["test_a_gate_timeout_returns_instead_of_raising_name_error"]},
+        {"source": "embodiments/harness/model.py:142", "invariant": "Offline controls include prose-only replies, plausible wrong edits, tampered evaluators, repair after feedback and an unsolvable floor.", "transplant": "Extend existing canonical conformance fixtures with these response classes; keep synthetic controls separate from real-provider results.", "existing_tests": ["test_the_fake_model_is_deterministic_per_difficulty", "test_difficulty_nine_is_a_floor_however_many_attempts_are_made"]}
+      ],
+      "do_not_copy": [
+        "Gate.sandbox is a label; Gate.run executes bash on the host and does not instantiate a sandbox.",
+        "The effect screen is substring matching on a command, not typed authority.",
+        "The child environment retains HOME/PYTHONPATH and drops PYTHONNOUSERSITE. This can reload the known global usercustomize.py monkeypatch.",
+        "Gate-path heuristics do not completely identify an arbitrary evaluator's dependencies.",
+        "Edit staging avoids partial validation writes but is not a crash-atomic filesystem transaction.",
+        "repo.prepare removes an existing destination; do not transplant its overwrite policy into a shared workspace.",
+        "FakeSession and Cost use synthetic or zero-default token accounting; do not use them as real-provider accounting authorities."
+      ]
+    },
+    {
+      "path": "/tmp/claude-1000/-home-username-speculative-prompting/07d20b57-025b-4bae-b397-f8560b4e53af/scratchpad/harness-probe/mockprov.py",
+      "sha256": "4fffc2b8996181eb2b66279b37ed6be8543cedbdbd8dfb606c14e2eebe9b7e16",
+      "source_revision": null,
+      "kind": "existing_offline_protocol_probe",
+      "recipes": [
+        {"source_lines": "77-93", "transplant": "Responses object plus response.created/response.completed event framing as an initial offline parser control."},
+        {"source_lines": "94-100", "transplant": "Anthropic Messages non-streaming response shape as an offline parser control."},
+        {"source_lines": "101-119", "transplant": "ChatCompletions role/content/finish chunks followed by data: [DONE], plus non-streaming completion shape."},
+        {"source_lines": "40-76", "transplant": "Compare materialized messages and tool schema exposure in normalized tokenizer units, with the tokenizer named explicitly."}
+      ],
+      "do_not_copy": [
+        "Hardcoded usage 0 input / 1 output is fixture data, never provider-reported usage.",
+        "HTTPServer is single threaded; use the already-owned canonical broker concurrency model.",
+        "Anthropic streaming and detailed Responses delta sequences are not implemented by this probe.",
+        "No request authentication, exact route authority, body-size bound or timeout policy is established by this file.",
+        "Normalizing JSON and tokenizing with cl100k_base is not a qualified exact-wire token bound for every provider/model."
+      ]
+    }
+  ],
+  "historical_measurement_check": {
+    "report": "/home/username/HARNESS-MEASUREMENTS.md",
+    "sha256": "4583622fa83419558cf7a491c0e78eed2e68c42135008429cbe7b2779b9a36f2",
+    "reported_table_configurations": 8,
+    "reported_distinct_harnesses": 6,
+    "report_header_configuration_count": 7,
+    "referenced_log": "/tmp/harness-probe.jsonl",
+    "current_log_records": 2,
+    "current_log_path_values": ["/v1/chat/completions"],
+    "current_log_model_values": ["probe-model"],
+    "current_log_tool_counts": [0, 26],
+    "current_log_normalized_tokenizer_totals": [180, 11872],
+    "status": "historical_table_not_reproduced_by_current_overwritten_log",
+    "limits": ["The report's table is useful reported evidence but its cited current log does not retain those eight arms.", "Measurements include the task text and normalized JSON wrappers; they are not pure prefix-only provider-token measurements.", "A 3 percent difference from a prior provider run is not exact-request bound qualification."]
+  },
+  "fresh_selected_checks": {
+    "source_test_file": "/home/username/speculative_prompting/embodiments/harness/tests/test_harness.py",
+    "initial_attempt": {"interpreter": "/home/username/loop-engine/.venv/bin/python", "result": "not_executed_missing_pytest", "observed_error": "No module named pytest"},
+    "retry": {
+      "interpreter": "/usr/bin/python3",
+      "environment": {"PYTHONNOUSERSITE": "1", "PYTHONDONTWRITEBYTECODE": "1", "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "PYTHONPATH": "/home/username/speculative_prompting/embodiments:/home/username/.local/lib/python3.14/site-packages"},
+      "pytest_flags": ["-q", "-p", "no:cacheprovider"],
+      "temporary_artifact_root": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/reference-controls.NWkPHN",
+      "tests": ["test_the_gate_child_environment_is_an_allowlist", "test_edits_refuse_every_escape", "test_an_ambiguous_search_is_refused", "test_edits_are_all_or_nothing", "test_a_component_can_be_created", "test_creating_over_an_existing_file_is_refused", "test_create_blocks_are_still_all_or_nothing"],
+      "passed": 7,
+      "deselected": 32,
+      "elapsed_seconds": 0.09,
+      "provider_calls": 0,
+      "scope": "Existing parser/path/edit/env tests only. Gate subprocess and full-harness tests were not rerun; no canonical integration claim."
+    }
+  },
+  "first_batch_semantic_step_findings": [
+    {"id": "pi", "recommended_next_step": "Probe installed CLI with no-tools and all discovery suppressions, isolated models.json and JSONL parsing; use captured Pi fixture for parser negatives."},
+    {"id": "mistral_vibe", "recommended_next_step": "Probe --disabled-tools '*' and JSON/streaming output against engine broker; isolate VIBE_HOME."},
+    {"id": "aider", "recommended_next_step": "Probe ask mode and no-Git/no-update/no-analytics controls using --message-file. Do not assume auxiliary model-call count equals one."},
+    {"id": "goose", "recommended_next_step": "Probe --no-profile --instructions - --output-format stream-json with GOOSE_MODE=chat and native brokered provider; reject delegated CLI providers."},
+    {"id": "qwen_code", "recommended_next_step": "Pin exact registry and disable every discovered builtin/system/MCP tool; tools.core=[] and tools.eager are insufficient."},
+    {"id": "cline", "recommended_next_step": "Probe JSON stdin and --compaction off. CLI-wide no-tools remains unverified; connector no-tools and SDK enableTools must not be mistaken for main CLI flags."},
+    {"id": "openhands_cli", "recommended_next_step": "Implement and qualify an explicit tool-free adapter or SDK variant. Current CLI overwrites stored tools with get_default_cli_tools on new sessions, so tools=[] in persisted settings is insufficient."},
+    {"id": "mini_swe_agent", "recommended_next_step": "Use its existing action-parser/trajectory controls as reference; pure semantic JSON needs an explicit adapter because stock CLI expects executable actions and a submission action."}
+  ]
+}

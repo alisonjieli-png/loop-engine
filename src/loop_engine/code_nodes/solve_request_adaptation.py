@@ -58,6 +58,9 @@ def build_adaptive_request(
         allow_source_materialization_to_model=(
             request.allow_source_materialization_to_model
         ),
+        verifier_path=getattr(request, "verifier_path", "") or "",
+        capture_recovery_learning=getattr(request,'capture_recovery_learning',False),
+        diagnose_unchanged_evidence=getattr(request,'diagnose_unchanged_evidence',False),
         persist_run_history=request.save_run_history,
         quiet_model_io=request.quiet_model_io,
         allow_local_execution=request.allow_local_execution,

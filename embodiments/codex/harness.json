@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "harness_id": "codex",
+  "package_version": "0.153.4",
+  "style": "codex",
+  "command_prefix": ["/home/username/.local/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex"],
+  "read_only_paths": ["/home/username/.local/lib/node_modules/@openai/codex"]
+}

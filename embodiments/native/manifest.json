@@ -1,0 +1,10 @@
+{
+  "id": "native",
+  "folder": "native",
+  "status": "mechanism_implemented",
+  "title": "In-process native Loops",
+  "benefit": "Minimum placement overhead; no process isolation.",
+  "limitations": "Trusted deterministic workloads only. Model-quality comparison remains a separate qualification.",
+  "contract": "embodiment_work/v1",
+  "model_backend_qualified": false
+}

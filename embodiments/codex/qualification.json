@@ -1,0 +1,248 @@
+{
+  "record_type": "harness_project_qualification/v1",
+  "harness_id": "codex",
+  "package_version": "0.153.4",
+  "upstream": "https://github.com/openai/codex",
+  "source_revision": "3d2ee51ca2d5db578f328aa75e20aa22c0197c9a",
+  "license": "Apache-2.0",
+  "status": "qualified_offline_native_cli_text_profile",
+  "real_model_calls": 0,
+  "manifest": {
+    "schema_version": 1,
+    "harness_id": "codex",
+    "package_version": "0.153.4",
+    "style": "codex",
+    "command_prefix": [
+      "/home/username/.local/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex"
+    ],
+    "read_only_paths": [
+      "/home/username/.local/lib/node_modules/@openai/codex"
+    ]
+  },
+  "binary_sha256": "56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da",
+  "probes": [
+    {
+      "style": "codex",
+      "mode": "request-tools",
+      "exit_code": 1,
+      "timed_out": false,
+      "ok": true,
+      "broker_callback_count": 0,
+      "refusals": [
+        "native_tools_not_authorized"
+      ],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/codex-request-tools-01/result.json",
+      "record_sha256": "dd1bff362a67cef45f24d8d7ceb4653705259b857c8afeef79bac65faf38feb3",
+      "exact_candidate_observed": false,
+      "wire_tool_schemas": [
+        [
+          {
+            "type": "function",
+            "name": "exec_command",
+            "description": "Runs a command in a PTY, returning output or a session ID for ongoing interaction.",
+            "strict": false,
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "cmd": {
+                  "type": "string",
+                  "description": "Shell command to execute."
+                },
+                "justification": {
+                  "type": "string",
+                  "description": "User-facing approval question for `require_escalated`; omit otherwise."
+                },
+                "login": {
+                  "type": "boolean",
+                  "description": "True runs the shell with -l/-i semantics; false disables them. Defaults to true."
+                },
+                "max_output_tokens": {
+                  "type": "number",
+                  "description": "Output token budget. Defaults to 10000 tokens; larger requests may be capped by policy."
+                },
+                "prefix_rule": {
+                  "type": "array",
+                  "description": "Reusable approval prefix for `cmd`, only with `sandbox_permissions: \"require_escalated\"`; for example [\"git\", \"pull\"].",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "sandbox_permissions": {
+                  "type": "string",
+                  "description": "Per-command sandbox override. Defaults to `use_default`; use `require_escalated` for unsandboxed execution.",
+                  "enum": [
+                    "use_default",
+                    "require_escalated"
+                  ]
+                },
+                "shell": {
+                  "type": "string",
+                  "description": "Shell binary to launch. Defaults to the user's default shell."
+                },
+                "tty": {
+                  "type": "boolean",
+                  "description": "True allocates a PTY for the command; false or omitted uses plain pipes."
+                },
+                "workdir": {
+                  "type": "string",
+                  "description": "Working directory for the command. Defaults to the turn cwd."
+                },
+                "yield_time_ms": {
+                  "type": "number",
+                  "description": "Wait before yielding output. Defaults to 10000 ms; effective range is 250-30000 ms."
+                }
+              },
+              "required": [
+                "cmd"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "type": "function",
+            "name": "write_stdin",
+            "description": "Writes characters to an existing unified exec session and returns recent output.",
+            "strict": false,
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "chars": {
+                  "type": "string",
+                  "description": "Bytes to write to stdin. Defaults to empty, which polls without writing."
+                },
+                "max_output_tokens": {
+                  "type": "number",
+                  "description": "Output token budget. Defaults to 10000 tokens; larger requests may be capped by policy."
+                },
+                "session_id": {
+                  "type": "number",
+                  "description": "Identifier of the running unified exec session."
+                },
+                "yield_time_ms": {
+                  "type": "number",
+                  "description": "Wait before yielding output. Non-empty writes default to 250 ms and cap at 30000 ms; empty polls wait 5000-300000 ms by default."
+                }
+              },
+              "required": [
+                "session_id"
+              ],
+              "additionalProperties": false
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "style": "codex",
+      "mode": "response-tools",
+      "exit_code": 1,
+      "timed_out": false,
+      "ok": true,
+      "broker_callback_count": 1,
+      "refusals": [
+        "responses_native_or_nonmessage_item_refused"
+      ],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/codex-response-tools-01/result.json",
+      "record_sha256": "da597f5266ed4561cd843f568e7d44e59da9cf9f1243bf2c19b245c0f2592b4f",
+      "exact_candidate_observed": false,
+      "wire_tool_schemas": [
+        [],
+        []
+      ]
+    },
+    {
+      "style": "codex",
+      "mode": "text",
+      "exit_code": 1,
+      "timed_out": false,
+      "ok": false,
+      "broker_callback_count": 0,
+      "refusals": [],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/codex-text-01/result.json",
+      "record_sha256": "5da18542e324a77b0bade8605dc837087ac321db3cfca6a62733cb7e134d531e",
+      "exact_candidate_observed": false,
+      "wire_tool_schemas": []
+    },
+    {
+      "style": "codex",
+      "mode": "text",
+      "exit_code": 1,
+      "timed_out": false,
+      "ok": false,
+      "broker_callback_count": 0,
+      "refusals": [
+        "responses_request_fields_refused"
+      ],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/codex-text-02/result.json",
+      "record_sha256": "0611afa657f3744cbef0211174cc8bae59519e0409361d3ce15099369f96424e",
+      "exact_candidate_observed": false,
+      "wire_tool_schemas": [
+        []
+      ]
+    },
+    {
+      "style": "codex",
+      "mode": "text",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "broker_callback_count": 1,
+      "refusals": [],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/codex-text-03/result.json",
+      "record_sha256": "287e7f71dc85f44a938ffd62a62f0c5dc1e1b61ab398723548fef264d8b4e0f3",
+      "exact_candidate_observed": true,
+      "wire_tool_schemas": [
+        []
+      ]
+    },
+    {
+      "style": "codex",
+      "mode": "text",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "broker_callback_count": 1,
+      "refusals": [],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/codex-text-04/result.json",
+      "record_sha256": "f4f097afe912e6c32eb505b49d1d936d2197f3e2cd30186392e8199b00a3fad9",
+      "exact_candidate_observed": true,
+      "wire_tool_schemas": [
+        []
+      ]
+    },
+    {
+      "style": "codex",
+      "mode": "version",
+      "exit_code": 0,
+      "timed_out": false,
+      "ok": true,
+      "broker_callback_count": 0,
+      "refusals": [],
+      "native_marker_created": false,
+      "real_model_calls": 0,
+      "record": "artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/codex-version-01/result.json",
+      "record_sha256": "5739a08aceed397d721e41fa612837b43b9b1521f848fc1ed4a4c73e23c4d299",
+      "exact_candidate_observed": false,
+      "wire_tool_schemas": []
+    }
+  ],
+  "limitations": [
+    "scripted_provider_only",
+    "no_task_quality_claim",
+    "no_full_system_benchmark",
+    "shared_process_relay_wiring_not_performed",
+    "real_calls_require_OllamaCloud_broker"
+  ]
+}

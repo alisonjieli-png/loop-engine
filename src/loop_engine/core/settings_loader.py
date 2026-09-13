@@ -56,6 +56,14 @@ def _boolean(value, field_name: str) -> bool:
     raise SettingsError(f"{field_name} must be true or false")
 
 
+def _optional_positive_int(value, field_name: str):
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise SettingsError(f"{field_name} must be a positive integer")
+    return value
+
+
 def _loop(value: Mapping) -> LoopDefaults:
     body = _mapping(value, "loop")
     _known(body, ("framework", "allowable_modes", "preferred_modes",
@@ -108,6 +116,7 @@ def _provider(value: Mapping) -> ProviderSettings:
     _known(body, ("id", "kind", "enabled", "credential_env", "endpoint",
                   "model", "wire", "locality", "counts_as_evidence",
                   "maximum_output_tokens", "maximum_output_source",
+                  "context_window",
                   "purposes", "headers", "auth_scheme", "auth_header",
                   "stream", "tls_verification", "tls_ca_file"),
            "provider")
@@ -135,6 +144,8 @@ def _provider(value: Mapping) -> ProviderSettings:
             else int(raw_maximum)
             if raw_maximum is not None else None),
         maximum_output_source=str(body.get("maximum_output_source", "")),
+        context_window=_optional_positive_int(
+            body.get("context_window"), "provider.context_window"),
         purposes=_tuple(body.get(
             "purposes", ("counted_generation", "decide_label")),
             "provider.purposes"),
@@ -582,6 +593,23 @@ def self_test() -> dict:
         "this request must have no eligible model locality"))
     check("operating_policy_clamps_model_routes_before_contact",
           locked_request.config.allowed_localities == ())
+
+    windowed = runtime_settings_from_mapping({"models": {"providers": [{
+        "id": "wide_local", "kind": "custom",
+        "endpoint": "http://localhost:11434/v1", "model": "qwen2.5:7b",
+        "locality": "local", "context_window": 200000}]}})
+    wide_gateway = windowed.build_gateway(environ={})
+    check("custom_provider_context_window_reaches_route_capabilities",
+          wide_gateway.registry.get("custom.wide_local").capabilities.max_context == 200000)
+    for bad_window in (0, -5, "huge", True):
+        try:
+            runtime_settings_from_mapping({"models": {"providers": [{
+                "id": "bad_local", "kind": "custom",
+                "endpoint": "http://localhost:11434/v1", "model": "qwen2.5:7b",
+                "locality": "local", "context_window": bad_window}]}})
+            check(f"custom_provider_rejects_context_window_{bad_window!r}", False)
+        except SettingsError:
+            check(f"custom_provider_rejects_context_window_{bad_window!r}", True)
 
     passed = sum(1 for test in results if test["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

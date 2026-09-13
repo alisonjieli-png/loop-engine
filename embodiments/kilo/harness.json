@@ -1,0 +1,5 @@
+{
+  "schema_version":1,"harness_id":"kilo","package_version":"7.5.16","style":"kilo",
+  "command_prefix":["/usr/bin/node","/home/username/loop-engine/embodiments/kilo/runtime/node_modules/@kilocode/cli/bin/kilo"],
+  "read_only_paths":["/home/username/loop-engine/embodiments/kilo/runtime/node_modules"]
+}

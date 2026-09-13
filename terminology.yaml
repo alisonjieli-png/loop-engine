@@ -9,6 +9,33 @@ terms:
   LoopDefinitionRecord:
     kind: canonical
     definition: Passive searchable catalog projection of a LoopDefinition.
+  LoopInputCardinality:
+    kind: canonical
+    definition: Passive declaration of how many emissions one named input port accepts, independent of the consuming Loop's output cardinality.
+  HarnessSelectionScope:
+    kind: canonical
+    definition: Immutable comparison scope binding the response contract, owning Loop definition, resource policy, execution settings, and evaluation obligation.
+  HarnessTrialEvidence:
+    kind: canonical
+    definition: Immutable measured harness trial with an exact population, evaluator, subject, history identity, denominator, and nullable usage measurements.
+  HarnessEvidenceReview:
+    kind: canonical
+    definition: Host-issued independent review bound to one exact harness trial; the record does not perform or invent the review.
+  ReviewedHarnessEvidence:
+    kind: canonical
+    definition: One measured harness trial paired with its exact independent review decision.
+  HarnessSelectionPolicy:
+    kind: canonical
+    definition: Versioned policy that ranks eligible authorized harnesses from matched reviewed evidence and preserves configured order when evidence is insufficient.
+  HarnessSelectionDecision:
+    kind: canonical
+    definition: Passive recorded harness ordering with exclusions, measurements, evidence references, and the owning selection Loop identity.
+  HarnessResponseEvaluator:
+    kind: internal_only
+    definition: Explicit trusted host callback binding for one versioned response obligation; it grants no model, tool, file, or task-acceptance authority.
+  HarnessResponseEvaluation:
+    kind: canonical
+    definition: A verifier Loop's passed, rejected, or inconclusive assessment bound to the exact assignment and response digests.
   LoopComponentDefinition:
     kind: canonical
     definition: Passive versioned envelope for a semantic building block; never a runtime.

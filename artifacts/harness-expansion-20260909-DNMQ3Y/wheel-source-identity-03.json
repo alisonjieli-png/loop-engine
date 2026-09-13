@@ -1,0 +1,11 @@
+{
+  "record_type": "installed_python_source_identity/v1",
+  "source_root": "/home/username/loop-engine/src/loop_engine",
+  "installed_root": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/evidence/clean-wheel-env-03/lib/python3.10/site-packages/loop_engine",
+  "source_count": 464,
+  "installed_count": 464,
+  "identical": true,
+  "missing": [],
+  "extra": [],
+  "changed": []
+}

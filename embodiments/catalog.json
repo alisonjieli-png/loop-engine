@@ -1,0 +1,139 @@
+{
+  "record_type": "embodiment_catalog/v1",
+  "version": "1.0.0",
+  "runtime_type": "Loop",
+  "default_embodiment": null,
+  "scope": "An extensible catalog, not an exhaustive enumeration of every possible architecture.",
+  "embodiments": [
+    {
+      "id": "native",
+      "folder": "native",
+      "status": "mechanism_implemented",
+      "title": "In-process native Loops",
+      "benefit": "Minimum placement overhead; no process isolation.",
+      "limitations": "Trusted deterministic workloads only. Model-quality comparison remains a separate qualification.",
+      "contract": "embodiment_work/v1",
+      "model_backend_qualified": false
+    },
+    {
+      "id": "fresh_process",
+      "folder": "process_per_step",
+      "status": "mechanism_implemented",
+      "title": "One process per packet",
+      "benefit": "Fresh process state and isolated worker lifetime.",
+      "limitations": "Python worker protocol today, not an OpenCode or OS-security qualification.",
+      "contract": "embodiment_work/v1",
+      "model_backend_qualified": false
+    },
+    {
+      "id": "long_lived_session",
+      "folder": "long_lived_session",
+      "status": "mechanism_implemented",
+      "title": "One long-lived worker session",
+      "benefit": "Startup is amortized; every packet still creates a fresh Loop and explicit state.",
+      "limitations": "A process restart loses in-flight work; no provider caching benefit is claimed.",
+      "contract": "embodiment_work/v1",
+      "model_backend_qualified": false
+    },
+    {
+      "id": "pooled_sessions",
+      "folder": "session_pool",
+      "status": "mechanism_implemented",
+      "title": "Bounded pool of worker sessions",
+      "benefit": "Independent requests can overlap while each pipe is serialized.",
+      "limitations": "Pool capacity is explicit; failures and queue time remain part of the result.",
+      "contract": "embodiment_work/v1",
+      "model_backend_qualified": false
+    },
+    {
+      "id": "parallel_portfolio",
+      "folder": "parallel_portfolio",
+      "status": "mechanism_implemented",
+      "title": "Parallel verified candidate portfolio",
+      "benefit": "Two independent implementations are checked as they finish; each accepted candidate extends a versioned portfolio.",
+      "limitations": "This tests orchestration on trusted operations, not diverse-model success probability.",
+      "contract": "embodiment_work/v1",
+      "model_backend_qualified": false
+    },
+    {
+      "id": "durable_reactive",
+      "folder": "durable_reactive",
+      "status": "mechanism_implemented",
+      "title": "Durable reactive activation",
+      "benefit": "Canonical SQLite scheduling, fencing, worker execution and persisted Run History.",
+      "limitations": "Pure deterministic activations only; external-effect resume needs additional qualification.",
+      "contract": "embodiment_work/v1",
+      "model_backend_qualified": false
+    },
+    {
+      "id": "adaptive_tree",
+      "folder": "adaptive_tree",
+      "status": "planned",
+      "title": "Adaptive decomposition",
+      "benefit": "Attempt first, then select a contract-bound decomposition after verified failure.",
+      "limitations": "Not connected to this lab yet; use the existing PoC only as design evidence.",
+      "contract": "embodiment_work/v1",
+      "model_backend_qualified": false
+    },
+    {
+      "id": "reuse_first",
+      "folder": "reuse_first",
+      "status": "planned",
+      "title": "Governed reuse first",
+      "benefit": "Resolve exact reviewed assets before generating a new implementation.",
+      "limitations": "The lab does not yet integrate capability qualification and promotion; no cache is presented as learned code reuse.",
+      "contract": "embodiment_work/v1",
+      "model_backend_qualified": false
+    },
+    {
+      "id": "opencode_per_step",
+      "folder": "opencode_per_step",
+      "status": "planned",
+      "title": "OpenCode per action Loop",
+      "benefit": "Tool-using agency inside an exact isolated harness profile.",
+      "limitations": "The raw packaged adapter stays quarantined. Implement through a qualified host/harness binding.",
+      "contract": "embodiment_work/v1",
+      "model_backend_qualified": false
+    },
+    {
+      "id": "brokered_container",
+      "folder": "brokered_container",
+      "status": "planned",
+      "title": "Container per action with brokered models",
+      "benefit": "Pinned execution environment and host-owned provider authority.",
+      "limitations": "Writable profiles, image availability and cancellation must be qualified before activation.",
+      "contract": "embodiment_work/v1",
+      "model_backend_qualified": false
+    },
+    {
+      "id": "local_agent_host",
+      "folder": "local_agent_host",
+      "status": "planned",
+      "title": "Local agent under a governed host",
+      "benefit": "Retain vigil or TypeScript operator workflows with Loop Engine reasoning and acceptance.",
+      "limitations": "No repository merger or automatic publication. Needs an exact host adapter.",
+      "contract": "embodiment_work/v1",
+      "model_backend_qualified": false
+    },
+    {
+      "id": "transactional_semantic",
+      "folder": "transactional_semantic",
+      "status": "planned",
+      "title": "Transactional semantic realization",
+      "benefit": "Interpret a versioned semantic contract, verify a candidate, then commit exact authorized effects.",
+      "limitations": "Existing core API foundation; no independently qualified lab runner yet.",
+      "contract": "embodiment_work/v1",
+      "model_backend_qualified": false
+    },
+    {
+      "id": "speculative_decoding",
+      "folder": "speculative_decoding",
+      "status": "planned",
+      "title": "Provider-side speculative decoding",
+      "benefit": "Compare target/draft token verification beneath the model route.",
+      "limitations": "No local decoder implementation or qualified adapter was found. Hardware and sampling compatibility require testing.",
+      "contract": "embodiment_work/v1",
+      "model_backend_qualified": false
+    }
+  ]
+}

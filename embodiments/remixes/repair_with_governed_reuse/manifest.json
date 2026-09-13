@@ -1,0 +1,9 @@
+{
+  "record_type": "embodiment_remix/v1",
+  "id": "repair_with_governed_reuse",
+  "status": "planned",
+  "sources": "vigil + new_overnight_build + Loop Engine",
+  "invariant": "Keep CI intake, worktrees and regression grading; use schema-derived patches; stage reusable code under the existing capability authority.",
+  "qualification": "Correctness after final distill write; invalid-gate harvest refusal; exact rollback; held-out-data qualification; explicit delivery authority.",
+  "runtime_type": "Loop"
+}

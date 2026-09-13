@@ -11,7 +11,7 @@ from operator import setitem
 from ..loop.loop_contract import LoopContract
 from .external_harness import (
     HarnessAdapterInfo, HarnessArtifactRef, HarnessBudget, HarnessError,
-    HarnessModelCall, HarnessRegistry, HarnessRunRequest, HarnessRunResult, HarnessServices,
+    HarnessModelCall, HarnessModelIdentity, HarnessRegistry, HarnessRunRequest, HarnessRunResult, HarnessServices,
     ModelOutputLimit, StaticModelOutputResolver, _budget_failure,
     resolve_harness_output_limit, run_external_harness,
 )
@@ -435,6 +435,12 @@ def run_checks() -> dict:
               and exception_result.physical_model_calls is None
               and exception_result.total_tokens is None
               and exception_result.total_cost is None)
+        check("adapter_exception_names_type_in_memory_and_summary",
+              exception_result.underlying_error.startswith("RuntimeError: ")
+              and exception_result.safe_summary()["underlying_error_type"]
+              == "RuntimeError"
+              and "SECRET_FIXTURE_NOT_FOR_HISTORY"
+              not in str(exception_result.safe_summary()))
 
         class MutatedAccountingAdapter(RegisteredAdapter):
             def run(self, active_request, active_services):
@@ -536,6 +542,164 @@ def run_checks() -> dict:
     check("post_run_budget_assessment_does_not_claim_preemptive_enforcement",
           "post_run_acceptance" in custom_result.safe_summary()["budget_assessment"])
 
+    _gateway_binding_checks(check, rejects)
+
     passed = sum(item["passed"] for item in tests)
     return {"tests": tests, "passed": passed, "total": len(tests),
             "all_passed": passed == len(tests)}
+
+
+def _gateway_binding_checks(check, rejects):
+    """Exercise optional authority, allocations and actual gateway event reuse."""
+    import tempfile
+    from unittest.mock import patch
+
+    from ..code_nodes.solution_model_port import fixture_model_execution
+    from ..loop.recursive_loop import Loop, LoopConfig
+    from .context_artifacts import (
+        ContextArtifactManager,
+        ContextArtifactStore,
+        ContextArtifactStoreSpec,
+    )
+    from .model_capabilities import ModelOutputAllocation, ModelOutputCapability
+    from .model_gateway import ModelGatewayRequest
+    from .ollama_client import ChatResult
+
+    limit = ModelOutputLimit(64, "custom_endpoint_declared", "offline fixture contract",
+                             provider_id="fixture", model_id="fixture-model", route_id="fixture.route")
+    allocation = ModelOutputAllocation(
+        ModelOutputCapability(64, "offline fixture contract"), "fixture", "fixture-model",
+        "fixture.route", 16, "fixture:allocation", "Explicit fixture response allocation")
+    budget = HarnessBudget(None, output_limit=limit)
+    contract = LoopContract("gateway broker", "model_led", ("prompt/v1",), ("answer/v1",), ("pure",))
+    request = HarnessRunRequest(
+        "gateway-broker", "host_gateway", "Answer the exact semantic request", contract, budget,
+        provider_id="fixture", model_id="fixture-model", model_routes=("fixture.route",),
+        authorize_model_calls=True)
+    check("unbounded_calls_are_explicit_and_invalid_finite_limits_still_refuse",
+          budget.max_model_calls is None and all(rejects(lambda value=value: HarnessBudget(value))
+              for value in (0, -1, False, 1.5, "unbounded")))
+    allocated = replace(request, budget=replace(budget, output_allocation=allocation))
+    check("allocation_keeps_capacity_and_selected_allowance_separate",
+          allocated.budget.max_output_tokens == 64 and allocated.budget.requested_output_tokens == 16
+          and request.budget.requested_output_tokens == 64 and allocated.digest != request.digest)
+    check("allocation_refuses_wrong_provider_model_route_and_capacity",
+          all(rejects(lambda change=change: replace(request, budget=replace(
+              budget, output_allocation=replace(allocation, **change)))) for change in (
+                  {"provider_id": "other"}, {"model_id": "other"}, {"route_name": "other"},
+                  {"capability": ModelOutputCapability(128, "other capacity")}))
+          and rejects(lambda: replace(budget, output_allocation={"requested_tokens": 16})))
+    unresolved = replace(allocated, budget=replace(allocated.budget, output_limit=None))
+    resolved = resolve_harness_output_limit(unresolved, HarnessServices(
+        model_output_resolver=StaticModelOutputResolver((limit,))))
+    check("late_capacity_resolution_preserves_and_checks_the_allocation",
+          resolved.budget.requested_output_tokens == 16 and rejects(lambda:
+              resolve_harness_output_limit(unresolved, HarnessServices(model_output_resolver=
+                  StaticModelOutputResolver((replace(limit, max_output_tokens=128),))))))
+    unknown = HarnessRunResult(request.request_id, request.harness_id, "completed",
+                               call_count_complete=False)
+    check("unbounded_call_authority_preserves_unknown_counts_without_a_fake_zero",
+          _budget_failure(request, unknown) is None and unknown.physical_model_calls is None
+          and _budget_failure(replace(request, budget=replace(budget, max_model_calls=1)), unknown)
+          == "model_call_accounting_incomplete"
+          and _budget_failure(replace(request, budget=replace(budget, max_total_tokens=100)), unknown)
+          == "token_accounting_incomplete"
+          and _budget_failure(replace(request, budget=replace(budget, max_cost=1)), unknown)
+          == "cost_accounting_incomplete")
+    primary = HarnessModelIdentity("fixture", "fixture-model", "fixture.route")
+    fallback = HarnessModelIdentity("second", "second-model", "second.route")
+    multi = replace(request, model_routes=("fixture.route", "second.route"),
+                    authorized_model_identities=(primary, fallback))
+    check("authorized_model_identities_are_typed_unique_and_bind_requested_routes",
+          multi.digest != request.digest
+          and rejects(lambda: replace(request, authorized_model_identities=(fallback,)))
+          and rejects(lambda: replace(multi, authorized_model_identities=(primary, primary)))
+          and rejects(lambda: replace(multi, authorized_model_identities=({"provider_id": "fixture"},)))
+          and rejects(lambda: HarnessModelIdentity("fixture", "model", "bad route")))
+    check("capacity_and_allocation_cannot_rebind_a_route_to_another_authorized_model",
+          rejects(lambda: resolve_harness_output_limit(replace(multi, budget=replace(
+              budget, output_limit=replace(limit, route_id="second.route")))))
+          and rejects(lambda: replace(multi, budget=replace(budget, output_limit=None,
+              output_allocation=replace(allocation, route_name="second.route")))))
+
+    authority = fixture_model_execution()
+    parent = Loop("gateway broker owner", LoopConfig(max_depth=None))
+
+    class BrokerAdapter:
+        def __init__(self, change=None, remembered=None, call_parent=None, duplicate=False):
+            self.change, self.remembered = change, remembered
+            self.call_parent, self.duplicate = call_parent, duplicate
+            self.last_call = None
+
+        @staticmethod
+        def info():
+            return HarnessAdapterInfo("host_gateway", "fixture/v1", "not-imported", available=True,
+                execution_capabilities=HarnessExecutionCapabilities(supported_features=("model_routes",)))
+
+        def run(self, current, services):
+            if self.remembered is None:
+                result = authority.gateway.invoke(ModelGatewayRequest("fixture prompt", authority.config),
+                                                  parent=self.call_parent or parent)
+                attempt = result.physical_provider_attempts[0]
+                event = next(row for row in parent.ledger.events
+                             if row.get("loop_id") == attempt.loop_id and row.get("event") in (
+                                 "model_led", "model_invocation_failed"))
+                call = HarnessModelCall(attempt.provider, attempt.model, event["event"] == "model_led",
+                    input_tokens=event.get("prompt_tokens"), output_tokens=event.get("eval_tokens"),
+                    gateway_loop_id=attempt.loop_id, route_id=attempt.route)
+            else:
+                call = self.remembered
+            self.last_call = call
+            calls = (replace(call, **self.change),) if self.change else (call,)
+            if self.duplicate:
+                calls = calls * 2
+            return HarnessRunResult(current.request_id, current.harness_id, "completed", output="fixture answer",
+                                    model_calls=calls, adapter_version="fixture/v1")
+
+    with tempfile.TemporaryDirectory(prefix="harness-gateway-bindings-") as root:
+        services = HarnessServices(artifact_store=ContextArtifactManager(
+            ContextArtifactStore(ContextArtifactStoreSpec(root))))
+
+        def invoke(adapter, current=request):
+            return run_external_harness(adapter, current, services=services, parent=parent)
+
+        adapter = BrokerAdapter()
+        start = len(parent.ledger.events)
+        outcome = invoke(adapter)
+        new = parent.ledger.events[start:]
+        check("gateway_physical_call_is_recorded_once_in_shared_canonical_history",
+              outcome.completed and outcome.physical_model_calls == 1 and outcome.total_tokens == 5
+              and sum(row.get("event") == "model_led" for row in new) == 1)
+        check("gateway_reference_cannot_reuse_an_earlier_harness_attempt",
+              rejects(lambda: invoke(BrokerAdapter(remembered=adapter.last_call))))
+        check("gateway_reference_refuses_forged_identity_status_and_usage",
+              all(rejects(lambda change=change: invoke(BrokerAdapter(change))) for change in (
+                  {"gateway_loop_id": "unregistered.loop"}, {"input_tokens": 999}, {"ok": False})))
+        foreign = parent.spawn("separately owned gateway work", LoopConfig(max_depth=None))
+        check("gateway_reference_refuses_another_owner_or_duplicate_physical_reference",
+              rejects(lambda: invoke(BrokerAdapter(call_parent=foreign)))
+              and rejects(lambda: invoke(BrokerAdapter(duplicate=True))))
+        with patch.object(authority.gateway.providers["fixture"].adapter, "chat_maxout",
+                          return_value=ChatResult("fixture answer", "fixture-model", prompt_tokens=None,
+                                                  eval_tokens=None, ok=True)):
+            start = len(parent.ledger.events)
+            missing = invoke(BrokerAdapter())
+        check("gateway_reference_preserves_unknown_usage_without_duplicate_events",
+              missing.completed and missing.physical_model_calls == 1 and missing.total_tokens is None
+              and sum(row.get("event") == "model_led" for row in parent.ledger.events[start:]) == 1)
+
+        class FallbackAdapter(BrokerAdapter):
+            def run(self, current, services):
+                call = HarnessModelCall("second", "second-model", True, input_tokens=1, output_tokens=2,
+                                        route_id="second.route")
+                return HarnessRunResult(current.request_id, current.harness_id, "completed", output="fallback answer",
+                    model_calls=(call,), provider_id=current.provider_id, model_id=current.model_id,
+                    adapter_version="fixture/v1")
+
+        fallback_result = invoke(FallbackAdapter(), multi)
+        check("explicit_fallback_keeps_actual_calls_and_primary_result_identity",
+              fallback_result.completed and fallback_result.provider_id == "fixture"
+              and fallback_result.model_calls[0].provider == "second"
+              and rejects(lambda: invoke(FallbackAdapter()))
+              and rejects(lambda: invoke(FallbackAdapter(), replace(multi,
+                  authorized_model_identities=(primary, HarnessModelIdentity("second", "other", "second.route"))))))

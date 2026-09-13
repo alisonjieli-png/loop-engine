@@ -81,9 +81,59 @@ _MODE_WATERFALL = {"code_only": ("code_only",),
                    "hybrid": ("code_only", "hybrid"),
                    "model_led": ("code_only", "hybrid", "model_led")}
 
+#: output types: how many outputs a Loop emits before finishing. ``single``
+#: resolves one output and completes; ``multiple`` admits a bounded
+#: portfolio of outputs (each individually readable) and completes when the
+#: quota is met or the loop otherwise exits. This is a setting, not a
+#: runtime type: a multiple-output Loop is still one Loop.
+OUTPUT_TYPES = ("single", "multiple")
+
+
+def normalize_output_type(output_type: str = "") -> str:
+    """Return a valid output type or the single-output default."""
+    current = output_type or "single"
+    if current not in OUTPUT_TYPES:
+        raise LoopContractError(
+            f"output_type must be one of {OUTPUT_TYPES}")
+    return current
+
+
+def validate_max_outputs(output_type: str, max_outputs) -> None:
+    """Fail closed on the portfolio bound: a multiple-output contract must
+    name a positive quota (unbounded emission is unbounded memory); a
+    single-output contract must not carry one."""
+    if output_type == "multiple":
+        if (not isinstance(max_outputs, int)
+                or isinstance(max_outputs, bool) or max_outputs < 1):
+            raise LoopContractError(
+                "a multiple-output contract needs max_outputs as a "
+                "positive integer — unbounded emission is refused")
+    elif max_outputs is not None:
+        raise LoopContractError(
+            "a single-output contract must not carry max_outputs")
+
 
 class LoopContractError(ValueError):
     """A loop contract is misconfigured or a composability check failed closed."""
+
+
+@dataclass(frozen=True)
+class LoopInputCardinality:
+    """Passive per-input emission cardinality, independent of producer lifecycle."""
+    role: str
+    cardinality: str = 'single'
+    max_items: int | None = None
+
+    def __post_init__(self):
+        if type(self.role) is not str or not self.role.strip():
+            raise LoopContractError('input cardinality needs an exact named role')
+        if self.cardinality not in ('single','multiple'):
+            raise LoopContractError('input cardinality must be single or multiple')
+        if self.cardinality=='multiple':
+            if type(self.max_items) is not int or self.max_items<1:
+                raise LoopContractError('multiple input cardinality needs an explicit positive bound')
+        elif self.max_items is not None:
+            raise LoopContractError('single input cardinality must not carry a collection bound')
 
 
 def execution_mode_for_runtime_mode(runtime_mode: str) -> str:
@@ -114,6 +164,9 @@ class LoopContract:
     locality: str = "local_machine"
     cost_class: str = "free"
     role: str = ""
+    output_type: str = "single"               # single | multiple
+    max_outputs: "int | None" = None          # required quota for multiple
+    input_cardinalities: tuple[LoopInputCardinality,...] = ()
 
     def __post_init__(self):
         if not isinstance(self.name, str) or not self.name.strip():
@@ -132,6 +185,17 @@ class LoopContract:
             raise LoopContractError(
                 f"execution_mode {self.execution_mode!r} not in "
                 f"{EXECUTION_MODES}")
+        object.__setattr__(self, "output_type",
+                           normalize_output_type(self.output_type))
+        validate_max_outputs(self.output_type, self.max_outputs)
+        if type(self.input_cardinalities) not in (tuple,list) or any(
+                not isinstance(item,LoopInputCardinality) for item in self.input_cardinalities):
+            raise LoopContractError('input cardinalities must use typed declarations')
+        cardinalities=tuple(sorted(self.input_cardinalities,key=lambda item:item.role))
+        if (len({item.role for item in cardinalities})!=len(cardinalities)
+                or any(item.role not in self.input_roles for item in cardinalities)):
+            raise LoopContractError('input cardinalities must name distinct declared input roles')
+        object.__setattr__(self,'input_cardinalities',cardinalities)
         if self.locality not in LOCALITY:
             raise LoopContractError(
                 f"locality {self.locality!r} not in {LOCALITY}")
@@ -157,6 +221,10 @@ class LoopContract:
     def mode_waterfall(self) -> tuple:
         """Cheapest-first execution path for this loop's mode."""
         return _MODE_WATERFALL[self.execution_mode]
+
+    def cardinality_for_input(self, role: str) -> LoopInputCardinality:
+        if role not in self.input_roles:raise LoopContractError('input role is not declared')
+        return next((item for item in self.input_cardinalities if item.role==role),LoopInputCardinality(role))
 
 
 @dataclass(frozen=True)
@@ -281,6 +349,19 @@ def validate_loop_connection(spec: LoopConnectionSpec) -> LoopConnectionResult:
             violations.append(
                 f"{label} effects {over!r} exceed {spec.effect_ceiling!r}")
 
+    # Each input declares what it can receive. Consumer output cardinality
+    # does not authorize multiple incoming emissions or change another port.
+    if producer.output_type == 'multiple':
+        for binding in bindings:
+            if binding.target_input not in consumer.input_roles or binding.adapter_loop_ref:
+                continue
+            cardinality=consumer.cardinality_for_input(binding.target_input)
+            if cardinality.cardinality=='single':
+                violations.append(f'consumer input {binding.target_input!r} takes one emission; '
+                                  'name an Adapter Loop that selects the item')
+            elif producer.max_outputs > cardinality.max_items:
+                violations.append(f'producer output bound exceeds consumer input {binding.target_input!r} bound')
+
     return LoopConnectionResult(not violations, tuple(bindings),
                                 tuple(violations))
 
@@ -393,6 +474,93 @@ def self_test() -> dict:
     except LoopContractError:
         refused = True
     check("loop_with_no_output_role_refused", refused)
+
+    # 4b. OUTPUT TYPE — single is the default with no quota; multiple needs
+    # a positive quota; single must not carry one; unknown types refuse.
+    single = LoopContract(name="s", execution_mode="code_only",
+                          output_roles=("y",))
+    multi = LoopContract(name="m", execution_mode="code_only",
+                         output_roles=("y",), output_type="multiple",
+                         max_outputs=3)
+    check("output_type_defaults_single_without_quota",
+          single.output_type == "single" and single.max_outputs is None
+          and multi.output_type == "multiple" and multi.max_outputs == 3)
+
+    def _refused(**fields):
+        try:
+            LoopContract(name="q", execution_mode="code_only",
+                         output_roles=("y",), **fields)
+        except LoopContractError:
+            return True
+        return False
+
+    check("output_quota_fails_closed",
+          _refused(output_type="multiple")
+          and _refused(output_type="multiple", max_outputs=0)
+          and _refused(output_type="multiple", max_outputs=-2)
+          and _refused(output_type="multiple", max_outputs="3")
+          and _refused(output_type="multiple", max_outputs=2.0)
+          and _refused(output_type="multiple", max_outputs=True)
+          and _refused(max_outputs=2)
+          and normalize_output_type() == "single"
+          and normalize_output_type("multiple") == "multiple",
+          "multiple needs a positive int quota; single carries none")
+    try:
+        normalize_output_type("portfolio")
+        unknown_word_accepted = True
+    except LoopContractError:
+        unknown_word_accepted = False
+    check("unknown_output_type_refused", not unknown_word_accepted)
+
+    # 4c. CONNECTION — multiple into single refuses without a named
+    # selection adapter; every other direction stays compatible.
+    consuming_single = LoopContract(
+        name="cs", execution_mode="code_only",
+        input_roles=("y",), output_roles=("z",))
+    consuming_multi = LoopContract(
+        name="cm", execution_mode="code_only",
+        input_roles=("y",), output_roles=("z",),
+        output_type="multiple", max_outputs=2,
+        input_cardinalities=(LoopInputCardinality('y','multiple',3),))
+    no_adapter = validate_loop_connection(
+        LoopConnectionSpec(producer=multi, consumer=consuming_single))
+    with_adapter = validate_loop_connection(LoopConnectionSpec(
+        producer=multi, consumer=consuming_single,
+        bindings=(LoopPortBinding("y", "y", adapter_loop_ref="pick_best"),)))
+    reverse = validate_loop_connection(
+        LoopConnectionSpec(producer=single, consumer=consuming_multi))
+    both_multi = validate_loop_connection(
+        LoopConnectionSpec(producer=multi, consumer=consuming_multi))
+    check("multiple_into_single_needs_selection_adapter",
+          (not no_adapter.compatible
+           and any("Adapter Loop" in v for v in no_adapter.violations))
+          and with_adapter.compatible and reverse.compatible
+          and both_multi.compatible,
+          "fail-closed only where items would be silently dropped")
+    from dataclasses import replace
+    single_result_many_inputs=replace(consuming_single,
+        input_cardinalities=(LoopInputCardinality('y','multiple',3),))
+    check('single_output_can_consume_explicit_multiple_inputs',validate_loop_connection(
+        LoopConnectionSpec(producer=multi,consumer=single_result_many_inputs)).compatible)
+    many_results_one_input=replace(consuming_single,output_type='multiple',max_outputs=5)
+    check('consumer_output_changes_do_not_change_input_acceptance',not validate_loop_connection(
+        LoopConnectionSpec(producer=multi,consumer=many_results_one_input)).compatible)
+    too_small=replace(single_result_many_inputs,input_cardinalities=(LoopInputCardinality('y','multiple',2),))
+    check('producer_emission_bound_must_fit_input_bound',not validate_loop_connection(
+        LoopConnectionSpec(producer=multi,consumer=too_small)).compatible)
+    two_ports=replace(multi,output_roles=('y','other'))
+    consuming_two=replace(consuming_single,input_roles=('y','other'))
+    check('an_adapter_for_one_port_does_not_authorize_another',not validate_loop_connection(LoopConnectionSpec(
+        producer=two_ports,consumer=consuming_two,bindings=(LoopPortBinding('y','y','select_y'),
+                                                        LoopPortBinding('other','other')))).compatible)
+    invalid_inputs=0
+    for declaration in (lambda:LoopInputCardinality('y','multiple'),
+                        lambda:LoopInputCardinality('y','multiple',True),
+                        lambda:LoopInputCardinality('y','single',2),
+                        lambda:replace(consuming_single,input_cardinalities=(LoopInputCardinality('absent'),))):
+        try:declaration()
+        except LoopContractError:invalid_inputs+=1
+    check('unbounded_boolean_unknown_and_conflicting_inputs_are_refused',invalid_inputs==4)
 
     # 5. ADVERSARIAL — compatibility fails closed in each direction.
     no_contract, _ = contract_compatible(None, required_inputs=("y",))

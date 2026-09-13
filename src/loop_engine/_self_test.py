@@ -19,6 +19,7 @@ def self_test() -> dict:
         "architecture_map", "architecture_contract",
         "parameter_boundary_checks",
         "semantic_conformance",
+        "nomenclature_conformance",
         "reachability_report",
         "repository_conformance", "repository_structure",
         "backend_isolation", "structure_review",
@@ -42,7 +43,7 @@ def self_test() -> dict:
         "core.practitioner_runtime_facts",
         "core.source_role_orientation",
         "core.adaptive_practitioner_project", "core.runtime_capacity",
-        "core.context_budget", "core.context_pack_manifest",
+        "core.context_budget", "core.context_pack_manifest", "core.observation_expectations",
         "core.task_frontier", "core.prompt_experiment",
         "core.task_region_statistics", "core.option_selection",
         "core.semantic_decision", "core.decision_outcome",
@@ -56,7 +57,7 @@ def self_test() -> dict:
         "core.model_demand", "core.run_stages", "core.choice",
         "core.outcome_vector",
         "core.recovery", "core.template_negotiation",
-        "core.workspace_read",
+        "core.workspace_read", "core.verifier_execute",
         "core.cognitive_grammar",
         "core.terminal_layer", "core.run_validity",
         "kaggle_report",
@@ -114,6 +115,21 @@ def self_test() -> dict:
         "core.brave_search",
         "core.external_harness",
         "core.external_harness_adapters",
+        "core.harness_process_checks",
+        "core.harness_semantic",
+        "core.harness_fallback",
+        "core.harness_selection", "core.harness_response_evaluation",
+        "core.harness_additional_recipe_checks",
+        "core.harness_cline_kilo_recipe_checks",
+        "core.harness_goose_recipe_checks",
+        "core.harness_lightweight_recipe_checks",
+        "core.harness_mini_swe_recipe_checks",
+        "core.harness_opencode_recipe_checks",
+        "core.harness_python_recipe_checks",
+        "core.harness_responses_recipe_checks",
+        "core.independent_probe_review_checks",
+        "core.independent_probe_review_integration_checks",
+        "core.harness_remaining_recipe_checks",
         "core.harness_intelligence_bridge",
         "core.mcp_adapter",
         "core.mcp_sdk_transport",
@@ -218,6 +234,9 @@ def self_test() -> dict:
         "strings.question_engine",
         "strings.solution_shaping",
         "core.model_gateway", "core.model_response_admission",
+        "core.model_response_admission_checks",
+        "core.adaptive_practitioner_supervision", "core.recovery_learning",
+        "core.cognitive_response_checks",
         "core.model_capabilities",
         "core.route_health",
         "core.live_model_verification",
@@ -282,7 +301,18 @@ def self_test() -> dict:
             if isinstance(run, str):
                 run = _importlib.import_module(
                     f"{__package__}.{run}").self_test
-            return run()["tests"]
+            result = run()
+            tests = result.get("tests") if isinstance(result, dict) else None
+            if tests is None and isinstance(result, dict) and result and all(
+                    type(value) is bool for value in result.values()):
+                # Legacy flat shape: {check_name: passed}. Fold it into
+                # records rather than crashing the whole suite; anything
+                # else still fails loudly below.
+                tests = [{"test": f"{name}_{key}", "passed": value}
+                         for key, value in result.items()]
+            if tests is None:
+                raise KeyError("tests")
+            return tests
         except ModuleNotFoundError as exc:
             package = _PACKAGE_FOR_MODULE.get((exc.name or "").split(".")[0])
             if package is None:

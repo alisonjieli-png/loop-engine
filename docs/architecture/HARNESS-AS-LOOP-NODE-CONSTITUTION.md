@@ -11,7 +11,7 @@ question:
 
 It is the constitutional answer. It does not grant execution authority, and
 it does not replace `AGENTS.md`, `architecture.yaml`, or the
-[harness capability matrix](HARNESS-CAPABILITY-MATRIX.md). Where this document
+[harness capability matrix](../research/HARNESS-CAPABILITY-MATRIX.md). Where this document
 and those authorities disagree, those authorities win. This file binds the
 vocabulary everyone building harness integration uses from here.
 
@@ -34,7 +34,7 @@ Operational runtime type
 ```
 
 A harness is none of these things. A harness is an **internal execution
-substrate** that one Loop binds for a bounded stretch of semantic work — the
+substrate** that one Loop binds for a bounded stretch of semantic work, the
 way the Model Gateway is a substrate for model calls and the Workspace
 Backends are a substrate for file and command effects. The constitution's
 rule stays absolute: no harness owns task authority, acceptance, promotion,
@@ -57,7 +57,7 @@ overnight line measured what harnesses actually buy:
   tokens vs opencode 16,066 vs codex 88,080. Architecture races separated
   four arms; the harness choice moved 22x-100x.
 
-So harnesses are worth wrapping. The wrapper — the loop node — is what keeps
+So harnesses are worth wrapping. The wrapper (the loop node) is what keeps
 them bounded.
 
 ## 3. The anatomy of a loop node (the full capability list)
@@ -82,7 +82,7 @@ NodePackage (the launch envelope — closed vocabulary, profile-switchable)
 └── ledger             — LEDGER_ID + the closed pull vocabulary
 ```
 
-Each part is **inline bytes or a ledger-resolvable reference** — never both.
+Each part is **inline bytes or a ledger-resolvable reference**, never both.
 Six transport mechanisms carry it (`argv`, `blob`, `env`, `stdin`,
 `ledger-ref`, `hybrid`), all first-class and per-run switchable, because
 transport choice is an A/B measurement, not a doctrine. The privacy floor
@@ -148,23 +148,23 @@ Starting Practitioner
 ```
 
 **Suggested outputs and fingerprinting** (the dual discipline): when the
-engine knows the domain of a step's output — five variables, three
-categorical, two numeric — it suggests that shape in the contract. This does
+engine knows the domain of a step's output (five variables, three
+categorical, two numeric), it suggests that shape in the contract. This does
 two jobs at once: the node's reply is checkable (admission has a schema to
 enforce), and the *step fingerprint* (procedure + state-shape + input shape +
 output shape, not prose) becomes the reuse key. Two steps with the same
 fingerprint are the same work in different words; the flywheel can hand back
 the code that worked and skip regeneration. Small steps, precise fingerprints,
-cheap reuse — that is the whole economics of the loop node system.
+cheap reuse: that is the whole economics of the loop node system.
 
 ## 6. Node-to-node communication: the ledger is the bus
 
-Every node writes to one shared run ledger **as its own identity** — the
+Every node writes to one shared run ledger **as its own identity**: the
 spawned-node crash-isolation measurements showed that a dying process takes
 its own work only; siblings complete; the queue survives; history is durable.
 The pull tool serves the closed vocabulary (`task`, `horizon_long|medium|
 short`, `fingerprint`, `intelligence`, `memory`, `node_patches`,
-`sibling_files`, `ledger_log`) with every query logged — the log itself is
+`sibling_files`, `ledger_log`) with every query logged. The log itself is
 the measured signal for improving the push.
 
 ```text
@@ -184,10 +184,22 @@ reactive output store keeps immutable candidate metadata, independent
 evaluations, and policy-versioned ranks; the Canvas holds alternative
 Solution Loop candidates and projects the selected ones into one
 authoritative graph before execution. The export contract: independently
-checked source, dependencies, tests, usage, digests — a human can replay the
-solution without the engine. The overnight line's solution-export and the
+checked source, dependencies, tests, usage, digests (a human can replay the
+solution without the engine). The overnight line's solution-export and the
 reactive portfolio are the two live shapes of this; neither deletes a failed
 candidate.
+
+A single Loop can now also emit more than one output itself. Output type
+answers "How many outputs does this Loop emit?": `single` resolves one
+output and completes; `multiple` admits a bounded portfolio (the
+`max_outputs` quota) and completes at quota, at the loop's exit condition,
+or at any other stop with the partial portfolio kept. Only accepted step
+outputs a handler flags join; the flag proposes and the Loop admits, and
+every admission is a ledger event. A multiple producer feeding a single
+consumer is refused unless a named Adapter Loop selects the item. This is
+the mechanism behind "async loop nodes that create a database of multiple
+responses": one harness-driven Loop, many admitted candidates, each
+individually readable, all owned by the same Loop identity and Run History.
 
 ## 8. The harness unit contract (what we are building toward)
 
@@ -211,7 +223,7 @@ Harness unit (one node's execution)
 ```
 
 The defaults: core plugins for the three capability ports staged in every
-instance (a node that doesn't need them never calls them — offline tasks
+instance (a node that doesn't need them never calls them: offline tasks
 simply never pull); tool grants off unless the step kind needs them; cheap
 steps (decide-next, summarize, verify) on the gateway harness with no process
 at all, because the ~8k-token instance overhead is waste there.
@@ -251,7 +263,7 @@ touching the owned column duplicates the runtime and is refused.
 Preliminary evidence favors OpenCode (and its forks) and Pi: containerized
 per-node instances with composed permissions, proven live in the overnight
 line and the instance-builder experiment. The frozen trial pipeline decides
-the rest — data over review:
+the rest (data over review):
 
 ```text
 T0  desk audit       — matrix rows, pinned versions, license, audit surface
@@ -276,7 +288,7 @@ adjusted away.
 ## 11. The give-up rule (the zipped-CSV lesson)
 
 A harness that sees `task.md` referencing `train.csv`, finds no such file,
-and reports failure — when `data.zip` sits right there — is not an
+and reports failure (when `data.zip` sits right there) is not an
 unattended solver. The loop-node contract makes resolution structural:
 
 1. The orientation procedure REQUIRES attempting extraction when referenced
@@ -285,9 +297,9 @@ unattended solver. The loop-node contract makes resolution structural:
    gave up must show the commands it actually ran.
 3. A failed first attempt is a patch, not a verdict: classify the failure
    (missing input? wrong contract? infrastructure?) before retrying or
-   splitting — the classification decides, never the clock alone.
+   splitting: the classification decides, never the clock alone.
 4. The completion signal is engine-owned: the tree stops when the real gate
-   passes, not when a node says "done" — and it does not stop while the
+   passes, not when a node says "done", and it does not stop while the
    gate is red just because a node stopped trying.
 
 ## 12. Standing constraints (what never changes)
@@ -295,7 +307,7 @@ unattended solver. The loop-node contract makes resolution structural:
 - Every executable vertex is a Loop. Harnesses are adapters; MCP servers,
   skills, plugins, tools are adapters. None gain graph-vertex status.
 - Harness completion is never task acceptance; exit zero is never success.
-- Candidate until approved: intelligence, code, outputs — no retrieval,
+- Candidate until approved: intelligence, code, outputs. No retrieval,
   score, or self-report promotes anything.
 - No silent ceilings or invented caps; budgets are typed and enforced
   before effects; missing usage is unknown, never zero.

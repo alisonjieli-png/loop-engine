@@ -1,0 +1,5 @@
+{
+  "schema_version":1,"harness_id":"cline","package_version":"3.0.61","style":"cline",
+  "command_prefix":["/usr/bin/node","/home/username/loop-engine/embodiments/cline/runtime/node_modules/cline/bin/cline"],
+  "read_only_paths":["/home/username/loop-engine/embodiments/cline/runtime/node_modules"]
+}

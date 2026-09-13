@@ -1,0 +1,13 @@
+{
+  "record_type": "embodiment_mutation/v1",
+  "id": "model_routing",
+  "status": "planned",
+  "arms": [
+    "fixed_route",
+    "per_kind_tiers",
+    "diverse_models"
+  ],
+  "control_rule": "Assert the physical provider/model identity, route authority and physical-call count, not metadata alone.",
+  "runtime_type": "Loop",
+  "automatic_application": false
+}

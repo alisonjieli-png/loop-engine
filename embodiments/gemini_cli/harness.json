@@ -1,0 +1,5 @@
+{
+  "schema_version": 1, "harness_id": "gemini_cli", "package_version": "0.59.0", "style": "gemini_cli",
+  "command_prefix": ["/usr/bin/node", "/home/username/loop-engine/embodiments/gemini_cli/runtime/node_modules/@google/gemini-cli/bundle/gemini.js"],
+  "read_only_paths": ["/home/username/loop-engine/embodiments/gemini_cli/runtime/node_modules"]
+}

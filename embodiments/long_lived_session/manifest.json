@@ -1,0 +1,10 @@
+{
+  "id": "long_lived_session",
+  "folder": "long_lived_session",
+  "status": "mechanism_implemented",
+  "title": "One long-lived worker session",
+  "benefit": "Startup is amortized; every packet still creates a fresh Loop and explicit state.",
+  "limitations": "A process restart loses in-flight work; no provider caching benefit is claimed.",
+  "contract": "embodiment_work/v1",
+  "model_backend_qualified": false
+}

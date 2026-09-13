@@ -95,6 +95,9 @@ class SolveRequest:
     allow_sandbox_commands: bool = False
     workspace_root: str = ""
     allow_source_materialization_to_model: bool = False
+    #: Explicit operator-declared verifier script, run mid-solve as an
+    #: observation (never as acceptance). Empty means no verifier runs.
+    verifier_path: str = ""
     deterministic_resolvers: tuple[object, ...] = field(
         default=(), repr=False, compare=False)
     extension_snapshot: dict = field(default_factory=dict)
@@ -117,8 +120,14 @@ class SolveRequest:
     independent_verification_policy: IndependentVerificationPolicy = field(
         default_factory=IndependentVerificationPolicy)
     host_runtime: object | None = field(default=None, repr=False, compare=False)
+    capture_recovery_learning: bool = False
+    diagnose_unchanged_evidence: bool = False
 
     def __post_init__(self) -> None:
+        if type(self.capture_recovery_learning) is not bool:
+            raise SolveError('capture_recovery_learning must be a Boolean')
+        if type(self.diagnose_unchanged_evidence) is not bool:
+            raise SolveError('diagnose_unchanged_evidence must be a Boolean')
         if self.host_runtime is not None:
             from ..core.host_runtime import HostRuntimeBinding
             if not isinstance(self.host_runtime, HostRuntimeBinding):

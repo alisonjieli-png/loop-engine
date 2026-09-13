@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from .adaptive_practitioner_records import (
     AdaptivePractitionerError, AdaptiveRunServices, ModelStepRequest)
 from .adaptive_practitioner_validation import _short_strings, _short_text
+from .model_response_admission import ModelResponseContract, ModelResponseAdmissionPolicy
 
 
 RECOVERY_ROUTES = (
@@ -65,6 +66,43 @@ def _adjudication_schema() -> str:
         "reason": "string",
         "confidence": 0.0,
     }, separators=(",", ":"))
+
+
+def _response_contract(identity, properties):
+    """Explicit response fields, never executable rules inferred from prose."""
+    return ModelResponseContract(identity, json.dumps({
+        'type':'object','required':list(properties),'properties':properties},sort_keys=True),
+        policy=ModelResponseAdmissionPolicy(report_required_field_names=True))
+
+
+def _diagnosis_contract():
+    text={'type':'string','minLength':1}
+    texts={'type':'array','items':text}
+    return _response_contract('recovery_diagnosis/v1',{
+        'diagnosis_id':text,'root_causes':{'type':'array','minItems':1,'items':{
+            'type':'object','required':['cause','evidence_refs','confidence'],
+            'properties':{'cause':text,'evidence_refs':texts,
+                          'confidence':{'type':'number','minimum':0,'maximum':1}}}},
+        'failed_strategy':text,'missing_context':texts,'invalid_assumptions':texts,
+        'recommended_change_types':{'type':'array','minItems':1,'items':{'enum':list(RECOVERY_CHANGE_KINDS)}}})
+
+
+def _proposal_contract(services):
+    text={'type':'string','minLength':1}
+    refs=sorted(item['capability_ref'] for item in services.available_capabilities())
+    properties={'proposal_id':text,'change_kind':{'enum':list(RECOVERY_CHANGE_KINDS)},
+        'route':{'enum':list(RECOVERY_ROUTES)},'directive':text,'expected_progress':text,
+        'required_capabilities':{'type':'array','items':{'enum':refs} if refs else False},
+        'risks':{'type':'array','items':text},'confidence':{'type':'number','minimum':0,'maximum':1}}
+    return _response_contract('recovery_proposals/v1',{'proposals':{'type':'array','minItems':1,
+        'items':{'type':'object','required':list(properties),'properties':properties}}})
+
+
+def _adjudication_contract(proposal_ids):
+    return _response_contract('recovery_selection/v1',{
+        'selected_proposal_id':{'enum':list(proposal_ids)},
+        'reason':{'type':'string','minLength':1},
+        'confidence':{'type':'number','minimum':0,'maximum':1}})
 
 
 def _validate_diagnosis(value: dict) -> dict:
@@ -156,7 +194,7 @@ def _validate_proposals(value: dict, services: AdaptiveRunServices) -> tuple:
 
 def _resolve_validated_step(
         services: AdaptiveRunServices, step_id: str, objective: str,
-        state: dict, schema: str, validator):
+        state: dict, schema: str, validator, admission_contract=None):
     """Give one rejected semantic result a bounded typed repair attempt."""
     failure = ""
     rejected = None
@@ -167,7 +205,8 @@ def _resolve_validated_step(
         value = services.model(ModelStepRequest(
             step_id, directive,
             {**state, "recovery_validation_failure": failure,
-             "rejected_recovery_output": rejected}, schema))
+             "rejected_recovery_output": rejected}, schema,
+            admission_contract=admission_contract))
         try:
             return validator(value)
         except (AdaptivePractitionerError, TypeError, ValueError) as exc:
@@ -182,7 +221,7 @@ def _resolve_validated_step(
 def resolve_stall_with_panel(
         request: RecoveryPanelRequest,
         services: AdaptiveRunServices) -> dict:
-    """Run diagnosis, two competing proposals, and independent adjudication."""
+    """Run diagnosis, proposal generation, and a separate adjudication."""
     common = {
         **request.model_state,
         "stall_signal": request.stall_signal,
@@ -192,13 +231,13 @@ def resolve_stall_with_panel(
     diagnosis = _resolve_validated_step(
         services, "diagnose_stall",
         "Diagnose why governed work stopped making useful progress.",
-        common, _diagnosis_schema(), _validate_diagnosis)
+        common, _diagnosis_schema(), _validate_diagnosis, _diagnosis_contract())
     proposal_values = _resolve_validated_step(
         services, "propose_recovery",
         "Propose every useful executable changed strategy from the diagnosis. "
         "Do not repeat the same change under different wording.",
         {**common, "diagnosis": diagnosis}, _proposal_schema(),
-        lambda value: _validate_proposals(value, services))
+        lambda value: _validate_proposals(value, services), _proposal_contract(services))
     proposals = {item["proposal_id"]: item for item in proposal_values}
 
     def validate_adjudication(raw_value):
@@ -224,7 +263,7 @@ def resolve_stall_with_panel(
         "Select one recovery directive using evidence, progress, authority, and risk.",
         {**common, "diagnosis": diagnosis,
          "proposals": list(proposal_values)},
-        _adjudication_schema(), validate_adjudication))
+        _adjudication_schema(), validate_adjudication, _adjudication_contract(proposals)))
     adjudicated = proposals[selected_id]
     directive = {
         "record_type": "practitioner_recovery_directive/v1",
@@ -245,4 +284,48 @@ def resolve_stall_with_panel(
     services.unchanged_progress_snapshots = 0
     services.recovery_directives.append(directive)
     services.active_recovery_directive = directive
+    if getattr(getattr(services,'request',None), 'capture_recovery_learning', False):
+        from .recovery_learning import capture_recovery_learning
+        from ..loop.kernel_runtime import current_kernel_owner
+        try:
+            directive['learning_capture'] = capture_recovery_learning(
+                directive, services, parent=current_kernel_owner())
+        except Exception as exc:
+            # Candidate extraction cannot invent a lesson or promote a failed
+            # result. The original recovery and shared accounting remain intact.
+            directive['learning_capture'] = {'record_type':'recovery_learning_capture/v1',
+                'disposition':'unavailable','error_type':type(exc).__name__,
+                'active_intelligence_updated':False,'improvement_demonstrated':False}
+            services.diagnostic('recovery_learning_unavailable',{'error_type':type(exc).__name__})
     return directive
+
+
+def recover_step_contract_failure(failure, model_state, services):
+    """Reorient before an action when an enabled response-repair cycle stalls.
+
+    The panel uses separate cognitive assignments. Its own failure is reported
+    once and is not recursively sent into this handler. No failed response is
+    converted into a valid action or an accepted task result.
+    """
+    from .model_response_admission import ModelResponseRepairStalled
+    if not isinstance(failure, ModelResponseRepairStalled):
+        raise TypeError('step recovery requires an observed typed response stall')
+    if not getattr(getattr(services,'request',None),'diagnose_unchanged_evidence',False):
+        raise failure
+    results=getattr(getattr(services,'model_session',None),'results',())
+    admissions=getattr(results[-1],'response_admissions',()) if results else ()
+    signal={'record_type':'practitioner_stall_signal/v2','code':'RECOVERY_DIAGNOSIS_REQUIRED',
+        'trigger':'response_contract_stalled','phase':'before_action',
+        'step_id':failure.step_id,'attempts':failure.attempts,'failure_code':failure.failure_code,
+        'rejected_digests':list(failure.rejected_digests),
+        'schema_errors':sorted({message for item in admissions for message in item.schema_errors}),
+        'diagnosis_only':True,'current_action_executed':False}
+    services.supervision_findings.append(signal)
+    services.diagnostic('step_contract_reorientation_required',signal)
+    try:
+        return resolve_stall_with_panel(RecoveryPanelRequest(
+            signal,model_state,int(getattr(services,'active_pass_number',0))),services)
+    except Exception as exc:
+        services.diagnostic('step_contract_reorientation_unavailable',{
+            'step_id':failure.step_id,'error_type':type(exc).__name__})
+        return None

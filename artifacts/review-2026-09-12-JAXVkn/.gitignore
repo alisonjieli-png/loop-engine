@@ -1,0 +1,6 @@
+# Local derived review data. The source methods and prose can be reviewed
+# separately from machine-specific inventory and session provenance.
+review.duckdb*
+*.json
+*.jsonl.gz
+prior-review-material/

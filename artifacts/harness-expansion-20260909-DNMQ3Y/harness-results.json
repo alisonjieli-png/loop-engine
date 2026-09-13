@@ -1,0 +1,2459 @@
+{
+  "record_type": "harness_campaign_evidence_inventory/v1",
+  "status": "provisional_pending_expansion_and_release_checks",
+  "observed_date": "2026-09-09",
+  "repository": "/home/username/loop-engine",
+  "head": "acfd826eeee3ea2c05b638031ff235b709a69eb2",
+  "worktree": "dirty concurrent implementation; phase manifests bind their own source hashes",
+  "counting": {
+    "researched_projects": 23,
+    "startup_attempted_projects": 23,
+    "live_eligible_projects": 18,
+    "blocked_projects": 5,
+    "identified_standard_license_projects": 21,
+    "readme_only_license_projects": 1,
+    "restricted_source_available_projects": 1,
+    "completed_component_phases_real_inference_projects": 11,
+    "completed_component_phases_model_calls": 33,
+    "completed_component_phases_verified_pairs": 30,
+    "completed_component_phases_attempted_pairs": 34,
+    "completed_component_phases_planned_pairs": 36,
+    "expansion_projects_pending": 7
+  },
+  "authority": {
+    "provider": "ollama_cloud",
+    "route": "cloud.default",
+    "model": "deepseek-v4-flash:0731",
+    "output_capacity": 65536,
+    "selected_output_allowance": 65536,
+    "total_run_token_ceiling": null,
+    "capacity_evidence": "Exact model maximum from retained Ollama HTTP 400 record observed 2026-08-25",
+    "component_per_task_physical_attempts": 1,
+    "component_per_project_physical_attempts": 3,
+    "component_provider_retry": false,
+    "component_failover": false,
+    "cost_usd": null,
+    "cost_state": "unknown"
+  },
+  "population": {
+    "task_count": 3,
+    "case_count": 34,
+    "digest": "85c2ca6b0e87111e793a212452947b3233cbbbf58a4c4a79ace2ca59ef39dd0b",
+    "manifest": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/manifest.json",
+    "evaluator": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/evaluate_inside.py",
+    "correct_controls_passed": 3,
+    "wrong_controls_rejected": 3,
+    "used_evidence_not_fresh_holdout": true,
+    "full_system_benchmark": false
+  },
+  "projects": [
+    {
+      "project_id": "pi",
+      "catalog_id": "pi",
+      "name": "Pi coding agent",
+      "repository": "https://github.com/earendil-works/pi",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "former_locations": [
+          "mariozechner/pi-mono",
+          "badlogic/pi-mono"
+        ],
+        "current_package": "@earendil-works/pi-coding-agent",
+        "note": "The official May 7, 2026 announcement documents the move and deprecated @mariozechner package scope."
+      },
+      "version": "0.85.1",
+      "release_source_revision": null,
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/pi/harness.json",
+        "sha256": "2f30bd628f19630226e2eda6df8e76787b550f885dc6cb4b8c958ef1237d1f2e",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "pi",
+          "package_version": "0.85.1",
+          "style": "pi",
+          "command_prefix": [
+            "/usr/bin/node",
+            "/home/username/loop-engine/embodiments/pi/runtime/node_modules/@earendil-works/pi-coding-agent/dist/cli.js"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/pi/runtime/node_modules"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli",
+      "profile_description": "Print JSON mode; native tools and discovery disabled.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/installed-probes/core-pi-v2.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [],
+      "local_detail_report": null,
+      "live_component_phases": [
+        {
+          "phase": "live-first-batch",
+          "report_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/report.json",
+          "rows": [
+            {
+              "harness": "pi",
+              "task_id": "escaped-field-stream",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 595,
+              "output_tokens": 4168,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "elapsed_seconds": 17.959,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/pi/escaped-field-stream/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "6e886a996597e529705e9bc5c105b16183f5a3bf27d76dbfe6936609012ed05b"
+            },
+            {
+              "harness": "pi",
+              "task_id": "window-run-peaks",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 623,
+              "output_tokens": 1797,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "elapsed_seconds": 10.761,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/pi/window-run-peaks/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "6c09321d34308ad41b17deadff1fa53b44ea75e397fc3d619ca2e44a67914cf4"
+            },
+            {
+              "harness": "pi",
+              "task_id": "revision-tombstone-fold",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 622,
+              "output_tokens": 1220,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 10,
+              "evaluated_cases": 10,
+              "elapsed_seconds": 13.749,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/pi/revision-tombstone-fold/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "a5ae59154ca99258cd109031c343800e49fc45be1352ad9c38ff2be078a66c25"
+            }
+          ]
+        }
+      ],
+      "full_solve_fixture_results": [
+        {
+          "harness": "pi",
+          "terminal_code": "COMPLETED_VERIFIED",
+          "checks": {
+            "terminal_matches_expected_acceptance": true,
+            "history_chain_intact": true,
+            "physical_calls_match_history": true,
+            "harness_was_actually_invoked": true,
+            "independent_verification_required": true
+          },
+          "all_passed": true,
+          "fixture_model_calls": 11,
+          "live_provider_calls": 0,
+          "harness_events": 11,
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/full-solve/pi-a-01/result.json",
+          "sha256": "37f0f59776ba488b9b46d880f449174210c15771e9577ed5d383b6c9097c3d23"
+        },
+        {
+          "harness": "pi",
+          "terminal_code": "VERIFICATION_FAILED",
+          "checks": {
+            "terminal_matches_expected_acceptance": true,
+            "history_chain_intact": true,
+            "physical_calls_match_history": true,
+            "harness_was_actually_invoked": true,
+            "independent_verification_required": true
+          },
+          "all_passed": true,
+          "fixture_model_calls": 11,
+          "live_provider_calls": 0,
+          "harness_events": 11,
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/full-solve/pi-negative-wrong-math-01/result.json",
+          "sha256": "c4c52a24aa910d94d54e8173dcea739ede95527beca4265197b468d3abf3d4b3"
+        }
+      ],
+      "source_urls": [
+        "https://github.com/earendil-works/pi",
+        "https://github.com/earendil-works/pi/tree/main/packages/coding-agent",
+        "https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/models.md",
+        "https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/containerization.md",
+        "https://pi.dev/news/2026/5/7/pi-has-a-new-home"
+      ]
+    },
+    {
+      "project_id": "aider",
+      "catalog_id": "aider",
+      "name": "Aider",
+      "repository": "https://github.com/Aider-AI/aider",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "parent_harness": null
+      },
+      "version": "0.86.2",
+      "release_source_revision": null,
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/aider/harness.json",
+        "sha256": "606a50281ff7a46389a224076286cbee766b9903049915a0df737a42097425ef",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "aider",
+          "package_version": "0.86.2",
+          "style": "aider",
+          "command_prefix": [
+            "/home/username/loop-engine/embodiments/aider/runtime/.venv/bin/python",
+            "-m",
+            "aider"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/aider/runtime/.venv",
+            "/home/username/loop-engine/embodiments/aider/runtime/python"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli",
+      "profile_description": "Ask-mode CLI; exact text delivery. Rendering repair is replay-only, not a repeated live attempt.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/installed-probes/core-aider-v2.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [],
+      "local_detail_report": null,
+      "live_component_phases": [
+        {
+          "phase": "live-first-batch",
+          "report_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/report.json",
+          "rows": [
+            {
+              "harness": "aider",
+              "task_id": "escaped-field-stream",
+              "status": "failed",
+              "physical_model_calls": 1,
+              "input_tokens": 247,
+              "output_tokens": 65536,
+              "gateway_errors": [
+                "output_limit_reached"
+              ],
+              "process_errors": [
+                "broker_RuntimeError"
+              ],
+              "driver_error": {},
+              "parent_terminal_count": 0,
+              "parent_terminal_reason": null,
+              "history_chain_intact": true,
+              "passed_cases": null,
+              "evaluated_cases": null,
+              "elapsed_seconds": 195.396,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/aider/escaped-field-stream/summary.json",
+              "process_attempts": 2,
+              "token_accounting_complete": true,
+              "summary_sha256": "53e9a082c36d74b9a1b50bd3023585a45b55b93bfe47c85d28e3f33c600a0585"
+            },
+            {
+              "harness": "aider",
+              "task_id": "window-run-peaks",
+              "status": "failed",
+              "physical_model_calls": 1,
+              "input_tokens": 275,
+              "output_tokens": 713,
+              "gateway_errors": [],
+              "process_errors": [
+                "empty_harness_output"
+              ],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done_failed",
+              "history_chain_intact": true,
+              "passed_cases": null,
+              "evaluated_cases": null,
+              "elapsed_seconds": 16.941,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/aider/window-run-peaks/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "9ae4bb853a9a9aba5c25d5e0e737d4562949987276d2403fabea55be89d27612"
+            },
+            {
+              "harness": "aider",
+              "task_id": "revision-tombstone-fold",
+              "status": "failed",
+              "physical_model_calls": 1,
+              "input_tokens": 274,
+              "output_tokens": 515,
+              "gateway_errors": [],
+              "process_errors": [
+                "empty_harness_output"
+              ],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done_failed",
+              "history_chain_intact": true,
+              "passed_cases": null,
+              "evaluated_cases": null,
+              "elapsed_seconds": 35.091,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/aider/revision-tombstone-fold/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "a35d856ce21708dec6a56e3c851a99494a5fa8a04f18c1a0d4176e67fe651cbc"
+            }
+          ]
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/Aider-AI/aider",
+        "https://aider.chat/docs/scripting.html",
+        "https://aider.chat/docs/usage/modes.html",
+        "https://aider.chat/docs/config/options.html",
+        "https://aider.chat/docs/config/aider_conf.html",
+        "https://github.com/Aider-AI/aider/blob/main/aider/args.py"
+      ]
+    },
+    {
+      "project_id": "goose",
+      "catalog_id": "goose",
+      "name": "Goose",
+      "repository": "https://github.com/aaif-goose/goose",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "former_locations": [
+          "block/goose"
+        ]
+      },
+      "version": "1.50.0",
+      "release_source_revision": null,
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/goose/harness.json",
+        "sha256": "de40d54f5c855cbf5702f7d19213edf2be83e3ed60a7e67369af4e7ab919a108",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "goose",
+          "package_version": "1.50.0",
+          "style": "goose",
+          "command_prefix": [
+            "/home/username/loop-engine/embodiments/goose/runtime/goose"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/goose/runtime/goose"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli",
+      "profile_description": "Headless recipe with no profile/extensions and constrained text output.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/goose.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/goose.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": null,
+      "live_component_phases": [
+        {
+          "phase": "live-first-batch",
+          "report_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/report.json",
+          "rows": [
+            {
+              "harness": "goose",
+              "task_id": "escaped-field-stream",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 484,
+              "output_tokens": 3521,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "elapsed_seconds": 21.591,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/goose/escaped-field-stream/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "335cac3683ab76feab55eb2b75bbb7a74aea9dddbf84132bdeab2c242b169c51"
+            },
+            {
+              "harness": "goose",
+              "task_id": "window-run-peaks",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 512,
+              "output_tokens": 1272,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "elapsed_seconds": 27.937,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/goose/window-run-peaks/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "aa1f9696709aaafdd01cd2288b3db784713d2f30f4c3fd6498cb694757a61c80"
+            },
+            {
+              "harness": "goose",
+              "task_id": "revision-tombstone-fold",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 511,
+              "output_tokens": 2010,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 10,
+              "evaluated_cases": 10,
+              "elapsed_seconds": 27.297,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/goose/revision-tombstone-fold/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "b88984c39617ab324bb7ad55dcc921827292b28c1f1f36370f55253c209d1df2"
+            }
+          ]
+        }
+      ],
+      "full_solve_fixture_results": [
+        {
+          "harness": "goose",
+          "terminal_code": "COMPLETED_VERIFIED",
+          "checks": {
+            "terminal_matches_expected_acceptance": true,
+            "history_chain_intact": true,
+            "physical_calls_match_history": true,
+            "harness_was_actually_invoked": true,
+            "independent_verification_required": true
+          },
+          "all_passed": true,
+          "fixture_model_calls": 11,
+          "live_provider_calls": 0,
+          "harness_events": 11,
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/full-solve/goose-a-01/result.json",
+          "sha256": "06e959f92a049f1e3724a515c1faaf94e472507309d8bf1bee646643215521cb"
+        }
+      ],
+      "source_urls": [
+        "https://github.com/aaif-goose/goose",
+        "https://goose-docs.ai/docs/tutorials/headless-goose/",
+        "https://goose-docs.ai/docs/getting-started/providers/",
+        "https://goose-docs.ai/docs/guides/goose-permissions/",
+        "https://goose-docs.ai/docs/guides/config-files/",
+        "https://goose-docs.ai/docs/tutorials/goose-in-docker/",
+        "https://github.com/aaif-goose/goose/blob/main/crates/goose-cli/src/cli.rs",
+        "https://github.com/aaif-goose/goose/blob/main/crates/goose-provider-types/src/goose_mode.rs",
+        "https://github.com/aaif-goose/goose/blob/main/crates/goose/src/agents/agent.rs",
+        "https://goose-docs.ai/docs/guides/cli-providers/"
+      ]
+    },
+    {
+      "project_id": "gemini_cli",
+      "catalog_id": "gemini_cli",
+      "name": "Gemini CLI",
+      "repository": "https://github.com/google-gemini/gemini-cli",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "parent_harness": null
+      },
+      "version": "0.59.0",
+      "release_source_revision": null,
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/gemini_cli/harness.json",
+        "sha256": "719f7322589059ea74bf97fb76564104ac7639f2057837ead254034347095481",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "gemini_cli",
+          "package_version": "0.59.0",
+          "style": "gemini_cli",
+          "command_prefix": [
+            "/usr/bin/node",
+            "/home/username/loop-engine/embodiments/gemini_cli/runtime/node_modules/@google/gemini-cli/bundle/gemini.js"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/gemini_cli/runtime/node_modules"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli",
+      "profile_description": "Headless CLI, empty core tools and deny policy; text protocol translation.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/gemini_cli.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/gemini_cli.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": null,
+      "live_component_phases": [
+        {
+          "phase": "live-first-batch",
+          "report_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/report.json",
+          "rows": [
+            {
+              "harness": "gemini_cli",
+              "task_id": "escaped-field-stream",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 5439,
+              "output_tokens": 3123,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "elapsed_seconds": 34.012,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/gemini_cli/escaped-field-stream/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "c8a14cc884b9537570175166aa3150b67e1c7ec16f8bb33da9f1571ebdd82ab4"
+            },
+            {
+              "harness": "gemini_cli",
+              "task_id": "window-run-peaks",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 5467,
+              "output_tokens": 2860,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "elapsed_seconds": 27.109,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/gemini_cli/window-run-peaks/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "27e111f3b1428d748ec9aa4d2cd9b76dff00875ff2356be7949a26efa2014fbd"
+            },
+            {
+              "harness": "gemini_cli",
+              "task_id": "revision-tombstone-fold",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 5466,
+              "output_tokens": 699,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 10,
+              "evaluated_cases": 10,
+              "elapsed_seconds": 19.785,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/gemini_cli/revision-tombstone-fold/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "eea821eefd581e305418b05d7ac06df4023653192bab4454b954d5d72db2c7cd"
+            }
+          ]
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/google-gemini/gemini-cli",
+        "https://geminicli.com/docs/cli/sandbox/",
+        "https://geminicli.com/docs/reference/configuration/"
+      ]
+    },
+    {
+      "project_id": "qwen_code",
+      "catalog_id": "qwen_code",
+      "name": "Qwen Code",
+      "repository": "https://github.com/QwenLM/qwen-code",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "parent_harness": "google-gemini/gemini-cli",
+        "note": "README names Gemini CLI v0.8.2 as origin and says independent development replaced upstream syncing starting with Qwen v0.1."
+      },
+      "version": "0.23.1",
+      "release_source_revision": null,
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/qwen_code/harness.json",
+        "sha256": "c38f98cd5ca856bcebd13257592d80c4c995de3a6c95ba714b15f1f2aa8fa111",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "qwen_code",
+          "package_version": "0.23.1",
+          "style": "qwen_code",
+          "command_prefix": [
+            "/usr/bin/node",
+            "/home/username/loop-engine/embodiments/qwen_code/runtime/node_modules/@qwen-code/qwen-code/cli-entry.js"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/qwen_code/runtime/node_modules"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli",
+      "profile_description": "Bare CLI with explicit native tool exclusion.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/qwen_code.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/qwen_code.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": null,
+      "live_component_phases": [
+        {
+          "phase": "live-first-batch",
+          "report_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/report.json",
+          "rows": [
+            {
+              "harness": "qwen_code",
+              "task_id": "escaped-field-stream",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 4830,
+              "output_tokens": 843,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "elapsed_seconds": 14.937,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/qwen_code/escaped-field-stream/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "fba7cae0493349a310749a57abff76195ba223eb10c3a928f0ef9d9214e2c910"
+            },
+            {
+              "harness": "qwen_code",
+              "task_id": "window-run-peaks",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 4858,
+              "output_tokens": 2483,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "elapsed_seconds": 28.95,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/qwen_code/window-run-peaks/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "aba5c85fd56c8157f9b396d1594b2aec4ffc7f14290776f5c1c7c6ac058a25fb"
+            },
+            {
+              "harness": "qwen_code",
+              "task_id": "revision-tombstone-fold",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 4857,
+              "output_tokens": 1205,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 10,
+              "evaluated_cases": 10,
+              "elapsed_seconds": 37.898,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/qwen_code/revision-tombstone-fold/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "de2ba3910923b59cac55c59ed4a44693d4a37fee7099c7c5f611103bb59e0134"
+            }
+          ]
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/QwenLM/qwen-code",
+        "https://qwenlm.github.io/qwen-code-docs/en/users/features/headless/",
+        "https://github.com/QwenLM/qwen-code/blob/main/docs/users/configuration/settings.md",
+        "https://github.com/QwenLM/qwen-code/blob/main/docs/users/configuration/auth.md"
+      ]
+    },
+    {
+      "project_id": "openhands_cli",
+      "catalog_id": "openhands_cli",
+      "name": "OpenHands CLI",
+      "repository": "https://github.com/OpenHands/OpenHands-CLI",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "related_framework": "OpenHands software-agent-sdk",
+        "note": "OpenHands/OpenHands currently presents Agent Canvas; this entry identifies the runnable CLI, not that control center."
+      },
+      "version": "1.16.0",
+      "release_source_revision": "2963442dacc7cea44e39b7c4e73724295c853465",
+      "manifest": null,
+      "profile_kind": "unqualified_native_cli",
+      "profile_description": "Headless mode advertises native tools and auto-approves actions; broker refuses tool schemas.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/remaining-recipes/openhands_cli/text-01/result.json",
+      "local_semantic_profile_qualified": false,
+      "live_eligible": false,
+      "blocker": "Headless mode advertises native tools and auto-approves actions; broker refuses tool schemas.",
+      "local_core_attempts": [],
+      "local_detail_report": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/remaining-recipes/qualification.json",
+      "live_component_phases": [],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/OpenHands/OpenHands-CLI",
+        "https://raw.githubusercontent.com/OpenHands/OpenHands-CLI/main/README.md",
+        "https://docs.openhands.dev/openhands/usage/cli/command-reference",
+        "https://github.com/OpenHands/OpenHands-CLI/blob/main/openhands_cli/stores/agent_store.py",
+        "https://github.com/OpenHands/OpenHands"
+      ]
+    },
+    {
+      "project_id": "mini_swe_agent",
+      "catalog_id": "mini_swe_agent",
+      "name": "mini-SWE-agent",
+      "repository": "https://github.com/SWE-agent/mini-swe-agent",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "related_harness": "SWE-agent",
+        "note": "Distinct simplified implementation; current project recommends v2 and documents migration from v1."
+      },
+      "version": "2.4.6",
+      "release_source_revision": null,
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/mini_swe_agent/harness.json",
+        "sha256": "778d0bc9142565251e328a9ea1c92b355c58f9cc1eebfcdf71b9ded0bb43282c",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "mini_swe_agent",
+          "package_version": "2.4.6",
+          "style": "mini_swe_agent",
+          "command_prefix": [
+            "/home/username/loop-engine/embodiments/mini_swe_agent/runtime/.venv311/bin/python"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/mini_swe_agent/runtime/.venv311",
+            "/home/username/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu",
+            "/home/username/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu"
+          ]
+        }
+      },
+      "profile_kind": "modified_sdk_profile",
+      "profile_description": "DefaultAgent plus LitellmTextbasedModel and non-executing SemanticSubmissionEnvironment, not stock shell agent.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v4/mini_swe_agent.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/mini_swe_agent.json",
+          "ok": false,
+          "local_requests": 0,
+          "live_provider_calls": 0
+        },
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v4/mini_swe_agent.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": null,
+      "live_component_phases": [
+        {
+          "phase": "live-next-batch",
+          "report_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/report.json",
+          "rows": [
+            {
+              "harness_id": "mini_swe_agent",
+              "task_id": "escaped-field-stream",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 201,
+              "output_tokens": 1180,
+              "known_input_tokens_subtotal": 201,
+              "known_output_tokens_subtotal": 1180,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/mini_swe_agent/escaped-field-stream/summary.json",
+              "elapsed_seconds": 13.267,
+              "token_accounting_complete": true,
+              "summary_sha256": "5f72080069cf3a2801723016de1fa3c8abb6c467834bc45517da4795c8e22cc4"
+            },
+            {
+              "harness_id": "mini_swe_agent",
+              "task_id": "window-run-peaks",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 229,
+              "output_tokens": 931,
+              "known_input_tokens_subtotal": 229,
+              "known_output_tokens_subtotal": 931,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/mini_swe_agent/window-run-peaks/summary.json",
+              "elapsed_seconds": 12.856,
+              "token_accounting_complete": true,
+              "summary_sha256": "22383f678d5cdb24320af87bf3df80da2d23033a7208a697f51c93bfdabc08c5"
+            },
+            {
+              "harness_id": "mini_swe_agent",
+              "task_id": "revision-tombstone-fold",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 228,
+              "output_tokens": 560,
+              "known_input_tokens_subtotal": 228,
+              "known_output_tokens_subtotal": 560,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 10,
+              "evaluated_cases": 10,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/mini_swe_agent/revision-tombstone-fold/summary.json",
+              "elapsed_seconds": 13.519,
+              "token_accounting_complete": true,
+              "summary_sha256": "81f119016b5721905270b22e05c415cdb76ffb8796f4fe8598e932bda7a67996"
+            }
+          ]
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/SWE-agent/mini-swe-agent",
+        "https://mini-swe-agent.com/v2/usage/mini/",
+        "https://mini-swe-agent.com/latest/advanced/environments/",
+        "https://github.com/SWE-agent/mini-swe-agent/blob/main/docs/models/local_models.md"
+      ]
+    },
+    {
+      "project_id": "swe_agent",
+      "catalog_id": "swe_agent",
+      "name": "SWE-agent",
+      "repository": "https://github.com/SWE-agent/SWE-agent",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "successor": "SWE-agent/mini-swe-agent"
+      },
+      "version": "1.1.0",
+      "release_source_revision": "0f3acafacabc0def8cc76b4e48acb4b6cf302cb9",
+      "manifest": null,
+      "profile_kind": "unqualified_native_cli",
+      "profile_description": "Run reaches SWE-ReX environment startup, blocked by intentionally absent Docker socket.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/remaining-recipes/swe_agent/startup-01/result.json",
+      "local_semantic_profile_qualified": false,
+      "live_eligible": false,
+      "blocker": "Run reaches SWE-ReX environment startup, blocked by intentionally absent Docker socket.",
+      "local_core_attempts": [],
+      "local_detail_report": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/remaining-recipes/qualification.json",
+      "live_component_phases": [],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/SWE-agent/SWE-agent",
+        "https://swe-agent.com/latest/usage/hello_world/",
+        "https://swe-agent.com/latest/reference/model_config/"
+      ]
+    },
+    {
+      "project_id": "cline",
+      "catalog_id": "cline",
+      "name": "Cline CLI",
+      "repository": "https://github.com/cline/cline",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "related_products": [
+          "Cline IDE extension",
+          "Cline SDK"
+        ],
+        "counting_rule": "One harness family, not one candidate per client."
+      },
+      "version": "3.0.61",
+      "release_source_revision": null,
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/cline/harness.json",
+        "sha256": "5e473921b794e3c1df230954ceb4b12727cae34cf6aaec2119a0fa6e02abb04d",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "cline",
+          "package_version": "3.0.61",
+          "style": "cline",
+          "command_prefix": [
+            "/usr/bin/node",
+            "/home/username/loop-engine/embodiments/cline/runtime/node_modules/cline/bin/cline"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/cline/runtime/node_modules"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli",
+      "profile_description": "CLI with native tools disabled.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/cline.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/cline.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": null,
+      "live_component_phases": [
+        {
+          "phase": "live-next-batch",
+          "report_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/report.json",
+          "rows": [
+            {
+              "harness_id": "cline",
+              "task_id": "escaped-field-stream",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 1019,
+              "output_tokens": 1032,
+              "known_input_tokens_subtotal": 1019,
+              "known_output_tokens_subtotal": 1032,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/cline/escaped-field-stream/summary.json",
+              "elapsed_seconds": 8.114,
+              "token_accounting_complete": true,
+              "summary_sha256": "cc392c2101710453959400fe80ea05f8a97e26575a82d71a51f9684c24e1396e"
+            },
+            {
+              "harness_id": "cline",
+              "task_id": "window-run-peaks",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 1047,
+              "output_tokens": 1030,
+              "known_input_tokens_subtotal": 1047,
+              "known_output_tokens_subtotal": 1030,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/cline/window-run-peaks/summary.json",
+              "elapsed_seconds": 11.279,
+              "token_accounting_complete": true,
+              "summary_sha256": "17fc8f72ec283515e8881af91a62b66d365b15dca91d809b2a1836a4b0a01232"
+            },
+            {
+              "harness_id": "cline",
+              "task_id": "revision-tombstone-fold",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 1046,
+              "output_tokens": 832,
+              "known_input_tokens_subtotal": 1046,
+              "known_output_tokens_subtotal": 832,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 10,
+              "evaluated_cases": 10,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/cline/revision-tombstone-fold/summary.json",
+              "elapsed_seconds": 8.565,
+              "token_accounting_complete": true,
+              "summary_sha256": "f4629e27d44ad2b9d30b3aa2d5af33191148f635aad5db37e2dd2385aa7088d3"
+            }
+          ]
+        }
+      ],
+      "full_solve_fixture_results": [
+        {
+          "harness": "cline",
+          "terminal_code": "COMPLETED_VERIFIED",
+          "checks": {
+            "terminal_matches_expected_acceptance": true,
+            "history_chain_intact": true,
+            "physical_calls_match_history": true,
+            "harness_was_actually_invoked": true,
+            "independent_verification_required": true
+          },
+          "all_passed": true,
+          "fixture_model_calls": 11,
+          "live_provider_calls": 0,
+          "harness_events": 11,
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/full-solve/cline-a-01/result.json",
+          "sha256": "9b31c9ff320b504b1479053c1ef7e363740ab6c4c05d7f8f276b9b2230157dbe"
+        }
+      ],
+      "source_urls": [
+        "https://github.com/cline/cline",
+        "https://docs.cline.bot/cli/cli-reference",
+        "https://github.com/cline/cline/blob/main/apps/cli/README.md",
+        "https://github.com/cline/cline/blob/main/apps/cli/src/commands/program.ts",
+        "https://github.com/cline/cline/blob/main/apps/cli/src/utils/chat-commands.ts",
+        "https://docs.cline.bot/sdk/tools"
+      ]
+    },
+    {
+      "project_id": "continue",
+      "catalog_id": "continue_cli",
+      "name": "Continue CLI",
+      "repository": "https://github.com/continuedev/continue",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "related_products": [
+          "Continue IDE extensions"
+        ]
+      },
+      "version": "1.5.47",
+      "release_source_revision": null,
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/continue/harness.json",
+        "sha256": "8c65552f235d5bd681c3ab657be7e115e43d2f7f64c64b816a2dc415410661ca",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "continue",
+          "package_version": "1.5.47",
+          "style": "continue",
+          "command_prefix": [
+            "/usr/bin/node",
+            "/home/username/loop-engine/embodiments/continue/runtime/cli/dist/cn.js"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/continue/runtime/cli"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli",
+      "profile_description": "Headless read-only CLI with constrained text transport.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/installed-probes/core-continue-v2.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [],
+      "local_detail_report": null,
+      "live_component_phases": [
+        {
+          "phase": "live-first-batch",
+          "report_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/report.json",
+          "rows": [
+            {
+              "harness": "continue",
+              "task_id": "escaped-field-stream",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 719,
+              "output_tokens": 720,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "elapsed_seconds": 7.143,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/continue/escaped-field-stream/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "bdd351b8920862aa54d4849dfdd768277acdc20caad17d080a4c80507d4b086e"
+            },
+            {
+              "harness": "continue",
+              "task_id": "window-run-peaks",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 775,
+              "output_tokens": 594,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "elapsed_seconds": 10.312,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/continue/window-run-peaks/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "a633aa88c07569685510804d01b7fb61e965007889fa16d1aa972caeb4155f03"
+            },
+            {
+              "harness": "continue",
+              "task_id": "revision-tombstone-fold",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 773,
+              "output_tokens": 653,
+              "gateway_errors": [],
+              "process_errors": [],
+              "driver_error": {},
+              "parent_terminal_count": 1,
+              "parent_terminal_reason": "done",
+              "history_chain_intact": true,
+              "passed_cases": 10,
+              "evaluated_cases": 10,
+              "elapsed_seconds": 6.368,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-first-batch/runs/continue/revision-tombstone-fold/summary.json",
+              "process_attempts": 1,
+              "token_accounting_complete": true,
+              "summary_sha256": "6ca601e0c328c015772965ca21b50fdc0bbd798de4938fb2e2e557e39c0ed47d"
+            }
+          ]
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/continuedev/continue",
+        "https://docs.continue.dev/cli/headless-mode",
+        "https://docs.continue.dev/cli/tool-permissions",
+        "https://docs.continue.dev/customize/model-providers/top-level/openai"
+      ]
+    },
+    {
+      "project_id": "kilo",
+      "catalog_id": "kilo_cli",
+      "name": "Kilo CLI",
+      "repository": "https://github.com/Kilo-Org/kilocode",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "parent_harness": "OpenCode",
+        "evidence": "Official README explicitly identifies Kilo CLI as an OpenCode fork."
+      },
+      "version": "7.5.16",
+      "release_source_revision": null,
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/kilo/harness.json",
+        "sha256": "f3a0e0f561a3999963a1d1af4524f2cbce2b6890726c84a92fcac8acf45fa068",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "kilo",
+          "package_version": "7.5.16",
+          "style": "kilo",
+          "command_prefix": [
+            "/usr/bin/node",
+            "/home/username/loop-engine/embodiments/kilo/runtime/node_modules/@kilocode/cli/bin/kilo"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/kilo/runtime/node_modules"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli",
+      "profile_description": "Custom text agent with deny-all native tools.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/kilo.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/kilo.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": null,
+      "live_component_phases": [
+        {
+          "phase": "live-next-batch",
+          "report_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/report.json",
+          "rows": [
+            {
+              "harness_id": "kilo",
+              "task_id": "escaped-field-stream",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 700,
+              "output_tokens": 3863,
+              "known_input_tokens_subtotal": 700,
+              "known_output_tokens_subtotal": 3863,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/kilo/escaped-field-stream/summary.json",
+              "elapsed_seconds": 25.932,
+              "token_accounting_complete": true,
+              "summary_sha256": "04b3b099961262eb561d08620ae97d30d780480fd152a904d5fafc908d63cd04"
+            },
+            {
+              "harness_id": "kilo",
+              "task_id": "window-run-peaks",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 728,
+              "output_tokens": 670,
+              "known_input_tokens_subtotal": 728,
+              "known_output_tokens_subtotal": 670,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/kilo/window-run-peaks/summary.json",
+              "elapsed_seconds": 14.183,
+              "token_accounting_complete": true,
+              "summary_sha256": "36e62e3ab1d9f7a1c5b08abe781d114ca5b52aa87ca66f16c907377e820a7238"
+            },
+            {
+              "harness_id": "kilo",
+              "task_id": "revision-tombstone-fold",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 727,
+              "output_tokens": 448,
+              "known_input_tokens_subtotal": 727,
+              "known_output_tokens_subtotal": 448,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 10,
+              "evaluated_cases": 10,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/kilo/revision-tombstone-fold/summary.json",
+              "elapsed_seconds": 15.258,
+              "token_accounting_complete": true,
+              "summary_sha256": "b1c052ddc22512160dee61475a398453e7fa8334d28ba55c221c3cd55987b2fc"
+            }
+          ]
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/Kilo-Org/kilocode",
+        "https://kilo.ai/docs/code-with-ai/platforms/cli",
+        "https://kilo.ai/docs/code-with-ai/agents/custom-models",
+        "https://kilo.ai/docs/getting-started/settings/sandboxing",
+        "https://kilo.ai/docs/customize/agent-permissions"
+      ]
+    },
+    {
+      "project_id": "forgecode",
+      "catalog_id": "forgecode",
+      "name": "ForgeCode",
+      "repository": "https://github.com/tailcallhq/forgecode",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "former_locations": [
+          "antinomyhq/forge"
+        ]
+      },
+      "version": "2.13.21",
+      "release_source_revision": "ddabeb274390822424abd16d3912d1823c258b06",
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/forgecode/harness.json",
+        "sha256": "bed3b67303f8a59284bc7ede9d0439b458f342e5c8a708ac3049e4f0d251315b",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "forgecode",
+          "package_version": "2.13.21",
+          "style": "forgecode",
+          "command_prefix": [
+            "/home/username/loop-engine/embodiments/forgecode/runtime/forge"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/forgecode/runtime"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli",
+      "profile_description": "Private stdin plus fresh explicitly titled Conversation, no previous context; native title generation skipped.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v6/forgecode.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v6/forgecode.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/remaining-recipes/qualification.json",
+      "live_component_phases": [
+        {
+          "phase": "live-expansion-batch",
+          "status": "pending",
+          "planned_tasks": 3,
+          "manifest_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-expansion-batch/manifest.json",
+          "phase_kind": "new_project_profile"
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/tailcallhq/forgecode",
+        "https://forgecode.dev/docs/custom-providers/"
+      ]
+    },
+    {
+      "project_id": "mistral_vibe",
+      "catalog_id": "mistral_vibe",
+      "name": "Mistral Vibe",
+      "repository": "https://github.com/mistralai/mistral-vibe",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "parent_harness": null
+      },
+      "version": "2.25.0",
+      "release_source_revision": null,
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/mistral_vibe/harness.json",
+        "sha256": "7ffed61875b2d59d6bae6e719d590727514207fc19ff945b3b5a704470baea1e",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "mistral_vibe",
+          "package_version": "2.25.0",
+          "style": "mistral_vibe",
+          "command_prefix": [
+            "/home/username/loop-engine/embodiments/mistral_vibe/runtime/.venv/bin/vibe"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/mistral_vibe/runtime/.venv",
+            "/home/username/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu",
+            "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli",
+      "profile_description": "Programmatic CLI with all tools/skills disabled.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v4/mistral_vibe.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/mistral_vibe.json",
+          "ok": false,
+          "local_requests": 0,
+          "live_provider_calls": 0
+        },
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v4/mistral_vibe.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": null,
+      "live_component_phases": [
+        {
+          "phase": "live-next-batch",
+          "report_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/report.json",
+          "rows": [
+            {
+              "harness_id": "mistral_vibe",
+              "task_id": "escaped-field-stream",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 2553,
+              "output_tokens": 945,
+              "known_input_tokens_subtotal": 2553,
+              "known_output_tokens_subtotal": 945,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/mistral_vibe/escaped-field-stream/summary.json",
+              "elapsed_seconds": 12.466,
+              "token_accounting_complete": true,
+              "summary_sha256": "4ccb88309bea09dac2fc9f6ca52d54c4bc6856d7e79796dca4dbb8d92145e10c"
+            },
+            {
+              "harness_id": "mistral_vibe",
+              "task_id": "window-run-peaks",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 2581,
+              "output_tokens": 2090,
+              "known_input_tokens_subtotal": 2581,
+              "known_output_tokens_subtotal": 2090,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/mistral_vibe/window-run-peaks/summary.json",
+              "elapsed_seconds": 14.307,
+              "token_accounting_complete": true,
+              "summary_sha256": "106cee45a7d19efa1a74339efcb77e3a318ee5d65215d0ce03c5e3d03a29f70a"
+            },
+            {
+              "harness_id": "mistral_vibe",
+              "task_id": "revision-tombstone-fold",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 2579,
+              "output_tokens": 439,
+              "known_input_tokens_subtotal": 2579,
+              "known_output_tokens_subtotal": 439,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 10,
+              "evaluated_cases": 10,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/mistral_vibe/revision-tombstone-fold/summary.json",
+              "elapsed_seconds": 10.194,
+              "token_accounting_complete": true,
+              "summary_sha256": "762dd1d1a662e73d8ce4d03c121f453d0389cca50744e5642f1493d86066d2b0"
+            }
+          ]
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/mistralai/mistral-vibe",
+        "https://docs.mistral.ai/vibe/code/cli/configuration-reference"
+      ]
+    },
+    {
+      "project_id": "gptme",
+      "catalog_id": "gptme",
+      "name": "gptme",
+      "repository": "https://github.com/gptme/gptme",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "parent_harness": null
+      },
+      "version": "0.33.0",
+      "release_source_revision": null,
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/gptme/harness.json",
+        "sha256": "1eb785308651010e539e1807a4c015f535d68dab03777cbbb2e8d3d2ad00826f",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "gptme",
+          "package_version": "0.33.0",
+          "style": "gptme",
+          "command_prefix": [
+            "/home/username/loop-engine/embodiments/gptme/runtime/.venv/bin/gptme-util"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/gptme/runtime/.venv",
+            "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu",
+            "/home/username/.local/share/uv/python/cpython-3.10.20-linux-x86_64-gnu"
+          ]
+        }
+      },
+      "profile_kind": "llm_generation_utility",
+      "profile_description": "gptme-util llm generate, not autonomous chat; local/ identifies relay transport only.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v4/gptme.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/gptme.json",
+          "ok": false,
+          "local_requests": 0,
+          "live_provider_calls": 0
+        },
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v4/gptme.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": null,
+      "live_component_phases": [
+        {
+          "phase": "live-next-batch",
+          "report_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/report.json",
+          "rows": [
+            {
+              "harness_id": "gptme",
+              "task_id": "escaped-field-stream",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 179,
+              "output_tokens": 1425,
+              "known_input_tokens_subtotal": 179,
+              "known_output_tokens_subtotal": 1425,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/gptme/escaped-field-stream/summary.json",
+              "elapsed_seconds": 9.397,
+              "token_accounting_complete": true,
+              "summary_sha256": "6622e511c0864a2078cc2bf8b8178a5e9d36209c93711e1134d355991d9735ec"
+            },
+            {
+              "harness_id": "gptme",
+              "task_id": "window-run-peaks",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 207,
+              "output_tokens": 1139,
+              "known_input_tokens_subtotal": 207,
+              "known_output_tokens_subtotal": 1139,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 12,
+              "evaluated_cases": 12,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/gptme/window-run-peaks/summary.json",
+              "elapsed_seconds": 10.261,
+              "token_accounting_complete": true,
+              "summary_sha256": "42aae776d9cc080543ffba7df86a5f54085cf1b42ab5b3a708bc7f57cba8e026"
+            },
+            {
+              "harness_id": "gptme",
+              "task_id": "revision-tombstone-fold",
+              "status": "verified",
+              "physical_model_calls": 1,
+              "input_tokens": 206,
+              "output_tokens": 354,
+              "known_input_tokens_subtotal": 206,
+              "known_output_tokens_subtotal": 354,
+              "driver_error": {},
+              "terminal_code": "ACCEPTED",
+              "history_chain_intact": true,
+              "passed_cases": 10,
+              "evaluated_cases": 10,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/gptme/revision-tombstone-fold/summary.json",
+              "elapsed_seconds": 9.072,
+              "token_accounting_complete": true,
+              "summary_sha256": "6c702fcc8d53be857796e8ef70ab57fa219a87ef0cbde783e85b074622174705"
+            }
+          ]
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/gptme/gptme"
+      ]
+    },
+    {
+      "project_id": "hermes_agent",
+      "catalog_id": "hermes_agent",
+      "name": "Hermes Agent",
+      "repository": "https://github.com/NousResearch/hermes-agent",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "parent_harness": null
+      },
+      "version": "0.21.1",
+      "release_source_revision": "2237be355906fbe6065ce1815711eee52b2d646e",
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/hermes_agent/harness.json",
+        "sha256": "6f591a8cc140c6fa1b88e7b8c276f45714c5a923452d88f85b4f1403962f4a1c",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "hermes_agent",
+          "package_version": "0.21.1",
+          "style": "hermes_agent",
+          "command_prefix": [
+            "/home/username/loop-engine/embodiments/hermes_agent/runtime/.venv/bin/python",
+            "/home/username/loop-engine/embodiments/hermes_agent/runtime/NousResearch-hermes-agent-9949d0d"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/hermes_agent/runtime/.venv",
+            "/home/username/loop-engine/embodiments/hermes_agent/runtime/NousResearch-hermes-agent-9949d0d",
+            "/home/username/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu",
+            "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli_private_io_shim",
+      "profile_description": "Original CLI main receives stdin privately; empty toolsets, title/memory/compression disabled.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v6/hermes_agent.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v6/hermes_agent.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/remaining-recipes/qualification.json",
+      "live_component_phases": [
+        {
+          "phase": "live-expansion-batch",
+          "status": "pending",
+          "planned_tasks": 3,
+          "manifest_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-expansion-batch/manifest.json",
+          "phase_kind": "new_project_profile"
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/NousResearch/hermes-agent",
+        "https://hermes-agent.nousresearch.com/docs/reference/cli-commands",
+        "https://hermes-agent.nousresearch.com/docs/user-guide/security"
+      ]
+    },
+    {
+      "project_id": "crush",
+      "catalog_id": "crush",
+      "name": "Crush",
+      "repository": "https://github.com/charmbracelet/crush",
+      "license": "FSL-1.1-MIT",
+      "license_state": "source_available_with_competing_use_restriction",
+      "lineage": {
+        "parent_harness": null
+      },
+      "version": "0.92.0",
+      "release_source_revision": "559ec80922fecf3baa0b7599230f4c91067440de",
+      "manifest": null,
+      "profile_kind": "diagnostic_native_cli",
+      "profile_description": "Tools-off headless transport works; auxiliary title violates original semantic packet gate.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/remaining-recipes/crush/core-text-01/result.json",
+      "local_semantic_profile_qualified": false,
+      "live_eligible": false,
+      "blocker": "Tools-off headless transport works; auxiliary title violates original semantic packet gate.",
+      "local_core_attempts": [],
+      "local_detail_report": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/remaining-recipes/qualification.json",
+      "live_component_phases": [],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/charmbracelet/crush",
+        "https://raw.githubusercontent.com/charmbracelet/crush/main/LICENSE.md"
+      ]
+    },
+    {
+      "project_id": "opencode",
+      "catalog_id": "opencode",
+      "name": "OpenCode",
+      "repository": "https://github.com/anomalyco/opencode",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "parent_harness": null,
+        "related_project": "Kilo CLI is a separate documented fork, not this project's configuration"
+      },
+      "version": "1.17.9",
+      "release_source_revision": null,
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/opencode/harness.json",
+        "sha256": "812c1c4018be05c516c4cebfba60a894d2f00999f113cebb6615541246d32391",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "opencode",
+          "package_version": "1.17.9",
+          "style": "opencode",
+          "command_prefix": [
+            "/home/username/loop-engine/embodiments/opencode/runtime/opencode"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/opencode/runtime/opencode"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli",
+      "profile_description": "Original file-attachment profile failed packet preservation; selected private-stdin repair is a separate phase.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v5/opencode.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core/opencode.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        },
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v5/opencode.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": null,
+      "live_component_phases": [
+        {
+          "phase": "live-next-batch",
+          "report_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/report.json",
+          "rows": [
+            {
+              "harness_id": "opencode",
+              "task_id": "escaped-field-stream",
+              "status": "failed",
+              "physical_model_calls": 0,
+              "input_tokens": null,
+              "output_tokens": null,
+              "known_input_tokens_subtotal": 0,
+              "known_output_tokens_subtotal": 0,
+              "driver_error": {},
+              "terminal_code": "VERIFICATION_REJECTED",
+              "history_chain_intact": true,
+              "passed_cases": null,
+              "evaluated_cases": null,
+              "summary_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-next-batch/runs/opencode/escaped-field-stream/summary.json",
+              "elapsed_seconds": 3.16,
+              "token_accounting_complete": false,
+              "summary_sha256": "a45493258de23b45412897e18ff7b44872df9e504cdf9a1aba10f5571d3ac8d8"
+            },
+            {
+              "harness_id": "opencode",
+              "task_id": "window-run-peaks",
+              "status": "not_started"
+            },
+            {
+              "harness_id": "opencode",
+              "task_id": "revision-tombstone-fold",
+              "status": "not_started"
+            }
+          ]
+        },
+        {
+          "phase": "live-expansion-batch",
+          "status": "pending",
+          "planned_tasks": 3,
+          "manifest_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-expansion-batch/manifest.json",
+          "phase_kind": "private_stdin_repair"
+        }
+      ],
+      "full_solve_fixture_results": [
+        {
+          "harness": "opencode",
+          "terminal_code": "COMPLETED_VERIFIED",
+          "checks": {
+            "terminal_matches_expected_acceptance": true,
+            "history_chain_intact": true,
+            "physical_calls_match_history": true,
+            "harness_was_actually_invoked": true,
+            "independent_verification_required": true
+          },
+          "all_passed": true,
+          "fixture_model_calls": 11,
+          "live_provider_calls": 0,
+          "harness_events": 11,
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/full-live/opencode-escaped-01/fixture-positive/result.json",
+          "sha256": "5aee332762fdfaa0d706a3c31fb4a2abcf165a7f94af6abb8492f2426901c6d3"
+        },
+        {
+          "harness": "opencode",
+          "terminal_code": "VERIFICATION_FAILED",
+          "checks": {
+            "terminal_matches_expected_acceptance": true,
+            "history_chain_intact": true,
+            "physical_calls_match_history": true,
+            "harness_was_actually_invoked": true,
+            "independent_verification_required": true
+          },
+          "all_passed": true,
+          "fixture_model_calls": 11,
+          "live_provider_calls": 0,
+          "harness_events": 11,
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/full-live/opencode-escaped-01/fixture-wrong-math/result.json",
+          "sha256": "f016cee7a9f4e59f860b91720e350c8c880d73949600152de48d72ea3f1f0b64"
+        }
+      ],
+      "source_urls": [
+        "https://github.com/anomalyco/opencode",
+        "https://opencode.ai/config.json"
+      ]
+    },
+    {
+      "project_id": "freebuff",
+      "catalog_id": "freebuff",
+      "name": "Freebuff (Codebuff project)",
+      "repository": "https://github.com/CodebuffAI/freebuff",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "former_locations": [
+          "CodebuffAI/codebuff"
+        ],
+        "counting_rule": "Codebuff/freebuff and its SDK are one project entry."
+      },
+      "version": "0.0.172",
+      "release_source_revision": "cc9069e251e8fedd5784c688ce78ccfecd76815f",
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/freebuff/harness.json",
+        "sha256": "9cf2330e9a15e6f2c8d1c624d0fb95ad0777f90e817ad1b5552035905d51a807",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "freebuff",
+          "package_version": "0.0.172",
+          "style": "freebuff",
+          "command_prefix": [
+            "/home/username/loop-engine/embodiments/freebuff/runtime/freebuff"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/freebuff/runtime"
+          ]
+        }
+      },
+      "profile_kind": "unqualified_hosted_cli",
+      "profile_description": "Stock interactive/hosted protocol; startup timed out; model broker not qualified.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/freebuff-startup-01/result.json",
+      "local_semantic_profile_qualified": false,
+      "live_eligible": false,
+      "blocker": "Stock interactive/hosted protocol; startup timed out; model broker not qualified.",
+      "local_core_attempts": [],
+      "local_detail_report": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/summary.json",
+      "live_component_phases": [],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/CodebuffAI/freebuff",
+        "https://raw.githubusercontent.com/CodebuffAI/freebuff/main/README.md"
+      ]
+    },
+    {
+      "project_id": "openinterpreter_rust",
+      "catalog_id": "openinterpreter",
+      "name": "Open Interpreter (current Rust project)",
+      "repository": "https://github.com/openinterpreter/openinterpreter",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "parent_harness": "openai/codex",
+        "former_locations": [
+          "OpenInterpreter/open-interpreter"
+        ],
+        "note": "Current Rust Codex-derived project. README points the older Python code to endolith/open-interpreter. Do not confuse that older distribution with this entry.",
+        "counting_rule": "Harness-emulation menu entries are configurations, not extra projects."
+      },
+      "version": "0.0.42",
+      "release_source_revision": "67299aeb7c1089be425cb7809169747af1e61af5",
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/openinterpreter_rust/harness.json",
+        "sha256": "d9a8768b5d197dcf87e789a6b5be102b66c0c725d0461504e9513ef08f76a1db",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "openinterpreter_rust",
+          "package_version": "0.0.42",
+          "style": "openinterpreter_rust",
+          "command_prefix": [
+            "/home/username/loop-engine/embodiments/openinterpreter_rust/runtime/bin/interpreter"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/openinterpreter_rust/runtime"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli",
+      "profile_description": "Current Rust native exec CLI, Codex-derived, Responses path only.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v5/openinterpreter_rust.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v5/openinterpreter_rust.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/summary.json",
+      "live_component_phases": [
+        {
+          "phase": "live-expansion-batch",
+          "status": "pending",
+          "planned_tasks": 3,
+          "manifest_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-expansion-batch/manifest.json",
+          "phase_kind": "new_project_profile"
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/openinterpreter/openinterpreter",
+        "https://raw.githubusercontent.com/openinterpreter/openinterpreter/main/README.md",
+        "https://www.openinterpreter.com/docs/terminal/cli-reference"
+      ]
+    },
+    {
+      "project_id": "nanocode",
+      "catalog_id": "nanocode",
+      "name": "nanocode",
+      "repository": "https://github.com/1rgs/nanocode",
+      "license": "MIT",
+      "license_state": "declared_in_readme_only_API_license_null",
+      "lineage": {
+        "parent_harness": null
+      },
+      "version": "git-b009d3dbedf14795a5c10804a5455386563f4b5b",
+      "release_source_revision": "b009d3dbedf14795a5c10804a5455386563f4b5b",
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/nanocode/harness.json",
+        "sha256": "1cbea146ab96ebe80aa04fa3e1eb5c5892e80eed7ee05f06d4cfad5ab810c8ca",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "nanocode",
+          "package_version": "git-b009d3dbedf14795a5c10804a5455386563f4b5b",
+          "style": "nanocode",
+          "command_prefix": [
+            "/usr/bin/python3",
+            "/home/username/loop-engine/embodiments/nanocode/upstream/nanocode.py"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/nanocode/upstream"
+          ]
+        }
+      },
+      "profile_kind": "modified_headless_adapter",
+      "profile_description": "Imports original main/model loop, replaces terminal I/O, endpoint/model and empties native tool registry.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v5/nanocode.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v5/nanocode.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/summary.json",
+      "live_component_phases": [
+        {
+          "phase": "live-expansion-batch",
+          "status": "pending",
+          "planned_tasks": 3,
+          "manifest_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-expansion-batch/manifest.json",
+          "phase_kind": "new_project_profile"
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/1rgs/nanocode",
+        "https://raw.githubusercontent.com/1rgs/nanocode/master/nanocode.py"
+      ]
+    },
+    {
+      "project_id": "trae_agent",
+      "catalog_id": "trae_agent",
+      "name": "Trae Agent",
+      "repository": "https://github.com/bytedance/trae-agent",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "parent_harness": null
+      },
+      "version": "0.1.0",
+      "release_source_revision": "e839e559ac61bdd0e057c375dd1dee391fee797d",
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/trae_agent/harness.json",
+        "sha256": "768022c3fae4ca3355535472b76c20f57aac24e386817eec88f39bee01a10466",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "trae_agent",
+          "package_version": "0.1.0",
+          "style": "trae_agent",
+          "command_prefix": [
+            "/home/username/loop-engine/embodiments/trae_agent/runtime/.venv/bin/python"
+          ],
+          "read_only_paths": [
+            "/home/username/loop-engine/embodiments/trae_agent/runtime/.venv",
+            "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu"
+          ]
+        }
+      },
+      "profile_kind": "modified_sdk_profile",
+      "profile_description": "Original Agent.run/execute_task with explicit empty tools, custom text system prompt and completion hook.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v5/trae_agent.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v5/trae_agent.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/summary.json",
+      "live_component_phases": [
+        {
+          "phase": "live-expansion-batch",
+          "status": "pending",
+          "planned_tasks": 3,
+          "manifest_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-expansion-batch/manifest.json",
+          "phase_kind": "new_project_profile"
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/bytedance/trae-agent"
+      ]
+    },
+    {
+      "project_id": "plandex",
+      "catalog_id": "plandex",
+      "name": "Plandex",
+      "repository": "https://github.com/plandex-ai/plandex",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "parent_harness": null
+      },
+      "version": "2.2.1",
+      "release_source_revision": "df17a187974c3795c3f1d2ea47bbacbdb675dde5",
+      "manifest": null,
+      "profile_kind": "unqualified_native_cli",
+      "profile_description": "Tokenizer cache enables help; chat reaches first-run account/server prerequisite.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/remaining-recipes/plandex/startup-01/result.json",
+      "local_semantic_profile_qualified": false,
+      "live_eligible": false,
+      "blocker": "Tokenizer cache enables help; chat reaches first-run account/server prerequisite.",
+      "local_core_attempts": [],
+      "local_detail_report": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/remaining-recipes/qualification.json",
+      "live_component_phases": [],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/plandex-ai/plandex",
+        "https://raw.githubusercontent.com/plandex-ai/plandex/main/README.md"
+      ]
+    },
+    {
+      "project_id": "codex",
+      "catalog_id": "codex_cli",
+      "name": "Codex CLI",
+      "repository": "https://github.com/openai/codex",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "lineage": {
+        "parent_harness": null,
+        "related_project": "Open Interpreter is a separate documented Codex-derived project."
+      },
+      "version": "0.153.4",
+      "release_source_revision": "3d2ee51ca2d5db578f328aa75e20aa22c0197c9a",
+      "manifest": {
+        "path": "/home/username/loop-engine/embodiments/codex/harness.json",
+        "sha256": "3729f565d46d10e732231fb361820c2538704e474efc091a86b461ff6cee97e9",
+        "configuration": {
+          "schema_version": 1,
+          "harness_id": "codex",
+          "package_version": "0.153.4",
+          "style": "codex",
+          "command_prefix": [
+            "/home/username/.local/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex"
+          ],
+          "read_only_paths": [
+            "/home/username/.local/lib/node_modules/@openai/codex"
+          ]
+        }
+      },
+      "profile_kind": "configured_native_cli",
+      "profile_description": "Native exec CLI with Responses codec and exact tools-off model catalog.",
+      "startup_attempted": true,
+      "startup_evidence": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v5/codex.json",
+      "local_semantic_profile_qualified": true,
+      "live_eligible": true,
+      "blocker": null,
+      "local_core_attempts": [
+        {
+          "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-core-v5/codex.json",
+          "ok": true,
+          "local_requests": 1,
+          "live_provider_calls": 0
+        }
+      ],
+      "local_detail_report": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/summary.json",
+      "live_component_phases": [
+        {
+          "phase": "live-expansion-batch",
+          "status": "pending",
+          "planned_tasks": 3,
+          "manifest_path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/live-expansion-batch/manifest.json",
+          "phase_kind": "new_project_profile"
+        }
+      ],
+      "full_solve_fixture_results": [],
+      "source_urls": [
+        "https://github.com/openai/codex"
+      ]
+    }
+  ],
+  "complete_solve_live_attempts": [
+    {
+      "run_id": "adaptive-f7e520796be0d4c4ed0b9654",
+      "terminal_code": "NO_PROGRESS",
+      "status": "NO_PROGRESS",
+      "solved": false,
+      "model_calls": null,
+      "model_call_accounting_complete": false,
+      "tool_calls": 0,
+      "loop_count": 80,
+      "elapsed_seconds": 127.3,
+      "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/full-live-opencode-escaped-01.json",
+      "sha256": "93ca15eb862f752532277257bcbabc60db36ad8193b28b51ea25e92fd3fc9e9e",
+      "input_tokens": null,
+      "output_tokens": null,
+      "token_accounting_complete": false,
+      "history": {
+        "events": 791,
+        "chain_intact": true,
+        "product_outcome_bound": true,
+        "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/full-live/opencode-escaped-01/runs/adaptive-f7e520796be0d4c4ed0b9654",
+        "head_digest": "4ee851fbff7008fec006c966578f33db80de2e3d6f2aa13225a56ab7a65bf224"
+      },
+      "deterministic_checks_passed": false,
+      "independent": [],
+      "harness_id": "opencode",
+      "max_model_calls": 45,
+      "max_passes": 4,
+      "cost_usd": null,
+      "cost_state": "unknown",
+      "known_input_tokens_subtotal": 139529,
+      "known_output_tokens_subtotal": 17662,
+      "model_calls_known_subtotal": 9,
+      "accounting_note": "Nine known physical calls have usage; unresolved gateway accounting prevents exact totals. Audit pending."
+    },
+    {
+      "run_id": "adaptive-8efada0bd6ea5dbd3d9f44ff",
+      "terminal_code": "VERIFICATION_FAILED",
+      "status": "VERIFICATION_FAILED",
+      "solved": false,
+      "model_calls": 27,
+      "model_call_accounting_complete": true,
+      "tool_calls": 3,
+      "loop_count": 246,
+      "elapsed_seconds": 558.881,
+      "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/full-live-pi-escaped-01.json",
+      "sha256": "a6abea989b2bf621cf3a2ed27d6e750733bc6d7557414eafbc87a5fabe6340b6",
+      "input_tokens": 474979,
+      "output_tokens": 99860,
+      "token_accounting_complete": true,
+      "history": {
+        "events": 2375,
+        "chain_intact": true,
+        "product_outcome_bound": true,
+        "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/full-live/pi-escaped-01/runs/adaptive-8efada0bd6ea5dbd3d9f44ff",
+        "head_digest": "581a7fdc81a7a42bdb928a82a2dd5f35db17f3b1a2ec51ecb20a81b87810fd20"
+      },
+      "deterministic_checks_passed": true,
+      "independent": [
+        {
+          "status": "unavailable",
+          "notes": "Independent checking unavailable: independent checks do not cover every registered criterion",
+          "verifier_loop_id": "loop222"
+        }
+      ],
+      "harness_id": "pi",
+      "max_model_calls": 30,
+      "max_passes": 3,
+      "cost_usd": null,
+      "cost_state": "unknown",
+      "known_input_tokens_subtotal": 474979,
+      "known_output_tokens_subtotal": 99860
+    },
+    {
+      "run_id": "adaptive-ca493a254c6c5cfd91113b0c",
+      "terminal_code": "VERIFICATION_FAILED",
+      "status": "VERIFICATION_FAILED",
+      "solved": false,
+      "model_calls": 28,
+      "model_call_accounting_complete": true,
+      "tool_calls": 3,
+      "loop_count": 237,
+      "elapsed_seconds": 629.305,
+      "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/full-live-pi-escaped-02.json",
+      "sha256": "a7eec738eac80762aa5091b645b856a7740d873c334711c1bf71cde1c37331db",
+      "input_tokens": 443287,
+      "output_tokens": 123690,
+      "token_accounting_complete": true,
+      "history": {
+        "events": 2286,
+        "chain_intact": true,
+        "product_outcome_bound": true,
+        "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/full-live/pi-escaped-02/runs/adaptive-ca493a254c6c5cfd91113b0c",
+        "head_digest": "fc0250bc6999651ee576678ccc5115c4b2be449b44b6c53ace89af9f878e39fe"
+      },
+      "deterministic_checks_passed": true,
+      "independent": [
+        {
+          "status": "unavailable",
+          "notes": "Independent checking unavailable: independent oracle review did not approve the proposed checks",
+          "verifier_loop_id": "loop164"
+        },
+        {
+          "status": "unavailable",
+          "notes": "Independent checking unavailable: independent oracle review did not approve the proposed checks",
+          "verifier_loop_id": "loop209"
+        }
+      ],
+      "harness_id": "pi",
+      "max_model_calls": 30,
+      "max_passes": 3,
+      "cost_usd": null,
+      "cost_state": "unknown",
+      "known_input_tokens_subtotal": 443287,
+      "known_output_tokens_subtotal": 123690
+    }
+  ],
+  "reference_recipe_review": {
+    "path": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/source-reference-recipes.json",
+    "sources": [
+      {
+        "repository_path": "/home/username/new_overnight_build",
+        "head": "2530a1520f15610e4383d4405585ccdb3628be8d",
+        "files": [
+          {
+            "path": "/home/username/new_overnight_build/poc/harnesses.py",
+            "sha256": "c8f0ca3105fb3acc8025cba3353bb9b68367bf739b2f217b8c31c3ce1de65d1a"
+          },
+          {
+            "path": "/home/username/new_overnight_build/tests/test_harnesses.py",
+            "sha256": "cfdf1dde517e112294c1fb4ec5d26210516d49e100a1eb9ce482fedb2f57f970"
+          }
+        ],
+        "dirty_paths_at_review": [
+          "poc/harnesses.py",
+          "tests/test_harnesses.py"
+        ],
+        "subtree_status": null,
+        "lessons": [
+          {
+            "source": "poc/harnesses.py:144",
+            "invariant": "The exact Pi invocation distinguishes unspecified tools, an empty tool set, and an explicit allowlist; the prompt is a file reference.",
+            "transplant": "Use pi -p --mode json --no-session, @prompt-file, --no-tools for an empty set, or --tools with explicit names. Add all discovery-suppression flags from the official upstream source for an isolated semantic step.",
+            "existing_tests": [
+              "tests/test_harnesses.py:59",
+              "tests/test_harnesses.py:72",
+              "tests/test_harnesses.py:81"
+            ]
+          },
+          {
+            "source": "poc/harnesses.py:187",
+            "invariant": "Pi output parsing follows an actually captured assistant message envelope and preserves transport errors.",
+            "transplant": "Read message_end.message when role=assistant, extract text content parts, read usage.input/output and surface errorMessage. The current dirty source improves on the older committed parser.",
+            "existing_tests": [
+              "tests/test_harnesses.py:137",
+              "tests/test_harnesses.py:153",
+              "tests/test_harnesses.py:162"
+            ]
+          }
+        ],
+        "do_not_copy": [
+          "Pi usage defaults to zero when missing; canonical accounting must preserve null/unknown and known subtotals.",
+          "Deduplicating solely by timestamp can collapse distinct same-timestamp messages; use exact event identity when available.",
+          "splitlines treats Unicode separators as framing; Pi RPC documentation requires LF-only JSONL splitting.",
+          "The local_endpoint=unsupported assertion only tested OPENAI_BASE_URL. Pi supports custom endpoints through its isolated models.json provider registry.",
+          "REGISTRY contains OpenCode, Pi and Codex, not Aider despite the header's installed-binary list.",
+          "pure currently disables context files and extensions but does not explicitly disable skill/template/theme discovery.",
+          "Arbitrary extra_args are not an authority boundary. A canonical adapter must validate or own its exact argv."
+        ]
+      },
+      {
+        "repository_path": "/home/username/speculative_prompting",
+        "head": "86d857357a983a2dd0b7d0cc2ccb961b862ad290",
+        "files": [
+          {
+            "path": "/home/username/speculative_prompting/embodiments/harness/edits.py",
+            "sha256": "9436b71ca99f45557d2f9499e6fbc14c32e9712c2c45cb9888d620ab96267db5"
+          },
+          {
+            "path": "/home/username/speculative_prompting/embodiments/harness/gate.py",
+            "sha256": "1096e0f560d6f7bf2820e3ccbc6a547041ecff57f1dd619f5be033c9830e7e90"
+          },
+          {
+            "path": "/home/username/speculative_prompting/embodiments/harness/model.py",
+            "sha256": "5f6196d11e27525c0395340fd00df98834f39f188beb8030b8adafbff4cf837f"
+          },
+          {
+            "path": "/home/username/speculative_prompting/embodiments/harness/contract.py",
+            "sha256": "7a443b467126df71226d4dbf56a56c9101061298d358e0a8e8cc2cdaedd9801d"
+          },
+          {
+            "path": "/home/username/speculative_prompting/embodiments/harness/tests/test_harness.py",
+            "sha256": "3f2aa1e8ad58ffd1e3e937373e9c6bdfc608735151aaf13b32ad826d395cfc32"
+          }
+        ],
+        "dirty_paths_at_review": [],
+        "subtree_status": "untracked_concurrent_work_not_bound_by_head_alone",
+        "lessons": [
+          {
+            "source": "embodiments/harness/edits.py:58",
+            "invariant": "Preserve mixed CREATE/EDIT order and validate the entire requested edit set before writing any member.",
+            "transplant": "Add corresponding adversarial controls to the existing canonical workspace/artifact service; do not create a second write-authority service.",
+            "existing_tests": [
+              "test_edits_refuse_every_escape",
+              "test_an_ambiguous_search_is_refused",
+              "test_edits_are_all_or_nothing",
+              "test_a_component_can_be_created",
+              "test_creating_over_an_existing_file_is_refused",
+              "test_create_blocks_are_still_all_or_nothing"
+            ]
+          },
+          {
+            "source": "embodiments/harness/gate.py:89",
+            "invariant": "Freeze evaluator identity before candidate work and refuse acceptance if the evaluator changed even when its exit code is zero.",
+            "transplant": "Bind canonical evaluator/source bytes before dispatch, then retain the existing changed-gate negative control at tests/test_harness.py:107.",
+            "existing_tests": [
+              "test_a_run_that_changes_the_check_is_void",
+              "test_the_gate_decides_and_the_fix_flips_it"
+            ]
+          },
+          {
+            "source": "embodiments/harness/gate.py:122",
+            "invariant": "A timeout owns and terminates the process group, then waits for output/drain.",
+            "transplant": "Reuse the process-group cleanup sequence at the declared external-process adapter and add cancellation as a separate path.",
+            "existing_tests": [
+              "test_a_gate_timeout_returns_instead_of_raising_name_error"
+            ]
+          },
+          {
+            "source": "embodiments/harness/model.py:142",
+            "invariant": "Offline controls include prose-only replies, plausible wrong edits, tampered evaluators, repair after feedback and an unsolvable floor.",
+            "transplant": "Extend existing canonical conformance fixtures with these response classes; keep synthetic controls separate from real-provider results.",
+            "existing_tests": [
+              "test_the_fake_model_is_deterministic_per_difficulty",
+              "test_difficulty_nine_is_a_floor_however_many_attempts_are_made"
+            ]
+          }
+        ],
+        "do_not_copy": [
+          "Gate.sandbox is a label; Gate.run executes bash on the host and does not instantiate a sandbox.",
+          "The effect screen is substring matching on a command, not typed authority.",
+          "The child environment retains HOME/PYTHONPATH and drops PYTHONNOUSERSITE. This can reload the known global usercustomize.py monkeypatch.",
+          "Gate-path heuristics do not completely identify an arbitrary evaluator's dependencies.",
+          "Edit staging avoids partial validation writes but is not a crash-atomic filesystem transaction.",
+          "repo.prepare removes an existing destination; do not transplant its overwrite policy into a shared workspace.",
+          "FakeSession and Cost use synthetic or zero-default token accounting; do not use them as real-provider accounting authorities."
+        ]
+      },
+      {
+        "repository_path": "/tmp/claude-1000/-home-username-speculative-prompting/07d20b57-025b-4bae-b397-f8560b4e53af/scratchpad/harness-probe/mockprov.py",
+        "head": null,
+        "files": [],
+        "dirty_paths_at_review": [],
+        "subtree_status": null,
+        "lessons": [
+          {
+            "source_lines": "77-93",
+            "transplant": "Responses object plus response.created/response.completed event framing as an initial offline parser control."
+          },
+          {
+            "source_lines": "94-100",
+            "transplant": "Anthropic Messages non-streaming response shape as an offline parser control."
+          },
+          {
+            "source_lines": "101-119",
+            "transplant": "ChatCompletions role/content/finish chunks followed by data: [DONE], plus non-streaming completion shape."
+          },
+          {
+            "source_lines": "40-76",
+            "transplant": "Compare materialized messages and tool schema exposure in normalized tokenizer units, with the tokenizer named explicitly."
+          }
+        ],
+        "do_not_copy": [
+          "Hardcoded usage 0 input / 1 output is fixture data, never provider-reported usage.",
+          "HTTPServer is single threaded; use the already-owned canonical broker concurrency model.",
+          "Anthropic streaming and detailed Responses delta sequences are not implemented by this probe.",
+          "No request authentication, exact route authority, body-size bound or timeout policy is established by this file.",
+          "Normalizing JSON and tokenizing with cl100k_base is not a qualified exact-wire token bound for every provider/model."
+        ]
+      }
+    ]
+  },
+  "verification": {
+    "final_source_suite": "pending",
+    "final_clean_wheel_suite": "pending",
+    "current_suite_intermediate_failures": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/verification-expansion-01.json",
+    "older_wheel_narrow_contract_checks": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/current-wheel-checks.json"
+  },
+  "limits": [
+    "Configured native CLIs, modified SDK profiles and a generation utility are different interventions, not fair stock-agent head-to-head.",
+    "One small reused task population, one model and uncontrolled native prompts; no AGI or broad generalization claim.",
+    "Some runs overlap; elapsed time is recorded but not a fair speed ranking.",
+    "OpenCode full-solve call/token totals remain unknown until its accounting audit is resolved.",
+    "Prior failures, paused tasks and unknown usage/cost remain visible."
+  ],
+  "pending_updates": [
+    "Seven-project live-expansion-batch report",
+    "Full OpenCode accounting/failure audit",
+    "Final source/conformance/clean-wheel verification counts"
+  ]
+}

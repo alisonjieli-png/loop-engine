@@ -252,6 +252,13 @@ def execute_adaptive_capability(
         input_value = arguments
         input_role = "next_action_decision/v1"
         output_role = "environment_description/v1"
+    elif plan.handle == "core.verifier.execute":
+        from .verifier_execute import verifier_execute_operation
+        operation = lambda _value, _params: verifier_execute_operation(
+            arguments, services)
+        input_value = arguments
+        input_role = "next_action_decision/v1"
+        output_role = "verifier_execution/v1"
     elif plan.handle == "core.intelligence.search":
         operation = lambda _value, _params: intelligence_search_operation(
             arguments, services, owner)

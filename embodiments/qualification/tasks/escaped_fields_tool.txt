@@ -1,0 +1,7 @@
+Create a small standard-library Python project.
+
+Deliver escaped_fields.py, exporting split_escaped(text: str, delimiter: str = '|', escape: str = '\\') -> list[str]. The delimiter and escape must each be exactly one character and must differ. An escape quotes exactly the next character. Unescaped delimiters separate fields. Preserve empty fields, including leading and trailing fields. Empty input returns ['']. A trailing unmatched escape raises ValueError. Non-string arguments raise TypeError. Invalid delimiter/escape values raise ValueError.
+
+The module must also provide a command-line interface: read a JSON object containing text and optional delimiter/escape from standard input, then print the resulting list as JSON. Errors must exit nonzero. Deliver verify.py with meaningful executable checks of the function and CLI. Use only Python's standard library. Test code should clean up its temporary files and must not leave undeclared dependency files in the workspace. Do not request package installation or network access.
+
+Run the verification and return the authored module and verification source as the deliverables. These requirements are complete; no external input or user choice is required.

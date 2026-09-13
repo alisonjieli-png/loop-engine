@@ -1,0 +1,1268 @@
+{
+  "record_type": "generated_view_audit/v1",
+  "models": [
+    {
+      "record_type": "architecture_diagram/v1",
+      "key": "context",
+      "title": "Loop Engine in its setting",
+      "level": "context",
+      "note": "What a run reaches outside itself.",
+      "elements": [
+        {
+          "key": "operator",
+          "name": "Operator",
+          "kind": "person",
+          "description": "Sets the task, the authority, and the budget.",
+          "module": "",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "engine",
+          "name": "Loop Engine",
+          "kind": "system",
+          "description": "Interprets the task and performs the work through Loops.",
+          "module": "",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "providers",
+          "name": "Model providers",
+          "kind": "external",
+          "description": "Ollama, Mistral, OpenRouter and other configured routes.",
+          "module": "",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "sandbox",
+          "name": "Execution sandbox",
+          "kind": "external",
+          "description": "Docker or a confined host process.",
+          "module": "",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "sources",
+          "name": "Task and data sources",
+          "kind": "external",
+          "description": "Files, repositories, datasets, task systems, and benchmarks.",
+          "module": "",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "tools",
+          "name": "External tools and services",
+          "kind": "external",
+          "description": "Typed capabilities selected under explicit effect authority.",
+          "module": "",
+          "evidence_state": "partial"
+        }
+      ],
+      "relationships": [
+        {
+          "source": "operator",
+          "target": "engine",
+          "label": "gives a task and authority",
+          "carries": "task text, permissions, budget"
+        },
+        {
+          "source": "engine",
+          "target": "providers",
+          "label": "asks",
+          "carries": "work packets, typed output contracts"
+        },
+        {
+          "source": "engine",
+          "target": "sandbox",
+          "label": "runs generated code in",
+          "carries": "projects, commands, artifacts"
+        },
+        {
+          "source": "engine",
+          "target": "sources",
+          "label": "reads from or writes to",
+          "carries": "authorized source refs and verified artifacts"
+        },
+        {
+          "source": "engine",
+          "target": "tools",
+          "label": "invokes",
+          "carries": "typed requests, observations, effect records"
+        },
+        {
+          "source": "engine",
+          "target": "operator",
+          "label": "returns",
+          "carries": "verified result, or a precise blocker"
+        }
+      ]
+    },
+    {
+      "record_type": "architecture_diagram/v1",
+      "key": "containers",
+      "title": "What a task passes through",
+      "level": "container",
+      "note": "The middle level between the setting and the components. The state label distinguishes working paths from partial and shadow contracts.",
+      "elements": [
+        {
+          "key": "frontier",
+          "name": "Task and frontier",
+          "kind": "container",
+          "description": "The task plus a post-run projection of what stayed open. A living frontier is not implemented.",
+          "module": "core.task_frontier",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "practitioner",
+          "name": "Practitioner runtime",
+          "kind": "container",
+          "description": "Runs the task as Loops and owns what happens next.",
+          "module": "core.adaptive_practitioner",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "orientation",
+          "name": "Orientation",
+          "kind": "container",
+          "description": "Reads the situation before committing to an approach.",
+          "module": "core.adaptive_practitioner_orientation",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "planning",
+          "name": "Planning",
+          "kind": "container",
+          "description": "Turns an approach into bounded steps.",
+          "module": "core.adaptive_practitioner_planning",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "context",
+          "name": "Context compiler",
+          "kind": "container",
+          "description": "Fits the chosen evidence into the window that exists.",
+          "module": "core.context_budget",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "interface",
+          "name": "Semantic interface",
+          "kind": "container",
+          "description": "Defines negotiable response contracts but is not yet wired into product calls.",
+          "module": "core.template_negotiation",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "calls",
+          "name": "Model calls and recording",
+          "kind": "container",
+          "description": "Asks providers, and writes down what was decided.",
+          "module": "core.adaptive_practitioner_records",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "allocation",
+          "name": "Model allocation",
+          "kind": "container",
+          "description": "Computes a shadow ladder. Product solve keeps one run-scoped model configuration.",
+          "module": "core.model_demand",
+          "evidence_state": "shadow"
+        },
+        {
+          "key": "capabilities",
+          "name": "Capability fabric",
+          "kind": "container",
+          "description": "Tools and skills the run may reach for.",
+          "module": "core.capability_directory",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "harness",
+          "name": "External harnesses",
+          "kind": "container",
+          "description": "Other coding agents driven as subordinate workers.",
+          "module": "core.external_harness",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "verification",
+          "name": "Verification",
+          "kind": "container",
+          "description": "Decides whether the work actually satisfies the task.",
+          "module": "core.adaptive_practitioner_verification",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "recovery",
+          "name": "Recovery",
+          "kind": "container",
+          "description": "Chooses what to do after a failure, by reasoning.",
+          "module": "core.adaptive_practitioner_recovery",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "stage_evidence",
+          "name": "Stage evidence sidecar",
+          "kind": "store",
+          "description": "Local observations beside selected facts in Run History.",
+          "module": "core.stage_store",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "history",
+          "name": "Run History",
+          "kind": "store",
+          "description": "Canonical ordered evidence for governed Loop work.",
+          "module": "core.run_history",
+          "evidence_state": "implemented"
+        }
+      ],
+      "relationships": [
+        {
+          "source": "frontier",
+          "target": "practitioner",
+          "label": "hands the open work to",
+          "carries": "task, authority, what is unresolved"
+        },
+        {
+          "source": "practitioner",
+          "target": "orientation",
+          "label": "starts by",
+          "carries": "the task as given, and the situation"
+        },
+        {
+          "source": "orientation",
+          "target": "planning",
+          "label": "settles enough to",
+          "carries": "approach, knowns, what is still unknown"
+        },
+        {
+          "source": "planning",
+          "target": "calls",
+          "label": "issues steps through",
+          "carries": "one bounded responsibility at a time"
+        },
+        {
+          "source": "context",
+          "target": "calls",
+          "label": "supplies the evidence to",
+          "carries": "selected evidence, within the window"
+        },
+        {
+          "source": "interface",
+          "target": "calls",
+          "label": "shapes the answer for",
+          "carries": "offered contract, and room to refuse it"
+        },
+        {
+          "source": "allocation",
+          "target": "calls",
+          "label": "orders the routes for",
+          "carries": "a ladder, or a refusal to advise"
+        },
+        {
+          "source": "calls",
+          "target": "capabilities",
+          "label": "may reach for",
+          "carries": "a tool, with its contract and effects"
+        },
+        {
+          "source": "calls",
+          "target": "harness",
+          "label": "may delegate to",
+          "carries": "bounded work, returned as events"
+        },
+        {
+          "source": "calls",
+          "target": "verification",
+          "label": "submits the result to",
+          "carries": "artifacts, claims, evidence"
+        },
+        {
+          "source": "verification",
+          "target": "recovery",
+          "label": "escalates a failure to",
+          "carries": "what failed, and what survived it"
+        },
+        {
+          "source": "recovery",
+          "target": "practitioner",
+          "label": "returns a plan to",
+          "carries": "the smallest change worth trying"
+        },
+        {
+          "source": "calls",
+          "target": "stage_evidence",
+          "label": "records stage observations in",
+          "carries": "semantic signature, motif, shape, route"
+        },
+        {
+          "source": "stage_evidence",
+          "target": "allocation",
+          "label": "supplies observations to",
+          "carries": "prior outcomes, or too few to advise on"
+        },
+        {
+          "source": "practitioner",
+          "target": "history",
+          "label": "records governed work in",
+          "carries": "Loop events, effects, decisions, verification"
+        },
+        {
+          "source": "verification",
+          "target": "frontier",
+          "label": "closes or reopens",
+          "carries": "what is now settled, what is still open"
+        }
+      ]
+    },
+    {
+      "record_type": "architecture_diagram/v1",
+      "key": "learning-fabric",
+      "title": "What a run records, and what later runs read",
+      "level": "component",
+      "note": "Default ladder advice stays shadow. An explicit offline binding can expose prior material, with mechanism-only evidence.",
+      "elements": [
+        {
+          "key": "practitioner",
+          "name": "Adaptive Practitioner",
+          "kind": "container",
+          "description": "Runs the kernel passes and owns every semantic decision.",
+          "module": "core.adaptive_practitioner",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "stage",
+          "name": "Stage fingerprint",
+          "kind": "component",
+          "description": "Names a semantic situation, motif, and shape. It does not persist exact occurrence identity.",
+          "module": "core.stage_fingerprint",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "decision",
+          "name": "Semantic decision",
+          "kind": "component",
+          "description": "Who decided, from which alternatives, and why.",
+          "module": "core.semantic_decision",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "outcome",
+          "name": "Decision outcome",
+          "kind": "component",
+          "description": "Provides an initial forward join. Complete stage contribution is not wired.",
+          "module": "core.decision_outcome",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "choice",
+          "name": "Choice contract",
+          "kind": "component",
+          "description": "One typed shape for every decision put to a model.",
+          "module": "core.choice",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "template",
+          "name": "Template negotiation",
+          "kind": "component",
+          "description": "Defines negotiable response shapes. Product calls still use fixed step schemas.",
+          "module": "core.template_negotiation",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "recovery",
+          "name": "Recovery",
+          "kind": "component",
+          "description": "Reasoning chooses what to do after a failure.",
+          "module": "core.recovery",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "ladder",
+          "name": "Model ladder",
+          "kind": "component",
+          "description": "Computes a shadow route order from coarse prior outcomes. It does not select a route.",
+          "module": "core.model_demand",
+          "evidence_state": "shadow"
+        },
+        {
+          "key": "convergence",
+          "name": "Convergence measure",
+          "kind": "component",
+          "description": "Default arms stay shadow; explicit bindings control offline packet exposure with injected-provider evidence only.",
+          "module": "core.convergence",
+          "evidence_state": "shadow"
+        },
+        {
+          "key": "credit",
+          "name": "Outcome vector",
+          "kind": "component",
+          "description": "Separates several signals from run outcome. Production stage attribution remains partial.",
+          "module": "core.outcome_vector",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "store",
+          "name": "Stage JSONL store",
+          "kind": "store",
+          "description": "Local sidecar index; selected exposure, decision, and action facts also enter Run History, but canonical rows are pending.",
+          "module": "core.stage_store",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "lifecycle",
+          "name": "Run stage lifecycle",
+          "kind": "component",
+          "description": "Loads the sidecar and closes it at run exits. Durable campaign storage is not implemented.",
+          "module": "core.run_stages",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "history",
+          "name": "Run History",
+          "kind": "store",
+          "description": "Canonical append-only runtime evidence and event chain.",
+          "module": "core.run_history",
+          "evidence_state": "implemented"
+        }
+      ],
+      "relationships": [
+        {
+          "source": "credit",
+          "target": "store",
+          "label": "is stored beside each stage",
+          "carries": "known signals, unknown signals, granularity"
+        },
+        {
+          "source": "store",
+          "target": "ladder",
+          "label": "projects coarse evidence into",
+          "carries": "route, attempts, Boolean helped projection"
+        },
+        {
+          "source": "practitioner",
+          "target": "stage",
+          "label": "names each step",
+          "carries": "responsibility, horizons, what is open"
+        },
+        {
+          "source": "practitioner",
+          "target": "decision",
+          "label": "records every choice",
+          "carries": "owner, alternatives, reason"
+        },
+        {
+          "source": "decision",
+          "target": "outcome",
+          "label": "is followed forward",
+          "carries": "admitted, executed, observed, verified"
+        },
+        {
+          "source": "practitioner",
+          "target": "choice",
+          "label": "asks through",
+          "carries": "options, enforced bounds, novel proposals"
+        },
+        {
+          "source": "choice",
+          "target": "template",
+          "label": "may negotiate the shape with",
+          "carries": "disposition, replacement, extensions"
+        },
+        {
+          "source": "choice",
+          "target": "recovery",
+          "label": "carries the failure decision for",
+          "carries": "eligible routes, mechanical facts"
+        },
+        {
+          "source": "stage",
+          "target": "convergence",
+          "label": "requests an occurrence assignment",
+          "carries": "experiment, signature, ephemeral occurrence, seed"
+        },
+        {
+          "source": "lifecycle",
+          "target": "store",
+          "label": "loads and closes",
+          "carries": "prior stages in, closed stages out"
+        },
+        {
+          "source": "stage",
+          "target": "store",
+          "label": "is recorded in",
+          "carries": "digest, motif, shape, route"
+        },
+        {
+          "source": "ladder",
+          "target": "practitioner",
+          "label": "is recorded but not applied",
+          "carries": "shadow route order, or an honest refusal"
+        },
+        {
+          "source": "outcome",
+          "target": "store",
+          "label": "adds the run-level result to",
+          "carries": "task outcome beside any local signals"
+        },
+        {
+          "source": "practitioner",
+          "target": "history",
+          "label": "records governed work in",
+          "carries": "Loop events, decisions, effects, verification"
+        }
+      ]
+    },
+    {
+      "record_type": "architecture_diagram/v1",
+      "key": "atomic-loop-sequence",
+      "title": "One governed semantic responsibility",
+      "level": "dynamic",
+      "note": "Current product sequence. Response negotiation and stage model allocation have contracts but do not yet control this path.",
+      "elements": [
+        {
+          "key": "request",
+          "name": "Typed responsibility",
+          "kind": "component",
+          "description": "Goal, inputs, authority, budget, and completion condition.",
+          "module": "core.task_frontier",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "loop",
+          "name": "Owning Loop",
+          "kind": "container",
+          "description": "The only executable graph vertex.",
+          "module": "loop.recursive_loop",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "context",
+          "name": "Context selection",
+          "kind": "component",
+          "description": "Selects bounded task and intelligence material.",
+          "module": "core.practitioner_context",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "interface",
+          "name": "Response program",
+          "kind": "component",
+          "description": "Negotiable contract exists but is not on the product path.",
+          "module": "core.template_negotiation",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "allocation",
+          "name": "Model allocation",
+          "kind": "component",
+          "description": "A shadow ladder is recorded; the run route stays fixed.",
+          "module": "core.model_demand",
+          "evidence_state": "shadow"
+        },
+        {
+          "key": "call",
+          "name": "Semantic model call",
+          "kind": "component",
+          "description": "Provider-neutral call through the ModelGateway.",
+          "module": "core.model_gateway",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "candidate",
+          "name": "Candidate admission",
+          "kind": "component",
+          "description": "Parses and validates an untrusted response.",
+          "module": "core.model_response_admission",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "action",
+          "name": "Authorized action",
+          "kind": "component",
+          "description": "Executes a selected registered capability.",
+          "module": "core.adaptive_practitioner_capabilities",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "verify",
+          "name": "Verification",
+          "kind": "component",
+          "description": "Checks task evidence and produces a verdict.",
+          "module": "core.adaptive_practitioner_verification",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "state",
+          "name": "Trusted state transition",
+          "kind": "component",
+          "description": "Implemented for the semantic runtime, not yet for every adaptive Practitioner update.",
+          "module": "core.semantic_state",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "outcome",
+          "name": "Stage outcome",
+          "kind": "component",
+          "description": "One selected-action stage has a local result signal; complete stage contribution is unavailable.",
+          "module": "core.outcome_vector",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "history",
+          "name": "Run History",
+          "kind": "store",
+          "description": "Preserves the governed event sequence.",
+          "module": "core.run_history",
+          "evidence_state": "implemented"
+        }
+      ],
+      "relationships": [
+        {
+          "source": "request",
+          "target": "loop",
+          "label": "starts",
+          "carries": "typed work"
+        },
+        {
+          "source": "loop",
+          "target": "context",
+          "label": "requests",
+          "carries": "context need"
+        },
+        {
+          "source": "context",
+          "target": "interface",
+          "label": "supplies",
+          "carries": "selected references and task state"
+        },
+        {
+          "source": "interface",
+          "target": "allocation",
+          "label": "describes",
+          "carries": "response and model demand"
+        },
+        {
+          "source": "allocation",
+          "target": "call",
+          "label": "would select",
+          "carries": "eligible model portfolio; currently shadow"
+        },
+        {
+          "source": "call",
+          "target": "candidate",
+          "label": "returns",
+          "carries": "untrusted model response"
+        },
+        {
+          "source": "candidate",
+          "target": "action",
+          "label": "proposes",
+          "carries": "validated action request"
+        },
+        {
+          "source": "action",
+          "target": "verify",
+          "label": "produces",
+          "carries": "observation, artifacts, execution records"
+        },
+        {
+          "source": "verify",
+          "target": "state",
+          "label": "authorizes or refuses",
+          "carries": "verified proposed state change"
+        },
+        {
+          "source": "state",
+          "target": "outcome",
+          "label": "reports",
+          "carries": "local and downstream outcome signals"
+        },
+        {
+          "source": "outcome",
+          "target": "history",
+          "label": "records",
+          "carries": "identity, evidence, unknowns, cost"
+        }
+      ]
+    },
+    {
+      "record_type": "architecture_diagram/v1",
+      "key": "fingerprint-lattice",
+      "title": "Identity scales and their current linkage",
+      "level": "component",
+      "note": "Several records exist, but one linked multi-scale fingerprint lattice is not implemented. Partial labels prevent the drawing from claiming otherwise.",
+      "elements": [
+        {
+          "key": "f8",
+          "name": "F8 Campaign",
+          "kind": "component",
+          "description": "A bounded task population and evaluation run.",
+          "module": "code_nodes.campaign_runner",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "f7",
+          "name": "F7 Task",
+          "kind": "component",
+          "description": "Structured task identity and compatibility facts.",
+          "module": "core.task_fingerprint",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "f6",
+          "name": "F6 Solution branch",
+          "kind": "component",
+          "description": "Independent branch identity and outcome linkage are target behavior.",
+          "module": "",
+          "evidence_state": "target"
+        },
+        {
+          "key": "f5",
+          "name": "F5 Structural subgraph",
+          "kind": "component",
+          "description": "Solution graphs exist; cross-run subgraph fingerprints do not.",
+          "module": "code_nodes.solution_graph",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "f4",
+          "name": "F4 Cognitive episode",
+          "kind": "component",
+          "description": "Reviewed episode records exist outside the production stage lattice.",
+          "module": "memory.episodic.record",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "f3",
+          "name": "F3 State transition",
+          "kind": "component",
+          "description": "Versioned semantic transitions exist on a narrower runtime path.",
+          "module": "core.semantic_state",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "f2",
+          "name": "F2 Loop activation occurrence",
+          "kind": "component",
+          "description": "Product events link activation, semantic call, and attempts; canonical projection records are pending.",
+          "module": "loop.recursive_loop",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "f1",
+          "name": "F1 Logical semantic call",
+          "kind": "component",
+          "description": "One coherent semantic invocation identity.",
+          "module": "core.semantic_runtime_records",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "f0",
+          "name": "F0 Physical provider attempt",
+          "kind": "component",
+          "description": "Exact provider attempt and usage evidence.",
+          "module": "core.model_gateway",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "f9",
+          "name": "F9 Cross-run motif",
+          "kind": "component",
+          "description": "Derived stage motif with no campaign outcome linkage.",
+          "module": "core.stage_fingerprint",
+          "evidence_state": "partial"
+        }
+      ],
+      "relationships": [
+        {
+          "source": "f8",
+          "target": "f7",
+          "label": "contains",
+          "carries": "task references"
+        },
+        {
+          "source": "f7",
+          "target": "f6",
+          "label": "may compare",
+          "carries": "branch identity and task objective"
+        },
+        {
+          "source": "f6",
+          "target": "f5",
+          "label": "contains",
+          "carries": "subgraph identity and topology"
+        },
+        {
+          "source": "f5",
+          "target": "f4",
+          "label": "contains",
+          "carries": "episode references"
+        },
+        {
+          "source": "f4",
+          "target": "f3",
+          "label": "summarizes",
+          "carries": "ordered transition references"
+        },
+        {
+          "source": "f3",
+          "target": "f2",
+          "label": "is produced by",
+          "carries": "exact Loop activation reference"
+        },
+        {
+          "source": "f2",
+          "target": "f1",
+          "label": "owns",
+          "carries": "logical semantic call references"
+        },
+        {
+          "source": "f1",
+          "target": "f0",
+          "label": "may require",
+          "carries": "one or more physical attempt references"
+        },
+        {
+          "source": "f4",
+          "target": "f9",
+          "label": "may project to",
+          "carries": "cross-run motif candidate"
+        }
+      ]
+    },
+    {
+      "record_type": "architecture_diagram/v1",
+      "key": "stage-assistance-trial",
+      "title": "Candidate paired stage assistance path",
+      "level": "dynamic",
+      "note": "The evidence contracts and rebuildable projection are implemented as a partial foundation. The public offline solve path executes both arms with injected responses and hydrated advisory material. Its control manifest says mechanism-only; live benefit is unproven.",
+      "elements": [
+        {
+          "key": "history",
+          "name": "Canonical Run History",
+          "kind": "store",
+          "description": "Immutable source events for experiment records.",
+          "module": "core.run_history",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "projection",
+          "name": "Stage evidence projection",
+          "kind": "store",
+          "description": "Rebuilds canonical source rows, not current product histories.",
+          "module": "core.stage_evidence_projection",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "trial",
+          "name": "Control manifest and trial",
+          "kind": "component",
+          "description": "The fixture shares one manifest with six blocking unknowns.",
+          "module": "core.stage_assistance_experiment",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "retrieval",
+          "name": "Prior candidate snapshot",
+          "kind": "component",
+          "description": "Offline fixture injects typed candidates and digest-bound hydrated material; canonical Run History query is pending.",
+          "module": "core.stage_evidence_records",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "advisory",
+          "name": "Advisory assignment",
+          "kind": "component",
+          "description": "Exposure manifest may name retrieved prior references.",
+          "module": "core.stage_assistance_experiment",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "fresh",
+          "name": "Fresh assignment",
+          "kind": "component",
+          "description": "Exposure manifest requires zero prior references.",
+          "module": "core.stage_assistance_experiment",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "assisted_call",
+          "name": "Assisted model call",
+          "kind": "component",
+          "description": "Public offline solve sends hydrated prior material through the prompt-sensitive injected provider adapter.",
+          "module": "core.model_gateway",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "fresh_call",
+          "name": "Fresh model call",
+          "kind": "component",
+          "description": "Public offline solve sends no candidate or hydrated prior material through the same injected provider path.",
+          "module": "core.model_gateway",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "verify",
+          "name": "Action result verification",
+          "kind": "component",
+          "description": "Exact occurrence refs link one selected action, execution, and same-Practitioner verifier; independence is pending.",
+          "module": "core.stage_action_lineage",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "outcome",
+          "name": "Linked trial outcomes",
+          "kind": "component",
+          "description": "The contract can hold outcomes; the fixture emits none.",
+          "module": "core.stage_evidence_records",
+          "evidence_state": "partial"
+        }
+      ],
+      "relationships": [
+        {
+          "source": "history",
+          "target": "projection",
+          "label": "rebuilds",
+          "carries": "digest-bound stage experiment records"
+        },
+        {
+          "source": "projection",
+          "target": "trial",
+          "label": "is intended to supply",
+          "carries": "scoped prior occurrence references"
+        },
+        {
+          "source": "trial",
+          "target": "retrieval",
+          "label": "freezes",
+          "carries": "source-state digest and control unknowns"
+        },
+        {
+          "source": "retrieval",
+          "target": "advisory",
+          "label": "may expose",
+          "carries": "exact prior candidate references"
+        },
+        {
+          "source": "trial",
+          "target": "fresh",
+          "label": "also creates",
+          "carries": "an occurrence with zero prior references"
+        },
+        {
+          "source": "advisory",
+          "target": "assisted_call",
+          "label": "feeds offline",
+          "carries": "hydrated material and explicit use contract"
+        },
+        {
+          "source": "fresh",
+          "target": "fresh_call",
+          "label": "feeds offline",
+          "carries": "fresh packet from the same declared source state"
+        },
+        {
+          "source": "assisted_call",
+          "target": "verify",
+          "label": "submits offline",
+          "carries": "assisted output and call records"
+        },
+        {
+          "source": "fresh_call",
+          "target": "verify",
+          "label": "submits offline",
+          "carries": "fresh output and call records"
+        },
+        {
+          "source": "verify",
+          "target": "outcome",
+          "label": "would produce canonical",
+          "carries": "metric, run validity, cost, latency, usage"
+        },
+        {
+          "source": "outcome",
+          "target": "history",
+          "label": "must be recorded in",
+          "carries": "linked immutable outcome evidence"
+        }
+      ]
+    },
+    {
+      "record_type": "architecture_diagram/v1",
+      "key": "deployment",
+      "title": "Learning evidence deployment boundary",
+      "level": "container",
+      "note": "Current runs and Run History are local. The SQLite stage evidence projection is a rebuildable index, not a shared authority. A multi-tenant learning service remains a target.",
+      "elements": [
+        {
+          "key": "solve",
+          "name": "Local product solve",
+          "kind": "container",
+          "description": "One adaptive Practitioner run.",
+          "module": "core.adaptive_practitioner",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "history",
+          "name": "Local Run History",
+          "kind": "store",
+          "description": "Canonical event and artifact references.",
+          "module": "core.run_history",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "sidecar",
+          "name": "Stage JSONL sidecar",
+          "kind": "store",
+          "description": "Optional shared path with no campaign transaction contract.",
+          "module": "core.stage_store",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "projection",
+          "name": "SQLite stage projection",
+          "kind": "store",
+          "description": "File-backed WAL index rebuilt from Run History events.",
+          "module": "core.stage_evidence_projection",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "scheduler",
+          "name": "Reactive scheduler",
+          "kind": "container",
+          "description": "Local durable activation scheduling and fencing.",
+          "module": "core.reactive_scheduler",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "providers",
+          "name": "Model gateway",
+          "kind": "container",
+          "description": "Configured provider routes and exact physical attempts.",
+          "module": "core.model_gateway",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "tools",
+          "name": "Capability directory",
+          "kind": "container",
+          "description": "Effect-free discovery before authorized invocation.",
+          "module": "core.capability_directory",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "shared",
+          "name": "Shared learning service",
+          "kind": "external",
+          "description": "Transactional multi-tenant ingestion, retention, and query.",
+          "module": "",
+          "evidence_state": "target"
+        }
+      ],
+      "relationships": [
+        {
+          "source": "solve",
+          "target": "history",
+          "label": "writes",
+          "carries": "canonical Loop events and artifact refs"
+        },
+        {
+          "source": "solve",
+          "target": "sidecar",
+          "label": "may write",
+          "carries": "shadow stage observations"
+        },
+        {
+          "source": "history",
+          "target": "projection",
+          "label": "rebuilds",
+          "carries": "committed intact stage evidence events"
+        },
+        {
+          "source": "scheduler",
+          "target": "solve",
+          "label": "may activate",
+          "carries": "leased finite Loop work"
+        },
+        {
+          "source": "solve",
+          "target": "providers",
+          "label": "calls through",
+          "carries": "authorized semantic requests"
+        },
+        {
+          "source": "solve",
+          "target": "tools",
+          "label": "discovers and invokes through",
+          "carries": "typed capability requests and effect records"
+        },
+        {
+          "source": "history",
+          "target": "shared",
+          "label": "could publish to",
+          "carries": "privacy-scoped immutable evidence"
+        },
+        {
+          "source": "shared",
+          "target": "projection",
+          "label": "could replace",
+          "carries": "shared query projection, never runtime authority"
+        }
+      ]
+    },
+    {
+      "record_type": "architecture_diagram/v1",
+      "key": "record-access",
+      "title": "Typed record access and distinct storage authorities",
+      "level": "component",
+      "note": "Store and artifact boxes are internal mechanics, not executable Loop graph vertices. Managed notes use a tool; committed Run History has a separate immutable owner. PostgreSQL remains a target.",
+      "elements": [
+        {
+          "key": "caller",
+          "name": "Developer or operational Loop",
+          "kind": "container",
+          "description": "Submits a typed record request under host-granted scope.",
+          "module": "loop.recursive_loop",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "operations",
+          "name": "Managed record operations",
+          "kind": "component",
+          "description": "Schema, scope, exact effect approval and revision checks.",
+          "module": "core.record_operations",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "query",
+          "name": "Catalog query contract",
+          "kind": "component",
+          "description": "One closed filter contract; no LLM SQL text.",
+          "module": "catalog.query",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "files",
+          "name": "Immutable package JSONL",
+          "kind": "store",
+          "description": "Shipped read-only records; not a mutable notes document.",
+          "module": "catalog.stores.package_jsonl",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "duckdb",
+          "name": "DuckDB file query adapter",
+          "kind": "component",
+          "description": "Bounded JSONL reads with typed filters; no file CRUD.",
+          "module": "catalog.stores.duckdb_files",
+          "evidence_state": "partial"
+        },
+        {
+          "key": "sqlite",
+          "name": "Local SQLite records",
+          "kind": "store",
+          "description": "Scoped mutable heads with atomic version preconditions.",
+          "module": "catalog.stores.sqlite_store",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "artifacts",
+          "name": "Immutable revision artifacts",
+          "kind": "store",
+          "description": "Digest-addressed document revisions with prior references.",
+          "module": "core.context_artifacts",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "history",
+          "name": "Canonical Run History",
+          "kind": "store",
+          "description": "Append-only execution evidence; not edited by note CRUD.",
+          "module": "core.run_history",
+          "evidence_state": "implemented"
+        },
+        {
+          "key": "postgres",
+          "name": "Server record adapter",
+          "kind": "external",
+          "description": "Future qualified multi-process database backend.",
+          "module": "",
+          "evidence_state": "target"
+        }
+      ],
+      "relationships": [
+        {
+          "source": "caller",
+          "target": "operations",
+          "label": "requests",
+          "carries": "typed operation, expected revision, document"
+        },
+        {
+          "source": "operations",
+          "target": "query",
+          "label": "compiles bounded reads",
+          "carries": "host-enforced namespace and typed predicates"
+        },
+        {
+          "source": "query",
+          "target": "files",
+          "label": "reads through adapter",
+          "carries": "record cards and selected values"
+        },
+        {
+          "source": "query",
+          "target": "duckdb",
+          "label": "uses optional SQL implementation",
+          "carries": "bound literals and declared source files"
+        },
+        {
+          "source": "duckdb",
+          "target": "files",
+          "label": "scans without writing",
+          "carries": "JSONL record bytes"
+        },
+        {
+          "source": "operations",
+          "target": "artifacts",
+          "label": "stores after approval",
+          "carries": "immutable revision bytes and digest"
+        },
+        {
+          "source": "operations",
+          "target": "sqlite",
+          "label": "commits after artifact write",
+          "carries": "current reference with atomic precondition"
+        },
+        {
+          "source": "query",
+          "target": "sqlite",
+          "label": "queries",
+          "carries": "scoped record results"
+        },
+        {
+          "source": "operations",
+          "target": "history",
+          "label": "host may persist owning Loop events",
+          "carries": "operation metadata; no automatic CLI history write"
+        },
+        {
+          "source": "query",
+          "target": "postgres",
+          "label": "could use qualified adapter",
+          "carries": "same typed request with declared capabilities"
+        }
+      ]
+    }
+  ],
+  "source_sha256": "380917132a660b766cd6fca2d1c4cbf3bf51740c10d0b15ed1a9fbc1601ec83f",
+  "view_count": 8,
+  "verification": "Existing typed model and generator. No browser/PlantUML visual rendering performed.",
+  "missing_mandate_fields": [
+    "structured protocol per edge",
+    "structured synchronous/asynchronous behavior per edge",
+    "structured trust/authority per edge"
+  ],
+  "all_requested_c4_views_implemented": false
+}

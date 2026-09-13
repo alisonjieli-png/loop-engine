@@ -25,6 +25,9 @@ LoopDefinition
 `LoopDefinition` is immutable. Its canonical content determines its SHA-256
 digest. Loading a changed record with the old digest fails.
 
+Read [contract cardinality and record compatibility](RECORD-COMPATIBILITY.md)
+for explicit input cardinality and version-preserving historical reads.
+
 ## Start boundary
 
 `LoopStartRequest` carries five fields:

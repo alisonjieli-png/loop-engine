@@ -5,6 +5,13 @@
 This document records an accepted architecture direction and a required
 checkpoint. It does not claim that the checkpoint is implemented.
 
+The [flexible cognitive and action composition direction](FLEXIBLE-COGNITIVE-AND-ACTION-COMPOSITION.md)
+and [configuration grid search guide](../guides/configuration-grid-search-and-optimization.md)
+provide the September 13 expansion requirements and experiment protocol.
+They build on this checkpoint rather than creating a parallel configuration
+or optimization system. More steps, prompts, questions, and intelligence can
+be useful treatments; reduction is not the only permitted objective.
+
 Loop Engine will represent observable work strategies as typed, versioned
 configuration and measure how those strategies affect task outcomes. It will
 not claim to reproduce biological consciousness. It will not persist private

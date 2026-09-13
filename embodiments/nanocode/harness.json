@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "harness_id": "nanocode",
+  "package_version": "git-b009d3dbedf14795a5c10804a5455386563f4b5b",
+  "style": "nanocode",
+  "command_prefix": ["/usr/bin/python3", "/home/username/loop-engine/embodiments/nanocode/upstream/nanocode.py"],
+  "read_only_paths": ["/home/username/loop-engine/embodiments/nanocode/upstream"]
+}

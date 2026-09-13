@@ -7,6 +7,29 @@ All notable changes to this project are documented here. This project follows
 
 First public release.
 
+### Fixed on 2026-09-13
+
+- [Claude Fable 5.1 review of 2026-09-13](docs/verification/CLAUDE-FABLE-5.1-REVIEW-2026-09-13.md),
+  fixes applied the same day. A registered evaluator's verdict
+  (`semantic_response_rejected` or `response_evaluation_inconclusive`) is
+  now recorded on the physical attempt with its own code and ends the
+  invocation on the route that produced the answer; the new
+  `ModelGatewayConfig.allow_evaluator_route_failover` permission is the only
+  way a verdict may move to another route. A harness selection policy
+  refuses two records that cite one Run History reference, so a copied
+  successful record can neither satisfy the minimum-evidence gate nor change
+  which harness ranks first. The spawned task checkpoint reader and the
+  information binding reader require a stored SHA-256 digest and stored
+  integer counters instead of recomputing a blank digest or narrowing a
+  coerced value. The raw-host verifier runs in its own process group, ends
+  every process it started on timeout, bounds captured output, and returns
+  the output tail with a timeout error. Evaluation records are
+  `harness_response_evaluation/v2` with the evaluated subject contract, and a
+  two-parameter callback receives the occurrence it is judging. The
+  definition reader raises only `LoopDefinitionError` for stored contract
+  faults. The adaptive Practitioner treats an evaluator verdict as response
+  repair work rather than a transport failure.
+
 ### Added
 
 - [Unseen novel-task campaign](docs/verification/UNSEEN-NOVEL-TASK-CAMPAIGN-2026-09-06.md).

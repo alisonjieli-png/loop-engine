@@ -30,13 +30,13 @@ from .adaptive_practitioner_capabilities import (
 from .adaptive_practitioner_deterministic import run_deterministic_attempt
 from .adaptive_practitioner_orientation import orientation_policy_findings
 from .adaptive_practitioner_planning import (
-    AdaptivePlanningRequest, build_execution_plan,
+    AdaptivePlanningRequest, build_execution_plan, record_plan_outline,
 )
 from .adaptive_practitioner_records import (
     _unnamed_fields, ADAPTIVE_PRACTITIONER_RECORD_TYPE, NEXT_ACTION_KINDS,
     AdaptivePractitionerDependencies, AdaptivePractitionerError,
     AdaptivePractitionerRequest, AdaptiveRunServices, DeterministicAttemptTrace,
-    ModelStepRequest, NextActionDecision, TaskOrientationResult,
+    ModelStepRequest, NextActionDecision, TaskOrientationResult, ModelResponseRepairStalled,
 )
 from .adaptive_practitioner_result import (
     failed_adaptive_output, finish_deterministic_attempt, has_bound_accepted_incumbent,
@@ -350,8 +350,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                 "goal": "string", "reason": "string", "inputs": {},
                 "expected_output": "string",
                 "required_capabilities": ["registered capability ref"],
-                "permissions": [
-                    "source_read|network_read|workspace_write|sandbox_command"],
+                "permissions": [],
                 "budget": {},
                 "dependencies": ["string"], "scheduling": "string",
                 "verification": "string", "return_destination": "string",
@@ -363,6 +362,8 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
         failure = ""
         for attempt in (1, 2):
             try:
+                admission_contract = NextActionDecision.response_contract(tuple(sorted(
+                    entry['capability_ref'] for entry in services.available_capabilities())))
                 value = services.model(ModelStepRequest(
                     "decide_next",
                     ("Return typed NextActionDecision candidates for verified "
@@ -371,7 +372,8 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                      "changing the task or adding authority."),
                     {**_model_state(state, services),
                      "orientation": situation.knowns["orientation"].to_dict(),
-                     "next_action_validation_failure": failure}, schema))
+                     "next_action_validation_failure": failure}, schema,
+                    admission_contract=admission_contract))
                 decision_stage = services._graded_stage
                 actions = value.get("actions")
                 if not isinstance(actions, list) or not actions:
@@ -426,6 +428,11 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                     parsed.append(decision)
                 decisions = parsed
                 selected_index = raw_selected
+                break
+            except ModelResponseRepairStalled as exc:
+                from .adaptive_practitioner_recovery import recover_step_contract_failure
+                recover_step_contract_failure(exc,_model_state(state,services),services)
+                failure = str(exc)[:500]
                 break
             except SolutionModelError:
                 raise
@@ -508,6 +515,7 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
             AdaptivePlanningRequest(state, situation, chosen), services)
         plan.experiment["action_occurrence_ref"] = str(
             services.plan_details.get("active_action_occurrence_ref") or "")
+        record_plan_outline(plan, chosen.action, services)
         return plan
     def act(state: PractitionerState, plan: ExecutionPlan) -> list[ResultPacket]:
         from .adaptive_practitioner_scope import validate_scope_workspace
@@ -657,7 +665,8 @@ def run_adaptive_practitioner(
             owner, services,
             lambda: _history_record(owner, services, runs_dir))
     load_prior_stages(services, runs_dir)
-    services.model_session = dependencies.model_execution.start_session()
+    services.model_session = dependencies.model_execution.start_session(
+        artifact_store=services.artifacts)
     try:
         run = run_kernel_passes(KernelRunRequest(
             ProblemSpec(

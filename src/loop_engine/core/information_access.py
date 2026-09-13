@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import re
 import sqlite3
 from dataclasses import dataclass, field
 from enum import Enum
@@ -19,6 +20,9 @@ from typing import Protocol
 
 from ..loop.atomic_primitives import LoopValue, LoopValueRef
 from ..loop.intrinsic_kernel import intrinsic_content_digest
+
+
+_STORED_DIGEST = re.compile(r"^[0-9a-f]{64}$")
 
 
 class InformationAccessFailureCode(str, Enum):
@@ -239,6 +243,23 @@ class InformationStorageBinding:
             raise InformationAccessError(
                 InformationAccessFailureCode.INVALID_REQUEST,
                 "stored information binding has an invalid shape")
+        # A stored binding must carry its digest. Scope, owner, authorized
+        # Loops, and required permissions are exactly what the digest protects,
+        # so a blank digest is refused rather than recomputed.
+        if (type(value["binding_digest"]) is not str
+                or not _STORED_DIGEST.fullmatch(value["binding_digest"])):
+            raise InformationAccessError(
+                InformationAccessFailureCode.INTEGRITY_VIOLATION,
+                "stored information binding must carry its SHA-256 digest")
+        if type(value["size_bytes"]) is not int:
+            raise InformationAccessError(
+                InformationAccessFailureCode.INVALID_REQUEST,
+                "stored information binding size must be an integer")
+        if any(not isinstance(value[name], list) for name in (
+                "authorized_loop_ids", "required_permissions")):
+            raise InformationAccessError(
+                InformationAccessFailureCode.INVALID_REQUEST,
+                "stored information binding lists must be lists")
         if _digest_text(str(value["locator_token"])) != value["locator_digest"]:
             raise InformationAccessError(
                 InformationAccessFailureCode.INTEGRITY_VIOLATION,

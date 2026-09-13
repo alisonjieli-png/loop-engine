@@ -68,6 +68,12 @@ belong.
 
 ## Other self-improvement tasks
 
+The optional [recovery-learning assignment](../practitioner/COGNITIVE-ACT-RECOVERY.md)
+uses the configured model session to retain a conditional lesson in the
+existing artifact store. It records either a task-local disposition or an
+unvalidated `LearningBundle`. It does not update active intelligence or
+replace independent review.
+
 The same Loop Practitioner can receive other bounded goals and step profiles:
 
 - compare retrieval methods on a fixed query set;
@@ -80,6 +86,15 @@ The same Loop Practitioner can receive other bounded goals and step profiles:
 
 Each self-improvement task still ends at candidate staging unless a separate review authority
 accepts the result.
+
+Configuration search is another Practitioner task. It can compare added
+cognitive steps, action methods, prompt portfolios, questions, intelligence
+sources, and fallback policies, as well as compact alternatives. Read the
+[flexible composition direction](../../architecture/FLEXIBLE-COGNITIVE-AND-ACTION-COMPOSITION.md)
+and [grid search protocol](../../guides/configuration-grid-search-and-optimization.md).
+Enumeration, task execution, evaluation, acceptance, and promotion remain
+separate operations. An experiment can stage a useful configuration; it
+cannot approve its own finding for persistent reuse.
 
 ## Seed a new domain
 

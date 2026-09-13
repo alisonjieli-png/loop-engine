@@ -12,7 +12,8 @@ import os
 import shutil
 import subprocess
 import tempfile
-from dataclasses import asdict, dataclass
+import uuid
+from dataclasses import asdict, dataclass, field
 from pathlib import Path, PurePosixPath
 
 from .workspace_contracts import (
@@ -77,6 +78,66 @@ class DockerWorkspaceDeclaration:
                     "Docker image must use an immutable sha256 digest")
 
 
+@dataclass
+class _DockerCleanupTarget:
+    """Run-owned container identity and private daemon routing for cleanup."""
+
+    name: str
+    owner: str
+    binary: str
+    environment: dict[str, str] = field(repr=False)
+    container_id: str = ""
+
+
+def _docker_cleanup(target: _DockerCleanupTarget) -> tuple[bool, str]:
+    """Remove only this owned container and positively confirm its absence."""
+    identity = target.container_id or target.name
+    template = ('{"id":{{json .Id}},"name":{{json .Name}},'
+                '"owner":{{json (index .Config.Labels "loop-engine.command")}}}')
+
+    def inspect(reference):
+        return subprocess.run(
+            [target.binary, "container", "inspect", "--format", template, reference],
+            env=target.environment, capture_output=True, text=True, timeout=5,
+            shell=False)
+
+    def missing(process, reference):
+        return process.returncode != 0 and any(
+            line.rstrip().endswith(f"No such {kind}: {reference}")
+            for line in process.stderr.splitlines() for kind in ("container", "object"))
+
+    try:
+        observed = inspect(identity)
+        if missing(observed, identity):
+            return True, "container_absent"
+        if observed.returncode != 0:
+            return False, "container_inspection_failed"
+        value = json.loads(observed.stdout)
+        container_id = value.get("id", "")
+        if (not isinstance(container_id, str) or len(container_id) != 64
+                or any(character not in "0123456789abcdef" for character in container_id)
+                or value.get("owner") != target.owner
+                or (target.container_id and container_id != target.container_id)
+                or (not target.container_id and value.get("name") != "/" + target.name)):
+            return False, "container_ownership_unconfirmed"
+        target.container_id = container_id
+        try:
+            subprocess.run(
+                [target.binary, "container", "rm", "--force", container_id],
+                env=target.environment, capture_output=True, text=True, timeout=5,
+                shell=False)
+        except (OSError, subprocess.SubprocessError):
+            # A failed client may still have completed the exact daemon effect.
+            # Only the following inspection can establish that outcome.
+            pass
+        confirmed = inspect(container_id)
+        if missing(confirmed, container_id):
+            return True, "container_removed"
+        return False, "container_removal_unconfirmed"
+    except (OSError, subprocess.SubprocessError, ValueError, TypeError, AttributeError):
+        return False, "container_cleanup_unconfirmed"
+
+
 class DockerWorkspace:
     """Explicit Docker command adapter with two execution checks."""
 
@@ -86,6 +147,7 @@ class DockerWorkspace:
             raise ValueError("Docker workspace needs backend_kind=docker")
         self.spec = spec
         self.declaration = declaration
+        self._pending_cleanup: _DockerCleanupTarget | None = None
         self._host_root = Path(spec.root).expanduser().resolve(strict=False)
         from .workspace_local import RestrictedLocalWorkspace
         self._files = RestrictedLocalWorkspace(WorkspaceSpec(
@@ -134,6 +196,9 @@ class DockerWorkspace:
         # The host directory is the exact directory mounted into the
         # container. File preparation and collection use the same confined
         # path checks as the local backend and do not need to start a process.
+        if self._pending_cleanup is not None and request.operation == FileOperation.WRITE:
+            return _file_error(request, "docker_cleanup_unknown",
+                               "Previous Docker command termination is not confirmed")
         return self._files.file(request)
 
     def command(self, request: CommandRequest) -> CommandResult:
@@ -146,6 +211,9 @@ class DockerWorkspace:
                                   "Docker execution declaration is invalid")
         availability = self.availability()
         if not availability.available:
+            if self._pending_cleanup is not None:
+                return _command_error(request, "docker_cleanup_unknown",
+                    f"Previous Docker container {self._pending_cleanup.name} termination remains unconfirmed")
             return _command_error(
                 request, availability.reason_code, availability.detail)
         if not self.spec.execution_enabled:
@@ -166,8 +234,17 @@ class DockerWorkspace:
                 self.declaration.container_root, request.cwd)
         except ValueError as exc:
             return _command_error(request, "path_outside_workspace", str(exc))
+        if self._pending_cleanup is not None:
+            confirmed, reason = _docker_cleanup(self._pending_cleanup)
+            if not confirmed:
+                return _command_error(request, "docker_cleanup_unknown",
+                    f"Previous Docker container {self._pending_cleanup.name} remains unresolved: {reason}")
+            self._pending_cleanup = None
+        owner = uuid.uuid4().hex
+        container_name = "loop-engine-command-" + owner
         docker_argv = [
             self.declaration.docker_binary, "run", "--rm", "--pull", "never",
+            "--name", container_name, "--label", "loop-engine.command=" + owner,
             "--read-only", "--cap-drop", "ALL", "--security-opt",
             "no-new-privileges", "--user", f"{os.getuid()}:{os.getgid()}",
             "--pids-limit",
@@ -201,9 +278,18 @@ class DockerWorkspace:
                 shell=False,
             )
         except subprocess.TimeoutExpired:
+            target = _DockerCleanupTarget(container_name, owner,
+                self.declaration.docker_binary, dict(docker_environment))
+            self._pending_cleanup = target
+            confirmed, reason = _docker_cleanup(target)
+            if not confirmed:
+                return _command_error(request, "docker_cleanup_unknown",
+                    f"Docker command timed out; container {container_name} termination is unconfirmed: {reason}")
+            self._pending_cleanup = None
             return _command_error(
                 request, "command_timeout",
-                f"Docker command exceeded {request.timeout_seconds} seconds")
+                f"Docker command exceeded {request.timeout_seconds} seconds; "
+                f"owned container {target.container_id or target.name} is absent")
         except OSError as exc:
             return _command_error(request, "command_start_failed", str(exc))
         stdout, stdout_cut = _bounded_text(
@@ -441,6 +527,8 @@ def _optional_test_cases() -> list[dict]:
           and modal.availability().reason_code == "adapter_not_registered",
           "E2B and Modal need no import, credential, or network call")
     results.extend(_docker_read_only_test_cases())
+    from .workspace_docker_cleanup_checks import run_checks
+    results.extend(run_checks())
     return results
 
 

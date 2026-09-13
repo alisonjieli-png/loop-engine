@@ -1,0 +1,5 @@
+{
+  "schema_version":1,"harness_id":"mini_swe_agent","package_version":"2.4.6","style":"mini_swe_agent",
+  "command_prefix":["/home/username/loop-engine/embodiments/mini_swe_agent/runtime/.venv311/bin/python"],
+  "read_only_paths":["/home/username/loop-engine/embodiments/mini_swe_agent/runtime/.venv311","/home/username/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu","/home/username/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu"]
+}

@@ -1,0 +1,18 @@
+{
+  "record_type": "audit_infrastructure_failure/v1",
+  "operation": "existing full offline self-test",
+  "result": "aborted",
+  "exit_code": 1,
+  "completed_check_count": null,
+  "failure": "OSError: [Errno 122] Disk quota exceeded",
+  "location": "memory/storage/learning_cycle.py:_append, learning_cycle_checks.py:134",
+  "temporary_directory": "/tmp",
+  "temporary_mount": "tmpfs rw,nosuid,nodev,nr_inodes=1048576,inode64,usrquota",
+  "workspace_mount": "ext4 rw,relatime",
+  "workspace_free_observed": "486 GB",
+  "cause_scope": "Temporary journal write failed under a quota-enabled tmpfs. Exact user quota was not queried; this is not evidence that the workspace disk is full.",
+  "response": "Preserve failure. Rerun with a new workspace TMPDIR and a separate result name.",
+  "deleted_artifacts": [],
+  "runtime_changes": [],
+  "provider_calls_authorized": false
+}

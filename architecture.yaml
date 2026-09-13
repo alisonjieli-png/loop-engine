@@ -448,6 +448,19 @@ external_harness_execution:
   adapter_registry: loop_engine.core.external_harness.HarnessRegistry
   capabilities: loop_engine.core.harness_execution_contracts.HarnessExecutionCapabilities
   requirements: loop_engine.core.harness_execution_contracts.HarnessExecutionRequirements
+  assignment_selection: loop_engine.core.harness_selection.select_harness_as_loop
+  selection_policy: loop_engine.core.harness_selection_records.HarnessSelectionPolicy
+  response_evaluation: loop_engine.core.harness_response_evaluation.evaluate_response_as_loop
+  selection_invariants:
+    - selection_never_adds_a_harness_outside_the_authorized_registration_set
+    - eligibility_precedes_comparison_and_ranking
+    - evidence_matches_contract_resources_settings_definition_adapter_provider_model_population_and_evaluator
+    - changed_or_unreviewed_evidence_never_becomes_selection_authority
+    - insufficient_matched_evidence_preserves_the_eligible_configured_order
+    - missing_measurements_remain_unknown
+    - semantic_rejection_requires_a_registered_verifier_and_explicit_recovery_permission
+    - inconclusive_evaluation_never_becomes_a_pass_or_permission_to_retry
+    - selection_and_evaluation_do_not_accept_the_whole_task_or_promote_intelligence
   maturity: implemented_offline
   invariants:
     - identifiers_select_only_explicitly_registered_host_adapters
@@ -461,7 +474,7 @@ external_harness_execution:
     - harness_completion_is_not_task_acceptance
   unproven:
     - live_full_coding_harness_qualification
-    - automatic_harness_selection_and_cross_domain_quality
+    - generalized_harness_ranking_and_cross_domain_quality
     - hermetic_tools_skills_context_network_and_cancellation
     - preemptive_total_token_and_spending_limits
 
@@ -643,6 +656,17 @@ product_solve:
   practitioner: loop_engine.core.adaptive_practitioner.run_adaptive_practitioner
   source_inspection: loop_engine.core.adaptive_practitioner_source.source_inspection_operation
   model_response_admission: loop_engine.core.model_response_admission.admit_model_response_as_loop
+  response_contract: loop_engine.core.model_response_admission.ModelResponseContract
+  progress_supervision: loop_engine.core.adaptive_practitioner_supervision.detect_stall
+  recovery_candidate_capture: loop_engine.core.recovery_learning.capture_recovery_learning
+  cognitive_recovery_invariants:
+    - response_schema_is_explicit_not_inferred_from_example_prose
+    - approved_normalization_does_not_change_semantic_values
+    - known_response_rejection_is_not_a_transport_retry
+    - occurrence_ids_and_reworded_explanations_do_not_establish_progress
+    - stall_detection_requests_model_led_diagnosis_not_automatic_task_acceptance
+    - recovery_learning_is_opt_in_and_uses_existing_model_authority
+    - recovery_candidates_are_run_local_unvalidated_artifacts_not_active_intelligence
   generated_project: loop_engine.core.generated_project.execute_generated_project
   graph_authority: loop_engine.code_nodes.solution_graph.LoopGraphDefinition
   default_granularity: governed_semantic
@@ -764,6 +788,174 @@ node_ontology:
   allow_mode_specific_node_classes: false
 
 loop_dimensions:
+  configuration_design:
+    version: 1.1.0
+    status: accepted_requirement_partially_implemented
+    confirmed_on: "2026-09-13"
+    descriptive_term: discrete cognitive or act step Loop node
+    document: docs/architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md
+    behavioral_explanation: docs/context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md
+    executable_configuration: false
+    operational_runtime_type: Loop
+    dimensions:
+      - harness_implementation_and_process_initialization
+      - role_profile
+      - step_profile
+      - model
+      - provider_and_route
+      - tools
+      - skills
+      - context_markdown_files
+      - harness_native_instruction_markdown_files
+      - prompt_injected_markdown_and_prompt_construction
+      - plugins
+      - hooks
+      - input_contract
+      - output_contract
+      - supervisors_and_independent_verifiers
+      - thinking_power
+      - model_call_strategy
+      - model_generation_settings
+      - model_output_allocation
+      - loop_usage_and_orchestration
+      - run_mode
+      - intelligence_and_runtime_memory
+      - workspace_and_execution_environment
+      - budgets_permissions_and_effect_policy
+      - loop_exit_and_output_publication_conditions
+    inventory_policy: non_exhaustive
+    discovery_required: true
+    baseline_preservation: required_entries_are_a_minimum_not_a_ceiling
+    proposal_status: proposed_for_review
+    proposal_choice_requirements: required_per_dimension
+    review_addendum: docs/context/CONFIGURATION-DIMENSION-DISCOVERY-ADDENDUM-2026-09-13.md
+    proposed_dimensions:
+      reasoning_and_action_method:
+        label: Reasoning and action method
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [role_profile, step_profile, tools]
+        boundary_to_inspect: src/loop_engine/core/adaptive_practitioner_planning.py
+      objective_and_risk_policy:
+        label: Objective and risk policy
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [model, supervisors_and_independent_verifiers, budgets_permissions_and_effect_policy]
+        boundary_to_inspect: src/loop_engine/core/harness_selection.py
+      task_framing_and_uncertainty:
+        label: Task framing and uncertainty
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [input_contract, supervisors_and_independent_verifiers]
+        boundary_to_inspect: src/loop_engine/core/task_frontier.py
+      modality_and_semantic_representation:
+        label: Modality and semantic representation
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [input_contract, output_contract]
+        boundary_to_inspect: src/loop_engine/loop/loop_contract.py
+      context_allocation_ordering_and_compression:
+        label: Context allocation, ordering, and compression
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [context_markdown_files, prompt_injected_markdown_and_prompt_construction, intelligence_and_runtime_memory]
+        boundary_to_inspect: src/loop_engine/core/context_budget.py
+      information_freshness_and_contradiction:
+        label: Information freshness and contradiction
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [intelligence_and_runtime_memory]
+        boundary_to_inspect: src/loop_engine/core/information_access.py
+      transport_delivery_and_backpressure:
+        label: Transport, delivery, and backpressure
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [input_contract, output_contract, loop_usage_and_orchestration]
+        boundary_to_inspect: src/loop_engine/core/information_access.py
+      state_continuity_and_checkpointing:
+        label: State continuity and checkpointing
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [harness_implementation_and_process_initialization, loop_usage_and_orchestration]
+        boundary_to_inspect: src/loop_engine/loop/spawned_task_checkpoint.py
+      reuse_cache_and_invalidation:
+        label: Reuse, caching, and invalidation
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [intelligence_and_runtime_memory]
+        boundary_to_inspect: src/loop_engine/core/adaptive_practitioner_reuse.py
+      search_strategy_and_exploration:
+        label: Search strategy and exploration
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [step_profile, model_call_strategy, loop_usage_and_orchestration]
+        boundary_to_inspect: src/loop_engine/core/task_frontier.py
+      randomness_and_reproducibility:
+        label: Randomness and reproducibility
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [model_generation_settings, loop_usage_and_orchestration]
+        boundary_to_inspect: src/loop_engine/core/prompt_experiment.py
+      evaluation_coverage_and_calibration:
+        label: Evaluation coverage and calibration
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [supervisors_and_independent_verifiers, output_contract]
+        boundary_to_inspect: src/loop_engine/core/independent_verification.py
+      privacy_and_retention:
+        label: Privacy and retention
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [intelligence_and_runtime_memory, budgets_permissions_and_effect_policy, provider_and_route]
+        boundary_to_inspect: src/loop_engine/core/context_artifacts.py
+      dependency_and_environment_reproducibility:
+        label: Dependency and environment reproducibility
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [tools, plugins, workspace_and_execution_environment]
+        boundary_to_inspect: src/loop_engine/core/workspace_contracts.py
+      cancellation_and_effect_reconciliation:
+        label: Cancellation and effect reconciliation
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [budgets_permissions_and_effect_policy, loop_usage_and_orchestration]
+        boundary_to_inspect: src/loop_engine/loop/effect_approval.py
+      configuration_binding_and_change_control:
+        label: Configuration binding and change control
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [harness_implementation_and_process_initialization, role_profile, step_profile]
+        boundary_to_inspect: src/loop_engine/core/parameter_resolution.py
+      failure_classification_and_escalation:
+        label: Failure classification and escalation
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [harness_implementation_and_process_initialization, supervisors_and_independent_verifiers, loop_exit_and_output_publication_conditions]
+        boundary_to_inspect: src/loop_engine/core/harness_fallback.py
+      output_serving_and_downstream_feedback:
+        label: Output serving and downstream feedback
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [output_contract, loop_exit_and_output_publication_conditions]
+        boundary_to_inspect: src/loop_engine/loop/reactive_contracts.py
+      learning_transfer_and_promotion:
+        label: Learning transfer and promotion
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [intelligence_and_runtime_memory, role_profile]
+        boundary_to_inspect: src/loop_engine/core/recovery_learning.py
+      schedule_triggers_and_workload_admission:
+        label: Schedule triggers and workload admission
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [loop_usage_and_orchestration]
+        boundary_to_inspect: src/loop_engine/scheduling.py
+      observability_and_attribution:
+        label: Observability and attribution
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [input_contract, output_contract, budgets_permissions_and_effect_policy]
+        boundary_to_inspect: src/loop_engine/core/run_history.py
+    required_per_dimension:
+      - explicit_initial_choice_and_immutable_identity
+      - required_optional_absent_unsupported_and_unknown_states
+      - ordered_fallback_priorities_or_explicit_no_fallback
+      - eligibility_and_cross_dimension_compatibility
+      - typed_transition_triggers_and_expected_changes
+      - exact_authority_and_remaining_resources
+      - objective_independent_evaluation_and_decision_evidence
+      - recorded_attempts_outcomes_failures_and_accounting
+    invariants:
+      - initial_harness_choice_is_not_the_starting_relationship
+      - all_executable_work_remains_owned_by_the_canonical_loop
+      - configured_preference_is_not_proof_of_optimality
+      - fallback_never_grants_authority_or_resets_consumed_budgets
+      - contract_changes_require_explicit_compatibility_not_weaker_acceptance
+      - native_loading_and_prompt_injection_are_distinct
+      - unavailable_independent_review_never_becomes_self_approval
+      - external_effect_uncertainty_requires_reconciliation_before_retry
+      - unknown_measurements_remain_unknown
+      - every_dimension_and_permitted_interaction_needs_qualification
+      - documentation_is_not_runtime_permission_or_qualification
   roles:
     - practitioner
     - intelligence
@@ -816,9 +1008,31 @@ forbidden_class_names:
 development_import_boundaries:
   src_must_not_import:
     - devtools
+    - embodiments
+    - embodiment_lab
     - tests
     - examples
     - benchmarks
+
+experimental_embodiments:
+  directory: embodiments
+  implementation: devtools/embodiment_lab
+  discovery_index: embodiments/catalog.json
+  operational_runtime_type: Loop
+  runtime_profiles: existing_registered_profiles_only
+  history_authority: loop_engine.core.run_history.RunHistory
+  activation_authority: loop_engine.core.reactive_scheduler.SQLiteReactiveScheduler
+  output_authority: loop_engine.core.reactive_output_store.SQLiteReactiveOutputStore
+  current_backend: trusted_deterministic_mechanism
+  unqualified: [model_quality, raw_opencode_execution, untrusted_code_containment]
+  invariants:
+    - independent_launch_state_and_artifacts
+    - no_default_winning_embodiment
+    - planned_folders_refuse_execution
+    - no_product_import_of_experimental_code
+    - no_new_operational_runtime
+    - shared_frozen_population_and_independent_evaluator
+    - import_call_and_observable_effect_are_separate_checks
 
 reusable_capability_flywheel:
   operational_runtime_type: Loop

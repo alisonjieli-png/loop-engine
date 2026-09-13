@@ -1,0 +1,10 @@
+{
+  "id": "parallel_portfolio",
+  "folder": "parallel_portfolio",
+  "status": "mechanism_implemented",
+  "title": "Parallel verified candidate portfolio",
+  "benefit": "Two independent implementations are checked as they finish; each accepted candidate extends a versioned portfolio.",
+  "limitations": "This tests orchestration on trusted operations, not diverse-model success probability.",
+  "contract": "embodiment_work/v1",
+  "model_backend_qualified": false
+}

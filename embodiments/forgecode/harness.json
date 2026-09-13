@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "harness_id": "forgecode",
+  "package_version": "2.13.21",
+  "style": "forgecode",
+  "command_prefix": ["/home/username/loop-engine/embodiments/forgecode/runtime/forge"],
+  "read_only_paths": ["/home/username/loop-engine/embodiments/forgecode/runtime"]
+}

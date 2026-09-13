@@ -12,6 +12,7 @@ Operational runtime
     ├── selected role profile
     ├── selected mode
     ├── typed input and output roles
+    ├── output type: single output, or a bounded multiple-output portfolio
     ├── loop condition and exit condition
     ├── least-authority runtime context
     ├── relationship to other Loops
@@ -69,6 +70,31 @@ ID, version, and digest in its lifecycle events.
 Some established constructor calls still use an observable compatibility
 path. That path composes a complete `LoopDefinition` and `LoopRuntimeContext`
 before the Loop starts. It does not create a weaker runtime type.
+
+## Output type
+
+Output type answers "How many outputs does this Loop emit?" It is a setting
+on the contract and the run configuration, not a runtime type: a
+multiple-output Loop is still one Loop.
+
+```text
+Loop output type
+├── single
+│   └── one output, then complete; the admitted portfolio echoes it once
+└── multiple
+    └── a bounded admitted portfolio (max_outputs quota); complete at
+        quota, at the loop's exit condition, or at any other stop with
+        the partial portfolio kept honestly
+```
+
+[`LoopContract`](../../src/loop_engine/loop/loop_contract.py) declares
+`output_type` and the `max_outputs` quota; a multiple contract without a
+positive quota is refused, and a single contract must not carry one. Only
+accepted step outputs a handler flags with `emit_output` join the
+portfolio; the flag proposes and the Loop admits. A multiple-output
+producer feeding a single-output consumer is refused unless a named Adapter
+Loop selects the item. [`LoopResult.outputs`](../../src/loop_engine/loop/recursive_loop.py)
+carries the admitted items; `output` keeps its existing meaning.
 
 ## Role profile ontology
 

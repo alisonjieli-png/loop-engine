@@ -14,8 +14,8 @@ objects:
     content_digest: 400229d47342e0593fb75d14e210ca04d47407411c8682e0f37c5acdc16e7b36
     payload: file:records/part-00000.jsonl
   - id: core.context.practitioner_portfolio
-    version: 1.0.0
+    version: 1.1.0
     artifact_kind: intelligence_record
     lifecycle: registered
-    content_digest: 03a4c5df659e650a0a1cc41508bbe4eee6e1f58a6263e0346c72717114622c04
+    content_digest: b95c66b4971a1c594775ea3bf8460ec5db653b69442c167a8a3df2416f55de31
     payload: file:practitioner_context_intelligence.yaml

@@ -1,0 +1,15 @@
+Build a small standard-library-only Python project in the requested workspace.
+
+Deliver revision_fold.py exporting fold_revisions(events: list[dict]) -> dict[str,int].
+Every event has exactly key (str), revision (int, possibly negative), and value
+(int or None). For each key select the event with greatest revision. Ties at
+the same revision are resolved by the event occurring later in the input list.
+None is a tombstone: omit that key from the output even if an older event has
+a value. Insert output keys in lexicographic order. All input events are valid.
+Do not mutate the input list or its dictionaries. Empty input returns {}.
+
+Deliver verify.py containing executable checks of these requirements, including
+ties, tombstones, negative revisions, key order and input non-mutation.
+Running python verify.py must exit zero when its checks pass and nonzero when
+they fail. It may import revision_fold. Do not add external dependencies or
+require network access. Deliver both source files, not only a description.

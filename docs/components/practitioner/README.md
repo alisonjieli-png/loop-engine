@@ -53,6 +53,13 @@ A Practitioner can use a registered reference, compact, research, solver,
 verifier, self-improvement, or code-execution profile. A validated extension
 may add another versioned profile. The role does not require nine steps.
 
+The [flexible cognitive and action composition direction](../../architecture/FLEXIBLE-COGNITIVE-AND-ACTION-COMPOSITION.md)
+describes additional cognitive methods, action methods, questions, and
+variable step structures to support and test. A compact procedure and an
+expanded procedure can both remain valid choices. Use the
+[grid search guide](../../guides/configuration-grid-search-and-optimization.md)
+for comparisons instead of assuming the shorter procedure is better.
+
 ## Ambiguity during orientation
 
 Missing text does not always require a question. The task compiler records one
@@ -114,6 +121,9 @@ This graph explains how the work was built. It is not the finished Solution
 graph.
 
 ## What it can produce
+
+For response checks, repeated-work diagnosis, and optional candidate capture,
+read [Cognitive-act recovery](COGNITIVE-ACT-RECOVERY.md).
 
 A Practitioner run may return a direct result. It may also produce a
 [Solution Canvas](../solution-canvas/) that can be compiled, inspected, and

@@ -4,11 +4,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import shutil
 from pathlib import Path
 
-from loop_engine.code_nodes.solution_model_port import (
-    FixtureModelExecutionRequest, fixture_model_execution)
+from acceptance_oracles import model_execution, negative_answers, probe_answers
 from loop_engine.code_nodes.solve_runtime import SolveRequest, solve_task
 from loop_engine.core.adaptive_practitioner_records import NextActionDecision
 from loop_engine.core.run_history import load_saved_run_bundle
@@ -71,7 +69,8 @@ def _action_id(decision: dict) -> str:
 
 def _answers(summary: str, outputs: list[str], candidate: dict,
              files: dict[str, str], *, source_query: str = "",
-             source_roles: tuple[dict, ...] = ()) -> tuple[str, ...]:
+             source_roles: tuple[dict, ...] = (),
+             independent_case: str) -> tuple[str, ...]:
     decision = _decision()
     how = {
         "action_id": _action_id(decision), "how_mode": "generate",
@@ -146,6 +145,7 @@ def _answers(summary: str, outputs: list[str], candidate: dict,
         _orientation(summary, outputs), {"actions": [decision]}, how, candidate))
     sequence.extend({"path": path, "content": content}
                     for path, content in files.items())
+    sequence.extend(probe_answers(independent_case))
     sequence.extend((verification, route))
     return tuple(json.dumps(item) for item in sequence)
 
@@ -172,6 +172,8 @@ def _task_a() -> tuple[TaskIntakeRequest, tuple[str, ...]]:
         # it exists; report.md is what running the project produces.
         "expected_artifacts": [
             {"path": "report.md", "media_type": "text/markdown",
+             "minimum_bytes": 1},
+            {"path": "sample.json", "media_type": "application/json",
              "minimum_bytes": 1}],
     }
     files = {
@@ -180,7 +182,7 @@ def _task_a() -> tuple[TaskIntakeRequest, tuple[str, ...]]:
     }
     return TaskIntakeRequest(text=task), _answers(
         "Build and verify an expense report command.",
-        ["Python command", "Markdown report"], candidate, files)
+        ["Python command", "Markdown report"], candidate, files, independent_case="expenses")
 
 
 def _task_b(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
@@ -214,6 +216,7 @@ def _task_b(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
     return TaskIntakeRequest(dataset=str(fixtures / "inventory.csv"), goal=goal), _answers(
         "Transform and verify a supplied inventory table.",
         ["cleaned CSV", "summary"], candidate, files,
+        independent_case="inventory",
         source_query="inventory",
         source_roles=({
             "path": "inventory.csv",
@@ -255,6 +258,7 @@ def _task_c(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
     return TaskIntakeRequest(repository=str(fixtures / "docs"), goal=goal), _answers(
         "Index and verify supplied Markdown documents.",
         ["Markdown document index"], candidate, files, source_query="docs",
+        independent_case="documents",
         source_roles=(
             {"path": "docs/alpha.md",
              "role": "one of the Markdown documents to index",
@@ -292,6 +296,8 @@ def _task_d(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
              "expected_exit_codes": [0]}],
         "expected_artifacts": [
             {"path": "repaired_package/calc.py", "media_type": "text/x-python",
+             "minimum_bytes": 1},
+            {"path": "repaired_package/test_calc.py", "media_type": "text/x-python",
              "minimum_bytes": 1}],
     }
     files = {
@@ -300,6 +306,7 @@ def _task_d(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
     return TaskIntakeRequest(repository=str(fixtures / "failing_package"), goal=goal), _answers(
         "Repair and verify the supplied failing package.",
         ["repaired Python package"], candidate, files,
+        independent_case="repair",
         source_query="failing_package",
         source_roles=(
             {"path": "failing_package/calc.py",
@@ -312,6 +319,43 @@ def _task_d(fixtures: Path) -> tuple[TaskIntakeRequest, tuple[str, ...]]:
              "observed_fields": [],
              "evidence": "Python source, which the profile reports fieldless",
              "confidence": 0.8}))
+
+
+def _negative_controls(output: Path) -> list[dict]:
+    """An accepting producer must not bypass independent execution or freezing."""
+    intake_request, positive = _task_a()
+    records = []
+    for control in ("wrong_math", "undeclared_dependency"):
+        answers = negative_answers(positive, control)
+        outcome = solve_task(SolveRequest(
+            intake_task(intake_request), model_execution=model_execution(answers),
+            runs_dir=str(output / f"negative-{control}-runs"), interaction_mode="autonomous",
+            max_passes=1, allow_workspace_writes=True, allow_sandbox_commands=True,
+            workspace_root=str(output / f"negative-{control}-workspace")))
+        value = outcome.to_dict()
+        (output / f"negative-{control}.json").write_text(json.dumps(value, indent=2) + "\n")
+        verification = value["verification"]
+        independent = verification.get("independent_verification_records", [])
+        adaptive = json.loads((Path(value["run_history"]["path"]) / "adaptive-result.json").read_text())
+        projects = adaptive.get("project_attempts", [])
+        producer_checks_passed = bool(projects and projects[-1].get("deterministic_checks_passed"))
+        expected_failure = (any(item["status"] == "failed" and item.get("source_unchanged") is True
+            and any(check.get("completed") is True and check.get("passed") is False
+                    and check.get("observed") != check.get("expected") for check in item.get("checks", []))
+            for item in independent) if control == "wrong_math" else
+            any(item["status"] == "unavailable" and "undeclared dependency files" in item.get("notes", "")
+                and item.get("model_calls_known_subtotal") == 0 for item in independent))
+        record = {"control": control, "terminal_code": value["terminal_code"],
+                  "model_calls": value["model_calls"], "run_id": value["run_id"],
+                  "producer_checks_passed": producer_checks_passed,
+                  "independent_statuses": [item["status"] for item in independent],
+                  "passed": (not outcome.solved and producer_checks_passed and expected_failure
+                      and verification["independent_verification_policy"]["required"] is True
+                      and bool(independent))}
+        records.append(record)
+        if not record["passed"]:
+            raise SystemExit(f"negative acceptance control did not refuse: {record}")
+    return records
 
 
 def main() -> int:
@@ -331,8 +375,7 @@ def main() -> int:
         task_id = chr(96 + index)
         run_root = output / f"task-{task_id}-runs"
         workspace = output / f"task-{task_id}-workspace"
-        execution = fixture_model_execution(FixtureModelExecutionRequest(
-            answers=answers, max_model_calls=len(answers)))
+        execution = model_execution(answers)
         outcome = solve_task(SolveRequest(
             intake_task(intake_request), model_execution=execution,
             runs_dir=str(run_root), interaction_mode="autonomous",
@@ -364,6 +407,11 @@ def main() -> int:
             "artifacts_inspected": bool(value["artifacts"]),
             "semantic_verification": bool(
                 adaptive_result.get("verification")),
+            "independent_verification": (
+                value["verification"]["independent_verification_policy"]["required"] is True
+                and bool(value["verification"].get("independent_verification_records"))
+                and all(item["status"] == "passed" for item in
+                        value["verification"]["independent_verification_records"])),
             "route": adaptive_result.get("final_route") == "stop_success",
         }
         if index > 1 and not adaptive_result.get("source_inspections"):
@@ -406,6 +454,7 @@ def main() -> int:
            for item in records):
         raise SystemExit(
             "product acceptance did not use the LLM-first Practitioner path")
+    negative_controls = _negative_controls(output)
     report = {
         "record_type": "product_acceptance/v1",
         "tasks": len(records), "completed_verified": sum(
@@ -425,6 +474,8 @@ def main() -> int:
         "repair_verified": repair_commands[-1]["expectation_met"]
         and repair_commands[-1]["exit_code"] == 0,
         "saved_product_outcomes_bound": len(records),
+        "negative_controls": negative_controls,
+        "negative_controls_passed": sum(item["passed"] for item in negative_controls),
         "limitations": [
             "Model semantics use a typed offline fixture in this acceptance run.",
             "A separate authorized live-provider solve is required."],

@@ -1,0 +1,14 @@
+{
+  "record_type": "embodiment_mutation/v1",
+  "id": "containment_policy",
+  "status": "planned",
+  "arms": [
+    "trusted_host",
+    "bubblewrap",
+    "pinned_container",
+    "microvm"
+  ],
+  "control_rule": "Measure the actual code-running process, resource limits, network boundaries and cleanup.",
+  "runtime_type": "Loop",
+  "automatic_application": false
+}

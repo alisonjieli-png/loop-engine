@@ -1,157 +1,110 @@
 # Start here
 
-You are working in Loop Engine. This page is the short current picture: what
-the repository is, what is green today, what is not, and the first hour of
-work. Two companion pages carry the detail:
+Loop Engine has one executable runtime, `Loop`. Start with the current
+contracts and the owner's recorded requirements. Use dated reports for what
+was actually measured, not as instructions to repeat old campaigns.
 
-- [Invariants and traps](INVARIANTS-AND-TRAPS.md): what the machine refuses,
-  and the mistakes that have already cost real time here.
-- [Ways of running](WAYS-OF-RUNNING.md): every setting that exists today, what
-  it changes, and how to add another without removing one.
-- [Everything learned, 2026-09-08](EVERYTHING-LEARNED-2026-09-08.md): what the
-  last round of work measured, the defects only running found, what this
-  project's real problem turned out to be, and what is still unknown. Start
-  here if you want the numbers rather than the rules.
+## Required context
 
-The longer orientation, reading order, and component map stay in
-[CODEX-START-HERE.md](CODEX-START-HERE.md). Read that when you need depth.
-Read this page first.
+Read [AGENTS.md](../../AGENTS.md), then inspect the branch, revision, dirty
+paths, active processes, and known writers. Existing changes are not yours
+to discard, commit, or publish without resolving ownership.
 
-## What this is, in three sentences
+Read the
+[discrete cognitive or act step Loop node complete explanation](DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md)
+in full. Keep the complete phrase and explanation. Then read the
+[complete configuration dimension requirement](../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md).
+The September 13 requirement includes an initial choice and ordered fallback
+priorities for every dimension, not just the harness and model.
 
-Loop Engine runs open-ended tasks through one runtime object called a Loop.
-Everything executable is a Loop: roles (Practitioner, Intelligence, Solution),
-run modes, step profiles, budgets and permissions are fields on it, never
-subclasses and never a second runtime. Work is judged by evidence the engine
-itself produced, so a model saying it succeeded is never the reason a run is
-recorded as succeeding.
+Read the [flexible composition direction](../architecture/FLEXIBLE-COGNITIVE-AND-ACTION-COMPOSITION.md)
+and [grid search guide](../guides/configuration-grid-search-and-optimization.md)
+when extending the system. Additional cognitive steps, actions, prompts,
+questions, and intelligence are valid directions. The design is not limited
+to the smallest workflow or the current dimension inventory.
 
-## State on 2026-09-08, at commit `5d4e7c4`
+The [deeper session orientation](CODEX-START-HERE.md) maps current components
+and dated evidence. Use the relevant component guide rather than loading
+every historical prompt. Read
+[reference-source boundaries](REFERENCE-SOURCES.md) before consulting an
+older repository.
 
-| Check | Result |
-|---|---|
-| `--self-test` | 3,412 of 3,412, on Python 3.10, 3.11 and 3.12 |
-| `--conformance` | all gates pass |
-| `--repo-conformance` | passes |
-| `examples/25_host_runtime` unit tests | 140 of 140 |
-| GitHub job: public documentation | passes |
-| GitHub job: build the distribution | passes |
-| GitHub job: suite and conformance gates | fails, at one gate only |
+The [Claude Fable 5.1 review handoff](CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md)
+is the current review entry point for the September 13 cleanup and runtime
+changes. It links the exact verification record and preserves known limits.
 
-The one failing gate is the hardcoding delta. It reports 260 blocking findings
-that predate this work, and it has failed on every push since 2026-09-05. The
-self-test and conformance steps inside that same job pass. Nothing else on
-`main` is red.
+## Evidence to start from
 
-Do not try to make that gate pass by adding allowlist entries or refreshing
-the baseline. The findings were measured, not guessed: 163 sit in
-`src/loop_engine/core`, 51 are URL literals inside two generated files under
-`docs/research/`, 20 sit inside test fixture bodies, and the rest are
-scattered. The dominant shape is a record type or status compared as an inline
-literal, so the real fix is a schema version registry and enum references at
-the comparison sites. That is a project, and it is written up in
-[the improvement plan](../implementation/IMPROVEMENT-PLAN-2026-09-07.md),
-section 6.
+The
+[September 12 configuration report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md)
+records 70 real Tactical calls, 159/160 case checks in a forty-cell repair
+matrix, and nine native Markdown controls. One case failed. These are
+bounded component experiments, not a full-system benchmark or proof of
+general configuration selection.
 
-## The rule that shapes every change
+The
+[September 12 architecture checkpoint](../research/COGNITIVE-STEP-ARCHITECTURE-AND-STATE-2026-09-12.md)
+separates runtime mechanisms, failed live recovery, and unresolved Solution
+delivery and learning. The earlier
+[clean-installation checkpoint](../../artifacts/state-checkpoint-20260912-OtPgn5/README.md)
+records 3,839/3,839 checks for its saved source. Later working-tree changes
+need their own verification. No historical count establishes today's state.
 
-Add ways of running. Do not remove them.
+The [preserved September 8 entry point](START-HERE-SNAPSHOT-2026-09-08.md)
+is historical. Its hosted build status, counts, and publishing instructions
+do not describe the current working tree.
 
-The owner's standing instruction is that the engine should support many
-configurations, patterns and architectures at once. When a review says a path
-is broken, the answer is a typed refusal plus a specified build-out, or a new
-policy with the old behavior as the default. It is not deletion. If you find
-yourself removing an option to make something simpler, stop and add a setting
-instead.
+## Safe local checks
 
-## The first hour
-
-1. Read [AGENTS.md](../../AGENTS.md). It is short and it governs.
-2. Check who else is writing here:
-
-   ```bash
-   git -C /home/username/loop-engine status --porcelain
-   git -C /home/username/loop-engine log --oneline -5
-   ps -eo pid,etime,cmd | grep -E 'codex|claude' | grep -v grep
-   ```
-
-   Another agent commits into this same checkout. Stage explicit paths. Never
-   use `git add -A`. Never discard a change you did not make.
-3. Run the gates before you change anything, so you know what was already
-   broken. The commands are in the next section.
-4. Read [the improvement plan](../implementation/IMPROVEMENT-PLAN-2026-09-07.md).
-   It lists every open item with the file it touches, the check that proves
-   it, and a status. Items marked `decision` need the owner, not you.
-5. Read [the review](../verification/CODE-REVIEW-2026-09-07.md) if you are
-   fixing a numbered finding. Every finding there was reproduced by running
-   code, and the probe that reproduces it is named.
-
-## Commands
-
-Use the repository virtual environment. It is Python 3.10. The system
-`python3` is 3.14 and does not have the package installed, so a bare
-`python3` will fail in a way that looks like a missing module.
+Run these from the repository directory. Commands in this block do not change
+the directory for the commands that follow.
 
 ```bash
 cd /home/username/loop-engine
+git status --short --branch
+git rev-parse HEAD
+git worktree list --porcelain
+ps -eo pid=,ppid=,etime=,stat=,comm=
 
-# the complete offline suite, about twenty minutes, no provider is called
 PYTHONPATH=src .venv/bin/python -m loop_engine --self-test
-
-# the zero-tolerance architecture gates, about one minute
 PYTHONPATH=src .venv/bin/python -m loop_engine --conformance
-
-# repository structure
 PYTHONPATH=src .venv/bin/python -m loop_engine --repo-conformance --format json
 
-# the host runtime examples, about one minute
-cd examples/25_host_runtime && PYTHONPATH=../../src \
-  ../../.venv/bin/python -m unittest discover -s . -p 'test_*.py'
+(
+  cd examples/25_host_runtime
+  PYTHONPATH=../../src ../../.venv/bin/python -m unittest discover -s . -p 'test_*.py'
+)
 
-# the development assurance canaries and the hardcoding delta gate
-PYTHONPATH=devtools/src .venv/bin/python -m loop_engine_devtools.cli --self-test
-PYTHONPATH=devtools/src .venv/bin/python -m loop_engine_devtools.cli \
-  --hardcoding-audit --allowlist devtools/hardcoding-allowlist.yaml \
-  --baseline devtools/hardcoding-ci-baseline.json --fail-on-new high
+PYTHONPATH=src:devtools .venv/bin/python -m unittest discover \
+  -s devtools/embodiment_lab/tests -p 'test_*.py'
 ```
 
-To run one module's checks while you work, which is much faster than the full
-suite:
+Start with the owning module's smallest relevant checks before the full
+offline suite. Confirm that the repository environment exists before using
+it. A clean installation means a fresh distribution installed outside the
+source import path, not another run using `PYTHONPATH=src`.
 
-```bash
-PYTHONPATH=src .venv/bin/python -c \
-  "from loop_engine.loop import recursive_loop as m; r = m.self_test(); \
-   print(r['passed'], '/', r['total']); \
-   print([t['test'] for t in r['tests'] if not t['passed']])"
-```
+Documentation has separate structure, prose, and terminology checks. See
+[Invariants and traps](INVARIANTS-AND-TRAPS.md). Local tests do not establish
+hosted continuous-integration status or real provider quality.
 
-## Finishing a change
+## Change and review rules
 
-A change is finished when all of this is true.
+Add supported ways of running without silently removing another option.
+An unavailable or unqualified option needs an explicit refusal and an honest
+implementation status. Do not weaken contracts or refresh a failure baseline
+to make a check pass.
 
-- The module's own checks pass, and you added a check for what you changed.
-- `--self-test` and `--conformance` pass.
-- The documentation checks pass if you touched any Markdown. They are three
-  separate checks with different scopes, described in
-  [Invariants and traps](INVARIANTS-AND-TRAPS.md).
-- You ran the gates yourself and quoted the numbers. Do not report completion
-  from intent, from file presence, or from a narrow test.
-- The commit and push went to `main`. There are no feature branches here.
+Use [the component map](../components/README.md) to locate the authoritative
+implementation. Keep immutable historical records, failed attempts, and
+legacy readers when compatibility requires them. A copied repository, old
+solution, or prior test result is not automatically active intelligence.
 
-## What to be careful about claiming
-
-This repository has a habit of recording evidence carefully, and reports here
-are expected to separate what was observed from what was inferred and what is
-not established. Two specific cautions:
-
-- A green local suite is not a green build. Cite the GitHub run for your
-  commit, because `main` has been failing one gate since 2026-09-05 and a
-  report that only quotes local counts hides that.
-- A module with passing self-tests and no caller is proven correct and inert.
-  Before claiming a capability works, check that a live path reaches it:
-
-  ```bash
-  PYTHONPATH=src .venv/bin/python -c \
-    "from loop_engine.reachability_report import reachability_report; \
-     print(reachability_report('solve_path'))"
-  ```
+Finish a bounded change with checks for the behavior, relevant component
+tests, conformance, and clean-installation evidence where needed. Name any
+remaining required work. Do not claim the complete design works because a
+small test passes. Commit and push verified changes to `main` in the same
+turn, as the owner's standing instruction of 2026-09-02 requires; keep
+another session's in-progress files out of your commit until ownership is
+resolved. Do not invoke a provider or repeat an external effect unless the
+current request authorizes that action.

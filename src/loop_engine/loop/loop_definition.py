@@ -12,7 +12,7 @@ import re
 from dataclasses import dataclass, field, replace
 from typing import Any
 
-from .loop_contract import LoopContract
+from .loop_contract import LoopContract, LoopContractError, LoopInputCardinality
 from .loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
 from .runtime_context import LoopRuntimeContext, LoopRuntimeContextError
 from .supervision_policy import DEFAULT_SUPERVISION_POLICY, SupervisionPolicy
@@ -148,6 +148,8 @@ class LoopDefinition:
     effects: tuple[str, ...]
     permissions: tuple[str, ...] = ()
     required_capabilities: tuple[str, ...] = ()
+    _record_encoding: str = field(default='loop_definition/v2',init=False,repr=False,compare=False)
+    _legacy_output_fields: bool = field(default=True,init=False,repr=False,compare=False)
 
     def __post_init__(self) -> None:
         LoopDefinitionRef(
@@ -247,6 +249,16 @@ class LoopDefinition:
                 and facts["exit_condition"] != self.exit_condition):
             raise LoopDefinitionError(
                 "configuration exit_condition conflicts with definition")
+        if ("output_type" in facts
+                and facts["output_type"] != self.contract.output_type):
+            raise LoopDefinitionError(
+                "configuration output_type conflicts with contract "
+                "output_type")
+        if ("max_outputs" in facts
+                and facts["max_outputs"] != self.contract.max_outputs):
+            raise LoopDefinitionError(
+                "configuration max_outputs conflicts with contract "
+                "max_outputs")
 
     @property
     def identity(self) -> LoopRoleIdentity:
@@ -256,8 +268,8 @@ class LoopDefinition:
             self.role_profile_id, self.role_profile_version))
 
     def _canonical_body(self) -> dict:
-        return {
-            "record_type": "loop_definition/v1",
+        value = {
+            "record_type": self._record_encoding,
             "definition_id": self.definition_id,
             "version": self.version,
             "role_profile": {
@@ -269,6 +281,10 @@ class LoopDefinition:
                 "execution_mode": self.contract.execution_mode,
                 "input_roles": list(self.contract.input_roles),
                 "output_roles": list(self.contract.output_roles),
+                "output_type": self.contract.output_type,
+                "max_outputs": self.contract.max_outputs,
+                "input_cardinalities": [{"role":item.role,"cardinality":item.cardinality,
+                                          "max_items":item.max_items} for item in self.contract.input_cardinalities],
                 "effects": list(self.contract.effects),
                 "locality": self.contract.locality,
                 "cost_class": self.contract.cost_class,
@@ -284,6 +300,12 @@ class LoopDefinition:
             "permissions": list(self.permissions),
             "required_capabilities": list(self.required_capabilities),
         }
+        if self._record_encoding == 'loop_definition/v1':
+            value['contract'].pop('input_cardinalities')
+            if not self._legacy_output_fields:
+                value['contract'].pop('output_type')
+                value['contract'].pop('max_outputs')
+        return value
 
     @property
     def canonical_json(self) -> str:
@@ -316,26 +338,51 @@ class LoopDefinition:
         }
         if not isinstance(value, dict) or set(value) != required:
             raise LoopDefinitionError("LoopDefinition has an invalid shape")
-        if value["record_type"] != "loop_definition/v1":
+        if value["record_type"] not in ("loop_definition/v1","loop_definition/v2"):
             raise LoopDefinitionError("unsupported LoopDefinition record type")
         role_profile = value["role_profile"]
         if not isinstance(role_profile, dict) or set(role_profile) != {
                 "profile_id", "version"}:
             raise LoopDefinitionError("role_profile has an invalid shape")
         contract_values = value["contract"]
-        if not isinstance(contract_values, dict) or set(contract_values) != {
-                "name", "execution_mode", "input_roles", "output_roles",
-                "effects", "locality", "cost_class", "role"}:
+        contract_keys = set(contract_values) if isinstance(
+            contract_values, dict) else set()
+        legacy_keys = {
+            "name", "execution_mode", "input_roles", "output_roles",
+            "effects", "locality", "cost_class", "role"}
+        current_keys = legacy_keys | {"output_type", "max_outputs"}
+        current_input_keys = current_keys | {'input_cardinalities'}
+        allowed_keys=((legacy_keys,current_keys) if value['record_type']=='loop_definition/v1' else (current_input_keys,))
+        if contract_keys not in allowed_keys:
             raise LoopDefinitionError("contract has an invalid shape")
-        definition = cls(
-            definition_id=value["definition_id"], version=value["version"],
-            role_profile_id=role_profile["profile_id"],
-            role_profile_version=role_profile["version"],
+        incoming_body={key:item for key,item in value.items() if key!='content_digest'}
+        original_digest=hashlib.sha256(json.dumps(incoming_body,sort_keys=True,separators=(',',':'),
+            ensure_ascii=False,allow_nan=False).encode('utf-8')).hexdigest()
+        if value['content_digest']!=original_digest:
+            raise LoopDefinitionError('LoopDefinition content digest does not match its original encoding')
+        cardinalities=contract_values.get('input_cardinalities',())
+        if type(cardinalities) not in (tuple,list) or any(type(item) is not dict
+                or set(item)!={'role','cardinality','max_items'} for item in cardinalities):
+            raise LoopDefinitionError('input cardinalities have an invalid encoded shape')
+        roles=[item['role'] for item in cardinalities]
+        if roles!=sorted(roles):
+            raise LoopDefinitionError(
+                'input cardinalities must be sorted by role in the stored encoding')
+        try:
             contract=LoopContract(
                 **{**contract_values,
                    "input_roles": tuple(contract_values["input_roles"]),
                    "output_roles": tuple(contract_values["output_roles"]),
-                   "effects": tuple(contract_values["effects"])}),
+                   "effects": tuple(contract_values["effects"]),
+                   'input_cardinalities':tuple(LoopInputCardinality(**item) for item in cardinalities)})
+        except (LoopContractError, TypeError) as exc:
+            # The reader promises one error type for every stored-record fault.
+            raise LoopDefinitionError('stored contract is invalid: '+str(exc)) from exc
+        definition = cls(
+            definition_id=value["definition_id"], version=value["version"],
+            role_profile_id=role_profile["profile_id"],
+            role_profile_version=role_profile["version"],
+            contract=contract,
             configuration_facts=ConfigurationFacts.from_mapping(
                 value["configuration_facts"]),
             supported_modes=tuple(value["supported_modes"]),
@@ -347,6 +394,10 @@ class LoopDefinition:
             permissions=tuple(value["permissions"]),
             required_capabilities=tuple(value["required_capabilities"]),
         )
+        # Only this immutable-record reader can retain an earlier encoding.
+        # A new definition, including dataclasses.replace(), emits version 2.
+        object.__setattr__(definition,'_record_encoding',value['record_type'])
+        object.__setattr__(definition,'_legacy_output_fields','output_type' in contract_keys)
         expected = value["content_digest"]
         if not isinstance(expected, str) or not _DIGEST.fullmatch(expected):
             raise LoopDefinitionError(
@@ -381,6 +432,8 @@ class LoopDefinition:
                 name=str(getattr(contract, "goal", "loop work")),
                 execution_mode=terminal_execution_mode,
                 input_roles=input_roles, output_roles=output_roles,
+                output_type=getattr(config, "output_type", "single"),
+                max_outputs=getattr(config, "max_outputs", None),
                 effects=effects, role=identity.role.value)
         if compatibility and current_contract.runtime_mode not in supported:
             current_contract = replace(
@@ -414,6 +467,8 @@ class LoopDefinition:
             "max_model_calls": config.max_model_calls,
             "loop_condition": config.loop_condition,
             "exit_condition": config.exit_condition,
+            "output_type": getattr(config, "output_type", "single"),
+            "max_outputs": getattr(config, "max_outputs", None),
             "success_confidence_min": config.success_confidence_min,
             **({"supervision": config.supervision.to_dict()}
                if config.supervision != DEFAULT_SUPERVISION_POLICY else {}),
@@ -463,6 +518,8 @@ class LoopDefinition:
                 else int(facts["max_model_calls"])),
             loop_condition=self.loop_condition,
             exit_condition=self.exit_condition,
+            output_type=facts.get("output_type", "single"),
+            max_outputs=facts.get("max_outputs"),
             success_confidence_min=float(
                 facts.get("success_confidence_min", 0.5)),
             supervision=(

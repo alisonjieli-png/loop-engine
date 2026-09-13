@@ -16,6 +16,7 @@ from loop_engine.core.run_history import load_saved_run_bundle
 from loop_engine.code_nodes.loop_report import report_from_run
 
 from run_acceptance import _task_a, _task_b
+from acceptance_oracles import bind_response
 
 
 class _ProviderHandler(BaseHTTPRequestHandler):
@@ -23,11 +24,15 @@ class _ProviderHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):  # noqa: N802 - standard library protocol
         length = int(self.headers.get("Content-Length", "0"))
-        self.rfile.read(length)
+        request = json.loads(self.rfile.read(length))
         if not self.answers:
             self.send_error(500, "fixture answer queue exhausted")
             return
-        content = self.answers.pop(0)
+        try:
+            content = bind_response(self.answers.pop(0), request["messages"][-1]["content"])
+        except (ValueError, KeyError, TypeError):
+            self.send_error(500, "fixture verifier phase mismatch")
+            return
         body = json.dumps({
             "model": "fixture-model",
             "choices": [{"message": {"role": "assistant", "content": content}}],
@@ -189,6 +194,10 @@ def main() -> int:
         (root / "dataset-runs", dataset_result),
     )
     for run_root, saved_result in bound_results:
+        independent = saved_result["verification"].get("independent_verification_records", [])
+        if (saved_result["verification"]["independent_verification_policy"]["required"] is not True
+                or not independent or any(item["status"] != "passed" for item in independent)):
+            raise SystemExit("CLI acceptance did not execute required independent verification")
         bundle = load_saved_run_bundle(str(run_root), saved_result["run_id"])
         report = report_from_run(str(run_root), saved_result["run_id"])
         if (bundle.outcome["terminal_code"] != "COMPLETED_VERIFIED"

@@ -25,7 +25,8 @@ _REPO_ROOT = os.path.dirname(os.path.dirname(_PACKAGE_ROOT))
 ALLOWED_NODE_CLASSES = frozenset()
 
 #: Roots production code must never import.
-FORBIDDEN_IMPORT_ROOTS = ("devtools", "tests", "examples", "benchmarks")
+FORBIDDEN_IMPORT_ROOTS = ("devtools", "tests", "examples", "benchmarks",
+                          "embodiments", "embodiment_lab")
 
 #: Manifest schema the intelligence bundles must declare.
 MANIFEST_SCHEMA = "catalog_manifest/v1"

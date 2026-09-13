@@ -1,0 +1,14 @@
+{
+  "record_type": "embodiment_mutation/v1",
+  "id": "process_lifetime",
+  "status": "mechanism_available",
+  "arms": [
+    "native",
+    "fresh_process",
+    "long_lived_session",
+    "pooled_sessions"
+  ],
+  "control_rule": "Hold the workload and evaluator fixed; compare actual process reuse and explicit-state separation.",
+  "runtime_type": "Loop",
+  "automatic_application": false
+}

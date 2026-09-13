@@ -196,6 +196,25 @@ def run_solve(args) -> int:
                     gateway or settings.build_gateway(), config,
                     max_model_calls=maximum_model_calls,
                     llm_thinking_power=policy.thinking_power)
+                selected_harness = getattr(args, "embodiment", "")
+                harness_config = getattr(args, "embodiment_config", "")
+                if selected_harness or harness_config:
+                    from .core.harness_configuration import load_harness_binding
+                    from .core.harness_execution_contracts import valid_harness_id
+                    if selected_harness and not valid_harness_id(selected_harness):
+                        raise ValueError("invalid embodiment identifier")
+                    if not harness_config:
+                        harness_config = str(Path.cwd() / "embodiments" / selected_harness / "harness.json")
+                    harness_work = getattr(args, "harness_work_dir", "") or str(
+                        Path(runs_dir).resolve() / "harness-processes")
+                    socket_dir = getattr(args, "harness_socket_dir", "") or str(
+                        Path.cwd() / ".loop-engine-dev" / "hs")
+                    Path(socket_dir).mkdir(parents=True, exist_ok=True, mode=0o700)
+                    model_execution = replace(model_execution, harness=load_harness_binding(
+                        str(Path(harness_config).resolve()), work_root=harness_work,
+                        socket_directory=str(Path(socket_dir).resolve()), expected_id=selected_harness))
+            elif getattr(args, "embodiment", "") or getattr(args, "embodiment_config", ""):
+                raise ValueError("a selected harness requires explicit model-call authority")
             return solve_task(SolveRequest(
                 intake=intake, model_execution=model_execution,
                 runs_dir=runs_dir,
@@ -216,6 +235,7 @@ def run_solve(args) -> int:
                 workspace_root=workspace,
                 allow_source_materialization_to_model=
                     args.allow_source_to_model,
+                verifier_path=getattr(args, "verifier", "") or "",
                 extension_snapshot=
                     extension_application.snapshot.to_dict(),
                 quiet_model_io=bool(getattr(args, "quiet_model_io", False)),

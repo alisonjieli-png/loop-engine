@@ -1,0 +1,10 @@
+{
+  "id": "brokered_container",
+  "folder": "brokered_container",
+  "status": "planned",
+  "title": "Container per action with brokered models",
+  "benefit": "Pinned execution environment and host-owned provider authority.",
+  "limitations": "Writable profiles, image availability and cancellation must be qualified before activation.",
+  "contract": "embodiment_work/v1",
+  "model_backend_qualified": false
+}

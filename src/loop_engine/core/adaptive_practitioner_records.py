@@ -49,6 +49,8 @@ from .independent_verification import IndependentVerificationPolicy
 from .llm_work_packet import LLMContextBlock, LLMWorkPacket, WorkDirective
 from .model_demand import ladder_from_observations
 from .model_response_admission import (
+    ModelResponseContract,
+    ModelResponseAdmissionPolicy,
     ModelResponseAdmissionRequest,
     ModelResponseRepairStalled,
     admit_model_response_as_loop,
@@ -174,10 +176,22 @@ ADAPTIVE_CAPABILITIES = (
         "effects": [],
     },
     {
+        "capability_ref": "core.verifier.execute",
+        "purpose": (
+            "Run the operator-declared verifier script against the run's "
+            "current artifacts and return its score and output as an "
+            "observation for replanning. The score never accepts the task "
+            "by itself; acceptance stays with verification. Only the "
+            "explicit declared path ever runs."),
+        "arguments": {},
+        "required_permissions": ["workspace_write", "sandbox_command"],
+        "effects": ["spawns_process"],
+    },
+    {
         "capability_ref": "core.intelligence.search",
         "purpose": (
-            "Search the four persistent intelligence layers and prior Run "
-            "History summaries through the existing retrieval projections. "
+            "Search the supplied Practitioner Context Intelligence portfolio "
+            "or the packaged context catalogue through existing retrieval. "
             "Results are references and candidates, never authority."),
         "arguments": {
             "query": "one retrieval query",
@@ -1201,6 +1215,41 @@ class NextActionDecision:
             "confidence": self.confidence, "fallback": dict(self.fallback),
         }
 
+    @classmethod
+    def response_contract(cls, capability_refs: tuple[str, ...]) -> ModelResponseContract:
+        """The response shape checked before a proposal reaches a consumer.
+
+        Fields come from this record, capability identities from the current
+        registry. Effect permission and progress checks still run separately.
+        """
+        from .adaptive_practitioner_planning import action_needs_execution_capability
+        text_fields = ('goal', 'reason', 'expected_output', 'scheduling',
+                       'verification', 'return_destination')
+        properties = {name: {'type':'string', 'minLength':1} for name in text_fields}
+        properties.update({
+            'action_kind':{'enum':list(NEXT_ACTION_KINDS)},
+            'inputs':{'type':'object'}, 'budget':{'type':'object'}, 'fallback':{'type':'object'},
+            'required_capabilities':{'type':'array', 'items':{'enum':list(capability_refs)}
+                                     if capability_refs else False},
+            'permissions':{'type':'array', 'items':{'type':'string'}},
+            'dependencies':{'type':'array', 'items':{'type':'string'}},
+            'confidence':{'type':'number', 'minimum':0, 'maximum':1},
+        })
+        required = {item.name for item in fields(cls)}
+        if set(properties) != required:
+            raise AdaptivePractitionerError('action response schema no longer matches its typed record')
+        schema = {'type':'object', 'required':['actions'], 'properties':{
+            'actions':{'type':'array', 'minItems':1, 'items':{
+                'type':'object', 'required':sorted(required), 'properties':properties,
+                'allOf':[{'if':{'properties':{'action_kind':{'enum':[
+                    kind for kind in NEXT_ACTION_KINDS if action_needs_execution_capability(kind)]}}},
+                          'then':{'properties':{'required_capabilities':{'minItems':1}}}}]}},
+            'selected_action_index':{'type':'integer', 'minimum':0}},
+            'allOf':[{'if':{'properties':{'actions':{'minItems':2}}},
+                      'then':{'required':['selected_action_index']}}]}
+        return ModelResponseContract('next_action_response/v1', json.dumps(schema, sort_keys=True),
+            policy=ModelResponseAdmissionPolicy(report_required_field_names=True))
+
 class DeterministicTaskResolver(Protocol):
     """Exact reusable resolver considered before model escalation."""
 
@@ -1240,8 +1289,19 @@ class AdaptivePractitionerRequest:
     independent_verification_policy: IndependentVerificationPolicy = field(
         default_factory=IndependentVerificationPolicy)
     host_runtime_manifest: dict = field(default_factory=dict)
+    #: Explicit operator-declared verifier script (e.g. a task gate). Empty
+    #: means no verifier runs mid-solve. Only an explicit path is ever
+    #: executed — nothing is discovered, inferred, or defaulted — and its
+    #: output is an observation for replanning, never acceptance by itself.
+    verifier_path: str = ""
+    capture_recovery_learning: bool = False
+    diagnose_unchanged_evidence: bool = False
 
     def __post_init__(self) -> None:
+        if type(self.capture_recovery_learning) is not bool:
+            raise TypeError('recovery learning capture must be explicitly enabled or disabled')
+        if type(self.diagnose_unchanged_evidence) is not bool:
+            raise TypeError('unchanged-evidence diagnosis must be an explicit Boolean')
         if not isinstance(self.host_runtime_manifest, dict):
             raise AdaptivePractitionerError("host runtime manifest must be a mapping")
         try:
@@ -1313,6 +1373,13 @@ class AdaptivePractitionerRequest:
         if not isinstance(self.allow_local_execution, bool):
             raise AdaptivePractitionerError(
                 "allow_local_execution must be a boolean")
+        if not isinstance(self.verifier_path, str):
+            raise AdaptivePractitionerError("verifier_path must be text")
+        if ("\x00" in self.verifier_path
+                or "\n" in self.verifier_path
+                or "\r" in self.verifier_path):
+            raise AdaptivePractitionerError(
+                "verifier_path must be one clean path")
         if not isinstance(self.context_budget, ContextBudgetPolicy):
             raise AdaptivePractitionerError(
                 "context_budget must be a ContextBudgetPolicy")
@@ -1340,6 +1407,8 @@ class AdaptivePractitionerRequest:
         """
         value = {
             "task": self.task,
+            **({'capture_recovery_learning':True} if self.capture_recovery_learning else {}),
+            **({'diagnose_unchanged_evidence':True} if self.diagnose_unchanged_evidence else {}),
             "mode": self.mode,
             "max_passes": self.max_passes,
             "interaction_mode": self.interaction_mode,
@@ -1445,6 +1514,16 @@ class ModelStepRequest:
     objective: str
     state: dict
     output_contract: str
+    admission_contract: ModelResponseContract | None = None
+
+    def __post_init__(self):
+        if self.admission_contract is not None and not isinstance(self.admission_contract, ModelResponseContract):
+            raise TypeError('model-step admission requires a typed response contract')
+
+    @property
+    def output_contract_digest(self):
+        return (self.admission_contract.content_digest if self.admission_contract is not None
+                else hashlib.sha256(self.output_contract.encode('utf-8')).hexdigest())
 
 
 
@@ -1627,7 +1706,7 @@ class AdaptiveRunServices:
             usable = (
                 bool(self.request.source_refs)
                 and self.request.allow_source_materialization_to_model
-                if ref == "core.source.inspect" else
+                if ref in ("core.source.inspect", "core.source.profile") else
                 self.request.allow_network_reads
                 if ref == "core.web.get" else
                 self.request.allow_network_reads
@@ -1636,12 +1715,20 @@ class AdaptiveRunServices:
                 self.request.allow_workspace_writes
                 and self.request.allow_sandbox_commands
                 if ref == "core.generated_project" else
+                # The verifier runs only the explicit operator-declared
+                # path: no declaration, no capability. Its output is an
+                # observation for replanning, never acceptance.
+                self.request.allow_workspace_writes
+                and self.request.allow_sandbox_commands
+                and bool(self.request.verifier_path.strip())
+                if ref == "core.verifier.execute" else
                 # Available whenever the run may write a workspace, because
                 # a run that can produce a file must be able to read it back.
                 # Withholding this is what left a live run repairing code it
                 # could not see for twenty passes.
                 self.request.allow_workspace_writes
-                if ref == "core.workspace.read" else False)
+                if ref == "core.workspace.read" else
+                ref in ("core.environment.describe", "core.intelligence.search"))
             if usable:
                 available.append(item)
         host = getattr(self.dependencies, "host_runtime", None)
@@ -1792,6 +1879,13 @@ class AdaptiveRunServices:
         failure = _latest_model_failure(session)
         attempts = tuple(session.results[-1].attempts) if session.results else ()
         failed_attempt = attempts[-1] if attempts else None
+        same_shape_repeats = 0
+        for prior in reversed(session.results):
+            if (getattr(prior, "ok", True) is False
+                    and getattr(prior, "error_code", "") == error_code):
+                same_shape_repeats += 1
+            else:
+                break
         capacity = getattr(failed_attempt, "output_capacity", None)
         parameters = ()
         if isinstance(capacity, ModelOutputCapability) and capacity.declared_maximum is not None:
@@ -1799,14 +1893,14 @@ class AdaptiveRunServices:
                 "output.allocation", "requested_output_tokens", "integer",
                 minimum=1, maximum=capacity.declared_maximum, unit="tokens",
                 semantic_effect="Explicit output allowance for this complete response; not a guessed model capacity"),)
-        response_contract_ref = "inline:sha256:" + hashlib.sha256(
-            request.output_contract.encode("utf-8")).hexdigest()
+        response_contract_ref = "inline:sha256:" + request.output_contract_digest
         facts = {
             "task": self.request.task,
             "responsibility": request.objective,
             "response_contract_ref": response_contract_ref,
             "error_code": error_code,
             "attempts_so_far": attempt,
+            "same_shape_repeats": same_shape_repeats,
             "provider_responded": provider_responded,
             "step": request.step_id,
             "completed_work": [
@@ -2108,8 +2202,7 @@ class AdaptiveRunServices:
              "additional prose outside the requested schema"),
             "the returned payload validates against the required schema",
             "the payload or its claimed authority fails validation",
-            "inline:sha256:" + hashlib.sha256(
-                request.output_contract.encode("utf-8")).hexdigest(),
+            "inline:sha256:" + request.output_contract_digest,
             "return_to_owning_practitioner")
         packet = LLMWorkPacket(
             packet_id=(f"packet.{self.run_id.replace('-', '_')}."
@@ -2215,6 +2308,8 @@ class AdaptiveRunServices:
             output_contract={
                 "schema_ref": directive.return_schema_ref,
                 "schema": request.output_contract,
+                **({'validated_contract':request.admission_contract.to_dict()}
+                   if request.admission_contract is not None else {}),
                 "format": "json", "additional_text_allowed": False,
                 # Asked of every step, answered beside the step's own schema,
                 # and removed before that schema is validated. The portfolio
@@ -2277,7 +2372,11 @@ class AdaptiveRunServices:
                 raise ModelResponseRepairStalled(
                     f"model step {request.step_id} produced "
                     f"{format_attempt - 1} invalid outputs; format repair is "
-                    f"bounded at {_MAXIMUM_FORMAT_ATTEMPTS} attempts")
+                    f"bounded at {_MAXIMUM_FORMAT_ATTEMPTS} attempts",
+                    step_id=request.step_id,
+                    attempts=format_attempt - 1,
+                    failure_code=format_failure_code,
+                    rejected_digests=tuple(sorted(invalid_digests)))
             profile = self.portfolio.assembly_profile(
                 bool(request.state.get("failures")) or format_attempt > 1)
             assembled = assemble_work_packet(
@@ -2353,9 +2452,10 @@ class AdaptiveRunServices:
                 prompt_assembly_id=snapshot["assembly_id"],
                 prompt_digest=snapshot["prompt_digest"],
                 deterministic_attempt_status=self.deterministic_attempt.status,
-                output_schema_digest=hashlib.sha256(
-                    request.output_contract.encode("utf-8")).hexdigest())
+                output_schema_digest=request.output_contract_digest)
             pending_output_allocation = None
+            response_guard_failure = None
+            text = None
             for transport_attempt in range(
                     1, _MAXIMUM_ATTEMPTS_ANY_ERROR + 1):
                 trace_event = {
@@ -2365,8 +2465,7 @@ class AdaptiveRunServices:
                     "transport_attempt": transport_attempt,
                     "prompt_digest": snapshot["prompt_digest"],
                     "prompt_bytes": len(assembled.prompt),
-                    "output_schema_digest": hashlib.sha256(
-                        request.output_contract.encode("utf-8")).hexdigest(),
+                    "output_schema_digest": request.output_contract_digest,
                 }
                 if not self.request.quiet_model_io:
                     trace_event["prompt_text"] = assembled.prompt
@@ -2376,14 +2475,20 @@ class AdaptiveRunServices:
                     self.route_health_ledger = RouteHealthLedger()
                 result_count = len(self.model_session.results)
                 try:
-                    text = self.model_session.invoke(
-                        ModelInvocationRequest(
-                            assembled.prompt,
-                            temperature=assembled.temperature,
-                            output_allocation=pending_output_allocation,
-                            semantic_call_id=(
-                                observed.semantic_call_id
-                                if observed is not None else "")), owner)
+                    invocation = ModelInvocationRequest(
+                        assembled.prompt, temperature=assembled.temperature,
+                        output_allocation=pending_output_allocation,
+                        semantic_call_id=(observed.semantic_call_id if observed is not None
+                            else f'{self.run_id}:response:{self.model_session.calls_used + 1}'))
+                    if request.admission_contract is not None:
+                        from .observation_expectations import ObservationExpectation
+                        contract = request.admission_contract
+                        expectation = ObservationExpectation(
+                            invocation.semantic_call_id + ':expected', invocation.semantic_call_id,
+                            invocation.exact_input_digest, contract.contract_ref, contract.schema_json)
+                        invocation = replace(invocation, response_expectation=expectation,
+                                             response_admission_policy=contract.policy)
+                    text = self.model_session.invoke(invocation, owner)
                     latest_result = (
                         self.model_session.results[-1]
                         if len(self.model_session.results) > result_count
@@ -2412,6 +2517,38 @@ class AdaptiveRunServices:
                     error_code = exc.error_code or "model_gateway_failed"
                     self._record_generation_outcome(
                         request, error_code=error_code)
+                    if error_code == 'output_validation_failed' and latest_result is not None:
+                        failures = [item for item in latest_result.response_admissions
+                                    if not item.admitted]
+                        if failures:
+                            response_guard_failure = failures[-1]
+                            self.publish('model.step.response_rejected', step=request.step_id,
+                                format_attempt=format_attempt, transport_attempt=transport_attempt,
+                                failure_code=response_guard_failure.failure_code,
+                                response_digest=response_guard_failure.raw_digest)
+                            break  # Observed response repair, not a transport retry.
+                    if (error_code in ('semantic_response_rejected',
+                                       'response_evaluation_inconclusive')
+                            and latest_result is not None):
+                        verdicts = [item for item in latest_result.response_evaluations
+                                    if item.status != 'passed']
+                        if verdicts:
+                            # A registered evaluator judged the answer. That is
+                            # response repair work with its finding codes, not a
+                            # transport failure and not a reason to change route.
+                            from .model_response_admission import ModelResponseAdmissionResult
+                            verdict = verdicts[-1]
+                            response_guard_failure = ModelResponseAdmissionResult(
+                                False, None, 'registered_evaluator', error_code,
+                                verdict.response_digest,
+                                schema_errors=tuple('evaluation_finding:' + code
+                                                    for code in verdict.finding_codes))
+                            self.publish('model.step.response_rejected', step=request.step_id,
+                                format_attempt=format_attempt, transport_attempt=transport_attempt,
+                                failure_code=error_code, response_digest=verdict.response_digest,
+                                evaluation_contract_ref=verdict.contract_ref,
+                                finding_codes=list(verdict.finding_codes))
+                            break
                     self.publish(
                         "model.step.transport_failed", step=request.step_id,
                         format_attempt=format_attempt,
@@ -2431,18 +2568,20 @@ class AdaptiveRunServices:
                         raise
                     pending_output_allocation = recovery.output_allocation
                     continue
-            contract_digest = hashlib.sha256(
-                request.output_contract.encode("utf-8")).hexdigest()
-            if not self.request.quiet_model_io:
+            contract_digest = request.output_contract_digest
+            if text is not None and not self.request.quiet_model_io:
                 self.publish(
                     "model.step.raw_output", step=request.step_id,
                     format_attempt=format_attempt,
                     output_digest=hashlib.sha256(
                         text.encode("utf-8")).hexdigest(),
                     output_text=text)
-            admitted = admit_model_response_as_loop(
+            admitted = response_guard_failure or admit_model_response_as_loop(
                 ModelResponseAdmissionRequest(
-                    text, "inline:" + contract_digest, contract_digest),
+                    text, "inline:" + contract_digest, contract_digest,
+                    **({'schema':json.loads(request.admission_contract.schema_json),
+                        'policy':request.admission_contract.policy}
+                       if request.admission_contract is not None else {})),
                 parent=owner)
             value = admitted.value
             decision_failure_code = ""
@@ -2532,7 +2671,12 @@ class AdaptiveRunServices:
                     admission_loop_id=admitted.loop_id)
                 raise ModelResponseRepairStalled(
                     f"model step {request.step_id} repeated the same invalid "
-                    "JSON output without progress")
+                    "JSON output without progress",
+                    step_id=request.step_id,
+                    attempts=format_attempt,
+                    failure_code="repeated_invalid_output",
+                    rejected_digests=tuple(sorted(
+                        invalid_digests | {admitted.raw_digest})))
             invalid_digests.add(admitted.raw_digest)
             format_failure_code = (decision_failure_code
                                    or admitted.failure_code)

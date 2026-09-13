@@ -26,6 +26,7 @@ loop_engine must never import loop_engine_devtools.
 ```text
 devtools/
 ├── qualification_lab/     standalone Ollama and black-box qualification lab
+├── embodiment_lab/        independent experimental placements using canonical Loop
 ├── src/loop_engine_devtools/
 │   ├── assurance/          review Loop definitions and operations
 │   ├── intelligence/core/  shipped review rules, presets, proof obligations

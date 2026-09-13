@@ -1,0 +1,353 @@
+{
+  "record_type": "audit_deliverable_checks/v1",
+  "checks": [
+    {
+      "name": "parse:audit-validation.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "parse:canonical-component-inventory.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "parse:cold-warm-proof.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "parse:conformance-checks.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "parse:deliverable-status.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "parse:feature-preservation.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "parse:focused-checks.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "parse:frontier-probe.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "parse:full-attempt-01-failure.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "parse:full-workspace-tmp-checks.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "parse:generated-view-audit.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "parse:reachability-checks.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "link:snapshot-01/snapshot.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "link:snapshot-01/capability-preservation-ledger.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "link:canonical-component-inventory.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "link:snapshot-01/source-index.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "link:../../docs/components/loop-object/README.md",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "link:CURRENT-GENERATED-VIEWS.md",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "link:generated-view-audit.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "link:snapshot-01/information-transfer.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "link:frontier-probe.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "link:full-attempt-01-failure.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "link:cold-warm-proof.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "link:deliverable-status.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "link:full-workspace-tmp-checks.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "unique capability inventory identities",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "no automatic removal disposition",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "semantic review explicitly incomplete",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "all 15 requested capability families preserved",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "20 deliverables accounted for",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:1",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:2",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:3",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:4",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:5",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:6",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:7",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:8",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:9",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:10",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:11",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:12",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:13",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:14",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:15",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:16",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:17",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:18",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:19",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deliverable artifact:20",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "opencode-portable-atomic:cold:record digest",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "opencode-portable-atomic:cold:whole gate",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "opencode-portable-atomic:warm:record digest",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "opencode-portable-atomic:warm:whole gate",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "opencode-portable-atomic:warm no attempts",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "opencode-portable-atomic:export replay",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "pi-portable-atomic:cold:record digest",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "pi-portable-atomic:cold:whole gate",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "pi-portable-atomic:warm:record digest",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "pi-portable-atomic:warm:whole gate",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "pi-portable-atomic:warm no attempts",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "pi-portable-atomic:export replay",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "preserved authority:/home/username/loop-engine/AGENTS.md",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "preserved authority:/home/username/loop-engine/README.md",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "preserved authority:/home/username/loop-engine/architecture.yaml",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "preserved authority:/home/username/loop-engine/terminology.yaml",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "preserved authority:/home/username/loop-engine/docs/architecture/CONSTITUTION.md",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "canonical indexed source preserved",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no decorative dash prose",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "passed": 69,
+  "total": 69,
+  "all_passed": true
+}

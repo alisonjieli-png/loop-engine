@@ -1,0 +1,9 @@
+{
+  "record_type": "embodiment_remix/v1",
+  "id": "hybrid_gateway_and_tools",
+  "status": "planned",
+  "sources": "overnight + Loop Engine's host/harness bridge",
+  "invariant": "Keep pure decisions on a direct model route; use an isolated harness only for actions requiring tool agency.",
+  "qualification": "Exactly one charged physical call; actual route equals selected route; tool grants delivered; no implicit fallback; same prompt/model/evaluator controls.",
+  "runtime_type": "Loop"
+}

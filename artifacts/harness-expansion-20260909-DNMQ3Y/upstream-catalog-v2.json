@@ -1,0 +1,1451 @@
+{
+  "record_type": "harness_upstream_catalog/v2",
+  "observed_date_utc": "2026-09-09",
+  "scope": "Distinct coding harness projects, including explicit fork lineage and maintenance/restricted-license cases. SDK packages, configurations and model choices are not additional projects. Catalog membership is not successful trial evidence.",
+  "candidate_count": 23,
+  "standard_license_candidate_count": 21,
+  "restricted_license_candidate_count": 1,
+  "maintenance_method": "Read public GitHub repository API fields full_name, archived, disabled, pushed_at and license, and separately inspect explicit maintenance declarations in the official README. A recent push is not a maintenance-quality guarantee.",
+  "integration_target": "An existing canonical Loop owns reasoning and all effects. A qualified CLI adapter may implement one isolated semantic model step, with its own effect tools disabled and every provider request brokered through the existing engine model authority. A catalog entry grants no runtime authority.",
+  "global_qualification_requirements": [
+    "Pin exact harness release, source revision and dependency environment before claiming compatibility.",
+    "Check installed help and source against these moving documentation references.",
+    "Use separate task-owned config, state, cache and workspace paths; retain approved session records.",
+    "Prove tool registry closure, discovery suppression, network confinement, cancellation and child-process cleanup independently.",
+    "Broker every physical provider request, including retries, compaction, summaries and auxiliary model calls; reject any unapproved route.",
+    "Retain unknown provider usage and cost as unknown; CLI instance counts are not physical provider-call counts.",
+    "Do not replace the canonical solver with a CLI wrapper or credit a docs-only candidate as integrated.",
+    "Treat fork ancestry as a comparison control, not another independent experiment by default."
+  ],
+  "candidates": [
+    {
+      "id": "pi",
+      "name": "Pi coding agent",
+      "repository": "https://github.com/earendil-works/pi",
+      "repository_api": "https://api.github.com/repos/earendil-works/pi",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness_with_sdk",
+      "lineage": {
+        "former_locations": [
+          "mariozechner/pi-mono",
+          "badlogic/pi-mono"
+        ],
+        "current_package": "@earendil-works/pi-coding-agent",
+        "note": "The official May 7, 2026 announcement documents the move and deprecated @mariozechner package scope."
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-08T15:31:45Z",
+        "declared_status": "current_project"
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "pi",
+          "-p",
+          "--mode",
+          "json"
+        ],
+        "stdin": "Prompt text is merged into the initial prompt.",
+        "output": "JSONL events; print mode also supports plain text.",
+        "rpc_argv": [
+          "pi",
+          "--mode",
+          "rpc"
+        ]
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "config_path": "<isolated-agent-dir>/models.json",
+        "config_keys": [
+          "providers.<id>.baseUrl",
+          "providers.<id>.api",
+          "providers.<id>.apiKey",
+          "providers.<id>.models"
+        ],
+        "protocols": [
+          "OpenAI-compatible",
+          "Anthropic",
+          "Google"
+        ]
+      },
+      "semantic_step": {
+        "status": "documented_controls_pending_installed_probe",
+        "tool_disable_argv": [
+          "--no-tools"
+        ],
+        "discovery_disable_argv": [
+          "--no-extensions",
+          "--no-skills",
+          "--no-prompt-templates",
+          "--no-themes",
+          "--no-context-files"
+        ],
+        "state_argv": [
+          "--no-session"
+        ],
+        "system_prompt_argv": [
+          "--system-prompt",
+          "<engine-system-prompt>"
+        ],
+        "extra_model_requests": "Not established as one physical request; gateway must observe all requests."
+      },
+      "controls": [
+        "No built-in filesystem/process/network/credential permission system.",
+        "Documented external containerization patterns: Docker, Gondolin and OpenShell.",
+        "--no-tools disables all tools by default; --no-builtin-tools is narrower."
+      ],
+      "control_issues": [
+        "Replacing the system prompt alone still appends context files and skills unless their discovery is disabled.",
+        "Installed versions may predate the documented flags.",
+        "RPC requires LF-delimited JSONL, not arbitrary Unicode line splitting."
+      ],
+      "source_urls": [
+        "https://github.com/earendil-works/pi",
+        "https://github.com/earendil-works/pi/tree/main/packages/coding-agent",
+        "https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/models.md",
+        "https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/containerization.md",
+        "https://pi.dev/news/2026/5/7/pi-has-a-new-home"
+      ]
+    },
+    {
+      "id": "aider",
+      "name": "Aider",
+      "repository": "https://github.com/Aider-AI/aider",
+      "repository_api": "https://api.github.com/repos/Aider-AI/aider",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness",
+      "lineage": {
+        "parent_harness": null
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-05-22T14:02:20Z",
+        "declared_status": "no_retirement_notice_verified_recent_push_not_observed"
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "aider",
+          "--message-file",
+          "<engine-prompt-file>",
+          "--chat-mode",
+          "ask"
+        ],
+        "stdin": "Prefer documented --message-file for large prompts.",
+        "output": "Terminal text; structured provider replies require separate extraction."
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "argv_template": [
+          "--openai-api-base",
+          "<engine-broker-url>",
+          "--model",
+          "openai/<model-id>"
+        ]
+      },
+      "semantic_step": {
+        "status": "ask_mode_documented_pending_source_and_installed_probe",
+        "tool_disable_argv": null,
+        "mode_argv": [
+          "--chat-mode",
+          "ask"
+        ],
+        "startup_restriction_argv": [
+          "--no-git",
+          "--no-auto-commits",
+          "--no-dirty-commits",
+          "--no-check-update",
+          "--no-analytics",
+          "--no-suggest-shell-commands",
+          "--no-stream",
+          "--map-tokens",
+          "0"
+        ],
+        "extra_model_requests": "Architect mode explicitly uses multiple models; weak-model, summaries and other auxiliary requests must be measured and brokered."
+      },
+      "controls": [
+        "Ask mode is documented to answer without modifying files.",
+        "Documented read-only files, dry-run and confirmation controls.",
+        "Auto-commit and dirty-commit behavior have disable switches."
+      ],
+      "control_issues": [
+        "Ask mode is not an OS sandbox or proof of zero auxiliary calls.",
+        "Automatic Git commits are enabled in the default coding workflow.",
+        "The scripting Python API is explicitly not a stable supported interface."
+      ],
+      "source_urls": [
+        "https://github.com/Aider-AI/aider",
+        "https://aider.chat/docs/scripting.html",
+        "https://aider.chat/docs/usage/modes.html",
+        "https://aider.chat/docs/config/options.html",
+        "https://aider.chat/docs/config/aider_conf.html",
+        "https://github.com/Aider-AI/aider/blob/main/aider/args.py"
+      ]
+    },
+    {
+      "id": "goose",
+      "name": "Goose",
+      "repository": "https://github.com/aaif-goose/goose",
+      "repository_api": "https://api.github.com/repos/aaif-goose/goose",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "kind": "general_purpose_cli_harness_with_coding_tools",
+      "lineage": {
+        "former_locations": [
+          "block/goose"
+        ]
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-09T02:01:12Z",
+        "declared_status": "current_AAIF_project"
+      },
+      "headless": {
+        "status": "documented_and_current_argument_parser_read",
+        "argv_template": [
+          "goose",
+          "run",
+          "--no-profile",
+          "--instructions",
+          "-",
+          "--output-format",
+          "stream-json"
+        ],
+        "stdin": "--instructions - reads the instruction body from stdin.",
+        "output": "text, json or stream-json; exact emitted schema requires installed probe."
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "environment_names": [
+          "GOOSE_PROVIDER",
+          "GOOSE_MODEL",
+          "OPENAI_HOST",
+          "OPENAI_BASE_PATH"
+        ],
+        "protocols": [
+          "OpenAI-compatible"
+        ]
+      },
+      "semantic_step": {
+        "status": "current_source_controls_identified_pending_execution_qualification",
+        "tool_disable_argv": [
+          "--no-profile"
+        ],
+        "environment_values": {
+          "GOOSE_MODE": "chat"
+        },
+        "provider_requirement": "Use the native OpenAI-compatible provider routed to engine broker, not an ACP or other CLI provider that applies its own permission mapping.",
+        "extra_model_requests": "Context strategies, planning and retries may add requests; exact request inventory remains unqualified."
+      },
+      "controls": [
+        "Chat Only permission mode is documented to disable extension use and file modification.",
+        "Manual Approval, Smart Approval and Completely Autonomous modes are separate choices.",
+        "Docker and sandbox arrangements are documented."
+      ],
+      "control_issues": [
+        "Headless mode cannot obtain interactive approvals.",
+        "GOOSE_MODE=auto is not a tool-disable mechanism.",
+        "--no-profile suppresses default extensions; do not add --with-extension, --with-builtin or a recipe that restores tools.",
+        "Current agent source skips tool requests in Chat mode; prove tool schemas are absent and plugin startup has no effects separately.",
+        "Native Chat mode is not equivalent to Chat mode delegated through another CLI provider."
+      ],
+      "source_urls": [
+        "https://github.com/aaif-goose/goose",
+        "https://goose-docs.ai/docs/tutorials/headless-goose/",
+        "https://goose-docs.ai/docs/getting-started/providers/",
+        "https://goose-docs.ai/docs/guides/goose-permissions/",
+        "https://goose-docs.ai/docs/guides/config-files/",
+        "https://goose-docs.ai/docs/tutorials/goose-in-docker/",
+        "https://github.com/aaif-goose/goose/blob/main/crates/goose-cli/src/cli.rs",
+        "https://github.com/aaif-goose/goose/blob/main/crates/goose-provider-types/src/goose_mode.rs",
+        "https://github.com/aaif-goose/goose/blob/main/crates/goose/src/agents/agent.rs",
+        "https://goose-docs.ai/docs/guides/cli-providers/"
+      ]
+    },
+    {
+      "id": "gemini_cli",
+      "name": "Gemini CLI",
+      "repository": "https://github.com/google-gemini/gemini-cli",
+      "repository_api": "https://api.github.com/repos/google-gemini/gemini-cli",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness",
+      "lineage": {
+        "parent_harness": null
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-09T01:26:07Z",
+        "declared_status": "current_project"
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "gemini",
+          "-p",
+          "<prompt>"
+        ],
+        "stdin": "Headless scripting supported; exact framing pending adapter probe.",
+        "output": "Headless output supported."
+      },
+      "custom_endpoint": {
+        "status": "arbitrary_OpenAI_endpoint_not_verified",
+        "protocols_verified": [
+          "Gemini",
+          "Vertex"
+        ]
+      },
+      "semantic_step": {
+        "status": "contingent_on_broker_protocol_and_tool_closure",
+        "tool_disable_argv": null
+      },
+      "controls": [
+        "Sandbox choices documented: Docker, Podman, macOS Seatbelt, Windows sandbox, gVisor and experimental LXC.",
+        "Trusted-folder and approval policies are separate controls."
+      ],
+      "control_issues": [
+        "Do not assume a custom OpenAI base URL is supported because other Gemini-derived harnesses support it.",
+        "Sandbox behavior and defaults are platform/version dependent."
+      ],
+      "source_urls": [
+        "https://github.com/google-gemini/gemini-cli",
+        "https://geminicli.com/docs/cli/sandbox/",
+        "https://geminicli.com/docs/reference/configuration/"
+      ]
+    },
+    {
+      "id": "qwen_code",
+      "name": "Qwen Code",
+      "repository": "https://github.com/QwenLM/qwen-code",
+      "repository_api": "https://api.github.com/repos/QwenLM/qwen-code",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness",
+      "lineage": {
+        "parent_harness": "google-gemini/gemini-cli",
+        "note": "README names Gemini CLI v0.8.2 as origin and says independent development replaced upstream syncing starting with Qwen v0.1."
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-09T02:32:43Z",
+        "declared_status": "current_project"
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "qwen",
+          "-p",
+          "<prompt>",
+          "--output-format",
+          "stream-json"
+        ],
+        "stdin": "Accepts piped text; supports text and stream-json input formats.",
+        "output": "text, json or stream-json"
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "protocols": [
+          "OpenAI-compatible",
+          "Anthropic",
+          "Gemini",
+          "Qwen"
+        ],
+        "local_examples": [
+          "Ollama",
+          "vLLM"
+        ],
+        "environment_names": [
+          "OPENAI_API_KEY",
+          "OPENAI_BASE_URL",
+          "OPENAI_MODEL"
+        ],
+        "config_keys": [
+          "modelProviders.openai[].id",
+          "modelProviders.openai[].baseUrl",
+          "modelProviders.openai[].envKey"
+        ]
+      },
+      "semantic_step": {
+        "status": "requires_exact_tool_registry_and_config_adapter",
+        "tool_disable_argv": null,
+        "tool_disable_config_keys": [
+          "tools.disabled",
+          "permissions.deny",
+          "mcpServers.<id>.excludeTools"
+        ],
+        "extra_model_requests": "Agent, team, goal, compaction, retry and summary paths need explicit suppression or broker observation."
+      },
+      "controls": [
+        "Approval modes and sandbox configuration are independent.",
+        "tools.disabled removes names from registry.",
+        "Whole-tool deny rules block builtins; MCP exclusion has distinct behavior."
+      ],
+      "control_issues": [
+        "tools.core=[] disables nothing.",
+        "A nonempty core allowlist does not cover synthetic/system or dynamically discovered tools.",
+        "tools.eager defers tools; it does not disable them.",
+        "--safe-mode also disables settings-sourced permission and sandbox configuration; it is not a security profile.",
+        "Headless --yolo does not enable a sandbox."
+      ],
+      "source_urls": [
+        "https://github.com/QwenLM/qwen-code",
+        "https://qwenlm.github.io/qwen-code-docs/en/users/features/headless/",
+        "https://github.com/QwenLM/qwen-code/blob/main/docs/users/configuration/settings.md",
+        "https://github.com/QwenLM/qwen-code/blob/main/docs/users/configuration/auth.md"
+      ]
+    },
+    {
+      "id": "openhands_cli",
+      "name": "OpenHands CLI",
+      "repository": "https://github.com/OpenHands/OpenHands-CLI",
+      "repository_api": "https://api.github.com/repos/OpenHands/OpenHands-CLI",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness_with_sdk_backend",
+      "lineage": {
+        "related_framework": "OpenHands software-agent-sdk",
+        "note": "OpenHands/OpenHands currently presents Agent Canvas; this entry identifies the runnable CLI, not that control center."
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-07T09:31:45Z",
+        "declared_status": "raw_README_says_no_longer_actively_maintained_recommends_Agent_Canvas",
+        "note": "A direct raw-source follow-up exposed this declaration, which the earlier rendered GitHub page did not show. Prefer the current source declaration over that cached rendering."
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "openhands",
+          "--headless",
+          "--json",
+          "-f",
+          "<engine-prompt-file>",
+          "--override-with-envs"
+        ],
+        "stdin": "Use documented task file or task argument.",
+        "output": "JSONL with --headless --json"
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "environment_names": [
+          "LLM_API_KEY",
+          "LLM_MODEL",
+          "LLM_BASE_URL"
+        ],
+        "required_argv": [
+          "--override-with-envs"
+        ]
+      },
+      "semantic_step": {
+        "status": "tool_free_CLI_configuration_not_yet_verified",
+        "tool_disable_argv": null,
+        "extra_model_requests": "Condenser and optional critic/security-model work may add calls or routes; all must be brokered."
+      },
+      "controls": [
+        "--always-approve and --llm-approve are documented approval modes.",
+        "Local, server and container arrangements must be distinguished."
+      ],
+      "control_issues": [
+        "An approval flag does not hide all effect tools.",
+        "Current AgentStore._resolve_tools returns get_default_cli_tools for a new session and _apply_runtime_config overwrites agent.tools. Persisting tools=[] alone does not disable its tools.",
+        "Current CLI context builder enables project, user and public skill loading; an empty work directory is not complete discovery suppression.",
+        "Do not infer containment from OpenHands branding or from the presence of a serve command."
+      ],
+      "source_urls": [
+        "https://github.com/OpenHands/OpenHands-CLI",
+        "https://raw.githubusercontent.com/OpenHands/OpenHands-CLI/main/README.md",
+        "https://docs.openhands.dev/openhands/usage/cli/command-reference",
+        "https://github.com/OpenHands/OpenHands-CLI/blob/main/openhands_cli/stores/agent_store.py",
+        "https://github.com/OpenHands/OpenHands"
+      ]
+    },
+    {
+      "id": "mini_swe_agent",
+      "name": "mini-SWE-agent",
+      "repository": "https://github.com/SWE-agent/mini-swe-agent",
+      "repository_api": "https://api.github.com/repos/SWE-agent/mini-swe-agent",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_and_batch_harness",
+      "lineage": {
+        "related_harness": "SWE-agent",
+        "note": "Distinct simplified implementation; current project recommends v2 and documents migration from v1."
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-07T22:16:21Z",
+        "declared_status": "current_primary_project"
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "mini",
+          "-t",
+          "<prompt>",
+          "-y",
+          "--exit-immediately",
+          "-o",
+          "<trajectory-path>"
+        ],
+        "stdin": "Preconfigure first-run state and supply a task to avoid prompting.",
+        "output": "Saved JSON trajectory; terminal text is not the authoritative result."
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "config_keys": [
+          "model.model_name",
+          "model.model_kwargs.custom_llm_provider",
+          "model.model_kwargs.api_base"
+        ]
+      },
+      "semantic_step": {
+        "status": "not_a_drop_in_tool_free_step_without_adapter_work",
+        "tool_disable_argv": null,
+        "extra_model_requests": "Agent loop can make multiple calls. Its native interface expects executable actions and a submission action."
+      },
+      "controls": [
+        "confirm, yolo and human modes.",
+        "Local environment has no isolation.",
+        "Docker, Singularity, SWE-ReX and experimental bubblewrap environments are documented."
+      ],
+      "control_issues": [
+        "-y disables confirmations rather than disabling execution.",
+        "A model that returns bare semantic JSON does not satisfy the default command/action parser.",
+        "A custom inert environment or exact adapter requires its own tests and must not be mislabeled stock CLI integration."
+      ],
+      "source_urls": [
+        "https://github.com/SWE-agent/mini-swe-agent",
+        "https://mini-swe-agent.com/v2/usage/mini/",
+        "https://mini-swe-agent.com/latest/advanced/environments/",
+        "https://github.com/SWE-agent/mini-swe-agent/blob/main/docs/models/local_models.md"
+      ]
+    },
+    {
+      "id": "swe_agent",
+      "name": "SWE-agent",
+      "repository": "https://github.com/SWE-agent/SWE-agent",
+      "repository_api": "https://api.github.com/repos/SWE-agent/SWE-agent",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "kind": "coding_batch_harness",
+      "lineage": {
+        "successor": "SWE-agent/mini-swe-agent"
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-07T22:17:28Z",
+        "declared_status": "maintenance_only_superseded_by_mini_swe_agent"
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "sweagent",
+          "run",
+          "<configured-problem-and-environment-options>"
+        ],
+        "batch_argv": [
+          "sweagent",
+          "run-batch"
+        ],
+        "output": "Saved trajectories and patch results"
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "config_keys": [
+          "agent.model.api_base",
+          "agent.model.name",
+          "agent.model.completion_kwargs"
+        ]
+      },
+      "semantic_step": {
+        "status": "maintenance_reference_arm_pending_tool_free_adapter",
+        "tool_disable_argv": null
+      },
+      "controls": [
+        "Official example executes in Docker through SWE-ReX.",
+        "Custom tools and environments are configurable."
+      ],
+      "control_issues": [
+        "An issue-solving tool loop is not automatically a single semantic model step.",
+        "Prefer mini-SWE-agent for new implementation according to maintainers; preserve this as a distinct reference arm."
+      ],
+      "source_urls": [
+        "https://github.com/SWE-agent/SWE-agent",
+        "https://swe-agent.com/latest/usage/hello_world/",
+        "https://swe-agent.com/latest/reference/model_config/"
+      ]
+    },
+    {
+      "id": "cline",
+      "name": "Cline CLI",
+      "repository": "https://github.com/cline/cline",
+      "repository_api": "https://api.github.com/repos/cline/cline",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness_with_shared_sdk",
+      "lineage": {
+        "related_products": [
+          "Cline IDE extension",
+          "Cline SDK"
+        ],
+        "counting_rule": "One harness family, not one candidate per client."
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-09T02:29:16Z",
+        "declared_status": "current_project"
+      },
+      "headless": {
+        "status": "documented_current_raw_README_checked_version_sensitive",
+        "argv_template": [
+          "cline",
+          "--json",
+          "--compaction",
+          "off",
+          "--data-dir",
+          "<isolated-data-dir>"
+        ],
+        "stdin": "Current CLI README says --json requires a prompt argument or piped stdin.",
+        "output": "NDJSON agent events; source example extracts agent_event.event.text."
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "protocols": [
+          "OpenAI-compatible",
+          "Ollama",
+          "LM Studio"
+        ],
+        "exact_cli_config_keys": null
+      },
+      "semantic_step": {
+        "status": "SDK_tool_closure_documented_CLI_equivalent_pending",
+        "tool_disable_argv": null,
+        "compaction_disable_argv": [
+          "--compaction",
+          "off"
+        ],
+        "sdk_control": "Agent tools list and toolPolicies.<name>.enabled=false",
+        "extra_model_requests": "Task summaries, subagents, retries and auxiliary features require registry closure and request accounting. Default one-shot mode includes spawn and team tools; --yolo disables those by default but enables submit_and_exit and does not disable ordinary tools."
+      },
+      "controls": [
+        "CLI --auto-approve boolean.",
+        "CLINE_COMMAND_PERMISSIONS restricts shell commands.",
+        "SDK tool policies can hide individual tools.",
+        "CLI documentation lists sandbox and isolated data directory controls."
+      ],
+      "control_issues": [
+        "SDK controls cannot be silently claimed as CLI flags.",
+        "Tool policy omissions default to enabled and auto-approved in the documented SDK.",
+        "--auto-approve false is not a tool-disable flag.",
+        "Moving docs differ on short flags and defaults; freeze and inspect the installed CLI."
+      ],
+      "source_urls": [
+        "https://github.com/cline/cline",
+        "https://docs.cline.bot/cli/cli-reference",
+        "https://github.com/cline/cline/blob/main/apps/cli/README.md",
+        "https://github.com/cline/cline/blob/main/apps/cli/src/commands/program.ts",
+        "https://github.com/cline/cline/blob/main/apps/cli/src/utils/chat-commands.ts",
+        "https://docs.cline.bot/sdk/tools"
+      ]
+    },
+    {
+      "id": "continue_cli",
+      "name": "Continue CLI",
+      "repository": "https://github.com/continuedev/continue",
+      "repository_api": "https://api.github.com/repos/continuedev/continue",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness",
+      "lineage": {
+        "related_products": [
+          "Continue IDE extensions"
+        ]
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-08T10:01:48Z",
+        "declared_status": "README_says_no_longer_actively_maintained_read_only_final_2_0_0",
+        "note": "Do not conflate the explicit maintenance declaration with GitHub archived=true, which was not observed."
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "cn",
+          "-p",
+          "<prompt>",
+          "--format",
+          "json"
+        ],
+        "stdin": "Piped data included as context.",
+        "output": "Structured JSON"
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "config_keys": [
+          "models[].provider",
+          "models[].model",
+          "models[].apiBase",
+          "models[].apiKey"
+        ]
+      },
+      "semantic_step": {
+        "status": "tool_exclusion_documented_pending_wildcard_probe",
+        "tool_disable_argv": [
+          "--exclude",
+          "*"
+        ],
+        "extra_model_requests": "Must verify one-turn completion and no uncaptured summaries/retries."
+      },
+      "controls": [
+        "allow, ask and exclude permissions.",
+        "Headless excludes tools requiring interactive approval."
+      ],
+      "control_issues": [
+        "--readonly plan mode still permits Bash in current docs.",
+        "Plan and auto modes override --allow, --exclude and permissions.yaml; do not combine them with a supposedly restrictive exclusion profile.",
+        "Maintenance has explicitly ended according to the README."
+      ],
+      "source_urls": [
+        "https://github.com/continuedev/continue",
+        "https://docs.continue.dev/cli/headless-mode",
+        "https://docs.continue.dev/cli/tool-permissions",
+        "https://docs.continue.dev/customize/model-providers/top-level/openai"
+      ]
+    },
+    {
+      "id": "kilo_cli",
+      "name": "Kilo CLI",
+      "repository": "https://github.com/Kilo-Org/kilocode",
+      "repository_api": "https://api.github.com/repos/Kilo-Org/kilocode",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness_fork",
+      "lineage": {
+        "parent_harness": "OpenCode",
+        "evidence": "Official README explicitly identifies Kilo CLI as an OpenCode fork."
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-08T22:08:12Z",
+        "declared_status": "current_project"
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "kilo",
+          "run",
+          "<prompt>",
+          "--auto"
+        ],
+        "output": "Exact JSON/event format pending installed probe."
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "config_keys": [
+          "provider.<id>.options.baseURL",
+          "provider.<id>.options.apiKey",
+          "provider.<id>.models"
+        ]
+      },
+      "semantic_step": {
+        "status": "permission_and_registry_adapter_pending",
+        "tool_disable_argv": null,
+        "tool_disable_config_keys": [
+          "permission"
+        ]
+      },
+      "controls": [
+        "Per-tool and per-pattern allow, ask and deny.",
+        "Separate macOS/Linux sandbox enforcement documented.",
+        "Project env/file credential interpolation is restricted by trust rules."
+      ],
+      "control_issues": [
+        "Treat as an explicitly related OpenCode control, not an independent runtime lineage.",
+        "Autonomous mode does not mean all effects are safe or tools disabled."
+      ],
+      "source_urls": [
+        "https://github.com/Kilo-Org/kilocode",
+        "https://kilo.ai/docs/code-with-ai/platforms/cli",
+        "https://kilo.ai/docs/code-with-ai/agents/custom-models",
+        "https://kilo.ai/docs/getting-started/settings/sandboxing",
+        "https://kilo.ai/docs/customize/agent-permissions"
+      ]
+    },
+    {
+      "id": "forgecode",
+      "name": "ForgeCode",
+      "repository": "https://github.com/tailcallhq/forgecode",
+      "repository_api": "https://api.github.com/repos/tailcallhq/forgecode",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness",
+      "lineage": {
+        "former_locations": [
+          "antinomyhq/forge"
+        ]
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-07T18:14:21Z",
+        "declared_status": "current_project"
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "forge",
+          "-p",
+          "<prompt>"
+        ],
+        "stdin": "Piped text accepted as prompt.",
+        "output": "Terminal output; exact structured extraction pending."
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "environment_names": [
+          "OPENAI_URL",
+          "OPENAI_API_KEY"
+        ],
+        "config_keys": [
+          "model"
+        ]
+      },
+      "semantic_step": {
+        "status": "tool_free_controls_not_verified",
+        "tool_disable_argv": null
+      },
+      "controls": [
+        "Agent and custom-provider configuration documented."
+      ],
+      "control_issues": [
+        "Native OS confinement and complete tool disabling not established by the checked sources.",
+        "forge commit performs a Git mutation and is outside semantic-step invocation."
+      ],
+      "source_urls": [
+        "https://github.com/tailcallhq/forgecode",
+        "https://forgecode.dev/docs/custom-providers/"
+      ]
+    },
+    {
+      "id": "mistral_vibe",
+      "name": "Mistral Vibe",
+      "repository": "https://github.com/mistralai/mistral-vibe",
+      "repository_api": "https://api.github.com/repos/mistralai/mistral-vibe",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness",
+      "lineage": {
+        "parent_harness": null
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-04T08:53:52Z",
+        "declared_status": "current_project"
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "vibe",
+          "--prompt",
+          "<prompt>",
+          "--disabled-tools",
+          "*",
+          "--output",
+          "json"
+        ],
+        "stdin": "README documents noninteractive operation with piped input.",
+        "output": "text, json (all messages), streaming (JSONL per message)"
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "config_keys": [
+          "providers[].name",
+          "providers[].api_base",
+          "providers[].api_key_env_var",
+          "providers[].api_style",
+          "models[].provider"
+        ]
+      },
+      "semantic_step": {
+        "status": "documented_controls_pending_installed_probe",
+        "tool_disable_argv": [
+          "--disabled-tools",
+          "*"
+        ],
+        "extra_model_requests": "Compaction, retries and auxiliary features must be observed at broker; max-turns is not a provider-call guarantee."
+      },
+      "controls": [
+        "Tool enabled/disabled filters accept exact names, globs and regex.",
+        "Per-tool always/ask policies and bash allow/deny.",
+        "Run limits for turns, cumulative tokens and price are documented."
+      ],
+      "control_issues": [
+        "Agent safety field is a visual hint only; it does not enforce permissions.",
+        "Documented cumulative limits may interrupt after usage exceeds the limit; do not claim strict pre-dispatch bounds.",
+        "No built-in OS confinement was verified in this pass."
+      ],
+      "source_urls": [
+        "https://github.com/mistralai/mistral-vibe",
+        "https://docs.mistral.ai/vibe/code/cli/configuration-reference"
+      ]
+    },
+    {
+      "id": "gptme",
+      "name": "gptme",
+      "repository": "https://github.com/gptme/gptme",
+      "repository_api": "https://api.github.com/repos/gptme/gptme",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "kind": "general_purpose_cli_harness_with_coding_tools",
+      "lineage": {
+        "parent_harness": null
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-09T02:27:56Z",
+        "declared_status": "README_reports_active_development"
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "gptme",
+          "--non-interactive",
+          "--output-format",
+          "json",
+          "<prompt>"
+        ],
+        "stdin": "Piped context supported.",
+        "output": "JSONL with --output-format json"
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "environment_names": [
+          "OPENAI_BASE_URL"
+        ],
+        "argv_template": [
+          "--model",
+          "local/<model-id>"
+        ]
+      },
+      "semantic_step": {
+        "status": "tool_allowlist_documented_empty_list_semantics_pending",
+        "tool_disable_argv": null,
+        "tool_allowlist_argv": [
+          "--tools",
+          "<comma-separated-tool-names>"
+        ]
+      },
+      "controls": [
+        "Confirmation mode and tool allowlist.",
+        "Hook and pre-commit guardrails for persistent agents."
+      ],
+      "control_issues": [
+        "Noninteractive mode implies no confirmations.",
+        "An empty --tools value cannot be assumed to disable tools without inspecting the installed implementation.",
+        "Guidance hooks are not proof of OS containment."
+      ],
+      "source_urls": [
+        "https://github.com/gptme/gptme"
+      ]
+    },
+    {
+      "id": "hermes_agent",
+      "name": "Hermes Agent",
+      "repository": "https://github.com/NousResearch/hermes-agent",
+      "repository_api": "https://api.github.com/repos/NousResearch/hermes-agent",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "kind": "general_purpose_cli_harness_with_coding_tools",
+      "lineage": {
+        "parent_harness": null
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-09T02:26:00Z",
+        "declared_status": "current_project"
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "hermes",
+          "chat",
+          "--oneshot",
+          "-q",
+          "<prompt>"
+        ],
+        "final_only_argv": [
+          "hermes",
+          "-z",
+          "<prompt>"
+        ],
+        "stdin": "Scripted one-shot supports piped input.",
+        "output": "-z outputs final plain text only; chat one-shot retains richer output; usage-file option documented."
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "protocols": [
+          "OpenAI-compatible"
+        ],
+        "exact_cli_config_keys": null
+      },
+      "semantic_step": {
+        "status": "toolset_and_auxiliary_feature_suppression_pending",
+        "tool_disable_argv": null,
+        "tool_allowlist_argv": [
+          "--toolsets",
+          "<toolset-list>"
+        ]
+      },
+      "controls": [
+        "Local approval rules and blocklists.",
+        "Local, Docker, SSH, Singularity, Modal, Daytona and Vercel terminal backends.",
+        "Docker resource limits and environment forwarding configuration documented."
+      ],
+      "control_issues": [
+        "Persistent skill learning, summaries, subagents, cron and memory can create additional work outside one user-facing answer.",
+        "Docker mounts and forwarded credentials need independent review; container branding does not prove host protection.",
+        "Official docs describe bypassing some command checks on container backends; choose confinement before enabling that behavior."
+      ],
+      "source_urls": [
+        "https://github.com/NousResearch/hermes-agent",
+        "https://hermes-agent.nousresearch.com/docs/reference/cli-commands",
+        "https://hermes-agent.nousresearch.com/docs/user-guide/security"
+      ]
+    },
+    {
+      "id": "crush",
+      "name": "Crush",
+      "repository": "https://github.com/charmbracelet/crush",
+      "repository_api": "https://api.github.com/repos/charmbracelet/crush",
+      "license": "FSL-1.1-MIT",
+      "license_state": "source_available_with_competing_use_restriction",
+      "kind": "coding_cli_harness",
+      "lineage": {
+        "parent_harness": null
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-08T18:02:05Z",
+        "declared_status": "current_project"
+      },
+      "headless": {
+        "status": "stable_noninteractive_command_not_verified",
+        "argv_template": null,
+        "output": "Server workspace/session protocol documented; exact adapter pending."
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "protocols": [
+          "OpenAI-compatible",
+          "Anthropic-compatible"
+        ]
+      },
+      "semantic_step": {
+        "status": "contingent_license_and_transport_review",
+        "tool_disable_argv": null
+      },
+      "controls": [
+        "Default tool approvals, per-tool allow/deny, optional --yolo.",
+        "Workspace/session server architecture documented."
+      ],
+      "control_issues": [
+        "Do not count current code as an unrestricted OSS candidate; the exact license restricts competing commercial uses.",
+        "First client fixes workspace-wide --yolo and --debug flags; later clients cannot override them.",
+        "Personal context files and skill discovery need explicit isolation."
+      ],
+      "source_urls": [
+        "https://github.com/charmbracelet/crush",
+        "https://raw.githubusercontent.com/charmbracelet/crush/main/LICENSE.md"
+      ]
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode",
+      "repository": "https://github.com/anomalyco/opencode",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness",
+      "lineage": {
+        "parent_harness": null,
+        "related_project": "Kilo CLI is a separate documented fork, not this project's configuration"
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": null,
+        "status": "repository_reachable_API_metadata_request_failed_504"
+      },
+      "headless": {
+        "status": "installed_1_17_9_verified",
+        "argv_template": [
+          "opencode",
+          "run",
+          "<neutral-instruction>",
+          "--file",
+          "<private-task-file>",
+          "--format",
+          "json"
+        ]
+      },
+      "custom_endpoint": {
+        "status": "installed_local_broker_verified",
+        "config_keys": [
+          "provider.<id>.npm",
+          "provider.<id>.options.baseURL",
+          "provider.<id>.options.apiKey",
+          "provider.<id>.models"
+        ]
+      },
+      "controls": [
+        "Per-process config, tools false, permission deny, private data home, plugin/project discovery suppression and external Bubblewrap."
+      ],
+      "control_issues": [
+        "The historical raw-host adapter remains quarantined; this is a separate brokered semantic profile.",
+        "Exit code and text alone do not establish a stopped, tool-free result."
+      ],
+      "source_urls": [
+        "https://github.com/anomalyco/opencode",
+        "https://opencode.ai/config.json"
+      ],
+      "trial_evidence": [
+        "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-recipes/opencode-text-01/result.json",
+        "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-recipes/opencode-request-tools-01/result.json",
+        "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/additional-recipes/opencode-response-tools-01/result.json"
+      ]
+    },
+    {
+      "id": "freebuff",
+      "name": "Freebuff (Codebuff project)",
+      "repository": "https://github.com/CodebuffAI/freebuff",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness_with_hosted_services",
+      "lineage": {
+        "former_locations": [
+          "CodebuffAI/codebuff"
+        ],
+        "counting_rule": "Codebuff/freebuff and its SDK are one project entry."
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-09T03:51:50Z",
+        "status": "current_project"
+      },
+      "headless": {
+        "status": "CLI_exists_exact_noninteractive_invocation_not_verified",
+        "package": "freebuff",
+        "argv_template": null
+      },
+      "custom_endpoint": {
+        "status": "Ollama_only_routing_not_verified",
+        "note": "Current default product uses hosted included models; a default run would not satisfy this task's provider restriction."
+      },
+      "controls": [
+        "Specialized agents and local/hosted execution surfaces documented."
+      ],
+      "control_issues": [
+        "Must qualify an explicit broker transport before any real trial.",
+        "Do not treat its internal SDK packages or five product surfaces as five independent harness projects."
+      ],
+      "source_urls": [
+        "https://github.com/CodebuffAI/freebuff",
+        "https://raw.githubusercontent.com/CodebuffAI/freebuff/main/README.md"
+      ],
+      "trial_evidence": []
+    },
+    {
+      "id": "openinterpreter",
+      "name": "Open Interpreter (current Rust project)",
+      "repository": "https://github.com/openinterpreter/openinterpreter",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness_fork",
+      "lineage": {
+        "parent_harness": "openai/codex",
+        "former_locations": [
+          "OpenInterpreter/open-interpreter"
+        ],
+        "note": "Current Rust Codex-derived project. README points the older Python code to endolith/open-interpreter. Do not confuse that older distribution with this entry.",
+        "counting_rule": "Harness-emulation menu entries are configurations, not extra projects."
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-09-08T07:54:44Z",
+        "status": "current_project"
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "interpreter",
+          "exec",
+          "--json",
+          "<prompt>"
+        ]
+      },
+      "custom_endpoint": {
+        "status": "documented_OpenAI_compatible_and_local_provider_support",
+        "argv_knobs": [
+          "--chat-completions",
+          "--oss",
+          "--local-provider"
+        ],
+        "note": "Use a canonical broker route to Ollama Cloud; local-provider wording alone is not an authorized local-GPU trial."
+      },
+      "controls": [
+        "Native sandbox and approval modes; MCP/ACP and Codex-compatible exec."
+      ],
+      "control_issues": [
+        "Fork ancestry must be recorded.",
+        "Emulation of other harnesses does not prove equal source, behavior or benchmark quality."
+      ],
+      "source_urls": [
+        "https://github.com/openinterpreter/openinterpreter",
+        "https://raw.githubusercontent.com/openinterpreter/openinterpreter/main/README.md",
+        "https://www.openinterpreter.com/docs/terminal/cli-reference"
+      ],
+      "trial_evidence": []
+    },
+    {
+      "id": "nanocode",
+      "name": "nanocode",
+      "repository": "https://github.com/1rgs/nanocode",
+      "license": "MIT",
+      "license_state": "declared_in_readme_only_API_license_null",
+      "kind": "minimal_coding_cli_harness",
+      "lineage": {
+        "parent_harness": null
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-01-14T05:59:51Z",
+        "status": "no_recent_push_observed"
+      },
+      "headless": {
+        "status": "interactive_script_documented_headless_wrapper_needed",
+        "argv_template": [
+          "python",
+          "nanocode.py"
+        ]
+      },
+      "custom_endpoint": {
+        "status": "source_extension_required",
+        "note": "Inspected source hardcodes Anthropic/OpenRouter Messages endpoints. MODEL changes model identity, not endpoint."
+      },
+      "controls": [
+        "Source implements read/write/edit/glob/grep/bash tools."
+      ],
+      "control_issues": [
+        "No complete no-tools or sandbox policy verified.",
+        "A contained adapter must replace the endpoint and disable effects before Ollama-only trials.",
+        "README declares MIT; GitHub API did not detect a license file. Preserve that provenance distinction."
+      ],
+      "source_urls": [
+        "https://github.com/1rgs/nanocode",
+        "https://raw.githubusercontent.com/1rgs/nanocode/master/nanocode.py"
+      ],
+      "trial_evidence": []
+    },
+    {
+      "id": "trae_agent",
+      "name": "Trae Agent",
+      "repository": "https://github.com/bytedance/trae-agent",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness",
+      "lineage": {
+        "parent_harness": null
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2026-02-05T11:21:00Z",
+        "status": "no_recent_push_observed"
+      },
+      "headless": {
+        "status": "documented",
+        "argv_template": [
+          "trae-cli",
+          "run",
+          "<task>"
+        ]
+      },
+      "custom_endpoint": {
+        "status": "documented",
+        "config_keys": [
+          "model_providers.<id>.provider",
+          "model_providers.<id>.base_url",
+          "agents.trae_agent.tools"
+        ],
+        "environment_names": [
+          "OPENAI_BASE_URL"
+        ]
+      },
+      "controls": [
+        "Explicit agent tools list; separate configured model providers; MCP optional."
+      ],
+      "control_issues": [
+        "Default tool list includes bash/edit/thinking/task_done; complete tool-free submission behavior needs execution qualification.",
+        "Lakeview or other auxiliary summaries must stay on the brokered authorized route."
+      ],
+      "source_urls": [
+        "https://github.com/bytedance/trae-agent"
+      ],
+      "trial_evidence": []
+    },
+    {
+      "id": "plandex",
+      "name": "Plandex",
+      "repository": "https://github.com/plandex-ai/plandex",
+      "license": "MIT",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness_with_local_server",
+      "lineage": {
+        "parent_harness": null
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": "2025-10-03T21:49:58Z",
+        "status": "README_says_cloud_winding_down_since_2025_10_03_self_hosted_path_remains"
+      },
+      "headless": {
+        "status": "scripting_and_piping_documented_exact_command_pending",
+        "argv_template": null
+      },
+      "custom_endpoint": {
+        "status": "self_hosted_provider_configuration_documented_exact_Ollama_broker_recipe_pending"
+      },
+      "controls": [
+        "Cumulative diff review sandbox and configurable command execution; self-hosted Docker server."
+      ],
+      "control_issues": [
+        "A diff staging area is not complete OS confinement.",
+        "Hosted cloud onboarding is winding down; trial local self-hosted mode only with an explicit broker route."
+      ],
+      "source_urls": [
+        "https://github.com/plandex-ai/plandex",
+        "https://raw.githubusercontent.com/plandex-ai/plandex/main/README.md"
+      ],
+      "trial_evidence": []
+    },
+    {
+      "id": "codex_cli",
+      "name": "Codex CLI",
+      "repository": "https://github.com/openai/codex",
+      "license": "Apache-2.0",
+      "license_state": "identified_standard_license",
+      "kind": "coding_cli_harness",
+      "lineage": {
+        "parent_harness": null,
+        "related_project": "Open Interpreter is a separate documented Codex-derived project."
+      },
+      "maintenance": {
+        "github_archived": false,
+        "last_push_utc": null,
+        "status": "repository_reachable_API_metadata_request_failed_504"
+      },
+      "headless": {
+        "status": "local_references_document_exec_stdin_exact_current_recipe_pending",
+        "argv_template": [
+          "codex",
+          "exec",
+          "-"
+        ]
+      },
+      "custom_endpoint": {
+        "status": "custom_provider_recipe_requires_versioned_protocol_qualification",
+        "note": "Do not default to OpenAI or ChatGPT auth/model service. Real calls for this task must use brokered Ollama Cloud."
+      },
+      "controls": [
+        "Open-source Rust coding harness with sandbox, permissions and settings."
+      ],
+      "control_issues": [
+        "A public GitHub source license does not grant external model authority.",
+        "Tool suppression and Responses protocol need actual installed-client verification."
+      ],
+      "source_urls": [
+        "https://github.com/openai/codex"
+      ],
+      "trial_evidence": []
+    }
+  ],
+  "unresolved_candidates": [
+    {
+      "id": "mentat",
+      "requested_repository": "https://github.com/AbanteAI/mentat",
+      "status": "not_qualified",
+      "observed_repository_api_status": 404,
+      "note": "No current canonical replacement, license or runnable interface verified. Not counted among the 16 candidates."
+    }
+  ],
+  "counting_exclusions": [
+    {
+      "name": "Pi agent-core and pi-ai",
+      "reason": "Framework/runtime/provider packages within Pi, not independently counted CLI harnesses."
+    },
+    {
+      "name": "OpenHands SDK and Agent Canvas",
+      "reason": "Framework and control-center surfaces; the runnable CLI has its own candidate entry."
+    },
+    {
+      "name": "Cline SDK and IDE clients",
+      "reason": "Shared harness family, not additional independent candidates."
+    },
+    {
+      "name": "TheAgentCompany",
+      "reason": "Evaluation benchmark, not a coding harness."
+    }
+  ],
+  "first_batch_original_research_shortlist": [
+    "pi",
+    "aider",
+    "goose",
+    "mini_swe_agent",
+    "openhands_cli",
+    "mistral_vibe",
+    "qwen_code",
+    "cline"
+  ],
+  "semantic_bridge_priority": [
+    "pi",
+    "mistral_vibe",
+    "aider",
+    "goose",
+    "continue_cli"
+  ],
+  "semantic_bridge_priority_note": "This order reflects documented tool-suppression controls only. No candidate is promoted to integrated or qualified by this report. Continue remains a maintenance/reference arm. The other candidates need exact configuration or adapter work before a tool-free semantic-step claim.",
+  "supersedes": "/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/upstream-catalog.json",
+  "real_provider_policy": {
+    "allowed_provider": "Ollama Cloud only",
+    "enforcement": "All real model requests must pass the canonical engine broker and its exact authorized cloud route.",
+    "other_vendor_accounts": "No default Anthropic, Google, OpenAI, OpenRouter, Codebuff or Copilot model service is authorized by this task.",
+    "failure_rule": "Unsupported broker routing is a recorded trial limitation, never permission to silently call another provider."
+  },
+  "distinct_project_count": 23,
+  "readme_declared_license_candidate_count": 1,
+  "proprietary_comparators": [
+    {
+      "id": "claude_code",
+      "name": "Claude Code",
+      "repository": "https://github.com/anthropics/claude-code",
+      "classification": "proprietary_product_public_docs_plugins_issue_repository",
+      "license": "Anthropic commercial terms; not counted as MIT/Apache source harness",
+      "source_urls": [
+        "https://github.com/anthropics/claude-code"
+      ],
+      "real_trial_condition": "Only an explicitly permitted broker route to Ollama Cloud; no Anthropic model service calls."
+    },
+    {
+      "id": "github_copilot_cli",
+      "name": "GitHub Copilot CLI",
+      "repository": "https://github.com/github/copilot-cli",
+      "classification": "proprietary_product_public_distribution_issue_repository",
+      "license": "Custom license and GitHub product terms; not counted as MIT/Apache source harness",
+      "source_urls": [
+        "https://github.com/github/copilot-cli",
+        "https://github.com/github/copilot-cli/blob/main/LICENSE.md"
+      ],
+      "real_trial_condition": "Custom broker/model support remains unverified; no default Copilot service calls under this task."
+    }
+  ],
+  "execution_status_note": "The >=22 distinct-project research inventory is complete. Trial completeness and successful integrations must be reported separately from these 23 entries. This file does not claim all projects have run."
+}

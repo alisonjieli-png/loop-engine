@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import hashlib
 from dataclasses import replace
 from typing import Any
 
@@ -28,7 +29,7 @@ from .delegation_runtime import (
     DelegationSpec,
     LoopPortValue,
 )
-from .loop_contract import LoopContract
+from .loop_contract import LoopContract, LoopInputCardinality
 from .loop_profile_catalog import LoopProfileRef
 from .recursive_loop import Loop, LoopConfig, StepOutcome
 
@@ -87,6 +88,19 @@ def run_checkpoint_checks() -> list[dict]:
     check(
         "terminal_checkpoint_round_trips_and_restores_exact_metadata",
         terminal["passed"], terminal["detail"])
+    checkpoint=terminal['checkpoint']
+    extended=replace(checkpoint,spec=replace(checkpoint.spec,contract=replace(checkpoint.spec.contract,
+        output_type='multiple',max_outputs=2,
+        input_cardinalities=(LoopInputCardinality('raw/v1','multiple',3),))),checkpoint_digest='')
+    roundtrip=SpawnedTaskCheckpoint.from_json(extended.to_json())
+    check('checkpoint_preserves_both_input_and_output_cardinality',roundtrip.spec.contract==extended.spec.contract
+          and roundtrip.schema_version=='spawned_task_checkpoint/v3')
+    old=checkpoint.to_dict();old['schema_version']='spawned_task_checkpoint/v2'
+    for name in ('output_type','max_outputs','input_cardinalities'):old['spec']['contract'].pop(name)
+    old.pop('checkpoint_digest')
+    old['checkpoint_digest']=hashlib.sha256(json.dumps(old,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    legacy=SpawnedTaskCheckpoint.from_dict(old)
+    check('historical_checkpoint_retains_its_exact_encoding_and_digest',legacy.to_dict()==old)
 
     invalid = _checkpoint_refusal_case(terminal["checkpoint"])
     check(
@@ -162,8 +176,21 @@ def _checkpoint_refusal_case(checkpoint: SpawnedTaskCheckpoint) -> dict[str, Any
     tampered["spec"]["goal"] = "tampered goal"
     unknown = json.loads(checkpoint.to_json())
     unknown["unexpected"] = True
+    # A stored record must carry its digest; a blank one is not recomputed.
+    blank = json.loads(checkpoint.to_json())
+    blank["spec"]["goal"] = "tampered goal"
+    blank["checkpoint_digest"] = ""
+    # A counter that would be narrowed by coercion is refused even when the
+    # digest was computed over the narrowed body.
+    coerced = json.loads(checkpoint.to_json())
+    coerced["update_count"] = 2.9
+    body = {key: value for key, value in coerced.items()
+            if key != "checkpoint_digest"}
+    body["update_count"] = 2
+    coerced["checkpoint_digest"] = hashlib.sha256(json.dumps(
+        body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     refused = 0
-    for value in (stale, tampered, unknown):
+    for value in (stale, tampered, unknown, blank, coerced):
         try:
             SpawnedTaskCheckpoint.from_dict(value)
         except (SpawnedTaskCheckpointError, ValueError):
@@ -177,10 +204,10 @@ def _checkpoint_refusal_case(checkpoint: SpawnedTaskCheckpoint) -> dict[str, Any
     except SpawnedTaskCheckpointError:
         invalid_state = True
     return {
-        "passed": refused == 3 and invalid_state,
+        "passed": refused == 5 and invalid_state,
         "detail": (
-            "stale schema, changed body, unknown field, and result/status "
-            "mismatch were refused"),
+            "stale schema, changed body, unknown field, blank stored digest, "
+            "coerced counter, and result/status mismatch were refused"),
     }
 
 

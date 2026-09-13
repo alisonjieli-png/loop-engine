@@ -1,0 +1,13 @@
+{
+  "record_type": "embodiment_mutation/v1",
+  "id": "reuse_policy",
+  "status": "planned",
+  "arms": [
+    "cold",
+    "qualified_reuse",
+    "drifted_asset_control"
+  ],
+  "control_rule": "Requalify on new data; reject drift and bad assets before execution; keep failed replay costs.",
+  "runtime_type": "Loop",
+  "automatic_application": false
+}

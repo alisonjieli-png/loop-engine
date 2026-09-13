@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -368,6 +369,19 @@ def run_checks() -> dict:
         check("invalid_model_json_is_repaired_through_the_same_typed_step",
               repaired["solved"] and repaired["model_calls"] == 8,
               repaired.get("failure", "format repair succeeded"))
+        outlines = []
+        for base, _dirs, files in os.walk(root):
+            for name in files:
+                try:
+                    with open(os.path.join(base, name), encoding="utf-8",
+                              errors="replace") as handle:
+                        if "Plan outline:" in handle.read(400):
+                            outlines.append(name)
+                except OSError:
+                    pass
+        check("admitted_method_is_saved_as_a_readable_plan_outline",
+              len(outlines) >= 1,
+              f"{len(outlines)} plan outline artifact(s) in the run store")
 
     with tempfile.TemporaryDirectory() as root:
         repeated_execution = fixture_model_execution(
@@ -385,6 +399,8 @@ def run_checks() -> dict:
               and repeated["model_calls"] == 2
               and "repeated the same invalid JSON" in repeated["failure"],
               repeated.get("failure", ""))
+        # The stall shape contract lives beside admission
+        # (model_response_admission_checks); this flow pins the behavior.
 
     leaked_orientation = _orientation(
         verification_obligations=[

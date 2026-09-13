@@ -1,0 +1,10 @@
+{
+  "id": "reuse_first",
+  "folder": "reuse_first",
+  "status": "planned",
+  "title": "Governed reuse first",
+  "benefit": "Resolve exact reviewed assets before generating a new implementation.",
+  "limitations": "The lab does not yet integrate capability qualification and promotion; no cache is presented as learned code reuse.",
+  "contract": "embodiment_work/v1",
+  "model_backend_qualified": false
+}

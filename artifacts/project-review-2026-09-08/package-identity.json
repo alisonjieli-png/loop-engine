@@ -1,0 +1,10 @@
+{
+  "source_python_modules": 430,
+  "snapshot_python_modules": 430,
+  "wheel_python_modules": 430,
+  "source_unchanged_since_snapshot": true,
+  "wheel_python_exactly_matches_snapshot": true,
+  "local_run_history_or_studio_files_in_wheel": [],
+  "experimental_modules_in_wheel": [],
+  "wheel_sha256": "24628545db2b4393f11f3abec1cae7ff9bccd54b4771dc15c3c3ea9c4b48bf58"
+}

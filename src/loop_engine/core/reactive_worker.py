@@ -490,6 +490,11 @@ class ReactiveWorkerOutcome:
     #: The exception type name when history persistence failed after the
     #: Loop finished, so the cause is not reduced to one generic code.
     history_error_code: str = ""
+    #: Bounded "<Type>: <message>" of the exception behind error_code, so a
+    #: row can name the real failure (e.g. a LoopError's fixed-vocabulary
+    #: text) instead of only the upper-cased type. Never persisted to the
+    #: scheduler; the terminal record keeps the stable code.
+    underlying_error: str = ""
 
 
 class AsyncReactiveWorker:
@@ -609,7 +614,9 @@ class AsyncReactiveWorker:
                 pass
             return ReactiveWorkerOutcome(
                 request.claim.worker_id, True, activation.activation_id,
-                error_code=error_code, heartbeats_sent=heartbeats)
+                error_code=error_code, heartbeats_sent=heartbeats,
+                underlying_error=(type(exc).__name__ + ": "
+                                  + str(exc)[:200]))
 
     async def run_many(
             self, requests: tuple[ReactiveWorkerRequest, ...]
@@ -627,7 +634,9 @@ class AsyncReactiveWorker:
                 # of every other sibling's result.
                 outcomes.append(ReactiveWorkerOutcome(
                     item.claim.worker_id, False,
-                    error_code=type(value).__name__.upper()))
+                    error_code=type(value).__name__.upper(),
+                    underlying_error=(type(value).__name__ + ": "
+                                      + str(value)[:200])))
             else:
                 outcomes.append(value)
         return tuple(outcomes)

@@ -155,3 +155,15 @@ contracts and examples.
 Runtime Memory is the temporary note board for the current run. It is not a
 fifth intelligence layer. Notes do not automatically become persistent
 intelligence. A later, explicit curation step is required.
+
+## Expand intelligence coverage and use
+
+The design should support more useful questions, methods, examples,
+counterexamples, executable capabilities, prior outcomes, and human guidance
+within these four layers. More stored material is not automatically better,
+but reducing context is not the universal objective either. Compare what was
+retrieved, loaded, applied, and useful on the actual assignment.
+
+Read [flexible cognitive and action composition](../../architecture/FLEXIBLE-COGNITIVE-AND-ACTION-COMPOSITION.md)
+and [configuration grid search](../../guides/configuration-grid-search-and-optimization.md)
+for expansion, source combinations, prompt portfolios, and contribution tests.

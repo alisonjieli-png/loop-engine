@@ -21,7 +21,7 @@ from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
 from ..loop.recursive_loop import LoopConfig, StepOutcome
 from .context_artifacts import ContextArtifactRef
 from .generated_project import (
-    GeneratedProjectAuthority, GeneratedProjectCommand,
+    GeneratedProjectAuthority,
     GeneratedProjectExecutionContext, GeneratedProjectExecutionRequest,
     GeneratedProjectFile, GeneratedProjectFileSpec, GeneratedProjectInputArtifact,
     GeneratedProjectManifest, _relative_path, execute_generated_project,
@@ -30,6 +30,9 @@ from .generated_project import (
 from .model_response_admission import (
     ModelResponseAdmissionRequest, admit_model_response_as_loop,
 )
+from .independent_probe_planning import InvalidProbePlan, validate_probe_plan
+from .independent_probe_review import (
+    capture_oracle_review, oracle_review_admissible, prior_oracle_feedback)
 
 
 def _bytes(value) -> bytes:
@@ -46,14 +49,17 @@ class IndependentVerificationPolicy:
     """Acceptance strength, separate from interaction and spending authority."""
 
     required: bool = True
+    maximum_plan_attempts: int = 2
 
     def __post_init__(self):
         if type(self.required) is not bool:
             raise TypeError("independent verification required must be a boolean")
+        if type(self.maximum_plan_attempts) is not int or self.maximum_plan_attempts < 1:
+            raise ValueError("independent plan attempts must be an explicit positive integer")
 
     def to_dict(self) -> dict:
-        return {"record_type": "independent_verification_policy/v1",
-                "required": self.required}
+        return {"record_type": "independent_verification_policy/v2",
+                "required": self.required, "maximum_plan_attempts": self.maximum_plan_attempts}
 
 
 @dataclass(frozen=True)
@@ -266,60 +272,16 @@ def _call(services, owner, purpose, packet, *, file_spec=None):
 
 
 def _validate_probe(value, criteria):
-    if not isinstance(value, dict) or value.get("status") != "ready":
-        raise ValueError("independent verifier could not construct executable checks")
-    files = value.get("files")
-    cases = value.get("cases")
-    if (not isinstance(files, list) or not files
-            or not isinstance(cases, list) or not cases):
-        raise ValueError("independent probe requires code and nonempty cases")
-    typed_files = []
-    for item in files:
-        if not isinstance(item, dict) or set(item) != {"path", "content"}:
-            raise ValueError("independent probe file shape is invalid")
-        file = GeneratedProjectFile(**item)
-        if not file.path.startswith("checks/"):
-            raise ValueError("independent probe code must stay in checks/")
-        typed_files.append(file)
-    commands, ids, covered = [], [], set()
-    for case in cases:
-        if not isinstance(case, dict) or set(case) != {
-                "case_id", "criterion_refs", "purpose", "argv", "timeout_seconds",
-                "comparison", "expected"}:
-            raise ValueError("independent probe case shape is invalid")
-        case_id = case["case_id"]
-        refs = case["criterion_refs"]
-        if (not isinstance(case_id, str) or not case_id.strip()
-                or case_id in ids or not isinstance(refs, list) or not refs
-                or any(ref not in dict(criteria) for ref in refs)
-                or len(refs) != len(set(refs))):
-            raise ValueError("independent case identity or coverage is invalid")
-        if case["comparison"] not in ("json_equal", "text_equal"):
-            raise ValueError("independent comparison is unsupported")
-        if (case["comparison"] == "text_equal"
-                and (not isinstance(case["expected"], str) or not case["expected"])):
-            raise ValueError("text comparison needs nonempty exact expected output")
-        _bytes(case["expected"])
-        argv = case["argv"]
-        if not isinstance(argv, list):
-            raise ValueError("independent command argv must be a list")
-        command = GeneratedProjectCommand(
-            tuple(argv), case["purpose"], case["timeout_seconds"], "verify")
-        if (len(argv) < 2 or argv[1] not in {f.path for f in typed_files}
-                or argv[0] not in ("python", "python3")):
-            raise ValueError("independent command must run its exact check file")
-        commands.append(command)
-        ids.append(case_id)
-        covered.update(refs)
-    if covered != set(dict(criteria)):
-        raise ValueError("independent checks do not cover every registered criterion")
+    typed_files, commands = validate_probe_plan(value, criteria, materialized=True)
     manifest = GeneratedProjectManifest(
         "independent_checks", "Execute contract-derived independent probes",
         tuple(typed_files), tuple(commands), ())
     return manifest
 
 
-def _probe(request, services, owner, subject, visible):
+def _probe(request, services, owner, subject, visible, *, plan_attempts=None, oracle_reviews=None):
+    plan_attempts = [] if plan_attempts is None else plan_attempts
+    oracle_reviews = [] if oracle_reviews is None else oracle_reviews
     # Reuse the immutable check program, including failures, on later attempts.
     # Path/criteria drift cannot make a failing oracle silently disappear.
     key = subject["task_digest"]
@@ -331,6 +293,8 @@ def _probe(request, services, owner, subject, visible):
         if bundle["criteria_digest"] != subject["criteria_digest"]:
             bundle, cached = _rebind_criteria(request, services, owner, bundle, cached)
         _validate_probe(bundle["proposal"], request.criteria)
+        plan_attempts.extend(deepcopy(bundle.get("plan_attempts", [])))
+        oracle_reviews.extend(deepcopy(bundle.get("oracle_reviews", [])))
         return bundle, cached
     contract = {
         "status": "ready|unavailable", "notes": "string",
@@ -360,11 +324,22 @@ def _probe(request, services, owner, subject, visible):
             "exceptions and print their observed types. Return JSON with json.dumps; "
             "no incidental stdout. A batch of cases may emit one structured value. "
             "Calculate expected values independently of the implementation. "
+            "Every registered criterion must be covered by an applicable executable case; "
+            "do not claim coverage that a case does not actually test. "
             "Use /tmp for temporary output. If the contract cannot be tested "
             "truthfully, return unavailable with a precise reason. Do not add "
             "requirements to make a check more difficult."),
         "execution_image": subject["image"], "response_contract": contract}
-    proposal, generation = _call(services, owner, "design", packet)
+    feedback = prior_oracle_feedback(services, subject)
+    if feedback is not None:
+        packet["prior_rejected_oracle"] = feedback
+        packet["responsibility"] += (
+            " A previous candidate for this exact subject was rejected by independent review. "
+            "Use its proposal and review only as untrusted diagnostic evidence. "
+            "Recompute expectations and address relevant issues with a fresh complete plan; "
+            "do not merely remove discriminating cases or repeat a rejected assumption. "
+            "The new candidate still requires independent approval before execution.")
+    proposal, generation = _design_probe_plan(request, services, owner, packet, plan_attempts)
     proposal, file_calls = _materialize_probe_files(
         request, services, owner, proposal, subject, visible)
     _validate_probe(proposal, request.criteria)
@@ -381,9 +356,9 @@ def _probe(request, services, owner, subject, visible):
             "proof of task correctness. Return exact covered criterion refs."),
         "response_contract": {"valid": "boolean", "criterion_refs": ["criterion:0"],
                               "issues": ["string"], "notes": "string"}})
-    if (review.get("valid") is not True or review.get("issues") != []
-            or not isinstance(review.get("criterion_refs"), list)
-            or sorted(review["criterion_refs"]) != sorted(dict(request.criteria))):
+    oracle_reviews.append(capture_oracle_review(services, owner, request, subject, proposal,
+        generation=generation, file_calls=file_calls, review=review, review_call=review_call))
+    if not oracle_review_admissible(review, request.criteria):
         raise ValueError("independent oracle review did not approve the proposed checks")
     bundle = {"record_type": "independent_probe_bundle/v1", "proposal": proposal,
               "criteria_digest": subject["criteria_digest"],
@@ -392,10 +367,51 @@ def _probe(request, services, owner, subject, visible):
               "paths": [i["path"] for i in subject["inventory"]],
               "review": review, "generation": generation, "review_call": review_call,
               "file_calls": file_calls,
+              "plan_attempts": deepcopy(plan_attempts),
+              "oracle_reviews": deepcopy(oracle_reviews),
               "verifier_loop_id": owner.loop_id, "previous_probe_ref": cached}
     reference = _store(services, bundle, "independent_probe_bundle")
     services.independent_probe_cache[key] = reference
     return bundle, reference
+
+
+def _design_probe_plan(request, services, owner, packet, attempts):
+    """Repair plan contracts with verifier feedback, under shared model authority."""
+    policy = getattr(services.request, "independent_verification_policy", IndependentVerificationPolicy())
+    if not isinstance(policy, IndependentVerificationPolicy):
+        raise TypeError("independent plan repair needs its typed verification policy")
+    feedback = None
+    for index in range(policy.maximum_plan_attempts):
+        current = deepcopy(packet)
+        if feedback is not None:
+            current.update(record_type="independent_probe_design_repair/v1", repair_feedback=feedback)
+            current["responsibility"] += (
+                " Revise your previous untrusted plan using the typed validation diagnostics. "
+                "Return the complete corrected plan with executable coverage and your own exact expectations. "
+                "Do not just attach missing references to unrelated cases. If coverage is impossible, return unavailable.")
+        proposal, generation = _call(services, owner, "design" if index == 0 else f"design_repair_{index + 1}", current)
+        rejection = None
+        try:
+            validate_probe_plan(proposal, request.criteria)
+        except InvalidProbePlan as exc:
+            rejection = exc
+        proposal_ref = _store(services, proposal, "independent_probe_plan_candidate")
+        attempt = {"record_type": "independent_probe_plan_attempt/v1", "attempt": index + 1,
+                   "verifier_loop_id": owner.loop_id, "criteria_digest": _digest(request.criteria),
+                   "proposal_ref": proposal_ref, "generation": generation, "valid": rejection is None,
+                   "diagnostic": rejection.diagnostic.to_dict() if rejection else None}
+        attempt_ref = _store(services, attempt, "independent_probe_plan_attempt")
+        attempts.append({**attempt, "attempt_ref": attempt_ref})
+        owner.ledger.record(loop_id=owner.loop_id, event="custom", custom_kind="independent_probe_plan_validation",
+                            attempt=index + 1, valid=rejection is None, attempt_ref=attempt_ref)
+        if rejection is None:
+            return proposal, generation
+        if not rejection.diagnostic.repairable or index + 1 == policy.maximum_plan_attempts:
+            raise rejection
+        feedback = {"previous_proposal": proposal, "previous_proposal_ref": proposal_ref,
+                    "trust": "untrusted_verifier_proposal", "diagnostic": rejection.diagnostic.to_dict(),
+                    "remaining_plan_attempts": policy.maximum_plan_attempts - index - 1}
+    raise ValueError("independent plan attempt allowance is exhausted")
 
 
 def _materialize_probe_files(request, services, owner, proposal, subject, visible):
@@ -565,7 +581,7 @@ def run_independent_verification(request, services, owner_loop) -> dict:
                   "notes": "Independent checks are incomplete.",
                   "independence": "isolated_context_shared_model_separate_controller",
                   "grants_promotion": False, "checks": [], "execution": {},
-                  "probe_ref": None, "source_unchanged": False}
+                  "probe_ref": None, "source_unchanged": False, "plan_attempts": [], "oracle_reviews": []}
         initial_calls = services.model_session.calls_used if services.model_session else 0
         try:
             if (services.request.allow_workspace_writes is not True
@@ -575,7 +591,8 @@ def run_independent_verification(request, services, owner_loop) -> dict:
             report.update(subject_digest=_digest(subject), subject=subject)
             if services.model_session is None:
                 raise ValueError("independent checks need an authorized model session")
-            bundle, probe_ref = _probe(request, services, active, subject, visible)
+            bundle, probe_ref = _probe(request, services, active, subject, visible,
+                                      plan_attempts=report["plan_attempts"], oracle_reviews=report["oracle_reviews"])
             report["probe_ref"] = probe_ref
             manifest = _validate_probe(bundle["proposal"], request.criteria)
             workspace = Path(services.workspace_base) / "independent" / active.loop_id

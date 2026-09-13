@@ -73,6 +73,42 @@ guidance:
     intelligence_functions: [readiness, execution, verification]
     step_affinities: [assess_prepare, act, verify]
     content: A model proposal never grants a capability or effect permission.
+  - record_id: core.guidance.recognize_sufficiency
+    version: 1.0.0
+    intelligence_functions: [verification, routing, deliberation]
+    step_affinities: [verify, decide_next, route]
+    content: >-
+      Before starting new work, check whether an existing artifact already
+      satisfies the acceptance. Verify it and stop instead of acting again.
+  - record_id: core.guidance.survey_established_facts
+    version: 1.0.0
+    intelligence_functions: [readiness, deliberation]
+    step_affinities: [orient, assess_prepare, act]
+    content: >-
+      Before probing the environment or data, read what this run already
+      established. Re-derive nothing already on record.
+  - record_id: core.guidance.stop_on_recurrence
+    version: 1.0.0
+    intelligence_functions: [deliberation, routing]
+    step_affinities: [decide_next, route, diagnose_stall]
+    content: >-
+      A third same-shape failure forbids another same-shape retry. Change
+      the strategy family, ask, or abstain — never repeat the shape.
+  - record_id: core.guidance.reflect_before_repeat
+    version: 1.0.0
+    intelligence_functions: [deliberation, verification]
+    step_affinities: [decide_next, act, route]
+    content: >-
+      When an action failed, state what was learned before selecting the
+      next action. A next action without a stated lesson is not selectable.
+  - record_id: core.guidance.coverage_before_close
+    version: 1.0.0
+    intelligence_functions: [verification, routing]
+    step_affinities: [verify, route]
+    content: >-
+      A pass is not complete until verify and, after any surprise,
+      calibrate have fired. Route back for missing reflection, never
+      forward past it.
   - record_id: core.guidance.return_typed_output
     version: 1.0.0
     intelligence_functions: [implementation, execution, routing]
@@ -446,6 +482,10 @@ steps:
       - What requires research, user clarification, or additional authority?
       - Which independent subcomponents or decisions does the task require?
       - What depends on what, and what can run in parallel?
+      - Which folders, files, data, and tools around this task have actually
+        been inspected, and which are still assumed?
+      - Where should the work happen, and what must the working directory
+        contain and allow before acting?
   standardize_task:
     persona_refs:
       - core.persona.domain_expert
@@ -485,6 +525,8 @@ steps:
       - Which perspectives, sources, capabilities, or prior runs could improve the decision?
       - What can be reused exactly, parameterized, modified, composed, or transferred by analogy?
       - What appears genuinely new?
+      - What does this machine and run actually offer (compute, data, tools,
+        network), measured rather than declared, and what is still unknown?
   decide_next:
     persona_refs:
       - core.persona.systems_builder
@@ -500,6 +542,10 @@ steps:
       - Which action has the best expected value after considering cost, risk, reversibility, and information gain?
       - Should the work be performed here or delegated to another Loop with its own contract?
       - What fallback is required if the selected action fails?
+      - Has this exact approach already failed, and what does that failure
+        forbid retrying?
+      - What was learned from the last failure, stated plainly, before the
+        next action is selected?
   how:
     persona_refs:
       - core.persona.systems_builder
@@ -515,6 +561,8 @@ steps:
       - Should the method be configured, composed, adapted, researched, generated, or delegated?
       - What inputs, capabilities, effects, tests, and stop conditions does the method require?
       - Which dependencies and joins constrain scheduling?
+      - What working directory, input staging, and effect boundaries must be
+        in place before the method runs?
   act:
     persona_refs:
       - core.persona.software_engineer
@@ -526,6 +574,10 @@ steps:
       - What bounded operation should run now?
       - What evidence, artifacts, outputs, failures, and lineage did the operation produce?
       - Did the action use only its authorized capabilities and effects?
+      - Do the running observables still match the forecast, or has the
+        operation drifted off track and should stop early?
+      - What does this run already establish that makes fresh probing or
+        setup unnecessary?
   verify:
     persona_refs:
       - core.persona.independent_verifier
@@ -541,6 +593,10 @@ steps:
       - Do deterministic tests, source evidence, and artifact checks support the result?
       - What failed, remains uncertain, or needs repair?
       - Is the current result the requested artifact or only an intermediate state?
+      - Does the artifact match the required output format exactly (columns,
+        schema, file layout, interface signature), not just the right idea?
+      - Does any existing artifact already satisfy the acceptance, so that
+        verifying it and stopping beats acting again?
   integrate_commit:
     persona_refs:
       - core.persona.future_maintainer
@@ -554,6 +610,9 @@ steps:
       - Which results are verified and safe to add to the current state?
       - Which observations may become learning candidates, and which must remain run-local?
       - Which state and artifact references should the next pass receive?
+      - How should the result be presented so its consumer can use it
+        without rework (report structure, artifact layout, plain direct
+        wording)?
   route:
     persona_refs:
       - core.persona.whole_system_reviewer
@@ -565,6 +624,8 @@ steps:
       - Is the final requested outcome now verified?
       - Should the Practitioner continue, branch, retry, repair, reset, escalate, ask, abstain, or finish?
       - What reusable lesson may be proposed only after verification?
+      - Since the last surprise, have verify and calibrate both fired? If
+        not, route back for the missing reflection, not forward.
   frame_alternatives:
     output_contract: task_framings/v1
     persona_refs:
@@ -618,6 +679,8 @@ steps:
       - What exact evidence shows progress stopped?
       - Is the cause task understanding, missing context, method choice, capability behavior, verification drift, integration, or routing?
       - Which assumptions or repeated strategies should be rejected?
+      - How many times has this exact failure recurred across attempts,
+        and what does that count forbid retrying?
       - What materially different change types could restore progress?
   propose_recovery:
     persona_refs:
