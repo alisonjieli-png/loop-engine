@@ -220,6 +220,7 @@ MODULE_MAP = {
         "harness_fallback", "harness_fallback_checks", "harness_layering",
         "harness_layering_space", "harness_layering_availability",
         "harness_layering_availability_checks",
+        "harness_layering_configuration", "harness_layering_configuration_checks",
         "harness_selection_records", "harness_selection", "harness_selection_checks",
         "harness_response_evaluation",
         "harness_additional_recipes", "harness_additional_recipe_checks",

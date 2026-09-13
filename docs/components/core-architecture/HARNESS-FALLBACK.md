@@ -430,6 +430,21 @@ configuration. Today every executable address is the direct adapter; the
 projection makes that visible instead of proposing declarations as if
 they could run.
 
+The same projection feeds the configuration setters.
+`core.harness_layering_configuration` describes one assignment's layering
+space as a `ConfigurationTargetSpec` with two integer settings, the
+control policy index and the composition index, on a plain
+`LayeringConfiguration`. Support is declared by the space, availability is
+"available" when at least one address executes today and "unavailable"
+otherwise, both facts cite the availability summary by its digest, and
+qualification stays unknown unless the caller supplies a fact from
+independent evidence. The allowed values are exactly the policies whose
+direct-adapter address executes now and, for the composition, the direct
+adapter alone until a wrapper executor is registered; the joined record
+keeps the declared remainder visible beside the target. A setter or a
+meta-selector therefore refuses the same addresses invocation would
+refuse, before proposing them.
+
 ## Verification
 
 `core.harness_layering.self_test()` proves the declarations, the order

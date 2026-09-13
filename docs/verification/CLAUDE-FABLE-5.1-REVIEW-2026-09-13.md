@@ -649,6 +649,7 @@ duplicated by it.
 | `layering_exclusions`, `iter_admissible`, `refuse_inadmissible_proposals` | Admissibility under the run's outer fallback policy, per address, as a lazy walk, and as a separate filter record over one proposal batch. | `generation.layering_axes` |
 | `classify_address`, `availability_summary`, `address_availability` | Which addresses execute today, which the outer policy refuses, and which are declarations without an executor (composition, undeclared control, declared control), with the reason the semantic binding raises. Counted without walking the compositions. | `core.harness_layering_availability`, `generation.layering_axes` |
 | `load_layered_binding` | A host-authored layering declaration file read under the run's own outer policy. | `core.harness_configuration` |
+| `layering_configuration_target`, `layering_configuration_record`, `describe_layering_configuration`, `LayeringConfiguration` | The layering space as a `ConfigurationTargetSpec` for the setters and the meta-selector: two integer settings whose support and availability facts cite the availability projection by digest, allowed values equal to the executable addresses, qualification only from supplied evidence, and a joined record that keeps the declared remainder visible. `ConfigurationSettingSpec.to_dict` emits tuples for `phases` and `run_modes`, so the joined record normalizes them to lists. | `core.harness_layering_configuration` |
 
 Two facts matter for a joint compatibility check. First, the
 availability projection is the semantic binding's own rule:

@@ -170,6 +170,16 @@ First public release.
   override a layout variable or change a value silently, `setenv_arguments`
   for the launcher, and a record with a content digest. The sandbox
   argument builder uses it; the variables it sets are unchanged.
+- [Layering as a configuration target](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership).
+  `core.harness_layering_configuration` describes one assignment's layering
+  space as a `ConfigurationTargetSpec` for the configuration setters and the
+  meta-selector: two integer settings on a `LayeringConfiguration`, support
+  and availability facts that cite the availability projection by digest,
+  allowed values equal to the addresses that execute today, qualification
+  only from a supplied independent fact, inspection through the setters'
+  own view, and a joined record that keeps the declared-but-unexecutable
+  remainder visible. Ten checks, including a space the outer policy refuses
+  everywhere reporting unavailable with no allowed values.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback
