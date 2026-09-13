@@ -123,7 +123,7 @@ def self_test() -> dict:
         "core.brave_search",
         "core.external_harness",
         "core.external_harness_adapters",
-        "core.harness_process_checks",
+        "core.harness_process_checks", "core.harness_confinement",
         "core.harness_semantic",
         "core.harness_fallback", "core.harness_layering", "core.harness_layering_space",
         "core.harness_layering_availability",

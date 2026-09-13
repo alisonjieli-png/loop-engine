@@ -716,6 +716,19 @@ directly (about 180, most in the Codex harness recipe and Practitioner
 modules), environment values in confinement setups (about 85), prompt
 texts (38), and four endpoint addresses.
 
+The environment batch was decided the same afternoon. The sandbox's own
+layout became the typed `ConfinedEnvironment` record in
+`core.harness_confinement` (the auditor's proposed abstraction for it,
+`typed_runtime_settings`), and seventy-nine findings in the harness
+recipes, the laboratory, and the tools were allowlisted with written
+reasons naming the variable and the confinement rule behind each: relay
+placeholder credentials, the harnesses' own consent switches, workspace
+locations, variable names read at the boundary, empty unset defaults, and
+the verifier's minimal `PATH`. A `None` under an `environment` role is no
+longer a deployment value. The committed tree's count fell from 318 to
+225; what remains is the vocabulary tokens, the prompt texts, and the four
+endpoint addresses.
+
 ## Addendum written while Codex evaluated the findings
 
 Added on 2026-09-13 after 12:00 local time, while the live Codex session

@@ -9,6 +9,18 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- Hardcoding gate, second batch. A `None` compared under a role named
+  `environment` was reported as a deployment value read at a boundary; the
+  environment-read class now needs a value. Seventy-nine deployment
+  findings in the harness recipes, the embodiment laboratory, and the
+  tools were decided with written reasons: placeholder relay credentials
+  the harness command lines require to be nonempty, the harnesses' own
+  documented consent and startup switches fixed by the confinement design,
+  locations inside the confined workspace, environment-variable names read
+  at the boundary, empty "unset" defaults, and the raw-host verifier's
+  minimal fixed `PATH`. With the sandbox layout moved to the typed record,
+  the committed tree's new-high count against the frozen CI baseline fell
+  from 318 to 225.
 - Hardcoding audit precision. The auditor marked any literal anywhere
   inside a comparison as the token being compared, so `x is None`, a
   subscript index such as `items[0]`, and the key of a mapping read such as
@@ -81,6 +93,16 @@ First public release.
 
 ### Added
 
+- [Confined environment record](src/loop_engine/core/harness_confinement.py).
+  The environment the sandbox sets after clearing the host's is a typed,
+  digest-bound `ConfinedEnvironment`: the sandbox's own layout (`PATH`,
+  `HOME`, the XDG directories), deterministic text modes (`LANG`, `TERM`,
+  `NO_COLOR`), and the consent switches every brokered harness gets
+  (`DO_NOT_TRACK`, `CI`, `PYTHONDONTWRITEBYTECODE`), with `with_switches`
+  for a recipe's own documented variables, a refusal when a switch would
+  override a layout variable or change a value silently, `setenv_arguments`
+  for the launcher, and a record with a content digest. The sandbox
+  argument builder uses it; the variables it sets are unchanged.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback

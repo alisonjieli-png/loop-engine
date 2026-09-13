@@ -234,12 +234,10 @@ def _sandbox(request, run, socket_path):
     for module in ("harness_mini_swe_recipe.py", "harness_python_recipes.py", "harness_cline_kilo_recipes.py",
                    "harness_lightweight_recipes.py", "harness_responses_recipes.py", "harness_remaining_recipes.py"):
         args += ["--ro-bind", str(Path(__file__).with_name(module)), "/relay/" + module]
-    environment = {"PATH": "/usr/bin:/bin", "HOME": "/work/home", "XDG_CONFIG_HOME": "/work/home/.config",
-        "XDG_CACHE_HOME": "/work/home/.cache", "LANG": "C.UTF-8", "TERM": "dumb", "NO_COLOR": "1",
-        "PYTHONDONTWRITEBYTECODE": "1", "DO_NOT_TRACK": "1", "CI": "1",
-        "CONTINUE_METRICS_ENABLED": "0", "CONTINUE_CLI_ENABLE_TELEMETRY": "0"}
-    for key, value in environment.items():
-        args += ["--setenv", key, value]
+    # The sandbox's own layout and consent switches are a typed, digest-bound
+    # record; see harness_confinement for what each variable means.
+    from .harness_confinement import default_confined_environment
+    args += default_confined_environment().setenv_arguments()
     if request.spec.style == "aider":
         args += ["--setenv", "COLUMNS", str(request.maximum_output_bytes)]
     return args + ["--chdir", "/work", "--", "/usr/bin/python3", "/relay/run.py"]

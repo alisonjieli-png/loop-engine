@@ -215,7 +215,7 @@ MODULE_MAP = {
         "external_harness_accounting", "external_harness_adapter_checks",
         "external_harness_checks", "harness_execution_contracts",
         "harness_model_authority", "harness_process", "harness_process_relay",
-        "harness_process_checks",
+        "harness_process_checks", "harness_confinement",
         "harness_configuration", "harness_semantic", "harness_semantic_checks",
         "harness_fallback", "harness_fallback_checks", "harness_layering",
         "harness_layering_space", "harness_layering_availability",

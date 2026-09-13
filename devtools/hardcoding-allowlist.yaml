@@ -794,6 +794,794 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-13
     expires_on: 2027-09-13
+  - finding_id: hardcoding.0312d518e9378f692a41cdca
+    owner: devtools.embodiment_axes.execution-placement.02-subprocess-per-step.embodiment:self_check
+    rationale: >-
+      The literal is part of the cleared environment the embodiment laboratory gives its reference
+      consumer or gate subprocess ('PATH'); the laboratory deliberately does not inherit the calling
+      process environment, so these are the consumer's fixed layout, not a deployment setting. Reviewed on
+      2026-09-13 (devtools/embodiment_axes/execution-placement/02-subprocess-per-step/embodiment.py:73).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.9916e24a894b4d8d103c78a4
+    owner: devtools.embodiment_axes.execution-placement.02-subprocess-per-step.embodiment:self_check
+    rationale: >-
+      The literal is the empty default of an environment read, meaning the variable is absent; it is the
+      unset sentinel, not a configured value. Reviewed on 2026-09-13 (devtools/embodiment_axes/execution-
+      placement/02-subprocess-per-step/embodiment.py:73).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.95f452e2456fa00c3cfe2846
+    owner: devtools.embodiment_axes.shared.port:_ollama
+    rationale: >-
+      The literal is the empty default of an environment read, meaning the variable is absent; it is the
+      unset sentinel, not a configured value. Reviewed on 2026-09-13
+      (devtools/embodiment_axes/shared/port.py:104).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.19ecb793c144c6e606e25035
+    owner: devtools.embodiment_lab.configuration_matrix:run_cell
+    rationale: >-
+      The literal is part of the cleared environment the embodiment laboratory gives its reference
+      consumer or gate subprocess (TMPDIR); the laboratory deliberately does not inherit the calling
+      process environment, so these are the consumer's fixed layout, not a deployment setting. Reviewed on
+      2026-09-13 (devtools/embodiment_lab/configuration_matrix.py:174).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.65dd2f5a82a1957e6cc83136
+    owner: devtools.embodiment_lab.configuration_matrix:run_cell
+    rationale: >-
+      The literal is part of the cleared environment the embodiment laboratory gives its reference
+      consumer or gate subprocess (':'); the laboratory deliberately does not inherit the calling process
+      environment, so these are the consumer's fixed layout, not a deployment setting. Reviewed on
+      2026-09-13 (devtools/embodiment_lab/configuration_matrix.py:173).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.760aa9b75c5562570430ab9d
+    owner: devtools.embodiment_lab.configuration_matrix:run_cell
+    rationale: >-
+      The literal is part of the cleared environment the embodiment laboratory gives its reference
+      consumer or gate subprocess (PATH); the laboratory deliberately does not inherit the calling process
+      environment, so these are the consumer's fixed layout, not a deployment setting. Reviewed on
+      2026-09-13 (devtools/embodiment_lab/configuration_matrix.py:173).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.9f3ec4058a86d5430ba2a57c
+    owner: devtools.embodiment_lab.configuration_matrix:run_cell
+    rationale: >-
+      The literal is part of the cleared environment the embodiment laboratory gives its reference
+      consumer or gate subprocess (LANG); the laboratory deliberately does not inherit the calling process
+      environment, so these are the consumer's fixed layout, not a deployment setting. Reviewed on
+      2026-09-13 (devtools/embodiment_lab/configuration_matrix.py:174).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.b66c1886bc243c7b021917ef
+    owner: devtools.embodiment_lab.configuration_matrix:run_cell
+    rationale: >-
+      The literal is part of the cleared environment the embodiment laboratory gives its reference
+      consumer or gate subprocess (PYTHONDONTWRITEBYTECODE); the laboratory deliberately does not inherit
+      the calling process environment, so these are the consumer's fixed layout, not a deployment setting.
+      Reviewed on 2026-09-13 (devtools/embodiment_lab/configuration_matrix.py:174).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.b9cadda6c6d47e5b74d92c01
+    owner: devtools.embodiment_lab.configuration_matrix:run_cell
+    rationale: >-
+      The literal is part of the cleared environment the embodiment laboratory gives its reference
+      consumer or gate subprocess ('src'); the laboratory deliberately does not inherit the calling
+      process environment, so these are the consumer's fixed layout, not a deployment setting. Reviewed on
+      2026-09-13 (devtools/embodiment_lab/configuration_matrix.py:173).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.c78acf5f97b0add3ad2e27d3
+    owner: devtools.embodiment_lab.configuration_matrix:run_cell
+    rationale: >-
+      The literal is part of the cleared environment the embodiment laboratory gives its reference
+      consumer or gate subprocess ('devtools'); the laboratory deliberately does not inherit the calling
+      process environment, so these are the consumer's fixed layout, not a deployment setting. Reviewed on
+      2026-09-13 (devtools/embodiment_lab/configuration_matrix.py:173).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.279b05b0110db0945ec4a7c9
+    owner: devtools.embodiment_lab.process_adapter:WorkerProcess.start
+    rationale: >-
+      The literal is part of the cleared environment the embodiment laboratory gives its reference
+      consumer or gate subprocess ('PATH'); the laboratory deliberately does not inherit the calling
+      process environment, so these are the consumer's fixed layout, not a deployment setting. Reviewed on
+      2026-09-13 (devtools/embodiment_lab/process_adapter.py:28).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.8dfc4739766539d9932f6e71
+    owner: devtools.embodiment_lab.process_adapter:WorkerProcess.start
+    rationale: >-
+      The literal is part of the cleared environment the embodiment laboratory gives its reference
+      consumer or gate subprocess ('LC_ALL'); the laboratory deliberately does not inherit the calling
+      process environment, so these are the consumer's fixed layout, not a deployment setting. Reviewed on
+      2026-09-13 (devtools/embodiment_lab/process_adapter.py:28).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.9b9a9b0a007f9c4f99ea2176
+    owner: devtools.embodiment_lab.process_adapter:WorkerProcess.start
+    rationale: >-
+      The literal is part of the cleared environment the embodiment laboratory gives its reference
+      consumer or gate subprocess ('LANG'); the laboratory deliberately does not inherit the calling
+      process environment, so these are the consumer's fixed layout, not a deployment setting. Reviewed on
+      2026-09-13 (devtools/embodiment_lab/process_adapter.py:28).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.57a44e4ee8e3f119734cf369
+    owner: devtools.embodiment_lab.systematic_catalog
+    rationale: >-
+      The literal is the NAME of the environment variable LOOP_ENGINE_PRIOR_CAMPAIGN_RUNS_GLOB, read or
+      set at the process boundary; the value comes from the host or the recipe, the name selects no
+      runtime behaviour, and a typed setting would only restate the name. Reviewed on 2026-09-13
+      (devtools/embodiment_lab/systematic_catalog.py:29).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.d2a3a99f7f9631941793a1fc
+    owner: devtools.embodiment_lab.systematic_catalog
+    rationale: >-
+      The literal is the NAME of the environment variable LOOP_ENGINE_TASK_DATABASE, read or set at the
+      process boundary; the value comes from the host or the recipe, the name selects no runtime
+      behaviour, and a typed setting would only restate the name. Reviewed on 2026-09-13
+      (devtools/embodiment_lab/systematic_catalog.py:26).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.2ab2238430db703c43274383
+    owner: loop_engine.core.custom_endpoint:_call_spacing_secs
+    rationale: >-
+      The literal is the NAME of a Loop Engine operator variable (LOOP_ENGINE_CALL_SPACING_SECS) or its
+      no-spacing default of 0; the operator's environment supplies the value and the code only reads it.
+      Reviewed on 2026-09-13 (src/loop_engine/core/custom_endpoint.py:406).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.33cd13d1e9cf54c1780cd434
+    owner: loop_engine.core.custom_endpoint:_call_spacing_secs
+    rationale: >-
+      The literal is the NAME of a Loop Engine operator variable (0) or its no-spacing default of 0; the
+      operator's environment supplies the value and the code only reads it. Reviewed on 2026-09-13
+      (src/loop_engine/core/custom_endpoint.py:406).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.cc1e465bc38ea0af0102b7c7
+    owner: loop_engine.core.custom_endpoint:_call_spacing_secs
+    rationale: >-
+      The literal is the NAME of a Loop Engine operator variable (LOOP_ENGINE_SLOT_DIR) or its no-spacing
+      default of 0; the operator's environment supplies the value and the code only reads it. Reviewed on
+      2026-09-13 (src/loop_engine/core/custom_endpoint.py:397).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.1b3be6bc5a4c88c894889141
+    owner: loop_engine.core.custom_endpoint:_claim_call_slot
+    rationale: >-
+      The literal is the NAME of a Loop Engine operator variable (LOOP_ENGINE_SLOT_LOG) or its no-spacing
+      default of 0; the operator's environment supplies the value and the code only reads it. Reviewed on
+      2026-09-13 (src/loop_engine/core/custom_endpoint.py:430).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.a7f6244d43cc6f9fc24d1ea2
+    owner: loop_engine.core.custom_endpoint:_claim_call_slot
+    rationale: >-
+      The literal is the NAME of a Loop Engine operator variable (LOOP_ENGINE_SLOT_DIR) or its no-spacing
+      default of 0; the operator's environment supplies the value and the code only reads it. Reviewed on
+      2026-09-13 (src/loop_engine/core/custom_endpoint.py:426).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.07e9443aeebe5fad367cbf17
+    owner: loop_engine.core.harness_additional_recipes:prepare_recipe
+    rationale: >-
+      The literal is the value of GEMINI_TELEMETRY_ENABLED, one of the harness's own documented consent or
+      startup switches, fixed by the confinement design so the harness cannot report home, self-update,
+      index the workspace, or read host configuration; it belongs to the isolation contract, not to a
+      deployment. Reviewed on 2026-09-13 (src/loop_engine/core/harness_additional_recipes.py:104).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.1de66b28c1aa8d185b2f2360
+    owner: loop_engine.core.harness_additional_recipes:prepare_recipe
+    rationale: >-
+      The literal is the value of QWEN_CODE_DISABLE_AUTO_UPDATE, one of the harness's own documented
+      consent or startup switches, fixed by the confinement design so the harness cannot report home,
+      self-update, index the workspace, or read host configuration; it belongs to the isolation contract,
+      not to a deployment. Reviewed on 2026-09-13 (src/loop_engine/core/harness_additional_recipes.py:79).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.806dfad149c3d427f9b2dccf
+    owner: loop_engine.core.harness_additional_recipes:prepare_recipe
+    rationale: >-
+      The literal is the placeholder credential value the additional command line requires to be nonempty;
+      the brokered relay bound into the sandbox ignores it, and the run's authority is the relay socket,
+      not this value, so no deployment could set it. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_additional_recipes.py:77).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.82ac8c687241ab8606c26538
+    owner: loop_engine.core.harness_additional_recipes:prepare_recipe
+    rationale: >-
+      The literal is the value of NO_BROWSER, one of the harness's own documented consent or startup
+      switches, fixed by the confinement design so the harness cannot report home, self-update, index the
+      workspace, or read host configuration; it belongs to the isolation contract, not to a deployment.
+      Reviewed on 2026-09-13 (src/loop_engine/core/harness_additional_recipes.py:104).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.992d31041cb4df1e0f85798f
+    owner: loop_engine.core.harness_additional_recipes:prepare_recipe
+    rationale: >-
+      The literal is the loopback address prefix of the relay bound into the sandbox; the port is the
+      relay's own and the interface is the sandbox's, so no deployment could point it elsewhere without
+      defeating the confinement. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_additional_recipes.py:103).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.aee872bcd3f444298c52a0b8
+    owner: loop_engine.core.harness_additional_recipes:prepare_recipe
+    rationale: >-
+      The literal is the placeholder credential value the additional command line requires to be nonempty;
+      the brokered relay bound into the sandbox ignores it, and the run's authority is the relay socket,
+      not this value, so no deployment could set it. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_additional_recipes.py:102).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.25935c50b0a07ff6b92e6b66
+    owner: loop_engine.core.harness_cline_kilo_recipes:prepare_cline_kilo_recipe
+    rationale: >-
+      The literal is the value of KILO_DISABLE_MODELS_FETCH and KILO_DISABLE_CODEBASE_INDEXING, two of the
+      harness's own documented consent or startup switches, fixed by the confinement design so the harness
+      cannot report home, self-update, index the workspace, or read host configuration; it belongs to the
+      isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_cline_kilo_recipes.py:103).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.3b7c120fba03ce78024f99ff
+    owner: loop_engine.core.harness_cline_kilo_recipes:prepare_cline_kilo_recipe
+    rationale: >-
+      The literal is the value of KILO_DISABLE_PROJECT_CONFIG and KILO_DISABLE_DEFAULT_PLUGINS, two of the
+      harness's own documented consent or startup switches, fixed by the confinement design so the harness
+      cannot report home, self-update, index the workspace, or read host configuration; it belongs to the
+      isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_cline_kilo_recipes.py:101).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.5e03b1cac621261ba4cf592d
+    owner: loop_engine.core.harness_cline_kilo_recipes:prepare_cline_kilo_recipe
+    rationale: >-
+      The literal is the value of KILO_DISABLE_AUTOUPDATE and KILO_DISABLE_SHARE, two of the harness's own
+      documented consent or startup switches, fixed by the confinement design so the harness cannot report
+      home, self-update, index the workspace, or read host configuration; it belongs to the isolation
+      contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_cline_kilo_recipes.py:102).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.d95687008c673e43ea61254b
+    owner: loop_engine.core.harness_cline_kilo_recipes:prepare_cline_kilo_recipe
+    rationale: >-
+      The literal is the value of KILO_DISABLE_SESSION_INGEST, one of the harness's own documented consent
+      or startup switches, fixed by the confinement design so the harness cannot report home, self-update,
+      index the workspace, or read host configuration; it belongs to the isolation contract, not to a
+      deployment. Reviewed on 2026-09-13 (src/loop_engine/core/harness_cline_kilo_recipes.py:104).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.e164a2608b5277ca72c53346
+    owner: loop_engine.core.harness_cline_kilo_recipes:prepare_cline_kilo_recipe
+    rationale: >-
+      The literal is the value of KILO_DISABLE_PROJECT_CONFIG and KILO_DISABLE_DEFAULT_PLUGINS, two of the
+      harness's own documented consent or startup switches, fixed by the confinement design so the harness
+      cannot report home, self-update, index the workspace, or read host configuration; it belongs to the
+      isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_cline_kilo_recipes.py:101).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.e4f7af4531c2084e07aa7cad
+    owner: loop_engine.core.harness_cline_kilo_recipes:prepare_cline_kilo_recipe
+    rationale: >-
+      The literal is the value of KILO_DISABLE_MODELS_FETCH and KILO_DISABLE_CODEBASE_INDEXING, two of the
+      harness's own documented consent or startup switches, fixed by the confinement design so the harness
+      cannot report home, self-update, index the workspace, or read host configuration; it belongs to the
+      isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_cline_kilo_recipes.py:103).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.f3f758fc4f1a4dc76f839e6e
+    owner: loop_engine.core.harness_cline_kilo_recipes:prepare_cline_kilo_recipe
+    rationale: >-
+      The literal is the value of KILO_DISABLE_AUTOUPDATE and KILO_DISABLE_SHARE, two of the harness's own
+      documented consent or startup switches, fixed by the confinement design so the harness cannot report
+      home, self-update, index the workspace, or read host configuration; it belongs to the isolation
+      contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_cline_kilo_recipes.py:102).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.283f805a22de9e0856274476
+    owner: loop_engine.core.harness_goose_recipe:prepare_goose_recipe
+    rationale: >-
+      The literal is Goose's own documented option value for GOOSE_PROVIDER, pinning the harness to its
+      OpenAI-compatible provider in chat mode so the brokered relay handles every call; the recipe is the
+      single owner of that choice. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_goose_recipe.py:35).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.4679a384e2084be326b64816
+    owner: loop_engine.core.harness_goose_recipe:prepare_goose_recipe
+    rationale: >-
+      The literal is the placeholder credential value the goose command line requires to be nonempty; the
+      brokered relay bound into the sandbox ignores it, and the run's authority is the relay socket, not
+      this value, so no deployment could set it. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_goose_recipe.py:37).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.5016aaf24e9d02561ccd6877
+    owner: loop_engine.core.harness_goose_recipe:prepare_goose_recipe
+    rationale: >-
+      The literal is the value of GOOSE_TELEMETRY_ENABLED, one of the harness's own documented consent or
+      startup switches, fixed by the confinement design so the harness cannot report home, self-update,
+      index the workspace, or read host configuration; it belongs to the isolation contract, not to a
+      deployment. Reviewed on 2026-09-13 (src/loop_engine/core/harness_goose_recipe.py:38).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.a5d485fb75397ae07dbac5d4
+    owner: loop_engine.core.harness_goose_recipe:prepare_goose_recipe
+    rationale: >-
+      The literal is Goose's own documented option value for GOOSE_MODE, pinning the harness to its
+      OpenAI-compatible provider in chat mode so the brokered relay handles every call; the recipe is the
+      single owner of that choice. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_goose_recipe.py:35).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.bea9748ca2ebbfa45076fd10
+    owner: loop_engine.core.harness_goose_recipe:prepare_goose_recipe
+    rationale: >-
+      The literal is the value of GOOSE_DISABLE_KEYRING, one of the harness's own documented consent or
+      startup switches, fixed by the confinement design so the harness cannot report home, self-update,
+      index the workspace, or read host configuration; it belongs to the isolation contract, not to a
+      deployment. Reviewed on 2026-09-13 (src/loop_engine/core/harness_goose_recipe.py:37).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.2da763aeee8be9cd00ecc838
+    owner: loop_engine.core.harness_lightweight_recipes:prepare_lightweight_recipe
+    rationale: >-
+      The literal is the value of NO_COLOR and DO_NOT_TRACK and PYTHONDONTWRITEBYTECODE, one of the
+      harness's own documented consent or startup switches, fixed by the confinement design so the harness
+      cannot report home, self-update, index the workspace, or read host configuration; it belongs to the
+      isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_lightweight_recipes.py:108).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.7ccfab2afda9b0740374c6ab
+    owner: loop_engine.core.harness_lightweight_recipes:prepare_lightweight_recipe
+    rationale: >-
+      The literal is the value of NO_COLOR and DO_NOT_TRACK and PYTHONDONTWRITEBYTECODE, one of the
+      harness's own documented consent or startup switches, fixed by the confinement design so the harness
+      cannot report home, self-update, index the workspace, or read host configuration; it belongs to the
+      isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_lightweight_recipes.py:108).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.8a606bb6ed84aeabcd349d5d
+    owner: loop_engine.core.harness_lightweight_recipes:prepare_lightweight_recipe
+    rationale: >-
+      The literal is the value of NO_COLOR and DO_NOT_TRACK and PYTHONDONTWRITEBYTECODE, one of the
+      harness's own documented consent or startup switches, fixed by the confinement design so the harness
+      cannot report home, self-update, index the workspace, or read host configuration; it belongs to the
+      isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_lightweight_recipes.py:108).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.26dccea3f226f12f4a978177
+    owner: loop_engine.core.harness_mini_swe_recipe:prepare_mini_swe_recipe
+    rationale: >-
+      The literal is the placeholder credential value the mini_swe command line requires to be nonempty;
+      the brokered relay bound into the sandbox ignores it, and the run's authority is the relay socket,
+      not this value, so no deployment could set it. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_mini_swe_recipe.py:33).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.313af122afc68d37298acd37
+    owner: loop_engine.core.harness_mini_swe_recipe:prepare_mini_swe_recipe
+    rationale: >-
+      The literal is the value of PYTHONNOUSERSITE, one of the harness's own documented consent or startup
+      switches, fixed by the confinement design so the harness cannot report home, self-update, index the
+      workspace, or read host configuration; it belongs to the isolation contract, not to a deployment.
+      Reviewed on 2026-09-13 (src/loop_engine/core/harness_mini_swe_recipe.py:34).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.4927cbe789c2b2886c05ff8e
+    owner: loop_engine.core.harness_mini_swe_recipe:prepare_mini_swe_recipe
+    rationale: >-
+      The literal is the value of LITELLM_LOCAL_MODEL_COST_MAP, one of the harness's own documented
+      consent or startup switches, fixed by the confinement design so the harness cannot report home,
+      self-update, index the workspace, or read host configuration; it belongs to the isolation contract,
+      not to a deployment. Reviewed on 2026-09-13 (src/loop_engine/core/harness_mini_swe_recipe.py:33).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.6e5485745b142ab481c771ef
+    owner: loop_engine.core.harness_mini_swe_recipe:prepare_mini_swe_recipe
+    rationale: >-
+      The literal is the value of MSWEA_SILENT_STARTUP, one of the harness's own documented consent or
+      startup switches, fixed by the confinement design so the harness cannot report home, self-update,
+      index the workspace, or read host configuration; it belongs to the isolation contract, not to a
+      deployment. Reviewed on 2026-09-13 (src/loop_engine/core/harness_mini_swe_recipe.py:32).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.71e041447cde8563536fc76f
+    owner: loop_engine.core.harness_mini_swe_recipe:prepare_mini_swe_recipe
+    rationale: >-
+      The literal is the value of MSWEA_CONFIGURED, one of the harness's own documented consent or startup
+      switches, fixed by the confinement design so the harness cannot report home, self-update, index the
+      workspace, or read host configuration; it belongs to the isolation contract, not to a deployment.
+      Reviewed on 2026-09-13 (src/loop_engine/core/harness_mini_swe_recipe.py:32).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.accf74011ef2ef733569de17
+    owner: loop_engine.core.harness_mini_swe_recipe:prepare_mini_swe_recipe
+    rationale: >-
+      The literal is the value of MSWEA_COST_TRACKING, one of the harness's own documented consent or
+      startup switches, fixed by the confinement design so the harness cannot report home, self-update,
+      index the workspace, or read host configuration; it belongs to the isolation contract, not to a
+      deployment. Reviewed on 2026-09-13 (src/loop_engine/core/harness_mini_swe_recipe.py:32).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.f39504686f5bf443ce9e0813
+    owner: loop_engine.core.harness_mini_swe_recipe:prepare_mini_swe_recipe
+    rationale: >-
+      The literal names a location inside the confined workspace or the sandbox's own filesystem layout
+      ('home/.config/mini-swe-agent'); the recipe that sets it also binds it, so it cannot vary by host.
+      Reviewed on 2026-09-13 (src/loop_engine/core/harness_mini_swe_recipe.py:31).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.67a57e10720ccb95dd89dc9c
+    owner: loop_engine.core.harness_opencode_recipe:prepare_opencode_recipe
+    rationale: >-
+      The literal names a location inside the confined workspace or the sandbox's own filesystem layout
+      ('home/.local/share'); the recipe that sets it also binds it, so it cannot vary by host. Reviewed on
+      2026-09-13 (src/loop_engine/core/harness_opencode_recipe.py:52).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.8624d55ccb8740a94b4eea49
+    owner: loop_engine.core.harness_opencode_recipe:prepare_opencode_recipe
+    rationale: >-
+      The literal is the value of OPENCODE_DISABLE_PROJECT_CONFIG and OPENCODE_DISABLE_DEFAULT_PLUGINS,
+      two of the harness's own documented consent or startup switches, fixed by the confinement design so
+      the harness cannot report home, self-update, index the workspace, or read host configuration; it
+      belongs to the isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_opencode_recipe.py:50).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.8ab7735696e92a242453e724
+    owner: loop_engine.core.harness_opencode_recipe:prepare_opencode_recipe
+    rationale: >-
+      The literal is the value of OPENCODE_DISABLE_AUTOUPDATE and OPENCODE_DISABLE_SHARE, two of the
+      harness's own documented consent or startup switches, fixed by the confinement design so the harness
+      cannot report home, self-update, index the workspace, or read host configuration; it belongs to the
+      isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_opencode_recipe.py:51).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.c2425eb8fce07d367e04e1f5
+    owner: loop_engine.core.harness_opencode_recipe:prepare_opencode_recipe
+    rationale: >-
+      The literal is the value of OPENCODE_DISABLE_PROJECT_CONFIG and OPENCODE_DISABLE_DEFAULT_PLUGINS,
+      two of the harness's own documented consent or startup switches, fixed by the confinement design so
+      the harness cannot report home, self-update, index the workspace, or read host configuration; it
+      belongs to the isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_opencode_recipe.py:50).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.e7246c48699ae699379d99a3
+    owner: loop_engine.core.harness_opencode_recipe:prepare_opencode_recipe
+    rationale: >-
+      The literal is the value of OPENCODE_DISABLE_AUTOUPDATE and OPENCODE_DISABLE_SHARE, two of the
+      harness's own documented consent or startup switches, fixed by the confinement design so the harness
+      cannot report home, self-update, index the workspace, or read host configuration; it belongs to the
+      isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_opencode_recipe.py:51).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.218104123b97ae86affe353d
+    owner: loop_engine.core.harness_python_recipes:prepare_python_recipe
+    rationale: >-
+      The literal is the value of GPTME_TELEMETRY_ENABLED, one of the harness's own documented consent or
+      startup switches, fixed by the confinement design so the harness cannot report home, self-update,
+      index the workspace, or read host configuration; it belongs to the isolation contract, not to a
+      deployment. Reviewed on 2026-09-13 (src/loop_engine/core/harness_python_recipes.py:63).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.368d3969c82a24ace3b1b747
+    owner: loop_engine.core.harness_python_recipes:prepare_python_recipe
+    rationale: >-
+      The literal is the value of LOG_LEVEL, one of the harness's own documented consent or startup
+      switches, fixed by the confinement design so the harness cannot report home, self-update, index the
+      workspace, or read host configuration; it belongs to the isolation contract, not to a deployment.
+      Reviewed on 2026-09-13 (src/loop_engine/core/harness_python_recipes.py:90).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.4787a94b62e7b7b5d25f57ee
+    owner: loop_engine.core.harness_python_recipes:prepare_python_recipe
+    rationale: >-
+      The literal is the placeholder credential value the python command line requires to be nonempty; the
+      brokered relay bound into the sandbox ignores it, and the run's authority is the relay socket, not
+      this value, so no deployment could set it. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_python_recipes.py:89).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.63b77c52fc98bb9f10d15277
+    owner: loop_engine.core.harness_python_recipes:prepare_python_recipe
+    rationale: >-
+      The literal is the placeholder credential value the python command line requires to be nonempty; the
+      brokered relay bound into the sandbox ignores it, and the run's authority is the relay socket, not
+      this value, so no deployment could set it. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_python_recipes.py:60).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.6b94a30f654bac6bef6710fe
+    owner: loop_engine.core.harness_python_recipes:prepare_python_recipe
+    rationale: >-
+      The literal names a location inside the confined workspace or the sandbox's own filesystem layout
+      (':/usr/bin:/bin'); the recipe that sets it also binds it, so it cannot vary by host. Reviewed on
+      2026-09-13 (src/loop_engine/core/harness_python_recipes.py:61).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.a0a19fcfc3c2a22fbbe8e225
+    owner: loop_engine.core.harness_python_recipes:prepare_python_recipe
+    rationale: >-
+      The literal is the value of GPTME_MAX_STEPS, one of the harness's own documented consent or startup
+      switches, fixed by the confinement design so the harness cannot report home, self-update, index the
+      workspace, or read host configuration; it belongs to the isolation contract, not to a deployment.
+      Reviewed on 2026-09-13 (src/loop_engine/core/harness_python_recipes.py:62).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.c8d3d4319526a12e00afeb94
+    owner: loop_engine.core.harness_python_recipes:prepare_python_recipe
+    rationale: >-
+      The integer is the index of the interpreter prefix from which the recipe derives the sandbox PATH;
+      it is a position, not a setting. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_python_recipes.py:61).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.fe018f74ddd2346ca7f4ad47
+    owner: loop_engine.core.harness_python_recipes:prepare_python_recipe
+    rationale: >-
+      The literal is the value of GPTME_TIKTOKEN_TIMEOUT, one of the harness's own documented consent or
+      startup switches, fixed by the confinement design so the harness cannot report home, self-update,
+      index the workspace, or read host configuration; it belongs to the isolation contract, not to a
+      deployment. Reviewed on 2026-09-13 (src/loop_engine/core/harness_python_recipes.py:63).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.fff25dc4f528599fa63dd655
+    owner: loop_engine.core.harness_python_recipes:prepare_python_recipe
+    rationale: >-
+      The literal is the value of DO_NOT_TRACK, one of the harness's own documented consent or startup
+      switches, fixed by the confinement design so the harness cannot report home, self-update, index the
+      workspace, or read host configuration; it belongs to the isolation contract, not to a deployment.
+      Reviewed on 2026-09-13 (src/loop_engine/core/harness_python_recipes.py:90).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.2e2ee3faf73c3180699f9bce
+    owner: loop_engine.core.harness_remaining_recipes:prepare_remaining_recipe
+    rationale: >-
+      The literal is the value of NO_COLOR and DO_NOT_TRACK and PYTHONDONTWRITEBYTECODE, one of the
+      harness's own documented consent or startup switches, fixed by the confinement design so the harness
+      cannot report home, self-update, index the workspace, or read host configuration; it belongs to the
+      isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_remaining_recipes.py:73).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.4540914938c25734b8bc8891
+    owner: loop_engine.core.harness_remaining_recipes:prepare_remaining_recipe
+    rationale: >-
+      The literal is the value of NO_COLOR and DO_NOT_TRACK and PYTHONDONTWRITEBYTECODE, one of the
+      harness's own documented consent or startup switches, fixed by the confinement design so the harness
+      cannot report home, self-update, index the workspace, or read host configuration; it belongs to the
+      isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_remaining_recipes.py:73).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.a9e6677b63cacff17e0c577a
+    owner: loop_engine.core.harness_remaining_recipes:prepare_remaining_recipe
+    rationale: >-
+      The literal is the value of NO_COLOR and DO_NOT_TRACK and PYTHONDONTWRITEBYTECODE, one of the
+      harness's own documented consent or startup switches, fixed by the confinement design so the harness
+      cannot report home, self-update, index the workspace, or read host configuration; it belongs to the
+      isolation contract, not to a deployment. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_remaining_recipes.py:73).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.104e36e68159a1e05321bf3d
+    owner: loop_engine.core.harness_responses_recipes:prepare_responses_recipe
+    rationale: >-
+      The literal is the NAME of the environment variable CODEX_HOME, read or set at the process boundary;
+      the value comes from the host or the recipe, the name selects no runtime behaviour, and a typed
+      setting would only restate the name. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_responses_recipes.py:101).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.1d2bb5c00e2f9e46f2631f46
+    owner: loop_engine.core.harness_responses_recipes:prepare_responses_recipe
+    rationale: >-
+      The literal is the value of DO_NOT_TRACK, one of the harness's own documented consent or startup
+      switches, fixed by the confinement design so the harness cannot report home, self-update, index the
+      workspace, or read host configuration; it belongs to the isolation contract, not to a deployment.
+      Reviewed on 2026-09-13 (src/loop_engine/core/harness_responses_recipes.py:103).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.23b681d21b457d47de7fc4e5
+    owner: loop_engine.core.harness_responses_recipes:prepare_responses_recipe
+    rationale: >-
+      The literal selects which of the harness's own home variables to set (CODEX_HOME for the Codex
+      command line, INTERPRETER_HOME otherwise); it names a recipe style, not a deployment. Reviewed on
+      2026-09-13 (src/loop_engine/core/harness_responses_recipes.py:101).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.5a30ad3ced332a873be32b48
+    owner: loop_engine.core.harness_responses_recipes:prepare_responses_recipe
+    rationale: >-
+      The literal is the placeholder credential value the responses command line requires to be nonempty;
+      the brokered relay bound into the sandbox ignores it, and the run's authority is the relay socket,
+      not this value, so no deployment could set it. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_responses_recipes.py:102).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.5bdf790af148b418808fba04
+    owner: loop_engine.core.harness_responses_recipes:prepare_responses_recipe
+    rationale: >-
+      The literal is the NAME of the environment variable INTERPRETER_HOME, read or set at the process
+      boundary; the value comes from the host or the recipe, the name selects no runtime behaviour, and a
+      typed setting would only restate the name. Reviewed on 2026-09-13
+      (src/loop_engine/core/harness_responses_recipes.py:101).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.a2dbb485a6db06516a6cd92a
+    owner: loop_engine.core.harness_responses_recipes:prepare_responses_recipe
+    rationale: >-
+      The literal is the value of RUST_LOG, one of the harness's own documented consent or startup
+      switches, fixed by the confinement design so the harness cannot report home, self-update, index the
+      workspace, or read host configuration; it belongs to the isolation contract, not to a deployment.
+      Reviewed on 2026-09-13 (src/loop_engine/core/harness_responses_recipes.py:103).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.a58f6f2033461cee6e41fcf1
+    owner: loop_engine.core.harness_responses_recipes:prepare_responses_recipe
+    rationale: >-
+      The literal is the value of NO_COLOR, one of the harness's own documented consent or startup
+      switches, fixed by the confinement design so the harness cannot report home, self-update, index the
+      workspace, or read host configuration; it belongs to the isolation contract, not to a deployment.
+      Reviewed on 2026-09-13 (src/loop_engine/core/harness_responses_recipes.py:102).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.1c2aa228db898e6af4460199
+    owner: loop_engine.core.verifier_execute:verifier_execute_operation
+    rationale: >-
+      The raw-host verifier and the T1 gate run with a minimal fixed PATH and fall back to /tmp only when
+      the host has no HOME; both are confinement choices of the caller, whose scratch directory is created
+      elsewhere, not deployment settings. Reviewed on 2026-09-13
+      (src/loop_engine/core/verifier_execute.py:110).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.2a5114e03b2dd5df736efcc4
+    owner: loop_engine.core.verifier_execute:verifier_execute_operation
+    rationale: >-
+      The raw-host verifier and the T1 gate run with a minimal fixed PATH and fall back to /tmp only when
+      the host has no HOME; both are confinement choices of the caller, whose scratch directory is created
+      elsewhere, not deployment settings. Reviewed on 2026-09-13
+      (src/loop_engine/core/verifier_execute.py:110).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.57caad9ac8880e640e289f14
+    owner: loop_engine.core.verifier_execute:verifier_execute_operation
+    rationale: >-
+      The raw-host verifier and the T1 gate run with a minimal fixed PATH and fall back to /tmp only when
+      the host has no HOME; both are confinement choices of the caller, whose scratch directory is created
+      elsewhere, not deployment settings. Reviewed on 2026-09-13
+      (src/loop_engine/core/verifier_execute.py:109).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.a9abef9310443494dba3d4d8
+    owner: tools.harness_t1_gates:gate_binary
+    rationale: >-
+      The raw-host verifier and the T1 gate run with a minimal fixed PATH and fall back to /tmp only when
+      the host has no HOME; both are confinement choices of the caller, whose scratch directory is created
+      elsewhere, not deployment settings. Reviewed on 2026-09-13 (tools/harness_t1_gates.py:94).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.dda90d27cf6e79d16cdb0157
+    owner: tools.harness_t1_gates:gate_binary
+    rationale: >-
+      The raw-host verifier and the T1 gate run with a minimal fixed PATH and fall back to /tmp only when
+      the host has no HOME; both are confinement choices of the caller, whose scratch directory is created
+      elsewhere, not deployment settings. Reviewed on 2026-09-13 (tools/harness_t1_gates.py:94).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.cfd42e9f97f1f2b8eaccfb38
+    owner: tools.task_campaign:endpoint_healthy
+    rationale: >-
+      The literal is the empty default of an environment read, meaning the variable is absent; it is the
+      unset sentinel, not a configured value. Reviewed on 2026-09-13 (tools/task_campaign.py:474).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.5df0ab319b693ad8b74ca46f
+    owner: tools.task_campaign:run_cell
+    rationale: >-
+      The literal is the empty default of an environment read, meaning the variable is absent; it is the
+      unset sentinel, not a configured value. Reviewed on 2026-09-13 (tools/task_campaign.py:327).
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust

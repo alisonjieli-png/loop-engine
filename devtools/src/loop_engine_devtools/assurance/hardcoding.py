@@ -399,7 +399,8 @@ def _classification(
                     "A typed record default is owned by its profile or contract.")
         return ("OPTIONAL_PARAMETER_WITH_DEFAULT", tuple(tags), "medium", 0.98,
                 "A call boundary default is part of the parameter contract.")
-    if (context.call_name.endswith(("getenv", "environ.get"))
+    if value is not None and (
+            context.call_name.endswith(("getenv", "environ.get"))
             or _role_tail(context.role_name) in {
                 "environment", "environ", "env", "environment_variable"}):
         return ("DEPLOYMENT_CONFIGURATION", ("environment_read",), "high",
@@ -1544,7 +1545,10 @@ def self_test() -> dict[str, Any]:
             "        return items[-1]\n"
             "    if state in ('advisory', 'fresh'):\n"
             "        return 'assisted'\n"
-            "    return None\n",
+            "    return None\n"
+            "def launch(environment=None):\n"
+            "    env = environment if environment is not None else {}\n"
+            "    return env\n",
             encoding="utf-8")
         (package / "broken.py").write_text("def broken(:\n", encoding="utf-8")
         initial = scan_hardcoding(AuditRequest(root, include_low_risk=True))
@@ -1593,6 +1597,10 @@ def self_test() -> dict[str, Any]:
         check("the_compared_value_keeps_its_comparison_class",
               any(item["literal_preview"] == "'read'"
                   and "behavior_comparison" in item["secondary_tags"] for item in routed))
+        check("none_under_an_environment_role_is_not_a_deployment_value",
+              all(item["classification"] != "DEPLOYMENT_CONFIGURATION"
+                  for item in findings if item["symbol_ref"] == "launch"
+                  and item["literal_kind"] == "null"))
         check("malformed_source_is_bounded_not_fatal", any(
             item["literal_kind"] == "parse_error" for item in findings))
         duplicate_ready = [item for item in findings
