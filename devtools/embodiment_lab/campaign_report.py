@@ -19,6 +19,7 @@ from pathlib import Path
 
 from loop_engine.core.run_history import MODEL_INVOCATION_EVENT, RunHistory
 from loop_engine.core.run_history_paths import saved_run_ids
+from loop_engine.generation.space import INTEGER_RANGE, ConfigurationSpace, GenerationError, parse_json
 
 from .trial_evidence import REQUIRED_LINKS, campaign_evidence_summary
 
@@ -79,6 +80,59 @@ def access_probes(root) -> list:
     return probes
 
 
+def campaign_grid(space_record, cells) -> dict:
+    """Every visited cell placed in the campaign's declared configuration
+    grid: its index in the space, its coordinate on each axis, and the
+    counts by axis level, so the fabric of the search (which
+    configurations ran, for which families, with what outcome) is one
+    record. A cell whose configuration is not an address of the declared
+    space is listed as unindexed, never placed by guess."""
+    if not isinstance(space_record, dict) or "axes" not in space_record:
+        return {"declared": False, "cardinality": 0, "axes": [], "placed": [], "unindexed": 0,
+                "by_level": {}}
+    try:
+        space = ConfigurationSpace.from_dict(space_record)
+    except (GenerationError, TypeError, ValueError, KeyError) as exc:
+        return {"declared": False, "cardinality": 0, "axes": [], "placed": [], "unindexed": len(cells),
+                "by_level": {}, "error_type": type(exc).__name__}
+    axes = []
+    for axis in space.axes:
+        if axis.value_kind == INTEGER_RANGE:
+            levels = [str(v) for v in range(axis.minimum, axis.maximum + 1)]
+        else:
+            levels = [str(parse_json(value)) for value in axis.encoded_values]
+        axes.append({"dimension_id": axis.dimension_id, "levels": levels})
+    placed, unindexed = [], 0
+    by_level = {axis["dimension_id"]: {level: {"cells": 0, "finished": 0, "failed": 0}
+                                      for level in axis["levels"]} for axis in axes}
+    for cell in cells:
+        configuration = cell.get("configuration")
+        try:
+            index = space.index_of(configuration)
+        except (GenerationError, TypeError, ValueError, KeyError):
+            unindexed += 1
+            continue
+        coordinates = []
+        remainder = index
+        for axis, declared in zip(reversed(space.axes), reversed(axes)):
+            offset = remainder % axis.cardinality
+            remainder //= axis.cardinality
+            coordinates.append(declared["levels"][offset])
+        coordinates.reverse()
+        for declared, level in zip(axes, coordinates):
+            counts = by_level[declared["dimension_id"]][level]
+            counts["cells"] += 1
+            if cell.get("status") == "finished":
+                counts["finished"] += 1
+            elif cell.get("status") == "failed":
+                counts["failed"] += 1
+        placed.append({"index": index, "coordinates": coordinates, "task_id": cell.get("task_id"),
+                       "family": cell.get("family"), "status": cell.get("status"),
+                       "engine_terminal": cell.get("engine_terminal")})
+    return {"declared": True, "cardinality": space.cardinality, "space_id": space.space_id,
+            "axes": axes, "placed": placed, "unindexed": unindexed, "by_level": by_level}
+
+
 def campaign_report(root) -> dict:
     """The campaign's records, cells, accounting, and coverage as one plain
     record; every number names the file it came from by its section."""
@@ -124,8 +178,10 @@ def campaign_report(root) -> dict:
                     families[family]["finished"] += 1
                 elif report.get("status") == "failed":
                     families[family]["failed"] += 1
+        exported = _load(cell / "status.json")
         cells.append({
             "task_id": task_id, "family": family, "occurrence": cell.name,
+            "configuration": exported.get("configuration"),
             "status": report.get("status"), "engine_terminal": report.get("engine_terminal"),
             "projection_readable": report.get("projection_readable", True),
             "model_calls": calls, "accounting_complete": report.get("accounting_complete"),
@@ -164,6 +220,7 @@ def campaign_report(root) -> dict:
                      "gaps": by_gap, "required_links": list(REQUIRED_LINKS)},
         "accounting": totals,
         "access_probes": probes,
+        "grid": campaign_grid(campaign.get("configuration_space"), cells),
         "cells": cells,
     }
 
@@ -176,6 +233,36 @@ def _bar(count: int, total: int, label: str) -> str:
     width = 0 if not total else round(100 * count / total)
     return (f'<div class="bar" title="{_esc(label)}"><span style="width:{width}%"></span>'
             f'<b>{_esc(label)}</b> {count} of {total}</div>')
+
+
+def _fabric_svg(report: dict) -> str:
+    """The grid as one drawing: configuration index across, job family
+    down, one mark per visited cell coloured by status, drawn to the
+    space's own cardinality so an untouched column is visibly empty."""
+    grid = report["grid"]
+    families = sorted(report["population"]["families"]) or sorted({p["family"] for p in grid["placed"]})
+    if not grid["declared"] or not families:
+        return "<p class='muted'>The campaign declares no configuration space, so there is no grid to draw.</p>"
+    columns, rows = max(grid["cardinality"], 1), len(families)
+    cell_w, cell_h, left, top = 3, 14, 150, 18
+    width, height = left + columns * cell_w + 10, top + rows * cell_h + 10
+    marks = []
+    for item in grid["placed"]:
+        if item["family"] not in families:
+            continue
+        y = top + families.index(item["family"]) * cell_h
+        colour = {"finished": "var(--ok)", "failed": "var(--bad)"}.get(item["status"], "var(--warn)")
+        marks.append(f'<rect x="{left + item["index"] * cell_w}" y="{y + 1}" width="{cell_w}" height="{cell_h - 2}" '
+                     f'fill="{colour}"><title>{_esc(item["task_id"])} at {item["index"]}: {_esc(item["status"])} '
+                     f'{_esc(item["engine_terminal"] or "")} ({_esc(", ".join(item["coordinates"]))})</title></rect>')
+    labels = "".join(f'<text x="{left - 6}" y="{top + i * cell_h + cell_h - 3}" text-anchor="end" font-size="10" fill="var(--ink)">{_esc(name or "unnamed")}</text>'
+                     for i, name in enumerate(families))
+    ticks = "".join(f'<text x="{left + i * cell_w}" y="{top - 5}" font-size="9" fill="var(--muted)">{i}</text>'
+                    for i in range(0, columns, max(1, columns // 8)))
+    return (f'<svg viewBox="0 0 {width} {height}" width="{width}" height="{height}" role="img" '
+            f'aria-label="campaign grid: {columns} configurations by {rows} families">'
+            f'<rect x="{left}" y="{top}" width="{columns * cell_w}" height="{rows * cell_h}" fill="var(--code)"/>'
+            f'{labels}{ticks}{"".join(marks)}</svg>')
 
 
 def render_campaign_html(report: dict) -> str:
@@ -220,6 +307,16 @@ def render_campaign_html(report: dict) -> str:
                             f"<div><dt>{_esc(k)}</dt><dd>{_esc(v)}</dd></div>"
                             for k, v in observation.items() if not isinstance(v, (dict, list))) + "</dl>")
     unknown = acc["cells_with_unknown_calls"]
+    grid = report["grid"]
+    fabric = _fabric_svg(report)
+    grid_summary = (f"{len(grid['placed'])} cells placed in a space of {grid['cardinality']} configurations "
+                    f"({' × '.join(a['dimension_id'] + '[' + str(len(a['levels'])) + ']' for a in grid['axes'])}); "
+                    f"{grid['unindexed']} cells carry a configuration outside the declared space."
+                    if grid["declared"] else "No configuration space is declared for this campaign.")
+    level_rows = "".join(
+        f"<tr><td>{_esc(axis)}</td><td>{_esc(level)}</td><td class='num'>{counts['cells']}</td>"
+        f"<td class='num'>{counts['finished']}</td><td class='num'>{counts['failed']}</td></tr>"
+        for axis, levels in grid["by_level"].items() for level, counts in levels.items())
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Campaign {_esc(camp.get('campaign_id') or Path(report['root']).name)}</title>
@@ -255,6 +352,8 @@ th {{ background:var(--code); font-size:.8rem; position:sticky; top:0 }} td.num 
 <div><dt>access probe calls</dt><dd>{acc['probe_calls']} in {acc['probes']} probes{' (' + str(acc['probes_unreadable']) + ' unreadable)' if acc['probes_unreadable'] else ''}</dd></div></dl>
 <p class="muted">Task model calls are each cell's physical count from its Run History where the history could be read, else the outcome's claim; tokens are the provider-reported usage the outcome carries. Access probe calls are the worker's readiness checks, counted from their own saved histories and kept apart from task calls.</p></section>
 <section><h2>Provider observation</h2>{observation_html}</section>
+<section><h2>Grid</h2><p class="muted">{grid_summary}</p><div class="wrap" style="padding:.5rem">{fabric}</div>
+<div class="wrap"><table><thead><tr><th>axis</th><th>level</th><th class="num">cells</th><th class="num">finished</th><th class="num">failed</th></tr></thead><tbody>{level_rows}</tbody></table></div></section>
 <section><h2>Evidence gaps by link</h2><div class="wrap"><table><thead><tr><th>link</th><th class="num">cells missing it</th></tr></thead><tbody>{gap_rows}</tbody></table></div></section>
 <section><h2>Population by job family</h2><div class="wrap"><table><thead><tr><th>family</th><th class="num">tasks</th><th class="num">visited</th><th class="num">finished</th><th class="num">failed</th></tr></thead><tbody>{family_rows}</tbody></table></div></section>
 <section><h2>Cells</h2><div class="wrap"><table><thead><tr><th>task</th><th>family</th><th>occurrence</th><th>status</th><th>terminal</th><th class="num">calls</th><th class="num">prompt</th><th class="num">completion</th><th class="num">checkpoints</th><th class="num">artifacts</th><th>evidence</th><th>disagreements</th></tr></thead><tbody>{cell_rows or '<tr><td colspan="12" class="muted">No cell has been written yet.</td></tr>'}</tbody></table></div></section>

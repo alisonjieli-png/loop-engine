@@ -140,6 +140,42 @@ class OfflineTrialChecks(unittest.TestCase):
             self.assertEqual(json.loads(json.dumps(summary)), summary)
 
 
+class CampaignGridChecks(unittest.TestCase):
+    def test_visited_cells_are_placed_in_the_declared_space_and_counted_by_level(self):
+        """A cell is placed at its index in the declared space with a
+        coordinate on every axis; a cell whose configuration is not an
+        address of the space is counted as unindexed, never placed."""
+        from embodiment_lab.campaign_report import _fabric_svg, campaign_grid
+        from embodiment_lab.task_database_campaign import campaign_space
+        space = campaign_space(('native_gateway', 'codex'))
+        cells = [
+            {'task_id': 'A', 'family': 'analytics', 'status': 'finished', 'engine_terminal': 'COMPLETED_VERIFIED',
+             'configuration': space.configuration_at(0)},
+            {'task_id': 'B', 'family': 'analytics', 'status': 'failed', 'engine_terminal': 'PROVIDER_UNAVAILABLE',
+             'configuration': space.configuration_at(space.cardinality - 1)},
+            {'task_id': 'C', 'family': 'ops', 'status': 'finished', 'engine_terminal': 'NO_PROGRESS',
+             'configuration': {'harness': 'elsewhere'}},
+        ]
+        grid = campaign_grid(space.to_dict(), cells)
+        self.assertTrue(grid['declared'])
+        self.assertEqual(grid['cardinality'], space.cardinality)
+        self.assertEqual([a['dimension_id'] for a in grid['axes']],
+                         ['harness', 'temperature', 'output_allocation_tokens', 'context_delivery', 'harness_fallback'])
+        self.assertEqual(grid['unindexed'], 1)
+        self.assertEqual([p['index'] for p in grid['placed']], [0, space.cardinality - 1])
+        self.assertEqual(grid['placed'][0]['coordinates'], ['native_gateway', '0.0', '16384', 'bounded_inline', 'none'])
+        self.assertEqual(grid['placed'][1]['coordinates'],
+                         ['codex', '0.7', '65536', 'selected_references', 'registered_alternatives'])
+        self.assertEqual(grid['by_level']['harness']['native_gateway'], {'cells': 1, 'finished': 1, 'failed': 0})
+        self.assertEqual(grid['by_level']['harness']['codex'], {'cells': 1, 'finished': 0, 'failed': 1})
+        report = {'grid': grid, 'population': {'families': {'analytics': {}, 'ops': {}}}}
+        drawing = _fabric_svg(report)
+        self.assertEqual(drawing.count('<rect'), 3)
+        self.assertIn('analytics', drawing)
+        self.assertNotIn('<script', drawing)
+        self.assertEqual(json.loads(json.dumps(grid)), grid)
+
+
 class RefusalPageTrialChecks(unittest.TestCase):
     def test_a_page_in_the_providers_place_keeps_its_typed_code_and_its_call_count(self):
         """A login page or proxy notice answering a trial's model call is a

@@ -95,9 +95,12 @@ PYTHONPATH=src:devtools python -m embodiment_lab.campaign_report ROOT --html pag
 ```
 
 The page shows the worker's status and gate, coverage of the population by
-job family, each cell's status, terminal, counted model calls, provider-
-reported tokens, checkpoints, artifacts, and the evidence links it lacks,
-and the accounting totals. It reads only the records the runner exported
+job family, the campaign's grid (every visited cell at its index in the
+declared configuration space, one mark per cell by family and status across
+the space's full cardinality, with counts by axis level), each cell's
+status, terminal, counted model calls, provider-reported tokens,
+checkpoints, artifacts, and the evidence links it lacks, and the accounting
+totals with the worker's access-probe calls kept apart. It reads only the records the runner exported
 and each cell's projection when it can be read; a cell the running worker
 holds locked is shown as in progress.
 

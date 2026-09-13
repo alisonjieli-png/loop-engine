@@ -26,8 +26,13 @@ First public release.
   coverage, evidence links, accounting from each cell's own outcome, and
   population by job family, from exported records only, counts the
   worker's access-probe calls from their own saved histories apart from
-  task calls, and shows a cell whose projection the running worker holds
-  locked as in progress. Left
+  task calls, shows a cell whose projection the running worker holds
+  locked as in progress, and draws the campaign's grid: every visited cell
+  placed at its index in the declared configuration space with a
+  coordinate on each axis, one mark per cell by job family and status
+  across the space's full cardinality, and the counts by axis level; a
+  cell whose configuration is not an address of the space is counted as
+  unindexed, never placed. Left
   open for the Codex session: acknowledging an interrupted occurrence,
   engine identity over the controller and package resources, and
   route-stop on a single generic 400.
