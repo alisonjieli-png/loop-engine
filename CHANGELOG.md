@@ -9,6 +9,17 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- Append-only Run History checkpoints. `RunHistory.append_checkpoint(root)`
+  stores every event once and one checkpoint line per call (revision,
+  events covered, head digest), so N checkpoints of an n-event history
+  store n events rather than n(n+1)/2 as N full copies do; a history that
+  diverges from the stored prefix is refused, never written over.
+  `load_checkpoint(root, run_id, revision)` rebuilds the history at any
+  checkpoint from the shared log's prefix and verifies the chain and the
+  recorded head; a tampered log is a typed integrity error. The campaign's
+  per-step full copies, whose growth the Codex session named as the
+  remaining storage problem, can move to this store without changing what
+  a checkpoint proves.
 - The built-in Ollama adapter can learn a model's output ceiling from the
   service's own refusal (`learn_output_capability`): one streamed request
   for far more output than any model allows, on the OpenAI-compatible

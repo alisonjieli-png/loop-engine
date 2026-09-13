@@ -81,10 +81,19 @@ and a crash mid-trial leaves the campaign unresumable.
 The [Ollama adapter path review](../verification/OLLAMA-ADAPTER-REVIEW-2026-09-13.md)
 records what the live provider said on the evening of September 13 (the
 key lists twenty models; generation is refused with a weekly usage limit
-and no stated wait) and the eight adapter and classification defects fixed
-before the campaign spends that allowance: the Ollama wire now streams,
-a spent allowance is `usage_limit_reached` rather than a throttle, and a
-listing is not readiness.
+and no stated wait) and the sixteen adapter and classification defects
+fixed before the campaign spends that allowance: the Ollama wire now
+streams, a spent allowance is `usage_limit_reached` rather than a
+throttle, a declared but unset credential refuses before any request, and
+a listing is not readiness. For the storage-growth limit the preparation
+report names, `RunHistory.append_checkpoint(root)` and
+`load_checkpoint(root, run_id, revision)` store every event once with one
+line per checkpoint and rebuild any checkpoint as the verified prefix; the
+campaign's per-step full copies can move to that store without changing
+what a checkpoint proves. `ollama_client.learn_output_capability(model)`
+reads a model's output ceiling from the service's own refusal, for the
+thirteen listed models without a declared maximum, once the allowance
+resets.
 
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).

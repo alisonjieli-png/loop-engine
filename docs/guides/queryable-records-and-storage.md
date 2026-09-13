@@ -45,6 +45,16 @@ Internal record mechanics used by Loops
 | Search and analytical indexes | Declared projection | Rebuild from authority |
 | Shared production records | Future qualified server adapter | Explicit transaction and namespace policy |
 
+A Run History saved with `save(root)` is one immutable copy of the whole
+event log. A history that is checkpointed many times over a long task uses
+`append_checkpoint(root)` instead: every event is stored once, appended in
+order, and each checkpoint is one line naming the events it covers and the
+head digest at that count, so N checkpoints of an n-event history store n
+events rather than N copies. `load_checkpoint(root, run_id, revision)`
+rebuilds the history as it stood at that checkpoint from the shared log's
+prefix and verifies the chain and the recorded head; a stored log that
+diverges from the history being checkpointed is refused, never written over.
+
 A large reviewed YAML file can be appropriate. A small file rewritten by
 several workers without concurrency checks can be unsafe. SQL access alone
 does not establish authority, transactional updates, or safe deletion.

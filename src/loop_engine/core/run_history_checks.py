@@ -436,6 +436,63 @@ def self_test() -> dict:
     check("an_unkeyed_history_is_unchanged_and_labelled_unverified",
           len(_plain.event_log) == 1 and _plain.authorship == "unverified")
 
+    # Append-only checkpoints: N checkpoints of an n-event history store n
+    # events once, each checkpoint re-loads as the verified prefix, and a
+    # tampered or diverging log is refused.
+    grown = RunHistory("run-checkpoints-check")
+    store = tempfile.mkdtemp(prefix="run-history-checkpoints-")
+    full_copies = tempfile.mkdtemp(prefix="run-history-full-copies-")
+    try:
+        records = []
+        full_bytes = 0
+        for step in range(6):
+            grown.append("iteration", loop_id="x", step=f"step-{step}")
+            if step % 2 == 1:
+                records.append(grown.append_checkpoint(store))
+                copy_root = os.path.join(full_copies, str(step))
+                grown.save(copy_root)
+                full_bytes += os.path.getsize(os.path.join(copy_root, grown.run_id, "events.jsonl"))
+        store_dir = os.path.join(store, grown.run_id)
+        with open(os.path.join(store_dir, "events.jsonl"), encoding="utf-8") as stream:
+            stored_lines = [line for line in stream if line.strip()]
+        appended_bytes = os.path.getsize(os.path.join(store_dir, "events.jsonl"))
+        first = RunHistory.load_checkpoint(store, grown.run_id, 0)
+        latest = RunHistory.load_checkpoint(store, grown.run_id)
+        listed = RunHistory.checkpoints(store, grown.run_id)
+        check("append_only_checkpoints_store_each_event_once",
+              len(stored_lines) == 6 and [r["events"] for r in records] == [2, 4, 6]
+              and [r["events_appended"] for r in records] == [2, 2, 2]
+              and [r["revision"] for r in listed] == [0, 1, 2]
+              and appended_bytes < full_bytes,
+              f"store {appended_bytes} bytes, three full copies {full_bytes} bytes")
+        check("a_checkpoint_reloads_as_the_verified_prefix",
+              len(first.event_log) == 2 and first.verify_chain()["intact"]
+              and first.event_log[-1].event_digest == records[0]["head_digest"]
+              and len(latest.event_log) == 6
+              and latest.event_log[-1].event_digest == grown.event_log[-1].event_digest)
+        diverged = RunHistory("run-checkpoints-check")
+        diverged.append("iteration", loop_id="x", step="elsewhere")
+        refused_divergence = False
+        try:
+            diverged.append_checkpoint(store)
+        except RunHistoryIntegrityError:
+            refused_divergence = True
+        with open(os.path.join(store_dir, "events.jsonl"), encoding="utf-8") as stream:
+            lines = stream.readlines()
+        lines[1] = lines[1].replace("step-1", "step-9")
+        with open(os.path.join(store_dir, "events.jsonl"), "w", encoding="utf-8") as stream:
+            stream.writelines(lines)
+        refused_tamper = False
+        try:
+            RunHistory.load_checkpoint(store, grown.run_id, 1)
+        except RunHistoryIntegrityError:
+            refused_tamper = True
+        check("a_diverging_history_and_a_tampered_log_are_refused",
+              refused_divergence and refused_tamper and len(stored_lines) == 6)
+    finally:
+        shutil.rmtree(store, ignore_errors=True)
+        shutil.rmtree(full_copies, ignore_errors=True)
+
     passed = sum(1 for r in results if r["passed"])
     return {"tests": results, "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}

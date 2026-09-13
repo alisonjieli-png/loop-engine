@@ -384,6 +384,120 @@ class RunHistory:
             json.dump(manifest, f, indent=1)
         return d
 
+    # --- append-only checkpoints ------------------------------------------
+
+    CHECKPOINT_STORE_RECORD_TYPE = "run_history_checkpoint_store/v1"
+    CHECKPOINT_RECORD_TYPE = "run_history_checkpoint/v1"
+
+    def append_checkpoint(self, root: str) -> dict:
+        """Record this history's current state under ``root`` without
+        copying what earlier checkpoints already hold.
+
+        ``root/<run_id>/events.jsonl`` holds every event once, appended in
+        order; ``checkpoints.jsonl`` holds one line per checkpoint with its
+        revision, the number of events it covers, and the head digest at
+        that count. A checkpoint is the prefix of the shared log up to its
+        count, so N checkpoints of an n-event history store n events, not
+        n(n+1)/2 as N full copies do. The events already stored must be
+        this history's own prefix, digest for digest; a history that
+        diverges from what is stored is refused, never written over.
+        """
+        d = os.path.join(root, self.run_id)
+        os.makedirs(d, exist_ok=True)
+        events_path = os.path.join(d, "events.jsonl")
+        stored = 0
+        if os.path.exists(events_path):
+            with open(events_path, encoding="utf-8") as stream:
+                for line in stream:
+                    if not line.strip():
+                        continue
+                    if stored >= len(self.event_log):
+                        raise RunHistoryIntegrityError(
+                            "the stored log holds more events than this history")
+                    row = json.loads(line)
+                    if row.get("event_digest") != self.event_log[stored].event_digest:
+                        raise RunHistoryIntegrityError(
+                            f"stored event {stored} is not this history's event")
+                    stored += 1
+        with open(events_path, "a", encoding="utf-8") as stream:
+            for e in self.event_log[stored:]:
+                stream.write(json.dumps({**e.body(), "event_digest": e.event_digest},
+                                        default=str) + "\n")
+        checkpoints_path = os.path.join(d, "checkpoints.jsonl")
+        revision = 0
+        if os.path.exists(checkpoints_path):
+            with open(checkpoints_path, encoding="utf-8") as stream:
+                revision = sum(1 for line in stream if line.strip())
+        record = {"record_type": self.CHECKPOINT_RECORD_TYPE, "run_id": self.run_id,
+                  "revision": revision, "events": len(self.event_log),
+                  "events_appended": len(self.event_log) - stored,
+                  "head_digest": (self.event_log[-1].event_digest
+                                  if self.event_log else ""),
+                  "committed": self._committed}
+        with open(checkpoints_path, "a", encoding="utf-8") as stream:
+            stream.write(json.dumps(record) + "\n")
+        with open(os.path.join(d, "manifest.json"), "w", encoding="utf-8") as stream:
+            json.dump({"record_type": self.CHECKPOINT_STORE_RECORD_TYPE,
+                       "run_id": self.run_id, "parent_run_id": self.parent_run_id,
+                       "checkpoints": revision + 1, "events": len(self.event_log),
+                       "head_digest": record["head_digest"]}, stream, indent=1)
+        return record
+
+    @classmethod
+    def checkpoints(cls, root: str, run_id: str) -> list:
+        """Every checkpoint record stored for one run, in revision order."""
+        run_id = validated_run_id(run_id)
+        path = os.path.join(root, run_id, "checkpoints.jsonl")
+        if not os.path.exists(path):
+            return []
+        with open(path, encoding="utf-8") as stream:
+            return [json.loads(line) for line in stream if line.strip()]
+
+    @classmethod
+    def load_checkpoint(cls, root: str, run_id: str,
+                        revision: "int | None" = None) -> "RunHistory":
+        """The history as it stood at one checkpoint (the latest by
+        default), rebuilt from the shared log's prefix and verified: the
+        chain to that count intact and the head digest the checkpoint
+        recorded, or a typed integrity error."""
+        run_id = validated_run_id(run_id)
+        d = os.path.join(root, run_id)
+        with open(os.path.join(d, "manifest.json"), encoding="utf-8") as stream:
+            man = json.load(stream)
+        if man.get("record_type") != cls.CHECKPOINT_STORE_RECORD_TYPE or man.get("run_id") != run_id:
+            raise RunHistoryIntegrityError("manifest is not this run's checkpoint store")
+        records = cls.checkpoints(root, run_id)
+        if not records:
+            raise RunHistoryIntegrityError("the checkpoint store holds no checkpoint")
+        if revision is None:
+            record = records[-1]
+        else:
+            matching = [r for r in records if r.get("revision") == revision]
+            if len(matching) != 1:
+                raise RunHistoryIntegrityError(f"no single checkpoint has revision {revision}")
+            record = matching[0]
+        count = int(record.get("events", -1))
+        ch = cls(run_id, parent_run_id=man.get("parent_run_id", ""))
+        with open(os.path.join(d, "events.jsonl"), encoding="utf-8") as stream:
+            for line in stream:
+                if not line.strip() or len(ch.event_log) >= count:
+                    continue
+                row = json.loads(line)
+                dig = row.pop("event_digest")
+                row["consumed_refs"] = tuple(row.get("consumed_refs", ()))
+                row["produced_refs"] = tuple(row.get("produced_refs", ()))
+                ev = RunHistoryEvent(**row)
+                ev.event_digest = dig
+                ch.event_log.append(ev)
+        ch._committed = bool(record.get("committed", False))
+        verification = ch.verify_chain()
+        observed_head = ch.event_log[-1].event_digest if ch.event_log else ""
+        if (not verification["intact"] or count < 0 or len(ch.event_log) != count
+                or str(record.get("head_digest", "")) != observed_head):
+            raise RunHistoryIntegrityError(
+                "the stored log prefix does not match the checkpoint or its digest chain")
+        return ch
+
     @classmethod
     def load(cls, root: str, run_id: str) -> "RunHistory":
         run_id = validated_run_id(run_id)
