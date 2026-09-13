@@ -55,7 +55,9 @@ def _projection_rows(path):
 
 def _step_history_verified(row) -> bool:
     """The saved step history re-loads and its chain verifies intact; the
-    writer's own ``integrity`` flag is not enough."""
+    writer's own ``integrity`` flag is not enough. A row that names a
+    checkpoint in an append-only store is verified at that revision; a
+    row that names a full saved copy is verified as saved."""
     location = row.get("history")
     if not isinstance(location, str) or not location:
         return False
@@ -63,7 +65,13 @@ def _step_history_verified(row) -> bool:
     if not saved.is_dir():
         return False
     try:
-        history = RunHistory.load(str(saved.parent), saved.name)
+        if (saved / "checkpoints.jsonl").is_file():
+            revision = row.get("revision")
+            history = RunHistory.load_checkpoint(
+                str(saved.parent), saved.name,
+                revision if type(revision) is int else None)
+        else:
+            history = RunHistory.load(str(saved.parent), saved.name)
         return bool(history.verify_chain().get("intact"))
     except Exception:  # a broken or foreign directory is a missing link, not a crash
         return False

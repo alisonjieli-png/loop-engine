@@ -16,10 +16,15 @@ First public release.
   diverges from the stored prefix is refused, never written over.
   `load_checkpoint(root, run_id, revision)` rebuilds the history at any
   checkpoint from the shared log's prefix and verifies the chain and the
-  recorded head; a tampered log is a typed integrity error. The campaign's
-  per-step full copies, whose growth the Codex session named as the
-  remaining storage problem, can move to this store without changing what
-  a checkpoint proves.
+  recorded head; a tampered log is a typed integrity error.
+  `extend_from_ledger` grows a history with its ledger while keeping the
+  prefix it already projected (a rebuild from the whole ledger cannot,
+  since the synthesized start event is timed). The campaign runner now
+  keeps one history per trial, grown by extension and checkpointed after
+  every invocation into that store, so the per-step full copies whose
+  growth the Codex session named as the remaining storage problem are
+  gone; every checkpoint stays referenced and reloads at its revision, and
+  the evidence report verifies either layout.
 - The built-in Ollama adapter can learn a model's output ceiling from the
   service's own refusal (`learn_output_capability`): one streamed request
   for far more output than any model allows, on the OpenAI-compatible

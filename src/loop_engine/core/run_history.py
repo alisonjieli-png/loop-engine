@@ -306,17 +306,33 @@ class RunHistory:
         """Project the runtime LoopLedger into canonical RunHistory events.
         Explicit provider events are authoritative. Legacy ledgers without
         them may absorb the positional usage log for compatibility."""
-        ledger_events = list(ledger_events)
         ch = cls(run_id)
         ch.append("run_started", detail={"source": "loop_ledger"})
+        ch.extend_from_ledger(ledger_events, usage_log=usage_log)
+        return ch
+
+    def extend_from_ledger(self, ledger_events, *, usage_log=()) -> int:
+        """Append the projection of further ledger events to this history.
+
+        The events already projected keep their digests, so a history that
+        grows with its ledger (one checkpoint per step of a long task) has
+        a stable prefix; rebuilding from the whole ledger each time does
+        not, since the synthesized start event carries its own time. The
+        positional usage log continues from where the last extension left
+        it. Returns the number of canonical events appended.
+        """
+        ledger_events = list(ledger_events)
+        cls = type(self)
         usage = list(usage_log or ())
-        ui = 0
-        explicit_model_events = any(
+        ui = getattr(self, "_usage_index", 0)
+        before = len(self.event_log)
+        explicit_model_events = getattr(self, "_explicit_model_events", False) or any(
             event.get("event") in (
                 "model_led", "model_escalation", "model_invocation_failed",
                 "model.invocation.started", "model.invocation.completed",
                 "model.invocation.failed")
             for event in ledger_events)
+        self._explicit_model_events = explicit_model_events
         for e in ledger_events:
             et = cls._LEDGER_MAP.get(e.get("event", ""), "custom")
             if (et == "custom"
@@ -355,9 +371,10 @@ class RunHistory:
                 invocation = dict(kw)
                 invocation["detail"] = {
                     **dict(kw["detail"]), "_ledger_event": "model_invocation"}
-                ch.append("model_invocation", **invocation)
-            ch.append(et, **kw)
-        return ch
+                self.append("model_invocation", **invocation)
+            self.append(et, **kw)
+        self._usage_index = ui
+        return len(self.event_log) - before
 
     # --- persistence: the runs/<run_id>/ layout ----------------------------
 

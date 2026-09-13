@@ -242,9 +242,25 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
                 history = records.latest('step_history', 'retention-step')
                 self.assertEqual(history['revision'], 2)
                 self.assertEqual(history['retention'], 'immutable_history_preserved')
-                root = Path(history['history']).parents[1]
-                self.assertEqual(sorted(p.name for p in root.iterdir()), ['0', '1', '2'])
+                self.assertEqual(history['layout'], 'append_only_checkpoint_store')
                 self.assertTrue(history['integrity']['intact'])
+                # Three checkpoints of one growing history: every event is
+                # stored once, each revision reloads as the verified prefix,
+                # and nothing referenced is deleted.
+                from loop_engine.core.run_history import RunHistory
+                store = Path(history['history'])
+                checkpoints = RunHistory.checkpoints(str(store.parent), store.name)
+                self.assertEqual([c['revision'] for c in checkpoints], [0, 1, 2])
+                counts = [c['events'] for c in checkpoints]
+                self.assertEqual(sorted(counts), counts)
+                with open(store / 'events.jsonl', encoding='utf-8') as stream:
+                    stored = sum(1 for line in stream if line.strip())
+                self.assertEqual(stored, counts[-1])
+                self.assertEqual(history['checkpoint']['events'], counts[-1])
+                for revision, count in enumerate(counts):
+                    loaded = RunHistory.load_checkpoint(str(store.parent), store.name, revision)
+                    self.assertEqual(len(loaded.event_log), count)
+                    self.assertTrue(loaded.verify_chain()['intact'])
                 with self.assertRaises(ValueError):
                     RecordedSettingSession(authority, None, configuration, records, checkpoint_retention=1)
             finally:

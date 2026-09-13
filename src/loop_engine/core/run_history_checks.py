@@ -493,6 +493,23 @@ def self_test() -> dict:
         shutil.rmtree(store, ignore_errors=True)
         shutil.rmtree(full_copies, ignore_errors=True)
 
+    # A history grown with its ledger by extension projects the same
+    # events as a one-shot build and keeps a stable prefix, which a
+    # rebuild from the whole ledger cannot (its start event is timed).
+    ledger = list(lp.ledger.events)
+    whole = RunHistory.from_ledger(ledger, run_id="run-extension-check")
+    grown = RunHistory.from_ledger(ledger[:2], run_id="run-extension-check")
+    prefix = [e.event_digest for e in grown.event_log]
+    grown.extend_from_ledger(ledger[2:5])
+    grown.extend_from_ledger(ledger[5:])
+    strip = lambda e: {k: v for k, v in e.body().items() if k != "prev_digest"}
+    check("a_history_grown_by_extension_matches_a_one_shot_projection_and_keeps_its_prefix",
+          len(grown.event_log) == len(whole.event_log)
+          and all(strip(a) == strip(b) for a, b in zip(whole.event_log[1:], grown.event_log[1:]))
+          and [e.event_digest for e in grown.event_log[:len(prefix)]] == prefix
+          and grown.verify_chain()["intact"],
+          f"{len(grown.event_log)} events grown, {len(whole.event_log)} projected at once")
+
     passed = sum(1 for r in results if r["passed"])
     return {"tests": results, "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}

@@ -267,6 +267,12 @@ class RecordedSettingSession:
         self.configuration, self.records = configuration, records
         if checkpoint_retention is not None:
             raise ValueError('automatic deletion of referenced Run History is not a checkpoint retention policy')
+        # One Run History per trial, grown with the owner's ledger and
+        # checkpointed after every invocation into an append-only store, so
+        # N checkpoints of an n-event trial store n events once rather than
+        # N full copies; every checkpoint stays referenced and re-loadable.
+        self._trial_history = None
+        self._projected_events = 0
 
     def __getattr__(self, name):
         return getattr(self._session, name)
@@ -324,19 +330,21 @@ class RecordedSettingSession:
             # Persist a current checkpoint after every completed or failed
             # semantic invocation, not just at the task's terminal state.
             from loop_engine.core.run_history import RunHistory
-            history = RunHistory.from_ledger(parent_loop.ledger.events,
-                run_id='checkpoint-' + digest(operation)[:24])
-            history.commit()
-            root = Path(self.records.path).parent / 'step-history' / digest(operation)[:24]
-            revisions = sorted((int(p.name) for p in root.iterdir() if p.name.isdigit()), reverse=True) \
-                if root.exists() else []
-            revision = (revisions[0] + 1) if revisions else 0
-            location = history.save(str(root / str(revision)))
-            self.records.record('step_history', operation, {'history': location,
-                'integrity': history.verify_chain(), 'known_calls': self.calls_used,
+            ledger_events = list(parent_loop.ledger.events)
+            root = Path(self.records.path).parent / 'step-history'
+            run_id = 'checkpoint-' + digest(str(Path(self.records.path).parent))[:24]
+            if self._trial_history is None or self._trial_history.run_id != run_id:
+                self._trial_history = RunHistory.from_ledger(ledger_events, run_id=run_id)
+            else:
+                self._trial_history.extend_from_ledger(ledger_events[self._projected_events:])
+            self._projected_events = len(ledger_events)
+            checkpoint = self._trial_history.append_checkpoint(str(root))
+            self.records.record('step_history', operation, {'history': str(root / run_id),
+                'layout': 'append_only_checkpoint_store', 'checkpoint': checkpoint,
+                'integrity': self._trial_history.verify_chain(), 'known_calls': self.calls_used,
                 'call_accounting_complete': not self.accounting_uncertain,
-                'revision': revision, 'retention': 'immutable_history_preserved',
-                'events': len(parent_loop.ledger.events)})
+                'revision': checkpoint['revision'], 'retention': 'immutable_history_preserved',
+                'events': len(ledger_events)})
 
 
 @dataclass(frozen=True)

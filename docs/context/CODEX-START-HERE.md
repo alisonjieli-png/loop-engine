@@ -89,8 +89,10 @@ a listing is not readiness. For the storage-growth limit the preparation
 report names, `RunHistory.append_checkpoint(root)` and
 `load_checkpoint(root, run_id, revision)` store every event once with one
 line per checkpoint and rebuild any checkpoint as the verified prefix; the
-campaign's per-step full copies can move to that store without changing
-what a checkpoint proves. `ollama_client.learn_output_capability(model)`
+campaign runner's `RecordedSettingSession` now keeps one history per trial,
+grown with `extend_from_ledger`, and checkpoints it into that store after
+every invocation (`step_history` rows carry `layout`, `checkpoint`, and
+`revision`; the retention test pins that every revision reloads). `ollama_client.learn_output_capability(model)`
 reads a model's output ceiling from the service's own refusal, for the
 thirteen listed models without a declared maximum, once the allowance
 resets.
