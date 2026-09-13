@@ -225,6 +225,12 @@ deployments, database writes, and device operations.
 
 ## More steps and different step structures
 
+Harness implementation can also vary through one or more wrapper layers and
+through selected native goal, planning, session, and continuation controls.
+Read [layered harness wrappers and native control](LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md).
+Wrapper depth, wrapper order, and control ownership are separate choices.
+They do not impose another runtime or a fixed number of steps.
+
 Support variable step count, granularity, order, repetition, and branching.
 The existing atomic, compact, reference, and custom profiles are reusable
 choices, not an exhaustive progression or a universal maximum.

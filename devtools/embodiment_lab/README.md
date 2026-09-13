@@ -21,6 +21,16 @@ Run `PYTHONPATH=src:devtools python3 -m embodiment_lab list` from the repository
 
 Tests run with `PYTHONPATH=src:devtools python3 -m unittest discover -s devtools/embodiment_lab/tests -v`.
 
+## Development guidance and nested control
+
+Read [the development instructions](../AGENTS.md),
+[the harness instructions](../../embodiments/AGENTS.md), and
+[ASTRA.md](../../ASTRA.md) for current advisory comments. The
+[layered harness design](../../docs/architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
+supports an outer Loop around native harness iteration as a configuration
+choice. Compare both control layers explicitly; do not infer that native
+goals, tools, or session continuation are enabled by a documentation change.
+
 ## Live configuration comparisons
 
 The [configuration grid search guide](../../docs/guides/configuration-grid-search-and-optimization.md)

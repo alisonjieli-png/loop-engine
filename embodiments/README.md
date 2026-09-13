@@ -7,6 +7,13 @@ Dependencies, trial workspaces and reports for this work stay inside
 
 These are Loop Engine-specific execution experiments. Their launchers share the canonical runtime and lab evaluator. They are not independent codebases.
 
+Read [the harness development instructions](AGENTS.md) and the main advisory
+comments in [ASTRA.md](../ASTRA.md). [CLAUDE.md](CLAUDE.md) imports the scoped
+instructions for Claude Code. The
+[layered harness design](../docs/architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
+allows an outer Loop to supervise native harness iteration, with wrapper
+composition and native controls treated as separate dimensions.
+
 The sibling `/home/username/solver-lab` contains older separately owned
 experiments. It remains a read-only reference for this work, not the destination
 for new Loop Engine implementations or logs. Those older repositories stay in place.

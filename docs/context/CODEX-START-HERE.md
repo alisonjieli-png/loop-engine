@@ -8,6 +8,14 @@ the first message for a new session, the reading order, and the component map.
 
 This page applies to Codex and other coding agents working in the repository.
 
+[ASTRA.md](../../ASTRA.md) is the main current advisory comments-and-suggestions
+file for Claude Fable 5.1 and other development sessions. It keeps owner
+requirements, proposals, acceptance criteria, and historical evidence distinct.
+The repository [CLAUDE.md](../../CLAUDE.md) imports it with the shared
+[AGENTS.md](../../AGENTS.md) instructions. Read the scoped instructions in
+[embodiments](../../embodiments/AGENTS.md) or
+[devtools](../../devtools/AGENTS.md) when working there.
+
 Before continuing after the September 12 account change, read the
 [discrete cognitive or act step Loop node complete explanation and session handoff](DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md)
 in full. Preserve the full phrase and the behavioral explanation. Do not
@@ -27,6 +35,12 @@ non-exhaustive. Read the
 for the proposed refinements, additional choices, and ongoing review questions.
 Protect the required baseline while continuing to discover dimensions; do not
 turn either list into a fixed maximum or permit unknown runtime fields.
+
+The subsequent [layered harness wrapper and native control proposal](../architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
+records the owner's request to consider one or more wrapper layers and native
+controls as dimensions. Wrapper composition and control ownership can vary
+per assignment. This documentation does not enable native goal controllers
+or change the runtime adapters.
 
 For the owner's request to promote broader cognitive steps, actions, prompts,
 intelligence, and optimization, read

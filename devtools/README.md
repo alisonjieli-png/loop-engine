@@ -37,6 +37,20 @@ devtools/
 `qualification_lab` has no Loop Engine import. It can be copied into a separate
 repository and used as an independent reference and falsification harness.
 
+## Harness layering and development instructions
+
+Read [ASTRA.md](../ASTRA.md) for the main comments and suggestions and
+[the scoped development instructions](AGENTS.md) before changing experiments.
+The local [CLAUDE.md](CLAUDE.md) imports those scoped instructions for Claude
+Code; repository rules remain authoritative.
+
+The [layered harness design](../docs/architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
+explicitly permits an outer Loop around native harness iteration. Compare
+wrapper compositions and native control ownership while preserving shared
+authority, cancellation, exact outputs, and independent acceptance. More
+layers, steps, prompts, and intelligence are possible treatments, not proof
+of improvement or permission to enable native features automatically.
+
 ## Bootstrap rule
 
 A small deterministic verifier must run without importing Loop Engine.

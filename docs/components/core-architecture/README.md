@@ -89,6 +89,7 @@ These pages document the mechanics:
 - [OpenTelemetry export](OPENTELEMETRY.md)
 - [External harness adapters](EXTERNAL-HARNESS-ADAPTERS.md)
 - [Per-step harness recovery](HARNESS-FALLBACK.md)
+- [Layered harness wrappers and native control](../../architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md), a design consideration
 
 ## Extension boundary
 

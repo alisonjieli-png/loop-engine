@@ -1,5 +1,12 @@
 # Pi semantic-step embodiment
 
+For development, read [the harness instructions](../AGENTS.md),
+[ASTRA.md](../../ASTRA.md), and
+[the layered harness design](../../docs/architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md).
+An outer Loop may govern Pi's native iteration while preserving cumulative
+authority and independent acceptance. Native control and session reuse need
+their own qualified profile; this guidance does not change the launch flags.
+
 The pinned Pi installation is inside this repository at `/home/username/loop-engine/embodiments/pi/runtime/node_modules/@earendil-works/pi-coding-agent`. Version: 0.85.1. Package installation used `--ignore-scripts`; the lockfile records dependency integrity.
 
 Observed here: the actual CLI completed an isolated text-only round trip through the new broker mechanics, with one scripted callback and no live provider call. Evidence: `/home/username/loop-engine/artifacts/harness-expansion-20260909-DNMQ3Y/installed-probes/core-pi-v2.json`.

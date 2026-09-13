@@ -269,6 +269,13 @@ history or a new managed-record authority.
 
 ## Search initial choices and fallback policies separately
 
+Include [wrapper composition and native control ownership](../architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
+as candidate dimensions. Compare the existing direct adapter, additional
+wrapper layers, and qualified native-control profiles without treating all
+native features as one switch. Freeze who owns each transition so a native
+retry and an outer retry cannot independently multiply the work. Wrapper
+depth and control ownership remain separate from step count and run mode.
+
 The initial choice and the response to a particular failure can have different
 priorities. Compare a fixed configuration, an alternative fixed configuration,
 and a policy that can transition between them.

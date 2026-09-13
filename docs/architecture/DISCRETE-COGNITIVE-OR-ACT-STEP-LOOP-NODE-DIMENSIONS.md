@@ -15,8 +15,11 @@ in [architecture.yaml](../../architecture.yaml). It is a design inventory,
 not an executable configuration format or permission grant.
 
 The baseline requirement and the instruction to keep discovering dimensions
-are owner-confirmed. The additional choices below are assistant proposals for
-review. They are not attributed to the owner as individually approved choices.
+are owner-confirmed. The earlier additional choices below are assistant
+proposals for review, not individually owner-approved choices. The owner
+subsequently requested consideration of harness wrapper layers and native
+controls as dimensions; their specific contracts and implementations still
+need review.
 The [review addendum](../context/CONFIGURATION-DIMENSION-DISCOVERY-ADDENDUM-2026-09-13.md)
 records this clarification for the ongoing Claude Fable 5.1 review.
 
@@ -25,6 +28,12 @@ and [configuration grid search guide](../guides/configuration-grid-search-and-op
 develop this requirement further. They support additional steps, prompts,
 questions, intelligence, and action methods alongside compact alternatives,
 with explicit experiments for their effects and interactions.
+
+The [layered harness wrapper and native control proposal](LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
+separates wrapper composition from control ownership. It covers one or more
+wrapper layers, per-control delegation, initial choices, fallback priorities,
+and coordination with the owning Loop. It is a design consideration, not an
+enabled native goal mode or an implemented wrapper stack.
 
 ## Complete explanation
 
@@ -208,6 +217,8 @@ compatibility, authority, evidence, and outcome-recording requirements below.
 
 | Proposed dimension | Relationship to the baseline and reason | Initial and fallback decisions to make explicit | Existing boundary to inspect |
 |---|---|---|---|
+| Harness wrapper composition | Owner-requested refinement of harness implementation. The same harness can operate inside different preparation, supervision, transport, and resource wrappers. | Choose wrapper identities, versions, depth, order, and lifecycle responsibilities. Declare ordered alternative compositions and the state and authority preserved across a change. | [Harness semantic binding](../../src/loop_engine/core/harness_semantic.py), [process boundary](../../src/loop_engine/core/harness_process.py) |
+| Native control ownership | Owner-requested cross-cutting choice. The owning Loop and the native harness can expose overlapping goal, planning, iteration, retry, session, and cancellation controls. | Choose ownership separately per control, with disabled, unsupported, and unknown states. Define coordination, conflict resolution, and fallback between eligible control policies without resetting authority or duplicating effects. | [Harness capability contracts](../../src/loop_engine/core/harness_execution_contracts.py), [harness semantic binding](../../src/loop_engine/core/harness_semantic.py) |
 | Objective and risk policy | Cross-cutting. A preferred harness depends on whether the task values correctness, latency, cost, reliability, or the consequences of an error. | Declare metric direction, hard constraints, tradeoffs, and acceptable uncertainty. Permit fallback tradeoffs only within the task's required acceptance standard. | [Harness selection](../../src/loop_engine/core/harness_selection.py), [portfolio policy](../../src/loop_engine/loop/reactive_contracts.py) |
 | Task framing and uncertainty | Cross-cutting. More computation does not repair a wrong interpretation of the assignment. | Choose what to clarify, which assumptions must remain explicit, and when to gather evidence, ask the user, abstain, or request a revised contract. | [Task intake](../../src/loop_engine/templates/intake.py), [task frontier](../../src/loop_engine/core/task_frontier.py) |
 | Reasoning and action method | Refinement of Practitioner style, step profile, and tools. A model choice or thinking-power setting does not specify the method. | Choose an applicable method, such as rule-based deduction, causal analysis, simulation, formal constraint solving, or direct tool execution. Define alternatives after a failed assumption or check, including a dry run when needed. Preserve the task and effect contracts. | [Method selection and repair](../../src/loop_engine/core/adaptive_practitioner_planning.py) |

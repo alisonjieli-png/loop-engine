@@ -1,5 +1,12 @@
 # Codex text adapter experiment
 
+For development, read [the harness instructions](../AGENTS.md),
+[ASTRA.md](../../ASTRA.md), and
+[the layered harness design](../../docs/architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md).
+An outer Loop can supervise native harness iteration under a qualified
+control policy. The restricted text profile described below remains a
+separate configuration; these instructions do not enable native goals or tools.
+
 Installed Codex 0.153.4 completed a headless text roundtrip through a scripted
 private Responses provider. The actual request contained `tools: []`, and the
 CLI returned the exact candidate in a completed turn. No OpenAI or other real

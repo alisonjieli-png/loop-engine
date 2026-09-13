@@ -33,6 +33,8 @@ for the task:
 8. `humanizer-context.md` for public prose
 9. `docs/context/CODEX-START-HERE.md` after a new or compacted session
 10. `docs/context/REFERENCE-SOURCES.md` before consulting an older repository
+11. `ASTRA.md` for the current advisory comments and suggestions for continued
+    development and Claude Fable 5.1 review
 
 Treat existing changes as user or concurrent-agent work. Do not discard,
 restore, reformat, commit, or publish changes without resolving ownership.
@@ -372,6 +374,15 @@ Follow `humanizer-context.md`.
   or model use the universal objective. Preserve supported alternatives and
   test both additions and removals. Artificial general intelligence is a
   research ambition, not a new runtime, role, mode, or achieved capability claim.
+- Consider [layered harness wrappers and native control](docs/architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
+  as independent configuration dimensions. Wrapper depth and order need not be
+  fixed. Resolve ownership of each native control, initial choices, and
+  fallback priorities explicitly. Wrappers remain internal mechanics unless
+  their work needs a separately governed canonical Loop. Native controls
+  never grant broader authority or replace independent task acceptance.
+  An outer Loop Engine Loop may govern a native harness's inner loop. Keep
+  cumulative authority, retry ownership, cancellation, and independent
+  acceptance explicit across both. Read `ASTRA.md` for the advisory criteria.
 - Use plain English suitable for a reader using English as a second language.
 - Start at the highest level and move toward details.
 - Use direct statements, useful examples, and ordinary names.

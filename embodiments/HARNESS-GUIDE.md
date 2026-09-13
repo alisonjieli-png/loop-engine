@@ -49,6 +49,38 @@ Requests that omit the packet, change model identity, or contain native tool
 schemas are refused. Exit code zero alone is not success. The delivered text
 must equal an actual broker response, and the owning evaluator must accept it.
 
+## Development instructions and nested control
+
+The architecture permits an outer Loop Engine Loop around a native harness
+loop. The outer Loop retains task authority and independent acceptance; the
+inner harness can plan and execute its permitted internal operations. Read
+[the layered design](../docs/architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
+and the main comments in [ASTRA.md](../ASTRA.md).
+
+| Instruction surface | File | Purpose |
+|---|---|---|
+| Shared repository instructions | [AGENTS.md](../AGENTS.md) | Canonical development rules and architecture invariants. |
+| Main advisory comments | [ASTRA.md](../ASTRA.md) | Owner direction, suggestions, and acceptance criteria for Claude Fable 5.1 and other reviewers. |
+| Claude Code project entry | [CLAUDE.md](../CLAUDE.md) | Imports the shared repository rules and advisory note. |
+| Harness-directory instructions | [AGENTS.md](AGENTS.md), [CLAUDE.md](CLAUDE.md) | Adds the first-party harness development scope. |
+| Development-tool instructions | [AGENTS.md](../devtools/AGENTS.md), [CLAUDE.md](../devtools/CLAUDE.md) | Adds experiment, dependency, and evidence requirements. |
+
+Claude Code supports importing shared instructions with `@path` references
+inside `CLAUDE.md`. Codex uses `AGENTS.md` discovery rather than automatically
+loading a file merely named `codex.md`. See
+[Claude Code instruction imports](https://code.claude.com/docs/en/memory#agentsmd)
+and [official OpenAI documentation](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
+
+These files guide development sessions. They do not modify `harness.json`,
+launch flags, or runtime permissions. A confined text-response profile may
+deliberately disable project instruction loading. Verify the exact profile's
+loading behavior before claiming that these instructions reached a runtime
+model call. File presence and a resolved import are not a live loading test.
+
+The example and historical results below retain their original campaign
+scope. Use the current request and provider authority before running any
+provider-backed command.
+
 ## Run an installed embodiment
 
 Run from `/home/username/loop-engine`. Use a new workspace and run directory for
