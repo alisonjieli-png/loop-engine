@@ -22,6 +22,8 @@ import threading
 import time
 from typing import Callable
 
+from .harness_confinement import default_confined_environment
+
 
 class HarnessProcessError(ValueError):
     """A process identity, confinement, or transport contract was refused."""
@@ -236,7 +238,6 @@ def _sandbox(request, run, socket_path):
         args += ["--ro-bind", str(Path(__file__).with_name(module)), "/relay/" + module]
     # The sandbox's own layout and consent switches are a typed, digest-bound
     # record; see harness_confinement for what each variable means.
-    from .harness_confinement import default_confined_environment
     args += default_confined_environment().setenv_arguments()
     if request.spec.style == "aider":
         args += ["--setenv", "COLUMNS", str(request.maximum_output_bytes)]
@@ -368,7 +369,7 @@ def run_harness_process(request: HarnessProcessRequest,
             listener.listen(4)
             proc = subprocess.Popen(_sandbox(request, run, socket_path),
                 stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                env={"PATH": "/usr/bin:/bin"}, start_new_session=True)
+                env={"PATH": default_confined_environment().path}, start_new_session=True)
 
             def kill():
                 if proc.poll() is None:

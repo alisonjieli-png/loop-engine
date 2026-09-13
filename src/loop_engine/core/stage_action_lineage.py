@@ -12,6 +12,7 @@ import json
 from dataclasses import dataclass
 
 from .outcome_vector import observe as observe_outcome
+from .solve_control_manifest import ASSISTANCE_MODES, SHADOW_MODE
 from .stage_store import StageObservation
 
 
@@ -167,10 +168,10 @@ def record_selected_action(request: SelectedActionLineageRequest) -> dict:
         if item.get("stage_occurrence_id") == observation.occurrence_id
     )
     mode = request.services.request.stage_assistance.mode
-    if mode in ("advisory", "fresh") and len(decisions) != 1:
+    if mode in ASSISTANCE_MODES and len(decisions) != 1:
         raise ValueError(
             "an active experiment needs one assistance decision for the stage")
-    if mode in ("advisory", "fresh"):
+    if mode in ASSISTANCE_MODES:
         decision = decisions[0]
         exposure = stage_facts.get("active_exposure")
         if (not isinstance(exposure, dict)
@@ -552,7 +553,7 @@ def self_test() -> dict[str, object]:
             stage_arms={source.occurrence_id: facts,
                         unrelated.occurrence_id: {
                             "cognitive_phase": "orient"}},
-            stage_assistance_decisions=([] if mode == "shadow" else [decision]),
+            stage_assistance_decisions=([] if mode == SHADOW_MODE else [decision]),
             action_details={action_id: admitted},
             plan_details={action_id: {
                 "capability_ref": "core.generated_project",

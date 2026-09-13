@@ -14,6 +14,9 @@ from dataclasses import dataclass
 
 INFORMATION_MEASUREMENT_SPEC_SCHEMA = "information_measurement_spec/v1"
 INFRASTRUCTURE_VALIDITY_RECORD_SCHEMA = "infrastructure_validity_record/v1"
+VALID, INVALID = "valid", "invalid"
+VALIDITY_STATUSES = (VALID, INVALID)
+PREDICTIVE_STATE_INFORMATION = "predictive_state_information"
 INFORMATION_MEASURE_KINDS = (
     "paired_state_compression_distortion",
     "predictive_state_information",
@@ -63,16 +66,16 @@ class InfrastructureValidityRecord:
             _text(getattr(self, name), name)
         for name in ("subject_digest", "evaluator_digest"):
             _digest(getattr(self, name), name)
-        if self.status not in ("valid", "invalid"):
+        if self.status not in VALIDITY_STATUSES:
             raise InformationTheoryEvidenceError(
                 "infrastructure validity status must be valid or invalid"
             )
         _optional_text(self.reason_code, "reason_code")
-        if self.status == "valid" and self.reason_code:
+        if self.status == VALID and self.reason_code:
             raise InformationTheoryEvidenceError(
                 "a valid infrastructure record cannot have an invalid reason"
             )
-        if self.status == "invalid":
+        if self.status == INVALID:
             _text(self.reason_code, "reason_code")
             if self.reason_code not in INFRASTRUCTURE_INVALID_REASONS:
                 raise InformationTheoryEvidenceError(
@@ -86,7 +89,7 @@ class InfrastructureValidityRecord:
 
     @property
     def is_valid(self) -> bool:
-        return self.status == "valid"
+        return self.status == VALID
 
     @property
     def digest(self) -> str:
@@ -202,7 +205,7 @@ class InformationMeasurementSpec:
             raise InformationTheoryEvidenceError(
                 "the current estimator does not compute confidence intervals"
             )
-        if self.measure_kind == "predictive_state_information":
+        if self.measure_kind == PREDICTIVE_STATE_INFORMATION:
             if (
                 self.estimator_ref != "empirical_plugin_base2/v1"
                 or self.estimator_contract_digest

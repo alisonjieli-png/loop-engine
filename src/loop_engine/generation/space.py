@@ -12,7 +12,7 @@ import hashlib
 import json
 import math
 
-from .model.dimensions import ConditionalRule, VALUE_KINDS
+from .model.dimensions import ConditionalRule, INTEGER_RANGE, VALUE_KINDS
 from .model.fragments import GenerationError
 from ..core.record_operations_records import parse_json
 
@@ -51,7 +51,7 @@ class ConfigurationAxis:
         except ValueError as exc:
             raise GenerationError("axis values must be unambiguous strict JSON") from exc
         object.__setattr__(self, "encoded_values", encoded)
-        if self.value_kind == "integer_range":
+        if self.value_kind == INTEGER_RANGE:
             if (type(self.minimum) is not int or type(self.maximum) is not int
                     or self.minimum > self.maximum or encoded):
                 raise GenerationError("integer ranges need exact bounds and no value list")
@@ -60,17 +60,17 @@ class ConfigurationAxis:
 
     @property
     def cardinality(self) -> int:
-        return (self.maximum - self.minimum + 1 if self.value_kind == "integer_range"
+        return (self.maximum - self.minimum + 1 if self.value_kind == INTEGER_RANGE
                 else len(self.encoded_values))
 
     def value_at(self, offset: int):
         if type(offset) is not int or not 0 <= offset < self.cardinality:
             raise GenerationError("axis offset outside its declared range")
-        return (self.minimum + offset if self.value_kind == "integer_range"
+        return (self.minimum + offset if self.value_kind == INTEGER_RANGE
                 else json.loads(self.encoded_values[offset]))
 
     def offset_of(self, value) -> int:
-        if self.value_kind == "integer_range":
+        if self.value_kind == INTEGER_RANGE:
             if type(value) is not int or not self.minimum <= value <= self.maximum:
                 raise GenerationError("integer value outside its declared range")
             return value - self.minimum

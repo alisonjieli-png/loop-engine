@@ -13,7 +13,9 @@ from importlib.metadata import PackageNotFoundError, version
 import json
 import math
 
+from .model.dimensions import FLOAT_VALUES, INTEGER_RANGE, ORDINAL
 from .model.fragments import GenerationError
+from .search_records import COMPLETED, RUNNING
 
 
 def _positive(value, name):
@@ -119,7 +121,7 @@ class OptunaSearchAdapter:
         else:
             if len(request.objectives) != 1:
                 raise GenerationError("covariance adaptation requires a single objective")
-            if any(a.value_kind not in ("integer_range", "ordinal", "float_values")
+            if any(a.value_kind not in (INTEGER_RANGE, ORDINAL, FLOAT_VALUES)
                    for a in request.space.axes):
                 raise GenerationError("covariance adaptation needs explicitly ordered numeric axes")
             if sum(a.cardinality > 1 for a in request.space.axes) < 2:
@@ -138,7 +140,7 @@ class OptunaSearchAdapter:
         covariance = isinstance(parameters, CovarianceSearchSettings)
         distributions = {}
         for axis in request.space.axes:
-            if axis.value_kind == "integer_range":
+            if axis.value_kind == INTEGER_RANGE:
                 if max(abs(axis.minimum), abs(axis.maximum)) > 2 ** 53 - 1:
                     raise GenerationError("optimizer numeric coordinates cannot represent this range exactly")
                 distributions[axis.dimension_id] = optuna.distributions.IntDistribution(axis.minimum, axis.maximum)
@@ -156,7 +158,7 @@ class OptunaSearchAdapter:
         def encode(index):
             config = request.space.configuration_at(index)
             return {axis.dimension_id: (
-                config[axis.dimension_id] if axis.value_kind == "integer_range" else
+                config[axis.dimension_id] if axis.value_kind == INTEGER_RANGE else
                 axis.offset_of(config[axis.dimension_id]) if covariance else
                 axis.encoded_values[axis.offset_of(config[axis.dimension_id])])
                 for axis in request.space.axes}
@@ -165,7 +167,7 @@ class OptunaSearchAdapter:
             config = json.loads(request.space.context_json)
             for axis in request.space.axes:
                 value = params[axis.dimension_id]
-                config[axis.dimension_id] = (value if axis.value_kind == "integer_range" else
+                config[axis.dimension_id] = (value if axis.value_kind == INTEGER_RANGE else
                     axis.value_at(value) if covariance else json.loads(value))
             return request.space.index_of(config)
 
@@ -176,9 +178,9 @@ class OptunaSearchAdapter:
             used.append(observation.trial_id)
             study.enqueue_trial(encode(observation.configuration_index))
             trial = study.ask(fixed_distributions=distributions)
-            if observation.state == "completed" and all(v is not None for v in observation.values):
+            if observation.state == COMPLETED and all(v is not None for v in observation.values):
                 study.tell(trial, list(observation.values))
-            elif observation.state != "running":
+            elif observation.state != RUNNING:
                 study.tell(trial, state=optuna.trial.TrialState.FAIL)
         for _ in range(request.draw_limit):
             trial = study.ask(fixed_distributions=distributions)

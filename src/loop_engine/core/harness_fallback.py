@@ -12,6 +12,25 @@ import hashlib
 import json
 
 from .harness_execution_contracts import valid_harness_id
+from .harness_response_evaluation import INCONCLUSIVE, REJECTED
+
+
+# Decision reasons an assessment can return. The semantic binding and the
+# recipes compare against these names, never against retyped text.
+UNRESOLVED_MODEL_ACCOUNTING = "unresolved_model_accounting"
+UNEXPECTED_EFFECTS_REQUIRE_RECONCILIATION = "unexpected_effects_require_reconciliation"
+RESPONSE_EVALUATION_INCONCLUSIVE = "response_evaluation_inconclusive"
+RESPONSE_ADMITTED = "response_admitted"
+PROVIDER_OR_SHARED_GATEWAY_FAILURE = "provider_or_shared_gateway_failure"
+SHARED_BUDGET_EXHAUSTED = "shared_budget_exhausted"
+UNCLASSIFIED_FAILURE_REQUIRES_REVIEW = "unclassified_failure_requires_review"
+FAILURE_NOT_PERMITTED_BY_POLICY = "failure_not_permitted_by_policy"
+ALTERNATIVES_EXHAUSTED = "alternatives_exhausted"
+DECISION_REASONS = (UNRESOLVED_MODEL_ACCOUNTING, UNEXPECTED_EFFECTS_REQUIRE_RECONCILIATION,
+                    RESPONSE_EVALUATION_INCONCLUSIVE, RESPONSE_ADMITTED,
+                    PROVIDER_OR_SHARED_GATEWAY_FAILURE, SHARED_BUDGET_EXHAUSTED,
+                    UNCLASSIFIED_FAILURE_REQUIRES_REVIEW, FAILURE_NOT_PERMITTED_BY_POLICY,
+                    ALTERNATIVES_EXHAUSTED)
 
 
 class HarnessFailureKind(str, Enum):
@@ -129,7 +148,7 @@ def assess_harness_attempt(policy, index, result, gateway_results, *,
     Only the semantic binding calls this after the canonical boundary checks
     identities and effects. An empty model-call list is not a successful step.
     """
-    from .external_harness import HarnessRunResult
+    from .external_harness import BUDGET_EXHAUSTED_STATUS, HarnessRunResult
     from .model_gateway import ModelGatewayResult
     if not isinstance(policy, HarnessFallbackPolicy) or not isinstance(result, HarnessRunResult):
         raise TypeError("typed fallback policy and harness result are required")
@@ -143,40 +162,40 @@ def assess_harness_attempt(policy, index, result, gateway_results, *,
     if (accounting_uncertain or not result.call_count_complete
             or result.physical_model_calls != physical_calls
             or any(not call.gateway_loop_id for call in result.model_calls)):
-        return HarnessFallbackDecision("unresolved_model_accounting", accounting_uncertain=True)
+        return HarnessFallbackDecision(UNRESOLVED_MODEL_ACCOUNTING, accounting_uncertain=True)
     if result.tool_events or result.spawned_task_ids:
-        return HarnessFallbackDecision("unexpected_effects_require_reconciliation")
+        return HarnessFallbackDecision(UNEXPECTED_EFFECTS_REQUIRE_RECONCILIATION)
     if response_evaluation is not None:
         from .harness_response_evaluation import HarnessResponseEvaluation
         if not isinstance(response_evaluation,HarnessResponseEvaluation):
             raise TypeError('response evaluation must be an issued typed record')
-        if response_evaluation.status == 'inconclusive':
-            return HarnessFallbackDecision('response_evaluation_inconclusive')
+        if response_evaluation.status == INCONCLUSIVE:
+            return HarnessFallbackDecision(RESPONSE_EVALUATION_INCONCLUSIVE)
     if result.completed and physical_calls:
-        return HarnessFallbackDecision("response_admitted")
+        return HarnessFallbackDecision(RESPONSE_ADMITTED)
     from .model_gateway import EVALUATOR_VERDICT_ERRORS
     failures = [item.error_code for item in gateway_results if not item.ok]
     # An evaluator's verdict is a judgement about the answer, recorded by the
     # gateway with its own code. It is not a provider or shared failure.
     if any(code != HarnessFailureKind.RESPONSE_REJECTED.value
            and code not in EVALUATOR_VERDICT_ERRORS for code in failures):
-        return HarnessFallbackDecision("provider_or_shared_gateway_failure")
-    if result.status == "budget_exhausted":
-        return HarnessFallbackDecision("shared_budget_exhausted")
-    if "response_evaluation_inconclusive" in failures:
-        return HarnessFallbackDecision("response_evaluation_inconclusive")
+        return HarnessFallbackDecision(PROVIDER_OR_SHARED_GATEWAY_FAILURE)
+    if result.status == BUDGET_EXHAUSTED_STATUS:
+        return HarnessFallbackDecision(SHARED_BUDGET_EXHAUSTED)
+    if RESPONSE_EVALUATION_INCONCLUSIVE in failures:
+        return HarnessFallbackDecision(RESPONSE_EVALUATION_INCONCLUSIVE)
     code = (HarnessFailureKind.RESPONSE_REJECTED.value if failures else result.error_code)
-    if "semantic_response_rejected" in failures or (
-            response_evaluation is not None and response_evaluation.status == 'rejected'):
+    if HarnessFailureKind.SEMANTIC_REJECTED.value in failures or (
+            response_evaluation is not None and response_evaluation.status == REJECTED):
         code = HarnessFailureKind.SEMANTIC_REJECTED.value
     try:
         cause = HarnessFailureKind(code)
     except ValueError:
-        return HarnessFallbackDecision("unclassified_failure_requires_review")
+        return HarnessFallbackDecision(UNCLASSIFIED_FAILURE_REQUIRES_REVIEW)
     if cause not in policy.switch_on:
-        return HarnessFallbackDecision("failure_not_permitted_by_policy")
+        return HarnessFallbackDecision(FAILURE_NOT_PERMITTED_BY_POLICY)
     if index + 1 == len(policy.harness_ids):
-        return HarnessFallbackDecision("alternatives_exhausted")
+        return HarnessFallbackDecision(ALTERNATIVES_EXHAUSTED)
     return HarnessFallbackDecision(cause.value, policy.harness_ids[index + 1])
 
 

@@ -1582,6 +1582,75 @@ entries:
     classification: DEPLOYMENT_CONFIGURATION
     created_on: 2026-09-13
     expires_on: 2027-09-13
+  - finding_id: hardcoding.4ab833710916131436937a2b
+    owner: loop_engine.core.openai_responses_client
+    rationale: >-
+      The literal is OpenAI's own documented Responses endpoint. The client deliberately refuses any other
+      endpoint (it checks the endpoint against exactly these two constants before sending), so the address
+      is the provider contract this client implements, not a deployment choice; a different provider is a
+      different client behind the gateway. Reviewed on 2026-09-13
+      (src/loop_engine/core/openai_responses_client.py:47).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.6b117ad69b463359266057c1
+    owner: loop_engine.core.openai_responses_client
+    rationale: >-
+      The literal is OpenAI's own documented model-listing endpoint, the second of the two addresses this
+      client is allowed to call; the client refuses any other endpoint, so the address is the provider
+      contract, not a deployment choice. Reviewed on 2026-09-13
+      (src/loop_engine/core/openai_responses_client.py:48).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.dce669ab294505cc407e4c3b
+    owner: devtools.embodiment_axes.shared.port:_ollama
+    rationale: >-
+      The literal is Ollama's documented default local chat address, used only by the embodiment-axes
+      probe port on the developer machine; the port is a laboratory fixture with one owner, and the
+      product's provider routing does not read it. Reviewed on 2026-09-13
+      (devtools/embodiment_axes/shared/port.py:108).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.385df518cff039a20a41ebb1
+    owner: tools.task_campaign:main
+    rationale: >-
+      The literal is the default of the --health-url option of the campaign tool's optional --health-gate
+      probe, naming the owner's declared Tactical endpoint; the operator overrides it on the command line,
+      the tool only probes it when the gate is enabled, and the product's provider routing does not read
+      it. Reviewed on 2026-09-13 (tools/task_campaign.py:659).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.5cf41f304c0b7804f124a236
+    owner: loop_engine.core.generated_project:validate_generated_project_input_use
+    rationale: >-
+      The literal is the name of Python's own keyword argument mode of open() and Path.open(), matched in
+      the generated project's syntax tree to find the file mode; it is a language API name, not a
+      vocabulary token this project could own or vary. Reviewed on 2026-09-13
+      (src/loop_engine/core/generated_project.py:827).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.1b7ee6c9caf7ba506079e8ee
+    owner: loop_engine.core.adaptive_practitioner_records:_record_stage_assistance_decision
+    rationale: >-
+      The literal is the stage_occurrence_id field name of the stage-assistance decision record, excluded
+      when the record's other fields are copied; it names a record field, not a state the code selects on.
+      Reviewed on 2026-09-13 (src/loop_engine/core/adaptive_practitioner_records.py:858).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.4dd2c3e55fc40a9117726f17
+    owner: loop_engine.core.adaptive_practitioner_records:_record_stage_assistance_decision
+    rationale: >-
+      The literal is the record_type field name of the stage-assistance decision record, excluded when the
+      record's other fields are copied; it names a record field, not a state the code selects on. Reviewed
+      on 2026-09-13 (src/loop_engine/core/adaptive_practitioner_records.py:858).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust

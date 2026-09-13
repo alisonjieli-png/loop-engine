@@ -21,8 +21,11 @@ from .external_harness import (
 )
 from .harness_execution_contracts import HarnessExecutionCapabilities
 from .harness_fallback import (
+    ALTERNATIVES_EXHAUSTED, FAILURE_NOT_PERMITTED_BY_POLICY, RESPONSE_EVALUATION_INCONCLUSIVE,
+    UNEXPECTED_EFFECTS_REQUIRE_RECONCILIATION,
     HarnessFallbackPolicy, HarnessFailureKind, HarnessRecoveryObservation, assess_harness_attempt,
 )
+from .harness_response_evaluation import PASSED, REJECTED
 from .model_gateway import (
     EVALUATOR_VERDICT_ERRORS, ModelGateway, ModelGatewayRequest, ModelGatewayResult,
 )
@@ -234,17 +237,18 @@ class HarnessSemanticBinding:
             if decision.accounting_uncertain:
                 response.ok, response.text = False, ''
                 response.error_code = 'provider_attempt_contract_violated'
-            elif decision.reason == 'unexpected_effects_require_reconciliation':
+            elif decision.reason == UNEXPECTED_EFFECTS_REQUIRE_RECONCILIATION:
                 response.ok, response.text = False, ''
                 response.error_code = decision.reason
             elif (evaluation_state is not None and evaluation_state.latest is not None
-                  and decision.reason in ('semantic_response_rejected','failure_not_permitted_by_policy',
-                                          'alternatives_exhausted','response_evaluation_inconclusive')
+                  and decision.reason in (HarnessFailureKind.SEMANTIC_REJECTED.value,
+                                          FAILURE_NOT_PERMITTED_BY_POLICY, ALTERNATIVES_EXHAUSTED,
+                                          RESPONSE_EVALUATION_INCONCLUSIVE)
                   and all(item.error_code in ('output_validation_failed', *EVALUATOR_VERDICT_ERRORS)
                           for item in attempt.gateway_results if not item.ok)):
-                if evaluation_state.latest.status != 'passed':
+                if evaluation_state.latest.status != PASSED:
                     response.ok, response.text = False, ''
-                    response.error_code = ('semantic_response_rejected' if evaluation_state.latest.status == 'rejected'
+                    response.error_code = ('semantic_response_rejected' if evaluation_state.latest.status == REJECTED
                                            else 'response_evaluation_inconclusive')
             parent.ledger.record(loop_id=parent.loop_id, event='custom',
                 action='harness_attempt_assessed', record_type='harness_attempt_assessment/v1',

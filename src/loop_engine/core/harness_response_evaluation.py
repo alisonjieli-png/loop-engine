@@ -14,6 +14,11 @@ from typing import Callable
 
 from .harness_selection_records import exact_digest, exact_text
 
+# The three verdict statuses an evaluator may issue; every comparison in
+# the harness path names these, never retyped text.
+PASSED, REJECTED, INCONCLUSIVE = 'passed', 'rejected', 'inconclusive'
+EVALUATION_STATUSES = (PASSED, REJECTED, INCONCLUSIVE)
+
 
 @dataclass(frozen=True)
 class ResponseEvaluationContext:
@@ -35,14 +40,14 @@ class ResponseEvaluationVerdict:
     finding_codes: tuple[str,...] = ()
 
     def __post_init__(self):
-        if self.status not in ('passed','rejected','inconclusive'):
+        if self.status not in EVALUATION_STATUSES:
             raise ValueError('response evaluation status is not recognized')
         if type(self.finding_codes) not in (tuple,list):raise TypeError('finding codes must be a sequence')
         values=tuple(self.finding_codes)
         if (len(values)>16 or len(set(values))!=len(values)
                 or any(type(x) is not str or not re.fullmatch(r'[A-Za-z0-9_.:-]{1,128}',x) for x in values)):
             raise ValueError('evaluation findings must be bounded body-free codes')
-        if self.status!='passed' and not values:raise ValueError('an unsuccessful evaluation needs a finding code')
+        if self.status!=PASSED and not values:raise ValueError('an unsuccessful evaluation needs a finding code')
         object.__setattr__(self,'finding_codes',values)
 
 

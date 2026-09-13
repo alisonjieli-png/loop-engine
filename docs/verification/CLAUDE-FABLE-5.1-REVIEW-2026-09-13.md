@@ -729,6 +729,24 @@ longer a deployment value. The committed tree's count fell from 318 to
 225; what remains is the vocabulary tokens, the prompt texts, and the four
 endpoint addresses.
 
+The vocabulary batch followed. Where a closed vocabulary already had an
+authority, the comparisons now name it: response evaluation statuses,
+harness fallback decision reasons, harness run statuses, search
+observation states, axis value kinds, evidence validity statuses,
+generated-project command kinds and media types, and the stage-assistance
+arms, whose tuple moved to the control manifest so the Practitioner
+records, the lineage, the scope, and the solve runtime share one owner.
+The auditor classes the versioned step-content record as the governed
+prompt resource it is. The two OpenAI endpoints the client refuses to
+deviate from, the laboratory's local Ollama address, the campaign tool's
+health-probe default, Python's `mode` keyword name, and two record field
+names carry written reasons. The committed tree's count fell from 225 to
+140, a figure that now includes the configuration modules the Codex
+session landed in `ccf5dce`. What remains is vocabulary in modules whose
+authority does not exist yet (attempt statuses, terminal codes, event
+types, run modes, laboratory serving modes), the fourteen prompts still
+composed in code, and the new configuration modules' own vocabularies.
+
 ## Addendum written while Codex evaluated the findings
 
 Added on 2026-09-13 after 12:00 local time, while the live Codex session

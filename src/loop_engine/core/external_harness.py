@@ -41,6 +41,8 @@ HARNESS_MODES = ("hybrid", "non_deterministic")
 HARNESS_STATUSES = (
     "completed", "failed", "unavailable", "refused", "cancelled",
     "budget_exhausted")
+(COMPLETED_STATUS, FAILED_STATUS, UNAVAILABLE_STATUS, REFUSED_STATUS, CANCELLED_STATUS,
+ BUDGET_EXHAUSTED_STATUS) = HARNESS_STATUSES
 CONTEXT_VISIBILITY = (
     "fresh", "selected_refs", "shared_runtime_memory", "summary_return")
 

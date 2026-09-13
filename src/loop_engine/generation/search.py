@@ -13,7 +13,7 @@ import random
 
 from ..loop.recursive_loop import LoopError
 from .model.fragments import GenerationError
-from .search_records import SearchRequest, SearchServices
+from .search_records import COMPLETED, SearchRequest, SearchServices
 from .space import content_digest
 
 
@@ -215,11 +215,11 @@ class VectorWarmStartAdapter:
                            for a, b, objective in zip(left.values, right.values, request.objectives)]
             return all(v[0] for v in comparisons) and any(v[1] for v in comparisons)
 
-        measured = [v for v in observations if v.state == "completed"
+        measured = [v for v in observations if v.state == COMPLETED
                     and all(value is not None for value in v.values)]
         for observation in observations:
             source = observation.task
-            if (observation.state != "completed" or any(v is None for v in observation.values)
+            if (observation.state != COMPLETED or any(v is None for v in observation.values)
                     or source.feature_space_ref != target.feature_space_ref
                     or len(source.features) != len(target.features)):
                 continue

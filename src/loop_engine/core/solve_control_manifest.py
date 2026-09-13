@@ -28,8 +28,13 @@ CONTROL_COMPONENT_IDS = (
     "observer_sinks",
 )
 CONTROL_STATUSES = ("exact", "metadata_only", "unknown")
+EXACT_CONTROL, METADATA_ONLY_CONTROL, UNKNOWN_CONTROL = CONTROL_STATUSES
 CONTROL_EVIDENCE_CLASSES = ("mechanism_only",)
-ASSISTANCE_MODES = ("advisory", "fresh")
+# The stage-assistance arms: shadow observes, advisory and fresh are the
+# active experiment arms. Every comparison names these, never retyped text.
+SHADOW_MODE, ADVISORY_MODE, FRESH_MODE = "shadow", "advisory", "fresh"
+ASSISTANCE_MODES = (ADVISORY_MODE, FRESH_MODE)
+STAGE_ASSISTANCE_MODES = (SHADOW_MODE, ADVISORY_MODE, FRESH_MODE)
 _SENSITIVE_KEYS = {
     "api_key", "authorization", "authorization_header", "access_token",
     "refresh_token", "password", "secret", "secret_value", "private_prompt",
@@ -537,8 +542,10 @@ def self_test() -> dict[str, object]:
 
 
 __all__ = (
-    "ASSISTANCE_MODES", "CONTROL_COMPONENT_IDS", "CONTROL_EVIDENCE_CLASSES",
-    "CONTROL_STATUSES", "ControlComponentRecord", "PublicSolveControlManifest",
+    "ADVISORY_MODE", "ASSISTANCE_MODES", "CONTROL_COMPONENT_IDS", "CONTROL_EVIDENCE_CLASSES",
+    "CONTROL_STATUSES", "EXACT_CONTROL", "FRESH_MODE", "METADATA_ONLY_CONTROL", "SHADOW_MODE",
+    "STAGE_ASSISTANCE_MODES", "UNKNOWN_CONTROL",
+    "ControlComponentRecord", "PublicSolveControlManifest",
     "SolveControlManifestError", "StageControlApplicationCandidate",
     "record_control_manifest", "self_test",
 )

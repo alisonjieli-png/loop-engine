@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Callable
 
 from ..core.adaptive_practitioner import run_adaptive_practitioner
+from ..core.solve_control_manifest import ASSISTANCE_MODES
 from ..core.adaptive_practitioner_records import (
     AdaptivePractitionerDependencies,
     StageAssistanceRuntimeBinding,
@@ -147,7 +148,7 @@ class SolveRequest:
             raise SolveError("practitioner_mode is not recognized")
         if not isinstance(self.stage_assistance, StageAssistanceRuntimeBinding):
             raise SolveError("stage_assistance has the wrong contract")
-        if self.stage_assistance.mode in ("advisory", "fresh") and (
+        if self.stage_assistance.mode in ASSISTANCE_MODES and (
             self.model_execution is None
             or self.practitioner_mode == NO_REASONING_MODE
             or not self.save_run_history
@@ -485,7 +486,7 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
                 f"asked for {request.practitioner_mode!r} but no model "
                 "execution was configured, so no model was ever called")
         mode = NO_REASONING_MODE
-    active_stage_experiment = request.stage_assistance.mode in ("advisory", "fresh")
+    active_stage_experiment = request.stage_assistance.mode in ASSISTANCE_MODES
     if active_stage_experiment:
         region_evidence, tuned_budget = {}, None
     else:

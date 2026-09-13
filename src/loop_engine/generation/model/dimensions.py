@@ -19,6 +19,8 @@ VALUE_KINDS = (
     "tool_binding", "retrieval_profile", "memory_profile",
     "verifier_profile", "scheduling_profile",
 )
+#: The kinds an indexed axis or an optimizer distinguishes by name.
+(BOOLEAN, CATEGORICAL, ORDINAL, INTEGER_RANGE, FLOAT_VALUES) = VALUE_KINDS[:5]
 
 
 @dataclass(frozen=True)

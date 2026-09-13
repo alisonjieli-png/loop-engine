@@ -381,6 +381,10 @@ def _classification(
         return ("RESOURCE_OR_TEMPLATE", ("governed_prompt_resource",),
                 "low", 0.98,
                 "The text is already owned by a versioned typed prompt resource.")
+    if path.endswith("/core/step_content.json") and isinstance(value, str):
+        return ("RESOURCE_OR_TEMPLATE", ("governed_prompt_resource",),
+                "low", 0.98,
+                "The text lives in the versioned step-content record, the resource that owns it.")
     if context.is_default:
         tags.append("default")
         if context.default_kind == "dataclass":
@@ -1551,6 +1555,13 @@ def self_test() -> dict[str, Any]:
             "    return env\n",
             encoding="utf-8")
         (package / "broken.py").write_text("def broken(:\n", encoding="utf-8")
+        (package / "core").mkdir()
+        (package / "core" / "step_content.json").write_text(json.dumps({
+            "record_type": "opencode_step_content/v1",
+            "layers": [{"step_id": "canary", "system_prompt": (
+                "You are the canary step. Do not authorize changes. Return only "
+                "structured JSON with evidence, assumptions, and an abstention. " * 6)}]}),
+            encoding="utf-8")
         initial = scan_hardcoding(AuditRequest(root, include_low_risk=True))
         findings = initial["findings"]
         check("inline_prompt_is_a_resource_finding", any(
@@ -1597,6 +1608,13 @@ def self_test() -> dict[str, Any]:
         check("the_compared_value_keeps_its_comparison_class",
               any(item["literal_preview"] == "'read'"
                   and "behavior_comparison" in item["secondary_tags"] for item in routed))
+        check("step_content_prompts_are_governed_resources_not_hidden_prompts",
+              any(item["path"].endswith("core/step_content.json")
+                  and item["classification"] == "RESOURCE_OR_TEMPLATE"
+                  and "governed_prompt_resource" in item["secondary_tags"]
+                  and item["severity"] == "low" for item in findings)
+              and not any(item["path"].endswith("core/step_content.json")
+                          and item["severity"] != "low" for item in findings))
         check("none_under_an_environment_role_is_not_a_deployment_value",
               all(item["classification"] != "DEPLOYMENT_CONFIGURATION"
                   for item in findings if item["symbol_ref"] == "launch"

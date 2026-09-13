@@ -14,6 +14,10 @@ import re
 from .model.fragments import GenerationError
 from .space import ConfigurationSpace, content_digest
 
+# The states an observed trial can be in; only a completed trial supplies values.
+COMPLETED, FAILED, RUNNING, CANCELLED, UNKNOWN = "completed", "failed", "running", "cancelled", "unknown"
+OBSERVATION_STATES = (COMPLETED, FAILED, RUNNING, CANCELLED, UNKNOWN)
+
 
 def exact_text(value, name):
     if (type(value) is not str or not value.strip() or value != value.strip()
@@ -122,7 +126,7 @@ class SearchObservation:
             raise GenerationError("search observation requires a typed task and supported version")
         if type(self.configuration_index) is not int or self.configuration_index < 0:
             raise GenerationError("configuration index must be nonnegative")
-        if self.state not in ("completed", "failed", "running", "cancelled", "unknown"):
+        if self.state not in OBSERVATION_STATES:
             raise GenerationError("unknown search observation state")
         if self.data_partition not in ("search_feedback", "sealed_final"):
             raise GenerationError("observation must declare its evaluation partition")
@@ -134,7 +138,7 @@ class SearchObservation:
         if any(v is not None and (type(v) not in (int, float) or not math.isfinite(v))
                for v in values):
             raise GenerationError("observations need finite measurements or explicit unknowns")
-        if self.state != "completed" and any(v is not None for v in values):
+        if self.state != COMPLETED and any(v is not None for v in values):
             raise GenerationError("unfinished or failed trials cannot supply measured objective values")
         object.__setattr__(self, "objectives", objectives)
         object.__setattr__(self, "values", values)

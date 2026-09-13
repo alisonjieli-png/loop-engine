@@ -66,7 +66,9 @@ from .recovery import choose_recovery, recovery_options
 from .reusable_capability_harvest import ReuseObservationPort
 from .semantic_decision import SemanticAutonomyTally, SemanticDecisionRecord
 from .semantic_event_history import semantic_event_history
-from .solve_control_manifest import PublicSolveControlManifest
+from .solve_control_manifest import (
+    ADVISORY_MODE, ASSISTANCE_MODES, EXACT_CONTROL, FRESH_MODE, PublicSolveControlManifest,
+    SHADOW_MODE, STAGE_ASSISTANCE_MODES)
 from .stage_assistance_material import StageAssistanceMaterial
 from .stage_assistance_runtime_records import (
     StageAssistanceRuntimeRecordError,
@@ -540,7 +542,7 @@ def _observe_stage(services, stage) -> StageObservation | None:
         typed_candidates = ()
         typed_materials = ()
         retrieval_performed = False
-        if binding.mode == "advisory":
+        if binding.mode == ADVISORY_MODE:
             typed_candidates = tuple(
                 item for item in binding.candidates
                 if item.semantic_signature == stage.digest)
@@ -551,7 +553,7 @@ def _observe_stage(services, stage) -> StageObservation | None:
                 and item.semantic_signature == stage.digest
             )
             retrieval_performed = True
-        elif binding.mode == "shadow":
+        elif binding.mode == SHADOW_MODE:
             # What earlier runs did with stages of this shape. Shadow lookups
             # are measured and never added to the prompt.
             for match in services.prior_stages.lookup(
@@ -566,14 +568,14 @@ def _observe_stage(services, stage) -> StageObservation | None:
         prior_refs = (tuple(item.candidate_ref for item in typed_candidates)
                       if typed_candidates else
                       tuple(item.observation_ref for item in priors))
-        if binding.mode == "shadow" and ladder.observations:
+        if binding.mode == SHADOW_MODE and ladder.observations:
             services.stage_ladders[occurrence] = ladder.to_dict()
         exposure_applied = bool(typed_candidates)
         services.stage_arms[occurrence] = {
             "experiment": CACHE_ASSIST,
             "cognitive_phase": stage.cognitive_phase,
             "assigned_arm": (
-                binding.mode if binding.mode != "shadow" else assigned_arm),
+                binding.mode if binding.mode != SHADOW_MODE else assigned_arm),
             "exposure_applied": exposure_applied,
             "retrieval_performed": retrieval_performed,
             "retrieved_prior_refs": list(prior_refs),
@@ -799,7 +801,7 @@ def _record_stage_assistance_decision(
         return
     facts = services.stage_arms.get(observation.occurrence_id, {})
     mode = services.request.stage_assistance.mode
-    if mode not in ("advisory", "fresh"):
+    if mode not in ASSISTANCE_MODES:
         return None
     if raw_decision is None:
         try:
@@ -881,7 +883,7 @@ class AdaptivePractitionerError(ValueError):
     """The adaptive Practitioner could not satisfy a typed runtime contract."""
 
 
-STAGE_ASSISTANCE_MODES = ("shadow", "advisory", "fresh")
+# STAGE_ASSISTANCE_MODES is owned by the control manifest and re-exported here.
 
 
 @dataclass(frozen=True)
@@ -944,7 +946,7 @@ class StageAssistanceRuntimeBinding:
             raise AdaptivePractitionerError(
                 "hydrated material identity differs from its retrieval candidate"
             )
-        if self.mode in ("advisory", "fresh"):
+        if self.mode in ASSISTANCE_MODES:
             if self.control_manifest is None:
                 raise AdaptivePractitionerError(
                     "an active stage experiment needs a control manifest")
@@ -965,15 +967,15 @@ class StageAssistanceRuntimeBinding:
                     "an active stage experiment needs a source-state SHA-256")
             controlled_state = self.control_manifest.component(
                 "task_and_source")
-            if (controlled_state.status != "exact"
+            if (controlled_state.status != EXACT_CONTROL
                     or controlled_state.body.get("source_state_digest")
                     != self.source_state_digest):
                 raise AdaptivePractitionerError(
                     "control manifest does not exactly bind the source state")
-        if self.mode == "fresh" and (candidates or materials):
+        if self.mode == FRESH_MODE and (candidates or materials):
             raise AdaptivePractitionerError(
                 "a fresh stage-assistance arm cannot carry prior material")
-        if self.mode == "advisory":
+        if self.mode == ADVISORY_MODE:
             if not candidates:
                 raise AdaptivePractitionerError(
                     "an advisory stage-assistance arm needs candidates")
@@ -1377,7 +1379,7 @@ class AdaptivePractitionerRequest:
                           StageAssistanceRuntimeBinding):
             raise AdaptivePractitionerError(
                 "stage_assistance must be a StageAssistanceRuntimeBinding")
-        if (self.stage_assistance.mode == "fresh"
+        if (self.stage_assistance.mode == FRESH_MODE
                 and self.prior_region_evidence):
             raise AdaptivePractitionerError(
                 "a fresh stage-assistance arm cannot carry prior region "
@@ -1436,7 +1438,7 @@ class AdaptivePractitionerRequest:
             raise AdaptivePractitionerError(
                 "feedback must use unique typed TaskFeedback slots")
         object.__setattr__(self, "feedback", feedback)
-        if (self.stage_assistance.mode in ("advisory", "fresh")
+        if (self.stage_assistance.mode in ASSISTANCE_MODES
                 and self.stage_assistance.source_state_digest
                 != self.source_state_digest):
             raise AdaptivePractitionerError(
@@ -2063,7 +2065,7 @@ class AdaptiveRunServices:
             raise AdaptivePractitionerError(
                 "semantic model work needs a deterministic attempt trace")
         binding = self.request.stage_assistance
-        if (binding.mode in ("advisory", "fresh")
+        if (binding.mode in ASSISTANCE_MODES
                 and binding.source_state_digest
                 != self.request.source_state_digest):
             raise SolutionModelError(
@@ -2225,7 +2227,7 @@ class AdaptiveRunServices:
             )
         )
         if self.request.prior_region_evidence \
-                and binding.mode != "fresh":
+                and binding.mode != FRESH_MODE:
             # Advisory evidence from earlier runs in this task region: the
             # region statistics, the shortcut decision, and the tuning
             # decision. The model may use it; it selects nothing by itself.
@@ -2389,7 +2391,7 @@ class AdaptiveRunServices:
                     "selected_prior_refs": ["candidate_ref"],
                     "reason": "string",
                     "required_for_active_experiment": True,
-                }} if binding.mode in ("advisory", "fresh") else {})},
+                }} if binding.mode in ASSISTANCE_MODES else {})},
             policy_context={
                 "interaction_mode": self.request.interaction_mode,
                 "permissions": list(permissions),

@@ -11,6 +11,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from .solve_control_manifest import SHADOW_MODE
+
 
 def begin_scope(services, owner) -> None:
     """Bind one model context to its exact owning Practitioner Loop."""
@@ -83,7 +85,7 @@ def fork_services(spawning_service, spec):
     from .adaptive_practitioner_records import (
         AdaptiveRunServices, StageAssistanceRuntimeBinding)
 
-    if spawning_service.request.stage_assistance.mode != "shadow":
+    if spawning_service.request.stage_assistance.mode != SHADOW_MODE:
         raise ValueError("Spawned work in a paired experiment requires exact per-Loop assignments")
     workspace = spawning_service.workspace_base / "spawned" / str(len(spawning_service.spawned_results) + 1)
     request = replace(

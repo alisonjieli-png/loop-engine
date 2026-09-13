@@ -120,6 +120,10 @@ GENERATED_PROJECT_CANDIDATE_TYPE = "generated_project_candidate/v1"
 ALLOWED_PYTHON_EXECUTABLES = (
     "python", "python3", ".venv/bin/python", ".venv/bin/python3")
 GENERATED_COMMAND_KINDS = ("setup", "execute", "verify")
+SETUP_COMMAND, EXECUTE_COMMAND, VERIFY_COMMAND = GENERATED_COMMAND_KINDS
+HTML_MEDIA_TYPE = "text/html"
+MARKUP_MEDIA_TYPES = (HTML_MEDIA_TYPE, "application/xhtml+xml")
+READ_FILE_MODES = ("r", "rt", "rb")
 _PROJECT_ID = re.compile(r"^[a-z][a-z0-9_-]{0,79}$")
 
 
@@ -211,7 +215,7 @@ class GeneratedProjectCommand:
             raise GeneratedProjectError(
                 "generated command kind must be setup, execute, or verify")
         if self.network_access and (
-                self.command_kind != "setup"
+                self.command_kind != SETUP_COMMAND
                 or tuple(argv[1:4]) != ("-m", "pip", "install")):
             raise GeneratedProjectError(
                 "network access is limited to python -m pip install setup")
@@ -367,7 +371,7 @@ def _require_project_work(files, commands, artifacts, *, prefix: str) -> None:
     if not commands:
         raise GeneratedProjectError(f"{prefix}.commands: empty_array")
     if not artifacts and not any(
-            item.command_kind == "verify" and item.expected_exit_codes == (0,)
+            item.command_kind == VERIFY_COMMAND and item.expected_exit_codes == (0,)
             for item in commands):
         raise GeneratedProjectError(
             f"{prefix}.commands: code_only_requires_zero_exit_verify_command")
@@ -827,8 +831,8 @@ def validate_generated_project_input_use(
                                       if item.arg == "mode"), None)
                     if mode_node is None and len(node.args) > mode_position:
                         mode_node = node.args[mode_position]
-                    mode = "r" if mode_node is None else literal_path(mode_node)
-                    if mode not in ("r", "rt", "rb"):
+                    mode = READ_FILE_MODES[0] if mode_node is None else literal_path(mode_node)
+                    if mode not in READ_FILE_MODES:
                         # Write/update modes are not read evidence. An unknown
                         # mode or user-defined open method is unresolved too.
                         indirect = True
@@ -920,7 +924,7 @@ def _authored_source_artifacts(manifest, operations, commands) -> list[dict]:
         len(commands) == len(manifest.commands)
         and all(item.get("expectation_met") is True for item in commands))
     verify_command_passed = bool(commands_passed and any(
-        item.get("command_kind") == "verify" and item.get("ok") is True
+        item.get("command_kind") == VERIFY_COMMAND and item.get("ok") is True
         and item.get("exit_code") == 0 for item in commands))
     # Code-only delivery needs an actual verification command. A task that
     # produces data may instead use its declared command/output checks; do
@@ -944,8 +948,7 @@ def _authored_source_artifacts(manifest, operations, commands) -> list[dict]:
                     format_valid, error = True, ""
                 except (SyntaxError, UnicodeError, ValueError, RecursionError):
                     error = "python_source_syntax_invalid"
-            elif manifest.expected_artifacts and media_type in (
-                    "text/html", "application/xhtml+xml"):
+            elif manifest.expected_artifacts and media_type in MARKUP_MEDIA_TYPES:
                 # Mixed delivery can use markup fragments as source for a
                 # separately declared rendered document. Check source bytes
                 # and encoding here; final outputs keep their format checks.
@@ -955,7 +958,7 @@ def _authored_source_artifacts(manifest, operations, commands) -> list[dict]:
                     format_valid, error = True, ""
                 except UnicodeDecodeError:
                     error = "source_utf8_invalid"
-            elif not result.content and media_type.startswith("text/") and media_type != "text/html":
+            elif not result.content and media_type.startswith("text/") and media_type != HTML_MEDIA_TYPE:
                 format_valid, method, error = True, "utf8_decode", ""
             else:
                 format_valid, method, error = verify_artifact_content(media_type, result.content)
@@ -1852,7 +1855,7 @@ def _code_only_project_checks() -> list[dict]:
     manifest = GeneratedProjectManifest.from_mapping(manifest_body)
     check("code_only_candidate_and_manifest_need_no_fabricated_data_outputs",
           not candidate.expected_artifacts and not manifest.expected_artifacts
-          and candidate.commands[0].command_kind == "verify")
+          and candidate.commands[0].command_kind == VERIFY_COMMAND)
 
     def invalid(change):
         body = json.loads(json.dumps(candidate_body))

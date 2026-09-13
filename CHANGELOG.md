@@ -9,6 +9,25 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- Hardcoding gate, third batch: closed vocabularies compared by name.
+  Response evaluation statuses (`PASSED`, `REJECTED`, `INCONCLUSIVE`),
+  harness fallback decision reasons (`DECISION_REASONS`), harness run
+  statuses (`BUDGET_EXHAUSTED_STATUS` and the rest, unpacked from
+  `HARNESS_STATUSES`), search observation states (`OBSERVATION_STATES`),
+  axis value kinds (`INTEGER_RANGE`, `ORDINAL`, `FLOAT_VALUES`), evidence
+  validity statuses, generated-project command kinds, markup media types
+  and read modes, and the stage-assistance arms (`SHADOW_MODE`,
+  `ADVISORY_MODE`, `FRESH_MODE`, with `STAGE_ASSISTANCE_MODES` now owned by
+  the control manifest and re-exported by the Practitioner records) are
+  named once and compared by name in the harness, generation, evidence,
+  project, and Practitioner modules; behaviour is unchanged and every
+  module self-test passes. The auditor classes the strings of the
+  versioned step-content record as governed prompt resources, as it already
+  did for the prompt-fragment module, since that record is where step
+  prompts are meant to live. Seven more findings carry written reasons: the
+  OpenAI client's two documented endpoints it refuses to deviate from, the
+  laboratory probe's local Ollama address, the campaign tool's health-probe
+  default, Python's `mode` keyword name, and two record field names.
 - Hardcoding gate, second batch. A `None` compared under a role named
   `environment` was reported as a deployment value read at a boundary; the
   environment-read class now needs a value. Seventy-nine deployment
