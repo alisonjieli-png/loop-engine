@@ -413,6 +413,23 @@ exclusions, a lazy walk skips refused addresses while keeping their
 identity, and `refuse_inadmissible_proposals` splits a proposal batch into
 a separate record without altering the record the search wrote.
 
+An enumerable address is not an executable one, and a search should know
+the difference before it proposes. `core.harness_layering_availability`
+projects every address of a layering space onto exactly one of five states
+for one adapter, by the same rule `HarnessSemanticBinding` applies at
+construction (the binding now calls it): the outer policy refuses the
+address, no executor runs a layered composition, the adapter does not
+declare a natively owned control, the adapter declares it but no executor
+hands it over yet, or it executes now (the direct adapter under a policy
+that owns or disables every control). `classify_address` returns the state
+and the exact reason for one address, `availability_summary` counts the
+whole space from its policies and its composition count without walking
+the compositions and lists the executable addresses exactly, and
+`generation.layering_axes.address_availability` answers for one
+configuration. Today every executable address is the direct adapter; the
+projection makes that visible instead of proposing declarations as if
+they could run.
+
 ## Verification
 
 `core.harness_layering.self_test()` proves the declarations, the order

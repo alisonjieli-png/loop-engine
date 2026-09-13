@@ -115,20 +115,11 @@ class HarnessSemanticBinding:
         native controls that no registered executor implements."""
         if self.layering is None:
             return
-        if self.layering.initial.layers:
-            raise ValueError('no executor is registered for a layered composition; only the '
-                             'direct adapter (an empty composition) can run today')
-        natively = self.layering.control_policy.natively_owned()
-        if natively:
-            declared = set(self._adapter_native_controls())
-            unsupported = [item.value for item in natively if item.value not in declared]
-            if unsupported:
-                raise ValueError(f'adapter {self.harness_id!r} does not support native ownership '
-                                 f'of {unsupported}; its declared native controls are '
-                                 f'{sorted(declared)}')
-            raise ValueError('the direct adapter implements owning-Loop control for every native '
-                             f'control; {[item.value for item in natively]} is declared by the '
-                             'adapter but no executor hands it to the harness yet')
+        from .harness_layering_availability import EXECUTABLE_NOW, executor_refusal
+        state, reason = executor_refusal(self.layering, self.harness_id,
+                                         self._adapter_native_controls())
+        if state != EXECUTABLE_NOW:
+            raise ValueError(reason)
 
     def _adapter_native_controls(self):
         capabilities = self._registration.execution_capabilities

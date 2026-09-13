@@ -169,6 +169,21 @@ def refuse_inadmissible_proposals(space: LayeringSpace, batch: dict) -> dict:
             "task_execution_performed": False, "promotion_performed": False}
 
 
+def address_availability(space: LayeringSpace, configuration: dict,
+                         adapter_native_controls=()) -> dict:
+    """The state one configuration's layering address is in for the adapter
+    named: executable now, refused by the outer policy, a composition or a
+    native control no executor implements. The reason is the one the
+    semantic binding would raise, so a search learns before proposing which
+    addresses are declarations and which can run."""
+    from ..core.harness_layering_availability import classify_address
+    index = layering_index(space, configuration)
+    try:
+        return classify_address(space, index, adapter_native_controls)
+    except HarnessLayeringError as exc:
+        raise GenerationError(str(exc)) from exc
+
+
 def self_test() -> dict:
     from .layering_axes_checks import run_checks
     return run_checks()

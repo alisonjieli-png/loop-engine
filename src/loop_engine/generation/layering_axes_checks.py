@@ -12,7 +12,8 @@ from ..core.harness_layering import (ControlOwnership, NativeControl, NativeCont
 from ..core.harness_layering_space import (CompositionSpace, ControlPolicySpace,
                                            LayeringSpace)
 from .layering_axes import (COMPOSITION_DIMENSION, FILTER_RECORD_TYPE, INADMISSIBLE_RULE,
-                            POLICY_DIMENSION, SPACE_DIGEST_FIELD, iter_admissible,
+                            POLICY_DIMENSION, SPACE_DIGEST_FIELD, address_availability,
+                            iter_admissible,
                             layering_axes, layering_binding, layering_configuration_space,
                             layering_exclusions, layering_fields, layering_index,
                             refuse_inadmissible_proposals)
@@ -150,4 +151,15 @@ def run_checks():
           and not filtered["task_execution_performed"] and not filtered["promotion_performed"])
     check("the_filter_refuses_a_batch_from_another_space",
           _refused(lambda: refuse_inadmissible_proposals(layering, batch)))
+    states = {index: address_availability(without, plain.configuration_at(index))["state"]
+              for index in range(plain.cardinality)}
+    runnable = [without.encode(0, p) for p in range(without.policies.size)
+                if without.policies.policy_at(p).natively_owned() == ()]
+    check("every_address_reports_one_availability_state_and_only_the_direct_adapter_runs_today",
+          states[0] == "executable_now"
+          and [i for i, s in states.items() if s == "executable_now"] == runnable
+          and all(without.decode(i)[0] == 0 for i in runnable)
+          and states[without.encode(0, delegated_policy)] == "outer_policy_refuses"
+          and states[without.encode(1, 0)] == "composition_without_executor"
+          and _refused(lambda: address_availability(without, delegated, ("telepathy",))))
     return {"tests": tests}

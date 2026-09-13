@@ -43,7 +43,7 @@ Operational runtime type
 | `SearchTask`, `SearchObjective`, `SearchObservation` | Exact task and metric identities, optional versioned features, observed values, and evidence references. |
 | `SearchRequest`, `SearchServices` | One proposal batch, explicit computational effort, selected adapter, and host evidence resolver. |
 | `propose_configurations` | Canonical Loop execution, evidence filtering, applicability checks, deduplication, and proposed candidate records. |
-| `layering_axes`, `layering_configuration_space`, `layering_binding`, `layering_exclusions`, `refuse_inadmissible_proposals` | Harness wrapper composition and native control ownership as two integer axes, exact decoding to a validated layered binding, per-address admissibility under the run's outer fallback policy, and a separate filter record over one proposal batch. |
+| `layering_axes`, `layering_configuration_space`, `layering_binding`, `layering_exclusions`, `refuse_inadmissible_proposals`, `address_availability` | Harness wrapper composition and native control ownership as two integer axes, exact decoding to a validated layered binding, per-address admissibility under the run's outer fallback policy, a separate filter record over one proposal batch, and the availability state of one address for one adapter (executable now, refused, or a declaration no executor implements). |
 
 Integer ranges use constant-size bounds. Categorical values can contain
 structured settings or versioned resource references. Changing an axis,
@@ -60,6 +60,12 @@ conditional rule, so `layering_exclusions` reports it per address and
 `refuse_inadmissible_proposals` records which proposals of a batch it
 refuses, in a record of its own. Index 0 on both axes is the direct adapter
 with the owning Loop; no wrapper or native control executes from an address.
+`address_availability` reports, for one configuration and one adapter's
+declared native controls, whether the address executes now, is refused by
+the outer policy, or is a composition or native control no executor
+implements yet, with the reason the semantic binding would give;
+`core.harness_layering_availability.availability_summary` counts a whole
+space that way without walking its compositions.
 
 `ConfigurationSpace.cardinality` is the raw product of the axes, before
 conditional and runtime qualification. It is not the number of viable

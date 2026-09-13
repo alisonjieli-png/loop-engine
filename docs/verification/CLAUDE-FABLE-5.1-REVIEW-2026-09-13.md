@@ -630,6 +630,40 @@ size rule the alignment plan applied (a 700 KB hardcoding summary, a 2.4 MB
 component inventory, a 550 KB temporary-directory check record, and a
 250 KB diagnostics archive); a later decision can add or ignore them.
 
+## Interfaces for the wider grid, for the Codex session
+
+Added on 2026-09-13 after 14:00 local time, when the owner asked the Codex
+session for more dimensions, a larger grid, every combination of routes and
+harnesses, and awareness of which settings are available. The Codex session
+answered that it would extend the existing model-route selector, the
+reviewed-evidence harness selector, and the parameter resolver with a
+versioned description of what each target can configure, a checked setter,
+and a joint compatibility check. The following interfaces landed on `main`
+the same afternoon and are meant to be consumed by that work rather than
+duplicated by it.
+
+| Interface | What it answers | Where |
+|---|---|---|
+| `layering_axes`, `layering_configuration_space` | The wrapper composition and native control policy of a harness as two `integer_range` axes of a `ConfigurationSpace`, bound to the layering space's digest; any proposal adapter addresses them with the other dimensions. | `generation.layering_axes` |
+| `layering_binding`, `layering_fields` | Exact decoding of an address to its validated `LayeredHarnessBinding` and the inverse. | `generation.layering_axes` |
+| `layering_exclusions`, `iter_admissible`, `refuse_inadmissible_proposals` | Admissibility under the run's outer fallback policy, per address, as a lazy walk, and as a separate filter record over one proposal batch. | `generation.layering_axes` |
+| `classify_address`, `availability_summary`, `address_availability` | Which addresses execute today, which the outer policy refuses, and which are declarations without an executor (composition, undeclared control, declared control), with the reason the semantic binding raises. Counted without walking the compositions. | `core.harness_layering_availability`, `generation.layering_axes` |
+| `load_layered_binding` | A host-authored layering declaration file read under the run's own outer policy. | `core.harness_configuration` |
+
+Two facts matter for a joint compatibility check. First, the
+availability projection is the semantic binding's own rule:
+`HarnessSemanticBinding._refuse_undeclared_executor` calls
+`executor_refusal`, so a setter that consults the projection refuses
+exactly what invocation would refuse. Second, an adapter's declared native
+controls come from `HarnessExecutionCapabilities.native_controls`, which
+every registered adapter currently leaves empty; the projection therefore
+reports every natively owned control as undeclared until an adapter
+declares one, and every layered composition as lacking an executor. Both
+are honest states, not defects. A capability description that wants to
+say "this harness can own goal management natively" declares it there,
+and the projection moves that policy from `adapter_does_not_declare` to
+`declared_without_executor` until an executor exists.
+
 ## Addendum written while Codex evaluated the findings
 
 Added on 2026-09-13 after 12:00 local time, while the live Codex session

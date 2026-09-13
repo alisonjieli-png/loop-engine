@@ -77,6 +77,19 @@ First public release.
   embodiment laboratory's systematic catalog carries both dimensions as
   factors (207,360 configurations per task, up from 51,840) with maturity
   labels a lab check holds to the code the tree has.
+- [Layering availability](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership):
+  `core.harness_layering_availability` projects every address of a layering
+  space onto one of five states for one adapter (executable now, outer
+  policy refuses, composition without executor, adapter does not declare,
+  declared without executor) by the rule `HarnessSemanticBinding` applies at
+  construction, which now calls the same function so the reasons cannot
+  drift. `classify_address` gives one address's state and reason,
+  `availability_summary` counts a whole space from its policies and its
+  composition count without walking the compositions and lists the
+  executable addresses exactly, and
+  `generation.layering_axes.address_availability` answers for one
+  configuration, so a search learns which addresses are declarations before
+  proposing them.
 
 - [Unseen novel-task campaign](docs/verification/UNSEEN-NOVEL-TASK-CAMPAIGN-2026-09-06.md).
   Ten sealed novel tasks each completed on the first autonomous attempt
