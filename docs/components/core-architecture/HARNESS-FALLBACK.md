@@ -396,6 +396,23 @@ resets, rejected native completion, unavailable native features, and
 fallback to Loop Engine control) remain the qualification work before any
 executor for a layered profile is registered.
 
+A configuration search addresses both dimensions through
+`generation.layering_axes`. The control policy space and the composition
+space become two `integer_range` axes of a `ConfigurationSpace`, policy
+first and composition last, so a space holding only those axes assigns
+every address the integer the layering space assigns it. A fixed context
+field carries the layering space's digest, and a configuration addressed
+in a different layering space is refused on decode rather than read
+against the wrong table. Every proposal adapter (exact enumeration, seeded
+exploration, warm start, and the optional Bayesian, genetic, and
+covariance adapters) then proposes layering addresses alongside the other
+dimensions of the search. Admissibility under the outer policy is not a
+value-equality rule, so it is reported per address by
+`layering_exclusions` in the same form as the space's conditional
+exclusions, a lazy walk skips refused addresses while keeping their
+identity, and `refuse_inadmissible_proposals` splits a proposal batch into
+a separate record without altering the record the search wrote.
+
 ## Verification
 
 `core.harness_layering.self_test()` proves the declarations, the order

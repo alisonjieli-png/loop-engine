@@ -57,6 +57,26 @@ First public release.
   declarations the
   [layered harness proposal](docs/architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
   asks for, and the direct adapter remains the baseline.
+- [Layering dimensions a configuration search can address](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership).
+  `core.harness_layering_space` enumerates and indexes both dimensions: a
+  `ControlPolicySpace` decodes any complete control policy from a mixed-radix
+  index (256 policies for an adapter declaring nothing, 49,152 for one
+  declaring every control), a `CompositionSpace` walks every valid ordered
+  wrapper selection up to the caller's depth one sequence at a time with the
+  direct adapter at index 0 and no invented ceiling, and a `LayeringSpace` is
+  their product for one assignment, yielding validated bindings by index and
+  reporting an index inadmissible when the outer policy refuses it. The
+  spaces rebuild from their `harness_layering_space/v1` records under the
+  run's own outer policy, and `load_layered_binding` reads a host-authored
+  declaration file. `generation.layering_axes` turns the two spaces into two
+  `integer_range` axes of a `ConfigurationSpace` bound to the layering
+  space's digest, decodes any address to its binding, reports admissibility
+  per address, walks a shard lazily over admissible addresses, and splits a
+  proposal batch into a separate filter record, so every proposal adapter
+  proposes layering addresses with the other dimensions of a search. The
+  embodiment laboratory's systematic catalog carries both dimensions as
+  factors (207,360 configurations per task, up from 51,840) with maturity
+  labels a lab check holds to the code the tree has.
 
 - [Unseen novel-task campaign](docs/verification/UNSEEN-NOVEL-TASK-CAMPAIGN-2026-09-06.md).
   Ten sealed novel tasks each completed on the first autonomous attempt

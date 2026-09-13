@@ -31,8 +31,8 @@ ARCHITECTURE MAP: 9 top-level package groups
       store, repository, learning_cycle, learning_cycle_checks, learning_records
     memory.working/  (1 modules)
       state
-  generation/  (9 modules)
-    expansion, operators, space, space_checks, search, search_records, search_checks, search_optuna, search_optuna_checks
+  generation/  (11 modules)
+    expansion, operators, space, space_checks, search, search_records, search_checks, search_optuna, search_optuna_checks, layering_axes, layering_axes_checks
     generation.model/  (4 modules)
       campaign, dimensions, fragments, seeds
   templates/  (4 modules)

@@ -35,6 +35,13 @@ _PUBLIC = {
     "RandomSearchAdapter": ("search", "RandomSearchAdapter"),
     "VectorWarmStartAdapter": ("search", "VectorWarmStartAdapter"),
     "OptunaSearchAdapter": ("search_optuna", "OptunaSearchAdapter"),
+    "layering_axes": ("layering_axes", "layering_axes"),
+    "layering_configuration_space": ("layering_axes", "layering_configuration_space"),
+    "layering_binding": ("layering_axes", "layering_binding"),
+    "layering_fields": ("layering_axes", "layering_fields"),
+    "layering_exclusions": ("layering_axes", "layering_exclusions"),
+    "iter_admissible": ("layering_axes", "iter_admissible"),
+    "refuse_inadmissible_proposals": ("layering_axes", "refuse_inadmissible_proposals"),
 }
 
 __all__ = tuple(_PUBLIC)

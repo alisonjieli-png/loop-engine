@@ -82,6 +82,7 @@ MODULE_MAP = {
     "generation": (
         "expansion", "operators", "space", "space_checks", "search",
         "search_records", "search_checks", "search_optuna", "search_optuna_checks",
+        "layering_axes", "layering_axes_checks",
     ),
     "generation.model": (
         "campaign", "dimensions", "fragments", "seeds",

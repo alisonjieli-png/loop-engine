@@ -43,12 +43,23 @@ Operational runtime type
 | `SearchTask`, `SearchObjective`, `SearchObservation` | Exact task and metric identities, optional versioned features, observed values, and evidence references. |
 | `SearchRequest`, `SearchServices` | One proposal batch, explicit computational effort, selected adapter, and host evidence resolver. |
 | `propose_configurations` | Canonical Loop execution, evidence filtering, applicability checks, deduplication, and proposed candidate records. |
+| `layering_axes`, `layering_configuration_space`, `layering_binding`, `layering_exclusions`, `refuse_inadmissible_proposals` | Harness wrapper composition and native control ownership as two integer axes, exact decoding to a validated layered binding, per-address admissibility under the run's outer fallback policy, and a separate filter record over one proposal batch. |
 
 Integer ranges use constant-size bounds. Categorical values can contain
 structured settings or versioned resource references. Changing an axis,
 fixed context, condition, or campaign version changes the space identity.
 Fixed context cannot overwrite a varying dimension. False, zero, null, and
 text remain different choices.
+
+The two harness layering dimensions (`core.harness_layering_space`) join a
+space through `layering_axes`: the control policy index and the composition
+index are `integer_range` axes, and a fixed context field binds every
+configuration to the digest of the layering space that addressed it. The
+outer fallback policy's permission for native retry cannot be written as a
+conditional rule, so `layering_exclusions` reports it per address and
+`refuse_inadmissible_proposals` records which proposals of a batch it
+refuses, in a record of its own. Index 0 on both axes is the direct adapter
+with the owning Loop; no wrapper or native control executes from an address.
 
 `ConfigurationSpace.cardinality` is the raw product of the axes, before
 conditional and runtime qualification. It is not the number of viable

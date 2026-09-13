@@ -35,7 +35,7 @@ def self_test() -> dict:
         "generation.model.dimensions",
         "generation.model.campaign",
         "generation.operators", "generation.space", "generation.search",
-        "generation.search_optuna", "templates.model",
+        "generation.search_optuna", "generation.layering_axes", "templates.model",
         "templates.library", "templates.compiler", "templates.intake",
         "_conformance_test", "_conformance_scan",
         "conformance_report",
