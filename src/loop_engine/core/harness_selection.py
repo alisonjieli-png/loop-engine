@@ -12,6 +12,7 @@ import json
 
 from .harness_execution_contracts import HarnessExecutionCapabilities
 from .harness_selection_records import (
+    APPROVED,
     HarnessSelectionDecision,HarnessSelectionPolicy,HarnessSelectionScope)
 
 
@@ -53,7 +54,7 @@ def select_harness(policy, scope, registrations, *, provider_id, model_id):
     for info in eligible:
         for item in policy.evidence:
             trial=item.trial
-            if (item.review.decision=='approved' and trial.harness_id==info.harness_id
+            if (item.review.decision==APPROVED and trial.harness_id==info.harness_id
                     and trial.adapter_version==info.adapter_version
                     and trial.provider_id==provider_id and trial.model_id==model_id
                     and trial.scope_digest==scope.digest):

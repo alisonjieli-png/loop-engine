@@ -38,6 +38,24 @@ First public release.
   Loop runtime, the kernel, the reactive worker, the checkpoint, the
   Practitioner scope, recovery learning, and the stage evidence projection.
   The committed tree's new-high count fell from 140 to 118.
+- Hardcoding gate, fifth batch: the last shared vocabularies and the
+  laboratory. Fallback actions (`DIFFERENT_HARNESS` and the rest from
+  `FALLBACK_ACTIONS`), review decisions (`APPROVED`, `REJECTED`), the
+  next-action kinds unpacked from `NEXT_ACTION_KINDS`, the act modes, the
+  evaluation verdicts (`ADMITTED_VERDICTS`, now owned by the independent
+  evidence module), Astra readiness states, intake kinds, the sqlite
+  journal mode, the diagram's container kinds, the Gemini command line's
+  two roles, secret file suffixes, the OpenAI Responses API's item, part,
+  and status names, and the configuration modules' fact states, change
+  phases, and run modes (the latter from `MODES`) are named once and
+  compared by name. The laboratory's serving views and git tree-entry
+  vocabulary became constants. The auditor treats the frozen review probes
+  under `devtools/review-probes/` as evidence scripts, as it already did
+  for tests and examples, with a canary. Seventeen findings in the tools
+  and the laboratory carry written reasons: subcommand names, transcript
+  block kinds, record field names, store result statuses, and the legacy
+  tools' own prompt constants. The committed tree's new-high count fell
+  from 118 to 24.
 - Hardcoding gate, second batch. A `None` compared under a role named
   `environment` was reported as a deployment value read at a boundary; the
   environment-read class now needs a value. Seventy-nine deployment

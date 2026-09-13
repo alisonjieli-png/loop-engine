@@ -306,7 +306,7 @@ def _is_test_or_example(path: str) -> bool:
     parts = Path(path).parts
     name = Path(path).name
     return (any(part in {"tests", "examples", "benchmarks", "fixtures",
-                         "kaggle"}
+                         "kaggle", "review-probes"}
                 for part in parts)
             or name.startswith(("test_", "_self_test", "_checks"))
             or name.endswith(("_test.py", "_checks.py")))
@@ -1556,6 +1556,10 @@ def self_test() -> dict[str, Any]:
             encoding="utf-8")
         (package / "broken.py").write_text("def broken(:\n", encoding="utf-8")
         (package / "core").mkdir()
+        probe = root / "devtools" / "review-probes" / "2026-09-07" / "probe_x.py"
+        probe.parent.mkdir(parents=True)
+        probe.write_text("def probe(event):\n    return event.event_type == 'model_invocation'\n",
+                         encoding="utf-8")
         (package / "core" / "step_content.json").write_text(json.dumps({
             "record_type": "opencode_step_content/v1",
             "layers": [{"step_id": "canary", "system_prompt": (
@@ -1608,6 +1612,10 @@ def self_test() -> dict[str, Any]:
         check("the_compared_value_keeps_its_comparison_class",
               any(item["literal_preview"] == "'read'"
                   and "behavior_comparison" in item["secondary_tags"] for item in routed))
+        check("a_frozen_review_probe_is_evidence_not_product_code",
+              any(item["path"].endswith("probe_x.py") for item in findings)
+              and all(item["classification"] == "TEST_FIXTURE_OR_EXAMPLE"
+                      for item in findings if item["path"].endswith("probe_x.py")))
         check("step_content_prompts_are_governed_resources_not_hidden_prompts",
               any(item["path"].endswith("core/step_content.json")
                   and item["classification"] == "RESOURCE_OR_TEMPLATE"

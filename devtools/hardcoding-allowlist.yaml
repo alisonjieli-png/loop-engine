@@ -1651,6 +1651,164 @@ entries:
     classification: CLOSED_CONTROLLED_VOCABULARY
     created_on: 2026-09-13
     expires_on: 2027-09-13
+  - finding_id: hardcoding.48050861c686d3f3191224c1
+    owner: loop_engine.loop.loop_control:LoopModePolicy.__post_init__
+    rationale: >-
+      The literal is the delegated_modes field name of the Loop mode policy record, checked for presence
+      when the record's fields are validated; it names a record field, not a mode the code selects on.
+      Reviewed on 2026-09-13 (src/loop_engine/loop/loop_control.py:56).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.698c566705c760ba9e1536b3
+    owner: loop_engine.loop.loop_control:LoopModePolicy.__post_init__
+    rationale: >-
+      The literal is the installed_executor_modes field name of the Loop mode policy record, checked for
+      presence when the record's fields are validated; it names a record field, not a mode the code
+      selects on. Reviewed on 2026-09-13 (src/loop_engine/loop/loop_control.py:56).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.690b7deabd8714d8ea11d5bb
+    owner: devtools.embodiment_axes.decomposition.04-portfolio.embodiment:run
+    rationale: >-
+      The literal names the monolith arm of this decomposition embodiment's own two-arm portfolio,
+      declared and compared inside the one file that defines both arms; the embodiment axes are laboratory
+      implementations, not product routing. Reviewed on 2026-09-13
+      (devtools/embodiment_axes/decomposition/04-portfolio/embodiment.py:64).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.856cf38987806332295366a3
+    owner: devtools.embodiment_lab.qualify_harness_recovery:qualify.scoped_open
+    rationale: >-
+      The literal is Python's own open() write mode, checked by the laboratory's scoped-open guard so a
+      qualification run cannot rewrite the conformance manifest; a language API value, not a vocabulary
+      this project could own. Reviewed on 2026-09-13
+      (devtools/embodiment_lab/qualify_harness_recovery.py:51).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.3a03fc70a0548eeefa59c826
+    owner: tools.export_managed_record:export_record
+    rationale: >-
+      The literal is the found status of the managed record store's lookup result, the tool's only
+      accepted state besides retired; the export tool reads the store's own result vocabulary and owns no
+      state of its own. Reviewed on 2026-09-13 (tools/export_managed_record.py:52).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.7a702da103fb0c6ebd7a6d20
+    owner: tools.export_managed_record:export_record
+    rationale: >-
+      The literal is the retired status of the managed record store's lookup result, the tool's only
+      accepted state besides found; the export tool reads the store's own result vocabulary and owns no
+      state of its own. Reviewed on 2026-09-13 (tools/export_managed_record.py:52).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.6082549aa741032bcaee543a
+    owner: tools.make_checkpoint:main
+    rationale: >-
+      The literal is the commands field name of the checkpoint record, excluded when the rest of the
+      record is copied; it names a record field, not a state the tool selects on. Reviewed on 2026-09-13
+      (tools/make_checkpoint.py:562).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.41079b0da4f8e0d8bfc2c154
+    owner: tools.policy_edit:main
+    rationale: >-
+      The literal is the tool's own keys subcommand, one of the choices its argument parser declares and
+      dispatches on in the same function; a command-line interface name with one owner. Reviewed on
+      2026-09-13 (tools/policy_edit.py:265).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.b3ffaf627dd129672c1f688e
+    owner: tools.policy_edit:main
+    rationale: >-
+      The literal is the tool's own get subcommand, one of the choices its argument parser declares and
+      dispatches on in the same function; a command-line interface name with one owner. Reviewed on
+      2026-09-13 (tools/policy_edit.py:273).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.fbd4129f399dbb8ef1baa24d
+    owner: tools.policy_edit:main
+    rationale: >-
+      The literal is the tool's own self-test subcommand, one of the choices its argument parser declares
+      and dispatches on in the same function; a command-line interface name with one owner. Reviewed on
+      2026-09-13 (tools/policy_edit.py:257).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.59b03bce615ec519522d8452
+    owner: tools.session_intake:scan
+    rationale: >-
+      The literal is the tool_use block kind of the Claude Code session transcript format the intake tool
+      reads; the format is external and fixed by its producer, and the tool owns no state of its own.
+      Reviewed on 2026-09-13 (tools/session_intake.py:137).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.b5e42192ce47a65765f29a80
+    owner: tools.session_intake:scan
+    rationale: >-
+      The literal is the text block kind of the Claude Code session transcript format the intake tool
+      reads; the format is external and fixed by its producer, and the tool owns no state of its own.
+      Reviewed on 2026-09-13 (tools/session_intake.py:150).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.e0a15c9c9382756796b95280
+    owner: tools.session_intake:scan
+    rationale: >-
+      The literal is the tool_result block kind of the Claude Code session transcript format the intake
+      tool reads; the format is external and fixed by its producer, and the tool owns no state of its own.
+      Reviewed on 2026-09-13 (tools/session_intake.py:141).
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.b075f2a3548dbd098ff858b4
+    owner: tools.decompose
+    rationale: >-
+      The literal is the legacy decomposition tool's own prompt constant, with one owner and no product
+      caller; the product path composes prompts from the versioned prompt-fragment resource, and this tool
+      is kept as an option rather than migrated. Reviewed on 2026-09-13 (tools/decompose.py:59).
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.58090a0e67adfb3f77d65907
+    owner: tools.recursive_divide
+    rationale: >-
+      The literal is the legacy recursive-division tool's own prompt constant, with one owner and no
+      product caller; the product path composes prompts from the versioned prompt-fragment resource, and
+      this tool is kept as an option rather than migrated. Reviewed on 2026-09-13
+      (tools/recursive_divide.py:49).
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.25d05ce8d5633b26f4a9784b
+    owner: tools.strategies
+    rationale: >-
+      The literal is the legacy strategy-selection tool's own prompt constant, with one owner and no
+      product caller; the product path composes prompts from the versioned prompt-fragment resource, and
+      this tool is kept as an option rather than migrated. Reviewed on 2026-09-13
+      (tools/strategies.py:109).
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.8d2cffc0aa04fb9c0ffc4646
+    owner: tools.task_campaign
+    rationale: >-
+      The literal is the campaign tool's machine-checked evaluation contract text, appended verbatim to
+      each task so the evaluator's expectations travel with the task; it has one owner and is compared
+      byte for byte by the tool, so a template slot would change what is checked. Reviewed on 2026-09-13
+      (tools/task_campaign.py:153).
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust

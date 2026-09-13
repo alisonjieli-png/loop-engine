@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field, is_dataclass, replace
 from datetime import datetime
 
+from ..loop.loop_control import MODES
 from .configuration_capabilities import (
     ConfigurationCapabilityError, ConfigurationTargetSpec, describe_configuration,
     canonical, digest, exact_digest, exact_text)
@@ -19,6 +20,10 @@ from .parameter_resolution import (
     ParameterResolutionStatus, ParameterSource, ParameterSourceKind, ParameterValueState,
     SOURCE_PRECEDENCE, resolve_parameter)
 from .record_operations_records import parse_json
+
+# When a configuration change may take effect.
+CHANGE_PHASES = ("before_initialization", "per_request", "between_steps")
+BEFORE_INITIALIZATION, PER_REQUEST, BETWEEN_STEPS = CHANGE_PHASES
 
 
 @dataclass(frozen=True)
@@ -116,9 +121,9 @@ class ConfigurationUpdateRequest:
         if (not values or any(not isinstance(v, ConfigurationSettingChange) for v in values)
                 or len({v.parameter_id for v in values}) != len(values)):
             raise ConfigurationCapabilityError("update needs unique typed setting changes")
-        if self.phase not in ("before_initialization", "per_request", "between_steps"):
+        if self.phase not in CHANGE_PHASES:
             raise ConfigurationCapabilityError("unknown configuration change phase")
-        if self.run_mode not in ("deterministic", "hybrid", "non_deterministic"):
+        if self.run_mode not in MODES:
             raise ConfigurationCapabilityError("unknown run mode")
         object.__setattr__(self, "changes", values)
 

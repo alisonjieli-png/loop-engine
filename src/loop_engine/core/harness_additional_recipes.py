@@ -13,6 +13,10 @@ import math
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+# The Gemini command line's own two conversation roles.
+GEMINI_USER_ROLE, GEMINI_MODEL_ROLE = "user", "model"
+GEMINI_ROLES = (GEMINI_USER_ROLE, GEMINI_MODEL_ROLE)
+
 
 class AdditionalRecipeError(ValueError):
     """An unsupported recipe or wire value, refused before model dispatch."""
@@ -149,9 +153,9 @@ def decode_google_request(path, body, exact_model):
         if not isinstance(item, dict) or set(item) - {"parts", "role"}:
             raise AdditionalRecipeError("google_content_fields_refused")
         role = item.get("role", "user")
-        if role not in ("user", "model"):
+        if role not in GEMINI_ROLES:
             raise AdditionalRecipeError("google_content_role_refused")
-        messages.append({"role": "assistant" if role == "model" else "user",
+        messages.append({"role": "assistant" if role == GEMINI_MODEL_ROLE else "user",
                          "content": _text_parts(item.get("parts"))})
     result = {"model": exact_model, "messages": messages, "stream": allowed[route]}
     generation = body.get("generationConfig", {})

@@ -14,6 +14,10 @@ import re
 
 from .harness_execution_contracts import HarnessExecutionRequirements, valid_harness_id
 
+# An independent review either approves or rejects a trial; nothing in between.
+APPROVED, REJECTED = 'approved', 'rejected'
+REVIEW_DECISIONS = (APPROVED, REJECTED)
+
 
 def content_digest(value) -> str:
     return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':'),
@@ -140,7 +144,7 @@ The host supplies the independently verified outcome and immutable source refs.
         exact_digest(self.review_evidence_digest,'review evidence digest')
         exact_text(self.reviewer_ref,'reviewer reference')
         exact_text(self.review_evidence_ref,'review evidence reference')
-        if self.decision not in ('approved','rejected') or self.version!='1.0.0':
+        if self.decision not in REVIEW_DECISIONS or self.version!='1.0.0':
             raise ValueError('invalid independent review decision')
 
 

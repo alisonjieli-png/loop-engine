@@ -135,10 +135,10 @@ class ControlComponentRecord:
                 f"control component contains sensitive fields {sensitive}")
         unresolved = _unique_text(
             self.unresolved_fields, "unresolved_fields")
-        if self.status == "exact" and unresolved:
+        if self.status == EXACT_CONTROL and unresolved:
             raise SolveControlManifestError(
                 "an exact control component cannot have unresolved fields")
-        if self.status == "unknown" and not unresolved:
+        if self.status == UNKNOWN_CONTROL and not unresolved:
             raise SolveControlManifestError(
                 "an unknown control component must name what is unresolved")
         object.__setattr__(self, "unresolved_fields", unresolved)

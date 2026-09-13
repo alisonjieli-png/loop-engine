@@ -16,6 +16,15 @@ from .harness_execution_contracts import plain_harness_json
 from .parameter_resolution import ParameterDefinition, ParameterInput
 from .record_operations_records import parse_json
 
+# The states a configuration fact can be in: support, availability, and
+# qualification are separate facts, each with its own pair plus unknown.
+CONFIGURATION_FACT_STATES = ("supported", "unsupported", "available", "unavailable",
+                             "qualified", "unqualified", "unknown")
+(SUPPORTED, UNSUPPORTED, AVAILABLE, UNAVAILABLE, QUALIFIED, UNQUALIFIED,
+ UNKNOWN_FACT) = CONFIGURATION_FACT_STATES
+AVAILABILITY_STATES = (AVAILABLE, UNAVAILABLE, UNKNOWN_FACT)
+QUALIFICATION_STATES = (QUALIFIED, UNQUALIFIED, UNKNOWN_FACT)
+
 
 class ConfigurationCapabilityError(ValueError):
     """Configuration cannot be represented or supported as requested."""
@@ -51,10 +60,9 @@ class ConfigurationFact:
     expires_at: str = ""
 
     def __post_init__(self):
-        if self.state not in ("supported", "unsupported", "available", "unavailable",
-                              "qualified", "unqualified", "unknown"):
+        if self.state not in CONFIGURATION_FACT_STATES:
             raise ConfigurationCapabilityError("unknown configuration fact state")
-        if self.state != "unknown":
+        if self.state != UNKNOWN_FACT:
             exact_text(self.source_ref, "fact source")
             exact_digest(self.source_digest, "fact source digest")
         if self.expires_at:

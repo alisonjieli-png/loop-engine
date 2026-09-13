@@ -44,6 +44,8 @@ SINGLE_OWNER_RESPONSIBILITIES = ("transport", "accounting")
 #: What a fallback may change when a permitted failure occurs.
 FALLBACK_ACTIONS = ("different_wrapper", "reordered_composition",
                     "native_session_restart", "different_harness")
+(DIFFERENT_WRAPPER, REORDERED_COMPOSITION, NATIVE_SESSION_RESTART,
+ DIFFERENT_HARNESS) = FALLBACK_ACTIONS
 
 _IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}")
 _VERSION = re.compile(r"[0-9]+(\.[0-9]+){0,3}([+-][A-Za-z0-9.]{1,32})?")
@@ -305,7 +307,7 @@ class CompositionFallback:
             raise HarnessLayeringError(f"{self.action} needs the alternative composition")
         if not needs_composition and self.composition is not None:
             raise HarnessLayeringError(f"{self.action} does not take a composition")
-        if self.action == "different_harness":
+        if self.action == DIFFERENT_HARNESS:
             if not valid_harness_id(self.harness_id):
                 raise HarnessLayeringError("different_harness needs the alternative harness id")
         elif self.harness_id:
@@ -498,7 +500,7 @@ class LayeredHarnessBinding:
                         "different_harness to change it")
                 if item.composition.content_digest == self.initial.content_digest:
                     raise HarnessLayeringError("a fallback composition must differ from the initial one")
-            if item.action == "different_harness":
+            if item.action == DIFFERENT_HARNESS:
                 if item.harness_id == self.initial.harness_id:
                     raise HarnessLayeringError("different_harness must name another harness")
                 if self.fallback_policy is None:

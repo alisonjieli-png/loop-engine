@@ -22,6 +22,7 @@ from ..loop.kernel import (
 from ..loop.kernel_runtime import current_kernel_owner
 from .adaptive_host_verification import require_host_checks, verify_host_results
 from .independent_evidence import (
+    ACCEPT, ADMITTED_VERDICTS,
     apply_cross_attempt_evidence,
 )
 from .adaptive_practitioner_records import (
@@ -219,7 +220,7 @@ def validate_adaptive_evaluation(
     if (record["subject"] != subject.to_dict()
             or record.get("evaluation") != asdict(request.evaluation)):
         raise ValueError("integration differs from the evaluated subject or verdict")
-    if request.evaluation.verdict == "accept":
+    if request.evaluation.verdict == ACCEPT:
         _require_independent_checks(
             record, request.results, services,
             owner_loop or current_kernel_owner())
@@ -472,9 +473,7 @@ def verify_adaptive_results(
                 "new_requirement_proposals": ["string"],
             }, separators=(",", ":"))))
         verdict = str(value.get("verdict"))
-        admitted_verdicts = (
-            "accept", "accept_provisional", "repair", "research_more",
-            "try_another", "expand_swarm", "tune", "reset", "stop")
+        admitted_verdicts = ADMITTED_VERDICTS
         if verdict not in admitted_verdicts:
             # Name the value and the set. A closed vocabulary refused without
             # stating itself leaves the next attempt to guess again.
@@ -507,7 +506,7 @@ def verify_adaptive_results(
                 "gap": _short_text(item.get("gap"), "verification gap"),
             })
         gaps = tuple(item["gap"] for item in gap_assessments)
-        if verdict == "accept" and gaps:
+        if verdict == ACCEPT and gaps:
             raise AdaptivePractitionerError(
                 "verification cannot accept with unresolved registered criteria")
         advisory = _short_strings(

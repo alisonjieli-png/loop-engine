@@ -33,6 +33,7 @@ from ..loop.recursive_loop import MODEL_THINKING_POWER_LEVELS
 from ..core.model_response_admission import ModelResponseAdmissionPolicy
 from ..core.harness_selection_records import HarnessSelectionScope, content_digest, response_contract_digest
 from ..core.harness_response_evaluation import (
+    PASSED,
     HarnessResponseEvaluator, HarnessResponseEvaluationState, evaluate_response_as_loop)
 
 MODEL_LEAF_MODES = ("hybrid", "non_deterministic")
@@ -440,7 +441,7 @@ class ModelExecutionSession:
                 evaluation=evaluate_response_as_loop(evaluator,admitted_text,
                     semantic_call_id=request.semantic_call_id,input_digest=request.exact_input_digest,parent=parent_loop)
                 evaluation_state.evaluations.append(evaluation)
-                if evaluation.status=='passed':
+                if evaluation.status==PASSED:
                     return True
                 # A verdict about meaning is typed so the gateway records it
                 # as such and does not treat it as a reason to try another route.
@@ -465,7 +466,7 @@ class ModelExecutionSession:
             if evaluation_state.evaluations:
                 result=replace(result,response_evaluations=tuple(evaluation_state.evaluations))
                 last=evaluation_state.evaluations[-1]
-                if result.error_code=='output_validation_failed' and last.status!='passed':
+                if result.error_code=='output_validation_failed' and last.status!=PASSED:
                     result.error_code=('semantic_response_rejected' if last.status=='rejected'
                                        else 'response_evaluation_inconclusive')
             self._calls_charged += result.physical_model_calls

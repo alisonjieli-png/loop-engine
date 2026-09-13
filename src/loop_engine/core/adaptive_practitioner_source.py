@@ -71,6 +71,9 @@ PROJECT_MANIFEST_NAMES = frozenset({
 })
 
 
+# File suffixes that name key material; their contents are never read as sources.
+SECRET_FILE_SUFFIXES = (".key", ".pem")
+
 
 def _source_surface(relative: str) -> str:
     """Classify a repository path for retrieval, never for authority."""
@@ -295,7 +298,7 @@ def inventory_source_files(services: AdaptiveRunServices) -> SourceInventory:
         reason = ("ignored_directory" if is_directory and path.name in _IGNORED_SOURCE_DIRECTORIES
                   else "hidden_path" if path.name.startswith(".")
                   else "protected_source_path" if path.name.casefold() in _PROTECTED_SOURCE_NAMES
-                  or path.suffix.casefold() in (".key", ".pem") else "")
+                  or path.suffix.casefold() in SECRET_FILE_SUFFIXES else "")
         if reason:
             records.append(SourceAdmissionRecord(relative, "excluded", reason))
             return

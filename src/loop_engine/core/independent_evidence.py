@@ -25,6 +25,12 @@ from pathlib import Path
 
 from .solution_ratchet import rank_attempts, sort_attempts
 
+# The verdicts an evaluation may return; every comparison names these.
+ADMITTED_VERDICTS = ("accept", "accept_provisional", "repair", "research_more",
+                     "try_another", "expand_swarm", "tune", "reset", "stop")
+(ACCEPT, ACCEPT_PROVISIONAL, REPAIR_VERDICT, RESEARCH_MORE, TRY_ANOTHER, EXPAND_SWARM,
+ TUNE, RESET, STOP_VERDICT) = ADMITTED_VERDICTS
+
 
 def module_digest(path: "str | Path") -> str:
     """sha256 of an attempt's module, so byte-identical copies can be seen."""
@@ -197,7 +203,7 @@ def apply_cross_attempt_evidence(services, verdict: str,
             "certification": "unverified_correlation",
         })
     dissent = newest_attempt_dissents(services)
-    if verdict == "accept" and dissent:
+    if verdict == ACCEPT and dissent:
         verdict = "repair"
         services.diagnostic("independent_cross_attempt_dissent", {
             "note": ("the newest attempt disagrees with its peers on "

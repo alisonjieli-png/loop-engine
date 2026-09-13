@@ -82,6 +82,9 @@ __all__ = (
     "ROLE_PROFILE_TREE",
 )
 
+# The diagram node kinds drawn as containers.
+CONTAINER_LIKE_KINDS = ("container", "store", "component")
+
 
 def record_access_model(model_type, element_type, relationship_type):
     """Build the typed storage view without expanding the shared renderer."""
@@ -164,7 +167,7 @@ def render_c4_plantuml(model) -> str:
         description = (f"[{item.evidence_state}] {item.description}"
                        if item.description else f"[{item.evidence_state}]")
         arguments = [aliases[item.key], json.dumps(item.name)]
-        if item.kind in ("container", "store", "component"):
+        if item.kind in CONTAINER_LIKE_KINDS:
             arguments.append(json.dumps(item.module or "unspecified"))
         arguments.append(json.dumps(description))
         lines.append(f"{kind}({', '.join(arguments)})")

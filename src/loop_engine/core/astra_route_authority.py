@@ -101,6 +101,7 @@ PRICING_WORKFLOWS = ("standard", "batch", "flex", "fast")
 # Responses service tier; its nominal price remains in PRICING_WORKFLOWS.
 SERVICE_TIERS = RESPONSES_SERVICE_TIERS
 READINESS_STATES = ("ready", "refused")
+READY_STATE, REFUSED_STATE = READINESS_STATES
 _MONEY_QUANTUM = Decimal("0.000001")
 
 
@@ -702,12 +703,12 @@ class AstraReadinessDecision:
         object.__setattr__(
             self, "refusal_reasons", _strings(self.refusal_reasons, "refusal_reasons")
         )
-        if (self.state == "ready") == bool(self.refusal_reasons):
+        if (self.state == READY_STATE) == bool(self.refusal_reasons):
             raise AstraRouteReadinessError(
                 "ready decisions have no reasons; refused decisions need reasons"
             )
         if not ASTRA_EXECUTABLE_ROUTE_QUALIFIED and (
-            self.state != "refused"
+            self.state != REFUSED_STATE
             or ASTRA_EXECUTABLE_ROUTE_REFUSAL_REASON not in self.refusal_reasons
         ):
             raise AstraRouteReadinessError(
@@ -747,7 +748,7 @@ class AstraReadinessDecision:
 
     @property
     def ready(self) -> bool:
-        return self.state == "ready"
+        return self.state == READY_STATE
 
     def to_dict(self) -> dict[str, object]:
         return {

@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 INTAKE_KINDS = ("text", "file", "url", "dataset", "repository", "task_pack")
+(TEXT_INTAKE, FILE_INTAKE, URL_INTAKE, DATASET_INTAKE, REPOSITORY_INTAKE,
+ TASK_PACK_INTAKE) = INTAKE_KINDS
 _MAX_TASK_FILE_BYTES = 1_000_000
 
 
@@ -137,12 +139,12 @@ class TaskIntake:
     @property
     def external_source_refs(self) -> tuple[str, ...]:
         """Keep a captured instruction origin out of unread data references."""
-        return () if self.kind == "file" else tuple(self.source_refs)
+        return () if self.kind == FILE_INTAKE else tuple(self.source_refs)
 
     @property
     def instruction_provenance(self) -> CapturedInstructionProvenance | None:
         """Expose captured file instructions without changing the v1 wire record."""
-        if self.kind != "file":
+        if self.kind != FILE_INTAKE:
             return None
         metadata = dict(self.metadata)
         provenance = CapturedInstructionProvenance(

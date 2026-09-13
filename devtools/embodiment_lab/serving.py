@@ -14,14 +14,18 @@ from .contracts import TaskCase, WorkPacket, digest, identifier
 from .runtime import check_candidate
 from .storage import confined_root
 
+# The views a verified portfolio can be served in.
+SERVING_VIEWS = ("best", "all_verified", "random")
+BEST_VIEW, ALL_VERIFIED_VIEW, RANDOM_VIEW = SERVING_VIEWS
+
 
 def view(root: Path, task: TaskCase, options: dict) -> dict:
     root = confined_root(root, create=False)
     database = root / "portfolio.sqlite"
     if not database.is_file() or database.is_symlink():
         raise ValueError("verified portfolio is unavailable")
-    mode = options.get("view", "best")
-    if mode not in ("best", "all_verified", "random"):
+    mode = options.get("view", BEST_VIEW)
+    if mode not in SERVING_VIEWS:
         raise ValueError("unknown serving view")
     seed = options.get("seed", 0)
     if type(seed) is not int:
@@ -37,9 +41,9 @@ def view(root: Path, task: TaskCase, options: dict) -> dict:
             )
         )
         entries = result.entries
-        if mode == "best":
+        if mode == BEST_VIEW:
             entries = entries[:1]
-        elif mode == "random" and entries:
+        elif mode == RANDOM_VIEW and entries:
             entries = (random.Random(seed).choice(entries),)
         values = []
         for entry in entries:
@@ -66,7 +70,7 @@ def view(root: Path, task: TaskCase, options: dict) -> dict:
             "view": mode,
             "portfolio_version": result.snapshot.portfolio_version,
             "values": values,
-            "seed": seed if mode == "random" else None,
+            "seed": seed if mode == RANDOM_VIEW else None,
             "producer_reactivated": False,
             "model_calls": 0,
         }

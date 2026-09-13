@@ -12,6 +12,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 
 from .configuration_capabilities import (
+    AVAILABILITY_STATES, QUALIFICATION_STATES,
     ConfigurationCapabilityError, ConfigurationFact, canonical, digest, exact_digest, exact_text)
 from .record_operations_records import parse_json
 
@@ -153,11 +154,11 @@ class PreferenceEngineBinding:
         exact_digest(self.implementation_digest, "preference implementation digest")
         if not all(callable(getattr(self.adapter, name, None)) for name in ("rank", "descriptor")):
             raise ConfigurationCapabilityError("preference adapter must implement rank and descriptor")
-        if not isinstance(self.availability, ConfigurationFact) or self.availability.state not in (
-                "available", "unavailable", "unknown"):
+        if (not isinstance(self.availability, ConfigurationFact)
+                or self.availability.state not in AVAILABILITY_STATES):
             raise ConfigurationCapabilityError("preference availability needs its separate fact state")
-        if not isinstance(self.qualification, ConfigurationFact) or self.qualification.state not in (
-                "qualified", "unqualified", "unknown"):
+        if (not isinstance(self.qualification, ConfigurationFact)
+                or self.qualification.state not in QUALIFICATION_STATES):
             raise ConfigurationCapabilityError("preference qualification needs its separate fact state")
         kinds = tuple(self.target_kinds)
         if not kinds or len(set(kinds)) != len(kinds):

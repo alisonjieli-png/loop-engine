@@ -46,7 +46,8 @@ def create_adaptive_owner(request, dependencies, config, ledger):
 
 def validate_action_permissions(decision, services):
     """Admit declared host intent without expanding the core effect authority."""
-    if decision.action_kind == "REQUEST_AUTHORITY":
+    from .adaptive_practitioner_records import REQUEST_AUTHORITY
+    if decision.action_kind == REQUEST_AUTHORITY:
         return
     host = getattr(services.dependencies, "host_runtime", None)
     selected = tuple(decision.required_capabilities)

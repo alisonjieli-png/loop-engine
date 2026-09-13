@@ -12,6 +12,7 @@ import json
 from dataclasses import dataclass
 
 from .outcome_vector import observe as observe_outcome
+from .independent_evidence import ACCEPT, REPAIR_VERDICT
 from .solve_control_manifest import ASSISTANCE_MODES, SHADOW_MODE
 from .stage_store import StageObservation
 
@@ -398,9 +399,9 @@ def record_action_verification(
             or not request.deterministic_checks_passed):
         local_verification = False
     elif request.semantic_verification_observed:
-        if request.verdict == "accept":
+        if request.verdict == ACCEPT:
             local_verification = True
-        elif request.verdict == "repair":
+        elif request.verdict == REPAIR_VERDICT:
             local_verification = False
     predicted = observe_outcome(
         source.outcome, **({"local_verification": local_verification}

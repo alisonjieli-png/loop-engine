@@ -40,6 +40,10 @@ EXCLUDED_PARTS = frozenset(
 EXCLUDED_SUFFIXES = (".db", ".sqlite", ".sqlite3", ".pyc", ".pkl", ".pickle", ".joblib")
 MAX_SOURCE_BYTES = 100 * 1024 * 1024
 
+# Git's own tree-entry vocabulary: the object kind and the two regular-file modes.
+GIT_BLOB = "blob"
+GIT_REGULAR_FILE_MODES = frozenset({"100644", "100755"})
+
 
 def included(name: str) -> bool:
     path = PurePosixPath(name)
@@ -84,7 +88,7 @@ def snapshot(source: Path, destination: Path) -> dict:
             metadata, raw_name = item.split(b"\t", 1)
             mode, kind, object_id, size_text = metadata.decode().split()
             name = raw_name.decode("utf8")
-            if kind != "blob" or mode not in {"100644", "100755"} or not included(name):
+            if kind != GIT_BLOB or mode not in GIT_REGULAR_FILE_MODES or not included(name):
                 exclusions.append(name)
                 continue
             size = int(size_text)

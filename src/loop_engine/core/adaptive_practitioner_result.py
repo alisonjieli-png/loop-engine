@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from .independent_evidence import ACCEPT_PROVISIONAL
 from .solution_ratchet import rank_attempts
 
 import json
@@ -86,7 +87,7 @@ def integrate_adaptive_state(
         and verification.get("deterministic_checks_passed") is True)
     status = ("ACCEPTED_LOCAL" if accepted else "UNVERIFIED"
               if not verification else "PROVISIONAL"
-              if evaluation.verdict == "accept_provisional" else "REJECTED")
+              if evaluation.verdict == ACCEPT_PROVISIONAL else "REJECTED")
     result_digest = _digest(result)
     verification_digest = _digest(verification) if verification else None
     attempt = {

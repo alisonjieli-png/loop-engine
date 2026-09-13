@@ -20,6 +20,8 @@ from ..query import (
     snapshot_query,
 )
 
+WAL_JOURNAL_MODE = "wal"
+
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS records (
     record_id TEXT PRIMARY KEY,
@@ -54,7 +56,7 @@ class SQLiteRecordStore:
             self._con.execute("PRAGMA trusted_schema=OFF")
             self._journal_mode = self._con.execute(
                 "PRAGMA journal_mode").fetchone()[0]
-            if (not read_only and self._journal_mode == "wal"
+            if (not read_only and self._journal_mode == WAL_JOURNAL_MODE
                     and not _wal_runtime_qualified()):
                 raise StoreError(
                     "SQLite runtime is not qualified for WAL writes; use a "
@@ -194,7 +196,7 @@ class SQLiteRecordStore:
         self._con.execute("BEGIN IMMEDIATE")
         self._journal_mode = self._con.execute(
             "PRAGMA journal_mode").fetchone()[0]
-        if self._journal_mode == "wal" and not _wal_runtime_qualified():
+        if self._journal_mode == WAL_JOURNAL_MODE and not _wal_runtime_qualified():
             raise StoreError("SQLite runtime is not qualified for WAL writes")
 
     def export(self, selection: dict | None = None) -> dict:

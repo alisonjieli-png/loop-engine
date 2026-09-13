@@ -18,6 +18,7 @@ from ..loop.kernel import (
     Situation,
 )
 from .adaptive_practitioner_records import (
+    RUN_PARALLEL,
     AdaptivePractitionerError,
     AdaptiveRunServices,
     ModelStepRequest,
@@ -30,6 +31,9 @@ from .adaptive_practitioner_bindings import (
     ASSIGNMENT_KEY, ASSIGNMENT_RECORD_TYPE, BASE_ASSIGNMENT_FIELDS,
     EXTENDED_ASSIGNMENT_FIELDS, SpawnedAssignment, assignment_task_view,
     compile_assignments)
+
+# The two act modes a plan can name: spawn Practitioners, or run directly or as a DAG.
+SPAWN_PRACTITIONERS_ACT, DIRECT_OR_DAG_ACT = "spawn_practitioners", "run_direct|run_dag"
 
 
 @dataclass(frozen=True)
@@ -70,7 +74,7 @@ def _planning_schema(action_id: str, *, spawning: bool = False) -> str:
         "action_id": action_id,
         "how_mode": (
             "use|configure|compose|modify|mutate|research|generate|delegate"),
-        "act_mode": "spawn_practitioners" if spawning else "run_direct|run_dag",
+        "act_mode": SPAWN_PRACTITIONERS_ACT if spawning else DIRECT_OR_DAG_ACT,
         "capability_ref": "" if spawning else "selected registered capability",
         "arguments": {}, "steps": ["string"],
         "spawned_tasks": ([{
@@ -130,7 +134,7 @@ def _validate_plan_response(value, request, services) -> ExecutionPlan:
     chosen = request.chosen
     state = request.state
     action = services.action_details[chosen.action]
-    if action.action_kind == "RUN_PARALLEL":
+    if action.action_kind == RUN_PARALLEL:
         raise AdaptivePractitionerError(_PARALLEL_UNAVAILABLE)
     _require_fields(value, _PLAN_FIELDS, "plan")
     if type(value["action_id"]) is not str or value["action_id"] != chosen.action:
@@ -140,10 +144,10 @@ def _validate_plan_response(value, request, services) -> ExecutionPlan:
         raise AdaptivePractitionerError("plan.capability_ref: expected_text")
     spawning = action.action_kind == "SPAWN_LOOP"
     act_mode = _short_text(value["act_mode"], "plan.act_mode")
-    if spawning and act_mode != "spawn_practitioners":
+    if spawning and act_mode != SPAWN_PRACTITIONERS_ACT:
         raise AdaptivePractitionerError(
             "SPAWN_LOOP requires act_mode spawn_practitioners")
-    if not spawning and act_mode == "spawn_practitioners":
+    if not spawning and act_mode == SPAWN_PRACTITIONERS_ACT:
         raise AdaptivePractitionerError(
             "only a selected SPAWN_LOOP action may use spawn_practitioners; "
             "keep the selected capability in run_direct or run_dag")
@@ -262,7 +266,7 @@ def build_execution_plan(
     """Select, validate, and if needed repair one execution method."""
     chosen = request.chosen
     action = services.action_details[chosen.action]
-    if action.action_kind == "RUN_PARALLEL":
+    if action.action_kind == RUN_PARALLEL:
         services.plan_details[chosen.action] = {
             "arguments": {}, "spawned_tasks": [],
             "validation_failure": _PARALLEL_UNAVAILABLE}

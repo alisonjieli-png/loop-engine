@@ -44,6 +44,9 @@ from .model_capabilities import (
 )
 
 PROVIDER_ID = "openai"
+# The Responses API's own item, part, and status names this client reads.
+REASONING_ITEM, MESSAGE_ITEM, OUTPUT_TEXT_PART, COMPLETED_RESPONSE = (
+    "reasoning", "message", "output_text", "completed")
 API_URL = "https://api.openai.com/v1/responses"
 MODELS_URL = "https://api.openai.com/v1/models"
 DEFAULT_MODEL = "gpt-6-astra"
@@ -425,10 +428,10 @@ def _response_text(body: Mapping[str, object]) -> tuple[str, tuple[str, ...], bo
             unsupported.append("non_object_output")
             continue
         item_type = str(item.get("type", "") or "")
-        if item_type == "reasoning":
+        if item_type == REASONING_ITEM:
             reasoning_present = True
             continue
-        if item_type != "message":
+        if item_type != MESSAGE_ITEM:
             unsupported.append(item_type or "unknown_output")
             continue
         content = item.get("content")
@@ -437,7 +440,7 @@ def _response_text(body: Mapping[str, object]) -> tuple[str, tuple[str, ...], bo
                 unsupported.append("non_object_content")
                 continue
             part_type = str(part.get("type", "") or "")
-            if part_type == "output_text":
+            if part_type == OUTPUT_TEXT_PART:
                 value = part.get("text")
                 if isinstance(value, str) and value:
                     text_parts.append(value)
@@ -492,7 +495,7 @@ def normalize_response(
         "length",
     }
     done: bool | None
-    if status_name == "completed":
+    if status_name == COMPLETED_RESPONSE:
         done = True
     elif status_name:
         done = False
@@ -536,7 +539,7 @@ def normalize_response(
     elif error_body:
         code = str(error_body.get("code", "") or "provider_error")
         error = f"provider_error:{code}"
-    elif status_name != "completed":
+    elif status_name != COMPLETED_RESPONSE:
         error = (
             f"incomplete_response: Responses status was {status_name or 'missing'!r}"
         )
