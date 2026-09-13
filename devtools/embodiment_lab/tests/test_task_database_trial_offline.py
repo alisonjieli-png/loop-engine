@@ -15,6 +15,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from embodiment_lab.systematic_records import CampaignProjection
+from embodiment_lab.trial_evidence import campaign_evidence_summary, trial_evidence_report
 from embodiment_lab.task_database_campaign import CampaignTrialServices, file_digest, run_trial
 from loop_engine.core.custom_endpoint import CustomEndpoint
 from loop_engine.core.model_capabilities import ModelOutputCapability
@@ -94,6 +95,26 @@ class OfflineTrialChecks(unittest.TestCase):
                     self.assertIn('error_message', state)
             finally:
                 records.close()
+            report = trial_evidence_report(cell)
+            self.assertEqual(report['task_id'], 'T-OFFLINE')
+            self.assertTrue(report['links']['trial_state'])
+            self.assertTrue(report['links']['task_sources'])
+            if state['status'] == 'finished':
+                self.assertGreaterEqual(report['links']['applied_configuration'], 1)
+                self.assertGreaterEqual(report['links']['step_history'], 1)
+                self.assertTrue(report['links']['outcome'])
+                self.assertTrue(report['links']['run_history_intact'])
+                self.assertTrue(report['links']['model_calls_accounted'])
+                self.assertEqual(report['physical_model_calls'], transport.calls)
+            # A trial nothing evaluated and nothing delivered is not complete
+            # evidence, and the report says which links are missing.
+            self.assertFalse(report['complete'])
+            self.assertIn('independent_evaluation', report['gaps'])
+            self.assertIn('delivered_artifacts', report['gaps'])
+            summary = campaign_evidence_summary(root / 'campaign')
+            self.assertEqual((summary['trials'], summary['complete']), (1, 0))
+            self.assertEqual(summary['gaps']['independent_evaluation'], 1)
+            self.assertEqual(json.loads(json.dumps(summary)), summary)
 
 
 if __name__ == '__main__':

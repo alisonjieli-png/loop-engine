@@ -281,6 +281,15 @@ First public release.
   trial path records its sources, applied configuration, step history, and
   terminal state and ends in a recorded state rather than an exception,
   before a real provider is spent on it; it claims nothing about solving.
+- [Trial evidence report](devtools/embodiment_lab/trial_evidence.py): for
+  one campaign trial cell, whether each evidence link is present (the
+  trial state, the task sources and their digests, the configuration
+  applied per model call, the step-history checkpoints, the outcome with
+  an intact Run History, physical model calls counted against the calls
+  claimed, delivered artifacts, and an independent evaluation), the gaps
+  by name, and a campaign-wide summary counting trials by completeness
+  and by the gap that keeps them incomplete. It reads and runs nothing;
+  the offline trial test proves it against a cell the runner wrote.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback
