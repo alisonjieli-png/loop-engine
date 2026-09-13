@@ -205,6 +205,7 @@ class _LiteralContext:
     is_exception_text: bool
     is_user_copy: bool
     call_name: str
+    is_compare_operand: bool = False
 
 
 def _digest(value: Any) -> str:
@@ -428,7 +429,8 @@ def _classification(
                 "_PythonLiteralVisitor._emit"}):
         return ("CONSTITUTIONAL_INVARIANT", ("audit_vocabulary",), "low",
                 0.98, "The detector compares its own closed typed vocabulary.")
-    if context.is_compare and role_words & _STATE_WORDS:
+    if (context.is_compare_operand and isinstance(value, str)
+            and role_words & _STATE_WORDS):
         return ("CLOSED_CONTROLLED_VOCABULARY", ("raw_state_comparison",),
                 "high", 0.94,
                 "A raw token directly controls state, routing, or lifecycle behavior.")
@@ -446,7 +448,7 @@ def _classification(
             and context.role_name in {"MODES", "LOOP_ROLES", "LAYERS"}):
         return ("CONSTITUTIONAL_INVARIANT", (), "low", 0.95,
                 "The value belongs to a declared architecture vocabulary authority.")
-    if context.is_compare and isinstance(value, (str, bool)):
+    if context.is_compare_operand and isinstance(value, (str, bool)):
         return ("CLOSED_CONTROLLED_VOCABULARY", ("behavior_comparison",),
                 "medium", 0.72,
                 "A literal comparison participates in behavior selection.")
@@ -623,11 +625,29 @@ class _PythonLiteralVisitor(ast.NodeVisitor):
         parent = self.parents.get(node)
         return isinstance(parent, ast.Dict) and node in parent.keys
 
+    def _compare_operand(self, node: ast.AST) -> bool:
+        """Whether the literal is what a comparison or match actually tests:
+        an operand of the Compare, an element of a literal collection that
+        is one, or a match-case value. A mapping key being read, a subscript
+        index, or a call default that merely sits inside the comparison is
+        not the token being compared."""
+        current: ast.AST = node
+        parent = self.parents.get(current)
+        while isinstance(parent, (ast.Tuple, ast.Set, ast.List, ast.Dict, ast.UnaryOp)):
+            if isinstance(parent, ast.Dict) and current not in parent.keys:
+                return False
+            current, parent = parent, self.parents.get(parent)
+        if isinstance(parent, ast.Compare):
+            return current is parent.left or any(
+                current is item for item in parent.comparators)
+        return isinstance(parent, (ast.MatchValue, ast.MatchSingleton))
+
     def _context(self, node: ast.AST) -> _LiteralContext:
         default_parameter, default_kind = self._default_parameter(node)
         assignment = self._assignment_name(node)
         call_name = self._call_name(node)
         compare = bool(self._ancestor(node, (ast.Compare, ast.Match)))
+        operand = self._compare_operand(node)
         exception_text = bool(self._ancestor(node, (ast.Raise, ast.Assert)))
         call_words = _normal_words(call_name)
         user_copy = bool(call_words & {"print", "help", "description"})
@@ -660,7 +680,7 @@ class _PythonLiteralVisitor(ast.NodeVisitor):
             default_kind=default_kind,
             is_dict_key=self._is_dict_key(node), is_compare=compare,
             is_exception_text=exception_text, is_user_copy=user_copy,
-            call_name=call_name)
+            call_name=call_name, is_compare_operand=operand)
 
     def _emit(self, node: ast.AST, value: Any) -> None:
         self.literal_count += 1
@@ -1518,7 +1538,13 @@ def self_test() -> dict[str, Any]:
             "    planted_secret = 'sk-fixture0123456789abcdef'\n"
             "    if status == 'active':\n"
             "        return {'status': 'ready', 'key': key}\n"
-            "    return {'status': 'ready'}\n",
+            "    return {'status': 'ready'}\n"
+            "def route(decision, items, state):\n"
+            "    if decision.get('action') == 'read' and items[0] is not None:\n"
+            "        return items[-1]\n"
+            "    if state in ('advisory', 'fresh'):\n"
+            "        return 'assisted'\n"
+            "    return None\n",
             encoding="utf-8")
         (package / "broken.py").write_text("def broken(:\n", encoding="utf-8")
         initial = scan_hardcoding(AuditRequest(root, include_low_risk=True))
@@ -1552,6 +1578,21 @@ def self_test() -> dict[str, Any]:
         check("raw_state_comparison_is_detected", any(
             "raw_state_comparison" in item["secondary_tags"]
             for item in findings))
+        routed = [item for item in findings if item["symbol_ref"] == "route"]
+        check("a_mapping_key_read_inside_a_comparison_is_not_the_compared_token",
+              all(item["severity"] == "low" and "comparison" not in " ".join(item["secondary_tags"])
+                  for item in routed if item["literal_preview"] == "'action'"),
+              str([(i["literal_preview"], i["severity"]) for i in routed]))
+        check("none_and_subscript_indices_inside_a_comparison_are_not_vocabulary",
+              all(item["severity"] == "low" for item in routed
+                  if item["literal_kind"] in ("null", "integer")))
+        check("membership_against_a_literal_collection_remains_a_state_comparison",
+              all(item["severity"] == "high" and "raw_state_comparison" in item["secondary_tags"]
+                  for item in routed if item["literal_preview"] in ("'advisory'", "'fresh'"))
+              and any(item["literal_preview"] == "'advisory'" for item in routed))
+        check("the_compared_value_keeps_its_comparison_class",
+              any(item["literal_preview"] == "'read'"
+                  and "behavior_comparison" in item["secondary_tags"] for item in routed))
         check("malformed_source_is_bounded_not_fatal", any(
             item["literal_kind"] == "parse_error" for item in findings))
         duplicate_ready = [item for item in findings

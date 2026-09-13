@@ -9,6 +9,25 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- Hardcoding audit precision. The auditor marked any literal anywhere
+  inside a comparison as the token being compared, so `x is None`, a
+  subscript index such as `items[0]`, and the key of a mapping read such as
+  `decision.get("action")` were all reported as high-severity state
+  comparisons whenever a state word appeared nearby, while the value
+  actually compared kept its own class. The literal context now records
+  whether the literal is an operand of the comparison (or an element of a
+  literal collection that is one, or a match-case value), and both
+  comparison classes require it. Finding identities are unchanged, so no
+  baseline entry moved: findings that were never the compared token drop to
+  low severity, and true vocabulary tokens (`status == 'active'`,
+  `state in ('advisory', 'fresh')`) keep their high class. Four canary
+  checks cover the four cases. Against the frozen CI baseline the
+  new-high count fell from 502 to 335 in the shared working tree (which
+  held another session's uncommitted modules) and stands at 318 on a clean
+  export of this commit, with the baseline untouched; the remaining
+  findings are raw vocabulary tokens compared directly, environment
+  values, prompt texts, and endpoint addresses, each of which needs a
+  written decision.
 - Wide configuration search, after a same-day execution-verified review of
   the modules that reached `main` in `d8caea2` (probes under
   `.loop-engine-dev/fable-review-probe-20260913/agent-review-search/`).

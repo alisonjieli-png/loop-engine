@@ -690,6 +690,32 @@ sound, and thirteen defects, twelve of them fixed the same afternoon:
 | Empty-shard exhaustion inconsistent between adapters | low | fixed |
 | Documentation claims partly unmet | low | fixed where behaviour changed |
 
+### Hardcoding gate: a precision fault in the auditor, and what remains
+
+The audit's triage worklist showed that of the 502 findings blocking the
+delta gate at `5c062f1`, 109 were the key of a mapping read inside a
+comparison (`decision.get("action") == "read"` reported `"action"`, not
+`"read"`), 31 were `None` in an identity test, 17 were subscript indices,
+and a few were empty-collection defaults. The auditor classed any literal
+inside a comparison as the compared token and took its role from the
+enclosing call name, so `decision.get(...)` made the key a "state
+comparison". The literal context now records whether the literal is an
+operand of the comparison, and both comparison classes require it.
+Finding identities are unchanged and the baseline was not touched: the
+misclassified findings drop to low, true vocabulary tokens keep their
+class, and the new-high count against the frozen baseline fell from 502 to
+335 in the shared working tree (318 on a clean export of the commit; the
+difference is another session's uncommitted modules). The value compared
+against a mapping read still
+takes only the medium behaviour class, since no role word reaches it; that
+asymmetry is known and left as is rather than raising hundreds of
+existing medium findings to high in one change.
+
+What remains needs decisions, not scanning: raw vocabulary tokens compared
+directly (about 180, most in the Codex harness recipe and Practitioner
+modules), environment values in confinement setups (about 85), prompt
+texts (38), and four endpoint addresses.
+
 ## Addendum written while Codex evaluated the findings
 
 Added on 2026-09-13 after 12:00 local time, while the live Codex session
