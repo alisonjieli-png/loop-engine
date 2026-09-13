@@ -15,7 +15,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 from embodiment_lab.systematic_records import CampaignProjection
-from embodiment_lab.trial_evidence import campaign_evidence_summary, trial_evidence_report
+from embodiment_lab.trial_evidence import (_artifact_verified, _step_history_verified,
+                                           campaign_evidence_summary, trial_evidence_report)
 from embodiment_lab.task_database_campaign import CampaignTrialServices, file_digest, run_trial
 from loop_engine.core.custom_endpoint import CustomEndpoint
 from loop_engine.core.model_capabilities import ModelOutputCapability
@@ -111,6 +112,28 @@ class OfflineTrialChecks(unittest.TestCase):
             self.assertFalse(report['complete'])
             self.assertIn('independent_evaluation', report['gaps'])
             self.assertIn('delivered_artifacts', report['gaps'])
+            # What the writer recorded and what the report re-verified from
+            # disk agree for this cell, and the report says which links it
+            # re-verified rather than took as recorded.
+            self.assertEqual(report['disagreements'], {})
+            self.assertIn('step_history', report['reverified_links'])
+            self.assertEqual(report['recorded']['step_history'], report['links']['step_history'])
+            # The re-verification helpers refuse what disk does not prove: a
+            # missing artifact, a digest that no longer matches, a step
+            # history directory that is not a saved history.
+            artifact = root / 'delivered.txt'
+            artifact.write_bytes(b'delivered')
+            import hashlib
+            digest = hashlib.sha256(b'delivered').hexdigest()
+            self.assertTrue(_artifact_verified({'path': str(artifact), 'sha256': digest}))
+            self.assertTrue(_artifact_verified({'path': str(artifact)}))
+            self.assertFalse(_artifact_verified({'path': str(artifact), 'sha256': 'not-the-digest'}))
+            self.assertFalse(_artifact_verified({'path': str(root / 'absent.txt')}))
+            self.assertFalse(_artifact_verified({'artifact_ref': ''}))
+            self.assertFalse(_step_history_verified({'history': str(root / 'not-a-history')}))
+            (root / 'not-a-history').mkdir()
+            self.assertFalse(_step_history_verified({'history': str(root / 'not-a-history')}))
+            self.assertFalse(_step_history_verified({}))
             summary = campaign_evidence_summary(root / 'campaign')
             self.assertEqual((summary['trials'], summary['complete']), (1, 0))
             self.assertEqual(summary['gaps']['independent_evaluation'], 1)

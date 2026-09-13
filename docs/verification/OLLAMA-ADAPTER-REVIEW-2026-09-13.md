@@ -140,13 +140,16 @@ name and a hexadecimal reference.
     "key" as a word beside invalid, incorrect, rejected, revoked, or
     expired is `authentication_failed`.
 
-16. **Low, left open.** `guided_setup` infers the wire from port 11434, so
-    a hosted Ollama URL is offered the OpenAI wire; a generic 400 or 422
-    still stops the route on one occurrence where a per-cell classification
-    with escalation on repetition would serve a campaign better; the
-    Practitioner fails a step at once on `usage_limit_reached` with no
-    scheduled wait, which is right for a spent weekly allowance and wrong
-    for a stated short one, since nothing yet consumes `retry_after_seconds`.
+16. **Low.** `guided_setup` inferred the wire from port 11434, so a hosted
+    Ollama URL was offered the OpenAI wire. **Fixed:** the setup asks the
+    wire and suggests one from the URL's path. The Practitioner failed a
+    step at once on any refusal with no scheduled wait, right for a spent
+    weekly allowance and wrong for a stated short one. **Fixed:** a stated
+    wait is honoured before a same-route retry, up to sixty seconds, and
+    recorded; the recovery reasoner sees the failure class and the stated
+    wait as facts. **Left open:** a generic 400 or 422 still stops the
+    route on one occurrence, where a per-cell classification with
+    escalation on repetition would serve a campaign better.
 
 ## Verified sound
 

@@ -300,6 +300,45 @@ _SLOW_BACKOFF_ERRORS = frozenset({"rate_limited"})
 _SLOW_BACKOFF_SECONDS = 15
 _MAXIMUM_TRANSPORT_ATTEMPTS = 3
 
+#: A refusal that states its own wait (``Retry-After``) is honoured before
+#: the same route is retried, up to this ceiling, so a throttle that asks
+#: for twenty seconds is not answered in one. Longer stated waits are
+#: recorded and cut at the ceiling: a wait the length of a weekly
+#: allowance belongs to a campaign worker, not to one step of one run.
+_MAXIMUM_STATED_WAIT_SECONDS = 60
+
+
+def _stated_wait_seconds(result) -> "float | None":
+    """The wait the provider stated on the last attempt of a gateway
+    result, in seconds, or None when it stated none."""
+    attempts = tuple(getattr(result, "attempts", ()) or ())
+    last = attempts[-1] if attempts else None
+    value = getattr(last, "retry_after_seconds", None)
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return float(value)
+
+
+def _honour_stated_wait(owner, request, result, error_code: str,
+                        attempt: int, *, sleep=time.sleep) -> float:
+    """Wait the provider's stated time, bounded, before a same-route retry,
+    and record what was stated and what was waited. Returns the seconds
+    waited; zero when nothing was stated."""
+    stated = _stated_wait_seconds(result)
+    if stated is None or stated <= 0:
+        return 0.0
+    waited = min(stated, float(_MAXIMUM_STATED_WAIT_SECONDS))
+    owner.ledger.record(
+        loop_id=owner.loop_id, event="custom",
+        custom_kind="provider_stated_wait_honoured",
+        procedure_step=request.step_id, error_code=error_code,
+        transport_attempt=attempt, stated_wait_seconds=stated,
+        waited_seconds=waited,
+        wait_ceiling_seconds=_MAXIMUM_STATED_WAIT_SECONDS,
+        cut_at_ceiling=waited < stated)
+    sleep(waited)
+    return waited
+
 #: Attempts for a response that arrived carrying no answer. Kept apart from
 #: the transport count because the two say opposite things about the
 #: provider. A network error says it could not be reached, and a fourth call
@@ -1971,11 +2010,20 @@ class AdaptiveRunServices:
                 minimum=1, maximum=capacity.declared_maximum, unit="tokens",
                 semantic_effect="Explicit output allowance for this complete response; not a guessed model capacity"),)
         response_contract_ref = "inline:sha256:" + request.output_contract_digest
+        from .provider_failure_classes import failure_class
         facts = {
             "task": self.request.task,
             "responsibility": request.objective,
             "response_contract_ref": response_contract_ref,
             "error_code": error_code,
+            # The class says what kind of failure the code names (an
+            # outage, an allowance, a configuration fault, this request's
+            # fault, a violated contract) and the stated wait is the
+            # provider's own instruction; both are facts for the recovery
+            # reasoner, not a decision made for it.
+            "failure_class": failure_class(error_code),
+            "stated_wait_seconds": _stated_wait_seconds(
+                session.results[-1] if session.results else None),
             "attempts_so_far": attempt,
             "same_shape_repeats": same_shape_repeats,
             "provider_responded": provider_responded,
@@ -2644,6 +2692,8 @@ class AdaptiveRunServices:
                     if "retry_same_route" not in recovery.selected:
                         raise
                     pending_output_allocation = recovery.output_allocation
+                    _honour_stated_wait(owner, request, latest_result,
+                                        error_code, transport_attempt)
                     continue
             contract_digest = request.output_contract_digest
             if text is not None and not self.request.quiet_model_io:

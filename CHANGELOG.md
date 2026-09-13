@@ -9,6 +9,20 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- A provider's stated wait is honoured. A refusal that carries
+  `Retry-After` is waited for before the same route is retried, up to a
+  sixty-second ceiling, and the ledger records what was stated, what was
+  waited, and whether the ceiling cut it; the recovery reasoner now sees
+  the failure's class and the stated wait as facts beside the code. The
+  guided setup asks the wire format instead of inferring it from port
+  11434, suggesting one from the URL's path, so a hosted Ollama at
+  `https://ollama.com` is not offered the OpenAI path. The campaign's
+  per-cell evidence report re-verifies what disk can prove instead of
+  trusting the writer's flags: a saved step history's chain is reloaded and
+  verified, a delivered artifact must exist with its recorded digest, and
+  an applied configuration must be reported applied and be the trial's
+  own; the report names the links it re-verified and any disagreement
+  between what was recorded and what it confirmed.
 - Ollama adapter path, after a same-day probe-verified
   [review](docs/verification/OLLAMA-ADAPTER-REVIEW-2026-09-13.md) and one
   live observation (the key lists twenty models; generation is refused

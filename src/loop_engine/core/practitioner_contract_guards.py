@@ -137,10 +137,49 @@ def extra_fields_are_information() -> list:
     return checks
 
 
+def stated_wait_is_honoured_and_bounded() -> list:
+    """A provider that states its wait is waited for, up to the ceiling,
+    and the ledger says what was stated, what was waited, and whether the
+    ceiling cut it; a result that states nothing waits nothing."""
+    from types import SimpleNamespace
+    from .adaptive_practitioner_records import (
+        _MAXIMUM_STATED_WAIT_SECONDS, _honour_stated_wait, _stated_wait_seconds)
+    events = []
+    slept = []
+    owner = SimpleNamespace(loop_id="guard-owner", ledger=SimpleNamespace(
+        record=lambda **fields: events.append(fields)))
+    request = SimpleNamespace(step_id="guard-step")
+
+    def result(retry_after):
+        return SimpleNamespace(attempts=(SimpleNamespace(retry_after_seconds=retry_after),))
+
+    short = _honour_stated_wait(owner, request, result(7), "rate_limited", 1, sleep=slept.append)
+    long = _honour_stated_wait(owner, request, result(7200), "usage_limit_reached", 2,
+                               sleep=slept.append)
+    none = _honour_stated_wait(owner, request, result(None), "rate_limited", 1, sleep=slept.append)
+    empty = _honour_stated_wait(owner, request, SimpleNamespace(attempts=()), "timeout", 1,
+                                sleep=slept.append)
+    return [
+        {"test": "a short stated wait is waited in full and recorded",
+         "passed": short == 7.0 and slept[:1] == [7.0] and events
+         and events[0]["custom_kind"] == "provider_stated_wait_honoured"
+         and events[0]["stated_wait_seconds"] == 7.0 and events[0]["cut_at_ceiling"] is False,
+         "detail": str(events[:1])[:160]},
+        {"test": "a long stated wait is cut at the ceiling and the record says so",
+         "passed": long == float(_MAXIMUM_STATED_WAIT_SECONDS) and len(events) == 2
+         and events[1]["cut_at_ceiling"] is True and events[1]["stated_wait_seconds"] == 7200.0,
+         "detail": str(events[1:2])[:160]},
+        {"test": "no stated wait means no wait and no record",
+         "passed": none == 0.0 and empty == 0.0 and len(slept) == 2 and len(events) == 2
+         and _stated_wait_seconds(result(True)) is None and _stated_wait_seconds(None) is None,
+         "detail": ""},
+    ]
+
+
 def contract_guard_checks() -> list:
     """Every contract guard, as one list of test records."""
     return [schema_matches_record(), *retry_classification(),
-            *extra_fields_are_information()]
+            *extra_fields_are_information(), *stated_wait_is_honoured_and_bounded()]
 
 
 def self_test() -> dict:

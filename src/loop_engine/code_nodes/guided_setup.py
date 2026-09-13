@@ -249,8 +249,20 @@ def run_setup(*, interactive: bool = True, knowledge_path: str = "",
         model = _ask("      Model name:", interactive=interactive)
         if url and model:
             from ..core.custom_endpoint import (
-                CustomEndpoint, make_adapter)
-            wire = "ollama" if "11434" in url and "/v1" not in url else "openai"
+                CustomEndpoint, EndpointError, WIRE_FORMATS, make_adapter)
+            # The wire is asked, not inferred from a port: a hosted Ollama
+            # at https://ollama.com and a local one at 127.0.0.1:11434
+            # speak the same native wire, and a /v1 path on either is the
+            # OpenAI-compatible one. The suggestion comes from the path.
+            suggested = ("openai" if "/v1" in url
+                         else "ollama" if ("11434" in url or "ollama" in url.lower())
+                         else "openai")
+            wire = _ask(f"      Wire format ({' or '.join(WIRE_FORMATS)}) "
+                        f"[{suggested}]:", suggested,
+                        interactive=interactive).strip().lower() or suggested
+            if wire not in WIRE_FORMATS:
+                _say(f"      {wire!r} is not a wire format; using {suggested}")
+                wire = suggested
             ep = CustomEndpoint(name="my_server", base_url=url, model=model,
                                 wire=wire)
             probe = make_adapter(ep).verify()
