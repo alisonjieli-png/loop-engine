@@ -606,6 +606,21 @@ gate pass; the repository's own route is a written-reason allowlist entry
 per finding, or the abstraction the finding asks for. That triage is the
 remaining required work for a green `main`.
 
+After this session's usage limit ended the three fix groups mid-work, the
+Codex session integrated their unfinished changes, verified them, and pushed
+`2e0cf7b`; its record is
+[the Astra integration review](ASTRA-INTEGRATION-REVIEW-2026-09-13.md). At
+`2e0cf7b` the GitHub test jobs pass the self-test, the conformance gates,
+the embodiment lab, and the tool checks on Python 3.10, 3.11, and 3.12 and
+fail only at the hardcoding delta gate, which skips the later steps. Those
+skipped steps were run on the owner's machine against `2e0cf7b` with the
+workflow's commands and its pinned container image: the product solve
+acceptance, the command-line acceptance, the README quickstart check, the
+wheel build, a fresh installation with `pip check`, `doctor`, `setup`, the
+installed Studio checks (19 of 19), and the installed-package command-line
+acceptance all exit 0. The audit gate is therefore the only difference
+between the hosted workflow and a green run.
+
 Four evidence files stay untracked and unignored because they exceed the
 size rule the alignment plan applied (a 700 KB hardcoding summary, a 2.4 MB
 component inventory, a 550 KB temporary-directory check record, and a
