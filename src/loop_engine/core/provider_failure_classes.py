@@ -158,6 +158,13 @@ def self_test() -> dict:
             check(f"{name}_are_refused", False, "accepted")
         except (TypeError, ValueError):
             check(f"{name}_are_refused", True)
+    from .adaptive_practitioner_records import _RETRYABLE_TRANSPORT_ERRORS
+    check("the_practitioner_retries_only_outages_allowances_and_empty_answers",
+          all(failure_class(code) in (OUTAGE, ALLOWANCE) or code == "output_validation_failed"
+              for code in _RETRYABLE_TRANSPORT_ERRORS)
+          and not any(failure_class(code) in (CONFIGURATION, CONTRACT)
+                      for code in _RETRYABLE_TRANSPORT_ERRORS),
+          sorted(_RETRYABLE_TRANSPORT_ERRORS))
     check("the_vocabulary_is_read_only_and_closed",
           isinstance(PROVIDER_FAILURE_CLASSES, MappingProxyType)
           and set(PROVIDER_FAILURE_CLASSES.values()) <= set(FAILURE_CLASSES))
