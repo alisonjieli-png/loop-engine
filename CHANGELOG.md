@@ -208,6 +208,11 @@ First public release.
   the runtime's availability projection, with and without the adapter
   declaring the control; a level whose address no executor runs stays
   planned whatever its label says.
+- Module size: the stage store's thirty-nine offline checks moved to
+  `core/stage_store_checks.py` (the store's `self_test` delegates to
+  them), taking the module from the 800-line cap to 505 lines; the SQLite
+  stage-evidence projection, which also sits at the cap, carries a
+  declared size exception with a split plan for its validation methods.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback

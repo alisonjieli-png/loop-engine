@@ -190,7 +190,7 @@ MODULE_MAP = {
         "prompt_experiment", "task_region_statistics", "option_selection",
         "semantic_decision", "decision_outcome",
         "stage_fingerprint", "convergence", "outcome_vector",
-        "stage_store", "stage_store_records", "stage_evidence_records",
+        "stage_store", "stage_store_checks", "stage_store_records", "stage_evidence_records",
         "stage_action_lineage", "stage_action_lineage_adversarial_checks",
         "run_checkpoint",
         "solution_ratchet",
