@@ -1000,6 +1000,9 @@ class StageAssistanceRuntimeBinding:
         object.__setattr__(self, "candidates", candidates)
         object.__setattr__(self, "materials", materials)
 
+# The status a deterministic attempt reports when it produced a verified result.
+ATTEMPT_COMPLETED = "COMPLETED"
+
 
 @dataclass(frozen=True)
 class DeterministicAttemptTrace:

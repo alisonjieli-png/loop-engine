@@ -14,7 +14,7 @@ from . import stage_store_records as _records
 from .outcome_vector import HELPED, SIGNAL_SCOPES, UNKNOWN, OutcomeVector
 from .outcome_vector import observe as observe_outcome
 
-STAGE_OBSERVATION_RECORD_TYPE = "stage_observation/v2"
+STAGE_OBSERVATION_RECORD_TYPE, LEGACY_STAGE_OBSERVATION_RECORD_TYPE = "stage_observation/v2", "stage_observation/v1"
 BY_SIGNATURE, BY_MOTIF, BY_SHAPE = "signature", "motif", "shape"
 
 
@@ -373,7 +373,7 @@ class StageStore:
                     record_type = value.get("record_type")
                     strict_v2 = record_type == STAGE_OBSERVATION_RECORD_TYPE
                     if record_type not in (
-                            None, "stage_observation/v1",
+                            None, LEGACY_STAGE_OBSERVATION_RECORD_TYPE,
                             STAGE_OBSERVATION_RECORD_TYPE):
                         raise ValueError("unsupported stage record type")
                     if strict_v2:

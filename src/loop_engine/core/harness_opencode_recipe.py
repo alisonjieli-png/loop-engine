@@ -11,6 +11,9 @@ import json
 from pathlib import Path
 from urllib.parse import urlsplit
 
+# OpenCode's own finish reason for a turn that ended on its own.
+OPENCODE_STOP_REASON = "stop"
+
 
 def prepare_opencode_recipe(config, base_url):
     """Return argv, local-relay environment and exact private task stdin."""
@@ -81,4 +84,4 @@ def extract_opencode_output(stdout, expected):
         if part.get("type") == "step-finish":
             terminal = part.get("reason")
     actual = "\n".join(texts)
-    return expected if expected and actual == expected and terminal == "stop" else ""
+    return expected if expected and actual == expected and terminal == OPENCODE_STOP_REASON else ""

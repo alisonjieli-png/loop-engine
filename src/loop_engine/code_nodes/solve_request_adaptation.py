@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ..core.adaptive_practitioner_records import AdaptivePractitionerRequest
-from ..core.product_outcome_store import ProductModelCallAccounting
+from ..core.product_outcome_store import SOLVE_OUTCOME_V5, ProductModelCallAccounting
 
 
 @dataclass(frozen=True)
@@ -516,7 +516,7 @@ def _public_call_accounting_checks() -> list[dict]:
               and value["model_calls_known_subtotal"] == 44)
         check("v5_unknown_accounting_round_trips_in_digest_bound_saved_outcome",
               saved.history.verify_chain()["intact"]
-              and saved.outcome_ref.record_type == "solve_outcome/v5"
+              and saved.outcome_ref.record_type == SOLVE_OUTCOME_V5
               and all(saved.outcome[name] == expected
                       for name, expected in interrupted.items()))
         legacy = {**value, "model_calls": 0}

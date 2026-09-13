@@ -56,6 +56,26 @@ First public release.
   block kinds, record field names, store result statuses, and the legacy
   tools' own prompt constants. The committed tree's new-high count fell
   from 118 to 24.
+- Hardcoding gate, sixth batch: the last twenty-four, and the gate is
+  green. The built-in OpenCode step prompts (implement, verify, inventory,
+  requirements, both observation forms, provision) now live in the
+  versioned step-content record under `prompt_templates`, read through
+  `step_content.prompt_template` with validation of every built-in name;
+  the code composes each system prompt from those texts and its run-time
+  facts, and the rendered prompts are byte-identical to the previous
+  ones. The independent verification practitioner's system and probe-design
+  prompts moved into the governed prompt-fragment module. The remaining
+  singletons compare by name: the solve outcome record type, the
+  deterministic attempt's completion status, OpenCode's finish reason, the
+  information measure kinds, the token-bound record type, the store
+  compatibility verdicts unpacked from the handshake's `VERDICTS`, the
+  retry-same-route recovery option, skill lifecycle states, majority vote
+  scopes, the fresh assistance arm, the projection's journal mode, and the
+  legacy stage observation record type. One written reason covers the
+  generated-project capability's contract description. Against the frozen
+  CI baseline the committed tree now has zero new high findings, so the
+  `Self-orientation and hardcoding delta gates` step passes without any
+  change to the baseline.
 - Hardcoding gate, second batch. A `None` compared under a role named
   `environment` was reported as a deployment value read at a boundary; the
   environment-read class now needs a value. Seventy-nine deployment

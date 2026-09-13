@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 
+from .adaptive_practitioner_records import ATTEMPT_COMPLETED
 from .adaptive_practitioner_records import (
     AdaptiveRunServices, DeterministicAttemptTrace)
 
@@ -72,7 +73,7 @@ def run_deterministic_attempt(
                 recommended_escalation="NEEDS_SEMANTIC_ORIENTATION")
         return DeterministicAttemptTrace(
             hashlib.sha256(task.encode()).hexdigest(), task,
-            "COMPLETED",
+            ATTEMPT_COMPLETED,
             parsers_attempted=("literal_utf8",),
             exact_values=(("resolver_id", resolver_id),),
             capabilities_considered=tuple(

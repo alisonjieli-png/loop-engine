@@ -38,6 +38,7 @@ from pathlib import Path
 from .opencode_step_composition import (
     OpenCodeCompositionError, SkillLibrary, StepLayer, StepLayerCatalogue,
     admit_requests, read_only_tools)
+from .step_content import prompt_template
 
 #: A context file larger than this is summarised by its head rather than
 #: carried whole. Every byte of context costs on every later call, and a
@@ -95,29 +96,7 @@ def provision_step_layer(planned_next: str, catalogue: StepLayerCatalogue,
         step_id="provision",
         description="Decide which step runs next and what it must be given.",
         system_prompt=(
-            "You are the provisioning step. Nothing you say changes the code. "
-            "Your job is to decide what the NEXT step needs, from what the "
-            "run knows so far.\n\n"
-            f"The plan expects the next step to be: {planned_next}\n"
-            f"Steps you may choose instead: {steps}\n"
-            f"Skills you may request: {skills}\n\n"
-            "Decide, in this order:\n"
-            "1. Does the next step still make sense given the current state? "
-            "If the failure is not yet reproduced, choose reproduce. If the "
-            "cause is known, choose implement. If code changed and the gate "
-            "has not been rerun, choose verify. If the state says blocked_on, "
-            "choose summarise-for-human. Otherwise keep the plan.\n"
-            "2. Which skills, from the list above, would change what that step "
-            "does? Name each with one sentence on how it would be used. Do not "
-            "request a skill you cannot say a use for.\n"
-            "3. Which files, if any, must the step have read before it acts? "
-            "Give exact paths that exist in the workspace, each with why. A "
-            "step that must edit a function needs to see the function; a step "
-            "that must run a gate needs to see the gate's config.\n\n"
-            "You may read and search the workspace to answer these. You cannot "
-            "edit, write, or run anything; that is deliberate.\n\n"
-            "Return only what you can justify from the state or from a file "
-            "you read. An empty list is a valid and often correct answer."),
+            (f'You are the provisioning step. Nothing you say changes the code. Your job is to decide what the NEXT step needs, from what the run knows so far.\n\nThe plan expects the next step to be: {planned_next}\nSteps you may choose instead: {steps}\nSkills you may request: {skills}' + prompt_template("provision.decision_order"))),
         tools=read_only_tools(),
         permission={"edit": "deny", "bash": "deny"},
     )

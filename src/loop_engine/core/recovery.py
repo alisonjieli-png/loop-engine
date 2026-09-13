@@ -53,6 +53,9 @@ NO_REASONING_ROUTE_AVAILABLE = "NO_REASONING_ROUTE_AVAILABLE"
 CHOSEN_BY_REASONING = "llm"
 CHOSEN_BY_CONTINUITY_BROKER = "deterministic"
 
+# The recovery option that repeats the unchanged request on the same route.
+RETRY_SAME_ROUTE = "retry_same_route"
+
 
 @dataclass(frozen=True)
 class RecoveryOutcome:
@@ -114,7 +117,7 @@ def recovery_options(facts: dict) -> tuple[ChoiceOption, ...]:
     options = []
     if repeats < 3:
         options.append(ChoiceOption(
-            "retry_same_route",
+            RETRY_SAME_ROUTE,
             "Put the unchanged request through the same authorized model "
             "plan again",
             facts={"attempts_so_far": attempts, "error_code": error_code,
@@ -183,7 +186,7 @@ def choose_recovery(facts: dict, ask, *, parameters=()) -> RecoveryOutcome:
             reason="the recovery answer could not be read")
     return RecoveryOutcome(
         selected=answer.selected, adjustments=(answer.adjustments
-            if answer.selected == ("retry_same_route",) else {}),
+            if answer.selected == (RETRY_SAME_ROUTE,) else {}),
         novel=answer.novel, chosen_by=CHOSEN_BY_REASONING,
         reason=answer.reason,
         expected_observation=answer.expected_observation,

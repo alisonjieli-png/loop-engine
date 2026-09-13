@@ -747,6 +747,25 @@ authority does not exist yet (attempt statuses, terminal codes, event
 types, run modes, laboratory serving modes), the fourteen prompts still
 composed in code, and the new configuration modules' own vocabularies.
 
+### The gate went green
+
+Six batches on the afternoon of 2026-09-13 took the CI hardcoding delta
+gate from 502 blocking findings to zero without touching the frozen
+baseline. Two were precision faults in the auditor (a literal anywhere
+inside a comparison counted as the compared token; a `None` under an
+`environment` role counted as a deployment value), one was a missing
+classification (the versioned step-content record and the frozen review
+probes), and the rest were decisions: a typed confined environment for the
+sandbox, closed vocabularies compared by name against the authorities
+that already defined them (or new single owners where none existed), the
+built-in OpenCode step prompts moved into the step-content record and the
+verifier's prompts into the governed prompt module, and one hundred and
+four written reasons for confinement values, endpoint contracts, external
+format vocabularies, tool subcommands, and record field names. Every
+batch was verified on a clean export of the staged index (self-test, all
+27 conformance gates, repo conformance, devtools self-test) because the
+shared working tree held the Codex session's uncommitted work.
+
 ## Addendum written while Codex evaluated the findings
 
 Added on 2026-09-13 after 12:00 local time, while the live Codex session

@@ -16,6 +16,8 @@ VERDICTS = (
     "compatible_read_only", "compatible_export_only", "incompatible",
     "unknown", "refused_by_policy",
 )
+(COMPATIBLE, COMPATIBLE_WITH_MIGRATION, COMPATIBLE_WITH_DEGRADATION, COMPATIBLE_READ_ONLY,
+ COMPATIBLE_EXPORT_ONLY, INCOMPATIBLE, UNKNOWN_COMPATIBILITY, REFUSED_BY_POLICY) = VERDICTS
 
 
 class StoreHandshakeError(ValueError):

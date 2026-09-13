@@ -13,6 +13,7 @@ from pathlib import Path
 
 from ..loop.loop_control import NON_DETERMINISTIC
 from ..loop.recursive_loop import ACCEPTED
+from .adaptive_practitioner_records import ATTEMPT_COMPLETED
 from .solve_control_manifest import SHADOW_MODE
 
 
@@ -143,7 +144,7 @@ def spawned_summary(spawned, spawned_service, *, spec, calls_before: int) -> dic
     verification_digest = incumbent.get("verification_record_digest") if verified else None
     verification_kind = "adaptive_verification" if verified else "unverified"
     trace = spawned_service.deterministic_attempt
-    if (trace is not None and trace.status == "COMPLETED"
+    if (trace is not None and trace.status == ATTEMPT_COMPLETED
             and trace.literal_input == spawned_service.request.task
             and spawned.run.get("solved") is True
             and spawned.run.get("deterministic_attempt") == trace.to_dict()
@@ -195,7 +196,7 @@ def prepare_exact_result(services, owner):
         return None
     services.deterministic_attempt = run_deterministic_attempt(
         services.request.task, services, owner)
-    if services.deterministic_attempt.status != "COMPLETED":
+    if services.deterministic_attempt.status != ATTEMPT_COMPLETED:
         return None
     output = finish_deterministic_attempt(owner, services, lambda: {
         "run_id": services.run_id, "path": "", "separate_run": False,

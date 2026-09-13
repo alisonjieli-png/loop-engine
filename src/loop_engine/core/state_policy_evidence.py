@@ -9,6 +9,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from .information_evidence_contracts import (
+    PAIRED_STATE_COMPRESSION_DISTORTION,
     _EPSILON,
     InformationMeasurementSpec,
     InformationTheoryEvidenceError,
@@ -570,7 +571,7 @@ def assess_state_policy(
         raise InformationTheoryEvidenceError(
             "assessment needs InformationMeasurementSpec"
         )
-    if measurement_spec.measure_kind != "paired_state_compression_distortion":
+    if measurement_spec.measure_kind != PAIRED_STATE_COMPRESSION_DISTORTION:
         raise InformationTheoryEvidenceError(
             "state-policy assessment needs a paired compression-distortion spec"
         )

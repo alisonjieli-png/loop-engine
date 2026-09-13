@@ -10,6 +10,7 @@ import hashlib
 import json
 from pathlib import Path
 
+from .solve_control_manifest import FRESH_MODE
 from .stage_evidence_records import STAGE_ASSISTANCE_DISPOSITIONS, START_FRESH
 
 
@@ -155,7 +156,7 @@ def validate_decision(raw_decision: object, *, mode: str, exposed_refs,
     if not set(selected).issubset(tuple(exposed_refs or ())):
         raise StageAssistanceRuntimeRecordError(
             "the model selected a prior it was not exposed to")
-    if mode == "fresh" and (disposition != START_FRESH or selected):
+    if mode == FRESH_MODE and (disposition != START_FRESH or selected):
         raise StageAssistanceRuntimeRecordError(
             "a fresh arm permits only START_FRESH with no selected refs")
     if disposition in ("USE", "MODIFY") and len(selected) != 1:

@@ -17,6 +17,7 @@ INFRASTRUCTURE_VALIDITY_RECORD_SCHEMA = "infrastructure_validity_record/v1"
 VALID, INVALID = "valid", "invalid"
 VALIDITY_STATUSES = (VALID, INVALID)
 PREDICTIVE_STATE_INFORMATION = "predictive_state_information"
+PAIRED_STATE_COMPRESSION_DISTORTION = "paired_state_compression_distortion"
 INFORMATION_MEASURE_KINDS = (
     "paired_state_compression_distortion",
     "predictive_state_information",

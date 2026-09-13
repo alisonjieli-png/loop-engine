@@ -17,7 +17,8 @@ if TYPE_CHECKING:
 
 
 PRODUCT_OUTCOME_FILENAME = "outcome.json"
-PRODUCT_OUTCOME_RECORD_TYPES = ("solve_outcome/v3", "solve_outcome/v4", "solve_outcome/v5")
+SOLVE_OUTCOME_V5 = "solve_outcome/v5"
+PRODUCT_OUTCOME_RECORD_TYPES = ("solve_outcome/v3", "solve_outcome/v4", SOLVE_OUTCOME_V5)
 
 
 @dataclass(frozen=True)

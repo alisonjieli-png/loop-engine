@@ -13,6 +13,7 @@ from .opencode_step_composition import (
     OpenCodeCompositionError, SkillCandidate, SkillLibrary, StepLayer,
     StepLayerCatalogue, CoreLayer, read_only_tools,
     source_only_edit_permission)
+from .step_content import prompt_template
 
 
 #: Skills a practitioner run can pick up from the task text. Deliberately
@@ -125,16 +126,7 @@ def default_catalogue() -> StepLayerCatalogue:
             step_id="implement",
             description="Make the change the plan calls for.",
             system_prompt=(
-                "You are the implementation step. Make the change the plan "
-                "calls for, in files, using the tools you have.\n\n"
-                "Prefer the smallest change that satisfies the step. When "
-                "you finish, report exactly the paths you wrote.\n\n"
-                "You cannot edit test files; that is deliberate. If the gate "
-                "can only pass by changing a test -- because the expectation "
-                "is wrong, or because the test needs a service that is not "
-                "here -- do not work around it. Set blocked_on to say exactly "
-                "what a person would have to decide or provide, and stop. "
-                "That is a complete answer."),
+                prompt_template("implement")),
             tools=read_only_tools(bash=True, write=True, edit=True,
                                   patch=True),
             permission={"edit": source_only_edit_permission(),
@@ -144,14 +136,7 @@ def default_catalogue() -> StepLayerCatalogue:
             step_id="verify",
             description="Run the checks and report what actually happened.",
             system_prompt=(
-                "You are the verification step. Run the project's own "
-                "checks and report their real output.\n\n"
-                "Report what the commands printed, including failures. A "
-                "verification step that reports success it did not observe "
-                "is worse than one that reports nothing, because the run "
-                "above it will believe you. You may run commands and read "
-                "files; you may not edit them, because a verifier that can "
-                "edit can make a failing check pass."),
+                prompt_template("verify")),
             tools=read_only_tools(bash=True),
             permission={"edit": "deny", "bash": "allow"},
         ),
@@ -175,20 +160,7 @@ def inventory_step_layer(library: "SkillLibrary", catalogue: "StepLayerCatalogue
         step_id="inventory",
         description="Establish what tools, files and skills this run has.",
         system_prompt=(
-            "You are the inventory step. Establish what is actually here "
-            "before anything is decided.\n\n"
-            "Look at the workspace: list the files, find the project's own "
-            "test, lint and build commands by reading its config (package"
-            ".json scripts, pyproject, Makefile, CI workflow). Report the "
-            "commands you FOUND, quoted from the file you found them in. Do "
-            "not report a command you assume is conventional.\n\n"
-            f"Skills this runtime can admit: {available_skills}\n"
-            f"Steps this runtime can compose: {available_steps}\n"
-            "Your own tools this step: read, grep, glob, list.\n\n"
-            "You may not edit, write, or run commands. Report only what you "
-            "observed. A capability you could not confirm is reported as "
-            "absent, not assumed present: a run that believes it has a test "
-            "command it does not have will report a pass it never ran."),
+            (prompt_template("inventory.opening") + f'{available_skills}\nSteps this runtime can compose: {available_steps}' + prompt_template("inventory.tools_and_limits"))),
         tools=read_only_tools(),
         permission={"edit": "deny", "bash": "deny"},
     )
@@ -210,19 +182,7 @@ def requirements_step_layer(library: "SkillLibrary") -> StepLayer:
         step_id="requirements",
         description="Name what this specific task needs, and what is missing.",
         system_prompt=(
-            "You are the requirements step. Say what this task needs.\n\n"
-            "You may request skills only from this exact list:\n"
-            f"  {offered}\n"
-            "Requesting anything outside it is refused, so name what you "
-            "need from the list and describe anything missing in prose "
-            "instead of inventing a name for it.\n\n"
-            "For each request, say what you would do with it. A request "
-            "with no stated use is dropped -- asking for everything "
-            "available costs prompt budget on every later call and is the "
-            "same as asking for nothing.\n\n"
-            "If the task cannot be done with what exists, say so plainly "
-            "and name the missing capability. An honest gap is a usable "
-            "answer; an attempt that pretends the gap is not there is not."),
+            (f'You are the requirements step. Say what this task needs.\n\nYou may request skills only from this exact list:\n  {offered}' + prompt_template("requirements.rules"))),
         tools=read_only_tools(),
         permission={"edit": "deny", "bash": "deny"},
     )
@@ -278,23 +238,7 @@ def observation_step_layer(failed_step_id: str, failure_text: str, *,
                      if engine_observed.get("timed_out")
                      else f"it exited {code}")
         prompt = (
-            f"The {failed_step_id} step failed. The runtime ran the command "
-            f"for you; you do not need to run anything.\n\n"
-            f"Command: {ran}\nResult: {exit_line}\n\n"
-            f"Real output:\n{body}\n\n"
-            "Read that output and report what it actually says. Quote the "
-            "lines that matter rather than summarising them. Name the "
-            "single most specific fact in it -- a file and line, an exact "
-            "value, a missing name.\n\n"
-            "If the output contradicts the explanation the failed step "
-            "gave, say so plainly. That contradiction is the most useful "
-            "thing you can return, and the run above you cannot see it "
-            "unless you name it.\n\n"
-            "Do not propose a fix. A fix proposed in the same breath as an "
-            "observation bends the observation toward the fix.\n\n"
-            "If the output does not explain the failure, say that. \"The "
-            "output does not say why\" is a real answer and is better than "
-            "a cause invented to fill the field.")
+            (f'The {failed_step_id} step failed. The runtime ran the command for you; you do not need to run anything.\n\nCommand: {ran}\nResult: {exit_line}\n\nReal output:\n{body}' + prompt_template("observe.runtime_output_rules")))
         return StepLayer(
             step_id=f"observe-{failed_step_id}",
             description=f"Read what actually happened when {failed_step_id} failed.",
@@ -307,18 +251,7 @@ def observation_step_layer(failed_step_id: str, failure_text: str, *,
         step_id=f"observe-{failed_step_id}",
         description=f"Observe what actually happened when {failed_step_id} failed.",
         system_prompt=(
-            f"The {failed_step_id} step failed. This is what the runtime "
-            f"recorded:\n\n{excerpt}\n\n"
-            "Find out what actually happened. Run the failing thing, read "
-            "its real output, and report it exactly.\n\n"
-            "Use bash to observe, never to change the tree: no redirect "
-            "into a file, no `sed -i`, no `git checkout`, `stash` or "
-            "`apply`, no installing or upgrading anything. You have no "
-            "edit, write or patch tool, which leaves bash as the only way "
-            "to modify a file here -- you are the one holding it shut, and "
-            "the runtime checks the workspace afterwards and rolls back "
-            "anything that moved.\n\n"
-            "Return only what you observed. Do not propose a fix."),
+            (f'The {failed_step_id} step failed. This is what the runtime recorded:\n\n{excerpt}' + prompt_template("observe.manual_rules"))),
         tools=read_only_tools(bash=True),
         permission={"edit": "deny", "bash": "allow"},
         skills={"observe-the-failure": OBSERVATION_SKILL},

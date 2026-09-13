@@ -28,7 +28,7 @@ from jsonschema.exceptions import SchemaError
 from .context_pack_manifest import TRUST_CLASSES
 from .llm_work_packet import LLMContextBlock
 from .semantic_runtime_records import TrustedStateSnapshot, canonical_json
-from .skill_registry import LoadedSkill
+from .skill_registry import REGISTERED_SKILL, LoadedSkill
 
 SKILL_STATE_CONTEXT_POLICY = "skill_state_context/v1"
 SKILL_STATE_HISTORY_POLICY = "evidence_backed_history_material/v1"
@@ -532,7 +532,7 @@ class SkillStateContextRequest:
             )
         admission = self.skill.admission
         if (
-            self.skill.manifest.lifecycle != "registered"
+            self.skill.manifest.lifecycle != REGISTERED_SKILL
             or admission is None
             or admission.skill_id != self.skill.manifest.skill_id
             or admission.version != self.skill.manifest.version

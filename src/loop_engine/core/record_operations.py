@@ -15,7 +15,7 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
-from ..catalog.handshake import negotiate
+from ..catalog.handshake import COMPATIBLE, negotiate
 from ..catalog.protocol import CatalogStore, PreconditionFailed, StoreError
 from ..catalog.query import IntelligenceQuery
 from ..loop.effect_approval import EffectApprovalService, EffectClass, EffectSpec
@@ -193,7 +193,7 @@ class RecordOperationService:
             return RecordOperationResult(request.operation, "not_found")
         try:
             capabilities = store.capabilities()
-            if capabilities.compatibility_verdict != "compatible":
+            if capabilities.compatibility_verdict != COMPATIBLE:
                 raise RecordOperationError("store_compatibility_not_established")
             operations = ("get", "write") if effect is not None else (
                 "query",) if request.operation == "query" else ("get",)

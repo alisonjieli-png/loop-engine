@@ -1809,6 +1809,18 @@ entries:
     classification: RESOURCE_OR_TEMPLATE
     created_on: 2026-09-13
     expires_on: 2027-09-13
+  - finding_id: hardcoding.ec4960f482833680e8703fb0
+    owner: loop_engine.core.adaptive_practitioner_records
+    rationale: >-
+      The literal is the purpose text of the generated-project capability in the Practitioner's capability
+      registry: the contract description the model reads to decide whether to select that capability,
+      owned by the registry entry beside the capability's parameters and effects. It describes one
+      capability's rules rather than composing a prompt, and moving it away from the entry it describes
+      would separate the contract from its owner. Reviewed on 2026-09-13
+      (src/loop_engine/core/adaptive_practitioner_records.py:149).
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust

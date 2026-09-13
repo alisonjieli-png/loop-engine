@@ -19,6 +19,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 
 from .information_evidence_contracts import (
+    PREDICTIVE_STATE_INFORMATION,
     _EPSILON,
     INFORMATION_MEASUREMENT_SPEC_SCHEMA,
     InformationMeasurementSpec,
@@ -595,7 +596,7 @@ def estimate_predictive_information(
         raise InformationTheoryEvidenceError(
             "predictive information needs InformationMeasurementSpec"
         )
-    if specification.measure_kind != "predictive_state_information":
+    if specification.measure_kind != PREDICTIVE_STATE_INFORMATION:
         raise InformationTheoryEvidenceError(
             "predictive information needs a predictive-state measurement spec"
         )

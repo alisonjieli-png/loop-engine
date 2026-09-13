@@ -77,6 +77,7 @@ CREATE INDEX IF NOT EXISTS stage_evidence_by_signature
 CREATE INDEX IF NOT EXISTS stage_evidence_by_type
     ON stage_evidence_records(namespace_key, record_type);
 """
+WAL_JOURNAL_MODE = "wal"  # the projection stores evidence only under write-ahead logging
 
 
 class StageEvidenceProjectionError(ValueError):
@@ -188,7 +189,7 @@ class SQLiteStageEvidenceProjection:
         self._connection.execute("PRAGMA foreign_keys=ON")
         mode = str(self._connection.execute(
             "PRAGMA journal_mode=WAL").fetchone()[0]).lower()
-        if mode != "wal":
+        if mode != WAL_JOURNAL_MODE:
             self._connection.close()
             raise StageEvidenceProjectionError(
                 f"SQLite refused WAL mode and returned {mode!r}")

@@ -57,6 +57,7 @@ _TEST_PREFIXES = ("test_", "tests_")
 #: sees a 1-1 split and stays undecided) and, at an even split, labels every
 #: attempt a dissenter.  ``all`` is the default; ``peers`` remains available.
 MAJORITY_SCOPES = ("all", "peers")
+ALL_ATTEMPTS_VOTE, PEERS_VOTE = MAJORITY_SCOPES
 
 _NUMBER_RUNS = re.compile(r"(\d+)")
 
@@ -469,7 +470,7 @@ def rank_attempts(attempt_dirs: "list[str] | tuple[str, ...]", *,
                                            s.undecided,
                                            attempt_sort_key(s.attempt)))
     retained = ranked[0].attempt if ranked else ""
-    scope_note = ("all attempts vote on each input" if majority_scope == "all"
+    scope_note = ("all attempts vote on each input" if majority_scope == ALL_ATTEMPTS_VOTE
                   else "only the other attempts vote on each input")
     return RatchetReport(
         entry_point=entry_point, inputs_harvested=len(harvested),

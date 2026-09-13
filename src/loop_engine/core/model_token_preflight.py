@@ -21,6 +21,8 @@ from typing import Protocol
 
 _ACCOUNTING_SCOPE = "all_provider_reported_input_and_output/v1"
 
+TOKEN_BOUND_RECORD_TYPE = "provider_token_bound/v1"
+
 
 class TokenBoundFailureCode(str, Enum):
     """Closed, content-free failures before a physical provider dispatch."""
@@ -128,7 +130,7 @@ class ProviderTokenBound:
     source_ref: str = field(repr=False)
     source_version: str = field(repr=False)
     accounting_scope: str = _ACCOUNTING_SCOPE
-    record_type: str = "provider_token_bound/v1"
+    record_type: str = TOKEN_BOUND_RECORD_TYPE
 
     def __post_init__(self) -> None:
         _identity(self)
@@ -144,7 +146,7 @@ class ProviderTokenBound:
         if (type(self.accounting_scope) is not str
                 or self.accounting_scope != _ACCOUNTING_SCOPE
                 or type(self.record_type) is not str
-                or self.record_type != "provider_token_bound/v1"):
+                or self.record_type != TOKEN_BOUND_RECORD_TYPE):
             raise TokenBoundError(TokenBoundFailureCode.INVALID)
 
     @property

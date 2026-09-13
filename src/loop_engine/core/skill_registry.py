@@ -28,6 +28,7 @@ from .runtime_observer import RuntimeObservation, RuntimeObservationServices
 from .skill_discovery_projection import SkillDiscoveryCard, SkillDiscoveryProjection
 
 SKILL_STATES = ("candidate", "registered", "retired")
+CANDIDATE_SKILL, REGISTERED_SKILL, RETIRED_SKILL = SKILL_STATES
 AGENT_SKILLS_STRICT_POLICY = "agent_skills_standard_strict/v1"
 AGENT_SKILLS_ALLOWED_FRONTMATTER = frozenset(
     {

@@ -109,6 +109,39 @@ def _validate_skill(entry: dict, seen: set) -> None:
                 "term; triggers are matched on word boundaries in task text")
 
 
+#: The prompt texts the built-in step builders read from the record. A name
+#: listed here and absent from the record is a broken catalog, not a fallback.
+BUILTIN_PROMPT_TEMPLATE_NAMES = (
+    "implement", "verify", "inventory.opening", "inventory.tools_and_limits",
+    "requirements.rules", "observe.runtime_output_rules", "observe.manual_rules",
+    "provision.decision_order")
+
+
+def _validate_templates(entry: object) -> None:
+    if not isinstance(entry, dict):
+        raise StepContentError("prompt_templates must be an object of name to text")
+    for name, text in entry.items():
+        if not re.fullmatch(r"[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*", str(name)):
+            raise StepContentError(f"prompt template {name!r} is not a dotted lowercase name")
+        if not isinstance(text, str) or not text.strip():
+            raise StepContentError(f"prompt template {name!r} must be nonempty text")
+    missing = [name for name in BUILTIN_PROMPT_TEMPLATE_NAMES if name not in entry]
+    if missing:
+        raise StepContentError(f"prompt templates missing for built-in steps: {missing}")
+
+
+def prompt_template(name: str) -> str:
+    """The exact text of one prompt template in the record, or a refusal.
+
+    The built-in step builders compose their system prompts from these
+    texts and their run-time facts, so the prompt a step runs under lives
+    in the versioned record beside the authored layers, not in code."""
+    templates = load_catalog().get("prompt_templates", {})
+    if name not in templates:
+        raise StepContentError(f"unknown prompt template {name!r}")
+    return templates[name]
+
+
 @lru_cache(maxsize=1)
 def load_catalog(path: str = "") -> dict:
     """Read and validate the whole catalog, or refuse it."""
@@ -126,6 +159,7 @@ def load_catalog(path: str = "") -> dict:
         _validate_layer(entry, seen_steps)
     for entry in data.get("skills", ()):
         _validate_skill(entry, seen_skills)
+    _validate_templates(data.get("prompt_templates", {}))
     return data
 
 
@@ -246,6 +280,14 @@ def self_test() -> dict:
     check("a_generated_layer_cannot_displace_a_measured_one",
           "orientation step" in base_prompt.lower(), base_prompt[:60])
 
+    check("every_built_in_step_prompt_template_is_present_and_nonempty",
+          all(prompt_template(name).strip() for name in BUILTIN_PROMPT_TEMPLATE_NAMES)
+          and len(data["prompt_templates"]) >= len(BUILTIN_PROMPT_TEMPLATE_NAMES))
+    try:
+        prompt_template("no.such.template")
+        check("an_unknown_prompt_template_is_refused", False, "accepted")
+    except StepContentError:
+        check("an_unknown_prompt_template_is_refused", True)
     library = extended_library()
     check("generated_skills_extend_the_library",
           "reproduce-before-fix" in library.available()
