@@ -31,7 +31,7 @@ SECRET = "OVERNIGHT_TEST_SECRET"
 
 def _git(*args, cwd):
     return subprocess.run(["git", *args], cwd=str(cwd), capture_output=True,
-                          text=True, check=False)
+                          text=True, check=False, timeout=120)
 
 
 def _repo(root: Path) -> Path:
