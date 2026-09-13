@@ -95,7 +95,14 @@ every invocation (`step_history` rows carry `layout`, `checkpoint`, and
 `revision`; the retention test pins that every revision reloads). `ollama_client.learn_output_capability(model)`
 reads a model's output ceiling from the service's own refusal, for the
 thirteen listed models without a declared maximum, once the allowance
-resets.
+resets. The [campaign activation review](../verification/CAMPAIGN-ACTIVATION-REVIEW-2026-09-13.md)
+probed `65593c7` offline before the launch: the worker's frozen snapshot
+predates every fix since `dd49ca3`, a page in the provider's place drained
+the queue (fixed at the ledger's usage rule), and three items are left for
+this session: acknowledging an interrupted occurrence, engine identity over
+the controller and package resources, and route-stop on a single generic
+400. `python -m embodiment_lab.campaign_report ROOT --html page.html`
+renders a campaign root as one page from its exported records.
 
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).

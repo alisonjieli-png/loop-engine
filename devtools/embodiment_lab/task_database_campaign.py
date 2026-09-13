@@ -704,7 +704,13 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
                         if decision['classes'] and set(decision['classes']) <= {OUTAGE, ALLOWANCE}:
                             # A shared provider wait does not make this task
                             # fail and must not drain the rest of the queue.
-                            cursor['trial_attempt'] = cursor.get('trial_attempt', 0) + 1
+                            # The suspension records how many waits were
+                            # spent and resets the per-cell counter, so a
+                            # restarted worker waits its full ceiling again
+                            # instead of suspending after one attempt.
+                            cursor['suspended_after_attempts'] = cursor.get('trial_attempt', 0) + 1
+                            cursor['suspensions'] = cursor.get('suspensions', 0) + 1
+                            cursor['trial_attempt'] = 0
                             records.record('controller', 'cursor', cursor)
                             records.refresh_export(root / 'status.json', {**base, 'cursor': cursor,
                                 'status': 'provider_wait_suspended', 'latest_trial': result})

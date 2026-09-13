@@ -9,6 +9,26 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- Campaign activation and safety, after a same-night offline
+  [review](docs/verification/CAMPAIGN-ACTIVATION-REVIEW-2026-09-13.md) of
+  the Codex session's activation gate, access check, and worker: a page in
+  the provider's place (a login page, a proxy notice, a 200 body with an
+  error field) no longer drains the queue, because the harness accounting
+  check accepts the ledger's reported zero and the gateway's absent usage
+  as one description of one response, and the typed
+  `invalid_response_body` code reaches the worker as a counted call and an
+  outage to wait on; hexadecimal reference
+  ids are dropped before any bare-digit status rule reads an error body; a
+  suspension resets the per-cell attempt counter so a restarted worker
+  waits its full ceiling; the activation gate refuses a non-text time
+  instead of opening for a null. A self-contained campaign page
+  (`devtools/embodiment_lab/campaign_report.py`) renders a campaign root's
+  coverage, evidence links, accounting from each cell's own outcome, and
+  population by job family, from exported records only, and shows a cell
+  whose projection the running worker holds locked as in progress. Left
+  open for the Codex session: acknowledging an interrupted occurrence,
+  engine identity over the controller and package resources, and
+  route-stop on a single generic 400.
 - Append-only Run History checkpoints. `RunHistory.append_checkpoint(root)`
   stores every event once and one checkpoint line per call (revision,
   events covered, head digest), so N checkpoints of an n-event history

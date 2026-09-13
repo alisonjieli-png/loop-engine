@@ -40,6 +40,18 @@ def _budget_failure(request: HarnessRunRequest, result: HarnessRunResult) -> str
     return None
 
 
+def _usage_agrees(event, call) -> bool:
+    """The ledger event and the gateway attempt describe the same usage.
+
+    The ledger keeps a received response's reported zero counters as zero;
+    the gateway attempt reads the same two zeros as absent usage (a legacy
+    adapter's defaults are not evidence). Both are one description of one
+    response, so the pair agrees; any other difference is a mismatch."""
+    recorded = (event.get("prompt_tokens"), event.get("eval_tokens"))
+    reported = (call.input_tokens, call.output_tokens)
+    return recorded == reported or (recorded == (0, 0) and reported == (None, None))
+
+
 def _validate_gateway_references(calls, events, owner_ids) -> None:
     """Only fresh, matching canonical attempts may suppress imported events."""
     referenced = [call for call in calls if call.gateway_loop_id]
@@ -61,6 +73,5 @@ def _validate_gateway_references(calls, events, owner_ids) -> None:
                        for key in ("loop_definition_id", "loop_definition_version", "loop_definition_digest"))
                 or (event.get("provider"), event.get("model")) != (call.provider, call.model)
                 or (event.get("event") == "model_led") != call.ok
-                or (event.get("prompt_tokens"), event.get("eval_tokens"))
-                != (call.input_tokens, call.output_tokens)):
+                or not _usage_agrees(event, call)):
             raise HarnessError("gateway reference identity, status or usage mismatch")

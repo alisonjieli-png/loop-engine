@@ -576,6 +576,9 @@ _USAGE_LIMIT_MARKERS = ("usage limit", "usage_limit", "quota",
                         "spending limit", "spend limit", "billing hard limit",
                         "usage credits")
 _HTTP_STATUS_PREFIX = re.compile(r"^\s*http(?:\s+error)?\s+(\d{3})\b")
+#: A reference or request id: a hexadecimal run of six or more characters
+#: with at least one letter, or a uuid-shaped token; never a status.
+_REFERENCE_ID = re.compile(r"\b(?=[0-9a-f-]*[a-f])[0-9a-f]{6,}(?:-[0-9a-f]{2,})*\b|\b(?:ref|request_id|req|id)[:=_ ]+[0-9a-z_-]{5,}", re.I)
 #: "key" as a word (api key, api_key, apikey), so a model named "monkey"
 #: is not read as a credential.
 _KEY_WORD = re.compile(r"(?<![a-z])(?:api[_ -]?)?key(?![a-z])")
@@ -675,6 +678,10 @@ def _error_code(error: str) -> str:
         return "unknown_model_output_limit"
     if "not the declared model maximum" in low:
         return "model_output_limit_mismatch"
+    # Reference and request ids are hexadecimal, so they carry three-digit
+    # runs that look like statuses; they are dropped before any bare-digit
+    # rule below reads the text.
+    low = _REFERENCE_ID.sub(" ", low)
     status_code = _error_code_for_status(_http_status(low), low)
     if status_code:
         # The provider answered with a status: that settles the class

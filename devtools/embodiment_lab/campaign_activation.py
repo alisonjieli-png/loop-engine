@@ -26,7 +26,14 @@ def utc_time(value):
 def activation_due(not_before, now):
     if now.tzinfo is None or now.utcoffset() is None:
         raise ValueError('current time requires an explicit timezone')
-    return not not_before or now >= utc_time(not_before)
+    if not_before is None or not_before == '':
+        # No gate was declared: the campaign may start. Anything else that
+        # is not text (a null written by hand, a number) is not a declared
+        # time and must not open the gate by reading as false.
+        return True
+    if not isinstance(not_before, str):
+        raise ValueError('activation time must be text or absent')
+    return now >= utc_time(not_before)
 
 
 def probe_gateway(gateway, route, records):

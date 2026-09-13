@@ -140,5 +140,63 @@ class OfflineTrialChecks(unittest.TestCase):
             self.assertEqual(json.loads(json.dumps(summary)), summary)
 
 
+class RefusalPageTrialChecks(unittest.TestCase):
+    def test_a_page_in_the_providers_place_keeps_its_typed_code_and_its_call_count(self):
+        """A login page or proxy notice answering a trial's model call is a
+        classified outage on one counted call, never uncertain accounting
+        with no code, which the worker would score as a failed cell."""
+        class PageTransport:
+            def __init__(self):
+                self.calls = 0
+
+            def open(self, request, timeout):
+                self.calls += 1
+                return io.BytesIO(b'<!doctype html><html><body><h1>Sign in</h1></body></html>')
+
+        with tempfile.TemporaryDirectory(prefix='campaign-trial-page-') as directory:
+            root = Path(directory)
+            task_directory = root / 'database' / 'family' / 'T-PAGE'
+            task_directory.mkdir(parents=True)
+            (task_directory / 'task.json').write_text(json.dumps({'id': 'T-PAGE', 'attachments': []}))
+            (task_directory / 'task.md').write_text('# Page fixture task\n\nReply READY.\n')
+            row = {'id': 'T-PAGE', 'task_directory': str(task_directory),
+                   'descriptor_digest': file_digest(task_directory / 'task.json'),
+                   'brief_digest': file_digest(task_directory / 'task.md')}
+            endpoint = CustomEndpoint('page_fixture', 'https://fixture.invalid/v1', 'fixture-model',
+                locality='cloud', wire='openai', stream='buffer', auth_scheme='none', counts_as_evidence=True,
+                output_capability=ModelOutputCapability(65536, 'offline trial contract'))
+            gateway = ModelGateway(providers=(provider_spec_from_endpoint(endpoint),),
+                routes=(ModelRoute('fixture.route', 'page_fixture', 'fixture-model', 'cloud'),),
+                policy=RoutePolicy(allow_local_counted_generation=True))
+            configuration = {'harness': 'native_gateway', 'temperature': 0.0, 'output_allocation_tokens': 16384,
+                             'context_delivery': 'bounded_inline', 'harness_fallback': 'none',
+                             'mode': 'non_deterministic', 'provider': 'page_fixture', 'model': 'fixture-model',
+                             'route': 'fixture.route', 'provider_failover': False,
+                             'max_model_calls': None, 'max_passes': None}
+            manifest = {'harnesses': ['native_gateway'], 'repository': str(REPOSITORY),
+                        'harness_file_digests': {}, 'provider_file': ''}
+            transport = PageTransport()
+            with patch('loop_engine.core.custom_endpoint._endpoint_opener', return_value=transport):
+                state = run_trial(root / 'campaign', row, configuration, manifest, '0-attempt-0',
+                                  services=CampaignTrialServices(gateway=gateway))
+            self.assertEqual(state['status'], 'finished')
+            self.assertEqual(state['engine_terminal'], 'PROVIDER_UNAVAILABLE')
+            self.assertEqual(state['provider_failure_codes'], ['invalid_response_body'])
+            self.assertEqual(state['model_calls'], transport.calls)
+            self.assertTrue(state['model_call_accounting_complete'])
+            from embodiment_lab.task_database_campaign import outage_decision
+            from loop_engine.core.provider_failure_classes import WAIT_FOR_RECOVERY
+            self.assertEqual(outage_decision(state, 0, 3)['decision'], WAIT_FOR_RECOVERY)
+            from embodiment_lab.campaign_report import campaign_report, render_campaign_html
+            report = campaign_report(root / 'campaign')
+            self.assertEqual(report['coverage']['cells'], 1)
+            self.assertEqual(report['accounting']['model_calls'], transport.calls)
+            page = render_campaign_html(report)
+            self.assertIn('T-PAGE', page)
+            self.assertIn('PROVIDER_UNAVAILABLE', page)
+            self.assertNotIn('<script', page)
+            self.assertNotIn('http://', page.split('<main>', 1)[1].split('</main>')[0].replace('https://fixture.invalid', ''))
+
+
 if __name__ == '__main__':
     unittest.main()

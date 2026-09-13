@@ -38,8 +38,14 @@ REQUIRED_LINKS = ("trial_state", "task_sources", "applied_configuration", "step_
 
 
 def _projection_rows(path):
-    """Every latest record in the cell's projection, by namespace and id."""
-    connection = duckdb.connect(str(path), read_only=True)
+    """Every latest record in the cell's projection, by namespace and id;
+    None when the projection cannot be read now (a running worker holds
+    the writer lock on the cell it is executing), which the report says
+    rather than reading as an empty cell."""
+    try:
+        connection = duckdb.connect(str(path), read_only=True)
+    except duckdb.Error:
+        return None
     try:
         rows = connection.execute(
             "SELECT namespace, record_id, payload FROM experiment_records r WHERE revision = "
@@ -113,7 +119,17 @@ def trial_evidence_report(cell) -> dict:
         raise ValueError("a trial cell is a directory the runner wrote")
     projection = cell / "projection.duckdb"
     records = _projection_rows(projection) if projection.is_file() else {}
+    projection_readable = records is not None
+    records = records or {}
     state = records.get("trial", {}).get("state") or {}
+    status_export = cell / "status.json"
+    if not state and status_export.is_file():
+        # The exported status stands in while the projection is locked; it
+        # is the writer's own export, and the report says so.
+        try:
+            state = json.loads(status_export.read_text())
+        except ValueError:
+            state = {}
     sources = records.get("task_sources", {}).get("selected") or {}
     applied = records.get("applied_configuration", {})
     steps = records.get("step_history", {})
@@ -168,6 +184,7 @@ def trial_evidence_report(cell) -> dict:
     return {"record_type": REPORT_RECORD_TYPE, "cell": str(cell), "task_id": state.get("task_id"),
             "status": state.get("status"), "engine_terminal": state.get("engine_terminal"),
             "run_id": run_id, "links": links, "gaps": gaps, "complete": not gaps,
+            "projection_readable": projection_readable,
             "reverified_links": list(REVERIFIED_LINKS),
             "recorded": recorded, "disagreements": disagreements,
             "physical_model_calls": physical_calls, "claimed_model_calls": claimed,
@@ -190,6 +207,7 @@ def campaign_evidence_summary(root) -> dict:
     return {"record_type": "campaign_evidence_summary/v2", "root": str(root), "trials": len(reports),
             "complete": sum(1 for report in reports if report["complete"]),
             "with_disagreements": sum(1 for report in reports if report["disagreements"]),
+            "projection_locked": sum(1 for report in reports if not report["projection_readable"]),
             "finished": sum(1 for report in reports if report["status"] == TRIAL_FINISHED),
             "failed": sum(1 for report in reports if report["status"] == TRIAL_FAILED),
             "gaps": dict(sorted(by_gap.items())), "reports": reports}

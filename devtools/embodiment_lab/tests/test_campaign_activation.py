@@ -17,6 +17,12 @@ class CampaignActivationChecks(unittest.TestCase):
         self.assertFalse(activation_due(gate, datetime(2026, 9, 13, 23, tzinfo=timezone.utc)))
         self.assertTrue(activation_due(gate, utc_time(gate)))
         self.assertTrue(activation_due('', datetime.now(timezone.utc)))
+        self.assertTrue(activation_due(None, datetime.now(timezone.utc)))
+        # A hand-edited manifest cannot open the gate with a value that is
+        # not a declared time: zero, false, and a number are refused.
+        for value in (0, False, 1.5, ['2026-09-14T00:23:46+00:00']):
+            with self.assertRaises(ValueError):
+                activation_due(value, datetime.now(timezone.utc))
         with self.assertRaises(ValueError):
             utc_time('2026-09-14T00:23:46')
         with self.assertRaises(ValueError):

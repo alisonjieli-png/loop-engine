@@ -245,9 +245,13 @@ def as_model_loop(objective: str, fn, *, inputs=None,
     _prompt_tokens = _reported_token_attr(value, "prompt_tokens")
     _eval_tokens = _reported_token_attr(value, "eval_tokens")
     _total_tokens = _reported_token_attr(value, "total_tokens")
-    if not ok and getattr(value, 'response_received', None) is False:
+    if not ok and getattr(value, 'response_received', None) is not True:
         # Legacy response objects default their counters to zero even when
-        # no provider response arrived. Those defaults are not usage evidence.
+        # no provider response arrived, or when the flag is missing or
+        # untyped. Those defaults are not usage evidence. A reported zero
+        # on a received response stays zero here; the gateway attempt reads
+        # the same two zeros as absent usage, and the harness accounting
+        # check accepts that pair as one description of one response.
         _prompt_tokens = _eval_tokens = _total_tokens = None
     _known_usage = sum(item is not None for item in (
         _prompt_tokens, _eval_tokens, _total_tokens))
