@@ -124,6 +124,8 @@ def run_checks():
                                          engines=(repeating,)))
     check("an_invalid_proposal_from_rank_is_not_an_engine_crash",
           invalid["attempts"][0]["result"] == "invalid_proposal" and invalid["status"] == "abstained")
+    import json
+    check("the_decision_record_is_json_plain", json.loads(json.dumps(invalid)) == invalid)
     return {"tests": tests, "passed": sum(t["passed"] for t in tests), "total": len(tests),
             "all_passed": all(t["passed"] for t in tests)}
 

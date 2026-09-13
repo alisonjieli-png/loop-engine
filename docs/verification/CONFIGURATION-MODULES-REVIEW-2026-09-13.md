@@ -73,8 +73,10 @@ Every self-test count in the Codex session's verification report matched
    not exist now cite the checks that cover them.
 
 10. **Low. Records were not JSON-plain and had no typed readers.**
-    **Partly fixed:** setting records now emit lists for phases and modes.
-    Typed readers that refuse unknown keys remain open.
+    **Fixed:** setting records emit lists, the decision record is plain
+    JSON, and the fact, setting, and target records have `from_dict`
+    readers that rebuild with equal digests and refuse unknown or missing
+    fields, changed digests, and redacted records.
 
 11. **Low. Facts had no typed expiry handling.** **Fixed:** expiry must be
     ISO 8601 text, is normalized to one UTC spelling so `Z` and `+00:00`

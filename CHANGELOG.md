@@ -268,6 +268,13 @@ First public release.
   in that module or a check module of its package. Eleven rows named
   tests that did not exist (two check modules without a `self_test`, three
   check names found nowhere) and now cite the checks that cover them.
+- Configuration records read back: `ConfigurationFact`,
+  `ConfigurationSettingSpec`, and `ConfigurationTargetSpec` have `from_dict`
+  readers that rebuild a record with the same digests and refuse unknown
+  or missing fields, another record type, a changed definition or target
+  digest, and a redacted (sensitive) setting record, which cannot honestly
+  be rebuilt into a definition; the preference decision record is now
+  plain JSON. Six new setter checks and one preference check.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback

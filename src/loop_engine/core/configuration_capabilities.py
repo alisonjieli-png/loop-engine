@@ -26,6 +26,9 @@ AVAILABILITY_STATES = (AVAILABLE, UNAVAILABLE, UNKNOWN_FACT)
 QUALIFICATION_STATES = (QUALIFIED, UNQUALIFIED, UNKNOWN_FACT)
 
 
+TARGET_RECORD_TYPE = "configuration_target/v1"
+
+
 class ConfigurationCapabilityError(ValueError):
     """Configuration cannot be represented or supported as requested."""
 
@@ -79,6 +82,13 @@ class ConfigurationFact:
             # One instant, one spelling: the same expiry written with Z or
             # +00:00 must digest identically.
             object.__setattr__(self, "expires_at", parsed.astimezone(timezone.utc).isoformat())
+
+    @classmethod
+    def from_dict(cls, record) -> "ConfigurationFact":
+        expected = {item.name for item in fields(cls)}
+        if not isinstance(record, dict) or set(record) != expected:
+            raise ConfigurationCapabilityError("fact record has unexpected or missing fields")
+        return cls(**record)
 
     def current_state(self, at: datetime) -> str:
         if not isinstance(at, datetime) or at.tzinfo is None or at.utcoffset() is None:
@@ -154,6 +164,31 @@ class ConfigurationSettingSpec:
         value["default_input"]["state"] = parameter.default_input.state.value
         return cls(canonical(value), target_field, **facts)
 
+    @classmethod
+    def from_dict(cls, record) -> "ConfigurationSettingSpec":
+        """Rebuild a setting from its record with the same definition digest.
+        A field the record lacks or adds is refused rather than dropped, and
+        a redacted (sensitive) record cannot be rebuilt into a definition."""
+        expected = ({item.name for item in fields(cls)} - {"parameter_json"}) | {"parameter", "definition_digest"}
+        if not isinstance(record, dict) or set(record) != expected:
+            raise ConfigurationCapabilityError("setting record has unexpected or missing fields")
+        parameter = record["parameter"]
+        if not isinstance(parameter, dict) or parameter.get("constraints") == {"redacted": True}:
+            raise ConfigurationCapabilityError("a redacted setting record cannot be rebuilt")
+        for name in ("phases", "run_modes"):
+            if not isinstance(record[name], (list, tuple)):
+                raise ConfigurationCapabilityError(name + " must be a sequence")
+        spec = cls(canonical(parameter), record["target_field"],
+                   support=ConfigurationFact.from_dict(record["support"]),
+                   availability=ConfigurationFact.from_dict(record["availability"]),
+                   qualification=ConfigurationFact.from_dict(record["qualification"]),
+                   phases=tuple(record["phases"]), run_modes=tuple(record["run_modes"]),
+                   writable=record["writable"], authority_bearing=record["authority_bearing"],
+                   value_codec=record["value_codec"])
+        if record["definition_digest"] != digest(parse_json(spec.parameter_json)):
+            raise ConfigurationCapabilityError("setting record's definition digest does not match its definition")
+        return spec
+
     def parameter(self) -> ParameterDefinition:
         value = parse_json(self.parameter_json)
         value["default_input"] = ParameterInput(**value["default_input"])
@@ -208,10 +243,25 @@ class ConfigurationTargetSpec:
             "settings": [{**s.to_dict(), "parameter_json": s.parameter_json} for s in self.settings]})
 
     def to_dict(self):
-        return {"record_type": "configuration_target/v1", "target_ref": self.target_ref,
+        return {"record_type": TARGET_RECORD_TYPE, "target_ref": self.target_ref,
             "settings": [s.to_dict() for s in self.settings], "source_ref": self.source_ref,
             "source_digest": self.source_digest, "locality": self.locality,
             "version": self.version, "target_digest": self.content_digest}
+
+    @classmethod
+    def from_dict(cls, record) -> "ConfigurationTargetSpec":
+        """Rebuild a target from its record and refuse one whose digest does
+        not come back, whose type is another, or whose fields differ."""
+        expected = {"record_type", "target_ref", "settings", "source_ref", "source_digest",
+                    "locality", "version", "target_digest"}
+        if (not isinstance(record, dict) or set(record) != expected
+                or record["record_type"] != TARGET_RECORD_TYPE or not isinstance(record["settings"], (list, tuple))):
+            raise ConfigurationCapabilityError("target record has unexpected or missing fields")
+        target = cls(record["target_ref"], tuple(ConfigurationSettingSpec.from_dict(s) for s in record["settings"]),
+                     record["source_ref"], record["source_digest"], record["locality"], record["version"])
+        if record["target_digest"] != target.content_digest:
+            raise ConfigurationCapabilityError("target record's digest does not match its content")
+        return target
 
 
 def describe_configuration(target: ConfigurationTargetSpec, current, *, at: datetime) -> dict:

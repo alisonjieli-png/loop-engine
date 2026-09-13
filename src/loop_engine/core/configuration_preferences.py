@@ -226,7 +226,9 @@ def resolve_preference(request: PreferenceSelectionRequest) -> dict:
         "scope_digest": request.snapshot.scope_digest, "as_of": request.as_of.isoformat(),
         "eligible_candidates": [v.to_dict() for v in request.snapshot.candidates],
         "ordered_ids": [], "selected_engine_ref": "", "attempts": [],
-        "policy": asdict(request.policy), "engines": [v.to_dict() for v in request.engines],
+        "policy": {key: list(value) if isinstance(value, tuple) else value
+                   for key, value in asdict(request.policy).items()},
+        "engines": [v.to_dict() for v in request.engines],
         "status": "abstained", "model_call_performed_by_boundary": False,
         "execution_authority_granted": False, "task_accepted": False}
     if not ids:

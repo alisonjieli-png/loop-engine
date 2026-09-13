@@ -318,3 +318,21 @@ def _review_checks(check, refuses, spec, current, apply, Values):
     refuses("non_text_fact_references_are_refused", lambda: ConfigurationFact("unknown", 123, object()))
     check("setting_and_target_records_are_json_plain",
           json.loads(json.dumps(spec.to_dict())) == spec.to_dict())
+    rebuilt = ConfigurationTargetSpec.from_dict(json.loads(json.dumps(spec.to_dict())))
+    check("target_and_setting_records_rebuild_with_equal_digests",
+          rebuilt.content_digest == spec.content_digest and rebuilt == spec
+          and ConfigurationFact.from_dict(fact("supported").__dict__) == fact("supported"))
+    portable = spec.to_dict()
+    refuses("a_target_record_with_an_unknown_field_is_refused",
+            lambda: ConfigurationTargetSpec.from_dict({**portable, "extra": 1}))
+    refuses("a_target_record_missing_a_field_is_refused",
+            lambda: ConfigurationTargetSpec.from_dict({k: v for k, v in portable.items() if k != "locality"}))
+    refuses("a_target_record_whose_digest_was_changed_is_refused",
+            lambda: ConfigurationTargetSpec.from_dict({**portable, "target_digest": "0" * 64}))
+    refuses("a_setting_record_with_a_changed_definition_digest_is_refused",
+            lambda: ConfigurationSettingSpec.from_dict({**portable["settings"][0], "definition_digest": "0" * 64}))
+    sensitive_spec = ConfigurationSettingSpec.from_parameter(
+        replace(spec.settings[2].parameter(), sensitivity="sensitive"), "optional",
+        support=fact("supported"), availability=fact("available"), qualification=fact("qualified"))
+    refuses("a_redacted_setting_record_cannot_be_rebuilt",
+            lambda: ConfigurationSettingSpec.from_dict(sensitive_spec.to_dict()))
