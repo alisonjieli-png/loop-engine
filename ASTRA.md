@@ -67,6 +67,40 @@ inner harness can plan and use its permitted tools within the shared
 authority. These are nested control responsibilities, not a second Loop
 Engine runtime.
 
+## Meta-selectors and configuration setters
+
+The owner asked whether different meta-selectors or agents could choose the
+best configurations and grid parameters. Treat model preference engines,
+harness preference engines, selector portfolios, and the method that selects
+those engines as configurable choices. Give each an initial choice and
+ordered fallback priorities. Preserve abstention when the evidence is missing
+or incompatible; do not imply a universal best configuration.
+
+The [configuration preference guide](docs/guides/configuration-preferences-and-meta-selection.md)
+separates the implemented in-memory setter and advisory preference interface
+from proposed autonomous selector portfolios. It also records additional
+dimensions for support discovery, change phases, deployment, objective
+tradeoffs, feature representations, effective-setting confirmation, and
+independent requalification. The inventory remains open.
+
+Review the integration in this order: existing eligibility checks, exact
+candidate and engine identities, meta-selector recommendation, parameter
+precedence, authorized application, invocation-time revalidation, and
+independent evaluation. An unsupported choice cannot become eligible because
+a model recommends it. A supplied agent proposal does not prove that a model
+call occurred. A selector's own favorable score cannot approve the selector.
+
+Compare selector methods as well as the configurations they propose. Retain
+proposal overhead, failed selectors, fallback transitions, and evaluation
+partitions. Model-led joint configuration, Bayesian search, evolutionary
+search, vector-based transfer, and future methods can be composed when their
+contracts and authority permit. The current component checks do not qualify
+an autonomous live portfolio or automatic joint model and harness selection.
+
+The [September 13 preference verification report](docs/verification/CONFIGURATION-PREFERENCES-AND-META-SELECTION-2026-09-13.md)
+records the offline source and clean-installation checks, six search-method
+composition controls, the failed vector fixture, and the remaining live gaps.
+
 ## Complete behavioral explanation
 
 A discrete cognitive or act step Loop node is an independently governed

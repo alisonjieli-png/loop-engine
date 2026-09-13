@@ -267,6 +267,7 @@ def self_test() -> dict:
         "core.software_tdd_skill_checks",
         "core.settings_loader",
         "core.parameter_resolution",
+        "core.configuration_setters", "core.configuration_preferences",
                                                                                                                                                                                     ]
     import importlib as _importlib
     import importlib.util as _importlib_util

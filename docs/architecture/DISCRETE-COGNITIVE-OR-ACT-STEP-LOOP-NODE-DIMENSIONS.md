@@ -247,6 +247,37 @@ split one further. The number of entries is not a progress metric.
 
 ## Ongoing dimension discovery
 
+The owner subsequently requested additional model and harness preference
+engines, capability-aware configuration setters, and meta-selectors or agents
+that help choose grid parameters. Version 1.2.0 of the design inventory
+includes these further refinements. The
+[configuration preference guide](../guides/configuration-preferences-and-meta-selection.md)
+maps their owning contracts and separates current in-memory and advisory
+interfaces from proposed native setters and autonomous portfolios.
+
+| Further refinement | Initial and fallback decisions |
+|---|---|
+| Model preference engine | Existing route ordering, reviewed evidence ranking, or a qualified custom proposal method. |
+| Harness preference engine | Eligible configured order, matched trial ranking, or another qualified ordering method. |
+| Meta-selector and engine priorities | Initial selector, alternate selectors, abstention, and permitted failure triggers. |
+| Selector portfolio coordination | Serial proposals, permitted parallel proposals, proposal-combination policy, or a single engine. |
+| Objective tradeoff and feasibility | Metric priorities and constrained tradeoffs without weakening acceptance. |
+| Selector uncertainty and abstention | Confidence policy, additional information, another proposal, or stop. |
+| Selector feedback partition and scope | Exact-task feedback, admissible cross-task feedback, or no reusable evidence. |
+| Task feature encoding and distance | Exact feature representation, comparison method, and compatible alternatives. |
+| Configuration setter backend | In-memory field binding, qualified native file or command interface, or remote control adapter. |
+| Configuration change phase | Before initialization, per request, between steps, or explicit restart. |
+| Atomic configuration change and rollback | Staged replacement, exact commit protocol, reconciliation, or refusal. |
+| Support discovery and freshness | Host declaration, qualified handshake, sourced documentation, or permitted probe. |
+| Effective configuration confirmation | Echoed effective settings, native load evidence, invocation observation, or unknown. |
+| Deployment and serving realization | Qualified local or cloud deployment, serving implementation, hardware, and model realization. |
+| Concurrency and service admission | Available capacity, queue policy, alternate deployment, or deferred work. |
+| Search to execution binding | Exact proposal binding, revalidation, authorized dispatch, or recorded exclusion. |
+| Selector drift and independent requalification | Current reviewed version, qualified replacement, or loss of eligibility. |
+
+These entries inherit every choice and fallback requirement. They do not
+turn the inventory into a fully implemented grid or an exhaustive design.
+
 For each real assignment, ask what else could change the outcome while the
 named harness and model remain fixed. Inspect the entire governed lifecycle:
 intake, configuration resolution, preparation, execution, observation,

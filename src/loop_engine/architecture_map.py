@@ -261,6 +261,8 @@ MODULE_MAP = {
         "primitive_conformance",
         "runtime_observer", "runtime_settings", "settings_loader",
         "parameter_resolution",
+        "configuration_capabilities", "configuration_setters", "configuration_setter_checks",
+        "configuration_preferences", "configuration_preference_checks",
         "information_evidence_contracts", "information_theory_evidence",
         "information_update_evidence", "information_theory_adversarial_checks",
         "information_theory_evidence_checks", "state_policy_evidence",

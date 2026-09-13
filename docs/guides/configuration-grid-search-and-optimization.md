@@ -25,6 +25,11 @@ Use the [run-path and dimension coverage map](../verification/RUN-PATH-AND-DIMEN
 to track individual settings, fallback transitions, interactions, and
 stateful sequences separately from optimization outcomes.
 
+The [configuration preference guide](configuration-preferences-and-meta-selection.md)
+describes sourced setting capabilities, checked in-memory changes, and
+meta-selectors that choose among preference or search engines. Search-engine
+selection remains separate from dispatch authority and independent evaluation.
+
 ## Complete explanation
 
 A discrete cognitive or act step Loop node is an independently governed
@@ -370,10 +375,12 @@ coverage, beam search, evolutionary proposals, or other explicitly
 implemented strategies. Record which parts of the possible space were
 actually explored. Do not label a truncated traversal as exhaustive.
 
-The current generation executor installs exact enumeration only. Its
-`SEARCH_STRATEGIES` vocabulary also names other strategies, but a recognized
-name is not an installed search implementation. Unsupported choices refuse.
-The list of future strategies is not a closed research agenda.
+`generation.operators.generate_candidates` implements the earlier exact
+enumeration contract. Its `SEARCH_STRATEGIES` vocabulary is not an installed
+optimizer registry. The separate scalable `generation.search` boundary
+implements grid, random, and vector-guided proposals, with Bayesian,
+evolutionary, and covariance adaptation in the optional Optuna adapter.
+Unsupported adapter choices or unavailable dependencies refuse explicitly.
 
 Define any early-stopping, resource-allocation, or refinement rule before
 using it to select outcomes. Record what was excluded and why. Preserve
@@ -390,6 +397,9 @@ infer a spending grant from a finite candidate count.
 | Prompt composition and observations | [Prompt resources](../../src/loop_engine/strings/prompt_fragments.py), [prompt experiments](../../src/loop_engine/core/prompt_experiment.py), [context manifest](../../src/loop_engine/core/context_pack_manifest.py) | Integration depends on the actual caller; the presence of a resource does not prove contribution. |
 | Live bounded configuration trials | [Configuration matrix](../../devtools/embodiment_lab/configuration_matrix.py) | A fixed development application with a disclosed population, not an arbitrary-grid optimizer for all dimensions. |
 | Reviewed harness ordering | [Harness selection](../../src/loop_engine/core/harness_selection.py) | A fixed model route and resource scope; not joint model, prompt, intelligence, graph, and fallback optimization. |
+| Lazy indexed configuration spaces | [Configuration space](../../src/loop_engine/generation/space.py) | Large declared address spaces without exhaustive materialization; raw count is not valid or executed count. |
+| Task-conditioned proposal adapters | [Configuration search](../../src/loop_engine/generation/search.py), [optional optimizers](../../src/loop_engine/generation/search_optuna.py) | Proposals and validated search feedback, not automatic live task execution. |
+| Setting capabilities and preference engines | [Configuration preference guide](configuration-preferences-and-meta-selection.md) | Checked in-memory dataclass changes and advisory engine ordering; native setters and autonomous live portfolios remain unqualified. |
 
 A full applied optimization campaign still needs qualified resource
 resolution, complete exclusion accounting, exact treatment application,

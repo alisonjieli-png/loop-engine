@@ -87,6 +87,14 @@ BOUNDARIES = (
      "crosses": "a task-conditioned search proposes exact configuration candidates",
      "binding": "practitioner_loop", "envelope": "generation.search.propose_configurations",
      "test": "search:configuration_search_uses_canonical_loop"},
+    {"boundary": "authorized in-memory configuration update",
+     "crosses": "owned parameter sources resolve an atomic in-memory configuration change",
+     "binding": "practitioner_loop", "envelope": "core.configuration_setters.apply_configuration_as_loop",
+     "test": "configuration_setters:configuration_setter_uses_canonical_loop"},
+    {"boundary": "configuration preference resolution",
+     "crosses": "eligible choices receive a validated ordering from an explicitly selected engine",
+     "binding": "practitioner_loop", "envelope": "core.configuration_preferences.resolve_preference_as_loop",
+     "test": "configuration_preferences:configuration_preference_uses_canonical_loop"},
     {"boundary": "adaptive deterministic resolution",
      "crosses": "an arbitrary task searches exact registered resolvers before model escalation",
      "binding": "practitioner_loop",
@@ -366,6 +374,10 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
     "configuration search proposal": _exact(
         "practitioner", "practitioner.code_execution@1.0.0",
         "starting", "spawned_by"),
+    "authorized in-memory configuration update": _exact(
+        "practitioner", "practitioner.code_execution@1.0.0", "starting", "spawned_by"),
+    "configuration preference resolution": _exact(
+        "practitioner", "practitioner.code_execution@1.0.0", "starting", "spawned_by"),
     "adaptive deterministic resolution": _exact(
         "practitioner", "practitioner.code_execution@1.0.0",
         "spawned_by"),

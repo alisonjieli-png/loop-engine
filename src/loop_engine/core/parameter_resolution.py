@@ -416,8 +416,8 @@ def resolve_parameter(request: ParameterResolutionRequest) -> ResolvedParameter:
                 reason = proposal.rejection_reason
             elif not proposal.evidence_refs:
                 reason = "intelligence proposal has no supporting evidence"
-            elif proposal.confidence < (definition.minimum_intelligence_confidence
-                                        or 1.0):
+            elif proposal.confidence < (1.0 if definition.minimum_intelligence_confidence
+                                        is None else definition.minimum_intelligence_confidence):
                 reason = "intelligence proposal is below the owned confidence policy"
             else:
                 reason = ""

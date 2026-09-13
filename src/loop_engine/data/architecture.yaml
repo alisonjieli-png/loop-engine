@@ -759,6 +759,40 @@ scalable_configuration_search:
     - unavailable_optimizer_versions_refuse_without_substitution
     - distributed_trial_leases_and_live_task_execution_require_separate_qualification
 
+capability_aware_configuration:
+  version: 1.0.0
+  runtime_type: Loop
+  profile_ref: practitioner.code_execution@1.0.0
+  target_contract: loop_engine.core.configuration_capabilities.ConfigurationTargetSpec
+  parameter_authority: loop_engine.core.parameter_resolution.ParameterDefinition
+  setter_boundary: loop_engine.core.configuration_setters.apply_configuration_as_loop
+  preference_boundary: loop_engine.core.configuration_preferences.resolve_preference_as_loop
+  preference_contract: loop_engine.core.configuration_preferences.PreferenceSelectionRequest
+  meta_policy: loop_engine.core.configuration_preferences.MetaPreferencePolicy
+  current_scope: explicit_in_memory_configuration_and_advisory_ordering
+  trust_boundary: host_bound_deterministic_callbacks_and_source_attestations
+  invariants:
+    - support_availability_qualification_and_authority_are_separate
+    - settings_discovery_performs_no_provider_probe_or_installation
+    - source_precedence_remains_owned_by_parameter_resolution
+    - explicit_invalid_values_do_not_silently_fallback
+    - atomic_update_returns_a_new_dataclass_without_changing_the_running_harness
+    - authority_bearing_settings_are_not_generic_setter_targets
+    - changed_values_invalidate_previous_configuration_qualification
+    - selector_outputs_only_reorder_the_supplied_eligible_choices
+    - selector_engine_order_and_fallback_triggers_are_explicit
+    - stale_or_invalid_agent_proposals_do_not_grant_execution
+    - agent_proposal_admission_does_not_claim_a_physical_model_call
+    - meta_selector_composition_uses_the_same_canonical_loop_boundary
+    - active_selector_cycles_are_refused_when_supplied_by_the_composing_owner
+    - callback_bindings_do_not_create_a_parallel_registry_or_store
+  unproven:
+    - automatic_joint_model_and_harness_preference_binding
+    - native_file_environment_command_or_remote_configuration_setters
+    - autonomous_live_selector_agent_portfolios
+    - measured_selector_superiority_on_a_frozen_real_task_population
+    - distributed_atomic_configuration_commit_or_rollback
+
 independent_qualification:
   starter: devtools/qualification_lab
   imports_loop_engine: false
@@ -824,7 +858,7 @@ node_ontology:
 
 loop_dimensions:
   configuration_design:
-    version: 1.1.0
+    version: 1.2.0
     status: accepted_requirement_partially_implemented
     confirmed_on: "2026-09-13"
     descriptive_term: discrete cognitive or act step Loop node
@@ -970,6 +1004,91 @@ loop_dimensions:
         relation_to_baseline: cross_cutting
         related_baseline_dimensions: [input_contract, output_contract, budgets_permissions_and_effect_policy]
         boundary_to_inspect: src/loop_engine/core/run_history.py
+      model_preference_engine:
+        label: Model preference engine
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [model, provider_and_route]
+        boundary_to_inspect: src/loop_engine/core/model_routing_selector.py
+      harness_preference_engine:
+        label: Harness preference engine
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [harness_implementation_and_process_initialization]
+        boundary_to_inspect: src/loop_engine/core/harness_selection.py
+      meta_selector_and_engine_priorities:
+        label: Meta-selector and engine priorities
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [model, harness_implementation_and_process_initialization, loop_usage_and_orchestration]
+        boundary_to_inspect: src/loop_engine/core/configuration_preferences.py
+      selector_portfolio_coordination:
+        label: Selector portfolio coordination
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [supervisors_and_independent_verifiers, loop_usage_and_orchestration]
+        boundary_to_inspect: src/loop_engine/generation/search.py
+      objective_tradeoff_and_feasibility:
+        label: Objective tradeoff and feasibility
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [output_contract, budgets_permissions_and_effect_policy]
+        boundary_to_inspect: src/loop_engine/generation/search_records.py
+      selector_uncertainty_and_abstention:
+        label: Selector uncertainty and abstention
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [model_call_strategy, supervisors_and_independent_verifiers]
+        boundary_to_inspect: src/loop_engine/core/configuration_preferences.py
+      selector_feedback_partition_and_scope:
+        label: Selector feedback partition and scope
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [intelligence_and_runtime_memory, supervisors_and_independent_verifiers]
+        boundary_to_inspect: src/loop_engine/generation/search.py
+      task_feature_encoding_and_distance:
+        label: Task feature encoding and distance
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [input_contract, intelligence_and_runtime_memory]
+        boundary_to_inspect: src/loop_engine/generation/search_records.py
+      configuration_setter_backend:
+        label: Configuration setter backend
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [harness_implementation_and_process_initialization, plugins, tools]
+        boundary_to_inspect: src/loop_engine/core/configuration_setters.py
+      configuration_change_phase:
+        label: Configuration change phase
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [harness_implementation_and_process_initialization, hooks, loop_usage_and_orchestration]
+        boundary_to_inspect: src/loop_engine/core/configuration_capabilities.py
+      atomic_configuration_change_and_rollback:
+        label: Atomic configuration change and rollback
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [workspace_and_execution_environment, budgets_permissions_and_effect_policy]
+        boundary_to_inspect: src/loop_engine/core/configuration_setters.py
+      support_discovery_and_freshness:
+        label: Support discovery and freshness
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [harness_implementation_and_process_initialization, model, tools, plugins]
+        boundary_to_inspect: src/loop_engine/core/configuration_capabilities.py
+      effective_configuration_confirmation:
+        label: Effective configuration confirmation
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [harness_implementation_and_process_initialization, model_generation_settings]
+        boundary_to_inspect: src/loop_engine/core/harness_configuration.py
+      deployment_and_serving_realization:
+        label: Deployment and serving realization
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [provider_and_route, workspace_and_execution_environment]
+        boundary_to_inspect: src/loop_engine/core/model_routing_records.py
+      concurrency_and_service_admission:
+        label: Concurrency and service admission
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [provider_and_route, loop_usage_and_orchestration, budgets_permissions_and_effect_policy]
+        boundary_to_inspect: src/loop_engine/core/model_routing_selector.py
+      search_to_execution_binding:
+        label: Search to execution binding
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [input_contract, output_contract, loop_usage_and_orchestration]
+        boundary_to_inspect: src/loop_engine/generation/search.py
+      selector_drift_and_independent_requalification:
+        label: Selector drift and independent requalification
+        relation_to_baseline: cross_cutting
+        related_baseline_dimensions: [intelligence_and_runtime_memory, supervisors_and_independent_verifiers]
+        boundary_to_inspect: src/loop_engine/core/asset_lifecycle.py
     required_per_dimension:
       - explicit_initial_choice_and_immutable_identity
       - required_optional_absent_unsupported_and_unknown_states

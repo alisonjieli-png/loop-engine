@@ -36,6 +36,13 @@ for the proposed refinements, additional choices, and ongoing review questions.
 Protect the required baseline while continuing to discover dimensions; do not
 turn either list into a fixed maximum or permit unknown runtime fields.
 
+For additional preference engines, configuration setters, and meta-selector
+work, read [configuration preferences and meta-selection](../guides/configuration-preferences-and-meta-selection.md).
+The current interfaces provide sourced capability facts, atomic in-memory
+setting changes, and scope-bound advisory ordering. They do not automatically
+launch joint model and harness configurations or qualify autonomous live
+selector portfolios. The expanded design inventory is version 1.2.0.
+
 The subsequent [layered harness wrapper and native control proposal](../architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
 records the owner's request to consider one or more wrapper layers and native
 controls as dimensions. Wrapper composition and control ownership can vary
