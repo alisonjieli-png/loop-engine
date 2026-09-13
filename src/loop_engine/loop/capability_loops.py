@@ -28,6 +28,7 @@ _FAILURE_TERMINAL_CODES = {
     "missing_secret": "BLOCKED",
     "secret_lookup_failed": "BLOCKED",
     "rate_limited": "BLOCKED",
+    "usage_limit_reached": "BLOCKED",
     "invalid_provider_response": "VERIFICATION_REJECTED",
     "invalid_transport_response": "VERIFICATION_REJECTED",
     "response_too_large": "VERIFICATION_REJECTED",

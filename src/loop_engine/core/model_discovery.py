@@ -262,6 +262,19 @@ def discover_roster(*, providers=("ollama_cloud", "mistral", "openrouter"),
                 # its catalog is not evidence that anything is reachable.
                 roster.providers_failed[name] = str(v.get("error"))[:160]
                 continue
+        else:
+            listing = getattr(mod, "live_model_listing", None)
+            observed = listing() if callable(listing) else None
+            if isinstance(observed, dict) and not observed.get("ok"):
+                # A catalog that could not be obtained is not a catalog: a
+                # refused key, a dead path, or a page in the provider's
+                # place is recorded by its classified code, never by the
+                # body the provider sent.
+                from .model_gateway import _error_code
+                roster.providers_failed[name] = (
+                    "listing refused: "
+                    + _error_code(str(observed.get("error", ""))))
+                continue
         roster.providers_working.append(name)
         found = (_openrouter_catalog(limit_per_provider) if name == "openrouter"
                  else _listing_catalog(mod, name, limit_per_provider))
@@ -318,6 +331,56 @@ def self_test() -> dict:
 
     # 2. THE HONESTY LABEL: nothing here is measured, and every choice says so.
     # This is what keeps a routing hint from being read as a quality ranking.
+    # A catalog-only discovery consults the adapter's listing record, so a
+    # refused listing is a failed provider named by its code, not a working
+    # provider serving its configured model.
+    from . import custom_endpoint as _ce
+    from .custom_endpoint import CustomEndpoint, register_endpoint, unregister_endpoint
+    from .model_capabilities import ModelOutputCapability
+    from .provider_failover import PROVIDERS
+    import email.message, io
+
+    class _Refusing:
+        def open(self, request, timeout=None):
+            # The error class comes from the adapter's namespace; discovery
+            # imports no network module.
+            raise _ce.urllib.error.HTTPError(request.full_url, 401, "status 401",
+                                             email.message.Message(), io.BytesIO(b'{"error":"bad key"}'))
+
+    class _Listing:
+        def open(self, request, timeout=None):
+            class _R:
+                def read(self, limit=None):
+                    return b'{"models": [{"name": "served-model"}]}'
+                def __enter__(self):
+                    return self
+                def __exit__(self, *args):
+                    return False
+            return _R()
+
+    probe_endpoint = CustomEndpoint(
+        "discovery_probe_box", "https://box.example", "served-model", wire="ollama",
+        auth_scheme="none", output_capability=ModelOutputCapability(1024, "self-test"))
+    saved_opener = _ce._endpoint_opener
+    saved_registry = dict(PROVIDERS)
+    try:
+        register_endpoint(probe_endpoint)
+        _ce._endpoint_opener = lambda ep: _Refusing()
+        refused = discover_roster(providers=("discovery_probe_box",), verify_by_use=False)
+        _ce._endpoint_opener = lambda ep: _Listing()
+        listed = discover_roster(providers=("discovery_probe_box",), verify_by_use=False)
+    finally:
+        _ce._endpoint_opener = saved_opener
+        unregister_endpoint("discovery_probe_box")
+        PROVIDERS.clear()
+        PROVIDERS.update(saved_registry)
+    check("a_catalog_only_discovery_reads_a_refused_listing_as_a_failed_provider",
+          refused.providers_failed.get("discovery_probe_box") == "listing refused: authentication_failed"
+          and "discovery_probe_box" not in refused.providers_working and not refused.choices
+          and listed.providers_working == ["discovery_probe_box"]
+          and [c.model for c in listed.choices] == ["served-model"],
+          str(refused.providers_failed))
+
     check("every_choice_is_labelled_declared_and_not_measured",
           all(c.basis == "declared" and c.measured is False
               for c in (cheap, mid, exp, think)),

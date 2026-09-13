@@ -118,7 +118,7 @@ def _provider(value: Mapping) -> ProviderSettings:
                   "maximum_output_tokens", "maximum_output_source",
                   "context_window",
                   "purposes", "headers", "auth_scheme", "auth_header",
-                  "stream", "tls_verification", "tls_ca_file"),
+                  "stream", "tls_verification", "tls_ca_file", "think"),
            "provider")
     if not body.get("id"):
         raise SettingsError("each models.providers item needs id")
@@ -127,6 +127,10 @@ def _provider(value: Mapping) -> ProviderSettings:
     if raw_stream is not None and not isinstance(raw_stream, (str, bool)):
         raise SettingsError(
             "provider.stream must be auto, stream, buffer, or a boolean")
+    raw_think = body.get("think")
+    if raw_think is not None and not isinstance(raw_think, (str, bool)):
+        raise SettingsError(
+            "provider.think must be default, off, on, or a boolean")
     return ProviderSettings(
         provider_id=str(body["id"]),
         kind=str(body.get("kind", "builtin")),
@@ -155,7 +159,8 @@ def _provider(value: Mapping) -> ProviderSettings:
         auth_header=str(body.get("auth_header", "")),
         stream=raw_stream,
         tls_verification=str(body.get("tls_verification", "default")),
-        tls_ca_file=str(body.get("tls_ca_file", "")))
+        tls_ca_file=str(body.get("tls_ca_file", "")),
+        think=raw_think)
 
 
 def _tiers(value: Mapping, base: ModelSettings) -> tuple[ModelTier, ...]:

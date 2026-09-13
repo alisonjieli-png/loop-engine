@@ -35,7 +35,7 @@ LEXICAL_BACKENDS = ("store", "fts5", "lancedb")
 VECTOR_BACKENDS = ("hash", "model2vec")
 PROVIDER_KINDS = ("builtin", "custom")
 ESCALATION_ERROR_CODES = (
-    "rate_limited", "timeout", "network_unreachable",
+    "rate_limited", "usage_limit_reached", "timeout", "network_unreachable",
     "provider_unavailable", "provider_failed", "output_limit_reached",
     "incomplete_response", "empty_response",
     "output_validation_failed", "verification_rejected")
@@ -192,8 +192,17 @@ class ProviderSettings:
     stream: "str | bool | None" = None
     tls_verification: str = "default"
     tls_ca_file: str = ""
+    #: Whether a reasoning model thinks before it answers on the Ollama
+    #: wire: None leaves the model's default; off, on, or a boolean.
+    think: "str | bool | None" = None
 
     def __post_init__(self) -> None:
+        if self.think is not None:
+            from .custom_endpoint import EndpointError, _normalize_think
+            try:
+                _normalize_think(self.think)
+            except EndpointError as exc:
+                raise SettingsError(f"provider.think: {exc}") from exc
         if isinstance(self.maximum_output_tokens, str):
             if self.maximum_output_tokens != "unknown":
                 raise SettingsError(
@@ -312,6 +321,7 @@ class ProviderSettings:
             "auth_header": self.auth_header,
             "tls_verification": self.tls_verification,
             "tls_ca_file": self.tls_ca_file,
+            "think": self.think,
         }
 
 @dataclass(frozen=True)
@@ -770,7 +780,10 @@ class RuntimeSettings:
                         else "auto"),
                 tls_verification=str(
                     configured.tls_verification or "default"),
-                tls_ca_file=configured.tls_ca_file)
+                tls_ca_file=configured.tls_ca_file,
+                think=(configured.think if configured.think is not None
+                       else "default"),
+                credential_env=configured.credential_env)
             spec = provider_spec_from_endpoint(endpoint)
             providers.append(replace(
                 spec, credential_ref=(

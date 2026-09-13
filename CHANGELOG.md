@@ -9,6 +9,36 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- Ollama adapter path, after a same-day probe-verified
+  [review](docs/verification/OLLAMA-ADAPTER-REVIEW-2026-09-13.md) and one
+  live observation (the key lists twenty models; generation is refused
+  with HTTP 429 "weekly usage limit" and no `Retry-After`). The custom
+  endpoint's Ollama wire streams newline-delimited JSON instead of
+  returning "empty_response", so `stream: auto` can deliver after a proxy
+  timeout; the gateway classifies by the status an adapter puts first, so
+  a hexadecimal reference in a body cannot read as `401`, and a 429 whose
+  body names a usage limit, quota, or credits is the new
+  `usage_limit_reached`, an allowance the Practitioner does not retry
+  inside a step; a refusal inside a 200 body is classified by its words, a
+  page that is not JSON is `invalid_response_body` (outage class),
+  context-length refusals and 413 are `context_window_exceeded` (request
+  class, the cell fails and the route stays), 422 is `invalid_request`,
+  408 is `timeout`, and Ollama's "model 'x' not found, try pulling it
+  first" is `model_not_found`. `Retry-After` is read as seconds or an HTTP
+  date onto `retry_after_seconds` and the attempt record; a `think`
+  control on the custom endpoint is sent on the Ollama wire when
+  declared; `auto` streaming remembers the mode that delivered, and the
+  result says so; `live_model_listing()` on both adapters says how a
+  listing was refused. A declared credential
+  variable that is unset refuses before any request (`missing_credential`,
+  as the built-ins do) and the environment declaration accepts `key_env`;
+  an OpenAI stream cut before its stop reason is incomplete; an HTTP
+  exception inside the body is `incomplete_response`, never a raise; the
+  result counts the requests one attempt opened; keys are redacted from
+  provider error text; a base URL naming the API prefix or the chat path
+  composes the same URLs; `live_models` lists nothing on a refusal and
+  catalog-only discovery reads a refused listing as a failed provider.
+  Thirty offline checks in `core/custom_endpoint_checks.py`.
 - Hardcoding gate, third batch: closed vocabularies compared by name.
   Response evaluation statuses (`PASSED`, `REJECTED`, `INCONCLUSIVE`),
   harness fallback decision reasons (`DECISION_REASONS`), harness run

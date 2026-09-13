@@ -225,6 +225,32 @@ describes where a model call goes. Do not combine them.
 - Any of those loops may start another loop with different mode settings when
   its delegation policy permits that mode.
 
+## Classify a provider failure
+
+Every attempt carries one `error_code` from a closed vocabulary, and a
+worker reads the code's class from `core/provider_failure_classes.py`
+rather than the code alone. An adapter puts the HTTP status at the front of
+its error text (`HTTP 429 (retry after 120s): ...`), and the status settles
+the class before any word in the body can, so a reference id inside a body
+cannot read as a status.
+
+| Class | Codes | What a worker does |
+|---|---|---|
+| outage | `network_unreachable`, `provider_unavailable`, `gateway_timeout`, `timeout`, `invalid_response_body` | wait for recovery, within a stated ceiling |
+| allowance | `rate_limited` (a throttle that clears in seconds), `usage_limit_reached` (a spent weekly limit, quota, or spending cap that resets on the provider's calendar), `payment_required` | wait for the allowance, within a stated ceiling |
+| configuration | `missing_credential`, `authentication_failed`, `model_not_found`, `invalid_request`, `provider_not_configured`, `no_eligible_route`, `unknown_model_output_limit` | stop the route; no retry of the same configuration can pass |
+| request | `context_window_exceeded`, `output_limit_reached`, `output_validation_failed`, `unsupported_tool_call`, `empty_response`, the evaluator verdicts | fail this cell; the route stays |
+| contract | `provider_attempt_contract_violated`, `model_output_limit_mismatch`, `model_identity_mismatch`, `token_accounting_unavailable` | stop the route and review |
+| unclassified | `provider_failed`, `incomplete_response`, `model_gateway_failed` | fail the cell; the code says a failure happened and nothing about its kind |
+
+The attempt record also carries `retry_after_seconds` when the provider
+stated a wait, `delivered_by_stream` when a streamed request answered, and
+`provider_physical_requests` when the adapter opened more than one request
+for the attempt (`auto` streaming after a proxy timeout) or none (a refusal
+before sending). The Practitioner retries outage and throttle codes inside a
+step and never a spent allowance; a campaign worker decides per cell with
+`provider_failure_classes.decide`.
+
 ## Current limits
 
 - The gateway enforces attempt and provider-reported token ceilings. A complete

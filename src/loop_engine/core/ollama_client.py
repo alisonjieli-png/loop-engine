@@ -94,21 +94,121 @@ def max_output_for(model: str) -> int:
     return output_capability_for(model).maximum_output_tokens
 
 
-def live_models(api_key: str | None = None) -> list[str]:
-    """The currently-served Ollama Cloud models, minus any forbidden by policy."""
+def live_model_listing(api_key: str | None = None,
+                       timeout: float = 30.0) -> dict:
+    """The served catalog as a record that says whether it was obtained.
+
+    ``live_models`` folds a missing key, a refused key, an outage, and an
+    empty catalog into one empty list. A readiness probe has to tell them
+    apart: a refused key stops a route, an outage waits, and an empty
+    catalog with a working key is a provider still coming up. Forbidden
+    models are listed separately so the record shows what was withheld.
+    """
     key = api_key or load_api_key()
+    record = {"record_type": "ollama_model_listing/v1",
+              "listing_url": CATALOG_ENDPOINT, "ok": False, "models": [],
+              "forbidden": [], "http_status": None, "error": "",
+              "error_type": "", "retry_after_seconds": None,
+              "credential_present": bool(key)}
     if not key:
-        return []
+        record.update(error="OLLAMA_API_KEY not found",
+                      error_type="MissingCredential")
+        return record
     req = urllib.request.Request(
         CATALOG_ENDPOINT, headers={"Authorization": f"Bearer {key}"})
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            data = json.loads(resp.read().decode())
-    except Exception:
-        return []
-    names = [m.get("name") or m.get("model") for m in data.get("models", ())]
-    return [n for n in names if n and not any(
-        n.startswith(f) for f in FORBIDDEN_MODELS)]
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            raw = resp.read(4 * 1024 * 1024 + 1)
+    except urllib.error.HTTPError as exc:
+        detail = ""
+        try:
+            detail = exc.read()[:300].decode("utf-8", "replace")
+        except OSError:
+            pass
+        record.update(http_status=exc.code, error=f"HTTP {exc.code}: {detail}",
+                      error_type="HTTPError",
+                      retry_after_seconds=_retry_after_seconds(
+                          getattr(exc, "headers", None)))
+        return record
+    except (urllib.error.URLError, OSError) as exc:
+        record.update(error=f"{type(exc).__name__}: {str(exc)[:250]}",
+                      error_type=type(exc).__name__)
+        return record
+    if len(raw) > 4 * 1024 * 1024:
+        record.update(error="invalid_response_body: listing exceeds the "
+                            "probe contract", error_type="OversizedListing")
+        return record
+    try:
+        data = json.loads(raw.decode("utf-8", "replace"))
+    except ValueError:
+        record.update(error="invalid_response_body: listing is not JSON",
+                      error_type="ValueError")
+        return record
+    if not isinstance(data, dict):
+        record.update(error="invalid_response_body: listing is not an object",
+                      error_type="ValueError")
+        return record
+    if data.get("error"):
+        record.update(error=f"provider_error_body: {str(data['error'])[:300]}",
+                      error_type="ErrorBody")
+        return record
+    names = [str(m.get("name") or m.get("model") or "")
+             for m in data.get("models", ()) if isinstance(m, dict)]
+    names = [n for n in names if n]
+    forbidden = [n for n in names
+                 if any(n.startswith(f) for f in FORBIDDEN_MODELS)]
+    record.update(ok=True, http_status=200,
+                  models=[n for n in names if n not in forbidden],
+                  forbidden=forbidden)
+    return record
+
+
+def live_models(api_key: str | None = None) -> list[str]:
+    """The currently-served Ollama Cloud models, minus any forbidden by policy.
+
+    Compatibility projection of ``live_model_listing``: every failure
+    reads as an empty list; ask the listing record for the reason.
+    """
+    return list(live_model_listing(api_key)["models"])
+
+
+def _redacted(detail: str, secret: str) -> str:
+    """Provider error text with the key and any bearer token removed."""
+    import re
+    text = str(detail)
+    if secret:
+        text = text.replace(secret, "<redacted>")
+    return re.sub(r"(?i)bearer\s+[A-Za-z0-9._~+/=-]{8,}", "Bearer <redacted>", text)
+
+
+def _retry_after_seconds(headers) -> "float | None":
+    """The wait a refusal asked for (``Retry-After`` as seconds or an HTTP
+    date), or None when the provider stated none."""
+    if headers is None:
+        return None
+    try:
+        raw = headers.get("Retry-After")
+    except AttributeError:
+        return None
+    text = str(raw).strip() if raw is not None else ""
+    if not text:
+        return None
+    try:
+        return max(0.0, float(text))
+    except ValueError:
+        pass
+    try:
+        import email.utils
+        import time as _time
+        when = email.utils.parsedate_to_datetime(text)
+    except (TypeError, ValueError, IndexError):
+        return None
+    if when is None:
+        return None
+    if when.tzinfo is None:
+        from datetime import timezone
+        when = when.replace(tzinfo=timezone.utc)
+    return max(0.0, when.timestamp() - _time.time())
 
 
 def load_api_key(env_path: str | Path | None = None) -> str | None:
@@ -147,6 +247,16 @@ class ChatResult:
     done_reason: str = ""
     reasoning_present: bool = False
     output_limit_reached: bool = False
+    #: The wait a refusal asked for (``Retry-After``), in seconds; None when
+    #: the provider stated none, which is not the same as zero.
+    retry_after_seconds: "float | None" = None
+    #: Whether a streamed request delivered this result (``auto`` mode
+    #: records which mode actually answered).
+    delivered_by_stream: bool = False
+    #: HTTP requests this one logical attempt opened: two when ``auto``
+    #: streaming retried a proxy timeout, zero when the adapter refused
+    #: before sending. ``attempts`` stays the contract's one.
+    physical_requests: int = 1
 
     @property
     def total_tokens(self) -> int:
@@ -161,7 +271,10 @@ class ChatResult:
                 "response_received": self.response_received,
                 "done": self.done, "done_reason": self.done_reason,
                 "reasoning_present": self.reasoning_present,
-                "output_limit_reached": self.output_limit_reached}
+                "output_limit_reached": self.output_limit_reached,
+                "retry_after_seconds": self.retry_after_seconds,
+                "delivered_by_stream": self.delivered_by_stream,
+                "physical_requests": self.physical_requests}
 
 
 def response_reached_output_limit(
@@ -224,7 +337,8 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
     key = load_api_key() if api_key is None else api_key
     if not key:
         return ChatResult("", model, ok=False,
-                          error="OLLAMA_API_KEY not found")
+                          error="OLLAMA_API_KEY not found",
+                          physical_requests=0)
     messages = []
     if system:
         messages.append({"role": "system", "content": system})
@@ -250,12 +364,38 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
                  "Content-Type": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode())
+            raw = resp.read()
     except urllib.error.HTTPError as exc:
+        detail = ""
+        try:
+            detail = exc.read()[:300].decode("utf-8", "replace")
+        except OSError:
+            pass
+        detail = _redacted(detail, key)
+        retry_after = _retry_after_seconds(getattr(exc, "headers", None))
+        stated = (f" (retry after {retry_after:g}s)"
+                  if retry_after is not None else "")
         return ChatResult("", model, ok=False,
-                          error=f"HTTP {exc.code}: {exc.read().decode()[:200]}")
+                          error=f"HTTP {exc.code}{stated}: {detail}",
+                          retry_after_seconds=retry_after)
     except Exception as exc:
         return ChatResult("", model, ok=False, error=repr(exc))
+    try:
+        data = json.loads(raw.decode("utf-8", "replace"))
+    except ValueError:
+        return ChatResult("", model, ok=False, response_received=True,
+                          error="invalid_response_body: Ollama answered with "
+                                "a body that is not JSON")
+    if not isinstance(data, dict):
+        return ChatResult("", model, ok=False, response_received=True,
+                          error="invalid_response_body: Ollama answered with "
+                                "JSON that is not an object")
+    if data.get("error") and not (data.get("message") or {}).get("content"):
+        # A refusal inside a 200 body is classified by its words, never
+        # read as an empty answer.
+        return ChatResult("", str(data.get("model", model)), ok=False,
+                          response_received=True,
+                          error=f"provider_error_body: {str(data['error'])[:300]}")
     message = data.get("message", {}) or {}
     text = message.get("content", "")
     reasoning_present = bool(str(message.get("thinking", "") or "").strip())

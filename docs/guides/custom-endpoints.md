@@ -62,11 +62,27 @@ export LOOP_ENGINE_ENDPOINTS="name=box_a,url=https://a.example/v1,model=m1,max_o
 | `url` | yes | none | base URL, `http(s)://` |
 | `model` | yes | none | the model to request |
 | `key` | no | none | bearer token if the server wants one |
+| `key_env` | no | none | the variable to read the key from, instead of `key`; an unset variable refuses before any request is sent |
 | `wire` | no | `openai` | `openai` or `ollama` |
-| `locality` | no | `local` | `local` or `cloud` |
+| `locality` | no | `local` | `local`, `organization`, or `cloud`; descriptive only, every endpoint is a URL |
 | `max_output` | yes for generation | none | provider-declared maximum output tokens |
 | `max_output_source` | yes with `max_output` | none | one-line source for that exact maximum |
 | `evidence` | no | `false` | see below |
+| `auth_scheme` | no | `bearer` | `bearer`, `header` (the key in the header named by `auth_header`), or `none` |
+| `auth_header` | with `header` | none | the header that carries the key under the `header` scheme |
+| `stream` | no | `auto` | `auto` (buffered first, streamed after a proxy timeout, the mode that delivered remembered for the process), `stream`, or `buffer` |
+| `think` | no | `default` | `default` (`think: false` on the Ollama wire, nothing on the OpenAI wire), `off`, `on`, or `model` (send nothing; the model's own default) |
+| `tls_verification` | no | `default` | `default`, `ca_file`, or `skip`; see the providers guide |
+| `tls_ca_file` | with `ca_file` | none | the private authority to trust for this endpoint |
+
+The `url` may name the bare root, the API prefix, or the chat path
+(`https://ollama.com`, `https://ollama.com/api`, `https://ollama.com/api/chat`
+compose the same `/api/chat` and `/api/tags`; `https://host/v1` and
+`https://host/v1/chat/completions` compose the same `/v1/chat/completions` and
+`/v1/models`). On the Ollama wire the stream is newline-delimited JSON, as
+Ollama sends it; on the OpenAI wire it is server-sent events, and a stream cut
+before its stop reason or `[DONE]` is reported as incomplete, never as an
+answer.
 
 **A misspelled field is refused, not ignored.** `keyy=...` raises rather than
 silently dropping your credential and leaving you to debug an auth failure.
@@ -115,8 +131,18 @@ An unreachable endpoint returns a reason, never an exception:
 
 ```python
 {'provider': 'friends_box', 'ok': False,
- 'error': 'URLError: [Errno 111] Connection refused', 'prompt_tokens': 0}
+ 'error': 'URLError: <urlopen error [Errno 111] Connection refused>',
+ 'prompt_tokens': 0}
 ```
+
+A refusal carries its status first (`HTTP 429 (retry after 120s): ...`), so
+the gateway classifies by the status before any word in the body; the wait a
+provider states in `Retry-After` is on the result as `retry_after_seconds`
+(None when unstated). A connection that ends inside the body is
+`incomplete_response`; a login page or proxy notice that is not JSON is
+`invalid_response_body`; a refusal inside a 200 body is classified by its
+words. The configured key and any bearer token are redacted from error text
+before it reaches a record.
 
 That is what lets failover move past it to the next provider instead of
 crashing your run.

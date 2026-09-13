@@ -53,6 +53,7 @@ credential-leak paths.
 
 from __future__ import annotations
 
+import http.client
 import json
 import os
 import re
@@ -76,13 +77,65 @@ from .provider_failover import PROVIDERS
 #:               request first; when a generation dies at a reverse-proxy
 #:               read wall (gateway timeout), retry the same request with
 #:               SSE streaming, which keeps the proxy's read timer fed.
-#:               The learned mode is remembered per run in route health.
+#:               The mode that delivered is remembered per endpoint name
+#:               in this process (see ``learned_stream_mode``) and the
+#:               result says which mode answered.
 #:   "stream"  - always send stream: true (proxied gateways that must not
 #:               hold a silent connection open for minutes).
 #:   "buffer"  - always send stream: false (direct, unproxied servers).
 STREAM_MODES = ("auto", "stream", "buffer")
 
 WIRE_FORMATS = ("openai", "ollama")
+
+#: Whether the request asks a reasoning model to think before it answers.
+#:   "default" - the engine's default for the wire: ``think: false`` on the
+#:               Ollama wire, for parity with the built-in Ollama adapter,
+#:               whose measurement stands (a reasoning model spends the
+#:               output ceiling thinking before it emits the answer, and
+#:               the structured answer comes back truncated); nothing on
+#:               the OpenAI wire.
+#:   "off"     - ``think: false`` on the Ollama wire: the ceiling goes to
+#:               the answer.
+#:   "on"      - ``think: true`` on the Ollama wire.
+#:   "model"   - the request carries no ``think`` field; the model's own
+#:               default applies.
+#: The OpenAI wire has no portable spelling, so the field is recorded and
+#: not sent there.
+THINK_MODES = ("default", "off", "on", "model")
+
+#: Streaming modes ``auto`` learned per endpoint name in this process: once
+#: a buffered request died at a proxy read wall and the streamed retry
+#: delivered, later calls stream first instead of paying the wall again.
+#: Process-local and never persisted; the result says which mode delivered.
+_LEARNED_STREAM_MODES: dict[str, str] = {}
+
+
+def learned_stream_mode(endpoint_name: str) -> str:
+    """The streaming mode ``auto`` has learned for this endpoint, or empty."""
+    return _LEARNED_STREAM_MODES.get(endpoint_name, "")
+
+
+def forget_learned_stream_modes() -> None:
+    """Drop every learned mode (a test, or an operator changing a proxy)."""
+    _LEARNED_STREAM_MODES.clear()
+
+
+def _normalize_think(value: object) -> str:
+    """Accept flexible spellings for the think control."""
+    if value is None:
+        return "default"
+    if isinstance(value, bool):
+        return "on" if value else "off"
+    text = str(value).strip().casefold()
+    aliases = {"default": "default", "": "default",
+               "model": "model", "auto": "model", "none": "model",
+               "off": "off", "false": "off", "no": "off", "0": "off",
+               "on": "on", "true": "on", "yes": "on", "1": "on"}
+    if text not in aliases:
+        raise EndpointError(
+            f"think must be one of {THINK_MODES} (booleans and common "
+            f"spellings accepted); got {value!r}")
+    return aliases[text]
 
 
 def _normalize_stream(value: object) -> str:
@@ -135,6 +188,13 @@ class CustomEndpoint:
     stream: str = "auto"
     tls_verification: str = "default"
     tls_ca_file: str = ""
+    think: str = "default"
+    #: The name of the variable the key was to be read from, when a
+    #: declaration named one. Never the key. An endpoint whose declared
+    #: variable is unset refuses before sending a request, as the built-in
+    #: adapters do, instead of sending an unauthenticated request and
+    #: reading the refusal as a wrong credential.
+    credential_env: str = ""
 
     def __post_init__(self):
         if not self.name or not self.name.replace("_", "").isalnum():
@@ -158,6 +218,10 @@ class CustomEndpoint:
         if self.stream not in STREAM_MODES:
             raise EndpointError(
                 f"stream must be one of {STREAM_MODES}")
+        object.__setattr__(self, "think", _normalize_think(self.think))
+        if not isinstance(self.credential_env, str) or "\n" in self.credential_env \
+                or "=" in self.credential_env:
+            raise EndpointError("credential_env must be a variable name")
         if self.auth_scheme == "header":
             if (not self.auth_header.strip()
                     or not re.fullmatch(
@@ -211,12 +275,43 @@ class CustomEndpoint:
         object.__setattr__(self, "headers", tuple(sorted(headers)))
 
     @property
-    def chat_url(self) -> str:
+    def api_root(self) -> str:
+        """The base with any path this wire appends already stripped, so a
+        declaration that names the chat path, the API prefix, or the bare
+        root composes the same chat and listing URLs."""
         base = self.base_url.rstrip("/")
+        suffixes = (("/api/chat", "/api") if self.wire == "ollama"
+                    else ("/chat/completions",))
+        for suffix in suffixes:
+            if base.endswith(suffix):
+                return base[:-len(suffix)].rstrip("/")
+        return base
+
+    @property
+    def chat_url(self) -> str:
         if self.wire == "ollama":
-            return base + ("/api/chat" if not base.endswith("/api/chat") else "")
-        return base + ("/chat/completions"
-                       if not base.endswith("/chat/completions") else "")
+            return self.api_root + "/api/chat"
+        return self.api_root + "/chat/completions"
+
+    @property
+    def listing_url(self) -> str:
+        """Where this wire lists its models, beside the chat path."""
+        return self.api_root + ("/api/tags" if self.wire == "ollama"
+                                else "/models")
+
+    @property
+    def credential_missing(self) -> bool:
+        """A declared variable that holds no key, under a scheme that
+        needs one."""
+        return bool(self.credential_env) and not self.api_key \
+            and self.auth_scheme != "none"
+
+    @property
+    def think_sent(self) -> "bool | None":
+        """The ``think`` value the Ollama wire sends, or None for none."""
+        if self.wire != "ollama" or self.think == "model":
+            return None
+        return self.think == "on"
 
     def describe(self) -> dict:
         """Record shape — carries no credential."""
@@ -231,6 +326,10 @@ class CustomEndpoint:
                 "auth_scheme": self.auth_scheme,
                 "auth_header": self.auth_header,
                 "stream": self.stream,
+                "think": self.think,
+                "think_sent": self.think_sent,
+                "credential_env": self.credential_env,
+                "credential_missing": self.credential_missing,
                 "tls_verification": self.tls_verification,
                 "tls_ca_file": self.tls_ca_file}
 
@@ -292,6 +391,78 @@ def _sse_lines(response):
             yield stripped[len("data:"):].strip()
 
 
+def _ndjson_objects(response):
+    """Yield the JSON objects of a newline-delimited stream.
+
+    Ollama's native ``/api/chat`` streams one JSON object per line with no
+    SSE framing: ``{"message": {"content": "..."}, "done": false}`` until a
+    final ``done: true`` line that carries the stop reason and the counts.
+    A ``data:`` prefix is tolerated for a proxy that re-frames the stream;
+    blank lines, comments, and lines that are not objects are skipped.
+    """
+    for raw_line in response:
+        if isinstance(raw_line, bytes):
+            line = raw_line.decode("utf-8", errors="replace")
+        else:
+            line = str(raw_line)
+        stripped = line.strip()
+        if not stripped or stripped.startswith(":"):
+            continue
+        if stripped.casefold().startswith("data:"):
+            stripped = stripped[len("data:"):].strip()
+        if stripped == "[DONE]" or stripped.casefold() == "[done]":
+            break
+        try:
+            chunk = json.loads(stripped)
+        except ValueError:
+            continue
+        if isinstance(chunk, dict):
+            yield chunk
+
+
+def _ollama_stream_body(response, default_model: str) -> dict:
+    """Join an Ollama NDJSON stream into the non-streamed ``/api/chat`` shape.
+
+    Content and thinking deltas are joined; ``done``, ``done_reason``, the
+    model, and the counts come from the final line. A stream that ends
+    without a ``done: true`` line is reported as not done, never as a
+    complete answer.
+    """
+    text_parts: list[str] = []
+    thinking_parts: list[str] = []
+    final: dict = {}
+    reported_model = default_model
+    for chunk in _ndjson_objects(response):
+        reported_model = str(chunk.get("model") or reported_model)
+        message = chunk.get("message")
+        if isinstance(message, dict):
+            content = message.get("content")
+            if isinstance(content, str) and content:
+                text_parts.append(content)
+            thinking = message.get("thinking")
+            if isinstance(thinking, str) and thinking:
+                thinking_parts.append(thinking)
+        if chunk.get("done") is True:
+            final = chunk
+            break
+        if "error" in chunk and not message:
+            final = {"done": None, "error": chunk["error"]}
+            break
+    body = {
+        "model": reported_model,
+        "message": {"role": "assistant", "content": "".join(text_parts),
+                    "thinking": "".join(thinking_parts)},
+        "done": final.get("done", False) if final else False,
+        "done_reason": str(final.get("done_reason", "") or ""),
+        "prompt_eval_count": final.get("prompt_eval_count", 0),
+        "eval_count": final.get("eval_count", 0),
+        "_streamed": True,
+    }
+    if final.get("error") is not None:
+        body["error"] = final["error"]
+    return body
+
+
 def _sse_chunk_text(chunk: dict) -> tuple[list, list, str]:
     """Extract (content_parts, reasoning_parts, finish_reason) from one SSE
     chunk, tolerant of the shape variance across OpenAI-compatible servers.
@@ -348,15 +519,20 @@ def _chat_streamed(ep: CustomEndpoint, payload: dict, headers: dict,
         payload["stream_options"] = {"include_usage": True}
     req = urllib.request.Request(
         ep.chat_url, data=json.dumps(payload).encode(), headers=headers)
+    if ep.wire == "ollama":
+        with _endpoint_opener(ep).open(req, timeout=timeout) as response:
+            return _ollama_stream_body(response, ep.model)
     text_parts: list[str] = []
     reasoning_parts: list[str] = []
     finish_reason = ""
     reported_model = ep.model
     usage: dict = {}
+    saw_done = False
     with _endpoint_opener(ep).open(
             req, timeout=timeout) as response:
         for data in _sse_lines(response):
             if data == "[DONE]" or data.casefold() == "[done]":
+                saw_done = True
                 break
             try:
                 chunk = json.loads(data)
@@ -382,7 +558,81 @@ def _chat_streamed(ep: CustomEndpoint, payload: dict, headers: dict,
         "usage": usage,
         "_streamed": True,
         "_reasoning": "".join(reasoning_parts),
+        # A stream that ended before a stop reason or the done sentinel is
+        # not a complete answer, whatever text arrived.
+        "_done": bool(finish_reason) or saw_done,
     }
+
+
+def _retry_after_seconds(headers) -> "float | None":
+    """The wait a refusal asked for, in seconds, when the response said one.
+
+    ``Retry-After`` is either a delay in seconds or an HTTP date; both are
+    read, and anything else is treated as unstated rather than guessed.
+    """
+    if headers is None:
+        return None
+    try:
+        raw = headers.get("Retry-After")
+    except AttributeError:
+        return None
+    if raw is None:
+        return None
+    text = str(raw).strip()
+    if not text:
+        return None
+    try:
+        return max(0.0, float(text))
+    except ValueError:
+        pass
+    try:
+        import email.utils
+        import time as _time
+        when = email.utils.parsedate_to_datetime(text)
+    except (TypeError, ValueError, IndexError):
+        return None
+    if when is None:
+        return None
+    if when.tzinfo is None:
+        from datetime import timezone
+        when = when.replace(tzinfo=timezone.utc)
+    return max(0.0, when.timestamp() - _time.time())
+
+
+def _redacted(detail: str, secret: str) -> str:
+    """Provider error text with the configured key and any bearer token
+    removed, so a server that echoes the request cannot put the key in a
+    record."""
+    text = str(detail)
+    if secret:
+        text = text.replace(secret, "<redacted>")
+    return re.sub(r"(?i)bearer\s+[A-Za-z0-9._~+/=-]{8,}", "Bearer <redacted>", text)
+
+
+def _error_body_text(body) -> str:
+    """The error an endpoint put in a 200 body, as ``HTTP <status>: <text>``
+    when it named a status, else ``provider_error_body: <text>``; empty when
+    the body carries no error field."""
+    if not isinstance(body, dict):
+        return ""
+    error = body.get("error")
+    if error in (None, "", {}, []):
+        return ""
+    status = ""
+    if isinstance(error, dict):
+        message = error.get("message") or error.get("error") or json.dumps(
+            error, sort_keys=True)
+        code = error.get("code") or error.get("status") or body.get("status")
+        if isinstance(code, int) and 100 <= code <= 599:
+            status = str(code)
+        elif isinstance(code, str) and code.isdigit() and len(code) == 3:
+            status = code
+    else:
+        message = str(error)
+    message = str(message)[:300]
+    if status:
+        return f"HTTP {status}: {message}"
+    return f"provider_error_body: {message}"
 
 
 def _call_spacing_secs() -> float:
@@ -475,17 +725,28 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
     messages = ([{"role": "system", "content": system}] if system else []) \
         + [{"role": "user", "content": prompt}]
     _claim_call_slot(ep.name)
+    if ep.credential_missing:
+        return ChatResult(
+            text="", model=ep.model, ok=False,
+            error=f"missing_credential: {ep.credential_env} is not set; no "
+                  "request was sent", physical_requests=0)
     if ep.wire == "ollama":
         payload = {"model": ep.model, "messages": messages, "stream": False,
                    "options": {"num_predict": int(max_tokens),
                                "temperature": temperature}}
+        if ep.think_sent is not None:
+            payload["think"] = ep.think_sent
     else:
         payload = {"model": ep.model, "messages": messages,
                    "max_tokens": int(max_tokens), "temperature": temperature}
 
     headers = _request_headers(ep)
-    use_streaming = ep.stream == "stream"
+    use_streaming = ep.stream == "stream" or (
+        ep.stream == "auto" and learned_stream_mode(ep.name) == "stream")
+    learned_this_call = False
+    physical_requests = 0
     while True:
+        physical_requests += 1
         try:
             if use_streaming:
                 body = _chat_streamed(ep, payload, headers, timeout)
@@ -495,39 +756,92 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                     data=json.dumps(payload).encode(), headers=headers)
                 with _endpoint_opener(ep).open(
                         req, timeout=timeout) as r:
-                    body = json.loads(r.read())
+                    raw = r.read()
+                try:
+                    body = json.loads(raw)
+                except ValueError:
+                    # A login page, a WAF challenge, or a proxy notice
+                    # answered in the provider's place: the provider was
+                    # not reached, whatever the status said.
+                    return ChatResult(
+                        text="", model=ep.model, ok=False,
+                        error="invalid_response_body: endpoint answered "
+                              "with a body that is not JSON",
+                        response_received=True,
+                        physical_requests=physical_requests)
         except urllib.error.HTTPError as e:
             detail = ""
             try:
-                detail = e.read()[:300].decode("utf-8", "replace")
+                detail = _redacted(
+                    e.read()[:300].decode("utf-8", "replace"), ep.api_key)
             except OSError:
                 pass
+            retry_after = _retry_after_seconds(getattr(e, "headers", None))
             if e.code in (504, 524):
                 if ep.stream == "auto" and not use_streaming:
                     # Self-orient: the proxy cut a silent non-streamed
-                    # connection. Retry the same request with SSE streaming
+                    # connection. Retry the same request with streaming
                     # so the proxy's read timer stays fed.
                     use_streaming = True
+                    learned_this_call = True
                     continue
                 return ChatResult(
                     text="", model=ep.model, ok=False,
                     error="gateway_timeout: origin did not finish before the "
                           f"proxy read timeout (HTTP {e.code}); a shorter "
                           "owner-set output ceiling may complete within the "
-                          f"proxy window: {detail}")
+                          f"proxy window: {detail}",
+                    retry_after_seconds=retry_after,
+                    physical_requests=physical_requests)
+            stated = (f" (retry after {retry_after:g}s)"
+                      if retry_after is not None else "")
             return ChatResult(text="", model=ep.model, ok=False,
-                              error=f"HTTP {e.code}: {detail}")
+                              error=f"HTTP {e.code}{stated}: {detail}",
+                              retry_after_seconds=retry_after,
+                              physical_requests=physical_requests)
+        except http.client.HTTPException as e:
+            # The connection ended inside the body (IncompleteRead, a bad
+            # status line): a response began and did not finish. Never
+            # raised out of the adapter.
+            return ChatResult(text="", model=ep.model, ok=False,
+                              error="incomplete_response: "
+                                    f"{type(e).__name__}: {str(e)[:200]}",
+                              response_received=True,
+                              physical_requests=physical_requests)
         except (urllib.error.URLError, OSError, ValueError) as e:
             if ep.stream == "auto" and not use_streaming \
                     and isinstance(e, (urllib.error.URLError, OSError)) \
                     and "timed out" in str(e).lower():
                 use_streaming = True
+                learned_this_call = True
                 continue
             return ChatResult(text="", model=ep.model, ok=False,
-                              error=f"{type(e).__name__}: {str(e)[:250]}")
+                              error=f"{type(e).__name__}: {str(e)[:250]}",
+                              physical_requests=physical_requests)
         break
 
-    if ep.wire == "ollama" and not body.get("_streamed"):
+    if not isinstance(body, dict):
+        return ChatResult(
+            text="", model=ep.model, ok=False,
+            error="invalid_response_body: endpoint answered with JSON that "
+                  "is not an object", response_received=True,
+            physical_requests=physical_requests)
+    body_error = _error_body_text(body)
+    if body_error and not (
+            (body.get("choices") or [{}])[0].get("message", {}).get("content")
+            if body.get("choices") else
+            (body.get("message") or {}).get("content")):
+        # The endpoint refused inside a 200 body; classify its words the
+        # way a refusal status would be, never as an empty answer.
+        return ChatResult(text="", model=str(body.get("model", ep.model)),
+                          ok=False, error=_redacted(body_error, ep.api_key),
+                          response_received=True,
+                          delivered_by_stream=bool(body.get("_streamed")),
+                          physical_requests=physical_requests)
+    if learned_this_call and ep.stream == "auto":
+        _LEARNED_STREAM_MODES[ep.name] = "stream"
+
+    if ep.wire == "ollama":
         message = body.get("message") or {}
         text = message.get("content", "")
         p_tok = int(body.get("prompt_eval_count", 0) or 0)
@@ -543,7 +857,8 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
         usage = body.get("usage") or {}
         p_tok = int(usage.get("prompt_tokens", 0) or 0)
         e_tok = int(usage.get("completion_tokens", 0) or 0)
-        done = True
+        done = body.get("_done") if isinstance(body.get("_done"), bool) \
+            else True
         done_reason = str(choices[0].get("finish_reason", "") or "") \
             if choices else ""
         reasoning_present = bool(str(body.get("_reasoning") or "").strip())
@@ -570,7 +885,9 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                       response_received=True, done=done,
                       done_reason=done_reason,
                       reasoning_present=reasoning_present,
-                      output_limit_reached=output_limit_reached)
+                      output_limit_reached=output_limit_reached,
+                      delivered_by_stream=bool(body.get("_streamed")),
+                      physical_requests=physical_requests)
 
 
 def make_adapter(ep: CustomEndpoint):
@@ -630,21 +947,92 @@ def make_adapter(ep: CustomEndpoint):
                 output_capability=output_capability)
 
         @staticmethod
-        def live_models():
-            """Whatever the endpoint lists, or just its configured model."""
-            url = ep.base_url.rstrip("/") + (
-                "/api/tags" if ep.wire == "ollama" else "/models")
-            headers = _request_headers(ep)
+        def live_model_listing(timeout: float = 30.0) -> dict:
+            """The endpoint's model listing as a record that says whether
+            it was obtained, and when not, how the listing was refused.
+
+            ``live_models`` folds every failure into the configured model
+            so a resolver can proceed; a readiness probe needs the
+            distinction between a listing that names the model, one that
+            names other models, a refused credential, and a dead path.
+            """
+            url = ep.listing_url
+            record = {"record_type": "endpoint_model_listing/v1",
+                      "provider": ep.name, "listing_url": url,
+                      "model": ep.model, "ok": False, "models": [],
+                      "model_listed": False, "http_status": None,
+                      "error": "", "error_type": "",
+                      "retry_after_seconds": None}
+            if ep.credential_missing:
+                record.update(
+                    error=f"missing_credential: {ep.credential_env} is not "
+                          "set; no request was sent",
+                    error_type="MissingCredential")
+                return record
             try:
                 with _endpoint_opener(ep).open(
-                        urllib.request.Request(url, headers=headers),
-                        timeout=30) as r:
-                    body = json.loads(r.read())
-            except (urllib.error.URLError, OSError, ValueError):
-                return [ep.model]
+                        urllib.request.Request(
+                            url, headers=_request_headers(ep)),
+                        timeout=timeout) as r:
+                    raw = r.read(4 * 1024 * 1024 + 1)
+            except urllib.error.HTTPError as exc:
+                detail = ""
+                try:
+                    detail = _redacted(
+                        exc.read()[:300].decode("utf-8", "replace"),
+                        ep.api_key)
+                except OSError:
+                    pass
+                record.update(
+                    http_status=exc.code, error=f"HTTP {exc.code}: {detail}",
+                    error_type="HTTPError",
+                    retry_after_seconds=_retry_after_seconds(
+                        getattr(exc, "headers", None)))
+                return record
+            except (urllib.error.URLError, OSError) as exc:
+                record.update(error=f"{type(exc).__name__}: {str(exc)[:250]}",
+                              error_type=type(exc).__name__)
+                return record
+            if len(raw) > 4 * 1024 * 1024:
+                record.update(error="invalid_response_body: listing exceeds "
+                                    "the probe contract",
+                              error_type="OversizedListing")
+                return record
+            try:
+                body = json.loads(raw)
+            except ValueError:
+                record.update(error="invalid_response_body: listing is not "
+                                    "JSON", error_type="ValueError")
+                return record
+            if not isinstance(body, dict):
+                record.update(error="invalid_response_body: listing is not "
+                                    "an object", error_type="ValueError")
+                return record
+            body_error = _error_body_text(body)
+            if body_error:
+                record.update(error=_redacted(body_error, ep.api_key),
+                              error_type="ErrorBody")
+                return record
             rows = body.get("data") or body.get("models") or []
-            names = sorted(str(m.get("id") or m.get("name", "")) for m in rows)
-            return [n for n in names if n] or [ep.model]
+            names = sorted({str(m.get("id") or m.get("name")
+                                or m.get("model") or "")
+                            for m in rows if isinstance(m, dict)} - {""})
+            record.update(ok=True, http_status=200, models=names,
+                          model_listed=ep.model in names)
+            return record
+
+        @staticmethod
+        def live_models():
+            """Whatever the endpoint lists, or just its configured model.
+
+            Compatibility projection of ``live_model_listing``: an obtained
+            listing yields its models; a refused or unreachable one yields
+            an empty list, as the built-in adapters do, so discovery cannot
+            read a refusal as the configured model being served. Ask the
+            listing record for the reason.
+            """
+            listing = _Adapter.live_model_listing()
+            return list(listing["models"])
 
         @staticmethod
         def verify(model=""):
@@ -703,11 +1091,11 @@ def endpoints_from_env(value: "str | None" = None) -> list:
                 raise EndpointError(f"endpoint field {part!r} is not key=value")
             k, v = part.split("=", 1)
             fields[k.strip()] = v.strip()
-        unknown = set(fields) - {"name", "url", "model", "key", "wire",
-                                 "locality", "max_output",
+        unknown = set(fields) - {"name", "url", "model", "key", "key_env",
+                                 "wire", "locality", "max_output",
                                  "max_output_source", "evidence",
                                  "auth_scheme", "auth_header", "stream",
-                                 "tls_verification", "tls_ca_file"}
+                                 "think", "tls_verification", "tls_ca_file"}
         if unknown:
             raise EndpointError(
                 f"unknown endpoint field(s) {sorted(unknown)} — refused rather "
@@ -720,16 +1108,27 @@ def endpoints_from_env(value: "str | None" = None) -> list:
         capability = (ModelOutputCapability(
             maximum if maximum.casefold() == "unknown" else int(maximum),
             maximum_source) if maximum else None)
+        key_env = fields.get("key_env", "").strip()
+        if key_env and fields.get("key"):
+            raise EndpointError("declare key or key_env, not both")
+        # key_env names the variable the key is read from, so the key
+        # itself never sits in the endpoint declaration; an unset variable
+        # is recorded as missing, not read as an empty key.
+        environment_key = os.environ.get(key_env) if key_env else None
+        api_key = (environment_key if environment_key is not None
+                   else fields.get("key", ""))
         out.append(CustomEndpoint(
             name=fields.get("name", "custom"), base_url=fields.get("url", ""),
-            model=fields.get("model", ""), api_key=fields.get("key", ""),
+            model=fields.get("model", ""), api_key=api_key,
             wire=fields.get("wire", "openai"),
             locality=fields.get("locality", "local"),
             auth_scheme=fields.get("auth_scheme", "bearer"),
             auth_header=fields.get("auth_header", ""),
             stream=fields.get("stream", "auto"),
+            think=fields.get("think", "default"),
             tls_verification=fields.get("tls_verification", "default"),
             tls_ca_file=fields.get("tls_ca_file", ""),
+            credential_env=key_env,
             output_capability=capability,
             counts_as_evidence=fields.get("evidence", "").lower()
             in ("1", "true", "yes")))

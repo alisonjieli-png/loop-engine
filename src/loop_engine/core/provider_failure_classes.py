@@ -38,10 +38,17 @@ PROVIDER_FAILURE_CLASSES = MappingProxyType({
     # The provider or the path to it is down; the same request may pass later.
     "network_unreachable": OUTAGE, "provider_unavailable": OUTAGE,
     "gateway_timeout": OUTAGE, "timeout": OUTAGE, "MODEL_PROVIDER_UNAVAILABLE": OUTAGE,
+    # A login page, a WAF challenge, or a proxy notice answered in the
+    # provider's place; the provider was not reached and the same request
+    # may pass when the path is restored, within a stated ceiling.
+    "invalid_response_body": OUTAGE,
     # The provider refuses by allowance; nothing in the request or the
     # configuration is wrong, and retrying before the allowance changes
     # only spends attempts.
     "rate_limited": ALLOWANCE, "payment_required": ALLOWANCE,
+    # A spent usage allowance (a weekly limit, a quota, a spending cap)
+    # resets on the provider's calendar, not in the seconds a throttle takes.
+    "usage_limit_reached": ALLOWANCE,
     # The route is misconfigured; no retry of the same configuration can pass.
     "missing_credential": CONFIGURATION, "authentication_failed": CONFIGURATION,
     "model_not_found": CONFIGURATION, "invalid_request": CONFIGURATION,
@@ -114,13 +121,19 @@ def self_test() -> dict:
 
     messages = ("No route to host", "connection refused", "503 service unavailable",
                 "gateway_timeout", "read timed out", "429 rate limit exceeded",
+                'HTTP 429: {"error":"you have reached your weekly usage limit, add usage '
+                'credits: https://ollama.com/settings (ref: 1b8f6b1e-4013-4a90-b815-3ee66bc14807)"}',
                 "402 insufficient credit", "API key not found in environment",
                 "401 unauthorized", "404 model not found", "400 bad request",
                 "context_window_exceeded", "output_limit_reached", "validation failed",
                 "provider_attempt_contract_violated", "model_output_limit_mismatch",
                 "model identity mismatch", "token_accounting_unavailable",
                 "unsupported_tool_call", "empty_response", "incomplete_response",
-                "unknown_model_output_limit", "something else entirely")
+                "unknown_model_output_limit", "something else entirely",
+                "invalid_response_body: endpoint answered with a body that is not JSON",
+                "HTTP 413: Payload Too Large", "HTTP 422: validation error", "HTTP 408: Request Timeout",
+                'HTTP 400: {"error": {"message": "This model\'s maximum context length is 131072 tokens"}}',
+                "HTTP 404: model 'monkey-7b' not found")
     emitted = {_error_code(message) for message in messages}
     check("every_code_the_gateway_emits_for_these_messages_has_a_class",
           all(code in PROVIDER_FAILURE_CLASSES for code in emitted), sorted(emitted))
@@ -135,6 +148,16 @@ def self_test() -> dict:
           decide(["network_unreachable", "provider_unavailable"])["decision"] == WAIT_FOR_RECOVERY
           and decide(["rate_limited"])["decision"] == WAIT_FOR_ALLOWANCE
           and decide(["network_unreachable", "rate_limited"])["decision"] == WAIT_FOR_ALLOWANCE)
+    weekly = ('HTTP 429: {"error":"you (someone) have reached your weekly usage limit, add usage '
+              'credits: https://ollama.com/settings (ref: 1b8f6b1e-4013-4a90-b815-3ee66bc14807)"}')
+    check("a_spent_weekly_allowance_is_an_allowance_not_a_throttle_and_never_an_authentication_failure",
+          _error_code(weekly) == "usage_limit_reached"
+          and failure_class("usage_limit_reached") == ALLOWANCE
+          and decide(["usage_limit_reached"])["decision"] == WAIT_FOR_ALLOWANCE
+          and _error_code('HTTP 429: {"error":"rate limit exceeded (ref: 401a-4045)"}') == "rate_limited"
+          and _error_code("HTTP 503: {\"ref\":\"401\"}") == "provider_unavailable"
+          and "usage_limit_reached" not in _FAILOVER_FORBIDDEN_ERRORS,
+          _error_code(weekly))
     check("a_request_fault_or_an_unknown_code_fails_the_cell_not_the_campaign",
           decide(["context_window_exceeded"])["decision"] == FAIL_CELL
           and decide(["provider_failed"])["decision"] == FAIL_CELL
@@ -159,6 +182,21 @@ def self_test() -> dict:
         except (TypeError, ValueError):
             check(f"{name}_are_refused", True)
     from .adaptive_practitioner_records import _RETRYABLE_TRANSPORT_ERRORS
+    check("a_status_settles_the_class_before_the_body_words_can",
+          _error_code("HTTP 404: model 'monkey-7b' not found") == "model_not_found"
+          and _error_code('HTTP 400: {"error": {"message": "This model\'s maximum context length is '
+                          '131072 tokens. However, you requested 140000"}}') == "context_window_exceeded"
+          and failure_class("context_window_exceeded") == REQUEST
+          and _error_code("HTTP 413: Payload Too Large") == "context_window_exceeded"
+          and _error_code("HTTP 422: validation error") == "invalid_request"
+          and _error_code("HTTP 408: Request Timeout") == "timeout"
+          and _error_code("invalid_response_body: endpoint answered with a body that is not JSON")
+          == "invalid_response_body"
+          and failure_class("invalid_response_body") == OUTAGE
+          and _error_code("HTTP 429 (retry after 7200s): rate limit exceeded") == "rate_limited")
+    check("a_spent_allowance_is_not_retried_inside_a_step",
+          "usage_limit_reached" not in _RETRYABLE_TRANSPORT_ERRORS
+          and "rate_limited" in _RETRYABLE_TRANSPORT_ERRORS)
     check("the_practitioner_retries_only_outages_allowances_and_empty_answers",
           all(failure_class(code) in (OUTAGE, ALLOWANCE) or code == "output_validation_failed"
               for code in _RETRYABLE_TRANSPORT_ERRORS)

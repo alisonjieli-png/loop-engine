@@ -78,6 +78,13 @@ what was fixed the same evening and what stays open.
 The campaign review's two high findings matter before any provider answers
 again: a non-outage provider failure re-runs the same cell without bound,
 and a crash mid-trial leaves the campaign unresumable.
+The [Ollama adapter path review](../verification/OLLAMA-ADAPTER-REVIEW-2026-09-13.md)
+records what the live provider said on the evening of September 13 (the
+key lists twenty models; generation is refused with a weekly usage limit
+and no stated wait) and the eight adapter and classification defects fixed
+before the campaign spends that allowance: the Ollama wire now streams,
+a spent allowance is `usage_limit_reached` rather than a throttle, and a
+listing is not readiness.
 
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).

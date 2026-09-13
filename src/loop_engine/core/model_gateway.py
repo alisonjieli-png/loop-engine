@@ -18,6 +18,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import re
 import time
 import uuid
 from dataclasses import asdict, dataclass, field
@@ -403,6 +404,15 @@ class GatewayAttempt:
     token_bound_digest: str = ""
     reservation_status: str = ""
     reported_provider_attempts: int | None = None
+    #: The wait the provider asked for on a refusal (``Retry-After``), in
+    #: seconds; None when it stated none.
+    retry_after_seconds: "float | None" = None
+    #: Whether a streamed request delivered the response.
+    delivered_by_stream: bool = False
+    #: HTTP requests the adapter opened for this one attempt (two when
+    #: ``auto`` streaming retried a proxy timeout; zero when it refused
+    #: before sending). None when the adapter does not say.
+    provider_physical_requests: "int | None" = None
     output_capacity: ModelOutputCapability | None = field(default=None, repr=False)
 
     @property
@@ -452,6 +462,9 @@ class GatewayAttempt:
             "reserved_total_tokens": self.reserved_total_tokens,
             "token_bound_digest": self.token_bound_digest,
             "reservation_status": self.reservation_status,
+            "retry_after_seconds": self.retry_after_seconds,
+            "delivered_by_stream": self.delivered_by_stream,
+            "provider_physical_requests": self.provider_physical_requests,
             "reported_provider_attempts": self.reported_provider_attempts,
             "model_call_accounting_complete": self.reported_provider_attempts in (None, 1),
             "output_capacity_digest": (hashlib.sha256(json.dumps(
@@ -552,6 +565,65 @@ class ModelGatewayResult:
         }
 
 
+#: Words a provider uses when an account's allowance is spent for a period
+#: it sets (a weekly usage limit, a monthly quota, a spending cap), as
+#: opposed to a per-second throttle. Ollama Cloud answered 2026-09-13 with
+#: HTTP 429 "you have reached your weekly usage limit, add usage credits"
+#: and no Retry-After; OpenAI's is 429 "insufficient_quota". A throttle
+#: clears in seconds; a spent allowance clears on the provider's calendar,
+#: so a worker that waits fifteen seconds for it learns nothing.
+_USAGE_LIMIT_MARKERS = ("usage limit", "usage_limit", "quota",
+                        "spending limit", "spend limit", "billing hard limit",
+                        "usage credits")
+_HTTP_STATUS_PREFIX = re.compile(r"^\s*http(?:\s+error)?\s+(\d{3})\b")
+#: "key" as a word (api key, api_key, apikey), so a model named "monkey"
+#: is not read as a credential.
+_KEY_WORD = re.compile(r"(?<![a-z])(?:api[_ -]?)?key(?![a-z])")
+
+
+def _http_status(error: str) -> int:
+    """The status an adapter put at the front of its error text, or zero.
+
+    Every adapter here writes ``HTTP <status>: <body>`` and urllib writes
+    ``HTTP Error <status>: <reason>``, so the status is read from there
+    rather than found as a substring of the body: a provider's error body
+    carries request ids and hexadecimal references in which ``401`` or
+    ``404`` occur by chance, and a chance match turned a spent allowance
+    into an authentication failure that stops a route."""
+    match = _HTTP_STATUS_PREFIX.match(str(error).lower())
+    return int(match.group(1)) if match else 0
+
+
+def _error_code_for_status(status: int, low: str) -> str:
+    """The code a leading HTTP status names, or empty when the status alone
+    does not settle it (400 bodies are read for their words below)."""
+    if status in (401, 403):
+        return "authentication_failed"
+    if status == 402:
+        return "payment_required"
+    if status == 404:
+        return "model_not_found"
+    if status == 408:
+        return "timeout"
+    if status == 413:
+        # The request body itself is too large for the endpoint: this
+        # request's fault, like a prompt past the context window.
+        return "context_window_exceeded"
+    if status == 422:
+        # The endpoint refused a parameter of the request; the same
+        # request is refused identically until the adapter changes.
+        return "invalid_request"
+    if status == 429:
+        return ("usage_limit_reached"
+                if any(marker in low for marker in _USAGE_LIMIT_MARKERS)
+                else "rate_limited")
+    if status in (500, 502, 503):
+        return "provider_unavailable"
+    if status in (504, 524):
+        return "gateway_timeout"
+    return ""
+
+
 def _error_code(error: str) -> str:
     low = str(error).lower()
     if "provider_attempt_contract_violated" in low:
@@ -571,8 +643,17 @@ def _error_code(error: str) -> str:
             "connectionaborted",
             "brokenpipeerror")):
         return "provider_unavailable"
-    if "context_window_exceeded" in low:
+    if low.startswith("missing_credential"):
+        return "missing_credential"
+    if "context_window_exceeded" in low or any(marker in low for marker in (
+            "context_length_exceeded", "maximum context length",
+            "context length", "context window", "prompt is too long",
+            "input is too long", "too many tokens", "reduce the length")):
+        # The prompt does not fit this model: this request's fault, not
+        # the route's, so a campaign fails the cell and keeps the route.
         return "context_window_exceeded"
+    if "invalid_response_body" in low:
+        return "invalid_response_body"
     if "token_accounting_unavailable" in low:
         return "token_accounting_unavailable"
     if ("output_limit_reached" in low or "max_tokens" in low
@@ -594,13 +675,30 @@ def _error_code(error: str) -> str:
         return "unknown_model_output_limit"
     if "not the declared model maximum" in low:
         return "model_output_limit_mismatch"
+    status_code = _error_code_for_status(_http_status(low), low)
+    if status_code:
+        # The provider answered with a status: that settles the class
+        # before any word in its body can, so a model named "monkey" is
+        # not a missing key and a hexadecimal reference is not a status.
+        return status_code
     if (("not found" in low or "missing" in low or "in environment" in low)
-            and ("key" in low or "credential" in low)):
+            and (_KEY_WORD.search(low) or "credential" in low)):
         # A missing credential is a configuration state, not a rejected
         # credential. It is classified first so a failover plan can skip
         # the provider instead of treating it as an authentication failure.
         return "missing_credential"
-    if "401" in low or "403" in low or "unauthor" in low or "api_key" in low:
+    if ("model" in low and ("not found" in low or "does not exist" in low
+                            or "try pulling" in low)):
+        # Ollama says "model 'x' not found, try pulling it first"; the
+        # OpenAI shape says "The model `x` does not exist".
+        return "model_not_found"
+    if any(marker in low for marker in _USAGE_LIMIT_MARKERS) and (
+            "429" in low or "exceeded" in low or "reached" in low):
+        return "usage_limit_reached"
+    if ("401" in low or "403" in low or "unauthor" in low or "api_key" in low
+            or (_KEY_WORD.search(low) and any(word in low for word in (
+                "invalid", "incorrect", "wrong", "rejected", "revoked",
+                "expired")))):
         return "authentication_failed"
     if "402" in low or "payment required" in low or "insufficient credit" in low:
         return "payment_required"
@@ -1049,6 +1147,18 @@ class ModelGateway:
                                   else None)
                 output_limit_reached = bool(getattr(
                     provider_result, "output_limit_reached", False))
+                raw_retry_after = getattr(
+                    provider_result, "retry_after_seconds", None)
+                retry_after_seconds = (
+                    float(raw_retry_after)
+                    if isinstance(raw_retry_after, (int, float))
+                    and not isinstance(raw_retry_after, bool) else None)
+                delivered_by_stream = bool(getattr(
+                    provider_result, "delivered_by_stream", False))
+                raw_physical = getattr(provider_result, "physical_requests", None)
+                provider_physical_requests = (
+                    raw_physical if type(raw_physical) is int and raw_physical >= 0
+                    else None)
                 response_received = bool(
                     getattr(provider_result, "response_received", False)
                     or raw_text.strip()
@@ -1203,6 +1313,9 @@ class ModelGateway:
                     provider_request_digest=provider_request_digest,
                     transport_succeeded=transport_succeeded,
                     transport_error_code=transport_error_code,
+                    retry_after_seconds=retry_after_seconds,
+                    delivered_by_stream=delivered_by_stream,
+                    provider_physical_requests=provider_physical_requests,
                     reserved_input_tokens=(reservation.maximum_input_tokens if reservation else None),
                     reserved_total_tokens=(reservation.maximum_total_tokens if reservation else None),
                     token_bound_digest=reservation_digest,

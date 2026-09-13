@@ -14,8 +14,26 @@ Deterministic loops need no provider. Hybrid and non-deterministic loops use
 | OpenCode Go task compilation | `OPENCODE_GO_API_KEY` | Direct OpenAI-compatible OpenCode Go route for one advisory task review. |
 | Custom endpoint | Supplied in `CustomEndpoint` | OpenAI-compatible or native Ollama server. |
 
-Ollama Cloud is not local Ollama. Configure a local Ollama server as a custom
-endpoint with `wire="ollama"` and `locality="local"`.
+Ollama Cloud is reachable two ways: through the built-in `ollama_cloud`
+provider (its key comes from `OLLAMA_API_KEY` in the environment or the
+repository `.env`; a `credential_env` on a `kind: builtin` provider is recorded
+but the built-in adapter reads its own variable), or as a `kind: custom`
+provider at `https://ollama.com` with `wire: ollama`, whose key comes from the
+variable its `credential_env` names. A local Ollama server is the same custom
+endpoint at its own URL, such as `http://127.0.0.1:11434`; `locality` is
+descriptive only and changes no behaviour. On the Ollama wire both paths send
+`think: false` unless the declaration says otherwise (`think: on`, or
+`think: model` to leave the model's default), because a reasoning model spends
+the output ceiling thinking before it answers. A custom provider whose
+`credential_env` variable is unset refuses before sending a request, as the
+built-in adapters do.
+
+The model listing (`/api/tags`) is not readiness: on the evening of
+September 13, 2026 the key listed twenty models while every generation was
+refused with HTTP 429 "weekly usage limit" and no `Retry-After`. The gateway
+names that refusal `usage_limit_reached`, an allowance that resets on the
+provider's calendar, apart from `rate_limited`, a throttle that clears in
+seconds.
 
 ## GPT-6 Astra adapter status
 
@@ -96,8 +114,9 @@ description, and as a `tls_verification_policy` event in the run's model
 routing history.
 
 Select a settings-declared provider for a solve with
-`--compile-provider <provider_id>`; the key is read from that provider's
-`credential_env` variable.
+`--compile-provider <provider_id>`; for a `kind: custom` provider the key is
+read from that provider's `credential_env` variable, and for a built-in
+provider from the variable the built-in adapter owns.
 
 ## Preferred first setup
 

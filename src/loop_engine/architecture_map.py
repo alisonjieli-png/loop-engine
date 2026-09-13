@@ -285,6 +285,7 @@ MODULE_MAP = {
         "provider_failover", "provider_failure_classes",
         "provider_pinned",
         "model_discovery", "autoconfigure", "custom_endpoint",
+        "custom_endpoint_checks",
         "product_outcome_store",
         "generated_project", "generated_project_artifact_validation",
         "knowledge_loader",

@@ -211,6 +211,7 @@ def self_test() -> dict:
         "core.component_inventory",
         "core.config",
         "core.custom_endpoint",
+        "core.custom_endpoint_checks",
         "core.extension_discovery",
         "core.generated_project",
         "core.intelligence_registry",

@@ -49,8 +49,8 @@ def failure_code_for(result: dict) -> str:
             "model_gateway_failed", "no_eligible_route",
             "provider_not_configured", "missing_credential",
             "authentication_failed", "payment_required", "model_not_found",
-            "rate_limited", "provider_unavailable", "timeout",
-            "provider_failed"):
+            "rate_limited", "usage_limit_reached", "provider_unavailable",
+            "invalid_response_body", "timeout", "provider_failed"):
         return SolveTerminalCode.PROVIDER_UNAVAILABLE.value
     if code in ("PermissionError", "PERMISSION_DENIED"):
         return SolveTerminalCode.AUTHORITY_REQUIRED.value
