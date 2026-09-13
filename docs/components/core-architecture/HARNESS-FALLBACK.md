@@ -336,17 +336,27 @@ semantic-recovery restriction.
 A `HarnessSemanticBinding` accepts the binding as its `layering` argument.
 At construction it checks that the declaration wraps the selected harness,
 was checked against this binding's own fallback policy, and names only
-registered alternatives. At invocation it writes one
-`harness_layering_bound/v1` record with the assignment reference, the
-binding digest, the composition identity, the control policy digest, the
-natively owned controls, and the executor that will run, and every
+registered alternatives, and it refuses, with the exact reason, anything no
+registered executor implements: a composition with wrapper layers, a
+natively owned control the adapter does not declare in its
+`HarnessExecutionCapabilities.native_controls` (the message names the
+unsupported controls and the adapter's declared ones), or a declared
+control that no executor hands to the harness yet. The three reasons stay
+distinct, so "unsupported by this adapter" is never confused with "not
+implemented yet", and a declaration is never run as something else. An
+adapter's declared native controls are version-bound facts, not
+permissions; the tuple enters the capabilities record only when nonempty
+(`harness_execution_capabilities/v2`), so existing records and digests are
+unchanged, and every current recipe declares none.
+
+At invocation the binding writes one `harness_layering_bound/v1` record with
+the assignment reference, the binding digest, the composition identity, the
+control policy digest, the natively owned controls, the adapter's declared
+native controls, and the executor that will run, and every
 `harness_attempt_assessment/v1` record carries the same digests. The
-executor is always `direct_adapter` today: a composition with wrapper
-layers, or a control owned by the native harness, is refused before any
-adapter launches, because no registered executor implements it yet and a
-declaration must never be run as something else. A binding without a
-layering record reports an empty digest and the same executor, so an
-undeclared attempt is distinguishable from a declared direct one.
+executor is always `direct_adapter` today. A binding without a layering
+record reports an empty digest and the same executor, so an undeclared
+attempt is distinguishable from a declared direct one.
 
 The records are declarations. The proposal's comparison controls
 (continuation owner, retained versus fresh session, wrapper order,

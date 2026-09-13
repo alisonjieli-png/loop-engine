@@ -39,14 +39,16 @@ def run_self_test_checks():
             check(name, False)
 
     class FixtureHarness:
-        def __init__(self, identity, behavior='broker'):
+        def __init__(self, identity, behavior='broker', native_controls=()):
             self.identity, self.behavior = identity, behavior
+            self.native_controls = tuple(native_controls)
             self.requests = []
 
         def info(self):
             return HarnessAdapterInfo(self.identity, '1.0.0', 'offline_fixture',
                 available=self.behavior != 'unavailable',
-                execution_capabilities=HarnessExecutionCapabilities(supported_features=('model_routes',)))
+                execution_capabilities=HarnessExecutionCapabilities(
+                    supported_features=('model_routes',), native_controls=self.native_controls))
 
         def run(self, request, services):
             self.requests.append(request)
@@ -244,18 +246,55 @@ def run_self_test_checks():
         wrapped = LayeredHarnessBinding('assignment:layering-check',
             WrapperComposition('prepared', 'first', (WrapperLayer(
                 'instruction-prep', '1.0', ('instruction_preparation',)),)), everything, (), policy)
-        session, owner = layered_setup(wrapped)
-        refuses('a_composition_with_wrappers_is_refused_until_an_executor_exists',
-                lambda: session.invoke(ModelInvocationRequest('wrapped'), owner))
-        check('the_refused_composition_launched_no_adapter',
-              not any(item.requests for item in session.authority.harness.registry._adapters.values())
-              if hasattr(session.authority.harness.registry, '_adapters') else True)
+
+        def construction_message(layering, setup=layered_setup):
+            try:
+                setup(layering)
+            except ValueError as exc:
+                return str(exc)
+            return ''
+
+        message = construction_message(wrapped)
+        check('a_composition_with_wrappers_is_refused_at_construction_until_an_executor_exists',
+              'no executor is registered for a layered composition' in message)
         supervised = NativeControlPolicy({**everything.ownership,
                                           NativeControl.PLANNING: ControlOwnership.SUPERVISED})
-        session, owner = layered_setup(LayeredHarnessBinding('assignment:layering-check',
+        message = construction_message(LayeredHarnessBinding('assignment:layering-check',
             WrapperComposition('direct', 'first'), supervised, (), policy))
-        refuses('a_natively_owned_control_is_refused_until_an_executor_exists',
-                lambda: session.invoke(ModelInvocationRequest('supervised'), owner))
+        check('a_control_the_adapter_does_not_declare_is_refused_by_name',
+              'does not support native ownership' in message
+              and 'planning_and_continuation' in message)
+
+        def declaring_setup(layering):
+            adapters = tuple(FixtureHarness(identity, 'broker',
+                                            native_controls=('planning_and_continuation',))
+                             for identity in policy.harness_ids)
+            binding = HarnessSemanticBinding('first', HarnessRegistry(adapters),
+                str(Path(directory)/'work'), artifact_store=manager,
+                fallback_policy=policy, layering=layering)
+            authority = fixture_model_execution(FixtureModelExecutionRequest(
+                answers=('{"answer":1}',), max_model_calls=4))
+            authority = replace(authority, harness=binding,
+                config=replace(authority.config, max_route_attempts=None))
+            return authority.start_session(artifact_store=manager), Loop('layering controls')
+
+        message = construction_message(LayeredHarnessBinding('assignment:layering-check',
+            WrapperComposition('direct', 'first'), supervised, (), policy), declaring_setup)
+        check('a_declared_control_is_still_refused_until_an_executor_exists',
+              'no executor hands it to the harness yet' in message
+              and 'does not support' not in message)
+        session, owner = declaring_setup(direct)
+        session.invoke(ModelInvocationRequest('declared adapter controls'), owner)
+        bound = [e for e in owner.ledger.events if e.get('action') == 'harness_layering_bound']
+        check('the_bound_record_names_the_adapter_native_controls',
+              bound and bound[0]['adapter_native_controls'] == ['planning_and_continuation'])
+        refuses('an_unknown_native_control_name_is_refused_in_capabilities',
+                lambda: HarnessExecutionCapabilities(native_controls=('mind_reading',)))
+        check('capabilities_without_native_controls_keep_their_encoding',
+              HarnessExecutionCapabilities().to_dict()['record_type'] == 'harness_execution_capabilities/v1'
+              and 'native_controls' not in HarnessExecutionCapabilities().to_dict()
+              and HarnessExecutionCapabilities(native_controls=('goal_management',)).to_dict()['record_type']
+              == 'harness_execution_capabilities/v2')
         other_policy = HarnessFallbackPolicy(('first', 'second'), (HarnessFailureKind.UNAVAILABLE,))
         refuses('a_layered_binding_checked_against_another_outer_policy_is_refused',
                 lambda: layered_setup(LayeredHarnessBinding('assignment:layering-check',

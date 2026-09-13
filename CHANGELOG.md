@@ -45,9 +45,12 @@ First public release.
   bypass an outer semantic-recovery restriction. `HarnessSemanticBinding`
   accepts the binding as `layering`, records `harness_layering_bound/v1`
   with the digests and the executor at invocation, stamps every attempt
-  assessment with the same digests, and refuses a composition with wrapper
-  layers or a natively owned control until an executor for it is
-  registered. No adapter executes a composition yet; the records are the
+  assessment with the same digests, and refuses at construction, with the
+  exact reason, a composition with wrapper layers, a natively owned control
+  the adapter does not declare in the new
+  `HarnessExecutionCapabilities.native_controls` fact, or a declared control
+  that no executor hands to the harness yet. No adapter executes a
+  composition yet; the records are the
   declarations the
   [layered harness proposal](docs/architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
   asks for, and the direct adapter remains the baseline.

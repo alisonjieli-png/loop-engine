@@ -105,6 +105,10 @@ class HarnessSemanticBinding:
             for item in layering.fallbacks:
                 if item.harness_id and item.harness_id not in ids:
                     raise ValueError('a layered fallback names a harness outside the registered order')
+            # Refuse here, at construction, so the exact reason reaches the
+            # caller instead of being folded into a session's fail-closed
+            # accounting failure at invocation.
+            self._refuse_undeclared_executor()
 
     def _refuse_undeclared_executor(self):
         """A declaration is not an implementation: refuse to run wrappers or
@@ -116,8 +120,19 @@ class HarnessSemanticBinding:
                              'direct adapter (an empty composition) can run today')
         natively = self.layering.control_policy.natively_owned()
         if natively:
+            declared = set(self._adapter_native_controls())
+            unsupported = [item.value for item in natively if item.value not in declared]
+            if unsupported:
+                raise ValueError(f'adapter {self.harness_id!r} does not support native ownership '
+                                 f'of {unsupported}; its declared native controls are '
+                                 f'{sorted(declared)}')
             raise ValueError('the direct adapter implements owning-Loop control for every native '
-                             f'control; {[item.value for item in natively]} cannot run yet')
+                             f'control; {[item.value for item in natively]} is declared by the '
+                             'adapter but no executor hands it to the harness yet')
+
+    def _adapter_native_controls(self):
+        capabilities = self._registration.execution_capabilities
+        return tuple(capabilities.native_controls) if capabilities is not None else ()
 
     def _layering_fields(self):
         if self.layering is None:
@@ -151,6 +166,7 @@ class HarnessSemanticBinding:
                 semantic_call_id=request.semantic_call_id,
                 assignment_ref=self.layering.assignment_ref,
                 natively_owned_controls=[item.value for item in self.layering.control_policy.natively_owned()],
+                adapter_native_controls=list(self._adapter_native_controls()),
                 fallback_actions=[item.action for item in self.layering.fallbacks],
                 **self._layering_fields())
         if self.selection_policy is not None:

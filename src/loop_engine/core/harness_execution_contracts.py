@@ -196,6 +196,14 @@ class HarnessExecutionCapabilities:
     enforced_limits: tuple[str, ...] = ()
     isolation: str = "unverified"
     evidence_refs: tuple[str, ...] = ()
+    #: Native controls (core.harness_layering.NativeControl values) this
+    #: adapter can hand to the harness under a native ownership. Empty means
+    #: the adapter implements owning-Loop control for everything, which is
+    #: what every current recipe does. A declared control is a version-bound
+    #: fact about the adapter, never a permission: the owning Loop's control
+    #: policy decides ownership, and the record enters the capabilities
+    #: encoding only when the tuple is nonempty, so existing digests hold.
+    native_controls: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "supported_features", _names(self.supported_features))
@@ -207,11 +215,22 @@ class HarnessExecutionCapabilities:
         refs = tuple(self.evidence_refs)
         if any(not isinstance(ref, str) or not ref or len(ref) > 1024 for ref in refs):
             raise ValueError("invalid harness evidence reference")
+        controls = _names(self.native_controls)
+        if controls:
+            from .harness_layering import NativeControl
+            known = {item.value for item in NativeControl}
+            if not set(controls) <= known:
+                raise ValueError("harness native controls must name known native controls")
         object.__setattr__(self, "enforced_limits", limits)
         object.__setattr__(self, "evidence_refs", refs)
+        object.__setattr__(self, "native_controls", controls)
 
     def to_dict(self) -> dict:
-        return {"record_type": "harness_execution_capabilities/v1", **asdict(self)}
+        record = asdict(self)
+        if not self.native_controls:
+            del record["native_controls"]
+            return {"record_type": "harness_execution_capabilities/v1", **record}
+        return {"record_type": "harness_execution_capabilities/v2", **record}
 
 
 @dataclass(frozen=True)
