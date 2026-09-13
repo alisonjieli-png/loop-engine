@@ -15,6 +15,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import signal
 import socket
 import sys
@@ -39,7 +40,8 @@ from loop_engine.core.model_capabilities import ModelOutputAllocation
 from loop_engine.core.model_gateway import ModelGateway, ModelGatewayConfig
 from loop_engine.core.parameter_resolution import ParameterDefinition, ParameterInput, ParameterSourceKind
 from loop_engine.core.provider_failure_classes import (
-    FAIL_CELL, STOP_ROUTE, UNCLASSIFIED, WAIT_FOR_ALLOWANCE, WAIT_FOR_RECOVERY, decide, failure_class)
+    CONFIGURATION, CONTRACT, FAIL_CELL, STOP_ROUTE, UNCLASSIFIED, WAIT_FOR_ALLOWANCE, WAIT_FOR_RECOVERY,
+    decide, failure_class)
 from loop_engine.core.run_history import load_saved_run_bundle
 from loop_engine.core.settings_loader import load_runtime_settings
 from loop_engine.generation.space import ConfigurationAxis, ConfigurationSpace
@@ -193,9 +195,14 @@ def task_intake(row, delivery):
 class RecordedSettingSession:
     """Record each applied setting while retaining one existing budget owner."""
 
-    def __init__(self, authority, artifacts, configuration, records):
+    def __init__(self, authority, artifacts, configuration, records, *, checkpoint_retention=2):
         self._session = ModelExecutionSession(replace(authority, session_factory=None), artifact_store=artifacts)
         self.configuration, self.records = configuration, records
+        if type(checkpoint_retention) is not int or checkpoint_retention < 1:
+            raise ValueError('checkpoint retention must keep at least the latest revision')
+        # The ledger is append-only, so every earlier checkpoint is a prefix of
+        # the latest one; keeping all of them grows the cell quadratically.
+        self.checkpoint_retention = checkpoint_retention
 
     def __getattr__(self, name):
         return getattr(self._session, name)
@@ -237,11 +244,17 @@ class RecordedSettingSession:
                 run_id='checkpoint-' + digest(operation)[:24])
             history.commit()
             root = Path(self.records.path).parent / 'step-history' / digest(operation)[:24]
-            revision = len(list(root.glob('*'))) if root.exists() else 0
+            revisions = sorted((int(p.name) for p in root.iterdir() if p.name.isdigit()), reverse=True) \
+                if root.exists() else []
+            revision = (revisions[0] + 1) if revisions else 0
             location = history.save(str(root / str(revision)))
+            for stale in revisions[self.checkpoint_retention - 1:]:
+                shutil.rmtree(root / str(stale), ignore_errors=True)
             self.records.record('step_history', operation, {'history': location,
                 'integrity': history.verify_chain(), 'known_calls': self.calls_used,
-                'call_accounting_complete': not self.accounting_uncertain})
+                'call_accounting_complete': not self.accounting_uncertain,
+                'revision': revision, 'retained_revisions': self.checkpoint_retention,
+                'events': len(parent_loop.ledger.events)})
 
 
 @dataclass(frozen=True)
@@ -345,11 +358,23 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
     return {**state, 'path': str(cell)}
 
 
+def listed_model_names(body):
+    """The names a listing carries, from either the OpenAI or the Ollama shape."""
+    rows = body.get('data') or body.get('models') or [] if isinstance(body, dict) else []
+    return {str(row.get('id') or row.get('name') or '') for row in rows if isinstance(row, dict)} - {''}
+
+
+def model_is_listed(names, model):
+    """Exact identity, or the same identity with the implicit latest tag."""
+    return model in names or model + ':latest' in names or (model.endswith(':latest') and model[:-7] in names)
+
+
 def endpoint_reachable(url):
     """Transport-only observation: no credentials, model, or success claim."""
     parsed = urlsplit(url)
+    port = parsed.port or (80 if parsed.scheme == 'http' else 443)
     try:
-        with socket.create_connection((parsed.hostname, parsed.port or 443), timeout=10):
+        with socket.create_connection((parsed.hostname, port), timeout=10):
             return {'reachable': True, 'kind': 'tcp_connection_only', 'provider_verified': False}
     except OSError as exc:
         return {'reachable': False, 'kind': 'tcp_connection_only', 'error_type': type(exc).__name__,
@@ -361,22 +386,37 @@ def provider_available(endpoint):
     from urllib.error import HTTPError, URLError
     from urllib.request import Request
     from loop_engine.core.custom_endpoint import _endpoint_opener, _request_headers
+    from loop_engine.core.model_gateway import _error_code
     transport = endpoint_reachable(endpoint.base_url)
     if not transport['reachable']:
         return transport
+    # The same listing path the product adapter reads for this wire.
+    listing = endpoint.base_url.rstrip('/') + ('/api/tags' if getattr(endpoint, 'wire', 'openai') == 'ollama'
+                                              else '/models')
     try:
-        with _endpoint_opener(endpoint).open(Request(endpoint.base_url.rstrip('/') + '/models',
-                headers=_request_headers(endpoint)), timeout=30) as response:
+        with _endpoint_opener(endpoint).open(Request(listing, headers=_request_headers(endpoint)),
+                                             timeout=30) as response:
             raw = response.read(4 * 1024 * 1024 + 1)
             if len(raw) > 4 * 1024 * 1024:
                 return {'reachable': False, 'kind': 'model_listing', 'reason': 'listing_exceeds_probe_contract'}
-            body = json.loads(raw)
-            present = any(isinstance(item, dict) and item.get('id') == endpoint.model
-                          for item in body.get('data', []))
+            names = listed_model_names(json.loads(raw))
+            present = model_is_listed(names, endpoint.model)
+            # An empty listing is a provider still coming up (an outage); a
+            # listing that names other models but not this one is a
+            # configuration fault the worker must not wait on.
+            code = '' if present else ('model_not_found' if names else 'provider_unavailable')
             return {'reachable': present, 'kind': 'model_listing', 'model_listed': present,
+                    'listed_count': len(names), 'listing_url': listing, 'failure_code': code,
+                    'failure_class': failure_class(code) if code else '',
                     'provider_verified': False, 'model_calls': 0}
     except HTTPError as exc:
-        return {'reachable': False, 'kind': 'model_listing', 'http_status': exc.code, 'model_calls': 0}
+        # An HTTP refusal is classified by the gateway's own rule so a wrong
+        # credential or a missing route stops the worker instead of reading
+        # as an outage that never ends.
+        code = _error_code(f'HTTP Error {exc.code}: {exc.reason}')
+        return {'reachable': False, 'kind': 'model_listing', 'http_status': exc.code,
+                'failure_code': code, 'failure_class': failure_class(code), 'listing_url': listing,
+                'model_calls': 0}
     except (URLError, OSError, ValueError, TypeError, AttributeError) as exc:
         return {'reachable': False, 'kind': 'model_listing', 'error_type': type(exc).__name__, 'model_calls': 0}
 
@@ -464,6 +504,13 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
                 else:
                     probe = provider_available(endpoint)
                     records.record('provider_availability', 'latest', probe)
+                    if failure_class(probe.get('failure_code', '')) in (CONFIGURATION, CONTRACT):
+                        cursor['stopped_routes'] = cursor.get('stopped_routes', 0) + 1
+                        records.record('controller', 'cursor', cursor)
+                        state = {**base, 'cursor': cursor, 'status': 'route_stopped', 'provider_observation': probe}
+                        records.refresh_export(root / 'status.json', state)
+                        print(canonical(state), flush=True)
+                        return
                     if not probe['reachable']:
                         state = {**base, 'status': 'waiting_for_provider', 'provider_observation': probe,
                                  'next_probe_seconds': probe_interval, 'next_task': row['id']}

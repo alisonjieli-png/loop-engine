@@ -89,6 +89,10 @@ completed trials, waiting for the provider (errno 113, no route to host).
    call by `apply_configuration_as_loop`. Fix: checkpoint only the events
    since the last checkpoint, and record the setter run in the campaign
    projection rather than the task ledger.
+   **Retention fixed the same evening:** the session keeps
+   `checkpoint_retention` revisions (default 2) and removes older ones,
+   which are prefixes of the latest, so growth is linear; the setter run
+   still lands in the task ledger.
 
 5. **Medium. The readiness probe misclassifies in both directions and
    never exercises the generation URL.** `probe2_readiness_probe.out`: a
@@ -101,6 +105,12 @@ completed trials, waiting for the provider (errno 113, no route to host).
    own model listing, classify 401, 402, and 404 as configuration failures
    that stop the worker with a distinct status, and consider a bounded
    one-token generation probe.
+   **Fixed the same evening** except the generation probe: the port
+   defaults by scheme, the listing path follows the wire, a listed model
+   with the implicit `latest` tag counts, an empty listing reads as an
+   outage and a listing without the model as a configuration fault, and an
+   HTTP refusal is classified through the gateway's classifier so the
+   worker stops with `route_stopped` instead of waiting.
 
 6. **Medium. Adding a provider cannot reach this campaign.** At `d806759`
    the provider, model, and route are hard-coded and the provider file is

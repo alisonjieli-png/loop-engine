@@ -8,8 +8,8 @@ import unittest
 from unittest.mock import patch
 
 from embodiment_lab.task_database_campaign import (
-    RecordedSettingSession, campaign_space, confined_name, fair_order, outage_decision,
-    reconcile_interrupted, run_trial)
+    RecordedSettingSession, campaign_space, confined_name, endpoint_reachable, fair_order,
+    outage_decision, provider_available, reconcile_interrupted, run_trial)
 from embodiment_lab.systematic_records import CampaignProjection
 from loop_engine.code_nodes.solution_model_port import (
     FixtureModelExecutionRequest, ModelInvocationRequest, fixture_model_execution)
@@ -170,6 +170,75 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
             self.assertEqual(state['error_type'], 'FileExistsError')
             self.assertEqual((cell / 'evidence.txt').read_text(), 'kept')
             self.assertEqual(sorted(p.name for p in cell.iterdir()), ['evidence.txt'])
+
+    def test_readiness_probe_defaults_the_port_by_scheme_and_classifies_refusals(self):
+        from urllib.error import HTTPError
+        from loop_engine.core.custom_endpoint import CustomEndpoint
+        from loop_engine.core.model_capabilities import ModelOutputCapability
+        seen = []
+        class Connection:
+            def __enter__(self): return self
+            def __exit__(self, *_): return False
+        def connect(address, timeout):
+            seen.append(address); return Connection()
+        with patch('embodiment_lab.task_database_campaign.socket.create_connection', side_effect=connect):
+            self.assertTrue(endpoint_reachable('http://host.invalid/v1')['reachable'])
+            self.assertTrue(endpoint_reachable('https://host.invalid/v1')['reachable'])
+            self.assertTrue(endpoint_reachable('http://127.0.0.1:11434')['reachable'])
+        self.assertEqual([port for _, port in seen], [80, 443, 11434])
+        def endpoint(wire, model='fixture-model'):
+            return CustomEndpoint('probe_fixture', 'https://fixture.invalid/v1', model, locality='cloud',
+                wire=wire, stream='buffer', auth_scheme='none', counts_as_evidence=True,
+                output_capability=ModelOutputCapability(64, 'offline probe contract'))
+        class Transport:
+            def __init__(self, outcome): self.outcome = outcome; self.urls = []
+            def open(self, request, timeout):
+                self.urls.append(request.full_url)
+                if isinstance(self.outcome, int):
+                    raise HTTPError(request.full_url, self.outcome, 'refused', {}, None)
+                return io.BytesIO(json.dumps(self.outcome).encode())
+        cases = (
+            (endpoint('openai'), {'data': [{'id': 'fixture-model'}]}, True, ''),
+            (endpoint('ollama'), {'models': [{'name': 'fixture-model:latest'}]}, True, ''),
+            (endpoint('openai'), {'data': [{'id': 'another-model'}]}, False, 'configuration'),
+            (endpoint('openai'), {'data': []}, False, 'outage'),
+            (endpoint('openai'), 401, False, 'configuration'),
+            (endpoint('openai'), 404, False, 'configuration'),
+            (endpoint('openai'), 429, False, 'allowance'),
+            (endpoint('openai'), 503, False, 'outage'))
+        with patch('embodiment_lab.task_database_campaign.socket.create_connection', side_effect=connect):
+            for target, outcome, reachable, failure in cases:
+                with self.subTest(wire=target.wire, outcome=outcome):
+                    transport = Transport(outcome)
+                    with patch('loop_engine.core.custom_endpoint._endpoint_opener', return_value=transport):
+                        probe = provider_available(target)
+                    self.assertEqual(probe['reachable'], reachable)
+                    self.assertEqual(probe.get('failure_class', ''), failure)
+                    self.assertEqual(probe['model_calls'], 0)
+                    self.assertTrue(transport.urls[-1].endswith('/api/tags' if target.wire == 'ollama' else '/models'))
+
+    def test_checkpoint_retention_bounds_step_history_growth(self):
+        with tempfile.TemporaryDirectory(prefix='task-campaign-retention-') as directory:
+            records = CampaignProjection(Path(directory) / 'projection.duckdb')
+            authority = fixture_model_execution(FixtureModelExecutionRequest(
+                answers=('first', 'second', 'third'), max_model_calls=3))
+            configuration = campaign_space(('native_gateway',)).configuration_at(0)
+            session = RecordedSettingSession(authority, None, configuration, records, checkpoint_retention=1)
+            owner = Loop('checkpoint retention fixture owner')
+            try:
+                for number in range(3):
+                    session.invoke(ModelInvocationRequest('Fixture input ' + str(number),
+                                                          semantic_call_id='retention-step'), owner)
+                history = records.latest('step_history', 'retention-step')
+                self.assertEqual(history['revision'], 2)
+                self.assertEqual(history['retained_revisions'], 1)
+                root = Path(history['history']).parents[1]
+                self.assertEqual(sorted(p.name for p in root.iterdir()), ['2'])
+                self.assertTrue(history['integrity']['intact'])
+                with self.assertRaises(ValueError):
+                    RecordedSettingSession(authority, None, configuration, records, checkpoint_retention=0)
+            finally:
+                records.close()
 
 
 if __name__ == '__main__':

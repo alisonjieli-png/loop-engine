@@ -226,6 +226,18 @@ First public release.
   operation exposes it), an existing trial cell is reported rather than
   crashed into, a failed trial keeps its error message, and `SIGTERM`
   unwinds through the trial's `finally` blocks. Three new tests.
+- Task-database campaign runner, second batch: the readiness probe
+  defaults the port by scheme (80 for `http`, 443 for `https`), reads the
+  listing path the product adapter uses for the wire (`/api/tags` for
+  Ollama, `/models` otherwise), accepts a listed model with the implicit
+  `latest` tag, reads an empty listing as an outage and a listing without
+  the configured model as a configuration fault, and classifies an HTTP
+  refusal through the gateway's own classifier, so the worker stops with
+  `route_stopped` on a wrong credential or a missing route instead of
+  waiting forever. Per-step checkpoints keep `checkpoint_retention`
+  revisions (default 2) of the append-only ledger instead of every prefix,
+  and record the revision, the retention, and the event count. Two new
+  tests.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback
