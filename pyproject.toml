@@ -31,6 +31,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+optimization = [
+    "optuna==5.0.0",
+    "cmaes==0.12.0",
+]
 data = [
     "numpy",
     "pandas",
@@ -49,6 +53,7 @@ integrations = [
     "tomli>=2; python_version < '3.11'",
 ]
 all = [
+    "optuna==5.0.0", "cmaes==0.12.0",
     "numpy", "pandas", "scikit-learn", "lightgbm", "xgboost", "kaggle",
     "duckdb", "model2vec", "lancedb", "mcp>=1.29,<2",
     "opentelemetry-api>=1.41", "opentelemetry-sdk>=1.41",

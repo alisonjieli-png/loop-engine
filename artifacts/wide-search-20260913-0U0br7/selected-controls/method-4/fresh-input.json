@@ -1,0 +1,1 @@
+{"record_type":"wide_control_replay/v1","inputs":[-3,4,17],"outputs":[-4,17,56],"expected":[-2,19,58],"control_requirement_met":false,"runtime_events":28,"provider_calls_made":0}

@@ -139,6 +139,14 @@ class ControlPolicySpace:
                 "adapter_native_controls": list(self.adapter_native_controls),
                 "radices": list(self.radices), "size": self.size}
 
+    @classmethod
+    def from_dict(cls, value) -> "ControlPolicySpace":
+        _expect_space(value, "control_policy", {"adapter_native_controls", "radices", "size"})
+        space = cls(tuple(value["adapter_native_controls"]))
+        if list(space.radices) != list(value["radices"]) or space.size != value["size"]:
+            raise HarnessLayeringError("the stored control policy space does not match its record")
+        return space
+
 
 @dataclass(frozen=True)
 class CompositionSpace:
@@ -225,6 +233,16 @@ class CompositionSpace:
                 "catalogue": [item.to_dict() for item in self.catalogue],
                 "size": self.size}
 
+    @classmethod
+    def from_dict(cls, value) -> "CompositionSpace":
+        _expect_space(value, "composition", {"harness_id", "max_depth", "catalogue", "size"})
+        space = cls(value["harness_id"],
+                    tuple(WrapperLayer.from_dict(item) for item in value["catalogue"]),
+                    value["max_depth"])
+        if space.size != value["size"]:
+            raise HarnessLayeringError("the stored composition space does not match its record")
+        return space
+
 
 @dataclass(frozen=True)
 class LayeringSpace:
@@ -286,6 +304,35 @@ class LayeringSpace:
     @property
     def content_digest(self) -> str:
         return _digest(self.to_dict())
+
+    @classmethod
+    def from_dict(cls, value, *, fallback_policy=None) -> "LayeringSpace":
+        """Rebuild a space from its record. The outer fallback policy is not
+        stored in the record, only its digest, so the caller supplies it and
+        the digest is checked; a record with a digest and no policy is
+        refused rather than rebuilt without its rule."""
+        _expect_space(value, "layering", {"assignment_ref", "compositions", "policies",
+                                          "size", "outer_fallback_policy_digest"})
+        stored = value["outer_fallback_policy_digest"]
+        if stored and (fallback_policy is None or fallback_policy.content_digest != stored):
+            raise HarnessLayeringError(
+                "the layering space record names an outer fallback policy digest; supply "
+                "the same policy to rebuild it")
+        if not stored and fallback_policy is not None:
+            raise HarnessLayeringError("the record has no outer policy; do not add one on rebuild")
+        space = cls(value["assignment_ref"], CompositionSpace.from_dict(value["compositions"]),
+                    ControlPolicySpace.from_dict(value["policies"]), fallback_policy)
+        if space.size != value["size"]:
+            raise HarnessLayeringError("the stored layering space does not match its record")
+        return space
+
+
+def _expect_space(value, kind, keys):
+    if (type(value) is not dict or value.get("record_type") != SPACE_RECORD_TYPE
+            or value.get("kind") != kind):
+        raise HarnessLayeringError(f"expected a {SPACE_RECORD_TYPE} record of kind {kind}")
+    if set(value) != keys | {"record_type", "kind"}:
+        raise HarnessLayeringError(f"{kind} space record has unexpected or missing fields")
 
 
 def self_test() -> dict:
@@ -381,6 +428,21 @@ def self_test() -> dict:
          NativeControl.RETRY: ControlOwnership.DELEGATED})))
     check("a_native_retry_candidate_is_inadmissible_without_the_outer_permission",
           not without.admissible(delegated_index) and with_permission.admissible(delegated_index))
+    rebuilt = LayeringSpace.from_dict(layering.to_dict(), fallback_policy=outer)
+    check("a_layering_space_round_trips_through_its_record_with_its_outer_policy",
+          rebuilt.content_digest == layering.content_digest
+          and rebuilt.candidate_at(0).content_digest == layering.candidate_at(0).content_digest)
+    try:
+        LayeringSpace.from_dict(layering.to_dict())
+        check("a_record_naming_an_outer_policy_cannot_be_rebuilt_without_it", False, "accepted")
+    except HarnessLayeringError:
+        check("a_record_naming_an_outer_policy_cannot_be_rebuilt_without_it", True)
+    tampered = dict(layering.to_dict()); tampered["size"] = tampered["size"] + 1
+    try:
+        LayeringSpace.from_dict(tampered, fallback_policy=outer)
+        check("a_record_whose_size_disagrees_with_its_definition_is_refused", False, "accepted")
+    except HarnessLayeringError:
+        check("a_record_whose_size_disagrees_with_its_definition_is_refused", True)
     check("the_space_digest_is_stable_and_reproducible",
           layering.content_digest == LayeringSpace(
               "assignment:space-check", CompositionSpace("codex", (prep, bridge, meter, transport), 3),

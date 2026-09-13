@@ -108,48 +108,19 @@ def expand_variation_space(campaign: GenerationCampaign) -> tuple[dict, ...]:
     The campaign must explicitly select the installed exact-enumeration
     strategy. Conditional rules prune incompatible combinations.
     """
-    import itertools
+    from itertools import islice
+    from ..space import ConfigurationSpace
 
     if campaign.search_strategy != "exact_enumeration":
         raise GenerationError(
             "expansion requires an explicit model-selected installed strategy; "
             "this executor currently installs exact_enumeration")
-    axis_values = []
-    for dimension in campaign.dimensions:
-        axis_values.append((dimension.dimension_id, dimension.expand()))
-    if not axis_values:
+    if not campaign.dimensions:
         return ()
-    combinations = itertools.product(*(values for _, values in axis_values))
-    configs = []
-    for combo in combinations:
-        config = dict(zip((d for d, _ in axis_values), combo))
-        config = dict(config)
-        config.update(campaign.context)
-        pruned = False
-        rules = campaign.conditional_rules
-        if isinstance(rules, ConditionalRule):
-            rules = (rules,)
-        for rule in rules:
-            if not rule.matches(config):
-                continue
-            for key, allowed in rule.require.items():
-                if config.get(key) not in allowed:
-                    pruned = True
-                    break
-            if not pruned:
-                for key in rule.prohibit:
-                    if config.get(key):
-                        pruned = True
-                        break
-            if pruned:
-                break
-        if pruned:
-            continue
-        configs.append(config)
-        if (campaign.budget.candidate_limit is not None
-                and len(configs) >= campaign.budget.candidate_limit):
-            break
-    return tuple(configs)
+    values = (config for _, config in ConfigurationSpace.from_campaign(campaign).iter_configurations())
+    if campaign.budget.candidate_limit is not None:
+        values = islice(values, campaign.budget.candidate_limit)
+    return tuple(values)
 
 
 def self_test() -> dict:

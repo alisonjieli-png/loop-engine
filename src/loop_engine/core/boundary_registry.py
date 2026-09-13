@@ -83,6 +83,10 @@ BOUNDARIES = (
      "binding": "practitioner_loop",
      "envelope": "loop.encapsulate.as_practitioner_loop",
      "test": "encapsulate:deterministic_check_runs_as_practitioner_loop"},
+    {"boundary": "configuration search proposal",
+     "crosses": "a task-conditioned search proposes exact configuration candidates",
+     "binding": "practitioner_loop", "envelope": "generation.search.propose_configurations",
+     "test": "search:configuration_search_uses_canonical_loop"},
     {"boundary": "adaptive deterministic resolution",
      "crosses": "an arbitrary task searches exact registered resolvers before model escalation",
      "binding": "practitioner_loop",
@@ -357,6 +361,9 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
         "practitioner", "practitioner.reference_nine_step@1.0.0",
         "starting", "spawned_by"),
     "deterministic check": _exact(
+        "practitioner", "practitioner.code_execution@1.0.0",
+        "starting", "spawned_by"),
+    "configuration search proposal": _exact(
         "practitioner", "practitioner.code_execution@1.0.0",
         "starting", "spawned_by"),
     "adaptive deterministic resolution": _exact(

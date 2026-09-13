@@ -724,6 +724,41 @@ semantic_selection:
     - fingerprints_templates_and_prior_results_remain_candidates
     - model_selected_values_cannot_broaden_runtime_authority
 
+scalable_configuration_search:
+  version: 1.0.0
+  configuration_space: loop_engine.generation.space.ConfigurationSpace
+  proposal_boundary: loop_engine.generation.search.propose_configurations
+  runtime_type: Loop
+  profile_ref: practitioner.code_execution@1.0.0
+  request_contract: loop_engine.generation.search_records.SearchRequest
+  observation_contract: loop_engine.generation.search_records.SearchObservation
+  task_contract: loop_engine.generation.search_records.SearchTask
+  installed_adapter_types:
+    - loop_engine.generation.search.GridSearchAdapter
+    - loop_engine.generation.search.RandomSearchAdapter
+    - loop_engine.generation.search.VectorWarmStartAdapter
+    - loop_engine.generation.search_optuna.OptunaSearchAdapter
+  optional_optimizer_version: optuna@5.0.0
+  optional_covariance_dependency: cmaes@0.12.0
+  current_scope: proposal_computation_not_task_execution
+  owner_scope:
+    task_population: entire_catalog_subject_to_explicit_task_and_evaluator_admission
+    fixed_100_task_limit: false
+    configuration_population: expandable_versioned_spaces_including_billions_of_addresses
+    methods: [grid, bayesian, evolutionary, covariance_adaptation, vector_warm_start]
+  invariants:
+    - raw_configuration_count_is_not_valid_or_executed_count
+    - configuration_addresses_are_lazy_and_content_bound
+    - fixed_context_cannot_overwrite_a_varied_dimension
+    - unknown_or_incompatible_observations_remain_visible
+    - evidence_resolution_is_required_before_optimizer_use
+    - sealed_final_evaluation_cannot_guide_search
+    - cross_task_vectors_transfer_candidates_not_objective_values
+    - proposal_batches_do_not_impose_a_total_campaign_ceiling
+    - optimizer_output_does_not_grant_effects_acceptance_or_promotion
+    - unavailable_optimizer_versions_refuse_without_substitution
+    - distributed_trial_leases_and_live_task_execution_require_separate_qualification
+
 independent_qualification:
   starter: devtools/qualification_lab
   imports_loop_engine: false

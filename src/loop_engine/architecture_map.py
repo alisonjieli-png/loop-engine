@@ -80,7 +80,8 @@ MODULE_MAP = {
         "learning_records",
     ),
     "generation": (
-        "expansion", "operators",
+        "expansion", "operators", "space", "space_checks", "search",
+        "search_records", "search_checks", "search_optuna", "search_optuna_checks",
     ),
     "generation.model": (
         "campaign", "dimensions", "fragments", "seeds",
@@ -216,8 +217,8 @@ MODULE_MAP = {
         "harness_process_checks",
         "harness_configuration", "harness_semantic", "harness_semantic_checks",
         "harness_fallback", "harness_fallback_checks", "harness_layering",
-        "harness_selection_records", "harness_selection", "harness_selection_checks",
         "harness_layering_space",
+        "harness_selection_records", "harness_selection", "harness_selection_checks",
         "harness_response_evaluation",
         "harness_additional_recipes", "harness_additional_recipe_checks",
         "harness_cline_kilo_recipes", "harness_cline_kilo_recipe_checks",

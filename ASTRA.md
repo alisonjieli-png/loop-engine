@@ -30,6 +30,30 @@ dimensions.
 
 ## Direction to preserve
 
+The owner clarified the scale requirement after asking about Hyperlambda:
+the entire task catalog stays in scope for admission, with no fixed
+100-task sample limit. Configuration spaces may contain billions of possible
+solutions. Grid, Bayesian, genetic, covariance-adaptation, vector-based, and
+future methods should help choose which configuration to try next and which
+configurations suit particular tasks. The search method and its settings
+are themselves configuration choices, not one permanent optimizer.
+
+Preserve separate counts for represented, applicable, proposed, dispatched,
+evaluated, independently verified, and promoted work. Exhaustive traversal
+of a declared finite grid remains an option; adaptive search must not be
+reported as exhaustive coverage. Complete reports need exact links among
+the task, configuration, action occurrences, physical model calls, code,
+Solution Canvas, outputs, and independent evaluation. A displayed Canvas
+without executable artifacts and a successful fresh-input run is incomplete.
+
+The [generation component](src/loop_engine/generation/README.md) describes the
+current proposal interfaces. The [Hyperlambda and wide-search review](docs/research/HYPERLAMBDA-AND-WIDE-SEARCH-2026-09-13.md)
+separates external design ideas from local implementation and qualification.
+The [run-path and dimension coverage map](docs/verification/RUN-PATH-AND-DIMENSION-COVERAGE-2026-09-13.md)
+lists executable, proposal-only, and unqualified paths, with all baseline
+dimensions and a rule for individual, fallback, interaction, and sequence
+coverage. Its inventory checks must not be reported as behavioral coverage.
+
 The system should remain open to additional cognitive steps, action methods,
 prompts, questions, intelligence, harnesses, tools, wrapper layers, and
 configuration dimensions. The recorded inventory is a required baseline, not

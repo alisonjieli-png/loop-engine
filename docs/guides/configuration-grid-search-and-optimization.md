@@ -5,13 +5,25 @@ assignment, an action, or a complete task. Search can add steps, prompts,
 questions, intelligence, tools, verification, and alternative attempts.
 It can also compare a simpler procedure when that is useful.
 
-This guide is an experiment design requirement and a description of existing
-candidate-enumeration support. It does not announce an automatically applied
-general optimizer. The [flexible composition direction](../architecture/FLEXIBLE-COGNITIVE-AND-ACTION-COMPOSITION.md)
+This guide covers experiment requirements and the existing proposal
+interfaces. The [generation component](../../src/loop_engine/generation/README.md)
+supports lazy indexed spaces, grid and seeded exploration, task-vector
+candidate priors, and optional Bayesian, evolutionary, and covariance
+adaptation through Optuna. Proposal computation does not dispatch tasks or
+establish their quality. The [flexible composition direction](../architecture/FLEXIBLE-COGNITIVE-AND-ACTION-COMPOSITION.md)
 and [open-ended dimension inventory](../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md)
 define what to keep extensible. Existing
 [work-approach instrumentation](../architecture/WORK-APPROACH-INSTRUMENTATION.md)
 remains the related architecture checkpoint, not a parallel experiment system.
+
+The owner explicitly rejected a fixed 100-task sample. The entire task
+catalog remains in scope for admission, and search spaces may contain
+billions of possible configurations. Adaptive methods choose which trials
+to propose next; exact enumeration remains available for declared finite
+grids. Neither method may report unexecuted configurations as tested.
+Use the [run-path and dimension coverage map](../verification/RUN-PATH-AND-DIMENSION-COVERAGE-2026-09-13.md)
+to track individual settings, fallback transitions, interactions, and
+stateful sequences separately from optimization outcomes.
 
 ## Complete explanation
 

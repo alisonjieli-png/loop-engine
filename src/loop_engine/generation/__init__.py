@@ -23,6 +23,18 @@ _PUBLIC = {
     "GenerationCampaign": ("model.campaign", "GenerationCampaign"),
     "SeedArtifact": ("model.seeds", "SeedArtifact"),
     "expand_variation_space": ("expansion", "expand_variation_space"),
+    "ConfigurationSpace": ("space", "ConfigurationSpace"),
+    "ConfigurationAxis": ("space", "ConfigurationAxis"),
+    "SearchRequest": ("search_records", "SearchRequest"),
+    "SearchTask": ("search_records", "SearchTask"),
+    "SearchObjective": ("search_records", "SearchObjective"),
+    "SearchObservation": ("search_records", "SearchObservation"),
+    "SearchServices": ("search_records", "SearchServices"),
+    "propose_configurations": ("search", "propose_configurations"),
+    "GridSearchAdapter": ("search", "GridSearchAdapter"),
+    "RandomSearchAdapter": ("search", "RandomSearchAdapter"),
+    "VectorWarmStartAdapter": ("search", "VectorWarmStartAdapter"),
+    "OptunaSearchAdapter": ("search_optuna", "OptunaSearchAdapter"),
 }
 
 __all__ = tuple(_PUBLIC)
