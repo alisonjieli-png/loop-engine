@@ -20,7 +20,20 @@ sixty-token generation on `gpt-oss:20b` was refused: HTTP 429, "you have
 reached your weekly usage limit, add usage credits", with no `Retry-After`
 header. So the listing is not readiness, the refusal is an allowance that
 resets on the provider's calendar, and the error body carries the account
-name and a hexadecimal reference.
+name and a hexadecimal reference. At 22:40 UTC one non-generating request
+per listed model (`max_tokens` far above any ceiling, on the
+OpenAI-compatible path) was refused the same way for all nineteen, before
+any validation of the ceiling: the allowance check precedes the 400 that
+names a model's maximum, so the thirteen models without a source-backed
+output maximum (`glm-5.1`, `glm-5.2`, `glm-5.3`, `gpt-oss:120b`,
+`nemotron-3-ultra`, `nemotron-3-super`, `kimi-k2.6`, `kimi-k2.7-code`,
+`minimax-m2.7`, `minimax-m3`, `mistral-large-3:675b`,
+`deepseek-v4.1-flash`, `qwen3.5:397b`) stay outside the model universe
+until the allowance resets and the probe
+(`.loop-engine-dev/fable-review-probe-20260913/ollama-live-prep/probe_model_maxima.py`)
+can read each declared maximum. On the OpenAI-compatible path the 429 body
+is the OpenAI error shape; on the native path it is `{"error": ...}`; both
+classify as `usage_limit_reached`.
 
 ## Defects, and what was fixed the same evening
 
