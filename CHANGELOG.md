@@ -238,6 +238,21 @@ First public release.
   revisions (default 2) of the append-only ledger instead of every prefix,
   and record the revision, the retention, and the event count. Two new
   tests.
+- Configuration setters and preferences, after a same-day probe-verified
+  review ([report](docs/verification/CONFIGURATION-MODULES-REVIEW-2026-09-13.md)).
+  An abstained proposal is refused before resolution instead of rewriting
+  the setting to a default; a change whose value is decided by a
+  higher-precedence source is reported as `applied_by_precedence` with the
+  governing source named, never as the requester's own change; a
+  constructor that clamps or rounds is refused as `constructor_coerced_value`
+  with both digests; any constructor exception and an absent declared
+  field are typed refusals; the report states that the boundary made no
+  model call and whether a proposal was supplied; constraint values are
+  type-checked at spec construction; fact expiry is typed and normalized
+  to one spelling; qualification is invalidated only by settings that
+  affect it; setting records are JSON-plain; and a proposal the record
+  contract refuses inside `rank` is an invalid proposal, not an engine
+  crash. Sixteen new setter checks and one preference check.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback

@@ -8,7 +8,7 @@ and precedence remain owned by the existing parameter-resolution contracts.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, fields, is_dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 import hashlib
 import json
 
@@ -62,13 +62,23 @@ class ConfigurationFact:
     def __post_init__(self):
         if self.state not in CONFIGURATION_FACT_STATES:
             raise ConfigurationCapabilityError("unknown configuration fact state")
+        if type(self.source_ref) is not str or type(self.source_digest) is not str:
+            raise ConfigurationCapabilityError("fact source and digest must be text")
         if self.state != UNKNOWN_FACT:
             exact_text(self.source_ref, "fact source")
             exact_digest(self.source_digest, "fact source digest")
+        if type(self.expires_at) is not str:
+            raise ConfigurationCapabilityError("capability expiry must be ISO 8601 text")
         if self.expires_at:
-            parsed = datetime.fromisoformat(self.expires_at.replace("Z", "+00:00"))
-            if parsed.tzinfo is None:
+            try:
+                parsed = datetime.fromisoformat(self.expires_at.strip().replace("Z", "+00:00"))
+            except ValueError as exc:
+                raise ConfigurationCapabilityError("capability expiry is not ISO 8601") from exc
+            if parsed.tzinfo is None or parsed.utcoffset() is None:
                 raise ConfigurationCapabilityError("capability expiry needs a timezone")
+            # One instant, one spelling: the same expiry written with Z or
+            # +00:00 must digest identically.
+            object.__setattr__(self, "expires_at", parsed.astimezone(timezone.utc).isoformat())
 
     def current_state(self, at: datetime) -> str:
         if not isinstance(at, datetime) or at.tzinfo is None or at.utcoffset() is None:
@@ -106,9 +116,18 @@ class ConfigurationSettingSpec:
         for name in ("required", "nullable", "intelligence_allowed", "affects_semantic_identity", "affects_qualification"):
             if type(getattr(parameter, name)) is not bool:
                 raise ConfigurationCapabilityError("parameter switches must be Booleans")
-        if (not isinstance(parameter.constraints, dict) or not set(parameter.constraints)
+        constraints = parameter.constraints
+        if (not isinstance(constraints, dict) or not set(constraints)
                 <= {"allowed_values", "non_empty", "minimum", "maximum"}):
             raise ConfigurationCapabilityError("setting constraints must be supported by the parameter resolver")
+        for bound in ("minimum", "maximum"):
+            if bound in constraints and (isinstance(constraints[bound], bool)
+                                         or not isinstance(constraints[bound], (int, float))):
+                raise ConfigurationCapabilityError(f"constraint {bound} must be a number")
+        if "allowed_values" in constraints and not isinstance(constraints["allowed_values"], (list, tuple)):
+            raise ConfigurationCapabilityError("constraint allowed_values must be a sequence")
+        if "non_empty" in constraints and type(constraints["non_empty"]) is not bool:
+            raise ConfigurationCapabilityError("constraint non_empty must be a Boolean")
         for name, states in (("support", ("supported", "unsupported", "unknown")),
                              ("availability", ("available", "unavailable", "unknown")),
                              ("qualification", ("qualified", "unqualified", "unknown"))):
@@ -148,6 +167,7 @@ class ConfigurationSettingSpec:
 
     def to_dict(self):
         value = asdict(self)
+        value["phases"], value["run_modes"] = list(self.phases), list(self.run_modes)
         parameter = parse_json(value.pop("parameter_json"))
         if parameter["sensitivity"] == "sensitive":
             parameter["default_input"]["value"] = "<redacted>"

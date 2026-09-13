@@ -246,8 +246,15 @@ def resolve_preference(request: PreferenceSelectionRequest) -> dict:
             try:
                 if canonical(engine.adapter.descriptor()) != engine.descriptor_json:
                     raise ConfigurationCapabilityError("preference configuration changed after binding")
-                proposal = engine.adapter.rank(request.snapshot)
-                if canonical(engine.adapter.descriptor()) != engine.descriptor_json:
+                try:
+                    proposal = engine.adapter.rank(request.snapshot)
+                except ConfigurationCapabilityError:
+                    # A proposal the record contract refuses (a repeated id, a
+                    # missing evidence reference) is an invalid proposal, not
+                    # an engine crash, so a policy that falls back on crashes
+                    # does not mistake it for one.
+                    reason = "invalid_proposal"
+                if not reason and canonical(engine.adapter.descriptor()) != engine.descriptor_json:
                     raise ConfigurationCapabilityError("preference configuration changed during ranking")
             except Exception:
                 reason = "engine_failed"

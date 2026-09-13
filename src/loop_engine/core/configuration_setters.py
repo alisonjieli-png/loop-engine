@@ -169,7 +169,15 @@ class ConfigurationUpdateResult:
 
 def _apply(request, context):
     target, current, authority = context.target, context.current, context.authority
-    before = describe_configuration(target, current, at=context.as_of)
+    try:
+        before = describe_configuration(target, current, at=context.as_of)
+    except ConfigurationCapabilityError as exc:
+        return ConfigurationUpdateResult(current, {"record_type": "configuration_update/v1",
+            "target_ref": target.target_ref, "as_of": context.as_of.isoformat(), "status": "rejected",
+            "attempts": [], "rejections": [{"reason": "target_field_absent", "detail": str(exc)}],
+            "dispatch_performed": False, "native_harness_reconfigured": False,
+            "effect_authority_granted": False, "qualification_invalidated": False,
+            "model_call_performed_by_boundary": False})
     report = {"record_type": "configuration_update/v1", "target_ref": target.target_ref,
         "as_of": context.as_of.isoformat(),
         "request": {"expected_target_digest": request.expected_target_digest,
@@ -181,14 +189,17 @@ def _apply(request, context):
         "authority": {**asdict(authority), "source_kind": authority.source_kind.value},
         "before": before, "status": "rejected", "attempts": [], "rejections": [],
         "dispatch_performed": False, "native_harness_reconfigured": False,
-        "effect_authority_granted": False, "qualification_invalidated": False}
+        "effect_authority_granted": False, "qualification_invalidated": False,
+        # A supplied proposal is a record handed in; this boundary never calls a model.
+        "model_call_performed_by_boundary": False, "governing_sources": {},
+        "requester_candidate_selected": True}
     if (authority.target_ref != target.target_ref
             or request.expected_target_digest != before["target_digest"]
             or request.expected_values_digest != before["values_digest"]):
         report["rejections"].append({"reason": "stale_or_different_target"})
         return ConfigurationUpdateResult(current, report)
     bindings = {s.parameter_id: s for s in target.settings}
-    updates = {}
+    updates, governing = {}, {}
     explicit = authority.source_kind in (ParameterSourceKind.EXPLICIT_INVOCATION,
                                          ParameterSourceKind.RUN_OVERRIDE)
     for change in request.changes:
@@ -234,6 +245,12 @@ def _apply(request, context):
                     report["rejections"].append({"parameter_id": change.parameter_id,
                                                   "reason": "agentic_change_lacks_typed_proposal"})
                     break
+                if intelligence.abstained:
+                    # An abstention proposes nothing; it must not re-resolve
+                    # the stack and rewrite the setting to a default.
+                    report["rejections"].append({"parameter_id": change.parameter_id,
+                                                  "reason": "proposal_abstained"})
+                    break
             else:
                 sources = previous + (ParameterSource(authority.source_kind, authority.source_ref,
                                                      authority.source_version, selected_input),)
@@ -247,7 +264,8 @@ def _apply(request, context):
                     if trace["source_kind"] == ParameterSourceKind.INTELLIGENCE_PROPOSAL.value:
                         trace["reason"] = "sensitive proposal disposition recorded"
             report["attempts"].append({"parameter_id": change.parameter_id,
-                "candidate_position": position, "resolution": safe_resolution})
+                "candidate_position": position, "resolution": safe_resolution,
+                "proposal_supplied": intelligence is not None})
             if resolution.status == ParameterResolutionStatus.RESOLVED:
                 resolved = resolution
                 break
@@ -257,6 +275,7 @@ def _apply(request, context):
             report["rejections"].append({"parameter_id": change.parameter_id,
                                           "reason": "no_candidate_resolved"})
             continue
+        governing[change.parameter_id] = resolved.source_kind
         value = plain_harness_json(resolved.value)
         if setting.value_codec == "tuple":
             if not isinstance(value, list):
@@ -265,17 +284,37 @@ def _apply(request, context):
                 continue
             value = tuple(value)
         updates[setting.target_field] = value
+    report["governing_sources"] = governing
+    report["requester_candidate_selected"] = all(kind == authority.source_kind.value
+                                                 for kind in governing.values())
     if report["rejections"]:
         return ConfigurationUpdateResult(current, report)
     try:
         updated = replace(current, **updates)
         after = describe_configuration(target, updated, at=context.as_of)
-    except (ValueError, TypeError):
-        report["rejections"].append({"reason": "target_constructor_refused_configuration"})
+    except Exception as exc:  # the target's own constructor decides; its class is recorded, never its text
+        report["rejections"].append({"reason": "target_constructor_refused_configuration",
+                                     "exception_type": type(exc).__name__})
         return ConfigurationUpdateResult(current, report)
-    changed = after["values_digest"] != before["values_digest"]
-    report.update(status="applied_in_memory" if changed else "unchanged", after=after,
-                  qualification_invalidated=changed)
+    # The value that landed must be the value that was resolved; a
+    # constructor that clamps or rounds is a refusal, not a success.
+    after_rows = {row["parameter_id"]: row for row in after["settings"]}
+    for setting in target.settings:
+        if setting.target_field in updates:
+            expected = digest(plain_harness_json(updates[setting.target_field]))
+            if after_rows[setting.parameter_id]["value_digest"] != expected:
+                report["rejections"].append({"parameter_id": setting.parameter_id,
+                    "reason": "constructor_coerced_value", "resolved_value_digest": expected,
+                    "effective_value_digest": after_rows[setting.parameter_id]["value_digest"]})
+    if report["rejections"]:
+        return ConfigurationUpdateResult(current, report)
+    before_rows = {row["parameter_id"]: row for row in before["settings"]}
+    changed_ids = [pid for pid, row in after_rows.items() if row["value_digest"] != before_rows[pid]["value_digest"]]
+    invalidated = [pid for pid in changed_ids if bindings[pid].parameter().affects_qualification]
+    status = ("unchanged" if not changed_ids else
+              "applied_in_memory" if report["requester_candidate_selected"] else "applied_by_precedence")
+    report.update(status=status, after=after, changed_settings=changed_ids,
+                  qualification_invalidated=bool(invalidated), invalidated_settings=invalidated)
     return ConfigurationUpdateResult(updated, report)
 
 

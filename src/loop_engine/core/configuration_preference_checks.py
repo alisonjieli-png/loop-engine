@@ -111,6 +111,19 @@ def run_checks():
     _meta_checks(check, base, existing, explicit)
     _search_checks(check)
     _harness_checks(check)
+
+    class RepeatingAdapter:
+        def descriptor(self):
+            return {"method": "offline_repeating_fixture"}
+
+        def rank(self, snapshot):
+            first = snapshot.candidates[0].candidate_id
+            return PreferenceProposal(snapshot.content_digest, (first, first), "repeating@1.0.0")
+    repeating = engine("repeating@1.0.0", RepeatingAdapter())
+    invalid = resolve_preference(replace(base, policy=MetaPreferencePolicy((repeating.engine_ref,)),
+                                         engines=(repeating,)))
+    check("an_invalid_proposal_from_rank_is_not_an_engine_crash",
+          invalid["attempts"][0]["result"] == "invalid_proposal" and invalid["status"] == "abstained")
     return {"tests": tests, "passed": sum(t["passed"] for t in tests), "total": len(tests),
             "all_passed": all(t["passed"] for t in tests)}
 

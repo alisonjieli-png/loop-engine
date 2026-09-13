@@ -72,6 +72,9 @@ Claude's same-day findings are in the
 [Claude Fable 5.1 review](../verification/CLAUDE-FABLE-5.1-REVIEW-2026-09-13.md)
 and, for the task-database campaign runner, the
 [campaign runner review](../verification/TASK-DATABASE-CAMPAIGN-REVIEW-2026-09-13.md).
+The configuration setter and preference modules have their own
+[review](../verification/CONFIGURATION-MODULES-REVIEW-2026-09-13.md), with
+what was fixed the same evening and what stays open.
 The campaign review's two high findings matter before any provider answers
 again: a non-outage provider failure re-runs the same cell without bound,
 and a crash mid-trial leaves the campaign unresumable.

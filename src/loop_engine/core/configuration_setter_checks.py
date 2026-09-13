@@ -183,6 +183,7 @@ def run_checks():
     refuses("naive_fact_time_refused", lambda: fact("available").current_state(datetime(2026, 9, 13)))
     refuses("dataclass_type_is_not_a_configuration", lambda: describe_configuration(spec, Values, at=NOW))
     _invocation_checks(check)
+    _review_checks(check, refuses, spec, current, apply, Values)
     return {"tests": tests, "passed": sum(t["passed"] for t in tests), "total": len(tests),
             "all_passed": all(t["passed"] for t in tests)}
 
@@ -229,3 +230,91 @@ def _invocation_checks(check):
     refused, _ = apply_configuration_as_loop(invalid, ConfigurationSetterContext(spec, original, authority(spec), NOW))
     check("target_constructor_can_refuse_without_partial_change", refused.configuration is original
           and refused.report["rejections"][0]["reason"] == "target_constructor_refused_configuration")
+
+
+def _review_checks(check, refuses, spec, current, apply, Values):
+    """Checks added after the 2026-09-13 review: abstentions change nothing,
+    a change governed by a higher source says so, constructors that coerce
+    or raise are typed refusals, records are portable, and facts are typed."""
+    import json
+    agent = authority(spec, ParameterSourceKind.INTELLIGENCE_PROPOSAL)
+    abstained = ConfigurationValueCandidate(ParameterInput.from_value(0.1),
+        proposal(0.1, abstained=True, rejection_reason="no evidence for this task"))
+    abstention = replace(request(spec, current, (("temperature", (0.1,)),)),
+                         changes=(ConfigurationSettingChange("temperature", (abstained,)),))
+    refused, _ = apply(abstention, grant=agent)
+    check("an_abstained_proposal_changes_nothing",
+          refused.configuration is current and refused.report["status"] == "rejected"
+          and refused.report["rejections"][0]["reason"] == "proposal_abstained"
+          and refused.report["attempts"] == [])
+    pinned = ParameterSource(ParameterSourceKind.EXPLICIT_INVOCATION,
+        "fixture-explicit-pin@1.0.0", "1.0.0", ParameterInput.from_value(0.9))
+    proposed = replace(request(spec, current, (("temperature", (0.1,)),)),
+                       changes=(ConfigurationSettingChange("temperature", (ConfigurationValueCandidate(
+                           ParameterInput.from_value(0.1), proposal(0.1)),)),))
+    governed, _ = apply(proposed, grant=agent, prior=(("temperature", pinned),))
+    check("a_change_governed_by_a_higher_source_is_reported_as_such",
+          governed.configuration.temperature == 0.9
+          and governed.report["status"] == "applied_by_precedence"
+          and governed.report["governing_sources"] == {"temperature": "explicit_invocation"}
+          and governed.report["requester_candidate_selected"] is False
+          and governed.report["attempts"][0]["proposal_supplied"] is True)
+    own, _ = apply(proposed, grant=agent)
+    check("a_requesters_own_candidate_is_reported_as_applied",
+          own.configuration.temperature == 0.1 and own.report["status"] == "applied_in_memory"
+          and own.report["governing_sources"] == {"temperature": "intelligence_proposal"}
+          and own.report["requester_candidate_selected"] is True
+          and own.report["model_call_performed_by_boundary"] is False
+          and own.report["changed_settings"] == ["temperature"])
+
+    @dataclass(frozen=True)
+    class Clamping(Values):
+        def __post_init__(self):
+            if self.temperature > 1:
+                object.__setattr__(self, "temperature", 1.0)
+    clamped = Clamping()
+    coerced, _ = apply(request(spec, clamped, (("temperature", (4,)),)), current=clamped)
+    check("a_constructor_that_coerces_the_value_is_refused",
+          coerced.configuration is clamped and coerced.report["status"] == "rejected"
+          and coerced.report["rejections"][0]["reason"] == "constructor_coerced_value")
+
+    @dataclass(frozen=True)
+    class Hot(Values):
+        def __post_init__(self):
+            if self.temperature > 1:
+                raise RuntimeError("too hot")
+    hot = Hot()
+    raised, _ = apply(request(spec, hot, (("temperature", (4,)),)), current=hot)
+    check("a_constructor_exception_of_any_class_is_a_typed_refusal",
+          raised.configuration is hot
+          and raised.report["rejections"][0] == {"reason": "target_constructor_refused_configuration",
+                                                 "exception_type": "RuntimeError"})
+
+    @dataclass(frozen=True)
+    class Partial:
+        temperature: float = 0.7
+    absent, _ = apply(replace(request(spec, current, (("temperature", (0.2,)),))), current=Partial())
+    check("a_declared_field_absent_from_the_instance_is_a_typed_refusal",
+          absent.report["status"] == "rejected" and absent.report["rejections"][0]["reason"] == "target_field_absent")
+    unflagged = replace(spec, settings=(ConfigurationSettingSpec.from_parameter(
+        replace(spec.settings[0].parameter(), affects_qualification=False), "temperature",
+        support=fact("supported"), availability=fact("available"), qualification=fact("qualified"),
+        writable=True, phases=("per_request",)), *spec.settings[1:]))
+    quiet, _ = apply(request(unflagged, current, (("temperature", (0.2,)),)), chosen=unflagged)
+    check("qualification_invalidation_honours_the_parameter_flag",
+          quiet.report["status"] == "applied_in_memory" and quiet.report["qualification_invalidated"] is False
+          and quiet.report["invalidated_settings"] == [] and quiet.report["changed_settings"] == ["temperature"])
+    for name, constraints in (("string_minimum", {"minimum": "0"}), ("integer_allowed_values", {"allowed_values": 3}),
+                              ("text_non_empty", {"non_empty": "yes"}), ("boolean_maximum", {"maximum": True})):
+        refuses(f"a_{name}_constraint_is_refused_at_spec_construction",
+                lambda constraints=constraints: ConfigurationSettingSpec.from_parameter(
+                    replace(spec.settings[0].parameter(), constraints=constraints), "temperature"))
+    same = ConfigurationFact("available", "fixture-source@1.0.0", digest("x"), "2026-09-13T20:00:00Z")
+    check("an_expiry_is_normalized_so_one_instant_has_one_spelling",
+          same == ConfigurationFact("available", "fixture-source@1.0.0", digest("x"), "2026-09-13T20:00:00+00:00")
+          and same.expires_at == "2026-09-13T20:00:00+00:00")
+    refuses("a_non_text_expiry_is_refused", lambda: ConfigurationFact("available", "s@1.0.0", digest("x"), 5))
+    refuses("a_malformed_expiry_is_refused", lambda: ConfigurationFact("available", "s@1.0.0", digest("x"), "soon"))
+    refuses("non_text_fact_references_are_refused", lambda: ConfigurationFact("unknown", 123, object()))
+    check("setting_and_target_records_are_json_plain",
+          json.loads(json.dumps(spec.to_dict())) == spec.to_dict())
