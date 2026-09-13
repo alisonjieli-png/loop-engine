@@ -201,6 +201,70 @@ def run_self_test_checks():
         refuses('changed_alternative_registration_refused', lambda: session.authority.harness.invoke(
             None, gateway=session.authority.gateway, parent=owner))
 
+        # Layering declarations travel with the attempt record, and a
+        # declaration nothing implements is refused rather than run as the
+        # direct adapter in disguise.
+        from .harness_layering import (
+            ControlOwnership, LayeredHarnessBinding, NativeControl, NativeControlPolicy,
+            WrapperComposition, WrapperLayer)
+        everything = NativeControlPolicy.owning_loop_for_everything()
+        direct = LayeredHarnessBinding('assignment:layering-check',
+            WrapperComposition('direct', 'first'), everything, (), policy)
+
+        def layered_setup(layering, behaviors=('broker','broker','broker')):
+            adapters = tuple(FixtureHarness(identity, behavior)
+                             for identity, behavior in zip(policy.harness_ids, behaviors))
+            binding = HarnessSemanticBinding('first', HarnessRegistry(adapters),
+                str(Path(directory)/'work'), artifact_store=manager,
+                fallback_policy=policy, layering=layering)
+            authority = fixture_model_execution(FixtureModelExecutionRequest(
+                answers=('{"answer":1}',), max_model_calls=4))
+            authority = replace(authority, harness=binding,
+                config=replace(authority.config, max_route_attempts=None))
+            return authority.start_session(artifact_store=manager), Loop('layering controls')
+
+        session, owner = layered_setup(direct)
+        text = session.invoke(ModelInvocationRequest('declared direct adapter'), owner)
+        bound = [e for e in owner.ledger.events if e.get('action') == 'harness_layering_bound']
+        assessed = [e for e in owner.ledger.events if e.get('action') == 'harness_attempt_assessed']
+        check('an_empty_composition_runs_as_the_direct_adapter_and_is_recorded',
+              text == '{"answer":1}' and len(bound) == 1
+              and bound[0]['layering_digest'] == direct.content_digest
+              and bound[0]['composition_executor'] == 'direct_adapter'
+              and bound[0]['natively_owned_controls'] == []
+              and assessed and assessed[-1]['layering_digest'] == direct.content_digest
+              and assessed[-1]['control_policy_digest'] == everything.content_digest)
+        session, owner = layered_setup(None)
+        session.invoke(ModelInvocationRequest('undeclared direct adapter'), owner)
+        assessed = [e for e in owner.ledger.events if e.get('action') == 'harness_attempt_assessed']
+        check('an_undeclared_binding_still_names_its_executor',
+              assessed and assessed[-1]['layering_digest'] == ''
+              and assessed[-1]['composition_executor'] == 'direct_adapter'
+              and not [e for e in owner.ledger.events if e.get('action') == 'harness_layering_bound'])
+        wrapped = LayeredHarnessBinding('assignment:layering-check',
+            WrapperComposition('prepared', 'first', (WrapperLayer(
+                'instruction-prep', '1.0', ('instruction_preparation',)),)), everything, (), policy)
+        session, owner = layered_setup(wrapped)
+        refuses('a_composition_with_wrappers_is_refused_until_an_executor_exists',
+                lambda: session.invoke(ModelInvocationRequest('wrapped'), owner))
+        check('the_refused_composition_launched_no_adapter',
+              not any(item.requests for item in session.authority.harness.registry._adapters.values())
+              if hasattr(session.authority.harness.registry, '_adapters') else True)
+        supervised = NativeControlPolicy({**everything.ownership,
+                                          NativeControl.PLANNING: ControlOwnership.SUPERVISED})
+        session, owner = layered_setup(LayeredHarnessBinding('assignment:layering-check',
+            WrapperComposition('direct', 'first'), supervised, (), policy))
+        refuses('a_natively_owned_control_is_refused_until_an_executor_exists',
+                lambda: session.invoke(ModelInvocationRequest('supervised'), owner))
+        other_policy = HarnessFallbackPolicy(('first', 'second'), (HarnessFailureKind.UNAVAILABLE,))
+        refuses('a_layered_binding_checked_against_another_outer_policy_is_refused',
+                lambda: layered_setup(LayeredHarnessBinding('assignment:layering-check',
+                    WrapperComposition('direct', 'first'), everything, (), other_policy)))
+        refuses('a_layered_binding_for_another_harness_is_refused',
+                lambda: layered_setup(LayeredHarnessBinding('assignment:layering-check',
+                    WrapperComposition('direct', 'second'), everything, (),
+                    HarnessFallbackPolicy(('second', 'first'), ()))))
+
         result = HarnessRunResult('check', 'first', 'failed', error_code='adapter_reported_failure')
         from .external_harness import HarnessToolEvent
         result.tool_events = (HarnessToolEvent('unexpected', 'unknown', 'write'),)

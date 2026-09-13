@@ -54,6 +54,14 @@ class HarnessSemanticBinding:
     socket_directory: str = ''
     fallback_policy: HarnessFallbackPolicy | None = None
     selection_policy: HarnessSelectionPolicy | None = None
+    #: Optional declaration of the wrapper composition and native control
+    #: ownership this binding runs under (core.harness_layering). Absent, the
+    #: direct adapter runs, which is also what an empty composition with
+    #: every control owned by the Loop declares. A composition with wrapper
+    #: layers, or a natively owned control, is recorded but refused at
+    #: invocation until an executor for it is registered, so a declaration
+    #: can never be silently run as something else.
+    layering: object = field(default=None, repr=False, compare=False)
     _registration: HarnessAdapterInfo = field(init=False, repr=False)
     _adapter: object = field(init=False, repr=False, compare=False)
     _alternatives: tuple = field(init=False, repr=False, compare=False)
@@ -82,6 +90,43 @@ class HarnessSemanticBinding:
             raise ValueError('fallback order must start with the selected harness')
         object.__setattr__(self, '_alternatives', tuple(
             (item, self.registry.get(item), self.registry.get(item).info()) for item in ids))
+        if self.layering is not None:
+            from .harness_layering import LayeredHarnessBinding
+            layering = self.layering
+            if not isinstance(layering, LayeredHarnessBinding):
+                raise TypeError('harness layering requires a typed LayeredHarnessBinding')
+            if layering.initial.harness_id != self.harness_id:
+                raise ValueError('the layered binding must wrap the selected harness')
+            outer = layering.fallback_policy
+            if (outer is None) != (policy is None) or (
+                    outer is not None and outer.content_digest != policy.content_digest):
+                raise ValueError('the layered binding must be checked against this binding\'s '
+                                 'own fallback policy')
+            for item in layering.fallbacks:
+                if item.harness_id and item.harness_id not in ids:
+                    raise ValueError('a layered fallback names a harness outside the registered order')
+
+    def _refuse_undeclared_executor(self):
+        """A declaration is not an implementation: refuse to run wrappers or
+        native controls that no registered executor implements."""
+        if self.layering is None:
+            return
+        if self.layering.initial.layers:
+            raise ValueError('no executor is registered for a layered composition; only the '
+                             'direct adapter (an empty composition) can run today')
+        natively = self.layering.control_policy.natively_owned()
+        if natively:
+            raise ValueError('the direct adapter implements owning-Loop control for every native '
+                             f'control; {[item.value for item in natively]} cannot run yet')
+
+    def _layering_fields(self):
+        if self.layering is None:
+            return {'layering_digest': '', 'composition_id': '', 'control_policy_digest': '',
+                    'composition_executor': 'direct_adapter'}
+        return {'layering_digest': self.layering.content_digest,
+                'composition_id': self.layering.initial.composition_id,
+                'control_policy_digest': self.layering.control_policy.content_digest,
+                'composition_executor': 'direct_adapter'}
 
     def invoke(self, request: ModelGatewayRequest, *, gateway: ModelGateway,
                parent, artifact_store=None, validate=None, selection_scope=None,
@@ -99,6 +144,15 @@ class HarnessSemanticBinding:
         if not request.semantic_call_id:
             request = replace(request, semantic_call_id='semantic-harness-' + uuid.uuid4().hex)
         policy = self.fallback_policy or HarnessFallbackPolicy((self.harness_id,), ())
+        self._refuse_undeclared_executor()
+        if self.layering is not None:
+            parent.ledger.record(loop_id=parent.loop_id, event='custom',
+                action='harness_layering_bound', record_type='harness_layering_bound/v1',
+                semantic_call_id=request.semantic_call_id,
+                assignment_ref=self.layering.assignment_ref,
+                natively_owned_controls=[item.value for item in self.layering.control_policy.natively_owned()],
+                fallback_actions=[item.action for item in self.layering.fallbacks],
+                **self._layering_fields())
         if self.selection_policy is not None:
             from .harness_selection import select_harness_as_loop
             routes = gateway._routes(request.config)
@@ -195,7 +249,7 @@ class HarnessSemanticBinding:
                 decision=decision.reason, next_harness_id=decision.next_harness_id,
                 model_calls_known_subtotal=response.physical_model_calls,
                 model_call_accounting_complete=not decision.accounting_uncertain,
-                task_accepted=False)
+                task_accepted=False, **self._layering_fields())
             if not decision.next_harness_id:
                 break
             recovery.append(HarnessRecoveryObservation(harness_id,

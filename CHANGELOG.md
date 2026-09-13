@@ -41,8 +41,13 @@ First public release.
   outer fallback policy before execution. `HarnessFallbackPolicy` gained the
   explicit `allow_native_retry` permission (off by default, recorded as
   `harness_fallback_policy/v3` only when set), so a native retry can never
-  bypass an outer semantic-recovery restriction. No adapter executes a
-  composition yet; the records are the declarations the
+  bypass an outer semantic-recovery restriction. `HarnessSemanticBinding`
+  accepts the binding as `layering`, records `harness_layering_bound/v1`
+  with the digests and the executor at invocation, stamps every attempt
+  assessment with the same digests, and refuses a composition with wrapper
+  layers or a natively owned control until an executor for it is
+  registered. No adapter executes a composition yet; the records are the
+  declarations the
   [layered harness proposal](docs/architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
   asks for, and the direct adapter remains the baseline.
 

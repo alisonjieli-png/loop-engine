@@ -330,12 +330,27 @@ so every existing policy digest is unchanged. That rule is the proposal's
 requirement that a native transport retry cannot bypass an outer
 semantic-recovery restriction.
 
-The records are declarations. No adapter executes a composition yet, and
-the proposal's comparison controls (continuation owner, retained versus
-fresh session, wrapper order, concurrent native and outer retry,
-cancellation in flight, native counter resets, rejected native completion,
-unavailable native features, and fallback to Loop Engine control) remain
-the qualification work before any layered profile is used for a run.
+A `HarnessSemanticBinding` accepts the binding as its `layering` argument.
+At construction it checks that the declaration wraps the selected harness,
+was checked against this binding's own fallback policy, and names only
+registered alternatives. At invocation it writes one
+`harness_layering_bound/v1` record with the assignment reference, the
+binding digest, the composition identity, the control policy digest, the
+natively owned controls, and the executor that will run, and every
+`harness_attempt_assessment/v1` record carries the same digests. The
+executor is always `direct_adapter` today: a composition with wrapper
+layers, or a control owned by the native harness, is refused before any
+adapter launches, because no registered executor implements it yet and a
+declaration must never be run as something else. A binding without a
+layering record reports an empty digest and the same executor, so an
+undeclared attempt is distinguishable from a declared direct one.
+
+The records are declarations. The proposal's comparison controls
+(continuation owner, retained versus fresh session, wrapper order,
+concurrent native and outer retry, cancellation in flight, native counter
+resets, rejected native completion, unavailable native features, and
+fallback to Loop Engine control) remain the qualification work before any
+executor for a layered profile is registered.
 
 ## Verification
 
